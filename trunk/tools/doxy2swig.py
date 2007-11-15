@@ -365,6 +365,9 @@ class Doxy2SWIG:
         txt = ''
         for n in node.childNodes:
             txt = txt + n.data
+        if txt.split('=')[-1].strip() == '0':
+            # remove =0 from function definition
+            txt = txt.rpartition('=')[0]
         self.content[-1]['cppArgs'] = txt
         # replace the trailing const
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,

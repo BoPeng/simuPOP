@@ -36,6 +36,7 @@ void vspSplitter::resetSubPop(population & pop, SubPopID subPop)
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it)
 		it->setVisible(true);
+	m_activated = false;
 }
 
 
@@ -50,6 +51,24 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 		if (it->visible())
 			++count;
 	return count;
+}
+
+
+void nullSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+                            activateType type)
+{
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
+	if (type == Visible) {
+		m_activated = true;
+		return;
+	}
+	// to set itertable, because iterable flags are not required to be deactivated,
+	// we will have to reset it here.
+	RawIndIterator it = pop.rawIndBegin(subPop);
+	RawIndIterator it_end = pop.rawIndEnd(subPop);
+	for (; it != it_end; ++it)
+		it->setIteratable(true);
 }
 
 
@@ -86,16 +105,22 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 
 
 void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                           activateType type)
 {
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
 	Sex s = virtualSubPop == 0 ? Male : Female;
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	for (; it != it_end; ++it)
-		it->setVisible(it->sex() == s);
-	m_activated = true;
+		if (type == Visible)
+			it->setVisible(it->sex() == s);
+		else
+			it->setIteratable(it->sex() == s);
+	if (type == Visible)
+		m_activated = true;
 }
 
 
@@ -123,16 +148,22 @@ ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID 
 
 
 void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                                 activateType type)
 {
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
 	bool aff = virtualSubPop == 0 ? false : true;
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	for (; it != it_end; ++it)
-		it->setVisible(it->affected() == aff);
-	m_activated = true;
+		if (type == Visible)
+			it->setVisible(it->affected() == aff);
+		else
+			it->setIteratable(it->affected() == aff);
+	if (type == Visible)
+		m_activated = true;
 }
 
 
@@ -224,8 +255,10 @@ UINT infoSplitter::numVirtualSubPop()
 
 
 void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                            activateType type)
 {
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
 	UINT idx = pop.infoIdx(m_info);
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
@@ -239,17 +272,26 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 		// using cutoff, below
 		if (virtualSubPop == 0) {
 			for (; it != it_end; ++it)
-				it->setVisible(it->info(idx) < m_cutoff[0]);
+				if (type == Visible)
+					it->setVisible(it->info(idx) < m_cutoff[0]);
+				else
+					it->setIteratable(it->info(idx) < m_cutoff[0]);
 		} else if (static_cast<UINT>(virtualSubPop) == m_cutoff.size()) {
 			double v = m_cutoff.back();
 			for (; it != it_end; ++it)
-				it->setVisible(it->info(idx) >= v);
+				if (type == Visible)
+					it->setVisible(it->info(idx) >= v);
+				else
+					it->setIteratable(it->info(idx) >= v);
 		} else {         // in between
 			double v1 = m_cutoff[virtualSubPop - 1];
 			double v2 = m_cutoff[virtualSubPop];
 			double v = it->info(idx);
 			for (; it != it_end; ++it)
-				it->setVisible(v >= v1 && v < v2);
+				if (type == Visible)
+					it->setVisible(v >= v1 && v < v2);
+				else
+					it->setIteratable(v >= v1 && v < v2);
 		}
 	} else {
 		DBG_FAILIF(static_cast<UINT>(subPop) >= m_values.size(), IndexError,
@@ -257,9 +299,13 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 		    + toStr(m_values.size() - 1));
 		double v = m_values[virtualSubPop];
 		for (; it != it_end; ++it)
-			it->setVisible(fcmp_eq(it->info(idx), v));
+			if (type == Visible)
+				it->setVisible(fcmp_eq(it->info(idx), v));
+			else
+				it->setIteratable(fcmp_eq(it->info(idx), v));
 	}
-	m_activated = true;
+	if (type == Visible)
+		m_activated = true;
 }
 
 
@@ -326,8 +372,10 @@ UINT proportionSplitter::numVirtualSubPop()
 
 
 void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                                  activateType type)
 {
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_proportions.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 
@@ -351,9 +399,13 @@ void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID vi
 				spSize = size;
 			spCount = 0;
 		}
-		it->setVisible(sp == visibleSP);
+		if (type == Visible)
+			it->setVisible(sp == visibleSP);
+		else
+			it->setIteratable(sp == visibleSP);
 	}
-	m_activated = true;
+	if (type == Visible)
+		m_activated = true;
 }
 
 
@@ -405,8 +457,10 @@ UINT rangeSplitter::numVirtualSubPop()
 
 
 void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                             activateType type)
 {
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 
@@ -417,8 +471,12 @@ void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtual
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it, ++idx)
-		it->setVisible(idx >= low && idx < high);
-	m_activated = true;
+		if (type == Visible)
+			it->setVisible(idx >= low && idx < high);
+		else
+			it->setIteratable(idx >= low && idx < high);
+	if (type == Visible)
+		m_activated = true;
 }
 
 
@@ -470,8 +528,10 @@ UINT genotypeSplitter::numVirtualSubPop()
 
 
 void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                                activateType type)
 {
+	DBG_FAILIF(activated(), ValueError,
+	    "Can not activate a splitter against an activated virtual subpopulation");
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 	    "Virtual subpopulation index out of genotype");
 
@@ -479,8 +539,12 @@ void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it)
-		it->setVisible(match(& * it, alleles));
-	m_activated = true;
+		if (type == Visible)
+			it->setVisible(match(& * it, alleles));
+		else
+			it->setIteratable(match(& * it, alleles));
+	if (type == Visible)
+		m_activated = true;
 }
 
 

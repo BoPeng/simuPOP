@@ -123,7 +123,7 @@ protected:
 	static const size_t m_flagVisible = 8;
 
 	/// if this individual is iteratable. This will
-	/// not affect how activated virtual subpoulations 
+	/// not affect how activated virtual subpoulations
 	/// behave, but will affect how pyIndIterator
 	/// iterate through the population.
 	///
@@ -430,11 +430,13 @@ public:
 			RESETFLAG(m_flags, m_flagAffected);
 	}
 
+
 	/// CPPONLY
 	bool iteratable() const
 	{
 		return ISSETFLAG(m_flags, m_flagIteratable);
 	}
+
 
 	/// CPPONLY
 	void setIteratable(bool iteratable)
@@ -444,12 +446,14 @@ public:
 		else
 			RESETFLAG(m_flags, m_flagIteratable);
 	}
-	
+
+
 	/// CPPONLY
 	bool visible() const
 	{
 		return ISSETFLAG(m_flags, m_flagVisible);
 	}
+
 
 	/// CPPONLY
 	void setVisible(bool visible)
@@ -769,7 +773,7 @@ class pyIndIterator
 public:
 	pyIndIterator(vector<individual>::iterator const begin,
 	              vector<individual>::iterator const end,
-				  bool allInds, bool allVisibles) :
+	              bool allInds, bool allVisibles) :
 		m_index(begin),
 		m_end(end),
 		m_allInds(allInds),

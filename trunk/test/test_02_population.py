@@ -1242,6 +1242,8 @@ class TestPopulation(unittest.TestCase):
         pop.activateVirtualSubPop(1, 1)
         for ind in pop.individuals(1):
             self.assertEqual(ind.sex(), Female)
+        pop.deactivateVirtualSubPop(1)
+        #
         pop.activateVirtualSubPop(1, 0)
         for ind in pop.individuals(1):
             self.assertEqual(ind.sex(), Male)
@@ -1272,6 +1274,8 @@ class TestPopulation(unittest.TestCase):
         pop.activateVirtualSubPop(1, 1)
         for ind in pop.individuals(1):
             self.assertEqual(ind.affected(), True)
+        pop.deactivateVirtualSubPop(1)
+        #
         pop.activateVirtualSubPop(1, 0)
         for ind in pop.individuals(1):
             self.assertEqual(ind.affected(), False)
@@ -1423,6 +1427,20 @@ class TestPopulation(unittest.TestCase):
         # these should be calcuated using virtual stuff
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         self.assertEqual(an, [pop.dvars().alleleNum[x][0] for x in range(pop.totNumLoci())])        
+
+    def testIterateVirtualSubPop(self):
+        'Testing iteration through virtual subpopulations'
+        pop =  population(1000, loci=[5, 8])
+        InitByFreq(pop, [0.2, 0.4, 0.4])
+        pop.setVirtualSplitter(genotypeSplitter(loci=[2,5], alleles=[1,1,1,1], phase=False), 0)
+        for ind in pop.individuals(0, 0):
+            self.assertEqual(ind.allele(2, 0), 1)
+            self.assertEqual(ind.allele(2, 1), 1)
+            self.assertEqual(ind.allele(5, 0), 1)
+            self.assertEqual(ind.allele(5, 1), 1)
+        Stat(pop, alleleFreq=[2])
+        # this is different from the previous tests, where virtual subpopulation is activated
+        self.assertEqual(pop.dvars().alleleNum[2][0] == 0, False)
 
         
 if __name__ == '__main__':

@@ -247,6 +247,10 @@ a = pop.setVirtualSplitter(
     0)
 pop.virtualSubPopSize(0, 0)
 pop.virtualSubPopSize(0, 1)
+
+for ind in pop.individuals(0, 0):
+    assert ind.allele(2, 0) == 0 and ind.allele(2, 1) == 1
+
 #end
 
 

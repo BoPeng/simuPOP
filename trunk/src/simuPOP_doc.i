@@ -156,17 +156,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::affectionSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::affectionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::affectionSplitter::numVirtualSubPop "
 
@@ -180,30 +170,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::affectionSplitter::activate "
+%ignore simuPOP::affectionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::affectionSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::affectionSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::affectionSplitter::name "
 
@@ -979,17 +948,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::cloneOffspringGenerator::generateOffspring "
-
-Description:
-
-    generate numOff offspring
-
-Usage:
-
-    x.generateOffspring(pop, dad, mom, offBegin, offEnd, ops)
-
-"; 
+%ignore simuPOP::cloneOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::CombinedAlleleIterator "
 
@@ -1481,17 +1440,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::duplicateSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::duplicateSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::duplicateSplitter::name "
 
@@ -2156,17 +2105,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::genotypeSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::genotypeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::genotypeSplitter::numVirtualSubPop "
 
@@ -2180,30 +2119,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::genotypeSplitter::activate "
+%ignore simuPOP::genotypeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::genotypeSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::genotypeSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::genotypeSplitter::name "
 
@@ -2985,29 +2903,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::individual::visible "
+%ignore simuPOP::individual::iteratable() const;
 
-Description:
+%ignore simuPOP::individual::setIteratable(bool iteratable);
 
-    simuPOP::individual::visible
+%ignore simuPOP::individual::visible() const;
 
-Usage:
-
-    x.visible()
-
-"; 
-
-%feature("docstring") simuPOP::individual::setVisible "
-
-Description:
-
-    simuPOP::individual::setVisible
-
-Usage:
-
-    x.setVisible(visible)
-
-"; 
+%ignore simuPOP::individual::setVisible(bool visible);
 
 %feature("docstring") simuPOP::individual::subPopID "
 
@@ -3258,17 +3160,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::infoSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::infoSplitter::numVirtualSubPop "
 
@@ -3282,30 +3174,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoSplitter::activate "
+%ignore simuPOP::infoSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::infoSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::infoSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::infoSplitter::name "
 
@@ -4002,6 +3873,83 @@ Usage:
     x.__repr__()
 
 "; 
+
+%feature("docstring") simuPOP::linearParentChooser "
+
+Description:
+
+    choose a parent linearly, regardless of sex selection is not
+    considered
+
+"; 
+
+%feature("docstring") simuPOP::linearParentChooser::linearParentChooser "
+
+Description:
+
+    simuPOP::linearParentChooser::linearParentChooser
+
+Usage:
+
+    linearParentChooser()
+
+"; 
+
+%feature("docstring") simuPOP::linearParentChooser::clone "
+
+Description:
+
+    simuPOP::linearParentChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::linearParentChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::linearParentChooser::chooseParent();
+
+%feature("docstring") simuPOP::linearParentsChooser "
+
+Description:
+
+    choose two parents linearly, considering selection
+
+"; 
+
+%feature("docstring") simuPOP::linearParentsChooser::linearParentsChooser "
+
+Description:
+
+    simuPOP::linearParentsChooser::linearParentsChooser
+
+Usage:
+
+    linearParentsChooser()
+
+"; 
+
+%feature("docstring") simuPOP::linearParentsChooser::clone "
+
+Description:
+
+    simuPOP::linearParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::linearParentsChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::linearParentsChooser::chooseParents();
+
+%ignore simuPOP::linearParentsChooser::numMale();
+
+%ignore simuPOP::linearParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::maPenetrance "
 
@@ -4751,6 +4699,18 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::mating::virtualSubPop "
+
+Description:
+
+    simuPOP::mating::virtualSubPop
+
+Usage:
+
+    x.virtualSubPop()
+
+"; 
+
 %feature("docstring") simuPOP::mating::weight "
 
 Description:
@@ -4840,42 +4800,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mendelianOffspringGenerator::initialize "
+%ignore simuPOP::mendelianOffspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
-Description:
+%ignore simuPOP::mendelianOffspringGenerator::formOffspringGenotype(individual *parent, RawIndIterator &it, int ploidy, bool setSex);
 
-    create an offspring generator, save information from pop and ops
-    to speed up the calls to generateOffspring
-
-Usage:
-
-    x.initialize(pop, ops)
-
-"; 
-
-%feature("docstring") simuPOP::mendelianOffspringGenerator::formOffspringGenotype "
-
-Description:
-
-    simuPOP::mendelianOffspringGenerator::formOffspringGenotype
-
-Usage:
-
-    x.formOffspringGenotype(parent, it, ploidy, setSex)
-
-"; 
-
-%feature("docstring") simuPOP::mendelianOffspringGenerator::generateOffspring "
-
-Description:
-
-    generate numOff offspring
-
-Usage:
-
-    x.generateOffspring(pop, dad, mom, offBegin, offEnd, ops)
-
-"; 
+%ignore simuPOP::mendelianOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::mergeSubPops "
 
@@ -5889,17 +5818,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::nullSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::nullSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::nullSplitter::numVirtualSubPop "
 
@@ -5913,30 +5832,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::nullSplitter::activate "
+%ignore simuPOP::nullSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::nullSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::nullSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::nullSplitter::name "
 
@@ -6002,30 +5900,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::offspringGenerator::initialize "
+%ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
-Description:
-
-    create an offspring generator, save information from pop and ops
-    to speed up the calls to generateOffspring
-
-Usage:
-
-    x.initialize(pop, ops)
-
-"; 
-
-%feature("docstring") simuPOP::offspringGenerator::generateOffspring "
-
-Description:
-
-    generate numOff offspring
-
-Usage:
-
-    x.generateOffspring(pop, dad, mom, offBegin, offEnd, ops=0)
-
-"; 
+%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::offspringGenerator::~offspringGenerator "
 
@@ -6047,33 +5924,13 @@ Description:
 
 Usage:
 
-    x.clone(const=0)
+    x.clone()
 
 "; 
 
-%feature("docstring") simuPOP::offspringGenerator::initialized "
+%ignore simuPOP::offspringGenerator::initialized() const;
 
-Description:
-
-    simuPOP::offspringGenerator::initialized
-
-Usage:
-
-    x.initialized()
-
-"; 
-
-%feature("docstring") simuPOP::offspringGenerator::setNumParents "
-
-Description:
-
-    simuPOP::offspringGenerator::setNumParents
-
-Usage:
-
-    x.setNumParents(numParents)
-
-"; 
+%ignore simuPOP::offspringGenerator::setNumParents(int numParents);
 
 %feature("docstring") simuPOP::offspringGenerator::numParents "
 
@@ -6306,29 +6163,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::parentChooser::initialize "
+%ignore simuPOP::parentChooser::initialize(population &pop, SubPopID subPop);
 
-Description:
-
-    simuPOP::parentChooser::initialize
-
-Usage:
-
-    x.initialize(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::parentChooser::initialized "
-
-Description:
-
-    simuPOP::parentChooser::initialized
-
-Usage:
-
-    x.initialized()
-
-"; 
+%ignore simuPOP::parentChooser::initialized() const;
 
 %feature("docstring") simuPOP::parentChooser::numParents "
 
@@ -6342,29 +6179,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::parentChooser::chooseParent "
+%ignore simuPOP::parentChooser::chooseParent();
 
-Description:
-
-    simuPOP::parentChooser::chooseParent
-
-Usage:
-
-    x.chooseParent()
-
-"; 
-
-%feature("docstring") simuPOP::parentChooser::chooseParents "
-
-Description:
-
-    simuPOP::parentChooser::chooseParents
-
-Usage:
-
-    x.chooseParents()
-
-"; 
+%ignore simuPOP::parentChooser::chooseParents();
 
 %feature("docstring") simuPOP::parentChooser::~parentChooser "
 
@@ -7047,29 +6864,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::hasActivatedVirtualSubPop "
+%ignore simuPOP::population::hasActivatedVirtualSubPop() const;
 
-Description:
-
-    if a  population has any activated virtual subpopulations
-
-Usage:
-
-    x.hasActivatedVirtualSubPop()
-
-"; 
-
-%feature("docstring") simuPOP::population::hasActivatedVirtualSubPop "
-
-Description:
-
-    if a subpopulation has any activated virtual subpopulation
-
-Usage:
-
-    x.hasActivatedVirtualSubPop(subPop)
-
-"; 
+%ignore simuPOP::population::hasActivatedVirtualSubPop(SubPopID subPop) const ;
 
 %feature("docstring") simuPOP::population::hasVirtualSubPop "
 
@@ -7107,39 +6904,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::activateVirtualSubPop "
-
-Description:
-
-    activate a virtual subpopulation.
-
-Usage:
-
-    x.activateVirtualSubPop(id, vid=InvalidSubPopID)
-
-Arguments:
-
-    id:             subpopulation id
-    vid:            virtual subpopulation id
-
-"; 
-
-%ignore simuPOP::population::activateVirtualSubPop(virtualSubPopID subPop);
+%ignore simuPOP::population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop=InvalidSubPopID, vspSplitter::activateType type=vspSplitter::Visible);
 
 %ignore simuPOP::population::copyVirtualSplitters(const population &rhs);
 
-%feature("docstring") simuPOP::population::deactivateVirtualSubPop "
-
-Description:
-
-    deactivate virtual subpopulations in a given subpopulation. In
-    another word, all individuals will become visible.
-
-Usage:
-
-    x.deactivateVirtualSubPop(subPop)
-
-"; 
+%ignore simuPOP::population::deactivateVirtualSubPop(SubPopID subPop);
 
 %feature("docstring") simuPOP::population::__cmp__ "
 
@@ -7202,13 +6971,11 @@ Arguments:
 
 "; 
 
-%ignore simuPOP::population::virtualSubPopSize(virtualSubPopID subPop) const ;
-
 %feature("docstring") simuPOP::population::virtualSubPopSize "
 
 Usage:
 
-    x.virtualSubPopSize(id, vid=InvalidSubPopID)
+    x.virtualSubPopSize(subPop, virtualSubPop=InvalidSubPopID)
 
 Details:
 
@@ -7235,7 +7002,7 @@ Description:
 
 Usage:
 
-    x.virtualSubPopName(id, vid=InvalidSubPopID)
+    x.virtualSubPopName(subPop, virtualSubPop=InvalidSubPopID)
 
 Arguments:
 
@@ -7243,8 +7010,6 @@ Arguments:
     vid:            virtual subpopulation id
 
 "; 
-
-%ignore simuPOP::population::virtualSubPopName(virtualSubPopID subPop) const ;
 
 %feature("docstring") simuPOP::population::subPopSizes "
 
@@ -7374,6 +7139,18 @@ Description:
 Usage:
 
     x.individuals(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::population::individuals "
+
+Description:
+
+    simuPOP::population::individuals
+
+Usage:
+
+    x.individuals(subPop, virtualSubPop)
 
 "; 
 
@@ -8459,17 +8236,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::proportionSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::proportionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::proportionSplitter::numVirtualSubPop "
 
@@ -8483,30 +8250,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::proportionSplitter::activate "
+%ignore simuPOP::proportionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::proportionSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::proportionSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::proportionSplitter::name "
 
@@ -8737,7 +8483,7 @@ Description:
 
 Usage:
 
-    pyIndIterator(begin, end, allInds)
+    pyIndIterator(begin, end, allInds, allVisibles)
 
 "; 
 
@@ -9605,17 +9351,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyParentsChooser::initialize "
-
-Description:
-
-    simuPOP::pyParentsChooser::initialize
-
-Usage:
-
-    x.initialize(pop, sp)
-
-"; 
+%ignore simuPOP::pyParentsChooser::initialize(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::pyParentsChooser::~pyParentsChooser "
 
@@ -9629,17 +9365,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyParentsChooser::chooseParents "
-
-Description:
-
-    simuPOP::pyParentsChooser::chooseParents
-
-Usage:
-
-    x.chooseParents()
-
-"; 
+%ignore simuPOP::pyParentsChooser::chooseParents();
 
 %feature("docstring") simuPOP::pyPenetrance "
 
@@ -10454,29 +10180,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::randomParentChooser::initialize "
+%ignore simuPOP::randomParentChooser::initialize(population &pop, SubPopID sp);
 
-Description:
-
-    simuPOP::randomParentChooser::initialize
-
-Usage:
-
-    x.initialize(pop, sp)
-
-"; 
-
-%feature("docstring") simuPOP::randomParentChooser::chooseParent "
-
-Description:
-
-    simuPOP::randomParentChooser::chooseParent
-
-Usage:
-
-    x.chooseParent()
-
-"; 
+%ignore simuPOP::randomParentChooser::chooseParent();
 
 %feature("docstring") simuPOP::randomParentsChooser "
 
@@ -10510,53 +10216,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::randomParentsChooser::initialize "
+%ignore simuPOP::randomParentsChooser::initialize(population &pop, SubPopID sp);
 
-Description:
+%ignore simuPOP::randomParentsChooser::chooseParents();
 
-    simuPOP::randomParentsChooser::initialize
+%ignore simuPOP::randomParentsChooser::numMale();
 
-Usage:
-
-    x.initialize(pop, sp)
-
-"; 
-
-%feature("docstring") simuPOP::randomParentsChooser::chooseParents "
-
-Description:
-
-    simuPOP::randomParentsChooser::chooseParents
-
-Usage:
-
-    x.chooseParents()
-
-"; 
-
-%feature("docstring") simuPOP::randomParentsChooser::numMale "
-
-Description:
-
-    simuPOP::randomParentsChooser::numMale
-
-Usage:
-
-    x.numMale()
-
-"; 
-
-%feature("docstring") simuPOP::randomParentsChooser::numFemale "
-
-Description:
-
-    simuPOP::randomParentsChooser::numFemale
-
-Usage:
-
-    x.numFemale()
-
-"; 
+%ignore simuPOP::randomParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::randomSample "
 
@@ -10690,17 +10356,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::rangeSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::rangeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::rangeSplitter::numVirtualSubPop "
 
@@ -10714,30 +10370,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::rangeSplitter::activate "
+%ignore simuPOP::rangeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::rangeSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::rangeSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::rangeSplitter::name "
 
@@ -11542,17 +11177,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selfingOffspringGenerator::generateOffspring "
-
-Description:
-
-    generate numOff offspring
-
-Usage:
-
-    x.generateOffspring(pop, parent, , offBegin, offEnd, ops)
-
-"; 
+%ignore simuPOP::selfingOffspringGenerator::generateOffspring(population &pop, individual *parent, individual *, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::selfMating "
 
@@ -11745,17 +11370,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sexSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, subPop)
-
-"; 
+%ignore simuPOP::sexSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::sexSplitter::numVirtualSubPop "
 
@@ -11769,30 +11384,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sexSplitter::activate "
+%ignore simuPOP::sexSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop)
-
-"; 
-
-%feature("docstring") simuPOP::sexSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, sp)
-
-"; 
+%ignore simuPOP::sexSplitter::deactivate(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::sexSplitter::name "
 
@@ -14404,100 +13998,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::virtualSubPopID "
-
-Description:
-
-    simuPOP::virtualSubPopID
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::virtualSubPopID "
-
-Description:
-
-    Default constructor that returns an invalid  virtualSubPopID.
-
-Usage:
-
-    virtualSubPopID()
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::virtualSubPopID "
-
-Description:
-
-    Construct an  virtualSubPopID with only subpopulaton index. Such a
-    virtualSubPopID does not refer to any virtual subpop.
-
-Usage:
-
-    virtualSubPopID(id)
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::virtualSubPopID "
-
-Description:
-
-    Construct an  virtualSubPopID with both subpopulation and virtual
-    subpopulation ID.
-
-Usage:
-
-    virtualSubPopID(id, vid)
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::id "
-
-Description:
-
-    Return the subpopulation ID.
-
-Usage:
-
-    x.id()
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::vid "
-
-Description:
-
-    Return the virtual subpopulaiton ID.
-
-Usage:
-
-    x.vid()
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::isValid "
-
-Description:
-
-    If the  virtualSubPopID is valid.
-
-Usage:
-
-    x.isValid()
-
-"; 
-
-%feature("docstring") simuPOP::virtualSubPopID::isVirtual "
-
-Description:
-
-    If the  virtualSubPopID has a virtual subpopulation ID.
-
-Usage:
-
-    x.isVirtual()
-
-"; 
-
 %feature("docstring") simuPOP::vspSplitter "
 
 Details:
@@ -14532,7 +14032,7 @@ Description:
 
 Usage:
 
-    x.clone(const=0)
+    x.clone()
 
 "; 
 
@@ -14548,29 +14048,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::vspSplitter::activated "
+%ignore simuPOP::vspSplitter::activated() const;
 
-Description:
-
-    if the virtual subpopulation is activated.
-
-Usage:
-
-    x.activated()
-
-"; 
-
-%feature("docstring") simuPOP::vspSplitter::size "
-
-Description:
-
-    the size of a given virtual subpopulation.
-
-Usage:
-
-    x.size(pop, =0)
-
-"; 
+%ignore simuPOP::vspSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::vspSplitter::numVirtualSubPop "
 
@@ -14580,34 +14060,13 @@ Description:
 
 Usage:
 
-    x.numVirtualSubPop(=0)
+    x.numVirtualSubPop()
 
 "; 
 
-%feature("docstring") simuPOP::vspSplitter::activate "
+%ignore simuPOP::vspSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
 
-Description:
-
-    mark individuals in the given vsp as visible, and others
-    invisible.
-
-Usage:
-
-    x.activate(pop, subPop=0)
-
-"; 
-
-%feature("docstring") simuPOP::vspSplitter::deactivate "
-
-Description:
-
-    deactivate. Namely make all individuals visible again.
-
-Usage:
-
-    x.deactivate(pop, subPop=0)
-
-"; 
+%ignore simuPOP::vspSplitter::deactivate(population &pop, SubPopID subPop);
 
 %feature("docstring") simuPOP::vspSplitter::name "
 
@@ -14617,7 +14076,7 @@ Description:
 
 Usage:
 
-    x.name(sp=0)
+    x.name(sp)
 
 "; 
 
