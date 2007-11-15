@@ -268,11 +268,11 @@ population * population::clone(int keepAncestralPops) const
 
 ULONG population::virtualSubPopSize(SubPopID id, SubPopID vid) const
 {
-	return virtualSubPopSize(vspID(id, vid));
+	return virtualSubPopSize(virtualSubPopID(id, vid));
 }
 
 
-ULONG population::virtualSubPopSize(vspID subPop) const
+ULONG population::virtualSubPopSize(virtualSubPopID subPop) const
 {
 	CHECKRANGESUBPOP(subPop.id());
 	if (!subPop.isVirtual() && !hasActivatedVirtualSubPop(subPop.id()))
@@ -285,11 +285,11 @@ ULONG population::virtualSubPopSize(vspID subPop) const
 
 string population::virtualSubPopName(SubPopID id, SubPopID vid) const
 {
-	return virtualSubPopName(vspID(id, vid));
+	return virtualSubPopName(virtualSubPopID(id, vid));
 }
 
 
-string population::virtualSubPopName(vspID subPop) const
+string population::virtualSubPopName(virtualSubPopID subPop) const
 {
 	CHECKRANGESUBPOP(subPop.id());
 	DBG_ASSERT(subPop.isVirtual(), ValueError,
@@ -364,11 +364,11 @@ void population::copyVirtualSplitters(const population & rhs)
 
 void population::activateVirtualSubPop(SubPopID id, SubPopID vid)
 {
-	activateVirtualSubPop(vspID(id, vid));
+	activateVirtualSubPop(virtualSubPopID(id, vid));
 }
 
 
-void population::activateVirtualSubPop(vspID subPop)
+void population::activateVirtualSubPop(virtualSubPopID subPop)
 {
 	CHECKRANGESUBPOP(subPop.id());
 	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpopulation ID is wrong");

@@ -38,28 +38,28 @@ class individual;
 class population;
 
 /*
-   vspID is the ID of a virtual subpopulation. It consists of a subpopulation index
-   and an index of virtual subpopulation within that subpopulation. vspID can be used
+   virtualSubPopID is the ID of a virtual subpopulation. It consists of a subpopulation index
+   and an index of virtual subpopulation within that subpopulation. virtualSubPopID can be used
    to specify a subpopulation if only the first index is given.
  */
-class vspID
+class virtualSubPopID
 {
 public:
-	/// Default constructor that returns an invalid vspID.
-	vspID() : m_subPop(InvalidSubPopID), m_virtualSubPop(InvalidSubPopID)
+	/// Default constructor that returns an invalid virtualSubPopID.
+	virtualSubPopID() : m_subPop(InvalidSubPopID), m_virtualSubPop(InvalidSubPopID)
 	{
 	}
 
 
-	/// Construct an vspID with only subpopulaton index. Such a vspID does not refer
+	/// Construct an virtualSubPopID with only subpopulaton index. Such a virtualSubPopID does not refer
 	/// to any virtual subpop.
-	vspID(SubPopID id) : m_subPop(id), m_virtualSubPop(InvalidSubPopID)
+	virtualSubPopID(SubPopID id) : m_subPop(id), m_virtualSubPop(InvalidSubPopID)
 	{
 	}
 
 
-	/// Construct an vspID with both subpopulation and virtual subpopulation ID.
-	vspID(SubPopID id, SubPopID vid) : m_subPop(id),
+	/// Construct an virtualSubPopID with both subpopulation and virtual subpopulation ID.
+	virtualSubPopID(SubPopID id, SubPopID vid) : m_subPop(id),
 		m_virtualSubPop(vid)
 	{
 	}
@@ -68,7 +68,7 @@ public:
 	/// Return the subpopulation ID.
 	SubPopID id() const
 	{
-		DBG_ASSERT(isValid(), ValueError, "This is not a valid vspID");
+		DBG_ASSERT(isValid(), ValueError, "This is not a valid virtualSubPopID");
 		return m_subPop;
 	}
 
@@ -76,19 +76,19 @@ public:
 	/// Return the virtual subpopulaiton ID.
 	SubPopID vid() const
 	{
-		DBG_ASSERT(isVirtual(), ValueError, "This is not a valid virtual vspID");
+		DBG_ASSERT(isVirtual(), ValueError, "This is not a valid virtual virtualSubPopID");
 		return m_virtualSubPop;
 	}
 
 
-	/// If the vspID is valid.
+	/// If the virtualSubPopID is valid.
 	bool isValid() const
 	{
 		return m_subPop != InvalidSubPopID;
 	}
 
 
-	/// If the vspID has a virtual subpopulation ID.
+	/// If the virtualSubPopID has a virtual subpopulation ID.
 	bool isVirtual() const
 	{
 		return m_virtualSubPop != InvalidSubPopID;
@@ -103,7 +103,7 @@ private:
 
 /* Itertors will be defined in later versions. A good implementaion
    is being considered. Such iterators can be used to implement functions
-   such as pop.indidividuals(vspID).
+   such as pop.indidividuals(virtualSubPopID).
  */
 /*
    class vspIterator;
@@ -142,13 +142,13 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	virtual ULONG size(const population & pop, vspID subPop) const = 0;
+	virtual ULONG size(const population & pop, virtualSubPopID subPop) const = 0;
 
 	/// number of virtual subpops of subpopulation sp
 	virtual UINT numVirtualSubPop() = 0;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	virtual void activate(population & pop, vspID subPop) = 0;
+	virtual void activate(population & pop, virtualSubPopID subPop) = 0;
 
 	/// deactivate. Namely make all individuals visible again.
 	virtual void deactivate(population & pop, SubPopID subPop) = 0;
@@ -191,7 +191,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 
 	/// number of virtual subpops of subpopulation sp
@@ -202,7 +202,7 @@ public:
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop)
+	void activate(population & pop, virtualSubPopID subPop)
 	{
 		m_activated = true;
 	}
@@ -250,7 +250,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// name of a virtual subpopulation
 	string name(SubPopID sp)
@@ -281,7 +281,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop()
@@ -291,7 +291,7 @@ public:
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop);
+	void activate(population & pop, virtualSubPopID subPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	void deactivate(population & pop, SubPopID sp);
@@ -323,7 +323,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop()
@@ -333,7 +333,7 @@ public:
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop);
+	void activate(population & pop, virtualSubPopID subPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	void deactivate(population & pop, SubPopID sp);
@@ -367,13 +367,13 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop);
+	void activate(population & pop, virtualSubPopID subPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	void deactivate(population & pop, SubPopID sp);
@@ -403,13 +403,13 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop);
+	void activate(population & pop, virtualSubPopID subPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	void deactivate(population & pop, SubPopID sp);
@@ -440,13 +440,13 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop);
+	void activate(population & pop, virtualSubPopID subPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	void deactivate(population & pop, SubPopID sp);
@@ -478,13 +478,13 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
-	ULONG size(const population & pop, vspID subPop) const;
+	ULONG size(const population & pop, virtualSubPopID subPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, vspID subPop);
+	void activate(population & pop, virtualSubPopID subPop);
 
 	/// deactivate. Namely make all individuals visible again.
 	void deactivate(population & pop, SubPopID sp);
