@@ -1448,11 +1448,16 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
                            vectorlu newSubPopSize,
                            string newSubPopSizeExpr,
                            PyObject * newSubPopSizeFunc,
+                           bool shuffleOffspring,
                            SubPopID subPop,
                            SubPopID virtualSubPop,
                            double weight)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+	m_shuffleOffspring(shuffleOffspring)
 {
+	DBG_WARNING(subPop != InvalidSubPopID or virtualSubPop != InvalidSubPopID,
+	    "Parameter subPop or virtualSubPop is specified, but is ignored.");
+
 	vectormating::const_iterator it = matingSchemes.begin();
 	vectormating::const_iterator it_end = matingSchemes.end();
 
@@ -1472,7 +1477,7 @@ heteroMating::~heteroMating()
 
 
 heteroMating::heteroMating(const heteroMating & rhs) :
-	mating(rhs)
+	mating(rhs), m_shuffleOffspring(rhs.m_shuffleOffspring)
 {
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
@@ -1571,6 +1576,17 @@ bool heteroMating::mate(population & pop, population & scratch,
 		DBG_ASSERT(ind == scratch.rawIndEnd(sp), SystemError,
 		    "Maing somehow does not go to the last individual.");
 		pop.deactivateVirtualSubPop(sp);
+		// if more than two mating schemes working on the same subpopulation,
+		// it is better to shuffle offspring afterwards,
+		if (m.size() > 1 && m_shuffleOffspring) {
+			// random shuffle individuals
+			RawIndIterator ind = pop.rawIndBegin(sp);
+			RawIndIterator indEnd = pop.rawIndBegin(sp);
+			for (; ind != indEnd; ++ind)
+				ind->setSubPopID(static_cast<SubPopID>(rng().randInt(MaxSubPopID)));
+			std::sort(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
+			pop.setShallowCopied(true);
+		}
 	} // each subpopulation.
 	if (submit)
 		submitScratch(pop, scratch);
