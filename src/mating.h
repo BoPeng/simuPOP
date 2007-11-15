@@ -158,9 +158,11 @@ public:
 
 	/// create an offspring generator, save information from \c pop and \c ops to
 	/// speed up the calls to \c generateOffspring
+	/// CPPONLY
 	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
 	/// generate \c numOff offspring
+	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 	                               RawIndIterator & offBegin,
 	                               RawIndIterator & offEnd,
@@ -174,12 +176,14 @@ public:
 
 	virtual offspringGenerator * clone() const = 0;
 
+	/// CPPONLY
 	bool initialized() const
 	{
 		return m_initialized;
 	}
 
 
+	/// CPPONLY
 	void setNumParents(int numParents)
 	{
 		m_numParents = numParents;
@@ -263,12 +267,15 @@ public:
 	}
 
 
+	/// CPPONLY
 	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
 	// the default method to produce offspring
+	/// CPPONLY
 	void formOffspringGenotype(individual * parent,
 	                           RawIndIterator & it, int ploidy, bool setSex);
 
+	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 	                       RawIndIterator & offBegin,
 	                       RawIndIterator & offEnd,
@@ -336,8 +343,10 @@ public:
 	}
 
 
+	/// CPPONLY
 	virtual void initialize(population & pop, SubPopID subPop) { }
 
+	/// CPPONLY
 	bool initialized() const
 	{
 		return m_initialized;
@@ -350,12 +359,14 @@ public:
 	}
 
 
+	/// CPPONLY
 	virtual individual * chooseParent()
 	{
 		return NULL;
 	}
 
 
+	/// CPPONLY
 	virtual individualPair chooseParents()
 	{
 		return individualPair(NULL, NULL);
@@ -369,6 +380,82 @@ private:
 
 protected:
 	bool m_initialized;
+};
+
+
+/// choose a parent linearly, regardless of sex
+/// selection is not considered
+class linearParentChooser : public parentChooser
+{
+public:
+	linearParentChooser() : parentChooser(1)
+	{
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new linearParentChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individual * chooseParent();
+
+private:
+	bool m_selection;
+	/// starting individual
+	IndIterator m_begin;
+	/// ending individual
+	IndIterator m_end;
+	/// current individual
+	IndIterator m_ind;
+};
+
+
+/// choose two parents linearly, considering selection
+class linearParentsChooser : public parentChooser
+{
+public:
+	linearParentsChooser() :
+		parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
+		m_numMale(0), m_numFemale(0),
+		m_curMale(0), m_curFemale(0)
+	{
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new linearParentsChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individualPair chooseParents();
+
+	/// CPPONLY
+	ULONG numMale() { return m_numMale; }
+
+	/// CPPONLY
+	ULONG numFemale() { return m_numFemale; }
+
+private:
+	/// internal index to female/males.
+	vector<RawIndIterator> m_maleIndex;
+	vector<RawIndIterator> m_femaleIndex;
+
+	ULONG m_numMale;
+	ULONG m_numFemale;
+
+	ULONG m_curMale;
+	ULONG m_curFemale;
 };
 
 
@@ -387,8 +474,10 @@ public:
 	}
 
 
+	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
+	/// CPPONLY
 	individual * chooseParent();
 
 private:
@@ -420,11 +509,15 @@ public:
 	}
 
 
+	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
+	/// CPPONLY
 	individualPair chooseParents();
 
+	/// CPPONLY
 	ULONG numMale() { return m_numMale; }
+	/// CPPONLY
 	ULONG numFemale() { return m_numFemale; }
 
 private:
@@ -473,6 +566,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
 	/// destructor
@@ -487,6 +581,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	individualPair chooseParents();
 
 private:
@@ -577,11 +672,12 @@ public:
 		return m_subPop;
 	}
 
+
 	SubPopID virtualSubPop() const
 	{
 		return m_virtualSubPop;
 	}
-	
+
 
 	double weight() const
 	{

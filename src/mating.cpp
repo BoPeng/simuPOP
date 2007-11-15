@@ -363,6 +363,73 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 }
 
 
+void linearParentChooser::initialize(population & pop, SubPopID sp)
+{
+	m_begin = pop.indBegin(sp);
+	m_end = pop.indEnd(sp);
+	m_ind = m_begin;
+	m_initialized = true;
+}
+
+
+individual * linearParentChooser::chooseParent()
+{
+	if (m_ind == m_end)
+		m_ind = m_begin;
+	return & * m_ind++;
+}
+
+
+void linearParentsChooser::initialize(population & pop, SubPopID subPop)
+{
+	m_numMale = 0;
+	m_numFemale = 0;
+	m_curMale = 0;
+	m_curFemale = 0;
+	m_maleIndex.clear();
+	m_femaleIndex.clear();
+
+	IndIterator it = pop.indBegin(subPop);
+	for (; it.valid(); ++it) {
+		if (it->sex() == Male) {
+			m_numMale++;
+			m_maleIndex.push_back(it.rawIter());
+		} else {
+			m_numFemale++;
+			m_femaleIndex.push_back(it.rawIter());
+		}
+	}
+	m_initialized = true;
+}
+
+
+parentChooser::individualPair linearParentsChooser::chooseParents()
+{
+	DBG_ASSERT(initialized(), SystemError,
+	    "Please initialize this parent chooser before using it");
+
+	individual * dad = NULL;
+	individual * mom = NULL;
+
+	if (m_curMale == m_numMale)
+		m_curMale = 0;
+	if (m_curFemale == m_numFemale)
+		m_curFemale = 0;
+
+	// using weidhted sampler.
+	if (m_numMale != 0)
+		dad = & * (m_maleIndex[m_curMale++]);
+	else
+		dad = & * (m_femaleIndex[m_curFemale++]);
+
+	if (m_numFemale != 0)
+		mom = & * (m_femaleIndex[m_curFemale++]);
+	else
+		mom = & * (m_maleIndex[m_curMale++]);
+	return std::make_pair(dad, mom);
+}
+
+
 void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_selection = pop.selectionOn(sp);
@@ -1432,7 +1499,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			// if it is used for this subpop,
 			// for use for all subPops ...
 			if ((*it)->subPop() == sp ||
-				(*it)->subPop() == InvalidSubPopID) {
+			    (*it)->subPop() == InvalidSubPopID) {
 				m.push_back(*it);
 				w.push_back((*it)->weight());
 				DBG_FAILIF(fcmp_lt((*it)->weight(), 0.), ValueError,
@@ -1473,8 +1540,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is " 
-			<< vspSize << endl);
+		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is "
+		                       << vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();

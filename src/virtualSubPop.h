@@ -54,11 +54,10 @@ public:
 	// invisible individuals.
 	//
 	// When a population is activated by setting the iteratable flag,
-	// only operations that respect this flag would check it and 
+	// only operations that respect this flag would check it and
 	// respond to it.
 	//
-	enum activateType
-	{
+	enum activateType {
 		Iteratable,
 		Visible,
 	};
@@ -94,7 +93,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	virtual void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type) = 0;
+	                      activateType type) = 0;
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -145,10 +144,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
-	{
-		m_activated = true;
-	}
+	              activateType type);
 
 
 	/// deactivate. Namely make all individuals visible again.
@@ -239,7 +235,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type);
+	              activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -285,7 +281,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type);
+	              activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -329,7 +325,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type);
+	              activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -369,7 +365,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type);
+	              activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -410,7 +406,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type);
+	              activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY
@@ -452,7 +448,7 @@ public:
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
 	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type);
+	              activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
 	/// CPPONLY

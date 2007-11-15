@@ -393,8 +393,7 @@ individual & pyIndIterator::next()
 				return *m_index++;
 			else
 				++m_index;
-			}
-		else
+		} else
 			++m_index;
 	} while (true);
 }

@@ -256,7 +256,7 @@ public:
 	 \param vid virtual subpopulation id
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
-		vspSplitter::activateType type = vspSplitter::Visible);
+	                           vspSplitter::activateType type = vspSplitter::Visible);
 
 	/// CPPONLY
 	/// Copy virtual splitters if two populations have
@@ -475,34 +475,36 @@ public:
 		// so this feature is CPPONLY
 		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
 		           m_inds.begin() + subPopEnd(subPop),
-				   // if there is no activated virtual subpopualtions
-				   // iterate through all individuals.
+		           // if there is no activated virtual subpopualtions
+		           // iterate through all individuals.
 		           !hasActivatedVirtualSubPop(subPop),
-				   // otherwise, iterate through all visible individuals.
-				   true);
+		           // otherwise, iterate through all visible individuals.
+		           true);
 	}
+
 
 	pyIndIterator individuals(SubPopID subPop, SubPopID virtualSubPop)
 	{
 #ifndef OPTIMIZED
 		CHECKRANGESUBPOP(subPop);
 #endif
-		DBG_FAILIF(hasVirtualSubPop(subPop), ValueError,
-			"Population does not have any virtual subpopulation");
-		
+		DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
+		    "Population does not have any virtual subpopulation");
+
 		// this does not need to be deactivated...
 		activateVirtualSubPop(subPop, virtualSubPop, vspSplitter::Iteratable);
-		
+
 		// if there is no virtual subpop
 		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
 		           m_inds.begin() + subPopEnd(subPop),
-				   // allInds will not work at all, because there will be
-				   // virtual subpopulation
+		           // allInds will not work at all, because there will be
+		           // virtual subpopulation
 		           false,
-				   // and we count visible, and iteratable individuals.
-				   false);
+		           // and we count visible, and iteratable individuals.
+		           false);
 	}
-	
+
+
 	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
 	/**
 	   Return individual \ind from subpopulation \subPop. This function

@@ -2351,12 +2351,14 @@ age=5
 \begin_layout Itemize
 A 
 \family typewriter
-duplicateSplitter
+sexSplitter
 \family default
- does not split the subpopulation at all.
- It presents the whole subpopulation as several virtual subpopulations.
- By applying different mating schemes to such virtual subpopulations, one
- can apply several mating schemes to the same subpopulation.
+ splits the population into male and female virtual subpopulations.
+ A 
+\family typewriter
+affectionSplitter
+\family default
+ splits the population into unaffected and affected virtual subpopulations.
 \end_layout
 
 \begin_layout Itemize
@@ -2373,11 +2375,7 @@ A
 \family typewriter
 proportionSplitter
 \family default
- splits the population with given proportions, and
-\end_layout
-
-\begin_layout Itemize
-A 
+ splits the population with given proportions, and a 
 \family typewriter
 rangeSplitters 
 \family default
@@ -2395,6 +2393,12 @@ splits the population with genotype values at given loci.
 \begin_layout Standard
 The population class provies several functions to assign a splitter to a
  given subpopulation, retrieve virtual subpopulation sizes and names.
+ More interestingly, the 
+\family typewriter
+individuals(subPop, virtualSubPop) 
+\family default
+member function allows you to iterate through all individuals of a virtual
+ subpopulation.
  Example 
 \begin_inset LatexCommand ref
 reference "virtualSubPop"
@@ -3062,8 +3066,95 @@ heteroMatingRef
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+linearParentChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+linearParentsChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+randomParentChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+randomParentsChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+pyParentsChooserRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+cloneOffspringGeneratorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+selfingOffspringGeneratorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+mendelianOffspringGeneratorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Determine the number of offspring during mating
+\end_layout
+
+\begin_layout Standard
+Parameters 
+\family typewriter
+numOffspring, maxNumOffspring, numOffspringFunc 
+\family default
+and 
+\family typewriter
+mode
+\family default
+ are provided for each mating scheme (each offspring generator, to be exact)
+ to determine the number of offspring produced at each mating event.
 \end_layout
 
 \begin_layout Standard
@@ -3071,10 +3162,10 @@ The default value of
 \family typewriter
 numOffspring
 \family default
- parameter makes a mating scheme produce one offspring per mating.
- This is the real random mating and should be used whenever possible.
+ parameter makes a mating scheme produces one offspring per mating event.
+ This is required by random mating schemes and should be used whenever possible.
  However, various situations require a larger family size or even changing
- the family size.
+ family sizes.
  simuPOP provides a comprehensive way to deal with this problem.
 \end_layout
 
@@ -3092,49 +3183,25 @@ mode
 \family typewriter
 MATE_NumOffspring:
 \family default
- if 
-\family typewriter
-numOffspringFunc
-\family default
- is not given, the number of offspring will be the constant 
+ Produce 
 \family typewriter
 numOffspring
 \family default
- all the time.
- Otherwise, 
-\family typewriter
-numOffspringFunc(gen)
-\family default
- will be called 
-\series bold
-once
-\series default
- for each generation to get the number of offspring for the matings happen
- in this generation.
- 
+ offspring all the time.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_NumOffspringEachFamily:
+MATE_PyNumOffspring:
 \family default
- 
+ When 
 \family typewriter
 numOffspringFunc
 \family default
- has to be given and will be called whenever a mating happens.
- Since 
-\family typewriter
-numOffspringFunc
-\family default
- can be 
-\series bold
-any
-\series default
- Python function, this mode allows arbitrary model of assigning the number
- of offspring during mating.
- The mode can be slow though.
+ is defined, this mode is automatically used.
+ A user provided function is called whenever a mating event happens.
+ The return value determins the number of offpspring to use.
 \end_layout
 
 \begin_layout Itemize
@@ -3142,11 +3209,7 @@ any
 \family typewriter
 MATE_GeometricDistribution: numOffspring
 \family default
- or the result of 
-\family typewriter
-numOffspringFunc
-\family default
- (evaluated at each generation) will be considered as 
+ is considered as 
 \begin_inset Formula $p$
 \end_inset
 
@@ -3165,11 +3228,7 @@ P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
 \family typewriter
 MATE_PoissonDistribution: numOffspring
 \family default
- or result of 
-\family typewriter
-numOffspringFunc
-\family default
- (evaluated at each generation) will be considered as 
+ is considered as 
 \begin_inset Formula $p$
 \end_inset
 
@@ -3193,11 +3252,7 @@ Since the mean of this shifted Poisson distribution is
 \family typewriter
 MATE_BinomialDistribution: numOffspring
 \family default
- or the result of 
-\family typewriter
-numOffspringFunc
-\family default
- (evaluated at each generation) will be considered as 
+ is considered as 
 \begin_inset Formula $p$
 \end_inset
 
@@ -3228,15 +3283,7 @@ MATE_UniformDistribution:
 \family typewriter
 numOffspring
 \family default
- or the result of 
-\family typewriter
-numOffspringFunc
-\family default
- (evaluated at each generation), and 
-\family typewriter
-maxNumOffspring
-\family default
- will be considered as 
+ is be considered as 
 \begin_inset Formula $a$
 \end_inset
 
@@ -3669,7 +3716,7 @@ need to be modeled.
 \end_layout
 
 \begin_layout Subsection
-parent choosers
+Parent choosers and offspring generators
 \end_layout
 
 \begin_layout Standard
@@ -3682,6 +3729,10 @@ parent chooser
  Parent chooser determines how parent or parents are chosen from a given
  subpopulation.
  There are several predefined parent choosers such as 
+\family typewriter
+linearParentChooser
+\family default
+, 
 \family typewriter
 randomParentChooser, randomParentsChooser
 \family default
@@ -3754,58 +3805,13 @@ pyTagger
 \end_layout
 
 \begin_layout Standard
-It becomes obvious now that whereas a python function can return random
- male/famale pair, the generator interface is much more efficient because
- the identification of two sex groups is done only once.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-randomParentChooserRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-randomParentsChooserRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-pyParentsChooserRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 A parents chooser can yield a pair of parents, or a single parent.
  Obviously, a single diploid parent can not produce offspring using the
  usual Medelian fashion, so here comes another concept: 
 \emph on
 offspring generator
 \emph default
-.
-\end_layout
-
-\begin_layout Subsection
-Offspring generator
-\end_layout
-
-\begin_layout Standard
-An offspring generator determines how to produce offspring from given parent
- or parents.
+, which determines how to produce offspring from given parent or parents.
  Currently, there are three standard offspring generators.
 \end_layout
 
@@ -3828,40 +3834,8 @@ cloneOffspringGenerator
 selfingOffspringGenerator.
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-cloneOffspringGeneratorRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-selfingOffspringGeneratorRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-mendelianOffspringGeneratorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
-Hybrid non-random mating scheme 
-\family typewriter
-pyMating
+Hybrid mating schemes
 \end_layout
 
 \begin_layout Standard
@@ -3905,7 +3879,7 @@ status open
 
 \begin_layout Standard
 
-pyMating(randomParentsChooser(),
+pyMating(linearParentChooser(),
 \end_layout
 
 \begin_layout Standard
@@ -3915,13 +3889,106 @@ pyMating(randomParentsChooser(),
 
 \end_inset
 
-
+The later simply copy everyone from the parental to the offspring genertion.
 \end_layout
 
 \begin_layout Subsection
-Heterogeneous non-random mating scheme 
+Heterogeneous mating schemes
+\end_layout
+
+\begin_layout Standard
+Non-random mating can also be introduced by mating individuals from different
+ groups differently.
+ Different subpopulations, or different virtual subpopulations, can have
+ varying fecundity, represented by different numbers of offspring generated
+ per mating event.
+ For example, it is possible that only adults (may be defined by age > 30
+ and age < 50) in a subpopulation can produce offspring, where other individual
+ will either be copied to the offspring generation or die.
+ It is also quite common in plant genetics that a certain portion of trees
+ go through selfing, while others go through random mating.
+\end_layout
+
+\begin_layout Standard
+A 
 \family typewriter
 heteroMating
+\family default
+ mating scheme accepts a list of mating schemes that works separately on
+ different subpopulation, or virtual subpopulations.
+ For example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+heteroMating([randomMating(numOffspring=2, subPop=0),
+\end_layout
+
+\begin_layout Standard
+
+    randomMating(numOffspring=4, subPop=1)])
+\end_layout
+
+\end_inset
+
+define a heterogeneous mating scheme that mating events in subpopulation
+ 0 produces two offspring, while producing four in subpopulation 1.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Standard
+
+pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]), 0)
+\end_layout
+
+\begin_layout Standard
+
+heteroMating([selfMating(numOffspring=2, subPop=0, virtualSubPop=0),
+\end_layout
+
+\begin_layout Standard
+
+    randomMating(subPop=0, virtualSubPop=1)],
+\end_layout
+
+\begin_layout Standard
+
+    shuffleOffspring=True
+\end_layout
+
+\begin_layout Standard
+
+)
+\end_layout
+
+\end_inset
+
+allows different mating schems in one subpopulation.
+ In this example, the first subpopulation is splitted into two virtual subpopula
+tions by proportion.
+ Then, a selfing mating scheme is applied to the first virtual subpopulation,
+ and a random mating scheme is applied to the second.
+ In case that there are more than one mating schemes working on the same
+ subpopulation, offspring are shuffled randomly by default, unless this
+ is turned off by 
+\family typewriter
+shuffleOffspring=False
+\family default
+.
+ Randomization of the order of offspring is usually desired because otherwise,
+ taking this example, the first 20% of individuals will always go through
+ selfing, and the rest will always go through random mating.
+ When offspring are shuffled, each individual will have probability 0.2 to
+ be selfing, and probability 0.8 to mate randomly.
 \end_layout
 
 \begin_layout Section
