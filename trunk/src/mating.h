@@ -572,11 +572,16 @@ public:
 	}
 
 
-	virtualSubPopID subPop() const
+	SubPopID subPop() const
 	{
 		return m_subPop;
 	}
 
+	SubPopID virtualSubPop() const
+	{
+		return m_virtualSubPop;
+	}
+	
 
 	double weight() const
 	{
@@ -639,7 +644,10 @@ protected:
 	PyObject * m_subPopSizeFunc;
 
 	///
-	virtualSubPopID m_subPop;
+	SubPopID m_subPop;
+
+	///
+	SubPopID m_virtualSubPop;
 
 	///
 	double m_weight;
@@ -678,7 +686,7 @@ public:
 	         SubPopID virtualSubPop = InvalidSubPopID,
 	         double weight = 0)
 	{
-		DBG_FAILIF(static_cast<ULONG>(virtualSubPop) != InvalidSubPopID, ValueError,
+		DBG_FAILIF(virtualSubPop != InvalidSubPopID, ValueError,
 		    "noMating can not be used in virtual subpopulations");
 	}
 

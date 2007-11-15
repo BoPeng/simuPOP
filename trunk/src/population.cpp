@@ -266,37 +266,25 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
-ULONG population::virtualSubPopSize(SubPopID id, SubPopID vid) const
+ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) const
 {
-	return virtualSubPopSize(virtualSubPopID(id, vid));
+	CHECKRANGESUBPOP(subPop);
+	if (virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop))
+		return subPopSize(subPop);
+	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
+	    "There is no virtual subpopulation in subpop " + toStr(subPop));
+	return m_virtualSubPops[subPop]->size(*this, subPop, virtualSubPop);
 }
 
 
-ULONG population::virtualSubPopSize(virtualSubPopID subPop) const
+string population::virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop) const
 {
-	CHECKRANGESUBPOP(subPop.id());
-	if (!subPop.isVirtual() && !hasActivatedVirtualSubPop(subPop.id()))
-		return subPopSize(subPop.id());
-	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
-	    "There is no virtual subpopulation in subpop " + toStr(subPop.id()));
-	return m_virtualSubPops[subPop.id()]->size(*this, subPop);
-}
-
-
-string population::virtualSubPopName(SubPopID id, SubPopID vid) const
-{
-	return virtualSubPopName(virtualSubPopID(id, vid));
-}
-
-
-string population::virtualSubPopName(virtualSubPopID subPop) const
-{
-	CHECKRANGESUBPOP(subPop.id());
-	DBG_ASSERT(subPop.isVirtual(), ValueError,
+	CHECKRANGESUBPOP(subPop);
+	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError,
 	    "Subpopulation id is not virtual");
-	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
-	    "There is no virtual subpopulation in subpop " + toStr(subPop.id()));
-	return m_virtualSubPops[subPop.id()]->name(subPop.vid());
+	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
+	    "There is no virtual subpopulation in subpop " + toStr(subPop));
+	return m_virtualSubPops[subPop]->name(virtualSubPop);
 }
 
 
@@ -362,19 +350,13 @@ void population::copyVirtualSplitters(const population & rhs)
 }
 
 
-void population::activateVirtualSubPop(SubPopID id, SubPopID vid)
+void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop)
 {
-	activateVirtualSubPop(virtualSubPopID(id, vid));
-}
-
-
-void population::activateVirtualSubPop(virtualSubPopID subPop)
-{
-	CHECKRANGESUBPOP(subPop.id());
-	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpopulation ID is wrong");
-	DBG_ASSERT(hasVirtualSubPop(subPop.id()), ValueError,
-	    "Subpopulation " + toStr(subPop.id()) + " has no virtual subpopulations");
-	m_virtualSubPops[subPop.id()]->activate(*this, subPop);
+	CHECKRANGESUBPOP(subPop);
+	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError, "Given virtual subpopulation ID is wrong");
+	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
+	    "Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
+	m_virtualSubPops[subPop]->activate(*this, subPop, virtualSubPop);
 }
 
 

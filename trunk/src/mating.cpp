@@ -304,7 +304,7 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 			count++;
 		}
 	}                                                                                         // one offspring is successfully generated
-	return numOff;
+	return count;
 }
 
 
@@ -359,7 +359,7 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 			count++;
 		}
 	}                                                                                         // one offspring is successfully generated
-	return numOff;
+	return count;
 }
 
 
@@ -375,7 +375,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	} else
 		// get currently visible individuals. In case that sp is not virtual
 		// pop.subPopSize is called.
-		m_size = pop.virtualSubPopSize(virtualSubPopID(sp));
+		m_size = pop.virtualSubPopSize(sp);
 	m_initialized = true;
 }
 
@@ -582,7 +582,7 @@ mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newS
                SubPopID subPop, SubPopID virtualSubPop, double weight)
 	: m_subPopSize(newSubPopSize),
 	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL),
-	m_subPop(subPop, virtualSubPop), m_weight(weight)
+	m_subPop(subPop), m_virtualSubPop(virtualSubPop), m_weight(weight)
 {
 	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
 	    ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
@@ -603,6 +603,7 @@ mating::mating(const mating & rhs)
 	m_subPopSizeExpr(rhs.m_subPopSizeExpr),
 	m_subPopSizeFunc(rhs.m_subPopSizeFunc),
 	m_subPop(rhs.m_subPop),
+	m_virtualSubPop(rhs.m_virtualSubPop),
 	m_weight(rhs.m_weight)
 {
 	if (m_subPopSizeFunc != NULL)
@@ -1409,11 +1410,8 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it = rhs.m_matingSchemes.begin();
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
-	for (; it != it_end; ++it) {
-		DBG_ASSERT((*it)->subPop().isValid(), ValueError,
-		    "Please specify (virtual) subpopulation for each mating scheme used in heteroMating");
+	for (; it != it_end; ++it)
 		m_matingSchemes.push_back((*it)->clone());
-	}
 }
 
 
@@ -1431,7 +1429,10 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
-			if ((*it)->subPop().id() == sp) {
+			// if it is used for this subpop,
+			// for use for all subPops ...
+			if ((*it)->subPop() == sp ||
+				(*it)->subPop() == InvalidSubPopID) {
 				m.push_back(*it);
 				w.push_back((*it)->weight());
 				DBG_FAILIF(fcmp_lt((*it)->weight(), 0.), ValueError,
@@ -1443,19 +1444,11 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// determine the weight
 		if (m.size() == 1)
 			w[0] = 1.;
-		else {
-			it = m.begin();
-			it_end = m.end();
-			for (; it != it_end; ++it)
-				DBG_ASSERT((*it)->subPop().isVirtual(), ValueError,
-				    "If more than one mating scheme is applied to a"
-				    " subpopulation, they should all be virtual");
-		}
 		// the default case (all zero)
 		if (fcmp_eq(std::accumulate(w.begin(), w.end(), 0.), 0.)) {
 			// weight is subpopulation size
 			for (size_t i = 0; i < m.size(); ++i)
-				w[i] = pop.virtualSubPopSize(m[i]->subPop());
+				w[i] = pop.virtualSubPopSize(m[i]->subPop(), m[i]->virtualSubPop());
 		}
 		// weight.
 		double overall = std::accumulate(w.begin(), w.end(), 0.);
@@ -1465,15 +1458,23 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectorlu vspSize(m.size());
 		ULONG all = pop.subPopSize(sp);
 		for (size_t i = 0; i < m.size(); ++i) {
+			DBG_WARNING(fcmp_eq(w[i], 0.), "One of the mating scheme has weight 0, and will be ignored");
 			vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w[i] / overall);
 			DBG_ASSERT(all >= vspSize[i], SystemError,
 			    "Something wrong with weight calculation");
 			all -= vspSize[i];
 		}
 		// individuals left by floating point calculation is added to
-		// the last virtual subpopulation.
-		if (all > 0)
-			vspSize[m.size() - 1] += all;
+		// the last non-zero virtual subpopulation.
+		if (all > 0) {
+			for (size_t i = m.size() - 1; i >= 0; --i)
+				if (vspSize[i] != 0) {
+					vspSize[i] += all;
+					break;
+				}
+		}
+		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is " 
+			<< vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();
@@ -1481,11 +1482,11 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectorlu::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		for (; it != it_end; ++it, ++itSize) {
-			if ((*it)->subPop().isVirtual()) {
-				DBG_DO(DBG_DEVEL, cout << "Activate virtual subpop " +
-				    toStr((*it)->subPop().id()) + ", " + toStr((*it)->subPop().vid()) << endl;);
-				pop.activateVirtualSubPop((*it)->subPop());
-			}
+			if ((*it)->virtualSubPop() != InvalidSubPopID)
+				pop.activateVirtualSubPop(sp, (*it)->virtualSubPop());
+			else if (pop.hasActivatedVirtualSubPop(sp))
+				pop.deactivateVirtualSubPop(sp);
+
 			DBG_DO(DBG_MATING, (*it)->m_famSize.clear(););
 			// real mating
 			try {

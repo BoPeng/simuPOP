@@ -67,12 +67,11 @@ class TestMatingSchemes(unittest.TestCase):
             self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=2),
             [1]*1000)
         # what if each family have different number of offspring?
-        # MATE_NumOffspringEachFamily
         def nos(gen):
             return random.randrange(1,4)
         #
-        cnt = self.getFamSize( randomMating(numOffspringFunc=nos, 
-            mode= MATE_PyNumOffspring))
+        cnt = self.getFamSize(randomMating(numOffspringFunc=nos))
+        print cnt
         self.assertEqual( sum(cnt), 1000)
         num = [ cnt.count(i) for i in range(1,4) ]
         # test for uniform?
