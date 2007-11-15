@@ -36,16 +36,6 @@ namespace simuPOP {
 
 class individual;
 class population;
-
-/* Itertors will be defined in later versions. A good implementaion
-   is being considered. Such iterators can be used to implement functions
-   such as pop.indidividuals(id, vid).
- */
-/*
-   class vspIterator;
-   class constVspIterator;
- */
-
 /** virtual subpopss split a subpopulation into virtual sub-subpopulations.
    The virtual subpopulations do not have to add up to the whole
    subpopulation, nor they have to be distinct. For example,
@@ -54,9 +44,25 @@ class population;
    overlap so some of the inviduals may belong to more than one virtual
    subpopulations.
  */
-
 class vspSplitter
 {
+public:
+	// iteratable and visible are two different concepts.
+	// When a population is activated by setting the visible flag
+	// All operations that work on this subpopulation will be limited
+	// to visible individuals. To be exact, IndIterator would skip
+	// invisible individuals.
+	//
+	// When a population is activated by setting the iteratable flag,
+	// only operations that respect this flag would check it and 
+	// respond to it.
+	//
+	enum activateType
+	{
+		Iteratable,
+		Visible,
+	};
+
 public:
 	vspSplitter() : m_activated(false)
 	{
@@ -71,6 +77,7 @@ public:
 
 
 	/// if the virtual subpopulation is activated.
+	/// CPPONLY
 	bool activated() const
 	{
 		return m_activated;
@@ -78,26 +85,23 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	virtual ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const = 0;
 
 	/// number of virtual subpops of subpopulation sp
 	virtual UINT numVirtualSubPop() = 0;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	virtual void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop) = 0;
+	/// CPPONLY
+	virtual void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type) = 0;
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	virtual void deactivate(population & pop, SubPopID subPop) = 0;
 
 	/// name of a virtual subpopulation
 	virtual string name(SubPopID sp) = 0;
-
-	/*
-	   vspIterator begin() = 0;
-	   vspIterator end() = 0;
-	   constVspIterator begin() const = 0;
-	   constVspIterator end() const = 0;
-	 */
 
 protected:
 	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
@@ -127,6 +131,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 
@@ -138,13 +143,16 @@ public:
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop)
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
 	{
 		m_activated = true;
 	}
 
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp)
 	{
 		m_activated = false;
@@ -186,6 +194,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// name of a virtual subpopulation
@@ -217,6 +226,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
@@ -227,9 +237,12 @@ public:
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
 	/// name of a virtual subpopulation
@@ -259,6 +272,7 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
@@ -269,9 +283,12 @@ public:
 
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
 	/// name of a virtual subpopulation
@@ -303,15 +320,19 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
 	/// name of a virtual subpopulation
@@ -339,15 +360,19 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
 	/// name of a virtual subpopulation
@@ -376,15 +401,19 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
 	/// name of a virtual subpopulation
@@ -414,15 +443,19 @@ public:
 
 
 	/// the size of a given virtual subpopulation.
+	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 	/// number of virtual subpops of subpopulation sp
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
-	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop);
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
 
 	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
 	/// name of a virtual subpopulation

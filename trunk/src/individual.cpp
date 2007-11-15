@@ -388,8 +388,12 @@ individual & pyIndIterator::next()
 	do {
 		if (m_index == m_end)
 			throw StopIteration("");
-		else if (m_index->visible())
-			return *m_index++;
+		else if (m_index->visible()) {
+			if (m_allVisibles || m_index->iteratable())
+				return *m_index++;
+			else
+				++m_index;
+			}
 		else
 			++m_index;
 	} while (true);
