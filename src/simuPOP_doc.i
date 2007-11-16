@@ -915,6 +915,85 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::cloneMating "
+
+Description:
+
+    a clone  mating that copy everyone from parental to offspring
+    generation.
+
+Details:
+
+    Note that
+    * selection is not considered (fitness is ignored)
+    * sequentialParentMating is used. If offspring (virtual)
+    subpopulation size is smaller than parental subpopulation size,
+    not all parents will be cloned. If offspring (virtual)
+    subpopulation size is larger, some parents will be cloned more
+    than once.
+    * numOffspring interface is respected.
+    * during  mating operators are applied.
+
+"; 
+
+%feature("docstring") simuPOP::cloneMating::cloneMating "
+
+Description:
+
+    create a binomial selection  mating scheme
+
+Usage:
+
+    cloneMating(numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+
+Details:
+
+    Please refer to class  mating for parameter descriptions.
+
+"; 
+
+%feature("docstring") simuPOP::cloneMating::~cloneMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~cloneMating()
+
+"; 
+
+%feature("docstring") simuPOP::cloneMating::clone "
+
+Description:
+
+    deep copy of a binomial selection  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::cloneMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the binomial selection  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::cloneMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
 %feature("docstring") simuPOP::cloneOffspringGenerator "
 
 Description:
@@ -3874,83 +3953,6 @@ Usage:
     x.__repr__()
 
 "; 
-
-%feature("docstring") simuPOP::linearParentChooser "
-
-Description:
-
-    choose a parent linearly, regardless of sex selection is not
-    considered
-
-"; 
-
-%feature("docstring") simuPOP::linearParentChooser::linearParentChooser "
-
-Description:
-
-    simuPOP::linearParentChooser::linearParentChooser
-
-Usage:
-
-    linearParentChooser()
-
-"; 
-
-%feature("docstring") simuPOP::linearParentChooser::clone "
-
-Description:
-
-    simuPOP::linearParentChooser::clone
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::linearParentChooser::initialize(population &pop, SubPopID sp);
-
-%ignore simuPOP::linearParentChooser::chooseParent();
-
-%feature("docstring") simuPOP::linearParentsChooser "
-
-Description:
-
-    choose two parents linearly, considering selection
-
-"; 
-
-%feature("docstring") simuPOP::linearParentsChooser::linearParentsChooser "
-
-Description:
-
-    simuPOP::linearParentsChooser::linearParentsChooser
-
-Usage:
-
-    linearParentsChooser()
-
-"; 
-
-%feature("docstring") simuPOP::linearParentsChooser::clone "
-
-Description:
-
-    simuPOP::linearParentsChooser::clone
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::linearParentsChooser::initialize(population &pop, SubPopID sp);
-
-%ignore simuPOP::linearParentsChooser::chooseParents();
-
-%ignore simuPOP::linearParentsChooser::numMale();
-
-%ignore simuPOP::linearParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::maPenetrance "
 
@@ -11294,6 +11296,83 @@ Usage:
 "; 
 
 %ignore simuPOP::selfMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
+%feature("docstring") simuPOP::sequentialParentChooser "
+
+Description:
+
+    choose a parent linearly, regardless of sex selection is not
+    considered
+
+"; 
+
+%feature("docstring") simuPOP::sequentialParentChooser::sequentialParentChooser "
+
+Description:
+
+    simuPOP::sequentialParentChooser::sequentialParentChooser
+
+Usage:
+
+    sequentialParentChooser()
+
+"; 
+
+%feature("docstring") simuPOP::sequentialParentChooser::clone "
+
+Description:
+
+    simuPOP::sequentialParentChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::sequentialParentChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::sequentialParentChooser::chooseParent();
+
+%feature("docstring") simuPOP::sequentialParentsChooser "
+
+Description:
+
+    choose two parents linearly, considering selection
+
+"; 
+
+%feature("docstring") simuPOP::sequentialParentsChooser::sequentialParentsChooser "
+
+Description:
+
+    simuPOP::sequentialParentsChooser::sequentialParentsChooser
+
+Usage:
+
+    sequentialParentsChooser()
+
+"; 
+
+%feature("docstring") simuPOP::sequentialParentsChooser::clone "
+
+Description:
+
+    simuPOP::sequentialParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::sequentialParentsChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::sequentialParentsChooser::chooseParents();
+
+%ignore simuPOP::sequentialParentsChooser::numMale();
+
+%ignore simuPOP::sequentialParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::setAncestralDepth "
 

@@ -3030,6 +3030,13 @@ noMatingRef
 
 
 \backslash
+cloneMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 binomialSelectionRef
 \end_layout
 
@@ -3074,14 +3081,14 @@ status open
 
 
 \backslash
-linearParentChooserRef
+sequentialParentChooserRef
 \end_layout
 
 \begin_layout Standard
 
 
 \backslash
-linearParentsChooserRef
+sequentialParentsChooserRef
 \end_layout
 
 \begin_layout Standard
