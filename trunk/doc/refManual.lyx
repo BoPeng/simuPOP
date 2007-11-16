@@ -3991,6 +3991,178 @@ shuffleOffspring=False
  be selfing, and probability 0.8 to mate randomly.
 \end_layout
 
+\begin_layout Standard
+simuPOP determines if a mating scheme will be applied to a particular subpopulat
+ion using the following rules
+\end_layout
+
+\begin_layout Itemize
+If neither 
+\family typewriter
+subPop
+\family default
+, nor 
+\family typewriter
+virtualSubPop
+\family default
+ is specified, the mating scheme is applied to all subpoulations (as a whole,
+ not any virtual subpopulation).
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPop
+\family default
+, but not 
+\family typewriter
+virtualSubPop
+\family default
+ is specified, the mating scheme is applied to the specified subpopulation
+ (as a whole).
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPop
+\family default
+ and 
+\family typewriter
+virtualSubPop
+\family default
+ are both specified, the mating scheme is applied to the specified virtual
+ subpopulation.
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPop
+\family default
+ is not specified, but
+\family typewriter
+ virtualSubPop
+\family default
+ is, the mating scheme is applied to spcified virtual subpopulation of all
+ subpopulations.
+ Note that simuPOP will report an error if a subpopulation does not define
+ such a virtual subpopulation.
+\end_layout
+
+\begin_layout Standard
+If one mating scheme is specified for each parental subpopulation, offspring
+ subpopulation sizes are determined as usual, through parameters 
+\family typewriter
+newSubPopSize, newSubPopSizeFunc
+\family default
+, etc.
+ However, if multiple mating schemes will be applied, they have to share
+ the same offspring subpopulation.
+ This problem is addressed by a weight system.
+ That is to say, each mating scheme can be given a weight using parameter
+ 
+\family typewriter
+weight
+\family default
+.
+ A weight can be positive, zero (default) or negative.
+ The number of offspring each mating scheme will produce is determined by
+ these weights.
+ 
+\end_layout
+
+\begin_layout Standard
+This weighting scheme is best explained by an example.
+ Assuming that there are three mating schemes working on the same parental
+ subpopulation
+\end_layout
+
+\begin_layout Itemize
+Mating scheme A works on the whole subpopulation of size 1000
+\end_layout
+
+\begin_layout Itemize
+Mating scheme B works on a virtual subpopulation of size 500
+\end_layout
+
+\begin_layout Itemize
+Mating scheme C works on another virtual subpopulation of size 800
+\end_layout
+
+\begin_layout Standard
+Assuming the corresponding offspring subpopulation has 
+\begin_inset Formula $N$
+\end_inset
+
+ individuals, 
+\end_layout
+
+\begin_layout Itemize
+If all weights are 0, the offspring subpopulation is divided in proportion
+ to parental (virtual) subpopulation sizes.
+ In this example, the mating schemes will produce 
+\begin_inset Formula $\frac{10}{23}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{5}{23}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{8}{23}N$
+\end_inset
+
+ individuals respectively.
+\end_layout
+
+\begin_layout Itemize
+If all weights are negative, they are multiplied to their parental (virtual)
+ subpopulation sizes to get a fixed size.
+ For example, weight (-1, -2, -0.5) will lead to sizes (1000, 1000, 400)
+ in the offspring subpopulation.
+ If 
+\begin_inset Formula $N\ne2400$
+\end_inset
+
+ in this case, an error will be raised.
+\end_layout
+
+\begin_layout Itemize
+If all weights are positive, the number of offspring produced from each
+ mating scheme is proportional to these weights.
+ For example, weights (1, 2, 3) will lead to 
+\begin_inset Formula $\frac{1}{6}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{2}{6}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{1}{3}N$
+\end_inset
+
+ individuals respectively.
+ In this case, 0 weights will produce no offspring.
+\end_layout
+
+\begin_layout Itemize
+If there are mixed positive and negative weights, the negative weights are
+ first processed, and the rest of the individuals are divided using positive
+ weights.
+ For example, three mating schemes with weights (-1, 2, 3) will produce
+ 1000, 
+\begin_inset Formula $\frac{2}{5}\left(N-1000\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{3}{5}\left(N-1000\right)$
+\end_inset
+
+ individuals respectively.
+\end_layout
+
 \begin_layout Section
 \begin_inset LatexCommand label
 name "sec:Operators"
