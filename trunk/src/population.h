@@ -250,10 +250,11 @@ public:
 	/// number of virtual subpopulation of a given subpopulation.
 	UINT numVirtualSubPop(SubPopID subPop) const;
 
-	/// activate a virtual subpopulation. CPPONLY
+	/// activate a virtual subpopulation.
 	/**
 	 \param id subpopulation id
 	 \param vid virtual subpopulation id
+	 \note this function is currently not recommended to be used.
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
 	                           vspSplitter::activateType type = vspSplitter::Visible);
@@ -263,10 +264,11 @@ public:
 	/// the same number of subpopulations.
 	void copyVirtualSplitters(const population & rhs);
 
-	/// deactivate virtual subpopulations in a given
-	/// subpopulation. In another word, all individuals
-	/// will become visible.
-	/// CPPONLY
+	/** deactivate virtual subpopulations in a given
+	   subpopulation. In another word, all individuals
+	   will become visible.
+	 \note this function is currently not recommended to be used.
+	 */
 	void deactivateVirtualSubPop(SubPopID subPop);
 
 	// allow compaison of populations in python

@@ -71,7 +71,6 @@ class TestMatingSchemes(unittest.TestCase):
             return random.randrange(1,4)
         #
         cnt = self.getFamSize(randomMating(numOffspringFunc=nos))
-        print cnt
         self.assertEqual( sum(cnt), 1000)
         num = [ cnt.count(i) for i in range(1,4) ]
         # test for uniform?
@@ -377,11 +376,10 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*100+[4]*50)
         #
-        pop.setVirtualSplitter(duplicateSplitter(2), 0)
         simu = simulator(pop,
             heteroMating(
-                [selfMating(numOffspring=1, subPop=0, virtualSubPop=0),
-                selfMating(numOffspring=2, subPop=0, virtualSubPop=1),
+                [selfMating(numOffspring=1, subPop=0),
+                selfMating(numOffspring=2, subPop=0),
                 selfMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
