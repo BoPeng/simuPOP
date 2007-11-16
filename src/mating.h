@@ -852,7 +852,12 @@ public:
 	            PyObject * newSubPopSizeFunc = NULL,
 	            SubPopID subPop = InvalidSubPopID,
 	            SubPopID virtualSubPop = InvalidSubPopID,
-	            double weight = 0);
+	            double weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
+	{
+	}
+
 
 	/// destructor
 	~cloneMating()

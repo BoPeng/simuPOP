@@ -774,21 +774,6 @@ bool noMating::mate(population & pop, population & scratch, vector<baseOperator 
 }
 
 
-cloneMating(double numOffspring = 1.,
-    PyObject * numOffspringFunc = NULL,
-    UINT maxNumOffspring = 0,
-    UINT mode = MATE_NumOffspring,
-    vectorlu newSubPopSize = vectorlu(),
-    string newSubPopSizeExpr = "",
-    PyObject * newSubPopSizeFunc = NULL,
-    SubPopID subPop = InvalidSubPopID,
-    SubPopID virtualSubPop = InvalidSubPopID,
-    double weight = 0)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-	m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode) {
-}
-
-
 bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
                              RawIndIterator offBegin, RawIndIterator offEnd,
                              vector<baseOperator * > & ops)
@@ -808,7 +793,7 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 		DBG_FAILIF(parent == NULL, ValueError,
 		    "Random parent chooser returns invalid parent");
 		//
-		m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
+		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
@@ -1549,7 +1534,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			if ((*it)->subPop() == sp ||
 			    (*it)->subPop() == InvalidSubPopID) {
 				m.push_back(*it);
-				double w = *(it)->weight();
+				double w = (*it)->weight();
 				// less than zero...
 				if (fcmp_lt(w, 0.)) {
 					w_pos.push_back(0);
@@ -1572,8 +1557,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			for (size_t i = 0; i < m.size(); ++i)
 				// if there is no negative weight...
 				if (w_neg[i] == 0)
-					w_pos[i] = pop.virtualSubPopSize(m[i]->subPop(),
-					               m[i]->virtualSubPop());
+					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
 		}
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1585,15 +1569,26 @@ bool heteroMating::mate(population & pop, population & scratch,
 		ULONG all = pop.subPopSize(sp);
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
-			if (fcmp_gt(w_neg[i], 0.))
+			if (fcmp_gt(w_neg[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_neg[i]);
-			else {
-				DBG_WARNING(fcmp_eq(w_pos[i], 0.), "One of the mating scheme has weight 0, and will be ignored");
-				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_pos[i] / overall_pos);
+				DBG_ASSERT(all >= vspSize[i], ValueError,
+					"Not enough offspring to accommodate specified weight scheme. "
+					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
+					+ " available " + toStr(all) + ".");
+				all -= vspSize[i];
 			}
-			DBG_ASSERT(all >= vspSize[i], ValueError,
-			    "Not enough offspring to accommodate specified weight scheme");
-			all -= vspSize[i];
+		}
+		// then count positive ones
+		ULONG all_pos = all;
+		for (size_t i = 0; i < m.size(); ++i) {
+			if (fcmp_gt(w_pos[i], 0.)) {
+				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
+				DBG_ASSERT(all >= vspSize[i], ValueError,
+					"Not enough offspring to accommodate specified weight scheme. "
+					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
+					+ " available " + toStr(all_pos) + ".");
+				all -= vspSize[i];
+			}
 		}
 		DBG_FAILIF(fcmp_eq(overall_pos, 0) && all > 0, ValueError,
 		    "An exact (all negative) weight system is used, but offspring subpopulation size does not match");

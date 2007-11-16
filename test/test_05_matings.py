@@ -345,6 +345,55 @@ class TestMatingSchemes(unittest.TestCase):
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
             end=10)
+
+    def testCloneMating(self):
+        'Testing clone mating scheme'
+        TurnOnDebug(DBG_MATING)
+        pop = population(subPop=[100, 200])
+        InitByFreq(pop, [0.3, 0.7])
+        simu = simulator(pop, cloneMating(numOffspring=2))
+        simu.step(ops=[])
+        pop1 = simu.population(0)
+        self.assertEqual(pop.individual(0), pop1.individual(0))
+        self.assertEqual(pop.individual(0), pop1.individual(1))
+        self.assertEqual(pop.individual(1), pop1.individual(2))
+        self.assertEqual(pop.individual(1), pop1.individual(3))
+        self.assertEqual(pop.individual(2), pop1.individual(4))
+        # ...
+        self.assertEqual(simu.population(0).dvars().famSizes,
+            [2]*150)
+        TurnOffDebug(DBG_MATING)
+
+
+    def testWeightSystem(self):
+        'Testing the weigting system used by heterogeneous mating scheme'
+        TurnOnDebug(DBG_MATING)
+        def getOffSize(N, weights):
+            pop = population(N)
+            ms = []
+            for idx,w in enumerate(weights):
+                ms.append(cloneMating(numOffspring=(idx+1)*10, weight=w))
+            simu = simulator(pop, heteroMating(ms))
+            simu.step()
+            fs = simu.dvars(0).famSizes
+            ret = [0]*len(weights)
+            v0 = fs[0]
+            idx = 0
+            for v in fs:
+                if v > v0:
+                    v0 = v
+                    idx += 1
+                ret[idx] += v
+            return ret
+        self.assertEqual(getOffSize(1000, [0,0]), [500, 500])
+        self.assertEqual(getOffSize(1000, [-1,0]), [1000, 0])
+        self.assertEqual(getOffSize(1000, [-0.3, -0.7]), [300, 700])
+        self.assertEqual(getOffSize(1000, [-0.5, 0, 0]), [500, 250, 250])
+        self.assertEqual(getOffSize(1000, [-0.5, 2, 3]), [500, 200, 300])
+        self.assertEqual(getOffSize(1000, [-0.5, 2, 3]), [500, 200, 300])
+        self.assertEqual(getOffSize(1000, [2, -0.1, 3]), [360, 100, 540])
+        self.assertEqual(getOffSize(1000, [-0.2, -0.1, 0]), [200, 100, 700])
+        TurnOffDebug(DBG_MATING)
     
     def testHeteroMating(self):
         'Testing heterogeneous mating schemes'
