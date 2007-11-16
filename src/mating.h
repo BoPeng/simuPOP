@@ -385,17 +385,17 @@ protected:
 
 /// choose a parent linearly, regardless of sex
 /// selection is not considered
-class linearParentChooser : public parentChooser
+class sequentialParentChooser : public parentChooser
 {
 public:
-	linearParentChooser() : parentChooser(1)
+	sequentialParentChooser() : parentChooser(1)
 	{
 	}
 
 
 	parentChooser * clone() const
 	{
-		return new linearParentChooser(*this);
+		return new sequentialParentChooser(*this);
 	}
 
 
@@ -417,10 +417,10 @@ private:
 
 
 /// choose two parents linearly, considering selection
-class linearParentsChooser : public parentChooser
+class sequentialParentsChooser : public parentChooser
 {
 public:
-	linearParentsChooser() :
+	sequentialParentsChooser() :
 		parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
 		m_numMale(0), m_numFemale(0),
 		m_curMale(0), m_curFemale(0)
@@ -430,7 +430,7 @@ public:
 
 	parentChooser * clone() const
 	{
-		return new linearParentsChooser(*this);
+		return new sequentialParentsChooser(*this);
 	}
 
 
@@ -824,6 +824,74 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
 
 };
+
+/// a clone mating that copy everyone from parental to offspring generation.
+/**
+   Note that
+ \li selection is not considered (fitness is ignored)
+ \li sequentialParentMating is used. If offspring (virtual) subpopulation size
+   is smaller than parental subpopulation size, not all parents will be cloned.
+   If offspring (virtual) subpopulation size is larger, some parents will be
+   cloned more than once.
+ \li numOffspring interface is respected.
+ \li during mating operators are applied.
+ */
+class cloneMating : public mating
+{
+public:
+	/// create a binomial selection mating scheme
+	/**
+	   Please refer to class \c mating for parameter descriptions.
+	 */
+	cloneMating(double numOffspring = 1.,
+	            PyObject * numOffspringFunc = NULL,
+	            UINT maxNumOffspring = 0,
+	            UINT mode = MATE_NumOffspring,
+	            vectorlu newSubPopSize = vectorlu(),
+	            string newSubPopSizeExpr = "",
+	            PyObject * newSubPopSizeFunc = NULL,
+	            SubPopID subPop = InvalidSubPopID,
+	            SubPopID virtualSubPop = InvalidSubPopID,
+	            double weight = 0);
+
+	/// destructor
+	~cloneMating()
+	{
+	}
+
+
+	/// deep copy of a binomial selection mating scheme
+	/**
+	 \sa mating::clone() const
+	 */
+	virtual mating * clone() const
+	{
+		return new cloneMating(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the binomial selection mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::binomial random selection>";
+	}
+
+
+	/// CPPONLY perform sexless random mating
+	/**
+	 \param pop population
+	 \param scratch scratch population
+	 \param ops during-mating operators
+	 \return return false when mating fails
+	 */
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+	                        RawIndIterator offBegin, RawIndIterator offEnd,
+	                        vector<baseOperator * > & ops);
+
+protected:
+	cloneOffspringGenerator m_offGenerator;
+};
+
 
 /// a mating scheme that uses binomial selection, regardless of sex
 /**

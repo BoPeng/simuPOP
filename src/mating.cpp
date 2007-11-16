@@ -363,7 +363,7 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 }
 
 
-void linearParentChooser::initialize(population & pop, SubPopID sp)
+void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_begin = pop.indBegin(sp);
 	m_end = pop.indEnd(sp);
@@ -372,7 +372,7 @@ void linearParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individual * linearParentChooser::chooseParent()
+individual * sequentialParentChooser::chooseParent()
 {
 	if (m_ind == m_end)
 		m_ind = m_begin;
@@ -380,7 +380,7 @@ individual * linearParentChooser::chooseParent()
 }
 
 
-void linearParentsChooser::initialize(population & pop, SubPopID subPop)
+void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
@@ -403,7 +403,7 @@ void linearParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair linearParentsChooser::chooseParents()
+parentChooser::individualPair sequentialParentsChooser::chooseParents()
 {
 	DBG_ASSERT(initialized(), SystemError,
 	    "Please initialize this parent chooser before using it");
@@ -770,6 +770,48 @@ bool noMating::mate(population & pop, population & scratch, vector<baseOperator 
 				(*iop)->applyDuringMating(pop, it.rawIter(), NULL, NULL);
 		}
 	}
+	return true;
+}
+
+
+cloneMating(double numOffspring = 1.,
+    PyObject * numOffspringFunc = NULL,
+    UINT maxNumOffspring = 0,
+    UINT mode = MATE_NumOffspring,
+    vectorlu newSubPopSize = vectorlu(),
+    string newSubPopSizeExpr = "",
+    PyObject * newSubPopSizeFunc = NULL,
+    SubPopID subPop = InvalidSubPopID,
+    SubPopID virtualSubPop = InvalidSubPopID,
+    double weight = 0)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+	m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode) {
+}
+
+
+bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
+                             RawIndIterator offBegin, RawIndIterator offEnd,
+                             vector<baseOperator * > & ops)
+{
+	if (offBegin == offEnd)
+		return true;
+
+	sequentialParentChooser pc;
+	pc.initialize(pop, subPop);
+
+	if (!m_offGenerator.initialized())
+		m_offGenerator.initialize(pop, ops);
+
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		individual * parent = pc.chooseParent();
+		DBG_FAILIF(parent == NULL, ValueError,
+		    "Random parent chooser returns invalid parent");
+		//
+		m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
+		// record family size, for debug reasons.
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}                                                                                           // all offspring
 	return true;
 }
 
@@ -1497,7 +1539,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp) {
 		vectormating m;
-		vectorf w;
+		vectorf w_pos;      // positive weights
+		vectorf w_neg;      // negative weights
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
@@ -1506,41 +1549,60 @@ bool heteroMating::mate(population & pop, population & scratch,
 			if ((*it)->subPop() == sp ||
 			    (*it)->subPop() == InvalidSubPopID) {
 				m.push_back(*it);
-				w.push_back((*it)->weight());
-				DBG_FAILIF(fcmp_lt((*it)->weight(), 0.), ValueError,
-				    "Negative weight is not allowed");
+				double w = *(it)->weight();
+				// less than zero...
+				if (fcmp_lt(w, 0.)) {
+					w_pos.push_back(0);
+					w_neg.push_back(-w);
+				} else {
+					w_pos.push_back(w);
+					w_neg.push_back(0);
+				}
 			}
 		}
 		DBG_FAILIF(m.empty(), ValueError,
 		    "No mating scheme is available for subpopulation " + toStr(sp));
 		// determine the weight
 		if (m.size() == 1)
-			w[0] = 1.;
+			w_pos[0] = 1.;
+
 		// the default case (all zero)
-		if (fcmp_eq(std::accumulate(w.begin(), w.end(), 0.), 0.)) {
+		if (fcmp_eq(std::accumulate(w_pos.begin(), w_pos.end(), 0.), 0.)) {
 			// weight is subpopulation size
 			for (size_t i = 0; i < m.size(); ++i)
-				w[i] = pop.virtualSubPopSize(m[i]->subPop(), m[i]->virtualSubPop());
+				// if there is no negative weight...
+				if (w_neg[i] == 0)
+					w_pos[i] = pop.virtualSubPopSize(m[i]->subPop(),
+					               m[i]->virtualSubPop());
 		}
 		// weight.
-		double overall = std::accumulate(w.begin(), w.end(), 0.);
-		DBG_FAILIF(fcmp_eq(overall, 0.), ValueError,
+		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
+		double overall_neg = std::accumulate(w_neg.begin(), w_neg.end(), 0.);
+		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
 		    "Overall weight is zero");
 		//
 		vectorlu vspSize(m.size());
 		ULONG all = pop.subPopSize(sp);
+		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
-			DBG_WARNING(fcmp_eq(w[i], 0.), "One of the mating scheme has weight 0, and will be ignored");
-			vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w[i] / overall);
-			DBG_ASSERT(all >= vspSize[i], SystemError,
-			    "Something wrong with weight calculation");
+			if (fcmp_gt(w_neg[i], 0.))
+				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_neg[i]);
+			else {
+				DBG_WARNING(fcmp_eq(w_pos[i], 0.), "One of the mating scheme has weight 0, and will be ignored");
+				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_pos[i] / overall_pos);
+			}
+			DBG_ASSERT(all >= vspSize[i], ValueError,
+			    "Not enough offspring to accommodate specified weight scheme");
 			all -= vspSize[i];
 		}
+		DBG_FAILIF(fcmp_eq(overall_pos, 0) && all > 0, ValueError,
+		    "An exact (all negative) weight system is used, but offspring subpopulation size does not match");
+
 		// individuals left by floating point calculation is added to
-		// the last non-zero virtual subpopulation.
+		// the last non-zero, positive weight virtual subpopulation.
 		if (all > 0) {
 			for (size_t i = m.size() - 1; i >= 0; --i)
-				if (vspSize[i] != 0) {
+				if (vspSize[i] != 0 && w_pos[i] > 0) {
 					vspSize[i] += all;
 					break;
 				}
@@ -1553,9 +1615,13 @@ bool heteroMating::mate(population & pop, population & scratch,
 		it_end = m.end();
 		vectorlu::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
+		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
+		    "Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");
 		for (; it != it_end; ++it, ++itSize) {
 			if ((*it)->virtualSubPop() != InvalidSubPopID)
 				pop.activateVirtualSubPop(sp, (*it)->virtualSubPop());
+			// if previous mating scheme works on a virtual subpop,
+			// and the current one is not. deactivate it.
 			else if (pop.hasActivatedVirtualSubPop(sp))
 				pop.deactivateVirtualSubPop(sp);
 
@@ -1579,12 +1645,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// if more than two mating schemes working on the same subpopulation,
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {
-			// random shuffle individuals
-			RawIndIterator ind = pop.rawIndBegin(sp);
-			RawIndIterator indEnd = pop.rawIndBegin(sp);
-			for (; ind != indEnd; ++ind)
-				ind->setSubPopID(static_cast<SubPopID>(rng().randInt(MaxSubPopID)));
-			std::sort(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
+			std::random_shuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
 			pop.setShallowCopied(true);
 		}
 	} // each subpopulation.

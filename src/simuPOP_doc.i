@@ -2316,7 +2316,8 @@ Usage:
 
     heteroMating(matingSchemes, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      shuffleOffspring=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 "; 
 
@@ -6904,11 +6905,46 @@ Usage:
 
 "; 
 
-%ignore simuPOP::population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop=InvalidSubPopID, vspSplitter::activateType type=vspSplitter::Visible);
+%feature("docstring") simuPOP::population::activateVirtualSubPop "
+
+Description:
+
+    activate a virtual subpopulation.
+
+Usage:
+
+    x.activateVirtualSubPop(subPop, virtualSubPop=InvalidSubPopID,
+      type=vspSplitter::Visible)
+
+Arguments:
+
+    id:             subpopulation id
+    vid:            virtual subpopulation id
+
+Note:
+
+    this function is currently not recommended to be used.
+
+"; 
 
 %ignore simuPOP::population::copyVirtualSplitters(const population &rhs);
 
-%ignore simuPOP::population::deactivateVirtualSubPop(SubPopID subPop);
+%feature("docstring") simuPOP::population::deactivateVirtualSubPop "
+
+Usage:
+
+    x.deactivateVirtualSubPop(subPop)
+
+Details:
+
+    deactivate virtual subpopulations in a given subpopulation. In
+    another word, all individuals will become visible.
+
+Note:
+
+    this function is currently not recommended to be used.
+
+"; 
 
 %feature("docstring") simuPOP::population::__cmp__ "
 

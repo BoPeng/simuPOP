@@ -57,8 +57,6 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 void nullSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                             activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	if (type == Visible) {
 		m_activated = true;
 		return;
@@ -107,8 +105,6 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                            activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	Sex s = virtualSubPop == 0 ? Male : Female;
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
@@ -150,8 +146,6 @@ ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID 
 void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                                  activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	bool aff = virtualSubPop == 0 ? false : true;
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
@@ -257,8 +251,6 @@ UINT infoSplitter::numVirtualSubPop()
 void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                             activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	UINT idx = pop.infoIdx(m_info);
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
@@ -374,8 +366,6 @@ UINT proportionSplitter::numVirtualSubPop()
 void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                                   activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_proportions.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 
@@ -459,8 +449,6 @@ UINT rangeSplitter::numVirtualSubPop()
 void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                              activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 	    "Virtual subpopulation index out of range");
 
@@ -530,8 +518,6 @@ UINT genotypeSplitter::numVirtualSubPop()
 void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
                                 activateType type)
 {
-	DBG_FAILIF(activated(), ValueError,
-	    "Can not activate a splitter against an activated virtual subpopulation");
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 	    "Virtual subpopulation index out of genotype");
 
