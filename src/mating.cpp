@@ -1572,9 +1572,9 @@ bool heteroMating::mate(population & pop, population & scratch,
 			if (fcmp_gt(w_neg[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Not enough offspring to accommodate specified weight scheme. "
-					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
-					+ " available " + toStr(all) + ".");
+				    "Not enough offspring to accommodate specified weight scheme. "
+				    "Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
+				    + " available " + toStr(all) + ".");
 				all -= vspSize[i];
 			}
 		}
@@ -1584,9 +1584,9 @@ bool heteroMating::mate(population & pop, population & scratch,
 			if (fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-					"Not enough offspring to accommodate specified weight scheme. "
-					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
-					+ " available " + toStr(all_pos) + ".");
+				    "Not enough offspring to accommodate specified weight scheme. "
+				    "Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
+				    + " available " + toStr(all_pos) + ".");
 				all -= vspSize[i];
 			}
 		}
