@@ -7,6 +7,7 @@
 # 
 
 from simuPOP import *
+import random
 
 try:
     from rpy import *
@@ -14,9 +15,14 @@ try:
 except:
     has_rpy = False
 
-import random
-
-pop = population(20, loci=[1], infoFields=['x', 'y'])
+# try to load a more efficient version of parentsChooser
+# parentsChooser_cpp is defined in demoNonRandomMating.i, and it must
+# be compiled to be imported into this script.
+try:
+    from demoNonRandomMating import parentsChooser_cpp
+    has_cpp = True
+except:
+    has_cpp = False
 
 
 def locOfOffspring(loc):
@@ -34,10 +40,10 @@ def locOfOffspring(loc):
     #print '(%.2f, %.2f) + (%.2f, %.2f) ==> (%.2f, %.2f)' % \
     #    (loc[0], loc[2], loc[1], loc[3], new_x, new_y)
     return (new_x, new_y)
-        
 
-def drawInds(pop):
-    '''plot the location of individuals'''
+
+def plotInds(pop):
+    '''plot the location of individuals. This requires R and rpy. '''
     if not has_rpy:
         return True
     r.postscript('loc_%d.eps' % pop.gen())
@@ -54,7 +60,18 @@ def parentsChooser(pop, sp):
     '''Choose parents according to their locations. Because this is only a
        demonstration, performance is not under consideration.
     '''
-    # infinite supply of parents
+    ################### The C++ version ############
+    if has_cpp_chooser:
+        pc = parentsChooser_cpp(
+            [x.info('x') for x in pop.individuals() if x.sex() == Male],
+            [x.info('y') for x in pop.individuals() if x.sex() == Male],
+            [x.info('x') for x in pop.individuals() if x.sex() == Feale],
+            [x.info('y') for x in pop.individuals() if x.sex() == Female],
+            random.random())
+        while True:
+            print pc.chooseParents()
+            yield pc.chooseParents()
+    ##################### The Python version ###############
     males = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Male]
     females = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Female]
     if len(males) == 0 or len(females) == 0:
@@ -71,17 +88,19 @@ def parentsChooser(pop, sp):
         #print male, female
         yield (male, female)
 
+    
 
+#
+pop = population(20, loci=[1], infoFields=['x', 'y'])
 simu = simulator(pop,
     pyMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
 )
-
 simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
     ops = [
         pyEval(r'"%s\n" % gen'),
         pyTagger(func=locOfOffspring, infoFields=['x', 'y']),
-        pyOperator(func=drawInds),
+        pyOperator(func=plotInds),
     ],
     end = 3
 )
