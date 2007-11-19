@@ -46,7 +46,31 @@ typedef std::vector<PyObject * >           vectorobj;
 
 namespace simuPOP {
 
-class numOffspringGenerator
+/**
+   Offspring generators generate offspring from given parents. Generators differ
+   from each other by how and how many offspring is generated at each mating event.
+
+   Parameters \c mode, \c numOffspring, \c maxNumOffspring and \c numOffspringFunc
+   are used to specify how many offspring will be produced at each mating event.
+ \c mode can be one of
+ \li \c MATE_NumOffspring: a fixed number of offspring will be produced
+   	at all mating events .
+ \li \c MATE_PyNumOffspring: A python function, specified by parameter
+ \c numOffspringFunc, is called at each mating event to determine the number
+   	of offspring to produce.
+ \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
+   	   is used to determine the number of offspring of each family.
+ \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
+   	   is used to determine the number of offspring of each family.
+ \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
+   	   is used to determine the number of offspring of each family.
+ \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
+ \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
+
+   This is the base class of all parent choosers, and should not
+   be used directly.
+ */
+class offspringGenerator
 {
 public:
 	// numOffspring: constant, numOffspringFunc: call each time before mating
@@ -63,103 +87,29 @@ public:
 #define MATE_UniformDistribution     6
 
 public:
-	numOffspringGenerator(double numOffspring, PyObject * numOffspringFunc, UINT maxNumOffspring,
-	                      UINT mode);
+	/**
+	 \param numOffspring Depending on \mode, this paramter can be the number of offspring to
+	   	produce, or a paremter of a random distribution.
+	 \param numOffspringFunc a Python function that returns the number of offspring at each
+	   	mating event. The setting of this parameter implies \mode=MATE_PyNumOffspring.
+	 \param maxNumOffspring used when \c numOffspring is generated from a binomial or random
+	   	distribution.
+	 \param mode can be one of <tt>MATE_NumOffspring, MATE_PyNumOffspring,
+	   	MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
+	   	or <tt>MATE_UniformDistribution</tt>.
+	 */
+	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
+	                   UINT maxNumOffspring, UINT mode);
 
-	numOffspringGenerator(const numOffspringGenerator & rhs)
-		: m_numOffspring(rhs.m_numOffspring),
-		m_numOffspringFunc(rhs.m_numOffspringFunc),
-		m_maxNumOffspring(rhs.m_maxNumOffspring),
-		m_mode(rhs.m_mode)
-	{
-		if (m_numOffspringFunc != NULL)
-			Py_INCREF(m_numOffspringFunc);
-	}
-
-
-	/// destructor
-	virtual ~numOffspringGenerator()
+	virtual ~offspringGenerator()
 	{
 		if (m_numOffspringFunc != NULL)
 			Py_DECREF(m_numOffspringFunc);
 	}
 
 
-	/// CPPONLY
-	bool fixedFamilySize() const
-	{
-		return m_mode == MATE_NumOffspring;
-	}
+	virtual offspringGenerator * clone() const = 0;
 
-
-	/// CPPONLY the number of offspring of a genaration \c gen
-	/**
-	   This is called whenever a family size is needed.
-	   Its actual meaning depending on \c mode.
-	 */
-	ULONG numOffspring(int gen);
-
-protected:
-	/// number of offspring each mate
-	double m_numOffspring;
-
-	/// number of offspring func
-	PyObject * m_numOffspringFunc;
-
-	///
-	UINT m_maxNumOffspring;
-
-	/// whether or not call m_numOffspringFunc each time
-	UINT m_mode;
-};
-
-
-/**
- \c mode, \c numOffspring, \c maxNumOffspring can be used to specify how
-   	   many offspring will be produced at each mating event. This \c mode parameter
-   	   can be one of
- \li \c MATE_NumOffspring: a fixed number of offspring at all mating events at this generation.
-   		If \c numOffspring is given, all generations use this fixed number. If \c numOffspringFunc
-   		is given, the number of offspring at each generation is determined by the value
-   	   returned from this function.
- \li \c MATE_NumOffspringEachFamily: each family can have its own number of offspring.
-   	   Usually, \c numOffspringFunc is used to determine the number of offspring of each
-   	   family. If \c numOffspring is used, \c MATE_NumOffspringEachFamily is equivalent to
- \c MATE_NumOffspring.
- \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
-   	   is used to determine the number of offspring of each family.
- \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
-   	   is used to determine the number of offspring of each family.
- \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
-   	   is used to determine the number of offspring of each family.
- \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
- \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
-
- \param numOffspring the number of offspring or \em p for a random distribution.
-   	   Default to \c 1. This parameter determines the number of offspring that a
-   	   mating event will produce. Therefore, it determines the family size.
- \param numOffspringFunc a Python function that returns the number of offspring or \em p
- \param maxNumOffspring used when \c numOffspring is generated from a binomial distribution
- \param mode can be one of <tt>MATE_NumOffspring, MATE_NumOffspringEachFamily,
-   	   MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
-   	   or <tt>MATE_UniformDistribution</tt>.
- */
-/// CPPONLY
-/** How to generate offspring.
- */
-class offspringGenerator
-{
-public:
-	offspringGenerator(double numOffspring,
-	                   PyObject * numOffspringFunc,
-	                   UINT maxNumOffspring,
-	                   UINT mode
-	                   );
-
-	/// create an offspring generator, save information from \c pop and \c ops to
-	/// speed up the calls to \c generateOffspring
-	/// CPPONLY
-	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
 	/// generate \c numOff offspring
 	/// CPPONLY
@@ -168,13 +118,25 @@ public:
 	                               RawIndIterator & offEnd,
 	                               vector<baseOperator *> & ops) = 0;
 
-
-	virtual ~offspringGenerator()
+	/// CPPONLY
+	bool fixedFamilySize() const
 	{
+		return m_mode == MATE_NumOffspring;
 	}
 
 
-	virtual offspringGenerator * clone() const = 0;
+	/// create an offspring generator, save information from \c pop and \c ops to
+	/// speed up the calls to \c generateOffspring
+	/// CPPONLY
+	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
+
+	/// CPPONLY the number of offspring of a genaration \c gen
+	/**
+	   This is called whenever a family size is needed.
+	   Its actual meaning depending on \c mode.
+	 */
+	ULONG numOffspring(int gen);
+
 
 	/// CPPONLY
 	bool initialized() const
@@ -190,6 +152,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	int numParents() const
 	{
 		return m_numParents;
@@ -197,7 +160,17 @@ public:
 
 
 public:
-	numOffspringGenerator m_numOffGen;
+	/// number of offspring each mate
+	double m_numOffspring;
+
+	/// number of offspring func
+	PyObject * m_numOffspringFunc;
+
+	///
+	UINT m_maxNumOffspring;
+
+	/// whether or not call m_numOffspringFunc each time
+	UINT m_mode;
 
 protected:
 	bool checkFormOffspringGenotype(vector<baseOperator *> const & ops);
@@ -216,7 +189,11 @@ private:
 	bool m_initialized;
 };
 
-
+/** clone offspring generator copies parental geneotype to a number
+   of offspring. Only one parent is accepted. The number of offspring
+   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
+ \c maxNumOffspring and \c mode.
+ */
 class cloneOffspringGenerator : public offspringGenerator
 {
 public:
@@ -237,7 +214,7 @@ public:
 	}
 
 
-	// the default method to produce offspring
+	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 	                       RawIndIterator & offBegin,
 	                       RawIndIterator & offEnd,
@@ -245,7 +222,17 @@ public:
 
 };
 
+/** Mendelian offspring generator accepts two parents and pass their
+   genotype to a number of offspring following Mendelian's law. Basically,
+   one of the paternal chromosomes is chosen randomly to form the paternal
+   copy of the offspring, and one of the maternal chromosome is chosen
+   randomly to form the maternal copy of the offspring. The number of offspring
+   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
+ \c maxNumOffspring and \c mode. Recombination will not happen unless
+   a during-mating operator recombinator is used.
 
+   This offspring generator only works for diploid populations.
+ */
 class mendelianOffspringGenerator : public offspringGenerator
 {
 public:
@@ -294,6 +281,14 @@ protected:
 };
 
 
+/** selfing offspring generator works similarly as a mendelian offspring
+   generator but a single parent produces both the paternal and maternal
+   copy of the offspring chromosomes. This offspring generator accepts a
+   dipload parent. A random copy of the parental chromosomes is chosen
+   randomly to form the parental copy of the offspring chromosome, and
+   is chosen randomly again to form the maternal copy of the offspring
+   chromosome.
+ */
 class selfingOffspringGenerator : public mendelianOffspringGenerator
 {
 public:
@@ -314,6 +309,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * parent, individual *,
 	                       RawIndIterator & offBegin,
 	                       RawIndIterator & offEnd,
@@ -322,13 +318,21 @@ public:
 };
 
 
-// a base class for parent choosers
+/** Parent choosers repeatedly choose parent(s) from a parental
+   population, and pass them to offspring generators. A parent
+   chooser can select one or two parents, which should match what is
+   required by the offspring generator used.
+
+   This is the base class of all parent choosers, and should not
+   be used directly.
+ */
 class parentChooser
 {
 public:
 	typedef std::pair<individual *, individual *> individualPair;
 
 public:
+	// CPPONLY
 	// numParents can be 0 (undetermined, can be 1 or 2)
 	// 1 (one parent), or 2 (two parents)
 	parentChooser(int numParents) : m_initialized(false)
@@ -353,6 +357,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	int numParents()
 	{
 		return m_numParents;
@@ -383,8 +388,9 @@ protected:
 };
 
 
-/// choose a parent linearly, regardless of sex
-/// selection is not considered
+/** This parent chooser chooses a parent linearly, regardless of sex
+   or fitness values (selection is not considered).
+ */
 class sequentialParentChooser : public parentChooser
 {
 public:
@@ -416,7 +422,10 @@ private:
 };
 
 
-/// choose two parents linearly, considering selection
+/** This parents chooser chooses two parents sequentially. The
+   parents are chosen from their respective sex groups. Selection
+   is not considered.
+ */
 class sequentialParentsChooser : public parentChooser
 {
 public:

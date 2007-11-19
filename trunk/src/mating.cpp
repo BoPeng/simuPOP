@@ -25,11 +25,10 @@
 
 namespace simuPOP {
 
-
-numOffspringGenerator::numOffspringGenerator(double numOffspring,
-                                             PyObject * numOffspringFunc,
-                                             UINT maxNumOffspring,
-                                             UINT mode) :
+offspringGenerator::offspringGenerator(double numOffspring,
+                                       PyObject * numOffspringFunc,
+                                       UINT maxNumOffspring,
+                                       UINT mode) :
 	m_numOffspring(numOffspring),
 	m_numOffspringFunc(NULL),
 	m_maxNumOffspring(maxNumOffspring),
@@ -59,7 +58,7 @@ numOffspringGenerator::numOffspringGenerator(double numOffspring,
 }
 
 
-ULONG numOffspringGenerator::numOffspring(int gen)
+ULONG offspringGenerator::numOffspring(int gen)
 {
 	switch (m_mode) {
 	case MATE_NumOffspring:
@@ -90,18 +89,6 @@ ULONG numOffspringGenerator::numOffspring(int gen)
 	//
 	DBG_ASSERT(false, SystemError, "This line should never be reached");
 	return 0;
-}
-
-
-offspringGenerator::offspringGenerator(double numOffspring,
-                                       PyObject * numOffspringFunc,
-                                       UINT maxNumOffspring,
-                                       UINT mode) :
-	m_numOffGen(numOffspring, numOffspringFunc, maxNumOffspring, mode),
-	m_formOffGenotype(false),
-	m_numParents(0),
-	m_initialized(false)
-{
 }
 
 
@@ -142,7 +129,7 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 	// generate numOff offspring per mating, or until it  reaches offEnd
 	UINT count = 0;
 	bool accept = true;
-	UINT numOff = m_numOffGen.numOffspring(pop.gen());
+	UINT numOff = numOffspring(pop.gen());
 	while (count < numOff && it != it_end) {
 		if (m_formOffGenotype)
 			// use deep copy!!!!!!!
@@ -273,7 +260,7 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 	UINT count = 0;
 	bool accept = true;
 
-	UINT numOff = m_numOffGen.numOffspring(pop.gen());
+	UINT numOff = numOffspring(pop.gen());
 	while (count < numOff && it != it_end) {
 		if (m_formOffGenotype) {
 			// m_bt 's width is 2*numChrom() and can be used for
@@ -327,7 +314,7 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 	UINT count = 0;
 	bool accept = true;
 
-	UINT numOff = m_numOffGen.numOffspring(pop.gen());
+	UINT numOff = numOffspring(pop.gen());
 	while (count < numOff && it != it_end) {
 		if (m_formOffGenotype) {
 			// m_bt 's width is 2*numChrom() and can be used for
@@ -603,7 +590,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 	DBG_FAILIF(item == NULL, ValueError,
 	    "User-defined function yield invalid value. This may happen \n"
 	    "if you function does not provide enough parents for the mating \n"
-	    "scheme (a 'while True' is recommended).");
+	    "scheme (a 'while True' statement is recommended).");
 
 	vectori parents;
 	int parent;
@@ -1155,7 +1142,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	/// whether or not use stack.
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
-	bool useStack = m_offspringGenerator.m_numOffGen.fixedFamilySize();
+	bool useStack = m_offspringGenerator.fixedFamilySize();
 	// use to go through offspring generation to count alleles
 	UINT totNumLoci = pop.totNumLoci();
 
