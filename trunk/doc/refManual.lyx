@@ -2303,184 +2303,6 @@ preview false
 \end_layout
 
 \begin_layout Subsection
-Virtual subpopulations
-\end_layout
-
-\begin_layout Standard
-simuPOP 0.8.2 introduces the concept of 
-\emph on
-virtual subpopulations
-\emph default
-.
- Virtual subpopulations are collections of individuals in a subpoulation,
- defined by certain criterias.
- For example, all male individuals, all unaffected individuals, all individuals
- with information field age > 20, all individuals with genotype 0, 0 at
- a given locus, can form virtual subpopulations.
- Virtual subpopulations do not have to add up to the whole subpopulation,
- nor do they have to be distinct.
- Because properties of individuals are variable, virtual subpopulations
- do not have fixed sizes as subpopulations do.
-\end_layout
-
-\begin_layout Standard
-Virtual subpopulations allow easy handling of heterogeneous populations,
- and can facilitate some computations that are previously very difficult
- to do.
- For example, mating schemes can work on virtual subpopulations.
- This allows complicated mating schemes such as mating in aged population,
- and mixed mating schems.
- By limiting operators to virtual subpopulations, one can apply different
- genetic forces to different groups of individuals.
- It is also easy to calculate statistics at a finer scale, such as allele
- frequency of all males.
-\end_layout
-
-\begin_layout Standard
-Virtual subpopulations are defined by virtual splitters.
- A splitter splits a subpopulation into pre-determined number of virtual
- subpopulations.
- It also assign a name, such as 
-\family typewriter
-age=5
-\family default
- to each virtual subpopulation.
- For example
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-sexSplitter
-\family default
- splits the population into male and female virtual subpopulations.
- A 
-\family typewriter
-affectionSplitter
-\family default
- splits the population into unaffected and affected virtual subpopulations.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-infoSplitter
-\family default
- splits the population according to values of a given information field.
- It can split the population by given values, or by some cut-off values.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-proportionSplitter
-\family default
- splits the population with given proportions, and a 
-\family typewriter
-rangeSplitters 
-\family default
-choose individuals from given ranges.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-genotypeSplitter 
-\family default
-splits the population with genotype values at given loci.
-\end_layout
-
-\begin_layout Standard
-The population class provies several functions to assign a splitter to a
- given subpopulation, retrieve virtual subpopulation sizes and names.
- More interestingly, the 
-\family typewriter
-individuals(subPop, virtualSubPop) 
-\family default
-member function allows you to iterate through all individuals of a virtual
- subpopulation.
- Example 
-\begin_inset LatexCommand ref
-reference "virtualSubPop"
-
-\end_inset
-
- demonstrates how to assign virtual splitter, and how to use them.
- 
-\begin_inset Include \lstinputlisting{log/ref_virtualSubPop.log}[caption={Virtual subpopulation related functions},label={virtualSubPop}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-nullSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-duplicateSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-sexSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-affectionSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-infoSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-proportionSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-rangeSplitterRef
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-genotypeSplitterRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 \begin_inset LatexCommand label
 name "sub:Save-and-Load"
 
@@ -2797,6 +2619,170 @@ simuViewPop.viewPop(myPop)
 \begin_layout Standard
 
 simuViewPop.viewPop(filename='mypop.bin')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Virtual subpopulations
+\end_layout
+
+\begin_layout Standard
+simuPOP 0.8.2 introduces the concept of 
+\emph on
+virtual subpopulations
+\emph default
+.
+ Virtual subpopulations are collections of individuals in a subpoulation,
+ defined by certain criterias.
+ For example, all male individuals, all unaffected individuals, all individuals
+ with information field age > 20, all individuals with genotype 0, 0 at
+ a given locus, can form virtual subpopulations.
+ Virtual subpopulations do not have to add up to the whole subpopulation,
+ nor do they have to be distinct.
+ Because properties of individuals are variable, virtual subpopulations
+ do not have fixed sizes as subpopulations do.
+\end_layout
+
+\begin_layout Standard
+Virtual subpopulations allow easy handling of heterogeneous populations,
+ and can facilitate some computations that are previously very difficult
+ to do.
+ For example, mating schemes can work on virtual subpopulations.
+ This allows complicated mating schemes such as mating in aged population,
+ and mixed mating schems.
+ By limiting operators to virtual subpopulations, one can apply different
+ genetic forces to different groups of individuals.
+ It is also easy to calculate statistics at a finer scale, such as allele
+ frequency of all males.
+\end_layout
+
+\begin_layout Standard
+Virtual subpopulations are defined by virtual splitters.
+ A splitter splits a subpopulation into pre-determined number of virtual
+ subpopulations.
+ It also assign a name, such as 
+\family typewriter
+age=5
+\family default
+ to each virtual subpopulation.
+ For example
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+sexSplitter
+\family default
+ splits the population into male and female virtual subpopulations.
+ A 
+\family typewriter
+affectionSplitter
+\family default
+ splits the population into unaffected and affected virtual subpopulations.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+infoSplitter
+\family default
+ splits the population according to values of a given information field.
+ It can split the population by given values, or by some cut-off values.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+proportionSplitter
+\family default
+ splits the population with given proportions, and a 
+\family typewriter
+rangeSplitters 
+\family default
+choose individuals from given ranges.
+\end_layout
+
+\begin_layout Itemize
+A 
+\family typewriter
+genotypeSplitter 
+\family default
+splits the population with genotype values at given loci.
+\end_layout
+
+\begin_layout Standard
+The population class provies several functions to assign a splitter to a
+ given subpopulation, retrieve virtual subpopulation sizes and names.
+ More interestingly, the 
+\family typewriter
+individuals(subPop, virtualSubPop) 
+\family default
+member function allows you to iterate through all individuals of a virtual
+ subpopulation.
+ Example 
+\begin_inset LatexCommand ref
+reference "virtualSubPop"
+
+\end_inset
+
+ demonstrates how to assign virtual splitter, and how to use them.
+ 
+\begin_inset Include \lstinputlisting{log/ref_virtualSubPop.log}[caption={Virtual subpopulation related functions},label={virtualSubPop}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+sexSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+affectionSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+infoSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+proportionSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+rangeSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+genotypeSplitterRef
 \end_layout
 
 \end_inset

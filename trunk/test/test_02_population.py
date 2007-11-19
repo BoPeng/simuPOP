@@ -1215,20 +1215,6 @@ class TestPopulation(unittest.TestCase):
             for i in range(pop2.subPopSize(sp)):
                 self.assertEqual(pop2.individual(i, sp), pop.individual(i%pop.subPopSize(sp), sp))
 
-    def testVirtualSubPop(self):
-        'Testing virtual subpopulations'
-        pop = population(subPop=[20, 80], loci=[1])
-        pop.setVirtualSplitter(duplicateSplitter(4), 0)
-        pop.setVirtualSplitter(duplicateSplitter(2), 1)
-        self.assertEqual(pop.numVirtualSubPop(0), 4)
-        self.assertEqual(pop.numVirtualSubPop(1), 2)
-        self.assertEqual(pop.virtualSubPopSize(0, 0), 20)
-        self.assertEqual(pop.virtualSubPopSize(0, 1), 20)
-        self.assertEqual(pop.virtualSubPopSize(0, 3), 20)
-        self.assertRaises(exceptions.IndexError, pop.virtualSubPopSize, 0, 4) 
-        self.assertEqual(pop.virtualSubPopSize(1, 1), 80)
-        pop.activateVirtualSubPop(0, 1)
-    
     def testSexSplitter(self):
         'Test sex virtual subpop splitter'
         pop = population(subPop=[20, 80])
@@ -1398,11 +1384,6 @@ class TestPopulation(unittest.TestCase):
         # this makes sure that the new infoIterator can skip invisible individuals.
         self.assertEqual(pop.indInfo('x', True), tuple([11.0]*pop.virtualSubPopSize(0, 1)))
         pop.deactivateVirtualSubPop(0)
-        # see if the same info are obtained, using duplicate virtual subpops
-        info = pop.indInfo('x', True)
-        pop.setVirtualSplitter(duplicateSplitter(2), 0)
-        pop.activateVirtualSubPop(0, 1)
-        self.assertEqual(pop.indInfo('x', True), info)
 
 
     def testAlleleIterator(self):
@@ -1418,15 +1399,9 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(5, 1), 1)
         Stat(pop, alleleFreq=[2])
         self.assertEqual(pop.dvars().alleleNum[2][0], 0)
-        # see if the same info are obtained, using duplicate virtual subpops
         pop.deactivateVirtualSubPop(0)
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         an = [pop.dvars().alleleNum[x][0] for x in range(pop.totNumLoci())]
-        pop.setVirtualSplitter(duplicateSplitter(2), 0)
-        pop.activateVirtualSubPop(0, 1)
-        # these should be calcuated using virtual stuff
-        Stat(pop, alleleFreq=range(pop.totNumLoci()))
-        self.assertEqual(an, [pop.dvars().alleleNum[x][0] for x in range(pop.totNumLoci())])        
 
     def testIterateVirtualSubPop(self):
         'Testing iteration through virtual subpopulations'
