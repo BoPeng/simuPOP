@@ -468,7 +468,11 @@ private:
 };
 
 
-/// choose a parent randomly
+/** This parent chooser chooses a parent randomly from the
+   parental generation. If selection is turned on, parents are
+   chosen with probabilities that are proportional to their
+   fitness values. Sex is not considered.
+ */
 class randomParentChooser : public parentChooser
 {
 public:
@@ -500,7 +504,12 @@ private:
 };
 
 
-/// choose two parents randomly, considering selection
+/** This parent chooser chooses two parents randomly, a male
+   and a female, from their respective sex groups randomly.
+   If selection is turned on, parents are chosen from their sex
+   groups with probabilities that are proportional to their
+   fitness values.
+ */
 class randomParentsChooser : public parentChooser
 {
 public:
@@ -548,13 +557,20 @@ private:
 };
 
 
-/// choose two parents using a Python generator
-/// does not consider selection
+/** This parents chooser accept a Python generator function that yields
+   repeatedly an index (relative to each subpopulation) of a parent, or
+   indexes of two parents as a Python list of tuple. The generator function
+   is responsible for handling sex or selection if needed.
+ */
 class pyParentsChooser : public parentChooser
 {
 public:
+	/**
+	 \param parentsGenerator A Python generator function
+	 */
 	pyParentsChooser(PyObject * parentsGenerator);
 
+	/// CPPONLY
 	pyParentsChooser(const pyParentsChooser & rhs)
 		: parentChooser(rhs),
 		m_func(rhs.m_func),
@@ -653,8 +669,10 @@ public:
 	   		current (virtual) subpopulation size. If other virutal
 	   		subpopulation has non-zero weight, this virtual subpopulation
 	   		will produce no offspring (weight 0).
-	 \li any positive number: the size will be determined by
-	   		weights from other virtual subpopulations.
+	 \li any negative number -n: the size will be n*m where m is the size
+	   	of the (virtual) subpopulation of the parental generation.
+	 \li any positive number n: the size will be determined by
+	   		weights from all (virtual) subpopulations.
 
 	 \test src_mating.log Demographic models and control of number of offspring per mating event
 	 */
@@ -676,18 +694,21 @@ public:
 	}
 
 
+	/// CPPONLY
 	SubPopID subPop() const
 	{
 		return m_subPop;
 	}
 
 
+	/// CPPONLY
 	SubPopID virtualSubPop() const
 	{
 		return m_virtualSubPop;
 	}
 
 
+	/// CPPONLY
 	double weight() const
 	{
 		return m_weight;
@@ -712,6 +733,7 @@ public:
 	/// a common submit procedure is defined.
 	virtual void submitScratch(population & pop, population & scratch);
 
+	/// CPPONLY
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 	                        RawIndIterator offBegin, RawIndIterator offEnd,
 	                        vector<baseOperator * > & ops)
@@ -772,6 +794,10 @@ public:
  \li no subpopulation change. \em During-mating operators will be applied, but
    	the return values are not checked. I.e., subpopulation size parameters will be ignored
    	although some during-mating operators might be applied.
+
+   Note that because the offspring population is the same as parental population,
+   this mating scheme can not be used with other mating schemes in a heterogeneous
+   mating scheme. cloneMating is recommended for that purpose.
  */
 class noMating : public mating
 {
@@ -1071,7 +1097,10 @@ protected:
 /// a mating scheme of selfing
 /**
    In this mating scheme, a parent is choosen randomly, acts
-   both as father and mother as in random mating.
+   both as father and mother in the usual random mating. The parent
+   is chosen randomly, regardless of sex. If selection is turned on,
+   the probability that an individual is chosen is proportional to
+   his/her fitness.
  */
 class selfMating : public mating
 {
@@ -1404,23 +1433,21 @@ private:
 
 /// a Python mating scheme
 /**
-   Hybird mating scheme. This mating scheme takes a Python generator
-   that generate parents that will be mated by the mating scheme.
-   The mating scheme will generate offspring population (controlled by
-   newSubPopSize etc), call this function repeatedly to get parents,
-   perform the mating, produce a number of offspring  (controlled by
-   numOffspring etc), and apply given during mating operators.
-
-   The parentsGenerator is not a usually Python function, rather a
-   Python generator (use of yield keyword). Please refer to simuPOP
-   user's guide for an example of how to use this mating scheme.
-
+   	This hybrid mating scheme does not have to involve a python function.
+   	It requires a parent chooser, and an offspring generator. The parent
+   	chooser chooses parent(s) and pass them to the offspring generator to
+   	produce offspring.
  */
 class pyMating : public mating
 {
 public:
 	/// create a Python mating scheme
 	/**
+	 \param chooser a parent chooser that chooses parent(s) from the parental
+	   	generation.
+	 \param generator an offspring generator that produce offspring of given
+	   	parents.
+
 	 */
 	pyMating(parentChooser & chooser,
 	         offspringGenerator & generator,
@@ -1477,15 +1504,22 @@ private:
 
 };
 
-/** a heterogeneous mating scheme
- */
 typedef std::vector<mating *> vectormating;
 
+/** a heterogeneous mating scheme that applies a list of mating
+   schemes to different (virtual) subpopulations.
+ */
 class heteroMating : public mating
 {
 public:
-	/// create a Python mating scheme
+	/// create a heterogeneous Python mating scheme
 	/**
+	 \param matingSchemes A list of mating schemes. It parameter \c subPop of an
+	   	mating scheme is specified, it will be applied to specific subpopulation.
+	   	If \c virtualSubPop if specified, it will be applied to specifc virtual
+	   	subpopulations. The \c weight parameter is used to control how many
+	   	offspring to produce in case that more than one mating schemes are applied
+	   	to the same subpopulation.
 	 */
 	heteroMating(const vectormating & matingSchemes,
 	             vectorlu newSubPopSize = vectorlu(),

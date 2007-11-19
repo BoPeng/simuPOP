@@ -2382,9 +2382,10 @@ Usage:
 
 %feature("docstring") simuPOP::heteroMating "
 
-Description:
+Details:
 
-    simuPOP::heteroMating
+    a heterogeneous  mating scheme that applies a list of  mating
+    schemes to different (virtual) subpopulations.
 
 "; 
 
@@ -2392,7 +2393,7 @@ Description:
 
 Description:
 
-    create a Python  mating scheme
+    create a heterogeneous Python  mating scheme
 
 Usage:
 
@@ -2400,6 +2401,17 @@ Usage:
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
       shuffleOffspring=True, subPop=InvalidSubPopID,
       virtualSubPop=InvalidSubPopID, weight=0)
+
+Arguments:
+
+    matingSchemes:  A list of  mating schemes. It parameter subPop of
+                    an  mating scheme is specified, it will be applied
+                    to specific subpopulation. If virtualSubPop if
+                    specified, it will be applied to specifc virtual
+                    subpopulations. The weight parameter is used to
+                    control how many offspring to produce in case that
+                    more than one  mating schemes are applied to the
+                    same subpopulation.
 
 "; 
 
@@ -4632,8 +4644,12 @@ Arguments:
                     virutal subpopulation has non-zero weight, this
                     virtual subpopulation will produce no offspring
                     (weight 0).
-                    * any positive number: the size will be determined
-                    by weights from other virtual subpopulations.
+                    * any negative number -n: the size will be n*m
+                    where m is the size of the (virtual) subpopulation
+                    of the parental generation.
+                    * any positive number n: the size will be
+                    determined by weights from all (virtual)
+                    subpopulations.
 
 Example:
 
@@ -4693,41 +4709,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mating::subPop "
+%ignore simuPOP::mating::subPop() const;
 
-Description:
+%ignore simuPOP::mating::virtualSubPop() const;
 
-    simuPOP::mating::subPop
-
-Usage:
-
-    x.subPop()
-
-"; 
-
-%feature("docstring") simuPOP::mating::virtualSubPop "
-
-Description:
-
-    simuPOP::mating::virtualSubPop
-
-Usage:
-
-    x.virtualSubPop()
-
-"; 
-
-%feature("docstring") simuPOP::mating::weight "
-
-Description:
-
-    simuPOP::mating::weight
-
-Usage:
-
-    x.weight()
-
-"; 
+%ignore simuPOP::mating::weight() const;
 
 %feature("docstring") simuPOP::mating::clone "
 
@@ -4756,17 +4742,7 @@ Usage:
 
 %ignore simuPOP::mating::submitScratch(population &pop, population &scratch);
 
-%feature("docstring") simuPOP::mating::mateSubPop "
-
-Description:
-
-    simuPOP::mating::mateSubPop
-
-Usage:
-
-    x.mateSubPop(pop, subPop, offBegin, offEnd, ops)
-
-"; 
+%ignore simuPOP::mating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %ignore simuPOP::mating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
 
@@ -5553,7 +5529,11 @@ Details:
     * no subpopulation change. During-mating operators will be
     applied, but the return values are not checked. I.e.,
     subpopulation size parameters will be ignored although some
-    during-mating operators might be applied.
+    during-mating operators might be applied. Note that because the
+    offspring  population is the same as parental  population, this
+    mating scheme can not be used with other  mating schemes in a
+    heterogeneous  mating scheme.  cloneMating is recommended for that
+    purpose.
 
 "; 
 
@@ -8831,16 +8811,10 @@ Description:
 
 Details:
 
-    Hybird  mating scheme. This  mating scheme takes a Python
-    generator that generate parents that will be mated by the  mating
-    scheme. The  mating scheme will generate offspring  population
-    (controlled by newSubPopSize etc), call this function repeatedly
-    to get parents, perform the  mating, produce a number of offspring
-    (controlled by numOffspring etc), and apply given during  mating
-    operators.The parentsGenerator is not a usually Python function,
-    rather a Python generator (use of yield keyword). Please refer to
-    simuPOP user's guide for an example of how to use this  mating
-    scheme.
+    This hybrid  mating scheme does not have to involve a python
+    function. It requires a parent chooser, and an offspring
+    generator. The parent chooser chooses parent(s) and pass them to
+    the offspring generator to produce offspring.
 
 "; 
 
@@ -8855,6 +8829,13 @@ Usage:
     pyMating(chooser, generator, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
       subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+
+Arguments:
+
+    chooser:        a parent chooser that chooses parent(s) from the
+                    parental generation.
+    generator:      an offspring generator that produce offspring of
+                    given parents.
 
 "; 
 
@@ -9366,10 +9347,13 @@ Usage:
 
 %feature("docstring") simuPOP::pyParentsChooser "
 
-Description:
+Details:
 
-    choose two parents using a Python generator does not consider
-    selection
+    This parents chooser accept a Python generator function that
+    yields repeatedly an index (relative to each subpopulation) of a
+    parent, or indexes of two parents as a Python list of tuple. The
+    generator function is responsible for handling sex or selection if
+    needed.
 
 "; 
 
@@ -9383,7 +9367,13 @@ Usage:
 
     pyParentsChooser(parentsGenerator)
 
+Arguments:
+
+    parentsGenerator:A Python generator function
+
 "; 
+
+%ignore simuPOP::pyParentsChooser::pyParentsChooser(const pyParentsChooser &rhs);
 
 %feature("docstring") simuPOP::pyParentsChooser::clone "
 
@@ -10196,9 +10186,12 @@ Usage:
 
 %feature("docstring") simuPOP::randomParentChooser "
 
-Description:
+Details:
 
-    choose a parent randomly
+    This parent chooser chooses a parent randomly from the parental
+    generation. If selection is turned on, parents are chosen with
+    probabilities that are proportional to their fitness values. Sex
+    is not considered.
 
 "; 
 
@@ -10232,9 +10225,12 @@ Usage:
 
 %feature("docstring") simuPOP::randomParentsChooser "
 
-Description:
+Details:
 
-    choose two parents randomly, considering selection
+    This parent chooser chooses two parents randomly, a male and a
+    female, from their respective sex groups randomly. If selection is
+    turned on, parents are chosen from their sex groups with
+    probabilities that are proportional to their fitness values.
 
 "; 
 
@@ -11240,7 +11236,10 @@ Description:
 Details:
 
     In this  mating scheme, a parent is choosen randomly, acts both as
-    father and mother as in random  mating.
+    father and mother in the usual random  mating. The parent is
+    chosen randomly, regardless of sex. If selection is turned on, the
+    probability that an  individual is chosen is proportional to
+    his/her fitness.
 
 "; 
 
