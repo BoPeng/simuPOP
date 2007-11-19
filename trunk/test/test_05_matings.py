@@ -312,11 +312,9 @@ class TestMatingSchemes(unittest.TestCase):
             ops=[],
             end=10)
         #
-        simu = simulator(pop, pyMating(
+        self.assertRaises(exceptions.ValueError, pyMating,
             randomParentsChooser(),
-            selfingOffspringGenerator()))
-        self.assertRaises(exceptions.ValueError, simu.evolve,
-            preOps=[initByFreq([0.3, 0.7])], ops=[], end=10)
+            selfingOffspringGenerator())
         #
         simu = simulator(pop, pyMating(
             randomParentChooser(),
@@ -362,6 +360,11 @@ class TestMatingSchemes(unittest.TestCase):
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [2]*150)
+        pop = population(subPop=[100, 200])
+        InitByFreq(pop, [.3, .7])
+        simu = simulator(pop, cloneMating())
+        simu.step()
+        self.assertEqual(simu.population(0), pop)
         TurnOffDebug(DBG_MATING)
 
 
@@ -469,6 +472,18 @@ class TestMatingSchemes(unittest.TestCase):
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*60+[2]*20+[4]*50)
+
+    def testSequentialParentsChooser(self):
+        'Testing sequential parent chooser'
+        pop = population(subPop=[100, 200])
+        InitByFreq(pop, [.3, .7])
+        self.assertRaises(exceptions.ValueError, pyMating,
+            sequentialParentChooser(),
+            mendelianOffspringGenerator())
+        simu = simulator(pop, pyMating(
+            sequentialParentsChooser(),
+            mendelianOffspringGenerator()))
+        simu.step()
 
 ##   def testFreqTrajWithSubPop(self):
 ##     'Testing trajctory simulation with subpopulation structure'
