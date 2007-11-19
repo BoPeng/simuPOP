@@ -65,7 +65,9 @@ offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	m_maxNumOffspring(rhs.m_maxNumOffspring),
 	m_mode(rhs.m_mode),
 	m_formOffGenotype(rhs.m_formOffGenotype),
+#ifndef OPTIMIZED	
 	m_genoStruIdx(rhs.m_genoStruIdx),
+#endif	
 	m_numParents(rhs.m_numParents),
 	m_initialized(rhs.m_initialized)
 {
@@ -1485,7 +1487,7 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
 	m_shuffleOffspring(shuffleOffspring)
 {
-	DBG_WARNING(subPop != InvalidSubPopID or virtualSubPop != InvalidSubPopID,
+	DBG_WARNING(subPop != InvalidSubPopID || virtualSubPop != InvalidSubPopID,
 	    "Parameter subPop or virtualSubPop is specified, but is ignored.");
 
 	vectormating::const_iterator it = matingSchemes.begin();
