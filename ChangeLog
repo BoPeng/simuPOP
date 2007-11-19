@@ -5,7 +5,7 @@ BUGS:
 
 version 0.8.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
-version 0.8.2 - (Rev 1370)
+version 0.8.2 - (Rev 1370) Nov 19, 2007
   - BUG: Fix saveFstat in simuUtil.py
   - NEW/CHG: rewrite pyMating, which now accepts a parents chooser, and an offspring generator.
   - NEW: add heteroMating to allow allow different mating scheme used for different
