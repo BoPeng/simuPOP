@@ -54,38 +54,6 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 }
 
 
-void nullSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                            activateType type)
-{
-	if (type == Visible) {
-		m_activated = true;
-		return;
-	}
-	// to set itertable, because iterable flags are not required to be deactivated,
-	// we will have to reset it here.
-	RawIndIterator it = pop.rawIndBegin(subPop);
-	RawIndIterator it_end = pop.rawIndEnd(subPop);
-	for (; it != it_end; ++it)
-		it->setIteratable(true);
-}
-
-
-ULONG nullSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
-{
-	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError, "Given virtual subpop id is not virtual");
-	DBG_ASSERT(virtualSubPop == 0, IndexError, "There is only one virtual subpopulation for this splitter");
-	return pop.subPopSize(subPop);
-}
-
-
-ULONG duplicateSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
-{
-	DBG_FAILIF(virtualSubPop != InvalidSubPopID && virtualSubPop >= m_num, IndexError,
-	    "Virtual subpopulation id out of range");
-	return pop.subPopSize(subPop);
-}
-
-
 ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)
