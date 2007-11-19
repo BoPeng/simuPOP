@@ -996,9 +996,12 @@ Usage:
 
 %feature("docstring") simuPOP::cloneOffspringGenerator "
 
-Description:
+Details:
 
-    simuPOP::cloneOffspringGenerator
+    clone offspring generator copies parental geneotype to a number of
+    offspring. Only one parent is accepted. The number of offspring
+    produced is controled by parameters numOffspring,
+    numOffspringFunc, maxNumOffspring and mode.
 
 "; 
 
@@ -4771,9 +4774,18 @@ Usage:
 
 %feature("docstring") simuPOP::mendelianOffspringGenerator "
 
-Description:
+Details:
 
-    simuPOP::mendelianOffspringGenerator
+    Mendelian offspring generator accepts two parents and pass their
+    genotype to a number of offspring following Mendelian's law.
+    Basically, one of the paternal chromosomes is chosen randomly to
+    form the paternal copy of the offspring, and one of the maternal
+    chromosome is chosen randomly to form the maternal copy of the
+    offspring. The number of offspring produced is controled by
+    parameters numOffspring, numOffspringFunc, maxNumOffspring and
+    mode. Recombination will not happen unless a during-mating
+    operator  recombinator is used.This offspring generator only works
+    for diploid populations.
 
 "; 
 
@@ -5851,44 +5863,36 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::numOffspringGenerator "
+%feature("docstring") simuPOP::offspringGenerator "
 
-Description:
+Details:
 
-    simuPOP::numOffspringGenerator
-
-"; 
-
-%feature("docstring") simuPOP::numOffspringGenerator::numOffspringGenerator "
-
-Description:
-
-    simuPOP::numOffspringGenerator::numOffspringGenerator
-
-Usage:
-
-    numOffspringGenerator(numOffspring, numOffspringFunc,
-      maxNumOffspring, mode)
-
-"; 
-
-%feature("docstring") simuPOP::numOffspringGenerator::~numOffspringGenerator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~numOffspringGenerator()
+    Offspring generators generate offspring from given parents.
+    Generators differ from each other by how and how many offspring is
+    generated at each  mating event.Parameters mode, numOffspring,
+    maxNumOffspring and numOffspringFunc are used to specify how many
+    offspring will be produced at each  mating event. mode can be one
+    of
+    * MATE_NumOffspring: a fixed number of offspring will be produced
+    at all  mating events .
+    * MATE_PyNumOffspring: A python function, specified by parameter
+    numOffspringFunc, is called at each  mating event to determine the
+    number of offspring to produce.
+    * MATE_GeometricDistribution: a Geometric distribution with
+    parameter numOffspring is used to determine the number of
+    offspring of each family.
+    * MATE_PoissonDistribution: a Poisson distribution with parameter
+    numOffspring is used to determine the number of offspring of each
+    family.
+    * MATE_BinomialDistribution: a Binomial distribution with
+    parameter numOffspring is used to determine the number of
+    offspring of each family.
+    * MATE_UniformDistribution: a Uniform  [a, b]  distribution with
+    parameter numOffspring (a) and maxNumOffspring (b) is used to
+    determine the number of offspring of each family. This is the base
+    class of all parent choosers, and should not be used directly.
 
 "; 
-
-%ignore simuPOP::numOffspringGenerator::fixedFamilySize() const;
-
-%ignore simuPOP::numOffspringGenerator::numOffspring(int gen);
-
-%ignore simuPOP::offspringGenerator;
 
 %feature("docstring") simuPOP::offspringGenerator::offspringGenerator "
 
@@ -5901,11 +5905,23 @@ Usage:
     offspringGenerator(numOffspring, numOffspringFunc,
       maxNumOffspring, mode)
 
+Arguments:
+
+    numOffspring:   Depending on , this paramter can be the number of
+                    offspring to produce, or a paremter of a random
+                    distribution.
+    numOffspringFunc:a Python function that returns the number of
+                    offspring at each  mating event. The setting of
+                    this parameter implies =MATE_PyNumOffspring.
+    maxNumOffspring:used when numOffspring is generated from a
+                    binomial or random distribution.
+    mode:           can be one of MATE_NumOffspring,
+                    MATE_PyNumOffspring, MATE_GeometricDistribution,
+                    MATE_PoissonDistribution,
+                    MATE_BinomialDistribution, or
+                    MATE_UniformDistribution.
+
 "; 
-
-%ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
-
-%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::offspringGenerator::~offspringGenerator "
 
@@ -5931,21 +5947,19 @@ Usage:
 
 "; 
 
+%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
+
+%ignore simuPOP::offspringGenerator::fixedFamilySize() const;
+
+%ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
+
+%ignore simuPOP::offspringGenerator::numOffspring(int gen);
+
 %ignore simuPOP::offspringGenerator::initialized() const;
 
 %ignore simuPOP::offspringGenerator::setNumParents(int numParents);
 
-%feature("docstring") simuPOP::offspringGenerator::numParents "
-
-Description:
-
-    simuPOP::offspringGenerator::numParents
-
-Usage:
-
-    x.numParents()
-
-"; 
+%ignore simuPOP::offspringGenerator::numParents() const;
 
 %ignore simuPOP::OstreamManager;
 
@@ -6136,9 +6150,13 @@ Usage:
 
 %feature("docstring") simuPOP::parentChooser "
 
-Description:
+Details:
 
-    simuPOP::parentChooser
+    Parent choosers repeatedly choose parent(s) from a parental
+    population, and pass them to offspring generators. A parent
+    chooser can select one or two parents, which should match what is
+    required by the offspring generator used.This is the base class of
+    all parent choosers, and should not be used directly.
 
 "; 
 
@@ -6170,17 +6188,7 @@ Usage:
 
 %ignore simuPOP::parentChooser::initialized() const;
 
-%feature("docstring") simuPOP::parentChooser::numParents "
-
-Description:
-
-    simuPOP::parentChooser::numParents
-
-Usage:
-
-    x.numParents()
-
-"; 
+%ignore simuPOP::parentChooser::numParents();
 
 %ignore simuPOP::parentChooser::chooseParent();
 
@@ -11184,9 +11192,15 @@ Usage:
 
 %feature("docstring") simuPOP::selfingOffspringGenerator "
 
-Description:
+Details:
 
-    simuPOP::selfingOffspringGenerator
+    selfing offspring generator works similarly as a mendelian
+    offspring generator but a single parent produces both the paternal
+    and maternal copy of the offspring chromosomes. This offspring
+    generator accepts a dipload parent. A random copy of the parental
+    chromosomes is chosen randomly to form the parental copy of the
+    offspring chromosome, and is chosen randomly again to form the
+    maternal copy of the offspring chromosome.
 
 "; 
 
@@ -11299,10 +11313,10 @@ Usage:
 
 %feature("docstring") simuPOP::sequentialParentChooser "
 
-Description:
+Details:
 
-    choose a parent linearly, regardless of sex selection is not
-    considered
+    This parent chooser chooses a parent linearly, regardless of sex
+    or fitness values (selection is not considered).
 
 "; 
 
@@ -11336,9 +11350,11 @@ Usage:
 
 %feature("docstring") simuPOP::sequentialParentsChooser "
 
-Description:
+Details:
 
-    choose two parents linearly, considering selection
+    This parents chooser chooses two parents sequentially. The parents
+    are chosen from their respective sex groups. Selection is not
+    considered.
 
 "; 
 
