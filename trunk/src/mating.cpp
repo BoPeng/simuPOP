@@ -1431,6 +1431,9 @@ pyMating::pyMating(parentChooser & chooser,
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
+	DBG_FAILIF(m_parentChooser->numParents() != 0
+	    && m_parentChooser->numParents() != m_offspringGenerator->numParents(),
+	    ValueError, "Imcompatible parent chooser and offspring generator");
 }
 
 
@@ -1447,10 +1450,6 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 
 	if (!m_offspringGenerator->initialized())
 		m_offspringGenerator->initialize(pop, ops);
-
-	DBG_FAILIF(m_parentChooser->numParents() != 0
-	    && m_parentChooser->numParents() != m_offspringGenerator->numParents(),
-	    ValueError, "Imcompatible parent chooser and offspring generator");
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;

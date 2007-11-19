@@ -223,6 +223,9 @@ include scripts/simuForward.py
 include scripts/simuComplexDisease.py
 include scripts/analComplexDisease.py
 include scripts/simuNeutralSNPs.py
+include scripts/demoNonRandomMating.py
+include scripts/demoNonRandomMating.i
+include scripts/demoNonRandomMating.h
 
 # tests
 include test/run_tests.py
