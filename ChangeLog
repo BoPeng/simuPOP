@@ -3,12 +3,16 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.2 - (Rev 1370)
   - BUG: Fix saveFstat in simuUtil.py
-  - NEW/CHG: rewrite pyMating
+  - NEW/CHG: rewrite pyMating, which now accepts a parents chooser, and an offspring generator.
   - NEW: add heteroMating to allow allow different mating scheme used for different
 		subpopulations, or proportions of individuals
   - NEW: add selfMating mating scheme.
+  - NEW: add various parent choosers.
+  - NEW: add various offspring generators.
   - NEW: add null, duplicate, info, genotype, proportion splitters
   - NEW: add splitter interface to populations.
 

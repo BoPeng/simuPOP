@@ -5915,6 +5915,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::offspringGenerator::offspringGenerator(const offspringGenerator &rhs);
+
 %feature("docstring") simuPOP::offspringGenerator::clone "
 
 Description:
