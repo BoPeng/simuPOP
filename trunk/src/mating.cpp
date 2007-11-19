@@ -32,7 +32,8 @@ offspringGenerator::offspringGenerator(double numOffspring,
 	m_numOffspring(numOffspring),
 	m_numOffspringFunc(NULL),
 	m_maxNumOffspring(maxNumOffspring),
-	m_mode(mode)
+	m_mode(mode),
+	m_initialized(false)
 {
 	DBG_FAILIF(mode == MATE_PyNumOffspring && numOffspringFunc == NULL, ValueError,
 	    "Please provide a python function when mode is MATE_PyNumOffspring");
@@ -55,6 +56,21 @@ offspringGenerator::offspringGenerator(double numOffspring,
 	DBG_FAILIF(m_mode == MATE_BinomialDistribution && m_maxNumOffspring < 1,
 	    ValueError, "Max number of offspring should be greater than 1. Given "
 	    + toStr(m_maxNumOffspring));
+}
+
+
+offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
+	: m_numOffspring(rhs.m_numOffspring),
+	m_numOffspringFunc(rhs.m_numOffspringFunc),
+	m_maxNumOffspring(rhs.m_maxNumOffspring),
+	m_mode(rhs.m_mode),
+	m_formOffGenotype(rhs.m_formOffGenotype),
+	m_genoStruIdx(rhs.m_genoStruIdx),
+	m_numParents(rhs.m_numParents),
+	m_initialized(rhs.m_initialized)
+{
+	if (m_numOffspringFunc != NULL)
+		Py_INCREF(m_numOffspringFunc);
 }
 
 
@@ -123,8 +139,9 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 	    "Offspring generator is not initialized before used to generate offspring");
 
 	// if population has changed.
-	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-	    "Offspring generator is used for two different types of populations");
+	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), SystemError,
+	    "Offspring generator is used for two different types of populations. (" +
+	    toStr(m_genoStruIdx) + ", " + toStr(pop.genoStruIdx()) + ")");
 
 	// generate numOff offspring per mating, or until it  reaches offEnd
 	UINT count = 0;
@@ -673,7 +690,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
 		scratch.setSubPopStru(pop.subPopSizes(), true);
-	else if (!m_subPopSize.empty())  // set subPoplation size
+	else if (!m_subPopSize.empty())                         // set subPoplation size
 		scratch.setSubPopStru(m_subPopSize, true);
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {
@@ -1511,8 +1528,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp) {
 		vectormating m;
-		vectorf w_pos;      // positive weights
-		vectorf w_neg;      // negative weights
+		vectorf w_pos;                          // positive weights
+		vectorf w_neg;                          // negative weights
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
@@ -1630,7 +1647,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			std::random_shuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
 			pop.setShallowCopied(true);
 		}
-	} // each subpopulation.
+	}                        // each subpopulation.
 	if (submit)
 		submitScratch(pop, scratch);
 	return true;

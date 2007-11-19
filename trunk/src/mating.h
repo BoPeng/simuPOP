@@ -101,12 +101,16 @@ public:
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
 	                   UINT maxNumOffspring, UINT mode);
 
+
 	virtual ~offspringGenerator()
 	{
 		if (m_numOffspringFunc != NULL)
 			Py_DECREF(m_numOffspringFunc);
 	}
 
+
+	/// CPPONLY
+	offspringGenerator(const offspringGenerator & rhs);
 
 	virtual offspringGenerator * clone() const = 0;
 
