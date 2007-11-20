@@ -147,8 +147,9 @@ public:
 	 */
 	~simulator();
 
+	/// CPPONLY
 	simulator(const simulator & rhs);
-	
+
 	/// deep copy of a simulator
 	simulator * clone() const;
 

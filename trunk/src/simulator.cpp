@@ -127,6 +127,7 @@ simulator::simulator(const simulator & rhs) :
 		m_ptrRep[i] = rhs.m_ptrRep[i]->clone();
 }
 
+
 simulator * simulator::clone() const
 {
 	return new simulator(*this);
