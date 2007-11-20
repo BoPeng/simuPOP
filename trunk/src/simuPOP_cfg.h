@@ -145,6 +145,8 @@ const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 typedef unsigned long ULONG;
 const unsigned long MaxIndexSize = std::numeric_limits<ULONG>::max();
 typedef long LONG;
+const unsigned long MaxIntNumber = std::numeric_limits<int>::max();
+const unsigned long MaxLongNumber = std::numeric_limits<long int>::max();
 
 typedef std::vector<int>                   vectori;
 typedef std::vector<double>                vectorf;
