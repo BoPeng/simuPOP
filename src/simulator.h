@@ -147,6 +147,8 @@ public:
 	 */
 	~simulator();
 
+	simulator(const simulator & rhs);
+	
 	/// deep copy of a simulator
 	simulator * clone() const;
 
