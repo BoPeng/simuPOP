@@ -2045,6 +2045,54 @@ RNG::~RNG()
 }
 
 
+#if  defined (_WIN32) || defined (__WIN32__)
+// the following code is adapted from python os.urandom
+//
+typedef BOOL (WINAPI * CRYPTACQUIRECONTEXTA)(HCRYPTPROV * phProv, \
+                                             LPCSTR pszContainer, LPCSTR pszProvider, DWORD dwProvType, \
+                                             DWORD dwFlags);
+typedef BOOL (WINAPI * CRYPTGENRANDOM)(HCRYPTPROV hProv, DWORD dwLen, \
+                                       BYTE * pbBuffer);
+
+unsigned long RNG::generateRandomSeed()
+{
+	unsigned long seed;
+
+	HINSTANCE hAdvAPI32 = NULL;
+	CRYPTACQUIRECONTEXTA pCryptAcquireContext = NULL;
+
+	/* Obtain handle to the DLL containing CryptoAPI
+	   This should not fail	*/
+	hAdvAPI32 = GetModuleHandle("advapi32.dll");
+	if (hAdvAPI32 == NULL)
+		return static_cast<unsigned long>(time(NULL));
+
+	/* Obtain pointers to the CryptoAPI functions
+	   This will fail on some early versions of Win95 */
+	pCryptAcquireContext = (CRYPTACQUIRECONTEXTA)GetProcAddress(
+	                           hAdvAPI32, "CryptAcquireContextA");
+	if (pCryptAcquireContext == NULL)
+		return static_cast<unsigned long>(time(NULL));
+
+	CRYPTGENRANDOM pCryptGenRandom = (CRYPTGENRANDOM)GetProcAddress(
+	                                     hAdvAPI32, "CryptGenRandom");
+	if (pCryptGenRandom == NULL)
+		return static_cast<unsigned long>(time(NULL));
+
+	/* Acquire context */
+	if (!pCryptAcquireContext(&hCryptProv, NULL, NULL,
+	        PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+		return static_cast<unsigned long>(time(NULL));
+
+	/* Get random data */
+	if (!pCryptGenRandom(hCryptProv, sizeof(seed), (unsigned char *)&seed))
+		return static_cast<unsigned long>(time(NULL));
+
+	return seed;
+}
+
+
+#else
 unsigned long RNG::generateRandomSeed()
 {
 	// now, I need to work hard to get a good seed, considering
@@ -2052,6 +2100,7 @@ unsigned long RNG::generateRandomSeed()
 	// time
 	unsigned long seed;
 	FILE * devrandom;
+
 
 	if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
 		fread(&seed, sizeof(seed), 1, devrandom);
@@ -2067,6 +2116,8 @@ unsigned long RNG::generateRandomSeed()
 	return seed;
 }
 
+
+#endif
 
 // choose an random number generator.
 void RNG::setRNG(const char * rng, unsigned long seed)
