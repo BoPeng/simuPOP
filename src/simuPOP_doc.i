@@ -11597,6 +11597,8 @@ Note:
 
 "; 
 
+%ignore simuPOP::simulator::simulator(const simulator &rhs);
+
 %feature("docstring") simuPOP::simulator::clone "
 
 Description:
