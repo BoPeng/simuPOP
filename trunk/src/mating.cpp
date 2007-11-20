@@ -65,9 +65,9 @@ offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	m_maxNumOffspring(rhs.m_maxNumOffspring),
 	m_mode(rhs.m_mode),
 	m_formOffGenotype(rhs.m_formOffGenotype),
-#ifndef OPTIMIZED	
+#ifndef OPTIMIZED
 	m_genoStruIdx(rhs.m_genoStruIdx),
-#endif	
+#endif
 	m_numParents(rhs.m_numParents),
 	m_initialized(rhs.m_initialized)
 {
@@ -692,7 +692,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
 		scratch.setSubPopStru(pop.subPopSizes(), true);
-	else if (!m_subPopSize.empty())                         // set subPoplation size
+	else if (!m_subPopSize.empty())  // set subPoplation size
 		scratch.setSubPopStru(m_subPopSize, true);
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {
