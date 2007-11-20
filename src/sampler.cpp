@@ -928,7 +928,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 				pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
 				// many of the offspring may be -1.
 				for (UINT oi = 0; oi < m_maxOffspring; ++oi)
-					off.push_back(static_cast<ULONG>(it->info(offspringIdx[oi])));
+					off.push_back(it->info(offspringIdx[oi]));
 				pedIdx++;
 			}
 		}
@@ -940,10 +940,10 @@ bool nuclearFamilySample::prepareSample(population & pop)
 			UINT pedAffected = 0;
 			for (UINT oi = 0; oi < m_maxOffspring; ++oi) {
 				// valid offspring
-				if (off[i * m_maxOffspring + oi] != -1) {
-					pop.ind(static_cast<UINT>(off[i * m_maxOffspring + oi])).setInfo(i, pedindexIdx);
+				if (off[i * m_maxOffspring + oi] != -1.) {
+					pop.ind(static_cast<ULONG>(off[i * m_maxOffspring + oi])).setInfo(i, pedindexIdx);
 					pedSize++;
-					if (pop.ind(static_cast<UINT>(off[i * m_maxOffspring + oi])).affected())
+					if (pop.ind(static_cast<ULONG>(off[i * m_maxOffspring + oi])).affected())
 						pedAffected++;
 				}
 			}
