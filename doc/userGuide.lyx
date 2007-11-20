@@ -684,17 +684,7 @@ Special notes for windows users
 \end_layout
 
 \begin_layout Standard
-Due to the limits of the windows operating systems, several features are
- unavailable for a windows system.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-compression of native simuPOP file formats
-\series default
-.
- Because large populations tend to take lots of disk spaces, simuPOP compresses
+Because large populations tend to take lots of disk spaces, simuPOP compresses
  text, binary or XML output in gzip format by default, despite the slower
  saving time.
  Because gzip format is not well supported under windows, this feature is
@@ -708,38 +698,6 @@ compress=True
 savePopulation
 \family default
  is ignored.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-unique random seed for each simuPOP session
-\series default
-.
- Under *nix systems, simuPOP reads 
-\family typewriter
-/dev/urandom
-\family default
- to set random seed and can gurantee different seeds for concurrent simuPOP
- sessions.
- Under windows, system time is used to seed the random number generator
- so two simuPOP sessions may get the same seeds and produce the same results.
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-MPI modules.
-
-\series default
- Although windows port of Message Passing Interface implementations are
- available, I only have access to Linux multi-processor systems and Linux-based
- clusters.
- Therefore, windows MPI modules are not yet supported.
-\end_layout
-
-\begin_layout Standard
-I welcome suggestions on how to make these features available for windows.
 \end_layout
 
 \begin_layout LyX-Code

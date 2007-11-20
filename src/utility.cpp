@@ -59,7 +59,7 @@ using std::ofstream;
 
 // for CryptGenRandom
 #if defined (_WIN32) || defined (__WIN32__)
-#include <windows.h>
+#  include <windows.h>
 #endif
 
 #include "boost/pending/lowest_bit.hpp"
