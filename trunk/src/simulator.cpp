@@ -107,15 +107,29 @@ simulator::~simulator()
 }
 
 
+/// CPPONLY
+simulator::simulator(const simulator & rhs) :
+	GenoStruTrait(rhs),
+	m_gen(rhs.m_gen),
+	m_curRep(rhs.m_curRep),
+	m_matingScheme(NULL),
+	m_numRep(rhs.m_numRep),
+	m_groups(rhs.m_groups),
+	m_ptrRep(NULL),
+	m_scratchPop(NULL),
+	m_stopIfOneRepStops(rhs.m_stopIfOneRepStops),
+	m_applyOpToStoppedReps(rhs.m_applyOpToStoppedReps)
+{
+	m_matingScheme = rhs.m_matingScheme->clone();
+	m_scratchPop = rhs.m_scratchPop->clone();
+	m_ptrRep = new population *[m_numRep];
+	for (size_t i = 0; i < m_numRep; ++i)
+		m_ptrRep[i] = rhs.m_ptrRep[i]->clone();
+}
+
 simulator * simulator::clone() const
 {
-	simulator * simu = new simulator(population(0),
-	                       *m_matingScheme, m_stopIfOneRepStops,
-	                       m_applyOpToStoppedReps, m_numRep, m_groups);
-
-	for (size_t i = 0; i < m_numRep; ++i)
-		simu->setPopulation(*m_ptrRep[i], i);
-	return simu;
+	return new simulator(*this);
 }
 
 
