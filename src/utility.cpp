@@ -57,6 +57,11 @@ using std::ofstream;
 #  include <termios.h>
 #endif
 
+// for CryptGenRandom
+#if defined (_WIN32) || defined (__WIN32__)
+#include <windows.h>
+#endif
+
 #include "boost/pending/lowest_bit.hpp"
 using boost::lowest_bit;
 
@@ -2064,30 +2069,42 @@ unsigned long RNG::generateRandomSeed()
 	/* Obtain handle to the DLL containing CryptoAPI
 	   This should not fail	*/
 	hAdvAPI32 = GetModuleHandle("advapi32.dll");
-	if (hAdvAPI32 == NULL)
+	if (hAdvAPI32 == NULL) {
+		DBG_WARNING(true, "advapi32.dll can not be loaded");
 		return static_cast<unsigned long>(time(NULL));
+	}
 
 	/* Obtain pointers to the CryptoAPI functions
 	   This will fail on some early versions of Win95 */
 	pCryptAcquireContext = (CRYPTACQUIRECONTEXTA)GetProcAddress(
 	                           hAdvAPI32, "CryptAcquireContextA");
-	if (pCryptAcquireContext == NULL)
+	if (pCryptAcquireContext == NULL) {
+		DBG_WARNING(true, "Failed to get process address of CryptAcquireContextA");
 		return static_cast<unsigned long>(time(NULL));
+	}
 
 	CRYPTGENRANDOM pCryptGenRandom = (CRYPTGENRANDOM)GetProcAddress(
 	                                     hAdvAPI32, "CryptGenRandom");
-	if (pCryptGenRandom == NULL)
+	if (pCryptGenRandom == NULL) {
+		DBG_WARNING(true, "Failed to get process address of CryptGenRandom");
 		return static_cast<unsigned long>(time(NULL));
+	}
 
 	/* Acquire context */
+	HCRYPTPROV hCryptProv = 0;
 	if (!pCryptAcquireContext(&hCryptProv, NULL, NULL,
-	        PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+	        PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+		DBG_WARNING(true, "Can not acquire context of CryptAcquireContextA");
 		return static_cast<unsigned long>(time(NULL));
+	}
 
 	/* Get random data */
-	if (!pCryptGenRandom(hCryptProv, sizeof(seed), (unsigned char *)&seed))
+	if (!pCryptGenRandom(hCryptProv, sizeof(seed), (unsigned char *)&seed)) {
+		DBG_WARNING(true, "Failed to get random number");
 		return static_cast<unsigned long>(time(NULL));
+	}
 
+	DBG_DO(DBG_UTILITY, cout << "Get random seed " << hex << seed << endl);
 	return seed;
 }
 
@@ -2838,8 +2855,8 @@ void Limits()
     cout << "Maximum number of subpopulations: " << hex << MaxSubPopID << endl;
     cout << "Maximum index size (limits population size * total number of markers): "
          << hex << MaxIndexSize << endl;
-    cout << "Maximum integer: " << hex << std::numeric_limits<int>::max() << endl;
-    cout << "Maximum long integer: " << hex << std::numeric_limits<long int>::max() << endl;
+    cout << "Maximum integer: " << hex << MaxIntNumber << endl;
+    cout << "Maximum long integer: " << hex << MaxLongNumber << endl;
 
 }
 
