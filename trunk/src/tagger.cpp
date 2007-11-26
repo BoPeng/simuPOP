@@ -60,49 +60,25 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 		id2 = pop.infoIdx(infoField(1));
 	}
 
-	if (m_mode == TAG_Paternal) {
-		if (dad == NULL)
-			offspring->setInfo(0, id1);
-		else
-			offspring->setInfo(dad->info(id1), id1);
-	} else if (m_mode == TAG_Maternal) {
-		if (mom == NULL)
-			offspring->setInfo(0, id1);
-		else
-			offspring->setInfo(mom->info(id1), id1);
-	} else {
-		if (dad == NULL)
-			offspring->setInfo(0, id1);
-		else
-			offspring->setInfo(dad->info(id1), id1);
-		if (mom == NULL)
-			offspring->setInfo(0, id2);
-		else
-			offspring->setInfo(mom->info(id2), id2);
+	if (m_mode == TAG_Paternal)
+		offspring->setInfo(dad == NULL ? 0 : dad->info(id1), id1);
+	else if (m_mode == TAG_Maternal)
+		offspring->setInfo(mom == NULL ? 0 : mom->info(id1), id1);
+	else {
+		offspring->setInfo(dad == NULL ? 0 : dad->info(id1), id1);
+		offspring->setInfo(mom == NULL ? 0 : mom->info(id2), id2);
 	}
 	// output to a file?
 	if (noOutput())
 		return true;
 	ostream & out = getOstream(pop.dict());
-	if (m_mode == TAG_Paternal) {
-		if (dad == NULL)
-			out << 0 << '\t';
-		else
-			out << dad->info(id1) << '\t';
-	} else if (m_mode == TAG_Maternal) {
-		if (mom == NULL)
-			out << 0 << '\t';
-		else
-			out << mom->info(id1) << '\t';
-	} else {
-		if (dad == NULL)
-			out << 0 << '\t';
-		else
-			out << dad->info(id1) << '\t';
-		if (mom == NULL)
-			out << 0 << '\t';
-		else
-			out << mom->info(id2) << '\t';
+	if (m_mode == TAG_Paternal)
+		out << (dad == NULL ? 0 : dad->info(id1)) << '\t';
+	else if (m_mode == TAG_Maternal)
+		out << (mom == NULL ? 0 : mom->info(id1)) << '\t';
+	else {
+		out << (dad == NULL ? 0 : dad->info(id1)) << '\t';
+		out << (mom == NULL ? 0 : mom->info(id2)) << '\t';
 	}
 
 	closeOstream();
@@ -125,21 +101,12 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 			offspring->setInfo(dad - & * pop.indBegin(), id1);
 		else if (mom != NULL)
 			offspring->setInfo(mom - & * pop.indBegin(), id1);
-		else
-			offspring->setInfo(0, id1);
 	} else if (is == 2) {
 		UINT id1 = pop.infoIdx(infoField(0));
 		UINT id2 = pop.infoIdx(infoField(1));
 
-		if (dad == NULL)
-			offspring->setInfo(0, id1);
-		else
-			offspring->setInfo(dad - & * pop.indBegin(), id1);
-
-		if (mom == NULL)
-			offspring->setInfo(0, id2);
-		else
-			offspring->setInfo(mom - & * pop.indBegin(), id2);
+		offspring->setInfo(dad == NULL ? 0 : dad - & * pop.indBegin(), id1);
+		offspring->setInfo(mom == NULL ? 0 : mom - & * pop.indBegin(), id2);
 	}
 	// output to a file?
 	if (noOutput())
@@ -148,15 +115,8 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 	// always output two numbers. Because it is possible to have heteroMating
 	// with selfing + random mating.
 	ostream & out = getOstream(pop.dict());
-	if (dad == NULL)
-		out << 0 << '\t';
-	else
-		out << dad - & * pop.indBegin() << '\t';
-
-	if (mom == NULL)
-		out << 0 << '\t';
-	else
-		out << mom - & * pop.indBegin() << '\t';
+	out << (dad == NULL ? 0 : dad - & * pop.indBegin()) << '\t';
+	out << (mom == NULL ? 0 : mom - & * pop.indBegin()) << '\t';
 	closeOstream();
 	return true;
 }

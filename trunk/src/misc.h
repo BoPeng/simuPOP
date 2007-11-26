@@ -31,6 +31,53 @@
 
 namespace simuPOP {
 
+/// A pedigree manipulation class
+class pedigree
+{
+	typedef vector<vector<ULONG> > Pedigree;
+	typedef vector<vector<double> > PedInfo;
+
+public:
+	pedigree(int numParents = 2);
+
+	ULONG size(ULONG gen);
+
+	ULONG gen();
+
+	ULONG father(ULONG gen, ULONG idx);
+
+	ULONG mother(ULONG gen, ULONG idx);
+
+	void read(const string & filename, const string & aux_filename = string());
+
+	pedigree * clone()
+	{
+		return new pedigree();
+	}
+
+
+	/// write the pedigree (and its auxillary information) to files
+	void write(const string & filename, const string & aux_filename = string());
+
+	/// choose given individuals from the last generation
+	/// The last generation will be shrinked to only have these individuals
+	void selectIndividuals(const vectorlu & inds);
+
+	/// mark individuals that are unrelated to the last generation from the pedigree
+	void markUnrelated();
+
+	/// remove individuals that are unrelated to the last generation from the pedigree
+	/// indexes will be adjusted.
+	void removeUnrelated();
+
+private:
+	int m_numParents;
+
+	Pedigree m_paternal;
+	Pedigree m_maternal;
+	PedInfo m_info;
+};
+
 //
 // simulate trajectories of disease susceptibility loci using an extension of
 // the backward method described in Slatkin 2001.
