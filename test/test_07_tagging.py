@@ -52,6 +52,45 @@ class TestTagger(unittest.TestCase):
         # from this test, we can see that genetic drift 
         # can easily remove a signal (tag) from population.
 
+    def testInheritTaggerToFile(self):
+        'Testing inherit tagger that record indexes to a file'
+        pop = population(size=20, ploidy=2, loci=[2,4], subPop=[5,15], 
+                infoFields=['paternal_tag', 'maternal_tag'])
+        for ind in pop.individuals(0):
+            ind.setInfo(1, 'paternal_tag')
+        for ind in pop.individuals(1):
+            ind.setInfo(2, 'paternal_tag')
+        simu = simulator( pop, randomMating())
+        # other mode include TAG_Maternal, TAG_Both
+        simu.step([inheritTagger(mode=TAG_Paternal, output='>>inherit.tag')])
+        # we only know subpopulation 0 can not have tag 2
+        # we only know subpopulation 1 can not have tag 1
+        for i in range(pop.subPopSize(0)):
+            self.assertNotEqual( pop.individual(i,0).info('paternal_tag'), 2 )
+        for i in range(pop.subPopSize(1)):
+            self.assertNotEqual( pop.individual(i,1).info('paternal_tag'), 1 )
+        # the line has to be five 1 and 15 2's
+        self.assertEqual(open('inherit.tag').read(), '1\t'*5+'2\t'*15+'\n')
+        os.remove('inherit.tag')
+
+    def testParentsTaggerToFile(self):
+        'Testing parents tagger saved to a file'
+        simu = simulator(population(size=20, loci=[2,4], subPop=[5,15]),
+            randomMating(numOffspring=2))
+        file = '>>parents.tag'
+        simu.evolve(ops=[parentsTagger(output=file, infoFields=[])], end=10)
+        pop = simu.population(0)
+        ped = pedigree(2)
+        ped.read('parents.tag')
+        ped.write('par_orig.tag')
+        ped.selectIndividuals([0, 1, 4, 5, 10, 12, 15, 18])
+        ped.write('par_sel.tag')
+        ped.markUnrelated()
+        ped.write('par_unrel.tag')
+        ped.removeUnrelated()
+        ped.write('par_removed.tag')
+        #os.remove('parents.tag')
+
 
     def testPyTagger(self):
         'Testing python tagger (pass trait from parents to offspring)'

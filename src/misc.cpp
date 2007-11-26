@@ -22,8 +22,277 @@
 ***************************************************************************/
 
 #include "misc.h"
+#include <fstream>
+using std::ifstream;
+using std::ofstream;
+
+#include <sstream>
+using std::istringstream;
+using std::ws;
 
 namespace simuPOP {
+
+const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
+
+pedigree::pedigree(int numParents) : m_numParents(numParents)
+{
+}
+
+
+ULONG pedigree::size(ULONG gen)
+{
+	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+	    "Generation number out of bound");
+	return m_paternal[gen].size();
+}
+
+
+ULONG pedigree::gen()
+{
+	return m_paternal.size();
+}
+
+
+ULONG pedigree::father(ULONG gen, ULONG idx)
+{
+	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+	    "Generation number out of bound");
+	DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
+	    "Father index out of bound");
+	return m_paternal[gen][idx];
+}
+
+
+ULONG pedigree::mother(ULONG gen, ULONG idx)
+{
+	DBG_FAILIF(gen >= m_maternal.size(), IndexError,
+	    "Generation number out of bound");
+	DBG_FAILIF(idx >= m_maternal[gen].size(), IndexError,
+	    "Father index out of bound");
+	return m_maternal[gen][idx];
+}
+
+
+void pedigree::read(const string & filename, const string & aux_filename)
+{
+	ifstream ifs(filename.c_str());
+
+	DBG_FAILIF(!ifs, SystemError, "Can not open pedigree file " + filename + " to read");
+
+	string line;
+	while (getline(ifs, line)) {
+		m_paternal.push_back(vector<ULONG>());
+		if (m_numParents == 2)
+			m_maternal.push_back(vector<ULONG>());
+
+		istringstream values(line);
+		long int idx;
+		int ped = 0;
+		while (!values.eof()) {
+			values >> idx;
+			if (ped == 0)
+				m_paternal.back().push_back(idx == -1 ? UnusedIndividual : static_cast<ULONG>(idx));
+			else
+				m_maternal.back().push_back(idx == -1 ? UnusedIndividual : static_cast<ULONG>(idx));
+			ped = (ped + 1) % m_numParents;
+			values >> ws;
+		}
+		if (!m_paternal.empty() && m_paternal.back().empty())
+			m_paternal.pop_back();
+		if (!m_maternal.empty() && m_maternal.back().empty())
+			m_maternal.pop_back();
+		DBG_FAILIF(m_maternal.size() != m_paternal.size(), ValueError,
+		    "Paternal and maternal trees are different");
+		DBG_FAILIF(!m_maternal.empty() && !m_paternal.empty() &&
+		    m_maternal.back().size() != m_paternal.back().size(), ValueError,
+		    "Different indexes for father and mother");
+	}
+	ifs.close();
+
+	if (aux_filename.empty())
+		return;
+
+	ifstream afs(aux_filename.c_str());
+	DBG_FAILIF(!afs, SystemError, "Can not open auxiliary information pedigree" + aux_filename + " to read");
+	size_t gen = 0;
+	while (getline(afs, line)) {
+		m_info.push_back(vector<double>());
+
+		istringstream values(line);
+		double value;
+		while (!values.eof()) {
+			values >> value;
+			m_info.back().push_back(value);
+		}
+		if (!m_info.empty() && m_info.back().empty())
+			m_info.pop_back();
+		DBG_FAILIF(m_info.size() > m_maternal.size(), ValueError,
+		    "Auxiliary information pedigree has different size from the main pedigree");
+		DBG_FAILIF(m_info.back().size() != m_maternal[gen].size(), ValueError,
+		    "Auxiliary information pedigree has different size from the main pedigree");
+		gen++;
+	}
+	afs.close();
+}
+
+
+void pedigree::write(const string & filename, const string & aux_filename)
+{
+	ofstream ofs(filename.c_str());
+
+	DBG_FAILIF(!ofs, SystemError, "Can not open pedigree file " + filename + " to write.");
+
+	bool hasInfo = !aux_filename.empty();
+	ofstream afs;
+	if (hasInfo) {
+		afs.open(aux_filename.c_str());
+		DBG_FAILIF(!ofs, SystemError, "Can not open auxiliary information file " + filename + " to write.");
+	}
+
+	for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
+		size_t sz = m_paternal[gen].size();
+		for (size_t idx = 0; idx < sz; ++idx) {
+			if (m_paternal[gen][idx] == UnusedIndividual)
+				ofs << -1;
+			else
+				ofs << m_paternal[gen][idx];
+			if (m_numParents == 2) {
+				if (m_maternal[gen][idx] == UnusedIndividual)
+					ofs << "\t-1";
+				else
+					ofs << '\t' << m_maternal[gen][idx];
+				}
+			if (idx != sz - 1)
+				ofs << '\t';
+			if (hasInfo) {
+				afs << m_info[gen][idx];
+				if (idx != sz - 1)
+					afs << '\t';
+			}
+		}
+		ofs << '\n';
+		if (hasInfo)
+			afs << '\n';
+	}
+	ofs.close();
+	if (hasInfo)
+		afs.close();
+}
+
+
+void pedigree::selectIndividuals(const vectorlu & inds)
+{
+	DBG_FAILIF(m_paternal.empty(), ValueError,
+	    "Can not select individuals from an empty pedigree");
+
+	vector<bool> used(m_paternal.back().size(), false);
+	vectorlu::const_iterator it = inds.begin();
+	vectorlu::const_iterator it_end = inds.end();
+	for (; it != it_end; ++it) {
+		DBG_FAILIF(*it >= m_paternal.back().size(), IndexError,
+		    "Index exceeded the size of the last generation");
+		used[*it] = true;
+	}
+	for (size_t idx = 0; idx < m_paternal.back().size(); ++idx)
+		if (!used[idx]) {
+			m_paternal.back()[idx] = UnusedIndividual;
+			m_maternal.back()[idx] = UnusedIndividual;
+		}
+}
+
+
+void pedigree::markUnrelated()
+{
+	if (m_paternal.size() == 1)
+		return;
+
+	vector<bool> used;
+	// starting from the last generation, gen=0 etc will be replaced.
+	for (size_t gen = m_paternal.size() - 1; gen > 0; --gen) {
+		used.clear();
+		used.resize(m_paternal[gen - 1].size(), false);
+		for (size_t idx = 0; idx < m_paternal[gen].size(); ++idx)
+			if (m_paternal[gen][idx] != UnusedIndividual)
+				used[m_paternal[gen][idx]] = true;
+		if (m_numParents == 2)
+			for (size_t idx = 0; idx < m_maternal[gen].size(); ++idx)
+				if (m_maternal[gen][idx] != UnusedIndividual)
+					used[m_maternal[gen][idx]] = true;
+		for (size_t idx = 0; idx < m_paternal[gen - 1].size(); ++idx)
+			if (!used[idx]) {
+				m_paternal[gen - 1][idx] = UnusedIndividual;
+				m_maternal[gen - 1][idx] = UnusedIndividual;
+			}
+	}
+}
+
+
+void pedigree::removeUnrelated()
+{
+	DBG_FAILIF(m_paternal.empty(), ValueError,
+	    "Can not work on an empty pedigree");
+
+	if (m_paternal.size() == 1)
+		return;
+
+
+	// starting from the last generation, gen=0 etc will be replaced.
+	for (size_t gen = 0; gen < m_paternal.size() - 1; ++gen) {
+		vector<ULONG> & curGen = m_paternal[gen];
+		vector<ULONG> & nextGen = m_paternal[gen + 1];
+		size_t shift = 0;
+		for (size_t idx = 0; idx < curGen.size(); ++idx)
+			if (curGen[idx] == UnusedIndividual) {
+				// the next generation, with value > idx will be shifted by 1.
+				for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
+					if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
+						nextGen[idx1]--;
+				shift ++;
+			}
+	}
+	// maternal
+	for (size_t gen = 0; gen < m_maternal.size() - 1; ++gen) {
+		vector<ULONG> & curGen = m_maternal[gen];
+		vector<ULONG> & nextGen = m_maternal[gen + 1];
+		size_t shift = 0;
+		for (size_t idx = 0; idx < curGen.size(); ++idx)
+			if (curGen[idx] == UnusedIndividual) {
+				// the next generation, with value > idx will be shifted by 1.
+				for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
+					if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
+						nextGen[idx1]--;
+				shift ++;
+			}
+	}
+	// remove individuals
+	// new pedigree generation entries
+	vector<ULONG> l_pat;
+	vector<ULONG> l_mat;
+	vector<double> l_info;
+	for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
+		l_pat.clear();
+		l_mat.clear();
+		l_info.clear();
+		for (size_t idx = 0; idx < m_paternal[gen].size(); ++idx)
+			if (m_paternal[gen][idx] != UnusedIndividual) {
+				l_pat.push_back(m_paternal[gen][idx]);
+				if (m_numParents == 2) {
+					DBG_ASSERT(m_maternal[gen][idx] != UnusedIndividual,
+					    ValueError, "Inconsistent maternal and matermal pedigree");
+					l_mat.push_back(m_maternal[gen][idx]);
+				}
+				if (!m_info.empty())
+					l_info.push_back(m_info[gen][idx]);
+			}
+		m_paternal[gen].swap(l_pat);
+		if (m_numParents == 2)
+			m_maternal[gen].swap(l_mat);
+		if (!m_info.empty())
+			m_info[gen].swap(l_info);
+	}
+}
+
+
 vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
                             PyObject * NtFunc, vectorf fitness, PyObject * fitnessFunc,
                             ULONG minMutAge, ULONG maxMutAge, int ploidy,
