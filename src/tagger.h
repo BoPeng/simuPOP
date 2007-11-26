@@ -45,13 +45,10 @@ class tagger : public baseOperator
 
 public:
 	/// create a \c tagger, default to be always active but no output
-	tagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	tagger(string output = "", string outputExpr = "",
+	       int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	       int rep = REP_ALL, int grp = GRP_ALL,
-	       // this is not nice, but is the only way I know how to initialize this array.
-	       const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
-	{
-	};
+	       const vectorstr & infoFields = vectorstr());
 
 	/// destructor
 	virtual ~tagger()
@@ -64,6 +61,10 @@ public:
 		return new tagger(*this);
 	}
 
+
+	/// CPPONLY
+	/// add a newline
+	bool apply(population & pop);
 
 };
 
@@ -91,8 +92,9 @@ public:
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
 	              vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
-		tagger(begin, end, step, at, rep, grp, infoFields), m_mode(mode)
+		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() == 2, ValueError,
 		    "Inherit tagger needs to know the information fields of both parents");
@@ -136,9 +138,16 @@ private:
    set \c tag(), currently a pair of numbers, of each
    individual with indexes of his/her parents in the parental population. This information
    will be used by pedigree-related operators like \c affectedSibpairSample to track
-   the pedigree information. Since parental population will be discarded or stored after
-   mating, tagging information will be passed with individuals, and mating or population
-   change etc. will not interfere with this simple tagging system.
+   the pedigree information. Because parental population will be discarded or stored after
+   mating, these index will not be affected by post-mating operators.
+
+   This tagger record parental index to one or both
+ \li one or two information fields. Default to father_idx and mother_idx.
+   If only one parent is passed in a mating scheme (such as selfing), only the first
+   information field is used. If two parents are passed, the first information
+   field records paternal index, and the second records maternal index.
+ \li a file. Indexes will be written to this file. This tagger will also
+   act as a post-mating operator to add a new-line to this file.
  */
 class parentsTagger : public tagger
 {
@@ -147,8 +156,9 @@ public:
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
 	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
-		tagger(begin, end, step, at, rep, grp, infoFields)
+		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields)
 	{
 	};
 
@@ -178,6 +188,7 @@ public:
 
 };
 
+
 /// Python tagger
 /**
    This tagger takes some information fields from both parents, pass to a Python
@@ -199,8 +210,9 @@ public:
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 	         int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	         string output = "", string outputExpr = "",
 	         const vectorstr & infoFields = vectorstr()) :
-		tagger(begin, end, step, at, rep, grp, infoFields)
+		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,
 		    "infoFields can not be empty.");

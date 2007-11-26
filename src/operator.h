@@ -83,7 +83,7 @@ namespace simuPOP {
    More specifically, operators can be applied at \em pre-,
  \em during-, \em post-mating, or a combination of these stages. Applicable stages
    are usually set by default but you can change it by setting
-   <tt>stage=(PreMating|PostMating|DuringMating|PrePostMating)</tt> parameter.
+   <tt>stage=(PreMating|PostMating|DuringMating|PrePostMating|PreDuringMating|DuringPostMating)</tt> parameter.
    Some operators ignore \c stage parameter because they only
    work at one stage. \n
 
