@@ -436,6 +436,32 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents()
 }
 
 
+void pedigreeParentChooser::initialize(population & pop, SubPopID sp)
+{
+	// intentionally keep this parent chooser uninitialized so that
+	// this function can be called at each generation.
+	m_initialized = false;
+}
+
+
+individual * pedigreeParentChooser::chooseParent()
+{
+	return NULL;
+}
+
+
+void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
+{
+	m_initialized = true;
+}
+
+
+parentChooser::individualPair pedigreeParentsChooser::chooseParents()
+{
+	//return std::make_pair(NULL, NULL);
+}
+
+
 void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_selection = pop.selectionOn(sp);

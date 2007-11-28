@@ -35,6 +35,7 @@ namespace simuPOP {
 class pedigree
 {
 	typedef vector<vector<ULONG> > Pedigree;
+	typedef vector<vector<ULONG> > PedSize;
 	typedef vector<vector<double> > PedInfo;
 
 public:
@@ -75,6 +76,7 @@ private:
 
 	Pedigree m_paternal;
 	Pedigree m_maternal;
+	PedSize m_pedSize;
 	PedInfo m_info;
 };
 

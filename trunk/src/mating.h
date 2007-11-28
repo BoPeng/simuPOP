@@ -472,6 +472,80 @@ private:
 };
 
 
+/** This parent chooser chooses a parent according to pre-specified
+   	pedigree.
+ */
+class pedigreeParentChooser : public parentChooser
+{
+public:
+	pedigreeParentChooser(const pedigree & ped)
+		: parentChooser(1), m_pedigree(ped)
+	{
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new pedigreeParentChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individual * chooseParent();
+
+private:
+	pedigree m_pedigree;
+};
+
+
+/** This parents chooser chooses two parents pedigreely. The
+   parents are chosen from their respective sex groups. Selection
+   is not considered.
+ */
+class pedigreeParentsChooser : public parentChooser
+{
+public:
+	pedigreeParentsChooser() :
+		parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
+		m_numMale(0), m_numFemale(0),
+		m_curMale(0), m_curFemale(0)
+	{
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new pedigreeParentsChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individualPair chooseParents();
+
+	/// CPPONLY
+	ULONG numMale() { return m_numMale; }
+
+	/// CPPONLY
+	ULONG numFemale() { return m_numFemale; }
+
+private:
+	/// internal index to female/males.
+	vector<RawIndIterator> m_maleIndex;
+	vector<RawIndIterator> m_femaleIndex;
+
+	ULONG m_numMale;
+	ULONG m_numFemale;
+
+	ULONG m_curMale;
+	ULONG m_curFemale;
+};
+
 /** This parent chooser chooses a parent randomly from the
    parental generation. If selection is turned on, parents are
    chosen with probabilities that are proportional to their
