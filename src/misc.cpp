@@ -30,6 +30,9 @@ using std::ofstream;
 using std::istringstream;
 using std::ws;
 
+#include <numeric>
+using std::accumulate;
+
 namespace simuPOP {
 
 const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
@@ -82,6 +85,7 @@ void pedigree::read(const string & filename, const string & aux_filename)
 	string line;
 	while (getline(ifs, line)) {
 		m_paternal.push_back(vector<ULONG>());
+		m_pedSize.push_back(vector<ULONG>());
 		if (m_numParents == 2)
 			m_maternal.push_back(vector<ULONG>());
 
@@ -96,11 +100,32 @@ void pedigree::read(const string & filename, const string & aux_filename)
 				m_maternal.back().push_back(idx == -1 ? UnusedIndividual : static_cast<ULONG>(idx));
 			ped = (ped + 1) % m_numParents;
 			values >> ws;
+			if (values.peek() == '#') {
+				// ignore '#'
+				values.ignore();
+				// start reading population size.
+				while (!values.eof()) {
+					values >> idx;
+					m_pedSize.back().push_back(idx);
+					values >> ws;
+				}
+				// exit the outer loop
+				break;
+			}
 		}
+		DBG_FAILIF(m_paternal.back().size() != accumulate(m_pedSize.back().begin(),
+		        m_pedSize.back().end(), 0UL), ValueError,
+		    "Number of parents does not match subpopulation sizes.\n"
+		    "Line: " + toStr(m_paternal.size()) + ", Individuals read: " + toStr(m_paternal.back().size()) +
+		    ", Pop size: " + toStr(accumulate(m_pedSize.back().begin(),
+		            m_pedSize.back().end(), 0UL)));
 		if (!m_paternal.empty() && m_paternal.back().empty())
 			m_paternal.pop_back();
 		if (!m_maternal.empty() && m_maternal.back().empty())
 			m_maternal.pop_back();
+		if (!m_pedSize.empty() && m_pedSize.back().empty())
+			m_pedSize.pop_back();
+
 		DBG_FAILIF(m_maternal.size() != m_paternal.size(), ValueError,
 		    "Paternal and maternal trees are different");
 		DBG_FAILIF(!m_maternal.empty() && !m_paternal.empty() &&
@@ -161,15 +186,17 @@ void pedigree::write(const string & filename, const string & aux_filename)
 					ofs << "\t-1";
 				else
 					ofs << '\t' << m_maternal[gen][idx];
-				}
-			if (idx != sz - 1)
-				ofs << '\t';
+			}
+			ofs << '\t';
 			if (hasInfo) {
 				afs << m_info[gen][idx];
 				if (idx != sz - 1)
 					afs << '\t';
 			}
 		}
+		ofs << "#\t";
+		for (size_t idx = 0; idx < m_pedSize[gen].size(); ++idx)
+			ofs << m_pedSize[gen][idx] << '\t';
 		ofs << '\n';
 		if (hasInfo)
 			afs << '\n';
@@ -235,7 +262,6 @@ void pedigree::removeUnrelated()
 	if (m_paternal.size() == 1)
 		return;
 
-
 	// starting from the last generation, gen=0 etc will be replaced.
 	for (size_t gen = 0; gen < m_paternal.size() - 1; ++gen) {
 		vector<ULONG> & curGen = m_paternal[gen];
@@ -247,7 +273,7 @@ void pedigree::removeUnrelated()
 				for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
 					if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
 						nextGen[idx1]--;
-				shift ++;
+				shift++;
 			}
 	}
 	// maternal
@@ -261,8 +287,18 @@ void pedigree::removeUnrelated()
 				for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
 					if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
 						nextGen[idx1]--;
-				shift ++;
+				shift++;
 			}
+	}
+	// adjust m_pedSize
+	for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
+		size_t idx = 0;
+		for (UINT sp = 0; sp < m_pedSize[gen].size(); ++sp) {
+			UINT spSize = m_pedSize[gen][sp];
+			for (size_t i = 0; i < spSize; ++i, ++idx)
+				if (m_paternal[gen][idx] == UnusedIndividual)
+					m_pedSize[gen][sp]--;
+		}
 	}
 	// remove individuals
 	// new pedigree generation entries

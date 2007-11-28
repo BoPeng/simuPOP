@@ -158,7 +158,8 @@ public:
 	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
 	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
-		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields)
+		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields),
+		m_subPopSize(1, 0)
 	{
 	};
 
@@ -186,6 +187,14 @@ public:
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL);
 
+	/// at the end of a generation, write population structure information to a file
+	/// with a newline.
+	bool apply(population & pop);
+	
+private:
+	/// number of offspring from each subpopulation, counted
+	/// from the origin of parents
+	vectorlu m_subPopSize;
 };
 
 
