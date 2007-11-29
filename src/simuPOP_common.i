@@ -1386,4 +1386,14 @@ new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
 del genotypeSplitter.__init__
 genotypeSplitter.__init__ = new_genotypeSplitter
 
+
+def new_pedigreeMating(self, generator=None, pedigree=None, *args, **kwargs):
+    if generator is None:
+        generator = mendelianOffspringGenerator()
+    cppModule.pedigreeMating_swiginit(self,
+        cppModule.new_pedigreeMating(generator=generator, ped=pedigree, *args, **kwargs))
+ 
+new_pedigreeMating.__doc__ = pedigreeMating.__init__.__doc__
+del pedigreeMating.__init__
+pedigreeMating.__init__ = new_pedigreeMating
 %}

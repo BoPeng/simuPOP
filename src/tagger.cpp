@@ -86,6 +86,56 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 }
 
 
+bool parentTagger::applyDuringMating(population & pop, RawIndIterator offspring,
+                                     individual * dad, individual * mom)
+{
+	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
+	    "Both parents are invalid");
+
+	// record to one or two information fields
+	size_t is = infoSize();
+	if (is >= 1) {
+		if (dad != NULL)
+			offspring->setInfo(dad - & * pop.indBegin(), infoField(0));
+		else if (mom != NULL)
+			offspring->setInfo(mom - & * pop.indBegin(), infoField(0));
+	}
+	// output to a file?
+	if (noOutput())
+		return true;
+
+	// output one number
+	ostream & out = getOstream(pop.dict());
+	ULONG dadIdx = dad == NULL ? 0 : dad - & * pop.indBegin();
+	ULONG momIdx = mom == NULL ? 0 : mom - & * pop.indBegin();
+	UINT spID = pop.subPopIndPair(std::max(dadIdx, momIdx)).first;
+	// record subpopulation count
+	if (m_subPopSize.size() < spID + 1)
+		m_subPopSize.resize(spID + 1, 0);
+	m_subPopSize[spID]++;
+	if (dad == NULL)
+		out << momIdx << '\t';
+	else
+		out << dadIdx << '\t';
+	closeOstream();
+	return true;
+}
+
+
+bool parentTagger::apply(population & pop)
+{
+	ostream & out = this->getOstream(pop.dict());
+
+	out << "#\t";
+	for (size_t i = 0; i < m_subPopSize.size(); ++i)
+		out << m_subPopSize[i] << '\t';
+	out << '\n';
+	closeOstream();
+	m_subPopSize.clear();
+	return true;
+}
+
+
 bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                       individual * dad, individual * mom)
 {
@@ -115,7 +165,7 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 	UINT spID = pop.subPopIndPair(std::max(dadIdx, momIdx)).first;
 	// record subpopulation count
 	if (m_subPopSize.size() < spID + 1)
-		m_subPopSize.resize(spID+1, 0);
+		m_subPopSize.resize(spID + 1, 0);
 	m_subPopSize[spID]++;
 	out << dadIdx << '\t';
 	out << momIdx << '\t';

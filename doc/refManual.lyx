@@ -3044,6 +3044,13 @@ selfMatingRef
 
 
 \backslash
+pedigreeMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 pyMatingRef
 \end_layout
 
@@ -3089,6 +3096,13 @@ randomParentChooserRef
 
 \backslash
 randomParentsChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+pedigreeParentsChooserRef
 \end_layout
 
 \begin_layout Standard
@@ -6499,30 +6513,12 @@ status open
 taggerRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 inheritTaggerRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -6531,14 +6527,12 @@ status open
 parentsTaggerRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
+
+
+\backslash
+parentTaggerRef
+\end_layout
 
 \begin_layout Standard
 

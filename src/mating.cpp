@@ -275,6 +275,9 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
 	    "Offspring generator is used for two different types of populations");
 
+	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
+	    "Mendelian offspring generator requires two valid parents");
+
 	// generate numOffspring offspring per mating
 	UINT count = 0;
 	bool accept = true;
@@ -436,29 +439,31 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents()
 }
 
 
-void pedigreeParentChooser::initialize(population & pop, SubPopID sp)
-{
-	// intentionally keep this parent chooser uninitialized so that
-	// this function can be called at each generation.
-	m_initialized = false;
-}
-
-
-individual * pedigreeParentChooser::chooseParent()
-{
-	return NULL;
-}
-
-
 void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
 {
-	m_initialized = true;
+	m_gen = pop.gen();
+	m_subPop = subPop;
+	m_begin = pop.rawIndBegin();
+	m_index = 0;
+	// keep coming back to update m_gen and m_subPop
+	m_initialized = false;
 }
 
 
 parentChooser::individualPair pedigreeParentsChooser::chooseParents()
 {
-	//return std::make_pair(NULL, NULL);
+	individual * dad = NULL;
+	individual * mom = NULL;
+
+	dad = & * (m_begin + m_pedigree.father(m_gen, m_subPop, m_index));
+	if (m_pedigree.numParents() == 2)
+		mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
+	DBG_FAILIF(m_index >= m_pedigree.subPopSize(m_gen, m_subPop), IndexError,
+	    "Trying to retrieve more indiviudals (index=" +
+	    toStr(m_index) + " than what are available from the pedigree ("
+	    + toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
+	m_index++;
+	return std::make_pair(dad, mom);
 }
 
 
@@ -891,6 +896,72 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	return true;
+}
+
+
+// parameters about subpopulation size is ignored
+pedigreeMating::pedigreeMating(offspringGenerator & generator,
+                               pedigree & ped,
+                               vectorlu newSubPopSize,
+                               PyObject * newSubPopSizeFunc,
+                               string newSubPopSizeExpr,
+                               SubPopID subPop,
+                               SubPopID virtualSubPop,
+                               double weight)
+	: mating(vectorlu(), "", NULL, subPop, virtualSubPop, weight),
+	m_pedParentsChooser(ped)
+{
+	m_offspringGenerator = generator.clone();
+}
+
+
+bool pedigreeMating::mate(population & pop, population & scratch,
+                          vector<baseOperator * > & ops, bool submit)
+{
+	// scrtach will have the right structure.
+	scratch.setSubPopStru(m_pedParentsChooser.subPopSizes(pop.gen()), true);
+	scratch.copyVirtualSplitters(pop);
+
+	DBG_DO(DBG_MATING, m_famSize.clear());
+
+	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
+		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
+		        scratch.rawIndEnd(sp), ops))
+			return false;
+	if (submit)
+		submitScratch(pop, scratch);
+	return true;
+}
+
+
+bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
+                                RawIndIterator offBegin, RawIndIterator offEnd,
+                                vector<baseOperator * > & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator->initialized())
+		m_offspringGenerator->initialize(pop, ops);
+
+	// this parent chooser needs to be initialized each time.
+	m_pedParentsChooser.initialize(pop, subPop);
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents();
+		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
+		    ValueError, "Imcompatible parents chooser and offspring generator");
+		//
+		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		DBG_ASSERT(numOff == 1, ValueError,
+		    "Pedigree offspring generator can only generate one offspring each time");
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(1));
 	}
 	return true;
 }

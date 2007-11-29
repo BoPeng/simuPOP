@@ -445,7 +445,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 				DBG_DO(DBG_POPULATION, cout << "Total current " << m_popSize << endl);
 				DBG_DO(DBG_POPULATION, cout << "Current subpop size " <<
 				    this->subPopSizes() << endl);
-				throw ValueError("Populaiton size is fixed (by allowPopSizeChange parameter).\n"
+				throw ValueError("Population size is fixed (by allowPopSizeChange parameter).\n"
 				                 " Subpop sizes should add up to popsize");
 			}
 #endif
