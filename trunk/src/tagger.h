@@ -132,6 +132,65 @@ private:
 	int m_mode;
 };
 
+/// tagging according to parental indexes
+/**
+   This during-mating operator
+   set \c tag() each  individual with indexes of his/her parent in the parental population.
+   Because only one parent is recorded, this is recommended to be used for mating schemes
+   that requires only one parent (such as selfMating).
+
+   This tagger record indexes to information field parent_idx, and/or a given file. The usage
+   is similar to parentsTagger.
+ */
+class parentTagger : public tagger
+{
+public:
+	/// create a \c parentTagger
+	// string can be any string (m_Delimiter will be ignored for this class.)
+	//  %r will be replicate number %g will be generation number.
+	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	             string output = "", string outputExpr = "",
+	             const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
+		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields),
+		m_subPopSize(1, 0)
+	{
+	};
+
+	virtual ~parentTagger()
+	{
+	}
+
+
+	/// deep copy of a \c parentTagger
+	virtual baseOperator * clone() const
+	{
+		return new parentTagger(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the \c parentTagger
+	virtual string __repr__()
+	{
+		return "<simuPOP::parenttagger>" ;
+	}
+
+
+	/// CPPONLY
+	/// apply the \c parentTagger
+	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
+	                               individual * dad = NULL, individual * mom = NULL);
+
+	/// at the end of a generation, write population structure information to a file
+	/// with a newline.
+	bool apply(population & pop);
+
+private:
+	/// number of offspring from each subpopulation, counted
+	/// from the origin of parent
+	vectorlu m_subPopSize;
+};
+
+
 /// tagging according to parents' indexes
 /**
    This during-mating operator
@@ -190,7 +249,7 @@ public:
 	/// at the end of a generation, write population structure information to a file
 	/// with a newline.
 	bool apply(population & pop);
-	
+
 private:
 	/// number of offspring from each subpopulation, counted
 	/// from the origin of parents

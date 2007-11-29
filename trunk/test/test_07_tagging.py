@@ -80,8 +80,9 @@ class TestTagger(unittest.TestCase):
         file = '>>parents.tag'
         simu.evolve(ops=[parentsTagger(output=file, infoFields=[])], end=10)
         pop = simu.population(0)
-        ped = pedigree(2)
+        ped = pedigree()
         ped.read('parents.tag')
+        return
         ped.write('par_orig.tag')
         ped.selectIndividuals([0, 1, 4, 5, 10, 12, 15, 18])
         ped.write('par_sel.tag')

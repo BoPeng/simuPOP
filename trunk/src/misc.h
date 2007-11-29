@@ -34,20 +34,107 @@ namespace simuPOP {
 /// A pedigree manipulation class
 class pedigree
 {
-	typedef vector<vector<ULONG> > Pedigree;
-	typedef vector<vector<ULONG> > PedSize;
+	typedef vector<vectorlu > Pedigree;
+	typedef vector<vectorlu > PedSize;
 	typedef vector<vector<double> > PedInfo;
 
 public:
-	pedigree(int numParents = 2);
+	// numParents can be automatically determined
+	pedigree() : m_numParents(0)
+	{
+	}
 
-	ULONG size(ULONG gen);
 
-	ULONG gen();
+	ULONG size(ULONG gen)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		return m_paternal[gen].size();
+	}
 
-	ULONG father(ULONG gen, ULONG idx);
 
-	ULONG mother(ULONG gen, ULONG idx);
+	UINT numParents()
+	{
+		return m_numParents;
+	}
+
+
+	ULONG gen()
+	{
+		return m_paternal.size();
+	}
+
+
+	ULONG father(ULONG gen, ULONG idx)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
+		    "Father index out of bound");
+		return m_paternal[gen][idx];
+	}
+
+
+	ULONG mother(ULONG gen, ULONG idx)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		DBG_FAILIF(idx >= m_maternal[gen].size(), IndexError,
+		    "Mother index out of bound");
+		return m_maternal[gen][idx];
+	}
+
+
+	ULONG father(ULONG gen, SubPopID subPop, ULONG idx)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
+		    "Father index out of bound");
+		size_t shift = 0;
+		for (SubPopID i = 0; i < subPop; ++i)
+			shift += m_pedSize[gen][i];
+		return m_paternal[gen][shift + idx];
+	}
+
+
+	ULONG mother(ULONG gen, SubPopID subPop, ULONG idx)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
+		    "Mother index out of bound");
+		size_t shift = 0;
+		for (SubPopID i = 0; i < subPop; ++i)
+			shift += m_pedSize[gen][i];
+		return m_maternal[gen][shift + idx];
+	}
+
+
+	vectorlu subPopSizes(ULONG gen)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		return m_pedSize[gen];
+	}
+
+
+	ULONG subPopSize(ULONG gen, SubPopID subPop)
+	{
+		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+		    "Generation number " + toStr(gen) + " out of bound (<"
+		    + toStr(m_paternal.size()) + ")");
+		DBG_FAILIF(static_cast<size_t>(subPop) >= m_pedSize[gen].size(), IndexError,
+		    "SubPop index out of bound");
+		return m_pedSize[gen][subPop];
+	}
+
 
 	void read(const string & filename, const string & aux_filename = string());
 

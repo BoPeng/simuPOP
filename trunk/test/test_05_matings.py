@@ -484,6 +484,90 @@ class TestMatingSchemes(unittest.TestCase):
             mendelianOffspringGenerator()))
         simu.step()
 
+    def testPedigreeMating(self):
+        'Testing pedigree mating'
+        pop = population(subPop=[100, 100], loci=[2,5])
+        InitByFreq(pop, [0.2, 0.8])
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [parentsTagger(output='>>pedigree.dat',
+                infoFields=[])],
+            end=10
+        )
+        ped = pedigree()
+        ped.read('pedigree.dat')
+        #
+        simu1 = simulator(pop, pedigreeMating(pedigree=ped))
+        simu1.evolve(
+            ops = [parentsTagger(output='>>pedigree_rep.dat',
+                infoFields=[])],
+            end=10
+        )
+        self.assertEqual(open('pedigree.dat').read(),
+            open('pedigree_rep.dat').read())
+        #
+        ped.markUnrelated()
+        ped.removeUnrelated()
+        ped.write('ped_shrink.dat')
+        simu2 = simulator(pop, pedigreeMating(pedigree=ped))
+        simu2.evolve(
+            ops = [parentsTagger(output='>>ped_shrink_rep.dat',
+                infoFields=[])],
+            end=10
+        )
+        self.assertEqual(open('ped_shrink.dat').read(),
+            open('ped_shrink_rep.dat').read())
+        for file in ['pedigree.dat', 'pedigree_rep.dat',
+                'ped_shrink.dat', 'ped_shrink_rep.dat']:
+            os.remove(file)
+        #
+
+    def testOneParentPedigreeMating(self):
+        'Testing pedigree mating in the one parent cases'
+        # testing haploid case
+        pop = population(subPop=[100, 100], loci=[2,5])
+        InitByFreq(pop, [0.2, 0.8])
+        simu = simulator(pop, selfMating())
+        simu.evolve(
+            ops = [parentTagger(output='>>pedigree.dat',
+                infoFields=[])],
+            end=10
+        )
+        ped = pedigree()
+        ped.read('pedigree.dat')
+        #
+        simu1 = simulator(pop, 
+            pedigreeMating(generator=selfingOffspringGenerator(), 
+                pedigree=ped))
+        simu1.evolve(
+            ops = [parentTagger(output='>>pedigree_rep.dat',
+                infoFields=[])],
+            end=10
+        )
+        self.assertEqual(open('pedigree.dat').read(),
+            open('pedigree_rep.dat').read())
+        #
+        ped.markUnrelated()
+        ped.removeUnrelated()
+        ped.write('ped_shrink.dat')
+        simu2 = simulator(pop, 
+            pedigreeMating(generator=selfingOffspringGenerator(), 
+            pedigree=ped))
+        simu2.evolve(
+            ops = [parentTagger(output='>>ped_shrink_rep.dat',
+                infoFields=[])],
+            end=10
+        )
+        self.assertEqual(open('ped_shrink.dat').read(),
+            open('ped_shrink_rep.dat').read())
+        for file in ['pedigree.dat', 'pedigree_rep.dat',
+                'ped_shrink.dat', 'ped_shrink_rep.dat']:
+            os.remove(file)
+
+        
+
+
+
 ##   def testFreqTrajWithSubPop(self):
 ##     'Testing trajctory simulation with subpopulation structure'
 ##     from simuUtil import FreqTrajectoryMultiStochWithSubPop

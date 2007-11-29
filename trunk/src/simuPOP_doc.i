@@ -220,10 +220,10 @@ Details:
     to trace parental information. More specifically, operators can be
     applied at pre-, during-, post-mating, or a combination of these
     stages. Applicable stages are usually set by default but you can
-    change it by setting
-    stage=(PreMating|PostMating|DuringMating|PrePostMating) parameter.
-    Some operators ignore stage parameter because they only work at
-    one stage.
+    change it by setting stage=(PreMating|PostMating|DuringMating|PreP
+    ostMating|PreDuringMating|DuringPostMating) parameter. Some
+    operators ignore stage parameter because they only work at one
+    stage.
     Operators do not have to be applied at all generations. You can
     specify starting and/or ending generations (parameters start,
     end), gaps between applicable generations (parameter step), or
@@ -3247,8 +3247,8 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[\"paternal_tag\",
-      \"maternal_tag\"])
+      rep=REP_ALL, grp=GRP_ALL, output=\"\", outputExpr=\"\",
+      infoFields=[\"paternal_tag\", \"maternal_tag\"])
 
 Arguments:
 
@@ -3809,7 +3809,7 @@ Usage:
 
 Description:
 
-    draw a large pedigree  sample
+    draw a large  pedigree sample
 
 "; 
 
@@ -3817,7 +3817,7 @@ Description:
 
 Description:
 
-    draw a large pedigree  sample
+    draw a large  pedigree sample
 
 Usage:
 
@@ -3835,7 +3835,7 @@ Arguments:
 
     minTotalSize:   the minimum number of individuals in the  sample
     maxOffspring:   the maximum number of offspring a parent may have
-    minPedSize:     the minimal pedigree size. Default to 5.
+    minPedSize:     the minimal  pedigree size. Default to 5.
     minAffected:    the minimal number of affected individuals in each
                     pedigree. Default to 0.
     countOnly:      set variables about the number of affected
@@ -3883,7 +3883,7 @@ Usage:
 
 Description:
 
-    draw a a large pedigree  sample
+    draw a a large  pedigree sample
 
 Usage:
 
@@ -6072,10 +6072,17 @@ Details:
     numbers, of each  individual with indexes of his/her parents in
     the parental  population. This information will be used by
     pedigree-related operators like  affectedSibpairSample to track
-    the pedigree information. Since parental  population will be
-    discarded or stored after  mating, tagging information will be
-    passed with individuals, and  mating or  population change etc.
-    will not interfere with this simple tagging system.
+    the  pedigree information. Because parental  population will be
+    discarded or stored after  mating, these index will not be
+    affected by post-mating operators.This  tagger record parental
+    index to one or both
+    * one or two information fields. Default to father_idx and
+    mother_idx. If only one parent is passed in a  mating scheme (such
+    as selfing), only the first information field is used. If two
+    parents are passed, the first information field records paternal
+    index, and the second records maternal index.
+    * a file. Indexes will be written to this file. This  tagger will
+    also act as a post-mating operator to add a new-line to this file.
 
 "; 
 
@@ -6088,7 +6095,8 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
+      grp=GRP_ALL, output=\"\", outputExpr=\"\", infoFields=[\"father_idx\",
+      \"mother_idx\"])
 
 "; 
 
@@ -6130,6 +6138,103 @@ Usage:
 "; 
 
 %ignore simuPOP::parentsTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::parentsTagger::apply "
+
+Description:
+
+    at the end of a generation, write  population structure
+    information to a file with a newline.
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::parentTagger "
+
+Description:
+
+    tagging according to parental indexes
+
+Details:
+
+    This during-mating operator set tag() each  individual with
+    indexes of his/her parent in the parental  population. Because
+    only one parent is recorded, this is recommended to be used for
+    mating schemes that requires only one parent (such as
+    selfMating).This  tagger record indexes to information field
+    parent_idx, and/or a given file. The usage is similar to
+    parentsTagger.
+
+"; 
+
+%feature("docstring") simuPOP::parentTagger::parentTagger "
+
+Description:
+
+    create a  parentTagger
+
+Usage:
+
+    parentTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, output=\"\", outputExpr=\"\",
+      infoFields=[\"parent_idx\"])
+
+"; 
+
+%feature("docstring") simuPOP::parentTagger::~parentTagger "
+
+Description:
+
+    simuPOP::parentTagger::~parentTagger
+
+Usage:
+
+    x.~parentTagger()
+
+"; 
+
+%feature("docstring") simuPOP::parentTagger::clone "
+
+Description:
+
+    deep copy of a  parentTagger
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::parentTagger::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the  parentTagger
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::parentTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::parentTagger::apply "
+
+Description:
+
+    at the end of a generation, write  population structure
+    information to a file with a newline.
+
+Usage:
+
+    x.apply(pop)
+
+"; 
 
 %feature("docstring") simuPOP::pause "
 
@@ -6232,6 +6337,320 @@ Usage:
     x.__repr__()
 
 "; 
+
+%feature("docstring") simuPOP::pedigree "
+
+Description:
+
+    A  pedigree manipulation class.
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::pedigree "
+
+Description:
+
+    simuPOP::pedigree::pedigree
+
+Usage:
+
+    pedigree()
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::size "
+
+Description:
+
+    simuPOP::pedigree::size
+
+Usage:
+
+    x.size(gen)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::numParents "
+
+Description:
+
+    simuPOP::pedigree::numParents
+
+Usage:
+
+    x.numParents()
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::gen "
+
+Description:
+
+    simuPOP::pedigree::gen
+
+Usage:
+
+    x.gen()
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::father "
+
+Description:
+
+    simuPOP::pedigree::father
+
+Usage:
+
+    x.father(gen, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::mother "
+
+Description:
+
+    simuPOP::pedigree::mother
+
+Usage:
+
+    x.mother(gen, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::subPopSizes "
+
+Description:
+
+    simuPOP::pedigree::subPopSizes
+
+Usage:
+
+    x.subPopSizes(gen)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::subPopSize "
+
+Description:
+
+    simuPOP::pedigree::subPopSize
+
+Usage:
+
+    x.subPopSize(gen, subPop)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::read "
+
+Description:
+
+    simuPOP::pedigree::read
+
+Usage:
+
+    x.read(filename, aux_filename=string)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::clone "
+
+Description:
+
+    simuPOP::pedigree::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::write "
+
+Description:
+
+    write the  pedigree (and its auxillary information) to files
+
+Usage:
+
+    x.write(filename, aux_filename=string)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::selectIndividuals "
+
+Description:
+
+    choose given individuals from the last generation The last
+    generation will be shrinked to only have these individuals
+
+Usage:
+
+    x.selectIndividuals(inds)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::markUnrelated "
+
+Description:
+
+    mark individuals that are unrelated to the last generation from
+    the  pedigree
+
+Usage:
+
+    x.markUnrelated()
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::removeUnrelated "
+
+Description:
+
+    remove individuals that are unrelated to the last generation from
+    the  pedigree indexes will be adjusted.
+
+Usage:
+
+    x.removeUnrelated()
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating "
+
+Description:
+
+    a  mating scheme that follows a given  pedigree
+
+Details:
+
+    In this scheme, a  pedigree is given and the  mating scheme will
+    choose parents and produce offspring strictly following the
+    pedigree. Parameters setting number of offspring per  mating
+    event, and size of the offspring generations are ignored.To
+    implement this  mating scheme in  pyMating, 1.) a
+    newSubPopSizeFunc should be given to return the exact
+    subpopulation size, returned from pedigree.subPopSizes(gen). 2.)
+    use pedigreeChooser to choose parents 3.) use a suitable offspring
+    generator to generate offspring.This  pedigreeMating helps you do
+    1 and 2, and use a  mendelianOffspringGenerator as the default
+    offspring generator. You can use another offspring generator by
+    setting the generator parameter. Note that the offspring generator
+    can generate one and only one offspring each time.
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating::pedigreeMating "
+
+Description:
+
+    create a random  mating scheme
+
+Usage:
+
+    pedigreeMating(generator, ped, newSubPopSize=[],
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+
+Details:
+
+    Please refer to class  mating for descriptions of other
+    parameters.
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating::~pedigreeMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~pedigreeMating()
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating::clone "
+
+Description:
+
+    deep copy of a random  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::pedigreeMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::pedigreeMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the random  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::pedigreeMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
+%ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+
+%feature("docstring") simuPOP::pedigreeParentsChooser "
+
+Details:
+
+    This parents chooser chooses one or two parents from a given
+    pedigree. It works even when only one parent is needed.
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeParentsChooser::pedigreeParentsChooser "
+
+Description:
+
+    simuPOP::pedigreeParentsChooser::pedigreeParentsChooser
+
+Usage:
+
+    pedigreeParentsChooser(ped)
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeParentsChooser::clone "
+
+Description:
+
+    simuPOP::pedigreeParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeParentsChooser::subPopSizes "
+
+Description:
+
+    simuPOP::pedigreeParentsChooser::subPopSizes
+
+Usage:
+
+    x.subPopSizes(gen)
+
+"; 
+
+%ignore simuPOP::pedigreeParentsChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::pedigreeParentsChooser::chooseParents();
 
 %feature("docstring") simuPOP::penetrance "
 
@@ -9831,7 +10250,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      grp=GRP_ALL, output=\"\", outputExpr=\"\", infoFields=[])
 
 Arguments:
 
@@ -11274,7 +11693,7 @@ Details:
     This operator set the number of ancestral generations to keep in a
     population. It is usually called like setAncestral(at=[-2]) to
     start recording ancestral generations to a  population at the end
-    of the evolution. This is useful when constructing pedigree trees
+    of the evolution. This is useful when constructing  pedigree trees
     from a  population.
 
 "; 
@@ -13536,7 +13955,7 @@ Details:
 
     This is a during-mating operator that tags individuals with
     various information. Potential usages are:
-    * recording the parental information to track pedigree;
+    * recording the parental information to track  pedigree;
     * tagging an individual/allele and monitoring its  spread in the
     population etc.
 
@@ -13550,8 +13969,8 @@ Description:
 
 Usage:
 
-    tagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+    tagger(output=\"\", outputExpr=\"\", begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 "; 
 
@@ -13578,6 +13997,8 @@ Usage:
     x.clone()
 
 "; 
+
+%ignore simuPOP::tagger::apply(population &pop);
 
 %feature("docstring") simuPOP::terminateIf "
 
