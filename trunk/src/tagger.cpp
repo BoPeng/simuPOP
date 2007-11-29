@@ -126,7 +126,7 @@ bool parentTagger::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
-	out << "#\t" << pop.gen() << '\t';
+	out << "#\t";
 	for (size_t i = 0; i < m_subPopSize.size(); ++i)
 		out << m_subPopSize[i] << '\t';
 	out << '\n';
@@ -184,6 +184,93 @@ bool parentsTagger::apply(population & pop)
 	out << '\n';
 	closeOstream();
 	m_subPopSize.clear();
+	return true;
+}
+
+
+bool infoTagger::apply(population & pop)
+{
+	if (infoSize() == 0)
+		return true;
+
+	ostream & out = this->getOstream(pop.dict());
+
+	vectoru idx;
+	UINT is = infoSize();
+	for (size_t i = 0; i < is; ++i)
+		idx.push_back(pop.infoIdx(infoField(0)));
+
+	IndIterator it = pop.indBegin();
+	IndIterator it_end = pop.indEnd();
+	for (; it != it_end; ++it)
+		for (size_t i = 0; i < is; ++i)
+			out << it->info(idx[i]) << '\t';
+	out << '\n';
+	closeOstream();
+	return true;
+}
+
+
+sexTagger::sexTagger(const vectori & code,
+                     int begin, int end, int step, vectorl at, int rep, int grp,
+                     int stage, string output, string outputExpr,
+                     const vectorstr & infoFields) :
+	tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields),
+	m_code(code)
+{
+	setApplicableStage(stage);
+	if (m_code.empty()) {
+		m_code.push_back(1);
+		m_code.push_back(2);
+	}
+	DBG_FAILIF(m_code.size() != 2, ValueError,
+	    "Please use an array of size 2 to set code for sex.");
+}
+
+
+bool sexTagger::apply(population & pop)
+{
+	ostream & out = this->getOstream(pop.dict());
+
+	IndIterator it = pop.indBegin();
+	IndIterator it_end = pop.indEnd();
+
+	for (; it != it_end; ++it)
+		out << m_code[it->sex() == Male ? 0 : 1] << '\t';
+	out << '\n';
+	closeOstream();
+	return true;
+}
+
+
+affectionTagger::affectionTagger(const vectori & code,
+                                 int begin, int end, int step, vectorl at, int rep, int grp,
+                                 int stage, string output, string outputExpr,
+                                 const vectorstr & infoFields) :
+	tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields),
+	m_code(code)
+{
+	setApplicableStage(stage);
+	if (m_code.empty()) {
+		m_code.push_back(1);
+		m_code.push_back(2);
+	}
+	DBG_FAILIF(m_code.size() != 2, ValueError,
+	    "Please use an array of size 2 to set code for affection status.");
+}
+
+
+bool affectionTagger::apply(population & pop)
+{
+	ostream & out = this->getOstream(pop.dict());
+
+	IndIterator it = pop.indBegin();
+	IndIterator it_end = pop.indEnd();
+
+	for (; it != it_end; ++it)
+		out << m_code[it->affected() ? 1 : 0] << '\t';
+	out << '\n';
+	closeOstream();
 	return true;
 }
 

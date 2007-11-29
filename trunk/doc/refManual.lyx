@@ -5192,12 +5192,12 @@ A pedigree file has the following format:
 
 \begin_layout LyX-Code
 p1 p2 p3 p4 .....
- # gen sp1 sp2 sp3
+ # sp1 sp2 sp3
 \end_layout
 
 \begin_layout LyX-Code
 p1 p2 p3 p4 .....
- # gen sp1 sp2 sp3
+ # sp1 sp2 sp3
 \end_layout
 
 \begin_layout LyX-Code
@@ -5206,11 +5206,7 @@ p1 p2 p3 p4 .....
 
 \begin_layout Standard
 Numbers before # of each line of a pedigree file are the parent(s) of individual
-s at generation 
-\family typewriter
-gen
-\family default
-.
+s, starting from generation 0.
  If only one parent is used to produce offspring (e.g.
  using the 
 \family typewriter

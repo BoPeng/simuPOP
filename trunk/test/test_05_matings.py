@@ -494,8 +494,7 @@ class TestMatingSchemes(unittest.TestCase):
                 infoFields=[])],
             end=10
         )
-        ped = pedigree()
-        ped.read('pedigree.dat')
+        ped = pedigree('pedigree.dat')
         #
         simu1 = simulator(pop, pedigreeMating(pedigree=ped))
         simu1.evolve(
@@ -508,7 +507,7 @@ class TestMatingSchemes(unittest.TestCase):
         #
         ped.markUnrelated()
         ped.removeUnrelated()
-        ped.write('ped_shrink.dat')
+        ped.save('ped_shrink.dat')
         simu2 = simulator(pop, pedigreeMating(pedigree=ped))
         simu2.evolve(
             ops = [parentsTagger(output='>>ped_shrink_rep.dat',
@@ -533,8 +532,7 @@ class TestMatingSchemes(unittest.TestCase):
                 infoFields=[])],
             end=10
         )
-        ped = pedigree()
-        ped.read('pedigree.dat')
+        ped = pedigree('pedigree.dat')
         #
         simu1 = simulator(pop, 
             pedigreeMating(generator=selfingOffspringGenerator(), 
@@ -549,7 +547,7 @@ class TestMatingSchemes(unittest.TestCase):
         #
         ped.markUnrelated()
         ped.removeUnrelated()
-        ped.write('ped_shrink.dat')
+        ped.save('ped_shrink.dat')
         simu2 = simulator(pop, 
             pedigreeMating(generator=selfingOffspringGenerator(), 
             pedigree=ped))
