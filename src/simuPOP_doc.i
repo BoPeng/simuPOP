@@ -186,6 +186,40 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::affectionTagger "
+
+Description:
+
+    Tagging affection status.
+
+Details:
+
+    This is a simple post-mating  tagger that write affection status
+    to a file. By default, 1 for unaffected, 2 for affected.
+
+"; 
+
+%feature("docstring") simuPOP::affectionTagger::affectionTagger "
+
+Description:
+
+    simuPOP::affectionTagger::affectionTagger
+
+Usage:
+
+    affectionTagger(code=[], begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, stage=PostMating, output=\"\",
+      outputExpr=\"\", infoFields=[])
+
+Arguments:
+
+    code:           code for Male and Female, default to 1 and 2,
+                    respectively. This is used by Linkage format.
+
+"; 
+
+%ignore simuPOP::affectionTagger::apply(population &pop);
+
 %feature("docstring") simuPOP::baseOperator "
 
 Description:
@@ -3219,6 +3253,35 @@ Usage:
     x.name(sp)
 
 "; 
+
+%feature("docstring") simuPOP::infoTagger "
+
+Description:
+
+    Tagging information fields.
+
+Details:
+
+    This is a simple post-mating  tagger that write given information
+    fields to a file (or standard output).
+
+"; 
+
+%feature("docstring") simuPOP::infoTagger::infoTagger "
+
+Description:
+
+    simuPOP::infoTagger::infoTagger
+
+Usage:
+
+    infoTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, stage=PostMating, output=\"\", outputExpr=\"\",
+      infoFields=[])
+
+"; 
+
+%ignore simuPOP::infoTagger::apply(population &pop);
 
 %feature("docstring") simuPOP::inheritTagger "
 
@@ -6350,23 +6413,24 @@ Description:
 
 Description:
 
-    simuPOP::pedigree::pedigree
+    create a  pedigree. If a filename pedfile is given, the pedgree
+    will be loaded from this file.
 
 Usage:
 
-    pedigree()
+    pedigree(pedfile=string)
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::size "
+%feature("docstring") simuPOP::pedigree::popSize "
 
 Description:
 
-    simuPOP::pedigree::size
+    population size at generation gen
 
 Usage:
 
-    x.size(gen)
+    x.popSize(gen)
 
 "; 
 
@@ -6374,7 +6438,7 @@ Usage:
 
 Description:
 
-    simuPOP::pedigree::numParents
+    return the number of parents for each  individual
 
 Usage:
 
@@ -6382,11 +6446,23 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pedigree::setNumParents "
+
+Description:
+
+    Set the number of parents for each  individual.
+
+Usage:
+
+    x.setNumParents(numParents)
+
+"; 
+
 %feature("docstring") simuPOP::pedigree::gen "
 
 Description:
 
-    simuPOP::pedigree::gen
+    Return the number of generations of this  pedigree.
 
 Usage:
 
@@ -6398,7 +6474,9 @@ Usage:
 
 Description:
 
-    simuPOP::pedigree::father
+    Return the index of the father of  individualidx at generation gen
+    The returned index is the absolute index of father in the parental
+    generation.
 
 Usage:
 
@@ -6410,7 +6488,9 @@ Usage:
 
 Description:
 
-    simuPOP::pedigree::mother
+    Return the index of the mother of  individualidx at generation gen
+    The returned index is the absolute index of mother in the parental
+    generation.
 
 Usage:
 
@@ -6418,11 +6498,153 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pedigree::father "
+
+Description:
+
+    Return the index of the father of  individualidx of subpopulation
+    subPop at generation gen The returned index is the absolute index
+    of father in the parental generation.
+
+Usage:
+
+    x.father(gen, subPop, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::mother "
+
+Description:
+
+    Return the index of the mother of  individualidx of subpopulation
+    subPop at generation gen The returned index is the absolute index
+    of mother in the parental generation.
+
+Usage:
+
+    x.mother(gen, subPop, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::setFather "
+
+Description:
+
+    Set the index of the father of  individualidx at generation gen.
+
+Usage:
+
+    x.setFather(parent, gen, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::setMother "
+
+Description:
+
+    Set the index of the mother of  individualidx at generation gen.
+
+Usage:
+
+    x.setMother(parent, gen, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::setFather "
+
+Description:
+
+    Set the index of the father of  individualidx of subpopulation
+    subPop at generation gen.
+
+Usage:
+
+    x.setFather(parent, gen, subPop, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::setMother "
+
+Description:
+
+    Set the index of the mother of  individualidx of subpopulation
+    subPop at generation gen.
+
+Usage:
+
+    x.setMother(parent, gen, subPop, idx)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::info "
+
+Description:
+
+    Return information name of  individualidx at generation gen.
+
+Usage:
+
+    x.info(gen, idx, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::info "
+
+Description:
+
+    Return information name of  individualidx of subpopulation subPop
+    at generation gen.
+
+Usage:
+
+    x.info(gen, subPop, idx, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::setInfo "
+
+Description:
+
+    Set information name of  individualidx at generation gen.
+
+Usage:
+
+    x.setInfo(info, gen, idx, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::setInfo "
+
+Description:
+
+    Set information name of  individualidx of subpopulation subPop at
+    generation gen.
+
+Usage:
+
+    x.setInfo(info, gen, subPop, idx, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::addGen "
+
+Description:
+
+    Add a generation to the existing  pedigree, with given
+    subpopulation sizes subPopSize . All parental indexes and
+    information will be set to zero for the new generation.
+
+Usage:
+
+    x.addGen(subPopSize)
+
+"; 
+
 %feature("docstring") simuPOP::pedigree::subPopSizes "
 
 Description:
 
-    simuPOP::pedigree::subPopSizes
+    Return the subpopulation sizes of generation gen.
 
 Usage:
 
@@ -6434,7 +6656,8 @@ Usage:
 
 Description:
 
-    simuPOP::pedigree::subPopSize
+    Return the subpopulation size of subpopulation subPop of
+    generation gen.
 
 Usage:
 
@@ -6442,23 +6665,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::read "
-
-Description:
-
-    simuPOP::pedigree::read
-
-Usage:
-
-    x.read(filename, aux_filename=string)
-
-"; 
-
 %feature("docstring") simuPOP::pedigree::clone "
 
 Description:
 
-    simuPOP::pedigree::clone
+    Make a copy of this  pedigree.
 
 Usage:
 
@@ -6466,15 +6677,98 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::write "
+%feature("docstring") simuPOP::pedigree::load "
 
 Description:
 
-    write the  pedigree (and its auxillary information) to files
+    load  pedigree from a file, the file is usually saved by
+    parentTagger or  parentsTagger. The format is described in the
+    simuPOP reference manual
 
 Usage:
 
-    x.write(filename, aux_filename=string)
+    x.load(filename)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::loadInfo "
+
+Description:
+
+    load information name from a information  pedigree file and add to
+    this  pedigree Information name should not have existed in the
+    pedigree. The information  pedigree file filename is usually
+    produced by taggers such as  sexTagger affectionTagger,  pyTagger
+    and  infoTagger.
+
+Usage:
+
+    x.loadInfo(filename, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::loadInfo "
+
+Description:
+
+    load information names from a information  pedigree file and add
+    to this  pedigree Information names in names should not have
+    existed in the  pedigree.  pedigree file filename is usually
+    produced by taggers such as  sexTagger affectionTagger,  pyTagger
+    and  infoTagger.
+
+Usage:
+
+    x.loadInfo(filename, names)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::addInfo "
+
+Description:
+
+    add an information field to the  pedigree, with given initial
+    value
+
+Usage:
+
+    x.addInfo(name, init=0)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::save "
+
+Description:
+
+    Write the  pedigree to a file.
+
+Usage:
+
+    x.save(filename)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::saveInfo "
+
+Description:
+
+    Save auxiliary information name to an information  pedigree file.
+
+Usage:
+
+    x.saveInfo(filename, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::saveInfo "
+
+Description:
+
+    save auxiliary information names to an information  pedigree file
+
+Usage:
+
+    x.saveInfo(filename, names)
 
 "; 
 
@@ -6482,8 +6776,9 @@ Usage:
 
 Description:
 
-    choose given individuals from the last generation The last
-    generation will be shrinked to only have these individuals
+    Mark individuals inds as 'unrelated' in the last generation
+    removeUnrelated function will remove these individuals from the
+    pdeigree.
 
 Usage:
 
@@ -6495,8 +6790,9 @@ Usage:
 
 Description:
 
-    mark individuals that are unrelated to the last generation from
-    the  pedigree
+    mark individuals that are unrelated to the visible individuals at
+    the last generation (not marked by selectIndividuals) from the
+    pedigree.
 
 Usage:
 
@@ -11822,6 +12118,40 @@ Usage:
     x.name(sp)
 
 "; 
+
+%feature("docstring") simuPOP::sexTagger "
+
+Description:
+
+    Tagging sex status.
+
+Details:
+
+    This is a simple post-mating  tagger that write sex status to a
+    file. By default, 1 for Male, 2 for Female.
+
+"; 
+
+%feature("docstring") simuPOP::sexTagger::sexTagger "
+
+Description:
+
+    simuPOP::sexTagger::sexTagger
+
+Usage:
+
+    sexTagger(code=[], begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, stage=PostMating, output=\"\", outputExpr=\"\",
+      infoFields=[])
+
+Arguments:
+
+    code:           code for Male and Female, default to 1 and 2,
+                    respectively. This is used by Linkage format.
+
+"; 
+
+%ignore simuPOP::sexTagger::apply(population &pop);
 
 %ignore simuPOP::SharedVariables;
 

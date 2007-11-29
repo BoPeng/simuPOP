@@ -257,6 +257,70 @@ private:
 };
 
 
+/// Tagging information fields
+/** This is a simple post-mating tagger that write given
+   information fields to a file (or standard output).
+ */
+class infoTagger : public tagger
+{
+public:
+	infoTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	           int rep = REP_ALL, int grp = GRP_ALL,
+	           int stage = PostMating, string output = "", string outputExpr = "",
+	           const vectorstr & infoFields = vectorstr()) :
+		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields)
+	{
+		setApplicableStage(stage);
+	}
+
+
+	bool apply(population & pop);
+
+};
+
+/// Tagging sex status
+/** This is a simple post-mating tagger that write sex
+   	status to a file. By default, 1 for Male, 2 for Female.
+ */
+class sexTagger : public tagger
+{
+public:
+	/**
+	 \param code  code for Male and Female, default to 1 and 2, respectively.
+	   This is used by Linkage format.
+	 */
+	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	          int stage = PostMating, string output = "", string outputExpr = "",
+	          const vectorstr & infoFields = vectorstr());
+
+	bool apply(population & pop);
+
+private:
+	vectori m_code;
+};
+
+/// Tagging affection status
+/** This is a simple post-mating tagger that write affection status
+   	to a file. By default, 1 for unaffected, 2 for affected.
+ */
+class affectionTagger : public tagger
+{
+public:
+	/**
+	 \param code  code for Male and Female, default to 1 and 2, respectively.
+	   This is used by Linkage format.
+	 */
+	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	                int stage = PostMating, string output = "", string outputExpr = "",
+	                const vectorstr & infoFields = vectorstr());
+
+	bool apply(population & pop);
+
+private:
+	vectori m_code;
+};
+
+
 /// Python tagger
 /**
    This tagger takes some information fields from both parents, pass to a Python

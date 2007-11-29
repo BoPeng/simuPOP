@@ -80,8 +80,7 @@ class TestTagger(unittest.TestCase):
         file = '>>parents.tag'
         simu.evolve(ops=[parentsTagger(output=file, infoFields=[])], end=10)
         pop = simu.population(0)
-        ped = pedigree()
-        ped.read('parents.tag')
+        ped = pedigree('parents.tag')
         return
         ped.write('par_orig.tag')
         ped.selectIndividuals([0, 1, 4, 5, 10, 12, 15, 18])
@@ -120,6 +119,49 @@ class TestTagger(unittest.TestCase):
             self.assertEqual(ind.info('trait1'), 16.)
             # 2 * 2 = 4, 4 * 4 = 16, ...
             self.assertEqual(ind.info('trait2'), 65536.)
+
+
+    def testPedigree(self):
+        'Testing the handling of pedigrees'
+        pop = population(subPop=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
+        InitByFreq(pop, [0.2, 0.8])
+        def addToZ(val):
+            return [val[0]+1]
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                parentsTagger(output='>>pedigree.dat', infoFields=[]),
+                sexTagger(output='>>sex.dat'),
+                affectionTagger(output='>>affection.dat'),
+                infoTagger(output='>>info.dat', infoFields=['x', 'y']),
+                pyTagger(output='>>z.dat', func=addToZ, infoFields=['z'])
+                ],
+            end=10
+        )
+        ped = pedigree('pedigree.dat')
+        ped.loadInfo('affection.dat', 'affection')
+        ped.saveInfo('aff1.dat', 'affection')
+        ped.loadInfo('info.dat', ['x', 'y'])
+        ped.loadInfo('z.dat', 'z')
+        ped.loadInfo('sex.dat', 'sex')
+        ped.saveInfo('all.dat', ['affection', 'sex', 'x', 'y', 'z'])
+        # reduce pedigree
+        ped.markUnrelated()
+        ped.removeUnrelated()
+        ped.saveInfo('z1.dat', 'z')
+        # add and set info?
+        ped.addInfo('a')
+        self.assertEqual(ped.info(0, 0, 'a'), 0)
+        ped.addInfo('b', -1)
+        self.assertEqual(ped.info(0, 0, 'b'), -1)
+        #
+        ped.addGen([20, 20])
+        self.assertEqual(ped.subPopSizes(ped.gen()-1), (20, 20))
+        ped.setFather(5, 11, 0)
+        ped.setMother(5, 11, 0)
+        self.assertRaises(exceptions.IndexError, ped.setMother, 500, 11, 0)
+        self.assertEqual(ped.father(11, 0), 5)
+        self.assertEqual(ped.mother(11, 0), 5)
 
         
 if __name__ == '__main__':

@@ -34,18 +34,25 @@ namespace simuPOP {
 /// A pedigree manipulation class
 class pedigree
 {
+private:
+	/// The reason why I do not want to use a
+	/// vector<vector< struct<dad, mom, vector<info>>>
+	/// structure is because mom and info are optional.
+	/// Because pedigree can be large, it makes sense to treat
+	/// them separately.
+
 	typedef vector<vectorlu > Pedigree;
-	typedef vector<vectorlu > PedSize;
-	typedef vector<vector<double> > PedInfo;
+	// pedigree subpopulation size information ...
+	typedef Pedigree PedSize;
+	typedef vector<vector<vectorf> > PedInfo;
 
 public:
-	// numParents can be automatically determined
-	pedigree() : m_numParents(0)
-	{
-	}
+	/// create a pedigree. If a filename \c pedfile is given, the pedgree
+	/// will be loaded from this file.
+	pedigree(const string & pedfile = string());
 
-
-	ULONG size(ULONG gen)
+	/// population size at generation \c gen
+	ULONG popSize(ULONG gen)
 	{
 		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 		    "Generation number " + toStr(gen) + " out of bound (<"
@@ -53,105 +60,119 @@ public:
 		return m_paternal[gen].size();
 	}
 
-
+	/// return the number of parents for each individual
 	UINT numParents()
 	{
 		return m_numParents;
 	}
 
-
+	/// Set the number of parents for each individual
+	void setNumParents(int numParents)
+	{
+		DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
+			"Number of parents has to be 1 or 2");
+		m_numParents = numParents;	
+	}
+	
+	/// Return the number of generations of this pedigree
 	ULONG gen()
 	{
 		return m_paternal.size();
 	}
 
+	/// Return the index of the father of individual \c idx at generation \c gen
+	/// The returned index is the absolute index of father in the parental generation
+	ULONG father(ULONG gen, ULONG idx);
 
-	ULONG father(ULONG gen, ULONG idx)
-	{
-		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
-		DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
-		    "Father index out of bound");
-		return m_paternal[gen][idx];
-	}
+	/// Return the index of the mother of individual \c idx at generation \c gen
+	/// The returned index is the absolute index of mother in the parental generation
+	ULONG mother(ULONG gen, ULONG idx);
 
+	/// Return the index of the father of individual \c idx of subpopulation
+	/// \c subPop at generation \c gen
+	/// The returned index is the absolute index of father in the parental generation
+	ULONG father(ULONG gen, SubPopID subPop, ULONG idx);
 
-	ULONG mother(ULONG gen, ULONG idx)
-	{
-		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
-		DBG_FAILIF(idx >= m_maternal[gen].size(), IndexError,
-		    "Mother index out of bound");
-		return m_maternal[gen][idx];
-	}
+	/// Return the index of the mother of individual \c idx of subpopulation
+	/// \c subPop at generation \c gen
+	/// The returned index is the absolute index of mother in the parental generation
+	ULONG mother(ULONG gen, SubPopID subPop, ULONG idx);
 
+	/// Set the index of the father of individual  \c idx at generation \c gen
+	void setFather(ULONG parent, ULONG gen, ULONG idx);
 
-	ULONG father(ULONG gen, SubPopID subPop, ULONG idx)
-	{
-		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
-		DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		    "Father index out of bound");
-		size_t shift = 0;
-		for (SubPopID i = 0; i < subPop; ++i)
-			shift += m_pedSize[gen][i];
-		return m_paternal[gen][shift + idx];
-	}
+	/// Set the index of the mother of individual  \c idx at generation \c gen
+	void setMother(ULONG parent, ULONG gen, ULONG idx);
 
+	/// Set the index of the father of individual \c idx of subpopulation \c subPop at generation \c gen
+	void setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx);
 
-	ULONG mother(ULONG gen, SubPopID subPop, ULONG idx)
-	{
-		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
-		DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		    "Mother index out of bound");
-		size_t shift = 0;
-		for (SubPopID i = 0; i < subPop; ++i)
-			shift += m_pedSize[gen][i];
-		return m_maternal[gen][shift + idx];
-	}
+	/// Set the index of the mother of individual \c idx of subpopulation \c subPop at generation \c gen
+	void setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx);
+	
+	/// Return information \c name of individual \c idx at generation \c gen
+	double info(ULONG gen, ULONG idx, const string & name);
 
+	/// Return information \c name of individual \c idx of subpopulation \c subPop at generation \c gen
+	double info(ULONG gen, SubPopID subPop, ULONG idx, const string & name);
+	
+	/// Set information \c name  of individual \c idx at generation \c gen
+	void setInfo(double info, ULONG gen, ULONG idx, const string & name);
 
-	vectorlu subPopSizes(ULONG gen)
-	{
-		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
-		return m_pedSize[gen];
-	}
+	/// Set information \c name of individual \c idx of subpopulation \c subPop at generation \c gen
+	void setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const string & name);
 
+	/// Add a generation to the existing pedigree, with given subpopulation sizes
+	/// \c subPopSize . All parental indexes and information will be set to zero 
+	/// for the new generation.
+	void addGen(const vectorlu & subPopSize);
+	
+	/// Return the subpopulation sizes of generation \c gen
+	vectorlu subPopSizes(ULONG gen);
 
-	ULONG subPopSize(ULONG gen, SubPopID subPop)
-	{
-		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
-		DBG_FAILIF(static_cast<size_t>(subPop) >= m_pedSize[gen].size(), IndexError,
-		    "SubPop index out of bound");
-		return m_pedSize[gen][subPop];
-	}
+	/// Return the subpopulation size of subpopulation \c subPop of generation \c gen
+	ULONG subPopSize(ULONG gen, SubPopID subPop);
 
-
-	void read(const string & filename, const string & aux_filename = string());
-
+	/// Make a copy of this pedigree
 	pedigree * clone()
 	{
 		return new pedigree();
 	}
 
+	/// load pedigree from a file, the file is usually saved by \c parentTagger or
+	/// \c parentsTagger. The format is described in the simuPOP reference manual
+	void load(const string & filename);
 
-	/// write the pedigree (and its auxillary information) to files
-	void write(const string & filename, const string & aux_filename = string());
+	/// load information \c name from a information pedigree file and add to this pedigree
+	/// Information \c name should not have existed in the pedigree. The information
+	/// pedigree file \c filename is usually produced by taggers such as \c sexTagger
+	/// \c affectionTagger, \c pyTagger and \c infoTagger.
+	void loadInfo(const string & filename, const string & name);
 
-	/// choose given individuals from the last generation
-	/// The last generation will be shrinked to only have these individuals
+	/// load information \c names from a information pedigree file and add to this pedigree
+	/// Information names in \c names should not have existed in the pedigree.
+	/// pedigree file \c filename is usually produced by taggers such as \c sexTagger
+	/// \c affectionTagger, \c pyTagger and \c infoTagger.
+	void loadInfo(const string & filename, const vectorstr & names);
+
+	/// add an information field to the pedigree, with given initial value
+	void addInfo(const string & name, double init = 0);
+
+	/// Write the pedigree to a file
+	void save(const string & filename);
+
+	/// Save auxiliary information \c name to an information pedigree file
+	void saveInfo(const string & filename, const string & name);
+
+	/// save auxiliary information \c names to an information pedigree file
+	void saveInfo(const string & filename, const vectorstr & names);
+
+	/// Mark individuals \c inds as 'unrelated' in the last generation
+	/// \c removeUnrelated function will remove these individuals from the pdeigree
 	void selectIndividuals(const vectorlu & inds);
 
-	/// mark individuals that are unrelated to the last generation from the pedigree
+	/// mark individuals that are unrelated to the visible individuals at the
+	/// last generation (not marked by selectIndividuals) from the pedigree.
 	void markUnrelated();
 
 	/// remove individuals that are unrelated to the last generation from the pedigree
@@ -162,9 +183,14 @@ private:
 	int m_numParents;
 
 	Pedigree m_paternal;
+	///
 	Pedigree m_maternal;
+	///
 	PedSize m_pedSize;
+	///
 	PedInfo m_info;
+	///
+	vectorstr m_infoNames;
 };
 
 }
