@@ -126,7 +126,7 @@ bool parentTagger::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
-	out << "#\t";
+	out << "#\t" << pop.gen() << '\t';
 	for (size_t i = 0; i < m_subPopSize.size(); ++i)
 		out << m_subPopSize[i] << '\t';
 	out << '\n';

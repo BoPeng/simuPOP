@@ -40,6 +40,7 @@
 
 #include "utility.h"
 #include "misc.h"
+#include "pedigree.h"
 #include "initializer.h"
 #include "outputer.h"
 #include "terminator.h"
@@ -243,6 +244,7 @@ namespace std
 
 %include "utility.h"
 %include "misc.h"
+%include "pedigree.h"
 %include "genoStru.h"
 %include "virtualSubPop.h"
 %include "individual.h"

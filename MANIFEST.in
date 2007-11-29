@@ -39,6 +39,7 @@ include src/mutator.h
 include src/recombinator.h
 include src/tagger.h
 include src/misc.h
+include src/pedigree.h
 include src/virtualSubPop.h
 
 # source files
@@ -64,6 +65,7 @@ include src/mutator.cpp
 include src/recombinator.cpp
 include src/tagger.cpp
 include src/misc.cpp
+include src/pedigree.cpp
 include src/virtualSubPop.cpp
 
 # source generated files
