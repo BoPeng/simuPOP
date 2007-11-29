@@ -5161,6 +5161,133 @@ preview false
 
 \end_layout
 
+\begin_layout Section
+Pedigree
+\end_layout
+
+\begin_layout Standard
+A pedigree records the parent(s) of each individual during evolution.
+ It can be created manually or using tagging operators 
+\family typewriter
+parentTagger
+\family default
+ (tagging one parent) and 
+\family typewriter
+parentsTagger 
+\family default
+(tagging both parents).
+ The pedigree can be analyzed to study various properties of the evolutionary
+ process, manipulated (e.g.
+ removing individuals without offspring), and used to re-realize the evolutionar
+y process using 
+\family typewriter
+pedigreeMating
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+A pedigree file has the following format:
+\end_layout
+
+\begin_layout LyX-Code
+p1 p2 p3 p4 .....
+ # gen sp1 sp2 sp3
+\end_layout
+
+\begin_layout LyX-Code
+p1 p2 p3 p4 .....
+ # gen sp1 sp2 sp3
+\end_layout
+
+\begin_layout LyX-Code
+...
+\end_layout
+
+\begin_layout Standard
+Numbers before # of each line of a pedigree file are the parent(s) of individual
+s at generation 
+\family typewriter
+gen
+\family default
+.
+ If only one parent is used to produce offspring (e.g.
+ using the 
+\family typewriter
+selfMating
+\family default
+ mating scheme), 
+\family typewriter
+parentTagger(output, outputExpr)
+\family default
+ records the index of the parent of each individual (
+\family typewriter
+p...
+\family default
+) in the parental generation.
+ Otherwise, 
+\family typewriter
+parentsTagger(output, outputExpr)
+\family default
+ records the indexes of both parents.
+\end_layout
+
+\begin_layout Standard
+The generation number and the size of subpopulations are listed after the
+ # character.
+ The sum of subpopulation sizes should match the individuals listed before
+ #.
+\end_layout
+
+\begin_layout Standard
+A number of auxillary information pedigrees can be loaded after a pedigree
+ is created.
+ These information pedigree files does not have subpopulation and generation
+ information (does not have character # and numbers after it).
+ If there are 
+\begin_inset Formula $n$
+\end_inset
+
+ individuals at a generation, the corresponding line in an information pedigree
+ file should have 
+\begin_inset Formula $m*n$
+\end_inset
+
+ numbers where 
+\begin_inset Formula $m$
+\end_inset
+
+ is the number of properties for each individual.
+ Information pedigrees can be created by other tagging operators such as
+ 
+\family typewriter
+pyTagger(output, outputExpr)
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+These auxiliary information will be attached to individuals in a pedigree.
+ They will be removed if an individual is removed from the pedigree.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+pedigreeRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Operator References
 \end_layout

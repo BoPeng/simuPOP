@@ -253,6 +253,7 @@ HEADER_FILES = [
     'src/recombinator.h',
     'src/tagger.h',
     'src/misc.h',
+    'src/pedigree.h',
     'src/virtualSubPop.h',
 ]
 
@@ -278,6 +279,7 @@ SOURCE_FILES = [
     'src/recombinator.cpp',
     'src/tagger.cpp',
     'src/misc.cpp',
+    'src/pedigree.cpp',
     'src/virtualSubPop.cpp',
 ]
 
