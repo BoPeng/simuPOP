@@ -1382,7 +1382,7 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
     if quiet in [True, False]:
         simuOptions['Quiet'] = quiet
     if len(debug) > 0:
-        aimuOptions['Debug'].extend(debug)
+        simuOptions['Debug'].extend(debug)
 
 # short = standard
 if simuOptions['AlleleType'] == 'standard':
