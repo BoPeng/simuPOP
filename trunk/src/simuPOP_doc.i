@@ -6592,6 +6592,18 @@ Usage:
 
 Description:
 
+    Return information name of all individuals at generation gen.
+
+Usage:
+
+    x.info(gen, name)
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::info "
+
+Description:
+
     Return information name of  individualidx of subpopulation subPop
     at generation gen.
 
@@ -6805,11 +6817,12 @@ Usage:
 Description:
 
     remove individuals that are unrelated to the last generation from
-    the  pedigree indexes will be adjusted.
+    the  pedigree indexes will be adjusted. WARNING: if
+    adjust_index=false, an invalid  pedigree will be generated
 
 Usage:
 
-    x.removeUnrelated()
+    x.removeUnrelated(adjust_index=True)
 
 "; 
 
