@@ -94,17 +94,18 @@ ULONG pedigree::mother(ULONG gen, SubPopID subPop, ULONG idx)
 	return m_maternal[gen][shift + idx];
 }
 
+
 void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
+	    "Please set number of parents before change the pedigree");
 	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 	    "Generation number " + toStr(gen) + " out of bound (<"
 	    + toStr(m_paternal.size()) + ")");
 	DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
 	    "Father index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_paternal[gen-1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	DBG_FAILIF(gen >= 1 && parent >= m_paternal[gen - 1].size(),
+	    IndexError, "Given parent index is out of bound of the parental population");
 	m_paternal[gen][idx] = parent;
 }
 
@@ -112,15 +113,15 @@ void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
 void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-		
+	    "Please set number of parents before change the pedigree");
+
 	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 	    "Generation number " + toStr(gen) + " out of bound (<"
 	    + toStr(m_paternal.size()) + ")");
 	DBG_FAILIF(idx >= m_maternal[gen].size(), IndexError,
 	    "Mother index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_maternal[gen-1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	DBG_FAILIF(gen >= 1 && parent >= m_maternal[gen - 1].size(),
+	    IndexError, "Given parent index is out of bound of the parental population");
 	m_maternal[gen][idx] = parent;
 }
 
@@ -128,14 +129,14 @@ void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
 void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
+	    "Please set number of parents before change the pedigree");
 	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 	    "Generation number " + toStr(gen) + " out of bound (<"
 	    + toStr(m_paternal.size()) + ")");
 	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
 	    "Father index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_paternal[gen-1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	DBG_FAILIF(gen >= 1 && parent >= m_paternal[gen - 1].size(),
+	    IndexError, "Given parent index is out of bound of the parental population");
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -146,14 +147,14 @@ void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 void pedigree::setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
+	    "Please set number of parents before change the pedigree");
 	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 	    "Generation number " + toStr(gen) + " out of bound (<"
 	    + toStr(m_paternal.size()) + ")");
 	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
 	    "Mother index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_maternal[gen-1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	DBG_FAILIF(gen >= 1 && parent >= m_maternal[gen - 1].size(),
+	    IndexError, "Given parent index is out of bound of the parental population");
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -173,6 +174,24 @@ double pedigree::info(ULONG gen, ULONG idx, const string & name)
 			return m_info[gen][idx][i];
 	DBG_FAILIF(true, ValueError, "Information " + name + " is not found");
 	return 0;
+}
+
+
+vectorf pedigree::info(ULONG gen, const string & name)
+{
+	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
+	    "Generation number " + toStr(gen) + " out of bound (<"
+	    + toStr(m_paternal.size()) + ")");
+	int idx = -1;
+	for (size_t i = 0; i < m_infoNames.size(); ++i)
+		if (m_infoNames[i] == name)
+			idx = i;
+	DBG_FAILIF(idx == -1, ValueError, "Information " + name + " is not found");
+	size_t size = m_paternal[gen].size();
+	vectorf info(size);
+	for (size_t i = 0; i < size; ++i)
+		info[i] = m_info[gen][i][idx];
+	return info;
 }
 
 
@@ -197,7 +216,7 @@ double pedigree::info(ULONG gen, SubPopID subPop, ULONG idx, const string & name
 void pedigree::setInfo(double info, ULONG gen, ULONG idx, const string & name)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
+	    "Please set number of parents before change the pedigree");
 	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 	    "Generation number " + toStr(gen) + " out of bound (<"
 	    + toStr(m_paternal.size()) + ")");
@@ -215,7 +234,7 @@ void pedigree::setInfo(double info, ULONG gen, ULONG idx, const string & name)
 void pedigree::setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const string & name)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
+	    "Please set number of parents before change the pedigree");
 	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
 	    "Generation number " + toStr(gen) + " out of bound (<"
 	    + toStr(m_paternal.size()) + ")");
@@ -231,6 +250,7 @@ void pedigree::setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const
 		}
 	DBG_FAILIF(true, ValueError, "Information " + name + " is not found");
 }
+
 
 vectorlu pedigree::subPopSizes(ULONG gen)
 {
@@ -251,11 +271,12 @@ ULONG pedigree::subPopSize(ULONG gen, SubPopID subPop)
 	return m_pedSize[gen][subPop];
 }
 
+
 void pedigree::addGen(const vectorlu & sizes)
 {
 	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-	
+	    "Please set number of parents before change the pedigree");
+
 	ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
 	m_paternal.push_back(vectorlu(popSize));
 	if (m_numParents == 2)
@@ -268,6 +289,7 @@ void pedigree::addGen(const vectorlu & sizes)
 	}
 	m_pedSize.push_back(sizes);
 }
+
 
 void pedigree::load(const string & filename)
 {
@@ -340,6 +362,7 @@ void pedigree::load(const string & filename)
 void pedigree::loadInfo(const string & filename, const string & name)
 {
 	vectorstr names(1, name);
+
 	loadInfo(filename, names);
 }
 
@@ -482,18 +505,20 @@ void pedigree::selectIndividuals(const vectorlu & inds)
 	DBG_FAILIF(m_paternal.empty(), ValueError,
 	    "Can not select individuals from an empty pedigree");
 
-	vector<bool> used(m_paternal.back().size(), false);
+	size_t size = m_paternal.back().size();
+	vector<bool> used(size, false);
 	vectorlu::const_iterator it = inds.begin();
 	vectorlu::const_iterator it_end = inds.end();
 	for (; it != it_end; ++it) {
-		DBG_FAILIF(*it >= m_paternal.back().size(), IndexError,
+		DBG_FAILIF(*it >= size, IndexError,
 		    "Index exceeded the size of the last generation");
 		used[*it] = true;
 	}
-	for (size_t idx = 0; idx < m_paternal.back().size(); ++idx)
+	for (size_t idx = 0; idx < size; ++idx)
 		if (!used[idx]) {
 			m_paternal.back()[idx] = UnusedIndividual;
-			m_maternal.back()[idx] = UnusedIndividual;
+			if (m_numParents == 2)
+				m_maternal.back()[idx] = UnusedIndividual;
 		}
 }
 
@@ -525,30 +550,16 @@ void pedigree::markUnrelated()
 }
 
 
-void pedigree::removeUnrelated()
+void pedigree::removeUnrelated(bool shift_index)
 {
 	if (m_paternal.size() <= 1)
 		return;
 
 	// starting from the last generation, gen=0 etc will be replaced.
-	for (size_t gen = 0; gen < m_paternal.size() - 1; ++gen) {
-		vectorlu & curGen = m_paternal[gen];
-		vectorlu & nextGen = m_paternal[gen + 1];
-		size_t shift = 0;
-		for (size_t idx = 0; idx < curGen.size(); ++idx)
-			if (curGen[idx] == UnusedIndividual) {
-				// the next generation, with value > idx will be shifted by 1.
-				for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
-					if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
-						nextGen[idx1]--;
-				shift++;
-			}
-	}
-	// maternal
-	if (m_numParents == 2) {
-		for (size_t gen = 0; gen < m_maternal.size() - 1; ++gen) {
-			vectorlu & curGen = m_maternal[gen];
-			vectorlu & nextGen = m_maternal[gen + 1];
+	if (shift_index) {
+		for (size_t gen = 0; gen < m_paternal.size() - 1; ++gen) {
+			vectorlu & curGen = m_paternal[gen];
+			vectorlu & nextGen = m_paternal[gen + 1];
 			size_t shift = 0;
 			for (size_t idx = 0; idx < curGen.size(); ++idx)
 				if (curGen[idx] == UnusedIndividual) {
@@ -558,6 +569,22 @@ void pedigree::removeUnrelated()
 							nextGen[idx1]--;
 					shift++;
 				}
+		}
+		// maternal
+		if (m_numParents == 2) {
+			for (size_t gen = 0; gen < m_maternal.size() - 1; ++gen) {
+				vectorlu & curGen = m_maternal[gen];
+				vectorlu & nextGen = m_maternal[gen + 1];
+				size_t shift = 0;
+				for (size_t idx = 0; idx < curGen.size(); ++idx)
+					if (curGen[idx] == UnusedIndividual) {
+						// the next generation, with value > idx will be shifted by 1.
+						for (size_t idx1 = 0; idx1 < nextGen.size(); ++idx1)
+							if (nextGen[idx1] != UnusedIndividual && nextGen[idx1] + shift > idx)
+								nextGen[idx1]--;
+						shift++;
+					}
+			}
 		}
 	}
 	// adjust m_pedSize

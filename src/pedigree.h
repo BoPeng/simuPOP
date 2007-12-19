@@ -60,25 +60,29 @@ public:
 		return m_paternal[gen].size();
 	}
 
+
 	/// return the number of parents for each individual
 	UINT numParents()
 	{
 		return m_numParents;
 	}
 
+
 	/// Set the number of parents for each individual
 	void setNumParents(int numParents)
 	{
 		DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
-			"Number of parents has to be 1 or 2");
-		m_numParents = numParents;	
+		    "Number of parents has to be 1 or 2");
+		m_numParents = numParents;
 	}
-	
+
+
 	/// Return the number of generations of this pedigree
 	ULONG gen()
 	{
 		return m_paternal.size();
 	}
+
 
 	/// Return the index of the father of individual \c idx at generation \c gen
 	/// The returned index is the absolute index of father in the parental generation
@@ -109,13 +113,16 @@ public:
 
 	/// Set the index of the mother of individual \c idx of subpopulation \c subPop at generation \c gen
 	void setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx);
-	
+
 	/// Return information \c name of individual \c idx at generation \c gen
 	double info(ULONG gen, ULONG idx, const string & name);
 
+	/// Return information \c name of all individuals at generation \c gen
+	vectorf info(ULONG gen, const string & name);
+
 	/// Return information \c name of individual \c idx of subpopulation \c subPop at generation \c gen
 	double info(ULONG gen, SubPopID subPop, ULONG idx, const string & name);
-	
+
 	/// Set information \c name  of individual \c idx at generation \c gen
 	void setInfo(double info, ULONG gen, ULONG idx, const string & name);
 
@@ -123,10 +130,10 @@ public:
 	void setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const string & name);
 
 	/// Add a generation to the existing pedigree, with given subpopulation sizes
-	/// \c subPopSize . All parental indexes and information will be set to zero 
+	/// \c subPopSize . All parental indexes and information will be set to zero
 	/// for the new generation.
 	void addGen(const vectorlu & subPopSize);
-	
+
 	/// Return the subpopulation sizes of generation \c gen
 	vectorlu subPopSizes(ULONG gen);
 
@@ -138,6 +145,7 @@ public:
 	{
 		return new pedigree();
 	}
+
 
 	/// load pedigree from a file, the file is usually saved by \c parentTagger or
 	/// \c parentsTagger. The format is described in the simuPOP reference manual
@@ -177,7 +185,8 @@ public:
 
 	/// remove individuals that are unrelated to the last generation from the pedigree
 	/// indexes will be adjusted.
-	void removeUnrelated();
+	/// WARNING: if adjust_index=false, an invalid pedigree will be generated
+	void removeUnrelated(bool adjust_index = true);
 
 private:
 	int m_numParents;

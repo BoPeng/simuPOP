@@ -6647,6 +6647,13 @@ inheritTaggerRef
 
 
 \backslash
+parentTaggerRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 parentsTaggerRef
 \end_layout
 
@@ -6654,7 +6661,21 @@ parentsTaggerRef
 
 
 \backslash
-parentTaggerRef
+sexTaggerRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+affectionTaggerRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+infoTaggerRef
 \end_layout
 
 \begin_layout Standard
