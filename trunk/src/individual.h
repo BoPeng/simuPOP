@@ -225,10 +225,6 @@ public:
 	 \param index absolute index from the beginning of the genotype, ranging from \c 0
 	   	to <tt> totNumLoci()*ploidy() </tt>
 	 */
-#ifdef SIMUMPI
-	Allele allele(UINT index) const;
-
-#else
 	Allele allele(UINT index) const
 	{
 		CHECKRANGEGENOSIZE(index);
@@ -236,7 +232,6 @@ public:
 	}
 
 
-#endif
 
 	/// return the allele at locus \c index of the \c p-th copy of the chromosomes
 	/**
@@ -244,10 +239,6 @@ public:
 	 \c 0 to <tt> totNumLoci() </tt>
 	 \param p index of the ploidy
 	 */
-#ifdef SIMUMPI
-	Allele allele(UINT index, UINT p) const;
-
-#else
 	Allele allele(UINT index, UINT p) const
 	{
 		CHECKRANGEABSLOCUS(index);
@@ -256,7 +247,6 @@ public:
 	}
 
 
-#endif
 
 	/// return the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
 	/**
@@ -265,10 +255,6 @@ public:
 	 \param p index of the polidy
 	 \param ch index of the chromosome in the \c p-th chromosome set
 	 */
-#ifdef SIMUMPI
-	Allele allele(UINT index, UINT p, UINT ch) const;
-
-#else
 	Allele allele(UINT index, UINT p, UINT ch) const
 	{
 		CHECKRANGELOCUS(ch, index);
@@ -277,8 +263,6 @@ public:
 		return *(m_genoPtr + index + p * totNumLoci() + chromBegin(ch));
 	}
 
-
-#endif
 
 	/// return the name of \c allele(index)
 	string alleleChar(UINT index) const
@@ -316,10 +300,6 @@ public:
 	 \param index index from the begining of genotype, ranging from \c 0
 	   	to <tt> totNumLoci()*ploidy() </tt>
 	 */
-#ifdef SIMUMPI
-	void setAllele(Allele allele, UINT index);
-
-#else
 	void setAllele(Allele allele, UINT index)
 	{
 		CHECKRANGEGENOSIZE(index);
@@ -327,18 +307,12 @@ public:
 	}
 
 
-#endif
-
 	/// set the allele at locus \c index of the \c p-th copy of the chromosomes
 	/**
 	 \param allele allele to be set
 	 \param index index from the begining of the poloidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
 	 \param p index of the poloidy
 	 */
-#ifdef SIMUMPI
-	void setAllele(Allele allele, UINT index, UINT p);
-
-#else
 	void setAllele(Allele allele, UINT index, UINT p)
 	{
 		CHECKRANGEABSLOCUS(index);
@@ -347,8 +321,6 @@ public:
 	}
 
 
-#endif
-
 	/// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
 	/**
 	 \param allele allele to be set
@@ -356,10 +328,6 @@ public:
 	 \param p index of the ploidy
 	 \param ch index of the chromosome in ploidy \c p
 	 */
-#ifdef SIMUMPI
-	void setAllele(Allele allele, UINT index, UINT p, UINT ch);
-
-#else
 	void setAllele(Allele allele, UINT index, UINT p, UINT ch)
 	{
 		CHECKRANGELOCUS(ch, index);
@@ -368,8 +336,6 @@ public:
 		*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch) ) = allele;
 	}
 
-
-#endif
 
 	/// return the sex of an individual, \c 1 for males and \c 2 for females.
 	Sex sex() const
@@ -539,11 +505,7 @@ public:
 	/// CPPONLY end of allele
 	GenoIterator genoEnd() const
 	{
-#ifdef SIMUMPI
-		return m_genoPtr + localGenoSize();
-#else
 		return m_genoPtr + genoSize();
-#endif
 	}
 
 
@@ -551,13 +513,7 @@ public:
 	GenoIterator genoBegin(UINT p) const
 	{
 		CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-		return m_genoPtr + p * localNumLoci();
-
-#else
 		return m_genoPtr + p * totNumLoci();
-
-#endif
 	}
 
 
@@ -565,11 +521,7 @@ public:
 	GenoIterator genoEnd(UINT p) const
 	{
 		CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-		return m_genoPtr + (p + 1) * localNumLoci();
-#else
 		return m_genoPtr + (p + 1) * totNumLoci();
-#endif
 	}
 
 
@@ -736,21 +688,8 @@ protected:
 	/// temporary information
 	SubPopID m_subPopID;
 
-#ifdef SIMUMPI
-	/// pointer to genotype.
-	union {
-		// used by slave node
-		GenoIterator m_genoPtr;
-		// used by master node
-		ULONG m_indIndex;
-	};
-
-	// population ID.
-	ULONG m_popID;
-#else
 	/// pointer to genotype.
 	GenoIterator m_genoPtr;
-#endif
 
 	/// pointer to info
 	InfoIterator m_infoPtr;

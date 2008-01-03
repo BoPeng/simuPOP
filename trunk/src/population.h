@@ -65,12 +65,6 @@ using boost::serialization::make_nvp;
 #include "individual.h"
 #include "virtualSubPop.h"
 
-#ifdef SIMUMPI
-
-#  define SLAVE_CREATE 1
-#  define SLAVE_DESTROY 2
-#endif
-
 namespace simuPOP {
 
 class population;
@@ -170,7 +164,6 @@ public:
 	   individual. For example, if you need to record the parents of each individual
 	   using operator
 	   <tt>parentTagger()</tt>, you will need two fields \c father_idx and \c mother_idx.
-	 \param chromMap For MPI modules, currently unused.
 	 \return no return value. Exception will be thrown when wrong parameters are given.
 	 \sa simulator, baseOperator, mating schemes
 	 \test src_population.log Population initialization and member functions
@@ -186,8 +179,7 @@ public:
 	           const vectorstr & alleleNames = vectorstr(),
 	           const vectorstr & lociNames = vectorstr(),
 	           UINT maxAllele = ModuleMaxAllele,
-	           const vectorstr & infoFields = vectorstr(),
-	           const vectori & chromMap = vectori());
+	           const vectorstr & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor
 	population(const population & rhs);
@@ -2124,11 +2116,6 @@ private:
 	/// selection flags for each subpopulation.
 	/// empty means no selection
 	vector<bool> m_selectionFlags;
-
-#ifdef SIMUMPI
-	/// unique population id, used by slave nodes to identify a population
-	ULONG m_popID;
-#endif
 
 };
 

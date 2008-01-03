@@ -73,15 +73,8 @@ using boost::lowest_bit;
 // in simuPOP_wrap.cpp CPPONLY
 extern "C" PyObject * newcarrayobject(char * buf, char type, int size);
 
-#ifdef SIMUMPI
-#  include "slave.h"
-extern "C" PyObject * newcarrayiterobject(ULONG shift,
-                                          ULONG size, UINT piece_size, vectoru map);
-
-#else
 extern "C" PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
 
-#endif
 extern "C" bool is_carrayobject(PyObject *);
 
 extern "C" int    carray_length(PyObject * a);
@@ -140,7 +133,6 @@ string g_dbgString[DBG_CODE_LENGTH] =
 	"DBG_MATING",
 	"DBG_MIGRATOR",
 	"DBG_PROFILE",
-	"DBG_MPI",
 	"DBG_DEVEL"
 };
 
@@ -594,19 +586,6 @@ PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end
 }
 
 
-#ifdef SIMUMPI
-PyObject * Allele_Vec_As_NumArray(ULONG shift,
-                                  ULONG size, UINT piece_size, vectoru map)
-{
-	PyObject * res = newcarrayiterobject(shift, size, piece_size, map);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
-	return res;
-}
-
-
-#else
-
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 {
 	PyObject * res = newcarrayiterobject(begin, end);
@@ -615,8 +594,6 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	return res;
 }
 
-
-#endif
 
 PyObject * Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
 {
@@ -2670,13 +2647,6 @@ public:
 protected:
     int overflow(int c)
     {
-        /* In the maste slave mode, slave can also output
-		 #ifdef SIMUMPI
-		   				// only head node can output to python output
-		   				if(mpiRank() != 0)
-		   					return 0;
-		 #endif
-		 */
         // write out current buffer
         if (pbase() != pptr() ) {
             // the end of string might not be \0
@@ -2838,16 +2808,6 @@ bool Optimized()
 }
 
 
-bool mpi()
-{
-#ifdef SIMUMPI
-    return true;
-#else
-    return false;
-#endif
-}
-
-
 void Limits()
 {
     cout << "Maximum allele state: " << hex << ModuleMaxAllele << endl;
@@ -2860,68 +2820,6 @@ void Limits()
 
 }
 
-
-#ifdef SIMUMPI
-// global MPI communicator
-// mpi will be finalized if the communicator is destructed.
-/** this is rediculus */
-int g_mpiArgc = 0;
-char * g_mpiArgv = "";
-char ** g_mpiArgvv = &g_mpiArgv;
-mpi::environment g_mpiEnv(g_mpiArgc, g_mpiArgvv);
-comm g_mpiComm;
-ULONG g_uniqueID = 1;
-
-comm::~comm()
-{
-    if (mpiRank() == 0) {
-        int action = SLAVE_TERMINATE;
-        for (size_t node = 1; node < mpiSize(); ++node)
-			send(node, 0, action);
-	}
-}
-
-
-const comm mpiComm()
-{
-    return g_mpiComm;
-}
-
-
-ULONG uniqueID()
-{
-    return g_uniqueID++;
-}
-
-
-#endif
-
-UINT mpiRank()
-{
-#ifdef SIMUMPI
-    return g_mpiComm.rank();
-#else
-    return 0;
-#endif
-}
-
-
-UINT mpiSize()
-{
-#ifdef SIMUMPI
-    return g_mpiComm.size();
-#else
-    return 0;
-#endif
-}
-
-
-void mpiBarrier()
-{
-#ifdef SIMUMPI
-    g_mpiComm.barrier();
-#endif
-}
 
 
 string AlleleType()

@@ -70,50 +70,6 @@ SWIG = 'swig'
 from distutils.core import setup, Extension
 
 
-#
-# UTILITY FUNCTIONS
-#
-# this is borrowed from pypar, since I do not have access to other
-# MPI implementation, I use mpiCC only.
-def getMPIFlags():
-    ''' get and parse result of mpiCC -showme or mpicc -show'''
-    fout = os.popen('mpiCC -show')
-    output = fout.read()
-    fout.close()
-    #
-    if output == '':
-        fout = os.popen('mpiCC -showme')
-        output = fout.read()
-        fout.close()
-    if output == '':
-        return {'mpi': False, 'inc_dirs': [], 'lib_dirs': [], 'libs': [],
-            'def_macros': [], 'undef_macros': []}
-    # now get the include, library dirs and the libs to link with.
-    flags = output.split()
-    inc_dirs = []
-    lib_dirs = []
-    libs = []
-    def_macros = []
-    undef_macros = []
-    for f in flags:
-        if f[:2] == '-I':
-            inc_dirs.append(f[2:])
-        elif f[:2] == '-L':
-            lib_dirs.append(f[2:])
-        elif f[:2] == '-l':
-            libs.append(f[2:])
-        elif f[:2] == '-U':
-            undef_macros.append(f[2:])
-        elif f[:2] == '-D':
-            tmp = f[2:].split('=')
-            if len(tmp) == 1:
-                def_macros.append((tmp[0], None))
-            else:
-                def_macros.append(tuple(tmp))
-    return {'mpi': True, 'inc_dirs': inc_dirs, 'lib_dirs': lib_dirs, 'libs':libs,
-            'def_macros': def_macros, 'undef_macros': undef_macros}
-
-
 def swig_version():
     ''' get the version of swig '''
     fout = os.popen('swig -version')
@@ -236,7 +192,6 @@ HEADER_FILES = [
     'src/genoStru.h',
     'src/individual.h',
     'src/population.h',
-    'src/slave.h',
     'src/simulator.h',
     'src/mating.h',
     'src/operator.h',
@@ -262,7 +217,6 @@ SOURCE_FILES = [
     'src/genoStru.cpp',
     'src/individual.cpp',
     'src/population.cpp',
-    'src/slave.cpp',
     'src/simulator.cpp',
     'src/mating.cpp',
     'src/operator.cpp',
@@ -417,9 +371,6 @@ SIMUPOP_FILES = [
 #
 
 
-# explore availability of mpi library
-MPIFlags = getMPIFlags()
-
 # I use -O option for 'Optimization' and part of my extension code actually
 # depend on this feature (XX_swiginit calls). However, this makes __doc__
 # messages of member functions disappear, as discussed in SWIG user mailing list.
@@ -441,12 +392,6 @@ MACROS = {
     'laop':   [('SIMUPOP_MODULE', 'simuPOP_laop'), ('LONGALLELE', None), ('OPTIMIZED', None)],
     'ba':     [('SIMUPOP_MODULE', 'simuPOP_ba'), ('BINARYALLELE', None) ],
     'baop':   [('SIMUPOP_MODULE', 'simuPOP_baop'), ('BINARYALLELE', None), ('OPTIMIZED', None)],
-    'mpi':    [('SIMUPOP_MODULE', 'simuPOP_mpi'), ('SIMUMPI', None)] + MPIFlags['def_macros'],
-    'opmpi':  [('SIMUPOP_MODULE', 'simuPOP_opmpi'), ('OPTIMIZED', None), ('SIMUMPI', None)] + MPIFlags['def_macros'], 
-    'lampi':  [('SIMUPOP_MODULE', 'simuPOP_lampi'), ('LONGALLELE', None), ('SIMUMPI', None)] + MPIFlags['def_macros'],
-    'laopmpi':[('SIMUPOP_MODULE', 'simuPOP_laopmpi'), ('LONGALLELE', None), ('OPTIMIZED', None), ('SIMUMPI', None)] + MPIFlags['def_macros'],
-    'bampi':  [('SIMUPOP_MODULE', 'simuPOP_bampi'), ('BINARYALLELE', None), ('SIMUMPI', None)] + MPIFlags['def_macros'],
-    'baopmpi':[('SIMUPOP_MODULE', 'simuPOP_baopmpi'), ('BINARYALLELE', None), ('OPTIMIZED', None), ('SIMUMPI', None)] + MPIFlags['def_macros'],
 }
  
 WRAP_INFO = {
@@ -456,12 +401,6 @@ WRAP_INFO = {
     'laop':   ['src/simuPOP_laop_wrap.cpp', 'src/simuPOP_laop.i', '-DLONGALLELE -DOPTIMIZED'],
     'ba':     ['src/simuPOP_ba_wrap.cpp', 'src/simuPOP_ba.i', '-DBINARYALLELE'],
     'baop':   ['src/simuPOP_baop_wrap.cpp', 'src/simuPOP_baop.i', '-DBINARYALLELE -DOPTIMIZED'],
-    'mpi':    ['src/simuPOP_mpi_wrap.cpp', 'src/simuPOP_mpi.i', '-DSIMUMPI'],
-    'opmpi':  ['src/simuPOP_opmpi_wrap.cpp', 'src/simuPOP_opmpi.i', '-DOPTIMIZED -DSIMUMPI'],
-    'lampi':  ['src/simuPOP_lampi_wrap.cpp', 'src/simuPOP_lampi.i', '-DLONGALLELE -DSIMUMPI'],
-    'laopmpi':['src/simuPOP_laopmpi_wrap.cpp', 'src/simuPOP_laopmpi.i', '-DLONGALLELE -DOPTIMIZED -DSIMUMPI'],
-    'bampi':  ['src/simuPOP_bampi_wrap.cpp', 'src/simuPOP_bampi.i', '-DBINARYALLELE -DSIMUMPI'],
-    'baopmpi':['src/simuPOP_baopmpi_wrap.cpp', 'src/simuPOP_baopmpi.i', '-DBINARYALLELE -DOPTIMIZED -DSIMUMPI'],
 }
 
 DESCRIPTION = """
@@ -502,16 +441,10 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
         boost_lib_names = []
         boost_lib_path = None
     else:
-        if 'mpi' in modu:
-            (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-                ['iostreams', 'serialization', 'mpi'], boost_lib_search_paths,
-                boost_lib_prefix, boost_lib_suffix,
-                boost_inc_search_paths, boost_versions)
-        else:
-            (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-                ['iostreams', 'serialization'], boost_lib_search_paths,
-                boost_lib_prefix, boost_lib_suffix,
-                boost_inc_search_paths, boost_versions)
+        (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
+            ['iostreams', 'serialization'], boost_lib_search_paths,
+            boost_lib_prefix, boost_lib_suffix,
+            boost_inc_search_paths, boost_versions)
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
@@ -549,12 +482,6 @@ def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
     if os.name == 'nt':
         res['define_macros'].extend([('BOOST_ALL_NO_LIB', None)])
     res['undef_macros'] = []
-    if 'mpi' in modu:
-        res['include_dirs'].extend(MPIFlags['inc_dirs'])
-        res['library_dirs'].extend(MPIFlags['lib_dirs'])
-        res['libraries'].extend(MPIFlags['libs'])
-        res['define_macros'].extend(MPIFlags['def_macros'])
-        res['undef_macros'].extend(MPIFlags['undef_macros'])
     return res
 
 
@@ -588,10 +515,6 @@ if __name__ == '__main__':
         execfile('simuPOP.release')
     # create source file for each module
     MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
-    #if MPIFlags['mpi']:
-    if False:
-        # feel like compiling mpi version first :-)
-        MODULES = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi'] + MODULES
     SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
     #
     # Generate Wrapping files

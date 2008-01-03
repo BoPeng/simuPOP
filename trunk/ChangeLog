@@ -10,6 +10,8 @@ version 0.8.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: add infoTagger, sexTagger, affectionTagger
   - NEW: add pedigree information handling functions
   - CHG: add more options to functions in hapMapUtil.py
+  - CHG: remove MPI related setup, build and source code (revert to r1393 to retrieve the
+		MPI related code).
 
 version 0.8.2 - (Rev 1370) Nov 19, 2007
   - BUG: Fix saveFstat in simuUtil.py

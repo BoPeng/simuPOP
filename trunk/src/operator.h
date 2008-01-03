@@ -307,13 +307,7 @@ public:
 	/// CPPONLY
 	virtual bool isCompatible(const population & pop)
 	{
-#ifdef SIMUMPI
-		DBG_ASSERT(MPIReady(), ValueError,
-		    "Operator " + __repr__() + " is not MPI ready. ");
 		return true;
-#else
-		return true;
-#endif
 	}
 
 
@@ -331,14 +325,6 @@ public:
 	}
 
 
-	/// determine if this operator can be used in a MPI module
-	/// CPPONLY
-	bool MPIReady()
-	{
-		return ISSETFLAG(m_flags, m_flagMPI);
-	}
-
-
 	/// CPPONLY set that the operator can be applied only for haploid populations
 	void setHaploidOnly()
 	{
@@ -350,13 +336,6 @@ public:
 	void setDiploidOnly()
 	{
 		SETFLAG(m_flags, m_flagDiploid);
-	}
-
-
-	/// CPPONLY set the operator is ready for MPI version
-	void setMPIReady()
-	{
-		SETFLAG(m_flags, m_flagMPI);
 	}
 
 
@@ -509,8 +488,6 @@ private:
 	static const size_t m_flagHaploid = 128;
 	// limited to diploid?
 	static const size_t m_flagDiploid = 256;
-	// can be used for MPI version?
-	static const size_t m_flagMPI = 512;
 
 private:
 	/// starting generation, default to 0

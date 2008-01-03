@@ -27,125 +27,10 @@ using std::ostringstream;
 
 namespace simuPOP {
 
-#ifdef SIMUMPI
-Allele individual::allele(UINT index) const
-{
-	CHECKRANGEGENOSIZE(index);
-	// find out which node has the allele and broadcast it.
-	UINT p = index / totNumLoci();
-	UINT locus = index - p * totNumLoci();
-
-	std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
-	UINT rank = rankOfChrom(chIdx.first);
-	Allele val = 0;
-	if (mpiRank() == rank)
-		val = *(m_genoPtr + chIdx.second +                      // infex in chrom
-		        localChromBegin(chIdx.first) +                  // local chrom begin
-		        p * localNumLoci());
-	broadcast(mpiComm(), val, rank);
-	return val;
-}
-
-
-Allele individual::allele(UINT index, UINT p) const
-{
-	CHECKRANGEABSLOCUS(index);
-	CHECKRANGEPLOIDY(p);
-
-	std::pair<UINT, UINT> chIdx = chromLocusPair(index);
-	UINT rank = rankOfChrom(chIdx.first);
-	Allele val = 0;
-	if (mpiRank() == rank)
-		val = *(m_genoPtr
-		        + index - beginLocus()                        // index is within a  block
-		        + p * localNumLoci());
-	broadcast(mpiComm(), val, rank);
-	return val;
-}
-
-
-Allele individual::allele(UINT index, UINT p, UINT ch) const
-{
-	CHECKRANGELOCUS(ch, index);
-	CHECKRANGEPLOIDY(p);
-	CHECKRANGECHROM(ch);
-
-	UINT rank = rankOfChrom(ch);
-	Allele val = 0;
-	if (mpiRank() == rank)
-		val = *(m_genoPtr + index + localChromBegin(ch)
-		        + p * localNumLoci());
-	broadcast(mpiComm(), val, rank);
-	return val;
-}
-
-
-void individual::setAllele(Allele allele, UINT index)
-{
-	CHECKRANGEGENOSIZE(index);
-
-	// find out which node has the allele and broadcast it.
-	UINT p = index / totNumLoci();
-	UINT locus = index - p * totNumLoci();
-
-	std::pair<UINT, UINT> chIdx = chromLocusPair(locus);
-	UINT rank = rankOfChrom(chIdx.first);
-	if (mpiRank() == rank)
-		*(m_genoPtr                                                               // infex in chrom
-		  + localChromBegin(chIdx.first)
-		  + chIdx.second
-		  + p * localNumLoci()) = allele;
-}
-
-
-// set allele from an index.
-// /**
-//\param allele allele to set
-//\param index index from the begining of genotype
-//\param p on p'th set of chromosome, p=0 by default
-// */
-void individual::setAllele(Allele allele, UINT index, UINT p)
-{
-	CHECKRANGEABSLOCUS(index);
-	CHECKRANGEPLOIDY(p);
-
-	std::pair<UINT, UINT> chIdx = chromLocusPair(index);
-	UINT rank = rankOfChrom(chIdx.first);
-	if (mpiRank() == rank)
-		*(m_genoPtr + chIdx.second + localChromBegin(chIdx.first)
-		  + p * localNumLoci()) = allele;
-}
-
-
-void individual::setAllele(Allele allele, UINT index, UINT p, UINT ch)
-{
-	CHECKRANGELOCUS(ch, index);
-	CHECKRANGEPLOIDY(p);
-	CHECKRANGECHROM(ch);
-
-	UINT rank = rankOfChrom(ch);
-	if (mpiRank() == rank)
-		*(m_genoPtr + index + localChromBegin(ch) +
-		  p * localNumLoci()) = allele;
-}
-
-
-#endif
-
 PyObject * individual::arrGenotype()
 {
 	// this &* is to avoid any possible type mismatch thing.
-	// there is some magic here, for MPI module
-	// PyObject are different from node to node, but the
-	// referred value is the same. The right one is used and
-	// the value is boardcasted.
-#ifdef SIMUMPI
-	// which portion is this piece of array in?
-	return Allele_Vec_As_NumArray(0, genoSize(),
-	           totNumLoci(), locusMap());
-#else
 	return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
-#endif
 }
 
 
@@ -154,13 +39,8 @@ PyObject * individual::arrGenotype()
 PyObject * individual::arrGenotype(UINT p)
 {
 	CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-	return Allele_Vec_As_NumArray(p * totalNumLoci(),
-	           totalNumLoci(), totNumLoci(), locusMap());
-#else
 	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
 	           m_genoPtr + (p + 1) * totNumLoci() );
-#endif
 }
 
 
@@ -169,13 +49,8 @@ PyObject * individual::arrGenotype(UINT p)
 PyObject * individual::arrGenotype(UINT p, UINT ch)
 {
 	CHECKRANGEPLOIDY(p);
-#ifdef SIMUMPI
-	return Allele_Vec_As_NumArray(p * localNumLoci() + chromBegin(ch),
-	           numLoci(ch), totNumLoci(), locusMap());
-#else
 	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
 	           m_genoPtr + p * totNumLoci() + chromEnd(ch));
-#endif
 }
 
 
@@ -218,53 +93,6 @@ individual & individual::copyFrom(const individual & rhs)
 
 bool individual::operator==(const individual & rhs) const
 {
-#ifdef SIMUMPI
-	bool equal = true;
-	if (genoStruIdx() != rhs.genoStruIdx() ) {
-		DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
-		equal = false;
-	}
-
-	if (mpiRank() == 0) {
-		if (ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
-		    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) ) {
-			DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
-			                            << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
-			                            << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
-			                            << endl);
-			equal = false;
-		}
-
-		/*
-
-		   			if(equal)
-		   			{
-		   				for( UINT i=0, iEnd = localInfoSize(); i < iEnd;  ++i)
-		   				{
-		   					if( info(i) != rhs.info(i) )
-		   					{
-		   						DBG_DO(DBG_POPULATION, cout << "Info different" << endl);
-		   						equal = false;
-		   						break;
-		   }
-		   }
-		   }
-		 */
-	}
-
-	for (UINT i = 0, iEnd = localGenoSize(); i < iEnd;  ++i) {
-		// no shift
-		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i) ) {
-			DBG_DO(DBG_POPULATION, cout << "Genotype different" << endl);
-			equal = false;
-			break;
-		}
-	}
-	bool res;
-	reduce(mpiComm(), equal, res, std::logical_and<bool>(), 0);
-	broadcast(mpiComm(), res, 0);
-	return res;
-#else
 	if (genoStruIdx() != rhs.genoStruIdx() ) {
 		DBG_DO(DBG_POPULATION, cout << "Geno stru different" << endl);
 		return false;
@@ -287,7 +115,6 @@ bool individual::operator==(const individual & rhs) const
 	for (UINT i = 0, iEnd = genoSize(); i < iEnd;  ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i) )
 			return false;
-#endif
 	return true;
 }
 

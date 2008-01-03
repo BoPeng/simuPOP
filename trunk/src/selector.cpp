@@ -139,12 +139,7 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 	if (m_len == 0) {
 		m_len = m_loci.size() * ind->ploidy();
 		m_alleles.resize(m_len);
-#ifdef SIMUMPI
-		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end(),
-		                 m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
-#else
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
-#endif
 	}
 
 	DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),

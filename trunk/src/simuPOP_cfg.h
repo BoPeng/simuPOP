@@ -260,7 +260,7 @@ public:
 
 // define DEBUG codes
 // DEbUG_CODE_LENGTH should be the number of debug codes
-#define DBG_CODE_LENGTH 21
+#define DBG_CODE_LENGTH 20
 
 enum DBG_CODE {
 	DBG_ALL = 0,
@@ -282,8 +282,7 @@ enum DBG_CODE {
 	DBG_MATING = 16,
 	DBG_MIGRATOR = 17,
 	DBG_PROFILE = 18,
-	DBG_MPI = 19,
-	DBG_DEVEL = 20
+	DBG_DEVEL = 19
 };
 
 // DBG_NAMES are defined in utility.cpp
@@ -344,11 +343,6 @@ enum DBG_CODE {
 #  define DBG_DO_(expr)
 #endif
 
-#ifdef SIMUMPI
-#  define PENDING_MPI DBG_FAILIF(true, SystemError, "This function is not available in MPI modules")
-#else
-#  define PENDING_MPI
-#endif
 // definition for all mode
 
 // epsilon when during floating point comparison
@@ -370,8 +364,5 @@ enum DBG_CODE {
 #define CHECKRANGESUBPOPMEMBER(ind, sp) DBG_FAILIF(subPopSize(sp) > 0 && ind >= subPopSize(sp), IndexError, "individual index (" + toStr(ind) + ") out of range 0 ~" + toStr(subPopSize(sp) - 1) + " in subpopulation " + toStr(sp))
 #define CHECKRANGEIND(ind) DBG_FAILIF(ind >= popSize(), IndexError, "individual index (" + toStr(ind) + ") is out of range of 0 ~ " + toStr(popSize() - 1))
 #define CHECKRANGEINFO(ind) DBG_FAILIF(ind >= infoSize(), IndexError, "info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(infoSize() - 1))
-#ifdef SIMUMPI
-#  define CHECKRANGELOCALINFO(ind) DBG_FAILIF(ind >= localInfoSize(), IndexError, "Local info index (" + toStr(ind) + ") is out of rage of 0 ~ " + toStr(localInfoSize() - 1))
-#endif
 }
 #endif
