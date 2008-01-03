@@ -172,12 +172,7 @@ double pyPenetrance::penet(individual * ind)
 		m_alleles.resize(m_len);
 		if (m_numArray != NULL)
 			Py_DECREF(m_numArray);
-#ifdef SIMUMPI
-		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end(),
-		                 m_alleles.size(), m_alleles.size(), 0, m_alleles.size());
-#else
 		m_numArray = Allele_Vec_As_NumArray(m_alleles.begin(), m_alleles.end() );
-#endif
 	}
 
 	if (infoSize() > 1) {

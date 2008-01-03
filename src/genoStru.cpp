@@ -26,18 +26,12 @@
 namespace simuPOP {
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
                              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-                             const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields,
-                             const vectori & chromMap)
+                             const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
 	: m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 	m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
 	m_maxAllele(maxAllele),
-	m_infoFields(infoFields),
-	m_chromMap(chromMap)
-#ifdef SIMUMPI
-	, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0),
-	m_localNumLoci(0), m_localGenoSize(0)
-#endif
+	m_infoFields(infoFields)
 {
 #ifdef BINARYALLELE
 	DBG_ASSERT(maxAllele == 1, ValueError,
@@ -113,44 +107,6 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
 	DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele + 1,
 	    "Not all allele names are given. ");
 
-#ifdef SIMUMPI
-	// no information fields for non-head nodes
-	if (mpiRank() != 0)
-		m_infoFields.clear();
-
-	if (m_chromMap.empty())
-		m_chromMap = vectori(m_numChrom, 1);
-	// begining and end chromosome?
-	UINT rank = mpiRank();
-	if (rank == 0 || rank > m_numChrom) {
-		m_beginChrom = 0;
-		m_endChrom = 0;
-	} else if (rank == 1) {
-		m_beginChrom = 0;
-		m_endChrom = m_chromMap[0];
-	} else if (rank <= m_numChrom) {
-		size_t sum = 0;
-		for (i = 0; i < rank - 1; ++i)
-			sum += m_chromMap[i];
-		m_beginChrom = sum;
-		m_endChrom = sum + m_chromMap[i];
-	}
-	m_beginLocus = m_chromIndex[m_beginChrom];
-	m_endLocus = m_chromIndex[m_endChrom];
-	m_localNumLoci = m_endLocus - m_beginLocus;
-	m_localGenoSize = m_localNumLoci * m_ploidy;
-	// local chromosome index
-	m_localChromIndex.resize(m_endChrom - m_beginChrom + 1);
-	for (m_localChromIndex[0] = 0, i = 1; i <= m_endChrom - m_beginChrom; ++i)
-		m_localChromIndex[i] = m_localChromIndex[i - 1] + m_numLoci[i - 1 + m_beginChrom];
-	DBG_DO(DBG_POPULATION, cout << "rank " << rank
-	                            << " begin Locus " << m_beginLocus
-	                            << " end Locus " << m_endLocus
-	                            << " begin Chrom " << m_beginChrom
-	                            << " ebd Chrom " << m_endChrom
-	                            << " local numLoci " << m_localNumLoci
-	                            << " loca genosize " << m_localGenoSize << endl);
-#endif
 }
 
 
@@ -167,9 +123,6 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 	                     (m_lociNames == rhs.m_lociNames) &&
 	                     (m_maxAllele == rhs.m_maxAllele) &&
 	                     (m_infoFields == rhs.m_infoFields)
-#ifdef SIMUMPI
-	                     && (m_chromMap == rhs.m_chromMap)
-#endif
 	                     ))
 		return true;
 	else
@@ -182,8 +135,7 @@ vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure
 
 void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-                                     const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields,
-                                     const vectori & chromMap)
+                                     const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
 {
 	/// only allow for TraitMaxIndex-1 different genotype structures
 	/// As a matter of fact, most simuPOP scripts have only one
@@ -196,7 +148,7 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sex
 	}
 
 	GenoStructure tmp = GenoStructure(ploidy, loci, sexChrom,
-	                        lociPos, chromNames, alleleNames, lociNames, maxAllele, infoFields, chromMap);
+	                        lociPos, chromNames, alleleNames, lociNames, maxAllele, infoFields);
 
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size();
 	     ++it) {
@@ -312,7 +264,7 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 		//
 		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 		return *new GenoStructure(gs1.m_ploidy, loci, sexChrom, lociPos,
-		           chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+		           chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields);
 	} else {
 		vectoru loci = gs1.m_numLoci;
 		loci.insert(loci.end(), gs2.m_numLoci.begin(), gs2.m_numLoci.end());
@@ -331,7 +283,7 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 		}
 		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 		return *new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
-		           chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields, gs1.m_chromMap);
+		           chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields);
 	}
 #undef addLocusName
 }
@@ -370,7 +322,7 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 		newLociNames.push_back(locusName(*loc));
 	}
 	return *new GenoStructure(ploidy(), newNumLoci, sexChrom(), newLociDist,
-	           newChromNames, alleleNames(), newLociNames, maxAllele(), infoFields(), chromMap());
+	           newChromNames, alleleNames(), newLociNames, maxAllele(), infoFields());
 }
 
 
@@ -417,7 +369,7 @@ GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, c
 		}
 	}
 	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
-	           gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
+	           gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields);
 }
 
 
@@ -463,7 +415,7 @@ GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, co
 		}
 	}
 	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
-	           gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields, gs.m_chromMap);
+	           gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields);
 }
 
 
@@ -577,67 +529,5 @@ GenoStructure & GenoStruTrait::struSetInfoFields(const vectorstr & fields)
 	return *gs;
 }
 
-
-#ifdef SIMUMPI
-/// return node rank by chromosome number, according to map on setChromMap
-UINT GenoStruTrait::rankOfChrom(UINT chrom) const
-{
-	vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
-
-	for (size_t i = 0, sum = 0; i < map.size(); ++i) {
-		sum += map[i];
-		if (chrom < sum)
-			return i + 1;
-	}
-	DBG_FAILIF(true, IndexError, "Chromosome " + toStr(chrom) + " is not on chromosome map");
-}
-
-
-/// begin chromosome for a given rank
-UINT GenoStruTrait::beginChromOfRank(UINT rank) const
-{
-	if (rank <= 1)
-		return 0;
-
-	vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
-
-	DBG_ASSERT(rank <= map.size(), IndexError, "Given rank " + toStr(rank) + " is invalid.");
-
-	size_t sum = 0;
-	for (size_t i = 0; i < rank - 1; ++i)
-		sum += map[i];
-	return sum;
-}
-
-
-/// end chromosome for a given rank (actually begin chromosome for the next rank)
-UINT GenoStruTrait::endChromOfRank(UINT rank) const
-{
-	vectori & map = s_genoStruRepository[m_genoStruIdx].m_chromMap;
-
-	DBG_ASSERT(rank <= map.size(), IndexError, "Given rank " + toStr(rank) + " is invalid.");
-	size_t sum = 0;
-	for (size_t i = 0; i < rank; ++i)
-		sum += map[i];
-	return sum;
-}
-
-
-vectoru GenoStruTrait::locusMap()
-{
-	// mpiSize = 4, three data nodes
-	// locusMap has size 4.
-	size_t sz = mpiSize();
-	vectoru map(sz);
-
-	// convert the chromosome map to locusMap
-	for (size_t i = 1; i < sz; ++i)
-		map[i - 1] = beginLocusOfRank(i);
-	map[sz - 1] = endLocusOfRank(sz - 1);
-	return map;
-}
-
-
-#endif
 
 }

@@ -45,13 +45,6 @@
 #include "Python.h"
 #include "simuPOP_cfg.h"
 
-#ifdef SIMUMPI
-#  include "boost/parallel/mpi.hpp"
-#  ifndef SWIG
-namespace mpi = boost::parallel::mpi;
-#  endif
-#endif
-
 #include <iostream>
 using std::ostream;
 using std::iostream;
@@ -240,14 +233,7 @@ PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
 PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
 /// CPPONLY
-#ifdef SIMUMPI
-PyObject * Allele_Vec_As_NumArray(UINT shift, ULONG size,
-                                  UINT trunk_size, vectoru map);
-
-#else
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
-
-#endif
 
 /// CPPONLY
 PyObject * Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
@@ -1367,36 +1353,8 @@ bool initialize();
 /// return \c True if this simuPOP module is optimized
 bool Optimized();
 
-bool mpi();
-
 /// print out system limits
 void Limits();
-
-#ifdef SIMUMPI
-class comm : public mpi::communicator
-{
-public:
-	// the the communicator in node 0 is destroyed,
-	// ask slave nodes to stop
-	~comm();
-};
-
-/// CPPONLY
-const comm mpiComm();
-
-// unique id for a population or other object, used by slave nodes to
-// identify a population
-ULONG uniqueID();
-
-#endif
-
-UINT mpiRank();
-
-/// CPPONLY
-UINT mpiSize();
-
-/// CPPONLY
-void mpiBarrier();
 
 /// return the allele type of the current module. Can be \c binary, \c short, or \c long.
 string AlleleType();

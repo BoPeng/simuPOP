@@ -22,7 +22,6 @@ include src/utility.h
 include src/genoStru.h
 include src/individual.h
 include src/population.h
-include src/slave.h
 include src/simulator.h
 include src/mating.h
 include src/operator.h
@@ -48,7 +47,6 @@ include src/utility.cpp
 include src/genoStru.cpp
 include src/individual.cpp
 include src/population.cpp
-include src/slave.cpp
 include src/simulator.cpp
 include src/mating.cpp
 include src/operator.cpp
@@ -76,12 +74,6 @@ include swigpyrun.h
 #include src/simuPOP_laop_wrap.cpp 
 #include src/simuPOP_ba_wrap.cpp
 #include src/simuPOP_baop_wrap.cpp
-#include src/simuPOP_mpi_wrap.cpp
-#include src/simuPOP_opmpi_wrap.cpp 
-#include src/simuPOP_lampi_wrap.cpp
-#include src/simuPOP_laopmpi_wrap.cpp 
-#include src/simuPOP_bampi_wrap.cpp
-#include src/simuPOP_baopmpi_wrap.cpp
 
 # source wrap files
 include src/simuPOP_common.i
@@ -92,12 +84,6 @@ include src/simuPOP_la.i
 include src/simuPOP_laop.i
 include src/simuPOP_ba.i
 include src/simuPOP_baop.i
-include src/simuPOP_mpi.i
-include src/simuPOP_opmpi.i
-include src/simuPOP_lampi.i
-include src/simuPOP_laopmpi.i
-include src/simuPOP_bampi.i
-include src/simuPOP_baopmpi.i
 
 # source python files (modules)
 include src/simuPOP.py
@@ -250,7 +236,6 @@ include test/test_18_penetrance.py
 include test/test_19_utility.py
 include test/test_20_rpy.py
 include test/test_21_performance.py
-include test/test_22_mpi.py
 
 # documentations
 include doc/userGuide.pdf

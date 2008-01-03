@@ -87,12 +87,7 @@ public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 		m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
-		m_chromNames(), m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0),
-		m_chromMap()
-#ifdef SIMUMPI
-		, m_beginChrom(0), m_endChrom(0), m_beginLocus(0), m_endLocus(0),
-		m_localNumLoci(0), m_localGenoSize(0), m_localChromIndex(0)
-#endif
+		m_chromNames(), m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0)
 	{
 	}
 
@@ -111,8 +106,7 @@ public:
 	 */
 	GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
 	              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-	              const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields,
-	              const vectori & chromMap);
+	              const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
 
 	bool operator==(const GenoStructure & rhs);
 
@@ -179,9 +173,6 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const UINT version) const
 	{
-#ifdef SIMUMPI
-		if (mpiRank() == 0) {
-#endif
 		ar & make_nvp("ploidy", m_ploidy);
 		ar & make_nvp("num_of_chrom", m_numChrom);
 		ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
@@ -193,19 +184,11 @@ private:
 		ar & make_nvp("max_allele", m_maxAllele);
 		ar & make_nvp("info_name", m_infoFields);
 		/// do not save load chromosome map
-#ifdef SIMUMPI
-	}
-
-
-#endif
 	}
 
 	template<class Archive>
 	void load(Archive & ar, const UINT version)
 	{
-#ifdef SIMUMPI
-		if (mpiRank() == 0) {
-#endif
 
 		ar & make_nvp("ploidy", m_ploidy);
 		ar & make_nvp("num_of_chrom", m_numChrom);
@@ -239,11 +222,6 @@ private:
 		m_totNumLoci = m_chromIndex[m_numChrom];
 		m_genoSize = m_totNumLoci * m_ploidy;
 		/// do not save load chromosome map
-#ifdef SIMUMPI
-	}
-
-
-#endif
 	}
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -286,35 +264,6 @@ private:
 
 	/// name of the information field
 	vectorstr m_infoFields;
-
-	/// chromosome map for mpi modules
-	/// This field is not saved/restored
-	vectori m_chromMap;
-
-#ifdef SIMUMPI
-	/// begin chromosome for this node
-	/// This field is not saved/restored
-	UINT m_beginChrom;
-
-	/// end chromosome for this node
-	/// This field is not saved/restored
-	UINT m_endChrom;
-
-	/// begin locus for this node
-	UINT m_beginLocus;
-
-	/// end locus for this node
-	UINT m_endLocus;
-
-	/// total number of loci at this node
-	UINT m_localNumLoci;
-
-	/// local genotype size
-	UINT m_localGenoSize;
-
-	/// loci index
-	vectoru m_localChromIndex;
-#endif
 
 	friend class GenoStruTrait;
 };
@@ -359,8 +308,7 @@ public:
 	/// CPPONLY set genotypic structure
 	void setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
 	                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-	                      const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields,
-	                      const vectori & chromMap);
+	                      const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
 
 	/// CPPONLY set an existing geno structure
 	/**
@@ -721,116 +669,6 @@ public:
 		std::swap(m_genoStruIdx, rhs.m_genoStruIdx);
 	}
 
-
-	/// CPPONLY return the distribution of chromosomes across multiple nodes (MPI version of simuPOP only)
-	vectori chromMap() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_chromMap;
-	}
-
-
-#ifdef SIMUMPI
-	/// return node rank by chromosome number, according to the map on \c setChromMap
-	UINT rankOfChrom(UINT chrom) const;
-
-	/// return node rank by locus ID, according to the map on \c setChromMap
-	UINT rankOfLocus(UINT locus) const
-	{
-		return rankOfChrom(chromLocusPair(locus).first);
-	}
-
-
-	/// begin chromosome for a given rank
-	UINT beginChromOfRank(UINT rank) const;
-
-	/// end chromosome for a given rank (actually begin chromosome for the next rank)
-	UINT endChromOfRank(UINT rank) const;
-
-	/// begin locus for a given rank
-	UINT beginLocusOfRank(UINT rank) const
-	{
-		return chromBegin(beginChromOfRank(rank));
-	}
-
-
-	/// end locus for a given rank
-	UINT endLocusOfRank(UINT rank) const
-	{
-		return rank == 0 ? 0 : chromEnd(endChromOfRank(rank) - 1);
-	}
-
-
-	// return the map of locus
-	// rank 1: map[0] - map[1]
-	// rank 2: map[1] - map[2]
-	// ...
-	vectoru locusMap();
-
-	/// begin chromosome for current node
-	UINT beginChrom() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_beginChrom;
-	}
-
-
-	/// end chromosome for current node
-	UINT endChrom() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_endChrom;
-	}
-
-
-	UINT localChromBegin(UINT chrom) const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_localChromIndex[chrom - beginChrom()];
-	}
-
-
-	UINT localChromEnd(UINT chrom) const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_localChromIndex[chrom + 1 - beginChrom()];
-	}
-
-
-	/// begin locus of current rank
-	UINT beginLocus() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_beginLocus;
-	}
-
-
-	/// end locus of current rank
-	UINT endLocus() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_endLocus;
-	}
-
-
-	UINT localNumLoci() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_localNumLoci;
-	}
-
-
-	UINT localGenoSize() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_localGenoSize;
-	}
-
-
-	bool hasChrom(UINT chrom) const
-	{
-		return mpiRank() == rankOfChrom(chrom);
-	}
-
-
-	bool hasLocus(UINT locus) const
-	{
-		return mpiRank() == rankOfLocus(locus);
-	}
-
-
-#endif
 
 private:
 	friend class boost::serialization::access;

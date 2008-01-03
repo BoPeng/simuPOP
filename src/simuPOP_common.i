@@ -34,7 +34,6 @@
 #include "individual.h"
 #include "population.h"
 #include "virtualSubPop.h"
-#include "slave.h"
 #include "operator.h"
 #include "simulator.h"
 
@@ -59,9 +58,6 @@
 
 ////////////////////////// DEFINE CARRAY //////////////////////////
 %{
-#ifdef SIMUMPI
-#include  <boost/parallel/mpi.hpp>
-#endif
 extern "C"
 {
 #include "arraymodule.c"
@@ -249,7 +245,6 @@ namespace std
 %include "virtualSubPop.h"
 %include "individual.h"
 %include "population.h"
-%include "slave.h"
 %include "operator.h"
 
 %extend simuPOP::population

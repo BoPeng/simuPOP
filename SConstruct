@@ -19,9 +19,9 @@
 #          extra library directories, usually to boost library. The path separator is ; under windows.
 #      
 #   targets: one of more of
-#      std op la laop ba baop mpi opmpi lampi laopmpi bampi baopmpi: individual module
+#      std op la laop ba baop: individual module
 #      all = all modules
-#      default to all standard modules (non-MPI version)
+#      default to all modules
 #      install: install specified targets
 #
 #
@@ -34,7 +34,6 @@ import os, sys
 SIMUPOP_REV = '9990'
 SIMUPOP_VER = '9.9.9'
 all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
-mpi_modu = ['mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
 
 if not os.path.isfile('SConstruct'):
     print 'Please run scons from simuPOP source directory.'
@@ -130,16 +129,13 @@ extra_lib = env.StaticLibrary(
 )
 
 targets = []
-# temporarily disable the building of mpi
-for key in all_modu: #  + mpi_modu:
+for key in all_modu:
     if key in BUILD_TARGETS:
         targets.append(key)
 if targets == []:
-    # by default, do not build mpi version
     targets = all_modu 
 if 'all' in BUILD_TARGETS:
-    # if all is specified, build all
-    targets = all_modu # + mpi_modu
+    targets = all_modu
 
 def mod_src(file, mod):
     return file.replace('src', '$build_dir').replace('.cpp', '_%s.cpp' % mod)

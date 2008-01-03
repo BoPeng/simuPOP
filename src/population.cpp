@@ -29,14 +29,6 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
 
-#ifdef SIMUMPI
-#  include <boost/parallel/mpi.hpp>
-namespace mpi = boost::parallel::mpi;
-
-// define action codes
-#  include "slave.h"
-#endif
-
 namespace io = boost::iostreams;
 
 namespace simuPOP {
@@ -52,8 +44,7 @@ population::population(ULONG size,
                        const vectorstr & alleleNames,
                        const vectorstr & lociNames,
                        UINT maxAllele,
-                       const vectorstr & infoFields,
-                       const vectori & chromMap)
+                       const vectorstr & infoFields)
 	:
 	GenoStruTrait(),
 	m_popSize(size),
@@ -99,7 +90,7 @@ population::population(ULONG size,
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 	this->setGenoStructure(ploidy, loci, sexChrom, lociPos, chromNames, alleleNames,
-	    lociNames, maxAllele, infoFields, chromMap);
+	    lociNames, maxAllele, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 	                       << sizeof(Allele) << '*' << genoSize() << endl
@@ -1216,7 +1207,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 
 	// create a population with this size
 	population * pop = new population(0, ploidy(), numLoci(), sexChrom(), lociPos(), sz, 0,
-	                       chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields(), chromMap());
+	                       chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields());
 	// copy individuals over
 	IndIterator from = indBegin();
 	vector<IndIterator> to;
@@ -1363,8 +1354,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
 	    sexChrom(), newLociPos.empty() ? lociPos() : newLociPos,
 	    // chromosome names are discarded
-	    vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields(),
-	    chromMap());
+	    vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields());
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
 		useAncestralPop(depth);
 
