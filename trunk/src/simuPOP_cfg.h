@@ -313,14 +313,14 @@ enum DBG_CODE {
     if (!(cond)) \
 	{ \
 		throw exception(\
-		    toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
+			toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
 	}
 
 #  define DBG_FAILIF(cond, exception, message) \
     if (cond) \
 	{ \
 		throw exception(\
-		    toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
+			toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
 	}
 
 #  define DBG_WARNING(cond, message) \

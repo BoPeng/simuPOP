@@ -104,10 +104,10 @@ public:
 		// rate is empty
 		if (!rate.empty()) {
 			DBG_FAILIF(!m_from.empty() && m_from.size() != rate.size(),
-			    ValueError, "Length of param fromSubPop must match rows of rate matrix.");
+				ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
 			DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
-			    ValueError, "Length of param toSubPop must match columns of rate matrix.");
+				ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
 			setRates(rate, mode);
 		}
@@ -201,13 +201,13 @@ public:
 	{
 		// carray of python list/typle
 		DBG_FAILIF(rateFunc != NULL && !PyCallable_Check(rateFunc),
-		    ValueError, "Passed rateFunc is not a callable Python function.");
+			ValueError, "Passed rateFunc is not a callable Python function.");
 		DBG_FAILIF(indFunc != NULL && !PyCallable_Check(indFunc),
-		    ValueError, "Passed indFunc is not a callable Python function.");
+			ValueError, "Passed indFunc is not a callable Python function.");
 		DBG_FAILIF(rateFunc == NULL && indFunc == NULL,
-		    ValueError, "Please specify either rateFunc or indFunc");
+			ValueError, "Please specify either rateFunc or indFunc");
 		DBG_FAILIF(rateFunc != NULL && indFunc != NULL,
-		    ValueError, "Please specify only one of rateFunc or indFunc");
+			ValueError, "Please specify only one of rateFunc or indFunc");
 
 		if (m_rateFunc != NULL)
 			Py_INCREF(m_rateFunc);
@@ -306,9 +306,9 @@ public:
 		m_subPopID(subPopID), m_randomize(randomize)
 	{
 		DBG_FAILIF(sizes.empty() && proportions.empty(), ValueError,
-		    "Please specify one of subPop and proportions.");
+			"Please specify one of subPop and proportions.");
 		DBG_FAILIF(!sizes.empty() && !proportions.empty(), ValueError,
-		    "Please specify only one of subPop and proportions.");
+			"Please specify only one of subPop and proportions.");
 	}
 
 

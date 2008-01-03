@@ -81,13 +81,13 @@ public:
 	virtual bool apply(population & pop)
 	{
 		DBG_ASSERT(m_keep.size() >= pop.popSize(),
-		    ValueError, "Given subpopid array has a length of "
-		    + toStr(m_keep.size()) + " which is less than population size "
-		    + toStr(pop.popSize()));
+			ValueError, "Given subpopid array has a length of "
+			+ toStr(m_keep.size()) + " which is less than population size "
+			+ toStr(pop.popSize()));
 
 		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i) {
 			DBG_FAILIF(m_keep[i] > 0 && static_cast<size_t>(m_keep[i]) > MaxSubPopID, ValueError,
-			    "Subpop id exceeding maximum allowed subpopulations");
+				"Subpop id exceeding maximum allowed subpopulations");
 			// subpop id is short
 			pop.ind(i).setSubPopID(static_cast<SubPopID>(m_keep[i]));
 		}
@@ -216,12 +216,12 @@ protected:
 
 	/// reset \c father_idx and \c mother_idx
 	void resetParentalIndex(population & pop, const string & fatherField = "father_idx",
-	                        const string & motherField = "mother_idx", const string & indexField = "oldindex");
+		const string & motherField = "mother_idx", const string & indexField = "oldindex");
 
 	/// find offspring and spouse
 	void findOffspringAndSpouse(population & pop, unsigned ancestralDepth, unsigned maxOffspring,
-	                            const string & fatherField, const string & motherField,
-	                            const string & spouseField, const string & offspringField);
+		const string & fatherField, const string & motherField,
+		const string & spouseField, const string & offspringField);
 
 	/// set all subpopulation IDs to \c -1 (remove)
 	void resetSubPopID(population & pop);
@@ -690,7 +690,7 @@ public:
 		m_keepAncestralPops(keepAncestralPops)
 	{
 		DBG_ASSERT(PyObj_Is_IntNumArray(keep), ValueError,
-		    "Passed vector is not a Python/Numeric int array");
+			"Passed vector is not a Python/Numeric int array");
 		Py_INCREF(keep);
 		m_keep = keep;
 	}
@@ -725,15 +725,15 @@ public:
 	virtual population & drawsample(population & pop)
 	{
 		DBG_ASSERT(NumArray_Size(m_keep) >= static_cast<int>(pop.popSize()),
-		    ValueError, "Given subpopid array has a length of "
-		    + toStr(NumArray_Size(m_keep)) + " which is less than population size "
-		    + toStr(pop.popSize()));
+			ValueError, "Given subpopid array has a length of "
+			+ toStr(NumArray_Size(m_keep)) + " which is less than population size "
+			+ toStr(pop.popSize()));
 
 		long * id = reinterpret_cast<long *>(NumArray_Data(m_keep));
 
 		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i) {
 			DBG_ASSERT(static_cast<size_t>(id[i]) <= MaxSubPopID, ValueError,
-			    "Subpop id exceeding maximum allowed subpopulations");
+				"Subpop id exceeding maximum allowed subpopulations");
 			// convert from int to signed short
 			pop.ind(i).setSubPopID(static_cast<SubPopID>(id[i]));
 		}

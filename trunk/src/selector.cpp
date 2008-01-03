@@ -38,8 +38,8 @@ bool selector::apply(population & pop)
 		for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp) {
 			IndInfoIterator fitness = pop.infoBegin(fit_id, *sp, true);
 			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
-			    "Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
-			    toStr(pop.numSubPop()) + ")");
+				"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
+				toStr(pop.numSubPop()) + ")");
 			for (IndIterator it = pop.indBegin(*sp); it.valid(); ++it)
 				*fitness++ = indFitness(& * it, pop.gen());
 			pop.turnOnSelection(*sp);
@@ -70,7 +70,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	strDict::iterator pos = m_dict.find(key);
 
 	DBG_ASSERT(pos != m_dict.end(), ValueError,
-	    "No fitness value for genotype " + key);
+		"No fitness value for genotype " + key);
 
 	return pos->second;
 }
@@ -143,8 +143,8 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 	}
 
 	DBG_FAILIF(static_cast<size_t>(m_len) != ind->ploidy() * m_loci.size(),
-	    SystemError,
-	    "Length of m_len is wrong. Have you changed pop type?");
+		SystemError,
+		"Length of m_len is wrong. Have you changed pop type?");
 
 	UINT pEnd = ind->ploidy();
 	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)

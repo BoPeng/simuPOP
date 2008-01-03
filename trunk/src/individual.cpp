@@ -40,7 +40,7 @@ PyObject * individual::arrGenotype(UINT p)
 {
 	CHECKRANGEPLOIDY(p);
 	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
-	           m_genoPtr + (p + 1) * totNumLoci() );
+		m_genoPtr + (p + 1) * totNumLoci() );
 }
 
 
@@ -50,7 +50,7 @@ PyObject * individual::arrGenotype(UINT p, UINT ch)
 {
 	CHECKRANGEPLOIDY(p);
 	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
-	           m_genoPtr + p * totNumLoci() + chromEnd(ch));
+		m_genoPtr + p * totNumLoci() + chromEnd(ch));
 }
 
 
@@ -101,9 +101,9 @@ bool individual::operator==(const individual & rhs) const
 	if (ISSETFLAG(m_flags, m_flagFemale) != ISSETFLAG(rhs.m_flags, m_flagFemale)
 	    || ISSETFLAG(m_flags, m_flagAffected) != ISSETFLAG(rhs.m_flags, m_flagAffected) ) {
 		DBG_DO(DBG_POPULATION, cout << "Flags different: sex "
-		                            << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
-		                            << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
-		                            << endl);
+			                        << ISSETFLAG(m_flags, m_flagFemale) << " vs " << ISSETFLAG(rhs.m_flags, m_flagFemale) << ", aff "
+			                        << ISSETFLAG(m_flags, m_flagAffected) << " vs " << ISSETFLAG(rhs.m_flags, m_flagAffected)
+			                        << endl);
 		return false;
 	}
 
@@ -172,7 +172,7 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 {
 	out << sexChar() << affectedChar() << " ";
 	DBG_DO(DBG_POPULATION,
-	    out << subPopID() << "," << genoStruIdx() << " "
+		out << subPopID() << "," << genoStruIdx() << " "
 	    );
 	for (UINT p = 0, pEnd = ploidy(); p < pEnd;  ++p) {
 		// copy( genoBegin()+i, genoBegin()+i+totNumLoci(),

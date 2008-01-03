@@ -90,7 +90,7 @@ bool parentTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                      individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
-	    "Both parents are invalid");
+		"Both parents are invalid");
 
 	// record to one or two information fields
 	size_t is = infoSize();
@@ -140,7 +140,7 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
                                       individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
-	    "Both parents are invalid");
+		"Both parents are invalid");
 
 	// record to one or two information fields
 	size_t is = infoSize();
@@ -224,7 +224,7 @@ sexTagger::sexTagger(const vectori & code,
 		m_code.push_back(2);
 	}
 	DBG_FAILIF(m_code.size() != 2, ValueError,
-	    "Please use an array of size 2 to set code for sex.");
+		"Please use an array of size 2 to set code for sex.");
 }
 
 
@@ -256,7 +256,7 @@ affectionTagger::affectionTagger(const vectori & code,
 		m_code.push_back(2);
 	}
 	DBG_FAILIF(m_code.size() != 2, ValueError,
-	    "Please use an array of size 2 to set code for affection status.");
+		"Please use an array of size 2 to set code for affection status.");
 }
 
 
@@ -297,7 +297,7 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 	//
 	vectorf res;
 	PyCallFunc(m_func, "(O)", Double_Vec_As_NumArray(values.begin(), values.end()),
-	    res, PyObj_As_Array);
+		res, PyObj_As_Array);
 
 	DBG_FAILIF(res.size() != numFields, ValueError, "Please return a value for each information field");
 

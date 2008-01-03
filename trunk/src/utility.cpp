@@ -800,7 +800,7 @@ next:
 PyObject * SharedVariables::getVar(const string & name, bool nameError)
 {
 	DBG_ASSERT(m_dict != NULL, ValueError,
-	    "Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
+		"Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
 
 	// go deep in to the string
 	size_t i, s;
@@ -886,7 +886,7 @@ next:
 void SharedVariables::removeVar(const string & name)
 {
 	DBG_ASSERT(m_dict != NULL, ValueError,
-	    "Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
+		"Shared variables are not associated with any Python variable. You populaiton might not be part of a simulator.");
 
 	DBG_DO(DBG_UTILITY, cout << "Removing variable " << name << endl);
 
@@ -1045,7 +1045,7 @@ PyObject * SharedVariables::setStrDictVar(const string & name, const strDict & v
 
 	for (strDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItemString(obj, const_cast<char *>(i->first.c_str()),
-		    v = PyFloat_FromDouble(i->second));
+			v = PyFloat_FromDouble(i->second));
 		Py_XDECREF(v);
 	}
 	return setVar(name, obj);
@@ -1059,8 +1059,8 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 
 	for (intDict::const_iterator i = val.begin(); i != val.end(); ++i) {
 		PyDict_SetItem(obj,
-		    u = PyInt_FromLong(i->first),
-		    v = PyFloat_FromDouble(i->second));
+			u = PyInt_FromLong(i->first),
+			v = PyFloat_FromDouble(i->second));
 		Py_XDECREF(u);
 		Py_XDECREF(v);
 	}
@@ -1098,8 +1098,8 @@ PyObject * load_int(const string & str, size_t & offset)
 
 	while (str[offset + len + 1] != ' ') len++;
 	PyObject * val = PyInt_FromString(
-	                     const_cast<char *>(str.substr(offset + 1, len).c_str()),
-	                     NULL, 0);
+		const_cast<char *>(str.substr(offset + 1, len).c_str()),
+		NULL, 0);
 	offset += len + 2;
 	return val;
 }
@@ -1120,8 +1120,8 @@ PyObject * load_long(const string & str, size_t & offset)
 
 	while (str[offset + len + 1] != ' ') len++;
 	PyObject * val = PyLong_FromString(
-	                     const_cast<char *>(str.substr(offset + 1, len).c_str()),
-	                     NULL, 0);
+		const_cast<char *>(str.substr(offset + 1, len).c_str()),
+		NULL, 0);
 	offset += len + 2;
 	return val;
 }
@@ -1162,7 +1162,7 @@ PyObject * load_string(const string & str, size_t & offset)
 
 	offset += len + 2;
 	DBG_ASSERT(str[offset - 1] == '\0', SystemError,
-	    "Error while loading string from str");
+		"Error while loading string from str");
 
 	return PyString_FromString(s);
 }
@@ -1374,7 +1374,7 @@ void SharedVariables::fromString(const string & vars)
 	obj = loadObj(vars, offset);
 
 	DBG_ASSERT(obj == NULL || vars[offset] == 'e', SystemError,
-	    "Failed to load objects from string");
+		"Failed to load objects from string");
 
 	// remove m_dict
 	if (m_ownVars) {
@@ -1458,7 +1458,7 @@ void Expression::compileExpr(const string & expr)
 		return;
 
 	m_expr = Py_CompileString(const_cast<char *>(expr.c_str()), "<embed>",
-	             Py_eval_input);
+		Py_eval_input);
 
 	if (m_expr == NULL)
 		throw ValueError("Expression '" + expr + "' is not a valid python expression.");
@@ -1478,7 +1478,7 @@ void Expression::compileStmts(const string & stmts)
 
 	// clear leading blank etc for statements ? Not yet.
 	m_stmts = Py_CompileString(const_cast<char *>(stmts.c_str()), "<embed>",
-	              Py_file_input);
+		Py_file_input);
 
 	if (m_stmts == NULL)
 		throw ValueError("statement '" + stmts + "' is not valid.");
@@ -1492,12 +1492,12 @@ PyObject * Expression::evaluate()
 		return NULL;
 
 	DBG_ASSERT(mainVars().dict() != NULL && m_locals != NULL,
-	    ValueError, "Can not evalulate. Dictionary is empty!");
+		ValueError, "Can not evalulate. Dictionary is empty!");
 
 	PyObject * res = NULL;
 	if (m_stmts != NULL) {
 		res = PyEval_EvalCode((PyCodeObject *)m_stmts,
-		          mainVars().dict(), m_locals);
+			mainVars().dict(), m_locals);
 		if (res == NULL) {
 			PyErr_Print();
 			throw SystemError("Evalulation of statements failed");
@@ -1509,7 +1509,7 @@ PyObject * Expression::evaluate()
 
 	if (m_expr != NULL) {
 		res = PyEval_EvalCode((PyCodeObject *)m_expr,
-		          mainVars().dict(), m_locals);
+			mainVars().dict(), m_locals);
 		if (res == NULL) {
 			PyErr_Print();
 			throw SystemError("Evalulation of expression failed");
@@ -1620,7 +1620,7 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 {
 
 	DBG_DO(DBG_UTILITY, cout << "creating " << name << " with parameter " <<
-	    readable << " " << realAppend << " " << useString << " " << endl);
+		readable << " " << realAppend << " " << useString << " " << endl);
 
 	if (useString) {
 		// existing file will be truncated...
@@ -1751,14 +1751,14 @@ string StreamElem::info()
 		out << m_filename << " : read-write file stream ";
 
 		DBG_DO(DBG_UTILITY, out << "(write pos: " << static_cast<fstream *>(m_stream)->tellp()
-		                        << ", read pos: " << static_cast<fstream *>(m_stream)->tellg() << ")");
+			                    << ", read pos: " << static_cast<fstream *>(m_stream)->tellg() << ")");
 
 		break;
 	case SSTREAM:
 		out << m_filename << " : string stream. " << endl;
 
 		DBG_DO(DBG_UTILITY, out << "(write pos: " << static_cast<stringstream *>(m_stream)->tellp()
-		                        << ", read pos: " << static_cast<stringstream *>(m_stream)->tellg() << ")");
+			                    << ", read pos: " << static_cast<stringstream *>(m_stream)->tellg() << ")");
 
 		break;
 	}
@@ -1791,7 +1791,7 @@ ostream * OstreamManager::getOstream(const string & name, bool readable,  bool r
 		DBG_DO(DBG_UTILITY, cout << "Create new file " << name << endl);
 
 		return m_ostreams.insert(ostreamMapValue(name,
-		               StreamElem(name, readable, realAppend, useString))).first->second.stream();
+				StreamElem(name, readable, realAppend, useString))).first->second.stream();
 	} else {                                                                          // already exist
 
 		DBG_DO(DBG_UTILITY, cout << "Find existing ostream " << name << " of info " << it->second.info() << endl);
@@ -1873,7 +1873,7 @@ void StreamProvider::setOutput(const string & output, const string & outputExpr)
 ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 {
 	DBG_FAILIF(readable && (ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)),
-	    SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
+		SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
 
 	if (ISSETFLAG(m_flags,  m_flagNoOutput) )
 		return cnull();
@@ -1886,7 +1886,7 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 	string filename;
 	if (!m_filenameExpr.empty()) {
 		DBG_ASSERT(dict != NULL, ValueError,
-		    "Need to know local dictionary to evaluate filename expression");
+			"Need to know local dictionary to evaluate filename expression");
 		m_filenameExpr.setLocalDict(dict);
 		m_filename = m_filenameExpr.valueAsString();
 
@@ -1905,14 +1905,14 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 	if (ISSETFLAG(m_flags, m_flagAppend) ) {
 
 		DBG_DO(DBG_UTILITY, cout << "Get a persistent file: "
-		                         << filename << endl);
+			                     << filename << endl);
 
 		return *ostreamManager().getOstream(filename, readable,
-		           ISSETFLAG(m_flags, m_flagRealAppend), ISSETFLAG(m_flags, m_flagUseString));
+			ISSETFLAG(m_flags, m_flagRealAppend), ISSETFLAG(m_flags, m_flagUseString));
 	} else {                                                                          // not in append mode, but check if this file is alreay there
 
 		DBG_DO(DBG_UTILITY, cout << "File is not persistent : "
-		                         << filename << endl);
+			                     << filename << endl);
 
 		if (!ostreamManager().hasOstream(filename) ) {
 			if (readable)
@@ -1932,12 +1932,12 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 		} else {
 
 			DBG_DO(DBG_UTILITY, cout << "file " + filename +
-			    " is already opened as appendable. Use that file instead." << endl);
+				" is already opened as appendable. Use that file instead." << endl);
 
 			RESETFLAG(m_flags, m_flagCloseAfterUse);
 			SETFLAG(m_flags, m_flagAppend);
 			return *ostreamManager().getOstream(filename, readable, ISSETFLAG(m_flags, m_flagRealAppend),
-			           ISSETFLAG(m_flags, m_flagUseString));
+				ISSETFLAG(m_flags, m_flagUseString));
 		}
 	}
 }
@@ -2005,7 +2005,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 		RESETFLAG(m_flags, m_flagUseDefault);
 
 	DBG_DO(DBG_UTILITY, cout << "Analyzed string is " << output << endl
-	                         << "Filename is " << format << endl);
+		                     << "Filename is " << format << endl);
 
 	m_filename = format;
 }
@@ -2054,14 +2054,14 @@ unsigned long RNG::generateRandomSeed()
 	/* Obtain pointers to the CryptoAPI functions
 	   This will fail on some early versions of Win95 */
 	pCryptAcquireContext = (CRYPTACQUIRECONTEXTA)GetProcAddress(
-	                           hAdvAPI32, "CryptAcquireContextA");
+		hAdvAPI32, "CryptAcquireContextA");
 	if (pCryptAcquireContext == NULL) {
 		DBG_WARNING(true, "Failed to get process address of CryptAcquireContextA");
 		return static_cast<unsigned long>(time(NULL));
 	}
 
 	CRYPTGENRANDOM pCryptGenRandom = (CRYPTGENRANDOM)GetProcAddress(
-	                                     hAdvAPI32, "CryptGenRandom");
+		hAdvAPI32, "CryptGenRandom");
 	if (pCryptGenRandom == NULL) {
 		DBG_WARNING(true, "Failed to get process address of CryptGenRandom");
 		return static_cast<unsigned long>(time(NULL));
@@ -2070,7 +2070,7 @@ unsigned long RNG::generateRandomSeed()
 	/* Acquire context */
 	HCRYPTPROV hCryptProv = 0;
 	if (!pCryptAcquireContext(&hCryptProv, NULL, NULL,
-	        PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+			PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
 		DBG_WARNING(true, "Can not acquire context of CryptAcquireContextA");
 		return static_cast<unsigned long>(time(NULL));
 	}
@@ -2140,14 +2140,14 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 				m_RNG = gsl_rng_alloc(*t);
 
 				DBG_ASSERT(gsl_rng_max(m_RNG) >= MaxRandomNumber && gsl_rng_min(m_RNG) == 0,
-				    ValueError, "You chosen random number generator can not generate full range of int.");
+					ValueError, "You chosen random number generator can not generate full range of int.");
 				break;
 			}
 		}
 
 		if (*t == 0)
 			throw SystemError("GSL_RNG_TYPE=" + toStr(rng_name)
-			    + " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListAllRNG()");
+				+ " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListAllRNG()");
 	} else {
 		// free current RNG
 		if (m_RNG != NULL)
@@ -2294,7 +2294,7 @@ void BernulliTrials::setAll(size_t idx, bool v)
 
 	DBG_ASSERT(BITOFF(m_table[idx].begin()) == 0, SystemError, "Start of a vector<bool> is not 0");
 	DBG_ASSERT(BITPTR(m_table[idx].begin()) == m_pointer[idx],
-	    SystemError, "Pointers mismatch");
+		SystemError, "Pointers mismatch");
 
 	size_t blk = m_N / WORDBIT;
 	size_t rest = m_N - blk * WORDBIT;
@@ -2629,7 +2629,7 @@ void gsl_error_handler(const char * reason, const char *,
                        int, int gsl_errno)
 {
     throw SystemError("GSL Error " + toStr(gsl_errno) + ":\t"
-        + reason);
+		+ reason);
 }
 
 
@@ -2821,7 +2821,6 @@ void Limits()
 }
 
 
-
 string AlleleType()
 {
 #ifdef LONGALLELE
@@ -2896,7 +2895,7 @@ const string fileExtension(const string & filename)
     if (last_dot != string::npos &&
         (last_slash == string::npos || last_dot > last_slash))
 		return filename.substr(last_dot + 1,
-		           filename.size() - (last_dot + 1));
+			filename.size() - (last_dot + 1));
     else
 		return string();
 }
@@ -2908,7 +2907,7 @@ const string fileExtension(const string & filename)
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 {
     DBG_ASSERT(BITOFF(fr) < WORDBIT, SystemError,
-        "Your vector<bool> implementation is different...");
+		"Your vector<bool> implementation is different...");
 
     WORDTYPE * fr_p = BITPTR(fr);
     WORDTYPE * to_p = BITPTR(to);
@@ -3195,7 +3194,7 @@ void testCopyGenotype()
 			continue;
         size_t length = rng().randInt(500);
         copyGenotype(from.begin() + from_idx,
-            to.begin() + to_idx, length);
+			to.begin() + to_idx, length);
         if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=
             vectora(to.begin() + to_idx, to.begin() + to_idx + length)) {
             cout << "Copying: " << vectora(from.begin() + from_idx, from.begin() + from_idx + length) << '\n'
@@ -3203,7 +3202,7 @@ void testCopyGenotype()
                  << "Index From: " << from_idx << " to: " << to_idx << " length: " << length << endl;
             // the error message can not be shown
             throw SystemError("Allele copy test for your system fails.\n"
-                              "Please email simuPOP mailing list with detailed os and compiler information");
+				              "Please email simuPOP mailing list with detailed os and compiler information");
 		}
 	}
 }

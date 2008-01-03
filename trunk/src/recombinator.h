@@ -126,7 +126,7 @@ public:
 	ULONG recCount(size_t locus)
 	{
 		DBG_ASSERT(locus < m_recCount.size(), IndexError,
-		    "locus index " + toStr(locus) + " is out of range");
+			"locus index " + toStr(locus) + " is out of range");
 		return m_recCount[locus];
 	}
 
@@ -141,32 +141,32 @@ public:
 	/// apply the recombinator during mating
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
-	                               RawIndIterator offspring,
-	                               individual * dad = NULL,
-	                               individual * mom = NULL);
+		RawIndIterator offspring,
+		individual * dad = NULL,
+		individual * mom = NULL);
 
 private:
 	// this function implement how to recombine
 	// parental chromosomes and set one copy of offspring chromosome
 	// bt contains the bernulli trailer
 	void recombine(
-	               individual * parent,                                             // one of the parent
-	               RawIndIterator & offspring,                                      // offspring
-	               int offPloidy,                                                   // which offspring ploidy to fill
-	               BernulliTrials & bt,
-	               const vectoru & recBeforeLoci,
-	               bool setSex = false);
+		individual * parent,                                                        // one of the parent
+		RawIndIterator & offspring,                                                 // offspring
+		int offPloidy,                                                              // which offspring ploidy to fill
+		BernulliTrials & bt,
+		const vectoru & recBeforeLoci,
+		bool setSex = false);
 
 	/// this function takes intensity, rate, afterLoci, ...
 	/// inputs and return a bernulli trailer and a recBeforeLoci
 	/// vector.
 	void prepareRecRates(population & pop,
-	                     double intensity,
-	                     vectorf rate,
-	                     vectoru afterLoci,                                 //
-	                     bool sexChrom,                                     // whether or not recombine the last chromosome
-	                     vectoru & recBeforeLoci,                           // return before loci vector
-	                     vectorf & vecP);                                   // return recombination rate
+		double intensity,
+		vectorf rate,
+		vectoru afterLoci,                                                  //
+		bool sexChrom,                                                      // whether or not recombine the last chromosome
+		vectoru & recBeforeLoci,                                            // return before loci vector
+		vectorf & vecP);                                                    // return recombination rate
 
 private:
 	/// intensity

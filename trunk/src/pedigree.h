@@ -55,8 +55,8 @@ public:
 	ULONG popSize(ULONG gen)
 	{
 		DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		    "Generation number " + toStr(gen) + " out of bound (<"
-		    + toStr(m_paternal.size()) + ")");
+			"Generation number " + toStr(gen) + " out of bound (<"
+			+ toStr(m_paternal.size()) + ")");
 		return m_paternal[gen].size();
 	}
 
@@ -72,7 +72,7 @@ public:
 	void setNumParents(int numParents)
 	{
 		DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
-		    "Number of parents has to be 1 or 2");
+			"Number of parents has to be 1 or 2");
 		m_numParents = numParents;
 	}
 

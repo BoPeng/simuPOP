@@ -50,8 +50,8 @@ void initializer::setRanges(population & pop)
 Sex initializer::nextSex()
 {
 	DBG_ASSERT(*m_sexItr == int (Male) || *m_sexItr == int (Female),
-	    ValueError, "sex must be array of Male or Female. "
-	    + toStr(*m_sexItr) + " given.");
+		ValueError, "sex must be array of Male or Female. "
+		+ toStr(*m_sexItr) + " given.");
 	Sex s = *m_sexItr++ == 1 ? Male : Female;
 	if (m_sexItr == m_sex.end())
 		m_sexItr = m_sex.begin();
@@ -67,7 +67,7 @@ bool initByFreq::apply(population & pop)
 	initSexIter();
 
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != m_ranges.size(),
-	    ValueError, "Ranges and values should have the same length");
+		ValueError, "Ranges and values should have the same length");
 
 	for (size_t rg = 0; rg < m_ranges.size(); ++rg) {
 		vectorf & alleleFreq = m_alleleFreq.size() == 1 ? m_alleleFreq[0] : m_alleleFreq[rg];
@@ -75,13 +75,13 @@ bool initByFreq::apply(population & pop)
 		ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
 
 		DBG_FAILIF(left > pop.popSize() || right > pop.popSize() || left > right,
-		    ValueError, "Invaid range boundary: " + toStr(left) + " - " + toStr(right - 1));
+			ValueError, "Invaid range boundary: " + toStr(left) + " - " + toStr(right - 1));
 
 		// Weightedsampler ws(rng(), incFreq);
 		Weightedsampler ws(rng(), alleleFreq);
 
 		DBG_ASSERT(fcmp_eq(std::accumulate(alleleFreq.begin(), alleleFreq.end(), 0.), 1),
-		    SystemError, "Allele frequecies should add up to one.");
+			SystemError, "Allele frequecies should add up to one.");
 
 		pop.adjustGenoPosition(true);
 		if (m_identicalInds) {
@@ -93,12 +93,12 @@ bool initByFreq::apply(population & pop)
 						copy(pop.indGenoBegin(left), pop.indGenoEnd(left), pop.indGenoBegin(ind));
 				} else {                                                  // only initialize one set of chromosome
 					ws.get(pop.ind(left).genoBegin(m_atPloidy),
-					    pop.ind(left).genoEnd(m_atPloidy));
+						pop.ind(left).genoEnd(m_atPloidy));
 
 					for (ULONG ind = left + 1; ind != right; ++ind)
 						copy(pop.ind(left).genoBegin(m_atPloidy),
-						    pop.ind(left).genoEnd(m_atPloidy),
-						    pop.ind(ind).genoBegin(m_atPloidy));
+							pop.ind(left).genoEnd(m_atPloidy),
+							pop.ind(ind).genoBegin(m_atPloidy));
 				}
 			} else {
 				// initislize locus by locus
@@ -106,12 +106,12 @@ bool initByFreq::apply(population & pop)
 					// all chromosomes
 					if (m_atPloidy == -1) {
 						ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-						    pop.alleleBegin(*locus, false) + (left + 1) * pop.ploidy() );
+							pop.alleleBegin(*locus, false) + (left + 1) * pop.ploidy() );
 
 						for (ULONG ind = left + 1; ind < right; ++ind)
 							copy(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-							    pop.alleleBegin(*locus, false) + (left + 1) * pop.ploidy(),
-							    pop.alleleBegin(*locus, false) + ind * pop.ploidy());
+								pop.alleleBegin(*locus, false) + (left + 1) * pop.ploidy(),
+								pop.alleleBegin(*locus, false) + ind * pop.ploidy());
 					} else {                                          // only one of the copies (do it one by one?)
 						UINT a = ws.get();
 						for (ULONG ind = left; ind != right; ++ind)
@@ -123,17 +123,17 @@ bool initByFreq::apply(population & pop)
 			if (m_atLoci.empty()) {                                                     // at all loci
 				if (m_atPloidy == -1) {
 					ws.get(pop.genoBegin(false) + left * pop.genoSize(),
-					    pop.genoBegin(false) + right * pop.genoSize());
+						pop.genoBegin(false) + right * pop.genoSize());
 				} else {                                                  // for only one ploidy
 					for (ULONG ind = left; ind != right; ++ind)
 						ws.get(pop.ind(ind).genoBegin(m_atPloidy),
-						    pop.ind(ind).genoEnd(m_atPloidy));
+							pop.ind(ind).genoEnd(m_atPloidy));
 				}
 			} else {                                                          // at certain loci
 				if (m_atPloidy == -1) {
 					for (vectoru::iterator locus = m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
 						ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-						    pop.alleleBegin(*locus, false) + right * pop.ploidy() );
+							pop.alleleBegin(*locus, false) + right * pop.ploidy() );
 				} else {                                                  // for only one ploidy
 					for (vectoru::iterator locus = m_atLoci.begin(); locus != m_atLoci.end(); ++locus) {
 						for (ULONG ind = left; ind != right; ++ind)
@@ -176,8 +176,8 @@ bool initByValue::apply(population & pop)
 					m_value[i].resize(pop.totNumLoci() * pop.ploidy());
 					for (UINT p = 1; p < pop.ploidy(); ++p)
 						copy(m_value[i].begin(),
-						    m_value[i].begin() + pop.totNumLoci(),
-						    m_value[i].begin() + pop.totNumLoci() * p);
+							m_value[i].begin() + pop.totNumLoci(),
+							m_value[i].begin() + pop.totNumLoci() * p);
 				}
 			}
 			if (!m_atLoci.empty() &&
@@ -188,8 +188,8 @@ bool initByValue::apply(population & pop)
 					m_value[i].resize(m_atLoci.size() * pop.ploidy());
 					for (UINT p = 1; p < pop.ploidy(); ++p)
 						copy(m_value[i].begin(),
-						    m_value[i].begin() + m_atLoci.size(),
-						    m_value[i].begin() + m_atLoci.size() * p);
+							m_value[i].begin() + m_atLoci.size(),
+							m_value[i].begin() + m_atLoci.size() * p);
 				}
 			}                                                                                       // case 2
 		}                                                                                           // no proportion
@@ -207,8 +207,8 @@ bool initByValue::apply(population & pop)
 	setRanges(pop);
 
 	DBG_FAILIF(m_proportion.empty() && m_value.size() > 1
-	    && m_value.size() != m_ranges.size(),
-	    ValueError, "Ranges and values should have the same length");
+		&& m_value.size() != m_ranges.size(),
+		ValueError, "Ranges and values should have the same length");
 
 	if (m_proportion.empty() ) {
 		// for each range
@@ -217,7 +217,7 @@ bool initByValue::apply(population & pop)
 			ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
 
 			DBG_FAILIF(left > pop.popSize() || right > pop.popSize() || left > right,
-			    ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
+				ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
 
 			vectori & src = m_value.size() > 1 ? m_value[rg] : m_value[0];
 			size_t srcSz = src.size();
@@ -225,28 +225,27 @@ bool initByValue::apply(population & pop)
 			size_t totNumLoci = pop.totNumLoci();
 
 			for (ULONG ind = left; ind < right; ++ind) {
-				if (m_atLoci.empty())
-				{
+				if (m_atLoci.empty()) {
 					if (m_atPloidy == -1) {           // all copies of chromosome
 						DBG_ASSERT(src.size() == pop.genoSize(), ValueError,
-						    "Length of value does not match geno size");
+							"Length of value does not match geno size");
 						copy(src.begin(), src.end(), pop.indGenoBegin(ind));
 					} else {                                                // one of the copied.
 						/// fixme: check length of src?
 						DBG_ASSERT(src.size() == pop.totNumLoci(), ValueError,
-						    "Ploidy is specified but the length of alleles do not match length of chromosome. val size: ");
+							"Ploidy is specified but the length of alleles do not match length of chromosome. val size: ");
 						copy(src.begin(), src.end(), pop.ind(ind).genoBegin(m_atPloidy));
 					}
 				} else {                                                        // with m_loci
 					if (m_atPloidy == -1) {                                     // all copied of chromosome
 						DBG_ASSERT(src.size() == m_atLoci.size() ||
-						    (src.size() == m_atLoci.size() * pop.ploidy() ),
-						    ValueError, "Length of value does not atLoci size");
+							(src.size() == m_atLoci.size() * pop.ploidy() ),
+							ValueError, "Length of value does not atLoci size");
 						for (size_t loc = 0; loc != srcSz ; ++loc)
 							*(pop.indGenoBegin(ind) + m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci) = src[loc];
 					} else {                                          // one of the copies.
 						DBG_ASSERT(src.size() == m_atLoci.size(), ValueError,
-						    "Ploidy is specified but the length of alleles do not match length of given allele array.");
+							"Ploidy is specified but the length of alleles do not match length of given allele array.");
 						for (size_t loc = 0; loc != srcSz ; ++loc)
 							*(pop.ind(ind).genoBegin(m_atPloidy) +
 							  m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci) = src[loc];
@@ -267,7 +266,7 @@ bool initByValue::apply(population & pop)
 			ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
 
 			DBG_FAILIF(left > pop.popSize() || right > pop.popSize() || left > right,
-			    ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
+				ValueError, "Invaid m_ranges boundary: " + toStr(left) + " - " + toStr(right));
 
 			size_t srcSz = m_value[0].size();
 			size_t lociSz = m_atLoci.size();
@@ -275,20 +274,19 @@ bool initByValue::apply(population & pop)
 			Weightedsampler ws(rng(), m_proportion);
 
 			for (ULONG ind = left; ind < right; ++ind) {
-				if (m_atLoci.empty())                     // whole chromosome or geno
-				{
+				if (m_atLoci.empty()) {                   // whole chromosome or geno
 					// by ploidy
 					if (srcSz == totNumLoci) {
 						if (m_atPloidy == -1) {
 							for (UINT p = 0; p < pop.ploidy(); ++p) {
 								UINT idx = ws.get();
 								copy(m_value[idx].begin(), m_value[idx].end(),
-								    pop.indGenoBegin(ind) + p * totNumLoci);
+									pop.indGenoBegin(ind) + p * totNumLoci);
 							}
 						} else {
 							UINT idx = ws.get();
 							copy(m_value[idx].begin(), m_value[idx].end(),
-							    pop.indGenoBegin(ind) + m_atPloidy * totNumLoci);
+								pop.indGenoBegin(ind) + m_atPloidy * totNumLoci);
 						}
 					} else {                                          // whole geno
 						UINT idx = ws.get();
@@ -296,10 +294,10 @@ bool initByValue::apply(population & pop)
 							copy(m_value[idx].begin(), m_value[idx].end(), pop.indGenoBegin(ind));
 						else  // only one copy of chromosome
 							copy(m_value[idx].begin(), m_value[idx].end(),
-							    pop.ind(ind).genoBegin(m_atPloidy));
+								pop.ind(ind).genoBegin(m_atPloidy));
 					}
-				} else {                                                  /// atLoci is in effect
-					if (srcSz == lociSz) {            // one by one
+				} else {                                                    /// atLoci is in effect
+					if (srcSz == lociSz) {                                  // one by one
 						if (m_atPloidy == -1) {
 							for (UINT p = 0; p < pop.ploidy(); ++p) {
 								UINT idx = ws.get();

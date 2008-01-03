@@ -305,7 +305,7 @@ public:
 	ULONG numOfMale()
 	{
 		DBG_ASSERT(m_numOfMale.size() > 1, ValueError,
-		    "num of male has not been counted.");
+			"num of male has not been counted.");
 
 		return m_numOfMale[ m_numOfMale.size() - 1 ];
 	}
@@ -314,7 +314,7 @@ public:
 	ULONG numOfFemale()
 	{
 		DBG_ASSERT(m_numOfFemale.size() > 1, ValueError,
-		    "num of female has not been counted.");
+			"num of female has not been counted.");
 
 		return m_numOfFemale[ m_numOfFemale.size() - 1 ];
 	}
@@ -323,10 +323,10 @@ public:
 	ULONG numOfMale(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfMale.size() > 1, ValueError,
-		    "num of male has not been counted.");
+			"num of male has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfMale.size() - 1, ValueError,
-		    "subPop index out of range.");
+			"subPop index out of range.");
 
 		return m_numOfMale[ subPop ];
 	}
@@ -335,10 +335,10 @@ public:
 	ULONG numOfFemale(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfFemale.size() > 1, ValueError,
-		    "num of male has not been counted.");
+			"num of male has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfFemale.size() - 1, ValueError,
-		    "subPop index out of range.");
+			"subPop index out of range.");
 
 		return m_numOfFemale[ subPop ];
 	}
@@ -415,7 +415,7 @@ public:
 	ULONG numOfAffected()
 	{
 		DBG_ASSERT(m_numOfAffected.size() > 1, ValueError,
-		    "num of affected has not been counted.");
+			"num of affected has not been counted.");
 
 		return m_numOfAffected[ m_numOfAffected.size() - 1 ];
 	}
@@ -424,7 +424,7 @@ public:
 	ULONG numOfUnaffected()
 	{
 		DBG_ASSERT(m_numOfUnaffected.size() > 1, ValueError,
-		    "num of unaffected has not been counted.");
+			"num of unaffected has not been counted.");
 
 		return m_numOfUnaffected[ m_numOfUnaffected.size() - 1 ];
 	}
@@ -433,10 +433,10 @@ public:
 	ULONG numOfAffected(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfAffected.size() > 1, ValueError,
-		    "num of affected has not been counted.");
+			"num of affected has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfAffected.size() - 1, ValueError,
-		    "subPop index out of range.");
+			"subPop index out of range.");
 
 		return m_numOfAffected[ subPop ];
 	}
@@ -445,10 +445,10 @@ public:
 	ULONG numOfUnaffected(UINT subPop)
 	{
 		DBG_ASSERT(m_numOfUnaffected.size() > 1, ValueError,
-		    "num of unaffected has not been counted.");
+			"num of unaffected has not been counted.");
 
 		DBG_ASSERT(subPop >= m_numOfUnaffected.size() - 1, ValueError,
-		    "subPop index out of range.");
+			"subPop index out of range.");
 
 		return m_numOfUnaffected[ subPop ];
 	}
@@ -604,8 +604,8 @@ public:
 	vectori & numOfAlleles(UINT subPop)
 	{
 		DBG_ASSERT(subPop < m_numOfAlleles.size() - 1, IndexError,
-		    "Subpop index " + toStr(subPop) + " out of range of 0 ~ "
-		    + toStr(m_numOfAlleles.size() - 2));
+			"Subpop index " + toStr(subPop) + " out of range of 0 ~ "
+			+ toStr(m_numOfAlleles.size() - 2));
 		return m_numOfAlleles[subPop];
 	}
 
@@ -619,10 +619,10 @@ public:
 				al.push_back(j);
 
 		DBG_ASSERT(al.size() == static_cast<UINT>(numOfAlleles()[loc]),
-		    SystemError, "Number of alleles at locus " + toStr(loc)
-		    + " does not match.Observed "
-		    + toStr(al.size()) + " previous count: "
-		    + toStr(numOfAlleles()[loc]));
+			SystemError, "Number of alleles at locus " + toStr(loc)
+			+ " does not match.Observed "
+			+ toStr(al.size()) + " previous count: "
+			+ toStr(numOfAlleles()[loc]));
 
 		return al;
 	}
@@ -640,14 +640,14 @@ public:
 
 #ifndef BINARYALLELE
 		DBG_WARNING(m_alleleNum[subPop][loc][0] != 0,
-		    "Having zero (NA) allele, counted as one allele.");
+			"Having zero (NA) allele, counted as one allele.");
 #endif
 
 		DBG_ASSERT(al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
-		    SystemError, "Number of alleles at locus " + toStr(loc)
-		    + " at subpop " + toStr(subPop) + " does not match. Observed "
-		    + toStr(al.size()) + " previous count: "
-		    + toStr(numOfAlleles(subPop)[loc]));
+			SystemError, "Number of alleles at locus " + toStr(loc)
+			+ " at subpop " + toStr(subPop) + " does not match. Observed "
+			+ toStr(al.size()) + " previous count: "
+			+ toStr(numOfAlleles(subPop)[loc]));
 
 		return al;
 	}
@@ -737,7 +737,7 @@ private:
 		while (m_atLoci[idx] != loc && idx < m_atLoci.size() )
 			idx++;
 		DBG_ASSERT(m_atLoci[idx] == loc, ValueError,
-		    "Can not find allele freq for locus " + toStr(loc));
+			"Can not find allele freq for locus " + toStr(loc));
 		return idx;
 	}
 
@@ -767,9 +767,9 @@ private:
 	int resIdx(int idx, UINT subPop)
 	{
 		DBG_ASSERT(subPop < m_heteroNum.size() / m_atLoci.size() - 1,
-		    IndexError,
-		    "Subpop index " + toStr(subPop) + " out of range of 0 ~ "
-		    + toStr(m_heteroNum.size() / m_atLoci.size() - 2));
+			IndexError,
+			"Subpop index " + toStr(subPop) + " out of range of 0 ~ "
+			+ toStr(m_heteroNum.size() / m_atLoci.size() - 2));
 
 		return idx + subPop * m_atLoci.size();
 	}
@@ -950,7 +950,7 @@ private:
 			idx++;
 
 		DBG_ASSERT(idx != m_haplotypes.size(), ValueError,
-		    "Can not find haplotype." + toStr(haplo[0]) + ", " + toStr(haplo[1]));
+			"Can not find haplotype." + toStr(haplo[0]) + ", " + toStr(haplo[1]));
 
 		return idx;
 	}
@@ -1071,11 +1071,11 @@ public:
 private:
 	// calculate single allele LD values
 	void calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
-	                 double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
+		double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
 
 	// output statistics
 	void outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
-	              bool valid_delta2, double D, double D_prime, double r2, double delta2);
+		bool valid_delta2, double D, double D_prime, double r2, double delta2);
 
 private:
 	/// need to get allele freq
@@ -1263,10 +1263,10 @@ public:
 
 	// relatedness between individuals
 	fraction relQueller(individual ind1,
-	                    individual ind2);
+		individual ind2);
 
 	fraction relLynch(individual ind1,
-	                  individual ind2);
+		individual ind2);
 
 	// IR measure for individual ind at specified locus
 	fraction relIR(individual ind1, int locus);
@@ -1276,7 +1276,7 @@ public:
 
 	// REL measure for individual ind at specified locus
 	fraction relRel(individual ind1,
-	                individual ind2,  int locus);
+		individual ind2,  int locus);
 
 	// between group i and j if method=REL_Queller and REL_Lynch
 	/// for group i and locus j otherwise

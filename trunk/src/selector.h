@@ -223,8 +223,8 @@ public:
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
-		                                                     static_cast<double>(loci.size()))),
-		    ValueError, "Please specify fitness for each combination of genotype.");
+															 static_cast<double>(loci.size()))),
+			ValueError, "Please specify fitness for each combination of genotype.");
 	};
 
 	virtual ~maSelector()
@@ -302,7 +302,7 @@ public:
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
 		for (vectorop::const_iterator s = selectors.begin(), sEnd = selectors.end(); s != sEnd; ++s) {
 			DBG_ASSERT( (*s)->__repr__().substr(10, 8) == "selector", ValueError,
-			    "Expecting a list of fitness calculator. Given " + (*s)->__repr__());
+				"Expecting a list of fitness calculator. Given " + (*s)->__repr__());
 			m_selectors.push_back( (*s)->clone());
 		}
 	};
@@ -388,7 +388,7 @@ public:
 		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
-		    "Please specify susceptibility loci");
+			"Please specify susceptibility loci");
 	};
 
 	/// destructor

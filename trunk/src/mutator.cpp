@@ -76,7 +76,7 @@ bool mutator::apply(population & pop)
 	if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
 		initialize(pop);
 		DBG_DO(DBG_MUTATOR, cout << "Reinitialize mutator at loci" << m_loci <<
-		    " at rate " << m_rate << endl);
+			" at rate " << m_rate << endl);
 	}
 
 	DBG_DO(DBG_MUTATOR, cout << "Mutate replicate " << pop.rep() << endl);
@@ -94,7 +94,7 @@ bool mutator::apply(population & pop)
 				// alleleBegin is *not* ordered, so the mutation is random
 				AlleleRef ptr = *(pop.alleleBegin(locus, false) + pos);
 				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
-				                         << " of individual " << (pos / pop.ploidy()) << " from " << int (ptr));
+					                     << " of individual " << (pos / pop.ploidy()) << " from " << int (ptr));
 				mutate(ptr);
 				DBG_DO(DBG_MUTATOR, cout << " to " << int (ptr) << endl);
 #else
@@ -178,11 +178,11 @@ void pyMutator::mutate(AlleleRef allele)
 	PyCallFunc(m_func, "(i)", static_cast<int>(allele), resInt, PyObj_As_Int);
 #ifdef BINARYALLELE
 	DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
-	    "Can only mutate to 0 or 1 in binary mode.");
+		"Can only mutate to 0 or 1 in binary mode.");
 	allele = resInt != 0;
 #else
 	DBG_ASSERT(static_cast<unsigned>(resInt) <= ModuleMaxAllele, ValueError,
-	    "Mutated to an allele greater than maximum allowed allele value");
+		"Mutated to an allele greater than maximum allowed allele value");
 	allele = static_cast<Allele>(resInt);
 #endif
 }

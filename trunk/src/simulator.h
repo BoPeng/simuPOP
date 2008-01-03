@@ -186,7 +186,7 @@ public:
 	population & pop(UINT rep) const
 	{
 		DBG_FAILIF(rep >= m_numRep, IndexError,
-		    "replicate index out of range. From 0 to numRep()-1 ");
+			"replicate index out of range. From 0 to numRep()-1 ");
 
 		return *m_ptrRep[rep];
 	}
@@ -222,7 +222,7 @@ public:
 	void setPopulation(population & pop, UINT rep)
 	{
 		DBG_FAILIF(rep >= m_numRep, IndexError,
-		    "replicate index out of range. From 0 to numRep()-1 ");
+			"replicate index out of range. From 0 to numRep()-1 ");
 		// get a copy of population
 		delete m_ptrRep[rep];
 		m_ptrRep[rep] = new population(pop);
@@ -340,9 +340,9 @@ public:
 	   genertion is the -1 genertion if no ending genertion is given?
 	 */
 	bool evolve(const vectorop & ops,
-	            const vectorop & preOps = vectorop(),
-	            const vectorop & postOps = vectorop(),
-	            int end = -1, bool dryrun = false);
+		const vectorop & preOps = vectorop(),
+		const vectorop & postOps = vectorop(),
+		int end = -1, bool dryrun = false);
 
 	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
 	/**
@@ -532,8 +532,8 @@ private:
 
 /// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml.
 simulator & LoadSimulator(const string & file,
-                          mating & mate,
-                          string format = "auto");
+	mating & mate,
+	string format = "auto");
 
 }
 #endif

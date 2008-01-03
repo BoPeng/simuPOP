@@ -45,7 +45,7 @@ void migrator::setRates(const matrix & rate, int mode)
 	if (m_mode != MigrByProbability && m_mode != MigrByProportion
 	    && m_mode != MigrByCounts)
 		throw ValueError("Migration mode can only be MigrByProbability), "
-		                 " MigrByProportion or MigrByCounts");
+			             " MigrByProportion or MigrByCounts");
 
 	// check parameters
 	for (UINT i = 0; i < szFrom; ++i) {
@@ -113,7 +113,7 @@ bool migrator::apply(population & pop)
 				toIndex = ws.get();
 
 				DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
-				    "Return index out of range.");
+					"Return index out of range.");
 
 				// rateSize==toSize (no i->i addition)
 				//   toIndex < toSize
@@ -203,7 +203,7 @@ bool pyMigrator::apply(population & pop)
 		// if pop is valid?
 		if (indObj == NULL)
 			throw SystemError("Could not pass population to the provided function. \n"
-			                  "Compiled with the wrong version of SWIG?");
+				              "Compiled with the wrong version of SWIG?");
 
 		// loci
 		if (!m_loci.empty()) {
