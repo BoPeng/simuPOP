@@ -185,7 +185,7 @@ public:
 	{
 
 		DBG_FAILIF(m_alleleFreq.empty(),
-		    IndexError, "Should specify one of alleleFreq, alleleFreqs");
+			IndexError, "Should specify one of alleleFreq, alleleFreqs");
 
 		for (size_t i = 0; i < m_alleleFreq.size(); ++i)
 			if (fcmp_ne(accumulate(m_alleleFreq[i].begin(), m_alleleFreq[i].end(), 0.), 1.0))
@@ -272,16 +272,16 @@ public:
 		m_value(value), m_proportion(proportions)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-		    IndexError, "male frequency in the population should be in the range of [0,1]");
+			IndexError, "male frequency in the population should be in the range of [0,1]");
 
 		DBG_FAILIF(m_value.empty(), ValueError,
-		    "Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
+			"Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
 
 		DBG_FAILIF(!m_proportion.empty() && m_proportion.size() != m_value.size(), ValueError,
-		    "If proportions are given, its length should match that of values.");
+			"If proportions are given, its length should match that of values.");
 
 		DBG_FAILIF(!m_proportion.empty() && fcmp_ne(accumulate(m_proportion.begin(), m_proportion.end(), 0.0), 1),
-		    ValueError, "Proportion should add up to one.");
+			ValueError, "Proportion should add up to one.");
 	}
 
 
@@ -424,9 +424,9 @@ public:
 		              stage, begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-		    IndexError, "male frequency in the population should be in the range of [0,1]");
+			IndexError, "male frequency in the population should be in the range of [0,1]");
 		DBG_ASSERT(PyCallable_Check(func),
-		    ValueError, "Func is not a Python function");
+			ValueError, "Func is not a Python function");
 
 		Py_XINCREF(func);
 		m_func = func;

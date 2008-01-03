@@ -36,26 +36,26 @@ offspringGenerator::offspringGenerator(double numOffspring,
 	m_initialized(false)
 {
 	DBG_FAILIF(mode == MATE_PyNumOffspring && numOffspringFunc == NULL, ValueError,
-	    "Please provide a python function when mode is MATE_PyNumOffspring");
+		"Please provide a python function when mode is MATE_PyNumOffspring");
 	if (numOffspringFunc != NULL) {
 		DBG_ASSERT(PyCallable_Check(numOffspringFunc), ValueError,
-		    "Passed variable is not a callable python function.");
+			"Passed variable is not a callable python function.");
 
 		Py_INCREF(numOffspringFunc);
 		m_numOffspringFunc = numOffspringFunc;
 		m_mode = MATE_PyNumOffspring;
 	}
 	DBG_FAILIF(mode == MATE_BinomialDistribution && maxNumOffspring < 2,
-	    ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
+		ValueError, "If mode is MATE_BinomialDistribution, maxNumOffspring should be > 1");
 	DBG_FAILIF(mode == MATE_UniformDistribution && maxNumOffspring < static_cast<UINT>(numOffspring),
-	    ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
+		ValueError, "If mode is MATE_UniformDistribution, maxNumOffspring should be greater than numOffspring");
 	DBG_FAILIF(mode == MATE_GeometricDistribution && (fcmp_lt(m_numOffspring, 0) || fcmp_gt(m_numOffspring, 1.)),
-	    ValueError, "P for a geometric distribution should be within [0,1], given " + toStr(m_numOffspring));
+		ValueError, "P for a geometric distribution should be within [0,1], given " + toStr(m_numOffspring));
 	DBG_FAILIF(m_mode == MATE_BinomialDistribution && (fcmp_lt(m_numOffspring, 0) || fcmp_gt(m_numOffspring, 1.)),
-	    ValueError, "P for a Bionomial distribution should be within [0,1], given " + toStr(m_numOffspring));
+		ValueError, "P for a Bionomial distribution should be within [0,1], given " + toStr(m_numOffspring));
 	DBG_FAILIF(m_mode == MATE_BinomialDistribution && m_maxNumOffspring < 1,
-	    ValueError, "Max number of offspring should be greater than 1. Given "
-	    + toStr(m_maxNumOffspring));
+		ValueError, "Max number of offspring should be greater than 1. Given "
+		+ toStr(m_maxNumOffspring));
 }
 
 
@@ -102,7 +102,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 		       + static_cast<UINT>(m_numOffspring);
 	default:
 		throw ValueError("Wrong mating numoffspring mode. Should be one of \n"
-		                 "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
+			             "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
 	}
 	//
 	DBG_ASSERT(false, SystemError, "This line should never be reached");
@@ -138,12 +138,12 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
                                                 vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
-	    "Offspring generator is not initialized before used to generate offspring");
+		"Offspring generator is not initialized before used to generate offspring");
 
 	// if population has changed.
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), SystemError,
-	    "Offspring generator is used for two different types of populations. (" +
-	    toStr(m_genoStruIdx) + ", " + toStr(pop.genoStruIdx()) + ")");
+		"Offspring generator is used for two different types of populations. (" +
+		toStr(m_genoStruIdx) + ", " + toStr(pop.genoStruIdx()) + ")");
 
 	// generate numOff offspring per mating, or until it  reaches offEnd
 	UINT count = 0;
@@ -270,13 +270,13 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
                                                     vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
-	    "Offspring is not initialized before used to generate offspring");
+		"Offspring is not initialized before used to generate offspring");
 
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-	    "Offspring generator is used for two different types of populations");
+		"Offspring generator is used for two different types of populations");
 
 	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
-	    "Mendelian offspring generator requires two valid parents");
+		"Mendelian offspring generator requires two valid parents");
 
 	// generate numOffspring offspring per mating
 	UINT count = 0;
@@ -324,10 +324,10 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
                                                   vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
-	    "Offspring is not initialized before used to generate offspring");
+		"Offspring is not initialized before used to generate offspring");
 
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-	    "Offspring generator is used for two different types of populations");
+		"Offspring generator is used for two different types of populations");
 
 	DBG_FAILIF(parent == NULL, ValueError, "selfMating: Parent is NULL");
 	DBG_FAILIF(mom != NULL, ValueError, "selfMating: the second parent should be NULL");
@@ -415,7 +415,7 @@ void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 parentChooser::individualPair sequentialParentsChooser::chooseParents()
 {
 	DBG_ASSERT(initialized(), SystemError,
-	    "Please initialize this parent chooser before using it");
+		"Please initialize this parent chooser before using it");
 
 	individual * dad = NULL;
 	individual * mom = NULL;
@@ -459,9 +459,9 @@ parentChooser::individualPair pedigreeParentsChooser::chooseParents()
 	if (m_pedigree.numParents() == 2)
 		mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
 	DBG_FAILIF(m_index >= m_pedigree.subPopSize(m_gen, m_subPop), IndexError,
-	    "Trying to retrieve more indiviudals (index=" +
-	    toStr(m_index) + " than what are available from the pedigree ("
-	    + toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
+		"Trying to retrieve more indiviudals (index=" +
+		toStr(m_index) + " than what are available from the pedigree ("
+		+ toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
 	m_index++;
 	return std::make_pair(dad, mom);
 }
@@ -475,7 +475,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 		UINT fit_id = pop.infoIdx("fitness");
 		// regardless of sex, get fitness for everyone.
 		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp, true),
-		        pop.infoEnd(fit_id, sp, true)));
+				pop.infoEnd(fit_id, sp, true)));
 	} else
 		// get currently visible individuals. In case that sp is not virtual
 		// pop.subPopSize is called.
@@ -487,7 +487,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 individual * randomParentChooser::chooseParent()
 {
 	DBG_ASSERT(initialized(), SystemError,
-	    "Please initialize this parent chooser before using it");
+		"Please initialize this parent chooser before using it");
 	// FIXME:
 	//
 	// In a virtual subpopulation, because m_begin + ... is ***really** slow
@@ -558,7 +558,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 parentChooser::individualPair randomParentsChooser::chooseParents()
 {
 	DBG_ASSERT(initialized(), SystemError,
-	    "Please initialize this parent chooser before using it");
+		"Please initialize this parent chooser before using it");
 
 	individual * dad = NULL;
 	individual * mom = NULL;
@@ -601,7 +601,7 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 {
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
-	                  " so this python parent chooser can not be used.");
+		              " so this python parent chooser can not be used.");
 #else
 #  ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
@@ -611,21 +611,21 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 	// if pop is valid?
 	DBG_FAILIF(popObj == NULL, SystemError,
-	    "Could not pass population to the provided function. \n"
-	    "Compiled with the wrong version of SWIG?");
+		"Could not pass population to the provided function. \n"
+		"Compiled with the wrong version of SWIG?");
 	PyObject * arglist = Py_BuildValue("(Oi)", popObj, sp);
 	m_generator = PyEval_CallObject(m_func, arglist);
 	Py_XDECREF(arglist);
 
 	// test if m_generator is a generator
 	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
-	    "Passed function is not a python generator");
+		"Passed function is not a python generator");
 
 	m_parIterator = PyObject_GetIter(m_generator);
 
 	// test if m_parIterator is iteratable.
 	DBG_FAILIF(m_parIterator == NULL, ValueError,
-	    "Can not iterate through parent generator");
+		"Can not iterate through parent generator");
 #endif
 	m_initialized = true;
 }
@@ -634,13 +634,13 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 parentChooser::individualPair pyParentsChooser::chooseParents()
 {
 	DBG_ASSERT(initialized(), SystemError,
-	    "Please initialize this parent chooser before using it");
+		"Please initialize this parent chooser before using it");
 
 	PyObject * item = PyIter_Next(m_parIterator);
 	DBG_FAILIF(item == NULL, ValueError,
-	    "User-defined function yield invalid value. This may happen \n"
-	    "if you function does not provide enough parents for the mating \n"
-	    "scheme (a 'while True' statement is recommended).");
+		"User-defined function yield invalid value. This may happen \n"
+		"if you function does not provide enough parents for the mating \n"
+		"scheme (a 'while True' statement is recommended).");
 
 	vectori parents;
 	int parent;
@@ -648,26 +648,26 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 	if (PySequence_Check(item)) {
 		PyObj_As_IntArray(item, parents);
 		DBG_ASSERT(parents.size() == 2, ValueError,
-		    "Returned parents indexes should have size 2");
+			"Returned parents indexes should have size 2");
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parents[0]) < m_size
-		    && static_cast<unsigned>(parents[1]) < m_size,
-		    ValueError, "Returned parent index (" + toStr(parents[0])
-		    + ", and " + toStr(parents[1]) +
-		    ") is greater than subpopulation size " + toStr(m_size));
+			&& static_cast<unsigned>(parents[1]) < m_size,
+			ValueError, "Returned parent index (" + toStr(parents[0])
+			+ ", and " + toStr(parents[1]) +
+			") is greater than subpopulation size " + toStr(m_size));
 #endif
 		Py_DECREF(item);
 		// FIXME: this can be really slow in a virtual population because
 		// visibility between m_begin and m_begin+parents[x] need to
 		// be checked. It should make sense to return individual directly.
 		return std::make_pair(& * (m_begin + parents[0]),
-		           & * (m_begin + parents[1]));
+			& * (m_begin + parents[1]));
 	} else if (PyInt_Check(item) || PyLong_Check(item)) {
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
-		    ValueError, "Returned index (" + toStr(parent) +
-		    ") is greater than subpopulation size " + toStr(m_size));
+			ValueError, "Returned index (" + toStr(parent) +
+			") is greater than subpopulation size " + toStr(m_size));
 #endif
 		Py_DECREF(item);
 		// FIXME: this can be really slow in a virtual population because
@@ -676,7 +676,7 @@ parentChooser::individualPair pyParentsChooser::chooseParents()
 		return parentChooser::individualPair(& * (m_begin + parent), NULL);
 	} else
 		DBG_ASSERT(false, ValueError,
-		    "Invalid type of returned parent index(es)");
+			"Invalid type of returned parent index(es)");
 	// this should not be reached
 	return parentChooser::individualPair(NULL, NULL);
 }
@@ -689,7 +689,7 @@ mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newS
 	m_subPop(subPop), m_virtualSubPop(virtualSubPop), m_weight(weight)
 {
 	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
-	    ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
+		ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
 
 
 	if (newSubPopSizeFunc != NULL) {
@@ -763,8 +763,8 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
 
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
-	    ValueError, "number of subPopulaitons must agree.\n Pre: "
-	    + toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
+		ValueError, "number of subPopulaitons must agree.\n Pre: "
+		+ toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
 }
 
 
@@ -778,7 +778,7 @@ bool mating::mate(population & pop, population & scratch,
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
 		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
-		        scratch.rawIndEnd(sp), ops))
+				scratch.rawIndEnd(sp), ops))
 			return false;
 	if (submit)
 		submitScratch(pop, scratch);
@@ -828,7 +828,7 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 	while (it != offEnd) {
 		individual * parent = pc.chooseParent();
 		DBG_FAILIF(parent == NULL, ValueError,
-		    "Random parent chooser returns invalid parent");
+			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		// record family size, for debug reasons.
@@ -857,7 +857,7 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 	while (it != offEnd) {
 		individual * parent = pc.chooseParent();
 		DBG_FAILIF(parent == NULL, ValueError,
-		    "Random parent chooser returns invalid parent");
+			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		// record family size, for debug reasons.
@@ -883,15 +883,15 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
 		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-		                 "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-		                 "(same sex mating if have to) options to get around this problem.");
+			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+			             "(same sex mating if have to) options to get around this problem.");
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
 		parentChooser::individualPair const parents = pc.chooseParents();
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
-		    "Random parents chooser returns invalid parent");
+			"Random parents chooser returns invalid parent");
 		//
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		// record family size (this may be wrong for the last family)
@@ -928,7 +928,7 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
 		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
-		        scratch.rawIndEnd(sp), ops))
+				scratch.rawIndEnd(sp), ops))
 			return false;
 	if (submit)
 		submitScratch(pop, scratch);
@@ -955,11 +955,11 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 	while (it != offEnd) {
 		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents();
 		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
-		    ValueError, "Imcompatible parents chooser and offspring generator");
+			ValueError, "Imcompatible parents chooser and offspring generator");
 		//
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		DBG_ASSERT(numOff == 1, ValueError,
-		    "Pedigree offspring generator can only generate one offspring each time");
+			"Pedigree offspring generator can only generate one offspring each time");
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(1));
 	}
@@ -987,7 +987,7 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 		individual * const parent = pc.chooseParent();
 		//
 		DBG_FAILIF(parent == NULL, ValueError,
-		    "Random parent chooser returns invalid parent");
+			"Random parent chooser returns invalid parent");
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
@@ -1028,10 +1028,10 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 	vectorf freqRange;
 
 	PyCallFunc(m_freqFunc, "(i)", pop.gen(),
-	    freqRange, PyObj_As_Array);
+		freqRange, PyObj_As_Array);
 
 	DBG_ASSERT(freqRange.size() == m_loci.size() || freqRange.size() == 2 * m_loci.size(),
-	    ValueError, "Length of returned range should have the same or double the number of loci.");
+		ValueError, "Length of returned range should have the same or double the number of loci.");
 
 	vectorlu alleleNum;
 
@@ -1041,7 +1041,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 	countAlleles(pop, -1, m_loci, m_alleles, alleleNum);
 
 	DBG_DO(DBG_MATING, cout << "Range of allele frequencies at generation "
-	                        << pop.gen() << " is " << freqRange << endl);
+		                    << pop.gen() << " is " << freqRange << endl);
 #endif
 
 	// compare integer is easier and more acurate, and we need to make sure
@@ -1062,7 +1062,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 #ifndef OPTIMIZED
 			if (alleleNum[i] == 0 && alleleRange[2 * i] > 0)
 				throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
-				                 "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
+					             "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
 #endif
 		}
 	} else {
@@ -1076,8 +1076,8 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 			alleleRange[2 * i] = static_cast<ULONG>(freqRange[2 * i] * pop.popSize() * pop.ploidy());
 
 			DBG_FAILIF(freqRange[2 * i] > freqRange[2 * i + 1], ValueError,
-			    "Incorrect frequency range: " + toStr(freqRange[2 * i]) +
-			    " - " + toStr(freqRange[2 * i + 1]));
+				"Incorrect frequency range: " + toStr(freqRange[2 * i]) +
+				" - " + toStr(freqRange[2 * i + 1]));
 
 			if (freqRange[2 * i] > 0 && alleleRange[2 * i] == 0)
 				alleleRange[2 * i] = 1;
@@ -1085,7 +1085,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 #ifndef OPTIMIZED
 			if (alleleNum[i] == 0 && alleleRange[2 * i] > 0)
 				throw ValueError("No allele exists so there is no way to reach specified allele frequency.\n"
-				                 "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
+					             "Locus " + toStr(m_loci[i]) + " at generation " + toStr(pop.gen()) );
 #endif
 		}
 	}
@@ -1098,7 +1098,7 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 		countAlleles(scratch, -1, m_loci, m_alleles, alleleNum);
 
 		DBG_DO(DBG_MATING, cout << "mating finished, new count "
-		                        << alleleNum << " range " << alleleRange << endl);
+			                    << alleleNum << " range " << alleleRange << endl);
 		//
 		bool succ = true;
 		for (size_t i = 0; i < m_loci.size(); ++i) {
@@ -1180,7 +1180,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			// if there is no alleles
 			if (numOfAlleles == 0 && expFreq[i] > 0.)
 				throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
-				                 " Generation " + toStr(pop.gen()) );
+					             " Generation " + toStr(pop.gen()) );
 
 			// calculate exp number of affected offspring in the next generation.
 			//
@@ -1189,7 +1189,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			// distribution with p_i beging allele frequency at each subpopulation.
 			// assign these numbers to each subpopulation
 			rng().randMultinomial(static_cast<unsigned int>(pop.popSize() * expFreq[i] * pldy),
-			    curFreq, expAlleles.begin() + numSP * i);
+				curFreq, expAlleles.begin() + numSP * i);
 		}
 	}
 	// simpler case, one subpopulation, or with gieven allele frequency
@@ -1218,7 +1218,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 				// if there is no alleles
 				if (n == 0 && expFreq[numSP * i + sp] > 0.)
 					throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
-					                 " Generation " + toStr(pop.gen()) );
+						             " Generation " + toStr(pop.gen()) );
 #endif
 				expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pldy * expFreq[numSP * i + sp]);
 				if (expFreq[numSP * i + sp] > 0. && expAlleles[numSP * i + sp] == 0)
@@ -1291,8 +1291,8 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 				cout << "Warning: the subpopulation is uni-sex. Mating will continue with same-sex mate" << endl;
 			else
 				throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-				                 "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-				                 "(same sex mating if have to) options to get around this problem.");
+					             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+					             "(same sex mating if have to) options to get around this problem.");
 		}
 
 		// ploidy
@@ -1531,8 +1531,8 @@ pyMating::pyMating(parentChooser & chooser,
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
 	DBG_FAILIF(m_parentChooser->numParents() != 0
-	    && m_parentChooser->numParents() != m_offspringGenerator->numParents(),
-	    ValueError, "Imcompatible parent chooser and offspring generator");
+		&& m_parentChooser->numParents() != m_offspringGenerator->numParents(),
+		ValueError, "Imcompatible parent chooser and offspring generator");
 }
 
 
@@ -1585,7 +1585,7 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 	m_shuffleOffspring(shuffleOffspring)
 {
 	DBG_WARNING(subPop != InvalidSubPopID || virtualSubPop != InvalidSubPopID,
-	    "Parameter subPop or virtualSubPop is specified, but is ignored.");
+		"Parameter subPop or virtualSubPop is specified, but is ignored.");
 
 	vectormating::const_iterator it = matingSchemes.begin();
 	vectormating::const_iterator it_end = matingSchemes.end();
@@ -1648,7 +1648,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			}
 		}
 		DBG_FAILIF(m.empty(), ValueError,
-		    "No mating scheme is available for subpopulation " + toStr(sp));
+			"No mating scheme is available for subpopulation " + toStr(sp));
 		// determine the weight
 		if (m.size() == 1)
 			w_pos[0] = 1.;
@@ -1665,7 +1665,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
 		double overall_neg = std::accumulate(w_neg.begin(), w_neg.end(), 0.);
 		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
-		    "Overall weight is zero");
+			"Overall weight is zero");
 		//
 		vectorlu vspSize(m.size());
 		ULONG all = pop.subPopSize(sp);
@@ -1674,9 +1674,9 @@ bool heteroMating::mate(population & pop, population & scratch,
 			if (fcmp_gt(w_neg[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-				    "Not enough offspring to accommodate specified weight scheme. "
-				    "Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
-				    + " available " + toStr(all) + ".");
+					"Not enough offspring to accommodate specified weight scheme. "
+					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
+					+ " available " + toStr(all) + ".");
 				all -= vspSize[i];
 			}
 		}
@@ -1686,14 +1686,14 @@ bool heteroMating::mate(population & pop, population & scratch,
 			if (fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
-				    "Not enough offspring to accommodate specified weight scheme. "
-				    "Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
-				    + " available " + toStr(all_pos) + ".");
+					"Not enough offspring to accommodate specified weight scheme. "
+					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
+					+ " available " + toStr(all_pos) + ".");
 				all -= vspSize[i];
 			}
 		}
 		DBG_FAILIF(fcmp_eq(overall_pos, 0) && all > 0, ValueError,
-		    "An exact (all negative) weight system is used, but offspring subpopulation size does not match");
+			"An exact (all negative) weight system is used, but offspring subpopulation size does not match");
 
 		// individuals left by floating point calculation is added to
 		// the last non-zero, positive weight virtual subpopulation.
@@ -1705,7 +1705,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 				}
 		}
 		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is "
-		                       << vspSize << endl);
+			                   << vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();
@@ -1713,7 +1713,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectorlu::iterator itSize = vspSize.begin();
 		RawIndIterator ind = scratch.rawIndBegin(sp);
 		DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
-		    "Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");
+			"Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");
 		for (; it != it_end; ++it, ++itSize) {
 			if ((*it)->virtualSubPop() != InvalidSubPopID)
 				pop.activateVirtualSubPop(sp, (*it)->virtualSubPop());
@@ -1732,12 +1732,12 @@ bool heteroMating::mate(population & pop, population & scratch,
 				throw;
 			}
 			DBG_DO(DBG_MATING,
-			    m_famSize.insert(m_famSize.end(), (*it)->m_famSize.begin(),
-			        (*it)->m_famSize.end()););
+				m_famSize.insert(m_famSize.end(), (*it)->m_famSize.begin(),
+					(*it)->m_famSize.end()););
 			ind += *itSize;
 		}
 		DBG_ASSERT(ind == scratch.rawIndEnd(sp), SystemError,
-		    "Maing somehow does not go to the last individual.");
+			"Maing somehow does not go to the last individual.");
 		pop.deactivateVirtualSubPop(sp);
 		// if more than two mating schemes working on the same subpopulation,
 		// it is better to shuffle offspring afterwards,

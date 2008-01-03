@@ -232,7 +232,6 @@ public:
 	}
 
 
-
 	/// return the allele at locus \c index of the \c p-th copy of the chromosomes
 	/**
 	 \param index index from the begining of the \c p-th set of the chromosomes, ranging from
@@ -245,7 +244,6 @@ public:
 		CHECKRANGEPLOIDY(p);
 		return *(m_genoPtr + index + p * totNumLoci() );
 	}
-
 
 
 	/// return the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
@@ -471,7 +469,7 @@ public:
 		int idx = infoIdx(name);
 
 		DBG_ASSERT(idx >= 0, IndexError,
-		    "Info name " + name + " is not a valid info field name");
+			"Info name " + name + " is not a valid info field name");
 		return m_infoPtr[idx];
 	}
 
@@ -490,7 +488,7 @@ public:
 		int idx = infoIdx(name);
 
 		DBG_ASSERT(idx >= 0, IndexError,
-		    "Info name " + name + " is not a valid info field name");
+			"Info name " + name + " is not a valid info field name");
 		m_infoPtr[idx] = value;
 	}
 
@@ -514,6 +512,7 @@ public:
 	{
 		CHECKRANGEPLOIDY(p);
 		return m_genoPtr + p * totNumLoci();
+
 	}
 
 
@@ -811,7 +810,7 @@ public:
 	IndividualIterator operator++(int)
 	{
 		DBG_ASSERT(m_it < m_end, ValueError,
-		    "Can not advance invalid iterator");
+			"Can not advance invalid iterator");
 
 		if (m_allInds)
 			return IndividualIterator(m_it++, m_end, m_allInds);
@@ -830,7 +829,7 @@ public:
 	IndividualIterator operator++()
 	{
 		DBG_ASSERT(m_it < m_end, ValueError,
-		    "Can not advance invalid iterator");
+			"Can not advance invalid iterator");
 		if (m_allInds) {
 			++m_it;
 			return *this;
@@ -840,7 +839,7 @@ public:
 			if ((++m_it)->visible())
 				return *this;
 		DBG_ASSERT(m_it == m_end, IndexError,
-		    "Something wrong with operator++ here");
+			"Something wrong with operator++ here");
 		return *this;
 	}
 
@@ -855,13 +854,13 @@ public:
 			return IndividualIterator(m_it + diff, m_end, m_allInds);
 		IndividualIterator tmp(*this);
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
-		    "Can not advance invalid iterator");
+			"Can not advance invalid iterator");
 		difference_type i = 0;
 		while (i < diff && tmp.m_it < tmp.m_end)
 			if ((++tmp.m_it)->visible())
 				++i;
 		DBG_FAILIF(i != diff, ValueError,
-		    "Can not add to IndIterator");
+			"Can not add to IndIterator");
 		return tmp;
 	}
 
@@ -873,7 +872,7 @@ public:
 			return *this;
 		}
 		DBG_ASSERT(m_it < m_end, ValueError,
-		    "Can not advance invalid iterator");
+			"Can not advance invalid iterator");
 		difference_type i = 0;
 		while (i < diff && m_it < m_end)
 			if ((++m_it)->visible())
@@ -1051,7 +1050,7 @@ public:
 	{
 		if (m_useGappedIterator) {
 			DBG_FAILIF(m_step != rhs.m_step, ValueError,
-			    "Iterator comparison failed");
+				"Iterator comparison failed");
 			return m_ptr != rhs.m_ptr || m_info != rhs.m_info;
 		} else
 			return m_it != rhs.m_it || m_info != rhs.m_info;
@@ -1200,7 +1199,7 @@ public:
 			return m_ptr != rhs.m_ptr;
 		else {
 			DBG_FAILIF(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size, ValueError,
-			    "Iterator comparison fails");
+				"Iterator comparison fails");
 			return m_it != rhs.m_it || m_index != rhs.m_index || m_p != rhs.m_p;
 		}
 	}

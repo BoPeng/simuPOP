@@ -67,16 +67,16 @@ population::population(ULONG size,
 	m_selectionFlags()
 {
 	DBG_FAILIF(maxAllele > ModuleMaxAllele, ValueError,
-	    "maxAllele is bigger than maximum allowed allele state of this library (" + toStr(ModuleMaxAllele) +
-	    ")\nPlease use simuOpt.setOptions(alleleType='long') to use the long allele version of simuPOP.");
+		"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(ModuleMaxAllele) +
+		")\nPlease use simuOpt.setOptions(alleleType='long') to use the long allele version of simuPOP.");
 
 	DBG_FAILIF(maxAllele == 0, ValueError,
-	    "maxAllele should be at least 1 (0,1 two states). ");
+		"maxAllele should be at least 1 (0,1 two states). ");
 
 	DBG_DO(DBG_POPULATION, cout << "Constructor of population is called\n");
 
 	DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
-	    "Number of subpopulations exceed maximum allowed subpopulation numbers");
+		"Number of subpopulations exceed maximum allowed subpopulation numbers");
 
 	// if specify subPop but not m_popSize
 	if (!subPop.empty() ) {
@@ -84,19 +84,19 @@ population::population(ULONG size,
 			m_popSize = accumulate(subPop.begin(), subPop.end(), 0UL);
 		else
 			DBG_ASSERT(m_popSize == accumulate(subPop.begin(), subPop.end(), 0UL),
-			    ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
+				ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
 	}
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 	this->setGenoStructure(ploidy, loci, sexChrom, lociPos, chromNames, alleleNames,
-	    lociNames, maxAllele, infoFields);
+		lociNames, maxAllele, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
-	                       << sizeof(Allele) << '*' << genoSize() << endl
-	                       << ", infoPtr: " << sizeof(double *)
-	                       << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
-	                       << ", plus genoStru" << endl);
+		                   << sizeof(Allele) << '*' << genoSize() << endl
+		                   << ", infoPtr: " << sizeof(double *)
+		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
+		                   << ", plus genoStru" << endl);
 
 	try {
 		// allocate memory here (not in function definition)
@@ -145,7 +145,7 @@ population::~population()
 			delete * it;
 
 	DBG_DO(DBG_POPULATION,
-	    cout << "Destructor of population is called" << endl);
+		cout << "Destructor of population is called" << endl);
 }
 
 
@@ -170,7 +170,7 @@ population::population(const population & rhs) :
 	m_selectionFlags()
 {
 	DBG_DO(DBG_POPULATION,
-	    cout << "Copy constructor of population is called" << endl);
+		cout << "Copy constructor of population is called" << endl);
 
 	try {
 		m_inds.resize(rhs.m_popSize);
@@ -263,7 +263,7 @@ ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) con
 	if (virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop))
 		return subPopSize(subPop);
 	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
-	    "There is no virtual subpopulation in subpop " + toStr(subPop));
+		"There is no virtual subpopulation in subpop " + toStr(subPop));
 	return m_virtualSubPops[subPop]->size(*this, subPop, virtualSubPop);
 }
 
@@ -272,9 +272,9 @@ string population::virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop) co
 {
 	CHECKRANGESUBPOP(subPop);
 	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError,
-	    "Subpopulation id is not virtual");
+		"Subpopulation id is not virtual");
 	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
-	    "There is no virtual subpopulation in subpop " + toStr(subPop));
+		"There is no virtual subpopulation in subpop " + toStr(subPop));
 	return m_virtualSubPops[subPop]->name(virtualSubPop);
 }
 
@@ -347,7 +347,7 @@ void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop,
 	CHECKRANGESUBPOP(subPop);
 	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError, "Given virtual subpopulation ID is wrong");
 	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
-	    "Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
+		"Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
 	m_virtualSubPops[subPop]->activate(*this, subPop, virtualSubPop, type);
 }
 
@@ -427,7 +427,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 		// usually, totSize == m_popSize, individuals are valid
 		if (totSize != m_popSize) {
 			DBG_DO(DBG_POPULATION, "Populaiton size changed to " + toStr(totSize) +
-			    " Genotype information may be lost");
+				" Genotype information may be lost");
 
 #ifndef OPTIMIZED
 			if (!allowPopSizeChange) {
@@ -435,9 +435,9 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 				DBG_DO(DBG_POPULATION, cout << "Attempted subpop " << newSubPopSizes << endl);
 				DBG_DO(DBG_POPULATION, cout << "Total current " << m_popSize << endl);
 				DBG_DO(DBG_POPULATION, cout << "Current subpop size " <<
-				    this->subPopSizes() << endl);
+					this->subPopSizes() << endl);
 				throw ValueError("Population size is fixed (by allowPopSizeChange parameter).\n"
-				                 " Subpop sizes should add up to popsize");
+					             " Subpop sizes should add up to popsize");
 			}
 #endif
 
@@ -477,7 +477,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 	//
 	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
 		DBG_DO(DBG_GENERAL,
-		    cout << "Virtual subpopulation splitters are removed due to population structure changes");
+			cout << "Virtual subpopulation splitters are removed due to population structure changes");
 		m_virtualSubPops.clear();
 	}
 }
@@ -487,7 +487,7 @@ void population::setSubPopByIndID(vectori id)
 {
 	if (!id.empty()) {
 		DBG_ASSERT(id.size() == m_popSize, ValueError,
-		    "Info should have the same length as pop size");
+			"Info should have the same length as pop size");
 		for (ULONG it = 0; it < m_popSize; ++it)
 			ind(it).setSubPopID(id[it]);
 	}
@@ -520,7 +520,7 @@ void population::setSubPopByIndID(vectori id)
 		vector<individual> newInds(newPopSize);
 
 		DBG_ASSERT(indEnd() == it + newPopSize, SystemError,
-		    "Pointer misplaced. ");
+			"Pointer misplaced. ");
 
 		// assign genotype location and set structure information for individuals
 		GenoIterator ptr = newGenotype.begin();
@@ -566,7 +566,7 @@ void population::setSubPopByIndID(vectori id)
 	//
 	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
 		DBG_DO(DBG_GENERAL,
-		    cout << "Virtual subpopulation splitters are removed due to population structure changes");
+			cout << "Virtual subpopulation splitters are removed due to population structure changes");
 		m_virtualSubPops.clear();
 	}
 }
@@ -575,11 +575,11 @@ void population::setSubPopByIndID(vectori id)
 void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 {
 	DBG_ASSERT(accumulate(sizes.begin(), sizes.end(), 0UL) == subPopSize(which),
-	    ValueError,
-	    "Sum of subpopulation sizes does not equal to the size of subpopulation to be splitted.");
+		ValueError,
+		"Sum of subpopulation sizes does not equal to the size of subpopulation to be splitted.");
 
 	DBG_FAILIF(!subPopID.empty() && subPopID.size() != sizes.size(), ValueError,
-	    "If subPopID is given, it should have the same length as subPOP");
+		"If subPopID is given, it should have the same length as subPOP");
 
 	if (sizes.size() == 1)
 		return;
@@ -593,7 +593,7 @@ void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 	else {
 		spID = subPopID[0];
 		DBG_WARNING(spID != which && spID < numSubPop(),
-		    "new subpop ID is already used. You are effectively merging two subpopulations")
+			"new subpop ID is already used. You are effectively merging two subpopulations")
 	}
 	ULONG sz = 0;                                                                     // idx within subpop
 	size_t newSPIdx = 0;
@@ -605,7 +605,7 @@ void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 				spID = numSubPop() + newSPIdx - 1;
 			else {
 				DBG_WARNING(subPopID[newSPIdx] != which && subPopID[newSPIdx] < numSubPop(),
-				    "new subpop ID is already used. You are effectively merging two subpopulations")
+					"new subpop ID is already used. You are effectively merging two subpopulations")
 				spID = subPopID[newSPIdx];
 			}
 		}
@@ -619,7 +619,7 @@ void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
 void population::splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID)
 {
 	DBG_ASSERT(fcmp_eq(accumulate(proportions.begin(), proportions.end(), 0.), 1.), ValueError,
-	    "Proportions do not add up to one.");
+		"Proportions do not add up to one.");
 
 	if (proportions.size() == 1)
 		return;
@@ -778,7 +778,7 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 void population::mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
-	    "Merged population should have the same genotype structure");
+		"Merged population should have the same genotype structure");
 	// calculate new population size
 	vectorlu newSS;
 	newSS.insert(newSS.end(), m_subPopSize.begin(), m_subPopSize.end());
@@ -786,7 +786,7 @@ void population::mergePopulationPerGen(const population & pop, const vectorlu & 
 	// new population size
 	ULONG newPopSize = accumulate(newSS.begin(), newSS.end(), 0UL);
 	DBG_FAILIF(!newSubPopSizes.empty() && accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) != newPopSize,
-	    ValueError, "newSubPopSizes should not change overall population size");
+		ValueError, "newSubPopSizes should not change overall population size");
 
 	// prepare new population
 	vector<individual> newInds(newPopSize);
@@ -833,7 +833,7 @@ void population::mergePopulation(const population & pop, const vectorlu & newSub
                                  int keepAncestralPops)
 {
 	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
-	    "Merged populations should have the same number of ancestral generations");
+		"Merged populations should have the same number of ancestral generations");
 	UINT topGen;
 	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
 		topGen = ancestralDepth();
@@ -859,16 +859,16 @@ void population::mergePopulationByLoci(const population & pop,
                                        const vectoru & newNumLoci, const vectorf & newLociPos, bool byChromosome)
 {
 	DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
-	    "Merged population should have the same number of individuals in each subpopulation");
+		"Merged population should have the same number of individuals in each subpopulation");
 
 	UINT numloci1 = totNumLoci();
 	UINT numloci2 = pop.totNumLoci();
 
 	DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != numloci1 + numloci2,
-	    ValueError, "Sum of newNumLoci should equal to " + toStr(numloci1 + numloci2));
+		ValueError, "Sum of newNumLoci should equal to " + toStr(numloci1 + numloci2));
 
 	DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != numloci1 + numloci2,
-	    ValueError, "newLociPos should have the length of combined total number of loci");
+		ValueError, "newLociPos should have the length of combined total number of loci");
 
 	// make copy of old genotype structure
 	GenoStructure * gs1 = new GenoStructure(genoStru());
@@ -902,7 +902,7 @@ void population::mergePopulationByLoci(const population & pop,
 	delete gs2;
 
 	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
-	    "Merged populations should have the same number of ancestral generations");
+		"Merged populations should have the same number of ancestral generations");
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
 		useAncestralPop(depth);
 		const_cast<population &>(pop).useAncestralPop(depth);
@@ -1093,7 +1093,7 @@ void population::insertAfterLoci(const vectoru & idx, const vectorf & pos, const
 void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 {
 	DBG_FAILIF(newSubPopSizes.size() != numSubPop(), ValueError,
-	    "Resize should give subpopulation size for each subpopulation");
+		"Resize should give subpopulation size for each subpopulation");
 
 	ULONG newPopSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
 
@@ -1144,10 +1144,10 @@ void population::reorderSubPops(const vectoru & order, const vectoru & rank,
                                 bool removeEmptySubPops)
 {
 	DBG_FAILIF(order.empty() && rank.empty(), ValueError,
-	    "Please specify one of order or rank.");
+		"Please specify one of order or rank.");
 
 	DBG_FAILIF(!order.empty() && !rank.empty(), ValueError,
-	    "You can specify only one of order or rank.");
+		"You can specify only one of order or rank.");
 
 	if (removeEmptySubPops)
 		this->removeEmptySubPops();
@@ -1207,7 +1207,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 
 	// create a population with this size
 	population * pop = new population(0, ploidy(), numLoci(), sexChrom(), lociPos(), sz, 0,
-	                       chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields());
+		chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields());
 	// copy individuals over
 	IndIterator from = indBegin();
 	vector<IndIterator> to;
@@ -1263,7 +1263,7 @@ population & population::newPopByIndID(int keepAncestralPops,
 void population::removeLoci(const vectoru & remove, const vectoru & keep)
 {
 	DBG_FAILIF(!keep.empty() && !remove.empty(), ValueError,
-	    "Please specify one and only one of keep or remove.");
+		"Please specify one and only one of keep or remove.");
 
 	if (keep.empty() && remove.empty() )
 		return;
@@ -1281,9 +1281,9 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 #ifndef OPTIMIZED
 	for (size_t i = 0; i < loci.size(); ++i) {
 		DBG_FAILIF(loci[i] >= this->totNumLoci(), ValueError,
-		    "Given loci " + toStr(loci[i]) + " exceed max number of loci.");
+			"Given loci " + toStr(loci[i]) + " exceed max number of loci.");
 		DBG_FAILIF(i > 0 && loci[i] <= loci[i - 1], ValueError,
-		    "Given loci should be in order.");
+			"Given loci should be in order.");
 	}
 #endif
 	// adjust order before doing anything
@@ -1350,11 +1350,11 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 {
 	/// total number of loci can not change
 	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
-	    "Re-arrange loci must keep the same total number of loci");
+		"Re-arrange loci must keep the same total number of loci");
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
-	    sexChrom(), newLociPos.empty() ? lociPos() : newLociPos,
-	    // chromosome names are discarded
-	    vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields());
+		sexChrom(), newLociPos.empty() ? lociPos() : newLociPos,
+		// chromosome names are discarded
+		vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields());
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
 		useAncestralPop(depth);
 
@@ -1370,10 +1370,10 @@ void population::pushAndDiscard(population & rhs, bool force)
 {
 	// time consuming!
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
-	    "Passed population has different genotypic structure");
+		"Passed population has different genotypic structure");
 
 	DBG_ASSERT(m_genotype.begin() != rhs.m_genotype.begin(), ValueError,
-	    "Passed population is a reference of current population, swapPop failed.");
+		"Passed population is a reference of current population, swapPop failed.");
 
 	// front -1 pop, -2 pop, .... end
 	//
@@ -1416,9 +1416,9 @@ void population::pushAndDiscard(population & rhs, bool force)
 	m_inds.swap(rhs.m_inds);
 #ifndef OPTIMIZED
 	DBG_FAILIF(rhsStartingGenoPtr != m_genotype.begin(),
-	    SystemError, "Starting genoptr has been changed.");
+		SystemError, "Starting genoptr has been changed.");
 	DBG_FAILIF(lhsStartingGenoPtr != rhs.m_genotype.begin(),
-	    SystemError, "Starting genoptr has been changed.");
+		SystemError, "Starting genoptr has been changed.");
 #endif
 	// current population should be working well
 	// (with all datamember copied form rhs
@@ -1442,7 +1442,7 @@ void population::pushAndDiscard(population & rhs, bool force)
 void population::addInfoField(const string field, double init)
 {
 	DBG_ASSERT(m_info.size() == infoSize() * popSize(), SystemError,
-	    "Info size is wrong");
+		"Info size is wrong");
 
 	vectorstr newfields;
 	UINT os = infoSize();
@@ -1491,7 +1491,7 @@ void population::addInfoField(const string field, double init)
 void population::addInfoFields(const vectorstr & fields, double init)
 {
 	DBG_ASSERT(m_info.size() == infoSize() * popSize(), SystemError,
-	    "Info size is wrong");
+		"Info size is wrong");
 
 	vectorstr newfields;
 
@@ -1574,7 +1574,7 @@ void population::setAncestralDepth(int depth)
 			m_ancestralPops.pop_back();
 	}
 	DBG_ASSERT(depth < 0 || m_ancestralPops.size() <= static_cast<size_t>(depth), SystemError,
-	    "Failed to change ancestral Depth");
+		"Failed to change ancestral Depth");
 
 	m_ancestralDepth = depth;
 }
@@ -1586,7 +1586,7 @@ void population::useAncestralPop(UINT idx)
 		return;
 
 	DBG_DO(DBG_POPULATION, cout << "Use ancestralPop: " << idx <<
-	    "Curidx: " << m_curAncestralGen << endl);
+		"Curidx: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
 		popData & pd = m_ancestralPops[ m_curAncestralGen - 1 ];
@@ -1615,7 +1615,7 @@ void population::useAncestralPop(UINT idx)
 
 	// now m_curAncestralGen is zero.
 	DBG_ASSERT(idx <= m_ancestralPops.size(),
-	    ValueError, "Ancestry population " + toStr(idx) + " does not exist.");
+		ValueError, "Ancestry population " + toStr(idx) + " does not exist.");
 
 	// now idx should be at least 1
 	m_curAncestralGen = idx;
@@ -1704,7 +1704,7 @@ void population::loadPopulation(const string & filename, const string & format)
 		// first close the file handle.
 
 		DBG_DO(DBG_POPULATION,
-		    cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
+			cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
 
 		// open a fresh ifstream
 		io::filtering_istream ifbin;
@@ -1749,16 +1749,16 @@ PyObject * population::vars(int subPop)
 		return m_vars.dict();
 	} else {
 		DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
-		    IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
+			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
 		DBG_ASSERT(hasVar("subPop"), ValueError,
-		    "subPop statistics does not exist yet.");
+			"subPop statistics does not exist yet.");
 
 		PyObject * spObj = getVar("subPop");
 		spObj = PyList_GetItem(spObj, subPop);
 
 		DBG_ASSERT(spObj != NULL, SystemError,
-		    "Something is wrong about the length of subPop list. ");
+			"Something is wrong about the length of subPop list. ");
 
 		Py_INCREF(spObj);
 		return spObj;
@@ -1775,16 +1775,16 @@ PyObject * population::dict(int subPop)
 		return m_vars.dict();
 	else {
 		DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
-		    IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
+			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
 		DBG_ASSERT(hasVar("subPop"), ValueError,
-		    "subPop statistics does not exist yet.");
+			"subPop statistics does not exist yet.");
 
 		PyObject * spObj = getVar("subPop");
 		spObj = PyList_GetItem(spObj, subPop);
 
 		DBG_ASSERT(spObj != NULL, SystemError,
-		    "Something is wrong about the length of subPop list. ");
+			"Something is wrong about the length of subPop list. ");
 
 		return spObj;
 	}
@@ -1899,7 +1899,7 @@ void population::adjustGenoPosition(bool order)
 #endif
 		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
 		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
-		    scInfo.begin() + i * infoSize());
+			scInfo.begin() + i * infoSize());
 	}
 
 	DBG_DO(DBG_POPULATION, cout << "Shallow copied" << scIndex << endl);
@@ -1916,11 +1916,11 @@ void population::adjustGenoPosition(bool order)
 		copyGenotype(scGeno.begin() + i * genoSize(), indGenoBegin(scIndex[i]), genoSize());
 #else
 		copy(scGeno.begin() + i * genoSize(), scGeno.begin() + (i + 1) * genoSize(),
-		    indGenoBegin(scIndex[i]));
+			indGenoBegin(scIndex[i]));
 #endif
 		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
 		copy(scInfo.begin() + i * infoSize(), scInfo.begin() + (i + 1) * infoSize(),
-		    ind(scIndex[i]).infoBegin());
+			ind(scIndex[i]).infoBegin());
 		m_inds[ scIndex[i] ].setShallowCopied(false);
 	}
 	//setShallowCopied(false);

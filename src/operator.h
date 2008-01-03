@@ -350,7 +350,7 @@ public:
 	string infoField(UINT idx)
 	{
 		DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) +
-		    " is out of range of 0 ~ " + toStr(m_infoFields.size()));
+			" is out of range of 0 ~ " + toStr(m_infoFields.size()));
 		return m_infoFields[idx];
 	}
 
@@ -733,7 +733,7 @@ public:
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// apply the \c ifElse operator to one population
 	virtual bool apply(population & pop);
@@ -1051,7 +1051,7 @@ public:
 
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the \c pyOperator operator
 	virtual string __repr__()
@@ -1115,7 +1115,7 @@ public:
 			Py_XINCREF(param);
 
 		DBG_FAILIF(stage == DuringMating, ValueError,
-		    "This operator can not be used DuringMating.");
+			"This operator can not be used DuringMating.");
 		this->setFormOffGenotype(formOffGenotype);
 	};
 

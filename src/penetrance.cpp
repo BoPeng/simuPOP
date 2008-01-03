@@ -103,7 +103,7 @@ double mapPenetrance::penet(individual * ind)
 	strDict::iterator pos = m_dict.find(key);
 
 	DBG_ASSERT(pos != m_dict.end(), ValueError,
-	    "No penetrance value for genotype " + key);
+		"No penetrance value for genotype " + key);
 
 	return pos->second;
 }
@@ -199,7 +199,7 @@ double pyPenetrance::penet(individual * ind)
 
 	// make sure the returned value is legitimate.
 	DBG_ASSERT(fcmp_ge(resDouble, 0.) && fcmp_le(resDouble, 1.),
-	    ValueError, "Returned fitness " + toStr(resDouble) + " is out of range [0,1]");
+		ValueError, "Returned fitness " + toStr(resDouble) + " is out of range [0,1]");
 
 	return resDouble;
 }

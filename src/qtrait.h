@@ -208,9 +208,9 @@ public:
 			m_sigma.resize(3, 0.);
 
 		DBG_ASSERT(m_qtrait.size() == static_cast<UINT>(pow(static_cast<double>(3),
-		                                                    static_cast<double>(loci.size())))
-		    && m_sigma.size() == m_qtrait.size(),
-		    ValueError, "Please specify qtrait for every combination of genotype.");
+															static_cast<double>(loci.size())))
+			&& m_sigma.size() == m_qtrait.size(),
+			ValueError, "Please specify qtrait for every combination of genotype.");
 	};
 
 	/// destructor
@@ -293,7 +293,7 @@ public:
 		DBG_FAILIF(qtraits.empty(), ValueError, "Please specify at least one selector.");
 		for (vectorop::const_iterator s = qtraits.begin(), sEnd = qtraits.end(); s != sEnd; ++s) {
 			DBG_ASSERT( (*s)->__repr__().substr(10, 6) == "qtrait", ValueError,
-			    "Expecting a vector of quantitative trait calculator");
+				"Expecting a vector of quantitative trait calculator");
 			m_qtraits.push_back( (*s)->clone() );
 		}
 
@@ -368,7 +368,7 @@ public:
 		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
-		    "Please specify susceptibility loci");
+			"Please specify susceptibility loci");
 	};
 
 	virtual ~pyQuanTrait()

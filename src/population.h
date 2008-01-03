@@ -249,7 +249,7 @@ public:
 	 \note this function is currently not recommended to be used.
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
-	                           vspSplitter::activateType type = vspSplitter::Visible);
+		vspSplitter::activateType type = vspSplitter::Visible);
 
 	/// CPPONLY
 	/// Copy virtual splitters if two populations have
@@ -453,7 +453,7 @@ public:
 		// users are not supposed to manually activate subpopulation
 		// so this feature is CPPONLY
 		return pyIndIterator(m_inds.begin(), m_inds.end(),
-		           !hasActivatedVirtualSubPop(), true);
+			!hasActivatedVirtualSubPop(), true);
 	}
 
 
@@ -468,12 +468,12 @@ public:
 		// users are not supposed to manually activate subpopulation
 		// so this feature is CPPONLY
 		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-		           m_inds.begin() + subPopEnd(subPop),
-		           // if there is no activated virtual subpopualtions
-		           // iterate through all individuals.
-		           !hasActivatedVirtualSubPop(subPop),
-		           // otherwise, iterate through all visible individuals.
-		           true);
+			m_inds.begin() + subPopEnd(subPop),
+			// if there is no activated virtual subpopualtions
+			// iterate through all individuals.
+			!hasActivatedVirtualSubPop(subPop),
+			// otherwise, iterate through all visible individuals.
+			true);
 	}
 
 
@@ -483,19 +483,19 @@ public:
 		CHECKRANGESUBPOP(subPop);
 #endif
 		DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
-		    "Population does not have any virtual subpopulation");
+			"Population does not have any virtual subpopulation");
 
 		// this does not need to be deactivated...
 		activateVirtualSubPop(subPop, virtualSubPop, vspSplitter::Iteratable);
 
 		// if there is no virtual subpop
 		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-		           m_inds.begin() + subPopEnd(subPop),
-		           // allInds will not work at all, because there will be
-		           // virtual subpopulation
-		           false,
-		           // and we count visible, and iteratable individuals.
-		           false);
+			m_inds.begin() + subPopEnd(subPop),
+			// allInds will not work at all, because there will be
+			// virtual subpopulation
+			false,
+			// and we count visible, and iteratable individuals.
+			false);
 	}
 
 
@@ -550,7 +550,7 @@ public:
 	IndIterator indBegin()
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(),
-		           !hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop());
 	}
 
 
@@ -558,7 +558,7 @@ public:
 	IndIterator indEnd()
 	{
 		return IndIterator(m_inds.end(), m_inds.end(),
-		           !hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop());
 	}
 
 
@@ -569,8 +569,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
-		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !hasActivatedVirtualSubPop(subPop));
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			!hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -580,8 +580,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !hasActivatedVirtualSubPop(subPop));
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			!hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -590,7 +590,7 @@ public:
 	ConstIndIterator indBegin() const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-		           !hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop());
 	}
 
 
@@ -599,7 +599,7 @@ public:
 	ConstIndIterator indEnd() const
 	{
 		return ConstIndIterator(m_inds.end(), m_inds.end(),
-		           !hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop());
 	}
 
 
@@ -610,8 +610,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !hasActivatedVirtualSubPop(subPop));
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			!hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -622,8 +622,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-		           m_inds.begin() + m_subPopIndex[subPop + 1],
-		           !hasActivatedVirtualSubPop(subPop));
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			!hasActivatedVirtualSubPop(subPop));
 	}
 
 
@@ -748,7 +748,7 @@ public:
 			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
-			           locus, totNumLoci());
+				locus, totNumLoci());
 	}
 
 
@@ -762,7 +762,7 @@ public:
 			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
-			           locus, totNumLoci());
+				locus, totNumLoci());
 	}
 
 
@@ -889,7 +889,7 @@ public:
 	void setIndSubPopID(const vectori & id)
 	{
 		DBG_ASSERT(id.size() == m_popSize, ValueError,
-		    "Info should have the same length as pop size");
+			"Info should have the same length as pop size");
 
 		for (ULONG it = 0; it < m_popSize; ++it)
 			ind(it).setSubPopID(static_cast<SubPopID>(id[it]));
@@ -975,7 +975,7 @@ public:
 	 \note Population variables are not copied to \c pop.
 	 */
 	void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu(),
-	                     int keepAncestralPops = -1);
+		int keepAncestralPops = -1);
 
 	/// merge populations by loci
 	/**
@@ -1000,7 +1000,7 @@ public:
 	   population have to have the same genotypic structure.
 	 */
 	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
-	                           const vectorf & newLociPos = vectorf(), bool byChromosome = false);
+		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
 
 	/// insert loci before given positions
 	/** Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
@@ -1059,15 +1059,15 @@ public:
 	   the rank should be 1 0 2 3.
 	 */
 	void reorderSubPops(const vectoru & order = vectoru(), const vectoru & rank = vectoru(),
-	                    bool removeEmptySubPops = false);
+		bool removeEmptySubPops = false);
 
 	/**
 	   Form a new population according to individual subpopulation ID. Individuals with negative subpopulation
 	   ID will be removed.
 	 */
 	population & newPopByIndID(int keepAncestralPops = -1,
-	                           const vectori & id = vectori(),
-	                           bool removeEmptySubPops = false);
+		const vectori & id = vectori(),
+		bool removeEmptySubPops = false);
 
 	/// remove some loci from the current population. Only one of the two parameters can be specified.
 	void removeLoci(const vectoru & remove = vectoru(), const vectoru & keep = vectoru());
@@ -1078,8 +1078,8 @@ public:
 	   (no change on the current population), equivalent to \n <tt>y=x.clone</tt> \n <tt>y.removeLoci(remove, keep)</tt>
 	 */
 	population & newPopWithPartialLoci(
-	                                   const vectoru & remove = vectoru(),
-	                                   const vectoru & keep = vectoru());
+		const vectoru & remove = vectoru(),
+		const vectoru & keep = vectoru());
 
 	/// absorb \c rhs population as the current generation of a population
 	/**
@@ -1129,7 +1129,7 @@ public:
 	{
 		CHECKRANGEINFO(idx);
 		DBG_ASSERT(values.size() == popSize(), IndexError,
-		    "Size of values should be the same as population size");
+			"Size of values should be the same as population size");
 		UINT is = infoSize();
 		if (order && !infoOrdered())
 			adjustInfoPosition(true);
@@ -1245,7 +1245,7 @@ public:
 	vectorinfo indInfo(UINT idx, UINT subPop, bool order)
 	{
 		return vectorinfo(infoBegin(idx, subPop, order),
-		           infoEnd(idx, subPop, order));
+			infoEnd(idx, subPop, order));
 	}
 
 
@@ -1294,7 +1294,7 @@ public:
 			adjustInfoPosition(order);
 
 		return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop] * infoSize(),
-		           m_info.begin() + m_subPopIndex[subPop + 1] * infoSize());
+			m_info.begin() + m_subPopIndex[subPop + 1] * infoSize());
 	}
 
 
@@ -1382,7 +1382,7 @@ public:
 
 private:
 	population & newPopByIndIDPerGen(const vectori & id = vectori(),
-	                                 bool removeEmptySubPops = false);
+		bool removeEmptySubPops = false);
 
 	void mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes);
 
@@ -1399,7 +1399,7 @@ public:
 	bool selectionOn(UINT sp) const
 	{
 		DBG_ASSERT(m_selectionFlags.empty() || m_selectionFlags.size() == numSubPop(),
-		    IndexError, "Selection flags are wrong");
+			IndexError, "Selection flags are wrong");
 		return !m_selectionFlags.empty() && m_selectionFlags[sp];
 	}
 
@@ -1424,12 +1424,12 @@ public:
 		// selector turn on ...
 		// split population...
 		DBG_ASSERT(m_selectionFlags.size() == numSubPop(),
-		    SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
+			SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
 		DBG_FAILIF(m_selectionFlags[sp], ValueError,
-		    "\nOnly one selector is allowed because each individual has only one fitness value\n"
-		    "If you need to select on more than one locus, use a multi-locus selector\n"
-		    "If you really want to apply another selector on the same population, call \n"
-		    "population::turnOffSelection() to walk around this restriction.\n");
+			"\nOnly one selector is allowed because each individual has only one fitness value\n"
+			"If you need to select on more than one locus, use a multi-locus selector\n"
+			"If you really want to apply another selector on the same population, call \n"
+			"population::turnOffSelection() to walk around this restriction.\n");
 		m_selectionFlags[sp] = true;
 	}
 
@@ -1446,12 +1446,12 @@ public:
 		// selector turn on ...
 		// split population...
 		DBG_ASSERT(m_selectionFlags.size() == numSubPop(),
-		    SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
+			SystemError, "Selection flags are wrong, did you split or merge populations after a selector is applied?");
 		DBG_FAILIF(true, ValueError,
-		    "\nOnly one selector is allowed because each individual has only one fitness value\n"
-		    "If you need to select on more than one locus, use a multi-locus selector\n"
-		    "If you really want to apply another selector on the same population, call \n"
-		    "population::turnOffSelection() to walk around this restriction.\n");
+			"\nOnly one selector is allowed because each individual has only one fitness value\n"
+			"If you need to select on more than one locus, use a multi-locus selector\n"
+			"If you really want to apply another selector on the same population, call \n"
+			"population::turnOffSelection() to walk around this restriction.\n");
 	}
 
 
@@ -1907,7 +1907,7 @@ private:
 			cout << "Number of individuals loaded" << m_inds.size() << endl;
 			cout << "population size" << m_popSize << endl;
 			throw ValueError("Number of individuals does not match population size.\n"
-			                 "Please use the same (binary, short or long) module to save and load files.");
+				             "Please use the same (binary, short or long) module to save and load files.");
 		}
 
 		DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);

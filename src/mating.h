@@ -119,9 +119,9 @@ public:
 	/// generate \c numOff offspring
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                               RawIndIterator & offBegin,
-	                               RawIndIterator & offEnd,
-	                               vector<baseOperator *> & ops) = 0;
+		RawIndIterator & offBegin,
+		RawIndIterator & offEnd,
+		vector<baseOperator *> & ops) = 0;
 
 	/// CPPONLY
 	bool fixedFamilySize() const
@@ -221,9 +221,9 @@ public:
 
 	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                       RawIndIterator & offBegin,
-	                       RawIndIterator & offEnd,
-	                       vector<baseOperator *> & ops);
+		RawIndIterator & offBegin,
+		RawIndIterator & offEnd,
+		vector<baseOperator *> & ops);
 
 };
 
@@ -265,13 +265,13 @@ public:
 	// the default method to produce offspring
 	/// CPPONLY
 	void formOffspringGenotype(individual * parent,
-	                           RawIndIterator & it, int ploidy, bool setSex);
+		RawIndIterator & it, int ploidy, bool setSex);
 
 	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-	                       RawIndIterator & offBegin,
-	                       RawIndIterator & offEnd,
-	                       vector<baseOperator *> & ops);
+		RawIndIterator & offBegin,
+		RawIndIterator & offEnd,
+		vector<baseOperator *> & ops);
 
 protected:
 	// use bernullitrisls with p=0.5 for free recombination
@@ -316,9 +316,9 @@ public:
 
 	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * parent, individual *,
-	                       RawIndIterator & offBegin,
-	                       RawIndIterator & offEnd,
-	                       vector<baseOperator *> & ops);
+		RawIndIterator & offBegin,
+		RawIndIterator & offEnd,
+		vector<baseOperator *> & ops);
 
 };
 
@@ -862,7 +862,7 @@ public:
 	         double weight = 0)
 	{
 		DBG_FAILIF(virtualSubPop != InvalidSubPopID, ValueError,
-		    "noMating can not be used in virtual subpopulations");
+			"noMating can not be used in virtual subpopulations");
 	}
 
 
@@ -969,8 +969,8 @@ public:
 	 \return return false when mating fails
 	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd,
-	                        vector<baseOperator * > & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
 
 protected:
 	cloneOffspringGenerator m_offGenerator;
@@ -1041,8 +1041,8 @@ public:
 	 \return return false when mating fails
 	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd,
-	                        vector<baseOperator * > & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
 
 protected:
 	cloneOffspringGenerator m_offGenerator;
@@ -1124,8 +1124,8 @@ public:
 
 	/// CPPONLY perform random mating
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd,
-	                        vector<baseOperator * > & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
 
 protected:
 	mendelianOffspringGenerator m_offspringGenerator;
@@ -1201,8 +1201,8 @@ public:
 
 	/// CPPONLY perform random mating
 	bool mateSubPop(population & pop, SubPopID subPop,
-	                RawIndIterator offBegin, RawIndIterator offEnd,
-	                vector<baseOperator * > & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
 
 	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
 
@@ -1281,8 +1281,8 @@ public:
 
 	/// CPPONLY perform self mating
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd,
-	                        vector<baseOperator *> & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator *> & ops);
 
 protected:
 	selfingOffspringGenerator m_offspringGenerator;
@@ -1290,7 +1290,7 @@ protected:
 
 /// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
-                  vectorlu & numAllele);
+	vectorlu & numAllele);
 
 /// a controlled mating scheme
 /**
@@ -1410,7 +1410,7 @@ private:
 
 /// CPPONLY
 void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loci, const vectori & alleles,
-                        vectoru & expAlleles);
+	vectoru & expAlleles);
 
 /// a controlled random mating scheme
 /** This is the controlled random mating scheme described in
@@ -1613,8 +1613,8 @@ public:
 	   no one will die (ignore during mating failing signal).
 	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
-	                        RawIndIterator offBegin, RawIndIterator offEnd,
-	                        vector<baseOperator * > & ops);
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
 
 private:
 	parentChooser * m_parentChooser;

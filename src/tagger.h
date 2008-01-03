@@ -97,7 +97,7 @@ public:
 		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() == 2, ValueError,
-		    "Inherit tagger needs to know the information fields of both parents");
+			"Inherit tagger needs to know the information fields of both parents");
 	};
 
 	virtual ~inheritTagger()
@@ -115,7 +115,7 @@ public:
 	/// CPPONLY
 	/// apply the \c inheritTagger
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// deep copy of a \c inheritTagger
 	virtual baseOperator * clone() const
@@ -178,7 +178,7 @@ public:
 	/// CPPONLY
 	/// apply the \c parentTagger
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// at the end of a generation, write population structure information to a file
 	/// with a newline.
@@ -244,7 +244,7 @@ public:
 	/// CPPONLY
 	/// apply the \c parentsTagger
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// at the end of a generation, write population structure information to a file
 	/// with a newline.
@@ -347,10 +347,10 @@ public:
 		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,
-		    "infoFields can not be empty.");
+			"infoFields can not be empty.");
 
 		DBG_ASSERT(PyCallable_Check(func), ValueError,
-		    "Passed variable is not a callable python function.");
+			"Passed variable is not a callable python function.");
 
 		Py_XINCREF(func);
 		m_func = func;
@@ -389,7 +389,7 @@ public:
 	/// CPPONLY
 	/// apply the \c pyTagger
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 private:
 	PyObject * m_func;

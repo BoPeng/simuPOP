@@ -115,7 +115,7 @@ public:
 	/// set penetrance to all individuals
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL);
+		individual * dad = NULL, individual * mom = NULL);
 
 	/// used by Python print function to print out the general information of the penetrance operator
 	virtual string __repr__()
@@ -226,8 +226,8 @@ public:
 		m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
-		                                                        static_cast<double>(loci.size()))),
-		    ValueError, "Please specify penetrance for each combination of genotype.");
+																static_cast<double>(loci.size()))),
+			ValueError, "Please specify penetrance for each combination of genotype.");
 	};
 
 	virtual ~maPenetrance()
@@ -304,7 +304,7 @@ public:
 		DBG_FAILIF(peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
 		for (vectorop::const_iterator s = peneOps.begin(), sEnd = peneOps.end(); s != sEnd; ++s) {
 			DBG_ASSERT( (*s)->__repr__().substr(10, 10) == "penetrance", ValueError,
-			    "Expecting a list of penetrance calculator");
+				"Expecting a list of penetrance calculator");
 
 			m_peneOps.push_back( (*s)->clone() );
 		}
@@ -390,7 +390,7 @@ public:
 		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
-		    "Please specify susceptibility loci");
+			"Please specify susceptibility loci");
 	};
 
 	/// destructor

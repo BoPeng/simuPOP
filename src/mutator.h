@@ -87,8 +87,8 @@ public:
 		m_maxAllele = 1;
 #else
 		DBG_ASSERT(maxAllele <= ModuleMaxAllele, ValueError,
-		    "The maximum allele number exceeds " + toStr(ModuleMaxAllele)
-		    + ". \nIf you need longer allele size, please use simuPOP_la libraries.");
+			"The maximum allele number exceeds " + toStr(ModuleMaxAllele)
+			+ ". \nIf you need longer allele size, please use simuPOP_la libraries.");
 #endif
 	}
 
@@ -147,7 +147,7 @@ public:
 	ULONG mutationCount(size_t locus)
 	{
 		DBG_ASSERT(locus < m_mutCount.size(), IndexError,
-		    "locus index " + toStr(locus) + " is out of range");
+			"locus index " + toStr(locus) + " is out of range");
 		return m_mutCount[locus];
 	}
 
@@ -288,7 +288,7 @@ public:
 		DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
 #endif
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
-		    ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
+			ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
 	}
 
 
@@ -374,7 +374,7 @@ public:
 		m_incProb(incProb), m_p(p), m_func(func)
 	{
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
-		    ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
+			ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
 
 #ifdef BINARYALLELE
 		DBG_WARNING(true, "Generalized stepwise mutation does not work well on two state alleles.");
@@ -382,13 +382,13 @@ public:
 
 		if (func != NULL) {                                               // use this function
 			DBG_ASSERT(PyCallable_Check(func),
-			    ValueError, "Func is not a Python function");
+				ValueError, "Func is not a Python function");
 
 			Py_XINCREF(func);
 			m_func = func;
 		} else {
 			DBG_ASSERT(fcmp_ge(p, 0.) && fcmp_le(p, 1.),
-			    ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
+				ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
 		}
 	}
 
@@ -450,7 +450,7 @@ public:
 		          output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields), m_func(NULL)
 	{
 		DBG_ASSERT(PyCallable_Check(func), ValueError,
-		    "Passed variable is not a callable python function.");
+			"Passed variable is not a callable python function.");
 
 		Py_XINCREF(func);
 		m_func = func;
@@ -575,7 +575,7 @@ public:
 	ULONG mutationCount(size_t locus)
 	{
 		DBG_ASSERT(locus < m_mutCount.size(), IndexError,
-		    "locus index " + toStr(locus) + " is out of range");
+			"locus index " + toStr(locus) + " is out of range");
 		return m_mutCount[locus];
 	}
 
