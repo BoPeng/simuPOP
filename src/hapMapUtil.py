@@ -24,7 +24,7 @@
 
 '''
 Utility functions to manipulate HapMap data. These functions 
-are provided as samples on how to load and evolve the HapMap
+are provided as examples on how to load and evolve the HapMap
 dataset. They tend to change frequently so do not call
 these functions directly. It is recommended that you
 copy these function to your script when you need to use 
@@ -44,51 +44,95 @@ from simuUtil import SaveQTDT
 # Method 1: give a list of marker names, get a population with these
 # markers
 # 
+HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
-def getMarkersFromName(hapmap_dir, names, chroms=[]):
-    ''' Get population from marker names. This function 
+def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0, numMarkers=[]):
+    '''
+    Get population from marker names. This function 
         returns a tuple with a population with found markers and names of
         markers that can not be located in the HapMap data. The returned
         population has three subpopulations, corresponding to CEU, YRI and
-        JPT+CHB hapmap populations.
+        JPT+CHB HapMap populations.
     
-    hapmap_dir: where hapmap data in simuPOP format is stored. The files
+    HapMap_dir: where HapMap data in simuPOP format is stored. The files
         should have been prepared by scripts/loadHapMap.py.
 
     names: names of markers
-
+    
     chroms: a list of chromosomes to look in. If empty, all 22 autosomes
-        will be tried.
+        will be tried. Chromosome index starts from 1. (1, ..., 22).
 
+    hapmap_pops: hapmap populations to load, can be a list of 'CEU', 'YRI'
+        or 'JPT+CHB', or a list of 0, 1, 2. If empty (default), all three 
+        populations will be loaded.
+
+    minDiffAF: minimal allele frequency difference between hapmap populations.
+        If three subpopulations are loaded, use the maximal of three pair-wise
+        allele frequency differences for comparison. This option is ignored
+        if hapmap_pops has length one.
+    
+    numMarkers: number of markers to use for each chromosome. Must have
+        the same length as chroms.
     '''
-    pops = []
     if len(chroms) == 0:
         chroms = range(1, 23)
-    for i in chroms:
+    # numMarkers is a tricky parameter...
+    if numMarkers == []:
+        numMarkers = [0]*len(chroms)
+    elif len(numMarkers) == 1:
+        numMarkers = numMarkers*len(chroms)
+    elif len(numMarkers) != len(chroms):
+        print 'Number of markers, if given, should have the same length as chromosomes'
+        numMarkers = [0]*len(chroms)
+    # hapmap_pops
+    if hapmap_pops == []:
+        hapmap_pops = [0, 1, 2]
+    else:
+        for i in range(len(hapmap_pops)):
+            if type(hapmap_pops[i]) == type(''):
+                try:
+                    hapmap_pops[i] = HapMap_pops.index(hapmap_pops[i])
+                except:
+                    print 'Wrong hapmap population name %s' % hapmap_pops[i]
+                    raise
+            elif hapmap_pops[i] > 2 or hapmap_pops[i] < 0:
+                raise ValueError('Hapmap population indexes should be 0, 1 or 2')
+    # read in HapMap data file
+    pops = []
+    for chIdx,i in enumerate(chroms):
         markers = []
-        print "Loading hapmap chromosome %d..." % i
-        pop = LoadPopulation(os.path.join(hapmap_dir, 'hapmap_%d.bin' % i))
+        print "Loading HapMap chromosome %d..." % i
+        pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.bin' % i))
         for name in names:
             try:
                 idx = pop.locusByName(name)
-                print "Locus %s is found. Idx: %d" % (name, idx)
+                if minDiffAF > 0 and len(hapmap_pops) > 1:
+                    maf = [min(pop.dvars(hp).alleleFreq[idx][0], 1 - pop.dvars(hp).alleleFreq[idx][0])
+                        for hp in hapmap_pops]
+                    if (len(maf) == 2 and abs(maf[0] - maf[1]) < minDiffAF) \
+                        or (len(maf) == 3 and abs(maf[0] - maf[1]) < minDiffAF \
+                        and abs(maf[1] - maf[2]) < minDiffAF and abs(maf[0] - maf[2]) < minDiffAF):
+                        continue
+                print "Locus %s is found. Idx: %d, Pos: %.3f" % (name, idx, pop.locusPos(idx))
                 markers.append(idx)
+                if numMarkers[chIdx] != 0 and numMarkers[chIdx] == len(markers):
+                    break
             except:
+                # marker with name not in this chromosome
                 pass
         if len(markers) > 0:
             markers.sort()
             pop.removeLoci(keep=markers)
             pops.append(pop)
         else:
+            print 'No qualified marker is found on chromosome %d ' % i
             del pop
-    ret = MergePopulationsByLoci(pops)
-    # find out which markers are not found
-    if ret.totNumLoci == len(names):
-        return (ret, [])
+    if len(pops) > 1:
+        pop = MergePopulationsByLoci(pops)
     else:
-        foundNames = ret.lociNames()
-        notFound = [x for x in names if x not in foundNames]
-        return (ret, notFound)
+        pop = pops[0].clone()
+    pop.removeSubPops([x for x in range(3) if x not in hapmap_pops], removeEmptySubPops=True)
+    return pop
 
 
 # Method 2: give a range, maximum number of markers, minimal minor allele frequency,
@@ -104,14 +148,17 @@ def getMarkersFromName(hapmap_dir, names, chroms=[]):
 #    getMarkersFromRange(2, 0, 100, sys.maxint. 0, 0.1)
 
 
-def getMarkersFromRange(HapMap_dir, pops, chrom, startPos, endPos, maxNum, 
-    minAF, minDiffAF, minDist):
-    '''Get a population with markers from given range
+def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum, 
+    minAF=0, minDiffAF=0, minDist=0):
+    '''
+    Get a population with markers from given range
     
         HapMap_dir: where HapMap data in simuPOP format is stored. The files
             should have been prepared by scripts/loadHapMap.py.
     
-        pops:     HapMap populations to load
+        hapmap_pops: HapMap populations to load. It can be a list of 'CEU', 'YRI'
+            or 'JPT+CHB', or a list of 0, 1, 2. If empty, all hapmap populations
+            will be loaded.
 
         chrom:    chromosome number (1-based index)
         
@@ -132,6 +179,20 @@ def getMarkersFromRange(HapMap_dir, pops, chrom, startPos, endPos, maxNum,
     pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.bin' % chrom))
     markers = []
     lastPos = 0
+    # hapmap_pops
+    if hapmap_pops == []:
+        hapmap_pops = [0, 1, 2]
+    else:
+        for i in range(len(hapmap_pops)):
+            if type(hapmap_pops[i]) == type(''):
+                try:
+                    hapmap_pops[i] = HapMap_pops.index(hapmap_pops[i])
+                except:
+                    print 'Wrong hapmap population name %s' % hapmap_pops[i]
+                    raise
+            elif hapmap_pops[i] > 2 or hapmap_pops[i] < 0:
+                raise ValueError('Hapmap population indexes should be 0, 1 or 2')
+    #
     for loc in range(pop.totNumLoci()):
         pos = pop.locusPos(loc)
         if pos < startPos or (endPos > 0 and pos > endPos):
@@ -141,10 +202,12 @@ def getMarkersFromRange(HapMap_dir, pops, chrom, startPos, endPos, maxNum,
         maf = min(pop.dvars().alleleFreq[loc][0], 1 - pop.dvars().alleleFreq[loc][0])
         if maf < minAF:
             continue
-        if minDiffAF > 0:
-            maf1 = min(pop.dvars(pops[0]).alleleFreq[loc][0], 1 - pop.dvars(pops[0]).alleleFreq[loc][0])
-            maf2 = min(pop.dvars(pops[1]).alleleFreq[loc][0], 1 - pop.dvars(pops[1]).alleleFreq[loc][0])
-            if abs(maf1 - maf2) < minDiffAF:
+        if minDiffAF > 0 and len(hapmap_pops) > 1:
+            maf = [min(pop.dvars(hp).alleleFreq[loc][0], 1 - pop.dvars(hp).alleleFreq[loc][0])
+                for hp in hapmap_pops]
+            if (len(maf) == 2 and abs(maf[0] - maf[1]) < minDiffAF) \
+                or (len(maf) == 3 and abs(maf[0] - maf[1]) < minDiffAF \
+                and abs(maf[1] - maf[2]) < minDiffAF and abs(maf[0] - maf[2]) < minDiffAF):
                 continue
         # this marker is OK
         markers.append(loc)
@@ -153,7 +216,7 @@ def getMarkersFromRange(HapMap_dir, pops, chrom, startPos, endPos, maxNum,
         lastPos = pos
     print '%d markers located' % len(markers)
     pop.removeLoci(keep=markers)
-    pop.removeSubPops([x for x in range(3) if x not in pops], removeEmptySubPops=True)
+    pop.removeSubPops([x for x in range(3) if x not in hapmap_pops], removeEmptySubPops=True)
     return pop
 
 
@@ -178,7 +241,8 @@ def evolveHapMap(pop,
     mutRate=1e-7,
     step=10, 
     keepParents=False, 
-    numOffspring=1):
+    numOffspring=1,
+    recordAncestry=False):
     ''' Evolve and expand the hapmap population
     
     gen: total evolution generation
@@ -194,6 +258,8 @@ def evolveHapMap(pop,
     
     gen: generations to evolve
     
+    migr: a migrator to be used.
+    
     recIntensity: recombination intensity
     
     mutRate: mutation rate
@@ -203,9 +269,9 @@ def evolveHapMap(pop,
     keepParents: whether or not keep parental generations
     
     numOffspring: number of offspring at the last generation
-
-    migr: a migrator to be used.
     
+    recordAncestry: whether or not calculate ancestry to an information field
+        ancestry. Only usable with two hapmap populations.    
     '''
     print "Starting population size is ", pop.subPopSizes()
     if initMultiple > 1:
@@ -226,7 +292,6 @@ def evolveHapMap(pop,
             sz = [int(x*rate) for x in cur]
         return sz
     #
-    simu = simulator(pop, randomMating(newSubPopSizeFunc=popSizeFunc), rep=1)
     operators = [
         # mutation will be disallowed in the last generation (see later)
         kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
@@ -236,6 +301,15 @@ def evolveHapMap(pop,
         migr,
         pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
     ]
+    def calcAncestry(anc):
+        return [(anc[0] + anc[1])/2]        
+    if recordAncestry:
+        pop.addInfoField('ancestry', 0)
+        assert pop.numSubPop() == 2
+        for ind in pop.individuals(1):
+            ind.setInfo(1, 'ancestry')
+        operators.append(pyTagger(func=calcAncestry, infoFields=['ancestry']))
+    simu = simulator(pop, randomMating(newSubPopSizeFunc=popSizeFunc), rep=1)
     del pop
     simu.evolve(ops=operators, end=gen-1)
     if keepParents:
@@ -246,8 +320,7 @@ def evolveHapMap(pop,
         # evolve, but without mutation
         simu.step(ops=operators[1:] + [parentsTagger()])
     return simu.getPopulation(0, True)
-
-
+ 
 
 #
 #
