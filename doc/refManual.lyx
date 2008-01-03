@@ -1,4 +1,4 @@
-#LyX 1.5.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -5713,7 +5713,7 @@ name "Function!migrIslandRates"
 
 \end_inset
 
-, MigrStepstoneRates
+, MigrSteppingStoneRates
 \begin_inset LatexCommand index
 name "Function!migrStepstoneRates"
 
@@ -5739,7 +5739,11 @@ Migrator is very flexible.
 \family typewriter
 MigrIslandRates(r, n)
 \family default
- returns a migration matrix
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
 \begin_inset Formula \[
 \left(\begin{array}{ccccc}
 1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
@@ -5756,9 +5760,13 @@ MigrIslandRates(r, n)
 \begin_layout Itemize
 
 \family typewriter
-MigrStepstoneRates(r, n, circular=False)
+MigrSteppingStoneRates(r, n, circular=False)
 \family default
- returns a migration matrix
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
 \begin_inset Formula \[
 \left(\begin{array}{ccccc}
 1-r & r\\
