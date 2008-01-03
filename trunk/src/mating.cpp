@@ -831,6 +831,7 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
+		(void)numOff; // silent warning about unused variable.
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
@@ -860,6 +861,7 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
+		(void)numOff; // silent warning about unused variable.
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
@@ -894,6 +896,7 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 			"Random parents chooser returns invalid parent");
 		//
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff; // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
@@ -958,6 +961,7 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 			ValueError, "Imcompatible parents chooser and offspring generator");
 		//
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff; // silent warning about unused variable.
 		DBG_ASSERT(numOff == 1, ValueError,
 			"Pedigree offspring generator can only generate one offspring each time");
 		// record family size (this may be wrong for the last family)
@@ -989,6 +993,7 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
+		(void)numOff; // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
@@ -1566,6 +1571,7 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 
 		//
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
+		(void)numOff; // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
@@ -1664,6 +1670,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
 		double overall_neg = std::accumulate(w_neg.begin(), w_neg.end(), 0.);
+		(void)overall_neg; // silent warning about unused variable.
 		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
 			"Overall weight is zero");
 		//
