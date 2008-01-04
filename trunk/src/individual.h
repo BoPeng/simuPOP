@@ -666,6 +666,8 @@ private:
 		if (b) SETFLAG(m_flags, m_flagFemale);
 		ar & boost::serialization::make_nvp("affected", b);
 		if (b) SETFLAG(m_flags, m_flagAffected);
+		SETFLAG(m_flags, m_flagVisible);
+		SETFLAG(m_flags, m_flagIteratable);
 
 		RESETFLAG(m_flags, m_flagShallowCopied);
 
@@ -1233,7 +1235,6 @@ typedef CombinedAlleleIterator<ConstRawIndIterator> ConstIndAlleleIterator;
 // set version for individual class
 // version 0: base
 // version 1: add sexChrom indicator
-// version 2: add infoSize
 BOOST_CLASS_VERSION(simuPOP::individual, 1)
 #endif
 
