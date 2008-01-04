@@ -49,7 +49,7 @@ else:
 
 
 if not simuOptions['Quiet']:
-    print "simuPOP : Copyright (c) 2004-2006 Bo Peng"
+    print "simuPOP : Copyright (c) 2004-2008 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
     if simuVer() == '9.9.9':
         # this is the subversion version of simuPOP
