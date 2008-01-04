@@ -599,7 +599,7 @@ def SaveSimulator(simu, *args, **kwargs):
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
-    maxAllele=ModuleMaxAllele, infoFields=[], chromMap=[]):
+    maxAllele=ModuleMaxAllele, infoFields=[]):
     if type(infoFields) not in (type([]), type(())):
         raise exceptions.ValueError('infoFields needs to be an array')
     ld = lociPos
@@ -614,12 +614,9 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
         ln = []
         for i in range(0, len(lociNames)):
             ln.extend( lociNames[i])
-    # get chromMap simuOptions
-    if chromMap == []:
-        chromMap = simuOptions['ChromMap']
     cppModule.population_swiginit(self,
         cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
-            ancestralDepth, chromNames, alleleNames, ln, maxAllele, infoFields, chromMap))
+            ancestralDepth, chromNames, alleleNames, ln, maxAllele, infoFields))
 
 new_population.__doc__ = population.__init__.__doc__
 del population.__init__

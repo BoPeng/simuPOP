@@ -288,12 +288,8 @@ class TestPopulation(unittest.TestCase):
         ###
         ###  ARRINDINFO is only valid for head node.
         ###
-        if mpiRank() == 0:
-            self.assertEqual(pop.arrIndInfo(True), range(10,15))
-            self.assertEqual(pop1.arrIndInfo(True), range(10))
-        else:
-            self.assertRaises(exceptions.ValueError, pop.arrIndInfo, True)
-            self.assertRaises(exceptions.ValueError, pop1.arrIndInfo, True)
+        self.assertEqual(pop.arrIndInfo(True), range(10,15))
+        self.assertEqual(pop1.arrIndInfo(True), range(10))
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop1.popSize(), 10)
 
@@ -406,12 +402,10 @@ class TestPopulation(unittest.TestCase):
         pop = population(subPop=[2,4,5], infoFields=['age'])
         self.assertEqual( pop.numSubPop(), 3)
         pop.setIndInfo(range(11), 0)
-        if mpiRank() == 0:
-            self.assertEqual(pop.arrIndInfo(True), range(11))
+        self.assertEqual(pop.arrIndInfo(True), range(11))
         pop.removeSubPops([1])
-        if mpiRank() == 0:        
-            self.assertEqual(pop.arrIndInfo(0, True), range(2))
-            self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
+        self.assertEqual(pop.arrIndInfo(0, True), range(2))
+        self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
     
     def testRemoveIndividuals(self):
         'Testing function removeIndividuals'
@@ -438,11 +432,10 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(11), 0)
         pop.removeIndividuals([2,3,4,5])
         self.assertEqual(pop.subPopSizes(), (2,0,5))
-        if mpiRank() == 0:
-            self.assertEqual(pop.arrIndInfo(0, True), range(2))
-            self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
-            # nothing in the middle left
-            self.assertEqual(pop.arrIndInfo(True), range(2) + range(6,11))
+        self.assertEqual(pop.arrIndInfo(0, True), range(2))
+        self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
+        # nothing in the middle left
+        self.assertEqual(pop.arrIndInfo(True), range(2) + range(6,11))
     
     
     def testMergeSubPops(self):
@@ -471,9 +464,8 @@ class TestPopulation(unittest.TestCase):
         pop.mergeSubPops([0,2], removeEmptySubPops=True)
         self.assertEqual(pop.subPopSizes(), (7,4))
         # the order may be different
-        if mpiRank() == 0:
-            self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
-            self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
+        self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
+        self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
         
 
     def testReorderSubPops(self):
@@ -508,9 +500,8 @@ class TestPopulation(unittest.TestCase):
         pop.reorderSubPops(rank=[1,3,0,2])
         self.assertEqual( pop.subPopSizes(), (3,1,4,2))
         newInfoSums = [sum([3,4,5]), sum([0]), sum([6,7,8,9]), sum([1,2])]
-        if mpiRank() == 0:
-            for i in range(4):
-                self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
+        for i in range(4):
+            self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
         
 
     def testNewPopByIndID(self):
@@ -629,14 +620,9 @@ class TestPopulation(unittest.TestCase):
             for j in range(10):
                 self.assertEqual(pop.individual(j).info(i), i*10+j)
         ind = pop.individual(0)
-        if mpiRank() == 0:
-            self.assertEqual(ind.arrInfo(), (0,10,20))
-            self.assertEqual(pop.arrIndInfo(True)[:8], (0,10,20,1,11,21,2,12))
-            self.assertEqual(pop.arrIndInfo(0, True)[:8], (0,10,20,1,11,21,2,12))
-        else:
-            self.assertRaises(exceptions.ValueError, ind.arrInfo)
-            self.assertRaises(exceptions.ValueError, pop.arrIndInfo, True)
-            self.assertRaises(exceptions.ValueError, pop.arrIndInfo, 0, True)
+        self.assertEqual(ind.arrInfo(), (0,10,20))
+        self.assertEqual(pop.arrIndInfo(True)[:8], (0,10,20,1,11,21,2,12))
+        self.assertEqual(pop.arrIndInfo(0, True)[:8], (0,10,20,1,11,21,2,12))
         self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1, True)
         # access by name
         #pop.setIndInfo(range(30,40), 'sex')
@@ -800,12 +786,10 @@ class TestPopulation(unittest.TestCase):
         pop.pushAndDiscard(pop1)
         # test info
         self.assertEqual(pop.popSize(), 20)
-        if mpiRank() == 0:
-            self.assertEqual(pop.arrIndInfo(True)[:4], [100, 110, 101, 111])
+        self.assertEqual(pop.arrIndInfo(True)[:4], [100, 110, 101, 111])
         pop.useAncestralPop(1)
         self.assertEqual(pop.popSize(), 10)
-        if mpiRank() == 0:
-            self.assertEqual(pop.arrIndInfo(True)[:4], [0, 10, 1, 11])
+        self.assertEqual(pop.arrIndInfo(True)[:4], [0, 10, 1, 11])
 
 
     def testSaveLoadPopulation(self):
