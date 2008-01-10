@@ -506,13 +506,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseOperator::MPIReady();
-
 %ignore simuPOP::baseOperator::setHaploidOnly();
 
 %ignore simuPOP::baseOperator::setDiploidOnly();
-
-%ignore simuPOP::baseOperator::setMPIReady();
 
 %feature("docstring") simuPOP::baseOperator::infoSize "
 
@@ -1609,7 +1605,7 @@ Usage:
 
 %ignore simuPOP::GenoStructure::GenoStructure();
 
-%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields);
 
 %feature("docstring") simuPOP::GenoStructure::~GenoStructure "
 
@@ -1696,7 +1692,7 @@ C
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields, const vectori &chromMap);
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields);
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(GenoStructure &rhs);
 
@@ -2116,8 +2112,6 @@ Usage:
 %ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
 
 %ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
-
-%ignore simuPOP::GenoStruTrait::chromMap() const;
 
 %feature("docstring") simuPOP::genotypeSplitter "
 
@@ -7244,7 +7238,7 @@ Usage:
     population(size=0, ploidy=2, loci=[], sexChrom=False,
       lociPos=[], subPop=[], ancestralDepth=0, chromNames=[],
       alleleNames=[], lociNames=[], maxAllele=ModuleMaxAllele,
-      infoFields=[], chromMap=[])
+      infoFields=[])
 
 Arguments:
 
@@ -7311,7 +7305,6 @@ Arguments:
                     record the parents of each  individual using
                     operator parentTagger(), you will need two fields
                     father_idx and mother_idx.
-    chromMap:       For MPI modules, currently unused.
 
 Example:
 
@@ -15299,18 +15292,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mpi "
-
-Description:
-
-    simuPOP::mpi
-
-Usage:
-
-    mpi()
-
-"; 
-
 %feature("docstring") simuPOP::Limits "
 
 Description:
@@ -15322,22 +15303,6 @@ Usage:
     Limits()
 
 "; 
-
-%feature("docstring") simuPOP::mpiRank "
-
-Description:
-
-    simuPOP::mpiRank
-
-Usage:
-
-    mpiRank()
-
-"; 
-
-%ignore simuPOP::mpiSize();
-
-%ignore simuPOP::mpiBarrier();
 
 %feature("docstring") simuPOP::AlleleType "
 
