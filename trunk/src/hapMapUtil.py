@@ -149,7 +149,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
 
 
 def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum, 
-    minAF=0, minDiffAF=0, minDist=0):
+    minAF=0, minDiffAF=0, minDist=0, maxDist=0):
     '''
     Get a population with markers from given range
     
@@ -174,6 +174,7 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
         
         minDist:  minimal distance between two adjacent markers, in cM
         
+        maxDist: maximum distance. If exceed, try to pick up a marker ASAP.
     '''
     print "Loading HapMap population hapmap_%d.bin" % chrom
     pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.bin' % chrom))
@@ -199,16 +200,17 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
             continue
         if lastPos != 0 and pos - lastPos < minDist:
             continue
-        maf = min(pop.dvars().alleleFreq[loc][0], 1 - pop.dvars().alleleFreq[loc][0])
-        if maf < minAF:
-            continue
-        if minDiffAF > 0 and len(hapmap_pops) > 1:
-            maf = [min(pop.dvars(hp).alleleFreq[loc][0], 1 - pop.dvars(hp).alleleFreq[loc][0])
-                for hp in hapmap_pops]
-            if (len(maf) == 2 and abs(maf[0] - maf[1]) < minDiffAF) \
-                or (len(maf) == 3 and abs(maf[0] - maf[1]) < minDiffAF \
-                and abs(maf[1] - maf[2]) < minDiffAF and abs(maf[0] - maf[2]) < minDiffAF):
+        if maxDist == 0 or pos - lastPos < maxDist:
+            maf = min(pop.dvars().alleleFreq[loc][0], 1 - pop.dvars().alleleFreq[loc][0])
+            if maf < minAF:
                 continue
+            if minDiffAF > 0 and len(hapmap_pops) > 1:
+                maf = [min(pop.dvars(hp).alleleFreq[loc][0], 1 - pop.dvars(hp).alleleFreq[loc][0])
+                    for hp in hapmap_pops]
+                if (len(maf) == 2 and abs(maf[0] - maf[1]) < minDiffAF) \
+                    or (len(maf) == 3 and abs(maf[0] - maf[1]) < minDiffAF \
+                    and abs(maf[1] - maf[2]) < minDiffAF and abs(maf[0] - maf[2]) < minDiffAF):
+                    continue
         # this marker is OK
         markers.append(loc)
         if maxNum > 0 and len(markers) == maxNum:
