@@ -227,6 +227,8 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
         lastPos = pos
     print '%d markers located' % len(markers)
     pop.removeLoci(keep=markers)
+    # this would save some RAM because variables take a lot of them
+    pop.vars().clear()
     pop.removeSubPops([x for x in range(3) if x not in hapmap_pops], removeEmptySubPops=True)
     return pop
 
