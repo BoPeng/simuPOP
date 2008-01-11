@@ -131,6 +131,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
         if len(markers) > 0:
             markers.sort()
             pop.removeLoci(keep=markers)
+            pop.vars().clear()
             pops.append(pop)
         else:
             print 'No qualified marker is found on chromosome %d ' % i
