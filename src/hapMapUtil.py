@@ -57,7 +57,8 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
     HapMap_dir: where HapMap data in simuPOP format is stored. The files
         should have been prepared by scripts/loadHapMap.py.
 
-    names: names of markers
+    names: names of markers. It can either be a stright list of names, or 
+        a dictionary of names categorized by chromosome number. 
     
     chroms: a list of chromosomes to look in. If empty, all 22 autosomes
         will be tried. Chromosome index starts from 1. (1, ..., 22).
@@ -101,9 +102,14 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
     pops = []
     for chIdx,i in enumerate(chroms):
         markers = []
-        print "Loading HapMap chromosome %d..." % i
         pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.bin' % i))
-        for name in names:
+        if type(names) == type({}):
+            chNames = names[i]
+        else:
+            chNames = names
+        print "Loading HapMap chromosome %d, using a list of %d markers..." % (i, len(chNames))
+        count = 1
+        for name in chNames:
             try:
                 idx = pop.locusByName(name)
                 if minDiffAF > 0 and len(hapmap_pops) > 1:
@@ -113,7 +119,9 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
                         or (len(maf) == 3 and abs(maf[0] - maf[1]) < minDiffAF \
                         and abs(maf[1] - maf[2]) < minDiffAF and abs(maf[0] - maf[2]) < minDiffAF):
                         continue
-                print "Locus %s is found. Idx: %d, Pos: %.3f" % (name, idx, pop.locusPos(idx))
+                count += 1
+                if count % 1000 == 0:
+                    print "%5d markers are found " % count
                 markers.append(idx)
                 if numMarkers[chIdx] != 0 and numMarkers[chIdx] == len(markers):
                     break

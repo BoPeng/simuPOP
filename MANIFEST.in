@@ -90,6 +90,7 @@ include src/simuPOP.py
 include src/simuOpt.py
 include src/simuUtil.py
 include src/simuRPy.py
+include src/hapMapUtil.py
 
 # gsl files
 include gsl/gsl_machine.h
