@@ -342,9 +342,27 @@ def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     elif len(pops) == 1:
         return pops[0].clone()
-    res = pops[0].clone()
-    for i in range(1, len(pops)):
-        res.mergePopulation(pops[i], keepAncestralPops=keepAncestralPops)
+    # to avoid repeated merging, it is better to merge files two by two
+    merged = []
+    for i in range(len(pops)):
+        if i*2 < len(pops):
+            merged.append(pops[i*2].clone())
+        if i*2 + 1 < len(pops):
+            merged[i].mergePopulation(pops[i*2+1], keepAncestralPops=keepAncestralPops)
+    # merge merged with minimal population copying
+    while True:
+        count = 0
+        for i in range(len(merged)):
+            if merged[i] is not None:
+                count += 1
+                for j in range(i+1, len(merged)):
+                    if merged[j] is not None:
+                        merged[i].mergePopulation(merged[j], keepAncestralPops=keepAncestralPops)
+                        merged[j] = None
+                        break
+        if count == 1:
+            break 
+    res = merged[0]
     if len(newSubPopSizes) != 0:
         if sum(newSubPopSizes) != res.popSize():
             raise exceptions.ValueError("MergePopulations: can not change total population size")
@@ -358,9 +376,27 @@ def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=Fals
         raise exceptions.ValueError("MergePopuations: empty population list is given")
     elif len(pops) == 1:
         return pops[0].clone()
-    res = pops[0].clone()
-    for i in range(1, len(pops)):
-        res.mergePopulationByLoci(pops[i], [], [], byChromosome)
+    # to avoid repeated merging, it is better to merge files two by two
+    merged = []
+    for i in range(len(pops)):
+        if i*2 < len(pops):
+            merged.append(pops[i*2].clone())
+        if i*2 + 1 < len(pops):
+            merged[i].mergePopulationByLoci(pops[i*2+1], [], [], byChromosome)
+    # merge merged with minimal population copying
+    while True:
+        count = 0
+        for i in range(len(merged)):
+            if merged[i] is not None:
+                count += 1
+                for j in range(i+1, len(merged)):
+                    if merged[j] is not None:
+                        merged[i].mergePopulationByLoci(merged[j], [], [], byChromosome)
+                        merged[j] = None
+                        break
+        if count == 1:
+            break 
+    res = merged[0]
     if len(newNumLoci) != 0:
         if sum(newNumLoci) != res.totNumLoci():
             raise exceptions.ValueError("MergePopulationsByLoci: can not change total number of loci")
