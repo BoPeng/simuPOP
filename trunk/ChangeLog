@@ -13,6 +13,8 @@ version 0.8.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: remove MPI related setup, build and source code (revert to r1393 to retrieve the
 		MPI related code).
   - BUG: Fix a bug of setting individual visibility of populations loaded from disk file.
+  - NEW: improve the efficiency of MergePopulations and MergePopulationsByLoci when
+		a lot of populaitons are involved.
 
 version 0.8.2 - (Rev 1370) Nov 19, 2007
   - BUG: Fix saveFstat in simuUtil.py
