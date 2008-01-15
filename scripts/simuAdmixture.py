@@ -347,13 +347,7 @@ from simuUtil import SaveQTDT
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
-# Parameters of the first seed-generation stage
-# 
-# two options are handled before simuPOP takes control. They are
-#   -s (--seed): name of the seed population
-#   --reseed:    if specified, generate the seed population even if it
-#                already exists.
-seed_options = [
+options = [
     {'arg': 'h',
      'longarg': 'help',
      'default': False, 
@@ -361,16 +355,28 @@ seed_options = [
      'allowedTypes': [types.NoneType, type(True)],
      'jump': -1                    # if -h is specified, ignore any other parameters.
     },
-    {'longarg': 'HapMap_dir=',
-     'default': '../HapMap',
+    {'longarg': 'name=',
+     'default': 'simu',
      'useDefault': True,
-     'label': 'HapMap data directory',
-     'description': '''Directory to store HapMap data in simuPOP format,
-                It should be prepared by the loadHapMap.py script distributed 
-                with simuPOP. Please refer to script loadHapMap.py for detailed 
-                instructions on how to obtain and prepare HapMap data.''',
      'allowedTypes': [types.StringType],
-     'validate': valueValidDir(),
+     'label': 'Name of the simulation',
+     'description': '''Name of this simulation. A directory with this name
+                will be created. Configuration file (.cfg) and samples will be
+                saved to this directory''',
+    },
+    {'separator': 'Generate seed population'},
+    {'arg': 's:',
+     'longarg': 'seed=',
+     'default': 'seed.bin',
+     'useDefault': True,
+     'description': '''Name of the seed population''',
+     'allowedTypes': [types.StringType],
+    },
+    {'longarg': 'useSavedSeed',
+     'default': True,
+     'label': 'Use saved seed population',
+     'useDefault': True,
+     'description': '''If seed population exists, whether or not use it directly'''
     },
     {'longarg': 'initPop=',
      'default': '',
@@ -380,7 +386,27 @@ seed_options = [
      'description': '''If you already have an initial population, load this one instead
                 of loading from HapMap. Setting of this parameter will skip parameters
                 chrom, markerList, numMarkers etc.'''
-    },        
+    },       
+    {'longarg': 'HapMap_dir=',
+     'default': '../HapMap',
+     'useDefault': True,
+     'label': 'HapMap data directory',
+     'description': '''Directory to store HapMap data in simuPOP format,
+                It should be prepared by the loadHapMap.py script distributed 
+                with simuPOP. Please refer to script loadHapMap.py for detailed 
+                instructions on how to obtain and prepare HapMap data.''',
+     'allowedTypes': [types.StringType],
+     #'validate': valueValidDir(),
+    },
+    {'longarg': 'pops=',
+     'default' : ['CEU', 'YRI', 'JPT+CHB'],
+     'useDefault': True,
+     'label' : 'HapMap populations',
+     'description': '''Which HapMap populations to use?''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'chooseFrom': HapMap_pops,
+     'validate': valueListOf(valueOneOf(HapMap_pops)),
+    },
     {'longarg': 'chrom=',
      'default': [2, 3],
      'label': 'Chromosomes to use',
@@ -462,15 +488,6 @@ seed_options = [
      'description': '''Minimal distance between markers (in the unit of cM).
                 Can be used for both methods.''',
     },
-    {'longarg': 'pops=',
-     'default' : ['CEU', 'YRI', 'JPT+CHB'],
-     'useDefault': True,
-     'label' : 'HapMap populations',
-     'description': '''Which HapMap populations to use?''',
-     'allowedTypes': [types.TupleType, types.ListType],
-     'chooseFrom': HapMap_pops,
-     'validate': valueListOf(valueOneOf(HapMap_pops)),
-    },
     {'longarg': 'initCopy=',
      'default': 10,
      'useDefault': True,
@@ -497,26 +514,14 @@ seed_options = [
      'allowedTypes': [types.IntType, types.LongType],
      'validate': valueGE(100)
     },
-    {'longarg': 'name=',
-     'default': 'simu',
+    #
+    {'separator': 'Population expansion'},
+    {'longarg': 'useSavedExpanded',
+     'default': True,
      'useDefault': True,
-     'description': '''Name of the simulation. A directory with this name will be 
-                created using this name to save seed population''',
-     'allowedTypes': [types.StringType],
-    },
-    {'arg': 's:',
-     'longarg': 'seed=',
-     'default': 'seed.bin',
-     'useDefault': True,
-     'description': '''Name of the seed population''',
-     'allowedTypes': [types.StringType],
-    },
-    {'arg': 'h',
-     'longarg': 'help',
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
+     'label': 'Use saved expanded population',
+     'description': '''If set to true, load saved $name/expanded.bin and 
+                skip population expansion'''
     },
     {'longarg': 'expandGen=',
      'default': 100,
@@ -535,15 +540,12 @@ seed_options = [
      'allowedTypes': [types.IntType, types.LongType],
      'validate': valueGE(100)
     },
-    {'longarg': 'remix=',
-     'default': False,
+    {'separator': 'Population admixture'},
+    {'longarg': 'useSavedAdmixed',
+     'default': True,
      'useDefault': True,
-     'label': 'Remix expanded population',
-     'description': '''If set to true, the program will try to locate saved 
-                population name/name_expanded.bin where name is the name of this simulation.
-                If found, read this population and ignore the population expansion stage''',
-     'allowedTypes': [types.BooleanType],
-     'validate': valueTrueFalse(),
+     'label': 'Use saved admixed population',
+     'description': '''If set to true, the program will use saved $name/admixed.bin''',
     },
     {'longarg': 'migrModel=',
      'default': 'Continuous Gene Flow',
@@ -591,27 +593,7 @@ seed_options = [
      'allowedTypes': [types.TupleType, types.ListType],
      'validate': valueListOf(valueListOf(valueBetween(0,1))),    
     },
-    {'longarg': 'sampleType=',
-     'default': 'case-control',
-     'label': 'Sample type',
-     'useDefault': True,
-     'description': '''Sample type, can be 'random', or 'case-control'. In the case of 
-                random, random sample is drawn from the admixed population, regardless
-                of individual affection status. (The penetrance model is ignored.) In
-                the case of case-control, a penetrance model is applied and given number
-                of cases and controls will be drawn from the admixed population.''',
-     'allowedTypes': [types.StringType],
-     'chooseOneOf': ['random', 'case-control'],
-     'allowedTypes': [types.StringType],
-     'validate': valueOneOf(['random', 'case-control']),
-    },
-    {'longarg': 'name=',
-     'default': 'simu',
-     'useDefault': True,
-     'description': '''Name of the simulation. A directory with this name will be 
-                created using this name to save seed population''',
-     'allowedTypes': [types.StringType],
-    },
+    {'separator': 'Quantitative trait model'},
     {'longarg': 'chromWithDSL=',
      'default': [1,2,3],
      'label': 'Chromosomes with DSL',
@@ -638,15 +620,41 @@ seed_options = [
                 this variable and allale frequency'''
     },
     {'longarg': 'cutoff=',
-     'default': None,
+     'default': '',
      'useDefault': True,
      'label': 'Cutoff value to determine affection status',
-     'allowedTypes': [types.IntType, types.FloatType],
+     'allowedTypes': [types.IntType, types.FloatType, types.StringType],
      'description': 'Cutoff value used to determine affection status'
-    },        
-    {'longarg': 'sampleSize=',
-     'default': [500, 500],
-     'label': 'Sample size',
+    },      
+    {'separator': 'Penetrance model'},
+     {'longarg': 'peneFunc=',
+     'default': 'None',
+     'label': 'Penetrance function',
+     'allowedTypes': [types.StringType],
+     'description': ''' Penetrance functions to be applied to the final
+        population. Two penetrance fucntions are provided, namely recessive
+        or additive single-locus model with heterogeneity multi-locus model. 
+        You can define another customized penetrance functions by modifying
+        this script. ''',
+     'validate':    valueOneOf(['recessive', 'additive', 'custom', 'None']),
+     'chooseOneOf': [ 'recessive', 'additive', 'custom', 'None']
+    },
+    {'longarg': 'parameter=',
+     'default': [0.5],
+     'label': 'Penetrance parameters',
+     'description': '''Penetrance parameter for all DSL. An array of parameter 
+        can be given to each DSL. The meaning of this parameter differ by 
+        penetrance model. For a recessive model, the penetrance is 0,0,p for 
+        genotype AA,Aa,aa (a is disease allele) respectively. For an additive 
+        model, the penetrance is 0,p/2,p respectively.''',
+     'allowedTypes': [types.ListType, types.TupleType],
+     'validate':   valueOneOf([ 
+             valueBetween(0,1), valueListOf(valueBetween(0,1))] )
+    },
+    {'separator': 'Draw samples'},
+    {'longarg': 'ccSampleSize=',
+     'default': [0,0],
+     'label': 'Case-control sample size',
      'description': '''Sample size. If sampleType == 'random' and a single number s
                 is given, a random sample of size s will be drawn from the whole
                 population. If a list [s1, s2, ...] is given, s1 random individuals will
@@ -663,21 +671,26 @@ seed_options = [
       'allowedTypes': [types.IntType, types.LongType, types.TupleType, types.ListType],
       'validate': valueOr(valueGE(0), valueListOf(valueOr(valueGE(0), valueListOf(valueGE(0)))))
     },
-    {'longarg': 'sampleName=',
-     'default': '',
+    {'longarg': 'ccSampleName=',
+     'default': 'case-control',
      'useDefault': True,
      'allowedTypes': [types.StringType],
-     'label': 'Name of the sample',
-     'description': 'Name of this sample, default to simulation name',
+     'label': 'Name of the case-control sample',
+     'description': 'Name of the case-control sample',
     },
-    {'longarg': 'name=',
-     'default': 'simu',
+    {'longarg': 'randomSampleSize=',
+     'default': 0,
+     'label': 'Random sample size',
+     'description': '''Size of a random sample''',
+     'allowedTypes': [types.IntType, types.LongType, types.TupleType, types.ListType],
+     'validate': valueOr(valueGE(0), valueListOf(valueOr(valueGE(0), valueListOf(valueGE(0)))))
+    },
+    {'longarg': 'randomSampleName=',
+     'default': 'random',
      'useDefault': True,
      'allowedTypes': [types.StringType],
-     'label': 'Name of the simulation',
-     'description': '''Name of this simulation. A directory with this name
-                will be created. Configuration file (.cfg) and samples will be
-                saved to this directory''',
+     'label': 'Name of the random sample',
+     'description': 'Name of the random sample',
     },
 ]
 
@@ -804,7 +817,7 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
 
 
 def generateSeedPopulation(HapMap_dir, initPop, chrom, markerList, numMarkers, startPos,
-            endingPos, minAF, minDiffAF, minDist, pops, initCopy, gen, size, name, popName):
+            endingPos, minAF, minDiffAF, minDist, pops, initCopy, gen, size, popName):
     'Generate seed population, using HapMap dataset and specified marker list'
     if os.path.isfile(initPop):
         pop = LoadPopulation(initPop)
@@ -831,10 +844,6 @@ def generateSeedPopulation(HapMap_dir, initPop, chrom, markerList, numMarkers, s
     )
     printInfo(pop)
     # save seed population
-    if os.path.isabs(popName):
-        popName = popName
-    else:
-        popName = os.path.join(name, popName)
     print 'Save seed population to', popName
     pop.savePopulation(popName)
 
@@ -849,12 +858,12 @@ def migrFunc(gen, curSize):
 def expandSeedPopulation(seedPop, expandGen, expandSize,
         expandedFile):
     '''Expand seed population'''
-    if not os.path.isfile(seedPop):
-        print 'Can not find the seed population'
-        sys.exit(1)
     # load seed population
-    print 'Loading seed population %s...' % seedPop
-    pop = LoadPopulation(seedPop)
+    if type(seedPop) == type(''):
+        print 'Loading seed population %s...' % seedPop
+        pop = LoadPopulation(seedPop)
+    else:
+        pop = seedPop
     # evolve it
     pop = evolveHapMap(pop,
         gen=expandGen, 
@@ -866,7 +875,7 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
     return pop
 
  
-def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixFile):
+def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixedFile):
     ''' Evolve the seed population
     '''
     # migration part.
@@ -896,8 +905,8 @@ def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixFile):
     print "Calculating allele frequency..."
     pop.vars().clear()
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
-    print 'Saving admixed population to ', admixFile
-    pop.savePopulation(admixFile)
+    print 'Saving admixed population to ', admixedFile
+    pop.savePopulation(admixedFile)
     return pop
 
 
@@ -987,134 +996,86 @@ def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
     print "There are %d (%.2f percent) affected individuals." % (pop.dvars().numOfAffected, pop.dvars().numOfAffected*100.0/pop.popSize())
 
 
-def getArg(arg):
-    'use to retrieve -s, --seed etc from sys.argv[1:]'
-    # separated by space
-    if arg in sys.argv[1:]:
-        idx = sys.argv.index(arg)
-        if idx != len(sys.argv) - 1:
-            return sys.argv[idx+1]
-            return seed
-    # separated by '='
-    for par in sys.argv:
-        if par.startswith(arg + '='):
-            return par[(len(arg) + 1):]
-    # not found
-    return None
-
-
 short_desc = '''This program simulates an admixed population based on 
 two or more HapMap populations. Please follow the intructions
 of the help message to prepare HapMap population.'''
 
 # determine which script to run.
 if __name__ == '__main__':
-    name = 'simu'
-    seed = 'seed.bin'
-    reseed = False
-    if getArg('--name') is not None:
-        name = getArg('--name')
-    if getArg('-s') is not None:
-        seed = getArg('-s')
-    elif getArg('--seed') is not None:
-        seed = getArg('--seed')
-    if '--reseed' in sys.argv[1:]:
-        reseed = True
-    #
-    if os.path.isabs(seed):
-        seedPop = seed
-    else:
-        seedPop = os.path.join(name, seed)
-    expandedFile = os.path.join(name, name + '_expanded.bin')
-    admixFile = os.path.join(name, name + '_admixed.bin')
-    expandedPop = None
-    admixedPop = None
-    # create directory
+    # 
+    # seed population does not exist, generate it
+    allParam = getParam(options, short_desc, __doc__, nCol=2)
+    # when user click cancel ...
+    if len(allParam) == 0:
+        sys.exit(1)
+    # -h or --help
+    if allParam[0]:    
+        print usage(seed_options, __doc__)
+        sys.exit(0)
+    # 
+    (name, 
+      seed, useSavedSeed, initPop, HapMap_dir, pops, chrom,
+        markerList, numMarkers, startPos, endingPos, minAF,
+        minDiffAF, minDist, initCopy, gen, size,
+      useSavedExpanded, expandGen, expandSize,
+      useSavedAdmixed, migrModel, migrGen, migrRate,
+      chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
+      peneFunc, peneParam, 
+      ccSampleSize, ccSampleName,
+      randomSampleSize, randomSampleName) = allParam[1:]
+    # simulation name?
     if not os.path.isdir(name):
         print 'Creating directory', name
         os.makedirs(name)
     if not os.path.isdir(name):
         print 'Can not create directory %s, exiting' % name
         sys.exit(1)
-    # 
-    # step 1:
-    if not os.path.isfile(seedPop) or reseed:
-        # seed population does not exist, generate it
-        allParam = getParam(seed_options, short_desc, __doc__, nCol=2)
-        # when user click cancel ...
-        if len(allParam) == 0:
-            sys.exit(1)
-        # -h or --help
-        if allParam[0]:    
-            print usage(seed_options, __doc__)
-            sys.exit(0)
-        if allParam[-1] != '':
-            print 'Save configuration to', allParam[-1]
-            # save current configuration
-            saveConfig(seed_options, allParam[-1], allParam)
-        # get seed population
-        generateSeedPopulation(*(allParam[1:-1]))
-        sys.exit(0)
+    cfgFile = os.path.join(name, name + '.cfg')
+    print 'Save configuration to', cfgFile
+    # save current configuration
+    saveConfig(options, cfgFile, allParam)
+    if os.path.isabs(seed):
+        seedFile = seed
+    else:
+        seedFile = os.path.join(name, seed)
+    expandedFile = os.path.join(name, name + '_expanded.bin')
+    admixedFile = os.path.join(name, name + '_admixed.bin')
+    #
+    # get seed population
+    if useSavedSeed and os.path.isfile(seedFile):
+        seedPop = None
+    else:
+        seedPop = generateSeedPopulation(HapMap_dir, initPop, 
+            chrom, markerList, numMarkers, startPos,
+            endingPos, minAF, minDiffAF, minDist, pops, initCopy,
+            gen, size, seedFile)
     #
     # step 2:
     #
-    # seed population exists, evolve it
-    expand = True
-    mix = True
-    #
     # if both files exists, skip this stage
-    if os.path.isfile(admixFile) and os.path.isfile(expandedFile):
-        expand = False
-        mix = False
-    if '--resample' in sys.argv[1:] and os.path.isfile(admixFile):
-        mix = False
-    if '--remix' in sys.argv[1:]:
-        mix = True
-    #
-    if expand or mix:
-        allParam = getParam(evolve_options, short_desc, __doc__, nCol=2)
-        # when user click cancel ...
-        if len(allParam) == 0:
-            sys.exit(1)
-        # -h or --help
-        if allParam[0]:
-            print usage(evolve_options, __doc__)
-            sys.exit(0)
-        # create directory
-        (expandGen, expandSize, remix, migrModel,
-            migrGen, migrRate) = allParam[1:]
-        #
-        cfg = os.path.join(name, name + '.cfg')
-        print 'Save configuration to', cfg
-        saveConfig(evolve_options, cfg, allParam)
-    if expand:
-        if not os.path.isfile(seedPop):
-            print 'Can not find the seed population'
-            sys.exit(1)
+    if useSavedExpanded and os.path.isfile(expandedFile):
+        expandedPop = None
+    else:
+        if seedPop is None:
+            print 'Loading seed population', seedFile
+            seedPop = LoadPopulation(seedFile)
         expandedPop = expandSeedPopulation(seedPop, expandGen,
             expandSize, expandedFile)
-    if mix:
+    # admixture
+    if useSavedAdmixed and os.path.isfile(admixedFile):
+        admixedPop = None
+    else:
         if expandedPop is None:
             print 'Loading expanded population from file ', expandedFile
             expandedPop = LoadPopulation(expandedFile)
-        pop = mixExpandedPopulation(expandedPop, migrModel, migrGen,
-            migrRate, admixFile)
-        sys.exit(0)
+        admixedPop = mixExpandedPopulation(expandedPop, migrModel, migrGen,
+            migrRate, admixedFile)
     #
-    # last stage
+    # step 3:
     # 
-    allParam = getParam(sample_options, short_desc, __doc__, nCol=2)
-    if len(allParam) == 0:
-        sys.exit(1)
-    # -h or --help
-    if allParam[0]:
-        print usage(evolve_options, __doc__)
-        sys.exit(0)
-    # create directory
-    (sampleType, chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
-        sampleSize, sampleName, name) = allParam[1:]
-    print 'Loading admixed population file ', admixFile
-    pop = LoadPopulation(admixFile)
+    if admixedPop is None:
+        print 'Loading admixed population file ', admixedFile
+        admixedPop = LoadPopulation(admixedFile)
     # assign case/control status and quantitative trait
     setQuanTrait(pop, chromWithDSL, freqDSL, freqDev, 
         dslVar, cutoff)
