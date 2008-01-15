@@ -1,0 +1,1125 @@
+#!/usr/bin/env python
+'''
+This script simulates an admixed population based on the HapMap dataset. Please
+read this help message carefully, making sure your know how this script works,
+then run a few test commands, before you explore the capacity of this script.
+
+
+Step 0: Prepare HapMap dataset. (scripts/loadHapMap.py)
+=========================================================
+
+This script reads the HapMap dataset. To avoid repeated importing, the hapMap
+datasets should be imported and saved in simuPOP format. This is done using
+scripts/loadHapMap.py. Please refer to loadHapMap.py for detailed instructions.
+
+
+Step 1: Generate a seed population (scripts/simuAdmixture.py)
+==============================================================
+
+Determine which markers to use.
+-----------------------------------
+
+Two methods are provided.
+
+a) Use a marker list in the format of 'chromosome position name'. In
+addition, you can specify which chromosome(s) to use, starting and ending
+position(s), number of markers on each chromosome, minimal distance
+between adjacent markers, and minimal allele frequency difference between
+two HapMap populations. 'position' in the marker list is assumed to be
+in base pair (as in Affymetrix or Illumina annotation data). Marker positions
+are converted to centiMorgan by dividing the positions by 10^6 (i.e. 
+1 centiMorgan = 1 M basepairs). Starting and ending position should be
+inputted in centiMorgan.
+
+b) Use selected HapMap markers. In addition to which chromosome(s) to use,
+starting and ending position(s), number of markers on each chromosome, 
+minimal distance between adjacent markers, you can specify minimal minor
+allele frequency, and minimal allele frequency difference between HapMap
+populations.
+
+The first method is suitable when you would like to simulate a population
+with markers in a real dataset, such as the Affymetrix 100k chipset.
+The 'allele frequency difference' criteria can be used to find markers
+of high ancestray information content.
+
+
+Generate a seed population. 
+----------------------------
+
+Two or three HapMap populations can be used. The population is expanded
+instantly by copying individual 10 (default value of parameter initCopy)
+time to avoid quick loss of heterogenity due to small population sizes. 
+and evolve for a relatively long period of time (200 generations by default)
+without migration. This stage is designed to make HapMap populations 
+more distinct, because the HapMap populations are already admixed.
+
+During the evolution, recombination at a rate of 0.01 per cM, and mutation
+at a rate of 1e-7 per nucleotide per generation is applied. Recombination
+and mutation will also be applied at the subsequent stages.
+
+This population will be saved as 'seed.bin' (configurable through --seed
+parameter) that will be used for the subsequent replicate simulations. We
+consider the subpopulations of the seed population as the populations around
+2000 years ago, that have been evolved separately from the Out-Of-Africa 
+population for abut 2000 generations
+
+Each simulation will be given a name and all files will be saved to a directory
+named after it. If there is no $name/seed.bin, or a file specified by -s or
+--seed, or parameter --reseed is given, this script will generate a seed
+population, which will be saved as $name/seed.bin, or any file specified by
+-s or --seed.
+
+
+Step 2. Evolve the seed population.
+=====================================
+
+If a seed file exists ($name/seed.bin or a file specified by option -s or
+--seed), the script will evolve this seed population as follows:
+
+1. Evolve the seed population subject to rapid population expansion for
+100 (default value of expandGen) generations. This is to mimic the rapid
+population expansion in the past 2000 years. Exponential population 
+growth model is used. No migration is allowed.
+
+2. Mix the populations using given migration model. Two basic models,
+namely 'Hybrid Isolations' and 'Continuous Gene Flow' are provided. 
+The first model simply mix the subpopulations and form a single population.
+The second model allows stable migration between subpopulations during
+the migration period. More advanced migration model, with changing
+migration rates can be specified using a 'Customized' model. To use 
+the last model, you will have to modify the 'migrFunc' function in
+this script. Note that it is possible to create a separate population,
+with individuals migrated from existing populations.
+
+e.g.
+
+'Hybrid Isolations':  Merge all HapMap populations instantly.
+
+'Continuous Gene Flow', two HapMap populations, with migration rate
+    [[1, 0],
+     [0.1, 0.9]]
+  10% of individuals will migrate from population 2 to 1 at each 
+  generation. Note that the population sizes will change as a result
+  of migration so the exact number of migrants varies from generation
+  to generation.
+  
+'Continuous Gene Flow', three HapMap populations, with migration rate
+    [[1, 0, 0],
+     [0.1, 0.9, 0],
+     [0.1, 0, 0.9]]
+   10% of individuals from population 2 and 3 migrate to population 1.
+
+'Continuous Gene Flow', two HapMap populations, with migration rate
+    [[0.8, 0, 0.2],
+     [0, 0.8, 0.2]]
+    A new population is created, and gets 20% of individuals from
+    population 1 and 2 at each generation.
+
+
+The result of this stage will be saved to two files
+  $name/expanded.bin (after population expandion)
+  $name/admixed.bin (after population admixture)
+The script will skip population expansion and/or admixture if the
+corresponding file is found, unless parameter --remix is specified.
+In that case, admixed.bin is ignored and a (possibly) new migration
+scheme can be applied to the same expanded population.
+
+
+Step 3: Sample from admixed population.
+========================================
+
+This stage does not really belong to this script because the goal of the
+script is to simulate admixed populations. Arbitrary quantitative trait,
+penetrance models can be applied to the simulated population, and arbitrary
+ascertain scheme can then be applied to the population. However, for the
+sake of completeness, this script allows three kinds of quantitative trait
+and samples
+
+
+A multi-locus quantitative trait model
+---------------------------------------
+
+Using this method, a list of chromosomes with disease pre-disposing locus
+is given (if there are more than one disease locus, repeat the chromosome
+number), along with desired allele frequency (and allowed window around this
+frequency). From given positions (default to 0.5, from the middle of 
+each chromosome), this script will locate loci that satify allele frequency
+requirement.
+
+Then, a list of 'percentage of variation that is explained by each disease
+locus' is required. An additive quantitative trait model is used which 
+yields trait value -a, 0 and a for genotype AA, Aa and aa respectively.
+Assume allele frequency p, a locus would contribute 2p(1-p)a^2 variance to
+the total trait variance. With given variance v, a is calculated using
+sqrt(v/(2p(1-p))).
+
+The rest of the variance is simulated using a normal distribution.
+
+
+A trait-derived affection status model
+---------------------------------------
+
+Using a above quantitative trait model, a cutoff value can be given which
+assign affection status to individuals according to their trait value.
+
+
+With a given penetrance model
+------------------------------
+
+It is also possible to use an explicit penetrance model to assign affection
+status. Using this approach, a list of markers (by names) is expected and 
+a penetrance matrix is given. For a two-locus model, the penetrance matrix
+should be given as p_AABB, p_AABb, p_AAbb, p_AaBB, p_AaBb, p_Aabb, p_aaBB,
+p_aaBb, p_aabb, which p_XXXX is the probability of affected for genotype
+XXXX.
+
+
+Draw a Case-control sample
+------------------------------
+
+If affection status is assigned to each individual, case-control samples
+can be drawn from the resulting population. One can simply specify number
+of cases and controls, or a list of cases and controls from each population.
+For example, [0,0,500], [0,0,500] would ignore the first two populations
+and draw 500 cases and 500 controls.
+
+
+Draw a random sample
+---------------------
+
+If a quantitative trait is specified, a random sample can be drawn from
+the admixed population. Given number of random individuals can be drawn from
+from all populations (a single number is given), or from each population
+(a list is given).
+
+The samples are saved in Merlin QTDT format, which can be easily converted
+to other formats.
+
+If parameter --resample is given, quantitative trait or penetrance models are 
+applied to $name/admixed.bin.
+
+The following are a few examples of using this script. If you use a parameter
+dialog, you can get the command line from the last line of the configuration 
+file.
+
+
+Test scripts
+==============
+
+The following test scripts demonstrate the use of this script using a small
+number of loci. Note that most parameters have default parameters so the
+command can be shortened considerably in practise. I list (almost) the full
+command for clarity purposes.
+
+simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
+    --chrom="range(1,3)"  --markerList='../../Affy/mapAffySNPs.txt' \
+    --startPos="[0]" --endingPos='[0]' --numMarkers="[100,100]" --minAF='0' --minDist='0'  \
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --gen='20' --size='3600'  \
+    --seed='test_seed.bin' --saveConfig='test_seed.cfg'
+
+simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --remix
+    
+simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chromWithDSL="[1,2]" \
+    --sampleSize="(5, 5)" --freqDSL=0.1 --cutoff=1 \
+    --dslVar="[0.05, 0.1]"   --seed='test_seed.bin'
+
+
+simulation for XJ Gu et al (2008)
+====================================
+
+simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
+    --initPop='../../Affy/affyAll.bin' --chrom="range(1,23)"  \
+    --markerList='../../Affy/mapAffySNPs.txt' --numMarkers="[500000]*22"  \
+    --startPos="[0]" --endingPos='[0]' --minAF='0' --minDist='0'  \
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --gen='20' --size='3600'  \
+    --seed='seed.bin' --saveConfig='seed.cfg'
+
+
+simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
+    --chrom="2" --numMarkers="100000" 
+
+
+
+Evolve seed population:
+
+simuAdmixture.py --noDialog  --expandGen='100' --expandSize='24000' \
+    --migrModel='Continuous Gene Flow' --migrGen='5' \
+    --migrRate="([0, 0.10000000000000001], [0.0, 1.0])" \
+    --DSL='[0]' --pene="(0.10000000000000001, 0.25, 0.5)"  \
+    --resample='False' --sampleSize="(500, 500)"  \
+    --name='admix'
+
+Or use some default values
+
+simuAdmixture.py --noDialog  --seed=admix_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --chromWithDSL="[1,2,3,4]" \
+    --sampleSize="(600, 600)" --freqDSL=0.15 --freqDev=0.01 --cutoff=1 \
+    --dslVar="[0.005, 0.01, 0.03, 0.05]"  --name='admix'
+
+# test
+simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --chromWithDSL="[1,2]" \
+    --sampleSize="(5, 5)" --freqDSL=0.1 --cutoff=1 \
+    --dslVar="[0.05, 0.1]"   --name='test'
+
+Evolve a different seed population
+
+simuAdmixture.py --noDialog  -s=seed1.bin --migrGen='5' \
+    --migrRate="([0, 0.1], [0, 1])" --DSL=100 \
+    --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
+    --name='admix'
+
+Resample from the saved population:
+
+simuAdmixture.py --noDialog --resample=True --DSL=100 \
+    --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
+    --name='admix'
+
+Two disease susceptibility loci:
+
+simuAdmixture.py --noDialog --resample=True --DSL='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="(500, 500)"   --name='admix'
+
+Create a new subpopulation (the third population is created):
+
+simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
+    --DSL='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="(500, 500)"   --name='admix'
+
+Sample only from the last (newly created population)
+
+simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
+    --DSL='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="([0,0,500], [0,0,500])"   --name='admix'
+
+Use a varying migration rate model:
+
+Modify migrFunc to fit your need. Then
+
+simuAdmixture.py --noDialog --migrModel='Customized' --DSL='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="([0,0,500], [0,0,500])" --name='admix'
+
+
+Dr. Reddon simulation one:
+
+Seed population: 
+
+500 markers from chromosome 2, initial allele frequency > 0.1, initial 
+allele frequency difference between CEU and YRI populations > 0.2, 
+minimal distance between adjacent markers 0.05cM
+
+simuAdmixture.py --noDialog  --HapMap_dir='../HapMap' --chrom='[2]' \
+   --numMarkers=500 --startPos=100  --minAF=0.1 --minDiffAF=0.2 \
+   --minDist=0.05 --pops="['CEU', 'YRI']" --reseed
+
+250 sample from CEU, 250 sample from YRI, 500 sample from admixed population
+when 10% of the CEU popopulation migrate to YRI for 5 generations.
+
+Round 1: expand and get sample from CEU
+
+simuAdmixture.py  --noDialog --migrModel='None' --migrGen='0' --sampleType='random'\
+  --sampleSize="(250, 0)" --sampleName='CEU' --name='simu2'
+
+Round 2: load expanded population and get sample from YRI
+
+simuAdmixture.py  --noDialog --remix=True --migrModel='None' --migrGen='0' --sampleType='random'\
+  --sampleSize="(0, 250)" --sampleName='YRI' --name='simu2'
+
+Bo Peng (bpeng@mdanderson.org)
+
+$LastChangedDate: 2007-10-12 14:48:57 -0500 (Fri, 12 Oct 2007) $
+$Rev: 1090 $
+
+'''
+
+from simuOpt import *
+setOptions(alleleType='binary')
+from simuPOP import *
+from hapMapUtil import getMarkersFromName, getMarkersFromRange, evolveHapMap
+
+import os, sys, types, exceptions, getopt, math, random
+from simuUtil import SaveQTDT
+
+HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
+
+# Parameters of the first seed-generation stage
+# 
+# two options are handled before simuPOP takes control. They are
+#   -s (--seed): name of the seed population
+#   --reseed:    if specified, generate the seed population even if it
+#                already exists.
+seed_options = [
+    {'arg': 'h',
+     'longarg': 'help',
+     'default': False, 
+     'description': 'Print this usage message.',
+     'allowedTypes': [types.NoneType, type(True)],
+     'jump': -1                    # if -h is specified, ignore any other parameters.
+    },
+    {'longarg': 'HapMap_dir=',
+     'default': '../HapMap',
+     'useDefault': True,
+     'label': 'HapMap data directory',
+     'description': '''Directory to store HapMap data in simuPOP format,
+                It should be prepared by the loadHapMap.py script distributed 
+                with simuPOP. Please refer to script loadHapMap.py for detailed 
+                instructions on how to obtain and prepare HapMap data.''',
+     'allowedTypes': [types.StringType],
+     'validate': valueValidDir(),
+    },
+    {'longarg': 'initPop=',
+     'default': '',
+     'useDefault': True,
+     'label': 'Initial population',
+     'allowedTypes': [types.NoneType, types.StringType],
+     'description': '''If you already have an initial population, load this one instead
+                of loading from HapMap. Setting of this parameter will skip parameters
+                chrom, markerList, numMarkers etc.'''
+    },        
+    {'longarg': 'chrom=',
+     'default': [2, 3],
+     'label': 'Chromosomes to use',
+     'description': '''A list of chromosomes to use from the HapMap data. When multiple
+                chromosomes are involves, numMarkers, if used, should be a list that specicy
+                number of markers on each chromosome. The same rule applies to startPos
+                and endingPos as well.''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'validate': valueListOf(valueBetween(1, 22)),
+    },
+    {'longarg': 'markerList=',
+     'default': '',
+     'useDefault': True,
+     'label': 'Marker list file',
+     'description': '''A file with a list of marker names, in the form of
+                "chrom_number marler_pos marker_name". Markers that on a chromosome not
+                in the chromosome list (parameter chrom) are ignored. lines start with 
+                # is ignored. If numMarkers, startPos, endingPos, minDist are also specified, 
+                the first numMarkers between startPos and endingPos will be used.
+                This script assumes that the marker position in the 
+                list file is in base pair, and will use pos/1000000 as cM to
+                compare marker location.''',
+     'allowedTypes': [types.StringType],
+     'validate': valueOr(valueEqual(''), valueValidFile()),
+    },
+    {'longarg': 'numMarkers=',
+     'default': [1000, 1000],
+     'label': 'Number of markers to use',
+     'description': '''Number of markers to use from the marker list file. If 0 is used,
+                all markers that satisfy conditions startPos, endingPos, minDist will
+                be used.''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'validate': valueOr(valueGT(0), valueListOf(valueGE(0)))
+    },
+    {'longarg': 'startPos=',
+     'default': 0,
+     'useDefault': True,
+     'label': 'staring position',
+     'description': '''Starting position of the markers. If multiple
+                chromosomes are used, the positions for each 
+                chromosome can be specified as a list.''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
+    },
+    {'longarg': 'endingPos=',
+     'default': 0,
+     'useDefault': True,
+     'label': 'Ending position',
+     'description': '''Ending position of the markers. Ignored if its value 
+                is 0.  If multiple chromosomes are used, the positions for each 
+                chromosome can be specified as a list. ''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
+    },
+    {'longarg': 'minAF=',
+     'default': 0,
+     'useDefault': True,
+     'label': 'Minimal allele frequency',
+     'description': '''Minimal allele frequency, only used for picking markers
+                from the HapMap dataset''',
+     'allowedTypes': [types.IntType, types.LongType, types.FloatType],
+     'validate': valueGE(0)
+    },
+    {'longarg': 'minDiffAF=',
+     'default': 0,
+     'useDefault': True,
+     'label': 'Minimal allele frequency difference',
+     'description': '''Minimal allele frequency difference between two HapMap population,
+                , can only be used when two HapMap populations are used. This options can be
+                used to choose markers with high ancestry information content.''',
+     'allowedTypes': [types.IntType, types.LongType, types.FloatType],
+     'validate': valueGE(0)
+    },
+    {'longarg': 'minDist=',
+     'default': 0,
+     'useDefault': True,
+     'label': 'Minimal distance between markers (cM)',
+     'allowedTypes': [types.IntType, types.LongType, types.FloatType],
+     'description': '''Minimal distance between markers (in the unit of cM).
+                Can be used for both methods.''',
+    },
+    {'longarg': 'pops=',
+     'default' : ['CEU', 'YRI', 'JPT+CHB'],
+     'useDefault': True,
+     'label' : 'HapMap populations',
+     'description': '''Which HapMap populations to use?''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'chooseFrom': HapMap_pops,
+     'validate': valueListOf(valueOneOf(HapMap_pops)),
+    },
+    {'longarg': 'initCopy=',
+     'default': 10,
+     'useDefault': True,
+     'label': 'Initial propagation',
+     'description': '''How to expand the initial small HapMap sample to
+                 avoid quick loss of heterogenity''',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': valueGT(0)
+    },
+    {'longarg': 'gen=',
+     'default': 200,
+     'useDefault': True,
+     'label': 'Generations to evolve',
+     'description': '''Number of generations to evolve to get the seed
+                population.''',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': valueGT(0)
+    },
+    {'longarg': 'size=',
+     'default': 4800,
+     'useDefault': True,
+     'label': 'Ending population size',
+     'description': 'Size of the seed population',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': valueGE(100)
+    },
+    {'longarg': 'name=',
+     'default': 'simu',
+     'useDefault': True,
+     'description': '''Name of the simulation. A directory with this name will be 
+                created using this name to save seed population''',
+     'allowedTypes': [types.StringType],
+    },
+    {'arg': 's:',
+     'longarg': 'seed=',
+     'default': 'seed.bin',
+     'useDefault': True,
+     'description': '''Name of the seed population''',
+     'allowedTypes': [types.StringType],
+    },
+    {'arg': 'h',
+     'longarg': 'help',
+     'default': False, 
+     'description': 'Print this usage message.',
+     'allowedTypes': [types.NoneType, type(True)],
+     'jump': -1                    # if -h is specified, ignore any other parameters.
+    },
+    {'longarg': 'expandGen=',
+     'default': 100,
+     'useDefault': True,
+     'label': 'Expansion generations',
+     'description': '''Number of generations to evolve during the population
+                expansion stage''',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': valueGT(0)
+    },
+    {'longarg': 'expandSize=',
+     'default': 24000,
+     'useDefault': True,
+     'label': 'Expanded population size',
+     'description': 'Size of the expanded population',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': valueGE(100)
+    },
+    {'longarg': 'remix=',
+     'default': False,
+     'useDefault': True,
+     'label': 'Remix expanded population',
+     'description': '''If set to true, the program will try to locate saved 
+                population name/name_expanded.bin where name is the name of this simulation.
+                If found, read this population and ignore the population expansion stage''',
+     'allowedTypes': [types.BooleanType],
+     'validate': valueTrueFalse(),
+    },
+    {'longarg': 'migrModel=',
+     'default': 'Continuous Gene Flow',
+     'useDefault': True,
+     'label': 'Migration model',
+     'description': '''Migration model used in the admixture stage, It can be 
+                'Hybrid Isoloation', 'Continuous Gene Flow', 'Customized' and 'None'. 
+                In the HI model, admixture occurs in a single generation and
+                is followed by recombination and drift, with no further genetic
+                contribution from either parental populations. In the CGF
+                model, migration happens with given migration matrix during
+                the migration stage. For example, [[0.9, 0.1], [0, 1]] means
+                moving 10% from population 1 to 2. 'Custimized' migration model
+                allows you to define your own migration model. A function
+                migrModel needs to be defined in this script, which returns
+                a migration rate at each generation. See the 'migrFunc' function 
+                in this script for details. If 'None' is chose, there will be
+                no migration. Note that the merge of two populations can be 
+                mimiced by a Hybrid Isolation migration of rate [[1, 0], [1, 0]].
+                That is to say, everyone from the second subpopulationmoves to the
+                first. The three subpopulation case is similar.''',
+     'chooseOneOf': ['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'],
+     'allowedTypes': [types.StringType],
+     'validate': valueOneOf(['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'])
+    },
+    {'longarg': 'migrGen=', 
+     'default': 5,
+     'useDefault': True,
+     'label': 'Migration generations',
+     'description': '''Length of migration stage. If set to zero, the migration stage
+                is ignored''',
+     'allowedTypes': [types.IntType, types.LongType],
+     'validate': valueGE(0),
+    },
+    {'longarg': 'migrRate=',
+     'default': [[0.9, 0.1], [0., 1.]],
+     'label': 'Migration rate matrix',
+     'useDefault': True,
+     'description': '''Migration rate matrix. Use only for the continuous gene flow model.
+                A_ij of this matrix represents the probability of moving from population i 
+                to j, and A_ii is the probability of staying in the same population, and 
+                is calculated as 1-sum_(j \ne i) A_ij. It is possible to create another 
+                subpopulation in this way, like sending some individuals from both parental
+                populations to a new subpopulation. ''',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'validate': valueListOf(valueListOf(valueBetween(0,1))),    
+    },
+    {'longarg': 'sampleType=',
+     'default': 'case-control',
+     'label': 'Sample type',
+     'useDefault': True,
+     'description': '''Sample type, can be 'random', or 'case-control'. In the case of 
+                random, random sample is drawn from the admixed population, regardless
+                of individual affection status. (The penetrance model is ignored.) In
+                the case of case-control, a penetrance model is applied and given number
+                of cases and controls will be drawn from the admixed population.''',
+     'allowedTypes': [types.StringType],
+     'chooseOneOf': ['random', 'case-control'],
+     'allowedTypes': [types.StringType],
+     'validate': valueOneOf(['random', 'case-control']),
+    },
+    {'longarg': 'name=',
+     'default': 'simu',
+     'useDefault': True,
+     'description': '''Name of the simulation. A directory with this name will be 
+                created using this name to save seed population''',
+     'allowedTypes': [types.StringType],
+    },
+    {'longarg': 'chromWithDSL=',
+     'default': [1,2,3],
+     'label': 'Chromosomes with DSL',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'description': '''Chromosomes with DSL. (Chromosomes are indexed from 1)'''
+    },
+    {'longarg': 'freqDSL=',
+     'default': 0.1,
+     'label': 'MAF of DSL',
+     'allowedTypes': [types.FloatType],
+    },
+    {'longarg': 'freqDev=',
+     'default': 0.05,
+     'useDefault': True,
+     'label': 'Allowed deviation from dslFreq',
+     'allowedTypes': [types.FloatType],
+    },
+    {'longarg': 'dslVar=',
+     'default': [],
+     'label': 'proportion of Variance to explain',
+     'allowedTypes': [types.ListType, types.TupleType],
+     'description': '''Proption of variance explained by each DSL,
+                The a in the additive formula is determined by
+                this variable and allale frequency'''
+    },
+    {'longarg': 'cutoff=',
+     'default': None,
+     'useDefault': True,
+     'label': 'Cutoff value to determine affection status',
+     'allowedTypes': [types.IntType, types.FloatType],
+     'description': 'Cutoff value used to determine affection status'
+    },        
+    {'longarg': 'sampleSize=',
+     'default': [500, 500],
+     'label': 'Sample size',
+     'description': '''Sample size. If sampleType == 'random' and a single number s
+                is given, a random sample of size s will be drawn from the whole
+                population. If a list [s1, s2, ...] is given, s1 random individuals will
+                be drawn from the first population, s2 random individuals will be
+                drawn from the second population, and so on.
+                If sampleType == 'case-control' and a two-number list 
+                [s1, s2] is given, s1 case and s2 controls will be drawn from the
+                whole population. If [list1, list2] is given, list1 is the number
+                of cases from each subpopulation, and list2 is the number of controls
+                from each subpopulation. The second form obviously can not be
+                used for the Hybrid Isolation model because there is no subpopulation
+                in the final population. Note that elements in list1 and list2 can
+                be zero so you can sample from only one of the subpopulations.''',
+      'allowedTypes': [types.IntType, types.LongType, types.TupleType, types.ListType],
+      'validate': valueOr(valueGE(0), valueListOf(valueOr(valueGE(0), valueListOf(valueGE(0)))))
+    },
+    {'longarg': 'sampleName=',
+     'default': '',
+     'useDefault': True,
+     'allowedTypes': [types.StringType],
+     'label': 'Name of the sample',
+     'description': 'Name of this sample, default to simulation name',
+    },
+    {'longarg': 'name=',
+     'default': 'simu',
+     'useDefault': True,
+     'allowedTypes': [types.StringType],
+     'label': 'Name of the simulation',
+     'description': '''Name of this simulation. A directory with this name
+                will be created. Configuration file (.cfg) and samples will be
+                saved to this directory''',
+    },
+]
+
+
+
+def printInfo(pop):
+    'Print out some information about the population'
+    Stat(pop, alleleFreq=range(pop.totNumLoci()))
+    # 1. number of population and population size
+    print 'Number of populations: %d' % pop.numSubPop()
+    print 'Size of populations: %s' % (' ,'.join([str(x) for x in pop.subPopSizes()]))
+    # 2. markers
+    print 'Number of chromosomes: %s' % pop.numChrom()
+    print 'Number of markers: %s' % (' ,'.join([str(x) for x in pop.numLoci()]))
+    for ch in range(pop.numChrom()):
+        print 'Chromosome %d' % ch
+        pos = pop.lociPos()[pop.chromBegin(ch):pop.chromEnd(ch)]
+        print '    range %.3f - %.3f' % (pos[0], pos[-1])
+        dist = [pos[i] - pos[i-1] for i in range(1, len(pos))]
+        print '    dist: min %.3f, max %.3f, mean %.3f' % (min(dist), max(dist), sum(dist)/len(dist))
+        freq = [pop.dvars().alleleFreq[x][0] for x in range(pop.chromBegin(ch), pop.chromEnd(ch))]
+        maf = [min(x, 1-x) for x in freq]
+        print '    allele freq: min %.3f, max %.3f, mean %.3f' % (min(maf), max(maf), sum(maf)/len(maf))
+        if pop.numSubPop() == 2:
+            freq0 = [pop.dvars(0).alleleFreq[x][0] for x in range(pop.chromBegin(ch), pop.chromEnd(ch))]
+            freq1 = [pop.dvars(1).alleleFreq[x][0] for x in range(pop.chromBegin(ch), pop.chromEnd(ch))]
+            maf0 = [min(x, 1-x) for x in freq0]
+            maf1 = [min(x, 1-x) for x in freq1]
+            diff = [abs(maf0[x]-maf1[x]) for x in range(len(maf0))]
+            print '    diff in allele freq: min %.3f, max %.3f, mean %.3f' % (min(diff), max(diff), sum(diff)/len(diff))
+
+
+def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
+            endingPos, minAF, minDiffAF, minDist, pops):
+    '''Create an initial population''' 
+    # process parameters
+    if not os.path.isdir(HapMap_dir):
+        print "HapMap directory does not exist"
+        sys.exit(1)
+    if len(chrom) == 0:
+        print 'Please specify one or more chromosomes'
+        sys.exit(1)
+    for ch in chrom:
+        if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
+            print "HapMap data file hapmap_%d.bin does not exist" % ch
+            sys.exit(1)
+    # in case that chrom is a tuple
+    chrom = list(chrom)
+    useHapMapMarker = markerList == ''
+    if type(numMarkers) not in [types.TupleType, types.ListType] or \
+        len(numMarkers) != len(chrom):
+        print "Please specify number of marker for each chromosome: ", numMarkers
+        sys.exit(1)
+    if type(startPos) not in [types.TupleType, types.ListType] or \
+        len(startPos) not in [1, len(chrom)]:
+        print "Wrong starting positions"
+        sys.exit(1)
+    if len(startPos) == 1:
+        startPos = startPos * len(chrom)
+    if type(endingPos) not in [types.TupleType, types.ListType] or \
+        len(endingPos) not in [1, len(chrom)]:
+        print "Wrong endinging positions"
+        sys.exit(1)
+    if len(endingPos) == 1:
+        endingPos = endingPos * len(chrom)
+    if type(numMarkers) not in [types.TupleType, types.ListType] or \
+        len(numMarkers) not in [1, len(chrom)]:
+        print "Wrong endinging positions"
+        sys.exit(1)
+    if len(numMarkers) == 1:
+        numMarkers = numMarkers * len(chrom)
+    # now, which subpopulations are needed?
+    load_sp = []
+    for idx,sp in enumerate(HapMap_pops):
+        if sp in pops:
+            load_sp.append(idx)
+    if len(load_sp) <= 1:
+        print 'Please choose at least two HapMap populations'
+        sys.exit(1)
+    if len(load_sp) == 3 and minDiffAF > 0:
+        print 'Minimal allele frequency difference can only be specified when two populations are chosen'
+        sys.exit(1)
+    # load markers!
+    ch_pops = []
+    if useHapMapMarker:
+        for ch, sp, ep, nm in zip(chrom, startPos, endingPos, numMarkers):
+            ch_pops.append(getMarkersFromRange(HapMap_dir, load_sp, ch, sp, 
+                ep, nm, minAF, minDiffAF, minDist))
+        # merge all populations (different chromosomes)
+        if len(ch_pops) > 1:
+            pop = MergePopulationsByLoci(ch_pops)
+        else:
+            pop = ch_pops[0].clone()
+    else:
+        # read the list
+        print 'Reading marker list %s' % markerList
+        mlist = open(markerList)
+        names = {}
+        lastpos = [0]*len(chrom)
+        for line in mlist.readlines():
+            (ch, pos, name) = line.split()
+            ch = int(float(ch))
+            pos = float(pos)/1000000.
+            if ch not in chrom:
+                continue
+            chIdx = chrom.index(ch)
+            if pos < startPos[chIdx]:
+                continue
+            if endingPos[chIdx] != 0 and pos > endingPos:
+                continue
+            if minDist > 0 and pos - lastpos[chIdx] < minDist:
+                continue
+            if not names.has_key(ch):
+                names[ch] = []
+            names[ch].append(name)
+            lastpos[chIdx] = pos
+        pop = getMarkersFromName(HapMap_dir, names, chroms=chrom,
+            hapmap_pops=load_sp, minDiffAF=minDiffAF, numMarkers=numMarkers)
+    # if this population fine?
+    if pop.numChrom() != len(chrom):
+        print "Something wrong. The population does not have enough chromosomes"
+        sys.exit(1)
+    return pop
+
+
+def generateSeedPopulation(HapMap_dir, initPop, chrom, markerList, numMarkers, startPos,
+            endingPos, minAF, minDiffAF, minDist, pops, initCopy, gen, size, name, popName):
+    'Generate seed population, using HapMap dataset and specified marker list'
+    if os.path.isfile(initPop):
+        pop = LoadPopulation(initPop)
+    else:
+        pop = createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
+            endingPos, minAF, minDiffAF, minDist, pops)
+        if initPop is not None and initPop != '':
+            pop.savePopulation(initPop)
+    # print population summary
+    print "Initial population has "
+    print "    %d subpopulations " % pop.numSubPop()
+    print "    %d total number of markers " % pop.totNumLoci()
+    for ch in range(len(chrom)):
+        print "Chromosome %d has %d markers in the range between %.3f and %.3f" \
+            % (ch, pop.numLoci(ch), pop.locusPos(pop.chromBegin(ch)),  \
+                pop.locusPos(pop.chromEnd(ch)-1))
+    #
+    # evolve the HapMap population
+    pop = evolveHapMap(pop, 
+        initMultiple=initCopy,
+        gen=gen,
+        endingSize=size,
+        step=10
+    )
+    printInfo(pop)
+    # save seed population
+    if os.path.isabs(popName):
+        popName = popName
+    else:
+        popName = os.path.join(name, popName)
+    print 'Save seed population to', popName
+    pop.savePopulation(popName)
+
+
+def migrFunc(gen, curSize):
+    ''' return migration rate at each generation'''
+    # this is a sample function that migrate to 
+    # a third population, with increasing intensity
+    return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
+
+
+def expandSeedPopulation(seedPop, expandGen, expandSize,
+        expandedFile):
+    '''Expand seed population'''
+    if not os.path.isfile(seedPop):
+        print 'Can not find the seed population'
+        sys.exit(1)
+    # load seed population
+    print 'Loading seed population %s...' % seedPop
+    pop = LoadPopulation(seedPop)
+    # evolve it
+    pop = evolveHapMap(pop,
+        gen=expandGen, 
+        endingSize=expandSize,
+        step=10,
+    )
+    print 'Saving expanded population to ', expandedFile
+    pop.savePopulation(expandedFile)
+    return pop
+
+ 
+def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixFile):
+    ''' Evolve the seed population
+    '''
+    # migration part.
+    mergeAt = 1000000  # default not merge
+    if migrModel == 'Hybrid Isolation':
+        print 'Using %s model' % migrModel
+        migr = noneOp()
+        mergeAt = 0
+    elif migrModel == 'None':
+        print 'Do not migrate'
+        migr = noneOp()
+    elif migrModel == 'Continuous Gene Flow':
+        print 'Using %s with migration rate %s' % (migrModel, migrRate)
+        migr = migrator(rate=migrRate, mode=MigrByProbability)
+    elif migrModel == 'Customized':
+        print 'Using customized migration model'
+        migr = pyMigrator(rateFunc=migrFunc, mode=MigrByProbability)
+    if migrGen > 0:
+        pop = evolveHapMap(pop,
+            mergeAt=mergeAt,
+            gen=migrGen,
+            # constant population size
+            endingSize=pop.popSize(),
+            step=1,
+            migr=migr)
+    # save this population
+    print "Calculating allele frequency..."
+    pop.vars().clear()
+    Stat(pop, alleleFreq=range(pop.totNumLoci()))
+    print 'Saving admixed population to ', admixFile
+    pop.savePopulation(admixFile)
+    return pop
+
+
+def drawSample(pop, sampleType, size, name):
+    '''Draw and save sample from population'''
+    #
+    # case control sample
+    caseControlSample = 'case-contro' in sampleType
+    randomSample = 'random' in sampleType
+    #
+    def comb(geno):
+        return geno[0]+geno[1]
+    if caseControlSample:
+        (samples,) = CaseControlSample(pop, cases=size[0], controls=size[1])
+        print "Saving case control sample to %s " % os.path.join(name, 'case_control')
+        SaveQTDT(samples, output=os.path.join(name, 'case_control'), affectionCode=['1', '2'], 
+                fields=['affection', 'qtrait'], combine=comb, header=True)
+    if randomSample:
+        (ran,) = RandomSample(pop, size=size)
+        # random sample
+        print "Saving random sample to %s ..." % os.path.join(name, 'random')
+        SaveQTDT(ran, output=os.path.join(name, 'random'), affectionCode=['1', '2'], 
+            fields=['qtrait'], combine=comb, header=True)
+
+
+def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
+    '''Set quantitative trait and affection status if a cutoff value
+    is given
+    
+    chromWithDSL: chromosomes with DSL, chromosomes should be
+        indexed from 0
+
+    p: target allele frequency of the DSL
+
+    sd: allowed deviation from p
+
+    vars: variance for each marker
+
+    cutoff: set an individual as 'affected' if its trait value is greater
+        than this cutoff value.
+    '''
+    #
+    numDSL = len(chromWithDSL)
+    DSL = []
+    sign = []
+    for ch1 in chromWithDSL:
+        ch = ch1 - 1
+        DSL.append(pop.chromBegin(ch) + pop.numLoci(ch)/2)
+        for i in range(DSL[ch], pop.chromEnd(ch)):
+            af = 1 - pop.dvars().alleleFreq[i][0]
+            # allele 1
+            if af > p - sd and af < p + sd:
+                # allele 0
+                DSL[-1] = i
+                sign.append(1)
+                break
+            # allele 0
+            elif 1 - af > p - sd and 1 - af < p + sd:
+                DSL[-1] = i
+                sign.append(-1)
+                break
+    maf = [min(pop.dvars().alleleFreq[x][0], 1-pop.dvars().alleleFreq[x][0]) for x in DSL]
+    print 'Using DSL %s with minor allele frequency %s' % (DSL, maf)
+    #
+    # applying quantitative trait
+    table = [[-math.sqrt(vars[i]/(2.*maf[i]*(1-maf[i])))*sign[i], 
+        0, sign[i]*math.sqrt(vars[i]/(2.*maf[i]*(1-maf[i])))] \
+            for i in range(numDSL)]
+    def traitFunc(geno):
+        return sum([table[x][geno[2*x]+geno[2*x+1]] for x in range(numDSL)]) + \
+            random.normalvariate(0, math.sqrt(1-sum(vars)))
+    pop.addInfoField('qtrait')
+    print "Assigning quantitative trait..."
+    PyQuanTrait(pop, loci=DSL, func=traitFunc)
+    print "Mean quantitative trait is ", sum(pop.indInfo('qtrait', False))/pop.popSize()
+    print "Minimal quantitative trait is ", min(pop.indInfo('qtrait', False))
+    print "Maximal quantitative trait is ", max(pop.indInfo('qtrait', False))
+    # set affection status
+    qidx = pop.infoIdx('qtrait')
+    for ind in pop.individuals():
+        if ind.info(qidx) > cutoff:
+            ind.setAffected(True)
+        else:
+            ind.setAffected(False)
+    print 'Using cutoff value %d' % cutoff
+    Stat(pop, numOfAffected=True)
+    print "There are %d (%.2f percent) affected individuals." % (pop.dvars().numOfAffected, pop.dvars().numOfAffected*100.0/pop.popSize())
+
+
+def getArg(arg):
+    'use to retrieve -s, --seed etc from sys.argv[1:]'
+    # separated by space
+    if arg in sys.argv[1:]:
+        idx = sys.argv.index(arg)
+        if idx != len(sys.argv) - 1:
+            return sys.argv[idx+1]
+            return seed
+    # separated by '='
+    for par in sys.argv:
+        if par.startswith(arg + '='):
+            return par[(len(arg) + 1):]
+    # not found
+    return None
+
+
+short_desc = '''This program simulates an admixed population based on 
+two or more HapMap populations. Please follow the intructions
+of the help message to prepare HapMap population.'''
+
+# determine which script to run.
+if __name__ == '__main__':
+    name = 'simu'
+    seed = 'seed.bin'
+    reseed = False
+    if getArg('--name') is not None:
+        name = getArg('--name')
+    if getArg('-s') is not None:
+        seed = getArg('-s')
+    elif getArg('--seed') is not None:
+        seed = getArg('--seed')
+    if '--reseed' in sys.argv[1:]:
+        reseed = True
+    #
+    if os.path.isabs(seed):
+        seedPop = seed
+    else:
+        seedPop = os.path.join(name, seed)
+    expandedFile = os.path.join(name, name + '_expanded.bin')
+    admixFile = os.path.join(name, name + '_admixed.bin')
+    expandedPop = None
+    admixedPop = None
+    # create directory
+    if not os.path.isdir(name):
+        print 'Creating directory', name
+        os.makedirs(name)
+    if not os.path.isdir(name):
+        print 'Can not create directory %s, exiting' % name
+        sys.exit(1)
+    # 
+    # step 1:
+    if not os.path.isfile(seedPop) or reseed:
+        # seed population does not exist, generate it
+        allParam = getParam(seed_options, short_desc, __doc__, nCol=2)
+        # when user click cancel ...
+        if len(allParam) == 0:
+            sys.exit(1)
+        # -h or --help
+        if allParam[0]:    
+            print usage(seed_options, __doc__)
+            sys.exit(0)
+        if allParam[-1] != '':
+            print 'Save configuration to', allParam[-1]
+            # save current configuration
+            saveConfig(seed_options, allParam[-1], allParam)
+        # get seed population
+        generateSeedPopulation(*(allParam[1:-1]))
+        sys.exit(0)
+    #
+    # step 2:
+    #
+    # seed population exists, evolve it
+    expand = True
+    mix = True
+    #
+    # if both files exists, skip this stage
+    if os.path.isfile(admixFile) and os.path.isfile(expandedFile):
+        expand = False
+        mix = False
+    if '--resample' in sys.argv[1:] and os.path.isfile(admixFile):
+        mix = False
+    if '--remix' in sys.argv[1:]:
+        mix = True
+    #
+    if expand or mix:
+        allParam = getParam(evolve_options, short_desc, __doc__, nCol=2)
+        # when user click cancel ...
+        if len(allParam) == 0:
+            sys.exit(1)
+        # -h or --help
+        if allParam[0]:
+            print usage(evolve_options, __doc__)
+            sys.exit(0)
+        # create directory
+        (expandGen, expandSize, remix, migrModel,
+            migrGen, migrRate) = allParam[1:]
+        #
+        cfg = os.path.join(name, name + '.cfg')
+        print 'Save configuration to', cfg
+        saveConfig(evolve_options, cfg, allParam)
+    if expand:
+        if not os.path.isfile(seedPop):
+            print 'Can not find the seed population'
+            sys.exit(1)
+        expandedPop = expandSeedPopulation(seedPop, expandGen,
+            expandSize, expandedFile)
+    if mix:
+        if expandedPop is None:
+            print 'Loading expanded population from file ', expandedFile
+            expandedPop = LoadPopulation(expandedFile)
+        pop = mixExpandedPopulation(expandedPop, migrModel, migrGen,
+            migrRate, admixFile)
+        sys.exit(0)
+    #
+    # last stage
+    # 
+    allParam = getParam(sample_options, short_desc, __doc__, nCol=2)
+    if len(allParam) == 0:
+        sys.exit(1)
+    # -h or --help
+    if allParam[0]:
+        print usage(evolve_options, __doc__)
+        sys.exit(0)
+    # create directory
+    (sampleType, chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
+        sampleSize, sampleName, name) = allParam[1:]
+    print 'Loading admixed population file ', admixFile
+    pop = LoadPopulation(admixFile)
+    # assign case/control status and quantitative trait
+    setQuanTrait(pop, chromWithDSL, freqDSL, freqDev, 
+        dslVar, cutoff)
+    # draw sample
+    drawSample(pop, sampleType, sampleSize, name)
+        
+
+
