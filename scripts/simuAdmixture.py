@@ -1038,8 +1038,8 @@ if __name__ == '__main__':
         seedFile = seed
     else:
         seedFile = os.path.join(name, seed)
-    expandedFile = os.path.join(name, name + '_expanded.bin')
-    admixedFile = os.path.join(name, name + '_admixed.bin')
+    expandedFile = os.path.join(name, 'expanded.bin')
+    admixedFile = os.path.join(name, 'admixed.bin')
     #
     # get seed population
     if useSavedSeed and os.path.isfile(seedFile):
@@ -1077,10 +1077,10 @@ if __name__ == '__main__':
         print 'Loading admixed population file ', admixedFile
         admixedPop = LoadPopulation(admixedFile)
     # assign case/control status and quantitative trait
-    setQuanTrait(pop, chromWithDSL, freqDSL, freqDev, 
+    setQuanTrait(admixedPop, chromWithDSL, freqDSL, freqDev, 
         dslVar, cutoff)
     # draw sample
-    drawSample(pop, sampleType, sampleSize, name)
+    drawSample(admixedPop, sampleType, sampleSize, name)
         
 
 
