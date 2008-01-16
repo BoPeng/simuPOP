@@ -620,14 +620,22 @@ options = [
                 this variable and allale frequency'''
     },
     {'longarg': 'cutoff=',
-     'default': '',
+     'default': 0,
      'useDefault': True,
      'label': 'Cutoff value to determine affection status',
-     'allowedTypes': [types.IntType, types.FloatType, types.StringType],
+     'allowedTypes': [types.IntType, types.FloatType],
      'description': 'Cutoff value used to determine affection status'
     },      
     {'separator': 'Penetrance model'},
-     {'longarg': 'peneFunc=',
+    {'longarg': 'DSL=',
+     'label': 'Disease susceptibility loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [types.TupleType, types.ListType],
+     'description': '''A list of markers (by name) that will be used to 
+                determine affection status'''
+    },
+    {'longarg': 'peneFunc=',
      'default': 'None',
      'label': 'Penetrance function',
      'allowedTypes': [types.StringType],
@@ -910,28 +918,6 @@ def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixedFile):
     return pop
 
 
-def drawSample(pop, sampleType, size, name):
-    '''Draw and save sample from population'''
-    #
-    # case control sample
-    caseControlSample = 'case-contro' in sampleType
-    randomSample = 'random' in sampleType
-    #
-    def comb(geno):
-        return geno[0]+geno[1]
-    if caseControlSample:
-        (samples,) = CaseControlSample(pop, cases=size[0], controls=size[1])
-        print "Saving case control sample to %s " % os.path.join(name, 'case_control')
-        SaveQTDT(samples, output=os.path.join(name, 'case_control'), affectionCode=['1', '2'], 
-                fields=['affection', 'qtrait'], combine=comb, header=True)
-    if randomSample:
-        (ran,) = RandomSample(pop, size=size)
-        # random sample
-        print "Saving random sample to %s ..." % os.path.join(name, 'random')
-        SaveQTDT(ran, output=os.path.join(name, 'random'), affectionCode=['1', '2'], 
-            fields=['qtrait'], combine=comb, header=True)
-
-
 def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
     '''Set quantitative trait and affection status if a cutoff value
     is given
@@ -996,6 +982,44 @@ def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
     print "There are %d (%.2f percent) affected individuals." % (pop.dvars().numOfAffected, pop.dvars().numOfAffected*100.0/pop.popSize())
 
 
+# penetrance generator functions. They will return a penetrance function
+# with given penetrance parameter
+def recessive(para):
+    ''' recessive single-locus, heterogeneity multi-locus '''
+    def func(geno):
+        val = 1
+        for i in range(len(geno)/2):
+            if geno[i*2] + geno[i*2+1] == 2:
+                val *= 1 - para[i]
+        return 1-val
+    return func
+    
+
+def additive(para):
+    ''' additive single-locus, heterogeneity multi-locus '''
+    def func(geno):
+        val = 1
+        for i in range(len(geno)/2):
+            val *= 1 - (geno[i*2]+geno[i*2+1])*para[i]/2.
+        return 1-val
+    return func
+
+
+# if you need some specialized penetrance function, modify this
+# function here.
+# NOTE:
+# 
+# 1. geno is the genptype at DSL. For example, if your DSL is [5,10]
+#     geno will be something like [0,1,1,1] where 0,1 is the genotype at 
+#     locus 5 and 1,1 is the genotype at locus 10.
+# 2. in simuComplexDisease.py, 0 is wild type, 1 is disease allele.
+def custom(para):
+    ''' quantitative trait '''
+    def func(geno):
+        return 1
+    return func
+
+
 short_desc = '''This program simulates an admixed population based on 
 two or more HapMap populations. Please follow the intructions
 of the help message to prepare HapMap population.'''
@@ -1020,7 +1044,7 @@ if __name__ == '__main__':
       useSavedExpanded, expandGen, expandSize,
       useSavedAdmixed, migrModel, migrGen, migrRate,
       chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
-      peneFunc, peneParam, 
+      DSL, peneFunc, peneParam, 
       ccSampleSize, ccSampleName,
       randomSampleSize, randomSampleName) = allParam[1:]
     # simulation name?
@@ -1076,11 +1100,39 @@ if __name__ == '__main__':
     if admixedPop is None:
         print 'Loading admixed population file ', admixedFile
         admixedPop = LoadPopulation(admixedFile)
-    # assign case/control status and quantitative trait
-    setQuanTrait(admixedPop, chromWithDSL, freqDSL, freqDev, 
-        dslVar, cutoff)
+    #
+    if len(chromWithDSL) > 0:
+        # assign case/control status and quantitative trait
+        setQuanTrait(admixedPop, chromWithDSL, freqDSL, freqDev, 
+            dslVar, cutoff)
+    #
+    if len(DSL) > 0:
+        if 'recessive' == peneFunc:
+            pene_func = recessive(para)
+        elif 'additive' == peneFunc:
+            pene_func = additive(para)
+        elif 'custom' == peneFunc:
+            pene_func = custom(para)
+        else:
+            pene_func = None
+        #
+        if pene_func is not None:
+            PyPenetrance(admixedPop, admixedPop.lociByNames(DSL), func=pene_func)
+    #
     # draw sample
-    drawSample(admixedPop, sampleType, sampleSize, name)
-        
+    def comb(geno):
+        return geno[0]+geno[1]
+    if ccSampleSize != [0, 0]:
+        (samples,) = CaseControlSample(admixedPop, cases=ccSampleSize[0],
+            controls=ccSampleSize[1])
+        print "Saving case control sample to %s " % os.path.join(name, 'case_control')
+        SaveQTDT(samples, output=os.path.join(name, 'case_control'), affectionCode=['1', '2'], 
+                fields=['affection', 'qtrait'], combine=comb, header=True)
+    if randomSampleSize != 0:
+        (ran,) = RandomSample(admixedPop, size=randomSampleSize)
+        # random sample
+        print "Saving random sample to %s ..." % os.path.join(name, 'random')
+        SaveQTDT(ran, output=os.path.join(name, 'random'), affectionCode=['1', '2'], 
+            fields=['qtrait'], combine=comb, header=True) 
 
 

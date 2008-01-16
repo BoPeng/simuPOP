@@ -336,7 +336,7 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
                 raise ValueError("Can not stay or jump backwards when processing options.")
     # look if any argument was not processed
     if checkUnprocessedArgs and (True not in map(lambda x:x.has_key('jump'), options) \
-        and True not in map(lambda x:x.has_key('jumpIfFalse'), option)):
+        and True not in map(lambda x:x.has_key('jumpIfFalse'), options)):
         for i in range(1, len(sys.argv)):
             if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
                 raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
