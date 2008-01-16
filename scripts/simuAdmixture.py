@@ -462,7 +462,7 @@ options = [
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'minAF=',
-     'default': 0,
+     'default': 0.05,
      'useDefault': True,
      'label': 'Minimal allele frequency',
      'description': '''Minimal allele frequency, only used for picking markers
@@ -595,10 +595,12 @@ options = [
     },
     {'separator': 'Quantitative trait model'},
     {'longarg': 'chromWithDSL=',
-     'default': [1,2,3],
+     'default': [1,2],
      'label': 'Chromosomes with DSL',
      'allowedTypes': [types.TupleType, types.ListType],
-     'description': '''Chromosomes with DSL. (Chromosomes are indexed from 1)'''
+     'description': '''Chromosomes with DSL. The chromosomes are counted from the loaded
+                population and indexed from 1. For example, if chromosomes 5, 6, 8 are
+                used in the simulation, [1, 3] here would refer to chromosome 5 and 8.'''
     },
     {'longarg': 'freqDSL=',
      'default': 0.1,
@@ -606,13 +608,13 @@ options = [
      'allowedTypes': [types.FloatType],
     },
     {'longarg': 'freqDev=',
-     'default': 0.05,
+     'default': 0.01,
      'useDefault': True,
      'label': 'Allowed deviation from dslFreq',
      'allowedTypes': [types.FloatType],
     },
     {'longarg': 'dslVar=',
-     'default': [],
+     'default': [0.05, 0.1],
      'label': 'proportion of Variance to explain',
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Proption of variance explained by each DSL,
@@ -661,7 +663,7 @@ options = [
     },
     {'separator': 'Draw samples'},
     {'longarg': 'ccSampleSize=',
-     'default': [0,0],
+     'default': [100,100],
      'label': 'Case-control sample size',
      'description': '''Sample size. If sampleType == 'random' and a single number s
                 is given, a random sample of size s will be drawn from the whole
@@ -687,7 +689,7 @@ options = [
      'description': 'Name of the case-control sample',
     },
     {'longarg': 'randomSampleSize=',
-     'default': 0,
+     'default': 100,
      'label': 'Random sample size',
      'description': '''Size of a random sample''',
      'allowedTypes': [types.IntType, types.LongType, types.TupleType, types.ListType],
@@ -977,7 +979,7 @@ def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
             ind.setAffected(True)
         else:
             ind.setAffected(False)
-    print 'Using cutoff value %d' % cutoff
+    print 'Using cutoff value %.2f' % cutoff
     Stat(pop, numOfAffected=True)
     print "There are %d (%.2f percent) affected individuals." % (pop.dvars().numOfAffected, pop.dvars().numOfAffected*100.0/pop.popSize())
 
@@ -1123,12 +1125,14 @@ if __name__ == '__main__':
     def comb(geno):
         return geno[0]+geno[1]
     if ccSampleSize != [0, 0]:
+        print 'Drawing a case control sample with size ', ccSampleSize
         (samples,) = CaseControlSample(admixedPop, cases=ccSampleSize[0],
             controls=ccSampleSize[1])
         print "Saving case control sample to %s " % os.path.join(name, 'case_control')
         SaveQTDT(samples, output=os.path.join(name, 'case_control'), affectionCode=['1', '2'], 
                 fields=['affection', 'qtrait'], combine=comb, header=True)
     if randomSampleSize != 0:
+        print 'Drawing a random sample with size ', randomSampleSize
         (ran,) = RandomSample(admixedPop, size=randomSampleSize)
         # random sample
         print "Saving random sample to %s ..." % os.path.join(name, 'random')
