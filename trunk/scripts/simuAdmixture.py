@@ -228,16 +228,28 @@ simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chromWithDSL="[1,2]" 
 simulation for XJ Gu et al (2008)
 ====================================
 
-simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
-    --initPop='../../Affy/affyAll.bin' --chrom="range(1,23)"  \
-    --markerList='../../Affy/mapAffySNPs.txt' --numMarkers="[500000]*22"  \
-    --startPos="[0]" --endingPos='[0]' --minAF='0' --minDist='0'  \
-    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --gen='20' --size='3600'  \
-    --seed='seed.bin' --saveConfig='seed.cfg'
+# 1: Hybrid isolation.
+simuAdmixture.py --noDialog  --name='IH' --useSavedSeed --initPop='../../Affy/affyAll.bin' \
+    --HapMap_dir='../../HapMap' --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" \
+    --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]" \
+    --startPos='[0]' --endingPos='[0]' --minAF='0' --minDiffAF='0' --minDist='0' --initCopy='10' \
+    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed --migrModel='Hybrid Isolation' --migrGen='5' \
+    --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
+    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
+    --cutoff='-0.5' --DSL='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
+    --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
+simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap_dir='../../HapMap' \
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" --markerList='' --numMarkers="(1000, 1000)" \
+    --startPos='[0]' --endingPos='[0]' --minAF='0.05' --minDiffAF='0' --minDist='0' --initCopy='10' \
+    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed --migrModel='Continuous Gene Flow' --migrGen='5' \
+    --migrRate="([0.90000000000000002, 0.10000000000000001], [0.0, 1.0])" --chromWithDSL="(1, 2, 3, 4)" \
+    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
+    --cutoff='-0.5' --DSL='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
+    --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
-simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
-    --chrom="2" --numMarkers="100000" 
 
 
 
@@ -711,10 +723,10 @@ def printInfo(pop):
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
     # 1. number of population and population size
     print 'Number of populations: %d' % pop.numSubPop()
-    print 'Size of populations: %s' % (' ,'.join([str(x) for x in pop.subPopSizes()]))
+    print 'Size of populations: %s' % (', '.join([str(x) for x in pop.subPopSizes()]))
     # 2. markers
     print 'Number of chromosomes: %s' % pop.numChrom()
-    print 'Number of markers: %s' % (' ,'.join([str(x) for x in pop.numLoci()]))
+    print 'Number of markers: %s' % (', '.join([str(x) for x in pop.numLoci()]))
     for ch in range(pop.numChrom()):
         print 'Chromosome %d' % ch
         pos = pop.lociPos()[pop.chromBegin(ch):pop.chromEnd(ch)]
