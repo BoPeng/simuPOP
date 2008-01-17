@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.3 - (Rev 1412) Jan 17, 2008 
   - NEW: allow taggers to write pedigree files
   - NEW: introduce pedigreeParentsChooser to choose parents according to a given pedigree
   - NEW: introduce pedigreeMating to mate according to a given pedigree
