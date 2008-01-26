@@ -789,12 +789,6 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
     for idx,sp in enumerate(HapMap_pops):
         if sp in pops:
             load_sp.append(idx)
-    if len(load_sp) <= 1:
-        print 'Please choose at least two HapMap populations'
-        sys.exit(1)
-    if len(load_sp) == 3 and minDiffAF > 0:
-        print 'Minimal allele frequency difference can only be specified when two populations are chosen'
-        sys.exit(1)
     # load markers!
     ch_pops = []
     if useHapMapMarker:
@@ -932,7 +926,7 @@ def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixedFile):
     return pop
 
 
-def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
+def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff, name):
     '''Set quantitative trait and affection status if a cutoff value
     is given
     
@@ -955,7 +949,7 @@ def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
     for ch1 in chromWithDSL:
         ch = ch1 - 1
         DSL.append(pop.chromBegin(ch) + pop.numLoci(ch)/2)
-        for i in range(DSL[ch], pop.chromEnd(ch)):
+        for i in range(DSL[-1], pop.chromEnd(ch)):
             af = 1 - pop.dvars().alleleFreq[i][0]
             # allele 1
             if af > p - sd and af < p + sd:
@@ -971,6 +965,13 @@ def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff):
     maf = [min(pop.dvars().alleleFreq[x][0], 1-pop.dvars().alleleFreq[x][0]) for x in DSL]
     print 'Using DSL %s with minor allele frequency %s' % (DSL, maf)
     #
+    dsl = open(os.path.join(name, 'DSL.lst'), 'w')
+    print >> dsl, "name\tchrom\tindex\tlocation\tminor allele frequency\tpercentage of variation"
+    for i,d in enumerate(DSL):
+        print >> dsl, "%s\t%d\t%d\t%.5f\t%.3f\t%.3f" % (pop.locusName(d),
+            pop.chromLocusPair(d)[0] + 1, d - pop.chromBegin(pop.chromLocusPair(d)[0]), pop.locusPos(d),
+            pop.dvars().alleleFreq[d][0], vars[i])
+    dsl.close()
     # applying quantitative trait
     table = [[-math.sqrt(vars[i]/(2.*maf[i]*(1-maf[i])))*sign[i], 
         0, sign[i]*math.sqrt(vars[i]/(2.*maf[i]*(1-maf[i])))] \
@@ -1118,7 +1119,7 @@ if __name__ == '__main__':
     if len(chromWithDSL) > 0:
         # assign case/control status and quantitative trait
         setQuanTrait(admixedPop, chromWithDSL, freqDSL, freqDev, 
-            dslVar, cutoff)
+            dslVar, cutoff, name)
     #
     if len(DSL) > 0:
         if 'recessive' == peneFunc:
