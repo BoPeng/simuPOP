@@ -500,6 +500,8 @@ elif os.name == 'posix':
         shutil.copy('config_solaris.h', 'config.h')
     elif sys.platform == 'darwin':    # MacOS
         shutil.copy('config_mac.h', 'config.h')
+    else: # HPUX?
+        shutil.copy('config_linux.h', 'config.h')
 else:
     # otherwise, assume a posix system
     shutil.copy('config_linux.h', 'config.h')
