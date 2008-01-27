@@ -4,6 +4,7 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.8.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - NEW: add support for other posix systems like HP-UX
 
 version 0.8.3 - (Rev 1412) Jan 17, 2008 
   - NEW: allow taggers to write pedigree files
