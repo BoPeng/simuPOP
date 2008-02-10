@@ -229,14 +229,14 @@ simulation for XJ Gu et al (2008)
 ====================================
 
 # 1: Hybrid isolation.
-simuAdmixture.py --noDialog  --name='IH' --useSavedSeed --initPop='../../Affy/affyAll.bin' \
-    --HapMap_dir='../../HapMap' --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" \
-    --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]" \
+simuAdmixture.py --noDialog  --name='IH' --initPop='../../Affy/affyAll_CEU.bin' \
+    --HapMap_dir='../../HapMap' --pops="['CEU']" --chrom="range(1, 23)" \
+    --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]*22" \
     --startPos='[0]' --endingPos='[0]' --minAF='0' --minDiffAF='0' --minDist='0' --initCopy='10' \
-    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed --migrModel='Hybrid Isolation' --migrGen='5' \
+    --gen='200' --size='4800' --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed --migrModel='None' --migrGen='1' \
     --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
-    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
+    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.005, 0.01, 0.03, 0.05)" \
     --cutoff='-0.5' --DSL='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
