@@ -5,14 +5,14 @@ read this help message carefully, making sure your know how this script works,
 then run a few test commands, before you explore the capacity of this script.
 
 
-Step 0: Prepare HapMap dataset. (scripts/loadHapMap.py)
-=========================================================
+Step 0: Prepare HapMap dataset. (call scripts/loadHapMap.py if available)
+=========================================================================
 
 This script makes use of the HapMap dataset. The dataset is downloaded, imported
 and saved in simuPOP format automatically, using script scripts/loadHapMap.py.
-If loadHapMap.py can not be imported (not in $PYTHONPATH), please try to 
-run loadHapMap.py manually and provide a path to the directory with generated
-hapmap_??.bin file.
+If loadHapMap.py can not be imported (not in the working directory or in $PYTHONPATH),
+please try to run loadHapMap.py manually and provide a path with files hapmap_XX.bin
+to parameter --HapMap_dir.
 
 
 Step 1: Generate a seed population (scripts/simuAdmixture.py)
@@ -66,17 +66,14 @@ consider the subpopulations of the seed population as the populations around
 population for abut 2000 generations
 
 Each simulation will be given a name and all files will be saved to a directory
-named after it. If there is no $name/seed.bin, or a file specified by -s or
---seed, or parameter --reseed is given, this script will generate a seed
-population, which will be saved as $name/seed.bin, or any file specified by
--s or --seed.
+named after it. This step will by default produce file $name/seed.bin.
 
 
 Step 2. Evolve the seed population.
 =====================================
 
-If a seed file exists ($name/seed.bin or a file specified by option -s or
---seed), the script will evolve this seed population as follows:
+After a seed population is generated (or loaded if already exists and parameter
+--useSavedSeed is given), this script will evolve it as follows:
 
 1. Evolve the seed population subject to rapid population expansion for
 100 (default value of expandGen) generations. This is to mimic the rapid
@@ -121,10 +118,11 @@ e.g.
 The result of this stage will be saved to two files
   $name/expanded.bin (after population expandion)
   $name/admixed.bin (after population admixture)
-The script will skip population expansion and/or admixture if the
-corresponding file is found, unless parameter --remix is specified.
-In that case, admixed.bin is ignored and a (possibly) new migration
-scheme can be applied to the same expanded population.
+The script will skip population expansion and/or admixture if the corresponding
+file is found and parameter useSavedExpanded and/or useSavedAdmixed is
+specified. In the useSavedExpanded case, the simulation starts mixing population
+$name/expanded.bin directly. In the useSavedAdmixed case, the simulation draw
+sample from the admixed population directly.
 
 
 Step 3: Sample from admixed population.
@@ -133,9 +131,10 @@ Step 3: Sample from admixed population.
 This stage does not really belong to this script because the goal of the
 script is to simulate admixed populations. Arbitrary quantitative trait,
 penetrance models can be applied to the simulated population, and arbitrary
-ascertain scheme can then be applied to the population. However, for the
-sake of completeness, this script allows three kinds of quantitative trait
-and samples
+ascertain scheme can then be applied to the population. Ideally, one should
+load $name/admixed.bin and draw sample from it. However, for the sake of
+convenience and completeness, this script allows three kinds of quantitative
+trait and sample models.
 
 
 A multi-locus quantitative trait model
@@ -239,7 +238,7 @@ simuAdmixture.py --noDialog  --name='IH' --initPop='../../Affy/affyAll_CEU.bin' 
     --useSavedAdmixed --migrModel='None' --migrGen='1' \
     --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.005, 0.01, 0.03, 0.05)" \
-    --cutoff='-0.5' --DSL='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
+    --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
 simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap_dir='../../HapMap' \
@@ -249,7 +248,7 @@ simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap
     --useSavedAdmixed --migrModel='Continuous Gene Flow' --migrGen='5' \
     --migrRate="([0.90000000000000002, 0.10000000000000001], [0.0, 1.0])" --chromWithDSL="(1, 2, 3, 4)" \
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
-    --cutoff='-0.5' --DSL='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
+    --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
 
@@ -260,7 +259,7 @@ Evolve seed population:
 simuAdmixture.py --noDialog  --expandGen='100' --expandSize='24000' \
     --migrModel='Continuous Gene Flow' --migrGen='5' \
     --migrRate="([0, 0.10000000000000001], [0.0, 1.0])" \
-    --DSL='[0]' --pene="(0.10000000000000001, 0.25, 0.5)"  \
+    --DSLpene='[0]' --pene="(0.10000000000000001, 0.25, 0.5)"  \
     --resample='False' --sampleSize="(500, 500)"  \
     --name='admix'
 
@@ -280,33 +279,33 @@ simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
 Evolve a different seed population
 
 simuAdmixture.py --noDialog  -s=seed1.bin --migrGen='5' \
-    --migrRate="([0, 0.1], [0, 1])" --DSL=100 \
+    --migrRate="([0, 0.1], [0, 1])" --DSLpene=100 \
     --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
     --name='admix'
 
 Resample from the saved population:
 
-simuAdmixture.py --noDialog --resample=True --DSL=100 \
+simuAdmixture.py --noDialog --resample=True --DSLpene=100 \
     --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
     --name='admix'
 
 Two disease susceptibility loci:
 
-simuAdmixture.py --noDialog --resample=True --DSL='[10, 50]' \
+simuAdmixture.py --noDialog --resample=True --DSLpene='[10, 50]' \
     --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
     --sampleSize="(500, 500)"   --name='admix'
 
 Create a new subpopulation (the third population is created):
 
 simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
-    --DSL='[10, 50]' \
+    --DSLpene='[10, 50]' \
     --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
     --sampleSize="(500, 500)"   --name='admix'
 
 Sample only from the last (newly created population)
 
 simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
-    --DSL='[10, 50]' \
+    --DSLpene='[10, 50]' \
     --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
     --sampleSize="([0,0,500], [0,0,500])"   --name='admix'
 
@@ -314,7 +313,7 @@ Use a varying migration rate model:
 
 Modify migrFunc to fit your need. Then
 
-simuAdmixture.py --noDialog --migrModel='Customized' --DSL='[10, 50]' \
+simuAdmixture.py --noDialog --migrModel='Customized' --DSLpene='[10, 50]' \
     --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
     --sampleSize="([0,0,500], [0,0,500])" --name='admix'
 
@@ -387,7 +386,7 @@ options = [
      'allowedTypes': [types.StringType],
     },
     {'longarg': 'useSavedSeed',
-     'default': True,
+     'default': False,
      'label': 'Use saved seed population',
      'useDefault': True,
      'description': '''If seed population exists, whether or not use it directly'''
@@ -534,7 +533,7 @@ options = [
     #
     {'separator': 'Population expansion'},
     {'longarg': 'useSavedExpanded',
-     'default': True,
+     'default': False,
      'useDefault': True,
      'label': 'Use saved expanded population',
      'description': '''If set to true, load saved $name/expanded.bin and 
@@ -559,7 +558,7 @@ options = [
     },
     {'separator': 'Population admixture'},
     {'longarg': 'useSavedAdmixed',
-     'default': True,
+     'default': False,
      'useDefault': True,
      'label': 'Use saved admixed population',
      'description': '''If set to true, the program will use saved $name/admixed.bin''',
@@ -611,9 +610,19 @@ options = [
      'validate': valueListOf(valueListOf(valueBetween(0,1))),    
     },
     {'separator': 'Quantitative trait model'},
+    {'longarg': 'DSLtrait=',
+     'default': [],
+     'label': 'Disease susceptibility loci',
+     'useDefault': True,
+     'allowedTypes': [types.ListType, types.TupleType],
+     'description': '''Names of disease susceptibility loci for the quantitative trait model.
+                If given, parameters chromWithDSL, freqDSL and freqDev will be ignored. 
+                Otherwise, these DSL will be determined by allele frequency automatically.'''
+    },
     {'longarg': 'chromWithDSL=',
      'default': [1,2],
      'label': 'Chromosomes with DSL',
+     'useDefault': True,
      'allowedTypes': [types.TupleType, types.ListType],
      'description': '''Chromosomes with DSL. The chromosomes are counted from the loaded
                 population and indexed from 1. For example, if chromosomes 5, 6, 8 are
@@ -622,6 +631,7 @@ options = [
     {'longarg': 'freqDSL=',
      'default': 0.1,
      'label': 'MAF of DSL',
+     'useDefault': True,
      'allowedTypes': [types.FloatType],
     },
     {'longarg': 'freqDev=',
@@ -646,7 +656,7 @@ options = [
      'description': 'Cutoff value used to determine affection status'
     },      
     {'separator': 'Penetrance model'},
-    {'longarg': 'DSL=',
+    {'longarg': 'DSLpene=',
      'label': 'Disease susceptibility loci',
      'default': [],
      'useDefault': True,
@@ -944,9 +954,12 @@ def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixedFile):
     return pop
 
 
-def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff, name):
+def setQuanTrait(pop, DSLtrait, chromWithDSL, p, sd, vars, cutoff, name):
     '''Set quantitative trait and affection status if a cutoff value
     is given
+    
+    DSLtrait: names of each disease susceptibility loci. If given,
+        ignore parameters chromWithDSL, p, sd.
     
     chromWithDSL: chromosomes with DSL, chromosomes should be
         indexed from 0
@@ -961,25 +974,42 @@ def setQuanTrait(pop, chromWithDSL, p, sd, vars, cutoff, name):
         than this cutoff value.
     '''
     #
-    numDSL = len(chromWithDSL)
-    DSL = []
-    sign = []
-    for ch1 in chromWithDSL:
-        ch = ch1 - 1
-        DSL.append(pop.chromBegin(ch) + pop.numLoci(ch)/2)
-        for i in range(DSL[-1], pop.chromEnd(ch)):
+    if len(DSLtrait) == 0:
+        numDSL = len(chromWithDSL)
+        DSL = []
+        sign = []
+        for ch1 in chromWithDSL:
+            ch = ch1 - 1
+            DSL.append(pop.chromBegin(ch) + pop.numLoci(ch)/2)
+            for i in range(DSL[-1], pop.chromEnd(ch)):
+                af = 1 - pop.dvars().alleleFreq[i][0]
+                # allele 1 is the minor allele
+                if af > p - sd and af < p + sd:
+                    DSL[-1] = i
+                    sign.append(1)
+                    break
+                # allele 0 is the minor allele
+                elif 1 - af > p - sd and 1 - af < p + sd:
+                    DSL[-1] = i
+                    sign.append(-1)
+                    break
+    else:
+        try:
+            DSL = pop.lociByNames(DSLtrait)
+            numDSL = len(DSL)
+        except:
+            print 'Can not find one of the DSL %s in this population' % \
+                ', '.join(DSLtrait)
+            sys.exit(1)
+        sign = []
+        for i in DSL:
             af = 1 - pop.dvars().alleleFreq[i][0]
-            # allele 1
-            if af > p - sd and af < p + sd:
-                # allele 0
-                DSL[-1] = i
+            # allele 1 is the minor allele
+            if af < 0.5:
                 sign.append(1)
-                break
-            # allele 0
-            elif 1 - af > p - sd and 1 - af < p + sd:
-                DSL[-1] = i
+            # allele 0 is the minor allele
+            else:
                 sign.append(-1)
-                break
     maf = [min(pop.dvars().alleleFreq[x][0], 1-pop.dvars().alleleFreq[x][0]) for x in DSL]
     print 'Using DSL %s with minor allele frequency %s' % (DSL, maf)
     #
@@ -1076,8 +1106,8 @@ if __name__ == '__main__':
         minDiffAF, minDist, initCopy, gen, size,
       useSavedExpanded, expandGen, expandSize,
       useSavedAdmixed, migrModel, migrGen, migrRate,
-      chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
-      DSL, peneFunc, peneParam, 
+      chromWithDSL, DSLtrait, freqDSL, freqDev, dslVar, cutoff,
+      DSLpene, peneFunc, peneParam, 
       ccSampleSize, ccSampleName,
       randomSampleSize, randomSampleName) = allParam[1:]
     # simulation name?
@@ -1136,10 +1166,10 @@ if __name__ == '__main__':
     #
     if len(chromWithDSL) > 0:
         # assign case/control status and quantitative trait
-        setQuanTrait(admixedPop, chromWithDSL, freqDSL, freqDev, 
+        setQuanTrait(admixedPop, chromWithDSL, DSLtrait, freqDSL, freqDev, 
             dslVar, cutoff, name)
     #
-    if len(DSL) > 0:
+    if len(DSLpene) > 0:
         if 'recessive' == peneFunc:
             pene_func = recessive(para)
         elif 'additive' == peneFunc:
@@ -1150,7 +1180,7 @@ if __name__ == '__main__':
             pene_func = None
         #
         if pene_func is not None:
-            PyPenetrance(admixedPop, admixedPop.lociByNames(DSL), func=pene_func)
+            PyPenetrance(admixedPop, admixedPop.lociByNames(DSLpene), func=pene_func)
     #
     # draw sample
     def comb(geno):
