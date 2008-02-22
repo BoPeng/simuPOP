@@ -8,9 +8,11 @@ then run a few test commands, before you explore the capacity of this script.
 Step 0: Prepare HapMap dataset. (scripts/loadHapMap.py)
 =========================================================
 
-This script reads the HapMap dataset. To avoid repeated importing, the hapMap
-datasets should be imported and saved in simuPOP format. This is done using
-scripts/loadHapMap.py. Please refer to loadHapMap.py for detailed instructions.
+This script makes use of the HapMap dataset. The dataset is downloaded, imported
+and saved in simuPOP format automatically, using script scripts/loadHapMap.py.
+If loadHapMap.py can not be imported (not in $PYTHONPATH), please try to 
+run loadHapMap.py manually and provide a path to the directory with generated
+hapmap_??.bin file.
 
 
 Step 1: Generate a seed population (scripts/simuAdmixture.py)
@@ -403,10 +405,13 @@ options = [
      'default': '../HapMap',
      'useDefault': True,
      'label': 'HapMap data directory',
-     'description': '''Directory to store HapMap data in simuPOP format,
-                It should be prepared by the loadHapMap.py script distributed 
-                with simuPOP. Please refer to script loadHapMap.py for detailed 
-                instructions on how to obtain and prepare HapMap data.''',
+     'description': '''Directory to store HapMap data in simuPOP format. Hapmap
+                data file hapmap_??.bin in this directory, if exits, will be
+                loaded directly. Otherwise, module loadHapMap.py (usually under
+                /path/to/simuPOP/scripts) will be used to download, import, and
+                save HapMap data in simuPOP formats. If this module can not be
+                imported, you can either add its path to environmental variable
+                $PYTHONPATH or run this script manually.''',
      'allowedTypes': [types.StringType],
      #'validate': valueValidDir(),
     },
@@ -750,15 +755,28 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
     '''Create an initial population''' 
     # process parameters
     if not os.path.isdir(HapMap_dir):
-        print "HapMap directory does not exist"
+        print 'HapMap directory %s does not exist, creating one.' % HapMap_dir
+        os.makedirs(HapMap_dir)
+    if not os.path.isdir(HapMap_dir):
+        print 'Can not create directory %s to store hapmap data, exiting' % HapMap_dir
         sys.exit(1)
     if len(chrom) == 0:
         print 'Please specify one or more chromosomes'
         sys.exit(1)
     for ch in chrom:
         if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
-            print "HapMap data file hapmap_%d.bin does not exist" % ch
-            sys.exit(1)
+            try:
+                import loadHapMap
+                loadHapMap.loadHapMap([ch], HapMap_dir)
+            except Exception, e:
+                print e
+            if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
+                print 'Failed to load or download hapmap data for chromosome %d' % ch
+                print 'Please copy script loadHapMap.py to the current directory, or add'
+                print 'path to this script to environmental variable$PYTHONPATH,'
+                print 'or run this script manually to download, import, and save HapMap'
+                print 'data in simuPOP format'
+                sys.exit(1)
     # in case that chrom is a tuple
     chrom = list(chrom)
     useHapMapMarker = markerList == ''

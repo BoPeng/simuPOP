@@ -156,9 +156,10 @@ def load_population(pop, ch, type):
             ind.setAllele(g, i, ploidy)
 
 
-if __name__ == '__main__':
+def loadHapMap(chroms, dest='.'):
+    '''Download, import and save hapmap data of given chromosomes'''
     ps = [0,0,0]
-    for ch in range(1, 23):
+    for ch in chroms:
         popFile = "hapmap_%d.bin" % ch
         print "\n\nCreating population %s" % popFile
         (lociPos, lociName) = getLoci(ch)
@@ -180,6 +181,8 @@ if __name__ == '__main__':
         print "Calculating allele frequency ..."
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         print "Saving population to %s..." % popFile
-        SavePopulation(pop, popFile)
+        SavePopulation(pop, os.path.join(dest, popFile))
         
-    
+
+if __name__ == '__main__':
+    loadHapMap(range(1, 23))
