@@ -71,9 +71,9 @@ public:
 /// inherite tag from parents
 /**
    This during-mating operator will copy the tag (information field) from his/her parents.
-   Depending on \c mode parameter, this tagger will obtain tag from his/her father
-   (two tag fields), mother (two tag fields) or both (first tag field from both
-   father and mother). \n
+   Depending on \c mode parameter, this tagger will obtain tag, value of the first
+   specified information fields, from his/her father or mother (two tag fields),
+   or both (first tag field from father, and second tag field from mother). \n
 
    An example may be tagging one or a few parents and examining, at the last generation,
    how many offspring they have.
@@ -96,8 +96,10 @@ public:
 	              const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
 		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields), m_mode(mode)
 	{
-		DBG_ASSERT(infoSize() == 2, ValueError,
-			"Inherit tagger needs to know the information fields of both parents");
+		DBG_ASSERT(infoSize() > 0, ValueError,
+			"At least one information field is needed.");
+        DBG_FAILIF(infoSize() == 1 && mode == TAG_Both, ValueError,
+            "Two information fields are needed in mode TAG_Both");
 	};
 
 	virtual ~inheritTagger()
