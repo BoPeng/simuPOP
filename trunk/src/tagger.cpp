@@ -51,10 +51,8 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 {
 	UINT id1 = 0, id2 = 0;
 
-	if (m_mode == TAG_Paternal)
+	if (m_mode == TAG_Paternal || m_mode == TAG_Maternal)
 		id1 = pop.infoIdx(infoField(0));
-	else if (m_mode == TAG_Maternal)
-		id1 = pop.infoIdx(infoField(1));
 	else {
 		id1 = pop.infoIdx(infoField(0));
 		id2 = pop.infoIdx(infoField(1));
@@ -72,14 +70,10 @@ bool inheritTagger::applyDuringMating(population & pop, RawIndIterator offspring
 	if (noOutput())
 		return true;
 	ostream & out = getOstream(pop.dict());
-	if (m_mode == TAG_Paternal)
-		out << (dad == NULL ? 0 : dad->info(id1)) << '\t';
-	else if (m_mode == TAG_Maternal)
-		out << (mom == NULL ? 0 : mom->info(id1)) << '\t';
-	else {
-		out << (dad == NULL ? 0 : dad->info(id1)) << '\t';
-		out << (mom == NULL ? 0 : mom->info(id2)) << '\t';
-	}
+	if (m_mode == TAG_Paternal || m_mode == TAG_Maternal)
+		out << offspring->info(id1) << '\t';
+	else
+		out << offspring->info(id1) << '\t' << offspring->info(id2) << '\t';
 
 	closeOstream();
 	return true;
