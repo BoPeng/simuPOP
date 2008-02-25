@@ -3500,8 +3500,9 @@ Details:
 
     This during-mating operator will copy the tag (information field)
     from his/her parents. Depending on mode parameter, this  tagger
-    will obtain tag from his/her father (two tag fields), mother (two
-    tag fields) or both (first tag field from both father and mother).
+    will obtain tag, value of the first specified information fields,
+    from his/her father or mother (two tag fields), or both (first tag
+    field from father, and second tag field from mother).
     An example may be tagging one or a few parents and examining, at
     the last generation, how many offspring they have.
 
@@ -6077,6 +6078,18 @@ Usage:
 
 %ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
+%feature("docstring") simuPOP::offspringGenerator::finalize "
+
+Description:
+
+    simuPOP::offspringGenerator::finalize
+
+Usage:
+
+    x.finalize(pop)
+
+"; 
+
 %ignore simuPOP::offspringGenerator::numOffspring(int gen);
 
 %ignore simuPOP::offspringGenerator::initialized() const;
@@ -6309,6 +6322,18 @@ Usage:
 "; 
 
 %ignore simuPOP::parentChooser::initialize(population &pop, SubPopID subPop);
+
+%feature("docstring") simuPOP::parentChooser::finalize "
+
+Description:
+
+    simuPOP::parentChooser::finalize
+
+Usage:
+
+    x.finalize(pop, subPop)
+
+"; 
 
 %ignore simuPOP::parentChooser::initialized() const;
 
@@ -10199,6 +10224,18 @@ Usage:
 
 %ignore simuPOP::pyParentsChooser::initialize(population &pop, SubPopID sp);
 
+%feature("docstring") simuPOP::pyParentsChooser::finalize "
+
+Description:
+
+    simuPOP::pyParentsChooser::finalize
+
+Usage:
+
+    x.finalize(pop, sp)
+
+"; 
+
 %feature("docstring") simuPOP::pyParentsChooser::~pyParentsChooser "
 
 Description:
@@ -13265,10 +13302,15 @@ Usage:
 
 Arguments:
 
-    popSize:        whether or not calculate  population sizes. This
-                    parameter will set the following variables:
+    popSize:        whether or not calculate  population and virtual
+                    subpopulation sizes. This parameter will set the
+                    following variables:
                     * numSubPop the number of subpopulations.
                     * subPopSize an array of subpopulation sizes.
+                    * virtualSubPopSize (optional) an array of virtual
+                    subpopulation sizes. If a subpopulation does not
+                    have any virtual subpopulation, the subpopulation
+                    size is returned.
                     * popSize, subPop[sp]['popSize'] the
                     population/subpopulation size.
     numOfMale:      whether or not count the numbers or proportions of
