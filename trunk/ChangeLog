@@ -8,6 +8,8 @@ version 0.8.4 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: automatically download HapMap data in loadHapMap.py and simuAdmixture.py.
   - NEW: add two operators infoEval and infoExec that can be used to manipulate
 	information fields during evolution.
+  - NEW: operator stator popSize=True also calculates virtual subpop size using
+		variable virtualPopSize.
 
 version 0.8.3 - (Rev 1412) Jan 17, 2008 
   - NEW: allow taggers to write pedigree files

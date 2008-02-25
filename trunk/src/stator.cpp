@@ -185,8 +185,19 @@ bool statPopSize::apply(population & pop)
 
 	// type mismatch, can not use subPopSizes() directly.
 	vectori spSize(numSP);
-	for (size_t sp = 0; sp < numSP; ++sp)
+    vectori vspSize;
+	for (size_t sp = 0; sp < numSP; ++sp) {
 		spSize[sp] = pop.subPopSize(sp);
+        int numVSP = pop.numVirtualSubPop(sp);
+        if (numVSP == 0)
+            pop.setIntVar(virtualPopSize_String + string("[") + toStr(sp) + "]", spSize[sp]);
+        else {
+            vspSize.clear();
+            for (size_t vsp = 0; vsp < numVSP; ++vsp)
+                vspSize.push_back(pop.virtualSubPopSize(sp, vsp));
+            pop.setIntVectorVar(virtualPopSize_String + string("[") + toStr(sp) + "]", vspSize);
+        }
+    }
 
 	pop.setIntVectorVar(subPopSize_String, spSize);
 

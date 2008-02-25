@@ -384,6 +384,7 @@ class statPopSize
 private:
 #define  numSubPop_String   "numSubPop"
 #define  popSize_String     "popSize"
+#define  virtualPopSize_String "virtualPopSize"
 #define  subPopSize_String  "subPopSize"
 
 public:
@@ -1482,10 +1483,13 @@ public:
 	/// create an \c stat operator
 	/**
 
-	 \param popSize whether or not calculate population sizes. This parameter
-	   	will set the following variables:
+	 \param popSize whether or not calculate population and virtual subpopulation 
+        sizes. This parameter will set the following variables:
 	 \li \c numSubPop the number of subpopulations.
 	 \li \c subPopSize an array of subpopulation sizes.
+     \li \c virtualSubPopSize (optional) an array of virtual subpopulation sizes.
+        If a subpopulation does not have any virtual subpopulation, the
+        subpopulation size is returned.
 	 \li \c popSize, <tt>subPop[sp]['popSize']</tt> the population/subpopulation size.
 
 	 \param numOfMale whether or not count the numbers or proportions of males and females.
