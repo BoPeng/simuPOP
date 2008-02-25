@@ -135,6 +135,11 @@ public:
 	/// CPPONLY
 	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
+    virtual void finalize(const population & pop)
+    {
+        m_initialized = false;
+    }
+
 	/// CPPONLY the number of offspring of a genaration \c gen
 	/**
 	   This is called whenever a family size is needed.
@@ -354,6 +359,11 @@ public:
 
 	/// CPPONLY
 	virtual void initialize(population & pop, SubPopID subPop) { }
+
+    virtual void finalize(population & pop, SubPopID subPop)
+    {
+        m_initialized = false;
+    }
 
 	/// CPPONLY
 	bool initialized() const
@@ -637,6 +647,11 @@ public:
 
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
+
+    void finalize(population & pop, SubPopID sp)
+    {
+        m_initialized = false;
+    }
 
 	/// destructor
 	~pyParentsChooser()

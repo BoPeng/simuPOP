@@ -1577,6 +1577,8 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
+    m_parentChooser->finalize(pop, subPop);
+    m_offspringGenerator->finalize(pop);
 	return true;
 }
 
