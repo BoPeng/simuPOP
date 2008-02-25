@@ -1118,6 +1118,12 @@ public:
 
 	// int requestInfoField(const string name);
 
+	/// CPPONLY
+	void clearInfoValues()
+	{
+		std::fill(m_info.begin(), m_info.end(), 0.0);
+	}
+	
 	/// set individual information for the given information field \c idx
 	/**
 	 \param values an array that has the same length as population size.

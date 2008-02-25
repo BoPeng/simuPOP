@@ -1,4 +1,4 @@
-#LyX 1.5.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -16,7 +16,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.2 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.4 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -3953,6 +3953,20 @@ preview false
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Information fields can also be manipulated during evolution, using one of
+ the Python operators, or operators 
+\family typewriter
+infoEval 
+\family default
+and 
+\family typewriter
+infoExec
+\family default
+ (new in version 0.8.4).
+ Please refer to simuPOP reference manual for details.
 \end_layout
 
 \begin_layout LyX-Code
