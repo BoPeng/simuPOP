@@ -322,7 +322,7 @@ UINT population::numVirtualSubPop(SubPopID subPop) const
 {
 	return hasVirtualSubPop(subPop)
 	       ? m_virtualSubPops[subPop]->numVirtualSubPop()
-		   : 1;
+		   : 0;
 }
 
 
