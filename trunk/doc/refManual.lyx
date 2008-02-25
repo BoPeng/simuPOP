@@ -2723,7 +2723,30 @@ individuals(subPop, virtualSubPop)
 \family default
 member function allows you to iterate through all individuals of a virtual
  subpopulation.
- Example 
+ 
+\end_layout
+
+\begin_layout Standard
+Member functions 
+\family typewriter
+pop.numVirtualSubPop(sp), pop.virtualSubPopSize(sp, vsp)
+\family default
+ can be used to determine the number of virtual subpopulation a subpopulation
+ has, and the size of the virtual subpoulation.
+ Operator 
+\family typewriter
+stat(popSize=True)
+\family default
+ also calculates virtual subpoulation sizes, and save them in a variable
+ 
+\family typewriter
+virtualPopSize
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Example 
 \begin_inset LatexCommand ref
 reference "virtualSubPop"
 
