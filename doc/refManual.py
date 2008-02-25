@@ -198,6 +198,20 @@ for idx in range(pop.popSize()):
 print pop.indInfo(bIdx, False)
 #end
 
+#file log/ref_info3.log
+pop = population(5, infoFields=['a', 'b'])
+InfoExec(pop, 'import random\na=random.randint(2,10)')
+InfoExec(pop, 'b=a+a*2')
+InfoEval(pop, r"'(%.0f, %.0f) ' % (a, b)")
+
+# this is wrong because 'c' is not available
+InfoExec(pop, 'b=c+a')
+# but we can also make use of population variables.
+pop.vars()['c'] = 6
+InfoExec(pop, 'b=c+a', usePopVars=True)
+print pop.indInfo('b', True)
+#end
+
 #file log/ref_ancestralPop.log
 simu = simulator(population(10000, loci=[2]), randomMating())
 simu.evolve(

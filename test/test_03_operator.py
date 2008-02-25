@@ -211,5 +211,51 @@ class TestOperator(unittest.TestCase):
             self.assertFileContent("gen%d.txt"%i, 'a'*5)
             os.remove('gen%d.txt'%i)
      
+    def testInfoEval(self):
+        '''Testing operator infoEval'''
+        pop = population(10, infoFields=['a', 'b'])
+        InfoEval(pop, expr='b', stmts='b=a+1')
+        self.assertEqual(pop.indInfo('b', True), tuple([1]*10))
+        #
+        # use population variable
+        pop.vars()['c'] = 5
+        # this should fail because there is no information field c
+        self.assertRaises(exceptions.SystemError, InfoEval, pop, 'c+4')
+        # usePopVars is needed
+        InfoEval(pop, 'c+4', usePopVars=True)
+
+
+    def testInfoExec(self):
+        '''Testing operator infoExec'''
+        pop = population(10, infoFields=['a', 'b'])
+        InfoExec(pop, 'b=a+1')
+        self.assertEqual(pop.indInfo('b', True), tuple([1]*10))
+        InfoExec(pop, 'a+=1')
+        self.assertEqual(pop.indInfo('a', True), tuple([1]*10))
+        # this will not do anything because there is no c to be updated.
+        InfoExec(pop, 'c=a+b')
+        #
+        # use population variable
+        pop.vars()['c'] = 5
+        # this should fail because there is no information field c
+        self.assertRaises(exceptions.SystemError, InfoExec, pop, 'b=c+4')
+        # usePopVars is needed
+        InfoExec(pop, 'b=c+4', usePopVars=True)
+        self.assertEqual(pop.indInfo('b', True), tuple([9]*10))
+        #
+        # as an operator
+        simu = simulator(pop, cloneMating())
+        simu.evolve(
+            preOps = [infoExec('b=0', name='set b to zero')],
+            ops = [
+                infoEval(r"'\t%.1f' % b", name='output b', stage=PostMating),
+                infoExec('b+=1', name='increase b'),
+                pyOutput('\n'),
+            ],
+            end = 4
+        )
+            
+
+         
 if __name__ == '__main__':
     unittest.main()

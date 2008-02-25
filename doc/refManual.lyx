@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.2 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.4 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -5161,6 +5161,68 @@ preview false
 
 \end_layout
 
+\begin_layout Standard
+Information fields can also be used to track individual information fields
+ during evolution, using Python operators or operators 
+\family typewriter
+infoEval
+\family default
+ and 
+\family typewriter
+infoExec
+\family default
+.
+ The latter two operators can evaluate Python expressions and statements
+ with varaibles being the information fields of individuals.
+ Changes to these variables will change the corresponding information fields
+ of an individul.
+ For example, assuming that population 
+\family typewriter
+pop
+\family default
+ has information field 
+\family typewriter
+a
+\family default
+, the following function (function form of operator 
+\family typewriter
+infoExec
+\family default
+) will increase the information field 
+\family typewriter
+a 
+\family default
+of every individual in the population by 1.
+\end_layout
+
+\begin_layout LyX-Code
+InfoExec(pop, 'a += 1')
+\end_layout
+
+\begin_layout Standard
+These statements are usually used to change the values of an information
+ field, or derive an information field from other ones.
+ However, variables from a poulation's local namespace can be made available,
+ using option 
+\family typewriter
+usePopVars=True
+\family default
+.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_info3.log}[caption={Use carray information fields function},label={carray-info}]
+preview false
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Pedigree
 \end_layout
@@ -6622,6 +6684,20 @@ pyEvalRef
 
 \backslash
 pyExecRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+infoEvalRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+infoExecRef
 \end_layout
 
 \end_inset

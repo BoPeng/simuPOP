@@ -46,6 +46,103 @@ bool pyEval::apply(population & pop)
 	return true;
 }
 
+void infoEval::prepareDict(population & pop)
+{
+	if (m_usePopVars && m_exposePop) {
+		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+		if (popObj == NULL)
+			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+
+		// set dictionary variable pop to this object
+		pop.setVar("pop", popObj);
+	}
+
+	if (m_usePopVars)
+		m_dict = pop.dict();
+	else
+		m_dict = PyDict_New();
+}
+
+
+string infoEval::evalInfo(individual* ind)
+{
+	vectorstr infos = ind->infoFields();
+	// update dictionary
+	for (UINT idx = 0; idx < infos.size(); ++idx) {
+		string name = infos[idx];
+		double val = ind->info(idx);
+		PyDict_SetItemString(m_dict, name.c_str(), PyFloat_FromDouble(val));
+	}
+
+	m_expr.setLocalDict(m_dict);
+	// evaluate
+	string res = m_expr.valueAsString();
+	// update information fields
+	for (UINT idx = 0; idx < infos.size(); ++idx) {
+		double info = 0;
+		string name = infos[idx];
+		try {
+			PyObject * var = PyDict_GetItemString(m_dict, name.c_str());
+			PyObj_As_Double(var, info);
+			ind->setInfo(info, idx);
+		} catch (...) {
+			DBG_WARNING(true, "Failed to update information field " + name + 
+				" from a dictionary of information fields.");
+		}
+	}
+	return res;
+}
+
+
+bool infoEval::apply(population & pop)
+{
+	prepareDict(pop);
+
+	string res;
+	if (m_subPops.empty()) {
+		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
+			res = evalInfo(& * it) ;
+			if (!this->noOutput() ) {
+				ostream & out = this->getOstream(pop.dict());
+				out << res;
+				this->closeOstream();
+			}
+		}
+	} else {
+		for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp) {
+			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
+				"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
+				toStr(pop.numSubPop()) + ")");
+			for (IndIterator it = pop.indBegin(*sp); it.valid(); ++it) {
+				res = evalInfo(& * it);
+				if (!this->noOutput() ) {
+					ostream & out = this->getOstream(pop.dict());
+					out << res;
+					this->closeOstream();
+				}
+			}
+		}
+	}
+	return true;
+}
+
+
+bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
+		individual * dad, individual * mom)
+{
+	// FIXME: This potentially can be very slow.
+	prepareDict(pop);
+
+	string res = evalInfo(&*offspring);
+
+	if (!this->noOutput() ) {
+		ostream & out = this->getOstream(pop.dict());
+		out << res;
+		this->closeOstream();
+	}
+	return true;
+}
+
 
 string haploKey(const vectori & seq)
 {

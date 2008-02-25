@@ -622,6 +622,16 @@ def PySubset(pop, *args, **kwargs):
     s.apply(pop)
 
 
+def InfoEval(pop, *args, **kwargs):
+	infoEval(*args, **kwargs).apply(pop)
+
+InfoEval.__doc__ = "Function version of operator infoEval whose __init__function is \n" + infoEval.__init__.__doc__
+
+def InfoExec(pop, *args, **kwargs):
+	infoExec(*args, **kwargs).apply(pop)
+
+InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
+
 def SavePopulation(pop, *args, **kwargs):
     pop.savePopulation(*args, **kwargs)
 

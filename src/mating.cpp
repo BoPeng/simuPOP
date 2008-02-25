@@ -758,6 +758,8 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 		// allow change of pop size of scratch
 		scratch.setSubPopStru(sz, true);
 	}
+	// this is not absolutely necessary but will reduce confusions
+	scratch.clearInfoValues();
 	scratch.copyVirtualSplitters(pop);
 
 	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
