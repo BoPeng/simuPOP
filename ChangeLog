@@ -10,6 +10,7 @@ version 0.8.4 - Not released, available at https://simupop.svn.sourceforge.net/s
 	information fields during evolution.
   - NEW: operator stator popSize=True also calculates virtual subpop size using
 		variable virtualPopSize.
+  - BUG: fix a bug in the re-initialization of pyParentsChooser.
 
 version 0.8.3 - (Rev 1412) Jan 17, 2008 
   - NEW: allow taggers to write pedigree files
