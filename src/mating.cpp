@@ -445,8 +445,7 @@ void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_subPop = subPop;
 	m_begin = pop.rawIndBegin();
 	m_index = 0;
-	// keep coming back to update m_gen and m_subPop
-	m_initialized = false;
+	m_initialized = true;
 }
 
 
@@ -837,6 +836,8 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
+	pc.finalize(pop, subPop);
+	m_offGenerator.finalize(pop);
 	return true;
 }
 
@@ -867,6 +868,8 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
+	pc.finalize(pop, subPop);
+	m_offGenerator.finalize(pop);
 	return true;
 }
 
@@ -902,6 +905,8 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
 	return true;
 }
 
@@ -969,6 +974,8 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(1));
 	}
+	m_pedParentsChooser.finalize(pop, subPop);
+	m_offspringGenerator->finalize(pop);
 	return true;
 }
 
@@ -999,6 +1006,8 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
 	return true;
 }
 
@@ -1671,6 +1680,9 @@ bool heteroMating::mate(population & pop, population & scratch,
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
 		}
+		DBG_DO(DBG_MATING, cout << "Positive mating scheme weights: " << w_pos << '\n'
+			<< "Negative mating scheme weights: " << w_neg << endl);
+
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
 		double overall_neg = std::accumulate(w_neg.begin(), w_neg.end(), 0.);
@@ -1715,7 +1727,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 					break;
 				}
 		}
-		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is "
+		DBG_DO(DBG_MATING, cout << "VSP sizes in subpop " << sp << " is "
 			                   << vspSize << endl);
 
 		// it points to the first mating scheme.
