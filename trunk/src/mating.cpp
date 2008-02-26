@@ -1695,7 +1695,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (fcmp_gt(w_neg[i], 0.)) {
-				vspSize[i] = static_cast<ULONG>(pop.subPopSize(sp) * w_neg[i]);
+				vspSize[i] = static_cast<ULONG>(pop.virtualSubPopSize(sp, m[i]->virtualSubPop()) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
 					"Not enough offspring to accommodate specified weight scheme. "
 					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
