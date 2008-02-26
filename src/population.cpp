@@ -260,10 +260,8 @@ population * population::clone(int keepAncestralPops) const
 ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) const
 {
 	CHECKRANGESUBPOP(subPop);
-	if (virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop))
+	if (virtualSubPop == InvalidSubPopID || !hasVirtualSubPop(virtualSubPop))
 		return subPopSize(subPop);
-	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
-		"There is no virtual subpopulation in subpop " + toStr(subPop));
 	return m_virtualSubPops[subPop]->size(*this, subPop, virtualSubPop);
 }
 
