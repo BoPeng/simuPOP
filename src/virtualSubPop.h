@@ -333,8 +333,27 @@ class genotypeSplitter : public vspSplitter
 {
 public:
 	/**
-	 \param genotype a shortcut for genotypes=[genotype]
-	 \param genotypes a list of genotypes
+	 \param locus a shortcut to loci=[locus]
+	 \param loci A list of locus at which alleles are used to classify individuals
+	 \param alleles a list (for each virtual subpopulation), of a list
+		of alleles at each locus. If phase if true, the order of alleles
+		is significant. If more than one set of alleles are given, 
+		individuals having either of them is qualified.
+	\param phase whether or not phase is respected.
+
+	For example,
+	Genotype Aa or aa at locus 1:
+		locus = 1, alleles = [0, 1]
+	Genotype Aa at locus 1 (assuming A is 1):
+		locus = 1, alleles = [1, 0], phase = True
+	Genotype AaBb at loci 1 and 2:
+		loci = [1, 2], alleles = [1, 0, 1, 0], phase = True
+	Two virtual subpopulations with Aa and aa
+		locus = 1, alleles = [[1, 0], [0, 0]], phase = True
+	A virtual subpopulation with Aa or aa
+		locus = 1, alleles = [1, 0, 0, 0]
+	Two virtual subpopulation with genotype AA and the rest
+		locus = 1, alleles = [[1, 1], [1, 0, 0, 0]], phase = False
 	 */
 	genotypeSplitter(const vectori & loci,
 	                 const intMatrix & alleles, bool phase = false);
@@ -366,6 +385,7 @@ public:
 
 private:
 	bool match(const individual * ind, const vectori & alleles) const;
+	bool matchSingle(const individual * ind, const vectori & alleles) const;
 
 private:
 	vectori m_loci;
