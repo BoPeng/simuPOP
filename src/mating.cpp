@@ -1691,7 +1691,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			"Overall weight is zero");
 		//
 		vectorlu vspSize(m.size());
-		ULONG all = pop.subPopSize(sp);
+		ULONG all = scratch.subPopSize(sp);
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (fcmp_gt(w_neg[i], 0.)) {
