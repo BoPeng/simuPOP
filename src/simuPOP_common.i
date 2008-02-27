@@ -242,9 +242,16 @@ namespace std
 %include "misc.h"
 %include "pedigree.h"
 %include "genoStru.h"
-%include "virtualSubPop.h"
 %include "individual.h"
+
+namespace std
+{
+	%template()    vector<simuPOP::vspSplitter * >;
+}
+
+%include "virtualSubPop.h"
 %include "population.h"
+
 %include "operator.h"
 
 %extend simuPOP::population
@@ -254,6 +261,7 @@ namespace std
     %template(setIndInfo) setIndInfo<vectori>;
     %template(setIndInfo) setIndInfo<vectorf>;
 }
+
 
 namespace std
 {

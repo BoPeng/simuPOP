@@ -111,6 +111,59 @@ protected:
 
 };
 
+typedef std::vector<vspSplitter *> vectorvsp;
+
+/** this plitter takes several splitters, and stacks their virtual
+subpopulation together. For example, if the first splitter has
+three vsp, the second has two. The two vsp from the second splitter
+will be the fouth (index 3) and fifth (index 4) of the combined 
+splitter
+*/
+class combinedSplitter : public vspSplitter
+{
+public:
+	combinedSplitter(const vectorvsp & splitters = vectorvsp());
+	
+	~combinedSplitter();
+	
+	vspSplitter * clone() const;
+	
+	/// the size of a given virtual subpopulation.
+	/// CPPONLY
+	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
+
+	/// number of virtual subpops of subpopulation sp
+	UINT numVirtualSubPop()
+	{
+		return m_numVSP;
+	}
+
+	/// mark individuals in the given vsp as visible, and others invisible.
+	/// CPPONLY
+	void activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type);
+
+	/// deactivate. Namely make all individuals visible again.
+	/// CPPONLY
+	void deactivate(population & pop, SubPopID sp);
+
+	/// name of a virtual subpopulation
+	string name(SubPopID sp);
+
+private:
+	/// the splitters
+	vector<vspSplitter*> m_splitters;
+	
+	/// total number of vsp
+	int m_numVSP;
+	/// currently activated splitter
+	int m_curSplitter;
+	/// the splitter correspond to a vsp
+	vectori m_splitter;
+	/// the real vsp of a splitter correspond to a vsp
+	vectori m_vsp;
+};
+
 
 /** split the population according to sex
  */
@@ -393,6 +446,5 @@ private:
 	bool m_phase;
 };
 
-typedef vector<vspSplitter *> vectorvsp;
 }
 #endif

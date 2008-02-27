@@ -54,6 +54,61 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 }
 
 
+combinedSplitter::combinedSplitter(const vectorvsp & splitters)
+	: vspSplitter(), m_numVSP(0), m_splitter(), m_vsp(), m_curSplitter(0)
+{
+	for (size_t i = 0; i < splitters.size(); ++i) {
+		m_splitters.push_back(splitters[i]->clone());
+		for (size_t j = 0; j < splitters[i]->numVirtualSubPop(); ++j) {
+			m_splitter.push_back(i);
+			m_vsp.push_back(j);
+			m_numVSP ++;
+		}
+	}
+}
+	
+combinedSplitter::~combinedSplitter()
+{
+	for (size_t i = 0; i < m_splitters.size(); ++i)
+		delete m_splitters[i];
+}
+
+
+vspSplitter * combinedSplitter::clone() const
+{
+	return new combinedSplitter(m_splitters);
+}	
+
+
+ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
+{
+	m_splitters[m_splitter[virtualSubPop]]->size(pop, subPop,
+		m_vsp[virtualSubPop]);
+}
+
+
+void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
+		activateType type)
+{
+	m_curSplitter = m_splitter[virtualSubPop];
+	m_splitters[m_curSplitter]->activate(pop, subPop,
+		m_vsp[virtualSubPop], type);
+}
+
+
+void combinedSplitter::deactivate(population & pop, SubPopID sp)
+{
+	m_splitters[m_curSplitter]->deactivate(pop, sp);
+}
+
+
+string combinedSplitter::name(SubPopID sp)
+{
+	return m_splitters[m_splitter[sp]]->name(m_vsp[sp]);
+
+}
+
+
 ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
 	if (virtualSubPop == InvalidSubPopID)

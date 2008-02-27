@@ -2714,6 +2714,20 @@ genotypeSplitter
 splits the population with genotype values at given loci.
 \end_layout
 
+\begin_layout Itemize
+A 
+\family typewriter
+combinedSplitter
+\family default
+ that allows the specification of multiple splitter at the same subpopulation.
+ For example, the unaffected and affected virtual subpopulation of a subpopulati
+on split by 
+\family typewriter
+combinedSplitter([sexSplitter(), affectionSplitter()])
+\family default
+ are 2 and 3, respectively.
+\end_layout
+
 \begin_layout Standard
 The population class provies several functions to assign a splitter to a
  given subpopulation, retrieve virtual subpopulation sizes and names.
@@ -2764,7 +2778,7 @@ preview false
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
@@ -2806,6 +2820,13 @@ rangeSplitterRef
 
 \backslash
 genotypeSplitterRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+combinedSplitterRef
 \end_layout
 
 \end_inset
