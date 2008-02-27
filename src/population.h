@@ -237,7 +237,9 @@ public:
 	bool hasVirtualSubPop(SubPopID subpop) const;
 
 	/// set a virtual splitter to a given subpopulation.
-	vspSplitter * setVirtualSplitter(vspSplitter * vsp, SubPopID sp);
+	/// \param vsp a virtual subpop splitter
+	/// \param sp subpopulation ID, default to zero
+	vspSplitter * setVirtualSplitter(vspSplitter * vsp, SubPopID sp = 0);
 
 	/// number of virtual subpopulation of a given subpopulation.
 	UINT numVirtualSubPop(SubPopID subPop) const;
