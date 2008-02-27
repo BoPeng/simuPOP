@@ -17,9 +17,9 @@ is presented. An object of this class will be created from Python, and be used
 like a regular Python class.
 
 Using this approach, and the -shadow option of SWIG, a Python shadow class will be 
-created in demoNonRandomMating.py. The C++ code is put to module
-_demoNonRandomMating.so (or .pyd under windows), and will be imported into
-demoNonRandomMating.py.
+created in Mating_pyMating_cpp.py. The C++ code is put to module
+_Mating_pyMating_cpp.so (or .pyd under windows), and will be imported into
+Mating_pyMating_cpp.py.
 
 */
 class parentsChooser_cpp
