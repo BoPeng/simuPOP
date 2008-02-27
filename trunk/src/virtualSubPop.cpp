@@ -508,28 +508,48 @@ void genotypeSplitter::deactivate(population & pop, SubPopID subPop)
 }
 
 
+//
+// 1: 0 1
+// 1: 0 1 1 1
+// Two possibilities (depending on ploidy)
+// 1, 2: 0 1 1 0 1 1 1 1
 string genotypeSplitter::name(SubPopID subPop)
 {
 	DBG_FAILIF(static_cast<UINT>(subPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
 	string label = "Genotype ";
-	int ploidy = m_alleles[0].size() / m_loci.size();
 	for (size_t i = 0; i < m_loci.size(); ++i) {
-		label += toStr(m_loci[i]) + ": " + toStr(m_alleles[subPop][i * ploidy]);
-		for (int p = 1; p < ploidy; ++p)
-			label += ", " + toStr(m_alleles[subPop][i * ploidy + p]);
-		if (i != m_loci.size() - 1)
-			label += "; ";
+		if (i != 0)
+			label += ", ";
+		label += toStr(m_loci[i]);
 	}
+	label += ":";
+	for (size_t i = 0; i < m_alleles[subPop].size(); ++i)
+		label += " " + toStr(m_alleles[subPop][i]);
 	return label;
 }
 
 
 bool genotypeSplitter::match(const individual * it, const vectori & alleles) const
 {
-	DBG_FAILIF(alleles.size() != it->ploidy() * m_loci.size(),
-		ValueError, "Given genotype does not match population ploidy");
+	unsigned types = alleles.size() / it->ploidy() / m_loci.size();
+	DBG_FAILIF(alleles.size() != types * it->ploidy() * m_loci.size(),
+		ValueError, "Given genotype does not match population ploidy.");
 
+	int ploidy = it->ploidy();
+	if (types == 1)
+		return matchSingle(it, alleles);
+	for (unsigned t = 0; t < types; ++t) {
+		vectori partial(alleles.begin() + t * ploidy * m_loci.size(),
+			alleles.begin() + (t + 1) * ploidy * m_loci.size());
+		if (matchSingle(it, partial))
+			return true;
+	}
+	return false;
+}
+
+bool genotypeSplitter::matchSingle(const individual * it, const vectori & alleles) const
+{
 	int ploidy = it->ploidy();
 	if (m_phase || ploidy == 1) {
 		UINT idx = 0;

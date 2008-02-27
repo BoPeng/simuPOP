@@ -1336,7 +1336,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(1000, loci=[2, 3])
         InitByFreq(pop, [0.3, 0.7])
         pop.setVirtualSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1,0]], phase=True), 0)
-        self.assertEqual(pop.virtualSubPopName(0, 0), "Genotype 1: 0, 0")
+        self.assertEqual(pop.virtualSubPopName(0, 0), "Genotype 1: 0 0")
         Stat(pop, genoFreq=[1], genoFreq_param={'phase':1})
         self.assertEqual(pop.virtualSubPopSize(0, 0), pop.dvars().genoNum[1][0][0])
         self.assertEqual(pop.virtualSubPopSize(0, 1), pop.dvars().genoNum[1][1][0])
@@ -1347,7 +1347,7 @@ class TestPopulation(unittest.TestCase):
         #
         pop.deactivateVirtualSubPop(0)
         pop.setVirtualSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1,0], [0,1]], phase=False), 0)
-        self.assertEqual(pop.virtualSubPopName(0, 0), "Genotype 1: 0, 0")
+        self.assertEqual(pop.virtualSubPopName(0, 0), "Genotype 1: 0 0")
         Stat(pop, genoFreq=[1], genoFreq_param={'phase':0})
         self.assertEqual(pop.virtualSubPopSize(0, 1), pop.virtualSubPopSize(0, 2))
         self.assertEqual(pop.virtualSubPopSize(0, 1), pop.dvars().genoNum[1][0][1])
@@ -1355,6 +1355,16 @@ class TestPopulation(unittest.TestCase):
         pop.activateVirtualSubPop(0, 1)
         for ind in pop.individuals(0):
             self.assertEqual((ind.allele(1, 0), ind.allele(1, 1)) in [(1,0), (0,1)], True)
+        # multiple genotype at the same locus
+        pop.setVirtualSplitter(genotypeSplitter(locus=1, alleles=[[0,0], [1, 0, 1, 1], [0, 1]], phase=False), 0)
+        self.assertEqual(pop.virtualSubPopName(0, 0), "Genotype 1: 0 0")
+        self.assertEqual(pop.virtualSubPopName(0, 1), "Genotype 1: 1 0 1 1")
+        Stat(pop, genoFreq=[1], genoFreq_param={'phase':1})
+        self.assertEqual(pop.virtualSubPopSize(0, 0), pop.dvars().genoNum[1][0][0])
+        self.assertEqual(pop.virtualSubPopSize(0, 1), pop.dvars().genoNum[1][1][0] + 
+            pop.dvars().genoNum[1][1][1] + pop.dvars().genoNum[1][0][1] )
+        # multiple loci
+        
 
     def testInfoIterator(self):
         'Testing the info iterator in virtual subpopulations'
