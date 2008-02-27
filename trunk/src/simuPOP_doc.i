@@ -1098,6 +1098,84 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::combinedSplitter "
+
+Details:
+
+    this plitter takes several splitters, and stacks their virtual
+    subpopulation together. For example, if the first splitter has
+    three vsp, the second has two. The two vsp from the second
+    splitter will be the fouth (index 3) and fifth (index 4) of the
+    combined splitter
+
+"; 
+
+%feature("docstring") simuPOP::combinedSplitter::combinedSplitter "
+
+Description:
+
+    simuPOP::combinedSplitter::combinedSplitter
+
+Usage:
+
+    combinedSplitter(splitters=vectorvsp)
+
+"; 
+
+%feature("docstring") simuPOP::combinedSplitter::~combinedSplitter "
+
+Description:
+
+    simuPOP::combinedSplitter::~combinedSplitter
+
+Usage:
+
+    x.~combinedSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::combinedSplitter::clone "
+
+Description:
+
+    simuPOP::combinedSplitter::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::combinedSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+
+%feature("docstring") simuPOP::combinedSplitter::numVirtualSubPop "
+
+Description:
+
+    number of virtual subpops of subpopulation sp
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%ignore simuPOP::combinedSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+
+%ignore simuPOP::combinedSplitter::deactivate(population &pop, SubPopID sp);
+
+%feature("docstring") simuPOP::combinedSplitter::name "
+
+Description:
+
+    name of a virtual subpopulation
+
+Usage:
+
+    x.name(sp)
+
+"; 
+
 %feature("docstring") simuPOP::continueIf "
 
 Description:
@@ -2123,18 +2201,33 @@ Details:
 
 %feature("docstring") simuPOP::genotypeSplitter::genotypeSplitter "
 
-Description:
-
-    simuPOP::genotypeSplitter::genotypeSplitter
-
 Usage:
 
     genotypeSplitter(loci, alleles, phase=False)
 
+Details:
+
+    For example, Genotype Aa or aa at locus 1: locus = 1, alleles =
+    [0, 1] Genotype Aa at locus 1 (assuming A is 1): locus = 1,
+    alleles = [1, 0], phase = True Genotype AaBb at loci 1 and 2: loci
+    = [1, 2], alleles = [1, 0, 1, 0], phase = True Two virtual
+    subpopulations with Aa and aa locus = 1, alleles = [[1, 0], [0,
+    0]], phase = True A virtual subpopulation with Aa or aa locus = 1,
+    alleles = [1, 0, 0, 0] Two virtual subpopulation with genotype AA
+    and the rest locus = 1, alleles = [[1, 1], [1, 0, 0, 0]], phase =
+    False
+
 Arguments:
 
-    genotype:       a shortcut for genotypes=[genotype]
-    genotypes:      a list of genotypes
+    locus:          a shortcut to loci=[locus]
+    loci:           A list of locus at which alleles are used to
+                    classify individuals
+    alleles:        a list (for each virtual subpopulation), of a list
+                    of alleles at each locus. If phase if true, the
+                    order of alleles is significant. If more than one
+                    set of alleles are given, individuals having
+                    either of them is qualified.
+    phase:          whether or not phase is respected.
 
 "; 
 

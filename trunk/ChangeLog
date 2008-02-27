@@ -15,6 +15,10 @@ version 0.8.4 - Not released, available at https://simupop.svn.sourceforge.net/s
 		field from mother in TAG_Maternal mode.
   - CHG: population::numVirtualSubPop() returns 0 instead 1 when there is no
 		virtual subpopulation.
+  - NEW: allow multiple genotype in the same virtual subpopulation split by
+		genotypeSplitter
+  - NEW: add combinedSplitter
+
 
 version 0.8.3 - (Rev 1412) Jan 17, 2008 
   - NEW: allow taggers to write pedigree files

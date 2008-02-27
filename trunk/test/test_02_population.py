@@ -1365,6 +1365,20 @@ class TestPopulation(unittest.TestCase):
             pop.dvars().genoNum[1][1][1] + pop.dvars().genoNum[1][0][1] )
         # multiple loci
         
+    def testCombinedSplitter(self):
+        'Testing the combined splitter'
+        pop = population(1000, loci=[2, 3])
+        InitByFreq(pop, [0.3, 0.7])
+        pop.setVirtualSplitter(combinedSplitter([
+            genotypeSplitter(locus=1, alleles=[[0,0], [1,0]], phase=True),
+            sexSplitter()]), 0)
+        self.assertEqual(pop.virtualSubPopName(0, 0), "Genotype 1: 0 0")
+        self.assertEqual(pop.virtualSubPopName(0, 1), "Genotype 1: 1 0")
+        self.assertEqual(pop.virtualSubPopName(0, 2), "Male")
+        self.assertEqual(pop.virtualSubPopName(0, 3), "Female")
+        Stat(pop, numOfMale=True)
+        self.assertEqual(pop.virtualSubPopSize(0, 3), pop.dvars(0).numOfFemale)
+
 
     def testInfoIterator(self):
         'Testing the info iterator in virtual subpopulations'
