@@ -1,4 +1,4 @@
-#LyX 1.5.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.4svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -412,6 +412,31 @@ Pedigree extraction
 
 \begin_layout Section
 Simulations that follow given pedigrees
+\end_layout
+
+\begin_layout Chapter
+Mating schemes
+\end_layout
+
+\begin_layout Section
+Non-random mating
+\end_layout
+
+\begin_layout Subsection
+Age structured population (overlapping generations)
+\end_layout
+
+\begin_layout Subsection
+Assorted mating
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{cookbook/Mating_assortedMating.py}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
