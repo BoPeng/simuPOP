@@ -36,7 +36,7 @@
 import sys
 from simuPOP import *
     
-def simuAssortativeMating(w, size, gen, vsp=[0, 3]):
+def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     '''
         w       proportion of general random mating.
         size    population size
@@ -48,16 +48,13 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 3]):
     # subpopulation have genotype (0, 0), (0, 1) or (1, 0), and (1, 1) respectively,
     # and have at leat one mutant (allele 1) in the last virtual subpopulation.
     pop.setVirtualSplitter(genotypeSplitter(locus=0, 
-        alleles=[[0, 0], [0, 1], [1, 1], [0, 1, 1, 1]]), 0)
+        alleles=[[0, 0], [0, 1], [1, 1], [0, 0, 0, 1], [0, 1, 1, 1]]), 0)
 
     # Negative weight means fixed size (weight * current subpopulation size).
     # In the case of no positive weight, zero weights means proportional to
     # parental (virtual) subpopulation size.
-    simu = simulator(pop, heteroMating([
-        randomMating(weight = -1*w),            # whole population random mating
-        randomMating(virtualSubPop=vsp[0], weight = 0),
-        randomMating(virtualSubPop=vsp[1], weight = 0)
-        ]))
+    simu = simulator(pop, heteroMating([randomMating(weight = -1*w)] + \
+        [randomMating(virtualSubPop=x, weight = 0) for x in vsp]))
     #
     simu.evolve(
         preOps = [
