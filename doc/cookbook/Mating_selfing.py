@@ -1,20 +1,29 @@
 #!/usr/bin/env python
-# 
-# Test the evolution of LD, with non-random mating schemes.
-#
+
+'''
+File: Mating_selfing.py
+Author: Bo Peng (bpeng@mdanderson.org)
+
+Purpose:
+  This script demonstrates the use of selfing mating schemes.
+
+$Date$
+$Revision$
+$HeadURL$
+''' 
 
 from simuPOP import *
-#from rpy import *
-import random
 
-N=10000
-n_rep = 10
-gen = 100
-percentages = [0, 0.2, 0.4, 0.6]
-
-def avg_LD(perc, N, n_rep, gen):
+def simuSelfing(perc, N, n_rep, gen):
+    '''
+    perc    percentage of individuals under selfing mating schemes
+    N       population size
+    n_rep   Number of replicates per simulation
+    gen     generations to run
+    '''
     pop = population(N, loci=[2])
     pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]), 0)
+    
     simu = simulator(pop,
         heteroMating([
             selfMating(subPop=0, virtualSubPop=0),
@@ -22,43 +31,21 @@ def avg_LD(perc, N, n_rep, gen):
         ]),
         rep=n_rep
     )
-    file = 'LD_%.2f.dat' % perc
 
     simu.evolve(preOps=[
             initByValue([0, 1, 1, 0]),
+            pyExec('ld_hist=[]')  # record ld
         ],
         ops=[
             recombinator(rate=0.01),
             stat(LD=[0,1]),
-            pyEval('"%.3f" % LD[0][1]', output='>>' + file),
-            pyOutput('\t', output='>>' + file),
-            pyOutput('\n', rep=REP_LAST, output='>>' + file)
+            pyExec('ld_hist.append(LD[0][1])')
         ],
-        end=gen
+        end=gen - 1
     )
-
-    ld = open(file)
-    avg_ld = []
-    for line in ld.readlines():
-        avg_ld.append(sum(map(float, line.split()))/n_rep)
-    return avg_ld
+    print simu.dvars(0).ld_hist
+    return 0
     
-ld_perc = []
-if os.path.isfile('ld.res'):
-    ld = open('ld.res')
-    for line in ld.readlines():
-        ld_perc.append(map(float, line.split()))
-else:
-    ld = open('ld.res', 'w')
-    for perc in percentages:
-        print 'Percentage of selfing is', perc
-        ld_perc.append(avg_LD(perc, N, n_rep, gen))
-        print >> ld, ' '.join(['%.4f' % x for x in ld_perc[-1]])
-    ld.close()
 
-r.postscript('ld.eps')
-r.plot(0, 0, xlim=[0, gen], ylim=[0, 0.25])
-for idx,ld in enumerate(ld_perc):
-    r.lines(range(0, gen+1), ld)
-    r.text(gen/2, ld[gen/2], '%.2f' % percentages[idx])
-r.dev_off()
+if __name__ == '__main__':
+    simuSelfing(.4, 1000, 10, 100)

@@ -1,4 +1,4 @@
-%module Mating_pyMating_cpp_cpp
+%module Mating_pyMating_cpp_impl
 %{
 #include "Mating_pyMating_cpp.h"
 %}
