@@ -245,10 +245,13 @@ include doc/refManual.pdf
 include doc/cookbook.pdf
 
 # cookbook examples
-include doc/cookbook/demoPyOperator.py
-include doc/cookbook/demoNonRandomMating.py
-include doc/cookbook/demoNonRandomMating.i
-include doc/cookbook/demoNonRandomMating.h
+include doc/cookbook/Mating_pyParentsChooser.py
+include doc/cookbook/Mating_selfing.py
+include doc/cookbook/Mating_overlappingGeneration.py
+include doc/cookbook/Mating_assortedMating.py
+include doc/cookbook/Mating_pyMating_cpp.py
+include doc/cookbook/Mating_pyMating_cpp.i
+include doc/cookbook/Mating_pyMating_cpp.h
 
 # win32 files
 include win32/stdint.h  
