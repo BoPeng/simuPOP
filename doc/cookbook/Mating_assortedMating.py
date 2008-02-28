@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # 
-# File: Mating_assortedMating.py
+# File: Mating_assortativeMating.py
 # Author: Bo Peng (bpeng@mdanderson.org)
 # 
 # Purpose:
-#   This scripts demonstrate how to implement assorted mating, namely mating
+#   This scripts demonstrate how to implement assortative mating, namely mating
 #   with preference to individuals with similar phenotype.
 #
 #   The core of this script is a heteroMating mating scheme that use
@@ -13,13 +13,19 @@
 #   3. random mating between individuals having at least one mutant (0, 1) or
 #       (1,1).
 #   
-#   A parameter w determines the proportion of offspring produced by these
-#   three mating schemes (w, 1, 1).
+#   A parameter w determines the proportion of offspring produced by the general
+#   random mating scheme. w = 1 means no assortative mating. The numbers of offspring
+#   produced by other two mating schemes are proportional to the size of the
+#   corresponding virtual subpopulations in the parental generation. For example,
+#   if the population size is 1000, w=0.5, and there are 200 homozygous wildtype
+#   individuals, the number of offspring produced by these three mating schemes
+#   will be 500, 100 and 400. The size of virtual subpopulations will change
+#   as a result of general random mating.
 #
 #   During the evolution, number of individuals having genotype (0, 0), (0, 1)
 #   and (1, 1) are printed, along with the frequency of allele 0.
 #   
-#   The simulation confirms that positive assorted mating would lead to the
+#   The simulation confirms that positive assortative mating would lead to the
 #   loss of heterozygotes.
 #   
 # $Date$
@@ -30,11 +36,12 @@
 import sys
 from simuPOP import *
     
-def simuAssortedMating(w, size, gen):
+def simuAssortativeMating(w, size, gen, vsp=[0, 3]):
     '''
-        w       weight of general random mating.
+        w       proportion of general random mating.
         size    population size
         gen     how many generation to run
+        vsp     virtual subpopulations for assortative mating.
     '''
     pop = population(size, loci=[1])
     # define four virtual subpopulations. Individuals in the first three virtual
@@ -43,12 +50,13 @@ def simuAssortedMating(w, size, gen):
     pop.setVirtualSplitter(genotypeSplitter(locus=0, 
         alleles=[[0, 0], [0, 1], [1, 1], [0, 1, 1, 1]]), 0)
 
-    # positive weights w, 1, 1 determines the number of offspring produced by each
-    # mating scheme.
+    # Negative weight means fixed size (weight * current subpopulation size).
+    # In the case of no positive weight, zero weights means proportional to
+    # parental (virtual) subpopulation size.
     simu = simulator(pop, heteroMating([
-        randomMating(weight = w),            # whole population random mating
-        randomMating(virtualSubPop=0, weight = 1), # homozygous wildtype
-        randomMating(virtualSubPop=3, weight = 1)  # having at least one mutant
+        randomMating(weight = -1*w),            # whole population random mating
+        randomMating(virtualSubPop=vsp[0], weight = 0),
+        randomMating(virtualSubPop=vsp[1], weight = 0)
         ]))
     #
     simu.evolve(
@@ -72,24 +80,4 @@ def simuAssortedMating(w, size, gen):
 
 
 if __name__ == '__main__':
-    # if there is no parameter
-    if len(sys.argv) == 1:
-        print simuAssortedMating(1, 2000, 200)
-        sys.exit(0)
-    # else, draw a figure like what is in Peng2008
-    from rpy import *
-    replicate = 10
-    gen = 20
-    popSize = 2000
-    r.postscript('assorted.eps')
-    r.plot(0, 0, xlim=[0, gen], ylim=[0, popSize], xlab='', ylab='', main='',
-        type='n')
-    for w in (0, 0.2, 0.4, 0.5, 1, 10):
-        Avg_AaNum = [0]*gen
-        for rep in range(replicate):
-            AaNum = simuAssortedMating(w, popSize, gen)
-            Avg_AaNum = [Avg_AaNum[x] + AaNum[x] for x in range(len(AaNum))]
-        Avg_AaNum = [x * 1.0 / replicate for x in Avg_AaNum]
-        print Avg_AaNum
-        r.lines(range(gen), Avg_AaNum)
-    r.dev_off()
+    simuAssortativeMating(0.1, 2000, 200)
