@@ -1669,8 +1669,10 @@ bool heteroMating::mate(population & pop, population & scratch,
 		DBG_FAILIF(m.empty(), ValueError,
 			"No mating scheme is available for subpopulation " + toStr(sp));
 		// determine the weight
-		if (m.size() == 1)
+		if (m.size() == 1) {
 			w_pos[0] = 1.;
+			w_neg[0] = 0.;
+		}
 
 		// the default case (all zero)
 		if (fcmp_eq(std::accumulate(w_pos.begin(), w_pos.end(), 0.), 0.)) {
