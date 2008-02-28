@@ -46,9 +46,9 @@ def simuAssortedMating(w, size, gen):
     # positive weights w, 1, 1 determines the number of offspring produced by each
     # mating scheme.
     simu = simulator(pop, heteroMating([
-        randomMating(weight = 0),            # whole population random mating
-        randomMating(virtualSubPop=0, weight = 0), # homozygous wildtype
-        randomMating(virtualSubPop=3, weight = 0)  # having at least one mutant
+        randomMating(weight = w),            # whole population random mating
+        randomMating(virtualSubPop=0, weight = 1), # homozygous wildtype
+        randomMating(virtualSubPop=3, weight = 1)  # having at least one mutant
         ]))
     #
     simu.evolve(
