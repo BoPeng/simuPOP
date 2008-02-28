@@ -260,7 +260,10 @@ population * population::clone(int keepAncestralPops) const
 ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) const
 {
 	CHECKRANGESUBPOP(subPop);
-	if (virtualSubPop == InvalidSubPopID || !hasVirtualSubPop(subPop))
+	// if there is no virtual subpopulation,
+	if (!hasVirtualSubPop(subPop) || \
+		// if no vsp is specified, but has actived vsp, return the size of this vsp
+		(virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop)))
 		return subPopSize(subPop);
 	return m_virtualSubPops[subPop]->size(*this, subPop, virtualSubPop);
 }
