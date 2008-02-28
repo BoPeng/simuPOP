@@ -301,12 +301,13 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 		} else {         // in between
 			double v1 = m_cutoff[virtualSubPop - 1];
 			double v2 = m_cutoff[virtualSubPop];
-			double v = it->info(idx);
-			for (; it != it_end; ++it)
+			for (; it != it_end; ++it) {
+				double v = it->info(idx);
 				if (type == Visible)
 					it->setVisible(v >= v1 && v < v2);
 				else
 					it->setIteratable(v >= v1 && v < v2);
+			}
 		}
 	} else {
 		DBG_FAILIF(static_cast<UINT>(subPop) >= m_values.size(), IndexError,
