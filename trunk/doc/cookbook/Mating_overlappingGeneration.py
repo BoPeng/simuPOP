@@ -1,27 +1,28 @@
 #!/usr/bin/env python
-# 
-# File: Mating_overlappingGeneration.py
-# Author: Bo Peng (bpeng@mdanderson.org)
-# 
-# Purpose:
-#   This scripts demonstrate how to implement overlapping generation
-#   and age-structured population, using a non-random mating scheme.
-#
-#   Individuals in this population has an information field 'age', which
-#   is manipulated as follows:
-#   
-#   1. Individuals are initialized with random ages between 0 and maxAge.
-#   2. At each generation, individual ages are increased by 1.
-#   3. Individuals with age over maxAge are not involved in mating. (died)
-#   4. Individuals not in mating ages are copied to the next generation.
-#   5. Individuals in mating ages performs rangom mating and produce
-#      offspring with age 0.
-#   6. Rpeat from step 2 for desired generations.
-#   
-# $Date$
-# $Revision$
-# $HeadURL$
-#
+
+'''
+File: Mating_overlappingGeneration.py
+Author: Bo Peng (bpeng@mdanderson.org)
+
+Purpose:
+  This script demonstrates how to implement overlapping generation
+  and age-structured population, using a non-random mating scheme.
+
+  Individuals in this population has an information field 'age', which
+  is manipulated as follows:
+  
+  1. Individuals are initialized with random ages between 0 and maxAge.
+  2. At each generation, individual ages are increased by 1.
+  3. Individuals with age over maxAge are not involved in mating. (died)
+  4. Individuals not in mating ages are copied to the next generation.
+  5. Individuals in mating ages performs rangom mating and produce
+     offspring with age 0.
+  6. Rpeat from step 2 for desired generations.
+  
+$Date$
+$Revision$
+$HeadURL$
+'''
 
 
 from simuPOP import *
