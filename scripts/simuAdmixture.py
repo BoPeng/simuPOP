@@ -676,7 +676,7 @@ options = [
      'validate':    valueOneOf(['recessive', 'additive', 'custom', 'None']),
      'chooseOneOf': [ 'recessive', 'additive', 'custom', 'None']
     },
-    {'longarg': 'parameter=',
+    {'longarg': 'peneParam=',
      'default': [0.5],
      'label': 'Penetrance parameters',
      'description': '''Penetrance parameter for all DSL. An array of parameter 
@@ -1106,7 +1106,7 @@ if __name__ == '__main__':
         minDiffAF, minDist, initCopy, gen, size,
       useSavedExpanded, expandGen, expandSize,
       useSavedAdmixed, migrModel, migrGen, migrRate,
-      chromWithDSL, DSLtrait, freqDSL, freqDev, dslVar, cutoff,
+      DSLtrait, chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
       DSLpene, peneFunc, peneParam, 
       ccSampleSize, ccSampleName,
       randomSampleSize, randomSampleName) = allParam[1:]
@@ -1164,9 +1164,10 @@ if __name__ == '__main__':
         print 'Loading admixed population file ', admixedFile
         admixedPop = LoadPopulation(admixedFile)
     #
+    print 'ch with dsl', chromWithDSL
     if len(chromWithDSL) > 0:
         # assign case/control status and quantitative trait
-        setQuanTrait(admixedPop, chromWithDSL, DSLtrait, freqDSL, freqDev, 
+        setQuanTrait(admixedPop, DSLtrait, chromWithDSL, freqDSL, freqDev, 
             dslVar, cutoff, name)
     #
     if len(DSLpene) > 0:
