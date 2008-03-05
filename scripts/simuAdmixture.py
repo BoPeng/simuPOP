@@ -235,17 +235,17 @@ simuAdmixture.py --noDialog  --name='IH' --initPop='../../Affy/affyAll_CEU.bin' 
     --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]*22" \
     --startPos='[0]' --endingPos='[0]' --minAF='0' --minDiffAF='0' --minDist='0' --initCopy='10' \
     --gen='200' --size='4800' --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed --migrModel='None' --migrGen='1' \
+    --useSavedAdmixed=True --migrModel='None' --migrGen='1' \
     --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.005, 0.01, 0.03, 0.05)" \
     --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
-simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap_dir='../../HapMap' \
+simuAdmixture.py --noDialog  --name='admix' --useSavedSeed=True --initPop='' --HapMap_dir='../../HapMap' \
     --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" --markerList='' --numMarkers="(1000, 1000)" \
     --startPos='[0]' --endingPos='[0]' --minAF='0.05' --minDiffAF='0' --minDist='0' --initCopy='10' \
-    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed --migrModel='Continuous Gene Flow' --migrGen='5' \
+    --gen='200' --size='4800' --useSavedExpanded=True --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed=True --migrModel='Continuous Gene Flow' --migrGen='5' \
     --migrRate="([0.90000000000000002, 0.10000000000000001], [0.0, 1.0])" --chromWithDSL="(1, 2, 3, 4)" \
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
     --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
@@ -385,11 +385,14 @@ options = [
      'description': '''Name of the seed population''',
      'allowedTypes': [types.StringType],
     },
-    {'longarg': 'useSavedSeed',
+    {'longarg': 'useSavedSeed=',
      'default': False,
      'label': 'Use saved seed population',
      'useDefault': True,
-     'description': '''If seed population exists, whether or not use it directly'''
+     'allowedTypes': [types.StringType, types.BooleanType],
+     'description': '''Use specified or a default seed population, if available.
+        The default seed population is seed.bin under the simulation directory.
+        '''
     },
     {'longarg': 'initPop=',
      'default': '',
@@ -532,11 +535,12 @@ options = [
     },
     #
     {'separator': 'Population expansion'},
-    {'longarg': 'useSavedExpanded',
+    {'longarg': 'useSavedExpanded=',
      'default': False,
      'useDefault': True,
+     'allowedTypes': [types.BooleanType, types.StringType],
      'label': 'Use saved expanded population',
-     'description': '''If set to true, load saved $name/expanded.bin and 
+     'description': '''If set to true, load specified or saved $name/expanded.bin and 
                 skip population expansion'''
     },
     {'longarg': 'expandGen=',
@@ -557,9 +561,10 @@ options = [
      'validate': valueGE(100)
     },
     {'separator': 'Population admixture'},
-    {'longarg': 'useSavedAdmixed',
+    {'longarg': 'useSavedAdmixed=',
      'default': False,
      'useDefault': True,
+     'allowedTypes': [types.StringType, types.BooleanType],
      'label': 'Use saved admixed population',
      'description': '''If set to true, the program will use saved $name/admixed.bin''',
     },
@@ -1127,6 +1132,16 @@ if __name__ == '__main__':
         seedFile = os.path.join(name, seed)
     expandedFile = os.path.join(name, 'expanded.bin')
     admixedFile = os.path.join(name, 'admixed.bin')
+    # specified seed file?
+    if type(useSavedSeed) == type(''):
+        seedFile = useSavedSeed
+        useSavedSeed = True
+    if type(useSavedExpanded) == type(''):
+        expandedFile = useSavedExpanded
+        useSavedExpanded = True
+    if type(useSavedAdmixed) == type(''):
+        expandedFile = useSavedAdmixed
+        useSavedAdmixed = True
     #
     # get seed population
     if useSavedSeed and os.path.isfile(seedFile):
