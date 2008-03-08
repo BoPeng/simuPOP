@@ -425,6 +425,11 @@ DATA_FILES = [
     ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
         'COPYING', 'TODO', 'simuPOP.release']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
+    ('share/simuPOP/doc/cookbook', ['doc/cookbook/%s' % x for x in 
+        ('Mating_assortativeMating.py', 'Mating_overlappingGeneration.py',
+         'Mating_pyParentsChooser.py', 'Mating_selfing.py',
+         'Mating_pyMating_cpp.py', 'Mating_pyMating_cpp.i', 'Mating_pyMating_cpp.h',
+         'Operator_pyOperator.py')]),
     ('share/simuPOP/test', glob.glob('test/test_*.py') + \
         ['test/run_tests.py', 'test/run_tests.sh']),
     ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
