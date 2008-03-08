@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.5 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.4 - (Rev 1452) Mar 8, 2008
   - NEW: add support for other posix systems like HP-UX
   - NEW: automatically download HapMap data in loadHapMap.py and simuAdmixture.py.
   - NEW: add two operators infoEval and infoExec that can be used to manipulate
