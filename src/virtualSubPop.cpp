@@ -82,7 +82,7 @@ vspSplitter * combinedSplitter::clone() const
 
 ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
 {
-	m_splitters[m_splitter[virtualSubPop]]->size(pop, subPop,
+	return m_splitters[m_splitter[virtualSubPop]]->size(pop, subPop,
 		m_vsp[virtualSubPop]);
 }
 

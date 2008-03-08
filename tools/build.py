@@ -53,7 +53,8 @@ def writeReleaseFile(release, revision):
     execfile(release_file, res, res)
     file = open(release_file, 'w')
     file.write('''SIMUPOP_VER = "%s"
-SIMUPOP_REV = "%s"''' % (release, revision))
+SIMUPOP_REV = "%s"
+''' % (release, revision))
     file.close()
     return (res['SIMUPOP_VER'], res['SIMUPOP_REV'])
 
