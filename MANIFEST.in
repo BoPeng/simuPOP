@@ -248,7 +248,7 @@ include doc/cookbook.pdf
 include doc/cookbook/Mating_pyParentsChooser.py
 include doc/cookbook/Mating_selfing.py
 include doc/cookbook/Mating_overlappingGeneration.py
-include doc/cookbook/Mating_assortedMating.py
+include doc/cookbook/Mating_assortativeMating.py
 include doc/cookbook/Mating_pyMating_cpp.py
 include doc/cookbook/Mating_pyMating_cpp.i
 include doc/cookbook/Mating_pyMating_cpp.h
