@@ -13,15 +13,15 @@ Roadmap: test and documentation:
   3/5/N document each class whether or not they are suitable only for diploid population.
   3/7/P sample script and precise description for each class, put it in online help
 O 3/8/N check help contents in C++ source code. 
-  1/4/N Proofread simuPOP user's guide and reference manual
-  2/5/P write more comprehensive test scripts 
+O 1/4/N Proofread simuPOP user's guide and reference manual
+O 2/5/P write more comprehensive test scripts 
 DONE    online help is not complete. Need re-write or fix the processing scripts.
 DONE    comprehensive testing scripts
 
 Roadmap: scripts:
 O 5/6/P add models from population genetics book
   7/7/P write simuEasyPop
-  3/2/P use checkbox for True/False option in simuOpt
+DONE    use checkbox for True/False option in simuOpt
 DONE    add things like listbox to tkGetParam function. Use wxPython when possible
 DONE    add other LD measures to simuLDDecay.py
 DONE    add a few population conversion, sampling scripts in scripts directory.
@@ -29,10 +29,10 @@ DONE    add a few population conversion, sampling scripts in scripts directory.
         another script to sample from them.
 
 Roadmap: simuPOP core
-  8/8/C overlapped generations and continuous time reproduction. (mating in aged populations.)
-  6/4/C add other mating scheme. (Following easyPOP)
+DONE    overlapped generations and continuous time reproduction. (mating in aged populations.)
+DONE    add other mating scheme. (Following easyPOP)
   6/7/C improve support for non-diploid individuals.
-  5/5/C profile simuPOP and imporve efficiency (this is *always* needed for a simulation program like simuPOP)
+O 5/5/C profile simuPOP and imporve efficiency (this is *always* needed for a simulation program like simuPOP)
 DONE    Sampling now copy populations and result in high RAM demand
 DONE    Add association measures displayed in http://www.sph.umich.edu/csg/abecasis/GOLD/docs/stats.html
 DONE    sex-difference recombination rate.
@@ -61,12 +61,7 @@ Roadmap: A real GUI other than the tk-based simple parameter dialog
 DONE    Start/stop for easy debugging
 
 Roadmap: Parallel version of simuPOP
-  3/3/N availability of MPI (and/or boost/MPI) under windows
-  6/4/C port genostructure to MPI
-  6/5/C port individual to MPI
-  6/6/C port population to MPI
-  6/9/C port operators to MPI
-DONE    feasibility study
+O       feasibility study (give up the MPI version, investigating openMP).
 
 Roadmap: Distribution
   2/2/N help the release and even development of RPy. rpy plays an important role in simuPOP
