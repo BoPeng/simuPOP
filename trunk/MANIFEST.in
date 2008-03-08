@@ -252,6 +252,7 @@ include doc/cookbook/Mating_assortativeMating.py
 include doc/cookbook/Mating_pyMating_cpp.py
 include doc/cookbook/Mating_pyMating_cpp.i
 include doc/cookbook/Mating_pyMating_cpp.h
+include doc/cookbook/Operator_pyOperator.py
 
 # win32 files
 include win32/stdint.h  
