@@ -26,8 +26,9 @@ if not os.path.isdir('log'):
 import simuOpt
 simuOpt.setOptions(optimized=False, alleleType='long', quiet=True)
 from simuPOP import *
-print alleleType()
-print optimized()
+# remember that global functions start with captical letters
+print AlleleType()
+print Optimized()
 #end
 
 #file log/ref_help.log

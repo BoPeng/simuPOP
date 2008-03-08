@@ -113,11 +113,11 @@ protected:
 
 typedef std::vector<vspSplitter *> vectorvsp;
 
-/** this plitter takes several splitters, and stacks their virtual
-subpopulation together. For example, if the first splitter has
+/** This plitter takes several splitters, and stacks their virtual
+subpopulations together. For example, if the first splitter has
 three vsp, the second has two. The two vsp from the second splitter
 will be the fouth (index 3) and fifth (index 4) of the combined 
-splitter
+splitter. 
 */
 class combinedSplitter : public vspSplitter
 {
@@ -165,7 +165,7 @@ private:
 };
 
 
-/** split the population according to sex
+/** split the population into Male and Female virtual subpopulations
  */
 class sexSplitter : public vspSplitter
 {
@@ -211,7 +211,7 @@ public:
 };
 
 
-/** split the population according to affection status
+/** split a subpopulation into unaffected and affected virtual subpopulations.
  */
 class affectionSplitter : public vspSplitter
 {
@@ -266,9 +266,17 @@ public:
 class infoSplitter : public vspSplitter
 {
 public:
+	/**
+	\param info name of the information field
+	\param values a list of values, each defines a virtual subpopulation
+	\param cutoff a list of cutoff values. For example, cutoff=[1, 2]
+		defines three virtual subpopulations with v < 1, 1 <= v < 2,
+		and v >= 2.
+	*/
 	infoSplitter(string info, vectorinfo const & values = vectorinfo(),
 	             vectorf const & cutoff = vectorf());
 
+	/// CPPONLY
 	vspSplitter * clone() const
 	{
 		return new infoSplitter(*this);
@@ -307,6 +315,10 @@ private:
 class proportionSplitter : public vspSplitter
 {
 public:
+	/** \param proportions A list of float numbers (between 0 and 1) that
+		defines the proportion of individuals in each virtual subpopulation.
+		These numbers should add up to one.
+	*/
 	proportionSplitter(vectorf const & proportions = vectorf());
 
 	vspSplitter * clone() const
@@ -339,7 +351,8 @@ private:
 };
 
 
-/** split the population according to individual range
+/** split the population according to individual range. The ranges
+can overlap and does not have to add up to the whole subpopulation.
  */
 class rangeSplitter : public vspSplitter
 {

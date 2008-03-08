@@ -397,7 +397,7 @@ class Doxy2SWIG:
             if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 # re function used to repalce the following sentances
-                vect = re.compile('vector(lu|u|l|i|f|a|op|str)')
+                vect = re.compile('vector(lu|u|l|i|f|a|op|str|vsp|info)')
                 defVal = vect.sub('[]', defVal)
                 #defVal = defVal.replace('vectorlu','[]')
                 #defVal = defVal.replace('vectorstr','[]')
