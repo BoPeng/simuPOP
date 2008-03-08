@@ -128,7 +128,8 @@ Usage:
 
 Details:
 
-    split the  population according to affection status
+    split a subpopulation into unaffected and affected virtual
+    subpopulations.
 
 "; 
 
@@ -1102,11 +1103,11 @@ Usage:
 
 Details:
 
-    this plitter takes several splitters, and stacks their virtual
-    subpopulation together. For example, if the first splitter has
+    This plitter takes several splitters, and stacks their virtual
+    subpopulations together. For example, if the first splitter has
     three vsp, the second has two. The two vsp from the second
     splitter will be the fouth (index 3) and fifth (index 4) of the
-    combined splitter
+    combined splitter.
 
 "; 
 
@@ -1118,7 +1119,7 @@ Description:
 
 Usage:
 
-    combinedSplitter(splitters=vectorvsp)
+    combinedSplitter(splitters=[])
 
 "; 
 
@@ -2458,16 +2459,18 @@ Usage:
       shuffleOffspring=True, subPop=InvalidSubPopID,
       virtualSubPop=InvalidSubPopID, weight=0)
 
+Details:
+
+    Parameter subpop, virtualSubPOp and weight of this  mating scheme
+    is ignored.
+
 Arguments:
 
-    matingSchemes:  A list of  mating schemes. It parameter subPop of
+    matingSchemes:  A list of  mating schemes. If parameter subPop of
                     an  mating scheme is specified, it will be applied
                     to specific subpopulation. If virtualSubPop if
                     specified, it will be applied to specifc virtual
-                    subpopulations. The weight parameter is used to
-                    control how many offspring to produce in case that
-                    more than one  mating schemes are applied to the
-                    same subpopulation.
+                    subpopulations.
 
 "; 
 
@@ -3510,19 +3513,18 @@ Usage:
 
     infoSplitter(info, values=[]nfo, cutoff=[])
 
-"; 
+Arguments:
 
-%feature("docstring") simuPOP::infoSplitter::clone "
-
-Description:
-
-    simuPOP::infoSplitter::clone
-
-Usage:
-
-    x.clone()
+    info:           name of the information field
+    values:         a list of values, each defines a virtual
+                    subpopulation
+    cutoff:         a list of cutoff values. For example, cutoff=[1,
+                    2] defines three virtual subpopulations with v <
+                    1, 1 <= v < 2, and v >= 2.
 
 "; 
+
+%ignore simuPOP::infoSplitter::clone() const;
 
 %ignore simuPOP::infoSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
@@ -7805,7 +7807,12 @@ Description:
 
 Usage:
 
-    x.setVirtualSplitter(vsp, sp)
+    x.setVirtualSplitter(vsp, sp=0)
+
+Arguments:
+
+    vsp:            a virtual subpop splitter
+    sp:             subpopulation ID, default to zero
 
 "; 
 
@@ -9175,6 +9182,13 @@ Description:
 Usage:
 
     proportionSplitter(proportions=[])
+
+Arguments:
+
+    proportions:    A list of float numbers (between 0 and 1) that
+                    defines the proportion of individuals in each
+                    virtual subpopulation. These numbers should add up
+                    to one.
 
 "; 
 
@@ -11305,7 +11319,9 @@ Usage:
 
 Details:
 
-    split the  population according to  individual range
+    split the  population according to  individual range. The ranges
+    can overlap and does not have to add up to the whole
+    subpopulation.
 
 "; 
 
@@ -12412,7 +12428,7 @@ Usage:
 
 Details:
 
-    split the  population according to sex
+    split the  population into Male and Female virtual subpopulations
 
 "; 
 

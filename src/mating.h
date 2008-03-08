@@ -1647,12 +1647,12 @@ class heteroMating : public mating
 public:
 	/// create a heterogeneous Python mating scheme
 	/**
-	 \param matingSchemes A list of mating schemes. It parameter \c subPop of an
+	 \param matingSchemes A list of mating schemes. If parameter \c subPop of an
 	   	mating scheme is specified, it will be applied to specific subpopulation.
 	   	If \c virtualSubPop if specified, it will be applied to specifc virtual
-	   	subpopulations. The \c weight parameter is used to control how many
-	   	offspring to produce in case that more than one mating schemes are applied
-	   	to the same subpopulation.
+	   	subpopulations.
+	
+	 Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
 	 */
 	heteroMating(const vectormating & matingSchemes,
 	             vectorlu newSubPopSize = vectorlu(),

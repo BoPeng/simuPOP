@@ -2631,13 +2631,13 @@ Virtual subpopulations
 \end_layout
 
 \begin_layout Standard
-simuPOP 0.8.2 introduces the concept of 
+simuPOP 0.8.2 introduces the concept 
 \emph on
 virtual subpopulations
 \emph default
 .
- Virtual subpopulations are collections of individuals in a subpoulation,
- defined by certain criterias.
+ Virtual subpopulations are groups of individuals in a subpoulation, defined
+ by certain criteria.
  For example, all male individuals, all unaffected individuals, all individuals
  with information field age > 20, all individuals with genotype 0, 0 at
  a given locus, can form virtual subpopulations.
@@ -2712,6 +2712,24 @@ A
 genotypeSplitter 
 \family default
 splits the population with genotype values at given loci.
+ Multiple genetypes are allowed for a virtual subpopulation.
+ For example, 
+\family typewriter
+genotypeSplitter(1, [0, 0, 0, 1])
+\family default
+ defines a virtual subpopulation with individuals having genotype 
+\family typewriter
+0, 0
+\family default
+ or 
+\family typewriter
+0, 1
+\family default
+ at locus 
+\family typewriter
+1
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -2719,13 +2737,23 @@ A
 \family typewriter
 combinedSplitter
 \family default
- that allows the specification of multiple splitter at the same subpopulation.
+ allows the specification of multiple splitter at the same subpopulation.
  For example, the unaffected and affected virtual subpopulation of a subpopulati
 on split by 
 \family typewriter
 combinedSplitter([sexSplitter(), affectionSplitter()])
 \family default
  are 2 and 3, respectively.
+ 
+\end_layout
+
+\begin_layout Standard
+There is currently no easy way to get the intersection or superset of two
+ virtual subpopulations, such as a virtual subpopulation with male and/or
+ affected individuals.
+ It is possible, though, to define an information field that reflect these
+ logics and define a virtual subpopulation according to this information
+ field.
 \end_layout
 
 \begin_layout Standard
@@ -3886,12 +3914,13 @@ selfingOffspringGenerator.
 \end_layout
 
 \begin_layout Subsection
-Hybrid mating schemes
+Homogeneous and hybrid mating schemes
 \end_layout
 
 \begin_layout Standard
-Parent choosers and offspring generators can be combined to form non-standard
- mating schemes.
+Parent choosers and offspring generators can be combined to form homogeneous
+ mating schemes, which work identically on all (virtual) subpopulations
+ it is applied.
  The only limit is that they have to be compatible in that a parent chooser
  that choose one parent can not be used with an offspring generator that
  needs two parents.
@@ -4108,8 +4137,8 @@ If one mating scheme is specified for each parental subpopulation, offspring
 newSubPopSize, newSubPopSizeFunc
 \family default
 , etc.
- However, if multiple mating schemes will be applied, they have to share
- the same offspring subpopulation.
+ However, if multiple mating schemes will be applied to the same subpopulation,
+ they have to share the same offspring subpopulation.
  This problem is addressed by a weight system.
  That is to say, each mating scheme can be given a weight using parameter
  
