@@ -83,6 +83,13 @@ class TestSimulator(unittest.TestCase):
         simu1 = simu.clone()
         for i in range(3):
             self.assertEqual(simu.population(i), simu1.population(i))
+        self.assertEqual(simu1.gen(), simu.gen())
+        # test if a cloned simulator can evolve again
+        simu1.evolve(
+            ops = [stat(alleleFreq=range(pop.totNumLoci()))],
+            end = 20
+        )
+        
         
 
     def testGenoStru(self):
