@@ -123,8 +123,10 @@ simulator::simulator(const simulator & rhs) :
 	m_matingScheme = rhs.m_matingScheme->clone();
 	m_scratchPop = rhs.m_scratchPop->clone();
 	m_ptrRep = new population *[m_numRep];
-	for (size_t i = 0; i < m_numRep; ++i)
+	for (size_t i = 0; i < m_numRep; ++i) {
 		m_ptrRep[i] = rhs.m_ptrRep[i]->clone();
+		m_ptrRep[i]->setRep(i);
+	}
 }
 
 
