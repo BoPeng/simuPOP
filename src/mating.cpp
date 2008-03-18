@@ -28,11 +28,15 @@ namespace simuPOP {
 offspringGenerator::offspringGenerator(double numOffspring,
                                        PyObject * numOffspringFunc,
                                        UINT maxNumOffspring,
-                                       UINT mode) :
+                                       UINT mode,
+                                       double sexParam,
+                                       UINT sexMode) :
 	m_numOffspring(numOffspring),
 	m_numOffspringFunc(NULL),
 	m_maxNumOffspring(maxNumOffspring),
 	m_mode(mode),
+	m_sexParam(sexParam),
+	m_sexMode(sexMode),
 	m_initialized(false)
 {
 	DBG_FAILIF(mode == MATE_PyNumOffspring && numOffspringFunc == NULL, ValueError,
@@ -56,6 +60,8 @@ offspringGenerator::offspringGenerator(double numOffspring,
 	DBG_FAILIF(m_mode == MATE_BinomialDistribution && m_maxNumOffspring < 1,
 		ValueError, "Max number of offspring should be greater than 1. Given "
 		+ toStr(m_maxNumOffspring));
+	DBG_FAILIF(m_sexMode == MATE_ProbOfMale && (fcmp_lt(m_sexParam, 0) || fcmp_gt(m_sexParam, 1)),
+		ValueError, "Probability of male has to be between 0 and 1");
 }
 
 
@@ -64,6 +70,8 @@ offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	m_numOffspringFunc(rhs.m_numOffspringFunc),
 	m_maxNumOffspring(rhs.m_maxNumOffspring),
 	m_mode(rhs.m_mode),
+	m_sexParam(rhs.m_sexParam),
+	m_sexMode(rhs.m_sexMode),
 	m_formOffGenotype(rhs.m_formOffGenotype),
 #ifndef OPTIMIZED
 	m_genoStruIdx(rhs.m_genoStruIdx),
@@ -107,6 +115,19 @@ ULONG offspringGenerator::numOffspring(int gen)
 	//
 	DBG_ASSERT(false, SystemError, "This line should never be reached");
 	return 0;
+}
+
+
+Sex offspringGenerator::getSex(int count)
+{
+	if (m_sexMode == MATE_RandomSex)
+		return rng().randInt(2) == 0 ? Male : Female;
+	else if (m_sexMode == MATE_ProbOfMale)
+		return rng().randUniform01() < m_sexParam ? Male : Female;
+	else if (m_sexMode == MATE_NumOfMale)
+		return count < static_cast<int>(m_sexParam) ? Male : Female;
+	else if (m_sexMode == MATE_NumOfFemale)
+		return count < static_cast<int>(m_sexParam) ? Female : Male;
 }
 
 
@@ -194,7 +215,8 @@ void mendelianOffspringGenerator::initialize(const population & pop,
 
 
 void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
-                                                        RawIndIterator & it, int ploidy, bool setSex)
+                                                        RawIndIterator & it, int ploidy,
+                                                        int count)
 {
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
@@ -254,12 +276,12 @@ void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
 	}
 #endif
 
-	if (setSex) {
+	if (count != -1) {
 		// last chromosome (sex chromosomes) determine sex
 		if (m_hasSexChrom)
 			it->setSex(parPloidy == 1 ? Male : Female);
 		else
-			it->setSex(rng().randInt(2) == 0 ? Male : Female);
+			it->setSex(getSex(count));
 	}
 }
 
@@ -288,8 +310,8 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 			// m_bt 's width is 2*numChrom() and can be used for
 			// the next two functions.
 			m_bt.trial();
-			formOffspringGenotype(mom, it, 0, false);
-			formOffspringGenotype(dad, it, 1, true);
+			formOffspringGenotype(mom, it, 0, -1);
+			formOffspringGenotype(dad, it, 1, count);
 		}
 
 		accept = true;
@@ -303,6 +325,10 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 					accept = false;
 					break;
 				}
+				// if there is no sex chromosome, mating scheme is responsible
+				// of setting offspring sex
+				if (!m_hasSexChrom)
+					it->setSex(getSex(count));
 			} catch (...) {
 				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
 				throw;
@@ -342,9 +368,9 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 			// m_bt 's width is 2*numChrom() and can be used for
 			// the next two functions.
 			m_bt.trial();
-			// use the same parent to produce to copies of chromosomes
-			formOffspringGenotype(parent, it, 0, false);
-			formOffspringGenotype(parent, it, 1, true);
+			// use the same parent to produce two copies of chromosomes
+			formOffspringGenotype(parent, it, 0, -1);
+			formOffspringGenotype(parent, it, 1, count);
 		}
 
 		accept = true;
@@ -358,6 +384,10 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 					accept = false;
 					break;
 				}
+				// if there is no sex chromosome, mating scheme is responsible
+				// of setting offspring sex
+				if (!m_hasSexChrom)
+					it->setSex(getSex(count));
 			} catch (...) {
 				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
 				throw;
@@ -1586,8 +1616,8 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
-    m_parentChooser->finalize(pop, subPop);
-    m_offspringGenerator->finalize(pop);
+	m_parentChooser->finalize(pop, subPop);
+	m_offspringGenerator->finalize(pop);
 	return true;
 }
 
@@ -1683,7 +1713,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
 		}
 		DBG_DO(DBG_MATING, cout << "Positive mating scheme weights: " << w_pos << '\n'
-			<< "Negative mating scheme weights: " << w_neg << endl);
+			                    << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -1730,7 +1760,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 				}
 		}
 		DBG_DO(DBG_MATING, cout << "VSP sizes in subpop " << sp << " is "
-			                   << vspSize << endl);
+			                    << vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();

@@ -561,9 +561,72 @@ class TestMatingSchemes(unittest.TestCase):
         for file in ['pedigree.dat', 'pedigree_rep.dat',
                 'ped_shrink.dat', 'ped_shrink_rep.dat']:
             os.remove(file)
-
         
 
+    def testMateRandomSex(self):
+        '''Testing assigning offspring sex by random'''
+        pop = population(10000)
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            preOps = [initByFreq([0.5, 0.5])],
+            ops = [
+                stat(numOfMale=True),
+                # number of male should be variable, but not too much
+                terminateIf('numOfMale < 4500 or numOfMale > 6500'),
+            ],
+            end = 10
+        )
+        self.assertEqual(simu.gen(), 11)
+
+
+    def testMateProbOfMale(self):
+        '''Testing assigning offspring sex by probability'''
+        pop = population(10000)
+        simu = simulator(pop, randomMating(sexParam=0.3, sexMode=MATE_ProbOfMale))
+        simu.evolve(
+            preOps = [initByFreq([0.5, 0.5])],
+            ops = [
+                stat(numOfMale=True),
+                # number of male should be variable, but not too much
+                terminateIf('numOfMale < 2500 or numOfMale > 3500'),
+            ],
+            end = 10
+        )
+        self.assertEqual(simu.gen(), 11)
+
+
+    def testMateNumOfMale(self):
+        '''Testing assigning certain number of males among offspring'''
+        pop = population(10000)
+        simu = simulator(pop, randomMating(numOffspring=4, sexParam=1,
+            sexMode=MATE_NumOfMale))
+        simu.evolve(
+            preOps = [initByFreq([0.5, 0.5])],
+            ops = [
+                stat(numOfMale=True),
+                # number of male should be variable, but not too much
+                terminateIf('numOfMale != 2500'),
+            ],
+            end = 10
+        )
+        self.assertEqual(simu.gen(), 11)
+
+
+    def testMateNumOfFemale(self):
+        '''Testing assigning certain number of females among offspring'''
+        pop = population(10000)
+        simu = simulator(pop, randomMating(numOffspring=4, sexParam=1,
+            sexMode=MATE_NumOfFemale))
+        simu.evolve(
+            preOps = [initByFreq([0.5, 0.5])],
+            ops = [
+                stat(numOfMale=True),
+                # number of male should be variable, but not too much
+                terminateIf('numOfMale != 7500'),
+            ],
+            end = 10
+        )
+        self.assertEqual(simu.gen(), 11)
 
 
 ##   def testFreqTrajWithSubPop(self):

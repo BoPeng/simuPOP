@@ -274,16 +274,11 @@ void recombinator::recombine(
 		copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci.back() - gt);
 #endif
 	}
-	if (setSex) {
+	if (setSex && m_hasSexChrom)
 		// sex chrom determination
 		// if curCp (last chromosome) is X, Female, otherwise Male.
 		// Note that for daddy, the last one is arranged XY
-		if (m_hasSexChrom)
-			offspring->setSex(curCp == 0 ? Female : Male);
-		else
-			offspring->setSex(rng().randInt(2) == 0 ? Male : Female);
-	}
-
+		offspring->setSex(curCp == 0 ? Female : Male);
 }
 
 
