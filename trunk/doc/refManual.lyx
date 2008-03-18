@@ -1,4 +1,4 @@
-#LyX 1.5.4svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -3383,6 +3383,109 @@ P\left(k\right)=\frac{1}{b-a}\;\textrm{ for }b\geq k\geq a\]
 \begin_layout Standard
 Note that all these distributions are adjusted to produce at least one offspring.
  
+\end_layout
+
+\begin_layout Subsection
+Determine offspring sex
+\end_layout
+
+\begin_layout Standard
+When the last chromosome is a sex chromosome (
+\family typewriter
+sexChrom=True
+\family default
+), offspring sex is determined by his/her genotype.
+ If an offspring is cloned from his/her parent using a 
+\family typewriter
+cloneOffspringGenerator()
+\family default
+, offspring sex is the same as his/her parent.
+ Otherwise, offspring is by default assigned to Male and Female with equal
+ probability 0.5.
+\end_layout
+
+\begin_layout Standard
+More advanced sex assignment mode is determined by parameters 
+\family typewriter
+sexMode 
+\family default
+and 
+\family typewriter
+sexParam
+\family default
+ of a mating scheme or an offspring generator (see later section).
+ 
+\family typewriter
+sexMode
+\family default
+ can be
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_RandomSex
+\family default
+ This is the default mode where offspring can be Male or Female with equal
+ probability.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_ProbOfMale
+\family default
+ In this mode, parameter 
+\family typewriter
+sexParam
+\family default
+ is considered as the probability of a Male offspring.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_NumOfMale
+\family default
+ In this mode, parameter 
+\family typewriter
+sexParam
+\family default
+ is the number of male in the family.
+ If the number of offspring at a mating event is less than this number,
+ all offspring will be male.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_NumOfFemale
+\family default
+ Similar to 
+\family typewriter
+MATE_NumOfMale
+\family default
+ but parameter 
+\family typewriter
+sexParam
+\family default
+ is considered as the number of female in the family.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+MATE_NumOfMale
+\family default
+ and 
+\family typewriter
+MATE_NumOfFemale
+\family default
+ are useful in theoretical studies where the sex ratio of a population needs
+ to be controlled strictly, or in special mating schemes, usually for animal
+ populations, where only a certain number of male or female individuals
+ are allowed in a family.
 \end_layout
 
 \begin_layout Subsection

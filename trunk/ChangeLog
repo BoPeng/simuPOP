@@ -5,6 +5,8 @@ BUGS:
 
 version 0.8.5 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - BUG: fix a bug that prevents a cloned simulator from evolving again.
+  - NEW: add parameter numMale and sexMode to all offspring generator and
+		mating schemes, to control the sex of offspring exactly.
 
 version 0.8.4 - (Rev 1456) Mar 8, 2008
   - NEW: add support for other posix systems like HP-UX

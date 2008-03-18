@@ -801,9 +801,10 @@ Description:
 Usage:
 
     binomialSelection(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -976,9 +977,10 @@ Description:
 Usage:
 
     cloneMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Details:
 
@@ -1032,7 +1034,8 @@ Details:
     clone offspring generator copies parental geneotype to a number of
     offspring. Only one parent is accepted. The number of offspring
     produced is controled by parameters numOffspring,
-    numOffspringFunc, maxNumOffspring and mode.
+    numOffspringFunc, maxNumOffspring and mode. Parameters sexParam
+    and sexMode is ignored.
 
 "; 
 
@@ -1045,7 +1048,13 @@ Description:
 Usage:
 
     cloneOffspringGenerator(numOffspring=1, numOffspringFunc=None,
-      maxNumOffspring=1, mode=MATE_NumOffspring)
+      maxNumOffspring=1, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex)
+
+Arguments:
+
+    sexParam:       ignored because sex is copied from the parent.
+    sexMode:        ignored because sex is copied from the parent.
 
 "; 
 
@@ -1371,7 +1380,8 @@ Description:
 Usage:
 
     controlledRandomMating(loci, alleles, freqFunc, acceptScheme=0,
-      numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
+      numOffspring=1., sexParam=0.5, sexMode=MATE_RandomSex,
+      numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True, subPop=InvalidSubPopID,
@@ -5076,7 +5086,7 @@ Usage:
 
     mendelianOffspringGenerator(numOffspring=1,
       numOffspringFunc=None, maxNumOffspring=1,
-      mode=MATE_NumOffspring)
+      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
 
 "; 
 
@@ -5094,7 +5104,7 @@ Usage:
 
 %ignore simuPOP::mendelianOffspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
-%ignore simuPOP::mendelianOffspringGenerator::formOffspringGenotype(individual *parent, RawIndIterator &it, int ploidy, bool setSex);
+%ignore simuPOP::mendelianOffspringGenerator::formOffspringGenotype(individual *parent, RawIndIterator &it, int ploidy, int count);
 
 %ignore simuPOP::mendelianOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
@@ -5847,9 +5857,10 @@ Description:
 Usage:
 
     noMating(numOffspring=1.0, numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
 
 Note:
 
@@ -6121,7 +6132,7 @@ Description:
 Usage:
 
     offspringGenerator(numOffspring, numOffspringFunc,
-      maxNumOffspring, mode)
+      maxNumOffspring, mode, sexParam, sexMode)
 
 Arguments:
 
@@ -6138,6 +6149,23 @@ Arguments:
                     MATE_PoissonDistribution,
                     MATE_BinomialDistribution, or
                     MATE_UniformDistribution.
+    sexParam:       parameter that controls the sex distribution among
+                    offspring. Its exact meaning is determined by
+                    parameter sexMode. Default to 0.5.
+    sexMode:        can be one of
+                    * MATE_RandomSex Set sex to Male or Female with
+                    probability 0.5. Parameter sexParam is ignored in
+                    this case. This is the default mode.
+                    * MATE_ProbOfMale Set an offspring to Male with
+                    probability sexParam (default to 0.5)
+                    * MATE_NumOfMale Set sexParam offspring to Male
+                    * MATE_NumOfFemale Set sexParam offspring to
+                    Female.
+
+Note:
+
+    : Parameter sexMode and sexParam are ignored if sex chromosome is
+    defined. Offspring sex is defined by genotype in this case.
 
 "; 
 
@@ -6186,6 +6214,22 @@ Usage:
 "; 
 
 %ignore simuPOP::offspringGenerator::numOffspring(int gen);
+
+%feature("docstring") simuPOP::offspringGenerator::getSex "
+
+Description:
+
+    return sex according to m_sexParam and m_sexMode
+
+Usage:
+
+    x.getSex(count)
+
+Arguments:
+
+    count:          the index of offspring
+
+"; 
 
 %ignore simuPOP::offspringGenerator::initialized() const;
 
@@ -11080,7 +11124,8 @@ Description:
 Usage:
 
     randomMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True, subPop=InvalidSubPopID,
       virtualSubPop=InvalidSubPopID, weight=0)
@@ -12165,7 +12210,8 @@ Description:
 Usage:
 
     selfingOffspringGenerator(numOffspring=1, numOffspringFunc=None,
-      maxNumOffspring=1, mode=MATE_NumOffspring)
+      maxNumOffspring=1, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex)
 
 "; 
 
@@ -12208,7 +12254,8 @@ Description:
 Usage:
 
     selfMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, newSubPopSize=[],
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True, subPop=InvalidSubPopID,
       virtualSubPop=InvalidSubPopID, weight=0)

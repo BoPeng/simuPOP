@@ -87,6 +87,12 @@ public:
 	// uniform between numOffspring and maxNumOffspring
 #define MATE_UniformDistribution     6
 
+
+#define MATE_RandomSex               1
+#define MATE_ProbOfMale              2
+#define MATE_NumOfMale               3
+#define MATE_NumOfFemale             4
+
 public:
 	/**
 	 \param numOffspring Depending on \mode, this paramter can be the number of offspring to
@@ -98,9 +104,20 @@ public:
 	 \param mode can be one of <tt>MATE_NumOffspring, MATE_PyNumOffspring,
 	   	MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
 	   	or <tt>MATE_UniformDistribution</tt>.
+	 \param sexParam parameter that controls the sex distribution among offspring. Its exact
+	   	meaning is determined by parameter sexMode. Default to 0.5.
+	 \param sexMode can be one of
+	 \li MATE_RandomSex  Set sex to Male or Female with probability 0.5. Parameter
+	 \c sexParam is ignored in this case. This is the default mode.
+	 \li MATE_ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
+	 \li MATE_NumOfMale Set \c sexParam offspring to Male
+	 \li MATE_NumOfFemale Set \c sexParam offspring to Female.
+	 \note: Parameter \c sexMode and \c sexParam are ignored if sex chromosome is defined.
+	   	Offspring sex is defined by genotype in this case.
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
-	                   UINT maxNumOffspring, UINT mode);
+	                   UINT maxNumOffspring, UINT mode,
+	                   double sexParam, UINT sexMode);
 
 
 	virtual ~offspringGenerator()
@@ -135,10 +152,11 @@ public:
 	/// CPPONLY
 	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
-    virtual void finalize(const population & pop)
-    {
-        m_initialized = false;
-    }
+	virtual void finalize(const population & pop)
+	{
+		m_initialized = false;
+	}
+
 
 	/// CPPONLY the number of offspring of a genaration \c gen
 	/**
@@ -147,6 +165,9 @@ public:
 	 */
 	ULONG numOffspring(int gen);
 
+	/// return sex according to m_sexParam and m_sexMode
+	/// \param count the index of offspring
+	Sex getSex(int count);
 
 	/// CPPONLY
 	bool initialized() const
@@ -182,7 +203,16 @@ public:
 	/// whether or not call m_numOffspringFunc each time
 	UINT m_mode;
 
+	///
+	double m_sexParam;
+
+	///
+	UINT m_sexMode;
+
 protected:
+	/// check if any of the during mating operators will set genotype
+	/// Note that such an operator will also set individual sex
+	/// if sexChromosome is present.
 	bool checkFormOffspringGenotype(vector<baseOperator *> const & ops);
 
 	/// see if who will generate offspring genotype
@@ -202,17 +232,25 @@ private:
 /** clone offspring generator copies parental geneotype to a number
    of offspring. Only one parent is accepted. The number of offspring
    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
- \c maxNumOffspring and \c mode.
+ \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
+   ignored.
  */
 class cloneOffspringGenerator : public offspringGenerator
 {
 public:
+	/**
+	 \param sexParam ignored because sex is copied from the parent.
+	 \param sexMode ignored because sex is copied from the parent.
+	 */
 	cloneOffspringGenerator(double numOffspring = 1,
 	                        PyObject * numOffspringFunc = NULL,
 	                        UINT maxNumOffspring = 1,
-	                        UINT mode = MATE_NumOffspring
+	                        UINT mode = MATE_NumOffspring,
+	                        double sexParam = 0.5,
+	                        UINT sexMode = MATE_RandomSex
 	                        ) :
-		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
+		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		                   mode, sexParam, sexMode)
 	{
 		setNumParents(1);
 	}
@@ -249,9 +287,12 @@ public:
 	mendelianOffspringGenerator(double numOffspring = 1,
 	                            PyObject * numOffspringFunc = NULL,
 	                            UINT maxNumOffspring = 1,
-	                            UINT mode = MATE_NumOffspring
+	                            UINT mode = MATE_NumOffspring,
+	                            double sexParam = 0.5,
+	                            UINT sexMode = MATE_RandomSex
 	                            ) :
-		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode),
+		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		                   mode, sexParam, sexMode),
 		m_bt(rng())
 	{
 		setNumParents(2);
@@ -269,8 +310,10 @@ public:
 
 	// the default method to produce offspring
 	/// CPPONLY
+	/// \param count index of offspring, used to set offspring sex
+	/// does not set sex if count == -1.
 	void formOffspringGenotype(individual * parent,
-		RawIndIterator & it, int ploidy, bool setSex);
+		RawIndIterator & it, int ploidy, int count);
 
 	/// CPPONLY
 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
@@ -305,9 +348,12 @@ public:
 	selfingOffspringGenerator(double numOffspring = 1,
 	                          PyObject * numOffspringFunc = NULL,
 	                          UINT maxNumOffspring = 1,
-	                          UINT mode = MATE_NumOffspring
+	                          UINT mode = MATE_NumOffspring,
+	                          double sexParam = 0.5,
+	                          UINT sexMode = MATE_RandomSex
 	                          )
-		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
+		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		                              mode, sexParam, sexMode)
 	{
 		setNumParents(1);
 	}
@@ -360,10 +406,11 @@ public:
 	/// CPPONLY
 	virtual void initialize(population & pop, SubPopID subPop) { }
 
-    virtual void finalize(population & pop, SubPopID subPop)
-    {
-        m_initialized = false;
-    }
+	virtual void finalize(population & pop, SubPopID subPop)
+	{
+		m_initialized = false;
+	}
+
 
 	/// CPPONLY
 	bool initialized() const
@@ -648,10 +695,11 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-    void finalize(population & pop, SubPopID sp)
-    {
-        m_initialized = false;
-    }
+	void finalize(population & pop, SubPopID sp)
+	{
+		m_initialized = false;
+	}
+
 
 	/// destructor
 	~pyParentsChooser()
@@ -869,6 +917,8 @@ public:
 	         PyObject * numOffspringFunc = NULL,
 	         UINT maxNumOffspring = 0,
 	         UINT mode = MATE_NumOffspring,
+	         double sexParam = 0.5,
+	         UINT sexMode = MATE_RandomSex,
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL,
@@ -941,6 +991,8 @@ public:
 	            PyObject * numOffspringFunc = NULL,
 	            UINT maxNumOffspring = 0,
 	            UINT mode = MATE_NumOffspring,
+	            double sexParam = 0.5,
+	            UINT sexMode = MATE_RandomSex,
 	            vectorlu newSubPopSize = vectorlu(),
 	            string newSubPopSizeExpr = "",
 	            PyObject * newSubPopSizeFunc = NULL,
@@ -948,7 +1000,8 @@ public:
 	            SubPopID virtualSubPop = InvalidSubPopID,
 	            double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
+		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		               mode, sexParam, sexMode)
 	{
 	}
 
@@ -1013,6 +1066,8 @@ public:
 	                  PyObject * numOffspringFunc = NULL,
 	                  UINT maxNumOffspring = 0,
 	                  UINT mode = MATE_NumOffspring,
+	                  double sexParam = 0.5,
+	                  UINT sexMode = MATE_RandomSex,
 	                  vectorlu newSubPopSize = vectorlu(),
 	                  string newSubPopSizeExpr = "",
 	                  PyObject * newSubPopSizeFunc = NULL,
@@ -1020,7 +1075,8 @@ public:
 	                  SubPopID virtualSubPop = InvalidSubPopID,
 	                  double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring, mode)
+		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		               mode, sexParam, sexMode)
 	{
 	}
 
@@ -1086,6 +1142,8 @@ public:
 	             PyObject * numOffspringFunc = NULL,
 	             UINT maxNumOffspring = 0,
 	             UINT mode = MATE_NumOffspring,
+	             double sexParam = 0.5,
+	             UINT sexMode = MATE_RandomSex,
 	             vectorlu newSubPopSize = vectorlu(),
 	             PyObject * newSubPopSizeFunc = NULL,
 	             string newSubPopSizeExpr = "",
@@ -1094,8 +1152,8 @@ public:
 	             SubPopID virtualSubPop = InvalidSubPopID,
 	             double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring,
-		                     numOffspringFunc, maxNumOffspring, mode),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode),
 		m_contWhenUniSex(contWhenUniSex)
 	{
 	}
@@ -1249,6 +1307,8 @@ public:
 	           PyObject * numOffspringFunc = NULL,
 	           UINT maxNumOffspring = 0,
 	           UINT mode = MATE_NumOffspring,
+	           double sexParam = 0.5,
+	           UINT sexMode = MATE_RandomSex,
 	           vectorlu newSubPopSize = vectorlu(),
 	           PyObject * newSubPopSizeFunc = NULL,
 	           string newSubPopSizeExpr = "",
@@ -1257,8 +1317,8 @@ public:
 	           SubPopID virtualSubPop = InvalidSubPopID,
 	           double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring,
-		                     numOffspringFunc, maxNumOffspring, mode)
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode)
 	{
 	}
 
@@ -1458,6 +1518,8 @@ public:
 	                       PyObject * freqFunc,
 	                       int acceptScheme = 0,
 	                       double numOffspring = 1.,
+	                       double sexParam = 0.5,
+	                       UINT sexMode = MATE_RandomSex,
 	                       PyObject * numOffspringFunc = NULL,
 	                       UINT maxNumOffspring = 0,
 	                       UINT mode = MATE_NumOffspring,
@@ -1470,6 +1532,7 @@ public:
 	                       double weight = 0)
 		: randomMating(numOffspring,
 		               numOffspringFunc, maxNumOffspring, mode,
+		               sexParam, sexMode,
 		               newSubPopSize,
 		               newSubPopSizeFunc,
 		               newSubPopSizeExpr,
@@ -1651,8 +1714,8 @@ public:
 	   	mating scheme is specified, it will be applied to specific subpopulation.
 	   	If \c virtualSubPop if specified, it will be applied to specifc virtual
 	   	subpopulations.
-	
-	 Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
+
+	   Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
 	 */
 	heteroMating(const vectormating & matingSchemes,
 	             vectorlu newSubPopSize = vectorlu(),
