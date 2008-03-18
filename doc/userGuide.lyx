@@ -1,4 +1,4 @@
-#LyX 1.5.4svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.5svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -644,10 +644,6 @@ Maybe most importantly:
 a complete and detailed reference manual!
 \end_layout
 
-\begin_layout Standard
-New in 0.8.2
-\end_layout
-
 \begin_layout Itemize
 selfing is introduced as a way to produce offspring from a parent
 \end_layout
@@ -659,6 +655,10 @@ pyMating can work with different, including a hybrid, parent choosers and
 
 \begin_layout Itemize
 recombinator works with selfing.
+\end_layout
+
+\begin_layout Itemize
+allow different ways to specify offspring sex.
 \end_layout
 
 \begin_layout Section
@@ -1820,6 +1820,9 @@ Choose parent(s) to generate offspring to populate the next generation.
  to 1), or a random number following one of geometric, Poisson or binomial
  distribution.
  Customized (hybrid) parent choosers can be used.
+ Offspring sex can be assigned randomly, with specified or default (0.5)
+ probability, or arranged to have certain number of males/females per mating
+ event.
 \end_layout
 
 \begin_layout Itemize
