@@ -136,7 +136,11 @@ public:
 		m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
 		m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
 		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam), 
-		m_bt(rng()), m_maleBt(rng()), m_recCount(0), m_algorithm(0)
+		m_bt(rng()), m_maleBt(rng()),
+#ifndef OPTIMIZED
+		m_recCount(0), m_convSize(),
+#endif
+		m_algorithm(0)
 	{
 		// tells mating schemes that this operator will form
 		// the genotype of offspring so they do not have to
@@ -166,19 +170,49 @@ public:
 	}
 
 
-	/// return recombination count
+	/// return recombination count at a locus (only valid in standard modules)
 	ULONG recCount(size_t locus)
 	{
+#ifndef OPTIMIZED	
 		DBG_ASSERT(locus < m_recCount.size(), IndexError,
 			"locus index " + toStr(locus) + " is out of range");
 		return m_recCount[locus];
+#else
+		return 0;
+#endif
 	}
 
 
-	/// return recombination counts
+	/// return recombination counts (only valid in standard modules)
 	vectoru recCounts()
 	{
+#ifndef OPTIMIZED
 		return m_recCount;
+#else
+		return vectoru();
+#endif
+	}
+
+
+	/// return the count of conversion of a certain size (only valid in standard modules)
+	ULONG convCount(size_t size)
+	{
+#ifndef OPTIMIZED
+		return m_convSize[size];
+#else
+		return 0;
+#endif
+	}
+
+
+	/// return the count of conversions of all sizes (only valid in standard modules)
+	std::map<int, int> convCounts()
+	{
+#ifndef OPTIMIZED
+		return m_convSize;
+#else
+		return std::map<int, int>();
+#endif
 	}
 
 
@@ -245,9 +279,13 @@ private:
 	/// whether or not set sex (population having sex chromosome)
 	bool m_hasSexChrom;
 
+#ifndef OPTIMIZED
 	/// report the number of recombination events
 	vectoru m_recCount;
 
+	// report the tract length of conversions
+	std::map<int, int> m_convSize;
+#endif
 	/// algorithm to use (frequent or seldom recombinations)
 	int m_algorithm;
 };

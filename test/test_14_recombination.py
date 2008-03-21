@@ -9,7 +9,7 @@
 # 
 
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
 import unittest, os, sys, exceptions
@@ -233,6 +233,26 @@ class TestRecombinator(unittest.TestCase):
                 # there is no allele 3 anywhere (only non-binary...)
                 if AlleleType() != 'binary':
                     self.assertEqual(ind.arrGenotype().count(a3), 0)
+
+
+    def testConversionCount(self):
+        'Testing count of conversion events '
+        r = 0.01
+        N = 1000
+        G = 100
+        rec = recombinator(rate=r, convProb=0.2, 
+            convMode=CONVERT_GeometricDistribution, convParam=0.3)
+        pop = population(size=N, loci=[10,10])
+        simu = simulator(pop, randomMating())
+        simu.evolve( [ rec ], end=G-1)
+        # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
+        # at end should be bionomial(ploidy*N*r, 0.5)
+        # print rec.convCounts(), rec.recCounts()
+        #assert abs( rec.recCount(0) - 2*N*r*G ) < 150, \
+        #    'Number of recombination event is not as expected. %d %d' % (rec.recCount(0), 2*N*r*G)
+        #assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
+        #    'Number of recombination event is not as expected. %d %d' % (rec.recCount(9), 2*N*0.5*G)
+
 
 if __name__ == '__main__':
     unittest.main()   
