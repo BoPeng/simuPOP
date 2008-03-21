@@ -1787,6 +1787,33 @@ C
 
 %ignore simuPOP::GenoStruTrait::setGenoStruIdx(size_t idx);
 
+%feature("docstring") simuPOP::GenoStruTrait::lociDist "
+
+Description:
+
+    distance between loci loc1 and loc2. These two loci should be on
+    the same chromosome. The distance will be negative if loc1 is
+    after loc2.
+
+Usage:
+
+    x.lociDist(loc1, loc2)
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::lociCovered "
+
+Description:
+
+    starting from loc, how many markers are covered by distance dist
+    (>=0) the result will be at least 1, even if dist = 0.
+
+Usage:
+
+    x.lociCovered(loc, dist)
+
+"; 
+
 %ignore simuPOP::GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) const ;
 
 %ignore simuPOP::GenoStruTrait::removeLociFromGenoStru(const vectoru &remove=vectoru(), const vectoru &keep=vectoru());
@@ -11433,7 +11460,7 @@ Usage:
 
 Description:
 
-    recombination
+    recombination and conversion
 
 Details:
 
@@ -11455,6 +11482,8 @@ Details:
     * it works for selfing. I.e., when only one parent is provided, it
     will be recombined twice, producing both maternal and paternal
     chromosomes of the offspring.
+    * conversion is allowed. Note that conversion will nullify many
+    recombination events, depending on the parameters chosen.
 
 "; 
 
@@ -11467,8 +11496,9 @@ Description:
 Usage:
 
     recombinator(intensity=-1, rate=[], afterLoci=[],
-      maleIntensity=-1, maleRate=[], maleAfterLoci=[], begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      maleIntensity=-1, maleRate=[], maleAfterLoci=[], convProb=0,
+      convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -11495,6 +11525,52 @@ Arguments:
                     recombination rate.
     maleAfterLoci:  if given, males will recombine at different
                     locations.
+    convProb:       The probability of conversion event among all
+                    recombination events. When a recombination event
+                    happens, it may become a recombination event if
+                    the Holliday junction is resolved/repaired
+                    successfully, or a conversion event if the
+                    junction is not resolved/repaired. The default
+                    convProb is 0, meaning no conversion event at all.
+                    Note that the ratio of conversion to recombination
+                    events varies greatly from study to study, ranging
+                    from 0.1 to 15 (Chen et al, Nature Review
+                    Genetics, 2007). This translate to 0.1/0.9~0.1 to
+                    15/16~0.94 of this parameter. When convProb is 1,
+                    all recombination events will be conversion
+                    events.
+    convMode:       conversion mode, determines how track length is
+                    determined.
+                    * CONVERT_NumMarkers Converts a fixed number of
+                    markers.
+                    * CONVERT_GeometricDistribution An geometric
+                    distribution is used to determine how many markers
+                    will be converted.
+                    * CONVERT_TractLength Converts a fixed length of
+                    tract.
+                    * CONVERT_ExponentialDistribution An exponential
+                    distribution with parameter convLen will be used
+                    to determine track length.
+    convParam:      Parameter for the conversion process. The exact
+                    meaning of this parameter is determined by
+                    convMode. Note that
+                    * conversion tract length is usually short, and is
+                    estimated to be between 337 and 456 bp, with
+                    overall range between maybe 50 - 2500 bp.
+                    *  simuPOP does not impose a unit for marker
+                    distance so your choice of convLen needs to be
+                    consistent with your unit. In the HapMap dataset,
+                    cM is usually assumed and marker distances are
+                    around 10kb (0.001cM ~- 1kb). Gene conversion can
+                    largely be ignored. This is important when you use
+                    distance based conversion mode such as
+                    CONVERT_TrackLength or
+                    CONVERT_ExponentialDistribution.
+                    * After a track length is determined, if a second
+                    recombination event happens within this region,
+                    the track length will be shortened. Note that
+                    conversion is identical to double recombination
+                    under this context.
 
 Note:
 
@@ -11819,6 +11895,18 @@ Description:
 Usage:
 
     x.randNormal(m, v)
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randExponential "
+
+Description:
+
+    simuPOP::RNG::randExponential
+
+Usage:
+
+    x.randExponential(v)
 
 "; 
 
