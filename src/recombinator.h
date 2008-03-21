@@ -142,6 +142,9 @@ public:
 		// the genotype of offspring so they do not have to
 		// generate default genotype for offspring
 		this->setFormOffGenotype(true);
+
+		DBG_FAILIF(fcmp_lt(m_convProb, 0) || fcmp_gt(m_convProb, 1),
+			ValueError, "Conversion probability should be between 0 and 1");
 	};
 
 	virtual ~recombinator()
@@ -198,13 +201,8 @@ private:
 		const vectoru & recBeforeLoci,
 		bool setSex = false);
 	
-	void recombineWithConversion(
-		individual * parent,                                                        // one of the parent
-		RawIndIterator & offspring,                                                 // offspring
-		int offPloidy,                                                              // which offspring ploidy to fill
-		BernulliTrials & bt,
-		const vectoru & recBeforeLoci,
-		bool setSex = false);
+	/// determine number of markers to convert
+	int markersConverted(size_t index, individual * ind);
 
 	/// this function takes intensity, rate, afterLoci, ...
 	/// inputs and return a bernulli trailer and a recBeforeLoci
