@@ -960,6 +960,12 @@ public:
 	}
 
 
+	double randExponential(double v)
+	{
+		return gsl_ran_exponential(m_RNG, v);
+	}
+
+
 	/// CPPONLY
 	void randUniform01Array(ULONG size, double * vec)
 	{
