@@ -133,6 +133,37 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 // initialize static variable s)genoStruRepository.
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
 
+
+/// distance between loci \c loc1 and \c loc2. These two loci should be
+/// on the same chromosome.
+double GenoStruTrait::lociDist(UINT loc1, UINT loc2) const
+{
+	// right now, it is assumed that locus is not the first
+	// on a chromosome
+	DBG_FAILIF(chromLocusPair(loc1).first != chromLocusPair(loc2).first,
+		ValueError, "locusDist assumes that two loci are on the same chromosome");
+	return locusPos(loc2) - locusPos(loc1);
+}
+
+
+UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
+{
+	DBG_FAILIF(fcmp_lt(dist, 0.), ValueError,
+		"Distance has to be positive in function lociCovered");
+	
+	const vectorf & lociPos = s_genoStruRepository[m_genoStruIdx].m_lociPos;
+	
+	int chrom = chromLocusPair(loc).first;
+	UINT endLoc = chromEnd(chrom);
+	double beginPos = lociPos[loc];
+
+	for (size_t i = loc + 1; i < endLoc; ++i)
+		if (lociPos[i] - beginPos > dist)
+			return i - loc;
+	return endLoc - loc;
+}
+
+
 void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                                      const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
