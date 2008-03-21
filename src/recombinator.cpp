@@ -244,33 +244,14 @@ void recombinator::recombine(
 	//
 	//  at each locus, check if recombine after it, if so
 	//  recombine.
-	bool withConversion = fcmp_gt(m_convProb, 0);
 	if (m_algorithm == 0) {
-
-		// negative means no conversion is pending.
-		int convCount = -1;
-		size_t gtEnd = recBeforeLoci.back();
-		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
+		for (size_t gt = 0, bl = 0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt) {
 			off[gt] = cp[curCp][gt];
 			// 2 4 x16 (x means recombine)
-			if (convCount == 0) { // conversion ...
-				curCp = (curCp + 1) % 2;
-				// this is not recorded in m_recCount[bl]
-				// no pending conversion
-				convCount = -1;
-			} else if (gt + 1 == recBeforeLoci[bl]) {
-				// recombination
+			if (gt + 1 == recBeforeLoci[bl]) {
 				if (bt.trialSucc(bl)) {
 					curCp = (curCp + 1) % 2;
 					DBG_DO_(m_recCount[bl]++);
-					// if conversion happens
-					if (withConversion && rng().randUniform01() < m_convProb)
-						// convCount will be decreased, until reconversion completes
-						// or another recombination happens
-						convCount = markersConverted(gt, parent);
-					else
-						// another recombination stops the previous conversion
-						convCount = -1;
 				}
 				++bl;
 			}
@@ -280,41 +261,16 @@ void recombinator::recombine(
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();
 		// if there is some recombination
-		int convCount = -1;
 		if (pos != BernulliTrials::npos) {
 			// first piece
 			for (; gt < recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
-			//
-			if (withConversion && rng().randUniform01() < m_convProb)
-				// convCount will be decreased, until reconversion completes
-				// or another recombination happens
-				convCount = markersConverted(gt, parent);
 			// next ...
 			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
-				// copy from last to this recombination point, but
-				// there might be a conversion event in between
-				gtEnd = recBeforeLoci[pos];
-				if (convCount > 0) {
-					convEnd = gt + convCount;
-					if (convEnd < gtEnd) {
-						for (; gt < convEnd; ++gt)
-							off[gt] = cp[curCp][gt];
-						curCp = (curCp + 1) % 2;
-					} else
-						// conversion event is supressed by another recombination
-						convCount = -1;
-				}
-				// conversion event for this recombination event
-				if (withConversion && rng().randUniform01() < m_convProb)
-					// convCount will be decreased, until reconversion completes
-					// or another recombination happens
-					convCount = markersConverted(gt, parent);
-				else
-					convCount = -1;
-				for (; gt < gtEnd; ++gt)
+				// copy from last to this recombination point
+				for (gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
 					off[gt] = cp[curCp][gt];
 				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
