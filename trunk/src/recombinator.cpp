@@ -236,41 +236,48 @@ void recombinator::recombine(
 			}
 		}
 	} else {
+#ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();
 		// if there is some recombination
 		if (pos != BernulliTrials::npos) {
 			// first piece
-#ifndef BINARYALLELE
 			for (; gt < recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
-#else
-			gtEnd = recBeforeLoci[pos];
-			copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
-			gt = gtEnd;
-#endif
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
 			// next ...
 			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
-#ifndef BINARYALLELE
 				// copy from last to this recombination point
 				for (gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
 					off[gt] = cp[curCp][gt];
-#else
-				gtEnd = recBeforeLoci[pos];
-				copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
-				gt = gtEnd;
-#endif
 				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
 			}
 		}
-#ifndef BINARYALLELE
 		// copy the last piece
 		for (; gt < recBeforeLoci.back(); ++gt)
 			off[gt] = cp[curCp][gt];
 #else
+		size_t gt = 0, gtEnd = 0;
+		size_t pos = bt.probFirstSucc();
+		// if there is some recombination
+		if (pos != BernulliTrials::npos) {
+			// first piece
+			gtEnd = recBeforeLoci[pos];
+			copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+			gt = gtEnd;
+			DBG_DO_(m_recCount[pos]++);
+			curCp = (curCp + 1) % 2;
+			// next ...
+			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
+				gtEnd = recBeforeLoci[pos];
+				copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+				gt = gtEnd;
+				DBG_DO_(m_recCount[pos]++);
+				curCp = (curCp + 1) % 2;
+			}
+		}
 		copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci.back() - gt);
 #endif
 	}

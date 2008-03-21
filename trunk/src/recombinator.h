@@ -34,7 +34,7 @@ using std::ostream;
 using std::ostream_iterator;
 
 namespace simuPOP {
-/// recombination
+/// recombination and conversion
 /**
    In simuPOP, only one recombinator is provided. Recombination events between loci
    a/b and b/c are independent, otherwise there will be some linkage between loci. Users
@@ -51,11 +51,18 @@ namespace simuPOP {
  \li it works for selfing. I.e., when only one parent is provided, it will be
    recombined twice, producing both maternal and paternal chromosomes of the
    offspring.
+ \li conversion is allowed. Note that conversion will nullify many recombination
+	events, depending on the parameters chosen.
  */
 
 class recombinator : public baseOperator
 {
 public:
+#define CONVERT_NumMarkers                   1
+#define CONVERT_TractLength                  2
+#define CONVERT_ExponentialDistribution      3
+#define CONVERT_GeometricDistribution        4
+
 	/// recombine chromosomes from parents
 	/**
 	 \param intensity intensity of recombination. The actual recombination rate
@@ -74,6 +81,36 @@ public:
 	 \param maleRate recombination rate for male individuals. If given,
 	   parameter \c rate will be considered as female recombination rate.
 	 \param maleAfterLoci if given, males will recombine at different locations.
+	 \param convProb The probability of conversion event among all recombination
+		events. When a recombination event happens, it may become a recombination event
+		if the Holliday junction is resolved/repaired successfully, or a 
+		conversion event if the junction is not resolved/repaired. The
+		default \c convProb is 0, meaning no conversion event at all.
+		Note that the ratio of conversion to recombination events varies greatly from
+		study to study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics, 2007).
+		This translate to 0.1/0.9~0.1 to 15/16~0.94 of this parameter. When
+		\c convProb is 1, all recombination events will be conversion events.
+	 \param convMode conversion mode, determines how track length is determined.
+		\li CONVERT_NumMarkers Converts a fixed number of markers.
+		\li CONVERT_GeometricDistribution An geometric distribution is used to
+			determine how many markers will be converted.
+		\li CONVERT_TractLength Converts a fixed length of tract.
+		\li CONVERT_ExponentialDistribution An exponential distribution with parameter
+			\c convLen will be used to determine track length.
+	 \param convParam Parameter for the conversion process. The exact meaning of this
+		parameter is determined by \c convMode. Note that
+		\li conversion tract length is usually short, and is estimated to be
+			between 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
+		\li simuPOP does not impose a unit for marker distance so your choice
+			of convLen needs to be consistent with your unit. In the HapMap dataset,
+			cM is usually assumed and marker distances are around 10kb (0.001cM ~- 1kb).
+			Gene conversion can largely be ignored. This is important when
+			you use distance based conversion mode such as \c CONVERT_TrackLength or
+			\c CONVERT_ExponentialDistribution.
+		\li After a track length is determined, if a second recombination
+			event happens within this region, the track length will be shortened.
+			Note that conversion is identical to double recombination under
+			this context.
 
 	 \note There is no recombination between sex chromosomes of male individuals
 	   if <tt>sexChrom()=True</tt>. This may change later if the exchanges
@@ -87,6 +124,9 @@ public:
 	             double maleIntensity = -1,
 	             vectorf maleRate = vectorf(),
 	             vectoru maleAfterLoci = vectoru(),
+				 double convProb = 0, // no conversion
+				 UINT convMode = CONVERT_NumMarkers,
+				 double convParam = 1.,
 	             int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		:
@@ -95,6 +135,7 @@ public:
 		m_rate(rate), m_maleRate(maleRate),
 		m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
 		m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
+		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam), 
 		m_bt(rng()), m_maleBt(rng()), m_recCount(0), m_algorithm(0)
 	{
 		// tells mating schemes that this operator will form
@@ -156,6 +197,14 @@ private:
 		BernulliTrials & bt,
 		const vectoru & recBeforeLoci,
 		bool setSex = false);
+	
+	void recombineWithConversion(
+		individual * parent,                                                        // one of the parent
+		RawIndIterator & offspring,                                                 // offspring
+		int offPloidy,                                                              // which offspring ploidy to fill
+		BernulliTrials & bt,
+		const vectoru & recBeforeLoci,
+		bool setSex = false);
 
 	/// this function takes intensity, rate, afterLoci, ...
 	/// inputs and return a bernulli trailer and a recBeforeLoci
@@ -170,16 +219,26 @@ private:
 
 private:
 	/// intensity
-	double m_intensity, m_maleIntensity;
+	double m_intensity;
+	double m_maleIntensity;
 
 	/// differnt rates
-	vectorf m_rate, m_maleRate;
+	vectorf m_rate;
+	vectorf m_maleRate;
 
 	/// initial parameter
-	vectoru m_afterLoci, m_maleAfterLoci;
+	vectoru m_afterLoci;
+	vectoru m_maleAfterLoci;
 
 	/// position to recombine, changed to fit a special pop
-	vectoru m_recBeforeLoci, m_maleRecBeforeLoci;
+	vectoru m_recBeforeLoci;
+	vectoru m_maleRecBeforeLoci;
+
+	double m_convProb;
+
+	UINT m_convMode;
+
+	double m_convParam;
 
 	/// bernulli trials
 	//  vector<BernulliTrials*> m_bt;
