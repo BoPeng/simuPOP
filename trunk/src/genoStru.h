@@ -329,6 +329,16 @@ public:
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
 
+	/// distance between loci \c loc1 and \c loc2. These two loci should be
+	/// on the same chromosome. The distance will be negative if \c loc1 is after
+	/// \c loc2.
+	double lociDist(UINT loc1, UINT loc2) const;
+
+
+	/// starting from \c loc, how many markers are covered by distance \c dist (>=0)
+	/// the result will be at least 1, even if dist = 0.
+	UINT lociCovered(UINT loc, double dist) const;
+
 
 	/// CPPONLY merge two genotype structure
 	GenoStructure & mergeGenoStru(size_t idx, bool byChromosome) const;

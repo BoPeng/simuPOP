@@ -206,6 +206,21 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopIndPair(21), (1,1) )
         self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
 
+    def testLociPos(self):
+        'Testing loci position related functions'
+        pop = population(loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]])
+        self.assertEqual(pop.lociDist(0, 3), 3)
+        self.assertEqual(pop.lociDist(2, 4), 2)
+        self.assertRaises(exceptions.ValueError, pop.lociDist, 2, 8)
+        #
+        self.assertEqual(pop.lociCovered(1, 2.2), 3)
+        self.assertEqual(pop.lociCovered(1, 5.2), 4)
+        self.assertEqual(pop.lociCovered(7, 0.2), 1)
+        self.assertEqual(pop.lociCovered(7, 2.2), 2)
+        self.assertEqual(pop.lociCovered(7, 6.5), 4)
+
+
     def testIterator(self):
         'Testing the individual iterators'
         pop = population(loci=[1], subPop=[4,6])
