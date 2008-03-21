@@ -185,7 +185,7 @@ void recombinator::prepareRecRates(population & pop,
 	/// initialize recombination counter,
 	/// This will count recombination events after
 	/// each locus.
-	m_recCount.resize(pop.totNumLoci(), 0);
+	DBG_DO_(m_recCount.resize(pop.totNumLoci(), 0));
 	return;
 }
 
@@ -228,6 +228,7 @@ void recombinator::recombine(
 	cp[0] = parent->genoBegin(0);
 	cp[1] = parent->genoBegin(1);
 	off = offspring->genoBegin(offPloidy);
+	size_t lastLocus = recBeforeLoci.back();
 
 	// get a new set of values.
 	// const BoolResults& bs = bt.trial();
@@ -244,16 +245,38 @@ void recombinator::recombine(
 	//
 	//  at each locus, check if recombine after it, if so
 	//  recombine.
+	bool withConversion = fcmp_gt(m_convProb, 0);
 	if (m_algorithm == 0) {
-		for (size_t gt = 0, bl = 0, gtEnd = recBeforeLoci.back(); gt < gtEnd; ++gt) {
+		// negative means no conversion is pending.
+		int convCount = -1;
+		size_t gtEnd = recBeforeLoci.back();
+		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
 			off[gt] = cp[curCp][gt];
-			// 2 4 x16 (x means recombine)
+			//
 			if (gt + 1 == recBeforeLoci[bl]) {
-				if (bt.trialSucc(bl)) {
+				// recombination (if convCount == 0, a conversion event is ending)
+				if (convCount < 0 && bt.trialSucc(bl)) {
 					curCp = (curCp + 1) % 2;
 					DBG_DO_(m_recCount[bl]++);
+					// if conversion happens
+					if (withConversion && gt != lastLocus &&
+						parent->chromLocusPair(gt).second != 0 && // can not be at the end of a chromosome
+						(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+						// convCount will be decreased, until reconversion completes
+						// or another recombination happens
+						convCount = markersConverted(gt, parent);
+						DBG_DO_(m_convSize[convCount] ++);
+					} else
+						// another recombination stops the previous conversion
+						convCount = -1;
 				}
 				++bl;
+			}
+			if (convCount == 0) { // conversion ...
+				curCp = (curCp + 1) % 2;
+				// this is not recorded in m_recCount[bl]
+				// no pending conversion
+				convCount = -1;
 			}
 		}
 	} else {
@@ -261,28 +284,70 @@ void recombinator::recombine(
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();
 		// if there is some recombination
+		int convCount = -1;
+		size_t convEnd;
 		if (pos != BernulliTrials::npos) {
 			// first piece
 			for (; gt < recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
-			// next ...
+			//
+			if (withConversion &&  gt != lastLocus &&
+				parent->chromLocusPair(gt).second != 0 && // can not be at the end of a chromosome
+				(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+				convCount = markersConverted(gt, parent);
+				DBG_DO_(m_convSize[convCount] ++);
+			}
+			// next recombination point...
 			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
-				// copy from last to this recombination point
-				for (gtEnd = recBeforeLoci[pos]; gt < gtEnd; ++gt)
+				// copy from last to this recombination point, but
+				// there might be a conversion event in between
+				gtEnd = recBeforeLoci[pos];
+				if (convCount > 0) {
+					convEnd = gt + convCount;
+					if (convEnd < gtEnd) {
+						for (; gt < convEnd; ++gt)
+							off[gt] = cp[curCp][gt];
+						curCp = (curCp + 1) % 2;
+					}
+					// no pending conversion
+					convCount = -1;
+				}
+				// copy from the end of conversion to this recombination point
+				for (; gt < gtEnd; ++gt)
 					off[gt] = cp[curCp][gt];
 				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
+				//
+				// conversion event for this recombination event
+				if (withConversion &&  gt != lastLocus &&
+					parent->chromLocusPair(gt).second != 0 && // can not be at the end of a chromosome
+					(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+					// convCount will be decreased, until reconversion completes
+					// or another recombination happens
+					convCount = markersConverted(gt, parent);
+					DBG_DO_(m_convSize[convCount] ++);
+				}
 			}
 		}
 		// copy the last piece
+		if (convCount > 0) {
+			convEnd = gt + convCount;
+			if (convEnd < gtEnd) {
+				for (; gt < convEnd; ++gt)
+					off[gt] = cp[curCp][gt];
+				curCp = (curCp + 1) % 2;
+			}
+		}
 		for (; gt < recBeforeLoci.back(); ++gt)
 			off[gt] = cp[curCp][gt];
 #else
 		size_t gt = 0, gtEnd = 0;
 		size_t pos = bt.probFirstSucc();
 		// if there is some recombination
+		int convCount = -1;
+		size_t convEnd;
 		if (pos != BernulliTrials::npos) {
 			// first piece
 			gtEnd = recBeforeLoci[pos];
@@ -290,12 +355,47 @@ void recombinator::recombine(
 			gt = gtEnd;
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
-			// next ...
+			if (withConversion &&  gt != lastLocus &&
+				parent->chromLocusPair(gt).second != 0 && // can not be at the end of a chromosome
+				(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+				convCount = markersConverted(gt, parent);
+				DBG_DO_(m_convSize[convCount] ++);
+			}
+			// next recombination point...
 			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
 				gtEnd = recBeforeLoci[pos];
+				if (convCount > 0) {
+					convEnd = gt + convCount;
+					if (convEnd < gtEnd) {
+						copyGenotype(cp[curCp] + gt, off + gt, convCount);
+						gt = convEnd;
+						curCp = (curCp + 1) % 2;
+					}
+					// no pending conversion
+					convCount = -1;
+				}
+				// copy from the end of conversion to the next recombination point
 				copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
 				gt = gtEnd;
 				DBG_DO_(m_recCount[pos]++);
+				curCp = (curCp + 1) % 2;
+				// conversion event for this recombination event
+				if (withConversion && gt != lastLocus &&
+					parent->chromLocusPair(gt).second != 0 && // can not be at the end of a chromosome
+					(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+					// convCount will be decreased, until reconversion completes
+					// or another recombination happens
+					convCount = markersConverted(gt, parent);
+					DBG_DO_(m_convSize[convCount] ++);
+				}
+			}
+		}
+		// copy the last piece
+		if (convCount > 0) {
+			convEnd = gt + convCount;
+			if (convEnd < gtEnd) {
+				copyGenotype(cp[curCp] + gt, off + gt, convCount);
+				gt = convEnd;
 				curCp = (curCp + 1) % 2;
 			}
 		}
