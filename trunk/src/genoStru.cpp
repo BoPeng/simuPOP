@@ -146,6 +146,26 @@ double GenoStruTrait::lociDist(UINT loc1, UINT loc2) const
 }
 
 
+UINT GenoStruTrait::lociLeft(UINT loc) const
+{
+	CHECKRANGEABSLOCUS(loc);
+
+	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i)
+		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
+			return s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - loc;
+}
+
+
+double GenoStruTrait::distLeft(UINT loc) const
+{
+	CHECKRANGEABSLOCUS(loc);
+
+	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i)
+		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
+			return locusPos(s_genoStruRepository[m_genoStruIdx].m_chromIndex[i]-1) - locusPos(loc);
+}
+
+
 UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
 {
 	DBG_FAILIF(fcmp_lt(dist, 0.), ValueError,

@@ -334,6 +334,11 @@ public:
 	/// \c loc2.
 	double lociDist(UINT loc1, UINT loc2) const;
 
+	/// return the number of loci left on that chromosome, including locus \c loc
+	UINT lociLeft(UINT loc) const;
+
+	/// distance left to the right of the loc, till the end of chromosome
+	double distLeft(UINT loc) const;
 
 	/// starting from \c loc, how many markers are covered by distance \c dist (>=0)
 	/// the result will be at least 1, even if dist = 0.

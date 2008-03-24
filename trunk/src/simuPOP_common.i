@@ -146,7 +146,7 @@ namespace std
 
     %template()         pair<string, double>;
     %template()         map<string, double>;
-	%template()         map<int, int>;
+    %template()         map<int, int>;
 
     %template()         pair<ULONG, ULONG>;
     %template()         vector<pair<ULONG, ULONG> >;
@@ -247,7 +247,7 @@ namespace std
 
 namespace std
 {
-	%template()    vector<simuPOP::vspSplitter * >;
+    %template()    vector<simuPOP::vspSplitter * >;
 }
 
 %include "virtualSubPop.h"
@@ -632,12 +632,12 @@ def PySubset(pop, *args, **kwargs):
 
 
 def InfoEval(pop, *args, **kwargs):
-	infoEval(*args, **kwargs).apply(pop)
+    infoEval(*args, **kwargs).apply(pop)
 
 InfoEval.__doc__ = "Function version of operator infoEval whose __init__function is \n" + infoEval.__init__.__doc__
 
 def InfoExec(pop, *args, **kwargs):
-	infoExec(*args, **kwargs).apply(pop)
+    infoExec(*args, **kwargs).apply(pop)
 
 InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
@@ -898,8 +898,23 @@ migrator.__init__ = new_migrator
 
 
 
-def new_recombinator(self, intensity=-1, rate=[], afterLoci=[], 
-    maleIntensity=-1, maleRate=[], maleAfterLoci=[], *args, **kwargs):
+def new_recombinator(self, intensity=-1, rate=[],
+    locus=None, loci=[], afterLoci=[], 
+    maleIntensity=-1, maleRate=[],
+    maleLocus=None, maleLoci=[], maleAfterLoci=[], *args, **kwargs):
+    # parameter loci
+    if len(afterLoci) != 0 and len(loci) == 0:
+        print 'Warning: parameter afterLoci of recombinator is renamed to loci'
+        loci = afterLoci
+    # parameter maleLoci
+    if len(maleAfterLoci) != 0 and len(maleLoci) == 0:
+        print 'Warning: parameter maleAfterLoci of recombinator is renamed to maleLoci'
+        maleLoci = maleAfterLoci
+    # paramter locus
+    if locus is not None and len(loci) == 0:
+        loci = [locus]
+    if maleLocus is not None and len(maleLoci) == 0:
+        maleLoci = [maleLocus]
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
         if len(afterLoci) > 0:
@@ -920,9 +935,9 @@ def new_recombinator(self, intensity=-1, rate=[], afterLoci=[],
         mr = maleRate
     cppModule.recombinator_swiginit(self,
         cppModule.new_recombinator(intensity=intensity, 
-        rate=r, afterLoci=afterLoci, 
+        rate=r, afterLoci=loci, 
         maleIntensity=maleIntensity, 
-        maleRate=mr, maleAfterLoci=maleAfterLoci, 
+        maleRate=mr, maleAfterLoci=maleLoci, 
         *args, **kwargs))
  
 new_recombinator.__doc__ = recombinator.__init__.__doc__
