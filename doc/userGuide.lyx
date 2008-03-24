@@ -16,7 +16,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.4 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.5 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -654,7 +654,7 @@ pyMating can work with different, including a hybrid, parent choosers and
 \end_layout
 
 \begin_layout Itemize
-recombinator works with selfing.
+recombinator and gene conversion.
 \end_layout
 
 \begin_layout Itemize
@@ -3396,11 +3396,11 @@ simuPOP is large, consisting of more than 80 operators and various functions
 k
 \emph default
 -allele, stepwise, generalized stepwise), migration (arbitrary, can create
- new subpopulation), recombination (uniform or nonuniform), quantitative
- trait, selection, penetrance (single or multi-locus, hybrid), ascertainment
- (case-control, affected sibpairs, random), statistics calculation (allele,
- genotype, haplotype, heterozygote number and frequency; expected heterozygosity
-; bi-allelic and multi-allelic 
+ new subpopulation), recombination (uniform or nonuniform), gene conversion
+ (new in v 0.8.5), quantitative trait, selection, penetrance (single or multi-locu
+s, hybrid), ascertainment (case-control, affected sibpairs, random), statistics
+ calculation (allele, genotype, haplotype, heterozygote number and frequency;
+ expected heterozygosity; bi-allelic and multi-allelic 
 \begin_inset Formula $D$
 \end_inset
 

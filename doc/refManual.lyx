@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.4 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.5 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -6188,9 +6188,15 @@ pointMutatorRef
 \end_layout
 
 \begin_layout Section
-Recombination
+Recombination 
 \begin_inset LatexCommand index
 name "recombination"
+
+\end_inset
+
+ and gene conversion 
+\begin_inset LatexCommand index
+name "conversion"
 
 \end_inset
 
@@ -6211,6 +6217,269 @@ recombinatorRef
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Gene conversion
+\end_layout
+
+\begin_layout Standard
+simuPOP uses the Holliday junction model to simulate gene conversion.
+ This model treats recombination and conversion as a unified process.
+ The key features of this model is
+\end_layout
+
+\begin_layout Itemize
+Two (out of four) chromatids pair and a single strand cut is made in each
+ chromatid
+\end_layout
+
+\begin_layout Itemize
+Strand exchange takes place between the chromatids
+\end_layout
+
+\begin_layout Itemize
+Ligation occurs yielding two completely intact DNA molecules
+\end_layout
+
+\begin_layout Itemize
+Branch migration occurs, giving regions of heteroduplex DNA
+\end_layout
+
+\begin_layout Itemize
+Resulution of the Holliday junction gives two DNA molecules with heteroduplex
+ DNA.
+ Depending upon how the holliday junction is resolved, we either observe
+ no exchange of flanking markers, or an exchange of flanking markers.
+ The former forms a conversion event, which can be considered as a double
+ recombination.
+\end_layout
+
+\begin_layout Standard
+Translated to simulation, recombination and conversion are performed in
+ the following steps
+\end_layout
+
+\begin_layout Enumerate
+Users specify the following paremters to a recombinator:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+recombination points (recombinations are allowed after specified markers)
+ (
+\family typewriter
+loci
+\family default
+),
+\end_layout
+
+\begin_layout Enumerate
+recombination rates (can vary from marker to marker) (
+\family typewriter
+rates
+\family default
+),
+\end_layout
+
+\begin_layout Enumerate
+probability of conversion if a recombination event happens (
+\family typewriter
+convProb
+\family default
+),
+\end_layout
+
+\begin_layout Enumerate
+track length parameters (
+\family typewriter
+convMode
+\family default
+ and 
+\family typewriter
+convParam
+\family default
+, will discuss later).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Starting with two parental chromosomes, randomly choose one of them to copy
+ to an offspring chromosome until a recombination event happens.
+\end_layout
+
+\begin_layout Enumerate
+This recombination event is a conversion event if
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+A random uniform number U(0,1) is less than the probability of conversion
+\end_layout
+
+\begin_layout Enumerate
+The length of flanking regions does not exceed the end of chromosome 
+\end_layout
+
+\begin_layout Standard
+If a conversion happens, record the end of flanking region as another recombinat
+ion event.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Copy from another copy of parental chromosome (recombination happens), until
+ the recorded second recombination event is reached, or another recombination
+ event happens.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Repeat these steps for all chromosomes.
+\end_layout
+
+\begin_layout Standard
+The tract length of a flanking region is determined by parameters 
+\family typewriter
+convMode
+\family default
+ and 
+\family typewriter
+convParam
+\family default
+.
+ 
+\family typewriter
+convMode 
+\family default
+can be
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+CONVERT_NumMarkers
+\family default
+ Convert a fixed number (
+\family typewriter
+convParam
+\family default
+) of markers.
+ This is the default mode with
+\family typewriter
+ convParam=1
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+CONVERT_TractLength
+\family default
+ Convert a fixed length (
+\family typewriter
+convParam
+\family default
+) of chromosome regions.
+ This can be used when markers are not equally spaced on chromosomes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+CONVERT_GeometricDistribution
+\family default
+ Convert a random number of markers, with a geometric distribution with
+ parameter 
+\family typewriter
+convParam
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+CONVERT_ExponentialDistribution
+\family default
+ Convert Convert a random length of chromosome region, using a exponential
+ distribution with parameter 
+\family typewriter
+convParam
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Note that
+\end_layout
+
+\begin_layout Itemize
+If tract length is determined by length (
+\family typewriter
+CONVERT_TractLength
+\family default
+ or 
+\family typewriter
+CONVERT_ExponentialDistribution
+\family default
+), the starting point of the flanking region is uniformly distributed between
+ marker 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $i-1$
+\end_inset
+
+, if the recombination happens at marker 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ That is to say, it is possible that no marker is converted with positive
+ tract length.
+\end_layout
+
+\begin_layout Itemize
+A conversion event will act like a recombination event if its flanking region
+ exceeds the end of chromosome, or if another recombination event happens
+ before the end of the flanking region.
+\end_layout
+
+\begin_layout Standard
+Although any parameters can be used in a recombinator, it is worth noting
+ that
+\end_layout
+
+\begin_layout Itemize
+The probability of conversion event among all recombination events if usually
+ expressed as ratio of conversion to recombination events in the literature.
+ This varies greatly from study to study, ranging from 0.1 to 15 (Chen et
+ al, Nature Review Genetics, 2007).
+ This translate to 0.1/0.9~0.1 to 15/16~0.94 of this parameter.
+ When 
+\backslash
+c convProb is 1, all recombination events will be conversion events.
+ The default value if 
+\family typewriter
+convProb=0
+\family default
+, meaning no conversion.
+\end_layout
+
+\begin_layout Itemize
+Conversion tract length is usually short, and is estimated to be between
+ 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
+ simuPOP does not impose a unit for marker distance so your choice of 
+\family typewriter
+convParam
+\family default
+ needs to be consistent with your unit.
+ In the HapMap dataset, cM is usually assumed and marker distances are around
+ 10kb (0.001cM ~- 1kb).
+ At this marker density, gene conversion can largely be ignored.
 \end_layout
 
 \begin_layout Section

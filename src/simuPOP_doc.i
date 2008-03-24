@@ -1801,6 +1801,31 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::GenoStruTrait::lociLeft "
+
+Description:
+
+    return the number of loci left on that chromosome, including locus
+    loc
+
+Usage:
+
+    x.lociLeft(loc)
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::distLeft "
+
+Description:
+
+    distance left to the right of the loc, till the end of chromosome
+
+Usage:
+
+    x.distLeft(loc)
+
+"; 
+
 %feature("docstring") simuPOP::GenoStruTrait::lociCovered "
 
 Description:
@@ -11558,7 +11583,7 @@ Arguments:
                     estimated to be between 337 and 456 bp, with
                     overall range between maybe 50 - 2500 bp.
                     *  simuPOP does not impose a unit for marker
-                    distance so your choice of convLen needs to be
+                    distance so your choice of convParam needs to be
                     consistent with your unit. In the HapMap dataset,
                     cM is usually assumed and marker distances are
                     around 10kb (0.001cM ~- 1kb). Gene conversion can
@@ -11675,7 +11700,8 @@ Usage:
 
 Description:
 
-    return recombination count
+    return recombination count at a locus (only valid in standard
+    modules)
 
 Usage:
 
@@ -11687,11 +11713,37 @@ Usage:
 
 Description:
 
-    return recombination counts
+    return recombination counts (only valid in standard modules)
 
 Usage:
 
     x.recCounts()
+
+"; 
+
+%feature("docstring") simuPOP::recombinator::convCount "
+
+Description:
+
+    return the count of conversion of a certain size (only valid in
+    standard modules)
+
+Usage:
+
+    x.convCount(size)
+
+"; 
+
+%feature("docstring") simuPOP::recombinator::convCounts "
+
+Description:
+
+    return the count of conversions of all sizes (only valid in
+    standard modules)
+
+Usage:
+
+    x.convCounts()
 
 "; 
 

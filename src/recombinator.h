@@ -102,7 +102,7 @@ public:
 		\li conversion tract length is usually short, and is estimated to be
 			between 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
 		\li simuPOP does not impose a unit for marker distance so your choice
-			of convLen needs to be consistent with your unit. In the HapMap dataset,
+			of \c convParam needs to be consistent with your unit. In the HapMap dataset,
 			cM is usually assumed and marker distances are around 10kb (0.001cM ~- 1kb).
 			Gene conversion can largely be ignored. This is important when
 			you use distance based conversion mode such as \c CONVERT_TrackLength or

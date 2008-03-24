@@ -219,6 +219,16 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.lociCovered(7, 0.2), 1)
         self.assertEqual(pop.lociCovered(7, 2.2), 2)
         self.assertEqual(pop.lociCovered(7, 6.5), 4)
+        #
+        self.assertEqual(pop.lociLeft(2), 3)
+        self.assertEqual(pop.lociLeft(4), 1)
+        self.assertEqual(pop.lociLeft(5), 7)
+        self.assertEqual(pop.lociLeft(11), 1)
+        #
+        self.assertEqual(pop.distLeft(2), 2)
+        self.assertEqual(pop.distLeft(4), 0)
+        self.assertEqual(pop.distLeft(5), 12)
+        self.assertEqual(pop.distLeft(11), 0)
 
 
     def testIterator(self):
