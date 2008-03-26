@@ -196,7 +196,7 @@ int recombinator::markersConverted(size_t index, individual * ind)
 	// this is an recombination! Otherwise, conversion will
 	// interfere with free crossover between chromosomes
 	if (m_convMode == CONVERT_NumMarkers || m_convMode == CONVERT_GeometricDistribution) {
-		int num = 0;
+		UINT num = 0;
 		if (m_convMode == CONVERT_NumMarkers)
 			num = static_cast<int>(m_convParam);
 		else
@@ -210,14 +210,14 @@ int recombinator::markersConverted(size_t index, individual * ind)
 	} else {
 		double len = 0;
 		if (m_convMode == CONVERT_TractLength)
-			len =m_convParam;
+			len = m_convParam;
 		else
 			len = rng().randExponential(len);
 		//
 		// recombination starts 'before' index so we assume that it happens
 		// randomly (uniformly) between this and previous marker
 		if (index > 0)
-			len -= rng().randUniform01() * ind->lociDist(index-1, index);
+			len -= rng().randUniform01() * ind->lociDist(index - 1, index);
 		if (len <= 0. || len >= ind->distLeft(index))
 			return 0;
 		else
@@ -280,12 +280,12 @@ void recombinator::recombine(
 					DBG_DO_(m_recCount[bl]++);
 					// if conversion happens
 					if (withConversion &&
-						parent->lociLeft(gt) != 1 && // can not be at the end of a chromosome
-						(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+					    parent->lociLeft(gt) != 1 && // can not be at the end of a chromosome
+					    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 						// convCount will be decreased, until reconversion completes
 						// or another recombination happens
-						convCount = markersConverted(gt+1, parent);
-						DBG_DO_(m_convSize[convCount] ++);
+						convCount = markersConverted(gt + 1, parent);
+						DBG_DO_(m_convSize[convCount]++);
 					} else
 						// another recombination stops the previous conversion
 						convCount = -1;
@@ -307,11 +307,11 @@ void recombinator::recombine(
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
 			//
-			if (withConversion &&  
-				parent->lociLeft(gt-1) != 1 && // can not be at the end of a chromosome
-				(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+			if (withConversion &&
+			    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+			    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 				convCount = markersConverted(gt, parent);
-				DBG_DO_(m_convSize[convCount] ++);
+				DBG_DO_(m_convSize[convCount]++);
 			}
 			// next recombination point...
 			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
@@ -335,13 +335,13 @@ void recombinator::recombine(
 				curCp = (curCp + 1) % 2;
 				//
 				// conversion event for this recombination event
-				if (withConversion && 
-					parent->lociLeft(gt-1) != 1 && // can not be at the end of a chromosome
-					(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+				if (withConversion &&
+				    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+				    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
-					DBG_DO_(m_convSize[convCount] ++);
+					DBG_DO_(m_convSize[convCount]++);
 				}
 			}
 		}
@@ -370,11 +370,11 @@ void recombinator::recombine(
 			gt = gtEnd;
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
-			if (withConversion && 
-				parent->lociLeft(gt-1) != 1 && // can not be at the end of a chromosome
-				(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+			if (withConversion &&
+			    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+			    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 				convCount = markersConverted(gt, parent);
-				DBG_DO_(m_convSize[convCount] ++);
+				DBG_DO_(m_convSize[convCount]++);
 			}
 			// next recombination point...
 			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
@@ -396,12 +396,12 @@ void recombinator::recombine(
 				curCp = (curCp + 1) % 2;
 				// conversion event for this recombination event
 				if (withConversion &&
-					parent->lociLeft(gt-1) != 1 && // can not be at the end of a chromosome
-					(m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+				    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+				    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
-					DBG_DO_(m_convSize[convCount] ++);
+					DBG_DO_(m_convSize[convCount]++);
 				}
 			}
 		}
@@ -423,6 +423,25 @@ void recombinator::recombine(
 		// if curCp (last chromosome) is X, Female, otherwise Male.
 		// Note that for daddy, the last one is arranged XY
 		offspring->setSex(curCp == 0 ? Female : Male);
+}
+
+
+// copy the first copy of chromosome from parent to offspring
+void recombinator::copyParentalGenotype(individual * parent,
+                                        RawIndIterator & it,
+                                        int ploidy)
+{
+	GenoIterator par = parent->genoBegin(0);
+	GenoIterator off = it->genoBegin(ploidy);
+
+#ifndef BINARYALLELE
+	size_t gt = 0;
+	size_t gt_end = parent->totNumLoci();
+	for (; gt < gt_end; ++gt)
+		off[gt] = par[gt];
+#else
+	copyGenotype(par, off, parent->totNumLoci());
+#endif
 }
 
 
@@ -474,6 +493,13 @@ bool recombinator::applyDuringMating(population & pop,
 		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);
 	else
 		recombine(dad, offspring, 0, m_bt, m_recBeforeLoci, false);
+
+	if (pop.haplodiploid()) {
+		DBG_FAILIF(dad == NULL, ValueError,
+			"Invalid male in haplodiploid mode");
+		copyParentalGenotype(dad, offspring, 1);
+		return true;
+	}
 
 	if (dad != NULL)
 		// only set sex once for offspring

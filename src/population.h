@@ -112,6 +112,7 @@ class population;
 class population : public GenoStruTrait
 {
 public:
+#define Haplodiploid 1.5
 	/** @name  constructors and destructor */
 	//@{
 
@@ -120,6 +121,11 @@ public:
 	 \param size population size. Can be ignored if \c subPop is specified.
 	   	In that case, \c size is the sum of \c subPop. Default to \c 0.
 	 \param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
+	   	Please use \c Haplodiploid to specify a haplodiploid population. Note that
+	   	the ploidy number returned for such a population will be 2 and male
+	   	individuals will store two copies of chromosomes. Operators such
+	   	as a recombinator will recognize this population as haplodiploid
+	   	and act accordingly.
 	 \param loci an array of numbers of loci on each chromosome. The length
 	   	of parameter \c loci determines the number of chromosomes. Default
 	   	to <tt>[1]</tt>, meaning one chromosome with a single locus. \n
@@ -169,7 +175,7 @@ public:
 	 \test src_population.log Population initialization and member functions
 	 */
 	population(ULONG size = 0,
-	           UINT ploidy = 2,
+	           float ploidy = 2,
 	           const vectoru & loci = vectoru(),
 	           bool sexChrom = false,
 	           const vectorf & lociPos = vectorf(),
@@ -1125,7 +1131,8 @@ public:
 	{
 		std::fill(m_info.begin(), m_info.end(), 0.0);
 	}
-	
+
+
 	/// set individual information for the given information field \c idx
 	/**
 	 \param values an array that has the same length as population size.

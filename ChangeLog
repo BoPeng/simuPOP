@@ -9,6 +9,11 @@ version 0.8.5 - Not released, available at https://simupop.svn.sourceforge.net/s
 		mating schemes, to control the sex of offspring exactly.
   - NEW: add gene conversion to recombinator, using parameter convMode, convProb and convParam.
   - NEW: add convenience functions GenoStruTrait::distLeft and GenoStruTrait::lociLeft.
+  - NEW: add random parent chooser without replacement, alphaParentsChooser,
+		haplodiploidOffspringGenerator, monogamousMating, polygamousMating, alphaMating,
+		and haplodiploidMating mating schemes.
+  - NEW: add haplodiploid option to GenoStructure. Recombinator now handles such
+		populations correctly.
 
 version 0.8.4 - (Rev 1456) Mar 8, 2008
   - NEW: add support for other posix systems like HP-UX

@@ -34,7 +34,7 @@ namespace io = boost::iostreams;
 namespace simuPOP {
 
 population::population(ULONG size,
-                       UINT ploidy,
+                       float ploidy,
                        const vectoru & loci,
                        bool sexChrom,
                        const vectorf & lociPos,
@@ -89,7 +89,11 @@ population::population(ULONG size,
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-	this->setGenoStructure(ploidy, loci, sexChrom, lociPos, chromNames, alleleNames,
+	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, 1.5),
+		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
+
+	this->setGenoStructure(static_cast<UINT>(ploidy), loci, sexChrom,
+		fcmp_ne(ploidy, 1.5), lociPos, chromNames, alleleNames,
 		lociNames, maxAllele, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
@@ -262,8 +266,8 @@ ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) con
 	CHECKRANGESUBPOP(subPop);
 	// if there is no virtual subpopulation,
 	if (!hasVirtualSubPop(subPop) || \
-		// if no vsp is specified, but has actived vsp, return the size of this vsp
-		(virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop)))
+	    // if no vsp is specified, but has actived vsp, return the size of this vsp
+	    (virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop)))
 		return subPopSize(subPop);
 	return m_virtualSubPops[subPop]->size(*this, subPop, virtualSubPop);
 }
@@ -1353,7 +1357,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 		"Re-arrange loci must keep the same total number of loci");
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
-		sexChrom(), newLociPos.empty() ? lociPos() : newLociPos,
+		sexChrom(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
 		// chromosome names are discarded
 		vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields());
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {

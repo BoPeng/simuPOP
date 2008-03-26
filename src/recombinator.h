@@ -52,7 +52,7 @@ namespace simuPOP {
    recombined twice, producing both maternal and paternal chromosomes of the
    offspring.
  \li conversion is allowed. Note that conversion will nullify many recombination
-	events, depending on the parameters chosen.
+   	events, depending on the parameters chosen.
  */
 
 class recombinator : public baseOperator
@@ -82,35 +82,38 @@ public:
 	   parameter \c rate will be considered as female recombination rate.
 	 \param maleAfterLoci if given, males will recombine at different locations.
 	 \param convProb The probability of conversion event among all recombination
-		events. When a recombination event happens, it may become a recombination event
-		if the Holliday junction is resolved/repaired successfully, or a 
-		conversion event if the junction is not resolved/repaired. The
-		default \c convProb is 0, meaning no conversion event at all.
-		Note that the ratio of conversion to recombination events varies greatly from
-		study to study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics, 2007).
-		This translate to 0.1/0.9~0.1 to 15/16~0.94 of this parameter. When
-		\c convProb is 1, all recombination events will be conversion events.
+	   	events. When a recombination event happens, it may become a recombination event
+	   	if the Holliday junction is resolved/repaired successfully, or a
+	   	conversion event if the junction is not resolved/repaired. The
+	   	default \c convProb is 0, meaning no conversion event at all.
+	   	Note that the ratio of conversion to recombination events varies greatly from
+	   	study to study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics, 2007).
+	   	This translate to 0.1/0.9~0.1 to 15/16~0.94 of this parameter. When
+	 \c convProb is 1, all recombination events will be conversion events.
 	 \param convMode conversion mode, determines how track length is determined.
-		\li CONVERT_NumMarkers Converts a fixed number of markers.
-		\li CONVERT_GeometricDistribution An geometric distribution is used to
-			determine how many markers will be converted.
-		\li CONVERT_TractLength Converts a fixed length of tract.
-		\li CONVERT_ExponentialDistribution An exponential distribution with parameter
-			\c convLen will be used to determine track length.
+	 \li CONVERT_NumMarkers Converts a fixed number of markers.
+	 \li CONVERT_GeometricDistribution An geometric distribution is used to
+	   		determine how many markers will be converted.
+	 \li CONVERT_TractLength Converts a fixed length of tract.
+	 \li CONVERT_ExponentialDistribution An exponential distribution with parameter
+	 \c convLen will be used to determine track length.
 	 \param convParam Parameter for the conversion process. The exact meaning of this
-		parameter is determined by \c convMode. Note that
-		\li conversion tract length is usually short, and is estimated to be
-			between 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
-		\li simuPOP does not impose a unit for marker distance so your choice
-			of \c convParam needs to be consistent with your unit. In the HapMap dataset,
-			cM is usually assumed and marker distances are around 10kb (0.001cM ~- 1kb).
-			Gene conversion can largely be ignored. This is important when
-			you use distance based conversion mode such as \c CONVERT_TrackLength or
-			\c CONVERT_ExponentialDistribution.
-		\li After a track length is determined, if a second recombination
-			event happens within this region, the track length will be shortened.
-			Note that conversion is identical to double recombination under
-			this context.
+	   	parameter is determined by \c convMode. Note that
+	 \li conversion tract length is usually short, and is estimated to be
+	   		between 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
+	 \li simuPOP does not impose a unit for marker distance so your choice
+	   		of \c convParam needs to be consistent with your unit. In the HapMap dataset,
+	   		cM is usually assumed and marker distances are around 10kb (0.001cM ~- 1kb).
+	   		Gene conversion can largely be ignored. This is important when
+	   		you use distance based conversion mode such as \c CONVERT_TrackLength or
+	 \c CONVERT_ExponentialDistribution.
+	 \li After a track length is determined, if a second recombination
+	   		event happens within this region, the track length will be shortened.
+	   		Note that conversion is identical to double recombination under
+	   		this context.
+	 \param haplodiploid If set to true, the first copy of paternal chromosomes
+	   		is copied directly as the paternal chromosomes of the offspring. This
+	   		is because haplodiploid male has only one set of chromosome.
 
 	 \note There is no recombination between sex chromosomes of male individuals
 	   if <tt>sexChrom()=True</tt>. This may change later if the exchanges
@@ -124,9 +127,9 @@ public:
 	             double maleIntensity = -1,
 	             vectorf maleRate = vectorf(),
 	             vectoru maleAfterLoci = vectoru(),
-				 double convProb = 0, // no conversion
-				 UINT convMode = CONVERT_NumMarkers,
-				 double convParam = 1.,
+	             double convProb = 0, // no conversion
+	             UINT convMode = CONVERT_NumMarkers,
+	             double convParam = 1.,
 	             int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		:
@@ -135,7 +138,7 @@ public:
 		m_rate(rate), m_maleRate(maleRate),
 		m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
 		m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
-		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam), 
+		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
 		m_bt(rng()), m_maleBt(rng()),
 #ifndef OPTIMIZED
 		m_recCount(0), m_convSize(),
@@ -173,7 +176,7 @@ public:
 	/// return recombination count at a locus (only valid in standard modules)
 	ULONG recCount(size_t locus)
 	{
-#ifndef OPTIMIZED	
+#ifndef OPTIMIZED
 		DBG_ASSERT(locus < m_recCount.size(), IndexError,
 			"locus index " + toStr(locus) + " is out of range");
 		return m_recCount[locus];
@@ -234,7 +237,7 @@ private:
 		BernulliTrials & bt,
 		const vectoru & recBeforeLoci,
 		bool setSex = false);
-	
+
 	/// determine number of markers to convert
 	int markersConverted(size_t index, individual * ind);
 
@@ -248,6 +251,9 @@ private:
 		bool sexChrom,                                                      // whether or not recombine the last chromosome
 		vectoru & recBeforeLoci,                                            // return before loci vector
 		vectorf & vecP);                                                    // return recombination rate
+
+	void copyParentalGenotype(individual * parent,
+		RawIndIterator & it, int ploidy);
 
 private:
 	/// intensity

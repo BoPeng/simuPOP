@@ -113,7 +113,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 			             "MATE_NumOffspring, MATE_NumOffspringEachFamily and MATE_GEometricDistribution");
 	}
 	//
-	DBG_ASSERT(false, SystemError, "This line should never be reached");
+	DBG_ASSERT(false, SystemError, "This line should never be reached.");
 	return 0;
 }
 
@@ -128,6 +128,8 @@ Sex offspringGenerator::getSex(int count)
 		return count < static_cast<int>(m_sexParam) ? Male : Female;
 	else if (m_sexMode == MATE_NumOfFemale)
 		return count < static_cast<int>(m_sexParam) ? Female : Male;
+	DBG_ASSERT(false, SystemError, "This line should not be reached.");
+	return Male;
 }
 
 
@@ -355,8 +357,8 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
 		"Offspring generator is used for two different types of populations");
 
-	DBG_FAILIF(parent == NULL, ValueError, "selfMating: Parent is NULL");
-	DBG_FAILIF(mom != NULL, ValueError, "selfMating: the second parent should be NULL");
+	DBG_FAILIF(parent == NULL, ValueError, "selfing offspring generator: Parent is NULL");
+	DBG_FAILIF(mom != NULL, ValueError, "selfing offspring generator: the second parent should be NULL");
 
 	// generate numOffspring offspring per mating
 	UINT count = 0;
@@ -398,6 +400,88 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 			count++;
 		}
 	}                                                                                         // one offspring is successfully generated
+	return count;
+}
+
+
+// copy the first copy of chromosome from parent to offspring
+void haplodiploidOffspringGenerator::copyParentalGenotype(individual * parent,
+                                                          RawIndIterator & it, int ploidy,
+                                                          int count)
+{
+	GenoIterator par = parent->genoBegin(0);
+	GenoIterator off = it->genoBegin(ploidy);
+
+#ifndef BINARYALLELE
+	size_t gt = 0;
+	size_t gt_end = parent->totNumLoci();
+	for (; gt < gt_end; ++gt)
+		off[gt] = par[gt];
+#else
+	copyGenotype(par, off, parent->totNumLoci());
+#endif
+
+	// no sex-chromosome determination
+	if (count != -1)
+		it->setSex(getSex(count));
+}
+
+
+UINT haplodiploidOffspringGenerator::generateOffspring(population & pop, individual * dad,
+                                                       individual * mom,
+                                                       RawIndIterator & it,
+                                                       RawIndIterator & it_end,
+                                                       vector<baseOperator *> & ops)
+{
+	DBG_ASSERT(initialized(), ValueError,
+		"Offspring is not initialized before used to generate offspring");
+
+	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
+		"Offspring generator is used for two different types of populations");
+
+	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
+		"haplodiploid offspring generator: one of the parents is invalid.");
+
+	// generate numOffspring offspring per mating
+	UINT count = 0;
+	bool accept = true;
+
+	UINT numOff = numOffspring(pop.gen());
+	while (count < numOff && it != it_end) {
+		if (m_formOffGenotype) {
+			// m_bt 's width is 2*numChrom() and can be used for
+			// the next two functions.
+			m_bt.trial();
+			// sex-chromosome determination???
+			formOffspringGenotype(mom, it, 0, -1);
+			copyParentalGenotype(dad, it, 1, count);
+		}
+
+		accept = true;
+		// apply all during mating operators
+		vector<baseOperator *>::iterator iop = ops.begin();
+		vector<baseOperator *>::iterator iopEnd = ops.end();
+		for (; iop != iopEnd; ++iop) {
+			try {
+				// During mating operator might reject this offspring.
+				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
+					accept = false;
+					break;
+				}
+				// if there is no sex chromosome, mating scheme is responsible
+				// of setting offspring sex
+				if (!m_hasSexChrom)
+					it->setSex(getSex(count));
+			} catch (...) {
+				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
+				throw;
+			}
+		}
+		if (accept) {
+			it++;
+			count++;
+		}
+	}                                                          // one offspring is successfully generated
 	return count;
 }
 
@@ -455,7 +539,7 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents()
 	if (m_curFemale == m_numFemale)
 		m_curFemale = 0;
 
-	// using weidhted sampler.
+	// using weighted sampler.
 	if (m_numMale != 0)
 		dad = & * (m_maleIndex[m_curMale++]);
 	else
@@ -499,16 +583,33 @@ parentChooser::individualPair pedigreeParentsChooser::chooseParents()
 void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_selection = pop.selectionOn(sp);
-	m_begin = pop.indBegin(sp);
+
+	// In a virtual subpopulation, because m_begin + ... is **really** slow
+	// It is a good idea to cache IndIterators. This is however inefficient
+	// for non-virtual populations
+	IndIterator it = pop.indBegin(sp);
+	for (; it.valid(); ++it)
+		m_index.push_back(it.rawIter());
+
 	if (m_selection) {
 		UINT fit_id = pop.infoIdx("fitness");
 		// regardless of sex, get fitness for everyone.
 		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp, true),
 				pop.infoEnd(fit_id, sp, true)));
-	} else
+	} else {
 		// get currently visible individuals. In case that sp is not virtual
 		// pop.subPopSize is called.
-		m_size = pop.virtualSubPopSize(sp);
+		DBG_ASSERT(pop.virtualSubPopSize(sp) == m_index.size(),
+			SystemError, "Something wrong with virtual population size calculation")
+		m_size = m_index.size();
+	}
+
+	if (!m_replacement)
+		std::random_shuffle(m_index.begin(), m_index.end());
+
+	DBG_FAILIF(!m_replacement && m_selection, ValueError,
+		"Selection is not allowed in random sample without replacement");
+
 	m_initialized = true;
 }
 
@@ -517,16 +618,26 @@ individual * randomParentChooser::chooseParent()
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
-	// FIXME:
-	//
-	// In a virtual subpopulation, because m_begin + ... is ***really** slow
-	// It might be a good idea to cache IndIterators.
 	//
 	// choose a parent
+	if (!m_replacement) {
+		if (m_index.empty()) {
+			if (!m_replenish)
+				throw IndexError("All parents have been chosen. You can use parameter replenish=True "
+					             "to allow replenish the parents.");
+			m_index.swap(m_chosen);
+			std::random_shuffle(m_index.begin(), m_index.end());
+		}
+		individual * ind = & * m_index.back();
+		if (m_replenish)
+			m_chosen.push_back(m_index.back());
+		m_index.pop_back();
+		return ind;
+	}
 	if (m_selection)
-		return & * (m_begin + m_sampler.get());
+		return & * (m_index[m_sampler.get()]);
 	else
-		return & * (m_begin + rng().randInt(m_size));
+		return & * (m_index[rng().randInt(m_size)]);
 }
 
 
@@ -556,7 +667,6 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_numMale = 0;
 	m_numFemale = 0;
 
-	size_t idx = 0;
 	it = pop.indBegin(subPop);
 	for (; it.valid(); it++) {
 		if (it->sex() == Male) {
@@ -570,7 +680,6 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 				m_femaleFitness[m_numFemale] = it->info(fit_id);
 			m_numFemale++;
 		}
-		idx++;
 	}
 
 	if (m_selection) {
@@ -579,6 +688,14 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
 		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
 	}
+
+	if (!m_replacement) {
+		std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
+		std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
+	}
+
+	DBG_FAILIF(!m_replacement && m_selection, ValueError,
+		"Selection is not allowed in random sample without replacement");
 
 	m_initialized = true;
 }
@@ -592,30 +709,217 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 	individual * dad = NULL;
 	individual * mom = NULL;
 
-	if (m_selection) {                                        // with selection
-		// using weidhted sampler.
-		if (m_numMale != 0)
-			dad = & * (m_maleIndex[m_malesampler.get()]);
+	if (m_polyNum > 1 && m_polyCount > 0) {
+		if (m_polySex == Male)
+			dad = m_lastParent;
 		else
-			dad = & * (m_femaleIndex[m_femalesampler.get()]);
+			mom = m_lastParent;
+		m_polyCount--;
+	}
 
-		if (m_numFemale != 0)
-			mom = & * (m_femaleIndex[m_femalesampler.get()]);
-		else
-			mom = & * (m_maleIndex[m_malesampler.get()]);
-	} else {
-		// using random sample.
-		if (m_numMale != 0)
-			dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
-		else
-			dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+	if (!m_replacement) {
+		if (mom == NULL) {
+			if (m_femaleIndex.empty()) {
+				if (!m_replenish)
+					throw IndexError("All females has been chosen. You can use parameter replenish=True "
+						             "to allow replenish the females.");
+				m_femaleIndex.swap(m_chosenFemale);
+				std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
+			}
+			mom = & * m_femaleIndex.back();
+			if (m_replenish)
+				m_chosenFemale.push_back(m_femaleIndex.back());
+			m_femaleIndex.pop_back();
 
-		if (m_numFemale != 0)
-			mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-		else
-			mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
+			if (m_polyNum > 1) {
+				m_polyCount = m_polyNum;
+				m_lastParent = mom;
+			}
+		}
+		if (dad == NULL) {
+			if (m_maleIndex.empty()) {
+				if (!m_replenish)
+					throw IndexError("All males has been chosen. You can use parameter replenish=True "
+						             "to allow replenish the males.");
+				m_maleIndex.swap(m_chosenMale);
+				std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
+			}
+			dad = & * m_maleIndex.back();
+			if (m_replenish)
+				m_chosenMale.push_back(m_maleIndex.back());
+			m_maleIndex.pop_back();
+			//
+			if (m_polyNum > 1) {
+				m_polyCount = m_polyNum;
+				m_lastParent = dad;
+			}
+		}
+		return std::make_pair(dad, mom);
+	}
+	// using weidhted sampler.
+	if (dad == NULL) {
+		if (m_selection) {                                    // with selection
+			if (m_numMale != 0)
+				dad = & * (m_maleIndex[m_malesampler.get()]);
+			else
+				dad = & * (m_femaleIndex[m_femalesampler.get()]);
+		} else {
+			// using random sample.
+			if (m_numMale != 0)
+				dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+			else
+				dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+		}
+		if (m_polyNum > 1) {
+			m_polyCount = m_polyNum;
+			m_lastParent = dad;
+		}
+	}
+
+	if (mom == NULL) {
+		if (m_selection) {                                    // with selection
+			if (m_numFemale != 0)
+				mom = & * (m_femaleIndex[m_femalesampler.get()]);
+			else
+				mom = & * (m_maleIndex[m_malesampler.get()]);
+		} else {         // no selection
+
+			if (mom == NULL) {
+				if (m_numFemale != 0)
+					mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+				else
+					mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
+			}
+		}
+		if (m_polyNum > 1) {
+			m_polyCount = m_polyNum;
+			m_lastParent = mom;
+		}
 	}
 	return std::make_pair(dad, mom);
+}
+
+
+alphaParentsChooser::alphaParentsChooser(Sex alphaSex, UINT alphaNum, string alphaField)
+	: parentChooser(2), m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
+	m_AIndex(0), m_BIndex(0),
+	m_AFitness(0), m_BFitness(0),
+	m_ASampler(rng()), m_BSampler(rng())
+{
+	DBG_FAILIF(m_alphaNum == 0 && m_alphaField.empty(), ValueError,
+		"Please specify number of alpha individual, or an information field to determine alpha individuals");
+}
+
+
+void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
+{
+	// determine alpha individuals
+	m_numA = 0;
+	m_numB = 0;
+
+	UINT info_id = 0;
+	bool useInfo = false;
+	if (!m_alphaField.empty()) {
+		info_id = pop.infoIdx(m_alphaField);
+		useInfo = true;
+	}
+
+	IndIterator it = pop.indBegin(subPop);
+	for (; it.valid(); ++it)
+		if (it->sex() == m_alphaSex) {
+			if (useInfo && it->info(info_id) == 0.)
+				continue;
+			m_numA++;
+		} else {
+			DBG_FAILIF(useInfo && it->info(info_id) != 0.,
+				ValueError, "Alpha individual must have alpha sex");
+			m_numB++;
+		}
+
+	DBG_FAILIF(m_numA == 0, ValueError, "No alpha individual is found");
+	DBG_FAILIF(m_numB == 0, ValueError, "No individual that is not in alpha sex is found.\n"
+		                                "Mating can not continue.");
+
+	// allocate memory at first for performance reasons
+	m_AIndex.resize(m_numA);
+	m_BIndex.resize(m_numB);
+
+	m_selection = pop.selectionOn(subPop);
+	UINT fit_id = 0;
+	if (m_selection) {
+		fit_id = pop.infoIdx("fitness");
+		m_AFitness.resize(m_numA);
+		m_BFitness.resize(m_numB);
+	}
+
+	m_numA = 0;
+	m_numB = 0;
+
+	it = pop.indBegin(subPop);
+	for (; it.valid(); it++) {
+		if (it->sex() == m_alphaSex) {
+			if (useInfo && it->info(info_id) == 0.)
+				continue;
+			m_AIndex[m_numA] = it.rawIter();
+			if (m_selection)
+				m_AFitness[m_numA] = it->info(fit_id);
+			m_numA++;
+		} else {
+			m_BIndex[m_numB] = it.rawIter();
+			if (m_selection)
+				m_BFitness[m_numB] = it->info(fit_id);
+			m_numB++;
+		}
+	}
+
+	if (m_selection) {
+		m_ASampler.set(m_AFitness);
+		m_BSampler.set(m_BFitness);
+		DBG_DO(DBG_DEVEL, cout << "Alpha fitness " << m_AFitness << endl);
+		DBG_DO(DBG_DEVEL, cout << "NonAlpha fitness " << m_BFitness << endl);
+	}
+
+	if (useInfo || m_alphaNum >= m_numA) {
+		m_initialized = true;
+		return;
+	}
+	// now, we need to choose a few alpha individuals
+	vector<RawIndIterator> m_newAIndex;
+	vectorf m_newAFitness;
+	// select individuals
+	for (size_t i = 0; i < m_alphaNum; ++i) {
+		if (m_selection)
+			// using weighted sampler.
+			m_newAIndex.push_back(m_AIndex[m_ASampler.get()]);
+		else
+			m_newAIndex.push_back(m_AIndex[rng().randInt(m_numA)]);
+		m_newAFitness.push_back(m_newAIndex.back()->info(fit_id));
+	}
+	m_AIndex.swap(m_newAIndex);
+	if (m_selection)
+		m_ASampler.set(m_newAFitness);
+	m_initialized = true;
+}
+
+
+parentChooser::individualPair alphaParentsChooser::chooseParents()
+{
+	DBG_ASSERT(initialized(), SystemError,
+		"Please initialize this parent chooser before using it");
+
+	individual * alpha = NULL;
+	individual * nonAlpha = NULL;
+
+	if (m_selection) {                                        // with selection
+		// using weighted sampler.
+		alpha = & * (m_AIndex[m_ASampler.get()]);
+		nonAlpha = & * (m_BIndex[m_BSampler.get()]);
+	} else {
+		// using random sample.
+		alpha = & * (m_AIndex[rng().randInt(m_numA)]);
+		nonAlpha = & * (m_BIndex[rng().randInt(m_numB)]);
+	}
+	return std::make_pair(alpha, nonAlpha);
 }
 
 
@@ -862,7 +1166,7 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
-		(void)numOff; // silent warning about unused variable.
+		(void)numOff;             // silent warning about unused variable.
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
@@ -894,7 +1198,7 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 			"Random parent chooser returns invalid parent");
 		//
 		UINT numOff = m_offGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
-		(void)numOff; // silent warning about unused variable.
+		(void)numOff;             // silent warning about unused variable.
 		// record family size, for debug reasons.
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}                                                                                           // all offspring
@@ -915,7 +1219,7 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	randomParentsChooser pc;
+	randomParentsChooser pc(true, false, Male, 1);
 	pc.initialize(pop, subPop);
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
@@ -931,7 +1235,145 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 			"Random parents chooser returns invalid parent");
 		//
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
-		(void)numOff; // silent warning about unused variable.
+		(void)numOff;             // silent warning about unused variable.
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
+	return true;
+}
+
+
+bool monogamousMating::mateSubPop(population & pop, SubPopID subPop,
+                                  RawIndIterator offBegin, RawIndIterator offEnd,
+                                  vector<baseOperator * > & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+
+	randomParentsChooser pc(true, m_replenish, Male, 1);
+	pc.initialize(pop, subPop);
+	/// now, all individuals of needToFind sex is collected
+	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
+		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
+			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+			             "(same sex mating if have to) options to get around this problem.");
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents();
+		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
+			"Random parents chooser returns invalid parent");
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff;             // silent warning about unused variable.
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
+	return true;
+}
+
+
+bool polygamousMating::mateSubPop(population & pop, SubPopID subPop,
+                                  RawIndIterator offBegin, RawIndIterator offEnd,
+                                  vector<baseOperator * > & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+
+	randomParentsChooser pc(m_replacement, m_replenish, m_polySex, m_polyNum);
+	pc.initialize(pop, subPop);
+	/// now, all individuals of needToFind sex is collected
+	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
+		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
+			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
+			             "(same sex mating if have to) options to get around this problem.");
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents();
+		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
+			"Random parents chooser returns invalid parent");
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff;             // silent warning about unused variable.
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
+	return true;
+}
+
+
+bool alphaMating::mateSubPop(population & pop, SubPopID subPop,
+                             RawIndIterator offBegin, RawIndIterator offEnd,
+                             vector<baseOperator * > & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+
+	alphaParentsChooser pc(m_alphaSex, m_alphaNum, m_alphaField);
+	pc.initialize(pop, subPop);
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents();
+		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
+			"Random parents chooser returns invalid parent");
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff;             // silent warning about unused variable.
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
+	return true;
+}
+
+
+bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
+                                    RawIndIterator offBegin, RawIndIterator offEnd,
+                                    vector<baseOperator * > & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+
+	alphaParentsChooser pc(m_alphaSex, m_alphaNum, m_alphaField);
+	pc.initialize(pop, subPop);
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents();
+		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
+			"Random parents chooser returns invalid parent");
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
@@ -998,7 +1440,7 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 			ValueError, "Imcompatible parents chooser and offspring generator");
 		//
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
-		(void)numOff; // silent warning about unused variable.
+		(void)numOff;             // silent warning about unused variable.
 		DBG_ASSERT(numOff == 1, ValueError,
 			"Pedigree offspring generator can only generate one offspring each time");
 		// record family size (this may be wrong for the last family)
@@ -1032,7 +1474,7 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
 		UINT numOff = m_offspringGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
-		(void)numOff; // silent warning about unused variable.
+		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
@@ -1612,7 +2054,7 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 
 		//
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
-		(void)numOff; // silent warning about unused variable.
+		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
 	}
@@ -1718,7 +2160,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
 		double overall_neg = std::accumulate(w_neg.begin(), w_neg.end(), 0.);
-		(void)overall_neg; // silent warning about unused variable.
+		(void)overall_neg;             // silent warning about unused variable.
 		DBG_FAILIF(fcmp_eq(overall_pos, 0.) && fcmp_eq(overall_neg, 0.), ValueError,
 			"Overall weight is zero");
 		//
