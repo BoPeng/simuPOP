@@ -24,11 +24,11 @@
 #include "genoStru.h"
 
 namespace simuPOP {
-GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
+GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
                              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                              const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
-	: m_ploidy(ploidy),  m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
-	m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
+	: m_ploidy(ploidy), m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
+	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
 	m_maxAllele(maxAllele),
 	m_infoFields(infoFields)
@@ -117,6 +117,7 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 	                     (m_ploidy == rhs.m_ploidy) &&
 	                     (m_numLoci == rhs.m_numLoci) &&
 	                     (m_sexChrom == rhs.m_sexChrom) &&
+	                     (m_haplodiploid == rhs.m_haplodiploid) &&
 	                     (m_lociPos == rhs.m_lociPos) &&
 	                     (m_chromNames == rhs.m_chromNames) &&
 	                     (m_alleleNames == rhs.m_alleleNames) &&
@@ -153,6 +154,8 @@ UINT GenoStruTrait::lociLeft(UINT loc) const
 	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i)
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
 			return s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - loc;
+	DBG_ASSERT(false, SystemError, "This should not be reached.");
+	return 0;
 }
 
 
@@ -162,7 +165,9 @@ double GenoStruTrait::distLeft(UINT loc) const
 
 	for (UINT i = 1, iEnd = numChrom(); i <= iEnd;  ++i)
 		if (s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] > loc)
-			return locusPos(s_genoStruRepository[m_genoStruIdx].m_chromIndex[i]-1) - locusPos(loc);
+			return locusPos(s_genoStruRepository[m_genoStruIdx].m_chromIndex[i] - 1) - locusPos(loc);
+	DBG_ASSERT(false, SystemError, "This should not be reached.");
+	return 0;
 }
 
 
@@ -170,9 +175,9 @@ UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
 {
 	DBG_FAILIF(fcmp_lt(dist, 0.), ValueError,
 		"Distance has to be positive in function lociCovered");
-	
+
 	const vectorf & lociPos = s_genoStruRepository[m_genoStruIdx].m_lociPos;
-	
+
 	int chrom = chromLocusPair(loc).first;
 	UINT endLoc = chromEnd(chrom);
 	double beginPos = lociPos[loc];
@@ -184,7 +189,7 @@ UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
 }
 
 
-void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
+void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                                      const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
 {
@@ -198,7 +203,7 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sex
 			+ "recompile simuPOP.");
 	}
 
-	GenoStructure tmp = GenoStructure(ploidy, loci, sexChrom,
+	GenoStructure tmp = GenoStructure(ploidy, loci, sexChrom, haplodiploid,
 		lociPos, chromNames, alleleNames, lociNames, maxAllele, infoFields);
 
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size();
@@ -314,7 +319,7 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 		DBG_DO(DBG_POPULATION, cout << "New loci names: " << lociNames << endl);
 		//
 		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
-		return *new GenoStructure(gs1.m_ploidy, loci, sexChrom, lociPos,
+		return *new GenoStructure(gs1.m_ploidy, loci, sexChrom, gs1.m_haplodiploid, lociPos,
 			chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields);
 	} else {
 		vectoru loci = gs1.m_numLoci;
@@ -333,7 +338,7 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 			addLocusName(*it);
 		}
 		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
-		return *new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, lociPos,
+		return *new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, gs1.m_haplodiploid, lociPos,
 			chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields);
 	}
 #undef addLocusName
@@ -372,7 +377,7 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 		newLociDist.push_back(locusPos(*loc));
 		newLociNames.push_back(locusName(*loc));
 	}
-	return *new GenoStructure(ploidy(), newNumLoci, sexChrom(), newLociDist,
+	return *new GenoStructure(ploidy(), newNumLoci, sexChrom(), haplodiploid(), newLociDist,
 		newChromNames, alleleNames(), newLociNames, maxAllele(), infoFields());
 }
 
@@ -419,7 +424,7 @@ GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, c
 				throw ValueError("Locus name " + names[i] + " already exists.");
 		}
 	}
-	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
+	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, gs.m_haplodiploid, lociPos,
 		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields);
 }
 
@@ -465,7 +470,7 @@ GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, co
 				throw ValueError("Locus name " + names[i] + " already exists.");
 		}
 	}
-	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, lociPos,
+	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, gs.m_haplodiploid, lociPos,
 		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields);
 }
 
@@ -494,9 +499,12 @@ string GenoStruTrait::ploidyName() const
 
 	if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 1)
 		return "haploid";
-	else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 2)
-		return "diploid";
-	else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 3)
+	else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 2) {
+		if (s_genoStruRepository[m_genoStruIdx].m_haplodiploid)
+			return "haplodiploid";
+		else
+			return "diploid";
+	} else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 3)
 		return "triploid";
 	else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 4)
 		return "tetraploid";

@@ -374,6 +374,51 @@ public:
 };
 
 
+/** haplodiploid offspring generator mimics sex-determination in honey bees.
+   Given a female (queen) parent and a male parent, the female is considered
+   as diploid with two set of chromosomes, and the male is condiered as haploid.
+   Actually, the first set of male chromosomes are used. During mating,
+   female produce eggs, subject to potential recombination and gene conversion,
+   while male sperm is identical to the parental chromosome.
+
+   Female offspring has two sets of chromosomes, one from mother and one from
+   father. Male offspring has one set of chromosomes from his mother.
+ */
+class haplodiploidOffspringGenerator : public mendelianOffspringGenerator
+{
+public:
+	haplodiploidOffspringGenerator(double numOffspring = 1,
+	                               PyObject * numOffspringFunc = NULL,
+	                               UINT maxNumOffspring = 1,
+	                               UINT mode = MATE_NumOffspring,
+	                               double sexParam = 0.5,
+	                               UINT sexMode = MATE_RandomSex
+	                               )
+		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		                              mode, sexParam, sexMode)
+	{
+		setNumParents(2);
+	}
+
+
+	void copyParentalGenotype(individual * parent,
+		RawIndIterator & it, int ploidy, int count);
+
+	offspringGenerator * clone() const
+	{
+		return new haplodiploidOffspringGenerator(*this);
+	}
+
+
+	/// CPPONLY
+	UINT generateOffspring(population & pop, individual * dad, individual * mom,
+		RawIndIterator & offBegin,
+		RawIndIterator & offEnd,
+		vector<baseOperator *> & ops);
+
+};
+
+
 /** Parent choosers repeatedly choose parent(s) from a parental
    population, and pass them to offspring generators. A parent
    chooser can select one or two parents, which should match what is
@@ -572,12 +617,27 @@ private:
 /** This parent chooser chooses a parent randomly from the
    parental generation. If selection is turned on, parents are
    chosen with probabilities that are proportional to their
-   fitness values. Sex is not considered.
+   fitness values. Sex is not considered. Parameter \c replacement
+   determines if a parent can be chosen multiple times. In case
+   that \c replacement=false, paremeter \c replenish=true allows
+   restart of the process if all parents are exhausted.
+   Note that selection is not allowed when \c replacement=false
+   because this poses a particular order on individuals in the
+   offspring generation.
  */
 class randomParentChooser : public parentChooser
 {
 public:
-	randomParentChooser() : parentChooser(1), m_sampler(rng())
+	/**
+	 \param replacement if replacement is false, a parent can not
+	   		be chosen more than once.
+	 \param replenish if all parent has been chosen, choose from
+	   		the whole parental population again.
+	 */
+	randomParentChooser(bool replacement = true, bool replenish = false) :
+		parentChooser(1),
+		m_replacement(replacement), m_replenish(replenish),
+		m_index(0), m_chosen(0), m_sampler(rng())
 	{
 	}
 
@@ -595,11 +655,15 @@ public:
 	individual * chooseParent();
 
 private:
+	bool m_replacement;
+	bool m_replenish;
+
 	bool m_selection;
+	///
+	vector<RawIndIterator> m_index;
+	vector<RawIndIterator> m_chosen;
 	/// accumulative fitness
 	Weightedsampler m_sampler;
-	/// starting individual
-	IndIterator m_begin;
 	/// individuals to choose
 	size_t m_size;
 };
@@ -609,16 +673,40 @@ private:
    and a female, from their respective sex groups randomly.
    If selection is turned on, parents are chosen from their sex
    groups with probabilities that are proportional to their
-   fitness values.
+   fitness values. If parameter \c replacement is false,
+   a chosen pair of parents can no longer be selected. This feature
+   can be used to simulate monopoly. If \c replenish is true,
+   a sex group can be replenished when it is exhausted. Note that
+   selection is not allowed in the case of monopoly because this
+   poses a particular order on individuals in the offspring generation.
+   This parents chooser also allows polygamous mating by reusing
+   a parent multiple times when returning parents.
  */
 class randomParentsChooser : public parentChooser
 {
 public:
-	randomParentsChooser() :
-		parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
+	/**
+	 \param replacement choose with (\c True, default) or without (\c False)
+	   		replacement. When choosing without replacement, parents
+	   		will be paired and can only mate once.
+	 \param replenish if set to true, one or both sex groups will
+	   		be replenished if they are exhausted.
+	 \param polySex Male (polygyny) or Female (polyandry) parent that
+	   		will have \c polyNum sex partners.
+	 \param polyNum Number of sex partners.
+	 */
+	randomParentsChooser(bool replacement = true, bool replenish = false,
+	                     Sex polySex = Male, UINT polyNum = 1) :
+		parentChooser(2),
+		m_replacement(replacement), m_replenish(replenish),
+		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0), m_lastParent(NULL),
+		m_maleIndex(0), m_femaleIndex(0),
+		m_chosenMale(0), m_chosenFemale(0),
 		m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
 	{
+		DBG_FAILIF(polyNum < 1, ValueError,
+			"Number of sex partners has to be at least one");
 	}
 
 
@@ -640,6 +728,14 @@ public:
 	ULONG numFemale() { return m_numFemale; }
 
 private:
+	bool m_replacement;
+	bool m_replenish;
+	Sex m_polySex;
+	UINT m_polyNum;
+
+	UINT m_polyCount;
+	individual * m_lastParent;
+
 	bool m_selection;
 
 	ULONG m_numMale;
@@ -648,6 +744,8 @@ private:
 	/// internal index to female/males.
 	vector<RawIndIterator> m_maleIndex;
 	vector<RawIndIterator> m_femaleIndex;
+	vector<RawIndIterator> m_chosenMale;
+	vector<RawIndIterator> m_chosenFemale;
 
 	vectorf m_maleFitness;
 	vectorf m_femaleFitness;
@@ -655,6 +753,90 @@ private:
 	// weighted sampler
 	Weightedsampler m_malesampler;
 	Weightedsampler m_femalesampler;
+
+};
+
+
+/**
+   This parents chooser has a fixed number of alpha individuals,
+   either male or female, and they are the only mating individuals in their
+   respective sex group. Random mating happens between alpha individuals
+   and the opposite sex group.
+
+   This parent chooser can be used to simulate polygyny where one male (alpha male)
+   is the father of all offspring born in the patch, or insets of the order
+   hymenopteran, including bees, wasps, and ants, where a queen produce all
+   the offspring in the colony.
+ */
+class alphaParentsChooser : public parentChooser
+{
+public:
+	/**
+	 \param alphaSex the sex of the alpha individual, i.e. alpha male
+	   	or alpha female who be the only mating individuals in their
+	   	sex group.
+	 \param alphaNum Number of alpha individuals. If \c infoField is
+	   	not given, \c alphaNum random individuals with \c alphaSex
+	   	will be chosen. If selection is enabled, individuals with higher
+	   	fitness values have higher probability to be selected.
+	 \param infoField if an information field is given, individuals
+	   	with non-zero values at this information field are alpha individuals.
+	   	Note that these individuals must have \c alphaSex.
+
+	   Note: If selection is enabled, it works regularly on on-alpha sex, but
+	   	works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	   	are chosen selectively, and selected again during mating.
+	 */
+	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string());
+
+	parentChooser * clone() const
+	{
+		return new alphaParentsChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	void finalize(population & pop, SubPopID sp)
+	{
+		m_initialized = false;
+	}
+
+
+	/// destructor
+	~alphaParentsChooser()
+	{
+	}
+
+
+	/// CPPONLY
+	individualPair chooseParents();
+
+private:
+	Sex m_alphaSex;
+
+	UINT m_alphaNum;
+
+	string m_alphaField;
+
+	// the following are for internal uses only
+	bool m_selection;
+
+	// available alpha and non-alpha (opposite sex)
+	ULONG m_numA;
+	ULONG m_numB;
+
+	/// internal index to nonA/As.
+	vector<RawIndIterator> m_AIndex;
+	vector<RawIndIterator> m_BIndex;
+
+	vectorf m_AFitness;
+	vectorf m_BFitness;
+
+	// weighted sampler
+	Weightedsampler m_ASampler;
+	Weightedsampler m_BSampler;
 };
 
 
@@ -1131,7 +1313,6 @@ protected:
 class randomMating : public mating
 {
 public:
-	/// create a random mating scheme
 	/**
 	 \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
 	 \n
@@ -1211,6 +1392,379 @@ protected:
 };
 
 
+/// a mating scheme of monogamy
+/**
+   This mating scheme is identical to random mating except that parents
+   are chosen without replacement. Under this mating scheme, offspring share
+   the same mother must share the same father. In case that all parental
+   pairs are exhausted, parameter \c replenish=True allows for the replenishment
+   of one or both sex groups.
+ */
+class monogamousMating : public mating
+{
+public:
+	/**
+	 \c replenish This parameter allows replenishment of one or both
+	   	parental sex groups in case that they are are exhausted. Default to False.
+	   Please refer to class \c mating for descriptions of other parameters.
+	 */
+	monogamousMating(bool replenish = false,
+	                 double numOffspring = 1.,
+	                 PyObject * numOffspringFunc = NULL,
+	                 UINT maxNumOffspring = 0,
+	                 UINT mode = MATE_NumOffspring,
+	                 double sexParam = 0.5,
+	                 UINT sexMode = MATE_RandomSex,
+	                 vectorlu newSubPopSize = vectorlu(),
+	                 PyObject * newSubPopSizeFunc = NULL,
+	                 string newSubPopSizeExpr = "",
+	                 bool contWhenUniSex = true,
+	                 SubPopID subPop = InvalidSubPopID,
+	                 SubPopID virtualSubPop = InvalidSubPopID,
+	                 double weight = 0)
+		:  mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode),
+		m_replenish(replenish),
+		m_contWhenUniSex(contWhenUniSex)
+	{
+	}
+
+
+	/// destructor
+	~monogamousMating()
+	{
+	}
+
+
+	/// deep copy of a random mating scheme
+	virtual mating * clone() const
+	{
+		return new monogamousMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+		// test if individual has sex
+		// if not, will yield compile time error.
+		pop.indBegin()->sex();
+
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the random mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::monogamous random mating>";
+	}
+
+
+	/// CPPONLY perform random mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
+
+protected:
+	mendelianOffspringGenerator m_offspringGenerator;
+
+	///
+	bool m_replenish;
+
+	/// if no other sex exist in a subpopulation,
+	/// same sex mating will occur if m_contWhenUniSex is set.
+	/// otherwise, an exception will be thrown.
+	bool m_contWhenUniSex;
+
+};
+
+
+/// a mating scheme of polygymy or polyandry
+/**
+   This mating scheme is composed of a random parents chooser that allows for
+   polygamous mating, and a mendelian offspring generator. In this mating scheme,
+   a male (or female) parent will have more than one sex partner (\c numPartner).
+   Parents returned from this parents chooser will yield the same male (or female)
+   parents, each with varying partners.
+ */
+class polygamousMating : public mating
+{
+public:
+	/**
+	 \param replacement If set to \c True, a parent can be chosen to mate again.
+	   		Default to False.
+	 \param replenish In case that \c replacement=True, whether or not replenish
+	   		 a sex group when it is exhausted.
+	 \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
+	 \param polyNum Number of sex partners.
+	   Please refer to class \c mating for descriptions of other parameters.
+	 */
+	polygamousMating(
+	                 UINT polyNum = 1,
+	                 double sexParam = 0.5,
+	                 bool replacement = false,
+	                 bool replenish = false,
+	                 double numOffspring = 1.,
+	                 PyObject * numOffspringFunc = NULL,
+	                 UINT maxNumOffspring = 0,
+	                 UINT mode = MATE_NumOffspring,
+	                 Sex polySex = Male,
+	                 UINT sexMode = MATE_RandomSex,
+	                 vectorlu newSubPopSize = vectorlu(),
+	                 PyObject * newSubPopSizeFunc = NULL,
+	                 string newSubPopSizeExpr = "",
+	                 bool contWhenUniSex = true,
+	                 SubPopID subPop = InvalidSubPopID,
+	                 SubPopID virtualSubPop = InvalidSubPopID,
+	                 double weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode),
+		m_replacement(replacement), m_replenish(replenish),
+		m_polySex(polySex), m_polyNum(polyNum),
+		m_contWhenUniSex(contWhenUniSex)
+	{
+	}
+
+
+	/// destructor
+	~polygamousMating()
+	{
+	}
+
+
+	/// deep copy of a random mating scheme
+	virtual mating * clone() const
+	{
+		return new polygamousMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+		// test if individual has sex
+		// if not, will yield compile time error.
+		pop.indBegin()->sex();
+
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the random mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::sexual random mating>";
+	}
+
+
+	/// CPPONLY perform random mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
+
+protected:
+	mendelianOffspringGenerator m_offspringGenerator;
+
+	///
+	bool m_replacement;
+	bool m_replenish;
+	Sex m_polySex;
+	UINT m_polyNum;
+
+
+	/// if no other sex exist in a subpopulation,
+	/// same sex mating will occur if m_contWhenUniSex is set.
+	/// otherwise, an exception will be thrown.
+	bool m_contWhenUniSex;
+
+};
+
+
+/// Only a number of alpha individuals can mate with individuals of opposite sex.
+/**
+   This mating scheme is composed of an alphaParentChooser and a Mendelian
+   offspring generator. That is to say, a certain number of alpha individual
+   (male or female) are determined by \c alphaNum or an information field. Then,
+   only these alpha individuals are able to mate with random individuals of
+   opposite sex.
+ */
+class alphaMating : public mating
+{
+public:
+	/**
+
+	   Please refer to class \c mating for descriptions of other parameters.
+	 */
+	alphaMating(Sex alphaSex = Male,
+	            UINT alphaNum = 0,
+	            string alphaField = string(),
+	            double numOffspring = 1.,
+	            PyObject * numOffspringFunc = NULL,
+	            UINT maxNumOffspring = 0,
+	            UINT mode = MATE_NumOffspring,
+	            double sexParam = 0.5,
+	            UINT sexMode = MATE_RandomSex,
+	            vectorlu newSubPopSize = vectorlu(),
+	            PyObject * newSubPopSizeFunc = NULL,
+	            string newSubPopSizeExpr = "",
+	            SubPopID subPop = InvalidSubPopID,
+	            SubPopID virtualSubPop = InvalidSubPopID,
+	            double weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode),
+		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField)
+	{
+	}
+
+
+	/// destructor
+	~alphaMating()
+	{
+	}
+
+
+	/// deep copy of a random mating scheme
+	virtual mating * clone() const
+	{
+		return new alphaMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the random mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::sexual random mating>";
+	}
+
+
+	/// CPPONLY perform random mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
+
+protected:
+	mendelianOffspringGenerator m_offspringGenerator;
+
+	Sex m_alphaSex;
+	UINT m_alphaNum;
+	string m_alphaField;
+};
+
+
+/// haplodiploid mating scheme of many hymemopterans
+/**
+   This mating scheme is composed of an alphaParentChooser and a
+   haplodiploidOffspringGenerator. The alphaParentChooser chooses a single
+   Female randomly or from a given information field. This female will
+   mate with random males from the colony. The offspring will have one of the
+   two copies of chromosomes from the female parent, and the first copy
+   of chromosomes from the male parent. Note that if a recombinator
+   is used, it should disable recombination of male parent.
+ */
+class haplodiploidMating : public mating
+{
+public:
+	/**
+	 \param alphaSex sex of the alpha individual. Default to Female.
+	 \param alphaNum Number of alpha individual. Default to one.
+	 \param alphaField information field that identifies the queen of the colony.
+	   	By default, a random female will be chosen.
+
+	   Please refer to class \c mating for descriptions of other parameters.
+	 */
+	haplodiploidMating(Sex alphaSex = Female,
+	                   UINT alphaNum = 1,
+	                   string alphaField = string(),
+	                   double numOffspring = 1.,
+	                   PyObject * numOffspringFunc = NULL,
+	                   UINT maxNumOffspring = 0,
+	                   UINT mode = MATE_NumOffspring,
+	                   double sexParam = 0.5,
+	                   UINT sexMode = MATE_RandomSex,
+	                   vectorlu newSubPopSize = vectorlu(),
+	                   PyObject * newSubPopSizeFunc = NULL,
+	                   string newSubPopSizeExpr = "",
+	                   SubPopID subPop = InvalidSubPopID,
+	                   SubPopID virtualSubPop = InvalidSubPopID,
+	                   double weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode),
+		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField)
+	{
+	}
+
+
+	/// destructor
+	~haplodiploidMating()
+	{
+	}
+
+
+	/// deep copy of a random mating scheme
+	virtual mating * clone() const
+	{
+		return new haplodiploidMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the random mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::sexual random mating>";
+	}
+
+
+	/// CPPONLY perform random mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
+
+protected:
+	haplodiploidOffspringGenerator m_offspringGenerator;
+
+	Sex m_alphaSex;
+	UINT m_alphaNum;
+	string m_alphaField;
+};
+
+
 /// a mating scheme that follows a given pedigree
 /**
    In this scheme, a pedigree is given and the mating scheme will
@@ -1232,7 +1786,6 @@ protected:
 class pedigreeMating : public mating
 {
 public:
-	/// create a random mating scheme
 	/**
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
@@ -1362,6 +1915,7 @@ public:
 protected:
 	selfingOffspringGenerator m_offspringGenerator;
 };
+
 
 /// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,

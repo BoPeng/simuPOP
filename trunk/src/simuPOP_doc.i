@@ -221,6 +221,167 @@ Arguments:
 
 %ignore simuPOP::affectionTagger::apply(population &pop);
 
+%feature("docstring") simuPOP::alphaMating "
+
+Description:
+
+    Only a number of alpha individuals can mate with individuals of
+    opposite sex.
+
+Details:
+
+    This  mating scheme is composed of an alphaParentChooser and a
+    Mendelian offspring generator. That is to say, a certain number of
+    alpha  individual (male or female) are determined by alphaNum or
+    an information field. Then, only these alpha individuals are able
+    to mate with random individuals of opposite sex.
+
+"; 
+
+%feature("docstring") simuPOP::alphaMating::alphaMating "
+
+Usage:
+
+    alphaMating(alphaSex=Male, alphaNum=0, alphaField=string,
+      numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
+      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
+      newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+
+Details:
+
+    Please refer to class  mating for descriptions of other
+    parameters.
+
+"; 
+
+%feature("docstring") simuPOP::alphaMating::~alphaMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~alphaMating()
+
+"; 
+
+%feature("docstring") simuPOP::alphaMating::clone "
+
+Description:
+
+    deep copy of a random  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::alphaMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::alphaMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the random  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::alphaMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
+%feature("docstring") simuPOP::alphaParentsChooser "
+
+Details:
+
+    This parents chooser has a fixed number of alpha individuals,
+    either male or female, and they are the only  mating individuals
+    in their respective sex group. Random  mating happens between
+    alpha individuals and the opposite sex group.This parent chooser
+    can be used to simulate polygyny where one male (alpha male) is
+    the father of all offspring born in the patch, or insets of the
+    order hymenopteran, including bees, wasps, and ants, where a queen
+    produce all the offspring in the colony.
+
+"; 
+
+%feature("docstring") simuPOP::alphaParentsChooser::alphaParentsChooser "
+
+Usage:
+
+    alphaParentsChooser(alphaSex=Male, alphaNum=0,
+      alphaField=string)
+
+Details:
+
+    Note: If selection is enabled, it works regularly on on-alpha sex,
+    but works twice on alpha sex. That is to say, alphaNum alpha
+    indiviudals are chosen selectively, and selected again during
+    mating.
+
+Arguments:
+
+    alphaSex:       the sex of the alpha  individual, i.e. alpha male
+                    or alpha female who be the only  mating
+                    individuals in their sex group.
+    alphaNum:       Number of alpha individuals. If infoField is not
+                    given, alphaNum random individuals with alphaSex
+                    will be chosen. If selection is enabled,
+                    individuals with higher fitness values have higher
+                    probability to be selected.
+    infoField:      if an information field is given, individuals with
+                    non-zero values at this information field are
+                    alpha individuals. Note that these individuals
+                    must have alphaSex.
+
+"; 
+
+%feature("docstring") simuPOP::alphaParentsChooser::clone "
+
+Description:
+
+    simuPOP::alphaParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::alphaParentsChooser::initialize(population &pop, SubPopID sp);
+
+%feature("docstring") simuPOP::alphaParentsChooser::finalize "
+
+Description:
+
+    simuPOP::alphaParentsChooser::finalize
+
+Usage:
+
+    x.finalize(pop, sp)
+
+"; 
+
+%feature("docstring") simuPOP::alphaParentsChooser::~alphaParentsChooser "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~alphaParentsChooser()
+
+"; 
+
+%ignore simuPOP::alphaParentsChooser::chooseParents();
+
 %feature("docstring") simuPOP::baseOperator "
 
 Description:
@@ -1694,7 +1855,7 @@ Usage:
 
 %ignore simuPOP::GenoStructure::GenoStructure();
 
-%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields);
+%ignore simuPOP::GenoStructure::GenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields);
 
 %feature("docstring") simuPOP::GenoStructure::~GenoStructure "
 
@@ -1781,7 +1942,7 @@ C
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields);
+%ignore simuPOP::GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru &loci, bool sexChrom, bool haplodiploid, const vectorf &lociPos, const vectorstr &chromNames, const vectorstr &alleleNames, const vectorstr &lociNames, UINT maxAllele, const vectorstr &infoFields);
 
 %ignore simuPOP::GenoStruTrait::setGenoStructure(GenoStructure &rhs);
 
@@ -1909,6 +2070,18 @@ Description:
 Usage:
 
     x.sexChrom()
+
+"; 
+
+%feature("docstring") simuPOP::GenoStruTrait::haplodiploid "
+
+Description:
+
+    simuPOP::GenoStruTrait::haplodiploid
+
+Usage:
+
+    x.haplodiploid()
 
 "; 
 
@@ -2498,6 +2671,149 @@ Usage:
     x.__repr__()
 
 "; 
+
+%feature("docstring") simuPOP::haplodiploidMating "
+
+Description:
+
+    haplodiploid  mating scheme of many hymemopterans
+
+Details:
+
+    This  mating scheme is composed of an alphaParentChooser and a
+    haplodiploidOffspringGenerator. The alphaParentChooser chooses a
+    single Female randomly or from a given information field. This
+    female will mate with random males from the colony. The offspring
+    will have one of the two copies of chromosomes from the female
+    parent, and the first copy of chromosomes from the male parent.
+    Note that if a  recombinator is used, it should disable
+    recombination of male parent.
+
+"; 
+
+%feature("docstring") simuPOP::haplodiploidMating::haplodiploidMating "
+
+Usage:
+
+    haplodiploidMating(alphaSex=Female, alphaNum=1,
+      alphaField=string, numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[],
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+
+Details:
+
+    Please refer to class  mating for descriptions of other
+    parameters.
+
+Arguments:
+
+    alphaSex:       sex of the alpha  individual. Default to Female.
+    alphaNum:       Number of alpha  individual. Default to one.
+    alphaField:     information field that identifies the queen of the
+                    colony. By default, a random female will be
+                    chosen.
+
+"; 
+
+%feature("docstring") simuPOP::haplodiploidMating::~haplodiploidMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~haplodiploidMating()
+
+"; 
+
+%feature("docstring") simuPOP::haplodiploidMating::clone "
+
+Description:
+
+    deep copy of a random  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::haplodiploidMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::haplodiploidMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the random  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::haplodiploidMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
+%feature("docstring") simuPOP::haplodiploidOffspringGenerator "
+
+Details:
+
+    haplodiploid offspring generator mimics sex-determination in honey
+    bees. Given a female (queen) parent and a male parent, the female
+    is considered as diploid with two set of chromosomes, and the male
+    is condiered as haploid. Actually, the first set of male
+    chromosomes are used. During  mating, female produce eggs, subject
+    to potential recombination and gene conversion, while male sperm
+    is identical to the parental chromosome.Female offspring has two
+    sets of chromosomes, one from mother and one from father. Male
+    offspring has one set of chromosomes from his mother.
+
+"; 
+
+%feature("docstring") simuPOP::haplodiploidOffspringGenerator::haplodiploidOffspringGenerator "
+
+Description:
+
+    simuPOP::haplodiploidOffspringGenerator::haplodiploidOffspringGene
+    rator
+
+Usage:
+
+    haplodiploidOffspringGenerator(numOffspring=1,
+      numOffspringFunc=None, maxNumOffspring=1,
+      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
+
+"; 
+
+%feature("docstring") simuPOP::haplodiploidOffspringGenerator::copyParentalGenotype "
+
+Description:
+
+    simuPOP::haplodiploidOffspringGenerator::copyParentalGenotype
+
+Usage:
+
+    x.copyParentalGenotype(parent, it, ploidy, count)
+
+"; 
+
+%feature("docstring") simuPOP::haplodiploidOffspringGenerator::clone "
+
+Description:
+
+    simuPOP::haplodiploidOffspringGenerator::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::haplodiploidOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::heteroMating "
 
@@ -5701,6 +6017,84 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::monogamousMating "
+
+Description:
+
+    a  mating scheme of monogamy
+
+Details:
+
+    This  mating scheme is identical to random  mating except that
+    parents are chosen without replacement. Under this  mating scheme,
+    offspring share the same mother must share the same father. In
+    case that all parental pairs are exhausted, parameter
+    replenish=True allows for the replenishment of one or both sex
+    groups.
+
+"; 
+
+%feature("docstring") simuPOP::monogamousMating::monogamousMating "
+
+Usage:
+
+    monogamousMating(numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, replenish=False, newSubPopSize=[],
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      contWhenUniSex=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
+
+Details:
+
+    replenish This parameter allows replenishment of one or both
+    parental sex groups in case that they are are exhausted. Default
+    to False. Please refer to class  mating for descriptions of other
+    parameters.
+
+"; 
+
+%feature("docstring") simuPOP::monogamousMating::~monogamousMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~monogamousMating()
+
+"; 
+
+%feature("docstring") simuPOP::monogamousMating::clone "
+
+Description:
+
+    deep copy of a random  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::monogamousMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::monogamousMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the random  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::monogamousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
 %feature("docstring") simuPOP::mutator "
 
 Description:
@@ -7275,10 +7669,6 @@ Details:
 
 %feature("docstring") simuPOP::pedigreeMating::pedigreeMating "
 
-Description:
-
-    create a random  mating scheme
-
 Usage:
 
     pedigreeMating(generator, ped, newSubPopSize=[],
@@ -7618,6 +8008,93 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::polygamousMating "
+
+Description:
+
+    a  mating scheme of polygymy or polyandry
+
+Details:
+
+    This  mating scheme is composed of a random parents chooser that
+    allows for polygamous  mating, and a mendelian offspring
+    generator. In this  mating scheme, a male (or female) parent will
+    have more than one sex partner (numPartner). Parents returned from
+    this parents chooser will yield the same male (or female) parents,
+    each with varying partners.
+
+"; 
+
+%feature("docstring") simuPOP::polygamousMating::polygamousMating "
+
+Description:
+
+    simuPOP::polygamousMating::polygamousMating
+
+Usage:
+
+    polygamousMating(numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, replacement=False,
+      replenish=False, polySex=Male, polyNum=1, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[],
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      contWhenUniSex=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
+
+Arguments:
+
+    replacement:    If set to True, a parent can be chosen to mate
+                    again. Default to False.
+    replenish:      In case that replacement=True, whether or not
+                    replenish a sex group when it is exhausted.
+    polySex:        sex of polygamous  mating. Male for polygyny,
+                    Female for polyandry.
+    polyNum:        Number of sex partners. Please refer to class
+                    mating for descriptions of other parameters.
+
+"; 
+
+%feature("docstring") simuPOP::polygamousMating::~polygamousMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~polygamousMating()
+
+"; 
+
+%feature("docstring") simuPOP::polygamousMating::clone "
+
+Description:
+
+    deep copy of a random  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::polygamousMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::polygamousMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the random  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::polygamousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
 %feature("docstring") simuPOP::population "
 
 Description:
@@ -7675,7 +8152,14 @@ Arguments:
                     specified. In that case, size is the sum of
                     subPop. Default to 0.
     ploidy:         number of sets of homologous copies of
-                    chromosomes. Default to 2 (diploid).
+                    chromosomes. Default to 2 (diploid). Please use
+                    Haplodiploid to specify a haplodiploid
+                    population. Note that the ploidy number returned
+                    for such a  population will be 2 and male
+                    individuals will store two copies of chromosomes.
+                    Operators such as a  recombinator will recognize
+                    this  population as haplodiploid and act
+                    accordingly.
     loci:           an array of numbers of loci on each chromosome.
                     The length of parameter loci determines the number
                     of chromosomes. Default to [1], meaning one
@@ -11169,10 +11653,6 @@ Details:
 
 %feature("docstring") simuPOP::randomMating::randomMating "
 
-Description:
-
-    create a random  mating scheme
-
 Usage:
 
     randomMating(numOffspring=1., numOffspringFunc=None,
@@ -11242,7 +11722,12 @@ Details:
     This parent chooser chooses a parent randomly from the parental
     generation. If selection is turned on, parents are chosen with
     probabilities that are proportional to their fitness values. Sex
-    is not considered.
+    is not considered. Parameter replacement determines if a parent
+    can be chosen multiple times. In case that replacement=false,
+    paremeter replenish=true allows restart of the process if all
+    parents are exhausted. Note that selection is not allowed when
+    replacement=false because this poses a particular order on
+    individuals in the offspring generation.
 
 "; 
 
@@ -11254,7 +11739,14 @@ Description:
 
 Usage:
 
-    randomParentChooser()
+    randomParentChooser(replacement=True, replenish=False)
+
+Arguments:
+
+    replacement:    if replacement is false, a parent can not be
+                    chosen more than once.
+    replenish:      if all parent has been chosen, choose from the
+                    whole parental  population again.
 
 "; 
 
@@ -11281,7 +11773,15 @@ Details:
     This parent chooser chooses two parents randomly, a male and a
     female, from their respective sex groups randomly. If selection is
     turned on, parents are chosen from their sex groups with
-    probabilities that are proportional to their fitness values.
+    probabilities that are proportional to their fitness values. If
+    parameter replacement is false, a chosen pair of parents can no
+    longer be selected. This feature can be used to simulate monopoly.
+    If replenish is true, a sex group can be replenished when it is
+    exhausted. Note that selection is not allowed in the case of
+    monopoly because this poses a particular order on individuals in
+    the offspring generation. This parents chooser also allows
+    polygamous  mating by reusing a parent multiple times when
+    returning parents.
 
 "; 
 
@@ -11293,7 +11793,19 @@ Description:
 
 Usage:
 
-    randomParentsChooser()
+    randomParentsChooser(replacement=True, replenish=False,
+      polySex=Male, polyNum=1)
+
+Arguments:
+
+    replacement:    choose with (True, default) or without (False)
+                    replacement. When choosing without replacement,
+                    parents will be paired and can only mate once.
+    replenish:      if set to true, one or both sex groups will be
+                    replenished if they are exhausted.
+    polySex:        Male (polygyny) or Female (polyandry) parent that
+                    will have polyNum sex partners.
+    polyNum:        Number of sex partners.
 
 "; 
 
@@ -11596,6 +12108,10 @@ Arguments:
                     the track length will be shortened. Note that
                     conversion is identical to double recombination
                     under this context.
+    haplodiploid:   If set to true, the first copy of paternal
+                    chromosomes is copied directly as the paternal
+                    chromosomes of the offspring. This is because
+                    haplodiploid male has only one set of chromosome.
 
 Note:
 

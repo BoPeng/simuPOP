@@ -1795,7 +1795,8 @@ name "GenoStruTrait!ploidyName"
 
 ()
 \family default
- )
+ ).
+ A haplodiploid population will return 2 as ploidy number.
 \end_layout
 
 \begin_layout Itemize
@@ -1985,6 +1986,20 @@ sex chromosomes (XY) may differ in length.
 it is assumed that males have XY and females have XX chromosomes.
  The sex chromosomes of male individuals are in the order of XY.
  
+\end_layout
+
+\begin_layout Standard
+A population can be haplodiploid (Females with two sets of chromosomes,
+ and males with one set of chromosomes) if you specify 
+\family typewriter
+ploidy=Haplodiploid
+\family default
+ when a population is created.
+ Such a population actually store two copies of chromosomes for both male
+ and female individuals.
+ The difference between a diploid and a haplodiploid population is that
+ some operators, such as a recombinator, will recognize a haplodiploid populatio
+n and act acoordingly.
 \end_layout
 
 \begin_layout Standard
@@ -3116,6 +3131,34 @@ selfMatingRef
 
 
 \backslash
+monogamousMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+polygamousMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+alphaMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+haplodiploidMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 pedigreeMatingRef
 \end_layout
 
@@ -3174,6 +3217,13 @@ randomParentsChooserRef
 
 
 \backslash
+alphaParentsChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 pedigreeParentsChooserRef
 \end_layout
 
@@ -3205,6 +3255,13 @@ cloneOffspringGeneratorRef
 
 \backslash
 selfingOffspringGeneratorRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+haplodiploidOffspringGeneratorRef
 \end_layout
 
 \begin_layout Standard

@@ -621,10 +621,12 @@ class Doxy2SWIG:
         try:
             object, name = resolve(module, True)
             #exec('import ' + module)
-        except:
+        except Exception, e:
             print "Module %s failed to load. It is description is not documented." % module
             print "Please compile simuPOP and rerun this program"
-            return
+            print
+            print e
+            sys.exit(1)
         #object = eval(module)
         synop, desc = splitdoc(getdoc(object))
         self.content.append({'type': 'docofmodule_' + module, 

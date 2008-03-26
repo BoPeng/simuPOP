@@ -86,7 +86,7 @@ class GenoStructure
 public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
-		m_numLoci(0), m_sexChrom(false), m_lociPos(0), m_chromIndex(0),
+		m_numLoci(0), m_sexChrom(false), m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0)
 	{
 	}
@@ -104,7 +104,7 @@ public:
 	 \param maxAllele maximum possible allele number for all alleles.
 	 \param length of info field
 	 */
-	GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
+	GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
 	              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 	              const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
 
@@ -177,6 +177,7 @@ private:
 		ar & make_nvp("num_of_chrom", m_numChrom);
 		ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
 		ar & make_nvp("sex_chromosome", m_sexChrom);
+		ar & make_nvp("haplodiploid", m_haplodiploid);
 		ar & make_nvp("loci_distance_on_chrom", m_lociPos);
 		ar & make_nvp("chrom_name", m_chromNames);
 		ar & make_nvp("allele_name", m_alleleNames);
@@ -197,12 +198,18 @@ private:
 
 		// after simuPOP 0.6.8, we have m_sexChrom
 		// before that, there is no sex chromosome
-		if (version > 0)
+		if (version >= 1)
 			ar & make_nvp("sex_chromosome", m_sexChrom);
 		else
 			m_sexChrom = false;
+		// haplodiploid flag is introduced in 0.8.5
+		if (version >= 4)
+			ar & make_nvp("haplodiploid", m_haplodiploid);
+		else
+			m_haplodiploid = false;
+		//
 		ar & make_nvp("loci_distance_on_chrom", m_lociPos);
-		if (version > 2)
+		if (version >= 3)
 			ar & make_nvp("chrom_name", m_chromNames);
 		else {
 			m_chromNames.resize(m_numChrom);
@@ -212,7 +219,7 @@ private:
 		ar & make_nvp("allele_name", m_alleleNames);
 		ar & make_nvp("loci_name", m_lociNames);
 		ar & make_nvp("max_allele", m_maxAllele);
-		if (version > 1)
+		if (version >= 2)
 			ar & make_nvp("info_name", m_infoFields);
 
 		// build chromosome index
@@ -247,6 +254,8 @@ private:
 	/// whether or not the last chromosome is sex chromosome
 	bool m_sexChrom;
 
+	bool m_haplodiploid;
+
 	/// position of loci on chromosome, recommended with unit cM
 	vectorf m_lociPos;
 
@@ -279,7 +288,8 @@ private:
 // version 1: add sexChrom indicator
 // version 2: add info name
 // version 3: add chromName
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 3)
+// version 4: add haplodiploid
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 4)
 #endif
 
 namespace simuPOP {
@@ -309,7 +319,7 @@ public:
 
 
 	/// CPPONLY set genotypic structure
-	void setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom,
+	void setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
 		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 		const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
 
@@ -328,6 +338,7 @@ public:
 			toStr(s_genoStruRepository.size() ) );
 		m_genoStruIdx = static_cast<TraitIndexType>(idx);
 	}
+
 
 	/// distance between loci \c loc1 and \c loc2. These two loci should be
 	/// on the same chromosome. The distance will be negative if \c loc1 is after
@@ -410,6 +421,12 @@ public:
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
+	}
+
+
+	bool haplodiploid() const
+	{
+		return s_genoStruRepository[m_genoStruIdx].m_haplodiploid;
 	}
 
 
