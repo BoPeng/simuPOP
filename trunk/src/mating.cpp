@@ -645,12 +645,28 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
+
+	UINT info_id = 0;
+	bool hasAlphaMale = m_alphaNum != 0 || !m_alphaField.empty();
+	bool useInfo = false;
+	if (!m_alphaField.empty()) {
+		info_id = pop.infoIdx(m_alphaField);
+		useInfo = true;
+	}
+
 	IndIterator it = pop.indBegin(subPop);
-	for (; it.valid(); ++it)
+	for (; it.valid(); ++it) {
+		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex 
+			&& it->info(info_id) == 0.)
+			continue;
 		if (it->sex() == Male)
 			m_numMale++;
 		else
 			m_numFemale++;
+	}
+			
+	DBG_FAILIF(hasAlphaMale && (m_numMale == 0 || m_numFemale == 0),
+		ValueError, "No alpha individual or individual of opposite sex is found");
 
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
@@ -669,6 +685,9 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	it = pop.indBegin(subPop);
 	for (; it.valid(); it++) {
+		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex 
+			&& it->info(info_id) == 0.)
+			continue;
 		if (it->sex() == Male) {
 			m_maleIndex[m_numMale] = it.rawIter();
 			if (m_selection)
@@ -697,6 +716,37 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	DBG_FAILIF(!m_replacement && m_selection, ValueError,
 		"Selection is not allowed in random sample without replacement");
 
+	if (!hasAlphaMale || useInfo ||  m_alphaNum >= 
+		(m_alphaSex == Male ? m_numMale : m_numFemale)) {
+		m_initialized = true;
+		return;
+	}
+	
+	// now, we need to choose a few alpha individuals
+	vector<RawIndIterator> m_newAlphaIndex;
+	vectorf m_newAlphaFitness;
+	// select individuals
+	for (size_t i = 0; i < m_alphaNum; ++i) {
+		if (m_selection) // fix me, without replacement!
+			// using weighted sampler.
+			m_newAlphaIndex.push_back(
+				m_alphaSex == Male ? m_maleIndex[m_malesampler.get()]
+				 : m_femaleIndex[m_femalesampler.get()]);
+		else // fix me, without replacement!
+			m_newAlphaIndex.push_back(
+				m_alphaSex == Male ? m_maleIndex[rng().randInt(m_numMale)]
+					: m_femaleIndex[rng().randInt(m_numFemale)]);
+		m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
+	}
+	if (m_alphaSex == Male) {
+		m_maleIndex.swap(m_newAlphaIndex);
+		if (m_selection)
+			m_malesampler.set(m_newAlphaFitness);
+	} else {
+		m_femaleIndex.swap(m_newAlphaIndex);
+		if (m_selection)
+			m_femalesampler.set(m_newAlphaFitness);
+	}
 	m_initialized = true;
 }
 
@@ -797,129 +847,6 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 		}
 	}
 	return std::make_pair(dad, mom);
-}
-
-
-alphaParentsChooser::alphaParentsChooser(Sex alphaSex, UINT alphaNum, string alphaField)
-	: parentChooser(2), m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
-	m_AIndex(0), m_BIndex(0),
-	m_AFitness(0), m_BFitness(0),
-	m_ASampler(rng()), m_BSampler(rng())
-{
-	DBG_FAILIF(m_alphaNum == 0 && m_alphaField.empty(), ValueError,
-		"Please specify number of alpha individual, or an information field to determine alpha individuals");
-}
-
-
-void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
-{
-	// determine alpha individuals
-	m_numA = 0;
-	m_numB = 0;
-
-	UINT info_id = 0;
-	bool useInfo = false;
-	if (!m_alphaField.empty()) {
-		info_id = pop.infoIdx(m_alphaField);
-		useInfo = true;
-	}
-
-	IndIterator it = pop.indBegin(subPop);
-	for (; it.valid(); ++it)
-		if (it->sex() == m_alphaSex) {
-			if (useInfo && it->info(info_id) == 0.)
-				continue;
-			m_numA++;
-		} else {
-			DBG_FAILIF(useInfo && it->info(info_id) != 0.,
-				ValueError, "Alpha individual must have alpha sex");
-			m_numB++;
-		}
-
-	DBG_FAILIF(m_numA == 0, ValueError, "No alpha individual is found");
-	DBG_FAILIF(m_numB == 0, ValueError, "No individual that is not in alpha sex is found.\n"
-		                                "Mating can not continue.");
-
-	// allocate memory at first for performance reasons
-	m_AIndex.resize(m_numA);
-	m_BIndex.resize(m_numB);
-
-	m_selection = pop.selectionOn(subPop);
-	UINT fit_id = 0;
-	if (m_selection) {
-		fit_id = pop.infoIdx("fitness");
-		m_AFitness.resize(m_numA);
-		m_BFitness.resize(m_numB);
-	}
-
-	m_numA = 0;
-	m_numB = 0;
-
-	it = pop.indBegin(subPop);
-	for (; it.valid(); it++) {
-		if (it->sex() == m_alphaSex) {
-			if (useInfo && it->info(info_id) == 0.)
-				continue;
-			m_AIndex[m_numA] = it.rawIter();
-			if (m_selection)
-				m_AFitness[m_numA] = it->info(fit_id);
-			m_numA++;
-		} else {
-			m_BIndex[m_numB] = it.rawIter();
-			if (m_selection)
-				m_BFitness[m_numB] = it->info(fit_id);
-			m_numB++;
-		}
-	}
-
-	if (m_selection) {
-		m_ASampler.set(m_AFitness);
-		m_BSampler.set(m_BFitness);
-		DBG_DO(DBG_DEVEL, cout << "Alpha fitness " << m_AFitness << endl);
-		DBG_DO(DBG_DEVEL, cout << "NonAlpha fitness " << m_BFitness << endl);
-	}
-
-	if (useInfo || m_alphaNum >= m_numA) {
-		m_initialized = true;
-		return;
-	}
-	// now, we need to choose a few alpha individuals
-	vector<RawIndIterator> m_newAIndex;
-	vectorf m_newAFitness;
-	// select individuals
-	for (size_t i = 0; i < m_alphaNum; ++i) {
-		if (m_selection)
-			// using weighted sampler.
-			m_newAIndex.push_back(m_AIndex[m_ASampler.get()]);
-		else
-			m_newAIndex.push_back(m_AIndex[rng().randInt(m_numA)]);
-		m_newAFitness.push_back(m_newAIndex.back()->info(fit_id));
-	}
-	m_AIndex.swap(m_newAIndex);
-	if (m_selection)
-		m_ASampler.set(m_newAFitness);
-	m_initialized = true;
-}
-
-
-parentChooser::individualPair alphaParentsChooser::chooseParents()
-{
-	DBG_ASSERT(initialized(), SystemError,
-		"Please initialize this parent chooser before using it");
-
-	individual * alpha = NULL;
-	individual * nonAlpha = NULL;
-
-	if (m_selection) {                                        // with selection
-		// using weighted sampler.
-		alpha = & * (m_AIndex[m_ASampler.get()]);
-		nonAlpha = & * (m_BIndex[m_BSampler.get()]);
-	} else {
-		// using random sample.
-		alpha = & * (m_AIndex[rng().randInt(m_numA)]);
-		nonAlpha = & * (m_BIndex[rng().randInt(m_numB)]);
-	}
-	return std::make_pair(alpha, nonAlpha);
 }
 
 
@@ -1219,7 +1146,7 @@ bool randomMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	randomParentsChooser pc(true, false, Male, 1);
+	randomParentsChooser pc(true, false, Male, 1, Male, 0, string());
 	pc.initialize(pop, subPop);
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
@@ -1256,7 +1183,7 @@ bool monogamousMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	randomParentsChooser pc(true, m_replenish, Male, 1);
+	randomParentsChooser pc(true, m_replenish, Male, 1, Male, 0, string());
 	pc.initialize(pop, subPop);
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
@@ -1293,7 +1220,7 @@ bool polygamousMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	randomParentsChooser pc(m_replacement, m_replenish, m_polySex, m_polyNum);
+	randomParentsChooser pc(m_replacement, m_replenish, m_polySex, m_polyNum, Male, 0, string());
 	pc.initialize(pop, subPop);
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
@@ -1330,7 +1257,7 @@ bool alphaMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	alphaParentsChooser pc(m_alphaSex, m_alphaNum, m_alphaField);
+	randomParentsChooser pc(true, false, Male, 1, m_alphaSex, m_alphaNum, m_alphaField);
 	pc.initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
@@ -1362,7 +1289,7 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	alphaParentsChooser pc(m_alphaSex, m_alphaNum, m_alphaField);
+	randomParentsChooser pc(true, false, Male, 1, m_alphaSex, m_alphaNum, m_alphaField);
 	pc.initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
