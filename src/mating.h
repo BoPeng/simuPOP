@@ -680,7 +680,9 @@ private:
    selection is not allowed in the case of monopoly because this
    poses a particular order on individuals in the offspring generation.
    This parents chooser also allows polygamous mating by reusing
-   a parent multiple times when returning parents.
+   a parent multiple times when returning parents, and allows
+   specification of a few alpha individuals who will be the only
+   mating individuals in their sex group.
  */
 class randomParentsChooser : public parentChooser
 {
@@ -694,9 +696,25 @@ public:
 	 \param polySex Male (polygyny) or Female (polyandry) parent that
 	   		will have \c polyNum sex partners.
 	 \param polyNum Number of sex partners.
+	 \param alphaSex the sex of the alpha individual, i.e. alpha male
+	   	or alpha female who be the only mating individuals in their
+	   	sex group.
+	 \param alphaNum Number of alpha individuals. If \c infoField is
+	   	not given, \c alphaNum random individuals with \c alphaSex
+	   	will be chosen. If selection is enabled, individuals with higher
+	   	fitness values have higher probability to be selected. There is
+		by default no alpha individual (\c alphaNum = 0).
+	 \param alphaField if an information field is given, individuals
+	   	with non-zero values at this information field are alpha individuals.
+	   	Note that these individuals must have \c alphaSex.
+
+	   Note: If selection is enabled, it works regularly on on-alpha sex, but
+	   	works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	   	are chosen selectively, and selected again during mating.
 	 */
 	randomParentsChooser(bool replacement = true, bool replenish = false,
-	                     Sex polySex = Male, UINT polyNum = 1) :
+	                     Sex polySex = Male, UINT polyNum = 1,
+		Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) : 
 		parentChooser(2),
 		m_replacement(replacement), m_replenish(replenish),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0), m_lastParent(NULL),
@@ -732,6 +750,13 @@ private:
 	bool m_replenish;
 	Sex m_polySex;
 	UINT m_polyNum;
+	
+	Sex m_alphaSex;
+
+	UINT m_alphaNum;
+
+	string m_alphaField;
+
 
 	UINT m_polyCount;
 	individual * m_lastParent;
@@ -754,89 +779,6 @@ private:
 	Weightedsampler m_malesampler;
 	Weightedsampler m_femalesampler;
 
-};
-
-
-/**
-   This parents chooser has a fixed number of alpha individuals,
-   either male or female, and they are the only mating individuals in their
-   respective sex group. Random mating happens between alpha individuals
-   and the opposite sex group.
-
-   This parent chooser can be used to simulate polygyny where one male (alpha male)
-   is the father of all offspring born in the patch, or insets of the order
-   hymenopteran, including bees, wasps, and ants, where a queen produce all
-   the offspring in the colony.
- */
-class alphaParentsChooser : public parentChooser
-{
-public:
-	/**
-	 \param alphaSex the sex of the alpha individual, i.e. alpha male
-	   	or alpha female who be the only mating individuals in their
-	   	sex group.
-	 \param alphaNum Number of alpha individuals. If \c infoField is
-	   	not given, \c alphaNum random individuals with \c alphaSex
-	   	will be chosen. If selection is enabled, individuals with higher
-	   	fitness values have higher probability to be selected.
-	 \param infoField if an information field is given, individuals
-	   	with non-zero values at this information field are alpha individuals.
-	   	Note that these individuals must have \c alphaSex.
-
-	   Note: If selection is enabled, it works regularly on on-alpha sex, but
-	   	works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
-	   	are chosen selectively, and selected again during mating.
-	 */
-	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string());
-
-	parentChooser * clone() const
-	{
-		return new alphaParentsChooser(*this);
-	}
-
-
-	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
-
-	void finalize(population & pop, SubPopID sp)
-	{
-		m_initialized = false;
-	}
-
-
-	/// destructor
-	~alphaParentsChooser()
-	{
-	}
-
-
-	/// CPPONLY
-	individualPair chooseParents();
-
-private:
-	Sex m_alphaSex;
-
-	UINT m_alphaNum;
-
-	string m_alphaField;
-
-	// the following are for internal uses only
-	bool m_selection;
-
-	// available alpha and non-alpha (opposite sex)
-	ULONG m_numA;
-	ULONG m_numB;
-
-	/// internal index to nonA/As.
-	vector<RawIndIterator> m_AIndex;
-	vector<RawIndIterator> m_BIndex;
-
-	vectorf m_AFitness;
-	vectorf m_BFitness;
-
-	// weighted sampler
-	Weightedsampler m_ASampler;
-	Weightedsampler m_BSampler;
 };
 
 
@@ -1595,9 +1537,9 @@ protected:
 
 /// Only a number of alpha individuals can mate with individuals of opposite sex.
 /**
-   This mating scheme is composed of an alphaParentChooser and a Mendelian
-   offspring generator. That is to say, a certain number of alpha individual
-   (male or female) are determined by \c alphaNum or an information field. Then,
+   This mating scheme is composed of an random parents chooser with alpha individuals,
+   and a Mendelian offspring generator. That is to say, a certain number of alpha
+   individual (male or female) are determined by \c alphaNum or an information field. Then,
    only these alpha individuals are able to mate with random individuals of
    opposite sex.
  */
