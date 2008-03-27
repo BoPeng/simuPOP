@@ -717,8 +717,9 @@ public:
 	                     Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
 		parentChooser(2),
 		m_replacement(replacement), m_replenish(replenish),
-		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0), m_lastParent(NULL),
-		m_maleIndex(0), m_femaleIndex(0),
+		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
+		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
+		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
 		m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
@@ -751,14 +752,13 @@ private:
 	Sex m_polySex;
 	UINT m_polyNum;
 
+	UINT m_polyCount;
+
 	Sex m_alphaSex;
-
 	UINT m_alphaNum;
-
 	string m_alphaField;
 
 
-	UINT m_polyCount;
 	individual * m_lastParent;
 
 	bool m_selection;

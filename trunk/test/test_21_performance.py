@@ -226,7 +226,18 @@ class TestPerformance(unittest.TestCase):
             # 4.31, 7.96, 12.12
             # 95.14,
             #
-            # 
+            # After massive mating scheme reconstruction, they should be slower,
+            # but how slow?
+            #
+            # op
+            # 0.34, 0.41, 0.66
+            # 4,67, 8.48, 11.34
+            # 97.75
+            #
+            # laop
+            #
+            # baop
+            
 
     def TestInfoIterator(self):
         'Testing the performance of info iterator'

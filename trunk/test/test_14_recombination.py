@@ -403,6 +403,10 @@ class TestRecombinator(unittest.TestCase):
                     self.assertEqual(ind.arrGenotype().count(a3), 0)
 
 
+    def testHaplodiploid(self):
+        'Testing recombination in haplodiploid populations'
+        pass
+
     def testConversionCount(self):
         'Testing count of conversion events '
         r = 0.01
@@ -421,7 +425,7 @@ class TestRecombinator(unittest.TestCase):
             # at end should be bionomial(ploidy*N*r, 0.5)
             recCount = sum(rec.recCounts()) - max(rec.recCounts())
             convCount = sum(rec.convCounts().values())
-            assert abs(recCount*0.2 - convCount) < 100
+            assert abs(recCount*0.2 - convCount) < 300
         
 
 

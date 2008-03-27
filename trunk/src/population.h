@@ -112,7 +112,7 @@ class population;
 class population : public GenoStruTrait
 {
 public:
-#define Haplodiploid 1.5
+#define Haplodiploid 2.5
 	/** @name  constructors and destructor */
 	//@{
 
