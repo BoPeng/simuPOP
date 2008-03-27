@@ -19,7 +19,7 @@ class TestTagger(unittest.TestCase):
     def testParentsTagger(self):
         'Testing parents tagger.'
         simu = simulator( 
-            population(size=20, ploidy=2, loci=[2,4], subPop=[5,15],
+            population(size=[5,15], ploidy=2, loci=[2,4],
                     infoFields=['father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
         simu.step([parentsTagger()])
@@ -36,7 +36,7 @@ class TestTagger(unittest.TestCase):
         # this operator pass tag from one or both parents to offspring
         # the game is not:
         # who is the offspring of one parent?
-        pop = population(size=20, ploidy=2, loci=[2,4], subPop=[5,15], 
+        pop = population(size=[5,15], ploidy=2, loci=[2,4],
                 infoFields=['paternal_tag', 'maternal_tag'])
         pop.individual(0).setInfo(1, 'paternal_tag')
         pop.individual(5).setInfo(2, 'paternal_tag')
@@ -54,7 +54,7 @@ class TestTagger(unittest.TestCase):
 
     def testInheritTaggerToFile(self):
         'Testing inherit tagger that record indexes to a file'
-        pop = population(size=20, ploidy=2, loci=[2,4], subPop=[5,15], 
+        pop = population(size=[5,15], ploidy=2, loci=[2,4], 
                 infoFields=['paternal_tag', 'maternal_tag'])
         for ind in pop.individuals(0):
             ind.setInfo(1, 'paternal_tag')
@@ -75,7 +75,7 @@ class TestTagger(unittest.TestCase):
 
     def testParentsTaggerToFile(self):
         'Testing parents tagger saved to a file'
-        simu = simulator(population(size=20, loci=[2,4], subPop=[5,15]),
+        simu = simulator(population(size=[5,15], loci=[2,4]),
             randomMating(numOffspring=2))
         file = '>>parents.tag'
         simu.evolve(ops=[parentsTagger(output=file, infoFields=[])], end=10)
@@ -94,7 +94,7 @@ class TestTagger(unittest.TestCase):
 
     def testPyTagger(self):
         'Testing python tagger (pass trait from parents to offspring)'
-        pop = population(size=20, ploidy=2, loci=[2,4], subPop=[5,15], 
+        pop = population(size=[5,15], ploidy=2, loci=[2,4],
                 infoFields=['trait1', 'trait2'])
         for ind in pop.individuals():
             ind.setInfo(1, 'trait1')
@@ -123,7 +123,7 @@ class TestTagger(unittest.TestCase):
 
     def testPedigree(self):
         'Testing the handling of pedigrees'
-        pop = population(subPop=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
+        pop = population(size=[100, 100], loci=[2,5], infoFields=['x', 'y', 'z'])
         InitByFreq(pop, [0.2, 0.8])
         def addToZ(val):
             return [val[0]+1]

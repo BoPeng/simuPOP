@@ -96,7 +96,7 @@ class TestSelector(unittest.TestCase):
                         )
         # sel = maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
         for i in range(100):
-            pop = population(subPop=[200,N], loci=[1], infoFields=['fitness'])
+            pop = population(size=[200,N], loci=[1], infoFields=['fitness'])
             simu = simulator(pop, randomMating())
             simu.evolve(
                 preOps = [initByFreq([1-p]+[p/10.]*10)],
@@ -118,7 +118,7 @@ class TestSelector(unittest.TestCase):
         'Testing directional selection in s subpopulation using a map selector'
         #TurnOnDebug(DBG_DEVEL)
         simu = simulator(
-            population(subPop=[200, 1000], ploidy=2, loci=[1], 
+            population(size=[200, 1000], ploidy=2, loci=[1], 
             infoFields=['fitness', 'spare']),
             randomMating() )
         # 1. directional selection
@@ -497,7 +497,7 @@ class TestSelector(unittest.TestCase):
     def testSubPops(self):
         'Testing the subPops parameter of selector'
         simu = simulator(
-            population(subPop=[20, 30, 40], loci=[2],
+            population(size=[20, 30, 40], loci=[2],
                 infoFields=['fitness']),
             randomMating())
         def testFitness(pop, params):
@@ -514,7 +514,7 @@ class TestSelector(unittest.TestCase):
         )
         # subPop is also allowed
         simu = simulator(
-            population(subPop=[20, 30, 40], loci=[2],
+            population(size=[20, 30, 40], loci=[2],
                 infoFields=['fitness']),
             randomMating())
         simu.evolve(

@@ -30,7 +30,7 @@ class TestOperator(unittest.TestCase):
     def testStage(self):
         'Testing stage parameter of operators'
         simu = simulator(
-            population(subPop=[20, 80], loci=[3]),
+            population(size=[20, 80], loci=[3]),
                 randomMating())
         simu.evolve(
             preOps = [initByFreq([0.2, 0.8])],

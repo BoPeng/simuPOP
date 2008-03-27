@@ -60,8 +60,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -82,8 +81,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50, 50, 100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -105,8 +103,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -130,8 +127,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -155,8 +151,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -177,8 +172,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -201,8 +195,7 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
@@ -226,8 +219,7 @@ class TestRPy(unittest.TestCase):
         # test the operator
         nr = 1
         simu = simulator(
-            population(size=200, ploidy=2, loci=[3,4],
-                subPop=[50,50,100]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4]),
             randomMating(), rep=nr)
         migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
                                         mode=MigrByProbability)

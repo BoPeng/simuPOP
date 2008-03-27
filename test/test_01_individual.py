@@ -20,12 +20,12 @@ class TestIndividual(unittest.TestCase):
     def testIndProperties(self):
         'Testing individual properties'
         if AlleleType() != 'binary':
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G']) 
         else:
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 alleleNames=['1','2']) 
         #
         pop.individual(99)
@@ -104,12 +104,12 @@ class TestIndividual(unittest.TestCase):
     def testIndGenotype(self):
         'Testing individual genotype manipulation function'
         if AlleleType() != 'binary':
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G']) 
         else: # binary
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 alleleNames=['1','2']) 
         ind = pop.individual(0)
         gt = ind.arrGenotype()

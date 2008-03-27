@@ -33,29 +33,25 @@ class TestPopulation(unittest.TestCase):
             [1,2,4,5].index, 6)
         # no exception '
         if AlleleType() == 'binary':
-            population(size=100, ploidy=2, loci=[5, 7], subPop=[20, 80],
+            population(size=[20,80], ploidy=2, loci=[5, 7], 
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=1, alleleNames=['_','A','C','T','G'])
         else:
-            population(size=100, ploidy=2, loci=[5, 7], subPop=[20, 80],
+            population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G'])
         # raise exception when max allele is wrong
         # MaxAllele may be too big.
         self.assertRaises( (exceptions.TypeError, exceptions.ValueError, exceptions.OverflowError),
             population, size=10, maxAllele=MaxAllele()+1)
-        # raise exception when subpop size does not match
-        self.assertRaises(exceptions.ValueError, 
-            population, size=1000, ploidy=4, loci=[5, 7]*20, \
-            subPop=[20, 80]*20)
         # raise exception when ploidy value is wrong
         self.assertRaises(exceptions.ValueError, 
-            population, subPop=[20,20], ploidy=0)
+            population, size=[20,20], ploidy=0)
         # raise exceptions with negative values
         self.assertRaises((exceptions.TypeError, exceptions.OverflowError),
             population, size=-10)
         self.assertRaises((exceptions.TypeError, exceptions.OverflowError),
-            population, subPop=[-10])
+            population, size=[-10])
         self.assertRaises((exceptions.ValueError, exceptions.OverflowError), 
             population, ploidy=-1)
         # lociDist is depreciated
@@ -102,13 +98,13 @@ class TestPopulation(unittest.TestCase):
     def testGenoStructure(self):
         'Testing geno structure related functions'
         if AlleleType() != 'binary':
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=3, chromNames=["ch1", "ch2"], 
                 alleleNames=['A','C','T','G']) 
         else:
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 chromNames=["ch1", "ch2"], alleleNames=['1','2']) 
         #
         self.assertEqual(pop.ploidy(), 2)
@@ -185,12 +181,12 @@ class TestPopulation(unittest.TestCase):
     def testPopProperties(self):
         'Testing population properties'
         if AlleleType() != 'binary':
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G']) 
         else:
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 alleleNames=['1','2']) 
         #
         self.assertEqual(pop.popSize(), 100)
@@ -242,7 +238,7 @@ class TestPopulation(unittest.TestCase):
 
     def testIterator(self):
         'Testing the individual iterators'
-        pop = population(loci=[1], subPop=[4,6])
+        pop = population(loci=[1], size=[4,6])
         for ind in pop.individuals():
             ind.setAllele(1, 0)
         for ind in pop.individuals(1):
@@ -329,7 +325,7 @@ class TestPopulation(unittest.TestCase):
 
     def testSplitSubPop(self):
         'Testing function splitSubPop'
-        pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
+        pop = population(size=[5,6,7], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         # mapArr is separate
         mapArr = list(arr)
@@ -368,7 +364,7 @@ class TestPopulation(unittest.TestCase):
     def testSplitSubPopByProportion(self):
         'Testing function splitSubPopByProportion'
         # split by proportion -------- 
-        pop = population(subPop=[5,6,7], ploidy=1, loci=[1])
+        pop = population(size=[5,6,7], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         # mapArr is separate
         mapArr = list(arr)
@@ -405,12 +401,12 @@ class TestPopulation(unittest.TestCase):
      
     def testRemoveSubPops(self):
         'Testing function removeEmptySubPops, removeSubPops'
-        pop = population(subPop=[0,1,0,2,3,0])
+        pop = population(size=[0,1,0,2,3,0])
         self.assertEqual( pop.numSubPop(), 6)
         pop.removeEmptySubPops()
         self.assertEqual( pop.numSubPop(), 3)
         # remove subpop
-        pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
+        pop = population(size=[0,1,0,2,3,0], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         # mapArr is separate
         arr[:] = range(pop.popSize())
@@ -433,7 +429,7 @@ class TestPopulation(unittest.TestCase):
         print "A warning should be issued"
         pop.removeSubPops([8])
         # see if remove subPOp change info
-        pop = population(subPop=[2,4,5], infoFields=['age'])
+        pop = population(size=[2,4,5], infoFields=['age'])
         self.assertEqual( pop.numSubPop(), 3)
         pop.setIndInfo(range(11), 0)
         self.assertEqual(pop.arrIndInfo(True), range(11))
@@ -443,7 +439,7 @@ class TestPopulation(unittest.TestCase):
     
     def testRemoveIndividuals(self):
         'Testing function removeIndividuals'
-        pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
+        pop = population(size=[0,1,0,2,3,0], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
@@ -462,7 +458,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 0, [0])
         self.assertGenotype(pop, 1, [3,4,5])
         # see if remove individual change info
-        pop = population(subPop=[2,4,5], infoFields=['age'])
+        pop = population(size=[2,4,5], infoFields=['age'])
         pop.setIndInfo(range(11), 0)
         pop.removeIndividuals([2,3,4,5])
         self.assertEqual(pop.subPopSizes(), (2,0,5))
@@ -474,7 +470,7 @@ class TestPopulation(unittest.TestCase):
     
     def testMergeSubPops(self):
         'Testing function mergeSubPops'
-        pop = population(subPop=[0,1,0,2,3,0], ploidy=1, loci=[1])
+        pop = population(size=[0,1,0,2,3,0], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
@@ -493,7 +489,7 @@ class TestPopulation(unittest.TestCase):
         # subpop will be shifted
         self.assertGenotype(pop, 0, [0,1,2,3,4,5])
         # see if merging affect individual id.
-        pop = population(subPop=[2,4,5], infoFields=['age'])
+        pop = population(size=[2,4,5], infoFields=['age'])
         pop.setIndInfo(range(11), 0)
         pop.mergeSubPops([0,2], removeEmptySubPops=True)
         self.assertEqual(pop.subPopSizes(), (7,4))
@@ -504,7 +500,7 @@ class TestPopulation(unittest.TestCase):
 
     def testReorderSubPops(self):
         'Testing function reorderSubPops'
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
+        pop = population(size=[1,2,3,4], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
@@ -516,7 +512,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 2, [0])
         self.assertGenotype(pop, 3, [3,4,5])
         # by rank
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
+        pop = population(size=[1,2,3,4], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         #
@@ -528,7 +524,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 2, [6,7,8,9])
         self.assertGenotype(pop, 3, [1,2])
         # reorder does not change info
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1], infoFields=['age'])
+        pop = population(size=[1,2,3,4], ploidy=1, loci=[1], infoFields=['age'])
         pop.setIndInfo(range(10), 'age')
         #
         pop.reorderSubPops(rank=[1,3,0,2])
@@ -540,7 +536,7 @@ class TestPopulation(unittest.TestCase):
 
     def testNewPopByIndID(self):
         'Testing function newPopByIndInfo'
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1])
+        pop = population(size=[1,2,3,4], ploidy=1, loci=[1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.popSize())
         oldPop = pop.clone()
@@ -556,7 +552,7 @@ class TestPopulation(unittest.TestCase):
         pop1.individual(0).setAllele(1, 0)
         self.assertNotEqual(pop.individual(0).allele(0), 1)
         # does new pop keeps info
-        pop = population(subPop=[1,2,3,4], ploidy=1, loci=[1], infoFields=['age'])
+        pop = population(size=[1,2,3,4], ploidy=1, loci=[1], infoFields=['age'])
         pop.setIndInfo(range(10),'age')
         pop1 = pop.newPopByIndID(id=[-1,8,7,6,5,4,3,2,1,-1], removeEmptySubPops=True)
         self.assertEqual(pop1.popSize(), 8)
@@ -570,7 +566,7 @@ class TestPopulation(unittest.TestCase):
         # FIXME: make sure to test a case when 
         # genotype has to be moved from one node to another 
         # in the MPI modules
-        pop = population(subPop=[1,2], ploidy=2, loci=[2,3,1])
+        pop = population(size=[1,2], ploidy=2, loci=[2,3,1])
         arr = pop.arrGenotype(True)
         arr[:] = range(pop.totNumLoci())*(pop.popSize()*pop.ploidy())
         pop.removeLoci(remove=[2])
@@ -598,7 +594,7 @@ class TestPopulation(unittest.TestCase):
         
     def testArrGenotype(self):
         'Testing function arrGenotype'
-        pop = population(loci=[1,2], subPop=[1,2])
+        pop = population(loci=[1,2], size=[1,2])
         arr = pop.arrGenotype(True)
         self.assertEqual( len(arr), pop.genoSize()*pop.popSize())
         arr = pop.arrGenotype(1, True)
@@ -700,7 +696,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.individual(i).info('fitness'), i+50)
         # 
         #  test indInfo
-        pop = population(subPop=[4,6], infoFields=['age', 'fitness'])
+        pop = population(size=[4,6], infoFields=['age', 'fitness'])
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
         self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
@@ -754,11 +750,11 @@ class TestPopulation(unittest.TestCase):
 
     def testAncestry(self):
         'Testing ancestral population related functions'
-        pop = population(subPop=[3,5], loci=[2,3], ancestralDepth=2)
+        pop = population(size=[3,5], loci=[2,3], ancestralDepth=2)
         InitByFreq(pop, [.2,.8])
         gt = list(pop.arrGenotype(True))
         self.assertEqual(pop.ancestralDepth(), 0)
-        pop1 = population(subPop=[2,3], loci=[2,3], ancestralDepth=2)
+        pop1 = population(size=[2,3], loci=[2,3], ancestralDepth=2)
         InitByFreq(pop1, [.8,.2])
         gt1 = list(pop1.arrGenotype(True))
         # can not do, because of different genotype
@@ -779,12 +775,12 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(exceptions.ValueError,
             pop.pushAndDiscard, pop)
         # can not do, because of different genotype
-        pop2 = population(subPop=[3,5], loci=[2])
+        pop2 = population(size=[3,5], loci=[2])
         self.assertRaises(exceptions.ValueError,
             pop.pushAndDiscard, pop2)
         # [ gt1, gt ]
         # push more?
-        pop2 = population(subPop=[3,5], loci=[2,3])
+        pop2 = population(size=[3,5], loci=[2,3])
         InitByFreq(pop2, [.2,.8])
         gt2 = list(pop2.arrGenotype(True))
         pop3 = pop2.clone()
@@ -829,16 +825,16 @@ class TestPopulation(unittest.TestCase):
     def testSaveLoadPopulation(self):
         'Testing save and load populations'
         if AlleleType() != 'binary':
-            pop = population(size=10, ploidy=2, loci=[5, 7], 
-                subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[2,8], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G'],
                 infoFields=['age', 'fitness']) 
             InitByFreq(pop, [.2, .3, .5])
             pop.setIndInfo(range(10), 'age')
             pop.setIndInfo(range(100, 110), 'fitness')
         else:
-            pop = population(size=10, ploidy=2, loci=[5, 7], 
-                subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[2,8], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 alleleNames=['1','2'], infoFields=['age', 'fitness']) 
             InitByFreq(pop, [.2, .8])
             pop.setIndInfo(range(10), 'age')
@@ -873,8 +869,8 @@ class TestPopulation(unittest.TestCase):
             if os.path.isfile('test_ba.txt'):
                 pop = LoadPopulation('test_ba.txt')
             else:
-                pop = population(size=10, ploidy=2, loci=[5, 7], 
-                    subPop=[2, 8], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+                pop = population(size=[2,8], ploidy=2, loci=[5, 7], 
+                    lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                     alleleNames=['1', '2'], infoFields=['age', 'fitness'], ancestralDepth=2) 
                 InitByFreq(pop, [.2, .8])
                 pop.setIndInfo(range(10), 'age')
@@ -911,9 +907,9 @@ class TestPopulation(unittest.TestCase):
 
     def testMergePopulation(self):
         'Testing merge populations...'
-        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
-        pop1 = population(subPop=[4, 5], loci=[4,5,1])
-        pop2 = population(subPop=[4, 5], loci=[4,1])
+        pop = population(size=[7, 3, 4], loci=[4, 5, 1])
+        pop1 = population(size=[4, 5], loci=[4,5,1])
+        pop2 = population(size=[4, 5], loci=[4,1])
         InitByFreq(pop, [.2, .3, .5])
         InitByFreq(pop1, [.5, .5])
         InitByFreq(pop2, [.2, .8])
@@ -942,9 +938,9 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.individual(i+pop_ori.popSize()), pop1.individual(i))
         #
         # test the Merge function
-        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
-        pop1 = population(subPop=[4, 5], loci=[4,5,1])
-        pop2 = population(subPop=[4, 5], loci=[4,1])
+        pop = population(size=[7, 3, 4], loci=[4, 5, 1])
+        pop1 = population(size=[4, 5], loci=[4,5,1])
+        pop2 = population(size=[4, 5], loci=[4,1])
         InitByFreq(pop, [.2, .3, .5])
         pop_ori = pop.clone()
         InitByFreq(pop1, [.5, .5])
@@ -962,9 +958,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop, mp)
         #
         # test for merge of ancestral gen
-        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
+        pop = population(size=[7, 3, 4], loci=[4, 5, 1])
         pop.setAncestralDepth(-1)
-        pop1 = population(subPop=[4, 5], loci=[4, 5, 1])
+        pop1 = population(size=[4, 5], loci=[4, 5, 1])
         pop.pushAndDiscard(pop1)
         #
         pop1 = pop.clone()
@@ -978,9 +974,9 @@ class TestPopulation(unittest.TestCase):
         
     def testMergePopulationByLoci(self):
         'Testing merge populations...'
-        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
-        pop1 = population(subPop=[7, 3, 4], loci=[3, 2])
-        pop2 = population(subPop=[4, 5], loci=[4,1])
+        pop = population(size=[7, 3, 4], loci=[4, 5, 1])
+        pop1 = population(size=[7, 3, 4], loci=[3, 2])
+        pop2 = population(size=[4, 5], loci=[4,1])
         InitByFreq(pop, [.2, .3, .5])
         InitByFreq(pop1, [.5, .5])
         InitByFreq(pop2, [.2, .8])
@@ -1024,9 +1020,9 @@ class TestPopulation(unittest.TestCase):
                     self.assertEqual(ind.allele(j+10, p), ind2.allele(j, p))
         #
         # test the Merge function
-        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
-        pop1 = population(subPop=[7, 3, 4], loci=[2, 3])
-        pop2 = population(subPop=[4, 5], loci=[4,1])
+        pop = population(size=[7, 3, 4], loci=[4, 5, 1])
+        pop1 = population(size=[7, 3, 4], loci=[2, 3])
+        pop2 = population(size=[4, 5], loci=[4,1])
         InitByFreq(pop, [.2, .3, .5])
         pop_ori = pop.clone()
         InitByFreq(pop1, [.5, .5])
@@ -1044,9 +1040,9 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop, mp)
         #
         # test for merge of ancestral gen
-        pop = population(subPop=[3, 4], loci=[4, 5, 1])
+        pop = population(size=[3, 4], loci=[4, 5, 1])
         pop.setAncestralDepth(-1)
-        pop1 = population(subPop=[3, 4], loci=[4, 5, 1])
+        pop1 = population(size=[3, 4], loci=[4, 5, 1])
         pop.pushAndDiscard(pop1)
         #
         pop1 = pop.clone()
@@ -1083,7 +1079,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(af2[5], af3[10])
         #
         # test mergePopulationByLoci using byChromosome
-        pop = population(subPop=[7, 3, 4], loci=[4, 5, 1])
+        pop = population(size=[7, 3, 4], loci=[4, 5, 1])
         InitByFreq(pop, [.2, .3, .5])
         pop_re = pop.clone()
         pop_re.removeLoci(remove=[1, 4, 7])
@@ -1095,7 +1091,7 @@ class TestPopulation(unittest.TestCase):
 
     def testInsertBeforeLoci(self):
         'Testing insert before loci of a population'
-        pop = population(subPop=[7,3,4], loci=[4,5,1])
+        pop = population(size=[7,3,4], loci=[4,5,1])
         InitByFreq(pop, [.2, .3, .5])
         pop1 = pop.clone()
         self.assertRaises(exceptions.ValueError, pop.insertBeforeLoci, idx=[0,5], pos=[0,0.5])
@@ -1154,7 +1150,7 @@ class TestPopulation(unittest.TestCase):
 
     def  testInsertAfterLoci(self):
         'Testing insert before loci of a population'
-        pop = population(subPop=[7,3,4], loci=[4,5,1])
+        pop = population(size=[7,3,4], loci=[4,5,1])
         InitByFreq(pop, [.2, .3, .5])
         pop1 = pop.clone()
         self.assertRaises(exceptions.ValueError, pop.insertAfterLoci, idx=[0,5], pos=[0,0.5])
@@ -1214,7 +1210,7 @@ class TestPopulation(unittest.TestCase):
 
     def testResizePopulation(self):
         'Testing population resize'
-        pop = population(subPop=[7,3,4], loci=[4,5,1])
+        pop = population(size=[7,3,4], loci=[4,5,1])
         InitByFreq(pop, [.2, .3, .5])
         pop1 = pop.clone()
         pop2 = pop.clone()
@@ -1235,7 +1231,7 @@ class TestPopulation(unittest.TestCase):
 
     def testSexSplitter(self):
         'Test sex virtual subpop splitter'
-        pop = population(subPop=[20, 80])
+        pop = population(size=[20, 80])
         InitByFreq(pop, [0.4, 0.6])
         Stat(pop, numOfMale=True)
         pop.setVirtualSplitter(sexSplitter(), 1)
@@ -1266,7 +1262,7 @@ class TestPopulation(unittest.TestCase):
 
     def testAffectionSplitter(self):
         'Test sex virtual subpop splitter'
-        pop = population(subPop=[20, 80])
+        pop = population(size=[20, 80])
         InitByFreq(pop, [0.4, 0.6])
         MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
         Stat(pop, numOfAffected=True)

@@ -8133,9 +8133,9 @@ Usage:
 
 Arguments:
 
-    size:           population size. Can be ignored if subPop is
-                    specified. In that case, size is the sum of
-                    subPop. Default to 0.
+    size:           An array of subpopulation sizes. If a single
+                    number is given, it will be the size of a single
+                    subpopulation of the whole  population.
     ploidy:         number of sets of homologous copies of
                     chromosomes. Default to 2 (diploid). Please use
                     Haplodiploid to specify a haplodiploid
@@ -8168,10 +8168,7 @@ Arguments:
                     positions, although they are usually intepreted as
                     centiMorgans. The default values are 1, 2, etc. on
                     each chromosome.
-    subPop:         an array of subpopulation sizes. Default value is
-                    [size] which means a single subpopulation of the
-                    whole  population. If both size and subPop are
-                    provided, subPop should add up to size.
+    subPop:         obsolete parameter
     ancestralDepth: number of most recent ancestral generations to
                     keep during evolution. Default to 0, which means
                     only the current generation will be available. You

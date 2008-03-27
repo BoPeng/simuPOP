@@ -347,7 +347,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testCloneMating(self):
         'Testing clone mating scheme'
         TurnOnDebug(DBG_MATING)
-        pop = population(subPop=[100, 200])
+        pop = population(size=[100, 200])
         InitByFreq(pop, [0.3, 0.7])
         simu = simulator(pop, cloneMating(numOffspring=2))
         simu.step(ops=[])
@@ -360,7 +360,7 @@ class TestMatingSchemes(unittest.TestCase):
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [2]*150)
-        pop = population(subPop=[100, 200])
+        pop = population(size=[100, 200])
         InitByFreq(pop, [.3, .7])
         simu = simulator(pop, cloneMating())
         simu.step()
@@ -401,7 +401,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testHeteroMating(self):
         'Testing heterogeneous mating schemes'
         TurnOnDebug(DBG_MATING)
-        pop = population(subPop=[100, 200])
+        pop = population(size=[100, 200])
         simu = simulator(pop,
             heteroMating(
                 [randomMating(numOffspring=1, subPop=0),
@@ -474,7 +474,7 @@ class TestMatingSchemes(unittest.TestCase):
 
     def testSequentialParentsChooser(self):
         'Testing sequential parent chooser'
-        pop = population(subPop=[100, 200])
+        pop = population(size=[100, 200])
         InitByFreq(pop, [.3, .7])
         self.assertRaises(exceptions.ValueError, pyMating,
             sequentialParentChooser(),
@@ -486,7 +486,7 @@ class TestMatingSchemes(unittest.TestCase):
 
     def testPedigreeMating(self):
         'Testing pedigree mating'
-        pop = population(subPop=[100, 100], loci=[2,5])
+        pop = population(size=[100, 100], loci=[2,5])
         InitByFreq(pop, [0.2, 0.8])
         simu = simulator(pop, randomMating())
         simu.evolve(
@@ -524,7 +524,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testOneParentPedigreeMating(self):
         'Testing pedigree mating in the one parent cases'
         # testing haploid case
-        pop = population(subPop=[100, 100], loci=[2,5])
+        pop = population(size=[100, 100], loci=[2,5])
         InitByFreq(pop, [0.2, 0.8])
         simu = simulator(pop, selfMating())
         simu.evolve(

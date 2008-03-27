@@ -97,7 +97,7 @@ class TestPerformance(unittest.TestCase):
         p = 0.4
         for N in [10000, 100000, 1000000]:
             print "N=%d" % N
-            pop = population(subPop=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
@@ -380,7 +380,7 @@ class TestPerformance(unittest.TestCase):
         p = 0.4
         for N in [10000]:
             print "N=%d" % N
-            pop = population(subPop=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
@@ -392,7 +392,7 @@ class TestPerformance(unittest.TestCase):
             print "Random mating: %f " % (c2 - c1)
             #
             # with recombination
-            pop = population(subPop=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
@@ -403,7 +403,7 @@ class TestPerformance(unittest.TestCase):
             c2 = time.clock()
             print "Low recombination: %f " % (c2 - c1)
             # with high recombination
-            pop = population(subPop=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
+            pop = population(size=[N/2]*2, loci=[1000], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
@@ -486,7 +486,7 @@ class TestPerformance(unittest.TestCase):
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
         for N in [40000, 400000]:
             print "N=%d" % N
-            pop = population(subPop=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = simulator(pop, binomialSelection())
             p = 0.4
@@ -498,7 +498,7 @@ class TestPerformance(unittest.TestCase):
             c2 = time.clock()
             print "From ind: %f " % (c2 - c1)
             print "Random mating"
-            pop = population(subPop=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
+            pop = population(size=[N/2]*2, loci=[1], infoFields=['a', 'fitness'])
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             p = 0.4
@@ -571,7 +571,7 @@ class TestPerformance(unittest.TestCase):
         # form 0
         c1 = time.clock()
         simu = simulator(
-            population(subPop=[1000]*10, loci=[200]),
+            population(size=[1000]*10, loci=[200]),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
             rep=1)
         simu.evolve(
@@ -591,7 +591,7 @@ class TestPerformance(unittest.TestCase):
         # form 1
         c1 = time.clock()
         simu = simulator(
-            population(subPop=[1000]*10, loci=[200]),
+            population(size=[1000]*10, loci=[200]),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
             rep=1)
         simu.evolve(
@@ -611,7 +611,7 @@ class TestPerformance(unittest.TestCase):
         # form 2
         c1 = time.clock()
         simu = simulator(
-            population(subPop=[1000]*10, loci=[1]*200),
+            population(size=[1000]*10, loci=[1]*200),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
             rep=1)
         simu.evolve(
@@ -629,7 +629,7 @@ class TestPerformance(unittest.TestCase):
         # form 1
         c1 = time.clock()
         simu = simulator(
-            population(subPop=[1000]*10, loci=[200]*10),
+            population(size=[1000]*10, loci=[200]*10),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
             rep=1)
         simu.evolve(

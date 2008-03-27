@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions
 class TestPenetrance(unittest.TestCase):
     
     def setUp(self):
-        self.pop = population(subPop=[500,100,1000], 
+        self.pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1])
         InitByValue(self.pop, 
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -49,7 +49,7 @@ class TestPenetrance(unittest.TestCase):
 
     def testNoInfoField(self):
         'Testing info field for penetrance opeartors'
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1], infoFields=['penetrance'])
         InitByValue(pop, 
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],

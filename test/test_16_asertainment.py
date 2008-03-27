@@ -20,7 +20,7 @@ class TestAscertainment(unittest.TestCase):
 
     def setUp(self):
         simu = simulator(
-            population(subPop=[1000,2000], ploidy=2, loci=[5,10],
+            population(size=[1000,2000], ploidy=2, loci=[5,10],
                 ancestralDepth=2, 
                 infoFields=['fitness', 'father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
@@ -41,7 +41,7 @@ class TestAscertainment(unittest.TestCase):
         self.pop = simu.getPopulation(0)
         # more complicated one
         simu1 = simulator(
-            population(subPop=[5000,20000], ploidy=2, loci=[5,10],
+            population(size=[5000,20000], ploidy=2, loci=[5,10],
                 ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx']),
             randomMating(numOffspring=2, maxNumOffspring=5, mode=MATE_UniformDistribution))
         simu1.evolve(

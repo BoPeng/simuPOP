@@ -655,6 +655,17 @@ def SaveSimulator(simu, *args, **kwargs):
 def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
     maxAllele=ModuleMaxAllele, infoFields=[]):
+    if subPop != []:
+        print 'Parameter subPop is obsolete. Please use size instead'
+        if size != 0:
+            print 'In addition, you can not specify both size and subPop'
+        size = subPop
+    if type(size) == type(0):
+        sz = size
+        sp = []
+    elif type(size) in [types.TupleType, types.ListType]:
+        sz = 0
+        sp = size
     if type(infoFields) not in (type([]), type(())):
         raise exceptions.ValueError('infoFields needs to be an array')
     ld = lociPos
@@ -670,7 +681,7 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
         for i in range(0, len(lociNames)):
             ln.extend( lociNames[i])
     cppModule.population_swiginit(self,
-        cppModule.new_population(size, ploidy, loci, sexChrom, ld, subPop, 
+        cppModule.new_population(sz, ploidy, loci, sexChrom, ld, sp, 
             ancestralDepth, chromNames, alleleNames, ln, maxAllele, infoFields))
 
 new_population.__doc__ = population.__init__.__doc__

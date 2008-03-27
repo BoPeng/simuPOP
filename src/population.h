@@ -118,8 +118,8 @@ public:
 
 	///Create a population object with given size and genotypic structure.
 	/**
-	 \param size population size. Can be ignored if \c subPop is specified.
-	   	In that case, \c size is the sum of \c subPop. Default to \c 0.
+	 \param size An array of subpopulation sizes. If a single number is given,
+		it will be the size of a single subpopulation of the whole population.
 	 \param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
 	   	Please use \c Haplodiploid to specify a haplodiploid population. Note that
 	   	the ploidy number returned for such a population will be 2 and male
@@ -144,10 +144,7 @@ public:
 	   <tt>loci=[2,3]</tt>. simuPOP does not assume a unit for these
 	   positions, although they are usually intepreted as centiMorgans.
 	   The default values are \c 1, \c 2, etc. on each chromosome.
-	 \param subPop an array of subpopulation sizes. Default value is
-	   <tt>[size]</tt>	which means a single subpopulation of the whole
-	   population. If both	\c size and \c subPop are provided,
-	 \c subPop should add up to \c size.
+	 \param subPop obsolete parameter
 	 \param ancestralDepth number of most recent ancestral generations to keep
 	   during evolution. Default to \c 0, which means only the current generation
 	   will be available. You can set it to a positive number \c m to

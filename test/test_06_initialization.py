@@ -58,7 +58,7 @@ class TestInitialization(unittest.TestCase):
      
     def testInitByFreq(self): 
         'Testing operator initByFreq '
-        pop = population(subPop=[500, 1000, 500], loci=[2,4,2])
+        pop = population(size=[500, 1000, 500], loci=[2,4,2])
         # initialize all
         InitByFreq(pop, [.2, .3, .5])
         self.assertGenotypeFreq(pop, [.15, .25, .45],
@@ -146,7 +146,7 @@ class TestInitialization(unittest.TestCase):
         self.assertNotEqual(pop.individual(0), pop.individual(8))
         #
         #Testing atPloidy in initByFreq'
-        pop = population(subPop=[500, 1000, 500], loci=[2,4,2])
+        pop = population(size=[500, 1000, 500], loci=[2,4,2])
         self.clearGenotype(pop)
         InitByFreq(pop, [.2, .3, .5], loci=[2,4,6], atPloidy=0)
         self.assertGenotypeFreq(pop, [.15, .25, .45], [.25, .35, .55],
@@ -205,7 +205,7 @@ class TestInitialization(unittest.TestCase):
         
     def testInitByValue(self):
         'Testing operator initByValue'
-        pop = population(subPop=[500,1000, 500], loci=[2,4,2])
+        pop = population(size=[500,1000, 500], loci=[2,4,2])
         # can initialize an invidiausl
         InitByValue(pop, [0]*5 + [2]*3 + [3]*5 +[4]*3)
         self.assertGenotype(pop, ([0]*5 + [2]*3 + [3]*5 +[4]*3)*pop.popSize())
@@ -258,7 +258,7 @@ class TestInitialization(unittest.TestCase):
         
     def testPyInit(self):
         'Testing operator pyInit'
-        pop = population(subPop=[2,8], loci=[1,2,1])
+        pop = population(size=[2,8], loci=[1,2,1])
         def initAllele(ind, p, sp):
             return sp + ind + p
         PyInit(pop, func=initAllele)
