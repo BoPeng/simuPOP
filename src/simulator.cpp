@@ -254,7 +254,7 @@ bool simulator::evolve(const vectorop & ops,
 		"Please specify only one of parameters end or gen");
 
 	DBG_DO(DBG_GENERAL, if (steps == -1 && end != -1)
-		cout << "Parameter end is obsolete in simulator::evolve(), please use gen instead");
+		cout << "Parameter end is obsolete in simulator::evolve(), please use gen instead" << endl);
 
 	// does not evolve.
 	if (steps == 0)
