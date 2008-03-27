@@ -18,7 +18,7 @@ class TestMigrator(unittest.TestCase):
     
     def testMigrateByCounts(self):
         'Testing migrate by counts'
-        pop = population(subPop=[2000,4000,4000], loci=[2])
+        pop = population(size=[2000,4000,4000], loci=[2])
         Migrate(pop, mode=MigrByCounts, 
             rate = [ [0, 50, 50],
                              [0, 0, 0],
@@ -37,7 +37,7 @@ class TestMigrator(unittest.TestCase):
         
     def testMigrateByProportion(self):
         'Testing migrate by proportion'
-        pop = population(subPop=[2000,4000,4000], loci=[2])
+        pop = population(size=[2000,4000,4000], loci=[2])
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=MigrByProportion, 
             rate = [ [0, .05, .05],
@@ -52,7 +52,7 @@ class TestMigrator(unittest.TestCase):
         
     def testMigrateByProbability(self):
         'Testing migrate by probability'
-        pop = population(subPop=[2000,4000,4000], loci=[2])
+        pop = population(size=[2000,4000,4000], loci=[2])
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=MigrByProbability, 
             rate = [ [0, .05, .05],
@@ -73,7 +73,7 @@ class TestMigrator(unittest.TestCase):
 
     def testMigrateFromTo(self):
         'Testing parameter from and to of migrators'
-        pop = population(subPop=[2000,4000,4000], loci=[2])
+        pop = population(size=[2000,4000,4000], loci=[2])
         # now if we want to inject a mutation whenever fixation happens
         Migrate(pop, mode=MigrByProbability, 
             fromSubPop = [0], toSubPop = [1,2], 
@@ -83,7 +83,7 @@ class TestMigrator(unittest.TestCase):
         assert abs(pop.subPopSize(1) - 4100) < 50
         assert abs(pop.subPopSize(2) - 4100) < 50
         # other parameter form can be used as well
-        pop = population(subPop=[2000,4000,4000], loci=[2])
+        pop = population(size=[2000,4000,4000], loci=[2])
         Migrate(pop, mode=MigrByProbability, 
             fromSubPop = 0, toSubPop = [1,2], 
             rate = [[.05, .05]] )
@@ -93,7 +93,7 @@ class TestMigrator(unittest.TestCase):
     
     def testMigrConstAlleleFreq(self):
         'Testing that migration does not change allele frequency'
-        pop = population(subPop=[2000,4000,4000], loci=[2])
+        pop = population(size=[2000,4000,4000], loci=[2])
         InitByFreq(pop, [.2, .8])
         Stat(pop, alleleFreq=[0])
         af = pop.dvars().alleleFreq[0][1]    # ~.2
@@ -116,7 +116,7 @@ class TestMigrator(unittest.TestCase):
              
     def testPyMigrator(self):
         'Testing operator pyMigrator'
-        #pop = population(subPop=[2,4,4], loci=[2,6])
+        #pop = population(size=[2,4,4], loci=[2,6])
         #InitByFreq(pop, [.2,.4,.4])
         #ind1 = pop.individual(0).arrGenotype(True)
         #PyMigrate(pop, subPopID=[2,2,0,0,2,2,1,1,1,1])
@@ -133,7 +133,7 @@ class TestMigrator(unittest.TestCase):
                 return [ [0.5] ]
             else:
                 return [[0]]
-        pop = population(subPop=[2000,4000], loci=[2])
+        pop = population(size=[2000,4000], loci=[2])
         InitByFreq(pop, [.2, .8])
         simu = simulator(pop, randomMating())
         simu.evolve(
@@ -168,7 +168,7 @@ class TestMigrator(unittest.TestCase):
         if AlleleType() == 'binary':
             return
         #TurnOnDebug(DBG_POPULATION)
-        pop = population(subPop=[4, 6], loci=[1], infoFields=['a','b'])
+        pop = population(size=[4, 6], loci=[1], infoFields=['a','b'])
         pop.arrGenotype(True)[:] = range(20)
         pop.arrIndInfo(True)[:] = range(20)
         self.assertEqual([x.allele(0,0) for x in pop.individuals(0)],
@@ -193,7 +193,7 @@ class TestMigrator(unittest.TestCase):
 
     def testMergeSubPop(self):
         'Testing population merge'
-        pop = population(subPop=[2,4,4], loci=[2,6])
+        pop = population(size=[2,4,4], loci=[2,6])
         MergeSubPops(pop, subPops=[0,2])
         self.assertEqual(pop.subPopSizes(), (6,4,0))
         MergeSubPops(pop, subPops=[0,1], removeEmptySubPops=True)

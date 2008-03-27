@@ -73,7 +73,7 @@ class TestSimulator(unittest.TestCase):
 
     def testClone(self):
         'Testing cloning of simulator'
-        pop = population(subPop=[10,4], loci=[2,5])
+        pop = population(size=[10,4], loci=[2,5])
         simu = simulator(pop, randomMating(), rep = 3)
         simu.evolve(
             preOps = [initByFreq([0.3, .7])],
@@ -96,12 +96,12 @@ class TestSimulator(unittest.TestCase):
         'Testing genotypic structure related functions'
         # genetic structure can also be accessed from simulator
         if AlleleType() != 'binary':
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 maxAllele=4, alleleNames=['_','A','C','T','G']) 
         else:
-            pop = population(size=100, ploidy=2, loci=[5, 7], 
-                subPop=[20, 80], lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
                 alleleNames=['1','2']) 
         #
         simu = simulator(pop, noMating() )

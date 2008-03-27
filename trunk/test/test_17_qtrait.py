@@ -19,7 +19,7 @@ import unittest, os, sys, exceptions, math, random
 class TestQuanTrait(unittest.TestCase):
     
     def setUp(self):
-        self.pop = population(subPop=[5000], 
+        self.pop = population(size=[5000], 
             ploidy=2, loci = [1], infoFields=['qtrait'])
         InitByValue(self.pop, 
             value = [[0,0],[0,1],[1,1]],

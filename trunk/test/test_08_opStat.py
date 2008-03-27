@@ -27,7 +27,7 @@ class TestStat(unittest.TestCase):
 
     def testPopSize(self):
         'Testing calculation of population (subPopulation) size'
-        pop = population(subPop=[200,800])
+        pop = population(size=[200,800])
         Stat(pop, popSize=1)
         self.assertEqual(pop.dvars().numSubPop, 2)
         self.assertEqual(pop.dvars().popSize, 1000)
@@ -37,7 +37,7 @@ class TestStat(unittest.TestCase):
 
     def testNumOfMale(self):
         'Testing counting number of male'
-        pop = population(subPop=[200, 800])
+        pop = population(size=[200, 800])
         for i in range(100):
             pop.individual(i,0).setSex(Male)
             pop.individual(i,1).setSex(Male)
@@ -55,7 +55,7 @@ class TestStat(unittest.TestCase):
             
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'
-        pop = population(subPop=[200, 800])
+        pop = population(size=[200, 800])
         for i in range(100):
             pop.individual(i,0).setAffected(True)
             pop.individual(i,1).setAffected(True)
@@ -79,7 +79,7 @@ class TestStat(unittest.TestCase):
         
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1])
         InitByValue(pop, 
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -110,7 +110,7 @@ class TestStat(unittest.TestCase):
 
     def testNumOfAlleles(self):
         'Testing calculation of number of alleles'
-        pop = population(subPop=[5000,15000], loci=[1])
+        pop = population(size=[5000,15000], loci=[1])
         InitByFreq(pop, [.2, 0, .5, .3])
         Stat(pop, numOfAlleles=[0])
         if AlleleType() == 'binary':
@@ -124,7 +124,7 @@ class TestStat(unittest.TestCase):
         
     def testHeteroFreq(self):
         'Testing counting of heterozygote frequency'
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1])
         if AlleleType() == 'binary':
             InitByValue(pop, 
@@ -197,7 +197,7 @@ class TestStat(unittest.TestCase):
         
     def testExpHetero(self):
         'Testing expected heterozygosity 1-sum p_i2'
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1])
         InitByValue(pop, 
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -212,7 +212,7 @@ class TestStat(unittest.TestCase):
 
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1])
         InitByValue(pop, 
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -250,7 +250,7 @@ class TestStat(unittest.TestCase):
 
     def testFst(self):
         'Testing calculation of Fst value'    
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [1])
         InitByValue(pop, 
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
@@ -276,7 +276,7 @@ class TestStat(unittest.TestCase):
     def testHaploFreq(self):
         'Testing calculation of haplotype frequency'
         # test haplotype frequency
-        pop = population(subPop=[5000,1000], ploidy=2, loci = [10])
+        pop = population(size=[5000,1000], ploidy=2, loci = [10])
         if AlleleType() == 'binary':
             InitByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
@@ -298,7 +298,7 @@ class TestStat(unittest.TestCase):
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
         #TurnOnDebug(DBG_STATOR)
-        pop = population(subPop=[500,100,1000], 
+        pop = population(size=[500,100,1000], 
             ploidy=2, loci = [5])
         InitByFreq(pop, freq)
         if AlleleType() == 'binary':
@@ -415,7 +415,7 @@ class TestStat(unittest.TestCase):
     def testAssociation(self):
         'Testing calculation of association between two loci'
         #TurnOnDebug(DBG_STATO
-        pop = population(subPop=[500,100,1000], ploidy=2, loci = [5])
+        pop = population(size=[500,100,1000], ploidy=2, loci = [5])
         #
         # FIXME:
         #
@@ -490,7 +490,7 @@ class TestStat(unittest.TestCase):
 
     def testCombinedStats(self):
         '''Resting dependency of combined statistics'''
-        pop = population(subPop=[500,100,1000], ploidy=2, loci = [5])
+        pop = population(size=[500,100,1000], ploidy=2, loci = [5])
         InitByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])
         assert pop.vars().has_key('alleleFreq')
