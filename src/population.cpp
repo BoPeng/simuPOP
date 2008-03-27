@@ -89,11 +89,11 @@ population::population(ULONG size,
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
-	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, 1.5),
+	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, Haplodiploid),
 		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
 
-	this->setGenoStructure(static_cast<UINT>(ploidy), loci, sexChrom,
-		fcmp_ne(ploidy, 1.5), lociPos, chromNames, alleleNames,
+	this->setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
+		loci, sexChrom, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
 		lociNames, maxAllele, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'

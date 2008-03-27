@@ -56,7 +56,7 @@ class TestPopulation(unittest.TestCase):
             population, size=-10)
         self.assertRaises((exceptions.TypeError, exceptions.OverflowError),
             population, subPop=[-10])
-        self.assertRaises((exceptions.TypeError, exceptions.OverflowError), 
+        self.assertRaises((exceptions.ValueError, exceptions.OverflowError), 
             population, ploidy=-1)
         # lociDist is depreciated
         self.assertRaises(exceptions.TypeError,
@@ -113,6 +113,7 @@ class TestPopulation(unittest.TestCase):
         #
         self.assertEqual(pop.ploidy(), 2)
         self.assertEqual(pop.ploidyName(), 'diploid')
+        self.assertEqual(pop.haplodiploid(), False)
         #
         self.assertEqual(pop.numChrom(), 2)
         self.assertEqual(pop.chromName(0), "ch1")
@@ -172,6 +173,14 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.locusName(1), 'lb')
         self.assertEqual(pop.locusName(2), 'lc')
         self.assertRaises(exceptions.IndexError, pop.locusName, 5)
+
+    def testHaplodiploid(self):
+        'Testing haplodiploid populations'
+        pop = population(size=100, ploidy=Haplodiploid, loci=[5, 7])
+        self.assertEqual(pop.ploidy(), 2)
+        self.assertEqual(pop.ploidyName(), 'haplodiploid')
+        self.assertEqual(pop.haplodiploid(), True)
+
         
     def testPopProperties(self):
         'Testing population properties'

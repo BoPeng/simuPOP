@@ -583,6 +583,7 @@ parentChooser::individualPair pedigreeParentsChooser::chooseParents()
 void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_selection = pop.selectionOn(sp);
+	m_index.clear();
 
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
 	// It is a good idea to cache IndIterators. This is however inefficient
@@ -666,7 +667,8 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	}
 
 	DBG_FAILIF(hasAlphaMale && (m_numMale == 0 || m_numFemale == 0),
-		ValueError, "No alpha individual or individual of opposite sex is found");
+		ValueError, "No alpha individual or individual of opposite sex is found."
+		+ toStr(m_alphaNum) + "'" + m_alphaField + "'");
 
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
