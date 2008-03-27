@@ -57,7 +57,7 @@ simu.evolve(
         pyEval(r"'%f    ' % LD[0][1]", step=25),
         pyEval(r"'\n'", rep=REP_LAST, step=25)
     ],
-    end=100
+    gen=100
 )
 r.dev_print(file='log/LDdecay.eps')
 #end
@@ -67,10 +67,9 @@ r.dev_off()
 
 #file log/genoStru.log
 # create a population, most parameters have default values
-pop = population(size=5, ploidy=2, loci=[5,10],
+pop = population(size=[2,3], ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'],
-    subPop=[2,3], maxAllele=3)
+    alleleNames=['A','C','T','G'], maxAllele=3)
 print pop.popSize()
 print pop.ploidy()
 print pop.ploidyName()
@@ -104,14 +103,13 @@ WF = population(size=100, ploidy=1, loci=[1])
 
 # a diploid population of size 10
 # there are two chromosomes with 5 and 7 loci respectively
-pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
+pop = population(size=[2, 8], ploidy=2, loci=[5, 7])
 
 # a population with SNP markers (with names A,C,T,G
 # range() are python functions
-pop = population(size=5, ploidy=2, loci=[5,10],
+pop = population(size=[2,3], ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'],
-    subPop=[2,3], maxAllele=3)
+    alleleNames=['A','C','T','G'], maxAllele=3)
 #end
 
 #file log/popAndOperator.log
@@ -123,7 +121,7 @@ simu.evolve(
     kamMutator(rate=0.001, rep=1),
     kamMutator(rate=0.0001, rep=2)
   ],
-  end=10
+  gen=10
 )
 #end
 
@@ -138,10 +136,9 @@ InitByFreq(pop, [.2, .3, .4, .1])
 
 
 #file log/dumpPop.log
-pop = population(size=5, ploidy=2, loci=[5,10],
+pop = population(size=[2,3], ploidy=2, loci=[5,10],
     lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'],
-    subPop=[2,3], maxAllele=3)
+    alleleNames=['A','C','T','G'], maxAllele=3)
 # .apply form
 initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
@@ -335,7 +332,7 @@ def randomChooser(pop, sp):
     while True:
         yield males[randint(0, nm-1)], females[randint(0, nf-1)]
 
-pop = population(subPop=[100, 20], loci=[1])
+pop = population(size=[100, 20], loci=[1])
 # this will initialize sex randomly
 InitByFreq(pop, [0.2, 0.8])
 rc1 = randomChooser(pop, 0)
@@ -384,7 +381,7 @@ op2 = output("a", begin=-5, end=-1, step=2)
 op3 = output("a", at=[2,5,10])
 op4 = output("a", at=[-10,-5,-1])
 simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
-               end=10)
+               gen=10)
 #end
 
 
@@ -499,7 +496,7 @@ simu.evolve(
 
 
 #file log/initByFreq.log
-simu = simulator( population(subPop=[2,3], loci=[5,7]),
+simu = simulator( population(size=[2,3], loci=[5,7]),
     randomMating(), rep=1)
 simu.step([
     initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
@@ -524,7 +521,7 @@ simu.step([
 
 
 #file log/pyMigrator.log
-simu = simulator(population(subPop=[2,3], loci=[2,5]),
+simu = simulator(population(size=[2,3], loci=[2,5]),
     randomMating())
 # an Numeric array, force to Int type
 spID = [2,2,1,1,0]
@@ -608,7 +605,7 @@ simu.evolve([
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     preOps=[  initByFreq(alleleFreq=[.2,.8])],
-    end=300)
+    gen=300)
 #end
 
 #file log/pySelector.log
@@ -638,11 +635,11 @@ simu.evolve([
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
     ],
     preOps=[  initByFreq(alleleFreq=[.2,.8])],
-    end=100)
+    gen=100)
 #end
 
 #file log/pySubset.log
-simu = simulator(population(subPop=[2,3], loci=[3,4], infoFields=['fitness']),
+simu = simulator(population(size=[2,3], loci=[3,4], infoFields=['fitness']),
     randomMating())
 simu.step([
     initByFreq([.3,.5,.2]),
@@ -660,8 +657,8 @@ simu.step([
 from simuUtil import *
 from simuRPy import *
 
-simu = simulator( population(size=200, ploidy=2, loci=[3,4],
-  subPop=[50,50,100]), randomMating(), rep=4)
+simu = simulator( population(size=[50,50,100], ploidy=2, loci=[3,4]),
+    randomMating(), rep=4)
 
 # migrate
 migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -675,7 +672,7 @@ simu.evolve([
    varPlotter('subPopSize', numRep=4, byRep=1, 
      varDim=3, win=10, title='subPop size', saveAs='log/simuDemo')
    ],
-   end=30
+   gen=30
 )
 
 #end
@@ -708,7 +705,7 @@ simu.evolve(
       varDim=popSize, win=endGen, numRep=numRep,
       title='affected status', saveAs="ifElse")
   ],
-  end=endGen,
+  gen=endGen,
   dryrun=False
 )
 #end
@@ -896,7 +893,7 @@ simu.evolve([
    #varPlotter(expr='LD[0][1]', title='Linkage disequilibrium',
    #  numRep = 4, ytitle='LD', saveAs='LD')
    ], preOps=[init],
-   end=10
+   gen=10
 )
 
 #end
@@ -940,8 +937,7 @@ recombine = recombinator( rate = recombinationRate )
 
 # create a simulator 
 simu = simulator(
-    population(size=popSize, ploidy=2, loci=loci,
-      subPop=subPopSize),
+    population(size=subPopSize, ploidy=2, loci=loci),
     randomMating(numOffspring = numOffspring,
                        newSubPopSize=subPopSize) )
 #
@@ -954,7 +950,7 @@ simu.evolve([
     endl(rep=REP_LAST)
     ],
     preOps=[init],
-    end=endGen)
+    gen=endGen)
 
 
 #end
@@ -1008,7 +1004,7 @@ simu = simulator(pop,
 simu.evolve(
   [migr, stat(popSize=True),
    pyEval('list(subPopSize)'), endl()],
-  preOps = [ initMigr ], end=10
+  preOps = [ initMigr ], gen=10
   )
 
 #end

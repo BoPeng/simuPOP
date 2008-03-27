@@ -42,7 +42,7 @@ pop.individual(20).setAllele(1, 0)
 #end
 
 #file log/ref_absIndex.log
-pop = population(subPop=[20, 30], loci=[5, 6])
+pop = population(size=[20, 30], loci=[5, 6])
 print pop.chromLocusPair(7)
 print pop.absLocusIndex(1,1)
 print pop.absIndIndex(10, 1)
@@ -59,7 +59,7 @@ simu.evolve(
         kamMutator(rate=0.001, rep=1),
         kamMutator(rate=0.0001, rep=2)
     ],
-    end=10
+    gen=10
 )
 #end
 
@@ -111,10 +111,9 @@ arr1[:] = [30,40, 50]
 
 
 #file log/ref_dumpPop.log
-pop = population(size=5, ploidy=2, loci=[5,10],
+pop = population(size=[2,3], ploidy=2, loci=[5,10],
         lociPos=[range(0,5),range(0,20,2)],
-        alleleNames=['A','C','T','G'],
-        subPop=[2,3], maxAllele=3)
+        alleleNames=['A','C','T','G'], maxAllele=3)
 # .apply form
 initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
@@ -124,7 +123,7 @@ Dump(pop)
 
 #file log/ref_popVars.log
 from simuUtil import ListVars
-pop = population(subPop=[1000, 2000], loci=[1])
+pop = population(size=[1000, 2000], loci=[1])
 InitByFreq(pop, [0.2, 0.8])
 ListVars(pop.vars(), useWxPython=False)
 Stat(pop, popSize=1, alleleFreq=[0])
@@ -139,7 +138,7 @@ print pop.dvars(1).alleleNum[0][1]
 
 
 #file log/ref_localNamespace.log
-pop = population(subPop=[1000, 2000], loci=[1])
+pop = population(size=[1000, 2000], loci=[1])
 InitByFreq(pop, [0.2, 0.8])
 Stat(pop, popSize=1, alleleFreq=[0])
 print pop.evaluate('alleleNum[0][0] + alleleNum[0][1]')
@@ -171,7 +170,7 @@ simu.evolve(
         pyEval(r'"gen %d, rep %d, num %d, myNum %d\n"' \
             ' % (gen, rep, alleleNum[0][0], myNum)')
         ],
-    end=2
+    gen=3
 )
 #end
 
@@ -351,7 +350,7 @@ simu.evolve(
 
 
 #file log/ref_pySubset.log
-simu = simulator(population(subPop=[2,3], loci=[3,4], infoFields=['fitness']),
+simu = simulator(population(size=[2,3], loci=[3,4], infoFields=['fitness']),
         randomMating())
 simu.step([
         initByFreq([.3,.5,.2]),
@@ -375,7 +374,7 @@ def randomChooser(pop, sp):
     while True:
         yield males[randint(0, nm-1)], females[randint(0, nf-1)]
 
-pop = population(subPop=[1000, 200], loci=[1], infoFields=['age'])
+pop = population(size=[1000, 200], loci=[1], infoFields=['age'])
 # this will initialize sex randomly
 InitByFreq(pop, [0.2, 0.8])
 for ind in pop.individuals():
@@ -400,8 +399,8 @@ for i in range(5):
 from simuUtil import *
 from simuRPy import *
 
-simu = simulator( population(size=200, ploidy=2, loci=[3,4],
-    subPop=[50,50,100]), randomMating(), rep=4)
+simu = simulator( population(size=[50,50,100], ploidy=2, loci=[3,4]),
+    randomMating(), rep=4)
 
 # migrate
 migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
@@ -415,7 +414,7 @@ simu.evolve([
      varPlotter('subPopSize', numRep=4, byRep=1, 
          varDim=3, win=10, title='subPop size', saveAs='log/ref_simuDemo')
      ],
-     end=30
+     gen=30
 )
 
 #end
@@ -448,7 +447,7 @@ simu.evolve(
             varDim=popSize, win=endGen, numRep=numRep,
             title='affected status', saveAs="ifElse")
     ],
-    end=endGen,
+    gen=endGen,
     dryrun=False
 )
 #end
@@ -636,7 +635,7 @@ simu.evolve([
     #varPlotter(expr='LD[0][1]', title='Linkage disequilibrium',
     #    numRep = 4, ytitle='LD', saveAs='LD')
     ], preOps=[init],
-    end=10
+    gen=10
 )
 
 #end
@@ -680,8 +679,7 @@ recombine = recombinator( rate = recombinationRate )
 
 # create a simulator 
 simu = simulator(
-    population(size=popSize, ploidy=2, loci=loci,
-        subPop=subPopSize),
+    population(size=subPopSize, ploidy=2, loci=loci),
     randomMating(numOffspring = numOffspring,
                          newSubPopSize=subPopSize) )
 #
@@ -694,7 +692,7 @@ simu.evolve([
     endl(rep=REP_LAST)
     ],
     preOps=[init],
-    end=endGen)
+    gen=endGen)
 
 
 #end
@@ -748,7 +746,7 @@ simu = simulator(pop,
 simu.evolve( [
     migr, stat(popSize=True),
     pyEval('list(subPopSize)'), endl()],
-    preOps = [ initMigr ], end=10
+    preOps = [ initMigr ], gen=10
 )
 
 #end

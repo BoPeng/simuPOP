@@ -13622,7 +13622,8 @@ Description:
 
 Usage:
 
-    x.evolve(ops, preOps=[], postOps=[], end=-1, dryrun=False)
+    x.evolve(ops, preOps=[], postOps=[], end=-1, gen=-1,
+      dryrun=False)
 
 Details:
 
@@ -13650,16 +13651,16 @@ Arguments:
     postOps:        operators that will be applied after evolution.
                     evolve() function will not check if they are
                     active.
-    end:            ending generation. Default to -1. In this case,
-                    there is no ending generation and a  simulator
-                    will only be ended by a  terminator. Otherwise, it
-                    should be a number greater than current generation
-                    number.
+    gen:            generations to evolve. Default to -1. In this
+                    case, there is no ending generation and a
+                    simulator will only be ended by a  terminator.
+                    Note that simu.gen() refers to the begining of a
+                    generation, and starts at 0.
     dryrun:         dryrun mode. Default to False.
 
 Note:
 
-    When end = -1, you can not specify negative generation parameters
+    When gen = -1, you can not specify negative generation parameters
     to operators. How would an operator know which genertion is the -1
     genertion if no ending genertion is given?
 

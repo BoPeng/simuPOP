@@ -15,6 +15,7 @@ version 0.8.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: add haplodiploid option to GenoStructure. Recombinator now handles such
 		populations correctly.
   - CHG: make the subPop parameter of population() function obsolete.
+  - CHG: add parameter gen, and make parameter end in simulator::evolve obsolete.
 
 version 0.8.4 - (Rev 1456) Mar 8, 2008
   - NEW: add support for other posix systems like HP-UX
