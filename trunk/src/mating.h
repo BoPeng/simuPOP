@@ -703,7 +703,7 @@ public:
 	   	not given, \c alphaNum random individuals with \c alphaSex
 	   	will be chosen. If selection is enabled, individuals with higher
 	   	fitness values have higher probability to be selected. There is
-		by default no alpha individual (\c alphaNum = 0).
+	   	by default no alpha individual (\c alphaNum = 0).
 	 \param alphaField if an information field is given, individuals
 	   	with non-zero values at this information field are alpha individuals.
 	   	Note that these individuals must have \c alphaSex.
@@ -714,7 +714,7 @@ public:
 	 */
 	randomParentsChooser(bool replacement = true, bool replenish = false,
 	                     Sex polySex = Male, UINT polyNum = 1,
-		Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) : 
+	                     Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
 		parentChooser(2),
 		m_replacement(replacement), m_replenish(replenish),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0), m_lastParent(NULL),
@@ -750,7 +750,7 @@ private:
 	bool m_replenish;
 	Sex m_polySex;
 	UINT m_polyNum;
-	
+
 	Sex m_alphaSex;
 
 	UINT m_alphaNum;
@@ -1243,6 +1243,101 @@ protected:
 	cloneOffspringGenerator m_offGenerator;
 };
 
+
+class baseRandomMating : public mating
+{
+public:
+	baseRandomMating(bool replacement = true,
+	                 bool replenish = false,
+	                 Sex polySex = Male,
+	                 UINT polyNum = 1,
+	                 Sex alphaSex = Male,
+	                 UINT alphaNum = 0,
+	                 string alphaField = string(),
+	                 double numOffspring = 1.,
+	                 PyObject * numOffspringFunc = NULL,
+	                 UINT maxNumOffspring = 0,
+	                 UINT mode = MATE_NumOffspring,
+	                 double sexParam = 0.5,
+	                 UINT sexMode = MATE_RandomSex,
+	                 vectorlu newSubPopSize = vectorlu(),
+	                 string newSubPopSizeExpr = "",
+	                 PyObject * newSubPopSizeFunc = NULL,
+	                 bool contWhenUniSex = true,
+	                 SubPopID subPop = InvalidSubPopID,
+	                 SubPopID virtualSubPop = InvalidSubPopID,
+	                 double weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode),
+		m_replacement(replacement), m_replenish(replenish),
+		m_polySex(polySex), m_polyNum(polyNum),
+		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
+		m_contWhenUniSex(contWhenUniSex)
+	{
+	}
+
+
+	/// destructor
+	~baseRandomMating()
+	{
+	}
+
+
+	/// deep copy of a random mating scheme
+	virtual mating * clone() const
+	{
+		return new baseRandomMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+		// test if individual has sex
+		// if not, will yield compile time error.
+		pop.indBegin()->sex();
+
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the random mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::sexual random mating>";
+	}
+
+
+	/// CPPONLY perform random mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator * > & ops);
+
+protected:
+	mendelianOffspringGenerator m_offspringGenerator;
+
+	/// random parents chooser parameters
+	bool m_replacement;
+	bool m_replenish;
+	Sex m_polySex;
+	UINT m_polyNum;
+	Sex m_alphaSex;
+	UINT m_alphaNum;
+	string m_alphaField;
+
+	/// if no other sex exist in a subpopulation,
+	/// same sex mating will occur if m_contWhenUniSex is set.
+	/// otherwise, an exception will be thrown.
+	bool m_contWhenUniSex;
+};
+
+
 /// a mating scheme of basic sexually random mating
 /**
    In this scheme, sex information is considered for each individual,
@@ -1252,7 +1347,7 @@ protected:
    parameter (\c contWhenUniSex) can be set to determine the behavior.
    Default to continuing without warning.
  */
-class randomMating : public mating
+class randomMating : public baseRandomMating
 {
 public:
 	/**
@@ -1274,16 +1369,10 @@ public:
 	             SubPopID subPop = InvalidSubPopID,
 	             SubPopID virtualSubPop = InvalidSubPopID,
 	             double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring, numOffspringFunc,
-		                     maxNumOffspring, mode, sexParam, sexMode),
-		m_contWhenUniSex(contWhenUniSex)
-	{
-	}
-
-
-	/// destructor
-	~randomMating()
+		:  baseRandomMating(true, false, Male, 1, Male, 0, string(),
+		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
+		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
+		                    newSubPopSizeFunc, contWhenUniSex, subPop, virtualSubPop, weight)
 	{
 	}
 
@@ -1295,41 +1384,12 @@ public:
 	}
 
 
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-		// test if individual has sex
-		// if not, will yield compile time error.
-		pop.indBegin()->sex();
-
-#ifndef OPTIMIZED
-		if (pop.ploidy() != 2)
-			cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
-
-		return true;
-	}
-
-
 	/// used by Python print function to print out the general information of the random mating scheme
 	virtual string __repr__()
 	{
 		return "<simuPOP::sexual random mating>";
 	}
 
-
-	/// CPPONLY perform random mating
-	virtual bool mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator * > & ops);
-
-protected:
-	mendelianOffspringGenerator m_offspringGenerator;
-
-	/// if no other sex exist in a subpopulation,
-	/// same sex mating will occur if m_contWhenUniSex is set.
-	/// otherwise, an exception will be thrown.
-	bool m_contWhenUniSex;
 
 };
 
@@ -1342,7 +1402,7 @@ protected:
    pairs are exhausted, parameter \c replenish=True allows for the replenishment
    of one or both sex groups.
  */
-class monogamousMating : public mating
+class monogamousMating : public baseRandomMating
 {
 public:
 	/**
@@ -1364,17 +1424,10 @@ public:
 	                 SubPopID subPop = InvalidSubPopID,
 	                 SubPopID virtualSubPop = InvalidSubPopID,
 	                 double weight = 0)
-		:  mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring, numOffspringFunc,
-		                     maxNumOffspring, mode, sexParam, sexMode),
-		m_replenish(replenish),
-		m_contWhenUniSex(contWhenUniSex)
-	{
-	}
-
-
-	/// destructor
-	~monogamousMating()
+		:  baseRandomMating(false, replenish, Male, 1, Male, 0, string(),
+		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
+		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
+		                    newSubPopSizeFunc, contWhenUniSex, subPop, virtualSubPop, weight)
 	{
 	}
 
@@ -1386,44 +1439,12 @@ public:
 	}
 
 
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-		// test if individual has sex
-		// if not, will yield compile time error.
-		pop.indBegin()->sex();
-
-#ifndef OPTIMIZED
-		if (pop.ploidy() != 2)
-			cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
-
-		return true;
-	}
-
-
 	/// used by Python print function to print out the general information of the random mating scheme
 	virtual string __repr__()
 	{
 		return "<simuPOP::monogamous random mating>";
 	}
 
-
-	/// CPPONLY perform random mating
-	virtual bool mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator * > & ops);
-
-protected:
-	mendelianOffspringGenerator m_offspringGenerator;
-
-	///
-	bool m_replenish;
-
-	/// if no other sex exist in a subpopulation,
-	/// same sex mating will occur if m_contWhenUniSex is set.
-	/// otherwise, an exception will be thrown.
-	bool m_contWhenUniSex;
 
 };
 
@@ -1436,28 +1457,27 @@ protected:
    Parents returned from this parents chooser will yield the same male (or female)
    parents, each with varying partners.
  */
-class polygamousMating : public mating
+class polygamousMating : public baseRandomMating
 {
 public:
 	/**
+	 \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
+	 \param polyNum Number of sex partners.
 	 \param replacement If set to \c True, a parent can be chosen to mate again.
 	   		Default to False.
 	 \param replenish In case that \c replacement=True, whether or not replenish
 	   		 a sex group when it is exhausted.
-	 \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
-	 \param polyNum Number of sex partners.
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
-	polygamousMating(
+	polygamousMating(Sex polySex = Male,
 	                 UINT polyNum = 1,
-	                 double sexParam = 0.5,
 	                 bool replacement = false,
 	                 bool replenish = false,
 	                 double numOffspring = 1.,
 	                 PyObject * numOffspringFunc = NULL,
 	                 UINT maxNumOffspring = 0,
 	                 UINT mode = MATE_NumOffspring,
-	                 Sex polySex = Male,
+	                 double sexParam = 0.5,
 	                 UINT sexMode = MATE_RandomSex,
 	                 vectorlu newSubPopSize = vectorlu(),
 	                 PyObject * newSubPopSizeFunc = NULL,
@@ -1466,18 +1486,10 @@ public:
 	                 SubPopID subPop = InvalidSubPopID,
 	                 SubPopID virtualSubPop = InvalidSubPopID,
 	                 double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring, numOffspringFunc,
-		                     maxNumOffspring, mode, sexParam, sexMode),
-		m_replacement(replacement), m_replenish(replenish),
-		m_polySex(polySex), m_polyNum(polyNum),
-		m_contWhenUniSex(contWhenUniSex)
-	{
-	}
-
-
-	/// destructor
-	~polygamousMating()
+		:  baseRandomMating(replacement, replenish, polySex, polyNum, Male, 0, string(),
+		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
+		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
+		                    newSubPopSizeFunc, contWhenUniSex, subPop, virtualSubPop, weight)
 	{
 	}
 
@@ -1489,48 +1501,12 @@ public:
 	}
 
 
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-		// test if individual has sex
-		// if not, will yield compile time error.
-		pop.indBegin()->sex();
-
-#ifndef OPTIMIZED
-		if (pop.ploidy() != 2)
-			cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
-
-		return true;
-	}
-
-
 	/// used by Python print function to print out the general information of the random mating scheme
 	virtual string __repr__()
 	{
 		return "<simuPOP::sexual random mating>";
 	}
 
-
-	/// CPPONLY perform random mating
-	virtual bool mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator * > & ops);
-
-protected:
-	mendelianOffspringGenerator m_offspringGenerator;
-
-	///
-	bool m_replacement;
-	bool m_replenish;
-	Sex m_polySex;
-	UINT m_polyNum;
-
-
-	/// if no other sex exist in a subpopulation,
-	/// same sex mating will occur if m_contWhenUniSex is set.
-	/// otherwise, an exception will be thrown.
-	bool m_contWhenUniSex;
 
 };
 
@@ -1543,7 +1519,7 @@ protected:
    only these alpha individuals are able to mate with random individuals of
    opposite sex.
  */
-class alphaMating : public mating
+class alphaMating : public baseRandomMating
 {
 public:
 	/**
@@ -1565,16 +1541,10 @@ public:
 	            SubPopID subPop = InvalidSubPopID,
 	            SubPopID virtualSubPop = InvalidSubPopID,
 	            double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring, numOffspringFunc,
-		                     maxNumOffspring, mode, sexParam, sexMode),
-		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField)
-	{
-	}
-
-
-	/// destructor
-	~alphaMating()
+		:  baseRandomMating(true, false, Male, 1, alphaSex, alphaNum, alphaField,
+		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
+		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
+		                    newSubPopSizeFunc, false, subPop, virtualSubPop, weight)
 	{
 	}
 
@@ -1586,35 +1556,13 @@ public:
 	}
 
 
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-#ifndef OPTIMIZED
-		if (pop.ploidy() != 2)
-			cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
-		return true;
-	}
-
-
 	/// used by Python print function to print out the general information of the random mating scheme
 	virtual string __repr__()
 	{
-		return "<simuPOP::sexual random mating>";
+		return "<simuPOP::alpha random mating>";
 	}
 
 
-	/// CPPONLY perform random mating
-	virtual bool mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator * > & ops);
-
-protected:
-	mendelianOffspringGenerator m_offspringGenerator;
-
-	Sex m_alphaSex;
-	UINT m_alphaNum;
-	string m_alphaField;
 };
 
 
