@@ -1244,9 +1244,41 @@ protected:
 };
 
 
+/**
+   This base class defines a general random mating scheme that
+   makes full use of a general random parents chooser, and a Mendelian
+   offspring generator. A general random parents chooser allows
+   selection without replacement, polygemous parents selection
+   (a parent with more than one partners), and the definition of
+   several alpha individuals.
+
+   Direct use of this mating scheme is not recommended.
+ \c randomMating, \c monogemousMating, \c polygemousMating,
+ \c alphaMating are all special cases of this mating scheme.
+   They should be used whenever possible.
+ */
 class baseRandomMating : public mating
 {
 public:
+	/**
+	 \param replacement If set to \c True, a parent can be chosen to mate again.
+	   		Default to False.
+	 \param replenish In case that \c replacement=True, whether or not replenish
+	   		 a sex group when it is exhausted.
+	 \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
+	 \param polyNum Number of sex partners.
+	 \param alphaSex the sex of the alpha individual, i.e. alpha male
+	   		   or alpha female who be the only mating individuals in their
+	   		   sex group.
+	 \param alphaNum Number of alpha individuals. If \c infoField is
+	   		   not given, \c alphaNum random individuals with \c alphaSex
+	   		   will be chosen. If selection is enabled, individuals with higher+               fitness values have higher probability to be selected. There is
+	   		   by default no alpha individual (\c alphaNum = 0).
+	 \param alphaField if an information field is given, individuals
+	   		   with non-zero values at this information field are alpha individuals.
+	   		   Note that these individuals must have \c alphaSex.
+
+	 */
 	baseRandomMating(bool replacement = true,
 	                 bool replenish = false,
 	                 Sex polySex = Male,
@@ -1523,8 +1555,22 @@ class alphaMating : public baseRandomMating
 {
 public:
 	/**
+	 \param alphaSex the sex of the alpha individual, i.e. alpha male
+	   		   or alpha female who be the only mating individuals in their
+	   		   sex group.
+	 \param alphaNum Number of alpha individuals. If \c infoField is
+	   		   not given, \c alphaNum random individuals with \c alphaSex
+	   		   will be chosen. If selection is enabled, individuals with higher+               fitness values have higher probability to be selected. There is
+	   		   by default no alpha individual (\c alphaNum = 0).
+	 \param alphaField if an information field is given, individuals
+	   		   with non-zero values at this information field are alpha individuals.
+	   		   Note that these individuals must have \c alphaSex.
 
 	   Please refer to class \c mating for descriptions of other parameters.
+	   Note: If selection is enabled, it works regularly on on-alpha sex, but
+	   		   works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	   		   are chosen selectively, and selected again during mating.
+
 	 */
 	alphaMating(Sex alphaSex = Male,
 	            UINT alphaNum = 0,
