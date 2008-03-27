@@ -156,12 +156,12 @@ private:
 	
 	/// total number of vsp
 	int m_numVSP;
-	/// currently activated splitter
-	int m_curSplitter;
 	/// the splitter correspond to a vsp
 	vectori m_splitter;
 	/// the real vsp of a splitter correspond to a vsp
 	vectori m_vsp;
+	/// currently activated splitter
+	int m_curSplitter;
 };
 
 
