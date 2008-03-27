@@ -303,7 +303,7 @@ public:
 		// cur = 5,
 		// end = 6
 		// will go two steps.
-		return evolve(ops, preOps, postOps, gen() + steps - 1, dryrun);
+		return evolve(ops, preOps, postOps, - 1, steps, dryrun);
 	}
 
 
@@ -328,21 +328,21 @@ public:
 	 \c evolve() function will \em not check if they are active.
 	 \param postOps operators that will be applied after evolution.
 	 \c evolve() function will \em not check if they are active.
-	 \param end ending generation. Default to \c -1. In this case, there
+	 \param gen generations to evolve. Default to \c -1. In this case, there
 	   is no ending generation and a simulator will only be ended by a
-	   terminator. Otherwise, it should be a number greater than current
-	   generation number.
+	   terminator. Note that simu.gen() refers to the begining of a 
+	   generation, and starts at 0.	 
 	 \param dryrun dryrun mode. Default to \c False.
 	 \result True if evolution performed successfully.
 	 \sa simulator::step()
-	 \note When <tt>end = -1</tt>, you can not specify negative generation
+	 \note When <tt>gen = -1</tt>, you can not specify negative generation
 	   parameters to operators. How would an operator know which
 	   genertion is the -1 genertion if no ending genertion is given?
 	 */
 	bool evolve(const vectorop & ops,
 		const vectorop & preOps = vectorop(),
 		const vectorop & postOps = vectorop(),
-		int end = -1, bool dryrun = false);
+		int end = -1, int gen = -1, bool dryrun = false);
 
 	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
 	/**
