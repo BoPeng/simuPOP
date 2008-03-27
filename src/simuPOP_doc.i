@@ -230,11 +230,12 @@ Description:
 
 Details:
 
-    This  mating scheme is composed of an alphaParentChooser and a
-    Mendelian offspring generator. That is to say, a certain number of
-    alpha  individual (male or female) are determined by alphaNum or
-    an information field. Then, only these alpha individuals are able
-    to mate with random individuals of opposite sex.
+    This  mating scheme is composed of an random parents chooser with
+    alpha individuals, and a Mendelian offspring generator. That is to
+    say, a certain number of alpha  individual (male or female) are
+    determined by alphaNum or an information field. Then, only these
+    alpha individuals are able to mate with random individuals of
+    opposite sex.
 
 "; 
 
@@ -251,19 +252,26 @@ Usage:
 Details:
 
     Please refer to class  mating for descriptions of other
-    parameters.
+    parameters. Note: If selection is enabled, it works regularly on
+    on-alpha sex, but works twice on alpha sex. That is to say,
+    alphaNum alpha indiviudals are chosen selectively, and selected
+    again during  mating.
 
-"; 
+Arguments:
 
-%feature("docstring") simuPOP::alphaMating::~alphaMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~alphaMating()
+    alphaSex:       the sex of the alpha  individual, i.e. alpha male
+                    or alpha female who be the only  mating
+                    individuals in their sex group.
+    alphaNum:       Number of alpha individuals. If infoField is not
+                    given, alphaNum random individuals with alphaSex
+                    will be chosen. If selection is enabled,
+                    individuals with higher+ fitness values have
+                    higher probability to be selected. There is by
+                    default no alpha  individual (alphaNum = 0).
+    alphaField:     if an information field is given, individuals with
+                    non-zero values at this information field are
+                    alpha individuals. Note that these individuals
+                    must have alphaSex.
 
 "; 
 
@@ -279,8 +287,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::alphaMating::isCompatible(const population &pop) const ;
-
 %feature("docstring") simuPOP::alphaMating::__repr__ "
 
 Description:
@@ -293,94 +299,6 @@ Usage:
     x.__repr__()
 
 "; 
-
-%ignore simuPOP::alphaMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
-
-%feature("docstring") simuPOP::alphaParentsChooser "
-
-Details:
-
-    This parents chooser has a fixed number of alpha individuals,
-    either male or female, and they are the only  mating individuals
-    in their respective sex group. Random  mating happens between
-    alpha individuals and the opposite sex group.This parent chooser
-    can be used to simulate polygyny where one male (alpha male) is
-    the father of all offspring born in the patch, or insets of the
-    order hymenopteran, including bees, wasps, and ants, where a queen
-    produce all the offspring in the colony.
-
-"; 
-
-%feature("docstring") simuPOP::alphaParentsChooser::alphaParentsChooser "
-
-Usage:
-
-    alphaParentsChooser(alphaSex=Male, alphaNum=0,
-      alphaField=string)
-
-Details:
-
-    Note: If selection is enabled, it works regularly on on-alpha sex,
-    but works twice on alpha sex. That is to say, alphaNum alpha
-    indiviudals are chosen selectively, and selected again during
-    mating.
-
-Arguments:
-
-    alphaSex:       the sex of the alpha  individual, i.e. alpha male
-                    or alpha female who be the only  mating
-                    individuals in their sex group.
-    alphaNum:       Number of alpha individuals. If infoField is not
-                    given, alphaNum random individuals with alphaSex
-                    will be chosen. If selection is enabled,
-                    individuals with higher fitness values have higher
-                    probability to be selected.
-    infoField:      if an information field is given, individuals with
-                    non-zero values at this information field are
-                    alpha individuals. Note that these individuals
-                    must have alphaSex.
-
-"; 
-
-%feature("docstring") simuPOP::alphaParentsChooser::clone "
-
-Description:
-
-    simuPOP::alphaParentsChooser::clone
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::alphaParentsChooser::initialize(population &pop, SubPopID sp);
-
-%feature("docstring") simuPOP::alphaParentsChooser::finalize "
-
-Description:
-
-    simuPOP::alphaParentsChooser::finalize
-
-Usage:
-
-    x.finalize(pop, sp)
-
-"; 
-
-%feature("docstring") simuPOP::alphaParentsChooser::~alphaParentsChooser "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~alphaParentsChooser()
-
-"; 
-
-%ignore simuPOP::alphaParentsChooser::chooseParents();
 
 %feature("docstring") simuPOP::baseOperator "
 
@@ -739,6 +657,104 @@ Usage:
 "; 
 
 %ignore simuPOP::baseOperator::noOutput();
+
+%feature("docstring") simuPOP::baseRandomMating "
+
+Details:
+
+    This base class defines a general random  mating scheme that makes
+    full use of a general random parents chooser, and a Mendelian
+    offspring generator. A general random parents chooser allows
+    selection without replacement, polygemous parents selection (a
+    parent with more than one partners), and the definition of several
+    alpha individuals.Direct use of this  mating scheme is not
+    recommended.  randomMating, monogemousMating, polygemousMating,
+    alphaMating are all special cases of this  mating scheme. They
+    should be used whenever possible.
+
+"; 
+
+%feature("docstring") simuPOP::baseRandomMating::baseRandomMating "
+
+Description:
+
+    simuPOP::baseRandomMating::baseRandomMating
+
+Usage:
+
+    baseRandomMating(replacement=True, replenish=False,
+      polySex=Male, polyNum=1, alphaSex=Male, alphaNum=0,
+      alphaField=string, numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
+      newSubPopSizeFunc=None, contWhenUniSex=True,
+      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+
+Arguments:
+
+    replacement:    If set to True, a parent can be chosen to mate
+                    again. Default to False.
+    replenish:      In case that replacement=True, whether or not
+                    replenish a sex group when it is exhausted.
+    polySex:        sex of polygamous  mating. Male for polygyny,
+                    Female for polyandry.
+    polyNum:        Number of sex partners.
+    alphaSex:       the sex of the alpha  individual, i.e. alpha male
+                    or alpha female who be the only  mating
+                    individuals in their sex group.
+    alphaNum:       Number of alpha individuals. If infoField is not
+                    given, alphaNum random individuals with alphaSex
+                    will be chosen. If selection is enabled,
+                    individuals with higher+ fitness values have
+                    higher probability to be selected. There is by
+                    default no alpha  individual (alphaNum = 0).
+    alphaField:     if an information field is given, individuals with
+                    non-zero values at this information field are
+                    alpha individuals. Note that these individuals
+                    must have alphaSex.
+
+"; 
+
+%feature("docstring") simuPOP::baseRandomMating::~baseRandomMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~baseRandomMating()
+
+"; 
+
+%feature("docstring") simuPOP::baseRandomMating::clone "
+
+Description:
+
+    deep copy of a random  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::baseRandomMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::baseRandomMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the random  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::baseRandomMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::BernulliTrials "
 
@@ -6038,10 +6054,10 @@ Details:
 
 Usage:
 
-    monogamousMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, replenish=False, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+    monogamousMating(replenish=False, numOffspring=1.,
+      numOffspringFunc=None, maxNumOffspring=0,
+      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
+      newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True, subPop=InvalidSubPopID,
       virtualSubPop=InvalidSubPopID, weight=0)
 
@@ -6051,18 +6067,6 @@ Details:
     parental sex groups in case that they are are exhausted. Default
     to False. Please refer to class  mating for descriptions of other
     parameters.
-
-"; 
-
-%feature("docstring") simuPOP::monogamousMating::~monogamousMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~monogamousMating()
 
 "; 
 
@@ -6078,8 +6082,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::monogamousMating::isCompatible(const population &pop) const ;
-
 %feature("docstring") simuPOP::monogamousMating::__repr__ "
 
 Description:
@@ -6092,8 +6094,6 @@ Usage:
     x.__repr__()
 
 "; 
-
-%ignore simuPOP::monogamousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::mutator "
 
@@ -8033,9 +8033,9 @@ Description:
 
 Usage:
 
-    polygamousMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, replacement=False,
-      replenish=False, polySex=Male, polyNum=1, sexParam=0.5,
+    polygamousMating(polySex=Male, polyNum=1, replacement=False,
+      replenish=False, numOffspring=1., numOffspringFunc=None,
+      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       contWhenUniSex=True, subPop=InvalidSubPopID,
@@ -8043,26 +8043,15 @@ Usage:
 
 Arguments:
 
+    polySex:        sex of polygamous  mating. Male for polygyny,
+                    Female for polyandry.
+    polyNum:        Number of sex partners.
     replacement:    If set to True, a parent can be chosen to mate
                     again. Default to False.
     replenish:      In case that replacement=True, whether or not
-                    replenish a sex group when it is exhausted.
-    polySex:        sex of polygamous  mating. Male for polygyny,
-                    Female for polyandry.
-    polyNum:        Number of sex partners. Please refer to class
-                    mating for descriptions of other parameters.
-
-"; 
-
-%feature("docstring") simuPOP::polygamousMating::~polygamousMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~polygamousMating()
+                    replenish a sex group when it is exhausted. Please
+                    refer to class  mating for descriptions of other
+                    parameters.
 
 "; 
 
@@ -8078,8 +8067,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::polygamousMating::isCompatible(const population &pop) const ;
-
 %feature("docstring") simuPOP::polygamousMating::__repr__ "
 
 Description:
@@ -8092,8 +8079,6 @@ Usage:
     x.__repr__()
 
 "; 
-
-%ignore simuPOP::polygamousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::population "
 
@@ -11674,18 +11659,6 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::randomMating::~randomMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~randomMating()
-
-"; 
-
 %feature("docstring") simuPOP::randomMating::clone "
 
 Description:
@@ -11697,8 +11670,6 @@ Usage:
     x.clone()
 
 "; 
-
-%ignore simuPOP::randomMating::isCompatible(const population &pop) const ;
 
 %feature("docstring") simuPOP::randomMating::__repr__ "
 
@@ -11712,8 +11683,6 @@ Usage:
     x.__repr__()
 
 "; 
-
-%ignore simuPOP::randomMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::randomParentChooser "
 
@@ -11781,20 +11750,26 @@ Details:
     monopoly because this poses a particular order on individuals in
     the offspring generation. This parents chooser also allows
     polygamous  mating by reusing a parent multiple times when
-    returning parents.
+    returning parents, and allows specification of a few alpha
+    individuals who will be the only  mating individuals in their sex
+    group.
 
 "; 
 
 %feature("docstring") simuPOP::randomParentsChooser::randomParentsChooser "
 
-Description:
-
-    simuPOP::randomParentsChooser::randomParentsChooser
-
 Usage:
 
     randomParentsChooser(replacement=True, replenish=False,
-      polySex=Male, polyNum=1)
+      polySex=Male, polyNum=1, alphaSex=Male, alphaNum=0,
+      alphaField=string)
+
+Details:
+
+    Note: If selection is enabled, it works regularly on on-alpha sex,
+    but works twice on alpha sex. That is to say, alphaNum alpha
+    indiviudals are chosen selectively, and selected again during
+    mating.
 
 Arguments:
 
@@ -11806,6 +11781,19 @@ Arguments:
     polySex:        Male (polygyny) or Female (polyandry) parent that
                     will have polyNum sex partners.
     polyNum:        Number of sex partners.
+    alphaSex:       the sex of the alpha  individual, i.e. alpha male
+                    or alpha female who be the only  mating
+                    individuals in their sex group.
+    alphaNum:       Number of alpha individuals. If infoField is not
+                    given, alphaNum random individuals with alphaSex
+                    will be chosen. If selection is enabled,
+                    individuals with higher fitness values have higher
+                    probability to be selected. There is by default no
+                    alpha  individual (alphaNum = 0).
+    alphaField:     if an information field is given, individuals with
+                    non-zero values at this information field are
+                    alpha individuals. Note that these individuals
+                    must have alphaSex.
 
 "; 
 
