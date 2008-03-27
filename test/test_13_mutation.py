@@ -80,7 +80,7 @@ class TestMutator(unittest.TestCase):
         'Testing if mutator would mutate irrelevant locus'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
             randomMating() )
-        simu.evolve([ kamMutator(rate=0.5, loci=[1,4])], end=200)
+        simu.evolve([ kamMutator(rate=0.5, loci=[1,4])], gen=200)
         self.assertGenotype(simu.population(0), 0, 
             loci=[0,2,3])
      
@@ -91,7 +91,7 @@ class TestMutator(unittest.TestCase):
         # simu.apply( [ initByFreq([.2,.8])])
         simu.evolve(
                 preOps =    [ initByFreq([.2,.8])],
-                ops = [ kamMutator(rate=0.1)], end=200)
+                ops = [ kamMutator(rate=0.1)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
@@ -110,7 +110,7 @@ class TestMutator(unittest.TestCase):
             randomMating(), rep=5)
         # simu.apply( [ initByFreq([.2,.8])])
         simu.evolve(preOps=[initByFreq([.2,.8])],
-             ops = [ smmMutator(rate=0.2)], end=200)
+             ops = [ smmMutator(rate=0.2)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
@@ -128,7 +128,7 @@ class TestMutator(unittest.TestCase):
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         simu.evolve( preOps = [ initByFreq([.2,.8])],
-                ops = [ gsmMutator(rate=0.2)], end=200)
+                ops = [ gsmMutator(rate=0.2)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
@@ -157,7 +157,7 @@ class TestMutator(unittest.TestCase):
         pop = population(size=N, ploidy=2, loci=[5])
         simu = simulator(pop, randomMating())
         mut = kamMutator(rate=r, maxAllele=10, loci=[0,2,4])
-        simu.evolve( [mut], end=G)
+        simu.evolve( [mut], gen=G)
         assert abs( mut.mutationCount(0) - 2*N*r[0]*G) < 200, \
             "Number of mutation event is not as expected."
         assert abs( mut.mutationCount(2) - 2*N*r[1]*G) < 200, \

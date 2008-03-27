@@ -78,7 +78,7 @@ class TestSimulator(unittest.TestCase):
         simu.evolve(
             preOps = [initByFreq([0.3, .7])],
             ops = [stat(alleleFreq=range(pop.totNumLoci()))],
-            end = 10
+            gen = 10
         )
         simu1 = simu.clone()
         for i in range(3):
@@ -87,7 +87,7 @@ class TestSimulator(unittest.TestCase):
         # test if a cloned simulator can evolve again
         simu1.evolve(
             ops = [stat(alleleFreq=range(pop.totNumLoci()))],
-            end = 20
+            gen = 20
         )
         
         
@@ -222,7 +222,7 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.infoFields(), ('a', 'b'))
         simu.addInfoFields(['c', 'd'])
         simu.setAncestralDepth(2)
-        simu.evolve(ops=[], end=10)
+        simu.evolve(ops=[], gen=10)
         self.assertEqual(simu.population(0).ancestralDepth(), 2)
         self.assertEqual(simu.infoFields(), ('a', 'b', 'c', 'd'))
         self.assertEqual(simu.population(0).infoFields(), ('a', 'b', 'c', 'd'))

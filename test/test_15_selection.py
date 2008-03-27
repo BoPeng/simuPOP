@@ -133,10 +133,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5, .5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
 
 
     def testMapSelectorDirSelection(self):
@@ -160,10 +160,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)     
+        self.assertEqual(simu.gen(), 100)     
 
 
     def testMaSelectorDirSelection(self):
@@ -185,10 +185,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
         
     def testMapSelectorHeteroAdv(self):
         'Testing heterozygous advantage using map selector'
@@ -216,10 +216,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
         
     def testMaSelectorHeteroAdv(self):
         'Testing heterozygous advantage using a multi-allele selector'
@@ -248,10 +248,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
 
     def testMapSelectorHeteroDisadv(self):
         'Testing heterozygous disadvantage using map selector'
@@ -272,10 +272,10 @@ class TestSelector(unittest.TestCase):
                     begin=50),
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
         
     def testMaSelectorHeteroDisadv(self):
         'Testing heterozygous advantage using a multi-allele selector'
@@ -300,10 +300,10 @@ class TestSelector(unittest.TestCase):
                     begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
 
     def testMultiLocusMaSelector(self):
         'Testing the multi-locus version of the maSelector'
@@ -317,7 +317,7 @@ class TestSelector(unittest.TestCase):
                     fitness=[1, 0.7, 1, 0.99, 0.98, 0.97, 1, 1, 0.5]), 
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
     
     def testMultiLocusMapSelector(self):
@@ -396,10 +396,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
         
     def testPySelectorWithGen(self):
         'Testing varying selection pressure using pySelector'
@@ -446,10 +446,10 @@ class TestSelector(unittest.TestCase):
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
             ],
             preOps=[ initByFreq(alleleFreq=[.5,.5])],
-            end=100
+            gen=100
         )
         # simulation did not terminate unexpectedly
-        self.assertEqual(simu.gen(), 101)
+        self.assertEqual(simu.gen(), 100)
 
     def testMlSelector(self):
         'Testing multi-locus selector'
@@ -465,7 +465,7 @@ class TestSelector(unittest.TestCase):
                 ], mode=SEL_Additive),
             ],
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
-            end=100
+            gen=100
         )
         # 
         simu.setGen(0)
@@ -477,7 +477,7 @@ class TestSelector(unittest.TestCase):
                 ], mode=SEL_Multiplicative),
             ],
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
-            end=100
+            gen=100
         )
 
     def testMultipleSelector(self):
@@ -510,7 +510,7 @@ class TestSelector(unittest.TestCase):
                 mapSelector(locus = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPops=[1]),
                 pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
                 ],
-            end = 5
+            gen = 5
         )
         # subPop is also allowed
         simu = simulator(
@@ -526,7 +526,7 @@ class TestSelector(unittest.TestCase):
                     subPop=2),
                 pyOperator(func=testFitness, param=([0],), stage=PreMating),
                 ],
-            end = 5
+            gen = 5
         )
 
             
