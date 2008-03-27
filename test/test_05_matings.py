@@ -746,20 +746,20 @@ class TestMatingSchemes(unittest.TestCase):
 
     def testMonoMating(self):
         'Testing monogemous mating scheme'
-        pop = population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
+        pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
         InitByFreq(pop, [0.2, 0.3, 0.5])
         # exactly 100 males and 100 females
-        for i in range(100):
+        for i in range(1000):
             pop.individual(i).setSex(Male)
-            pop.individual(100+i).setSex(Female)
+            pop.individual(1000+i).setSex(Female)
         simu = simulator(pop, monogamousMating(numOffspring=2, replenish=False))
         simu.evolve(
             preOps = [],
             ops = [parentsTagger()],
             gen = 1)
         # there is only one Male...
-        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx', True))), 100)
-        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx', True))), 100)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx', True))), 1000)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx', True))), 1000)
         #
         # the next generation is unlikely to have exact number of male and female so replenish is needed
         self.assertRaises(exceptions.IndexError, simu.step)
