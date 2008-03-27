@@ -656,15 +656,15 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	IndIterator it = pop.indBegin(subPop);
 	for (; it.valid(); ++it) {
-		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex 
-			&& it->info(info_id) == 0.)
+		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
+		    && it->info(info_id) == 0.)
 			continue;
 		if (it->sex() == Male)
 			m_numMale++;
 		else
 			m_numFemale++;
 	}
-			
+
 	DBG_FAILIF(hasAlphaMale && (m_numMale == 0 || m_numFemale == 0),
 		ValueError, "No alpha individual or individual of opposite sex is found");
 
@@ -685,8 +685,8 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 
 	it = pop.indBegin(subPop);
 	for (; it.valid(); it++) {
-		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex 
-			&& it->info(info_id) == 0.)
+		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
+		    && it->info(info_id) == 0.)
 			continue;
 		if (it->sex() == Male) {
 			m_maleIndex[m_numMale] = it.rawIter();
@@ -716,26 +716,26 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	DBG_FAILIF(!m_replacement && m_selection, ValueError,
 		"Selection is not allowed in random sample without replacement");
 
-	if (!hasAlphaMale || useInfo ||  m_alphaNum >= 
-		(m_alphaSex == Male ? m_numMale : m_numFemale)) {
+	if (!hasAlphaMale || useInfo || m_alphaNum >=
+	    (m_alphaSex == Male ? m_numMale : m_numFemale)) {
 		m_initialized = true;
 		return;
 	}
-	
+
 	// now, we need to choose a few alpha individuals
 	vector<RawIndIterator> m_newAlphaIndex;
 	vectorf m_newAlphaFitness;
 	// select individuals
 	for (size_t i = 0; i < m_alphaNum; ++i) {
-		if (m_selection) // fix me, without replacement!
+		if (m_selection)  // fix me, without replacement!
 			// using weighted sampler.
 			m_newAlphaIndex.push_back(
 				m_alphaSex == Male ? m_maleIndex[m_malesampler.get()]
-				 : m_femaleIndex[m_femalesampler.get()]);
-		else // fix me, without replacement!
+				: m_femaleIndex[m_femalesampler.get()]);
+		else  // fix me, without replacement!
 			m_newAlphaIndex.push_back(
 				m_alphaSex == Male ? m_maleIndex[rng().randInt(m_numMale)]
-					: m_femaleIndex[rng().randInt(m_numFemale)]);
+				: m_femaleIndex[rng().randInt(m_numFemale)]);
 		m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
 	}
 	if (m_alphaSex == Male) {
@@ -1135,44 +1135,7 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
-bool randomMating::mateSubPop(population & pop, SubPopID subPop,
-                              RawIndIterator offBegin, RawIndIterator offEnd,
-                              vector<baseOperator * > & ops)
-{
-	// nothing to do.
-	if (offBegin == offEnd)
-		return true;
-
-	if (!m_offspringGenerator.initialized())
-		m_offspringGenerator.initialize(pop, ops);
-
-	randomParentsChooser pc(true, false, Male, 1, Male, 0, string());
-	pc.initialize(pop, subPop);
-	/// now, all individuals of needToFind sex is collected
-	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
-		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-			             "(same sex mating if have to) options to get around this problem.");
-
-	// generate scratch.subPopSize(sp) individuals.
-	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents();
-		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
-			"Random parents chooser returns invalid parent");
-		//
-		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
-		(void)numOff;             // silent warning about unused variable.
-		// record family size (this may be wrong for the last family)
-		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-	}
-	pc.finalize(pop, subPop);
-	m_offspringGenerator.finalize(pop);
-	return true;
-}
-
-
-bool monogamousMating::mateSubPop(population & pop, SubPopID subPop,
+bool baseRandomMating::mateSubPop(population & pop, SubPopID subPop,
                                   RawIndIterator offBegin, RawIndIterator offEnd,
                                   vector<baseOperator * > & ops)
 {
@@ -1183,82 +1146,14 @@ bool monogamousMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	randomParentsChooser pc(true, m_replenish, Male, 1, Male, 0, string());
+	randomParentsChooser pc(m_replacement, m_replenish, m_polySex,
+	                        m_polyNum, m_alphaSex, m_alphaNum, m_alphaField);
 	pc.initialize(pop, subPop);
 	/// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
 		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
 			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
 			             "(same sex mating if have to) options to get around this problem.");
-
-	// generate scratch.subPopSize(sp) individuals.
-	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents();
-		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
-			"Random parents chooser returns invalid parent");
-		//
-		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
-		(void)numOff;             // silent warning about unused variable.
-		// record family size (this may be wrong for the last family)
-		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-	}
-	pc.finalize(pop, subPop);
-	m_offspringGenerator.finalize(pop);
-	return true;
-}
-
-
-bool polygamousMating::mateSubPop(population & pop, SubPopID subPop,
-                                  RawIndIterator offBegin, RawIndIterator offEnd,
-                                  vector<baseOperator * > & ops)
-{
-	// nothing to do.
-	if (offBegin == offEnd)
-		return true;
-
-	if (!m_offspringGenerator.initialized())
-		m_offspringGenerator.initialize(pop, ops);
-
-	randomParentsChooser pc(m_replacement, m_replenish, m_polySex, m_polyNum, Male, 0, string());
-	pc.initialize(pop, subPop);
-	/// now, all individuals of needToFind sex is collected
-	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
-		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
-			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
-			             "(same sex mating if have to) options to get around this problem.");
-
-	// generate scratch.subPopSize(sp) individuals.
-	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents();
-		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
-			"Random parents chooser returns invalid parent");
-		//
-		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
-		(void)numOff;             // silent warning about unused variable.
-		// record family size (this may be wrong for the last family)
-		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
-	}
-	pc.finalize(pop, subPop);
-	m_offspringGenerator.finalize(pop);
-	return true;
-}
-
-
-bool alphaMating::mateSubPop(population & pop, SubPopID subPop,
-                             RawIndIterator offBegin, RawIndIterator offEnd,
-                             vector<baseOperator * > & ops)
-{
-	// nothing to do.
-	if (offBegin == offEnd)
-		return true;
-
-	if (!m_offspringGenerator.initialized())
-		m_offspringGenerator.initialize(pop, ops);
-
-	randomParentsChooser pc(true, false, Male, 1, m_alphaSex, m_alphaNum, m_alphaField);
-	pc.initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
