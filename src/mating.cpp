@@ -646,6 +646,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
+	m_polyCount = 0;
 
 	UINT info_id = 0;
 	bool hasAlphaMale = m_alphaNum != 0 || !m_alphaField.empty();
@@ -667,12 +668,13 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	}
 
 	DBG_FAILIF(hasAlphaMale && (m_numMale == 0 || m_numFemale == 0),
-		ValueError, "No alpha individual or individual of opposite sex is found."
-		+ toStr(m_alphaNum) + "'" + m_alphaField + "'");
+		ValueError, "No alpha individual or individual of opposite sex is found.");
 
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
 	m_femaleIndex.resize(m_numFemale);
+	m_chosenMale.clear();
+	m_chosenFemale.clear();
 
 	m_selection = pop.selectionOn(subPop);
 	UINT fit_id = 0;
@@ -711,6 +713,8 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	}
 
 	if (!m_replacement) {
+		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
+		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
 		std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
 		std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
 	}
@@ -786,7 +790,7 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 			m_femaleIndex.pop_back();
 
 			if (m_polyNum > 1) {
-				m_polyCount = m_polyNum;
+				m_polyCount = m_polyNum - 1;
 				m_lastParent = mom;
 			}
 		}
@@ -804,7 +808,7 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 			m_maleIndex.pop_back();
 			//
 			if (m_polyNum > 1) {
-				m_polyCount = m_polyNum;
+				m_polyCount = m_polyNum - 1;
 				m_lastParent = dad;
 			}
 		}
@@ -824,8 +828,8 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 			else
 				dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
 		}
-		if (m_polyNum > 1) {
-			m_polyCount = m_polyNum;
+		if (m_polySex == Male && m_polyNum > 1) {
+			m_polyCount = m_polyNum - 1;
 			m_lastParent = dad;
 		}
 	}
@@ -837,16 +841,13 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 			else
 				mom = & * (m_maleIndex[m_malesampler.get()]);
 		} else {         // no selection
-
-			if (mom == NULL) {
-				if (m_numFemale != 0)
-					mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-				else
-					mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
-			}
+			if (m_numFemale != 0)
+				mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+			else
+				mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
 		}
-		if (m_polyNum > 1) {
-			m_polyCount = m_polyNum;
+		if (m_polySex == Female && m_polyNum > 1) {
+			m_polyCount = m_polyNum - 1;
 			m_lastParent = mom;
 		}
 	}
