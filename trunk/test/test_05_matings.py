@@ -13,7 +13,7 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, random, math
+import unittest, os, sys, random, math, sets
 
 def setGen(pop, off, dad, mom):
     off.setAllele(pop.gen(), 0)
@@ -46,9 +46,9 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing means to change population size (FIXME: imcomplete)'
         pass
         
-    def getFamSize(self, mate, endGen=0, size=1000):
+    def getFamSize(self, mate, endGen=1, size=1000):
         simu = simulator(population(size, loci=[1]), mate)
-        simu.evolve(ops=[], end=endGen)
+        simu.evolve(ops=[], gen=endGen)
         return simu.population(0).dvars().famSizes
         
     def testNumOffspring(self):
@@ -61,10 +61,10 @@ class TestMatingSchemes(unittest.TestCase):
         def nos(gen):
             return gen%2+1
         self.assertEqual( 
-            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=1),
+            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=2),
             [2]*500)
         self.assertEqual( 
-            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=2),
+            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=3),
             [1]*1000)
         # what if each family have different number of offspring?
         def nos(gen):
@@ -197,7 +197,7 @@ class TestMatingSchemes(unittest.TestCase):
                 stat(alleleFreq=[0]),
                 # pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
             ], 
-            end=burnin+mutAge
+            gen=burnin+mutAge
         )
             
 
@@ -236,7 +236,7 @@ class TestMatingSchemes(unittest.TestCase):
                 stat(alleleFreq=[0]),
                 #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
             ], 
-            end=burnin+mutAge
+            gen=burnin+mutAge
         )
         
     def testControlledMultiRandomMating(self):
@@ -278,7 +278,7 @@ class TestMatingSchemes(unittest.TestCase):
                 stat(alleleFreq=[0,1]),
                 #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])', begin=burnin)
             ], 
-            end=endingGen
+            gen=endingGen
         )
 
     def testSelfMating(self):
@@ -288,13 +288,13 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         #
         simu = simulator(pop, selfMating(numOffspring=2))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
 
     
     def testPyMating(self):
@@ -310,7 +310,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         #
         self.assertRaises(exceptions.ValueError, pyMating,
             randomParentsChooser(),
@@ -322,7 +322,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         #
         simu = simulator(pop, pyMating(
             randomParentsChooser(),
@@ -330,7 +330,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         #
         def pc(pop, sp):
             while True:
@@ -342,7 +342,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
 
     def testCloneMating(self):
         'Testing clone mating scheme'
@@ -410,7 +410,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*100+[2]*100)
@@ -423,7 +423,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*100+[4]*50)
@@ -437,7 +437,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*50+[2]*25+[4]*50)
@@ -451,7 +451,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*80+[2]*10+[4]*50)
@@ -467,7 +467,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
-            end=10)
+            gen=10)
         # ...
         self.assertEqual(simu.population(0).dvars().famSizes,
             [1]*60+[2]*20+[4]*50)
@@ -492,7 +492,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             ops = [parentsTagger(output='>>pedigree.dat',
                 infoFields=[])],
-            end=10
+            gen=10
         )
         ped = pedigree('pedigree.dat')
         #
@@ -500,7 +500,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu1.evolve(
             ops = [parentsTagger(output='>>pedigree_rep.dat',
                 infoFields=[])],
-            end=10
+            gen=10
         )
         self.assertEqual(open('pedigree.dat').read(),
             open('pedigree_rep.dat').read())
@@ -512,7 +512,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu2.evolve(
             ops = [parentsTagger(output='>>ped_shrink_rep.dat',
                 infoFields=[])],
-            end=10
+            gen=10
         )
         self.assertEqual(open('ped_shrink.dat').read(),
             open('ped_shrink_rep.dat').read())
@@ -530,7 +530,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu.evolve(
             ops = [parentTagger(output='>>pedigree.dat',
                 infoFields=[])],
-            end=10
+            gen=10
         )
         ped = pedigree('pedigree.dat')
         #
@@ -540,7 +540,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu1.evolve(
             ops = [parentTagger(output='>>pedigree_rep.dat',
                 infoFields=[])],
-            end=10
+            gen=10
         )
         self.assertEqual(open('pedigree.dat').read(),
             open('pedigree_rep.dat').read())
@@ -554,7 +554,7 @@ class TestMatingSchemes(unittest.TestCase):
         simu2.evolve(
             ops = [parentTagger(output='>>ped_shrink_rep.dat',
                 infoFields=[])],
-            end=10
+            gen=10
         )
         self.assertEqual(open('ped_shrink.dat').read(),
             open('ped_shrink_rep.dat').read())
@@ -664,6 +664,133 @@ class TestMatingSchemes(unittest.TestCase):
 ##       assert trajFunc(gens[i])[i] > 0
 ##       assert trajFunc(gens[i]-1)[i] == 0
   
+    def testHaplodiploid(self):
+        'Testing recombination in haplodiploid populations'
+        pop = population(size=[20, 20], ploidy=Haplodiploid, loci=[3,5])
+        simu = simulator(pop, haplodiploidMating())
+        simu.evolve(
+            preOps = [
+                initByValue([0]*8 + [1]*8)
+                ],
+            ops = [recombinator(rate=0.3)],
+            gen = 1)
+        # all individuals get the second copy from the first copy of male parents
+        # which are all zero
+        for ind in simu.population(0).individuals():
+            self.assertEqual(ind.arrGenotype(1), [0]*8)
+
+
+    def testAlphaMating(self):
+        'Testing alpha mating schemes'
+        # use a random alpha parent
+        pop = population(size=[200, 200], loci=[3,5])
+        simu = simulator(pop, alphaMating(alphaSex=Male, alphaNum=1))
+        simu.evolve(
+            preOps = [
+                initByFreq([0.2, 0.3, 0.5])
+                ],
+            ops = [],
+            gen = 1)
+        # there is only one Male...
+        ch1 = []
+        ch2 = []
+        for ind in simu.population(0).individuals(0):
+            genotype = ind.arrGenotype(1, 0)
+            if genotype not in ch1:
+                ch1.append(genotype)
+            genotype = ind.arrGenotype(1, 1)
+            if genotype not in ch2:
+                ch2.append(genotype)
+        assert len(ch1) <= 2
+        assert len(ch2) <= 2
+        # another subpopulation
+        ch1 = []
+        ch2 = []
+        for ind in simu.population(0).individuals(1):
+            genotype = ind.arrGenotype(1, 0)
+            if genotype not in ch1:
+                ch1.append(genotype)
+            genotype = ind.arrGenotype(1, 1)
+            if genotype not in ch2:
+                ch2.append(genotype)
+        assert len(ch1) <= 2
+        assert len(ch2) <= 2
+        #
+        # use a information field
+        pop = population(size=[200], loci=[3,5], infoFields=['alpha'])
+        InitByFreq(pop, [0.2, 0.3, 0.5])
+        pop.individual(0).setInfo(1, 'alpha')
+        pop.individual(1).setInfo(1, 'alpha')
+        pop.individual(0).setSex(Male)
+        pop.individual(1).setSex(Male)
+        simu = simulator(pop, alphaMating(alphaSex=Male, alphaField='alpha'))
+        simu.evolve(
+            preOps = [
+                #infoEval('alpha'),
+                ],
+            ops = [],
+            gen = 1)
+        # there is only one Male...
+        ch1 = []
+        ch2 = []
+        for ind in simu.population(0).individuals(0):
+            genotype = ind.arrGenotype(1, 0)
+            if genotype not in ch1:
+                ch1.append(genotype)
+            genotype = ind.arrGenotype(1, 1)
+            if genotype not in ch2:
+                ch2.append(genotype)
+        assert len(ch1) <= 4
+        assert len(ch2) <= 4
+
+
+    def testMonoMating(self):
+        'Testing monogemous mating scheme'
+        pop = population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
+        InitByFreq(pop, [0.2, 0.3, 0.5])
+        # exactly 100 males and 100 females
+        for i in range(100):
+            pop.individual(i).setSex(Male)
+            pop.individual(100+i).setSex(Female)
+        simu = simulator(pop, monogamousMating(numOffspring=2, replenish=False))
+        simu.evolve(
+            preOps = [],
+            ops = [parentsTagger()],
+            gen = 1)
+        # there is only one Male...
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx', True))), 100)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx', True))), 100)
+        #
+        # the next generation is unlikely to have exact number of male and female so replenish is needed
+        self.assertRaises(exceptions.IndexError, simu.step)
+        #
+
+
+    def testPolyMating(self):
+        'Testing polygemous mating scheme'
+        pop = population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
+        InitByFreq(pop, [0.2, 0.3, 0.5])
+        # exactly 100 males and 100 females
+        for i in range(100):
+            pop.individual(i).setSex(Male)
+            pop.individual(100+i).setSex(Female)
+        simu = simulator(pop, polygamousMating(polySex=Male, polyNum=3, numOffspring=2, replacement=True))
+        simu.evolve(
+            preOps = [],
+            ops = [parentsTagger()],
+            gen = 1)
+        # there is only one Male...
+        fi = simu.population(0).indInfo('father_idx', True)
+        self.assertEqual(fi[0], fi[1])
+        self.assertEqual(fi[0], fi[5])
+        self.assertNotEqual(fi[0], fi[6])
+        mi = simu.population(0).indInfo('mother_idx', True)
+        self.assertEqual(mi[0], mi[1])
+        self.assertNotEqual(mi[0], mi[2])
+        #
+        #
+
+        
 if __name__ == '__main__':
   unittest.main()
   sys.exit(0)

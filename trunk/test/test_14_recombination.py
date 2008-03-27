@@ -274,7 +274,7 @@ class TestRecombinator(unittest.TestCase):
         pop = population(1000, loci=[2,3,2])
         InitByValue(pop, value=geno)
         simu = simulator(pop, randomMating())
-        simu.evolve( [ recombinator(rate = 0.4) ], end=100)
+        simu.evolve( [ recombinator(rate = 0.4) ], gen=100)
         Stat(simu.population(0), alleleFreq=range(0,7))
         for i in range(7):
             self.assertEqual(simu.dvars(0).alleleFreq[i][geno[i]], 1.)
@@ -346,7 +346,7 @@ class TestRecombinator(unittest.TestCase):
         simu.evolve( 
             ops    = [ recombinator(rate=r) ],
             postOps = [    stat(LD=[0,1]) ], 
-            end=9)
+            gen=9)
         # check the change of LD, hopefully, the variation is not too high.
         assert abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) < 0.02, \
             "Decay of LD is not as expected: " + str(simu.dvars(0).LD[0][1]) + " vs expected " \
@@ -360,7 +360,7 @@ class TestRecombinator(unittest.TestCase):
         rec = recombinator(rate=r)
         pop = population(size=N, loci=[10,10])
         simu = simulator(pop, randomMating())
-        simu.evolve( [ rec ], end=G)
+        simu.evolve( [ rec ], gen=G)
         # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
         # at end should be bionomial(ploidy*N*r, 0.5)
         assert abs( rec.recCount(0) - 2*N*r*G ) < 150, \
@@ -387,7 +387,7 @@ class TestRecombinator(unittest.TestCase):
         InitByValue(pop, indRange=[N/2,N], sex=[Female]*(N/2), value=[a1]*7+[a2]*7)
         # now let us recombine
         simu = simulator(pop, randomMating())
-        simu.evolve( [ recombinator(rate=r) ], end=100)
+        simu.evolve( [ recombinator(rate=r) ], gen=100)
         pop = simu.population(0)
         #
         for i in range( pop.popSize() ):
@@ -432,7 +432,7 @@ class TestRecombinator(unittest.TestCase):
                 convMode=mode, convParam=param)
             pop = population(size=N, loci=[10,10])
             simu = simulator(pop, randomMating())
-            simu.evolve( [ rec ], end=G-1)
+            simu.evolve( [ rec ], gen=G-1)
             # at end should be bionomial(ploidy*N*r, 0.5)
             recCount = sum(rec.recCounts()) - max(rec.recCounts())
             convCount = sum(rec.convCounts().values())

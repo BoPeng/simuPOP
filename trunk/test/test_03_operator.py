@@ -42,7 +42,7 @@ class TestOperator(unittest.TestCase):
             ],
             postOps = [stat()],
             #dryrun=True,
-            end=10
+            gen=10
         )
     
     def testActiveGen(self):
@@ -50,23 +50,23 @@ class TestOperator(unittest.TestCase):
         def getActiveGens(endGen=20, *args, **kwargs):
             d = opRecorder(*args, **kwargs)
             simu = simulator(population(), noMating())
-            simu.evolve(ops=[d], end=endGen)
+            simu.evolve(ops=[d], gen=endGen)
             return simu.population(0).dvars().hist
         self.assertEqual(getActiveGens(begin=2, end=10), 
             range(2,11))
         self.assertEqual(getActiveGens(begin=2, end=10, step=2), 
             range(2,11,2))
         self.assertEqual(getActiveGens(begin=2, step=2), 
-            range(2,22,2))
-        self.assertEqual(getActiveGens(step=2), range(0,22,2))
-        self.assertEqual(getActiveGens(), range(0,21))
+            range(2,20,2))
+        self.assertEqual(getActiveGens(step=2), range(0,19,2))
+        self.assertEqual(getActiveGens(), range(0,20))
         self.assertEqual(getActiveGens(at=[2,5,9]), [2,5,9])
-        self.assertEqual(getActiveGens(at=[2,5,-1]), [2,5,20])
-        self.assertEqual(getActiveGens(begin=-10), range(11,21))
+        self.assertEqual(getActiveGens(at=[2,5,-1]), [2,5,19])
+        self.assertEqual(getActiveGens(begin=-10), range(10,20))
         # 20=-1, 16=-5
-        self.assertEqual(getActiveGens(begin=-10, end=-5), range(11,17))
+        self.assertEqual(getActiveGens(begin=-10, end=-5), range(10,16))
         # 
-        self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), range(11,17,2))
+        self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), range(10,16,2))
         self.assertRaises( exceptions.ValueError,
             getActiveGens, begin=-10, step=-3, end=-5 )
         
@@ -76,10 +76,10 @@ class TestOperator(unittest.TestCase):
         simu.setGroup([1,1,2])
         simu.evolve(
             ops = [opRecorder(grp=1)], 
-            end=10
+            gen=10
         )
-        self.assertEqual(simu.population(0).dvars().hist, range(11))
-        self.assertEqual(simu.population(1).dvars().hist, range(11))
+        self.assertEqual(simu.population(0).dvars().hist, range(10))
+        self.assertEqual(simu.population(1).dvars().hist, range(10))
         try:
             simu.population(2).dvars().hist
         except exceptions.AttributeError:
@@ -90,7 +90,7 @@ class TestOperator(unittest.TestCase):
         simu = simulator(population(), noMating(), rep=3)
         simu.evolve(
             ops = [opRecorder(rep=REP_LAST)], 
-            end=10
+            gen=10
         )
         try:
             simu.population(0).dvars().hist
@@ -100,7 +100,7 @@ class TestOperator(unittest.TestCase):
             simu.population(1).dvars().hist
         except exceptions.AttributeError:
             pass
-        self.assertEqual(simu.population(2).dvars().hist, range(11))
+        self.assertEqual(simu.population(2).dvars().hist, range(10))
         
     def assertFileContent(self, file, text):
         f = open(file)
@@ -114,7 +114,7 @@ class TestOperator(unittest.TestCase):
                 noMating(), rep=5)
         simu.evolve([
             pyOutput("a", output=">a.txt"),
-            ], end=10)
+            ], gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         self.assertFileContent("a.txt", 'a')
@@ -124,7 +124,7 @@ class TestOperator(unittest.TestCase):
         simu.setGen(0)
         simu.evolve([
             pyOutput("a", output="a.txt"),
-            ], end=10)
+            ], gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         self.assertFileContent("a.txt", 'a')
@@ -134,26 +134,26 @@ class TestOperator(unittest.TestCase):
         simu.setGen(0)
         simu.evolve([
             pyOutput("a", output=">>a.txt"),
-            ], end=10)
+            ], gen=10)
         # a is appended 5 rep * 11 generations
-        self.assertFileContent("a.txt", 'a'*55)
+        self.assertFileContent("a.txt", 'a'*50)
         os.remove('a.txt')
         #
         # rep = ...
         simu.setGen(0)
         simu.evolve([
             pyOutput("a", output=">>a.txt", rep=REP_LAST),
-            ], end=10)
+            ], gen=10)
         # a is appended 5 rep * 11 generations
-        self.assertFileContent("a.txt", 'a'*11)
+        self.assertFileContent("a.txt", 'a'*10)
         # if we use >>>, append to the end
         simu.setGen(0)
         simu.setGroup([0,0,1,1,1])
         simu.evolve([
             pyOutput("b", output=">>>a.txt", grp=1),
-            ], end=10)
+            ], gen=10)
         # a is appended 5 rep * 11 generations
-        self.assertFileContent("a.txt", 'a'*11+'b'*33)
+        self.assertFileContent("a.txt", 'a'*10+'b'*30)
         os.remove('a.txt')
         #
         # now, we can use eval instead of output
@@ -161,10 +161,10 @@ class TestOperator(unittest.TestCase):
         simu.setGroup([0,0,1,1,1])
         simu.evolve([
             pyEval("gen", output=">>a.txt", grp=1),
-            ], end=10)
+            ], gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 
-            ''.join( [ str(x)*3 for x in range(11)] ))
+            ''.join( [ str(x)*3 for x in range(10)] ))
         os.remove('a.txt')
 
     def testOutputExpr(self):
@@ -174,7 +174,7 @@ class TestOperator(unittest.TestCase):
         # each replicate
         simu.evolve([
             pyOutput("a", outputExpr="'rep%d.txt'%rep"),
-            ], end=10)
+            ], gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         for i in range(5):
@@ -185,7 +185,7 @@ class TestOperator(unittest.TestCase):
         simu.setGen(0)
         simu.evolve([
             pyOutput("a", outputExpr="'>rep%d.txt'%rep"),
-            ], end=10)
+            ], gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
         for i in range(5):
@@ -196,18 +196,18 @@ class TestOperator(unittest.TestCase):
         simu.setGen(0)
         simu.evolve([
             pyOutput("a", outputExpr="'>>rep%d.txt'%rep"),
-            ], end=10)
+            ], gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(5):
-            self.assertFileContent("rep%d.txt"%i, 'a'*11)
+            self.assertFileContent("rep%d.txt"%i, 'a'*10)
             os.remove('rep%d.txt'%i)
         # each generation?
         simu.setGen(0)
         simu.evolve([
             pyOutput("a", outputExpr="'>>gen%d.txt'%gen"),
-            ], end=10)
+            ], gen=10)
         # a is appended 1 rep * 11 generations
-        for i in range(11):
+        for i in range(10):
             self.assertFileContent("gen%d.txt"%i, 'a'*5)
             os.remove('gen%d.txt'%i)
      
@@ -252,7 +252,7 @@ class TestOperator(unittest.TestCase):
                 infoExec('b+=1', name='increase b'),
                 pyOutput('\n'),
             ],
-            end = 4
+            gen = 4
         )
             
 

@@ -32,7 +32,7 @@ class TestPyOperator(unittest.TestCase):
         InitByFreq(self.pop, [.2, .3, .5])
         simu = simulator(self.pop, randomMating())
         simu.evolve( ops=[pyOperator(self.myFunc)], 
-            end=20)
+            gen=20)
         
     def testCopyClone(self):
         'Testing copy of python operator'
@@ -59,7 +59,7 @@ class TestPyOperator(unittest.TestCase):
             pyOperator(func=self.myFuncWithParam, param=(0,.2)),
             pyOperator(func=self.myFuncWithParam, param=(1,.8)),
             ], 
-            end=2
+            gen=2
         )
 
     def myFuncAsTerminator(self, pop):
@@ -73,7 +73,7 @@ class TestPyOperator(unittest.TestCase):
         'Testing a python terminator'
         simu = simulator(self.pop, randomMating())
         simu.evolve( ops=[ pyOperator(self.myFuncAsTerminator) ],
-            end = 10 )
+            gen = 10 )
         assert simu.gen() == 4
         
     def dynaMutator(self, pop, param):
@@ -111,10 +111,10 @@ class TestPyOperator(unittest.TestCase):
                 stat(alleleFreq=range(5)),
                 terminateIf( 'alleleFreq[0][1] < 0.2' )
                 ],
-            end = 30
+            gen = 30
         )                
         # will not terminate when allele frequency get out of control
-        self.assertEqual( simu.gen(), 31)
+        self.assertEqual( simu.gen(), 30)
 
     def testPyIndOperator(self):
         'Testing pyIndOperator'

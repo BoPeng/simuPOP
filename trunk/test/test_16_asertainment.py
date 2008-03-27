@@ -36,7 +36,7 @@ class TestAscertainment(unittest.TestCase):
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))     
             ],
-            end=4
+            gen=4
         )
         self.pop = simu.getPopulation(0)
         # more complicated one
@@ -56,7 +56,7 @@ class TestAscertainment(unittest.TestCase):
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))     
             ],
-            end=10
+            gen=10
         )
         self.largepop = simu1.getPopulation(0)
     

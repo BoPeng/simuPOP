@@ -24,6 +24,7 @@ class TestTagger(unittest.TestCase):
             randomMating(numOffspring=2))
         simu.step([parentsTagger()])
         pop = simu.population(0)
+        print pop.indInfo('father_idx', True)
         # check if all siblings have the same parents
         for sp in range(pop.numSubPop()):
             for i in range(pop.subPopSize(sp)/2):
