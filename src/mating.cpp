@@ -729,25 +729,27 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	vectorf m_newAlphaFitness;
 	// select individuals
 	for (size_t i = 0; i < m_alphaNum; ++i) {
-		if (m_selection)  // fix me, without replacement!
+		if (m_selection) { // fix me, without replacement!
 			// using weighted sampler.
 			m_newAlphaIndex.push_back(
 				m_alphaSex == Male ? m_maleIndex[m_malesampler.get()]
 				: m_femaleIndex[m_femalesampler.get()]);
-		else  // fix me, without replacement!
+			m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
+		} else  // fix me, without replacement!
 			m_newAlphaIndex.push_back(
 				m_alphaSex == Male ? m_maleIndex[rng().randInt(m_numMale)]
 				: m_femaleIndex[rng().randInt(m_numFemale)]);
-		m_newAlphaFitness.push_back(m_newAlphaIndex.back()->info(fit_id));
 	}
 	if (m_alphaSex == Male) {
 		m_maleIndex.swap(m_newAlphaIndex);
 		if (m_selection)
 			m_malesampler.set(m_newAlphaFitness);
+		m_numMale = m_maleIndex.size();
 	} else {
 		m_femaleIndex.swap(m_newAlphaIndex);
 		if (m_selection)
 			m_femalesampler.set(m_newAlphaFitness);
+		m_numFemale = m_femaleIndex.size();
 	}
 	m_initialized = true;
 }
