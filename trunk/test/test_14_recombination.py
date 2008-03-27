@@ -405,7 +405,18 @@ class TestRecombinator(unittest.TestCase):
 
     def testHaplodiploid(self):
         'Testing recombination in haplodiploid populations'
-        pass
+        pop = population(size=[20, 20], ploidy=Haplodiploid, loci=[3,5])
+        simu = simulator(pop, haplodiploidMating())
+        simu.evolve(
+            preOps = [
+                initByValue([0]*8 + [1]*8)
+                ],
+            ops = [recombinator(rate=0.3)],
+            gen = 1)
+        # all individuals get the second copy from the first copy of male parents
+        # which are all zero
+        for ind in simu.population(0).individuals():
+            self.assertEqual(ind.arrGenotype(1), [0]*8)
 
     def testConversionCount(self):
         'Testing count of conversion events '
