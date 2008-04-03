@@ -870,6 +870,9 @@ def generateSeedPopulation(HapMap_dir, initPop, chrom, markerList, numMarkers, s
     'Generate seed population, using HapMap dataset and specified marker list'
     if os.path.isfile(initPop):
         pop = LoadPopulation(initPop)
+        if pop.numSubPop() != len(pops):
+            print "The initial population has incorrect number of subpopulations"
+            sys.exit(1)
     else:
         pop = createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
             endingPos, minAF, minDiffAF, minDist, pops)
@@ -883,6 +886,13 @@ def generateSeedPopulation(HapMap_dir, initPop, chrom, markerList, numMarkers, s
         print "Chromosome %d has %d markers in the range between %.3f and %.3f" \
             % (ch, pop.numLoci(ch), pop.locusPos(pop.chromBegin(ch)),  \
                 pop.locusPos(pop.chromEnd(ch)-1))
+    #
+    # For testing, save hapmap data
+    # 
+    #def comb(geno):
+    #    return geno[0]+geno[1]
+    #SaveQTDT(pop, output='hapmap', fields=[], combine=comb,
+    #    header=True)
     #
     # evolve the HapMap population
     pop = evolveHapMap(pop, 
