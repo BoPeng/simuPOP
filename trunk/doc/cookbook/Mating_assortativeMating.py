@@ -72,7 +72,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
             # append number of individuals with genotype Aa to list AaNum
             pyExec(r"AaNum.append(virtualPopSize[0][1])")
         ],
-        end = gen - 1
+        gen = gen
     )
     return simu.dvars(0).AaNum
 
