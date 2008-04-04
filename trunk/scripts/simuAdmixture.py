@@ -821,7 +821,9 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
     load_sp = []
     for idx,sp in enumerate(HapMap_pops):
         if sp in pops:
+            print "Using hapmap population %s" % sp
             load_sp.append(idx)
+    print "Loading populations ", load_sp
     # load markers!
     ch_pops = []
     if useHapMapMarker:
