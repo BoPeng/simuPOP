@@ -4126,6 +4126,17 @@ A homogeneous mating scheme
 \end_layout
 
 \begin_layout Standard
+A homogeneous mating scheme is responsible to choose parent(s) from a subpopulat
+ion or a virtual subpopulation, and population part or all of the corresponding
+ offspring subpopulation.
+ A parent chooser is used to choose one or two parents from the parental
+ generation, and pass it to an offspring generator, which produces one or
+ more offspring.
+ During mating operators such as taggers and recombinator can be applied
+ when offspring is generated.
+\end_layout
+
+\begin_layout Standard
 
 \end_layout
 
