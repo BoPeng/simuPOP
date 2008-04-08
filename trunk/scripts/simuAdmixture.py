@@ -80,6 +80,12 @@ After a seed population is generated (or loaded if already exists and parameter
 population expansion in the past 2000 years. Exponential population 
 growth model is used. No migration is allowed.
 
+A special controlled mating scheme can be used if the allele frequencies
+of some markers at the end of this stage is specified. This is similar to
+what has been done in Peng 2007, PLoS Genetics, but the trajectories are
+simulated forward in time. Note that these markers have to be on different
+chromosomes, and this special mating scheme is only used in this stage.
+
 2. Mix the populations using given migration model. Two basic models,
 namely 'Hybrid Isolations' and 'Continuous Gene Flow' are provided. 
 The first model simply mix the subpopulations and form a single population.
@@ -97,7 +103,7 @@ e.g.
 'Continuous Gene Flow', two HapMap populations, with migration rate
     [[1, 0],
      [0.1, 0.9]]
-  10% of individuals will migrate from population 2 to 1 at each 
+  10% of individuals will migrate from population 1 to 0 at each 
   generation. Note that the population sizes will change as a result
   of migration so the exact number of migrants varies from generation
   to generation.
@@ -235,17 +241,17 @@ simuAdmixture.py --noDialog  --name='IH' --initPop='../../Affy/affyAll_CEU.bin' 
     --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]*22" \
     --startPos='[0]' --endingPos='[0]' --minAF='0' --minDiffAF='0' --minDist='0' --initCopy='10' \
     --gen='200' --size='4800' --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed=True --migrModel='None' --migrGen='1' \
+    --useSavedAdmixed --migrModel='None' --migrGen='1' \
     --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.005, 0.01, 0.03, 0.05)" \
     --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
-simuAdmixture.py --noDialog  --name='admix' --useSavedSeed=True --initPop='' --HapMap_dir='../../HapMap' \
+simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap_dir='../../HapMap' \
     --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" --markerList='' --numMarkers="(1000, 1000)" \
     --startPos='[0]' --endingPos='[0]' --minAF='0.05' --minDiffAF='0' --minDist='0' --initCopy='10' \
-    --gen='200' --size='4800' --useSavedExpanded=True --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed=True --migrModel='Continuous Gene Flow' --migrGen='5' \
+    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed --migrModel='Continuous Gene Flow' --migrGen='5' \
     --migrRate="([0.90000000000000002, 0.10000000000000001], [0.0, 1.0])" --chromWithDSL="(1, 2, 3, 4)" \
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
     --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
@@ -385,11 +391,11 @@ options = [
      'description': '''Name of the seed population''',
      'allowedTypes': [types.StringType],
     },
-    {'longarg': 'useSavedSeed=',
+    {'longarg': 'useSavedSeed',
      'default': False,
      'label': 'Use saved seed population',
      'useDefault': True,
-     'allowedTypes': [types.StringType, types.BooleanType],
+     'allowedTypes': [types.BooleanType],
      'description': '''Use specified or a default seed population, if available.
         The default seed population is seed.bin under the simulation directory.
         '''
@@ -535,10 +541,16 @@ options = [
     },
     #
     {'separator': 'Population expansion'},
-    {'longarg': 'useSavedExpanded=',
+    {'longarg': 'expandedName=',
+     'default': 'expanded.bin',
+     'useDefault': True,
+     'description': '''Name of the expanded population, relative to simulation path''',
+     'allowedTypes': [types.StringType],
+    },
+    {'longarg': 'useSavedExpanded',
      'default': False,
      'useDefault': True,
-     'allowedTypes': [types.BooleanType, types.StringType],
+     'allowedTypes': [types.BooleanType],
      'label': 'Use saved expanded population',
      'description': '''If set to true, load specified or saved $name/expanded.bin and 
                 skip population expansion'''
@@ -560,11 +572,34 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'validate': valueGE(100)
     },
+    {'longarg': 'controlledLoci=',
+     'label': 'Loci with controlled allele frequency',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [types.TupleType, types.ListType],
+     'description': '''A list of markers (by name) whose allele frequency will be
+                controlled during this stage of evolution.'''
+    },
+    {'longarg': 'controlledFreq=',
+     'label': 'Desired allele frequency at controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [types.TupleType, types.ListType],
+     'description': '''A list of allele frequency ranges for each controlled locus.
+                If a single range is given, it is assumed for all markers. An example
+                of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
+    },
     {'separator': 'Population admixture'},
-    {'longarg': 'useSavedAdmixed=',
+    {'longarg': 'admixedName=',
+     'default': 'admixed.bin',
+     'useDefault': True,
+     'description': '''Name of the admixed, relative to simulation path''',
+     'allowedTypes': [types.StringType],
+    },
+    {'longarg': 'useSavedAdmixed',
      'default': False,
      'useDefault': True,
-     'allowedTypes': [types.StringType, types.BooleanType],
+     'allowedTypes': [types.BooleanType],
      'label': 'Use saved admixed population',
      'description': '''If set to true, the program will use saved $name/admixed.bin''',
     },
@@ -867,6 +902,13 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
     return pop
 
 
+def simulateFreqTraj(pop, gen, loci, freq, curFreq, popSizeFunc):
+    ''' simulate a frequency trjactory and return a trajectory function'''
+    def func():
+        return curFreq
+    return func
+
+    
 def generateSeedPopulation(HapMap_dir, initPop, chrom, markerList, numMarkers, startPos,
             endingPos, minAF, minDiffAF, minDist, pops, initCopy, gen, size, popName):
     'Generate seed population, using HapMap dataset and specified marker list'
@@ -916,8 +958,8 @@ def migrFunc(gen, curSize):
     return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
 
 
-def expandSeedPopulation(seedPop, expandGen, expandSize,
-        expandedFile):
+def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
+        controlledFreq, expandedFile):
     '''Expand seed population'''
     # load seed population
     if type(seedPop) == type(''):
@@ -925,12 +967,49 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
         pop = LoadPopulation(seedPop)
     else:
         pop = seedPop
-    # evolve it
-    pop = evolveHapMap(pop,
-        gen=expandGen, 
-        endingSize=expandSize,
-        step=10,
-    )
+    if len(controlledLoci) == 0:
+        # evolve it
+        pop = evolveHapMap(pop,
+            gen=expandGen, 
+            endingSize=expandSize,
+            step=10,
+        )
+    else:
+        N0 = pop.popSize()
+        N1 = expandSize
+        rate = math.exp(math.log(N1*1.0/N0)/gen)
+        # demographic function
+        def popSizeFunc(gen, cur):
+            sz = [int(x*rate) for x in cur]
+            return sz
+        #
+        operators = [
+            # mutation will be disallowed in the last generation (see later)
+            kamMutator(rate=1e-7, loci=range(pop.totNumLoci())),
+            recombinator(intensity=0.01),
+            stat(popSize=True, step=10, begin=9),
+            pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=10, begin=9)
+        ]
+        # simulate a frequency trajectory
+        print "Using controlled random mating on markers %s" % (', '.join(controlledLoci))
+        try:
+            ctrlLoci = pop.lociByNames(controlledLoci)
+        except:
+            print 'Can not find one of the controlled loci %s in this population' % \
+                ', '.join(controlledLoci)
+            print 'Please check markers.lst for a list of used markers and their frequency'
+            sys.exit(1)
+        Stat(pop, alleleFreq=ctrlLoci)
+        currentFreq = [pop.dvars().alleleFreq[x][1] for x in ctrlLoci]
+        trajFunc = simulateFreqTraj(popSizeFunc, gen, ctrlLoci, controlledFreq, currentFreq, popSizeFunc)
+        #
+        simu = simulator(pop, 
+            controlledRandomMating(newSubPopSizeFunc=popSizeFunc,
+                loci=controlledLoci,
+                alleles=[1]*len(controlledLoci),
+                freqFunc=trajFunc))
+        simu.evolve(ops=operators, gen=gen)
+        pop= simu.getPopulation(0, True)
     print 'Saving expanded population to ', expandedFile
     pop.savePopulation(expandedFile)
     return pop
@@ -1114,15 +1193,15 @@ if __name__ == '__main__':
         sys.exit(1)
     # -h or --help
     if allParam[0]:    
-        print usage(seed_options, __doc__)
+        print usage(options, __doc__)
         sys.exit(0)
     # 
     (name, 
-      seed, useSavedSeed, initPop, HapMap_dir, pops, chrom,
+      seedName, useSavedSeed, initPop, HapMap_dir, pops, chrom,
         markerList, numMarkers, startPos, endingPos, minAF,
         minDiffAF, minDist, initCopy, gen, size,
-      useSavedExpanded, expandGen, expandSize,
-      useSavedAdmixed, migrModel, migrGen, migrRate,
+      expandedName, useSavedExpanded, expandGen, expandSize, controlledLoci, controlledFreqTmp,
+      admixedName, useSavedAdmixed, migrModel, migrGen, migrRate,
       DSLtrait, chromWithDSL, freqDSL, freqDev, dslVar, cutoff,
       DSLpene, peneFunc, peneParam, 
       ccSampleSize, ccSampleName,
@@ -1138,22 +1217,21 @@ if __name__ == '__main__':
     print 'Save configuration to', cfgFile
     # save current configuration
     saveConfig(options, cfgFile, allParam)
-    if os.path.isabs(seed):
-        seedFile = seed
+    if os.path.isabs(seedName):
+        seedFile = seedName
     else:
-        seedFile = os.path.join(name, seed)
-    expandedFile = os.path.join(name, 'expanded.bin')
-    admixedFile = os.path.join(name, 'admixed.bin')
+        seedFile = os.path.join(name, seedName)
     # specified seed file?
-    if type(useSavedSeed) == type(''):
-        seedFile = useSavedSeed
-        useSavedSeed = True
-    if type(useSavedExpanded) == type(''):
-        expandedFile = useSavedExpanded
-        useSavedExpanded = True
-    if type(useSavedAdmixed) == type(''):
-        expandedFile = useSavedAdmixed
-        useSavedAdmixed = True
+    if useSavedSeed:
+        seedFile = seedName
+    if os.path.isabs(expandedName):
+        expandedFile = expandedName
+    else:
+        expandedFile = os.path.join(name, expandedName)
+    if os.path.isabs(admixedName):
+        admixedFile = admixedName
+    else:
+        admixedFile = os.path.join(name, admixedName)
     #
     # get seed population
     if useSavedSeed and os.path.isfile(seedFile):
@@ -1173,8 +1251,34 @@ if __name__ == '__main__':
         if seedPop is None:
             print 'Loading seed population', seedFile
             seedPop = LoadPopulation(seedFile)
+        # write marker information
+        markers = open(os.path.join(name, 'markers.lst'), 'w')
+        print >> markers, 'Name\tchrom\tlocation\tfreq'
+        Stat(seedPop, alleleFreq=range(seedPop.totNumLoci()))
+        for ch in range(seedPop.numChrom()):
+            for loc in range(seedPop.chromBegin(ch), seedPop.chromEnd(ch)):
+                print >> markers, '%s\t%d\t%.5f\t%.3f' % (seedPop.locusName(loc), 
+                    chrom[ch], seedPop.locusPos(loc), seedPop.dvars().alleleFreq[loc][1])
+        markers.close()
+        #
+        controlledFreq = []
+        if len(controlledFreqTmp) > 0:
+            if type(controlledFreqTmp[0]) in [types.TupleType, types.ListType]:
+                if len(controlledFreqTmp) != len(controlledLoci):
+                    print "Please specify frequency range for each controlled locus"
+                    sys.exit(1)
+                for rng in controlledFreqTmp:
+                    if len(rng) != 2:
+                        print "Wrong allele frequency range", rng
+                    controlledFreq.append(rng)
+            # give only one
+            else:
+                if len(controlledFreqTmp) != 2:
+                    print "Wrong allele frequency range", controlledFreqTmp
+                for i in range(len(controlledLoci)):
+                    controlledFreq.append(controlledFreqTmp)
         expandedPop = expandSeedPopulation(seedPop, expandGen,
-            expandSize, expandedFile)
+            expandSize, controlledLoci, controlledFreq, expandedFile)
     # admixture
     if useSavedAdmixed and os.path.isfile(admixedFile):
         admixedPop = None
