@@ -4,6 +4,7 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - NEW: Polish command line arguments output in a configuration file.
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
   - BUG: fix a bug that prevents a cloned simulator from evolving again.
