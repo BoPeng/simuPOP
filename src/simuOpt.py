@@ -57,7 +57,7 @@ Because these options are reserved, you can not use them in your simuPOP script.
 
 # First try to get environmental variable
 
-import os, sys, exceptions, types, re, time, imp
+import os, sys, exceptions, types, re, time, imp, textwrap
 
 allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', 'useDefault', 'jump', \
     'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom', 'separator']
@@ -1088,19 +1088,35 @@ def saveConfig(opt, file, param):
                         print >> f, "%s = '%s'" % (options[p]['longarg'][0:-1], param[p])
                 else:
                     print >> f, "%s = %s" % (options[p]['longarg'][0:-1], str(param[p]))
-    f.write("\n\n#The same options can be given by command line (subject to minor changes)\n#    --noDialog ")
+    print >> f, "\n\n#The same options can be given by command line options (subject to minor changes)"
+    cmd = "#    --noDialog "
+    # shorter version
+    scmd = "#    --noDialog "
     for p in range(0, len(options)):
         if options[p].has_key('label') and options[p].has_key('longarg'):
+            defaultVal = options[p].has_key('useDefault') and options[p]['useDefault'] \
+                and str(param[p]) == str(options[p]['default'])
             if options[p]['longarg'][-1] == '=':
                 if str(param[p]).find(",") >= 0:    # has single quote
-                    f.write( " --" + options[p]['longarg'][0:-1]
-                        + '="' + str( param[p] ) + '"')
+                    arg =  " --" + options[p]['longarg'][0:-1] \
+                        + '="' + str( param[p] ) + '"'
+                    cmd += arg
+                    if not defaultVal:
+                        scmd += arg
                 else:
-                    f.write( " --" + options[p]['longarg'][0:-1]
-                        + "='" + str( param[p] ) + "'")
-            else:
-                f.write( " --" + options[p]['longarg'] )
-    f.write("\n")
+                    arg = " --" + options[p]['longarg'][0:-1] \
+                        + "='" + str( param[p] ) + "'"
+                    cmd += arg
+                    if not defaultVal:
+                        scmd += arg
+            elif param[p]: # this option is True
+                cmd += "--" + options[p]['longarg']
+                if not defaultVal:
+                    cmd += "--" + options[p]['longarg']
+    print >> f, ' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False))
+    # print out shorter version
+    print >> f, "\n\n#Or a shorter version if default arguments are ignored"
+    print >> f, ' \\\n#    '.join(textwrap.wrap(scmd, break_long_words=False))
     f.close()
 
 
