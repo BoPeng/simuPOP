@@ -6760,8 +6760,11 @@ fitness
 \end_layout
 
 \begin_layout Itemize
-selector alone can not do selection! Only mating schemes can actually select
- on individuals.
+Selector only set information field and mark subpopulations as selection
+ ready.
+ However, how these information are used to select parents can vary from
+ mating scheme to mating scheme.
+ As a matter of fact, some mating schemes do not support selection at all.
 \end_layout
 
 \begin_layout Itemize
