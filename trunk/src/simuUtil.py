@@ -701,7 +701,7 @@ def FreqTrajectoryMultiStochWithSubPop(
                 print "Subpop return 0 index. restart "
             else:
                 break;
-        # now spTraj has SP0: loc0,1,2..., SP1 loc 0,1,2,..., ...
+        # now spTraj has LOC0: sp0,1,2, LOC1, sp0,1,2,... LOC2
         for i in range(numLoci):
             spTraj[sp+i*numSP] = t[i]
     # add all trajectories
