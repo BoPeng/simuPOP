@@ -648,6 +648,188 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 }
 
 
+matrix ForwardFreqTrajectory(
+	ULONG curGen,
+	ULONG endGen,
+	// frequency of each loci at each subpopulation
+	vectorf curFreq,
+	matrix endFreq,
+	vectorlu N,
+	PyObject * NtFunc,
+	vectorf fitness,
+	PyObject * fitnessFunc,
+	int ploidy,
+	long maxAttempts)
+{
+	size_t nLoci = endFreq.size();
+	size_t nSP = curFreq.size() / nLoci;
+
+	DBG_ASSERT(nLoci > 0, ValueError, "Number of loci should be at least one");
+	
+	for (size_t i = 0; i < nLoci; ++i) {
+		DBG_FAILIF(endFreq[i].size() != 2, ValueError,
+			"Please specify frequency range of each marker");
+	}
+
+	DBG_ASSERT(curGen <= endGen, ValueError,
+		"Current generation should be less than ending generation");
+
+	DBG_FAILIF(N.empty() && NtFunc == NULL, ValueError,
+		"Please specify either N or NtFunc");
+
+	DBG_FAILIF(!N.empty() && N.size() != nSP, ValueError,
+		"If N is specified, it should have length " + toStr(nSP));
+
+	size_t nGen = endGen - curGen + 1;
+	ULONG idx = curGen;
+
+	matrix result(nLoci*nSP, vectorf(nGen));
+
+	// population size at each generation
+	vector<vectori> Nt;
+	for (idx = curGen; idx <= endGen; ++ idx) {
+		vectori Ntmp(N.begin(), N.end());
+		if (NtFunc != NULL) {
+			PyObject * lastSize = PyTuple_New(nSP);
+			for (size_t i = 0; i < nSP; ++i)
+				PyTuple_SetItem(lastSize, i, 
+					PyInt_FromLong(idx == curGen ? 0 : Nt[idx-curGen-1][i]));
+			PyCallFunc2(NtFunc, "(iO)", idx, lastSize, Ntmp, PyObj_As_IntArray);
+			Py_XDECREF(lastSize);
+			DBG_ASSERT(Ntmp.size() == nSP, ValueError,
+				"Return value from NtFunc should be an array of size " + toStr(nSP));
+		}
+		Nt.push_back(Ntmp);
+		DBG_DO(DBG_DEVEL, cout << "Popsize at gen " << idx << " is " 
+			<< Nt[idx-curGen] << endl);
+	}
+	// selection pressure.
+	vectorf sAll(nLoci*3);
+	bool interaction = false;
+	if (ValidPyObject(fitnessFunc)) {
+		if (!PyCallable_Check(fitnessFunc) )
+			throw ValueError("sFunc is not a valid Python function.");
+		else
+			// increase the ref, just to be safe
+			Py_INCREF(fitnessFunc);
+	} else if (fitness.empty() ) {
+		// default to [1,1,1]
+		sAll.resize(nLoci * 3, 0.);
+	} else if (fitness.size() == 3 * nLoci) {
+		// independent case
+		for (size_t i = 0; i < nLoci; ++i) {
+			// convert to the form 1, s1, s2
+			sAll[3 * i + 1] = fitness[3 * i + 1] / fitness[3 * i] - 1.;
+			sAll[3 * i + 2] = fitness[3 * i + 2] / fitness[3 * i] - 1.;
+			sAll[3 * i] = 0.;
+		}
+	} else if (fitness.size() == std::pow3(nLoci)) {
+		// interaction case
+		interaction = true;
+	} else
+		throw ValueError("Wrong size of fitness vector");
+
+	// allele frequency at each generation
+	matrix a_frq(nSP, vectorf(nLoci));
+	//
+	idx = curGen;
+	int failedCount = 0;
+	while (true) {
+		if (idx == curGen) {
+			// initialize allele frequency at curGen
+			for (size_t sp = 0; sp < nSP; ++sp)
+				for (size_t loc = 0; loc < nLoci; ++loc) {
+					a_frq[sp][loc] = curFreq[sp + loc*nSP];
+					result[sp + loc * nSP][0] = a_frq[sp][loc];
+				}
+		}
+		// then selection coefficient. Note that allele frequency
+		// can be different, so selection coefficient can be different
+		// 
+		for (size_t sp = 0; sp < nSP; ++sp) {
+			// update allele frequency
+			if (ValidPyObject(fitnessFunc)) {
+				vectorf sAllTmp;
+				// compile allele frequency... and pass
+				PyObject * freqObj = Double_Vec_As_NumArray(a_frq[sp].begin(),
+					a_frq[sp].end());
+				PyCallFunc2(fitnessFunc, "(iO)", idx, freqObj, sAllTmp, PyObj_As_Array);
+
+				if (sAllTmp.size() == 3 * nLoci) {
+					sAll.resize(3 * nLoci);
+					for (size_t i = 0; i < nLoci; ++i) {
+						// convert to the form 1, s1, s2
+						sAll[3 * i + 1] = sAllTmp[3 * i + 1] / sAllTmp[3 * i] - 1.;
+						sAll[3 * i + 2] = sAllTmp[3 * i + 2] / sAllTmp[3 * i] - 1.;
+						sAll[3 * i] = 0.;
+					}
+				} else if (sAllTmp.size() == std::pow3(nLoci)) {
+					// interaction case.
+					interFitness(nLoci, sAllTmp, a_frq[sp].begin(), sAll);
+				} else
+					throw ValueError("Wrong size of fitness vector: " + toStr(sAllTmp.size()));
+			} else if (interaction) {
+				// from fitness vector, get sAll using allele frequency
+				interFitness(nLoci, fitness, a_frq[sp].begin(), sAll);
+			}
+
+			DBG_DO(DBG_DEVEL, cout << "Selection coef at sp " << sp << " is " << sAll << endl);
+	
+			// with s1 and s2 in hand, calculate freq at the next generation
+			for (size_t loc = 0; loc < nLoci; ++loc) {
+				double xt_1 = a_frq[sp][loc];
+				double s1 = sAll[3 * loc + 1];
+				double s2 = sAll[3 * loc + 2];
+				size_t N_t = Nt[idx - curGen + 1][sp];
+				
+				double xt_prime = xt_1 *(1 + s2 * xt_1 + s1 * (1 - xt_1)) / 
+					(1 + s2 * xt_1 * xt_1 + 2 * s1 * xt_1 *(1- xt_1));
+				ULONG it = rng().randBinomial(ploidy * N_t, xt_prime);
+				a_frq[sp][loc] = it / static_cast<double>(ploidy * N_t);
+				result[sp + loc*nSP][idx - curGen + 1] = a_frq[sp][loc];
+
+				DBG_DO(DBG_DEVEL, cout << "Gen: " << idx << " SP: " << sp 
+					<< " Size: " << N_t << " Loc: " << loc << " xt_1: " << xt_1 << " xt: " << a_frq[sp][loc] << endl);
+			}
+		} // each subpopulation
+		
+		// go to next generation
+		idx ++;
+
+		if (idx == endGen) {
+			// overall frequency
+			bool succ = true;
+			for (size_t loc = 0; loc < nLoci; ++loc) {
+				ULONG count = 0;
+				ULONG all = 0;
+				// no need to use ploidy here
+				for (size_t sp = 0; sp < nSP; ++sp) {
+					count += static_cast<ULONG>(a_frq[sp][loc] * Nt[idx - curGen][sp]);
+					all += Nt[idx - curGen][sp];
+				}
+				double frq = count / static_cast<double>(all);
+				if (frq < endFreq[loc][0] || frq > endFreq[loc][1])
+					succ = false;
+			}
+			// success?
+			if (succ)
+				break;
+			else if (++failedCount > maxAttempts) {
+				DBG_DO_(cout << "Maximum attempts exceeded." << endl);
+				return matrix();
+			} else
+				idx = curGen;
+		}
+	}
+	// clean up
+	if (NtFunc != NULL)
+		Py_DECREF(NtFunc);
+	if (ValidPyObject(fitnessFunc))
+		Py_DECREF(fitnessFunc);		
+	return result;
+}
+
+
 #ifndef OPTIMIZED
 // simulate trajectory
 vectorf FreqTrajectorySelSim(

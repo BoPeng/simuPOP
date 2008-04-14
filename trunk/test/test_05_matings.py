@@ -281,6 +281,75 @@ class TestMatingSchemes(unittest.TestCase):
             gen=endingGen
         )
 
+
+    def testForwardTrajectorySimulation(self):
+        'Testing forward trajectory simulation'
+        # fTurnOnDebug(DBG_DEVEL)
+        def Nt(gen, oldSize):
+            if gen == 10:
+                return [10000, 20000]
+            else:
+                return [x+gen for x in oldSize]
+        #
+        def fitness(gen, frq):
+            return [1, 1+gen/1000., 1+gen/500.]*3
+        #
+        def fitness1(gen, frq):
+            return [1, 1+gen/10000., 1+gen/5000.]
+        # one subpopulation
+        freq = [[0.08, 0.15], [0.12, 0.24], [0.15, 0.27]]
+        traj = ForwardFreqTrajectory(
+            curGen = 10,
+            endGen = 20,
+            # three loci, one subpop
+            curFreq = [0.1, 0.2, 0.3],
+            freq = freq,
+            N = [100],
+            fitnessFunc=fitness)
+        if len(traj) == 0:
+            for i in range(3):
+                assert traj[i] >= freq[i][0] and traj[i] <= freq[i][1] 
+        # for t in traj:
+        #    print ', '.join(['%.2f' % x for x in t])
+        # one locus
+        freq = [[0.08, 0.15]]
+        traj = ForwardFreqTrajectory(
+            curGen=10,
+            endGen=20,
+            # one locus, three subpop
+            curFreq=[0.1, 0.2, 0.1],
+            freq=freq,
+            N = [1000]*3,
+            fitnessFunc=fitness1)
+        if len(traj) == 0:
+            lastFrq = [x[-1] for x in traj]
+            lastSize = [1000]*3
+            avgFrq = sum([lastFrq[x]*lastSize[x] for x in range(3)]) / sum(lastSize)
+            assert avgFrq >= freq[0][0] and avgFrq <= freq[0][1] 
+        # for t in traj:
+        #    print ', '.join(['%.2f' % x for x in t])
+        # planned trajectory
+        #TurnOnDebug(DBG_DEVEL)
+        freq = [[0.05, 0.15], [0.05, 0.15], [0.05, 0.15]]
+        traj = ForwardFreqTrajectory(
+            curGen = 10,
+            endGen = 20,
+            # three loci, two subpop
+            curFreq = [0.05, 0.10]*3,
+            freq = freq,
+            NtFunc = Nt,
+            fitnessFunc = fitness)
+        if len(traj) == 0:
+            for loc in range(3):
+                lastFrq = [traj[loc*2+sp][-1] for sp in range(2)]
+                lastSize = Nt[20]
+                avgFrq = sum([lastFrq[x]*lastSize[x] for x in range(2)]) / sum(lastSize)
+                assert avgFrq >= freq[loc][0] and avgFrq <= freq[loc][1] 
+        #for t in traj:
+        #    print ', '.join(['%.2f' % x for x in t])
+
+
+
     def testSelfMating(self):
         'Test selfing mating scheme'
         pop = population(200, loci=[3,5])
@@ -343,6 +412,7 @@ class TestMatingSchemes(unittest.TestCase):
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
             gen=10)
+
 
     def testCloneMating(self):
         'Testing clone mating scheme'
