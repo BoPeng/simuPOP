@@ -127,7 +127,65 @@ matrix FreqTrajectoryMultiStoch(
 	bool restartIfFail = false,
 	long maxAttempts = 1000);
 
+
+//
+// simulate trajectories of disease susceptibility loci using a forward time
+// approach
+//
+// Parameters:
+//
+//    curGen current generation number
+//    endGen ending generation number
+//    N      constant population size N, which is a list of subpopulation sizes.
+//    NtFunc a python function that returns population size at each generation.
+//           gen is defined in forwrd order. NtFunc should take form func(gen, lastSize)
+//           where gen is current generation number and lastSize is population size of
+//           the last generation, which will be empty when gen == curGen. NtFunc should return an array of size of subpops.
+//           Note that number of subpopulations should not change.
+//    curFreq current allele frequencies of alleles of multiple unlinked loci.
+//           If there are two loci and one subpopulation, it should be
+//           [ [0.1], [0.2] ]
+//    freq  expected *range* of allele fequencies of alleles of multiple unlinked loci,
+//          at generation endGen, with all subpopulation combined. If there are two
+//          loci, it can be [ [0.08, 0.12], [0.19, 0.21]]
+//    fitness  constant fitness for [AA, Aa, aa, BB, Bb, bb ...].
+//    fitnessFunc  a python function that returns selection pressure at each generation
+//           the function expects parameters gen and freq. gen is current generation
+//           number and freq is the allele frequency at all loci. This allows
+//           frequency dependent selection. gen is defined in forward order.
+//    restartIfFail  If the process can not finish after T generations, restart if
+//           restartIfFail=true, otherwise return. Default to false.
+//    ploidy    Number of chromosomes will be N*ploidy
+//    maxAttempts    How many times to try to get a valid path? Default 10000
+//
+// Return the trajectory for each locus at each subpopulation. In the order
+// of 
+//    LOC0: sp0, sp1, sp2,.. LOC1: sp0, sp1, sp2
+// Each trajectory will have length endGen - curGen + 1.
+//
+// If maxAttempts is exceeded, an empty matrix will be returned.
+// 
+// Of course, you should specify only one of N/NtFunc and one of 
+// fitness and fitnessFunc.
+//
+matrix ForwardFreqTrajectory(
+	ULONG curGen = 0,
+	ULONG endGen = 0,
+	// in the order of LOC0: sp0, 1, 2, ..., LOC1, ...
+	vectorf curFreq = vectorf(),
+	matrix freq = matrix(),
+	vectorlu N = vectorlu(),
+	PyObject * NtFunc = NULL,
+	vectorf fitness = vectorf(),
+	PyObject * fitnessFunc = NULL,
+	int ploidy = 2,
+	long maxAttempts = 1000);
+
+
 #ifndef OPTIMIZED
+// These two functions try to duplicate relevant code from similar papers
+// and are kept for reference only.
+//
 // simulate trajectory
 vectorf FreqTrajectorySelSim(
 	double sel,                                                                     // strength of selection coef  ::8
