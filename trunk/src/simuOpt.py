@@ -62,7 +62,7 @@ import os, sys, exceptions, types, re, time, imp, textwrap
 allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes', 'prompt', 'useDefault', 'jump', \
     'jumpIfFalse', 'default', 'description', 'validate', 'chooseOneOf', 'chooseFrom', 'separator']
 
-allowed_commandline_options = ['-c', '--config', '--optimized', '--mpi', '--chromMap', \
+allowed_commandline_options = ['-c', '--config', '--optimized', \
     '-q', '--useTkinter', '--quiet', '--noDialog']
 
 def _getParamShortArg(p, processedArgs):
@@ -1003,8 +1003,6 @@ def usage(options, before=''):
     message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
     message += '        --noDialog :\n                Enter parameter from command line\n'
     message += '        --optimized :\n                Use optimized library (no error checking)\n'
-    message += '        --mpi :\n                      Use MPI module\n'
-    message += '        --chromMap : \n                Chromosome map for MPI module\n'
     for p in options:
         message += "        "
         if p.has_key('arg'):
@@ -1307,24 +1305,18 @@ def valueListOf(t):
 
 
 env_optimized = os.getenv('SIMUOPTIMIZED')
-env_mpi = os.getenv('SIMUMPI')
-env_chrom_map = os.getenv('SIMUCHROMMAP')
 env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
 [par_optimized] = _termGetParam([{'longarg':'optimized', \
     'default':''}], False, False, True)
-[par_mpi] = _termGetParam([{'longarg':'mpi', \
-    'default':''}], False, False, True)
-[par_chrom_map] = _termGetParam([{'longarg':'chromMap', \
-    'default':[]}], False, False, True)
 [par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
     'default':False}], False, False, True)
 [par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
     'default':False }], False, False, True) 
 
 # remove these parameters from sys.argv
-for arg in ['--optimized', '--mpi', '--chromMap', '--quiet', '-q', '--useTkinter']:
+for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
     try:
         sys.argv.remove(arg)
     except:
@@ -1337,26 +1329,12 @@ elif env_optimized != None:
 else:     # default to false
     _optimized = False
 
-if par_mpi != '':
-    _mpi = par_mpi
-elif env_mpi != None:
-    _mpi = True
-else:     # default to false
-    _mpi = False
-
-if par_chrom_map != []:
-    _chrom_map = par_chrom_map
-elif env_chrom_map != None:
-    _chrom_map = eval(env_chrom_map)
-else:     # default to []
-    _chrom_map = []
-
 if env_longAllele in ['standard', 'short', 'long', 'binary']:
     _longAllele = env_longAllele
 else:
     _longAllele = 'standard'
 
-simuOptions = {'Optimized':_optimized, 'MPI':_mpi, 'ChromMap':_chrom_map, 
+simuOptions = {'Optimized':_optimized, 
     'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
 if env_debug != None:
@@ -1372,9 +1350,9 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
         will be used if available. If nothing is defined, standard version will
         be used.
 
-    mpi: currently unused
+    mpi: obsolete.
 
-    chromMap: currently unused
+    chromMap: obsolete.
 
     alleleType: 'binary', 'short', or 'long'. 'standard' can be used as 'short'
         for backward compatibility. If not set, environmental variable 
@@ -1389,10 +1367,6 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
     '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
-    if mpi in [True, False]:
-        simuOptions['MPI'] = mpi
-    if chromMap != []:
-        simuOptions['ChromMap'] = chromMap
     if alleleType in ['standard', 'long', 'binary', 'short']:
         simuOptions['AlleleType'] = alleleType
     if quiet in [True, False]:
@@ -1405,8 +1379,6 @@ if simuOptions['AlleleType'] == 'standard':
     simuOptions['AlleleType'] = 'short'
 if simuOptions['Optimized'] not in [True, False]:
     simuOptions['Optimized'] = False
-if simuOptions['MPI'] not in [True, False]:
-    simuOptions['MPI'] = False
 
 def requireRevision(rev):
     '''Compare the revision of this simuPOP module with given revision. Raise
