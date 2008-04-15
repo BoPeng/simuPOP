@@ -156,32 +156,26 @@ Test scripts
 ==============
 
 The following test scripts demonstrate the use of this script using a small
-number of loci. Note that most parameters have default parameters so the
-command can be shortened considerably in practise. I list (almost) the full
-command for clarity purposes.
+number of loci. Note that some parameters can be ignored if their
+default values are used.
 
-simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
+simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' \
     --chrom="range(1,3)"  --markerList='../../Affy/mapAffySNPs.txt' \
     --startPos="[0]" --endingPos='[0]' --numMarkers="[100,100]" --minAF='0' --minDist='0'  \
-    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --gen='20' --size='3600'  \
-    --seed='test_seed.bin' --saveConfig='test_seed.cfg'
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --initGen='20' --seedSize='3600'  \
+    --seedName='test_seed.bin'
 
-simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
-    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --remix
+simuAdmixture.py --noDialog  --useSavedSeed --seedName=test_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" 
     
-simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chromWithDSL="[1,2]" \
-    --sampleSize="(5, 5)" --freqDSL=0.1 --cutoff=1 \
-    --dslVar="[0.05, 0.1]"   --seed='test_seed.bin'
-
 
 simulation for XJ Gu et al (2008)
 ====================================
 
 # 1: Hybrid isolation.
-simuAdmixture.py --noDialog  --name='IH' --initPop='../../Affy/affyAll_CEU.bin' \
+simuAdmixture.py --noDialog  --name='IH' \
     --HapMap_dir='../../HapMap' --pops="['CEU']" --chrom="range(1, 23)" \
-    --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]*22" \
-    --startPos='[0]' --endingPos='[0]' --minAF='0' --minDiffAF='0' --minDist='0' --initCopy='10' \
+    --markerList='../../Affy/mapAffySNPs.txt'  --initCopy='10' \
     --gen='200' --size='4800' --expandGen='100' --expandSize='24000' \
     --useSavedAdmixed --migrModel='None' --migrGen='1' \
     --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
@@ -198,8 +192,6 @@ simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap
     --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
     --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
-
-
 
 
 Evolve seed population:
@@ -274,17 +266,16 @@ Seed population:
 allele frequency difference between CEU and YRI populations > 0.2, 
 minimal distance between adjacent markers 0.05cM
 
-simuAdmixture.py --noDialog  --HapMap_dir='../HapMap' --chrom='[2]' \
+simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chrom='[2]' \
    --numMarkers=500 --startPos=100  --minAF=0.1 --minDiffAF=0.2 \
-   --minDist=0.05 --pops="['CEU', 'YRI']" --reseed
+   --minDist=0.05 --pops="['CEU', 'YRI']"
 
 250 sample from CEU, 250 sample from YRI, 500 sample from admixed population
 when 10% of the CEU popopulation migrate to YRI for 5 generations.
 
 Round 1: expand and get sample from CEU
 
-simuAdmixture.py  --noDialog --migrModel='None' --migrGen='0' --sampleType='random'\
-  --sampleSize="(250, 0)" --sampleName='CEU' --name='simu2'
+simuAdmixture.py  --noDialog --useSavedExpanded --migrModel='None' --migrGen='0'
 
 Round 2: load expanded population and get sample from YRI
 
@@ -319,6 +310,25 @@ options = [
      'description': '''Name of this simulation. A directory with this name
                 will be created. Configuration file (.cfg), marker list and
                 various populations will be saved to this directory''',
+    },
+    {'longarg': 'useSavedSeed',
+     'default': False,
+     'label': 'Use saved seed population',
+     'useDefault': True,
+     'allowedTypes': [types.BooleanType],
+     'jump': 12,
+     'description': '''Use specified or a default seed population, if available.
+        The default seed population is seed.bin under the simulation directory.
+        '''
+    },
+    {'longarg': 'useSavedExpanded',
+     'default': False,
+     'useDefault': True,
+     'allowedTypes': [types.BooleanType],
+     'jump': 16,
+     'label': 'Use saved expanded population',
+     'description': '''If set to true, load specified or saved $name/expanded.bin and 
+                skip population expansion'''
     },
     {'separator': 'Populations and markers to use'},
     {'longarg': 'HapMap_dir=',
@@ -428,20 +438,11 @@ options = [
     #
     {'separator': 'Generate seed population'},
     {'arg': 's:',
-     'longarg': 'seed=',
+     'longarg': 'seedName=',
      'default': 'seed.bin',
      'useDefault': True,
      'description': '''Name of the seed population''',
      'allowedTypes': [types.StringType],
-    },
-    {'longarg': 'useSavedSeed',
-     'default': False,
-     'label': 'Use saved seed population',
-     'useDefault': True,
-     'allowedTypes': [types.BooleanType],
-     'description': '''Use specified or a default seed population, if available.
-        The default seed population is seed.bin under the simulation directory.
-        '''
     },
     {'longarg': 'initCopy=',
      'default': 10,
@@ -476,14 +477,6 @@ options = [
      'useDefault': True,
      'description': '''Name of the expanded population, relative to simulation path''',
      'allowedTypes': [types.StringType],
-    },
-    {'longarg': 'useSavedExpanded',
-     'default': False,
-     'useDefault': True,
-     'allowedTypes': [types.BooleanType],
-     'label': 'Use saved expanded population',
-     'description': '''If set to true, load specified or saved $name/expanded.bin and 
-                skip population expansion'''
     },
     {'longarg': 'expandGen=',
      'default': 100,
@@ -927,11 +920,11 @@ if __name__ == '__main__':
         print usage(options, __doc__)
         sys.exit(0)
     # 
-    (name, 
+    (name, useSavedSeed, useSavedExpanded,
         HapMap_dir, pops, markerList, chrom, numMarkers, startPos,
         endingPos, minAF, minDiffAF, minDist, 
-      seedName, useSavedSeed, initCopy, initGen, seedSize,
-      expandedName, useSavedExpanded, expandGen, expandSize, controlledLoci, controlledFreqTmp,
+      seedName, initCopy, initGen, seedSize,
+      expandedName, expandGen, expandSize, controlledLoci, controlledFreqTmp,
       admixedName, migrModel, migrGen, migrRate) = allParam[1:]
     # simulation name?
     if not os.path.isdir(name):
@@ -961,8 +954,9 @@ if __name__ == '__main__':
         admixedFile = os.path.join(name, admixedName)
     #
     # get seed population
-    if useSavedSeed and os.path.isfile(seedFile):
-        print "Using existing seed file ", seedFile
+    if useSavedExpanded or (useSavedSeed and os.path.isfile(seedFile)):
+        if useSavedSeed:
+            print "Using existing seed file ", seedFile
         seedPop = None
     else:
         seedPop = generateSeedPopulation(HapMap_dir, 
