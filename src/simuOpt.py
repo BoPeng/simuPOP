@@ -291,10 +291,6 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
     values = []
     goto = 0
     for opt in range(0, len(options)):
-        if opt < goto:
-            values.append(None)
-            processedArgs.append(opt)
-            continue
         p = options[opt]
         # validate p
         for k in p.keys():
@@ -310,12 +306,16 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
         if val == None:
             if (useDefault or (not p.has_key('label')) or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
                 val = p['default']
-            else:
+            elif opt >= goto:
                 val = _getParamUserInput(p)
-        # should have a valid value now.
-        if val == None:
+        # these parameters are skipped, but still processed to process checkUnprocessedArgs
+        if opt < goto:
+            values.append(None)
+        elif val == None:
+            # should have a valid value now.
             raise exceptions.ValueError("Failed to get parameter " + p.setdefault("label",'') + " " + p.setdefault("longarg",''))
-        values.append( _getParamValue(p, val))
+        else:
+            values.append( _getParamValue(p, val))
         # now we really short have something not None, unless the default is None
         # if a string is fine
         # now, deal with jump option
