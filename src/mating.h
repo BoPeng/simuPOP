@@ -2070,10 +2070,6 @@ public:
 	/// CPPONLY
 	virtual bool isCompatible(const population & pop) const
 	{
-		// test if individual has sex
-		// if not, will yield compile time error.
-		pop.indBegin()->sex();
-
 #ifndef OPTIMIZED
 		if (pop.ploidy() != 2)
 			cout << "Warning: This mating type only works with diploid population." << endl;
@@ -2086,7 +2082,7 @@ public:
 	/// used by Python print function to print out the general information of the controlled random mating scheme
 	virtual string __repr__()
 	{
-		return "<simuPOP::sexual random mating>";
+		return "<simuPOP::controlled sexual random mating>";
 	}
 
 
