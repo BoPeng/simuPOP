@@ -687,6 +687,8 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
         currentFreq = []
         # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
         for loc in ctrlLoci:
+            print "Current overall frequency %s: %.3f" % (pop.locusName(loc),
+                pop.dvars().alleleFreq[loc][1])
             for sp in range(pop.numSubPop()):
                 currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
         traj = ForwardFreqTrajectory(
@@ -723,6 +725,11 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
             gen = expandGen
         )
         pop= simu.getPopulation(0, True)
+        Stat(pop, alleleFreq=ctrlLoci)
+        for i,loc in enumerate(ctrlLoci):
+            print "Locus %s: designed freq: (%.3f, %.3f), freq: %.3f" % \
+                (pop.alleleName(loc), controlledFreq[i][0],
+                controlledFreq[i][1], pop.dvars().alleleFreq[loc][1])
     print 'Saving expanded population to ', expandedFile
     pop.savePopulation(expandedFile)
     return pop
