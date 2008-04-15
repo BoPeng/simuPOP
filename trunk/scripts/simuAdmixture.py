@@ -151,6 +151,146 @@ Users can apply arbitrary penetrance or quantitative trait model and draw
 samples from this population. Script analAdmixture.py implements the examples
 used in paper Peng 2008.
 
+
+Test scripts
+==============
+
+The following test scripts demonstrate the use of this script using a small
+number of loci. Note that most parameters have default parameters so the
+command can be shortened considerably in practise. I list (almost) the full
+command for clarity purposes.
+
+simuAdmixture.py --noDialog  --reseed --HapMap_dir='../../HapMap' \
+    --chrom="range(1,3)"  --markerList='../../Affy/mapAffySNPs.txt' \
+    --startPos="[0]" --endingPos='[0]' --numMarkers="[100,100]" --minAF='0' --minDist='0'  \
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --gen='20' --size='3600'  \
+    --seed='test_seed.bin' --saveConfig='test_seed.cfg'
+
+simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --remix
+    
+simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chromWithDSL="[1,2]" \
+    --sampleSize="(5, 5)" --freqDSL=0.1 --cutoff=1 \
+    --dslVar="[0.05, 0.1]"   --seed='test_seed.bin'
+
+
+simulation for XJ Gu et al (2008)
+====================================
+
+# 1: Hybrid isolation.
+simuAdmixture.py --noDialog  --name='IH' --initPop='../../Affy/affyAll_CEU.bin' \
+    --HapMap_dir='../../HapMap' --pops="['CEU']" --chrom="range(1, 23)" \
+    --markerList='../../Affy/mapAffySNPs.txt'  --numMarkers="[0]*22" \
+    --startPos='[0]' --endingPos='[0]' --minAF='0' --minDiffAF='0' --minDist='0' --initCopy='10' \
+    --gen='200' --size='4800' --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed --migrModel='None' --migrGen='1' \
+    --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
+    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.005, 0.01, 0.03, 0.05)" \
+    --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
+    --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
+
+simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap_dir='../../HapMap' \
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" --markerList='' --numMarkers="(1000, 1000)" \
+    --startPos='[0]' --endingPos='[0]' --minAF='0.05' --minDiffAF='0' --minDist='0' --initCopy='10' \
+    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
+    --useSavedAdmixed --migrModel='Continuous Gene Flow' --migrGen='5' \
+    --migrRate="([0.90000000000000002, 0.10000000000000001], [0.0, 1.0])" --chromWithDSL="(1, 2, 3, 4)" \
+    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
+    --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
+    --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
+
+
+
+
+Evolve seed population:
+
+simuAdmixture.py --noDialog  --expandGen='100' --expandSize='24000' \
+    --migrModel='Continuous Gene Flow' --migrGen='5' \
+    --migrRate="([0, 0.10000000000000001], [0.0, 1.0])" \
+    --DSLpene='[0]' --pene="(0.10000000000000001, 0.25, 0.5)"  \
+    --resample='False' --sampleSize="(500, 500)"  \
+    --name='admix'
+
+Or use some default values
+
+simuAdmixture.py --noDialog  --seed=admix_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --chromWithDSL="[1,2,3,4]" \
+    --sampleSize="(600, 600)" --freqDSL=0.15 --freqDev=0.01 --cutoff=1 \
+    --dslVar="[0.005, 0.01, 0.03, 0.05]"  --name='admix'
+
+# test
+simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --chromWithDSL="[1,2]" \
+    --sampleSize="(5, 5)" --freqDSL=0.1 --cutoff=1 \
+    --dslVar="[0.05, 0.1]"   --name='test'
+
+Evolve a different seed population
+
+simuAdmixture.py --noDialog  -s=seed1.bin --migrGen='5' \
+    --migrRate="([0, 0.1], [0, 1])" --DSLpene=100 \
+    --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
+    --name='admix'
+
+Resample from the saved population:
+
+simuAdmixture.py --noDialog --resample=True --DSLpene=100 \
+    --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
+    --name='admix'
+
+Two disease susceptibility loci:
+
+simuAdmixture.py --noDialog --resample=True --DSLpene='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="(500, 500)"   --name='admix'
+
+Create a new subpopulation (the third population is created):
+
+simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
+    --DSLpene='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="(500, 500)"   --name='admix'
+
+Sample only from the last (newly created population)
+
+simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
+    --DSLpene='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="([0,0,500], [0,0,500])"   --name='admix'
+
+Use a varying migration rate model:
+
+Modify migrFunc to fit your need. Then
+
+simuAdmixture.py --noDialog --migrModel='Customized' --DSLpene='[10, 50]' \
+    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
+    --sampleSize="([0,0,500], [0,0,500])" --name='admix'
+
+
+Dr. Reddon simulation one:
+
+Seed population: 
+
+500 markers from chromosome 2, initial allele frequency > 0.1, initial 
+allele frequency difference between CEU and YRI populations > 0.2, 
+minimal distance between adjacent markers 0.05cM
+
+simuAdmixture.py --noDialog  --HapMap_dir='../HapMap' --chrom='[2]' \
+   --numMarkers=500 --startPos=100  --minAF=0.1 --minDiffAF=0.2 \
+   --minDist=0.05 --pops="['CEU', 'YRI']" --reseed
+
+250 sample from CEU, 250 sample from YRI, 500 sample from admixed population
+when 10% of the CEU popopulation migrate to YRI for 5 generations.
+
+Round 1: expand and get sample from CEU
+
+simuAdmixture.py  --noDialog --migrModel='None' --migrGen='0' --sampleType='random'\
+  --sampleSize="(250, 0)" --sampleName='CEU' --name='simu2'
+
+Round 2: load expanded population and get sample from YRI
+
+simuAdmixture.py  --noDialog --remix=True --migrModel='None' --migrGen='0' --sampleType='random'\
+  --sampleSize="(0, 250)" --sampleName='YRI' --name='simu2'
+  
 '''
 
 from simuOpt import *
