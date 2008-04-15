@@ -671,6 +671,11 @@ matrix ForwardFreqTrajectory(
 			"Please specify frequency range of each marker");
 	}
 
+	if (NtFunc != NULL)
+		Py_INCREF(NtFunc);
+	if (fitnessFunc != NULL)
+		Py_INCREF(fitnessFunc);
+
 	DBG_ASSERT(curGen <= endGen, ValueError,
 		"Current generation should be less than ending generation");
 
