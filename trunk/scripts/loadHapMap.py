@@ -66,11 +66,17 @@ def getLoci(ch):
     lociName = []
     file = legend_freq_file % (ch, rev)
     downloadIfNeeded(file)
-    for line in gzip.open(file).readlines():
-        fields = line.split()
-        lociName.append(fields[0])
-        # translate pos from index to cM. This is tentative
-        lociPos.append(float(fields[1])/1000000.)
+    try:
+        for line in gzip.open(file).readlines():
+            fields = line.split()
+            lociName.append(fields[0])
+            # translate pos from index to cM. This is tentative
+            lociPos.append(float(fields[1])/1000000.)
+    except:
+        print 'Failed to read file ', file
+        print 'You may want to remove your local copy and let this script re-download it.'
+        print
+        raise
     return (lociPos, lociName)
 
 
@@ -170,7 +176,7 @@ def loadHapMap(chroms, dest='.'):
             if ps[0] != popSize[0] or ps[1] != popSize[1] or ps[2] != popSize[2]:
                 print "Population size does not match across chromosomes"
                 sys.exit(1)
-        pop = population(subPop=popSize, ploidy=2, loci=[len(lociPos)],
+        pop = population(size=popSize, ploidy=2, loci=[len(lociPos)],
             lociPos=lociPos, lociNames=lociName)
         print "Loading CEU population",
         load_population(pop, ch, type='CEU')
