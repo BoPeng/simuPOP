@@ -67,9 +67,9 @@ without migration. This stage is designed to mix these copied individuals,
 and make HapMap populations more distinct, because the HapMap populations are
 already admixed.
 
-During the evolution, recombination at a rate of 0.01 per cM, and mutation
-at a rate of 1e-7 per nucleotide per generation is applied. Recombination
-and mutation will also be applied at the subsequent stages.
+During the evolution, recombination at a rate of 0.01 per cM (param --recIntensity),
+and mutation at a rate of 1e-7 per nucleotide per generation (param --mutaRate) 
+is applied. Recombination and mutation will also be applied at the subsequent stages.
 
 This population will be saved as 'seed.bin' (param --seed) that will be used
 for the subsequent replicate simulations. We consider the subpopulations of
@@ -85,16 +85,22 @@ Step 2. Evolve the seed population.
 After a seed population is generated (or loaded if already exists and parameter
 --useSavedSeed is given), this script will evolve it as follows:
 
-1. Evolve the seed population subject to rapid population expansion for
+Evolve the seed population subject to rapid population expansion for
 100 (param --expandGen) generations. This is to mimic the rapid
 population expansion in the past 2000 years. Exponential population 
 growth model is used. No migration is allowed.
 
+Selection on a number of loci can be applied to selected loci at this, and
+the next mixing stage. These loci are supposed to have disease predisposing
+alleles (though selection does not have to work against them), and there
+frequencies are controlled.
+
 A special controlled mating scheme can be used if the allele frequencies
-of some markers at the end of this stage is specified. This is similar to
-what has been done in Peng 2007, PLoS Genetics, but the trajectories are
-simulated forward in time. Note that these markers have to be on different
-chromosomes, and this special mating scheme is only used in this stage.
+of some markers at the end of this stage is specified. This can be done
+backward in time, assuming no disease allele at these loci in 
+the seed population (c.f. Peng 2007 PLoS genetics), or forward in time,
+by starting from existing allele frequencies in the seed population.
+These two kinds of loci can not yet be mixed.
 
 The resulting population of this generation will be saved as $name/expanded.bin
 (--param expandedName).
@@ -287,9 +293,11 @@ simuAdmixture.py  --noDialog --remix=True --migrModel='None' --migrGen='0' --sam
 from simuOpt import *
 setOptions(alleleType='binary')
 from simuPOP import *
-from hapMapUtil import getMarkersFromName, getMarkersFromRange, evolveHapMap
+from hapMapUtil import getMarkersFromName, getMarkersFromRange
 
-import os, sys, types, exceptions, getopt, math, random
+import os, sys, math 
+from types import *
+from exceptions import ValueError, SystemError
 from simuUtil import SaveQTDT
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
@@ -299,13 +307,13 @@ options = [
      'longarg': 'help',
      'default': False, 
      'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
+     'allowedTypes': [NoneType, type(True)],
      'jump': -1                    # if -h is specified, ignore any other parameters.
     },
     {'longarg': 'name=',
      'default': 'simu',
      'useDefault': True,
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
      'label': 'Name of the simulation',
      'description': '''Name of this simulation. A directory with this name
                 will be created. Configuration file (.cfg), marker list and
@@ -315,7 +323,7 @@ options = [
      'default': False,
      'label': 'Use saved seed population',
      'useDefault': True,
-     'allowedTypes': [types.BooleanType],
+     'allowedTypes': [BooleanType],
      'jump': 12,
      'description': '''Use specified or a default seed population, if available.
         The default seed population is seed.bin under the simulation directory.
@@ -324,7 +332,7 @@ options = [
     {'longarg': 'useSavedExpanded',
      'default': False,
      'useDefault': True,
-     'allowedTypes': [types.BooleanType],
+     'allowedTypes': [BooleanType],
      'jump': 16,
      'label': 'Use saved expanded population',
      'description': '''If set to true, load specified or saved $name/expanded.bin and 
@@ -342,7 +350,7 @@ options = [
                 save HapMap data in simuPOP formats. If this module can not be
                 imported, you can either add its path to environmental variable
                 $PYTHONPATH or run this script manually.''',
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
      #'validate': valueValidDir(),
     },
     {'longarg': 'pops=',
@@ -350,7 +358,7 @@ options = [
      'useDefault': True,
      'label' : 'HapMap populations',
      'description': '''Which HapMap populations to use?''',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'allowedTypes': [TupleType, ListType],
      'chooseFrom': HapMap_pops,
      'validate': valueListOf(valueOneOf(HapMap_pops)),
     },
@@ -366,7 +374,7 @@ options = [
                 This script assumes that the marker position in the 
                 list file is in base pair, and will use pos/1000000 as cM to
                 compare marker location. If more fields are given, others are ignored.''',
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
      'validate': valueOr(valueEqual(''), valueValidFile()),
     },
     {'longarg': 'chrom=',
@@ -376,7 +384,7 @@ options = [
                 chromosomes are involves, numMarkers, if used, should be a list that specicy
                 number of markers on each chromosome. The same rule applies to startPos
                 and endingPos as well.''',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'allowedTypes': [TupleType, ListType],
      'validate': valueListOf(valueBetween(1, 22)),
     },
     {'longarg': 'numMarkers=',
@@ -385,7 +393,7 @@ options = [
      'description': '''Number of markers to use from the marker list file. If 0 is used,
                 all markers that satisfy conditions startPos, endingPos, minDist will
                 be used.''',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'allowedTypes': [TupleType, ListType],
      'validate': valueOr(valueGT(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'startPos=',
@@ -395,7 +403,7 @@ options = [
      'description': '''Starting position of the markers. If multiple
                 chromosomes are used, the positions for each 
                 chromosome can be specified as a list.''',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'allowedTypes': [TupleType, ListType],
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'endingPos=',
@@ -405,7 +413,7 @@ options = [
      'description': '''Ending position of the markers. Ignored if its value 
                 is 0.  If multiple chromosomes are used, the positions for each 
                 chromosome can be specified as a list. ''',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'allowedTypes': [TupleType, ListType],
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'minAF=',
@@ -414,7 +422,7 @@ options = [
      'label': 'Minimal allele frequency',
      'description': '''Minimal allele frequency, only used for picking markers
                 from the HapMap dataset''',
-     'allowedTypes': [types.IntType, types.LongType, types.FloatType],
+     'allowedTypes': [IntType, LongType, FloatType],
      'validate': valueGE(0)
     },
     {'longarg': 'minDiffAF=',
@@ -424,14 +432,14 @@ options = [
      'description': '''Minimal allele frequency difference between two HapMap population,
                 , can only be used when two HapMap populations are used. This options can be
                 used to choose markers with high ancestry information content.''',
-     'allowedTypes': [types.IntType, types.LongType, types.FloatType],
+     'allowedTypes': [IntType, LongType, FloatType],
      'validate': valueGE(0)
     },
     {'longarg': 'minDist=',
      'default': 0,
      'useDefault': True,
      'label': 'Minimal distance between markers (cM)',
-     'allowedTypes': [types.IntType, types.LongType, types.FloatType],
+     'allowedTypes': [IntType, LongType, FloatType],
      'description': '''Minimal distance between markers (in the unit of cM).
                 Can be used for both methods.''',
     },
@@ -442,15 +450,16 @@ options = [
      'default': 'seed.bin',
      'useDefault': True,
      'description': '''Name of the seed population''',
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
     },
     {'longarg': 'initCopy=',
      'default': 10,
      'useDefault': True,
      'label': 'Initial propagation',
      'description': '''How to expand the initial small HapMap sample to
-                 avoid quick loss of heterogenity''',
-     'allowedTypes': [types.IntType, types.LongType],
+                 avoid quick loss of heterogenity. By default, each individual
+                 is copied 10 times.''',
+     'allowedTypes': [IntType, LongType],
      'validate': valueGT(0)
     },
     {'longarg': 'initGen=',
@@ -459,16 +468,111 @@ options = [
      'label': 'Generations to evolve',
      'description': '''Number of generations to evolve to get the seed
                 population.''',
-     'allowedTypes': [types.IntType, types.LongType],
+     'allowedTypes': [IntType, LongType],
      'validate': valueGT(0)
     },
     {'longarg': 'seedSize=',
      'default': 4800,
      'useDefault': True,
-     'label': 'Ending population size',
-     'description': 'Size of the seed population',
-     'allowedTypes': [types.IntType, types.LongType],
+     'label': 'Size of the seed population',
+     'description': '''Size of the seed population. The default value is the recommended
+                value when all hapmap populations are used (60+60+90)*20. You may want
+                to reduce it according to the populations used.''',
+     'allowedTypes': [IntType, LongType],
      'validate': valueGE(100)
+    },
+    #
+    {'separator': 'Mutation, selection and recombination'},
+    {'longarg': 'mutaRate=',
+     'default': 1e-6,
+     'label': 'Mutation rate',
+     'allowedTypes': [IntType, FloatType],
+     'description': '''Mutation rate using a 2-allele model (kam). Note that mutation
+                can generally be ignored during short period of time unless you
+                intentionally set a higher mutation rate.''',
+     'validate': valueBetween(0,1),
+    },
+    {'longarg': 'recIntensity=',
+     'default': 0.01,
+     'label': 'Recombination intensity',
+     'allowedTypes': [FloatType],
+     'description': '''Recombination intensity. The actually recombination rate between
+                two adjacent markers depends on distance (in cM) between them. For example,
+                two markers that are 10kb apart (0.00001 cM apart) will have recombination
+                rate 10^-5*0.01 (the default value) = 10^-6.
+     ''',
+     'validate': valueBetween(0,1),
+    },
+    {'longarg': 'controlledLoci=',
+     'label': 'Loci with controlled allele frequency',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of markers (by name) whose allele frequency will be
+                controlled during this stage of evolution. A forward-time trajectory
+                simulation algorithm will be used. Currently, only one of
+                --controlledLoci and --backwardControlledLoci is allowed.'''
+    },
+    {'longarg': 'controlledFreq=',
+     'label': 'Ending allele frequency at controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of allele frequency ranges for each controlled locus.
+                If a single range is given, it is assumed for all markers. An example
+                of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
+    },
+    {'longarg': 'backwardControlledLoci=',
+     'label': 'Backward controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of markers (by name) whose mutants, if any, will be removed
+                at the beginning of population expansion stage. A mutant will be introduced
+                as the result of mutation. The frequency trajectory will be simulated
+                using a backward approach (see Peng 2007, PLoS Genetics). Currently,
+                only one of --controlledLoci and --backwardControlledLoci is allowed.''',
+    },
+    {'longarg': 'backControlledFreq=',
+     'label': 'Ending allele frequency at backward controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of allele frequency (not a list of ranges as parameter controlledFreq)''',
+    },
+    {'longarg': 'fitness=',
+     'default': [1, 1.0001, 1.0002],
+     'label': 'Fitness of genotype AA,Aa,aa',
+     'allowedTypes': [ListType, TupleType],
+     'description': '''Fitness of genotype, can be:
+                f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
+                f1, f2, f3: if multiple DSL, the same fitness for each locus
+                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive' 
+                    or multiplicative, fitness at each locus. The overall fitness
+                    is determined by selMultiLocusModel
+                [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and selMultiLocusModel = interaction.
+                    For example, in the 2-DSL case, the numbers are (by row)
+                        BB Bb bb
+                    AA  a1 a2 a3
+                    Aa  b1 b2 b3
+                    aa  c1 c2 c3
+                3^n numbers are needed for n DSL.
+        ''',
+     'validate': valueListOf(valueGE(0.)),
+    },
+    {'longarg': 'selMultiLocusModel=',
+    'default': 'none',
+    'label': 'Multi-locus selection model',
+    'description': '''Model of overall fitness value given fitness values for each DSL.
+                multiplicative: f =  Prod(f_i)
+                additive: f = 1-Sum(1-f_i)
+                interaction: the intepretation of fitness parameter is different.
+                    see fitness.
+                Note that selection will be applied to all generations, but backControlledLoci
+                will only have wild-type allele before a mutant is introduced.
+                ''',
+    'allowedTypes': [StringType],
+    'chooseOneOf': ['additive', 'multiplicative', 'interaction', 'none']
     },
     #
     {'separator': 'Population expansion'},
@@ -476,49 +580,35 @@ options = [
      'default': 'expanded.bin',
      'useDefault': True,
      'description': '''Name of the expanded population, relative to simulation path''',
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
     },
     {'longarg': 'expandGen=',
      'default': 100,
      'useDefault': True,
-     'label': 'Expansion generations',
+     'label': 'Generations to expand',
      'description': '''Number of generations to evolve during the population
                 expansion stage''',
-     'allowedTypes': [types.IntType, types.LongType],
+     'allowedTypes': [IntType, LongType],
      'validate': valueGT(0)
     },
     {'longarg': 'expandSize=',
-     'default': 24000,
+     'default': 42000,
      'useDefault': True,
      'label': 'Expanded population size',
-     'description': 'Size of the expanded population',
-     'allowedTypes': [types.IntType, types.LongType],
+     'description': '''Size of the expanded population. The default value if the recommended
+                value when all hapmap populations are used (60+60+90)*200. You may want to
+                reduce it according to the population used, or increase it if disease
+                prevalence if low and insufficient cases are generated.''',
+     'allowedTypes': [IntType, LongType],
      'validate': valueGE(100)
     },
-    {'longarg': 'controlledLoci=',
-     'label': 'Loci with controlled allele frequency',
-     'default': [],
-     'useDefault': True,
-     'allowedTypes': [types.TupleType, types.ListType],
-     'description': '''A list of markers (by name) whose allele frequency will be
-                controlled during this stage of evolution.'''
-    },
-    {'longarg': 'controlledFreq=',
-     'label': 'Desired allele frequency at controlled loci',
-     'default': [],
-     'useDefault': True,
-     'allowedTypes': [types.TupleType, types.ListType],
-     'description': '''A list of allele frequency ranges for each controlled locus.
-                If a single range is given, it is assumed for all markers. An example
-                of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
-    },
-    #
+     #
     {'separator': 'Population admixture'},
     {'longarg': 'admixedName=',
      'default': 'admixed.bin',
      'useDefault': True,
      'description': '''Name of the admixed, relative to simulation path''',
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
     },
     {'longarg': 'migrModel=',
      'default': 'Continuous Gene Flow',
@@ -541,7 +631,7 @@ options = [
                 That is to say, everyone from the second subpopulationmoves to the
                 first. The three subpopulation case is similar.''',
      'chooseOneOf': ['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'],
-     'allowedTypes': [types.StringType],
+     'allowedTypes': [StringType],
      'validate': valueOneOf(['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'])
     },
     {'longarg': 'migrGen=', 
@@ -550,7 +640,7 @@ options = [
      'label': 'Migration generations',
      'description': '''Length of migration stage. If set to zero, the migration stage
                 is ignored''',
-     'allowedTypes': [types.IntType, types.LongType],
+     'allowedTypes': [IntType, LongType],
      'validate': valueGE(0),
     },
     {'longarg': 'migrRate=',
@@ -563,7 +653,7 @@ options = [
                 is calculated as 1-sum_(j \\ne i) A_ij. It is possible to create another 
                 subpopulation in this way, like sending some individuals from both parental
                 populations to a new subpopulation. ''',
-     'allowedTypes': [types.TupleType, types.ListType],
+     'allowedTypes': [TupleType, ListType],
      'validate': valueListOf(valueListOf(valueBetween(0,1))),    
     },
 ]
@@ -605,11 +695,9 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
         print 'HapMap directory %s does not exist, creating one.' % HapMap_dir
         os.makedirs(HapMap_dir)
     if not os.path.isdir(HapMap_dir):
-        print 'Can not create directory %s to store hapmap data, exiting' % HapMap_dir
-        sys.exit(1)
+        raise ValueError('Can not create directory %s to store hapmap data, exiting' % HapMap_dir)
     if len(chrom) == 0:
-        print 'Please specify one or more chromosomes'
-        sys.exit(1)
+        raise ValueError('Please specify one or more chromosomes')
     for ch in chrom:
         if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
             try:
@@ -618,35 +706,30 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
             except Exception, e:
                 print e
             if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
-                print 'Failed to load or download hapmap data for chromosome %d' % ch
-                print 'Please copy script loadHapMap.py to the current directory, or add'
-                print 'path to this script to environmental variable$PYTHONPATH,'
-                print 'or run this script manually to download, import, and save HapMap'
-                print 'data in simuPOP format'
-                sys.exit(1)
+                raise ValueError('''Failed to load or download hapmap data for chromosome %d
+                    Please copy script loadHapMap.py to the current directory, or add
+                    path to this script to environmental variable$PYTHONPATH,
+                    or run this script manually to download, import, and save HapMap
+                    data in simuPOP format''' % ch)
     # in case that chrom is a tuple
     chrom = list(chrom)
     useHapMapMarker = markerList == ''
-    if type(numMarkers) not in [types.TupleType, types.ListType] or \
+    if type(numMarkers) not in [TupleType, ListType] or \
         len(numMarkers) != len(chrom):
-        print "Please specify number of marker for each chromosome: ", numMarkers
-        sys.exit(1)
-    if type(startPos) not in [types.TupleType, types.ListType] or \
+        raise ValueError('Please specify number of marker for each chromosome: %d' % numMarkers)
+    if type(startPos) not in [TupleType, ListType] or \
         len(startPos) not in [1, len(chrom)]:
-        print "Wrong starting positions"
-        sys.exit(1)
+        raise ValueError('Wrong starting positions')
     if len(startPos) == 1:
         startPos = startPos * len(chrom)
-    if type(endingPos) not in [types.TupleType, types.ListType] or \
+    if type(endingPos) not in [TupleType, ListType] or \
         len(endingPos) not in [1, len(chrom)]:
-        print "Wrong endinging positions"
-        sys.exit(1)
+        raise ValueError('Wrong endinging positions')
     if len(endingPos) == 1:
         endingPos = endingPos * len(chrom)
-    if type(numMarkers) not in [types.TupleType, types.ListType] or \
+    if type(numMarkers) not in [TupleType, ListType] or \
         len(numMarkers) not in [1, len(chrom)]:
-        print "Wrong endinging positions"
-        sys.exit(1)
+        raise ValueError('Wrong endinging positions')
     if len(numMarkers) == 1:
         numMarkers = numMarkers * len(chrom)
     # now, which subpopulations are needed?
@@ -697,8 +780,7 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
             hapmap_pops=load_sp, minDiffAF=minDiffAF, numMarkers=numMarkers)
     # if this population fine?
     if pop.numChrom() != len(chrom):
-        print "Something wrong. The population does not have enough chromosomes"
-        sys.exit(1)
+        raise ValueError('Something wrong. The population does not have enough chromosomes')
     return pop
 
 
@@ -724,8 +806,6 @@ def generateSeedPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
     def popSizeFunc(gen, cur):
         return [int(x+rate/len(cur)) for x in cur]
     #
-    mutRate = 1e-7
-    recIntensity = 0.01
     step = 10
     print "Evolving the initial population"
     simu = simulator(pop,
@@ -733,7 +813,7 @@ def generateSeedPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
     simu.evolve(
         ops = [
             # mutation will be disallowed in the last generation (see later)
-            kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
+            kamMutator(rate=mutaRate, loci=range(pop.totNumLoci())),
             recombinator(intensity=recIntensity),
             stat(popSize=True, step=step, begin=step-1),
             pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
@@ -769,8 +849,27 @@ def migrFunc(gen, curSize):
     return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
 
 
-def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
-        controlledFreq, expandedFile):
+def getSelector(model, loci, fitness):
+    if model in ['additive', 'multiplicative']:
+        mlSelModel = {'additive':SEL_Additive, 
+            'multiplicative':SEL_Multiplicative}[model]
+        return mlSelector(
+            # with five multiple-allele selector as parameter
+            [ maSelector(locus=loci[x], wildtype=[0], 
+                fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) \
+                    for x in range(len(loci)) ],
+            mode=mlSelModel)
+    elif model == 'interaction':
+        # multi-allele selector can handle multiple DSL case
+        return maSelector(loci=loci, fitness=fitness, wildtype=[0])
+    else:
+        return noneOp()
+
+
+def expandSeedPopulation(seedPop, expandGen, expandSize, 
+        mutaRate, recIntensity, controlledLoci, controlledFreq, backControlledLoci,
+        backControlledFreq, fitness, mlSelModel,
+        expandedFile):
     '''Expand seed population'''
     # load seed population
     if type(seedPop) == type(''):
@@ -790,8 +889,6 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
         # evolve it
         #    # evolve the initial population
         #
-        mutRate = 1e-7
-        recIntensity = 0.01
         step = 10
         print "Evolving the seed population"
         simu = simulator(pop,
@@ -799,9 +896,10 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
         simu.evolve(
             ops = [
                 # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate=mutRate, loci=range(pop.totNumLoci())),
-                recombinator(intensity=recIntensity),
+                kamMutator(rate = mutaRate, loci=range(pop.totNumLoci())),
+                recombinator(intensity = recIntensity),
                 stat(popSize=True, step=step, begin=step-1),
+                getSelector(mlSelModel, controlledLoci + backwardControlledLoci, fitness),
                 pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
             ],
             gen = expandGen)
@@ -812,10 +910,9 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
         try:
             ctrlLoci = pop.lociByNames(controlledLoci)
         except:
-            print 'Can not find one of the controlled loci %s in this population' % \
-                ', '.join(controlledLoci)
-            print 'Please check markers.lst for a list of used markers and their frequency'
-            sys.exit(1)
+            raise ValueError('''Can not find one of the controlled loci %s in this population
+                Please check markers.lst for a list of used markers and their frequency''' % \
+                   ', '.join(controlledLoci))
         Stat(pop, alleleFreq=ctrlLoci)
         currentFreq = []
         # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
@@ -832,10 +929,9 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
             NtFunc = popSizeFunc
             )
         if len(traj) == 0:
-            print "Failed to simulate trajectory"
-            print "Initial allele frequency: ", currentFreq
-            print "Ending allele frequency: ", controlledFreq
-            sys.exit(1)
+            raise ValueError('''Failed to simulate trajectory
+                Initial allele frequency:
+                Ending allele frequency: %s''' % (currentFreq, controlledFreq))
         # define a trajectory function
         def trajFunc(gen):
             return [x[gen] for x in traj]
@@ -850,14 +946,14 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
         simu.evolve(
             ops =  [
                 # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate=1e-7, loci=range(pop.totNumLoci())),
-                recombinator(intensity=0.01),
+                kamMutator(rate=mutaRate, loci=range(pop.totNumLoci())),
+                recombinator(intensity=recIntensity),
                 stat(popSize=True, step=10, begin=9),
                 pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=10, begin=9)
             ],
             gen = expandGen
         )
-        pop= simu.getPopulation(0, True)
+        pop = simu.getPopulation(0, True)
         Stat(pop, alleleFreq=ctrlLoci)
         for i,loc in enumerate(ctrlLoci):
             print "Locus %s: designed freq: (%.3f, %.3f), freq: %.3f" % \
@@ -868,7 +964,8 @@ def expandSeedPopulation(seedPop, expandGen, expandSize, controlledLoci,
     return pop
 
  
-def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixedFile):
+def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, mutaRate,
+    recIntensity, selLoci, selModel, fitness, admixedFile):
     ''' Evolve the seed population
     '''
     # migration part.
@@ -887,13 +984,20 @@ def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, admixedFile):
         print 'Using customized migration model'
         migr = pyMigrator(rateFunc=migrFunc, mode=MigrByProbability)
     if migrGen > 0:
-        pop = evolveHapMap(pop,
-            mergeAt=mergeAt,
-            gen=migrGen,
-            # constant population size
-            endingSize=pop.popSize(),
-            step=1,
-            migr=migr)
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops =  [
+                # mutation will be disallowed in the last generation (see later)
+                kamMutator(rate = mutaRate, loci=range(pop.totNumLoci())),
+                recombinator(intensity = recIntensity),
+                stat(popSize=True, step=10, begin=9),
+                migr,
+                getSelector(selLoci, selModel, fitness),
+                pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)')
+            ],
+            gen = migrGen
+        )
+        pop = simu.getPopulation(0, True)
     # save this population
     print "Calculating allele frequency..."
     pop.vars().clear()
@@ -924,15 +1028,16 @@ if __name__ == '__main__':
         HapMap_dir, pops, markerList, chrom, numMarkers, startPos,
         endingPos, minAF, minDiffAF, minDist, 
       seedName, initCopy, initGen, seedSize,
-      expandedName, expandGen, expandSize, controlledLoci, controlledFreqTmp,
+      mutaRate, recIntensity, controlledLoci, controlledFreqTmp, backControlledLoci,
+        backControlledFreqTmp, fitness, mlSelModel,
+      expandedName, expandGen, expandSize,
       admixedName, migrModel, migrGen, migrRate) = allParam[1:]
     # simulation name?
     if not os.path.isdir(name):
         print 'Creating directory', name
         os.makedirs(name)
     if not os.path.isdir(name):
-        print 'Can not create directory %s, exiting' % name
-        sys.exit(1)
+        raise SystemError('Can not create directory %s, exiting' % name)
     cfgFile = os.path.join(name, name + '.cfg')
     print 'Save configuration to', cfgFile
     # save current configuration
@@ -965,7 +1070,7 @@ if __name__ == '__main__':
             initGen, seedSize, name, seedFile)
     #
     # step 2:
-    #
+    # 
     # if both files exists, skip this stage
     if useSavedExpanded and os.path.isfile(expandedFile):
         expandedPop = None
@@ -973,13 +1078,38 @@ if __name__ == '__main__':
         if seedPop is None:
             print 'Loading seed population', seedFile
             seedPop = LoadPopulation(seedFile)
+        # 
+        if len(controlledLoci) != 0 and len(backwardControlledLoci) != 0:
+            raise ValueError('This script currently only allows one kind of controlled loci' + \
+                'Please specify only one of --controlledLoci and --backwardControlledLoci')
+        #
+        # fitness
+        numDSL = len(controlledLoci) + len(backwardControlledLoci)
+        if mlSelModel == 'none':
+            fitness = []
+        elif mlSelModel == 'interaction':
+            if numDSL == 1:
+                raise ValueError("Interaction model can only be used with more than one DSL");
+            if len(fitnessTmp) != 3**numDSL:
+                raise ValueError("Please specify 3^n fitness values for n DSL");
+            fitness = fitnessTmp
+        else:
+            if fitnessTmp == []:    # neutral process
+                fitness = [1,1,1]*numDSL
+            else:
+                # for a single DSL
+                if len(fitnessTmp) == 3:
+                    fitness = fitnessTmp*numDSL
+                elif len(fitnessTmp) != numDSL*3:
+                    raise ValueError("Please specify fitness for each DSL")
+                else:
+                    fitness = fitnessTmp
         #
         controlledFreq = []
         if len(controlledFreqTmp) > 0:
-            if type(controlledFreqTmp[0]) in [types.TupleType, types.ListType]:
+            if type(controlledFreqTmp[0]) in [TupleType, ListType]:
                 if len(controlledFreqTmp) != len(controlledLoci):
-                    print "Please specify frequency range for each controlled locus"
-                    sys.exit(1)
+                    raise ValueError('Please specify frequency range for each controlled locus')
                 for rng in controlledFreqTmp:
                     if len(rng) != 2:
                         print "Wrong allele frequency range", rng
@@ -990,12 +1120,25 @@ if __name__ == '__main__':
                     print "Wrong allele frequency range", controlledFreqTmp
                 for i in range(len(controlledLoci)):
                     controlledFreq.append(controlledFreqTmp)
+        # backward controlled freq
+        backControlledFreq = []
+        if len(backControlledFreqTmp) == 1:
+            for lpc in backControlledLoci:
+                backControlledFreq.append(backControlledFreqTmp)
+        elif len(backControlledFreqTmp) != len(backControlledLoci):
+            raise ValueError('Number of backward controlled freq does not match the number of such loci')
+        else:
+            backControlledFreq = backControlledFreqTmp
+        #
         expandedPop = expandSeedPopulation(seedPop, expandGen,
-            expandSize, controlledLoci, controlledFreq, expandedFile)
+            expandSize, mutaRate, recIntensity, controlledLoci, controlledFreq, 
+            backControlledLoci, backControlledFreq, fitness, 
+            mlSelModel, expandedFile)
     # admixture
     if expandedPop is None:
         print 'Loading expanded population from file ', expandedFile
         expandedPop = LoadPopulation(expandedFile)
     admixedPop = mixExpandedPopulation(expandedPop, migrModel, migrGen,
-        migrRate, admixedFile)
+        migrRate, mutaRate, recIntensity, controlledFreq + backControlledLoci, fitness,
+        mlSelModel, admixedFile)
   
