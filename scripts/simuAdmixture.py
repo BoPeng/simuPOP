@@ -921,13 +921,39 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
                 pop.dvars().alleleFreq[loc][1])
             for sp in range(pop.numSubPop()):
                 currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
-        traj = ForwardFreqTrajectory(
-            curGen = 0,
-            endGen = expandGen,
-            curFreq = currentFreq,
-            freq = controlledFreq,
-            NtFunc = popSizeFunc
-            )
+        print 'Simulating frequency trajectory ...'
+        if len(controlledLoci) > 0:
+            traj = ForwardFreqTrajectory(
+                curGen = 0,
+                endGen = expandGen,
+                curFreq = currentFreq,
+                freq = controlledFreq,
+                fitness = fitness,
+                NtFunc = popSizeFunc
+                )
+            intoOps = []
+        else:
+            # clear these loci
+            print 'Clearing mutants at backward-controlled loci'
+            for loc in backControlledLoci:
+                for ind in pop.individuals():
+                    ind.setAllele(0, loc, 0)
+                    ind.setAllele(0, loc, 1)
+            # simulate trajectory
+            (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
+                curGen=expandGen,
+                numLoci=len(backControlledLoci),
+                freq=backControlledFreq,
+                NtFunc=popSizeFunc,
+                fitness=fitness,
+                minMutAge=1, 
+                maxMutAge=expandGen, 
+                mode='even',
+                restartIfFail=True)
+            intoOps = [
+                pointMutator(atLoci=[backControlledLoci[i]], toAllele=1, inds=[i],
+                    at = [introGens[i]], stage=PreMating)
+                for i in range(len(backControlledLoci))]
         if len(traj) == 0:
             raise ValueError('''Failed to simulate trajectory
                 Initial allele frequency:
@@ -950,7 +976,7 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
                 recombinator(intensity=recIntensity),
                 stat(popSize=True, step=10, begin=9),
                 pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=10, begin=9)
-            ],
+            ] + introOps,
             gen = expandGen
         )
         pop = simu.getPopulation(0, True)
