@@ -300,6 +300,12 @@ from types import *
 from exceptions import ValueError, SystemError
 from simuUtil import SaveQTDT
 
+try:
+    from rpy import *
+    hasRPy = True
+except:
+    hasRPy = False
+
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
 options = [
@@ -338,6 +344,69 @@ options = [
      'description': '''If set to true, load specified or saved $name/expanded.bin and 
                 skip population expansion'''
     },
+    #
+    {'separator': 'Progress report and visualization'},
+    {'longarg': 'step=',
+     'default': 10,
+     'label': 'Progress report interval',
+     'useDefault': True,
+     'allowedTypes': [IntType, LongType],
+     'description': '''Gap between generations at which population statistics are 
+                calculated and reported.'''
+    },
+    {'longarg': 'showAlleleFreq',
+     'default': True,
+     'useDefault': True,
+     'allowedTypes': [BooleanType],
+     'label': 'Show allele frequency at specified loci',
+     'description': '''If set, display allele frequency of loci specified in parameters
+                --controlledLoci or --backwardControlledLoci''',
+    },
+    {'longarg': 'figureStep=',
+     'default': 20,
+     'label': 'Figure update interval',
+     'useDefault': True,
+     'allowedTypes': [IntType, LongType],
+     'description': '''Gap between generations at which LD plots are 
+                draw. Default to 20.'''
+    },
+    {'longarg': 'showLDPlot',
+     'default': False,
+     'useDefault': True,
+     'allowedTypes': [BooleanType],
+     'label': 'Show allele frequency at specified loci',
+     'description': '''If set, draw and display LD structure (using haploview, available)
+                on specified regions (--ldRegions). The figures will be saved in names
+                such as CEU_stage_start-end_gen.PNG''',
+    },
+    {'longarg': 'haploview=',
+     'default': 'haploview',
+     'useDefault': True,
+     'allowedTypes': [StringType],
+     'label': 'Command to start haploview',
+     'description': '''Path to haploview or command to start haploview. It can simply
+                be haploview, but can be something like '/path/to/jave /path/to/haploview.jar'.
+                If haploview is not found, no LD plot will be displayed.'''
+    },
+    {'longarg': 'ldRegions=',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'label': 'Regions to plot LD structure',
+     'description': '''A list of regions, in terms of marker position that LD structure
+                is plotted. If there are 1000 markers on each chromosome, viewRegions
+                can be [[0, 500], [1200, 1700]]. A single region such as [0, 500] is
+                allowed.'''
+    },
+    {'longarg': 'ldSampleSize=',
+     'default': 200,
+     'label': 'Sample size for ld plotting',
+     'useDefault': True,
+     'allowedTypes': [IntType, LongType],
+     'description': '''A random sample of specified size will be draw from each subpopulation
+                for haploview plot.'''
+    },
+    #
     {'separator': 'Populations and markers to use'},
     {'longarg': 'HapMap_dir=',
      'default': '../HapMap',
@@ -659,7 +728,146 @@ options = [
 ]
 
 
+class admixtureParams:
+    ''' This class is used to wrap all parameters to a single object so that
+    I do not have to pass a bunch of parameters here and there. 
+    This class also clean up/validate parameters and calcualtes some derived
+    parameters for later uses.
+    '''
+    def __init__(self, options, allParam):
+        # when user click cancel ...
+        if len(allParam) == 0:
+            sys.exit(1)
+        # -h or --help
+        if allParam[0]:    
+            print usage(options, __doc__)
+            sys.exit(0)
+        # expand all params to different options
+        (self.name, self.useSavedSeed, self.useSavedExpanded,
+            self.step, self.showAlleleFreq, self.figureStep,
+            self.showLDPlot, self.haploview, self.ldRegionsTmp,
+            self.ldSampleSize,
+        self.HapMap_dir, self.pops, self.markerList, self.chrom,
+        self.numMarkers, self.startPos, self.endingPos, 
+        self.minAF, self.minDiffAF, self.minDist, 
+            self.seedName, self.initCopy, self.initGen, self.seedSize,
+        self.mutaRate, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
+        self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
+            self.expandedName, self.expandGen, self.expandSize,
+        self.admixedName, self.migrModel, self.migrGen, self.migrRate) \
+            = allParam[1:]
+        # preparations
+        self.createSimulationDir()
+        self.saveConfiguration()
+        self.seedFile = self.setFile(self.seedName)
+        self.expandedFile = self.setFile(self.expandedName)
+        self.admixedFile = self.setFile(self.admixedName)
+        #
+        self.ctrlLoci = self.forCtrlLoci + self.backCtrlLoci
+        # adjust parameters startPos, endPos etc.
+        self.prepareMarkerParams()
 
+    def createSimulationDir(self):
+        '''Create a directory with simulation name'''
+        if not os.path.isdir(self.name):
+            print 'Creating directory', self.name
+            os.makedirs(self.name)
+        if not os.path.isdir(self.name):
+            raise SystemError('Can not create directory %s, exiting' % self.name)
+
+    def saveConfiguration(self):
+        '''Save configuration to $name.cfg'''
+        cfgFile = os.path.join(self.name, self.name + '.cfg')
+        print 'Save configuration to', cfgFile
+        # save current configuration
+        saveConfig(options, cfgFile, allParam)
+
+    def setFile(self, filename):
+        '''Return $name/filename unless filename is absolute'''
+        if os.path.isabs(self.seedName):
+            self.seedFile = self.seedName
+        else:
+            self.seedFile = os.path.join(self.name, self.seedName)
+
+    def setCtrlLociIndex(self, pop):
+        '''Translate ctrlLoci to ctrlLociIdx, etc'''
+        try:
+            self.forCtrlLociIdx = pop.lociByName(self.forCtrlLoci)
+            self.backCtrlLociIdx = pop.lociByName(self.backCtrlLoci)
+            self.ctrlLociIdx = pop.lociByName(self.ctrlLoci)
+        except:
+            raise ValueError('''Can not find one of the controlled loci %s in this population
+                Please check markers.lst for a list of used markers and their frequency''' % \
+                ', '.join(ctrlLoci))
+        # this is used for statistical output
+        pop.dvars().ctrlLoci = ctrlLoci
+
+    def expandToList(self, par, size, err=''):
+        '''If par is a number, return a list of specified size'''
+        if type(par) in [IntType, LongType]:
+            return [par]*size
+        elif type(par) in [TupleType, ListType] and len(par) == 1:
+            return list(par)*size
+        elif len(par) != size:
+            raise ValueError(err)
+        else:
+            return par
+
+    def prepareMarkerParams(self):
+        '''validate marker parameters'''
+        if not os.path.isdir(self.HapMap_dir):
+            print 'HapMap directory %s does not exist, creating one.' % HapMap_dir
+            os.makedirs(self.HapMap_dir)
+            if not os.path.isdir(HapMap_dir):
+                raise ValueError('Can not create directory %s to store hapmap data, exiting' % HapMap_dir)
+        if len(self.chrom) == 0:
+            raise ValueError('Please specify one or more chromosomes')
+        # in case that chrom is a tuple
+        self.chrom = list(self.chrom)
+        numChrom = len(self.chrom)
+        self.numMarkers = self.expandToList(self.numMarkers, numChrom,
+            'Please specify number of marker for each chromosome')
+        self.startPos = self.expandToList(self.startPos, numChrom,
+            'Wrong starting positions')
+        self.endingPos = self.expandToList(self.endingPos, numChrom,
+            'Wrong endinging positions')
+        self.numMarkers = self.expandToList(self.numMarkers, numChrom,
+            'Wrong endinging positions')
+        # now, which subpopulations are needed?
+        self.popsIdx = []
+        for idx,sp in enumerate(HapMap_pops):
+            if sp in self.pops:
+                print "Using hapmap population %s" % sp
+                self.popsIdx.append(idx)
+        print "Loading populations ", self.popsIdx
+     
+#####################################################################
+# You have realized how many lines of code is used for parameter
+# handling and comments. Now, the real part...
+#####################################################################
+
+def expDemoFunc(N0, N1, gen):
+    '''
+    Return an exponential population expansion demographic function.
+    simuUtil::ExponentialExpansion can not actually be used before it expects
+        initial and ending total population size.
+    
+    N0: a list of initial subpopulation sizes.
+    N1: ending subpopulation sizes.
+    gen: generations to evolve.
+    '''
+    if type(N1) in [IntType, LongType]:
+        NN = [int(N1/len(N0))]*len(N0)
+    else:
+        NN = N1
+    if len(N0) != len(NN):
+        raise exceptions.ValueError("Number of subpopulations should be the same")
+    rate = [math.log(NN[x]) - math.log(N0[x])/gen for x in range(len(N0))]
+    def func(gen, oldSize=[]):
+        return [int(N0[x]*math.exp(gen*rate[x])) for x in len(oldSize)]
+    return func
+
+    
 def printInfo(pop):
     'Print out some information about the population'
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
@@ -687,64 +895,39 @@ def printInfo(pop):
             print '    diff in allele freq: min %.3f, max %.3f, mean %.3f' % (min(diff), max(diff), sum(diff)/len(diff))
 
 
-def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
-            endingPos, minAF, minDiffAF, minDist, pops):
-    '''Create an initial population''' 
-    # process parameters
-    if not os.path.isdir(HapMap_dir):
-        print 'HapMap directory %s does not exist, creating one.' % HapMap_dir
-        os.makedirs(HapMap_dir)
-    if not os.path.isdir(HapMap_dir):
-        raise ValueError('Can not create directory %s to store hapmap data, exiting' % HapMap_dir)
-    if len(chrom) == 0:
-        raise ValueError('Please specify one or more chromosomes')
-    for ch in chrom:
-        if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
+def createInitialPopulation(par):
+    '''Create an initial population, with parameters (from the par structure)
+    HapMap_dir:     directory that stores hapmap data.
+    chrom:          chromosomes to use
+    markerList:     list of markers to use
+    numMarkers:     number of markers per chromosome
+    startPos:       starting position on each chromosome
+    endPos:         ending position on each chromosome
+    minAF:          minimal allele frequency
+    minDiffAF:      minimal allele frequency differences among HapMap populations
+    minDist:        minimal distance between adjecent markers
+    pops:           hapmap populations to use    
+    ''' 
+    # load markers!
+    for ch in par.chrom:
+        if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.bin' % ch)):
             try:
                 import loadHapMap
-                loadHapMap.loadHapMap([ch], HapMap_dir)
+                loadHapMap.loadHapMap([ch], par.HapMap_dir)
             except Exception, e:
                 print e
-            if not os.path.isfile(os.path.join(HapMap_dir, 'hapmap_%d.bin' % ch)):
+            if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.bin' % ch)):
                 raise ValueError('''Failed to load or download hapmap data for chromosome %d
                     Please copy script loadHapMap.py to the current directory, or add
                     path to this script to environmental variable$PYTHONPATH,
                     or run this script manually to download, import, and save HapMap
                     data in simuPOP format''' % ch)
-    # in case that chrom is a tuple
-    chrom = list(chrom)
-    useHapMapMarker = markerList == ''
-    if type(numMarkers) not in [TupleType, ListType] or \
-        len(numMarkers) != len(chrom):
-        raise ValueError('Please specify number of marker for each chromosome: %d' % numMarkers)
-    if type(startPos) not in [TupleType, ListType] or \
-        len(startPos) not in [1, len(chrom)]:
-        raise ValueError('Wrong starting positions')
-    if len(startPos) == 1:
-        startPos = startPos * len(chrom)
-    if type(endingPos) not in [TupleType, ListType] or \
-        len(endingPos) not in [1, len(chrom)]:
-        raise ValueError('Wrong endinging positions')
-    if len(endingPos) == 1:
-        endingPos = endingPos * len(chrom)
-    if type(numMarkers) not in [TupleType, ListType] or \
-        len(numMarkers) not in [1, len(chrom)]:
-        raise ValueError('Wrong endinging positions')
-    if len(numMarkers) == 1:
-        numMarkers = numMarkers * len(chrom)
-    # now, which subpopulations are needed?
-    load_sp = []
-    for idx,sp in enumerate(HapMap_pops):
-        if sp in pops:
-            print "Using hapmap population %s" % sp
-            load_sp.append(idx)
-    print "Loading populations ", load_sp
-    # load markers!
+    useHapMapMarker = par.markerList == ''
     ch_pops = []
     if useHapMapMarker:
-        for ch, sp, ep, nm in zip(chrom, startPos, endingPos, numMarkers):
-            ch_pops.append(getMarkersFromRange(HapMap_dir, load_sp, ch, sp, 
-                ep, nm, minAF, minDiffAF, minDist))
+        for ch, sp, ep, nm in zip(par.chrom, par.startPos, par.endingPos, par.numMarkers):
+            ch_pops.append(getMarkersFromRange(par.HapMap_dir, par.popsIdx,
+                ch, sp, ep, nm, par.minAF, par.minDiffAF, par.minDist))
         # merge all populations (different chromosomes)
         if len(ch_pops) > 1:
             pop = MergePopulationsByLoci(ch_pops)
@@ -752,10 +935,10 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
             pop = ch_pops[0].clone()
     else:
         # read the list
-        print 'Reading marker list %s' % markerList
-        mlist = open(markerList)
+        print 'Reading marker list %s' % par.markerList
+        mlist = open(par.markerList)
         names = {}
-        lastpos = [0]*len(chrom)
+        lastpos = [0]*len(par.chrom)
         for line in mlist.readlines():
             if line.startswith('#') or line.strip() == '':
                 continue
@@ -763,72 +946,65 @@ def createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
             ch = int(float(fields[0]))
             pos = float(fields[1])/1000000.
             name = fields[2]
-            if ch not in chrom:
+            if ch not in par.chrom:
                 continue
-            chIdx = chrom.index(ch)
-            if pos < startPos[chIdx]:
+            chIdx = par.chrom.index(ch)
+            if pos < par.startPos[chIdx]:
                 continue
-            if endingPos[chIdx] != 0 and pos > endingPos:
+            if par.endingPos[chIdx] != 0 and pos > par.endingPos:
                 continue
-            if minDist > 0 and pos - lastpos[chIdx] < minDist:
+            if par.minDist > 0 and pos - par.lastpos[chIdx] < par.minDist:
                 continue
             if not names.has_key(ch):
                 names[ch] = []
             names[ch].append(name)
             lastpos[chIdx] = pos
-        pop = getMarkersFromName(HapMap_dir, names, chroms=chrom,
-            hapmap_pops=load_sp, minDiffAF=minDiffAF, numMarkers=numMarkers)
+        pop = getMarkersFromName(par.HapMap_dir, par.names, 
+            chroms=par.chrom, hapmap_pops=par.popsIdx, 
+            minDiffAF=par.minDiffAF, numMarkers=par.numMarkers)
     # if this population fine?
-    if pop.numChrom() != len(chrom):
+    if pop.numChrom() != len(par.chrom):
         raise ValueError('Something wrong. The population does not have enough chromosomes')
     return pop
 
 
-def generateSeedPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
-            endingPos, minAF, minDiffAF, minDist, pops, initCopy,
-            initGen, initSize, name, popName):
-    'Generate seed population, using HapMap dataset and specified marker list'
-    pop = createInitialPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
-        endingPos, minAF, minDiffAF, minDist, pops)
+def generateSeedPopulation(par):
+    '''Generate seed population, using HapMap dataset and specified marker list'''
+    pop = createInitialPopulation(par)
+    #
     initPop = pop.clone()
     # print population summary
     print "Initial population has "
     print "    %d subpopulations " % pop.numSubPop()
     print "    %d total number of markers " % pop.totNumLoci()
-    for ch in range(len(chrom)):
+    for ch in range(pop.numChrom()):
         print "Chromosome %d has %d markers in the range between %.3f and %.3f" \
             % (ch, pop.numLoci(ch), pop.locusPos(pop.chromBegin(ch)),  \
                 pop.locusPos(pop.chromEnd(ch)-1))
     # evolve the initial population
-    N0 = pop.popSize()
-    N1 = initSize
-    rate = (N1 - N0)*1.0/initGen
-    def popSizeFunc(gen, cur):
-        return [int(x+rate/len(cur)) for x in cur]
-    #
-    step = 10
     print "Evolving the initial population"
-    simu = simulator(pop,
-        randomMating(newSubPopSizeFunc = popSizeFunc), rep=1)
+    simu = simulator(pop, randomMating(
+        newSubPopSizeFunc = expDemoFunc(pop.subPopSizes(),
+            par.seedSize, par.initGen)), rep=1)
     simu.evolve(
         ops = [
             # mutation will be disallowed in the last generation (see later)
-            kamMutator(rate=mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity=recIntensity),
-            stat(popSize=True, step=step, begin=step-1),
-            pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
-        ],
+            kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())),
+            recombinator(intensity=par.recIntensity)
+        ] + getStatOps(par),
         gen = initGen)
     pop = simu.getPopulation(0, True)
     printInfo(pop)
+    #
     # save seed population
-    print 'Save seed population to', popName
-    pop.savePopulation(popName)
+    print 'Save seed population to', par.seedFile
+    pop.savePopulation(par.seedFile)
     #
     # print marker list fine
     Stat(initPop, alleleFreq=range(0, initPop.totNumLoci()))
     Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
     # write marker information
+    print 'Writing a marker list file'
     markers = open(os.path.join(name, 'markers.lst'), 'w')
     print >> markers, 'Name\tchrom\tlocation\t%s\t%s\tseed_freq' % \
         ('\t'.join([x + '_freq' for x in pops]), '\t'.join([x + '_seed_freq' for x in pops]))
@@ -840,6 +1016,13 @@ def generateSeedPopulation(HapMap_dir, chrom, markerList, numMarkers, startPos,
                 '\t'.join(['%.3f' % pop.dvars(x).alleleFreq[loc][1] for x in range(pop.numSubPop())]),
                 pop.dvars().alleleFreq[loc][1])
     markers.close()
+    #
+    # write a map file, used by haploview
+    print 'Writing a map file ld.map to be used by haploview'
+    file = open(os.path.join(name, 'ld.map'), 'w')
+    for loc in range(pop.totNumLoci()):
+        print >> file, pop.locusName(loc), int(pop.locusPos(loc)*1000000)
+    file.close()
     
 
 def migrFunc(gen, curSize):
@@ -866,9 +1049,67 @@ def getSelector(model, loci, fitness):
         return noneOp()
 
 
+def getStatOps(par):
+    '''Return statistis calculation and progress report operators '''
+    # statistics calculation and display
+    # 
+    ctrlLoci = par.controlledLoci + par.backControlledLoci
+    if len(ctrlLoci) > 0 and par.showAlleleFreq:
+        statOps = [
+            # note: DSL is set when the population is created
+            stat(popSize=True, alleleFreq = ctrlLoci, 
+                step = step),
+            pyEval(r'"gen=%d, size=%s, alleleFreq=%s\n" % (gen, subPopSize,' + \
+                r'", ".join([".3f" % alleleFreq[x][1] for x in DSL]))', step=step)
+        ],
+    else:
+        statOps = [
+            stat(popSize=True, step = step),
+            pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step)
+        ]
+
+
+def getVisualizationOps():
+    # ld plot?
+    if showLDPlot and figureStep > 0 and ldSampleSize > 0 and len(ldRegionsTmp) > 0:
+        ldRegions = []
+        if type(ldRegionsTmp[0]) in [IntType, LongType] and len(ldRegionsTmp) == 2:
+            ldRegions.append(ldRegionsTmp)
+        else:
+            ldRegions = ldRegionsTmp
+        #
+        statOps.append(pyOperator(func=drawLDPlot, 
+            param = (haploview, ldRegions, ldSampleSize, pops, name),
+            step=figureStep))
+        statOps.append(pyOperator(func=drawLDPlot, 
+            param = (haploview, ldRegions, ldSampleSize, pops, name),
+            at=[-1]))
+
+
+def drawLDPlot(pop, param):
+    '''Draw and display ld plot'''
+    (haploview, ldRegions, sampleSize, pops, dir) = param
+    sample = RandomSample(pop, [sampleSize]*pop.numSubPop())[0]
+    for idx,subPop in enumerate(pops):
+        removeSP = range(pop.numSubPop())
+        removeSP.remove(idx)
+        spSample = sample.clone()
+        spSample.removeSubPops(removeSP)
+        for reg in ldRegions:
+            name = 'LD_%s_%d-%d' % (subPop, reg[0], reg[1])
+            filename = os.path.join(dir, name)
+            regSample = spSample.clone()
+            regSample.removeLoci(range(reg[0], reg[1]))
+            SaveMerlinPedFile(pop, output=filename,
+                outputAffection=True, affectionCode=['1', '2'])
+            os.system('%s -pedfile %s.ped -map %s/ld.map -compressedpng -q -n' % \
+                (haploview, filename, dir) )
+    return True
+
+
 def expandSeedPopulation(seedPop, expandGen, expandSize, 
         mutaRate, recIntensity, controlledLoci, controlledFreq, backControlledLoci,
-        backControlledFreq, fitness, mlSelModel,
+        backControlledFreq, fitness, mlSelModel, step, showAlleleFreq,
         expandedFile):
     '''Expand seed population'''
     # load seed population
@@ -878,41 +1119,28 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
     else:
         pop = seedPop
     #
-    N0 = pop.popSize()
-    N1 = expandSize
-    rate = (N1 - N0)*1.0/expandGen
-    def popSizeFunc(gen, cur=[]):
-        if gen == 0:
-            return pop.subPopSizes()
-        return [int(x+rate/len(cur)) for x in cur]
+    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.expandSize,
+        par.expandGen)
     if len(controlledLoci) == 0:
         # evolve it
         #    # evolve the initial population
         #
-        step = 10
         print "Evolving the seed population"
-        simu = simulator(pop,
-            randomMating(newSubPopSizeFunc = popSizeFunc), rep=1)
+        simu = simulator(pop, randomMating(newSubPopSizeFunc = 
+            popSizeFunc),rep=1)
         simu.evolve(
             ops = [
                 # mutation will be disallowed in the last generation (see later)
                 kamMutator(rate = mutaRate, loci=range(pop.totNumLoci())),
                 recombinator(intensity = recIntensity),
-                stat(popSize=True, step=step, begin=step-1),
-                getSelector(mlSelModel, controlledLoci + backwardControlledLoci, fitness),
-                pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
-            ],
+                getSelector(mlSelModel, controlledLoci + backControlledLoci, fitness),
+            ] + getStatOps(step, controlledLoci + backControlledLoci, showAlleleFreq),
             gen = expandGen)
         pop = simu.getPopulation(0, True)
     else:
         # simulate a frequency trajectory
         print "Using controlled random mating on markers %s" % (', '.join(controlledLoci))
-        try:
-            ctrlLoci = pop.lociByNames(controlledLoci)
-        except:
-            raise ValueError('''Can not find one of the controlled loci %s in this population
-                Please check markers.lst for a list of used markers and their frequency''' % \
-                   ', '.join(controlledLoci))
+        ctrlLoci = pop.lociByNames(controlledLoci)
         Stat(pop, alleleFreq=ctrlLoci)
         currentFreq = []
         # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
@@ -935,14 +1163,15 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
         else:
             # clear these loci
             print 'Clearing mutants at backward-controlled loci'
-            for loc in backControlledLoci:
+            backCtrlLoci = pop.lociByNames(backwardControlledLoci)
+            for loc in backCtrlLoci:
                 for ind in pop.individuals():
                     ind.setAllele(0, loc, 0)
                     ind.setAllele(0, loc, 1)
             # simulate trajectory
             (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
                 curGen=expandGen,
-                numLoci=len(backControlledLoci),
+                numLoci=len(backCtrlLoci),
                 freq=backControlledFreq,
                 NtFunc=popSizeFunc,
                 fitness=fitness,
@@ -951,9 +1180,9 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
                 mode='even',
                 restartIfFail=True)
             intoOps = [
-                pointMutator(atLoci=[backControlledLoci[i]], toAllele=1, inds=[i],
+                pointMutator(atLoci=[backCtrlLoci[i]], toAllele=1, inds=[i],
                     at = [introGens[i]], stage=PreMating)
-                for i in range(len(backControlledLoci))]
+                for i in range(len(backCtrlLoci))]
         if len(traj) == 0:
             raise ValueError('''Failed to simulate trajectory
                 Initial allele frequency:
@@ -974,9 +1203,7 @@ def expandSeedPopulation(seedPop, expandGen, expandSize,
                 # mutation will be disallowed in the last generation (see later)
                 kamMutator(rate=mutaRate, loci=range(pop.totNumLoci())),
                 recombinator(intensity=recIntensity),
-                stat(popSize=True, step=10, begin=9),
-                pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=10, begin=9)
-            ] + introOps,
+            ] + introOps + statOps,
             gen = expandGen
         )
         pop = simu.getPopulation(0, True)
@@ -1040,60 +1267,22 @@ of the help message to prepare HapMap population.'''
 # determine which script to run.
 if __name__ == '__main__':
     # 
-    # seed population does not exist, generate it
-    allParam = getParam(options, short_desc, __doc__, nCol=2)
-    # when user click cancel ...
-    if len(allParam) == 0:
-        sys.exit(1)
-    # -h or --help
-    if allParam[0]:    
-        print usage(options, __doc__)
-        sys.exit(0)
+    # PARAMETER HANDLING
     # 
-    (name, useSavedSeed, useSavedExpanded,
-        HapMap_dir, pops, markerList, chrom, numMarkers, startPos,
-        endingPos, minAF, minDiffAF, minDist, 
-      seedName, initCopy, initGen, seedSize,
-      mutaRate, recIntensity, controlledLoci, controlledFreqTmp, backControlledLoci,
-        backControlledFreqTmp, fitness, mlSelModel,
-      expandedName, expandGen, expandSize,
-      admixedName, migrModel, migrGen, migrRate) = allParam[1:]
-    # simulation name?
-    if not os.path.isdir(name):
-        print 'Creating directory', name
-        os.makedirs(name)
-    if not os.path.isdir(name):
-        raise SystemError('Can not create directory %s, exiting' % name)
-    cfgFile = os.path.join(name, name + '.cfg')
-    print 'Save configuration to', cfgFile
-    # save current configuration
-    saveConfig(options, cfgFile, allParam)
-    # specified seed file?
-    if os.path.isabs(seedName):
-        seedFile = seedName
-    else:
-        seedFile = os.path.join(name, seedName)
+    # get all parameters
+    allParam = getParam(options, short_desc, __doc__, nCol=2)
+    par = admixtureParams(options, allParam)
     #
-    if os.path.isabs(expandedName):
-        expandedFile = expandedName
-    else:
-        expandedFile = os.path.join(name, expandedName)
-    #
-    if os.path.isabs(admixedName):
-        admixedFile = admixedName
-    else:
-        admixedFile = os.path.join(name, admixedName)
+    # SEED POPULATION GENERATION
     #
     # get seed population
-    if useSavedExpanded or (useSavedSeed and os.path.isfile(seedFile)):
-        if useSavedSeed:
-            print "Using existing seed file ", seedFile
+    if par.useSavedExpanded or (par.useSavedSeed and os.path.isfile(par.seedFile)):
+        if par.useSavedSeed:
+            print "Using existing seed file ", par.seedFile
         seedPop = None
     else:
-        seedPop = generateSeedPopulation(HapMap_dir, 
-            chrom, markerList, numMarkers, startPos,
-            endingPos, minAF, minDiffAF, minDist, pops, initCopy,
-            initGen, seedSize, name, seedFile)
+        seedPop = generateSeedPopulation(par)
+    sys.exit(0)
     #
     # step 2:
     # 
@@ -1110,7 +1299,7 @@ if __name__ == '__main__':
                 'Please specify only one of --controlledLoci and --backwardControlledLoci')
         #
         # fitness
-        numDSL = len(controlledLoci) + len(backwardControlledLoci)
+        numDSL = len(controlledLoci) + len(backControlledLoci)
         if mlSelModel == 'none':
             fitness = []
         elif mlSelModel == 'interaction':
@@ -1156,15 +1345,10 @@ if __name__ == '__main__':
         else:
             backControlledFreq = backControlledFreqTmp
         #
-        expandedPop = expandSeedPopulation(seedPop, expandGen,
-            expandSize, mutaRate, recIntensity, controlledLoci, controlledFreq, 
-            backControlledLoci, backControlledFreq, fitness, 
-            mlSelModel, expandedFile)
+        expandedPop = expandSeedPopulation(par)
     # admixture
     if expandedPop is None:
         print 'Loading expanded population from file ', expandedFile
         expandedPop = LoadPopulation(expandedFile)
-    admixedPop = mixExpandedPopulation(expandedPop, migrModel, migrGen,
-        migrRate, mutaRate, recIntensity, controlledFreq + backControlledLoci, fitness,
-        mlSelModel, admixedFile)
+    admixedPop = mixExpandedPopulation(par)
   
