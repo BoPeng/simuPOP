@@ -1375,7 +1375,10 @@ void population::pushAndDiscard(population & rhs, bool force)
 {
 	// time consuming!
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
-		"Passed population has different genotypic structure");
+		"Evolution can not continue because the new generation has different \n"
+		"genotypic structure. Note that genetypic structure of a population \n"
+		"might be changed unexpectedly, e.g. when a sample is drawn from a \n"
+		"population.\n");
 
 	DBG_ASSERT(m_genotype.begin() != rhs.m_genotype.begin(), ValueError,
 		"Passed population is a reference of current population, swapPop failed.");
