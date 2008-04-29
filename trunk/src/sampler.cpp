@@ -242,7 +242,7 @@ bool randomSample::prepareSample(population & pop)
 	saveIndIndex(pop, "oldindex");
 	if (m_size.size() > 1) {
 		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-			DBG_FAILIF(m_size[sp] > pop.subPopSize(sp), ValueError,
+			DBG_WARNING(m_size[sp] > pop.subPopSize(sp),
 				"sample size exceed subpopulation size.");
 		}
 	}
