@@ -1064,7 +1064,7 @@ def saveConfig(opt, file, param):
                 print >> f, "# label:\t%s" % options[p]['label']
             if options[p].has_key('arg'):
                 if options[p]['arg'][-1] == ':':
-                    print >> f, "# shortarg:\t-%s = %s" % (options[p]['arg'][0:-1], str( param[p] ))
+                    print >> f, "# shortarg:\t-%s = %s" % (options[p]['arg'][:-1], str( param[p] ))
                 else:
                     print >> f, "# shortarg:\t-%s" % options[p]['arg']
             # write description
@@ -1075,17 +1075,17 @@ def saveConfig(opt, file, param):
                     print >> f, "#\t", d.strip()
             if options[p].has_key('longarg'):
                 if options[p]['longarg'][-1] == '=':
-                    arg = options[p]['longarg'][0:-1]
+                    arg = options[p]['longarg'][:-1]
                 else:
                     arg = options[p]['longarg']
                 # write out option value, try to make it python readable
                 if type(param[p]) == type(''):
                     if "'" in param[p]:
-                        print >> f, '%s = "%s"' % (options[p]['longarg'][0:-1], param[p])
+                        print >> f, '%s = "%s"' % (arg, param[p])
                     else:
-                        print >> f, "%s = '%s'" % (options[p]['longarg'][0:-1], param[p])
+                        print >> f, "%s = '%s'" % (arg, param[p])
                 else:
-                    print >> f, "%s = %s" % (options[p]['longarg'][0:-1], str(param[p]))
+                    print >> f, "%s = %s" % (arg, str(param[p]))
     print >> f, "\n\n#The same options can be given by command line options (subject to minor changes)"
     cmd = "#    --noDialog "
     # shorter version
