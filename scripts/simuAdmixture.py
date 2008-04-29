@@ -298,13 +298,7 @@ from hapMapUtil import getMarkersFromName, getMarkersFromRange
 import os, sys, math 
 from types import *
 from exceptions import ValueError, SystemError
-from simuUtil import SaveQTDT
-
-try:
-    from rpy import *
-    hasRPy = True
-except:
-    hasRPy = False
+from simuUtil import SaveQTDT, SaveMerlinPedFile, FreqTrajectoryMultiStochWithSubPop
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
@@ -345,7 +339,7 @@ options = [
                 skip population expansion'''
     },
     #
-    {'separator': 'Progress report and visualization'},
+    {'separator': 'Progress report and plots'},
     {'longarg': 'step=',
      'default': 10,
      'label': 'Progress report interval',
@@ -370,14 +364,14 @@ options = [
      'description': '''Gap between generations at which LD plots are 
                 draw. Default to 20.'''
     },
-    {'longarg': 'showLDPlot',
+    {'longarg': 'drawLDPlot',
      'default': False,
      'useDefault': True,
      'allowedTypes': [BooleanType],
-     'label': 'Show allele frequency at specified loci',
-     'description': '''If set, draw and display LD structure (using haploview, available)
-                on specified regions (--ldRegions). The figures will be saved in names
-                such as CEU_stage_start-end_gen.PNG''',
+     'label': 'Draw LD plots at specified regions',
+     'description': '''If set, draw LD structure (using haploview, available) on specified
+                regions (--ldRegions). The figures will be saved in names such as
+                CEU_stage_start-end_gen.PNG''',
     },
     {'longarg': 'haploview=',
      'default': 'haploview',
@@ -745,7 +739,7 @@ class admixtureParams:
         # expand all params to different options
         (self.name, self.useSavedSeed, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
-            self.showLDPlot, self.haploview, self.ldRegionsTmp,
+            self.drawLDPlot, self.haploview, self.ldRegions,
             self.ldSampleSize,
         self.HapMap_dir, self.pops, self.markerList, self.chrom,
         self.numMarkers, self.startPos, self.endingPos, 
@@ -766,6 +760,14 @@ class admixtureParams:
         self.ctrlLoci = self.forCtrlLoci + self.backCtrlLoci
         # adjust parameters startPos, endPos etc.
         self.prepareMarkerParams()
+        # marker list file and ld map file.
+        self.markerListFile = os.path.join(self.name, 'markers.lst')
+        self.markerMapFile = os.path.join(self.name, 'ld.map')
+        # parameters for ld plots
+        if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
+            self.ldRegions = [self.ldRegions]
+        self.prepareFitnessParams()
+
 
     def createSimulationDir(self):
         '''Create a directory with simulation name'''
@@ -791,16 +793,20 @@ class admixtureParams:
 
     def setCtrlLociIndex(self, pop):
         '''Translate ctrlLoci to ctrlLociIdx, etc'''
+        if len(self.forCtrlLoci) != 0 and self(par.backCtrlLoci) != 0:
+            raise ValueError('This script currently only allows one kind of controlled loci' + \
+                'Please specify only one of --controlledLoci and --backwardControlledLoci')
+        #
         try:
-            self.forCtrlLociIdx = pop.lociByName(self.forCtrlLoci)
-            self.backCtrlLociIdx = pop.lociByName(self.backCtrlLoci)
-            self.ctrlLociIdx = pop.lociByName(self.ctrlLoci)
+            self.forCtrlLociIdx = pop.lociByNames(self.forCtrlLoci)
+            self.backCtrlLociIdx = pop.lociByNames(self.backCtrlLoci)
+            self.ctrlLociIdx = pop.lociByNames(self.ctrlLoci)
         except:
             raise ValueError('''Can not find one of the controlled loci %s in this population
                 Please check markers.lst for a list of used markers and their frequency''' % \
-                ', '.join(ctrlLoci))
+                ', '.join(self.ctrlLoci))
         # this is used for statistical output
-        pop.dvars().ctrlLoci = ctrlLoci
+        pop.dvars().ctrlLoci = self.ctrlLociIdx
 
     def expandToList(self, par, size, err=''):
         '''If par is a number, return a list of specified size'''
@@ -840,10 +846,49 @@ class admixtureParams:
                 print "Using hapmap population %s" % sp
                 self.popsIdx.append(idx)
         print "Loading populations ", self.popsIdx
-     
+        
+    def prepareFitnessParams(self):
+        # parameters for fitness...
+        numDSL = len(self.ctrlLoci)
+        if numDSL > 1 and self.mlSelModel == 'none':
+            self.fitness = []
+        elif self.mlSelModel == 'interaction':
+            if numDSL == 1:
+                raise ValueError("Interaction model can only be used with more than one DSL");
+            if len(self.fitness) != 3**numDSL:
+                raise ValueError("Please specify 3^n fitness values for n DSL");
+        else:
+            if self.fitness == []:    # neutral process
+                self.fitness = [1,1,1]*numDSL
+            else:
+                # for a single DSL
+                if len(self.fitness) == 3:
+                    self.fitness = self.fitness*numDSL
+                elif len(self.fitness) != numDSL*3:
+                    raise ValueError("Please specify fitness for each DSL")
+        #
+        if len(self.forCtrlFreq) > 0:
+            if type(self.forCtrlFreq[0]) in [TupleType, ListType]:
+                if len(self.forCtrlFreq) != len(self.forCtrlLoci):
+                    raise ValueError('Please specify frequency range for each controlled locus')
+                for rng in self.forCtrlFreq:
+                    if len(rng) != 2:
+                        print "Wrong allele frequency range", rng
+            # give only one
+            else:
+                if len(self.forCtrlFreq) != 2:
+                    print "Wrong allele frequency range", self.forCtrlFreq
+                self.forCtrlFreq = self.forCtrlFreq * len(self.forCtrlLoci)
+        # backward controlled freq
+        if len(self.backCtrlFreq) == 1:
+            self.backCtrlFreq = self.backCtrlFreq * len(self.backCtrlLoci)
+        elif len(self.backCtrlFreq) != len(self.backCtrlLoci):
+            raise ValueError('Number of backward controlled freq does not match the number of such loci')
+
+ 
 #####################################################################
 # You have realized how many lines of code is used for parameter
-# handling and comments. Now, the real part...
+# handling and comments. Now, the utility function part...
 #####################################################################
 
 def expDemoFunc(N0, N1, gen):
@@ -857,14 +902,14 @@ def expDemoFunc(N0, N1, gen):
     gen: generations to evolve.
     '''
     if type(N1) in [IntType, LongType]:
-        NN = [int(N1/len(N0))]*len(N0)
+        NN = [int(N1*x/sum(N0)) for x in N0]
     else:
         NN = N1
     if len(N0) != len(NN):
         raise exceptions.ValueError("Number of subpopulations should be the same")
-    rate = [math.log(NN[x]) - math.log(N0[x])/gen for x in range(len(N0))]
+    rate = [(math.log(NN[x]) - math.log(N0[x]))/gen for x in range(len(N0))]
     def func(gen, oldSize=[]):
-        return [int(N0[x]*math.exp(gen*rate[x])) for x in len(oldSize)]
+        return [int(N0[x]*math.exp(gen*rate[x])) for x in range(len(N0))]
     return func
 
     
@@ -894,6 +939,119 @@ def printInfo(pop):
             diff = [abs(maf0[x]-maf1[x]) for x in range(len(maf0))]
             print '    diff in allele freq: min %.3f, max %.3f, mean %.3f' % (min(diff), max(diff), sum(diff)/len(diff))
 
+
+def writeMarkerInfo(initPop, pop, par):
+    'Save marker info (both init and seed population)'
+    # print marker list fine
+    Stat(initPop, alleleFreq=range(0, initPop.totNumLoci()))
+    Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
+    # write marker information
+    print 'Writing a marker list file'
+    markers = open(par.markerListFile, 'w')
+    print >> markers, 'Name\tchrom\tlocation\t%s\t%s\tseed_freq' % \
+        ('\t'.join([x + '_freq' for x in par.pops]), '\t'.join([x + '_seed_freq' for x in par.pops]))
+    for ch in range(pop.numChrom()):
+        for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
+            print >> markers, '%s\t%d\t%.5f\t%s\t%s\t%.3f' % (pop.locusName(loc), 
+                par.chrom[ch], pop.locusPos(loc), 
+                '\t'.join(['%.3f' % initPop.dvars(x).alleleFreq[loc][1] for x in range(initPop.numSubPop())]),
+                '\t'.join(['%.3f' % pop.dvars(x).alleleFreq[loc][1] for x in range(pop.numSubPop())]),
+                pop.dvars().alleleFreq[loc][1])
+    markers.close()
+
+
+def writeMapFile(pop, par):
+    '''Write a marker map file that can be used by haploview'''
+    # write a map file, used by haploview
+    print 'Writing a map file ld.map to be used by haploview'
+    file = open(par.markerMapFile, 'w')
+    for loc in range(pop.totNumLoci()):
+        print >> file, pop.locusName(loc), int(pop.locusPos(loc)*1000000)
+    file.close()
+
+
+def drawLDPlot(pop, par):
+    '''Draw and display ld plot'''
+    # NOTE: RandomSample will add information field oldindex etc
+    # to pop so the population structure of pop will be changed.
+    # This may disrupt evolution.
+    sample = RandomSample(pop.clone(), [par.ldSampleSize]*pop.numSubPop())[0]
+    for idx,subPop in enumerate(par.pops):
+        toBeRemoved = range(pop.numSubPop())
+        toBeRemoved.remove(idx)
+        spSample = sample.clone()
+        spSample.removeSubPops(toBeRemoved)
+        for reg in par.ldRegions:
+            name = 'LD_%s_%d-%d_%s_%d' % (subPop, reg[0], reg[1],
+                pop.dvars().stage, pop.gen())
+            filename = os.path.join(par.name, name)
+            regSample = spSample.clone()
+            regSample.removeLoci(keep=range(reg[0], reg[1]))
+            print 'Drawing LD plot for population %s between loci %d and %d, using %d individuals' % \
+                (subPop, reg[0], reg[1], par.ldSampleSize)
+            SaveMerlinPedFile(regSample, output=filename,
+                outputAffection=True, affectionCode=['1', '2'])
+            cmd = '%s -pedfile %s.ped -map %s/ld.map -compressedpng -q -n' % \
+                (par.haploview, filename, par.name)
+            print 'Command: %s' % cmd
+            os.system(cmd)
+    return True
+
+
+def getStatOps(par):
+    '''Return statistis calculation and progress report operators '''
+    # statistics calculation and display
+    # 
+    if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
+        statOps = [
+            # note: DSL is set when the population is created
+            stat(popSize=True, alleleFreq = par.ctrlLociIdx, step = par.step),
+            pyEval(r'"gen=%3d, size=%s, alleleFreq=%s\n" % (gen, subPopSize,' + \
+                r'", ".join(["%.3f" % alleleFreq[x][1] for x in ctrlLoci]))', step=par.step)
+        ]
+    else:
+        statOps = [
+            stat(popSize=True, step = par.step),
+            pyEval(r'"gen=%3d, size=%s\n" % (gen, subPopSize)', step=par.step)
+        ]
+    # ld plot?
+    if par.drawLDPlot and par.figureStep > 0 and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
+        statOps.extend([
+            pyOperator(func=drawLDPlot, param = par, step=par.figureStep),
+            pyOperator(func=drawLDPlot, param = par, at=[-1])
+        ])
+    return statOps
+
+
+def migrFunc(gen, curSize):
+    '''This is an example of how to define a time-dependent
+    migration rate function
+    '''
+    # this is a sample function that migrate to 
+    # a third population, with increasing intensity
+    return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
+
+
+def getSelector(model, loci, fitness):
+    if model in ['additive', 'multiplicative']:
+        mlSelModel = {'additive':SEL_Additive, 
+            'multiplicative':SEL_Multiplicative}[model]
+        return mlSelector(
+            # with five multiple-allele selector as parameter
+            [ maSelector(locus=loci[x], wildtype=[0], 
+                fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) \
+                    for x in range(len(loci)) ],
+            mode=mlSelModel)
+    elif model == 'interaction':
+        # multi-allele selector can handle multiple DSL case
+        return maSelector(loci=loci, fitness=fitness, wildtype=[0])
+    else:
+        return noneOp()
+
+
+#####################################################################
+# Finally, the real actions.
+#####################################################################
 
 def createInitialPopulation(par):
     '''Create an initial population, with parameters (from the par structure)
@@ -971,6 +1129,9 @@ def createInitialPopulation(par):
 def generateSeedPopulation(par):
     '''Generate seed population, using HapMap dataset and specified marker list'''
     pop = createInitialPopulation(par)
+    par.setCtrlLociIndex(pop)
+    # used to generate plots
+    pop.dvars().stage = 'seed'
     #
     initPop = pop.clone()
     # print population summary
@@ -983,16 +1144,15 @@ def generateSeedPopulation(par):
                 pop.locusPos(pop.chromEnd(ch)-1))
     # evolve the initial population
     print "Evolving the initial population"
-    simu = simulator(pop, randomMating(
-        newSubPopSizeFunc = expDemoFunc(pop.subPopSizes(),
-            par.seedSize, par.initGen)), rep=1)
+    simu = simulator(pop, randomMating( newSubPopSizeFunc = 
+        expDemoFunc(pop.subPopSizes(), par.seedSize, par.initGen)), rep=1)
     simu.evolve(
         ops = [
             # mutation will be disallowed in the last generation (see later)
             kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())),
             recombinator(intensity=par.recIntensity)
         ] + getStatOps(par),
-        gen = initGen)
+        gen = par.initGen)
     pop = simu.getPopulation(0, True)
     printInfo(pop)
     #
@@ -1000,208 +1160,132 @@ def generateSeedPopulation(par):
     print 'Save seed population to', par.seedFile
     pop.savePopulation(par.seedFile)
     #
-    # print marker list fine
-    Stat(initPop, alleleFreq=range(0, initPop.totNumLoci()))
-    Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
-    # write marker information
-    print 'Writing a marker list file'
-    markers = open(os.path.join(name, 'markers.lst'), 'w')
-    print >> markers, 'Name\tchrom\tlocation\t%s\t%s\tseed_freq' % \
-        ('\t'.join([x + '_freq' for x in pops]), '\t'.join([x + '_seed_freq' for x in pops]))
-    for ch in range(pop.numChrom()):
-        for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
-            print >> markers, '%s\t%d\t%.5f\t%s\t%s\t%.3f' % (pop.locusName(loc), 
-                chrom[ch], pop.locusPos(loc), 
-                '\t'.join(['%.3f' % initPop.dvars(x).alleleFreq[loc][1] for x in range(initPop.numSubPop())]),
-                '\t'.join(['%.3f' % pop.dvars(x).alleleFreq[loc][1] for x in range(pop.numSubPop())]),
-                pop.dvars().alleleFreq[loc][1])
-    markers.close()
+    writeMarkerInfo(initPop, pop, par)
+    writeMapFile(pop, par)
     #
-    # write a map file, used by haploview
-    print 'Writing a map file ld.map to be used by haploview'
-    file = open(os.path.join(name, 'ld.map'), 'w')
-    for loc in range(pop.totNumLoci()):
-        print >> file, pop.locusName(loc), int(pop.locusPos(loc)*1000000)
-    file.close()
-    
-
-def migrFunc(gen, curSize):
-    ''' return migration rate at each generation'''
-    # this is a sample function that migrate to 
-    # a third population, with increasing intensity
-    return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
+    return pop
 
 
-def getSelector(model, loci, fitness):
-    if model in ['additive', 'multiplicative']:
-        mlSelModel = {'additive':SEL_Additive, 
-            'multiplicative':SEL_Multiplicative}[model]
-        return mlSelector(
-            # with five multiple-allele selector as parameter
-            [ maSelector(locus=loci[x], wildtype=[0], 
-                fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) \
-                    for x in range(len(loci)) ],
-            mode=mlSelModel)
-    elif model == 'interaction':
-        # multi-allele selector can handle multiple DSL case
-        return maSelector(loci=loci, fitness=fitness, wildtype=[0])
-    else:
-        return noneOp()
 
-
-def getStatOps(par):
-    '''Return statistis calculation and progress report operators '''
-    # statistics calculation and display
-    # 
-    ctrlLoci = par.controlledLoci + par.backControlledLoci
-    if len(ctrlLoci) > 0 and par.showAlleleFreq:
-        statOps = [
-            # note: DSL is set when the population is created
-            stat(popSize=True, alleleFreq = ctrlLoci, 
-                step = step),
-            pyEval(r'"gen=%d, size=%s, alleleFreq=%s\n" % (gen, subPopSize,' + \
-                r'", ".join([".3f" % alleleFreq[x][1] for x in DSL]))', step=step)
-        ],
-    else:
-        statOps = [
-            stat(popSize=True, step = step),
-            pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step)
-        ]
-
-
-def getVisualizationOps():
-    # ld plot?
-    if showLDPlot and figureStep > 0 and ldSampleSize > 0 and len(ldRegionsTmp) > 0:
-        ldRegions = []
-        if type(ldRegionsTmp[0]) in [IntType, LongType] and len(ldRegionsTmp) == 2:
-            ldRegions.append(ldRegionsTmp)
-        else:
-            ldRegions = ldRegionsTmp
-        #
-        statOps.append(pyOperator(func=drawLDPlot, 
-            param = (haploview, ldRegions, ldSampleSize, pops, name),
-            step=figureStep))
-        statOps.append(pyOperator(func=drawLDPlot, 
-            param = (haploview, ldRegions, ldSampleSize, pops, name),
-            at=[-1]))
-
-
-def drawLDPlot(pop, param):
-    '''Draw and display ld plot'''
-    (haploview, ldRegions, sampleSize, pops, dir) = param
-    sample = RandomSample(pop, [sampleSize]*pop.numSubPop())[0]
-    for idx,subPop in enumerate(pops):
-        removeSP = range(pop.numSubPop())
-        removeSP.remove(idx)
-        spSample = sample.clone()
-        spSample.removeSubPops(removeSP)
-        for reg in ldRegions:
-            name = 'LD_%s_%d-%d' % (subPop, reg[0], reg[1])
-            filename = os.path.join(dir, name)
-            regSample = spSample.clone()
-            regSample.removeLoci(range(reg[0], reg[1]))
-            SaveMerlinPedFile(pop, output=filename,
-                outputAffection=True, affectionCode=['1', '2'])
-            os.system('%s -pedfile %s.ped -map %s/ld.map -compressedpng -q -n' % \
-                (haploview, filename, dir) )
-    return True
-
-
-def expandSeedPopulation(seedPop, expandGen, expandSize, 
-        mutaRate, recIntensity, controlledLoci, controlledFreq, backControlledLoci,
-        backControlledFreq, fitness, mlSelModel, step, showAlleleFreq,
-        expandedFile):
+def expandSeedPopulation(pop, par):
     '''Expand seed population'''
-    # load seed population
-    if type(seedPop) == type(''):
-        print 'Loading seed population %s...' % seedPop
-        pop = LoadPopulation(seedPop)
-    else:
-        pop = seedPop
+    # used to generate plots
+    pop.dvars().stage = 'expand'
     #
     popSizeFunc = expDemoFunc(pop.subPopSizes(), par.expandSize,
         par.expandGen)
-    if len(controlledLoci) == 0:
+    if len(par.ctrlLoci) == 0:
         # evolve it
-        #    # evolve the initial population
         #
         print "Evolving the seed population"
         simu = simulator(pop, randomMating(newSubPopSizeFunc = 
-            popSizeFunc),rep=1)
+            popSizeFunc), rep=1)
         simu.evolve(
             ops = [
                 # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate = mutaRate, loci=range(pop.totNumLoci())),
-                recombinator(intensity = recIntensity),
-                getSelector(mlSelModel, controlledLoci + backControlledLoci, fitness),
-            ] + getStatOps(step, controlledLoci + backControlledLoci, showAlleleFreq),
-            gen = expandGen)
+                kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
+                recombinator(intensity = par.recIntensity),
+            ] + getStatOps(par),
+            gen = par.expandGen)
         pop = simu.getPopulation(0, True)
     else:
         # simulate a frequency trajectory
-        print "Using controlled random mating on markers %s" % (', '.join(controlledLoci))
-        ctrlLoci = pop.lociByNames(controlledLoci)
-        Stat(pop, alleleFreq=ctrlLoci)
+        print "Using controlled random mating on markers %s" % (', '.join(par.ctrlLoci))
+        Stat(pop, alleleFreq=par.ctrlLociIdx)
         currentFreq = []
         # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
-        for loc in ctrlLoci:
+        for loc in par.ctrlLociIdx:
             print "Current overall frequency %s: %.3f" % (pop.locusName(loc),
                 pop.dvars().alleleFreq[loc][1])
             for sp in range(pop.numSubPop()):
                 currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
         print 'Simulating frequency trajectory ...'
-        if len(controlledLoci) > 0:
+        if len(par.forCtrlLoci) > 0:
             traj = ForwardFreqTrajectory(
                 curGen = 0,
-                endGen = expandGen,
+                endGen = par.expandGen,
                 curFreq = currentFreq,
-                freq = controlledFreq,
-                fitness = fitness,
+                freq = par.forCtrlFreq,
+                fitness = par.fitness,
                 NtFunc = popSizeFunc
                 )
-            intoOps = []
+            introOps = []
         else:
             # clear these loci
             print 'Clearing mutants at backward-controlled loci'
-            backCtrlLoci = pop.lociByNames(backwardControlledLoci)
-            for loc in backCtrlLoci:
+            for idx,loc in enumerate(par.backCtrlLociIdx):
+                print 'Locus %s, expected frequency: %.3f' % (pop.locusName(loc), 
+                    par.backCtrlFreq[idx])
                 for ind in pop.individuals():
                     ind.setAllele(0, loc, 0)
                     ind.setAllele(0, loc, 1)
-            # simulate trajectory
-            (traj, introGens, trajFunc) = FreqTrajectoryMultiStochWithSubPop(
-                curGen=expandGen,
-                numLoci=len(backCtrlLoci),
-                freq=backControlledFreq,
-                NtFunc=popSizeFunc,
-                fitness=fitness,
-                minMutAge=1, 
-                maxMutAge=expandGen, 
-                mode='even',
-                restartIfFail=True)
-            intoOps = [
-                pointMutator(atLoci=[backCtrlLoci[i]], toAllele=1, inds=[i],
+            print 'Simulate allele frequency trajectory using a backward approach'
+            print 'Selection:', par.fitness
+            print 'Ending population size:', popSizeFunc(par.expandGen-1)
+            print 'Generation:', par.expandGen
+            # simulate trajectory for each subpopulation
+            numSP = pop.numSubPop()
+            numLoci = len(par.backCtrlLoci)
+            spTraj = [0]*(numSP*numLoci)
+            freqAll = [0]*(numLoci*numSP)
+            for i in range(numLoci):
+                # use current proportion to estimate proportion at the end
+                wt = [float(x)/pop.popSize() for x in pop.subPopSizes()]
+                expSize = [x*par.expandSize for x in wt]
+                # total allele number
+                totNum = int(par.backCtrlFreq[i]*par.expandSize)
+                # in subpopulations, according to population size
+                num = rng().randMultinomial(totNum, wt)
+                for sp in range(numSP):
+                    freqAll[sp+i*numSP] = num[sp]/float(expSize[sp])
+            for sp in range(numSP):
+                # FreqTraj... will probe Nt for the next geneartion.
+                def spPopSize(gen):
+                    return [popSizeFunc(gen)[sp]]
+                while True:
+                    t = FreqTrajectoryMultiStoch(
+                        curGen = par.expandGen,
+                        freq = [freqAll[sp+x*numSP] for x in range(numLoci)], 
+                        NtFunc = spPopSize, 
+                        fitness = par.fitness,
+                        minMutAge = 0, 
+                        maxMutAge = par.expandGen, 
+                        restartIfFail=False) 
+                    # failed to generate one of the trajectory
+                    if 0 in [len(x) for x in t]:
+                        print "Failed to generate trajectory. You may need to set a different set of parameters."
+                        sys.exit(1)
+                    if 0 in [x[0] for x in t]:
+                        print "Subpop return 0 index. restart "
+                    else:
+                        break;
+                # now spTraj has LOC0: sp0,1,2, LOC1, sp0,1,2,... LOC2
+                for i in range(numLoci):
+                    spTraj[sp+i*numSP] = t[i]
+            introOps = [
+                pointMutator(atLoci=[par.backCtrlLociIdx[i]], toAllele=1, inds=[i],
                     at = [introGens[i]], stage=PreMating)
-                for i in range(len(backCtrlLoci))]
+                    for i in range(len(par.backCtrlLoci))]
         if len(traj) == 0:
             raise ValueError('''Failed to simulate trajectory
                 Initial allele frequency:
-                Ending allele frequency: %s''' % (currentFreq, controlledFreq))
+                Ending allele frequency: %s''' % (currentFreq, par.backCtrlFreq))
         # define a trajectory function
         def trajFunc(gen):
             return [x[gen] for x in traj]
         #
+        print 'Start population expansion using a controlled random mating scheme'
         simu = simulator(pop, 
             controlledRandomMating(
-                loci=ctrlLoci,
-                alleles=[1]*len(ctrlLoci),
-                freqFunc=trajFunc,
-                newSubPopSizeFunc=popSizeFunc)
+                loci = par.ctrlLociIdx,
+                alleles = [1]*len(par.ctrlLoci),
+                freqFunc = trajFunc,
+                newSubPopSizeFunc = popSizeFunc)
         )
         simu.evolve(
             ops =  [
                 # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate=mutaRate, loci=range(pop.totNumLoci())),
+                kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
                 recombinator(intensity=recIntensity),
             ] + introOps + statOps,
             gen = expandGen
@@ -1221,6 +1305,8 @@ def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, mutaRate,
     recIntensity, selLoci, selModel, fitness, admixedFile):
     ''' Evolve the seed population
     '''
+    # used to generate plots
+    pop.dvars().stage = 'mix'
     # migration part.
     mergeAt = 1000000  # default not merge
     if migrModel == 'Hybrid Isolation':
@@ -1282,70 +1368,20 @@ if __name__ == '__main__':
         seedPop = None
     else:
         seedPop = generateSeedPopulation(par)
-    sys.exit(0)
     #
     # step 2:
     # 
     # if both files exists, skip this stage
-    if useSavedExpanded and os.path.isfile(expandedFile):
+    if par.useSavedExpanded and os.path.isfile(par.expandedFile):
         expandedPop = None
     else:
         if seedPop is None:
-            print 'Loading seed population', seedFile
-            seedPop = LoadPopulation(seedFile)
+            print 'Loading seed population', par.seedFile
+            seedPop = LoadPopulation(par.seedFile)
+            # par.ctrlLoci is set in generateSeedPopulation
+            par.setCtrlLociIndex(seedPop)
         # 
-        if len(controlledLoci) != 0 and len(backwardControlledLoci) != 0:
-            raise ValueError('This script currently only allows one kind of controlled loci' + \
-                'Please specify only one of --controlledLoci and --backwardControlledLoci')
-        #
-        # fitness
-        numDSL = len(controlledLoci) + len(backControlledLoci)
-        if mlSelModel == 'none':
-            fitness = []
-        elif mlSelModel == 'interaction':
-            if numDSL == 1:
-                raise ValueError("Interaction model can only be used with more than one DSL");
-            if len(fitnessTmp) != 3**numDSL:
-                raise ValueError("Please specify 3^n fitness values for n DSL");
-            fitness = fitnessTmp
-        else:
-            if fitnessTmp == []:    # neutral process
-                fitness = [1,1,1]*numDSL
-            else:
-                # for a single DSL
-                if len(fitnessTmp) == 3:
-                    fitness = fitnessTmp*numDSL
-                elif len(fitnessTmp) != numDSL*3:
-                    raise ValueError("Please specify fitness for each DSL")
-                else:
-                    fitness = fitnessTmp
-        #
-        controlledFreq = []
-        if len(controlledFreqTmp) > 0:
-            if type(controlledFreqTmp[0]) in [TupleType, ListType]:
-                if len(controlledFreqTmp) != len(controlledLoci):
-                    raise ValueError('Please specify frequency range for each controlled locus')
-                for rng in controlledFreqTmp:
-                    if len(rng) != 2:
-                        print "Wrong allele frequency range", rng
-                    controlledFreq.append(rng)
-            # give only one
-            else:
-                if len(controlledFreqTmp) != 2:
-                    print "Wrong allele frequency range", controlledFreqTmp
-                for i in range(len(controlledLoci)):
-                    controlledFreq.append(controlledFreqTmp)
-        # backward controlled freq
-        backControlledFreq = []
-        if len(backControlledFreqTmp) == 1:
-            for lpc in backControlledLoci:
-                backControlledFreq.append(backControlledFreqTmp)
-        elif len(backControlledFreqTmp) != len(backControlledLoci):
-            raise ValueError('Number of backward controlled freq does not match the number of such loci')
-        else:
-            backControlledFreq = backControlledFreqTmp
-        #
-        expandedPop = expandSeedPopulation(par)
+        expandedPop = expandSeedPopulation(seedPop, par)
     # admixture
     if expandedPop is None:
         print 'Loading expanded population from file ', expandedFile
