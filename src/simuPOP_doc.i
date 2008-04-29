@@ -12477,9 +12477,29 @@ Usage:
 
 "; 
 
-%ignore simuPOP::RNG::randMultinomial(unsigned int N, const vectorf &p, vectoru::iterator n);
+%feature("docstring") simuPOP::RNG::randMultinomial "
 
-%ignore simuPOP::RNG::randMultinomialVal(unsigned int N, const vectorf &p);
+Description:
+
+    Multinomial distribution.
+
+Usage:
+
+    x.randMultinomial(N, p, n)
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randMultinomialVal "
+
+Description:
+
+    simuPOP::RNG::randMultinomialVal
+
+Usage:
+
+    x.randMultinomialVal(N, p)
+
+"; 
 
 %feature("docstring") simuPOP::RNG::randPoisson "
 
@@ -16022,6 +16042,20 @@ Usage:
     FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, NtFunc=None,
       fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
       ploidy=2, restartIfFail=False, maxAttempts=1000)
+
+"; 
+
+%feature("docstring") simuPOP::ForwardFreqTrajectory "
+
+Description:
+
+    simuPOP::ForwardFreqTrajectory
+
+Usage:
+
+    ForwardFreqTrajectory(curGen=0, endGen=0, curFreq=[], freq=[],
+      N=[], NtFunc=None, fitness=[], fitnessFunc=None, ploidy=2,
+      maxAttempts=1000)
 
 "; 
 

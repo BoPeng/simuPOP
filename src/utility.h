@@ -984,7 +984,6 @@ public:
 
 
 	/// Multinomial distribution
-	/// CPPONLY
 	void randMultinomial(unsigned int N, const vectorf & p, vectoru::iterator n)
 	{
 		// if sum p_i != 1, it will be normalized.
@@ -993,7 +992,6 @@ public:
 	}
 
 
-	/// CPPONLY
 	vectoru randMultinomialVal(unsigned int N, const vectorf & p)
 	{
 		// if sum p_i != 1, it will be normalized.
