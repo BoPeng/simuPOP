@@ -35,6 +35,10 @@ recorded and plotted (if R/Rpy is available).
 
 """
 import simuOpt
+simuOpt.setOptions(alleleType='long')
+from simuPOP import *
+from simuUtil import *
+
 import os, sys, types, exceptions, math
 
 # declare all options, getParam will use these info to get parameters
@@ -313,7 +317,7 @@ def getOptions(details=__doc__):
 # 5. percentage of five most frequent alleles among disease alleles
 # 6. percentage of alleles from ancestral population
 # 
-def getStats(v, highest):
+def getStats(v, highest, numDSL, allelesBeforeExpansion):
     # the following are statistics for each DSL
     perc = []                                 # percentage
     numAllele = []                        # number of alleles
@@ -322,7 +326,6 @@ def getStats(v, highest):
     percMostCommon = []             # percentage of most common
     perc5MostCommon = []            # percentage of five most common
     percAncestralAllele = []    # percentage of alleles from before expansion
-    global allelesBeforeExpansion
     for d in range(numDSL):
         # overall DSA frequency
         overallFreq.append( 1 - v.alleleFreq[d][0])
@@ -377,14 +380,14 @@ def PlotSpectra(pop, param):
     for sp in range(pop.numSubPop()):
         # unpack result
         [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] \
-            = getStats(pop.dvars(sp), highest)
+            = getStats(pop.dvars(sp), highest, numDSL, pop.dvars().allelesBeforeExpansion)
         for d in range(numDSL):
             logOutput.write( '%.5f\t%d\t%.5f\t%.5f\t%.5f\t%.5f\t' % (effNumAllele[d], \
                 numAllele[d], overallFreq[d], percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]))
     # if there are subpop
     if pop.numSubPop() > 1: # then write overall state
         [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] \
-            = getStats(pop.dvars(), highest)
+            = getStats(pop.dvars(), highest, numDSL, pop.dvars().allelesBeforeExpansion)
         for d in range(numDSL):
             logOutput.write( '%.5f\t%d\t%.5f\t%.5f\t%.5f\t%.5f\t' % (effNumAllele[d], \
                 numAllele[d], overallFreq[d], percMostCommon[d], perc5MostCommon[d], percAncestralAllele[d]))
@@ -523,7 +526,7 @@ def simuCDCV(numDSL, initSpec, selModel,
     # create a simulator, if not in resume mode
     if resume == '':
         simu = simulator(     
-            population(subPop=incFunc(0), loci=[1]*(numDSL),
+            population(size=incFunc(0), loci=[1]*(numDSL),
                 maxAllele = maxAllele, infoFields=['fitness']),    
             randomMating(newSubPopSizeFunc=incFunc)
         )
@@ -539,9 +542,9 @@ def simuCDCV(numDSL, initSpec, selModel,
 
     # determine mutation etc
     if mutaModel == 'k-allele':
-        mutation = kamMutator(rate=mutaRate, atLoci=range(numDSL), maxAllele=maxAllele)
+        mutation = kamMutator(rate=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
     else:
-        mutation = smmMutator(rate=mutaRate, atLoci=range(numDSL), maxAllele=maxAllele)
+        mutation = smmMutator(rate=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
     # determine selection
     #
     if selModelAllDSL == 'customized':
@@ -577,8 +580,6 @@ def simuCDCV(numDSL, initSpec, selModel,
         logOutput.write("\n")
         logOutput.close()
     # use global
-    global allelesBeforeExpansion
-    allelesBeforeExpansion = []
     global NeHist, NeMax, FHist, FMax
     # determine plot label
     plotLabel = []
@@ -599,7 +600,8 @@ def simuCDCV(numDSL, initSpec, selModel,
     simu.evolve(                            # start evolution
         preOps=
             # initialize DSL 
-            [initByFreq(atLoci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)],
+            [initByFreq(atLoci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
+            [pyExec('allelesBeforeExpansion=[]')],
         ops=[         
             # report population size, for monitoring purpose only
             # count allele frequencies at both loci
@@ -609,14 +611,13 @@ def simuCDCV(numDSL, initSpec, selModel,
             #
             # record alleles before expansion, used to count percentage of alleles derived
             # from before expansion.
-            pyExec('global allelesBeforeExpansion\n'+
-                '''for i in range(%d):
+            pyExec( '''for i in range(%d):
                 allelesBeforeExpansion.append([])
                 for a in range(1,len(alleleNum[i])):
                     if alleleNum[i][a] != 0:
                         allelesBeforeExpansion[i].append(a)
                 print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
-                (numDSL), at=[burnin]),
+                numDSL, at=[burnin]),
             #
             splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
             # mutate
@@ -631,7 +632,7 @@ def simuCDCV(numDSL, initSpec, selModel,
             ticToc(step=100),
             ## pause at any user key input (for presentation purpose)
             ## pause(stopOnKeyStroke=1)
-            savePopulation(outputExpr='"%s/%s-%d.txt"%(name, name, gen)', step=3000),
+            savePopulation(outputExpr='"%s/%s-%%d.txt"%% gen' % (name, name), step=3000),
         ],
         end=end,
         dryrun = dryrun
@@ -651,12 +652,6 @@ if __name__ == '__main__':
         initSize, finalSize, burnin, noMigrGen, mixingGen, growth, numSubPop, 
         migrModel, migrRate, update, dispPlot, saveAt, savePop, resume,
         resumeAtGen, dryrun, name) = allParam
-
-    if maxAllele > 255:
-        simuOpt.setOptions(alleleType='long')
-    
-    from simuPOP import *
-    from simuUtil import *
 
     if dispPlot:
         try:
