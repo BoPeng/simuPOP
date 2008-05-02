@@ -736,7 +736,6 @@ class admixtureParams:
         if allParam[0]:
             print usage(options, __doc__)
             sys.exit(0)
-        print allParam
         # expand all params to different options
         (self.name, self.useSavedSeed, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
