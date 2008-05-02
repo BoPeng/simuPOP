@@ -237,6 +237,7 @@ include test/test_18_penetrance.py
 include test/test_19_utility.py
 include test/test_20_rpy.py
 include test/test_21_performance.py
+include test/test_22_scripts.py
 
 # documentations
 include doc/userGuide.pdf
