@@ -319,15 +319,6 @@ options = [
                 will be created. Configuration file (.cfg), marker list and
                 various populations will be saved to this directory''',
     },
-    {'longarg': 'custom=',
-     'default': '',
-     'useDefault': False,
-     'allowedTypes': [StringType],
-     'label': 'Customized definitions',
-     'description': '''A python module that provides customized,
-        migration and mating schemes. Only needed when 'customized' is 
-        selected for migration and mating scheme'''
-    },
     {'longarg': 'useSavedSeed',
      'default': False,
      'label': 'Use saved seed population',
@@ -516,6 +507,27 @@ options = [
                 Can be used for both methods.''',
     },
     #
+    {'separator': 'Generate evolution parameter'},
+    {'longarg': 'scale=',
+     'default': 10,
+     'useDefault': True,
+     'allowedTypes': [IntType, LongType, FloatType],
+     'label': 'Scale parameter',
+     'description': '''This parameter is used to speed up recombination, mutation
+                and selection. Briefly speaking, certain parts of the evolutionary
+                process is accelerated but random genetic drift is kept. Please
+                refer to Peng 2008 for more details''',
+     'validate': valueGT(0),
+    },
+    {'longarg': 'custom=',
+     'default': '',
+     'useDefault': False,
+     'allowedTypes': [StringType],
+     'label': 'Modual for customized definitions',
+     'description': '''A python module that provides customized,
+        migration and mating schemes. Only needed when 'customized' is 
+        selected for migration and mating scheme'''
+    },
     {'separator': 'Generate seed population'},
     {'arg': 's:',
      'longarg': 'seedName=',
@@ -768,13 +780,14 @@ class admixtureParams:
             print usage(options, __doc__)
             sys.exit(0)
         # expand all params to different options
-        (self.name, self.custom, self.useSavedSeed, self.useSavedExpanded,
+        (self.name, self.useSavedSeed, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
             self.drawLDPlot, self.haploview, self.ldRegions,
             self.ldSampleSize,
         self.HapMap_dir, self.pops, self.markerList, self.chrom,
         self.numMarkers, self.startPos, self.endingPos,
         self.minAF, self.minDiffAF, self.minDist,
+            self.scale, self.custom,
             self.seedName, self.initCopy, self.initGen, self.seedSize,
         self.mutaRate, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
         self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
@@ -797,10 +810,15 @@ class admixtureParams:
         # parameters for ld plots
         if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
             self.ldRegions = [self.ldRegions]
+        # mutation
+        self.mutaRate *= self.scale
+        # recombination
+        self.recIntensity *= self.scale
+        #
         self.prepareFitnessParams()
         # cutomized migrator and mating schemes
-        if par.cutsom != '':
-            exec('import %s as custom' % par.custom)
+        if self.custom != '':
+            exec('import %s as custom' % self.custom)
 
 
     def createSimulationDir(self):
@@ -900,7 +918,7 @@ class admixtureParams:
             else:
                 # for a single DSL
                 if len(self.fitness) == 3:
-                    self.fitness = self.fitness*numDSL
+                    self.fitness = [self.fitness]*numDSL
                 elif len(self.fitness) != numDSL*3:
                     raise ValueError("Please specify fitness for each DSL")
         #
@@ -921,6 +939,14 @@ class admixtureParams:
             self.backCtrlFreq = self.backCtrlFreq * len(self.backCtrlLoci)
         elif len(self.backCtrlFreq) != len(self.backCtrlLoci):
             raise ValueError('Number of backward controlled freq does not match the number of such loci')
+        #
+        # scale fitness
+        for i in range(numDSL):
+            f = self.fitness[i]
+            f = [x/f[0] for x in f]
+            f[1] = 1 + (f[1] - 1) * self.scale 
+            f[2] = 1 + (f[2] - 1) * self.scale
+            self.fitness[i] = f   
 
 
 #####################################################################
