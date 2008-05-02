@@ -1193,9 +1193,10 @@ def forCtrlExpand(pop, par):
     Stat(pop, alleleFreq=par.ctrlLociIdx)
     currentFreq = []
     # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
-    for loc in par.ctrlLociIdx:
-        print "Current overall frequency %s: %.3f" % (pop.locusName(loc),
-            pop.dvars().alleleFreq[loc][1])
+    for idx,loc in enumerate(par.ctrlLociIdx):
+        print "Current overall frequency %s: %.3f (aiming at: %.3f ~ %.3f)" % \
+            (pop.locusName(loc), pop.dvars().alleleFreq[loc][1],
+            par.forCtrlFreq[idx][0], par.forCtrlFreq[idx][1])
         for sp in range(pop.numSubPop()):
             currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
     print 'Simulating frequency trajectory ...'
@@ -1207,7 +1208,8 @@ def forCtrlExpand(pop, par):
         curFreq = currentFreq,
         freq = par.forCtrlFreq,
         fitness = par.fitness,
-        NtFunc = popSizeFunc
+        NtFunc = popSizeFunc,
+        maxAttempts = 10000
     )
     if len(traj) == 0:
         raise SystemError('Failed to generated trajectory')
@@ -1261,8 +1263,8 @@ def backCtrlExpand(pop, par):
         minMutAge = 0,
         maxMutAge = par.expandGen,
         restartIfFail = True)
-    introOps = [pointMutator(atLoci=[par.backCtrlLociIdx[i]], toAllele=1, inds=[i],
-            at = [len(x) for x in traj], stage=PreMating)
+    introOps = [pointMutator(locus=par.backCtrlLociIdx[i], toAllele=1, inds=[i],
+            at = [par.expandGen - len(traj[i]) + 1], stage=PreMating)
             for i in range(len(par.backCtrlLoci))]
     if len(traj) == 0:
         raise ValueError('''Failed to simulate trajectory
@@ -1270,13 +1272,19 @@ def backCtrlExpand(pop, par):
             Ending allele frequency: %s''' % (currentFreq, par.backCtrlFreq))
     # define a trajectory function
     def trajFunc(gen):
-        return [x[gen] for x in traj]
+        freq = []
+        for t in traj:
+            if gen < par.expandGen - len(t) + 1:
+                freq.append(0)
+            else:
+                freq.append(t[gen - par.expandGen + len(t) - 1])
+        return freq
     #
     print 'Start population expansion using a controlled random mating scheme'
     simu = simulator(pop,
         controlledRandomMating(
-            loci = par.ctrlLociIdx,
-            alleles = [1]*len(par.ctrlLoci),
+            loci = par.backCtrlLociIdx,
+            alleles = [1]*len(par.backCtrlLoci),
             freqFunc = trajFunc,
             newSubPopSizeFunc = popSizeFunc)
     )
@@ -1284,16 +1292,16 @@ def backCtrlExpand(pop, par):
         ops =  [
             # mutation will be disallowed in the last generation (see later)
             kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity=recIntensity),
+            recombinator(intensity = par.recIntensity),
         ] + introOps + getStatOps(par) + getSelector(par),
-        gen = expandGen
+        gen = par.expandGen
     )
     pop = simu.getPopulation(0, True)
-    Stat(pop, alleleFreq=ctrlLoci)
-    for i,loc in enumerate(ctrlLoci):
-        print "Locus %s: designed freq: (%.3f, %.3f), freq: %.3f" % \
-            (pop.alleleName(loc), controlledFreq[i][0],
-            controlledFreq[i][1], pop.dvars().alleleFreq[loc][1])
+    Stat(pop, alleleFreq = par.backCtrlLociIdx)
+    for i,loc in enumerate(par.backCtrlLociIdx):
+        print "Locus %s: designed freq: %.3f, freq: %.3f" % \
+            (pop.alleleName(loc), par.backCtrlFreq[i], pop.dvars().alleleFreq[loc][1])
+    return pop
 
 
 def mixExpandedPopulation(pop, par):
@@ -1368,6 +1376,8 @@ if __name__ == '__main__':
         if seedPop is None:
             print 'Loading seed population %s...' % par.seedFile
             seedPop = LoadPopulation(par.seedFile)
+            if seedPop.numSubPop() != len(par.pops):
+                raise ValueError("Seed population has different number of subpopulation than required.")
             # par.ctrlLoci is set in generateSeedPopulation
             par.setCtrlLociIndex(seedPop)
         #
@@ -1390,6 +1400,8 @@ if __name__ == '__main__':
     if expandedPop is None:
         print 'Loading expanded population from file ', par.expandedFile
         expandedPop = LoadPopulation(par.expandedFile)
+        if expandedPop.numSubPop() != len(par.pops):
+            raise ValueError("Seed population has different number of subpopulation than required.")
     expandedPop.dvars().stage = 'mix'
     admixedPop = mixExpandedPopulation(expandedPop, par)
     print 'Saving admixed population to ', par.admixedFile
