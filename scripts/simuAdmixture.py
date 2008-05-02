@@ -319,6 +319,15 @@ options = [
                 will be created. Configuration file (.cfg), marker list and
                 various populations will be saved to this directory''',
     },
+    {'longarg': 'custom=',
+     'default': '',
+     'useDefault': False,
+     'allowedTypes': [StringType],
+     'label': 'Customized definitions',
+     'description': '''A python module that provides customized,
+        migration and mating schemes. Only needed when 'customized' is 
+        selected for migration and mating scheme'''
+    },
     {'longarg': 'useSavedSeed',
      'default': False,
      'label': 'Use saved seed population',
@@ -686,9 +695,9 @@ options = [
                 the migration stage. For example, [[0.9, 0.1], [0, 1]] means
                 moving 10% from population 1 to 2. 'Custimized' migration model
                 allows you to define your own migration model. A function
-                migrModel needs to be defined in this script, which returns
-                a migration rate at each generation. See the 'migrFunc' function
-                in this script for details. If 'None' is chose, there will be
+                cusMigrModel needs to be defined in $custom.py which returns
+                a migration rate at each generation. (e.g. 
+                "def cusMigrModel(gen, curSize)"). If 'None' is chose, there will be
                 no migration. Note that the merge of two populations can be
                 mimiced by a Hybrid Isolation migration of rate [[1, 0], [1, 0]].
                 That is to say, everyone from the second subpopulationmoves to the
@@ -719,6 +728,28 @@ options = [
      'allowedTypes': [TupleType, ListType],
      'validate': valueListOf(valueListOf(valueBetween(0,1))),
     },
+    {'longarg': 'ancestry',
+     'default': True,
+     'useDefault': True,
+     'allowedTypes': [BooleanType],
+     'label': 'Record individual ancestry',
+     'description': '''If set, several information fields named after HapMap populations
+                will be added to each individual and record the percent of ancestry from
+                each population. For example, if a parent has CEU:0.5, YRI:0.5 and another
+                parent has CEU:0, YRI:1, their offspring' ancestry values will be CEU:0.25,
+                YRI: 0.75.''',
+    },
+    {'longarg': 'matingScheme=',
+     'default': 'random',
+     'label': 'Mating scheme during population mixing',
+     'useDefault': True,
+     'chooseOneOf': ['random', 'customized'],
+     'allowedTypes': [StringType],
+     'validate': valueOneOf(['random', 'customized']),
+     'description': '''Mating scheme used during the population mixing stage. This is usually
+                some sort of positive assortative mating scheme that is defined in
+                $custom.py. The name of the mating scheme has to be cusMatScheme'''
+    },
 ]
 
 
@@ -737,7 +768,7 @@ class admixtureParams:
             print usage(options, __doc__)
             sys.exit(0)
         # expand all params to different options
-        (self.name, self.useSavedSeed, self.useSavedExpanded,
+        (self.name, self.custom, self.useSavedSeed, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
             self.drawLDPlot, self.haploview, self.ldRegions,
             self.ldSampleSize,
@@ -748,8 +779,8 @@ class admixtureParams:
         self.mutaRate, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
         self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
             self.expandedName, self.expandGen, self.expandSize,
-        self.admixedName, self.migrModel, self.migrGen, self.migrRate) \
-            = allParam[1:]
+        self.admixedName, self.migrModel, self.migrGen, self.migrRate,
+        self.ancestry, self.matingScheme) = allParam[1:]
         # preparations
         self.createSimulationDir()
         self.saveConfiguration()
@@ -767,6 +798,9 @@ class admixtureParams:
         if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
             self.ldRegions = [self.ldRegions]
         self.prepareFitnessParams()
+        # cutomized migrator and mating schemes
+        if par.cutsom != '':
+            exec('import %s as custom' % par.custom)
 
 
     def createSimulationDir(self):
@@ -1324,7 +1358,38 @@ def mixExpandedPopulation(pop, par):
         print 'Using customized migration model'
         migr = pyMigrator(rateFunc=migrFunc, mode=MigrByProbability)
     #
-    simu = simulator(pop, randomMating())
+    ancOps = []
+    if par.ancestry and len(par.pops) > 1:
+        def calcAncestry(parAncestry):
+            '''parAncestry will be ancestry values of parents
+            e.g. CEU_dad, YRI_dad, CEU_mom, YRI_mom
+            This function is supposed to return offspring
+            ancestry values'''
+            sz = len(par.pops)
+            if len(parAncestry) != 2*sz:
+                raise ValueError('Invalid ancestry array passed')
+            return [(parAncestry[x] + parAncestry[x+sz])/2. for x in range(sz)]
+        #
+        pop.addInfoFields(par.pops, 0)
+        # initialize these fields
+        for i,sp in enumerate(par.pops):
+            # i: subpopulation index
+            # sp: field name
+            val = []
+            for j in range(len(par.pops)):
+                if i == j:
+                    # initialize as 1
+                    val.extend([1]*pop.subPopSize(j))
+                else:
+                    # initialize as 0
+                    val.extend([0]*pop.subPopSize(j))
+            pop.setIndInfo(val, sp)
+        ancOps = [pyTagger(func=calcAncestry, infoFields=par.pops)]
+    #
+    if par.matingScheme == 'random':
+        simu = simulator(pop, randomMating())
+    else:
+        simu = simulator(pop, custom.custMateScheme)
     simu.evolve(
         ops =  [
             # mutation will be disallowed in the last generation (see later)
@@ -1334,7 +1399,7 @@ def mixExpandedPopulation(pop, par):
             migr,
             getSelector(par),
             pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)')
-        ],
+        ] + ancOps,
         gen = par.migrGen
     )
     pop = simu.getPopulation(0, True)
