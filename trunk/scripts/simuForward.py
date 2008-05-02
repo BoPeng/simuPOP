@@ -144,6 +144,9 @@ the population.
 """
 
 import simuOpt
+# load simuPOP libraries
+from simuPOP import *
+from simuUtil import LinearExpansion, ExponentialExpansion, MigrSteppingStoneRates, MigrIslandRates
 import os, sys, exceptions, types, math
 
 #
@@ -616,17 +619,18 @@ def dynaAdvSelector(pop, param):
         # apply multi-locus selector, note that this operator will only
         # set a variable fitness in pop, actual selection happens during mating.
         if len(sel ) > 0:    # need adjustment (needed if 'else' part is empty)
+            pop.turnOffSelection()
             MlSelect(pop, sel, mode=SEL_Multiplicative)
     print ' '.join(['%.4f' % (1-freq[x][0]) for x in DSL])
     return True
 
 
-def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp, 
+def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist, 
         initSize, endingSize, growthModel, 
         burninGen, introLen, splitGen, mixingGen, endingGen, 
-        introSel, minAlleleFreqTmp, maxAlleleFreqTmp, 
+        introSel, minAlleleFreq, maxAlleleFreq, 
         numSubPop, migrModel, migrRate,
-        fitnessTmp, mlSelModelTmp, 
+        fitness, mlSelModel, 
         mutaRate, recRate, savedGen, numOffspring, numOffMode,
         dryrun, savePop, filename, format):
     ''' run a simulation of complex disease with given parameters. 
@@ -637,48 +641,39 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     if initSize < len(DSLafter):
         raise exceptions.ValueError("Initial population size is too small. (Less than number of DSL)")
     # expand .5 -> [0.5, 0.5...]
-    if len(DSLdistTmp) == 1:
-        DSLdist = DSLdistTmp * len(DSLafter)
-    else:
-        DSLdist = DSLdistTmp
+    if len(DSLdist) == 1:
+        DSLdist = DSLdist * len(DSLafter)
     if len( DSLafter ) != len(DSLdist):
         raise exceptions.ValueError("Please specify DSL distance for each DSL.")
     numDSL = len(DSLafter)
     if burninGen  + introLen > splitGen or splitGen > mixingGen or splitGen > endingGen:
         raise exceptions.ValueError("Generations should in the order of burninGen, introLen, splitGen, mixingGen and ending")
     # fitness
-    if mlSelModelTmp == 'none':
+    if mlSelModel == 'none':
         fitness = []
-    elif mlSelModelTmp == 'interaction':
+    elif mlSelModel == 'interaction':
         if numDSL == 1:
             raise exceptions.ValueError("Interaction model can only be used with more than one DSL");
-        if len(fitnessTmp) != 3**numDSL:
+        if len(fitness) != 3**numDSL:
             raise exceptions.ValueError("Please specify 3^n fitness values for n DSL");
-        fitness = fitnessTmp
     else:
-        if fitnessTmp == []:    # neutral process
+        if fitness == []:    # neutral process
             fitness = [1,1,1]*numDSL
         else:
             # for a single DSL
-            if len(fitnessTmp) == 3:
-                fitness = fitnessTmp*numDSL
-            elif len(fitnessTmp) != numDSL*3:
+            if len(fitness) == 3:
+                fitness = fitness*numDSL
+            elif len(fitness) != numDSL*3:
                 raise exceptions.ValueError("Please specify fitness for each DSL")
-            else:
-                fitness = fitnessTmp
     # range
-    if len(minAlleleFreqTmp) == 1:
-        minAlleleFreq = minAlleleFreqTmp * len(DSLafter)
-    elif len(minAlleleFreqTmp) != len(DSLafter):
+    if len(minAlleleFreq) == 1:
+        minAlleleFreq = minAlleleFreq * len(DSLafter)
+    elif len(minAlleleFreq) != len(DSLafter):
         raise exceptions.ValueError("min allele frequency should be specified for each DSL")
-    else:
-        minAlleleFreq = minAlleleFreqTmp
-    if len(maxAlleleFreqTmp) == 1:
-        maxAlleleFreq = maxAlleleFreqTmp * len(DSLafter)
-    elif len(maxAlleleFreqTmp) != len(DSLafter):
+    if len(maxAlleleFreq) == 1:
+        maxAlleleFreq = maxAlleleFreq * len(DSLafter)
+    elif len(maxAlleleFreq) != len(DSLafter):
         raise exceptions.ValueError("max allele frequency should be specified for each DSL")
-    else:
-        maxAlleleFreq = maxAlleleFreqTmp
 
     # number of offspring
     if numOffMode == 'geometric' and numOffspring > 1:
@@ -835,26 +830,26 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     ### selection 
     ###
-    if mlSelModelTmp in ['additive', 'multiplicative']:
+    if mlSelModel in ['additive', 'multiplicative']:
         mlSelModel = {'additive':SEL_Additive, 
-            'multiplicative':SEL_Multiplicative}[mlSelModelTmp]
+            'multiplicative':SEL_Multiplicative}[mlSelModel]
         operators.append( mlSelector(
             # with five multiple-allele selector as parameter
             [ maSelector(locus=DSL[x], wildtype=[0], 
                 fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) for x in range(len(DSL)) ],
             mode=mlSelModel, begin= burninGen + introLen),
         )
-    elif mlSelModelTmp == 'interaction':
+    elif mlSelModel == 'interaction':
         # multi-allele selector can handle multiple DSL case
         operators.append( maSelector(loci=DSL, fitness=fitness, wildtype=[0], begin = burninGen + introLen) )
     ###
     ### migration
     ###
     if numSubPop > 1 and migrModel == 'island' and migrRate > 0:
-        operators.append( migrator(migrIslandRates(migrRate, numSubPop),
+        operators.append( migrator(MigrIslandRates(migrRate, numSubPop),
             mode=MigrByProbability, begin=mixingGen) )
     elif numSubPop > 1 and migrModel == 'stepping stone' and migrRate > 0:
-        operators.append( migrator(migrSteppingStoneRates(migrRate, numSubPop, 
+        operators.append( migrator(MigrSteppingStoneRates(migrRate, numSubPop, 
             circular=True),    mode=MigrByProbability, begin=mixingGen) )
     ###
     ### output statistics, track performance
@@ -900,10 +895,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             pop = LoadPopulation(burnin_pop)
             simu = simulator(pop, randomMating(), rep=1)
             # skip the burnin stage.
-            print "Loading %s and skip burnin stage " % burnin_pop
+            print "Loading %s and skip burnin stage (gen=%d)" % (burnin_pop, burninGen)
             simu.setGen(burninGen)
             # evolve! If --dryrun is set, only show info
-            simu.evolve(ops = operators, end=endingGen - savedGen,
+            simu.evolve(ops = operators, end = endingGen,
                 dryrun=dryrun )
         else:
             pop = population(subPop=popSizeFunc(0), ploidy=2,
@@ -919,12 +914,12 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             simu = simulator(pop, randomMating(), rep=1)
             #
             # evolve! If --dryrun is set, only show info
-            simu.evolve( preOps = preOperators, ops = operators, end=endingGen - savedGen,
+            simu.evolve( preOps = preOperators, ops = operators, gen=endingGen - savedGen,
                 dryrun=dryrun )
             if dryrun:
                 raise exceptions.SystemError("Stop since in dryrun mode.")
-        if simu.gen() != endingGen - savedGen + 1:
-            print "Population restarted at gen ", simu.gen()
+        if simu.gen() != endingGen - savedGen:
+            print "Population restarted at gen ", simu.gen(), endingGen-savedGen
             print "Overall fixed population ", fixedCount
             print "Allelefreq ", ( "%.3f " * numDSL + "\n\n") % \
                 tuple([1-simu.dvars(0).alleleFreq[x][0] for x in DSL]) 
@@ -947,7 +942,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
                 )
             )
             # different evolution method for the last few generations
-            simu.evolve(ops=operators, end=endingGen)
+            simu.evolve(ops=operators, gen=endingGen)
             # succeed save information
             pop = simu.population(0)
             # we want to save info on how this population is generated.
@@ -988,24 +983,13 @@ if __name__ == '__main__':
         mutaRate, recRate, savedGen, numOffspring, numOffMode,
         dryrun, savePop, simuName, format) = allParam
     #
-    if markerType == 'SNP':
-        simuOpt.setOptions(alleleType='short')
-    else:
-        simuOpt.setOptions(alleleType='short')
-        
-    simuOpt.setOptions(quiet=True)
-
-    # load simuPOP libraries
-    from simuPOP import *
-    from simuUtil import LinearExpansion, ExponentialExpansion
-    #
     # check minimal requirement of simuPOP version
     if simuRev() < 383:
         raise exceptions.SystemError('''This scripts requires simuPOP revision >=425. 
             Please upgrade your simuPOP distribution.''' )
     #
     ################## RUN THE SIMULATION ###############
-    simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdist, 
+    simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist, 
         initSize, endingSize, growthModel, 
         burninGen, introLen, splitGen, mixingGen, endingGen, 
         introSel, minAlleleFreq, maxAlleleFreq, 
