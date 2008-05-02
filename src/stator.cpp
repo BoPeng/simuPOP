@@ -154,6 +154,71 @@ string haploKey(const vectori & seq)
 	return key + "'}";
 }
 
+stat::stat(
+	 bool popSize,
+	 //
+	 bool numOfMale,
+	 strDict numOfMale_param,
+	 //
+	 bool numOfAffected,
+	 strDict numOfAffected_param,
+	 //
+	 vectori numOfAlleles,
+	 strDict numOfAlleles_param,
+	 //
+	 vectori alleleFreq,
+	 strDict alleleFreq_param,
+	 //
+	 vectori heteroFreq,
+	 vectori expHetero,
+	 strDict expHetero_param,
+	 //
+	 vectori homoFreq,
+	 vectori genoFreq,
+	 strDict genoFreq_param,
+	 intMatrix haploFreq,
+	 //
+	 intMatrix LD,
+	 strDict LD_param,
+	 //
+	 intMatrix association,
+	 strDict association_param,
+	 //
+	 vectori Fst,
+	 strDict Fst_param,
+	 //
+	 intMatrix relGroups,
+	 vectori relLoci,
+	 strDict rel_param,
+	 //
+	 bool relBySubPop,                                          // internal use
+	 vectori relMethod,
+	 int relMinScored,                                             // minimal number of loci required.
+	 bool hasPhase,
+	 bool midValues,                                            // this parameter will be removed after all _param parameter is given.
+	 // regular parameters
+	 string output, string outputExpr,
+	 int stage, int begin, int end, int step, vectorl at,
+	 int rep, int grp, const vectorstr & infoFields)
+	: stator("", outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+	// the order of initialization is meaningful since they may depend on each other
+	m_popSize(popSize),
+	m_numOfMale(numOfMale, numOfMale_param),
+	m_numOfAffected(numOfAffected, numOfAffected_param),
+	m_alleleFreq(alleleFreq, alleleFreq_param),
+	m_numOfAlleles(m_alleleFreq, numOfAlleles, numOfAlleles_param),
+	m_heteroFreq(heteroFreq, homoFreq),
+	m_expHetero(m_alleleFreq, expHetero, expHetero_param),
+	m_genoFreq(genoFreq, genoFreq_param),
+	m_haploFreq(haploFreq),
+	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
+	m_association(m_alleleFreq, m_haploFreq, association, association_param),
+	m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
+	m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
+				  relMethod, relMinScored, rel_param)
+{
+}
+
 
 bool stat::apply(population & pop)
 {

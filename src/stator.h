@@ -1687,8 +1687,7 @@ public:
 	   is set to \c True, allele frequencies will be posted as well. This will be
 	   helpful in debugging and sometimes in deriving statistics.
 	 **/
-	stat(
-	     bool popSize = false,
+	stat(bool popSize = false,
 	     //
 	     bool numOfMale = false,
 	     strDict numOfMale_param = strDict(),
@@ -1732,26 +1731,8 @@ public:
 	     // regular parameters
 	     string output = "", string outputExpr = "",
 	     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	     int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: stator("", outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
-		// the order of initialization is meaningful since they may depend on each other
-		m_popSize(popSize),
-		m_numOfMale(numOfMale, numOfMale_param),
-		m_numOfAffected(numOfAffected, numOfAffected_param),
-		m_alleleFreq(alleleFreq, alleleFreq_param),
-		m_numOfAlleles(m_alleleFreq, numOfAlleles, numOfAlleles_param),
-		m_heteroFreq(heteroFreq, homoFreq),
-		m_expHetero(m_alleleFreq, expHetero, expHetero_param),
-		m_genoFreq(genoFreq, genoFreq_param),
-		m_haploFreq(haploFreq),
-		m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
-		m_association(m_alleleFreq, m_haploFreq, association, association_param),
-		m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
-		m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
-		              relMethod, relMinScored, rel_param)
-	{
-	}
-
+	     int rep = REP_ALL, int grp = GRP_ALL,
+		 const vectorstr & infoFields = vectorstr());
 
 	~stat()
 	{
