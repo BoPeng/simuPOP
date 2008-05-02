@@ -10,6 +10,8 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a minor simuOpt::saveConfigFile bug
   - BUG: reveal RNG::randMultinomial and RNG::randMultinomialVar
   - BUG: fix a bug that is related to reference count of loaded lists.
+  - CHG: allow sample size > population size (give a warning rather than error)
+  - CHG: allow recombination rate > 0.5 (adjust to 0.5 and issue a warning)
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
   - BUG: fix a bug that prevents a cloned simulator from evolving again.

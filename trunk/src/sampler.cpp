@@ -229,7 +229,7 @@ void sample::resetSubPopID(population & pop)
 
 bool randomSample::prepareSample(population & pop)
 {
-	DBG_FAILIF(m_size.size() == 1 && m_size[0] > pop.popSize(), ValueError,
+	DBG_WARNING(m_size.size() == 1 && m_size[0] > pop.popSize(),
 		"sample size > population size. Can not continue.");
 
 	DBG_FAILIF(m_size.empty(), ValueError,

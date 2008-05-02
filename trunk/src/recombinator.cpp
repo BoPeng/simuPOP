@@ -89,11 +89,13 @@ void recombinator::prepareRecRates(population & pop,
 				else
 					vecP[index] = rate[0];
 
-				DBG_ASSERT(fcmp_ge(vecP[index], 0) && fcmp_le(vecP[index], 1),
-					ValueError,
-					"Recombination rate should be in [0,1]. (This may happen \n"
-					"when you use intensity instead of loci, and your loci \n"
-					" distance is too high.)");
+				DBG_WARNING(fcmp_gt(vecP[index], 0.5),
+					"Recombination rate after marker " + toStr(index) + " is out of range ("
+					+ toStr(vecP[index]) + " ) so it is set to 0.5. This may happen \n"
+					"when you use recombination intensity instead of rate, and your loci \n"
+					"distance is too high.)");
+				if (fcmp_gt(vecP[index], 0.5))
+					vecP[index] = 0.5;
 				index++;
 			}
 			// 'recombine' after each chromosome.
