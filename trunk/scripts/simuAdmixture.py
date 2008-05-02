@@ -625,7 +625,7 @@ options = [
      'description': '''A list of allele frequency (not a list of ranges as parameter controlledFreq)''',
     },
     {'longarg': 'fitness=',
-     'default': [1, 1.0001, 1.0002],
+     'default': [1, 1, 1],
      'label': 'Fitness of genotype AA,Aa,aa',
      'allowedTypes': [ListType, TupleType],
      'description': '''Fitness of genotype, can be:
@@ -1180,7 +1180,7 @@ def createInitialPopulation(par):
                 names[ch] = []
             names[ch].append(name)
             lastpos[chIdx] = pos
-        pop = getMarkersFromName(par.HapMap_dir, par.names,
+        pop = getMarkersFromName(par.HapMap_dir, names,
             chroms=par.chrom, hapmap_pops=par.popsIdx,
             minDiffAF=par.minDiffAF, numMarkers=par.numMarkers)
     # if this population fine?
