@@ -865,10 +865,12 @@ new_pyMutator.__doc__ = pyMutator.__init__.__doc__
 del pyMutator.__init__
 pyMutator.__init__ = new_pyMutator
 
-def new_pointMutator(self, loci=[], atLoci=[], *args, **kwargs):
+def new_pointMutator(self, locus=None, loci=[], atLoci=[], *args, **kwargs):
     if atLoci != []:
-        print 'Parameter atLoci is obsolete. Please use loci'
+        print 'Parameter atLoci is obsolete. Please use locus or loci'
         loc = atLoci
+    elif locus != None:
+        loc = [locus]    
     else:
         loc = loci
     cppModule.pointMutator_swiginit(self, 
