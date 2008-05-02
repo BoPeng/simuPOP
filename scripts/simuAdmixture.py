@@ -912,7 +912,6 @@ def expDemoFunc(N0, N1, gen):
         endSize = N1
     rate = [(math.log(endSize[x]) - math.log(N0[x]))/gen for x in range(len(N0))]
     def func(gen, oldSize=[]):
-        print 'BS', gen, N0
         return [int(N0[x]*math.exp(gen*rate[x])) for x in range(len(N0))]
     return func
 
@@ -1016,8 +1015,7 @@ def getStatOps(par):
     else:
         statOps = [
             stat(popSize=True, step = par.step),
-            #pyEval(r'"gen=%3d, size=%s\n" % (gen, subPopSize)', step=par.step)
-            pyEval(r'"%s\n" % virtualPopSize', step=par.step)
+            pyEval(r'"gen=%3d, size=%s\n" % (gen, subPopSize)', step=par.step)
         ]
     # ld plot?
     if par.drawLDPlot and par.figureStep > 0 and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
