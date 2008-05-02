@@ -22,8 +22,8 @@ Determine which populations and markers to use.
 -----------------------------------------------
 
 The initial population consists of one, two or three hapmap populations
-(param --pops), and a selected set of markers. You can start from 
-all hapmap markers or a marker list in the format of 
+(param --pops), and a selected set of markers. You can start from
+all hapmap markers or a marker list in the format of
 'chromosome position name', such as (no header is required).
 
 1 2103664 rs1496555
@@ -34,7 +34,7 @@ all hapmap markers or a marker list in the format of
 
 If more fields are given, they will be ignored.
 
-You can refine your selection using 
+You can refine your selection using
   1. which chromosome(s) to use (param --chrom)
   2. number of markers to use on each chromosome (param --numMarkers)
   3. starting and ending positions (param --startPos and --endPos)
@@ -45,8 +45,8 @@ You can refine your selection using
   6. minimal distance between markers (param --minDist)
 
 Note that 'position' in the marker list is assumed to be in base pair
-(as in Affymetrix or Illumina annotation data). Marker positions 
-are converted to centiMorgan by dividing the positions by 10^6 (i.e. 
+(as in Affymetrix or Illumina annotation data). Marker positions
+are converted to centiMorgan by dividing the positions by 10^6 (i.e.
 1 centiMorgan = 1 M basepairs). Starting and ending position should be
 inputted in centiMorgan. Not all requirements can be met at the same time.
 
@@ -57,7 +57,7 @@ Each simulation will be given a name and all files will be saved to a directory
 named after it. A file markers.lst will be saved to directory $name.
 
 
-Generate a seed population. 
+Generate a seed population.
 ----------------------------
 
 The population is expanded instantly by copying individual 10 (param --initCopy)
@@ -68,12 +68,12 @@ and make HapMap populations more distinct, because the HapMap populations are
 already admixed.
 
 During the evolution, recombination at a rate of 0.01 per cM (param --recIntensity),
-and mutation at a rate of 1e-7 per nucleotide per generation (param --mutaRate) 
+and mutation at a rate of 1e-7 per nucleotide per generation (param --mutaRate)
 is applied. Recombination and mutation will also be applied at the subsequent stages.
 
 This population will be saved as 'seed.bin' (param --seed) that will be used
 for the subsequent replicate simulations. We consider the subpopulations of
-the seed population as the populations around 2000 years ago, that have 
+the seed population as the populations around 2000 years ago, that have
 been evolved separately from the Out-Of-Africa population for abut 40000
 generations
 
@@ -87,7 +87,7 @@ After a seed population is generated (or loaded if already exists and parameter
 
 Evolve the seed population subject to rapid population expansion for
 100 (param --expandGen) generations. This is to mimic the rapid
-population expansion in the past 2000 years. Exponential population 
+population expansion in the past 2000 years. Exponential population
 growth model is used. No migration is allowed.
 
 Selection on a number of loci can be applied to selected loci at this, and
@@ -97,7 +97,7 @@ frequencies are controlled.
 
 A special controlled mating scheme can be used if the allele frequencies
 of some markers at the end of this stage is specified. This can be done
-backward in time, assuming no disease allele at these loci in 
+backward in time, assuming no disease allele at these loci in
 the seed population (c.f. Peng 2007 PLoS genetics), or forward in time,
 by starting from existing allele frequencies in the seed population.
 These two kinds of loci can not yet be mixed.
@@ -110,11 +110,11 @@ Step 3. Mix the subpopulations (optional)
 ==========================================
 
 Mix the populations using given migration model. Two basic models,
-namely 'Hybrid Isolations' and 'Continuous Gene Flow' are provided. 
+namely 'Hybrid Isolations' and 'Continuous Gene Flow' are provided.
 The first model simply mix the subpopulations and form a single population.
 The second model allows stable migration between subpopulations during
 the migration period. More advanced migration model, with changing
-migration rates can be specified using a 'Customized' model. To use 
+migration rates can be specified using a 'Customized' model. To use
 the last model, you will have to modify the 'migrFunc' function in
 this script. Note that it is possible to create a separate population,
 with individuals migrated from existing populations.
@@ -126,11 +126,11 @@ e.g.
 'Continuous Gene Flow', two HapMap populations, with migration rate
     [[1, 0],
      [0.1, 0.9]]
-  10% of individuals will migrate from population 1 to 0 at each 
+  10% of individuals will migrate from population 1 to 0 at each
   generation. Note that the population sizes will change as a result
   of migration so the exact number of migrants varies from generation
   to generation.
-  
+
 'Continuous Gene Flow', three HapMap populations, with migration rate
     [[1, 0, 0],
      [0.1, 0.9, 0],
@@ -172,8 +172,8 @@ simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' \
     --seedName='test_seed.bin'
 
 simuAdmixture.py --noDialog  --useSavedSeed --seedName=test_seed.bin --migrGen='5' \
-    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" 
-    
+    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])"
+
 
 simulation for XJ Gu et al (2008)
 ====================================
@@ -266,10 +266,10 @@ simuAdmixture.py --noDialog --migrModel='Customized' --DSLpene='[10, 50]' \
 
 Dr. Reddon simulation one:
 
-Seed population: 
+Seed population:
 
-500 markers from chromosome 2, initial allele frequency > 0.1, initial 
-allele frequency difference between CEU and YRI populations > 0.2, 
+500 markers from chromosome 2, initial allele frequency > 0.1, initial
+allele frequency difference between CEU and YRI populations > 0.2,
 minimal distance between adjacent markers 0.05cM
 
 simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chrom='[2]' \
@@ -287,7 +287,7 @@ Round 2: load expanded population and get sample from YRI
 
 simuAdmixture.py  --noDialog --remix=True --migrModel='None' --migrGen='0' --sampleType='random'\
   --sampleSize="(0, 250)" --sampleName='YRI' --name='simu2'
-  
+
 '''
 
 from simuOpt import *
@@ -295,7 +295,7 @@ setOptions(alleleType='binary')
 from simuPOP import *
 from hapMapUtil import getMarkersFromName, getMarkersFromRange
 
-import os, sys, math 
+import os, sys, math
 from types import *
 from exceptions import ValueError, SystemError
 from simuUtil import SaveQTDT, SaveMerlinPedFile, FreqTrajectoryMultiStochWithSubPop
@@ -305,7 +305,7 @@ HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 options = [
     {'arg': 'h',
      'longarg': 'help',
-     'default': False, 
+     'default': False,
      'description': 'Print this usage message.',
      'allowedTypes': [NoneType, type(True)],
      'jump': -1                    # if -h is specified, ignore any other parameters.
@@ -335,7 +335,7 @@ options = [
      'allowedTypes': [BooleanType],
      'jump': 16,
      'label': 'Use saved expanded population',
-     'description': '''If set to true, load specified or saved $name/expanded.bin and 
+     'description': '''If set to true, load specified or saved $name/expanded.bin and
                 skip population expansion'''
     },
     #
@@ -345,7 +345,7 @@ options = [
      'label': 'Progress report interval',
      'useDefault': True,
      'allowedTypes': [IntType, LongType],
-     'description': '''Gap between generations at which population statistics are 
+     'description': '''Gap between generations at which population statistics are
                 calculated and reported.'''
     },
     {'longarg': 'showAlleleFreq',
@@ -354,14 +354,14 @@ options = [
      'allowedTypes': [BooleanType],
      'label': 'Show allele frequency at specified loci',
      'description': '''If set, display allele frequency of loci specified in parameters
-                --controlledLoci or --backwardControlledLoci''',
+                --forCtrlLoci or --backCtrlLoci''',
     },
     {'longarg': 'figureStep=',
      'default': 20,
      'label': 'Figure update interval',
      'useDefault': True,
      'allowedTypes': [IntType, LongType],
-     'description': '''Gap between generations at which LD plots are 
+     'description': '''Gap between generations at which LD plots are
                 draw. Default to 20.'''
     },
     {'longarg': 'drawLDPlot',
@@ -431,10 +431,10 @@ options = [
      'label': 'Marker list file',
      'description': '''A file with a list of marker names, in the form of
                 "chrom_number marler_pos marker_name". Markers that on a chromosome not
-                in the chromosome list (parameter chrom) are ignored. lines start with 
-                # is ignored. If numMarkers, startPos, endingPos, minDist are also specified, 
+                in the chromosome list (parameter chrom) are ignored. lines start with
+                # is ignored. If numMarkers, startPos, endingPos, minDist are also specified,
                 the first numMarkers between startPos and endingPos will be used.
-                This script assumes that the marker position in the 
+                This script assumes that the marker position in the
                 list file is in base pair, and will use pos/1000000 as cM to
                 compare marker location. If more fields are given, others are ignored.''',
      'allowedTypes': [StringType],
@@ -464,7 +464,7 @@ options = [
      'useDefault': True,
      'label': 'staring position',
      'description': '''Starting position of the markers. If multiple
-                chromosomes are used, the positions for each 
+                chromosomes are used, the positions for each
                 chromosome can be specified as a list.''',
      'allowedTypes': [TupleType, ListType],
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
@@ -473,8 +473,8 @@ options = [
      'default': 0,
      'useDefault': True,
      'label': 'Ending position',
-     'description': '''Ending position of the markers. Ignored if its value 
-                is 0.  If multiple chromosomes are used, the positions for each 
+     'description': '''Ending position of the markers. Ignored if its value
+                is 0.  If multiple chromosomes are used, the positions for each
                 chromosome can be specified as a list. ''',
      'allowedTypes': [TupleType, ListType],
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
@@ -566,18 +566,18 @@ options = [
      ''',
      'validate': valueBetween(0,1),
     },
-    {'longarg': 'controlledLoci=',
-     'label': 'Loci with controlled allele frequency',
+    {'longarg': 'forCtrlLoci=',
+     'label': 'Forward controlled loci',
      'default': [],
      'useDefault': True,
      'allowedTypes': [TupleType, ListType],
      'description': '''A list of markers (by name) whose allele frequency will be
                 controlled during this stage of evolution. A forward-time trajectory
                 simulation algorithm will be used. Currently, only one of
-                --controlledLoci and --backwardControlledLoci is allowed.'''
+                --forCtrlLoci and --backCtrlLoci is allowed.'''
     },
-    {'longarg': 'controlledFreq=',
-     'label': 'Ending allele frequency at controlled loci',
+    {'longarg': 'forCtrlFreq=',
+     'label': 'Ending allele frequency at forward controlled loci',
      'default': [],
      'useDefault': True,
      'allowedTypes': [TupleType, ListType],
@@ -585,7 +585,7 @@ options = [
                 If a single range is given, it is assumed for all markers. An example
                 of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
     },
-    {'longarg': 'backwardControlledLoci=',
+    {'longarg': 'backCtrlLoci=',
      'label': 'Backward controlled loci',
      'default': [],
      'useDefault': True,
@@ -594,7 +594,7 @@ options = [
                 at the beginning of population expansion stage. A mutant will be introduced
                 as the result of mutation. The frequency trajectory will be simulated
                 using a backward approach (see Peng 2007, PLoS Genetics). Currently,
-                only one of --controlledLoci and --backwardControlledLoci is allowed.''',
+                only one of --forCtrlLoci and --backCtrlLoci is allowed.''',
     },
     {'longarg': 'backControlledFreq=',
      'label': 'Ending allele frequency at backward controlled loci',
@@ -610,7 +610,7 @@ options = [
      'description': '''Fitness of genotype, can be:
                 f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
                 f1, f2, f3: if multiple DSL, the same fitness for each locus
-                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive' 
+                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive'
                     or multiplicative, fitness at each locus. The overall fitness
                     is determined by selMultiLocusModel
                 [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and selMultiLocusModel = interaction.
@@ -677,8 +677,8 @@ options = [
      'default': 'Continuous Gene Flow',
      'useDefault': True,
      'label': 'Migration model',
-     'description': '''Migration model used in the admixture stage, It can be 
-                'Hybrid Isoloation', 'Continuous Gene Flow', 'Customized' and 'None'. 
+     'description': '''Migration model used in the admixture stage, It can be
+                'Hybrid Isoloation', 'Continuous Gene Flow', 'Customized' and 'None'.
                 In the HI model, admixture occurs in a single generation and
                 is followed by recombination and drift, with no further genetic
                 contribution from either parental populations. In the CGF
@@ -687,9 +687,9 @@ options = [
                 moving 10% from population 1 to 2. 'Custimized' migration model
                 allows you to define your own migration model. A function
                 migrModel needs to be defined in this script, which returns
-                a migration rate at each generation. See the 'migrFunc' function 
+                a migration rate at each generation. See the 'migrFunc' function
                 in this script for details. If 'None' is chose, there will be
-                no migration. Note that the merge of two populations can be 
+                no migration. Note that the merge of two populations can be
                 mimiced by a Hybrid Isolation migration of rate [[1, 0], [1, 0]].
                 That is to say, everyone from the second subpopulationmoves to the
                 first. The three subpopulation case is similar.''',
@@ -697,7 +697,7 @@ options = [
      'allowedTypes': [StringType],
      'validate': valueOneOf(['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'])
     },
-    {'longarg': 'migrGen=', 
+    {'longarg': 'migrGen=',
      'default': 5,
      'useDefault': True,
      'label': 'Migration generations',
@@ -711,20 +711,20 @@ options = [
      'label': 'Migration rate matrix',
      'useDefault': True,
      'description': '''Migration rate matrix. Use only for the continuous gene flow model.
-                A_ij of this matrix represents the probability of moving from population i 
-                to j, and A_ii is the probability of staying in the same population, and 
-                is calculated as 1-sum_(j \\ne i) A_ij. It is possible to create another 
+                A_ij of this matrix represents the probability of moving from population i
+                to j, and A_ii is the probability of staying in the same population, and
+                is calculated as 1-sum_(j \\ne i) A_ij. It is possible to create another
                 subpopulation in this way, like sending some individuals from both parental
                 populations to a new subpopulation. ''',
      'allowedTypes': [TupleType, ListType],
-     'validate': valueListOf(valueListOf(valueBetween(0,1))),    
+     'validate': valueListOf(valueListOf(valueBetween(0,1))),
     },
 ]
 
 
 class admixtureParams:
     ''' This class is used to wrap all parameters to a single object so that
-    I do not have to pass a bunch of parameters here and there. 
+    I do not have to pass a bunch of parameters here and there.
     This class also clean up/validate parameters and calcualtes some derived
     parameters for later uses.
     '''
@@ -733,17 +733,18 @@ class admixtureParams:
         if len(allParam) == 0:
             sys.exit(1)
         # -h or --help
-        if allParam[0]:    
+        if allParam[0]:
             print usage(options, __doc__)
             sys.exit(0)
+        print allParam
         # expand all params to different options
         (self.name, self.useSavedSeed, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
             self.drawLDPlot, self.haploview, self.ldRegions,
             self.ldSampleSize,
         self.HapMap_dir, self.pops, self.markerList, self.chrom,
-        self.numMarkers, self.startPos, self.endingPos, 
-        self.minAF, self.minDiffAF, self.minDist, 
+        self.numMarkers, self.startPos, self.endingPos,
+        self.minAF, self.minDiffAF, self.minDist,
             self.seedName, self.initCopy, self.initGen, self.seedSize,
         self.mutaRate, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
         self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
@@ -786,16 +787,19 @@ class admixtureParams:
 
     def setFile(self, filename):
         '''Return $name/filename unless filename is absolute'''
-        if os.path.isabs(self.seedName):
-            self.seedFile = self.seedName
+        if os.path.isabs(filename):
+            return filename
         else:
-            self.seedFile = os.path.join(self.name, self.seedName)
+            return os.path.join(self.name, filename)
 
     def setCtrlLociIndex(self, pop):
         '''Translate ctrlLoci to ctrlLociIdx, etc'''
-        if len(self.forCtrlLoci) != 0 and self(par.backCtrlLoci) != 0:
+        if len(self.forCtrlLoci) != 0 and len(self.backCtrlLoci) != 0:
             raise ValueError('This script currently only allows one kind of controlled loci' + \
-                'Please specify only one of --controlledLoci and --backwardControlledLoci')
+                'Please specify only one of --forCtrlLoci and --backCtrlLoci')
+        if len(self.backCtrlLoci) > 0 and len(self.pops) > 1:
+            raise ValueError('''This script can only handle backward simulated trajectory in 
+                a single hapmap population.''')
         #
         try:
             self.forCtrlLociIdx = pop.lociByNames(self.forCtrlLoci)
@@ -846,7 +850,7 @@ class admixtureParams:
                 print "Using hapmap population %s" % sp
                 self.popsIdx.append(idx)
         print "Loading populations ", self.popsIdx
-        
+
     def prepareFitnessParams(self):
         # parameters for fitness...
         numDSL = len(self.ctrlLoci)
@@ -873,19 +877,19 @@ class admixtureParams:
                     raise ValueError('Please specify frequency range for each controlled locus')
                 for rng in self.forCtrlFreq:
                     if len(rng) != 2:
-                        print "Wrong allele frequency range", rng
+                        raise ValueError('Wrong allele frequency range: %s' % rng)
             # give only one
             else:
                 if len(self.forCtrlFreq) != 2:
-                    print "Wrong allele frequency range", self.forCtrlFreq
-                self.forCtrlFreq = self.forCtrlFreq * len(self.forCtrlLoci)
+                    raise ValueError('Wrong allele frequency range: %s' % self.forCtrlFreq)
+                self.forCtrlFreq = [self.forCtrlFreq] * len(self.forCtrlLoci)
         # backward controlled freq
         if len(self.backCtrlFreq) == 1:
             self.backCtrlFreq = self.backCtrlFreq * len(self.backCtrlLoci)
         elif len(self.backCtrlFreq) != len(self.backCtrlLoci):
             raise ValueError('Number of backward controlled freq does not match the number of such loci')
 
- 
+
 #####################################################################
 # You have realized how many lines of code is used for parameter
 # handling and comments. Now, the utility function part...
@@ -896,23 +900,24 @@ def expDemoFunc(N0, N1, gen):
     Return an exponential population expansion demographic function.
     simuUtil::ExponentialExpansion can not actually be used before it expects
         initial and ending total population size.
-    
+
     N0: a list of initial subpopulation sizes.
     N1: ending subpopulation sizes.
     gen: generations to evolve.
     '''
     if type(N1) in [IntType, LongType]:
-        NN = [int(N1*x/sum(N0)) for x in N0]
-    else:
-        NN = N1
-    if len(N0) != len(NN):
+        endSize = [int(N1*1.0*x/sum(N0)) for x in N0]
+    elif len(N1) != len(N0):
         raise exceptions.ValueError("Number of subpopulations should be the same")
-    rate = [(math.log(NN[x]) - math.log(N0[x]))/gen for x in range(len(N0))]
+    else:
+        endSize = N1
+    rate = [(math.log(endSize[x]) - math.log(N0[x]))/gen for x in range(len(N0))]
     def func(gen, oldSize=[]):
+        print 'BS', gen, N0
         return [int(N0[x]*math.exp(gen*rate[x])) for x in range(len(N0))]
     return func
 
-    
+
 def printInfo(pop):
     'Print out some information about the population'
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
@@ -952,8 +957,8 @@ def writeMarkerInfo(initPop, pop, par):
         ('\t'.join([x + '_freq' for x in par.pops]), '\t'.join([x + '_seed_freq' for x in par.pops]))
     for ch in range(pop.numChrom()):
         for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
-            print >> markers, '%s\t%d\t%.5f\t%s\t%s\t%.3f' % (pop.locusName(loc), 
-                par.chrom[ch], pop.locusPos(loc), 
+            print >> markers, '%s\t%d\t%.5f\t%s\t%s\t%.3f' % (pop.locusName(loc),
+                par.chrom[ch], pop.locusPos(loc),
                 '\t'.join(['%.3f' % initPop.dvars(x).alleleFreq[loc][1] for x in range(initPop.numSubPop())]),
                 '\t'.join(['%.3f' % pop.dvars(x).alleleFreq[loc][1] for x in range(pop.numSubPop())]),
                 pop.dvars().alleleFreq[loc][1])
@@ -1001,7 +1006,7 @@ def drawLDPlot(pop, par):
 def getStatOps(par):
     '''Return statistis calculation and progress report operators '''
     # statistics calculation and display
-    # 
+    #
     if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
         statOps = [
             # note: DSL is set when the population is created
@@ -1012,7 +1017,8 @@ def getStatOps(par):
     else:
         statOps = [
             stat(popSize=True, step = par.step),
-            pyEval(r'"gen=%3d, size=%s\n" % (gen, subPopSize)', step=par.step)
+            #pyEval(r'"gen=%3d, size=%s\n" % (gen, subPopSize)', step=par.step)
+            pyEval(r'"%s\n" % virtualPopSize', step=par.step)
         ]
     # ld plot?
     if par.drawLDPlot and par.figureStep > 0 and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
@@ -1027,26 +1033,26 @@ def migrFunc(gen, curSize):
     '''This is an example of how to define a time-dependent
     migration rate function
     '''
-    # this is a sample function that migrate to 
+    # this is a sample function that migrate to
     # a third population, with increasing intensity
     return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
 
 
-def getSelector(model, loci, fitness):
-    if model in ['additive', 'multiplicative']:
-        mlSelModel = {'additive':SEL_Additive, 
-            'multiplicative':SEL_Multiplicative}[model]
-        return mlSelector(
+def getSelector(par):
+    if par.mlSelModel in ['additive', 'multiplicative']:
+        mlSelModel = {'additive':SEL_Additive,
+            'multiplicative':SEL_Multiplicative}[par.mlSelModel]
+        return [mlSelector(
             # with five multiple-allele selector as parameter
-            [ maSelector(locus=loci[x], wildtype=[0], 
-                fitness=[fitness[3*x],fitness[3*x+1],fitness[3*x+2]]) \
-                    for x in range(len(loci)) ],
-            mode=mlSelModel)
-    elif model == 'interaction':
+            [ maSelector(locus=loci[x], wildtype=[0],
+                fitness=[par.fitness[3*x], par.fitness[3*x+1], par.fitness[3*x+2]]) \
+                    for x in range(len(par.ctrlLociIdx)) ],
+            mode=mlSelModel)]
+    elif par.mlSelModel == 'interaction':
         # multi-allele selector can handle multiple DSL case
-        return maSelector(loci=loci, fitness=fitness, wildtype=[0])
+        return [maSelector(loci=par.ctrlLociIdx, fitness=par.fitness, wildtype=[0])]
     else:
-        return noneOp()
+        return [noneOp()]
 
 
 #####################################################################
@@ -1064,8 +1070,8 @@ def createInitialPopulation(par):
     minAF:          minimal allele frequency
     minDiffAF:      minimal allele frequency differences among HapMap populations
     minDist:        minimal distance between adjecent markers
-    pops:           hapmap populations to use    
-    ''' 
+    pops:           hapmap populations to use
+    '''
     # load markers!
     for ch in par.chrom:
         if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.bin' % ch)):
@@ -1117,8 +1123,8 @@ def createInitialPopulation(par):
                 names[ch] = []
             names[ch].append(name)
             lastpos[chIdx] = pos
-        pop = getMarkersFromName(par.HapMap_dir, par.names, 
-            chroms=par.chrom, hapmap_pops=par.popsIdx, 
+        pop = getMarkersFromName(par.HapMap_dir, par.names,
+            chroms=par.chrom, hapmap_pops=par.popsIdx,
             minDiffAF=par.minDiffAF, numMarkers=par.numMarkers)
     # if this population fine?
     if pop.numChrom() != len(par.chrom):
@@ -1144,7 +1150,7 @@ def generateSeedPopulation(par):
                 pop.locusPos(pop.chromEnd(ch)-1))
     # evolve the initial population
     print "Evolving the initial population"
-    simu = simulator(pop, randomMating( newSubPopSizeFunc = 
+    simu = simulator(pop, randomMating( newSubPopSizeFunc =
         expDemoFunc(pop.subPopSizes(), par.seedSize, par.initGen)), rep=1)
     simu.evolve(
         ops = [
@@ -1166,195 +1172,183 @@ def generateSeedPopulation(par):
     return pop
 
 
+def freeExpand(pop, par):
+    '''Expand seed population freely'''
+    N0 = tuple(pop.subPopSizes())
+    popSizeFunc = expDemoFunc(N0, par.expandSize,
+        par.expandGen)
+    # evolve it. This is the simplest case.
+    print "Evolving the seed population freely..."
+    simu = simulator(pop, randomMating(newSubPopSizeFunc = popSizeFunc))
+    simu.evolve(
+        ops = [
+            # mutation will be disallowed in the last generation (see later)
+            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
+            recombinator(intensity = par.recIntensity),
+        ] + getStatOps(par) + getSelector(par),
+        gen = par.expandGen)
+    return simu.getPopulation(0, True)
 
-def expandSeedPopulation(pop, par):
-    '''Expand seed population'''
-    # used to generate plots
-    pop.dvars().stage = 'expand'
-    #
+
+def forCtrlExpand(pop, par):
+    '''Expand seed population using forward controlled loci'''
+    # simulate a frequency trajectory
+    Stat(pop, alleleFreq=par.ctrlLociIdx)
+    currentFreq = []
+    # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
+    for loc in par.ctrlLociIdx:
+        print "Current overall frequency %s: %.3f" % (pop.locusName(loc),
+            pop.dvars().alleleFreq[loc][1])
+        for sp in range(pop.numSubPop()):
+            currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
+    print 'Simulating frequency trajectory ...'
     popSizeFunc = expDemoFunc(pop.subPopSizes(), par.expandSize,
         par.expandGen)
-    if len(par.ctrlLoci) == 0:
-        # evolve it
-        #
-        print "Evolving the seed population"
-        simu = simulator(pop, randomMating(newSubPopSizeFunc = 
-            popSizeFunc), rep=1)
-        simu.evolve(
-            ops = [
-                # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-                recombinator(intensity = par.recIntensity),
-            ] + getStatOps(par),
-            gen = par.expandGen)
-        pop = simu.getPopulation(0, True)
-    else:
-        # simulate a frequency trajectory
-        print "Using controlled random mating on markers %s" % (', '.join(par.ctrlLoci))
-        Stat(pop, alleleFreq=par.ctrlLociIdx)
-        currentFreq = []
-        # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
-        for loc in par.ctrlLociIdx:
-            print "Current overall frequency %s: %.3f" % (pop.locusName(loc),
-                pop.dvars().alleleFreq[loc][1])
-            for sp in range(pop.numSubPop()):
-                currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
-        print 'Simulating frequency trajectory ...'
-        if len(par.forCtrlLoci) > 0:
-            traj = ForwardFreqTrajectory(
-                curGen = 0,
-                endGen = par.expandGen,
-                curFreq = currentFreq,
-                freq = par.forCtrlFreq,
-                fitness = par.fitness,
-                NtFunc = popSizeFunc
-                )
-            introOps = []
-        else:
-            # clear these loci
-            print 'Clearing mutants at backward-controlled loci'
-            for idx,loc in enumerate(par.backCtrlLociIdx):
-                print 'Locus %s, expected frequency: %.3f' % (pop.locusName(loc), 
-                    par.backCtrlFreq[idx])
-                for ind in pop.individuals():
-                    ind.setAllele(0, loc, 0)
-                    ind.setAllele(0, loc, 1)
-            print 'Simulate allele frequency trajectory using a backward approach'
-            print 'Selection:', par.fitness
-            print 'Ending population size:', popSizeFunc(par.expandGen-1)
-            print 'Generation:', par.expandGen
-            # simulate trajectory for each subpopulation
-            numSP = pop.numSubPop()
-            numLoci = len(par.backCtrlLoci)
-            spTraj = [0]*(numSP*numLoci)
-            freqAll = [0]*(numLoci*numSP)
-            for i in range(numLoci):
-                # use current proportion to estimate proportion at the end
-                wt = [float(x)/pop.popSize() for x in pop.subPopSizes()]
-                expSize = [x*par.expandSize for x in wt]
-                # total allele number
-                totNum = int(par.backCtrlFreq[i]*par.expandSize)
-                # in subpopulations, according to population size
-                num = rng().randMultinomial(totNum, wt)
-                for sp in range(numSP):
-                    freqAll[sp+i*numSP] = num[sp]/float(expSize[sp])
-            for sp in range(numSP):
-                # FreqTraj... will probe Nt for the next geneartion.
-                def spPopSize(gen):
-                    return [popSizeFunc(gen)[sp]]
-                while True:
-                    t = FreqTrajectoryMultiStoch(
-                        curGen = par.expandGen,
-                        freq = [freqAll[sp+x*numSP] for x in range(numLoci)], 
-                        NtFunc = spPopSize, 
-                        fitness = par.fitness,
-                        minMutAge = 0, 
-                        maxMutAge = par.expandGen, 
-                        restartIfFail=False) 
-                    # failed to generate one of the trajectory
-                    if 0 in [len(x) for x in t]:
-                        print "Failed to generate trajectory. You may need to set a different set of parameters."
-                        sys.exit(1)
-                    if 0 in [x[0] for x in t]:
-                        print "Subpop return 0 index. restart "
-                    else:
-                        break;
-                # now spTraj has LOC0: sp0,1,2, LOC1, sp0,1,2,... LOC2
-                for i in range(numLoci):
-                    spTraj[sp+i*numSP] = t[i]
-            introOps = [
-                pointMutator(atLoci=[par.backCtrlLociIdx[i]], toAllele=1, inds=[i],
-                    at = [introGens[i]], stage=PreMating)
-                    for i in range(len(par.backCtrlLoci))]
-        if len(traj) == 0:
-            raise ValueError('''Failed to simulate trajectory
-                Initial allele frequency:
-                Ending allele frequency: %s''' % (currentFreq, par.backCtrlFreq))
-        # define a trajectory function
-        def trajFunc(gen):
-            return [x[gen] for x in traj]
-        #
-        print 'Start population expansion using a controlled random mating scheme'
-        simu = simulator(pop, 
-            controlledRandomMating(
-                loci = par.ctrlLociIdx,
-                alleles = [1]*len(par.ctrlLoci),
-                freqFunc = trajFunc,
-                newSubPopSizeFunc = popSizeFunc)
-        )
-        simu.evolve(
-            ops =  [
-                # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-                recombinator(intensity=recIntensity),
-            ] + introOps + statOps,
-            gen = expandGen
-        )
-        pop = simu.getPopulation(0, True)
-        Stat(pop, alleleFreq=ctrlLoci)
-        for i,loc in enumerate(ctrlLoci):
-            print "Locus %s: designed freq: (%.3f, %.3f), freq: %.3f" % \
-                (pop.alleleName(loc), controlledFreq[i][0],
-                controlledFreq[i][1], pop.dvars().alleleFreq[loc][1])
-    print 'Saving expanded population to ', expandedFile
-    pop.savePopulation(expandedFile)
+    traj = ForwardFreqTrajectory(
+        curGen = 0,
+        endGen = par.expandGen,
+        curFreq = currentFreq,
+        freq = par.forCtrlFreq,
+        fitness = par.fitness,
+        NtFunc = popSizeFunc
+    )
+    if len(traj) == 0:
+        raise SystemError('Failed to generated trajectory')
+    # define a trajectory function
+    def trajFunc(gen):
+        return [x[gen] for x in traj]
+    #
+    print "Using controlled random mating on markers %s" % (', '.join(par.ctrlLoci))
+    simu = simulator(pop,
+        controlledRandomMating(
+            loci = par.ctrlLociIdx,
+            alleles = [1]*len(par.ctrlLoci),
+            freqFunc = trajFunc,
+            newSubPopSizeFunc = popSizeFunc)
+    )
+    simu.evolve(
+        ops =  [
+            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
+            recombinator(intensity = par.recIntensity),
+        ] + getStatOps(par) + getSelector(par),
+        gen = par.expandGen
+    )
+    pop = simu.getPopulation(0, True)
+    Stat(pop, alleleFreq=par.ctrlLociIdx)
+    for i,loc in enumerate(par.ctrlLociIdx):
+        print "Locus %s: designed freq: (%.3f, %.3f), simulated freq: %.3f" % \
+            (pop.alleleName(loc), par.forCtrlFreq[i][0],
+            par.forCtrlFreq[i][1], pop.dvars().alleleFreq[loc][1])
     return pop
 
- 
-def mixExpandedPopulation(pop, migrModel, migrGen, migrRate, mutaRate,
-    recIntensity, selLoci, selModel, fitness, admixedFile):
+
+def backCtrlExpand(pop, par):
+    '''Expand seed population using backward controlled loci'''
+    # clear these loci
+    print 'Clearing mutants at backward-controlled loci'
+    for idx,loc in enumerate(par.backCtrlLociIdx):
+        for ind in pop.individuals():
+            ind.setAllele(0, loc, 0)
+            ind.setAllele(0, loc, 1)
+    print 'Simulate allele frequency trajectory using a backward approach'
+    # NOTE:
+    # The current version of this script assumes only one subpopulation
+    # when a marker is backward controlled.
+    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.expandSize,
+        par.expandGen)
+    traj = FreqTrajectoryMultiStoch(
+        curGen = par.expandGen,
+        freq = par.backCtrlFreq,
+        NtFunc = popSizeFunc,
+        fitness = par.fitness,
+        minMutAge = 0,
+        maxMutAge = par.expandGen,
+        restartIfFail = True)
+    introOps = [pointMutator(atLoci=[par.backCtrlLociIdx[i]], toAllele=1, inds=[i],
+            at = [len(x) for x in traj], stage=PreMating)
+            for i in range(len(par.backCtrlLoci))]
+    if len(traj) == 0:
+        raise ValueError('''Failed to simulate trajectory
+            Initial allele frequency: %s
+            Ending allele frequency: %s''' % (currentFreq, par.backCtrlFreq))
+    # define a trajectory function
+    def trajFunc(gen):
+        return [x[gen] for x in traj]
+    #
+    print 'Start population expansion using a controlled random mating scheme'
+    simu = simulator(pop,
+        controlledRandomMating(
+            loci = par.ctrlLociIdx,
+            alleles = [1]*len(par.ctrlLoci),
+            freqFunc = trajFunc,
+            newSubPopSizeFunc = popSizeFunc)
+    )
+    simu.evolve(
+        ops =  [
+            # mutation will be disallowed in the last generation (see later)
+            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
+            recombinator(intensity=recIntensity),
+        ] + introOps + getStatOps(par) + getSelector(par),
+        gen = expandGen
+    )
+    pop = simu.getPopulation(0, True)
+    Stat(pop, alleleFreq=ctrlLoci)
+    for i,loc in enumerate(ctrlLoci):
+        print "Locus %s: designed freq: (%.3f, %.3f), freq: %.3f" % \
+            (pop.alleleName(loc), controlledFreq[i][0],
+            controlledFreq[i][1], pop.dvars().alleleFreq[loc][1])
+
+
+def mixExpandedPopulation(pop, par):
     ''' Evolve the seed population
     '''
-    # used to generate plots
-    pop.dvars().stage = 'mix'
+    if par.migrGen <= 0:
+        print 'No migration stage'
+        return pop
     # migration part.
-    mergeAt = 1000000  # default not merge
-    if migrModel == 'Hybrid Isolation':
-        print 'Using %s model' % migrModel
+    if par.migrModel == 'Hybrid Isolation':
+        print 'Using %s model' % par.migrModel
         migr = noneOp()
-        mergeAt = 0
-    elif migrModel == 'None':
+    elif par.migrModel == 'None':
         print 'Do not migrate'
         migr = noneOp()
-    elif migrModel == 'Continuous Gene Flow':
-        print 'Using %s with migration rate %s' % (migrModel, migrRate)
-        migr = migrator(rate=migrRate, mode=MigrByProbability)
-    elif migrModel == 'Customized':
+    elif par.migrModel == 'Continuous Gene Flow':
+        print 'Using %s with migration rate %s' % (par.migrModel, par.migrRate)
+        migr = migrator(rate=par.migrRate, mode=MigrByProbability)
+    elif par.migrModel == 'Customized':
         print 'Using customized migration model'
         migr = pyMigrator(rateFunc=migrFunc, mode=MigrByProbability)
-    if migrGen > 0:
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            ops =  [
-                # mutation will be disallowed in the last generation (see later)
-                kamMutator(rate = mutaRate, loci=range(pop.totNumLoci())),
-                recombinator(intensity = recIntensity),
-                stat(popSize=True, step=10, begin=9),
-                migr,
-                getSelector(selLoci, selModel, fitness),
-                pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)')
-            ],
-            gen = migrGen
-        )
-        pop = simu.getPopulation(0, True)
+    #
+    simu = simulator(pop, randomMating())
+    simu.evolve(
+        ops =  [
+            # mutation will be disallowed in the last generation (see later)
+            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
+            recombinator(intensity = par.recIntensity),
+            stat(popSize=True),
+            migr,
+            getSelector(par),
+            pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)')
+        ],
+        gen = par.migrGen
+    )
+    pop = simu.getPopulation(0, True)
     # save this population
     print "Calculating allele frequency..."
     pop.vars().clear()
     Stat(pop, alleleFreq=range(pop.totNumLoci()))
-    print 'Saving admixed population to ', admixedFile
-    pop.savePopulation(admixedFile)
     return pop
 
 
-short_desc = '''This program simulates an admixed population based on 
+short_desc = '''This program simulates an admixed population based on
 two or more HapMap populations. Please follow the intructions
 of the help message to prepare HapMap population.'''
 
 # determine which script to run.
 if __name__ == '__main__':
-    # 
+    #
     # PARAMETER HANDLING
-    # 
+    #
     # get all parameters
     allParam = getParam(options, short_desc, __doc__, nCol=2)
     par = admixtureParams(options, allParam)
@@ -1363,28 +1357,44 @@ if __name__ == '__main__':
     #
     # get seed population
     if par.useSavedExpanded or (par.useSavedSeed and os.path.isfile(par.seedFile)):
-        if par.useSavedSeed:
-            print "Using existing seed file ", par.seedFile
+        # Using existing seed file
         seedPop = None
     else:
         seedPop = generateSeedPopulation(par)
     #
-    # step 2:
-    # 
+    # step 2: population expansion
+    #
     # if both files exists, skip this stage
     if par.useSavedExpanded and os.path.isfile(par.expandedFile):
         expandedPop = None
     else:
         if seedPop is None:
-            print 'Loading seed population', par.seedFile
+            print 'Loading seed population %s...' % par.seedFile
             seedPop = LoadPopulation(par.seedFile)
             # par.ctrlLoci is set in generateSeedPopulation
             par.setCtrlLociIndex(seedPop)
-        # 
-        expandedPop = expandSeedPopulation(seedPop, par)
-    # admixture
+        #
+        seedPop.dvars().stage = 'expand'
+        #
+        if len(par.ctrlLoci) == 0:
+            # freely expand
+            expandedPop = freeExpand(seedPop, par)
+        elif len(par.forCtrlLoci) != 0:
+            # forward controlled expansion
+            expandedPop = forCtrlExpand(seedPop, par)
+        else:
+            # backward controlled expansion
+            expandedPop = backCtrlExpand(seedPop, par)
+        # save expanded population
+        print 'Saving expanded population to %s...' % par.expandedFile
+        expandedPop.savePopulation(par.expandedFile)
+    #
+    # step 3: admixture
     if expandedPop is None:
-        print 'Loading expanded population from file ', expandedFile
-        expandedPop = LoadPopulation(expandedFile)
-    admixedPop = mixExpandedPopulation(par)
-  
+        print 'Loading expanded population from file ', par.expandedFile
+        expandedPop = LoadPopulation(par.expandedFile)
+    expandedPop.dvars().stage = 'mix'
+    admixedPop = mixExpandedPopulation(expandedPop, par)
+    print 'Saving admixed population to ', par.admixedFile
+    admixedPop.savePopulation(par.admixedFile)
+
