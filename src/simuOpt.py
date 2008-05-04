@@ -319,22 +319,29 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
         # now we really short have something not None, unless the default is None
         # if a string is fine
         # now, deal with jump option
-        if values[-1] == True and p.has_key('jump'):
-            if p['jump'] == -1:    # go to last
-                goto = len(options)
+        if (values[-1] == True and p.has_key('jump')) or \
+            (values[-1] == False and p.has_key('jumpIfFalse')):
+            if p.has_key('jump'):
+                jumpTo = p['jump']
             else:
-                goto = p['jump']
-            # can not jump backward
-            if goto <= opt:
-                raise ValueError("Can not stay or jump backwards when processing options.")
-        if values[-1] == False and p.has_key('jumpIfFalse'):
-            if p['jumpIfFalse'] == -1:    # go to last
+                jumpTo = p['jumpIfFalse']
+            if jumpTo in [-1, None, '']:    # go to last
                 goto = len(options)
-            else:
-                goto = p['jumpIfFalse']
-            # can not jump backward
-            if goto <= opt:
+            elif type(jumpTo) == type(''):  # go to another parameter
+                goto = -1
+                for s_idx in range(opt + 1, len(options)):
+                    s_arg = options[s_idx]
+                    if s_arg.has_key('longarg') and \
+                        ((s_arg['longarg'][-1] == '=' and s_arg['longarg'][:-1] == jumpTo) or \
+                         (s_arg['longarg'][-1] != '=' and s_arg['longarg'] == jumpTo)):
+                        goto = s_idx;
+                        break
+                if goto == -1:
+                    raise ValueError('Failed to jump to option %s.' % jumpTo)
+            elif jumpTo <= opt:
                 raise ValueError("Can not stay or jump backwards when processing options.")
+            else:
+                goto = jumpTo
     # look if any argument was not processed
     if checkUnprocessedArgs:
         for i in range(1, len(sys.argv)):
@@ -932,6 +939,8 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
           if parameter  -h  has item  'jump':-1  which means jumping to the end.
           Another situation of using this value is when you have a hierarchical parameter
           set. For example, if mutation is on, specify mutation rate, otherwise proceed.
+          The value of this option can be the absolute index or the  longarg  name of
+          another option.
         
         jumpIfFalse: The same as jump but jump if current parameter is  False  .
         
