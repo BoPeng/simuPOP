@@ -322,18 +322,18 @@ options = [
     {'longarg': 'useSavedSeed',
      'default': False,
      'label': 'Use saved seed population',
-     'useDefault': True,
+     'useDefault': False,
      'allowedTypes': [BooleanType],
-     'jump': 12,
+     'jump': 'seedName',
      'description': '''Use specified or a default seed population, if available.
         The default seed population is seed.bin under the simulation directory.
         '''
     },
     {'longarg': 'useSavedExpanded',
      'default': False,
-     'useDefault': True,
+     'useDefault': False,
      'allowedTypes': [BooleanType],
-     'jump': 16,
+     'jump': 'expandedName',
      'label': 'Use saved expanded population',
      'description': '''If set to true, load specified or saved $name/expanded.bin and
                 skip population expansion'''
@@ -529,13 +529,6 @@ options = [
         selected for migration and mating scheme'''
     },
     {'separator': 'Generate seed population'},
-    {'arg': 's:',
-     'longarg': 'seedName=',
-     'default': 'seed.bin',
-     'useDefault': True,
-     'description': '''Name of the seed population''',
-     'allowedTypes': [StringType],
-    },
     {'longarg': 'initCopy=',
      'default': 10,
      'useDefault': True,
@@ -564,6 +557,13 @@ options = [
                 to reduce it according to the populations used.''',
      'allowedTypes': [IntType, LongType],
      'validate': valueGE(100)
+    },
+    {'arg': 's:',
+     'longarg': 'seedName=',
+     'default': 'seed.bin',
+     'useDefault': True,
+     'description': '''Name of the seed population''',
+     'allowedTypes': [StringType],
     },
     #
     {'separator': 'Mutation, selection and recombination'},
@@ -660,12 +660,6 @@ options = [
     },
     #
     {'separator': 'Population expansion'},
-    {'longarg': 'expandedName=',
-     'default': 'expanded.bin',
-     'useDefault': True,
-     'description': '''Name of the expanded population, relative to simulation path''',
-     'allowedTypes': [StringType],
-    },
     {'longarg': 'expandGen=',
      'default': 100,
      'useDefault': True,
@@ -677,7 +671,6 @@ options = [
     },
     {'longarg': 'expandSize=',
      'default': 42000,
-     'useDefault': True,
      'label': 'Expanded population size',
      'description': '''Size of the expanded population. The default value if the recommended
                 value when all hapmap populations are used (60+60+90)*200. You may want to
@@ -686,14 +679,14 @@ options = [
      'allowedTypes': [IntType, LongType],
      'validate': valueGE(100)
     },
-     #
-    {'separator': 'Population admixture'},
-    {'longarg': 'admixedName=',
-     'default': 'admixed.bin',
+    {'longarg': 'expandedName=',
+     'default': 'expanded.bin',
      'useDefault': True,
-     'description': '''Name of the admixed, relative to simulation path''',
+     'description': '''Name of the expanded population, relative to simulation path''',
      'allowedTypes': [StringType],
     },
+    #
+    {'separator': 'Population admixture'},
     {'longarg': 'migrModel=',
      'default': 'Continuous Gene Flow',
      'useDefault': True,
@@ -720,7 +713,6 @@ options = [
     },
     {'longarg': 'migrGen=',
      'default': 5,
-     'useDefault': True,
      'label': 'Migration generations',
      'description': '''Length of migration stage. If set to zero, the migration stage
                 is ignored''',
@@ -730,7 +722,6 @@ options = [
     {'longarg': 'migrRate=',
      'default': [[0.9, 0.1], [0., 1.]],
      'label': 'Migration rate matrix',
-     'useDefault': True,
      'description': '''Migration rate matrix. Use only for the continuous gene flow model.
                 A_ij of this matrix represents the probability of moving from population i
                 to j, and A_ii is the probability of staying in the same population, and
@@ -762,6 +753,12 @@ options = [
                 some sort of positive assortative mating scheme that is defined in
                 $custom.py. The name of the mating scheme has to be cusMatScheme'''
     },
+    {'longarg': 'admixedName=',
+     'default': 'admixed.bin',
+     'useDefault': True,
+     'description': '''Name of the admixed, relative to simulation path''',
+     'allowedTypes': [StringType],
+    },
 ]
 
 
@@ -788,12 +785,12 @@ class admixtureParams:
         self.numMarkers, self.startPos, self.endingPos,
         self.minAF, self.minDiffAF, self.minDist,
             self.scale, self.custom,
-            self.seedName, self.initCopy, self.initGen, self.seedSize,
+            self.initCopy, self.initGen, self.seedSize, self.seedName,
         self.mutaRate, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
         self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
-            self.expandedName, self.expandGen, self.expandSize,
-        self.admixedName, self.migrModel, self.migrGen, self.migrRate,
-        self.ancestry, self.matingScheme) = allParam[1:]
+            self.expandGen, self.expandSize, self.expandedName,
+        self.migrModel, self.migrGen, self.migrRate,
+        self.ancestry, self.matingScheme, self.admixedName) = allParam[1:]
         # preparations
         self.createSimulationDir()
         self.saveConfiguration()
