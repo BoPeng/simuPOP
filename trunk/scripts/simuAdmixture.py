@@ -430,10 +430,10 @@ options = [
      'useDefault': True,
      'label': 'Marker list file',
      'description': '''A file with a list of marker names, in the form of
-                "chrom_number marler_pos marker_name". Markers that on a chromosome not
-                in the chromosome list (parameter chrom) are ignored. lines start with
-                # is ignored. If numMarkers, startPos, endingPos, minDist are also specified,
-                the first numMarkers between startPos and endingPos will be used.
+                "chrom_number marler_pos marker_name". Markers that on a chromosome that are not
+                in the chromosome list (parameter --chrom) are ignored. The first header line and
+                lines start with # is ignored. If numMarkers, startPos, endingPos, minDist 
+                are also specified, the first numMarkers between startPos and endingPos will be used.
                 This script assumes that the marker position in the
                 list file is in base pair, and will use pos/1000000 as cM to
                 compare marker location. If more fields are given, others are ignored.''',
@@ -768,14 +768,7 @@ class admixtureParams:
     This class also clean up/validate parameters and calcualtes some derived
     parameters for later uses.
     '''
-    def __init__(self, options, allParam):
-        # when user click cancel ...
-        if len(allParam) == 0:
-            sys.exit(1)
-        # -h or --help
-        if allParam[0]:
-            print usage(options, __doc__)
-            sys.exit(0)
+    def __init__(self, allParam):
         # expand all params to different options
         (self.name, self.useSavedSeed, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
@@ -793,7 +786,6 @@ class admixtureParams:
         self.ancestry, self.matingScheme, self.admixedName) = allParam[1:]
         # preparations
         self.createSimulationDir()
-        self.saveConfiguration()
         self.seedFile = self.setFile(self.seedName)
         self.expandedFile = self.setFile(self.expandedName)
         self.admixedFile = self.setFile(self.admixedName)
@@ -1160,10 +1152,14 @@ def createInitialPopulation(par):
         for line in mlist.readlines():
             if line.startswith('#') or line.strip() == '':
                 continue
-            fields = line.split()
-            ch = int(float(fields[0]))
-            pos = float(fields[1])/1000000.
-            name = fields[2]
+            try:
+                fields = line.split()
+                ch = int(float(fields[0]))
+                pos = float(fields[1])/1000000.
+                name = fields[2]
+            except:
+                print "Ignoring line '%s'" % line
+                continue
             if ch not in par.chrom:
                 continue
             chIdx = par.chrom.index(ch)
@@ -1433,18 +1429,8 @@ def mixExpandedPopulation(pop, par):
     return pop
 
 
-short_desc = '''This program simulates an admixed population based on
-two or more HapMap populations. Please follow the intructions
-of the help message to prepare HapMap population.'''
-
-# determine which script to run.
-if __name__ == '__main__':
-    #
-    # PARAMETER HANDLING
-    #
-    # get all parameters
-    allParam = getParam(options, short_desc, __doc__, nCol=2)
-    par = admixtureParams(options, allParam)
+def simuAdmixture(par):
+    '''The main program'''
     #
     # SEED POPULATION GENERATION
     #
@@ -1494,4 +1480,30 @@ if __name__ == '__main__':
     admixedPop = mixExpandedPopulation(expandedPop, par)
     print 'Saving admixed population to ', par.admixedFile
     admixedPop.savePopulation(par.admixedFile)
+
+
+short_desc = '''This program simulates an admixed population based on
+two or more HapMap populations. Please follow the intructions
+of the help message to prepare HapMap population.'''
+
+# determine which script to run.
+if __name__ == '__main__':
+    #
+    # PARAMETER HANDLING
+    #
+    # get all parameters
+    allParam = getParam(options, short_desc, __doc__, nCol=2)
+    # when user click cancel ...
+    if len(allParam) == 0:
+       sys.exit(1)
+    # -h or --help
+    if allParam[0]:
+        print usage(options, __doc__)
+        sys.exit(0)
+    cfgFile = allParam[1] + '.cfg'
+    print 'Save configuration to', cfgFile
+    # save current configuration
+    saveConfig(options, cfgFile, allParam)
+    # create a parameter class and run simuAdmixture
+    simuAdmixture(admixtureParams(allParam))
 
