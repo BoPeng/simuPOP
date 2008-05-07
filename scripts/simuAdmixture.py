@@ -1088,7 +1088,6 @@ def getMutRecOps(pop, par):
             print 'Please run loadHapMap again to set up genetic distance'
         rate = [(pos[x] - pos[x-1])*par.recIntensity*par.scale \
             for x in range(1, pop.totNumLoci())]
-        print rate
         # recombination rate at the end of each chromosome will be invalid
         # but this does not matter
         rec = recombinator(rate=rate + [0], loci = range(pop.totNumLoci()))
