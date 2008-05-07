@@ -672,7 +672,7 @@ options = [
     'chooseOneOf': ['additive', 'multiplicative', 'interaction', 'none']
     },
     {'longarg': 'backMigrRate=',
-     'default': 0.005,
+     'default': 0.001,
      'useDefault': True,
      'allowedTypes': [IntType, FloatType],
      'label': 'Background migration rate',
@@ -1161,9 +1161,8 @@ def drawLDPlot(pop, par):
     return True
 
 
-def getOperators(pop, par, progress=False, visualization=False,
-        mutation=False, migration=False, recombination=False,
-        selection=False):
+def getOperators(pop, par, progress=False, visualization=False, mutation=False,
+        migration=False, recombination=False, selection=False):
     '''Return mutation and recombination operators'''
     ops = []
     if progress:
@@ -1327,12 +1326,15 @@ def generateSeedPopulation(par):
         print "Chromosome %d has %d markers in the range between %.3f and %.3f" \
             % (ch, pop.numLoci(ch), pop.locusPos(pop.chromBegin(ch)),  \
                 pop.locusPos(pop.chromEnd(ch)-1))
+    newSize = [x*par.initCopy for x in pop.subPopSizes()]
+    print 'Propagating population to size %s' % newSize
+    pop.resize(newSize, propagate=True)
     # evolve the initial population
     print "Evolving the initial population"
     simu = simulator(pop, randomMating( newSubPopSizeFunc =
         expDemoFunc(pop.subPopSizes(), par.seedSize, par.initGen)), rep=1)
     simu.evolve(
-        ops = getOperators(pop, par,
+        ops = getOperators(pop, par, 
             progress=True, visualization=True,
             mutation=True, migration=True, recombination=True),
         gen = par.initGen)
