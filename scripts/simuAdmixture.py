@@ -161,6 +161,14 @@ used in paper Peng 2008.
 Test scripts
 ==============
 
+def migrFunc(gen, curSize):
+    """This is an example of how to define a time-dependent
+    migration rate function
+    """
+    # this is a sample function that migrate to
+    # a third population, with increasing intensity
+    return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
+
 The following test scripts demonstrate the use of this script using a small
 number of loci. Note that some parameters can be ignored if their
 default values are used.
@@ -298,7 +306,7 @@ from hapMapUtil import getMarkersFromName, getMarkersFromRange
 import os, sys, math
 from types import *
 from exceptions import ValueError, SystemError
-from simuUtil import SaveQTDT, SaveMerlinPedFile, FreqTrajectoryMultiStochWithSubPop
+from simuUtil import SaveQTDT, SaveMerlinPedFile, MigrIslandRates
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
@@ -507,7 +515,179 @@ options = [
                 Can be used for both methods.''',
     },
     #
-    {'separator': 'Generate evolution parameter'},
+    {'separator': 'Mutation, recombination, etc'},
+    {'longarg': 'mutaRate=',
+     'default': 1e-6,
+     'label': 'Mutation rate',
+     'allowedTypes': [IntType, FloatType],
+     'description': '''Mutation rate using a 2-allele model (kam). Note that mutation
+                can generally be ignored during short period of time unless you
+                intentionally set a higher mutation rate.''',
+     'validate': valueBetween(0,1),
+    },
+    {'longarg': 'recMap=',
+     'default': 'genetic',
+     'useDefault': True,
+     'label': 'Marker map to use',
+     'description': '''Use physical (base pair) or genetic map to perform
+                recombination. If physical map is used, the recombination rate
+                would be marker distance in basepair / 1M * recIntensity.
+                If genetic map is used, the recombination rate would be map
+                distance * recIntensity. The hapmap populations use physical
+                distance as loci potitions, and store genetic distance as
+                a population variable genDist.
+                ''',
+     'allowedTypes': [StringType],
+     'chooseOneOf': ['physical', 'genetic']
+     },
+    {'longarg': 'recIntensity=',
+     'default': 0.01,
+     'label': 'Recombination intensity',
+     'useDefault': True,
+     'allowedTypes': [FloatType],
+     'description': '''Recombination intensity per cm/Mb, this should not be changed unless
+                you really know what you are doing. When a physical map is used, this is the
+                recombination intensity between adjacent markers. For example, two markers
+                that are 10kb apart (0.00001 cM apart) will have recombination
+                rate 10^-5*0.01 (the default value) = 10^-6. If a genetic map is used,
+                the recombination rate is recIntensity times the map distance between
+                two adjacent markers.
+     ''',
+     'validate': valueBetween(0,1),
+    },
+    {'longarg': 'convProb=',
+     'label': 'Gene conversion probability',
+     'default': 0,
+     'useDefault': True,
+     'allowedTypes': [IntType, FloatType],
+     'description': '''Gene conversion is considered as a sub-event during recombination.
+                    If a non-zero --convProb value is given, a recombination event will
+                    have this probability of becoming an gene conversion event, which 
+                    conceputally will lead to another recombination(-back) event --convLength
+                    after the current marker. Gene conversion is by default disabled.''',
+     'validate': valueBetween(0, 1)
+    },
+    {'longarg': 'convMode=',
+     'label': 'Model for conversion length',
+     'default': 'Tract length',
+     'useDefault': True,
+     'allowedTypes': [StringType],
+     'description': '''How to determine the length of a gene conversion. The exact meaning
+                    of parameter --convParam is determined by this parameter.
+                    'Tract length': --convParam is the length of converted region in cM.
+                        Note that the marker distance is usually around 10kb (0.001cM) and
+                        the track lengths range from 50 - 2500 bp.
+                    'Number of markers': convert a fixed number of markers
+                    'Geometric distribution': The number of markers converted is determined
+                        by a geometric distribution.
+                    'Exponential distribution': The tract length is determined by an
+                        exponential distribution.
+                    ''',
+     'chooseOneOf': ['Tract length', 'Number of markers', 'Geometric distribution',
+        'Exponential Distribution'],
+     'validate': valueOneOf(['Tract length', 'Number of markers', 'Geometric distribution',
+        'Exponential Distribution']),
+    },
+    {'longarg': 'convParam=',
+     'label': 'Conversion parameter',
+     'default': 0.02,
+     'useDefault': True,
+     'allowedTypes': [IntType, FloatType],
+     'description': '''The meaning of this parameter is determined by --convMode. By default,
+                when --convMode='Tract length', this parameter means that each gene conversion
+                event will convert a region of 0.02cM ~ 20kb region.''',
+     'validate': valueGE(0)
+    },
+    {'longarg': 'forCtrlLoci=',
+     'label': 'Forward controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of markers (by name) whose allele frequency will be
+                controlled during this stage of evolution. A forward-time trajectory
+                simulation algorithm will be used. Currently, only one of
+                --forCtrlLoci and --backCtrlLoci is allowed. Note that allele frequencies
+                are only controlled in the expansion stage.'''
+    },
+    {'longarg': 'forCtrlFreq=',
+     'label': 'Ending allele frequency at forward controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of allele frequency ranges for each controlled locus.
+                If a single range is given, it is assumed for all markers. An example
+                of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
+    },
+    {'longarg': 'backCtrlLoci=',
+     'label': 'Backward controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of markers (by name) whose mutants, if any, will be removed
+                at the beginning of population expansion stage. A mutant will be introduced
+                as the result of mutation. The frequency trajectory will be simulated
+                using a backward approach (see Peng 2007, PLoS Genetics). Currently,
+                only one of --forCtrlLoci and --backCtrlLoci is allowed. Note that allele
+                frequencies are only controlled in the expansion stage.''',
+    },
+    {'longarg': 'backControlledFreq=',
+     'label': 'Ending allele frequency at backward controlled loci',
+     'default': [],
+     'useDefault': True,
+     'allowedTypes': [TupleType, ListType],
+     'description': '''A list of allele frequency (not a list of ranges as parameter controlledFreq)''',
+    },
+    {'longarg': 'fitness=',
+     'default': [1, 1, 1],
+     'label': 'Fitness of genotype AA,Aa,aa',
+     'allowedTypes': [ListType, TupleType],
+     'description': '''Fitness of genotype, can be:
+                f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
+                f1, f2, f3: if multiple DSL, the same fitness for each locus
+                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive'
+                    or multiplicative, fitness at each locus. The overall fitness
+                    is determined by selMultiLocusModel
+                [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and selMultiLocusModel = interaction.
+                    For example, in the 2-DSL case, the numbers are (by row)
+                        BB Bb bb
+                    AA  a1 a2 a3
+                    Aa  b1 b2 b3
+                    aa  c1 c2 c3
+                3^n numbers are needed for n DSL.
+        ''',
+     'validate': valueListOf(valueGE(0.)),
+    },
+    {'longarg': 'selMultiLocusModel=',
+    'default': 'none',
+    'label': 'Multi-locus selection model',
+    'description': '''Model of overall fitness value given fitness values for each DSL.
+                multiplicative: f =  Prod(f_i)
+                additive: f = 1-Sum(1-f_i)
+                interaction: the intepretation of fitness parameter is different.
+                    see fitness.
+                Note that selection will be applied to all generations, but backControlledLoci
+                will only have wild-type allele before a mutant is introduced.
+                ''',
+    'allowedTypes': [StringType],
+    'chooseOneOf': ['additive', 'multiplicative', 'interaction', 'none']
+    },
+    {'longarg': 'backMigrRate=',
+     'default': 0.005,
+     'useDefault': True,
+     'allowedTypes': [IntType, FloatType],
+     'label': 'Background migration rate',
+     'description': '''If more than one hapmap populations are chosen, a low-level
+                of migration is allowed between these populations. An island model
+                will be used and the migration rate refers to the probability of
+                migrating to another population at each generation. For example,
+                if three populations are involved, the migration matrix will be
+                    [1-2r, r, r,
+                      r, 1-2r, 2,
+                      r, r, 1-2r]
+                Note that this background migration will stop at the admixture stage where
+                another migrator will take over.
+                '''
+    },
     {'longarg': 'scale=',
      'default': 10,
      'useDefault': True,
@@ -568,117 +748,7 @@ options = [
      'allowedTypes': [StringType],
     },
     #
-    {'separator': 'Mutation, selection and recombination'},
-    {'longarg': 'mutaRate=',
-     'default': 1e-6,
-     'label': 'Mutation rate',
-     'allowedTypes': [IntType, FloatType],
-     'description': '''Mutation rate using a 2-allele model (kam). Note that mutation
-                can generally be ignored during short period of time unless you
-                intentionally set a higher mutation rate.''',
-     'validate': valueBetween(0,1),
-    },
-    {'longarg': 'recMap=',
-     'default': 'genetic',
-     'useDefault': True,
-     'label': 'Marker map to use',
-     'description': '''Use physical (base pair) or genetic map to perform
-                recombination. If physical map is used, the recombination rate
-                would be marker distance in basepair / 1M * recIntensity.
-                If genetic map is used, the recombination rate would be map
-                distance * recIntensity. The hapmap populations use physical
-                distance as loci potitions, and store genetic distance as
-                a population variable genDist.
-                ''',
-     'allowedTypes': [StringType],
-     'chooseOneOf': ['physical', 'genetic']
-     },
-    {'longarg': 'recIntensity=',
-     'default': 0.01,
-     'label': 'Recombination intensity',
-     'useDefault': True,
-     'allowedTypes': [FloatType],
-     'description': '''Recombination intensity per cm/Mb, this should not be changed unless
-                you really know what you are doing. When a physical map is used, this is the
-                recombination intensity between adjacent markers. For example, two markers
-                that are 10kb apart (0.00001 cM apart) will have recombination
-                rate 10^-5*0.01 (the default value) = 10^-6. If a genetic map is used,
-                the recombination rate is recIntensity times the map distance between
-                two adjacent markers.
-     ''',
-     'validate': valueBetween(0,1),
-    },
-    {'longarg': 'forCtrlLoci=',
-     'label': 'Forward controlled loci',
-     'default': [],
-     'useDefault': True,
-     'allowedTypes': [TupleType, ListType],
-     'description': '''A list of markers (by name) whose allele frequency will be
-                controlled during this stage of evolution. A forward-time trajectory
-                simulation algorithm will be used. Currently, only one of
-                --forCtrlLoci and --backCtrlLoci is allowed.'''
-    },
-    {'longarg': 'forCtrlFreq=',
-     'label': 'Ending allele frequency at forward controlled loci',
-     'default': [],
-     'useDefault': True,
-     'allowedTypes': [TupleType, ListType],
-     'description': '''A list of allele frequency ranges for each controlled locus.
-                If a single range is given, it is assumed for all markers. An example
-                of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
-    },
-    {'longarg': 'backCtrlLoci=',
-     'label': 'Backward controlled loci',
-     'default': [],
-     'useDefault': True,
-     'allowedTypes': [TupleType, ListType],
-     'description': '''A list of markers (by name) whose mutants, if any, will be removed
-                at the beginning of population expansion stage. A mutant will be introduced
-                as the result of mutation. The frequency trajectory will be simulated
-                using a backward approach (see Peng 2007, PLoS Genetics). Currently,
-                only one of --forCtrlLoci and --backCtrlLoci is allowed.''',
-    },
-    {'longarg': 'backControlledFreq=',
-     'label': 'Ending allele frequency at backward controlled loci',
-     'default': [],
-     'useDefault': True,
-     'allowedTypes': [TupleType, ListType],
-     'description': '''A list of allele frequency (not a list of ranges as parameter controlledFreq)''',
-    },
-    {'longarg': 'fitness=',
-     'default': [1, 1, 1],
-     'label': 'Fitness of genotype AA,Aa,aa',
-     'allowedTypes': [ListType, TupleType],
-     'description': '''Fitness of genotype, can be:
-                f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
-                f1, f2, f3: if multiple DSL, the same fitness for each locus
-                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive'
-                    or multiplicative, fitness at each locus. The overall fitness
-                    is determined by selMultiLocusModel
-                [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and selMultiLocusModel = interaction.
-                    For example, in the 2-DSL case, the numbers are (by row)
-                        BB Bb bb
-                    AA  a1 a2 a3
-                    Aa  b1 b2 b3
-                    aa  c1 c2 c3
-                3^n numbers are needed for n DSL.
-        ''',
-     'validate': valueListOf(valueGE(0.)),
-    },
-    {'longarg': 'selMultiLocusModel=',
-    'default': 'none',
-    'label': 'Multi-locus selection model',
-    'description': '''Model of overall fitness value given fitness values for each DSL.
-                multiplicative: f =  Prod(f_i)
-                additive: f = 1-Sum(1-f_i)
-                interaction: the intepretation of fitness parameter is different.
-                    see fitness.
-                Note that selection will be applied to all generations, but backControlledLoci
-                will only have wild-type allele before a mutant is introduced.
-                ''',
-    'allowedTypes': [StringType],
-    'chooseOneOf': ['additive', 'multiplicative', 'interaction', 'none']
-    },
+
     #
     {'separator': 'Population expansion'},
     {'longarg': 'expandGen=',
@@ -797,16 +867,21 @@ class admixtureParams:
             self.step, self.showAlleleFreq, self.figureStep,
             self.drawLDPlot, self.haploview, self.ldRegions,
             self.ldSampleSize,
-        self.HapMap_dir, self.pops, self.markerList, self.chrom,
-        self.numMarkers, self.startPos, self.endingPos,
-        self.minAF, self.minDiffAF, self.minDist,
-            self.scale, self.custom,
+            #
+            self.HapMap_dir, self.pops, self.markerList, self.chrom,
+            self.numMarkers, self.startPos, self.endingPos,
+            self.minAF, self.minDiffAF, self.minDist,
+            #
+            self.mutaRate, self.recMap, self.recIntensity, self.convProb,
+            self.convMode, self.convParam, self.forCtrlLoci, self.forCtrlFreq,
+            self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
+            self.backMigrRate, self.scale, self.custom,
+            #
             self.initCopy, self.initGen, self.seedSize, self.seedName,
-        self.mutaRate, self.recMap, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
-        self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
             self.expandGen, self.expandSize, self.expandedName,
-        self.migrModel, self.migrGen, self.migrRate,
-        self.ancestry, self.matingScheme, self.admixedName) = allParam[1:]
+            #
+            self.migrModel, self.migrGen, self.migrRate,
+            self.ancestry, self.matingScheme, self.admixedName) = allParam[1:]
         # preparations
         self.createSimulationDir()
         self.seedFile = self.setFile(self.seedName)
@@ -827,6 +902,12 @@ class admixtureParams:
         self.recIntensity *= self.scale
         self.initGen /= self.scale
         self.expandGen /= self.scale
+        self.convMode = {
+            'Tract length': CONVERT_TractLength,
+            'Number of markers': CONVERT_NumMarkers,
+            'Geometric distribution': CONVERT_GeometricDistribution,
+            'Exponential Distribution': CONVERT_ExponentialDistribution
+            }[self.convMode]
         #
         self.prepareFitnessParams()
         # cutomized migrator and mating schemes
@@ -917,8 +998,14 @@ class admixtureParams:
 
     def prepareFitnessParams(self):
         # parameters for fitness...
+        self.mlSelModel = {
+            'additive':SEL_Additive,
+            'multiplicative':SEL_Multiplicative,
+            'interaction': 'interaction',
+            'none': None
+            }[self.mlSelModel]
         numDSL = len(self.ctrlLoci)
-        if numDSL > 1 and self.mlSelModel == 'none':
+        if numDSL > 1 and self.mlSelModel is None:
             self.fitness = []
         elif self.mlSelModel == 'interaction':
             if numDSL == 1:
@@ -1074,75 +1161,70 @@ def drawLDPlot(pop, par):
     return True
 
 
-def getMutRecOps(pop, par):
+def getOperators(pop, par, progress=False, visualization=False,
+        mutation=False, migration=False, recombination=False,
+        selection=False):
     '''Return mutation and recombination operators'''
-    mut = kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci()))
-    if par.recMap == 'physical':
-        rec = recombinator(intensity=par.recIntensity)
-    else: # use map distance
-        try:
-            pos = [pop.dvars().genDist[pop.locusName(x)] for x in range(pop.totNumLoci())]
-        except Exception,e:
-            print e
-            print 'Invalid or incomplete population variable genDist'
-            print 'Please run loadHapMap again to set up genetic distance'
-        rate = [(pos[x] - pos[x-1])*par.recIntensity*par.scale \
-            for x in range(1, pop.totNumLoci())]
-        # recombination rate at the end of each chromosome will be invalid
-        # but this does not matter
-        rec = recombinator(rate=rate + [0], loci = range(pop.totNumLoci()))
-    return [rec, mut]
-
-
-def getStatOps(par):
-    '''Return statistis calculation and progress report operators '''
-    # statistics calculation and display
-    #
-    if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
-        statOps = [
-            # note: DSL is set when the population is created
-            stat(popSize=True, alleleFreq = par.ctrlLociIdx, step = par.step),
-            pyEval(r'"gen=%3d, size=%s, alleleFreq=%s\n" % (gen, subPopSize,' + \
-                r'", ".join(["%.3f" % alleleFreq[x][1] for x in ctrlLoci]))', step=par.step)
-        ]
-    else:
-        statOps = [
-            stat(popSize=True, step = par.step),
-            pyEval(r'"gen=%3d, size=%s\n" % (gen, subPopSize)', step=par.step)
-        ]
-    # ld plot?
-    if par.drawLDPlot and par.figureStep > 0 and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
-        statOps.extend([
-            pyOperator(func=drawLDPlot, param = par, step=par.figureStep),
+    ops = []
+    if progress:
+        # statistics calculation and display
+        exp = ['gen=%3d', 'size=%s']
+        var = ['gen', 'subPopSize']
+        if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
+            exp.append('alleleFreq=%s')
+            var.append('", ".join(["%.3f" % alleleFreq[x][1] for x in ctrlLoci])')
+        if len(par.pops) > 1:
+            exp.append('Fst=%.3f')
+            var.append('AvgFst')
+        ops.extend([
+            stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
+                step = par.step),
+            pyEval(r'"%s\n" %% (%s)' % (', '.join(exp), ', '.join(var)), step=par.step)
+        ])
+    if visualization and par.drawLDPlot and par.figureStep > 0 \
+        and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
+        ops.extend([
+            pyOperator(func=drawLDPlot, param = par, step=par.figureStep, stage=PreMating),
             pyOperator(func=drawLDPlot, param = par, at=[-1])
         ])
-    return statOps
+    if mutation:    
+        ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
+    if migration and len(par.pops) > 1:
+        ops.append(migrator(MigrIslandRates(par.backMigrRate, len(par.pops))))
+    if recombination:
+        if par.recMap == 'physical':
+            ops.append(recombinator(intensity=par.recIntensity, convProb=par.convProb,
+                convMode=par.convMode, convParam=par.convParam))
+            print 'Recombination at %.3f cM/Mb over %.2f Mb physical distance (first chromosome)' % \
+                (par.recIntensity * 100, pop.lociDist(0, pop.numLoci(0)-1))
+        else: # use map distance
+            try:
+                pos = [pop.dvars().genDist[pop.locusName(x)] for x in range(pop.totNumLoci())]
+            except Exception,e:
+                print e
+                print 'Invalid or incomplete population variable genDist'
+                print 'Please run loadHapMap again to set up genetic distance'
+            rate = [(pos[x] - pos[x-1])*par.recIntensity for x in range(1, pop.totNumLoci())]
+            print 'Recombination at %.3f cM/Mb over %.2f Morgan genetic (%.2f Mb physical) distance (first chromosome)' % \
+                (par.recIntensity*100, (pop.dvars().genDist[pop.locusName(pop.numLoci(0)-1)] - \
+                    pop.dvars().genDist[pop.locusName(0)]), pop.lociDist(0, pop.numLoci(0)-1))
+            # recombination rate at the end of each chromosome will be invalid
+            # but this does not matter
+            ops.append(recombinator(rate=rate + [0], loci = range(pop.totNumLoci()),
+                convProb=par.convProb, convMode=par.convMode, convParam=par.convParam))
+    if selection:
+        if par.mlSelModel in [SEL_Additive, SEL_Multiplicative]:
+            ops.append(mlSelector(
+                # with five multiple-allele selector as parameter
+                [ maSelector(locus=loci[x], wildtype=[0],
+                    fitness=[par.fitness[3*x], par.fitness[3*x+1], par.fitness[3*x+2]]) \
+                        for x in range(len(par.ctrlLociIdx)) ],
+                mode=par.mlSelModel))
+        elif par.mlSelModel == 'interaction':
+            # multi-allele selector can handle multiple DSL case
+            ops.append(maSelector(loci=par.ctrlLociIdx, fitness=par.fitness, wildtype=[0]))
+    return ops
 
-
-def migrFunc(gen, curSize):
-    '''This is an example of how to define a time-dependent
-    migration rate function
-    '''
-    # this is a sample function that migrate to
-    # a third population, with increasing intensity
-    return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
-
-
-def getSelector(par):
-    if par.mlSelModel in ['additive', 'multiplicative']:
-        mlSelModel = {'additive':SEL_Additive,
-            'multiplicative':SEL_Multiplicative}[par.mlSelModel]
-        return [mlSelector(
-            # with five multiple-allele selector as parameter
-            [ maSelector(locus=loci[x], wildtype=[0],
-                fitness=[par.fitness[3*x], par.fitness[3*x+1], par.fitness[3*x+2]]) \
-                    for x in range(len(par.ctrlLociIdx)) ],
-            mode=mlSelModel)]
-    elif par.mlSelModel == 'interaction':
-        # multi-allele selector can handle multiple DSL case
-        return [maSelector(loci=par.ctrlLociIdx, fitness=par.fitness, wildtype=[0])]
-    else:
-        return [noneOp()]
 
 
 #####################################################################
@@ -1250,7 +1332,9 @@ def generateSeedPopulation(par):
     simu = simulator(pop, randomMating( newSubPopSizeFunc =
         expDemoFunc(pop.subPopSizes(), par.seedSize, par.initGen)), rep=1)
     simu.evolve(
-        ops = getMutRecOps(pop, par) + getStatOps(par),
+        ops = getOperators(pop, par,
+            progress=True, visualization=True,
+            mutation=True, migration=True, recombination=True),
         gen = par.initGen)
     pop = simu.getPopulation(0, True)
     printInfo(pop)
@@ -1274,7 +1358,9 @@ def freeExpand(pop, par):
     print "Evolving the seed population freely..."
     simu = simulator(pop, randomMating(newSubPopSizeFunc = popSizeFunc))
     simu.evolve(
-        ops = getMutRecOps(pop, par) + getStatOps(par) + getSelector(par),
+        ops =  getOperators(pop, par,
+            progress=True, visualization=True, selection=True,
+            mutation=True, migration=True, recombination=True),
         gen = par.expandGen)
     return simu.getPopulation(0, True)
 
@@ -1318,7 +1404,9 @@ def forCtrlExpand(pop, par):
             newSubPopSizeFunc = popSizeFunc)
     )
     simu.evolve(
-        ops = getMutRecOps(pop, par) + getStatOps(par) + getSelector(par),
+        ops = getOperators(pop, par,
+            progress=True, visualization=True, selection=True,
+            mutation=True, migration=True, recombination=True),
         gen = par.expandGen
     )
     pop = simu.getPopulation(0, True)
@@ -1378,7 +1466,10 @@ def backCtrlExpand(pop, par):
             newSubPopSizeFunc = popSizeFunc)
     )
     simu.evolve(
-        ops = getMutRecOps(pop, par) + introOps + getStatOps(par) + getSelector(par),
+        ops = getOperators(pop, par,
+            progress=True, visualization=True, selection=True,
+            mutation=True, migration=True, recombination=True)
+            + introOps,
         gen = par.expandGen
     )
     pop = simu.getPopulation(0, True)
@@ -1442,12 +1533,10 @@ def mixExpandedPopulation(pop, par):
     else:
         simu = simulator(pop, custom.custMateScheme)
     simu.evolve(
-        ops = getMutRecOps(pop, par) +  [
-            stat(popSize=True),
-            migr,
-            getSelector(par),
-            pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)')
-        ] + ancOps,
+        ops = getOperators(pop, par,
+            progress=True, visualization=True, selection=True,
+            mutation=True, migration=False, recombination=True)
+            + migr + ancOps,
         gen = par.migrGen
     )
     pop = simu.getPopulation(0, True)
