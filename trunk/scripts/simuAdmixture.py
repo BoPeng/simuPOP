@@ -540,11 +540,13 @@ options = [
      'validate': valueGT(0)
     },
     {'longarg': 'initGen=',
-     'default': 100,
+     'default': 1000,
      'useDefault': True,
      'label': 'Generations to evolve',
      'description': '''Number of generations to evolve to get the seed
-                population.''',
+                population. The actual evolved population is scaled down by
+                parameter --scale. (If scale==10, initGen=1000, the actually
+                evolved generation is 100).''',
      'allowedTypes': [IntType, LongType],
      'validate': valueGT(0)
     },
@@ -576,14 +578,33 @@ options = [
                 intentionally set a higher mutation rate.''',
      'validate': valueBetween(0,1),
     },
+    {'longarg': 'recMap=',
+     'default': 'genetic',
+     'useDefault': True,
+     'label': 'Marker map to use',
+     'description': '''Use physical (base pair) or genetic map to perform
+                recombination. If physical map is used, the recombination rate
+                would be marker distance in basepair / 1M * recIntensity.
+                If genetic map is used, the recombination rate would be map
+                distance * recIntensity. The hapmap populations use physical
+                distance as loci potitions, and store genetic distance as
+                a population variable genDist.
+                ''',
+     'allowedTypes': [StringType],
+     'chooseOneOf': ['physical', 'genetic']
+     },
     {'longarg': 'recIntensity=',
      'default': 0.01,
      'label': 'Recombination intensity',
+     'useDefault': True,
      'allowedTypes': [FloatType],
-     'description': '''Recombination intensity. The actually recombination rate between
-                two adjacent markers depends on distance (in cM) between them. For example,
-                two markers that are 10kb apart (0.00001 cM apart) will have recombination
-                rate 10^-5*0.01 (the default value) = 10^-6.
+     'description': '''Recombination intensity per cm/Mb, this should not be changed unless
+                you really know what you are doing. When a physical map is used, this is the
+                recombination intensity between adjacent markers. For example, two markers
+                that are 10kb apart (0.00001 cM apart) will have recombination
+                rate 10^-5*0.01 (the default value) = 10^-6. If a genetic map is used,
+                the recombination rate is recIntensity times the map distance between
+                two adjacent markers.
      ''',
      'validate': valueBetween(0,1),
     },
@@ -665,7 +686,9 @@ options = [
      'useDefault': True,
      'label': 'Generations to expand',
      'description': '''Number of generations to evolve during the population
-                expansion stage''',
+                expansion stage. The actual evolved population is scaled down by
+                parameter --scale. (If scale==10, expandGen=1000, the actually
+                evolved generation is 100).''',
      'allowedTypes': [IntType, LongType],
      'validate': valueGT(0)
     },
@@ -779,7 +802,7 @@ class admixtureParams:
         self.minAF, self.minDiffAF, self.minDist,
             self.scale, self.custom,
             self.initCopy, self.initGen, self.seedSize, self.seedName,
-        self.mutaRate, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
+        self.mutaRate, self.recMap, self.recIntensity, self.forCtrlLoci, self.forCtrlFreq,
         self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
             self.expandGen, self.expandSize, self.expandedName,
         self.migrModel, self.migrGen, self.migrRate,
@@ -799,10 +822,11 @@ class admixtureParams:
         # parameters for ld plots
         if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
             self.ldRegions = [self.ldRegions]
-        # mutation
+        # scaling
         self.mutaRate *= self.scale
-        # recombination
         self.recIntensity *= self.scale
+        self.initGen /= self.scale
+        self.expandGen /= self.scale
         #
         self.prepareFitnessParams()
         # cutomized migrator and mating schemes
@@ -1050,6 +1074,27 @@ def drawLDPlot(pop, par):
     return True
 
 
+def getMutRecOps(pop, par):
+    '''Return mutation and recombination operators'''
+    mut = kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci()))
+    if par.recMap == 'physical':
+        rec = recombinator(intensity=par.recIntensity)
+    else: # use map distance
+        try:
+            pos = [pop.dvars().genDist[pop.locusName(x)] for x in range(pop.totNumLoci())]
+        except Exception,e:
+            print e
+            print 'Invalid or incomplete population variable genDist'
+            print 'Please run loadHapMap again to set up genetic distance'
+        rate = [(pos[x] - pos[x-1])*par.recIntensity*par.scale \
+            for x in range(1, pop.totNumLoci())]
+        print rate
+        # recombination rate at the end of each chromosome will be invalid
+        # but this does not matter
+        rec = recombinator(rate=rate + [0], loci = range(pop.totNumLoci()))
+    return [rec, mut]
+
+
 def getStatOps(par):
     '''Return statistis calculation and progress report operators '''
     # statistics calculation and display
@@ -1135,12 +1180,15 @@ def createInitialPopulation(par):
     useHapMapMarker = par.markerList == ''
     ch_pops = []
     if useHapMapMarker:
+        genDist = {}
         for ch, sp, ep, nm in zip(par.chrom, par.startPos, par.endingPos, par.numMarkers):
             ch_pops.append(getMarkersFromRange(par.HapMap_dir, par.popsIdx,
                 ch, sp, ep, nm, par.minAF, par.minDiffAF, par.minDist))
+            genDist.update(ch_pops[-1].dvars().genDist)
         # merge all populations (different chromosomes)
         if len(ch_pops) > 1:
             pop = MergePopulationsByLoci(ch_pops)
+            pop.dvars().genDist = genDist
         else:
             pop = ch_pops[0].clone()
     else:
@@ -1203,11 +1251,7 @@ def generateSeedPopulation(par):
     simu = simulator(pop, randomMating( newSubPopSizeFunc =
         expDemoFunc(pop.subPopSizes(), par.seedSize, par.initGen)), rep=1)
     simu.evolve(
-        ops = [
-            # mutation will be disallowed in the last generation (see later)
-            kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity=par.recIntensity)
-        ] + getStatOps(par),
+        ops = getMutRecOps(pop, par) + getStatOps(par),
         gen = par.initGen)
     pop = simu.getPopulation(0, True)
     printInfo(pop)
@@ -1231,11 +1275,7 @@ def freeExpand(pop, par):
     print "Evolving the seed population freely..."
     simu = simulator(pop, randomMating(newSubPopSizeFunc = popSizeFunc))
     simu.evolve(
-        ops = [
-            # mutation will be disallowed in the last generation (see later)
-            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity = par.recIntensity),
-        ] + getStatOps(par) + getSelector(par),
+        ops = getMutRecOps(pop, par) + getStatOps(par) + getSelector(par),
         gen = par.expandGen)
     return simu.getPopulation(0, True)
 
@@ -1279,10 +1319,7 @@ def forCtrlExpand(pop, par):
             newSubPopSizeFunc = popSizeFunc)
     )
     simu.evolve(
-        ops =  [
-            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity = par.recIntensity),
-        ] + getStatOps(par) + getSelector(par),
+        ops = getMutRecOps(pop, par) + getStatOps(par) + getSelector(par),
         gen = par.expandGen
     )
     pop = simu.getPopulation(0, True)
@@ -1342,11 +1379,7 @@ def backCtrlExpand(pop, par):
             newSubPopSizeFunc = popSizeFunc)
     )
     simu.evolve(
-        ops =  [
-            # mutation will be disallowed in the last generation (see later)
-            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity = par.recIntensity),
-        ] + introOps + getStatOps(par) + getSelector(par),
+        ops = getMutRecOps(pop, par) + introOps + getStatOps(par) + getSelector(par),
         gen = par.expandGen
     )
     pop = simu.getPopulation(0, True)
@@ -1410,10 +1443,7 @@ def mixExpandedPopulation(pop, par):
     else:
         simu = simulator(pop, custom.custMateScheme)
     simu.evolve(
-        ops =  [
-            # mutation will be disallowed in the last generation (see later)
-            kamMutator(rate = par.mutaRate, loci=range(pop.totNumLoci())),
-            recombinator(intensity = par.recIntensity),
+        ops = getMutRecOps(pop, par) +  [
             stat(popSize=True),
             migr,
             getSelector(par),
