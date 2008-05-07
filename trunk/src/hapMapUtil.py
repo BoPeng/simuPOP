@@ -100,6 +100,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
                 raise ValueError('Hapmap population indexes should be 0, 1 or 2')
     # read in HapMap data file
     pops = []
+    genDist = {}
     for chIdx,i in enumerate(chroms):
         markers = []
         pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.bin' % i))
@@ -131,6 +132,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
         if len(markers) > 0:
             markers.sort()
             pop.removeLoci(keep=markers)
+            genDist.update(pop.dvars().genDist)
             pop.vars().clear()
             pops.append(pop)
         else:
@@ -140,6 +142,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
         pop = MergePopulationsByLoci(pops)
     else:
         pop = pops[0].clone()
+    pop.dvars().genDist = genDist
     pop.removeSubPops([x for x in range(3) if x not in hapmap_pops], removeEmptySubPops=True)
     return pop
 
@@ -228,7 +231,9 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
     print '%d markers located' % len(markers)
     pop.removeLoci(keep=markers)
     # this would save some RAM because variables take a lot of them
+    genDist = pop.dvars().genDist
     pop.vars().clear()
+    pop.dvars().genDist = genDist
     pop.removeSubPops([x for x in range(3) if x not in hapmap_pops], removeEmptySubPops=True)
     return pop
 
