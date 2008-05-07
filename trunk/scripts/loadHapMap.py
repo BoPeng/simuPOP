@@ -229,7 +229,7 @@ def set_map_dist(pop, ch, dest):
             else:
                 map[name] = map[pop.locusName(prev)] + (pos - prev_pos) / (next_pos - prev_pos) * (next_dis - prev_dis)
     print 'Map distance of %d markers (%.2f%% of %d) are estimated' % (cnt, cnt*100.0/pop.totNumLoci(), pop.totNumLoci())
-    pop.dvars().genDist =genp
+    pop.dvars().genDist = map
 
     
 def loadHapMap(chroms, dest='.'):
