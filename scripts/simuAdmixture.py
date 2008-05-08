@@ -971,10 +971,10 @@ class admixtureParams:
     def prepareMarkerParams(self):
         '''validate marker parameters'''
         if not os.path.isdir(self.HapMap_dir):
-            print 'HapMap directory %s does not exist, creating one.' % HapMap_dir
+            print 'HapMap directory %s does not exist, creating one.' % self.HapMap_dir
             os.makedirs(self.HapMap_dir)
-            if not os.path.isdir(HapMap_dir):
-                raise ValueError('Can not create directory %s to store hapmap data, exiting' % HapMap_dir)
+            if not os.path.isdir(self.HapMap_dir):
+                raise ValueError('Can not create directory %s to store hapmap data, exiting' % self.HapMap_dir)
         if len(self.chrom) == 0:
             raise ValueError('Please specify one or more chromosomes')
         # in case that chrom is a tuple
