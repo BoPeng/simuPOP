@@ -24,8 +24,8 @@
 ############################################################################
 
 '''
-Module  simuOpt  can be used to control which simuPOP module to load, and 
-how it is loaded using function  setOptions  . It also provides a simple 
+Module  simuOpt  can be used to control which simuPOP module to load, and
+how it is loaded using function  setOptions  . It also provides a simple
 way to set simulation options, from user input, command line, configuration
 file or a parameter dialog. All you need to do is to define an option
 description list that lists all parameters in a given format, and call
@@ -45,7 +45,7 @@ it checks command line option:
 
 --quiet: the same as -q
 
---useTkinter: force the use of Tcl/Tk dialog even when wxPython is available. By 
+--useTkinter: force the use of Tcl/Tk dialog even when wxPython is available. By
   default, wxPython is used whenever possible.
 
 --noDialog: do not use option dialog. If the options can not be obtained from
@@ -387,9 +387,29 @@ class _paramDialog:
         self.details = details
         self.nCol = nCol
 
+    def getNumOfRows(self):
+        '''Count the number of rows that is needed for all parameters'''
+        row = 0
+        for opt in self.options:
+            if opt.has_key('label') or opt.has_key('separator'):
+                row += 1
+            if opt.has_key('chooseFrom'):
+                row += len(opt['chooseFrom'])
+        if row / self.nCol * self.nCol == row:
+            row /= self.nCol
+        else:
+            row = row/self.nCol + 1
+        return row
+
+    def formatDesc(self, text):
+        # linux can auto wrap, windows can not but sometime wrap
+        # at unexpected places... It is safer to wrap at original
+        # place.
+        return '\n'.join([x.strip() for x in text.splitlines()] )
+
     def createDialog(self):
         raise exceptions.SystemError('Please define createDialog')
-        
+
     def runDialog(self):
         raise exceptions.SystemError('Please define runDialog')
 
@@ -407,7 +427,7 @@ class _paramDialog:
                     ret.append(self.values[p])
             return ret
         else:
-            return [] 
+            return []
 
 
 class _tkParamDialog(_paramDialog):
@@ -462,7 +482,7 @@ class _tkParamDialog(_paramDialog):
                 self.values[g] = val
         # get all results and return
         self.app.quit()
-    
+
     def doHelp(self, event):
         # open another window
         self.app1 = tk.Tk()
@@ -496,7 +516,7 @@ class _tkParamDialog(_paramDialog):
         # put the focus on the first button
         self.app1.mainloop()
         self.app1.destroy()
-    
+
     def createDialog(self):
         self.app = tk.Tk()
         self.app.protocol('WM_DELETE_WINDOW', self.denyWindowManagerClose)
@@ -592,11 +612,7 @@ class _tkParamDialog(_paramDialog):
                 colCount += 1
                  # put default value into the entryWidget
                 if self.values[g] != None:
-                    # len()>0 to avoid emtpy string with emtpy list
-                    if type(self.values[g]) in [types.ListType, types.TupleType] and len(self.values[g])>1:
-                        self.entryWidgets[g].insert(0, ', '.join(map(str, self.values[g])))
-                    else:
-                        self.entryWidgets[g].insert(0,str(self.values[g]))
+                    self.entryWidgets[g].insert(0, prettyOutput(self.values[g]))
             colIndex = colCount /colParam
             self.entryWidgets[g].bind("<Return>", self.doGetText)
             self.entryWidgets[g].bind("<Escape>", self.doCancel)
@@ -685,12 +701,6 @@ class _wxParamDialog(_paramDialog):
         self.values = []
         self.dlg.EndModal(wx.ID_CANCEL)
 
-    def formatDesc(self, text):
-        # linux can auto wrap, windows can not but sometime wrap
-        # at unexpected places... It is safer to wrap at original
-        # place.
-        return '\n'.join([x.strip() for x in text.splitlines()] )
-
     def addButton(self, ID, text, func, parent, box):
         button = wx.Button(parent, ID, text)
         box.Add(button, 0, wx.ALIGN_CENTER)
@@ -698,16 +708,15 @@ class _wxParamDialog(_paramDialog):
 
     def createDialog(self):
         self.app = wx.App(0)
-        dlg = wx.Dialog(parent=None, id=-1, title = self.title)
+        self.dlg = wx.Dialog(parent=None, id=-1, title = self.title)
         self.entryWidgets = [None]*len(self.options)
         self.labelWidgets = [None]*len(self.options)
         #
         # the main window
         box = wx.BoxSizer(wx.VERTICAL)
         # do not use a very long description please
-        topLabel = wx.StaticText(parent=dlg, id=-1, label='\n' + self.description)
-        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER , 50)
-        #topLabel.SetForegroundColour('Black')
+        topLabel = wx.StaticText(parent=self.dlg, id=-1, label='\n' + self.description)
+        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER, 50)
         topLabel.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL))
         # add a box for all ...
         paraBox = wx.FlexGridSizer(cols = self.nCol)
@@ -717,116 +726,102 @@ class _wxParamDialog(_paramDialog):
         # add several FlexGridSizer
         gridBox = []
         for col in range(self.nCol):
-            gridBox.append(wx.FlexGridSizer(cols=2, vgap=5, hgap=20))
+            gridBox.append(wx.FlexGridSizer(cols=2, vgap=2, hgap=5))
             gridBox[-1].AddGrowableCol(0)
             gridBox[-1].AddGrowableCol(1)
             paraBox.Add(gridBox[-1], 1, wx.EXPAND | wx.ALL, 10)
-        box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 10)
+        box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 5)
         # count numbers of valid parameters..
         # chooseFrom count as many
-        colParam = 0
-        for opt in self.options:
-            if opt.has_key('label') or opt.has_key('separator'):
-                colParam += 1
-            if opt.has_key('chooseFrom'):
-                colParam += len(opt['chooseFrom']) - 2
-        if colParam / self.nCol * self.nCol == colParam:
-            colParam /= self.nCol
-        else:
-            colParam = colParam/self.nCol + 1
-        colCount = 0
-        colIndex = 0
+        numRows = self.getNumOfRows()
+        rowIndex = 0
         # all entries
         for g,opt in enumerate(self.options):
             if not (opt.has_key('label') or opt.has_key('separator')) :
                 continue
-            colIndex = colCount / colParam
+            colIndex = rowIndex / numRows
             if opt.has_key('separator'):
-                self.labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['separator'])
-                #labelWidgets[g].SetForegroundColour('Blue')
+                self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
                 self.labelWidgets[g].SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD))
                 gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
+                # no entry widget
                 self.entryWidgets[g] = None
-                gridBox[colIndex].Add(wx.StaticText(parent=dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
-                colCount += 1
+                # add an empty string to the right... it would be good to extend.
+                gridBox[colIndex].Add(wx.StaticText(parent=self.dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
+                rowIndex += 1
                 continue
-            else: # label
-                self.labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['label'])
-                gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
+            # label
+            self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
+            gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
             # use different entry method for different types
             if opt.has_key('chooseOneOf'):    # single choice
-                self.entryWidgets[g] = wx.Choice(parent=dlg, id=g, choices = opt['chooseOneOf'])
+                self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g, choices = opt['chooseOneOf'])
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
+                # if an value is given through command line argument or configuration file
                 if self.values[g] != None:
                     try:
                         self.entryWidgets[g].SetSelection(opt['chooseOneOf'].index(self.values[g]))
                     except:
                         raise ValueError('Value: %s is not one of %s.' % (str(self.values[g]), str(opt['chooseOneOf'])))
-                colCount += 1
+                rowIndex += 1
             elif opt.has_key('chooseFrom'):    # multiple choice
-                w,h = self.labelWidgets[g].GetTextExtent('a')
-                self.entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, size=(0, (h+4)*len(opt['chooseFrom'])),
+                # the height is a little bit too much...
+                self.entryWidgets[g] = wx.CheckListBox(parent=self.dlg, id=g,
                     choices = opt['chooseFrom'])
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
                 if self.values[g] != None:
                     if type(self.values[g]) in [types.ListType, types.TupleType]:
                         for val in self.values[g]:
-                            self.entryWidgets[g].Check( opt['chooseFrom'].index(val))
+                            self.entryWidgets[g].Check(opt['chooseFrom'].index(val))
                     else:
-                        self.entryWidgets[g].Check( opt['chooseFrom'].index(self.values[g]))
+                        self.entryWidgets[g].Check(opt['chooseFrom'].index(self.values[g]))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
-                colCount += len(opt['chooseFrom']) - 1
+                rowIndex += len(opt['chooseFrom'])
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
-                w,h = self.labelWidgets[g].GetTextExtent('a')
-                self.entryWidgets[g] = wx.CheckBox(parent=dlg, id=g, label = 'Yes / No')
+                self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = 'Yes / No')
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
                 if self.values[g] != None:
                     self.entryWidgets[g].SetValue(self.values[g])
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
-                colCount += 1
-            else: # a edit box
+                rowIndex += 1
+            else: # an edit box
                 # put default value into the entryWidget
                 txt = ''
                 if self.values[g] != None:
-                     if type(self.values[g]) in [types.ListType, types.TupleType] and len(self.values[g])>1:
-                         txt =    ', '.join(map(str, self.values[g]))
-                     else:
-                         txt = str(self.values[g])
-                self.entryWidgets[g] = wx.TextCtrl(parent=dlg, id=g, value=txt)
+                     txt = prettyOutput(self.values[g])
+                self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
-                colCount += 1
-        self.dlg = dlg
+                rowIndex += 1
         # help button
         buttonBox = wx.GridSizer(cols=3)
         self.addButton(wx.ID_HELP, 'Help', self.onHelp, self.dlg, buttonBox)
         self.addButton(wx.ID_CANCEL, 'Cancel', self.onCancel, self.dlg, buttonBox)
         self.addButton(wx.ID_OK, 'OK', self.onOK, self.dlg, buttonBox)
         box.Add(buttonBox, 0, wx.ALL | wx.EXPAND, 20)
-        dlg.SetSizerAndFit(box)
-        dlg.Layout()
-        # first un-none
+        self.dlg.SetSizerAndFit(box)
+        self.dlg.Layout()
+        # set focus to the first un-none entry
         for g in range(len(self.options)):
             if self.entryWidgets[g] != None:
                 self.entryWidgets[g].SetFocus()
                 break
-    
+
     def runDialog(self):
         self.dlg.ShowModal()
         self.dlg.Destroy()
-        
 
 
 # get parameter
 def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=True, verbose=False, nCol=1):
     """ Get parameters from either
-            - a Tcl/Tk based, or wxPython based parameter dialog 
+            - a Tcl/Tk based, or wxPython based parameter dialog
               (wxPython is used if it is available)
             - command line argument
             - configuration file specified by  -c file   (  --config  file), or
@@ -835,63 +830,63 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
         The option description list consists of dictionaries with some
         predefined keys. Each dictionary defines an option. Each option
         description item can have the following keys:
-        
-        arg: short command line option name.  'h'  checks the presence of argument  -h  . 
-        If an argument is expected, add a comma to the option name. For example,  'p:'  
+
+        arg: short command line option name.  'h'  checks the presence of argument  -h  .
+        If an argument is expected, add a comma to the option name. For example,  'p:'
         matches command line option  -p=100  or  -p 100  .
-        
-        longarg: long command line option name.  'help'  checks the presence of 
-            argument  '--help'  .  'mu='  matches command line 
+
+        longarg: long command line option name.  'help'  checks the presence of
+            argument  '--help'  .  'mu='  matches command line
             option  --mu=0.001  or  -mu 0.001  .
-        
+
         label: The label of the input field in a parameter dialog, and as the prompt for
           user input.
-        
+
         default: default value for this parameter. It is used to as the default value
-          in the parameter dialog, and as the option value when a user presses  'Enter'  
+          in the parameter dialog, and as the option value when a user presses  'Enter'
           directly during interactive parameter input.
-        
+
         useDefault: use default value without asking, if the value can not be determined
-          from GUI, command line option or config file. This is useful for options that 
-          rarely need to be changed. Setting them to useDfault allows shorter command 
+          from GUI, command line option or config file. This is useful for options that
+          rarely need to be changed. Setting them to useDfault allows shorter command
           lines, and easy user input.
-        
-        description: a long description of this parameter, will be put into the usage 
-          information, which will be displayed with (  -h  ,  --help  command line option, or 
+
+        description: a long description of this parameter, will be put into the usage
+          information, which will be displayed with (  -h  ,  --help  command line option, or
           help button in parameter dialog).
-        
-        allowedTypes: acceptable types of this option. If  allowedTypes  is  types.ListType  
+
+        allowedTypes: acceptable types of this option. If  allowedTypes  is  types.ListType
           or  types.TupleType  and the user's input is a scalar, the input will be converted
           to a list automatically. If the conversion can not be done, this option will
           not be accepted.
-        
-        validate: a function to validate the parameter. You can define your own functions 
+
+        validate: a function to validate the parameter. You can define your own functions
           or use the ones defined in this module.
-        
-        chooseOneOf: if specified,  simuOpt  will choose one from a list of values using a 
+
+        chooseOneOf: if specified,  simuOpt  will choose one from a list of values using a
           listbox (Tk) or a combo box (wxPython) .
-        
+
         chooseFrom: if specified,  simuOpt  will choose one or more items from a list of
           values using a listbox (tk) or a combo box (wxPython).
-        
-        separator: if specified, a blue label will be used to separate groups of 
+
+        separator: if specified, a blue label will be used to separate groups of
           parameters.
-        
-        jump: it is used to skip some parameters when doing the interactive user input. 
-          For example,  getParam  will skip the rest of the parameters if  -h  is specified 
+
+        jump: it is used to skip some parameters when doing the interactive user input.
+          For example,  getParam  will skip the rest of the parameters if  -h  is specified
           if parameter  -h  has item  'jump':-1  which means jumping to the end.
           Another situation of using this value is when you have a hierarchical parameter
           set. For example, if mutation is on, specify mutation rate, otherwise proceed.
           The value of this option can be the absolute index or the  longarg  name of
           another option.
-        
+
         jumpIfFalse: The same as jump but jump if current parameter is  False  .
-        
-        
+
+
         This function will first check command line argument. If the argument
-        is available, use its value. Otherwise check if a config file is 
+        is available, use its value. Otherwise check if a config file is
         specified. If so, get the value from the config file. If both failed,
-        prompt user to input a value. All input will be checked against types, 
+        prompt user to input a value. All input will be checked against types,
         if exists, an array of allowed types.
 
         Parameters of this function are:
@@ -899,7 +894,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
         options: a list of option description dictionaries
 
         doc: short description put to the top of parameter dialog
-        
+
         details: module help. Usually set to  __doc__  .
 
         noDialog: do not use a parameter dialog, used in batch mode. Default to False.
@@ -907,7 +902,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
         checkUnprocessedArgs: obsolete because unused args are always checked.
 
         verbose: whether or not print detailed info
-        
+
         nCol: number of columns in the parameter dialog.
     """
     # check if --noDialog, -h is present
@@ -922,7 +917,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
         if opt.has_key('arg') and opt.has_key('longarg') and\
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
-                
+
     if noDialog or par_noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
         return _termGetParam(options, doc, verbose)
@@ -939,7 +934,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
 def usage(options, before=''):
     """ Print usage information from the option description list. Used
     with  -h  (or  --help   ) option, and in the parameter input dialog.
-    
+
     options: option description list.
 
     before: optional information
@@ -972,25 +967,32 @@ def usage(options, before=''):
             message += p['description']
         message += '\n'
         if p.has_key('default') and p['default'] != None:
-            message +=    '                Default to '
-            if type(p['default']) in [types.ListType, types.TupleType]:
-                message += ', '.join(map(str, p['default']))
-            else:
-                message += str(p['default'])
+            message +=    '                Default to ' + prettyOutput(p['default']) + '\n'
             message += '\n'
     return message
 
 
+def prettyOutput(value):
+    '''Return a value in good format, the main purpose is to
+      avoid [0.90000001, 0.2]
+    '''
+    if type(value) in [types.ListType, types.TupleType] and len(value)>1:
+        txt = '[' + ', '.join([prettyOutput(x) for x in value]) + ']'
+    else:
+        txt = str(value)
+    return txt
+
+
 def saveConfig(opt, file, param):
     """ Write a configuration file. This file can be later read with
-    command line option  -c  or --config  . 
+    command line option  -c  or --config  .
 
     opt: the option description list
 
     file: output file
 
-    param: parameters returned from  getParam  
-    
+    param: parameters returned from  getParam
+
     """
     try:
         f = open(file,'w')
@@ -1014,7 +1016,7 @@ def saveConfig(opt, file, param):
                 print >> f, "# label:\t%s" % options[p]['label']
             if options[p].has_key('arg'):
                 if options[p]['arg'][-1] == ':':
-                    print >> f, "# shortarg:\t-%s = %s" % (options[p]['arg'][:-1], str( param[p] ))
+                    print >> f, "# shortarg:\t-%s = %s" % (options[p]['arg'][:-1], prettyOutput(param[p]))
                 else:
                     print >> f, "# shortarg:\t-%s" % options[p]['arg']
             # write description
@@ -1031,11 +1033,11 @@ def saveConfig(opt, file, param):
                 # write out option value, try to make it python readable
                 if type(param[p]) == type(''):
                     if "'" in param[p]:
-                        print >> f, '%s = "%s"' % (arg, param[p])
+                        print >> f, '%s = "%s"' % (arg, prettyOutput(param[p]))
                     else:
-                        print >> f, "%s = '%s'" % (arg, param[p])
+                        print >> f, "%s = '%s'" % (arg, prettyOutput(param[p]))
                 else:
-                    print >> f, "%s = %s" % (arg, str(param[p]))
+                    print >> f, "%s = %s" % (arg, prettyOutput(param[p]))
     print >> f, "\n\n#The same options can be given by command line options (subject to minor changes)"
     cmd = "#    --noDialog "
     # shorter version
@@ -1046,21 +1048,21 @@ def saveConfig(opt, file, param):
                 and str(param[p]) == str(options[p]['default'])
             if options[p]['longarg'][-1] == '=':
                 if str(param[p]).find(",") >= 0:    # has single quote
-                    arg =  " --" + options[p]['longarg'][0:-1] \
-                        + '="' + str( param[p] ) + '"'
+                    arg = " --" + options[p]['longarg'][0:-1] \
+                        + '="' + prettyOutput(param[p]) + '"'
                     cmd += arg
                     if not defaultVal:
                         scmd += arg
                 else:
                     arg = " --" + options[p]['longarg'][0:-1] \
-                        + "='" + str( param[p] ) + "'"
+                        + "='" + prettyOutput(param[p]) + "'"
                     cmd += arg
                     if not defaultVal:
                         scmd += arg
             elif param[p]: # this option is True
-                cmd += "--" + options[p]['longarg']
+                cmd += " --" + options[p]['longarg']
                 if not defaultVal:
-                    cmd += "--" + options[p]['longarg']
+                    cmd += " --" + options[p]['longarg']
     print >> f, ' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False))
     # print out shorter version
     print >> f, "\n\n#Or a shorter version if default arguments are ignored"
@@ -1070,10 +1072,10 @@ def saveConfig(opt, file, param):
 
 def printConfig(opt, param, out=sys.stdout):
     """ Print configuration.
-    
+
         opt: option description list
 
-        param: parameters returned from  getParam()  
+        param: parameters returned from  getParam()
 
         out: output
     """
@@ -1165,7 +1167,7 @@ def valueGT(a):
 
 
 def valueGE(a):
-    '''Return a function that returns true if passed option is greater than or 
+    '''Return a function that returns true if passed option is greater than or
     equal to a'''
     def func(val):
         return val >= a
@@ -1180,7 +1182,7 @@ def valueLT(a):
 
 
 def valueLE(a):
-    '''Return a function that returns true if passed option is less than or 
+    '''Return a function that returns true if passed option is less than or
     equal to a'''
     def func(val):
         return val <= a
@@ -1263,7 +1265,7 @@ env_debug = os.getenv('SIMUDEBUG')
 [par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
     'default':False}], False, True)
 [par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
-    'default':False }], False, True) 
+    'default':False }], False, True)
 [par_noDialog] = _termGetParam([{'longarg':'noDialog', \
     'default':False }], False, True)
 
@@ -1286,7 +1288,7 @@ if env_longAllele in ['standard', 'short', 'long', 'binary']:
 else:
     _longAllele = 'standard'
 
-simuOptions = {'Optimized':_optimized, 
+simuOptions = {'Optimized':_optimized,
     'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
 if env_debug != None:
@@ -1306,15 +1308,15 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
     chromMap: obsolete.
 
     alleleType: 'binary', 'short', or 'long'. 'standard' can be used as 'short'
-        for backward compatibility. If not set, environmental variable 
-        SIMUALLELETYPE will be used if available. if it is not defined, the 
+        for backward compatibility. If not set, environmental variable
+        SIMUALLELETYPE will be used if available. if it is not defined, the
         short allele version will be used.
 
     quiet: If True, supress banner information when simuPOP is loaded.
 
     debug: a list of debug code (or string). If not set, environmental variable
         SIMUDEBUG will be used if available.
-    
+
     '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
