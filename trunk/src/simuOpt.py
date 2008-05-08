@@ -350,533 +350,481 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
     return values
 
 
-###
-### currently, I do not want to specify font. Use defaults on each
-### OS seems to be a better choice.
-#DEFAULT_FONT_FAMILY     = ("MS", "Sans", "Serif")
-#MONOSPACE_FONT_FAMILY = ("Courier")
-#DEFAULT_FONT_SIZE         = 12
-#BIG_FONT_SIZE = 12
+class _paramDialog:
+    def __init__(self, options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+        if len(options) == 0:
+            raise exceptions.ValueError("Empty field names...")    # some behaviors
+        # values, not the final result
+        # first set them with command line options etc
+        self.values = []
+        #
+        processedArgs = []
+        for opt in options:
+            # validate opt
+            for k in opt.keys():
+                if not k in allowed_keys:
+                    raise exceptions.ValueError("Unrecognized option entry " + k )
+            #
+            if opt.has_key('separator'):
+                val = opt['separator']
+            else:
+                val = _getParamShortArg(opt, processedArgs)
+                if val == None:
+                    val = _getParamLongArg(opt, processedArgs)
+                if val == None:
+                    val = _getParamConfigFile(opt, processedArgs)
+                if val == None:
+                    if opt.has_key('default'):
+                        val = opt['default']
+            self.values.append(val)
+        # look if any argument was not processed
+        if checkUnprocessedArgs:
+            for i in range(1, len(sys.argv)):
+                if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
+                    raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+        # now, initialize variables
+        self.options = options
+        self.title = title
+        self.description = description
+        self.details = details
+        self.nCol = nCol
 
-#
-# This function is adapted from easyGUI.
-# It is easy dirty as it can be since I need a
-# function to handle all the stuff.
-# Maybe a class approach will be used later.
-#
-def _tkGetParam(opt, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
-    ''' get options from a given options structure '''
-    import Tkinter as tk
-    if len(opt) == 0:
-        raise exceptions.ValueError("Empty field names...")    # some behaviors
-    # remove separators, tk version does not do this
-    options = []
-    for g in opt:
-        if not g.has_key('separator'):
-            options.append(g)
-    # values, not the final result
-    # first set them with command line options etc
-    values = []
-    processedArgs = []
-    # process all options
-    goto = 0
-    for opt in range(0, len(options)):
-        if opt < goto:
-            values.append(None)
-            continue
-        p = options[opt]
-        # validate p
-        for k in p.keys():
-            if not k in allowed_keys:
-                raise exceptions.ValueError("Unrecognized option entry " + k )
-        val = _getParamShortArg(p, processedArgs)
-        if val == None:
-            val = _getParamLongArg(p, processedArgs)
-        if val == None:
-            val = _getParamConfigFile(p, processedArgs)
-        if val == None:
-            if p.has_key('default'):
-                val = p['default']
-        # ignore jump options
-        values.append(val)
-    # look if any argument was not processed
-    if checkUnprocessedArgs:
-        for i in range(1, len(sys.argv)):
-            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
-                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
-    #
-    def denyWindowManagerClose():
-        """ don't allow WindowManager close    """
+    def createDialog(self):
+        raise exceptions.SystemError('Please define createDialog')
+        
+    def runDialog(self):
+        raise exceptions.SystemError('Please define runDialog')
+
+    def getParam(self):
+        '''Create, run a dialog, return result'''
+        self.createDialog()
+        self.runDialog()
+        #
+        # after the run has completed
+        if len(self.values) == len(self.options):
+            # remove values inserted by separators
+            ret = []
+            for p,opt in enumerate(self.options):
+                if not opt.has_key('separator'):
+                    ret.append(self.values[p])
+            return ret
+        else:
+            return [] 
+
+
+class _tkParamDialog(_paramDialog):
+    def __init__(self, options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+        ''' get options from a given options structure '''
+        _paramDialog.__init__(self, options, title, description, details, checkUnprocessedArgs, nCol)
+
+    def denyWindowManagerClose(self):
+        '''Don't allow WindowManager close'''
         x = tk.Tk()
         x.withdraw()
         x.bell()
         x.destroy()
-    root = tk.Tk()
-    root.protocol('WM_DELETE_WINDOW', denyWindowManagerClose )
-    entryWidgets = [None]*len(options)
-    labelWidgets = [None]*len(options)
-    root.title(title)
-    root.iconname('Dialog')
-    root.geometry("+300+200")
-    # cancel
-    def doCancel(event):
-        " when ESC is pressed cancel "
-        # scripple values by changing its length
-        values.append(None)
-        root.quit()
-    # done
-    def doGetText(event):
+
+    def doCancel(self, event):
+        '''When ESC is pressed cancel'''
+        self.values = []
+        self.app.quit()
+
+    def doGetText(self, event):
         ''' get result and convert values '''
-        for g in range(len(entryWidgets)):
-            if entryWidgets[g] == None:
+        for g in range(len(self.entryWidgets)):
+            if self.entryWidgets[g] == None:
                 continue
             try:
                 # get text from different type of entries
-                if entryWidgets[g].winfo_class() == "Entry":    # an entry box?
-                    val = _getParamValue( options[g], entryWidgets[g].get())
-                elif entryWidgets[g].winfo_class() == "Listbox":    # a listbox
-                    sel = entryWidgets[g].curselection()
+                if self.entryWidgets[g].winfo_class() == "Entry":    # an entry box?
+                    val = _getParamValue(self.options[g], self.entryWidgets[g].get())
+                elif self.entryWidgets[g].winfo_class() == "Listbox":    # a listbox
+                    sel = self.entryWidgets[g].curselection()
                     if len(sel) == 1:
-                        items = entryWidgets[g].get( sel)
+                        items = self.entryWidgets[g].get(sel)
                     else:
                         items = []
                         for s in sel:
-                            items.append( entryWidgets[g].get( s))
-                    val = _getParamValue( options[g], items)
-                elif entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
-                    var = values[g].get()
-                    val = _getParamValue( options[g], var)
-            except:                
-                #print "Invalid Value: ", entryWidgets[g].class()
-                # incorrect value
-                # set to red
-                # clear other red colors
-                for lab in labelWidgets:
+                            items.append(self.entryWidgets[g].get( s))
+                    val = _getParamValue(self.options[g], items)
+                elif self.entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
+                    var = self.values[g].get()
+                    val = _getParamValue(self.options[g], var)
+            except Exception,e:
+                print e
+                for lab in self.labelWidgets:
                     if lab != None:
                         lab.configure(fg='black')
                 # set this one to red
-                labelWidgets[g].configure(fg='red')
-                entryWidgets[g].focus_force()
+                self.labelWidgets[g].configure(fg='red')
+                self.entryWidgets[g].focus_force()
                 return
             else:
                 # convert to values
-                values[g] = val
+                self.values[g] = val
         # get all results and return
-        root.quit()
-    # help
-    def doHelp(event):
+        self.app.quit()
+    
+    def doHelp(self, event):
         # open another window
-        root1 = tk.Tk()
+        self.app1 = tk.Tk()
         # OK for help
         def doOK(event):
             " OK buton is pressed "
-            root1.quit()
-        #global root1
-        root1.title("Help for " + title)
-        root1.iconname('Dialog')
-        root1.geometry("+200+200")
-        root1.minsize(400, 100)
-        messageFrame = tk.Frame(root1)
+            self.app1.quit()
+        #global self.app1
+        self.app1.title("Help for " + self.title)
+        self.app1.iconname('Dialog')
+        self.app1.geometry("+200+200")
+        self.app1.minsize(400, 100)
+        messageFrame = tk.Frame(self.app1)
         messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
         scrollBar = tk.Scrollbar(messageFrame)
         scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
         messageWidget = tk.Text(messageFrame, wrap=tk.WORD,
             yscrollcommand=scrollBar.set)
-        messageWidget.insert(tk.END, usage(options, details))
+        messageWidget.insert(tk.END, usage(self.options, self.details))
         scrollBar.config(command=messageWidget.yview)
         #messageWidget.configure(font=(DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE), state=DISABLED)
         messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
-        buttonFrame = tk.Frame(root1)
+        buttonFrame = tk.Frame(self.app1)
         buttonFrame.pack(side=tk.BOTTOM, fill=tk.BOTH)
         okButton = tk.Button(buttonFrame, takefocus=1, text="OK")
         okButton.pack(expand=tk.YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
         # bind the keyboard events to the widget
         okButton.bind("<Return>", doOK)
         okButton.bind("<Button-1>", doOK)
-        root1.bind("<Escape>", doOK)
+        self.app1.bind("<Escape>", doOK)
         # put the focus on the first button
-        root1.mainloop()
-        root1.destroy()
-    #
-    # the main window
-    #
-    root.bind("<Escape>", doCancel)
-    # all use grid management
-    # top message
-    # do not use a very long description please
-    tk.Message(root, text=description, width=600).grid(row=0, column=0,
-        columnspan = 2 * nCol, sticky=tk.N+tk.E+tk.S+tk.W, pady=20)
-    # find out number of items etc
-    colParam = 0
-    for opt in options:
-        if opt.has_key('label'):
-            colParam += 1
-        if opt.has_key('chooseFrom'):
-            colParam += len( opt['chooseFrom']) -1
-        if opt.has_key('chooseOneOf'):
-            colParam += len( opt['chooseOneOf']) -1
-    if colParam / nCol * nCol == colParam:
-        colParam /= nCol
-    else:
-        colParam = colParam/nCol + 1
-    colCount = 0
-    colIndex = 0
-    # all entries
-    for g in range(len(options)):
-        opt = options[g]
-        if not opt.has_key('label'):
-            continue
-        # --------- entryWidget ----------------------------------------------
-        # use different entry method for different types
-        if opt.has_key('chooseOneOf'):    # single choice
-            labelWidgets[g] = tk.Label(root, text=opt['label'])
-            labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-                rowspan = len(opt['chooseOneOf']), sticky=tk.E)
-            entryWidgets[g] = tk.Listbox(root, width=40, selectmode=tk.SINGLE, \
-                exportselection=0, height=len(opt['chooseOneOf']))
-            entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
-                rowspan = len(opt['chooseOneOf']))
-            colCount += len(opt['chooseOneOf'])
-            for entry in opt['chooseOneOf']:
-                entryWidgets[g].insert(tk.END, str(entry))
-            if values[g] != None:
-                entryWidgets[g].select_set( opt['chooseOneOf'].index(values[g]))
-        elif opt.has_key('chooseFrom'):    # multiple choice
-            labelWidgets[g] = tk.Label(root, text=opt['label'])
-            labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-                rowspan = len(opt['chooseFrom']), sticky=tk.E)
-            entryWidgets[g] = tk.Listbox(root, width=40, selectmode=tk.EXTENDED, \
-                exportselection=0, height=len( opt['chooseFrom']))
-            entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
-                rowspan = len(opt['chooseFrom']))
-            colCount += len(opt['chooseFrom'])
-            for entry in opt['chooseFrom']:
-                entryWidgets[g].insert(tk.END, str(entry))
-            if values[g] != None:
-                if type(values[g]) in [types.TupleType, types.ListType]:
-                    for val in values[g]:
-                        entryWidgets[g].select_set( opt['chooseFrom'].index(val))
-                else:
-                    entryWidgets[g].select_set( opt['chooseFrom'].index( values[g] ))
-        elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
-             (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
-            labelWidgets[g] = tk.Label(root, text=opt['label'])
-            labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-                rowspan = 1, sticky=tk.E)
-            # replace values[g] by a tk IntVar() because tk.Checkbutton has to store
-            # its value in such a variable. values[g].get() will be used to return the
-            # state of this Checkbutton.
-            # c.f. http://infohost.nmt.edu/tcc/help/pubs/tkinter/control-variables.html
-            iv = tk.IntVar()
-            iv.set(values[g] == True) # values[g] can be None, True or False
-            values[g] = iv
-            entryWidgets[g] = tk.Checkbutton(root, height=1,
-                     text = "Yes / No", variable=values[g])
-            entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
-                rowspan = 1)
-            colCount += 1
-            entryWidgets[g].deselect()
+        self.app1.mainloop()
+        self.app1.destroy()
+    
+    def createDialog(self):
+        self.app = tk.Tk()
+        self.app.protocol('WM_DELETE_WINDOW', self.denyWindowManagerClose)
+        self.app.title(self.title)
+        self.app.iconname('Dialog')
+        self.app.geometry("+300+200")
+        #
+        # the main window
+        #
+        self.entryWidgets = [None]*len(self.options)
+        self.labelWidgets = [None]*len(self.options)
+        self.app.bind("<Escape>", self.doCancel)
+        # all use grid management
+        # top message
+        # do not use a very long description please
+        tk.Message(self.app, text=self.description, width=600).grid(row=0, column=0,
+            columnspan = 2 * self.nCol, sticky=tk.N+tk.E+tk.S+tk.W, pady=20)
+        # find out number of items etc
+        colParam = 0
+        for opt in self.options:
+            if opt.has_key('label'):
+                colParam += 1
+            if opt.has_key('chooseFrom'):
+                colParam += len( opt['chooseFrom']) -1
+            if opt.has_key('chooseOneOf'):
+                colParam += len( opt['chooseOneOf']) -1
+        if colParam / self.nCol * self.nCol == colParam:
+            colParam /= self.nCol
         else:
-            labelWidgets[g] = tk.Label(root, text=opt['label'])
-            labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
-            entryWidgets[g] = tk.Entry(root, width=40)
-            entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10)
-            colCount += 1
-             # put default value into the entryWidget
-            if values[g] != None:
-                # len()>0 to avoid emtpy string with emtpy list
-                if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>1:
-                    entryWidgets[g].insert(0, ', '.join(map(str, values[g])))
-                else:
-                    entryWidgets[g].insert(0,str(values[g]))
-        colIndex = colCount /colParam
-        entryWidgets[g].bind("<Return>", doGetText)
-        entryWidgets[g].bind("<Escape>", doCancel)
-    # help button
-    helpButton = tk.Button(root, takefocus=1, text="Help")
-    helpButton.bind("<Return>"    , doHelp)
-    helpButton.bind("<Button-1>", doHelp)
-    helpButton.grid( column=0, columnspan=nCol, row = colParam+1, pady=20)
-    # ok button
-    okButton = tk.Button(root, takefocus=1, text="Run!")
-    okButton.bind("<Return>"    , doGetText)
-    okButton.bind("<Button-1>", doGetText)
-    okButton.grid( column=nCol, columnspan=nCol, row = colParam+1, pady=20)
-    # cancel button
-    cancelButton = tk.Button(root, takefocus=1, text="Cancel")
-    cancelButton.bind("<Return>"    , doCancel)
-    cancelButton.bind("<Button-1>", doCancel)
-    cancelButton.grid( column=0, columnspan=2*nCol, row = colParam+1, pady=20)
-    # ------------------- time for action! -----------------
-    # first un-none
-    for g in range(len(options)):
-        if entryWidgets[g] != None:
-            entryWidgets[g].focus_force()
-            break
-    root.mainloop()    # run it!
-    # -------- after the run has completed ----------------------------------
-    root.destroy()    # button_click didn't destroy root, so we do it now
-    if len(values) == len(options):
-        return values
-    else:
-        return []
+            colParam = colParam/self.nCol + 1
+        colCount = 0
+        colIndex = 0
+        # all entries
+        for g in range(len(self.options)):
+            opt = self.options[g]
+            if not opt.has_key('label'):
+                continue
+            # --------- entryWidget ----------------------------------------------
+            # use different entry method for different types
+            if opt.has_key('chooseOneOf'):    # single choice
+                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
+                    rowspan = len(opt['chooseOneOf']), sticky=tk.E)
+                self.entryWidgets[g] = tk.Listbox(self.app, width=40, selectmode=tk.SINGLE, \
+                    exportselection=0, height=len(opt['chooseOneOf']))
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
+                    rowspan = len(opt['chooseOneOf']))
+                colCount += len(opt['chooseOneOf'])
+                for entry in opt['chooseOneOf']:
+                    self.entryWidgets[g].insert(tk.END, str(entry))
+                if self.values[g] != None:
+                    self.entryWidgets[g].select_set( opt['chooseOneOf'].index(self.values[g]))
+            elif opt.has_key('chooseFrom'):    # multiple choice
+                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
+                    rowspan = len(opt['chooseFrom']), sticky=tk.E)
+                self.entryWidgets[g] = tk.Listbox(self.app, width=40, selectmode=tk.EXTENDED, \
+                    exportselection=0, height=len( opt['chooseFrom']))
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
+                    rowspan = len(opt['chooseFrom']))
+                colCount += len(opt['chooseFrom'])
+                for entry in opt['chooseFrom']:
+                    self.entryWidgets[g].insert(tk.END, str(entry))
+                if self.values[g] != None:
+                    if type(self.values[g]) in [types.TupleType, types.ListType]:
+                        for val in self.values[g]:
+                            self.entryWidgets[g].select_set( opt['chooseFrom'].index(val))
+                    else:
+                        self.entryWidgets[g].select_set( opt['chooseFrom'].index( self.values[g] ))
+            elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
+                 (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
+                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
+                    rowspan = 1, sticky=tk.E)
+                # replace self.values[g] by a tk IntVar() because tk.Checkbutton has to store
+                # its value in such a variable. self.values[g].get() will be used to return the
+                # state of this Checkbutton.
+                # c.f. http://infohost.nmt.edu/tcc/help/pubs/tkinter/control-variables.html
+                iv = tk.IntVar()
+                iv.set(self.values[g] == True) # self.values[g] can be None, True or False
+                self.values[g] = iv
+                self.entryWidgets[g] = tk.Checkbutton(self.app, height=1,
+                         text = "Yes / No", variable=self.values[g])
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
+                    rowspan = 1)
+                colCount += 1
+                self.entryWidgets[g].deselect()
+            else:
+                self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
+                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
+                self.entryWidgets[g] = tk.Entry(self.app, width=40)
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10)
+                colCount += 1
+                 # put default value into the entryWidget
+                if self.values[g] != None:
+                    # len()>0 to avoid emtpy string with emtpy list
+                    if type(self.values[g]) in [types.ListType, types.TupleType] and len(self.values[g])>1:
+                        self.entryWidgets[g].insert(0, ', '.join(map(str, self.values[g])))
+                    else:
+                        self.entryWidgets[g].insert(0,str(self.values[g]))
+            colIndex = colCount /colParam
+            self.entryWidgets[g].bind("<Return>", self.doGetText)
+            self.entryWidgets[g].bind("<Escape>", self.doCancel)
+        # help button
+        helpButton = tk.Button(self.app, takefocus=1, text="Help")
+        helpButton.bind("<Return>", self.doHelp)
+        helpButton.bind("<Button-1>", self.doHelp)
+        helpButton.grid(column=0, columnspan=self.nCol, row = colParam+1, pady=20)
+        # ok button
+        okButton = tk.Button(self.app, takefocus=1, text="Run!")
+        okButton.bind("<Return>", self.doGetText)
+        okButton.bind("<Button-1>", self.doGetText)
+        okButton.grid( column=self.nCol, columnspan=self.nCol, row = colParam+1, pady=20)
+        # cancel button
+        cancelButton = tk.Button(self.app, takefocus=1, text="Cancel")
+        cancelButton.bind("<Return>", self.doCancel)
+        cancelButton.bind("<Button-1>", self.doCancel)
+        cancelButton.grid( column=0, columnspan=2*self.nCol, row = colParam+1, pady=20)
 
-#
-# This function is adapted from easyGUI.
-# It is easy dirty as it can be since I need a
-# function to handle all the stuff.
-# Maybe a class approach will be used later.
-#
-def _wxGetParam(options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
-    ''' get options from a given options structure '''
-    import wx
-    if len(options) == 0:
-        raise exceptions.ValueError("Empty field names...")    # some behaviors
-    # values, not the final result
-    # first set them with command line options etc
-    values = []
-    processedArgs = []
-    # process all options
-    goto = 0
-    for opt in range(0, len(options)):
-        if opt < goto:
-            values.append(None)
-            continue
-        p = options[opt]
-        # validate p
-        for k in p.keys():
-            if not k in allowed_keys:
-                raise exceptions.ValueError("Unrecognized option entry " + k )
-        if p.has_key('separator'):
-            val = p['separator']
-        else:
-            val = _getParamShortArg(p, processedArgs)
-            if val == None:
-                val = _getParamLongArg(p, processedArgs)
-            if val == None:
-                val = _getParamConfigFile(p, processedArgs)
-            if val == None:
-                if p.has_key('default'):
-                    val = p['default']
-            # ignore jump options
-        values.append(val)
-    # look if any argument was not processed
-    if checkUnprocessedArgs:
-        for i in range(1, len(sys.argv)):
-            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
-                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
-    # parameter 0 prevents wxPython from open a separate window for stdout and stderr
-    app = wx.App(0)
-    dlg = wx.Dialog(parent=None, id=-1, title=title)
-    entryWidgets = [None]*len(options)
-    labelWidgets = [None]*len(options)
-    # cancel
-    def onCancel(event):
-        " when ESC is pressed cancel "
-        # scripple values by changing its length
-        values.append(None)
-        dlg.EndModal(wx.ID_CANCEL)
-    # done
-    def onOK(event):
+    def runDialog(self):
+        # first un-none
+        for g in range(len(self.options)):
+            if self.entryWidgets[g] != None:
+                self.entryWidgets[g].focus_force()
+                break
+        self.app.mainloop()    # run it!
+        self.app.destroy()    # button_click didn't destroy self.app, so we do it now
+
+
+# get options from a given options structure
+class _wxParamDialog(_paramDialog):
+    def __init__(self, options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+        _paramDialog.__init__(self, options, title, description, details, checkUnprocessedArgs, nCol)
+
+    def onHelp(self, event):
+        # open another dialog
+        helpDlg = wx.Dialog(parent=self.dlg, id=-1, title='Help for ' + self.title)
+        box = wx.BoxSizer(wx.VERTICAL)
+        box.Add(wx.TextCtrl(parent=helpDlg, id=-1, size=[600,400],
+            style=wx.TE_MULTILINE | wx.TE_READONLY,
+            value = usage(self.options, self.details)), 0, wx.ALL, 20)
+        okButton = wx.Button(parent=helpDlg, id=wx.ID_OK, label='OK')
+        box.Add(okButton, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+        self.app.Bind(wx.EVT_BUTTON, lambda event:helpDlg.EndModal(wx.ID_OK), okButton)
+        helpDlg.SetSizerAndFit(box)
+        helpDlg.Layout()
+        helpDlg.ShowModal()
+        helpDlg.Destroy()
+
+    def onOK(self, event):
         ''' get result and convert values '''
-        for g in range(len(entryWidgets)):
-            if entryWidgets[g] == None:
+        for g in range(len(self.entryWidgets)):
+            if self.entryWidgets[g] == None:
                 continue
             try:
                 # get text from different type of entries
                 try:    # an entry box or check box
-                    val = _getParamValue( options[g], entryWidgets[g].GetValue())
+                    val = _getParamValue(self.options[g], self.entryWidgets[g].GetValue())
                 except:
                     try:    # a list box?
-                        val = _getParamValue( options[g],
-                            options[g]['chooseOneOf'][int(entryWidgets[g].GetSelection())])
+                        val = _getParamValue(self.options[g],
+                            self.options[g]['chooseOneOf'][int(self.entryWidgets[g].GetSelection())])
                     except: # a checklist box?
                         items = []
-                        for s in range(len(options[g]['chooseFrom'])):
-                            if entryWidgets[g].IsChecked(s):
-                                items.append( options[g]['chooseFrom'][s])
-                        val = _getParamValue( options[g], items)
+                        for s in range(len(self.options[g]['chooseFrom'])):
+                            if self.entryWidgets[g].IsChecked(s):
+                                items.append(self.options[g]['chooseFrom'][s])
+                        val = _getParamValue(self.options[g], items)
             except exceptions.Exception, e:
                 # incorrect value
                 # set to red
                 # clear other red colors
-                for lab in labelWidgets:
+                for lab in self.labelWidgets:
                     if lab != None:
                         lab.SetForegroundColour('black')
                 # set this one to red
-                labelWidgets[g].SetForegroundColour('red')
-                entryWidgets[g].SetFocus()
+                self.labelWidgets[g].SetForegroundColour('red')
+                self.entryWidgets[g].SetFocus()
                 return
             else:
                 # convert to values
-                values[g] = val
+                self.values[g] = val
         # get all results and return
-        dlg.EndModal(wx.ID_OK)
-    # help
-    def onHelp(event):
-        # open another dialog
-        dlg1 = wx.Dialog(parent=dlg, id=-1, title='Help for ' + title)
-        #global root1
-        box = wx.BoxSizer(wx.VERTICAL)
-        box.Add( wx.TextCtrl( parent=dlg1, id=-1, size=[600,400],
-            style=wx.TE_MULTILINE | wx.TE_READONLY,
-            value=usage(options, details)), 0, wx.ALL, 20)
-        okButton = wx.Button( parent=dlg1, id=wx.ID_OK, label='OK')
-        box.Add( okButton, 0, wx.ALIGN_CENTER | wx.ALL, 20)
-        app.Bind( wx.EVT_BUTTON, lambda event:dlg1.EndModal(wx.ID_OK),
-            okButton)
-        dlg1.SetSizerAndFit(box)
-        dlg1.Layout()
-        dlg1.ShowModal()
-        dlg1.Destroy()
-    # format a description to tooltip
-    def formatDesc(text):
+        self.dlg.EndModal(wx.ID_OK)
+
+    def onCancel(self, event):
+        '''When ESC is pressed cancel, clear values and return'''
+        self.values = []
+        self.dlg.EndModal(wx.ID_CANCEL)
+
+    def formatDesc(self, text):
         # linux can auto wrap, windows can not but sometime wrap
         # at unexpected places... It is safer to wrap at original
         # place.
-        return '\n'.join( [x.strip() for x in text.splitlines()] )
-    #
-    # the main window
-    #
-    # get font height for dialog arrangement purpose
-    # top message
-    box = wx.BoxSizer(wx.VERTICAL)
-    # do not use a very long description please
-    topLabel = wx.StaticText(parent=dlg, id=-1, label='\n'+description)
-    box.Add( topLabel, 0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER , 50)
-    #topLabel.SetForegroundColour('Black')
-    topLabel.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL))
-    # add a box for all ...
-    paraBox = wx.FlexGridSizer(cols=nCol)
-    for b in range(nCol):
-        paraBox.AddGrowableCol(b)
-    #
-    # add several FlexGridSizer
-    gridBox = []
-    for b in range(nCol):
-        gridBox.append( wx.FlexGridSizer(cols=2, vgap=5, hgap=20))
-        gridBox[-1].AddGrowableCol(0)
-        gridBox[-1].AddGrowableCol(1)
-        paraBox.Add( gridBox[-1], 1, wx.EXPAND | wx.ALL, 10)
-    box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 10)
-    # count numbers of valid parameters..
-    # chooseFrom count as three
-    colParam = 0
-    for opt in options:
-        if opt.has_key('label') or opt.has_key('separator'):
-            colParam += 1
-        if opt.has_key('chooseFrom'):
-            colParam += len( opt['chooseFrom']) -2
-    if colParam / nCol * nCol == colParam:
-        colParam /= nCol
-    else:
-        colParam = colParam/nCol + 1
-    colCount = 0
-    colIndex = 0
-    #print colParam
-    # all entries
-    for g in range(len(options)):
-        opt = options[g]
-        if not (opt.has_key('label') or opt.has_key('separator')) :
-            continue
-        colIndex = colCount / colParam
-        if opt.has_key('separator'):
-            labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['separator'])
-            #labelWidgets[g].SetForegroundColour('Blue')
-            labelWidgets[g].SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD))
-            gridBox[colIndex].Add(labelWidgets[g], 0, wx.ALIGN_LEFT )
-            entryWidgets[g] = None
-            gridBox[colIndex].Add(wx.StaticText(parent=dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
-            colCount += 1
-            continue
-        else: # label
-            labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['label'])
-            gridBox[colIndex].Add(labelWidgets[g], 0, wx.ALIGN_LEFT )
-        # --------- entryWidget ----------------------------------------------
-        # use different entry method for different types
-        if opt.has_key('chooseOneOf'):    # single choice
-            entryWidgets[g] = wx.Choice(parent=dlg, id=g, choices = opt['chooseOneOf'])
-            if opt.has_key('description'):
-                entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
-            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
-            if values[g] != None:
-                try:
-                    entryWidgets[g].SetSelection(opt['chooseOneOf'].index(values[g]))
-                except:
-                    raise ValueError('Value: %s is not one of %s.' % (str(values[g]), str(opt['chooseOneOf'])))
-            colCount += 1
-        elif opt.has_key('chooseFrom'):    # multiple choice
-            w,h = labelWidgets[g].GetTextExtent('a')
-            entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, size=(0, (h+4)*len(opt['chooseFrom'])),
-                choices = opt['chooseFrom'])
-            if opt.has_key('description'):
-                entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
-            if values[g] != None:
-                if type(values[g]) in [types.ListType, types.TupleType]:
-                    for val in values[g]:
-                        entryWidgets[g].Check( opt['chooseFrom'].index(val))
-                else:
-                    entryWidgets[g].Check( opt['chooseFrom'].index(values[g]))
-            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND)
-            colCount += len(opt['chooseFrom']) -1
-        elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
-             (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
-            w,h = labelWidgets[g].GetTextExtent('a')
-            entryWidgets[g] = wx.CheckBox(parent=dlg, id=g, label = 'Yes / No')
-            if opt.has_key('description'):
-                entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
-            if values[g] != None:
-                entryWidgets[g].SetValue(values[g])
-            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND)
-            colCount += 1
-        else: # a edit box
-            # put default value into the entryWidget
-            txt = ''
-            if values[g] != None:
-             if type(values[g]) in [types.ListType, types.TupleType] and len(values[g])>1:
-                 txt =    ', '.join(map(str, values[g]))
-             else:
-                 txt = str(values[g])
-            entryWidgets[g] = wx.TextCtrl(parent=dlg, id=g, value=txt)
-            if opt.has_key('description'):
-                entryWidgets[g].SetToolTipString(formatDesc(opt['description']))
-            gridBox[colIndex].Add(entryWidgets[g], 1, wx.EXPAND )
-            colCount += 1
-    # help button
-    buttonBox = wx.GridSizer(cols=3)
-    helpButton = wx.Button(dlg, wx.ID_HELP, 'Help')
-    buttonBox.Add( helpButton, 0, wx.ALIGN_CENTER )
-    dlg.Bind( wx.EVT_BUTTON, onHelp, helpButton)
-    cancelButton = wx.Button(dlg, wx.ID_CANCEL, 'Cancel')
-    buttonBox.Add( cancelButton, 0, wx.ALIGN_CENTER )
-    dlg.Bind( wx.EVT_BUTTON, onCancel, cancelButton)
-    okButton = wx.Button(dlg, wx.ID_OK, 'OK')
-    buttonBox.Add( okButton, 0, wx.ALIGN_CENTER)
-    dlg.Bind( wx.EVT_BUTTON, onOK, okButton)
-    #
-    box.Add( buttonBox, 0, wx.ALL | wx.EXPAND, 20)
-    # ------------------- time for action! -----------------
-    dlg.SetSizerAndFit(box)
-    dlg.Layout()
-    # first un-none
-    for g in range(len(options)):
-        if entryWidgets[g] != None:
-            entryWidgets[g].SetFocus()
-            break
-    dlg.ShowModal()
-    dlg.Destroy()
-    # we do not actually need a main loop
-    #app.MainLoop()    # run it!
-    # -------- after the run has completed ----------------------------------
-    if len(values) == len(options):
-        # remove values inserted by separators
-        ret = []
-        for p in range(len(options)):
-            if not options[p].has_key('separator'):
-                ret.append( values[p] )
-        return ret
-    else:
-        return []
+        return '\n'.join([x.strip() for x in text.splitlines()] )
+
+    def addButton(self, ID, text, func):
+        button = wx.Button(self.dlg, ID, text)
+        self.buttonBox.Add(button, 0, wx.ALIGN_CENTER)
+        self.dlg.Bind(wx.EVT_BUTTON, func, button)
+
+    def createDialog(self):
+        self.app = wx.App(0)
+        dlg = wx.Dialog(parent=None, id=-1, title = self.title)
+        self.entryWidgets = [None]*len(self.options)
+        self.labelWidgets = [None]*len(self.options)
+        #
+        # the main window
+        box = wx.BoxSizer(wx.VERTICAL)
+        # do not use a very long description please
+        topLabel = wx.StaticText(parent=dlg, id=-1, label='\n' + self.description)
+        box.Add(topLabel, 0, wx.EXPAND | wx.LEFT | wx.ALIGN_CENTER , 50)
+        #topLabel.SetForegroundColour('Black')
+        topLabel.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL))
+        # add a box for all ...
+        paraBox = wx.FlexGridSizer(cols = self.nCol)
+        for col in range(self.nCol):
+            paraBox.AddGrowableCol(col)
+        #
+        # add several FlexGridSizer
+        gridBox = []
+        for col in range(self.nCol):
+            gridBox.append(wx.FlexGridSizer(cols=2, vgap=5, hgap=20))
+            gridBox[-1].AddGrowableCol(0)
+            gridBox[-1].AddGrowableCol(1)
+            paraBox.Add(gridBox[-1], 1, wx.EXPAND | wx.ALL, 10)
+        box.Add(paraBox, 1, wx.EXPAND | wx.ALL, 10)
+        # count numbers of valid parameters..
+        # chooseFrom count as many
+        colParam = 0
+        for opt in self.options:
+            if opt.has_key('label') or opt.has_key('separator'):
+                colParam += 1
+            if opt.has_key('chooseFrom'):
+                colParam += len(opt['chooseFrom']) - 2
+        if colParam / self.nCol * self.nCol == colParam:
+            colParam /= self.nCol
+        else:
+            colParam = colParam/self.nCol + 1
+        colCount = 0
+        colIndex = 0
+        # all entries
+        for g,opt in enumerate(self.options):
+            if not (opt.has_key('label') or opt.has_key('separator')) :
+                continue
+            colIndex = colCount / colParam
+            if opt.has_key('separator'):
+                self.labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['separator'])
+                #labelWidgets[g].SetForegroundColour('Blue')
+                self.labelWidgets[g].SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD))
+                gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
+                self.entryWidgets[g] = None
+                gridBox[colIndex].Add(wx.StaticText(parent=dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
+                colCount += 1
+                continue
+            else: # label
+                self.labelWidgets[g] = wx.StaticText(parent=dlg, id=-1, label=opt['label'])
+                gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
+            # use different entry method for different types
+            if opt.has_key('chooseOneOf'):    # single choice
+                self.entryWidgets[g] = wx.Choice(parent=dlg, id=g, choices = opt['chooseOneOf'])
+                if opt.has_key('description'):
+                    self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
+                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
+                if self.values[g] != None:
+                    try:
+                        self.entryWidgets[g].SetSelection(opt['chooseOneOf'].index(self.values[g]))
+                    except:
+                        raise ValueError('Value: %s is not one of %s.' % (str(self.values[g]), str(opt['chooseOneOf'])))
+                colCount += 1
+            elif opt.has_key('chooseFrom'):    # multiple choice
+                w,h = self.labelWidgets[g].GetTextExtent('a')
+                self.entryWidgets[g] = wx.CheckListBox(parent=dlg, id=g, size=(0, (h+4)*len(opt['chooseFrom'])),
+                    choices = opt['chooseFrom'])
+                if opt.has_key('description'):
+                    self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
+                if self.values[g] != None:
+                    if type(self.values[g]) in [types.ListType, types.TupleType]:
+                        for val in self.values[g]:
+                            self.entryWidgets[g].Check( opt['chooseFrom'].index(val))
+                    else:
+                        self.entryWidgets[g].Check( opt['chooseFrom'].index(self.values[g]))
+                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
+                colCount += len(opt['chooseFrom']) - 1
+            elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
+                 (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
+                w,h = self.labelWidgets[g].GetTextExtent('a')
+                self.entryWidgets[g] = wx.CheckBox(parent=dlg, id=g, label = 'Yes / No')
+                if opt.has_key('description'):
+                    self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
+                if self.values[g] != None:
+                    self.entryWidgets[g].SetValue(self.values[g])
+                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
+                colCount += 1
+            else: # a edit box
+                # put default value into the entryWidget
+                txt = ''
+                if self.values[g] != None:
+                     if type(self.values[g]) in [types.ListType, types.TupleType] and len(self.values[g])>1:
+                         txt =    ', '.join(map(str, self.values[g]))
+                     else:
+                         txt = str(self.values[g])
+                self.entryWidgets[g] = wx.TextCtrl(parent=dlg, id=g, value=txt)
+                if opt.has_key('description'):
+                    self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
+                gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
+                colCount += 1
+        self.dlg = dlg
+        # help button
+        self.buttonBox = wx.GridSizer(cols=3)
+        self.addButton(wx.ID_HELP, 'Help', self.onHelp)
+        self.addButton(wx.ID_CANCEL, 'Cancel', self.onCancel)
+        self.addButton(wx.ID_OK, 'OK', self.onOK)
+        box.Add(self.buttonBox, 0, wx.ALL | wx.EXPAND, 20)
+        dlg.SetSizerAndFit(box)
+        dlg.Layout()
+        # first un-none
+        for g in range(len(self.options)):
+            if self.entryWidgets[g] != None:
+                self.entryWidgets[g].SetFocus()
+                break
+    
+    def runDialog(self):
+        self.dlg.ShowModal()
+        self.dlg.Destroy()
+        
 
 
 # get parameter
@@ -887,7 +835,6 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
             - command line argument
             - configuration file specified by  -c file   (  --config  file), or
             - prompt for user input
-
 
         The option description list consists of dictionaries with some
         predefined keys. Each dictionary defines an option. Each option
@@ -980,17 +927,17 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
                 
-    if noDialog or '--noDialog' in sys.argv[1:] or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
+    if noDialog or par_noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
         return _termGetParam(options, doc, verbose)
     else:
         title = os.path.split(sys.argv[0])[-1]
         if useTkinter:
-            return _tkGetParam(options, title, doc, details,
-                checkUnprocessedArgs, nCol)
+            return _tkParamDialog(options, title, doc, details,
+                checkUnprocessedArgs, nCol).getParam()
         elif useWxPython:
-            return _wxGetParam(options, title, doc, details,
-                checkUnprocessedArgs, nCol)
+            return _wxParamDialog(options, title, doc, details,
+                checkUnprocessedArgs, nCol).getParam()
         else:
             return _termGetParam(options, doc, verbose)
 
@@ -1323,6 +1270,8 @@ env_debug = os.getenv('SIMUDEBUG')
     'default':False}], False, False, True)
 [par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
     'default':False }], False, False, True) 
+[par_noDialog] = _termGetParam([{'longarg':'noDialog', \
+    'default':False }], False, False, True)
 
 # remove these parameters from sys.argv
 for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
@@ -1348,7 +1297,6 @@ simuOptions = {'Optimized':_optimized,
 
 if env_debug != None:
     simuOptions['Debug'].extend( env_debug.split(',') )
-
 
 def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=None, debug=[]):
     '''set options before simuPOP is loaded to control which simuPOP module to load,
@@ -1399,11 +1347,12 @@ def requireRevision(rev):
 useTkinter = False
 useWxPython = False
 
-
 if not par_useTkinter:
     try:
         # wxPython might not exist
         imp.find_module('wx')
+        if not par_noDialog:
+            import wx
     except:
         useWxPython = False
     else:
@@ -1414,6 +1363,8 @@ if par_useTkinter or not useWxPython:
     # Tkinter should almost always exists, but ...
     try:
         imp.find_module('Tkinter')
+        if not par_noDialog:
+            import Tkinter as tk
     except:
         print "Tkinter can not be loaded. Please check your Python installation."
         useTkinter = False
@@ -1422,3 +1373,4 @@ if par_useTkinter or not useWxPython:
         # this is not possible now because of the use of find_module
         #if TkVersion < 8.0 :
         #    useTkinter = False
+
