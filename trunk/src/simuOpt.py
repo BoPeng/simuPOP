@@ -471,7 +471,7 @@ class _tkParamDialog(_paramDialog):
             except Exception,e:
                 print e
                 for lab in self.labelWidgets:
-                    if lab != None:
+                    if lab is not None:
                         lab.configure(fg='black')
                 # set this one to red
                 self.labelWidgets[g].configure(fg='red')
@@ -567,7 +567,7 @@ class _tkParamDialog(_paramDialog):
                 colCount += len(opt['chooseOneOf'])
                 for entry in opt['chooseOneOf']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
-                if self.values[g] != None:
+                if self.values[g] is not None:
                     self.entryWidgets[g].select_set( opt['chooseOneOf'].index(self.values[g]))
             elif opt.has_key('chooseFrom'):    # multiple choice
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
@@ -580,7 +580,7 @@ class _tkParamDialog(_paramDialog):
                 colCount += len(opt['chooseFrom'])
                 for entry in opt['chooseFrom']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
-                if self.values[g] != None:
+                if self.values[g] is not None:
                     if type(self.values[g]) in [types.TupleType, types.ListType]:
                         for val in self.values[g]:
                             self.entryWidgets[g].select_set( opt['chooseFrom'].index(val))
@@ -611,7 +611,7 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10)
                 colCount += 1
                  # put default value into the entryWidget
-                if self.values[g] != None:
+                if self.values[g] is not None:
                     self.entryWidgets[g].insert(0, prettyOutput(self.values[g]))
             colIndex = colCount /colParam
             self.entryWidgets[g].bind("<Return>", self.doGetText)
@@ -635,7 +635,7 @@ class _tkParamDialog(_paramDialog):
     def runDialog(self):
         # first un-none
         for g in range(len(self.options)):
-            if self.entryWidgets[g] != None:
+            if self.entryWidgets[g] is not None:
                 self.entryWidgets[g].focus_force()
                 break
         self.app.mainloop()    # run it!
@@ -684,7 +684,7 @@ class _wxParamDialog(_paramDialog):
                 # set to red
                 # clear other red colors
                 for lab in self.labelWidgets:
-                    if lab != None:
+                    if lab is not None:
                         lab.SetForegroundColour('black')
                 # set this one to red
                 self.labelWidgets[g].SetForegroundColour('red')
@@ -739,6 +739,7 @@ class _wxParamDialog(_paramDialog):
         for g,opt in enumerate(self.options):
             if not (opt.has_key('label') or opt.has_key('separator')) :
                 continue
+            value = self.values[g]                
             colIndex = rowIndex / numRows
             if opt.has_key('separator'):
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
@@ -760,11 +761,11 @@ class _wxParamDialog(_paramDialog):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
                 # if an value is given through command line argument or configuration file
-                if self.values[g] != None:
+                if value is not None:
                     try:
-                        self.entryWidgets[g].SetSelection(opt['chooseOneOf'].index(self.values[g]))
+                        self.entryWidgets[g].SetSelection(opt['chooseOneOf'].index(value))
                     except:
-                        raise ValueError('Value: %s is not one of %s.' % (str(self.values[g]), str(opt['chooseOneOf'])))
+                        raise ValueError('Value: %s is not one of %s.' % (str(value), str(opt['chooseOneOf'])))
                 rowIndex += 1
             elif opt.has_key('chooseFrom'):    # multiple choice
                 # the height is a little bit too much...
@@ -772,12 +773,12 @@ class _wxParamDialog(_paramDialog):
                     choices = opt['chooseFrom'])
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
-                if self.values[g] != None:
-                    if type(self.values[g]) in [types.ListType, types.TupleType]:
-                        for val in self.values[g]:
+                if value is not None:
+                    if type(value) in [types.ListType, types.TupleType]:
+                        for val in value:
                             self.entryWidgets[g].Check(opt['chooseFrom'].index(val))
                     else:
-                        self.entryWidgets[g].Check(opt['chooseFrom'].index(self.values[g]))
+                        self.entryWidgets[g].Check(opt['chooseFrom'].index(value))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
                 rowIndex += len(opt['chooseFrom'])
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
@@ -785,15 +786,15 @@ class _wxParamDialog(_paramDialog):
                 self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = 'Yes / No')
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
-                if self.values[g] != None:
-                    self.entryWidgets[g].SetValue(self.values[g])
+                if value is not None:
+                    self.entryWidgets[g].SetValue(value)
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
                 rowIndex += 1
             else: # an edit box
                 # put default value into the entryWidget
                 txt = ''
-                if self.values[g] != None:
-                     txt = prettyOutput(self.values[g])
+                if value is not None:
+                    txt = prettyOutput(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(self.formatDesc(opt['description']))
@@ -809,7 +810,7 @@ class _wxParamDialog(_paramDialog):
         self.dlg.Layout()
         # set focus to the first un-none entry
         for g in range(len(self.options)):
-            if self.entryWidgets[g] != None:
+            if self.entryWidgets[g] is not None:
                 self.entryWidgets[g].SetFocus()
                 break
 
@@ -966,7 +967,7 @@ def usage(options, before=''):
         if p.has_key('description'):
             message += p['description']
         message += '\n'
-        if p.has_key('default') and p['default'] != None:
+        if p.has_key('default') and p['default'] is not None:
             message +=    '                Default to ' + prettyOutput(p['default']) + '\n'
             message += '\n'
     return message
@@ -1278,7 +1279,7 @@ for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
 
 if par_optimized != '':
     _optimized = par_optimized
-elif env_optimized != None:
+elif env_optimized is not None:
     _optimized = True
 else:     # default to false
     _optimized = False
@@ -1291,7 +1292,7 @@ else:
 simuOptions = {'Optimized':_optimized,
     'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
 
-if env_debug != None:
+if env_debug is not None:
     simuOptions['Debug'].extend( env_debug.split(',') )
 
 def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=None, debug=[]):
