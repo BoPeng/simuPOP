@@ -283,7 +283,7 @@ def _getParamValue(p, val):
             + p.setdefault('longarg','none') +")")
 
 
-def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=False):
+def _termGetParam(options, verbose=False, useDefault=False):
     ''' using user input to get param '''
     # get param from short arg
     processedArgs = []
@@ -308,7 +308,7 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
                 val = p['default']
             elif opt >= goto:
                 val = _getParamUserInput(p)
-        # these parameters are skipped, but still processed to process checkUnprocessedArgs
+        # these parameters are skipped, but still processed to check unprocessed args
         if opt < goto:
             values.append(val)
         elif val == None:
@@ -343,15 +343,14 @@ def _termGetParam(options, checkUnprocessedArgs=True, verbose=False, useDefault=
             else:
                 goto = jumpTo
     # look if any argument was not processed
-    if checkUnprocessedArgs:
-        for i in range(1, len(sys.argv)):
-            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
-                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+    for i in range(1, len(sys.argv)):
+        if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
+            raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     return values
 
 
 class _paramDialog:
-    def __init__(self, options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+    def __init__(self, options, title = '', description='', details='', nCol=1):
         if len(options) == 0:
             raise exceptions.ValueError("Empty field names...")    # some behaviors
         # values, not the final result
@@ -378,10 +377,9 @@ class _paramDialog:
                         val = opt['default']
             self.values.append(val)
         # look if any argument was not processed
-        if checkUnprocessedArgs:
-            for i in range(1, len(sys.argv)):
-                if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
-                    raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+        for i in range(1, len(sys.argv)):
+            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
+                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
         # now, initialize variables
         self.options = options
         self.title = title
@@ -413,9 +411,9 @@ class _paramDialog:
 
 
 class _tkParamDialog(_paramDialog):
-    def __init__(self, options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
+    def __init__(self, options, title = '', description='', details='', nCol=1):
         ''' get options from a given options structure '''
-        _paramDialog.__init__(self, options, title, description, details, checkUnprocessedArgs, nCol)
+        _paramDialog.__init__(self, options, title, description, details, nCol)
 
     def denyWindowManagerClose(self):
         '''Don't allow WindowManager close'''
@@ -630,8 +628,8 @@ class _tkParamDialog(_paramDialog):
 
 # get options from a given options structure
 class _wxParamDialog(_paramDialog):
-    def __init__(self, options, title = '', description='', details='', checkUnprocessedArgs=True, nCol=1):
-        _paramDialog.__init__(self, options, title, description, details, checkUnprocessedArgs, nCol)
+    def __init__(self, options, title = '', description='', details='', nCol=1):
+        _paramDialog.__init__(self, options, title, description, details, nCol)
 
     def onHelp(self, event):
         # open another dialog
@@ -639,10 +637,8 @@ class _wxParamDialog(_paramDialog):
         box = wx.BoxSizer(wx.VERTICAL)
         box.Add(wx.TextCtrl(parent=helpDlg, id=-1, size=[600,400],
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            value = usage(self.options, self.details)), 0, wx.ALL, 20)
-        okButton = wx.Button(parent=helpDlg, id=wx.ID_OK, label='OK')
-        box.Add(okButton, 0, wx.ALIGN_CENTER | wx.ALL, 20)
-        self.app.Bind(wx.EVT_BUTTON, lambda event:helpDlg.EndModal(wx.ID_OK), okButton)
+            value=usage(self.options, self.details)), 0, wx.ALL, 20)
+        self.addButton(wx.ID_OK, "OK", lambda event:helpDlg.EndModal(wx.ID_OK), helpDlg, box)
         helpDlg.SetSizerAndFit(box)
         helpDlg.Layout()
         helpDlg.ShowModal()
@@ -695,9 +691,9 @@ class _wxParamDialog(_paramDialog):
         # place.
         return '\n'.join([x.strip() for x in text.splitlines()] )
 
-    def addButton(self, ID, text, func):
-        button = wx.Button(self.dlg, ID, text)
-        self.buttonBox.Add(button, 0, wx.ALIGN_CENTER)
+    def addButton(self, ID, text, func, parent, box):
+        button = wx.Button(parent, ID, text)
+        box.Add(button, 0, wx.ALIGN_CENTER)
         self.dlg.Bind(wx.EVT_BUTTON, func, button)
 
     def createDialog(self):
@@ -808,11 +804,11 @@ class _wxParamDialog(_paramDialog):
                 colCount += 1
         self.dlg = dlg
         # help button
-        self.buttonBox = wx.GridSizer(cols=3)
-        self.addButton(wx.ID_HELP, 'Help', self.onHelp)
-        self.addButton(wx.ID_CANCEL, 'Cancel', self.onCancel)
-        self.addButton(wx.ID_OK, 'OK', self.onOK)
-        box.Add(self.buttonBox, 0, wx.ALL | wx.EXPAND, 20)
+        buttonBox = wx.GridSizer(cols=3)
+        self.addButton(wx.ID_HELP, 'Help', self.onHelp, self.dlg, buttonBox)
+        self.addButton(wx.ID_CANCEL, 'Cancel', self.onCancel, self.dlg, buttonBox)
+        self.addButton(wx.ID_OK, 'OK', self.onOK, self.dlg, buttonBox)
+        box.Add(buttonBox, 0, wx.ALL | wx.EXPAND, 20)
         dlg.SetSizerAndFit(box)
         dlg.Layout()
         # first un-none
@@ -828,7 +824,7 @@ class _wxParamDialog(_paramDialog):
 
 
 # get parameter
-def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArgs=True, verbose=False, nCol=1):
+def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=True, verbose=False, nCol=1):
     """ Get parameters from either
             - a Tcl/Tk based, or wxPython based parameter dialog 
               (wxPython is used if it is available)
@@ -908,7 +904,7 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
 
         noDialog: do not use a parameter dialog, used in batch mode. Default to False.
 
-        checkUnprocessedArgs: check args, avoid misspelling of arg name
+        checkUnprocessedArgs: obsolete because unused args are always checked.
 
         verbose: whether or not print detailed info
         
@@ -933,11 +929,9 @@ def getParam(options=[], doc="", details="", noDialog=False, checkUnprocessedArg
     else:
         title = os.path.split(sys.argv[0])[-1]
         if useTkinter:
-            return _tkParamDialog(options, title, doc, details,
-                checkUnprocessedArgs, nCol).getParam()
+            return _tkParamDialog(options, title, doc, details, nCol).getParam()
         elif useWxPython:
-            return _wxParamDialog(options, title, doc, details,
-                checkUnprocessedArgs, nCol).getParam()
+            return _wxParamDialog(options, title, doc, details, nCol).getParam()
         else:
             return _termGetParam(options, doc, verbose)
 
@@ -1265,13 +1259,13 @@ env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
 [par_optimized] = _termGetParam([{'longarg':'optimized', \
-    'default':''}], False, False, True)
+    'default':''}], False, True)
 [par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
-    'default':False}], False, False, True)
+    'default':False}], False, True)
 [par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
-    'default':False }], False, False, True) 
+    'default':False }], False, True) 
 [par_noDialog] = _termGetParam([{'longarg':'noDialog', \
-    'default':False }], False, False, True)
+    'default':False }], False, True)
 
 # remove these parameters from sys.argv
 for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
