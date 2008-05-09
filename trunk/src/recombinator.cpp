@@ -156,8 +156,8 @@ void recombinator::prepareRecRates(population & pop,
 			}
 			vecP.push_back(.5);
 
-			if (find(afterLoci.begin(), afterLoci.end(), index) != afterLoci.end())
-				cout << "Specified recombination rate for the last locus on a chromosome is discarded." << endl;
+			DBG_WARNING(find(afterLoci.begin(), afterLoci.end(), index) != afterLoci.end(), 
+				"Specified recombination rate for the last locus on a chromosome is discarded.");
 
 			// add between chromosomes....
 			index++;
