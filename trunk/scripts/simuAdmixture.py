@@ -15,11 +15,8 @@ please try to run loadHapMap.py manually and provide a path with files hapmap_XX
 to parameter --HapMap_dir.
 
 
-Step 1: Generate a seed population (scripts/simuAdmixture.py)
-==============================================================
-
-Determine which populations and markers to use.
------------------------------------------------
+Step 1: Determine which populations and markers to use
+======================================================
 
 The initial population consists of one, two or three hapmap populations
 (param --pops), and a selected set of markers. You can start from
@@ -48,63 +45,93 @@ Note that 'position' in the marker list is assumed to be in base pair
 (as in Affymetrix or Illumina annotation data). Marker positions
 are converted to centiMorgan by dividing the positions by 10^6 (i.e.
 1 centiMorgan = 1 M basepairs). Starting and ending position should be
-inputted in centiMorgan. Not all requirements can be met at the same time.
+inputted in centiMorgan. Note that sometimes not all requirements can
+be met at the same time.
 
-If an initial population is given, it will be used directly (without
-checking parameters), and to save the generated initial population.
-
-Each simulation will be given a name and all files will be saved to a directory
-named after it. A file markers.lst will be saved to directory $name.
+Each simulation will be given a name and all files will be saved to a
+directory named after it. A file markers.lst will be saved to directory
+$name.
 
 
-Generate a seed population.
-----------------------------
+Step 2: Evolve the population
+==============================
+
+Instant population expansion
+-----------------------------
 
 The population is expanded instantly by copying individual 10 (param --initCopy)
-time to avoid quick loss of heterogenity due to small population sizes. It
-then evolves for a relatively short period of time (param --initGen )
-without migration. This stage is designed to mix these copied individuals,
-and make HapMap populations more distinct, because the HapMap populations are
-already admixed.
-
-During the evolution, recombination at a rate of 0.01 per cM (param --recIntensity),
-and mutation at a rate of 1e-7 per nucleotide per generation (param --mutaRate)
-is applied. Recombination and mutation will also be applied at the subsequent stages.
-
-This population will be saved as 'seed.bin' (param --seed) that will be used
-for the subsequent replicate simulations. We consider the subpopulations of
-the seed population as the populations around 2000 years ago, that have
-been evolved separately from the Out-Of-Africa population for abut 40000
-generations
+time to avoid quick loss of heterogenity due to small population sizes.
 
 
+Recombination, mutation, migration and selection
+-------------------------------------------------
 
-Step 2. Evolve the seed population.
-=====================================
+During the evolution, recombination at a rate of 0.01 per cM or Mb 
+(param --recIntensity) will be applied. If a physical map is used, the
+recombination rate between two adjacent markers is recIntensity * physical
+distance (in Mb) between them. If a genetic map is used, the recombination
+rate between two adjacent markers is recIntentisy * genetic distance (in cM)
+between them. We use fine-scale genetic map that is downloaded from HapMap,
+estimated using methods described in McVean et al, (2004) Science 304: 581.
 
-After a seed population is generated (or loaded if already exists and parameter
---useSavedSeed is given), this script will evolve it as follows:
+Gene conversion is allowed. The impact of gene conversion depends on the 
+density of markers because gene conversion generally works over short
+distances.
 
-Evolve the seed population subject to rapid population expansion for
-100 (param --expandGen) generations. This is to mimic the rapid
-population expansion in the past 2000 years. Exponential population
-growth model is used. No migration is allowed.
+Mutation at a rate of 1e-7 per nucleotide per generation (param --mutaRate)
+is applied during evolution.
 
-Selection on a number of loci can be applied to selected loci at this, and
-the next mixing stage. These loci are supposed to have disease predisposing
-alleles (though selection does not have to work against them), and there
-frequencies are controlled.
+Low-level background migrations between populations are allowed. At each
+generation, The migration rate between each pair of populations is 0.0001 
+(or 0.01%, param --backMigrRate).
 
-A special controlled mating scheme can be used if the allele frequencies
-of some markers at the end of this stage is specified. This can be done
-backward in time, assuming no disease allele at these loci in
-the seed population (c.f. Peng 2007 PLoS genetics), or forward in time,
-by starting from existing allele frequencies in the seed population.
-These two kinds of loci can not yet be mixed.
+Selection on a number of loci can be applied to selected loci. These loci
+are supposed to have disease predisposing alleles (though selection does
+not have to work against them). Because we assume that these loci will
+be used to simulate a disease or a quantitative trait, we control the allele
+frequency of these loci so that they will have consistent disease allele
+frequency at the end of the simulation.
 
-The resulting population of this generation will be saved as $name/expanded.bin
-(--param expandedName).
+A special controlled mating scheme is used for this purpose, which requires
+simulated disease allele frequency trajectories. The trajectories can be
+simulated using a backward (Peng 2007, PLoS Genetics) or a forward-time
+approach. In a forward-time approach, the allele frequency is repeatedly
+simulated forward-in-time until it reaches a designed frequency range.
+In a backward-time approach, the allele frequency is simulated backward-in-time
+until it reaches zero. This implies that there is no disease allele
+at these loci at the beginning of the simulation so these alleles are
+removed at first.
 
+Slow population expansion
+--------------------------
+
+The population then evolves for a relatively short period of time (param --initGen)
+with no or slow population expansion (param --initSize). This step is designed to
+mix these copied individuals. 
+
+We consider populations at the end of this stage as the populations around 20k years
+ago (Pritchard et al (1999), Mol Biol Evol, 16), that have been evolved separately 
+from the Out-Of-Africa population for abut 20k years. Note that 20k years means
+1000 generations (param --expandGen).
+
+
+Rapid population expansion
+---------------------------
+
+Evolve the population subject to rapid population expansion for another
+1000 (param --expandGen) generations. This is to mimic the rapid
+population expansion in the past 20k years. Exponential population
+growth model is used.
+
+The resulting population of this generation is saved as $name/expanded.bin
+(--param expandedName). If this file exists, and parameter --useSavedExpanded
+is specified, the population will be loaded directly.
+
+A parameter --scale can be used to speed up the simulation. With this parameter,
+the intensity of mutation, recombinatin, and migration are magnified by --scale
+and the actually evolved generations are reduced by a factor of --scale. This
+technique is primarily used to control allele frequency and linkage disequilibrium
+patterns. Please see Peng 2008, in preparation, for a detailed description.
 
 Step 3. Mix the subpopulations (optional)
 ==========================================
@@ -146,17 +173,6 @@ e.g.
 
 The result of this stage will be saved to $name/admixed.bin (--param admixedName)
 
-The script will skip population expansion and/or admixture if the corresponding
-file is found and parameter useSavedExpanded and/or useSavedAdmixed is
-specified. In the useSavedExpanded case, the simulation starts mixing population
-$name/expanded.bin directly. In the useSavedAdmixed case, the simulation draw
-sample from the admixed population directly.
-
-The result of this script is expanded.bin (if no migration) or admixed.bin.
-Users can apply arbitrary penetrance or quantitative trait model and draw
-samples from this population. Script analAdmixture.py implements the examples
-used in paper Peng 2008.
-
 
 Test scripts
 ==============
@@ -176,10 +192,9 @@ default values are used.
 simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' \
     --chrom="range(1,3)"  --markerList='../../Affy/mapAffySNPs.txt' \
     --startPos="[0]" --endingPos='[0]' --numMarkers="[100,100]" --minAF='0' --minDist='0'  \
-    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --initGen='20' --seedSize='3600'  \
-    --seedName='test_seed.bin'
+    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --initGen='20' --initSize='3600'  \
 
-simuAdmixture.py --noDialog  --useSavedSeed --seedName=test_seed.bin --migrGen='5' \
+simuAdmixture.py --noDialog  --seedName=test_seed.bin --migrGen='5' \
     --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])"
 
 
@@ -197,7 +212,7 @@ simuAdmixture.py --noDialog  --name='IH' \
     --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
     --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
 
-simuAdmixture.py --noDialog  --name='admix' --useSavedSeed --initPop='' --HapMap_dir='../../HapMap' \
+simuAdmixture.py --noDialog  --name='admix' --initPop='' --HapMap_dir='../../HapMap' \
     --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" --markerList='' --numMarkers="(1000, 1000)" \
     --startPos='[0]' --endingPos='[0]' --minAF='0.05' --minDiffAF='0' --minDist='0' --initCopy='10' \
     --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
@@ -327,16 +342,6 @@ options = [
                 will be created. Configuration file (.cfg), marker list and
                 various populations will be saved to this directory''',
     },
-    {'longarg': 'useSavedSeed',
-     'default': False,
-     'label': 'Use saved seed population',
-     'useDefault': False,
-     'allowedTypes': [BooleanType],
-     'jump': 'seedName',
-     'description': '''Use specified or a default seed population, if available.
-        The default seed population is seed.bin under the simulation directory.
-        '''
-    },
     {'longarg': 'useSavedExpanded',
      'default': False,
      'useDefault': False,
@@ -349,12 +354,12 @@ options = [
     #
     {'separator': 'Progress report and plots'},
     {'longarg': 'step=',
-     'default': 10,
+     'default': 100,
      'label': 'Progress report interval',
      'useDefault': True,
      'allowedTypes': [IntType, LongType],
      'description': '''Gap between generations at which population statistics are
-                calculated and reported.'''
+                calculated and reported. (This parameter is affected by --scale)'''
     },
     {'longarg': 'showAlleleFreq',
      'default': True,
@@ -365,12 +370,12 @@ options = [
                 --forCtrlLoci or --backCtrlLoci''',
     },
     {'longarg': 'figureStep=',
-     'default': 20,
+     'default': 200,
      'label': 'Figure update interval',
      'useDefault': True,
      'allowedTypes': [IntType, LongType],
      'description': '''Gap between generations at which LD plots are
-                draw. Default to 20.'''
+                draw. Default to 200. (This parameter is affected by scale)'''
     },
     {'longarg': 'drawLDPlot',
      'default': False,
@@ -391,7 +396,7 @@ options = [
                 If haploview is not found, no LD plot will be displayed.'''
     },
     {'longarg': 'ldRegions=',
-     'default': [],
+     'default': [0, 500],
      'useDefault': True,
      'allowedTypes': [TupleType, ListType],
      'label': 'Regions to plot LD structure',
@@ -402,7 +407,7 @@ options = [
     },
     {'longarg': 'ldSampleSize=',
      'default': 200,
-     'label': 'Sample size for ld plotting',
+     'label': 'Sample size for LD plotting',
      'useDefault': True,
      'allowedTypes': [IntType, LongType],
      'description': '''A random sample of specified size will be draw from each subpopulation
@@ -449,7 +454,7 @@ options = [
      'validate': valueOr(valueEqual(''), valueValidFile()),
     },
     {'longarg': 'chrom=',
-     'default': [2, 3],
+     'default': [2],
      'label': 'Chromosomes to use',
      'description': '''A list of chromosomes to use from the HapMap data. When multiple
                 chromosomes are involves, numMarkers, if used, should be a list that specicy
@@ -459,7 +464,7 @@ options = [
      'validate': valueListOf(valueBetween(1, 22)),
     },
     {'longarg': 'numMarkers=',
-     'default': [1000, 1000],
+     'default': [1000],
      'label': 'Number of markers to use',
      'description': '''Number of markers to use from the marker list file. If 0 is used,
                 all markers that satisfy conditions startPos, endingPos, minDist will
@@ -672,7 +677,7 @@ options = [
     'chooseOneOf': ['additive', 'multiplicative', 'interaction', 'none']
     },
     {'longarg': 'backMigrRate=',
-     'default': 0.001,
+     'default': 0.0001,
      'useDefault': True,
      'allowedTypes': [IntType, FloatType],
      'label': 'Background migration rate',
@@ -684,8 +689,8 @@ options = [
                     [1-2r, r, r,
                       r, 1-2r, 2,
                       r, r, 1-2r]
-                Note that this background migration will stop at the admixture stage where
-                another migrator will take over.
+                Note that real migration rate is scaled by parameter --scale, and this background
+                migration will stop at the admixture stage where another migrator will take over. 
                 '''
     },
     {'longarg': 'scale=',
@@ -708,7 +713,7 @@ options = [
         migration and mating schemes. Only needed when 'customized' is 
         selected for migration and mating scheme'''
     },
-    {'separator': 'Generate seed population'},
+    {'separator': 'Population expansion'},
     {'longarg': 'initCopy=',
      'default': 10,
      'useDefault': True,
@@ -720,7 +725,7 @@ options = [
      'validate': valueGT(0)
     },
     {'longarg': 'initGen=',
-     'default': 1000,
+     'default': 100,
      'useDefault': True,
      'label': 'Generations to evolve',
      'description': '''Number of generations to evolve to get the seed
@@ -730,7 +735,7 @@ options = [
      'allowedTypes': [IntType, LongType],
      'validate': valueGT(0)
     },
-    {'longarg': 'seedSize=',
+    {'longarg': 'initSize=',
      'default': 4800,
      'useDefault': True,
      'label': 'Size of the seed population',
@@ -740,19 +745,8 @@ options = [
      'allowedTypes': [IntType, LongType],
      'validate': valueGE(100)
     },
-    {'arg': 's:',
-     'longarg': 'seedName=',
-     'default': 'seed.bin',
-     'useDefault': True,
-     'description': '''Name of the seed population''',
-     'allowedTypes': [StringType],
-    },
-    #
-
-    #
-    {'separator': 'Population expansion'},
     {'longarg': 'expandGen=',
-     'default': 100,
+     'default': 1000,
      'useDefault': True,
      'label': 'Generations to expand',
      'description': '''Number of generations to evolve during the population
@@ -813,7 +807,7 @@ options = [
      'validate': valueGE(0),
     },
     {'longarg': 'migrRate=',
-     'default': [[0.9, 0.1], [0., 1.]],
+     'default': [[0.99, 0.01], [0., 1.]],
      'label': 'Migration rate matrix',
      'description': '''Migration rate matrix. Use only for the continuous gene flow model.
                 A_ij of this matrix represents the probability of moving from population i
@@ -863,7 +857,7 @@ class admixtureParams:
     '''
     def __init__(self, allParam):
         # expand all params to different options
-        (self.name, self.useSavedSeed, self.useSavedExpanded,
+        (self.name, self.useSavedExpanded,
             self.step, self.showAlleleFreq, self.figureStep,
             self.drawLDPlot, self.haploview, self.ldRegions,
             self.ldSampleSize,
@@ -877,14 +871,13 @@ class admixtureParams:
             self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
             self.backMigrRate, self.scale, self.custom,
             #
-            self.initCopy, self.initGen, self.seedSize, self.seedName,
+            self.initCopy, self.initGen, self.initSize,
             self.expandGen, self.expandSize, self.expandedName,
             #
             self.migrModel, self.migrGen, self.migrRate,
             self.ancestry, self.matingScheme, self.admixedName) = allParam[1:]
         # preparations
         self.createSimulationDir()
-        self.seedFile = self.setFile(self.seedName)
         self.expandedFile = self.setFile(self.expandedName)
         self.admixedFile = self.setFile(self.admixedName)
         #
@@ -900,6 +893,9 @@ class admixtureParams:
         # scaling
         self.mutaRate *= self.scale
         self.recIntensity *= self.scale
+        self.backMigrRate *= self.scale
+        self.step /= self.scale
+        self.figureStep /= self.scale
         self.initGen /= self.scale
         self.expandGen /= self.scale
         self.convMode = {
@@ -1054,70 +1050,54 @@ class admixtureParams:
 # handling and comments. Now, the utility function part...
 #####################################################################
 
-def expDemoFunc(N0, N1, gen):
+def expDemoFunc(N0, N1, N2, gen1, gen2):
     '''
-    Return an exponential population expansion demographic function.
-    simuUtil::ExponentialExpansion can not actually be used before it expects
-        initial and ending total population size.
+    Return an exponential population expansion demographic function that has
+    two stages of expansion.
 
     N0: a list of initial subpopulation sizes.
-    N1: ending subpopulation sizes.
-    gen: generations to evolve.
+    N1: middle population size.
+    N2: ending population size.
+    
+    gen1: generations to evolve in the slow-expansion stage.
+    gen2: generations to evolve in the fast-expansion stage.
     '''
     if type(N1) in [IntType, LongType]:
-        endSize = [int(N1*1.0*x/sum(N0)) for x in N0]
+        midSize = [int(N1*1.0*x/sum(N0)) for x in N0]
     elif len(N1) != len(N0):
         raise exceptions.ValueError("Number of subpopulations should be the same")
     else:
-        endSize = N1
-    rate = [(math.log(endSize[x]) - math.log(N0[x]))/gen for x in range(len(N0))]
+        midSize = N1
+    if type(N2) in [IntType, LongType]:
+        endSize = [int(N2*1.0*x/sum(midSize)) for x in midSize]
+    elif len(N2) != len(N0):
+        raise exceptions.ValueError("Number of subpopulations should be the same")
+    else:
+        endSize = N2
+    #
+    rate1 = [(math.log(midSize[x]) - math.log(N0[x]))/gen1 for x in range(len(N0))]
+    rate2 = [(math.log(endSize[x]) - math.log(midSize[x]))/gen2 for x in range(len(N0))]
     def func(gen, oldSize=[]):
-        return [int(N0[x]*math.exp(gen*rate[x])) for x in range(len(N0))]
+        if gen < gen1:
+            return [int(N0[x]*math.exp(gen*rate1[x])) for x in range(len(N0))]
+        else:
+            return [int(midSize[x]*math.exp((gen-gen1)*rate2[x])) for x in range(len(N0))]
     return func
 
 
-def printInfo(pop):
-    'Print out some information about the population'
-    Stat(pop, alleleFreq=range(pop.totNumLoci()))
-    # 1. number of population and population size
-    print 'Number of populations: %d' % pop.numSubPop()
-    print 'Size of populations: %s' % (', '.join([str(x) for x in pop.subPopSizes()]))
-    # 2. markers
-    print 'Number of chromosomes: %s' % pop.numChrom()
-    print 'Number of markers: %s' % (', '.join([str(x) for x in pop.numLoci()]))
-    for ch in range(pop.numChrom()):
-        print 'Chromosome %d' % ch
-        pos = pop.lociPos()[pop.chromBegin(ch):pop.chromEnd(ch)]
-        print '    range %.3f - %.3f' % (pos[0], pos[-1])
-        dist = [pos[i] - pos[i-1] for i in range(1, len(pos))]
-        print '    dist: min %.3f, max %.3f, mean %.3f' % (min(dist), max(dist), sum(dist)/len(dist))
-        freq = [pop.dvars().alleleFreq[x][0] for x in range(pop.chromBegin(ch), pop.chromEnd(ch))]
-        maf = [min(x, 1-x) for x in freq]
-        print '    allele freq: min %.3f, max %.3f, mean %.3f' % (min(maf), max(maf), sum(maf)/len(maf))
-        if pop.numSubPop() == 2:
-            freq0 = [pop.dvars(0).alleleFreq[x][0] for x in range(pop.chromBegin(ch), pop.chromEnd(ch))]
-            freq1 = [pop.dvars(1).alleleFreq[x][0] for x in range(pop.chromBegin(ch), pop.chromEnd(ch))]
-            maf0 = [min(x, 1-x) for x in freq0]
-            maf1 = [min(x, 1-x) for x in freq1]
-            diff = [abs(maf0[x]-maf1[x]) for x in range(len(maf0))]
-            print '    diff in allele freq: min %.3f, max %.3f, mean %.3f' % (min(diff), max(diff), sum(diff)/len(diff))
-
-
-def writeMarkerInfo(initPop, pop, par):
-    'Save marker info (both init and seed population)'
+def writeMarkerInfo(pop, par):
+    'Save marker info'
     # print marker list fine
-    Stat(initPop, alleleFreq=range(0, initPop.totNumLoci()))
     Stat(pop, alleleFreq=range(0, pop.totNumLoci()))
     # write marker information
     print 'Writing a marker list file'
     markers = open(par.markerListFile, 'w')
-    print >> markers, 'Name\tchrom\tlocation\t%s\t%s\tseed_freq' % \
-        ('\t'.join([x + '_freq' for x in par.pops]), '\t'.join([x + '_seed_freq' for x in par.pops]))
+    print >> markers, 'Name\tchrom\tlocation\t%s\tfreq' % \
+        ('\t'.join([x + '_freq' for x in par.pops]))
     for ch in range(pop.numChrom()):
         for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
-            print >> markers, '%s\t%d\t%.5f\t%s\t%s\t%.3f' % (pop.locusName(loc),
+            print >> markers, '%s\t%d\t%.6f\t%s\t%.3f' % (pop.locusName(loc),
                 par.chrom[ch], pop.locusPos(loc),
-                '\t'.join(['%.3f' % initPop.dvars(x).alleleFreq[loc][1] for x in range(initPop.numSubPop())]),
                 '\t'.join(['%.3f' % pop.dvars(x).alleleFreq[loc][1] for x in range(pop.numSubPop())]),
                 pop.dvars().alleleFreq[loc][1])
     markers.close()
@@ -1138,7 +1118,10 @@ def drawLDPlot(pop, par):
     # NOTE: RandomSample will add information field oldindex etc
     # to pop so the population structure of pop will be changed.
     # This may disrupt evolution.
-    sample = RandomSample(pop.clone(), [par.ldSampleSize]*pop.numSubPop())[0]
+    if True in [pop.subPopSize(x) < par.ldSampleSize for x in range(pop.numSubPop())]:
+        sample = pop.clone()
+    else:
+        sample = RandomSample(pop.clone(), [par.ldSampleSize]*pop.numSubPop())[0]
     for idx,subPop in enumerate(par.pops):
         toBeRemoved = range(pop.numSubPop())
         toBeRemoved.remove(idx)
@@ -1146,7 +1129,7 @@ def drawLDPlot(pop, par):
         spSample.removeSubPops(toBeRemoved)
         for reg in par.ldRegions:
             name = 'LD_%s_%d-%d_%s_%d' % (subPop, reg[0], reg[1],
-                pop.dvars().stage, pop.gen())
+                pop.dvars().stage, pop.gen()*par.scale)
             filename = os.path.join(par.name, name)
             regSample = spSample.clone()
             regSample.removeLoci(keep=range(reg[0], reg[1]))
@@ -1167,8 +1150,8 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
     ops = []
     if progress:
         # statistics calculation and display
-        exp = ['gen=%3d', 'size=%s']
-        var = ['gen', 'subPopSize']
+        exp = ['gen %3d', 'size=%s']
+        var = ['gen*scale', 'subPopSize']
         if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
             exp.append('alleleFreq=%s')
             var.append('", ".join(["%.3f" % alleleFreq[x][1] for x in ctrlLoci])')
@@ -1177,14 +1160,19 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
             var.append('AvgFst')
         ops.extend([
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
-                step = par.step),
-            pyEval(r'"%s\n" %% (%s)' % (', '.join(exp), ', '.join(var)), step=par.step)
+                step = par.step, stage=PreMating),
+            pyEval(r'"At the beginning of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var)),
+                step=par.step, stage=PreMating),
+            stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
+                at = [par.initGen - 1, -1]),
+            pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var)),
+                at = [par.initGen - 1, -1])
         ])
     if visualization and par.drawLDPlot and par.figureStep > 0 \
         and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
         ops.extend([
             pyOperator(func=drawLDPlot, param = par, step=par.figureStep, stage=PreMating),
-            pyOperator(func=drawLDPlot, param = par, at=[-1])
+            pyOperator(func=drawLDPlot, param = par, at=[par.initGen - 1, -1])
         ])
     if mutation:    
         ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
@@ -1194,7 +1182,7 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
         if par.recMap == 'physical':
             ops.append(recombinator(intensity=par.recIntensity, convProb=par.convProb,
                 convMode=par.convMode, convParam=par.convParam))
-            print 'Recombination at %.3f cM/Mb over %.2f Mb physical distance (first chromosome)' % \
+            print 'Scaled recombination at %.3f cM/Mb over %.2f Mb physical distance (first chromosome)' % \
                 (par.recIntensity * 100, pop.lociDist(0, pop.numLoci(0)-1))
         else: # use map distance
             try:
@@ -1203,13 +1191,19 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
                 print e
                 print 'Invalid or incomplete population variable genDist'
                 print 'Please run loadHapMap again to set up genetic distance'
-            rate = [(pos[x] - pos[x-1])*par.recIntensity for x in range(1, pop.totNumLoci())]
-            print 'Recombination at %.3f cM/Mb over %.2f Morgan genetic (%.2f Mb physical) distance (first chromosome)' % \
+            loc = []
+            rate = []
+            for ch in range(pop.numChrom()):
+                beg = pop.chromBegin(ch)
+                end = pop.chromEnd(ch)
+                loc.extend(range(beg, end - 1))
+                rate.extend([(pos[x+1] - pos[x])*par.recIntensity for x in range(beg, end - 1)])
+            print 'Scaled recombination at %.3f cM/Mb over %.2f Morgan genetic (%.2f Mb physical) distance (first chromosome)' % \
                 (par.recIntensity*100, (pop.dvars().genDist[pop.locusName(pop.numLoci(0)-1)] - \
                     pop.dvars().genDist[pop.locusName(0)]), pop.lociDist(0, pop.numLoci(0)-1))
             # recombination rate at the end of each chromosome will be invalid
             # but this does not matter
-            ops.append(recombinator(rate=rate + [0], loci = range(pop.totNumLoci()),
+            ops.append(recombinator(rate=rate, loci = loc,
                 convProb=par.convProb, convMode=par.convMode, convParam=par.convParam))
     if selection:
         if par.mlSelModel in [SEL_Additive, SEL_Multiplicative]:
@@ -1307,68 +1301,35 @@ def createInitialPopulation(par):
     # if this population fine?
     if pop.numChrom() != len(par.chrom):
         raise ValueError('Something wrong. The population does not have enough chromosomes')
-    return pop
-
-
-def generateSeedPopulation(par):
-    '''Generate seed population, using HapMap dataset and specified marker list'''
-    pop = createInitialPopulation(par)
     par.setCtrlLociIndex(pop)
-    # used to generate plots
-    pop.dvars().stage = 'seed'
-    #
-    initPop = pop.clone()
-    # print population summary
-    print "Initial population has "
-    print "    %d subpopulations " % pop.numSubPop()
-    print "    %d total number of markers " % pop.totNumLoci()
-    for ch in range(pop.numChrom()):
-        print "Chromosome %d has %d markers in the range between %.3f and %.3f" \
-            % (ch, pop.numLoci(ch), pop.locusPos(pop.chromBegin(ch)),  \
-                pop.locusPos(pop.chromEnd(ch)-1))
-    newSize = [x*par.initCopy for x in pop.subPopSizes()]
-    print 'Propagating population to size %s' % newSize
-    pop.resize(newSize, propagate=True)
-    # evolve the initial population
-    print "Evolving the initial population"
-    simu = simulator(pop, randomMating( newSubPopSizeFunc =
-        expDemoFunc(pop.subPopSizes(), par.seedSize, par.initGen)), rep=1)
-    simu.evolve(
-        ops = getOperators(pop, par, 
-            progress=True, visualization=True,
-            mutation=True, migration=True, recombination=True),
-        gen = par.initGen)
-    pop = simu.getPopulation(0, True)
-    printInfo(pop)
-    #
-    # save seed population
-    print 'Save seed population to', par.seedFile
-    pop.savePopulation(par.seedFile)
-    #
-    writeMarkerInfo(initPop, pop, par)
+    # write marker and map file
+    writeMarkerInfo(pop, par)
     writeMapFile(pop, par)
-    #
+    # write a LD plot.
+    pop.dvars().stage = 'hapmap'
+    drawLDPlot(pop, par)
     return pop
 
 
 def freeExpand(pop, par):
-    '''Expand seed population freely'''
-    N0 = tuple(pop.subPopSizes())
-    popSizeFunc = expDemoFunc(N0, par.expandSize,
-        par.expandGen)
+    '''Expand an initial population freely'''
+    #
+    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
+        par.initGen, par.expandGen)
+    #
     # evolve it. This is the simplest case.
-    print "Evolving the seed population freely..."
+    print "Evolving the population freely..."
     simu = simulator(pop, randomMating(newSubPopSizeFunc = popSizeFunc))
     simu.evolve(
-        ops =  getOperators(pop, par,
+        ops = getOperators(pop, par,
             progress=True, visualization=True, selection=True,
             mutation=True, migration=True, recombination=True),
-        gen = par.expandGen)
+        gen = par.initGen + par.expandGen)
     return simu.getPopulation(0, True)
 
 
 def forCtrlExpand(pop, par):
-    '''Expand seed population using forward controlled loci'''
+    '''Expand a population using forward controlled loci'''
     # simulate a frequency trajectory
     Stat(pop, alleleFreq=par.ctrlLociIdx)
     currentFreq = []
@@ -1380,11 +1341,12 @@ def forCtrlExpand(pop, par):
         for sp in range(pop.numSubPop()):
             currentFreq.append(pop.dvars(sp).alleleFreq[loc][1])
     print 'Simulating frequency trajectory ...'
-    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.expandSize,
-        par.expandGen)
+    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
+        par.initGen, par.expandGen)
+    #
     traj = ForwardFreqTrajectory(
         curGen = 0,
-        endGen = par.expandGen,
+        endGen = par.initGen + par.expandGen,
         curFreq = currentFreq,
         freq = par.forCtrlFreq,
         fitness = par.fitness,
@@ -1392,7 +1354,10 @@ def forCtrlExpand(pop, par):
         maxAttempts = 10000
     )
     if len(traj) == 0:
-        raise SystemError('Failed to generated trajectory')
+        raise SystemError('Failed to generated trajectory after 10000 attempts'
+            'This usually means that the demographic and genetic settings are '
+            'very extreme which makes it very likely for an allele to reach designed'
+            'allele frequency. Please adjust your parameters and try again.')
     # define a trajectory function
     def trajFunc(gen):
         return [x[gen] for x in traj]
@@ -1409,7 +1374,7 @@ def forCtrlExpand(pop, par):
         ops = getOperators(pop, par,
             progress=True, visualization=True, selection=True,
             mutation=True, migration=True, recombination=True),
-        gen = par.expandGen
+        gen = par.initGen + par.expandGen
     )
     pop = simu.getPopulation(0, True)
     Stat(pop, alleleFreq=par.ctrlLociIdx)
@@ -1432,10 +1397,10 @@ def backCtrlExpand(pop, par):
     # NOTE:
     # The current version of this script assumes only one subpopulation
     # when a marker is backward controlled.
-    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.expandSize,
-        par.expandGen)
+    popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
+        par.initGen, par.expandGen)
     traj = FreqTrajectoryMultiStoch(
-        curGen = par.expandGen,
+        curGen = par.initGen + par.expandGen,
         freq = par.backCtrlFreq,
         NtFunc = popSizeFunc,
         fitness = par.fitness,
@@ -1453,10 +1418,10 @@ def backCtrlExpand(pop, par):
     def trajFunc(gen):
         freq = []
         for t in traj:
-            if gen < par.expandGen - len(t) + 1:
+            if gen < par.initGen + par.expandGen - len(t) + 1:
                 freq.append(0)
             else:
-                freq.append(t[gen - par.expandGen + len(t) - 1])
+                freq.append(t[gen - par.initGen - par.expandGen + len(t) - 1])
         return freq
     #
     print 'Start population expansion using a controlled random mating scheme'
@@ -1472,7 +1437,7 @@ def backCtrlExpand(pop, par):
             progress=True, visualization=True, selection=True,
             mutation=True, migration=True, recombination=True)
             + introOps,
-        gen = par.expandGen
+        gen = par.initGen + par.expandGen
     )
     pop = simu.getPopulation(0, True)
     Stat(pop, alleleFreq = par.backCtrlLociIdx)
@@ -1552,50 +1517,37 @@ def mixExpandedPopulation(pop, par):
 def simuAdmixture(par):
     '''The main program'''
     #
-    # SEED POPULATION GENERATION
-    #
-    # get seed population
-    if par.useSavedExpanded or (par.useSavedSeed and os.path.isfile(par.seedFile)):
-        # Using existing seed file
-        seedPop = None
-    else:
-        seedPop = generateSeedPopulation(par)
-    #
-    # step 2: population expansion
-    #
     # if both files exists, skip this stage
     if par.useSavedExpanded and os.path.isfile(par.expandedFile):
-        expandedPop = None
-    else:
-        if seedPop is None:
-            print 'Loading seed population %s...' % par.seedFile
-            seedPop = LoadPopulation(par.seedFile)
-            if seedPop.numSubPop() != len(par.pops):
-                raise ValueError("Seed population has different number of subpopulation than required.")
-            # par.ctrlLoci is set in generateSeedPopulation
-            par.setCtrlLociIndex(seedPop)
-        #
-        seedPop.dvars().stage = 'expand'
-        #
-        if len(par.ctrlLoci) == 0:
-            # freely expand
-            expandedPop = freeExpand(seedPop, par)
-        elif len(par.forCtrlLoci) != 0:
-            # forward controlled expansion
-            expandedPop = forCtrlExpand(seedPop, par)
-        else:
-            # backward controlled expansion
-            expandedPop = backCtrlExpand(seedPop, par)
-        # save expanded population
-        print 'Saving expanded population to %s...' % par.expandedFile
-        expandedPop.savePopulation(par.expandedFile)
-    #
-    # step 3: admixture
-    if expandedPop is None:
         print 'Loading expanded population from file ', par.expandedFile
         expandedPop = LoadPopulation(par.expandedFile)
         if expandedPop.numSubPop() != len(par.pops):
             raise ValueError("Seed population has different number of subpopulation than required.")
+    else:
+        pop = createInitialPopulation(par)
+        # used to generate plots
+        pop.dvars().scale = par.scale
+        pop.dvars().stage = 'expand'
+        #
+        newSize = [x*par.initCopy for x in pop.subPopSizes()]
+        print 'Propagating population to size %s' % newSize
+        pop.resize(newSize, propagate=True)
+        #
+        if len(par.ctrlLoci) == 0:
+            # freely expand
+            expandedPop = freeExpand(pop, par)
+        elif len(par.forCtrlLoci) != 0:
+            # forward controlled expansion
+            expandedPop = forCtrlExpand(pop, par)
+        else:
+            # backward controlled expansion
+            expandedPop = backCtrlExpand(pop, par)
+        # save expanded population
+        print 'Saving expanded population to %s...' % par.expandedFile
+        expandedPop.savePopulation(par.expandedFile)
+    #
+    # admixture
+    expandedPop.dvars().scale = 1
     expandedPop.dvars().stage = 'mix'
     admixedPop = mixExpandedPopulation(expandedPop, par)
     print 'Saving admixed population to ', par.admixedFile
