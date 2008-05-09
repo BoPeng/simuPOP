@@ -15,6 +15,7 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: allow longarg names in option jump and jumpIfFalse in simuOpt.py
   - NEW: load fine-scale recombinate rate and set variable genDist in loaded
 	HapMap populations. (loadHapMap.py)
+  - CHG: polish tkInter and wxPython parameter input dialog.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
