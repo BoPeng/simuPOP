@@ -153,6 +153,8 @@ matrix FreqTrajectoryMultiStoch(
 //           the function expects parameters gen and freq. gen is current generation
 //           number and freq is the allele frequency at all loci. This allows
 //           frequency dependent selection. gen is defined in forward order.
+//    migrRate migration rate. A simple island model is assumed that migr percent of
+//           individual will be migrated to each other for any pair of subpopulations.
 //    restartIfFail  If the process can not finish after T generations, restart if
 //           restartIfFail=true, otherwise return. Default to false.
 //    ploidy    Number of chromosomes will be N*ploidy
@@ -178,6 +180,7 @@ matrix ForwardFreqTrajectory(
 	PyObject * NtFunc = NULL,
 	vectorf fitness = vectorf(),
 	PyObject * fitnessFunc = NULL,
+	double migrRate = 0,
 	int ploidy = 2,
 	long maxAttempts = 1000);
 
