@@ -457,34 +457,36 @@ class _tkParamDialog(_paramDialog):
         x.bell()
         x.destroy()
 
-    def onHelp(self, event):
-        # open another window
-        helpDlg = tk.Tk()
-        # OK for help
-        def doOK(event):
-            " OK buton is pressed "
-            helpDlg.quit()
-        helpDlg.title('Help for ' + self.title)
-        messageFrame = tk.Frame(helpDlg)
-        messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
-        scrollBar = tk.Scrollbar(messageFrame)
-        scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
-        messageWidget = tk.Text(messageFrame, wrap=tk.WORD,
-            yscrollcommand=scrollBar.set)
-        messageWidget.insert(tk.END, usage(self.options, self.details))
-        scrollBar.config(command=messageWidget.yview)
-        #messageWidget.configure(font=(DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE), state=DISABLED)
-        messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
-        buttonFrame = tk.Frame(helpDlg)
-        buttonFrame.pack(side=tk.BOTTOM, fill=tk.BOTH)
-        okButton = tk.Button(buttonFrame, takefocus=1, text="OK")
-        okButton.pack(expand=tk.YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
+    def onHelpOK(self, event):
+        self.helpDlg.destroy()
+
+    def createHelpDialog(self):
+        self.helpDlg = tk.Toplevel(self.app)
+        self.helpDlg.title('Help for ' + self.title)
+        #
+        msg = tk.Text(self.helpDlg, wrap=tk.WORD)
+        msg.insert(tk.END, usage(self.options, self.details))
+        msg.grid(column=0, row=0, pady=10, padx=10,
+            sticky = tk.E + tk.W + tk.N + tk.S)
+        # scrollbar
+        sb = tk.Scrollbar(self.helpDlg)
+        sb.config(command=msg.yview)
+        sb.grid(column=1, row=0, sticky=tk.N + tk.S,
+            padx=0, pady=10)
+        msg["yscrollcommand"] = sb.set
+        self.helpDlg.columnconfigure(0, weight=1)
+        self.helpDlg.rowconfigure(0, weight=1)
+        self.helpDlg.rowconfigure(1, weight=0)
+        okButton = tk.Button(self.helpDlg, takefocus=1, text="OK")
+        okButton.grid(column=0, row=1, columnspan=2, pady=10, padx=10)
         # bind the keyboard events to the widget
-        okButton.bind("<Return>", doOK)
-        okButton.bind("<Button-1>", doOK)
-        helpDlg.bind("<Escape>", doOK)
-        helpDlg.mainloop()
-        helpDlg.destroy()
+        okButton.bind("<Return>", self.onHelpOK)
+        okButton.bind("<Button-1>", self.onHelpOK)
+        self.helpDlg.bind("<Escape>", self.onHelpOK)
+
+    def onHelp(self, event):
+        self.createHelpDialog()
+        self.app.wait_window(self.helpDlg)
 
     def onCancel(self, event):
         '''When ESC is pressed cancel'''
@@ -510,8 +512,9 @@ class _tkParamDialog(_paramDialog):
                             items.append(self.entryWidgets[g].get( s))
                     val = _getParamValue(self.options[g], items)
                 elif self.entryWidgets[g].winfo_class() == "Checkbutton":    # a checkbutton (true or false)
+                    # gets 0/1 for false/true
                     var = self.values[g].get()
-                    val = _getParamValue(self.options[g], var)
+                    val = _getParamValue(self.options[g], var == 1)
             except Exception,e:
                 print e
                 for lab in self.labelWidgets:
@@ -603,10 +606,10 @@ class _tkParamDialog(_paramDialog):
                 # state of this Checkbutton.
                 # c.f. http://infohost.nmt.edu/tcc/help/pubs/tkinter/control-variables.html
                 iv = tk.IntVar()
-                iv.set(value == True) # value can be None, True or False
-                value = iv
+                iv.set(self.values[g] == True) # value can be None, True or False
+                self.values[g] = iv
                 self.entryWidgets[g] = tk.Checkbutton(self.app, height=1,
-                    text = "Yes / No", variable=value)
+                    text = "Yes / No", variable=self.values[g])
                 self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, padx=5,
                     sticky=tk.W)
                 rowIndex += 1
