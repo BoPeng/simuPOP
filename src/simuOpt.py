@@ -283,7 +283,7 @@ def _getParamValue(p, val):
             + p.setdefault('longarg','none') +")")
 
 
-def _termGetParam(options, verbose=False, useDefault=False):
+def _termGetParam(options, useDefault=False, checkUnprocessedArgs=False):
     ''' using user input to get param '''
     # get param from short arg
     processedArgs = []
@@ -343,9 +343,10 @@ def _termGetParam(options, verbose=False, useDefault=False):
             else:
                 goto = jumpTo
     # look if any argument was not processed
-    for i in range(1, len(sys.argv)):
-        if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
-            raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+    if checkUnprocessedArgs:
+        for i in range(1, len(sys.argv)):
+            if (not sys.argv[i] in allowed_commandline_options) and (not i in processedArgs):
+                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
     return values
 
 
@@ -934,7 +935,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
 
     if noDialog or par_noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
-        return _termGetParam(options, doc, verbose)
+        return _termGetParam(options, False, True)
     else:
         title = os.path.split(sys.argv[0])[-1]
         if useTkinter:
@@ -942,7 +943,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
         elif useWxPython:
             return _wxParamDialog(options, title, doc, details, nCol).getParam()
         else:
-            return _termGetParam(options, doc, verbose)
+            return _termGetParam(options, False, True)
 
 
 def usage(options, before=''):
@@ -1275,13 +1276,13 @@ env_longAllele = os.getenv('SIMUALLELETYPE')
 env_debug = os.getenv('SIMUDEBUG')
 
 [par_optimized] = _termGetParam([{'longarg':'optimized', \
-    'default':''}], False, True)
+    'default':''}], True, False)
 [par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
-    'default':False}], False, True)
+    'default':False}], True, False)
 [par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
-    'default':False }], False, True)
+    'default':False }], True, False)
 [par_noDialog] = _termGetParam([{'longarg':'noDialog', \
-    'default':False }], False, True)
+    'default':False }], True, False)
 
 # remove these parameters from sys.argv
 for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
