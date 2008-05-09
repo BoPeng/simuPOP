@@ -658,6 +658,7 @@ matrix ForwardFreqTrajectory(
 	PyObject * NtFunc,
 	vectorf fitness,
 	PyObject * fitnessFunc,
+	double migr,
 	int ploidy,
 	long maxAttempts)
 {
@@ -684,6 +685,9 @@ matrix ForwardFreqTrajectory(
 
 	DBG_FAILIF(!N.empty() && N.size() != nSP, ValueError,
 		"If N is specified, it should have length " + toStr(nSP));
+
+	DBG_ASSERT(fcmp_ge(migr, 0) && fcmp_le(migr, 1), ValueError,
+		"Migration rate should be between 0 and 1");
 
 	size_t nGen = endGen - curGen + 1;
 	ULONG idx = curGen;
@@ -797,6 +801,47 @@ matrix ForwardFreqTrajectory(
 					<< " Size: " << N_t << " Loc: " << loc << " xt_1: " << xt_1 << " xt: " << a_frq[sp][loc] << endl);
 			}
 		} // each subpopulation
+		
+		// check if alleles get lost in any of the subpopulations
+		for (size_t sp = 0; sp < nSP; ++ sp) {
+			for (size_t loc = 0; loc < nLoci; ++ loc)
+				if (a_frq[sp][loc] == 0) {
+					idx = curGen;
+					continue;
+				}
+		}
+		
+		// now migration
+		if (migr != 0 && nSP > 1) {
+			matrix a_tmp(nSP, vectorf(nLoci, 0.));
+			for (size_t sp_from = 0; sp_from < nSP; ++ sp_from) {
+				size_t N_from = Nt[idx - curGen + 1][sp_from];
+				for (size_t sp_to = 0; sp_to < nSP; ++ sp_to) {
+					size_t N_to = Nt[idx - curGen + 1][sp_to];
+					if (sp_from == sp_to || N_from == 0 || N_to == 0 )
+						continue;
+					//
+					for (size_t loc = 0; loc < nLoci; ++ loc) {
+						double migrants = a_frq[sp_from][loc] * N_from * ploidy * migr;
+						a_tmp[sp_to][loc] += migrants;
+						a_tmp[sp_from][loc] -= migrants;
+					}						
+				}
+			}
+			// adjust rates
+			for (size_t sp = 0; sp < nSP; ++ sp) {
+				size_t N_t = Nt[idx - curGen + 1][sp];
+				for (size_t loc = 0; loc < nLoci; ++ loc) {
+					a_frq[sp][loc] += (a_frq[sp][loc] * ploidy * N_t + a_tmp[sp][loc]) 
+						/ (ploidy * N_t);
+					if (a_frq[sp][loc] <= 0 || a_frq[sp][loc] >= 1) {
+						idx = curGen;
+						continue;
+					}
+					result[sp + loc*nSP][idx - curGen + 1] = a_frq[sp][loc];
+				}
+			}
+		}
 		
 		// go to next generation
 		idx ++;
