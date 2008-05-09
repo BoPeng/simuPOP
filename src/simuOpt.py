@@ -387,18 +387,33 @@ class _paramDialog:
         self.details = details
         self.nCol = nCol
 
-    def getNumOfRows(self):
+    def getNumOfRows(self, multiLineChooseOneOf=False):
         '''Count the number of rows that is needed for all parameters'''
         row = 0
         for opt in self.options:
             if opt.has_key('label') or opt.has_key('separator'):
                 row += 1
             if opt.has_key('chooseFrom'):
-                row += len(opt['chooseFrom'])
+                row += len(opt['chooseFrom']) - 1
+            elif opt.has_key('chooseOneOf') and multiLineChooseOneOf:
+                row += len(opt['chooseOneOf']) - 1
         if row / self.nCol * self.nCol == row:
             row /= self.nCol
         else:
             row = row/self.nCol + 1
+        # it is possible but the row'th row sits between chooseOneOf or chooseFrom ...
+        r = 0
+        for opt in self.options:
+            if opt.has_key('label') or opt.has_key('separator'):
+                r += 1
+            if opt.has_key('chooseFrom'):
+                r += len(opt['chooseFrom']) - 1
+            elif opt.has_key('chooseOneOf') and multiLineChooseOneOf:
+                r += len(opt['chooseOneOf']) - 1
+            if r >= row:
+                row = r
+                # starts new
+                r = 0
         return row
 
     def formatDesc(self, text):
@@ -442,12 +457,41 @@ class _tkParamDialog(_paramDialog):
         x.bell()
         x.destroy()
 
-    def doCancel(self, event):
+    def onHelp(self, event):
+        # open another window
+        helpDlg = tk.Tk()
+        # OK for help
+        def doOK(event):
+            " OK buton is pressed "
+            helpDlg.quit()
+        helpDlg.title('Help for ' + self.title)
+        messageFrame = tk.Frame(helpDlg)
+        messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
+        scrollBar = tk.Scrollbar(messageFrame)
+        scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
+        messageWidget = tk.Text(messageFrame, wrap=tk.WORD,
+            yscrollcommand=scrollBar.set)
+        messageWidget.insert(tk.END, usage(self.options, self.details))
+        scrollBar.config(command=messageWidget.yview)
+        #messageWidget.configure(font=(DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE), state=DISABLED)
+        messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
+        buttonFrame = tk.Frame(helpDlg)
+        buttonFrame.pack(side=tk.BOTTOM, fill=tk.BOTH)
+        okButton = tk.Button(buttonFrame, takefocus=1, text="OK")
+        okButton.pack(expand=tk.YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
+        # bind the keyboard events to the widget
+        okButton.bind("<Return>", doOK)
+        okButton.bind("<Button-1>", doOK)
+        helpDlg.bind("<Escape>", doOK)
+        helpDlg.mainloop()
+        helpDlg.destroy()
+
+    def onCancel(self, event):
         '''When ESC is pressed cancel'''
         self.values = []
         self.app.quit()
 
-    def doGetText(self, event):
+    def onOK(self, event):
         ''' get result and convert values '''
         for g in range(len(self.entryWidgets)):
             if self.entryWidgets[g] == None:
@@ -483,161 +527,127 @@ class _tkParamDialog(_paramDialog):
         # get all results and return
         self.app.quit()
 
-    def doHelp(self, event):
-        # open another window
-        self.app1 = tk.Tk()
-        # OK for help
-        def doOK(event):
-            " OK buton is pressed "
-            self.app1.quit()
-        #global self.app1
-        self.app1.title("Help for " + self.title)
-        self.app1.iconname('Dialog')
-        self.app1.geometry("+200+200")
-        self.app1.minsize(400, 100)
-        messageFrame = tk.Frame(self.app1)
-        messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
-        scrollBar = tk.Scrollbar(messageFrame)
-        scrollBar.pack(side=tk.RIGHT, fill=tk.Y)
-        messageWidget = tk.Text(messageFrame, wrap=tk.WORD,
-            yscrollcommand=scrollBar.set)
-        messageWidget.insert(tk.END, usage(self.options, self.details))
-        scrollBar.config(command=messageWidget.yview)
-        #messageWidget.configure(font=(DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE), state=DISABLED)
-        messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
-        buttonFrame = tk.Frame(self.app1)
-        buttonFrame.pack(side=tk.BOTTOM, fill=tk.BOTH)
-        okButton = tk.Button(buttonFrame, takefocus=1, text="OK")
-        okButton.pack(expand=tk.YES, padx='1m', pady='1m', ipadx='2m', ipady='1m')
-        # bind the keyboard events to the widget
-        okButton.bind("<Return>", doOK)
-        okButton.bind("<Button-1>", doOK)
-        self.app1.bind("<Escape>", doOK)
-        # put the focus on the first button
-        self.app1.mainloop()
-        self.app1.destroy()
-
     def createDialog(self):
         self.app = tk.Tk()
         self.app.protocol('WM_DELETE_WINDOW', self.denyWindowManagerClose)
         self.app.title(self.title)
-        self.app.iconname('Dialog')
-        self.app.geometry("+300+200")
         #
         # the main window
-        #
         self.entryWidgets = [None]*len(self.options)
         self.labelWidgets = [None]*len(self.options)
-        self.app.bind("<Escape>", self.doCancel)
         # all use grid management
         # top message
-        # do not use a very long description please
-        tk.Message(self.app, text=self.description, width=600).grid(row=0, column=0,
-            columnspan = 2 * self.nCol, sticky=tk.N+tk.E+tk.S+tk.W, pady=20)
+        topMsg = tk.Label(self.app, text=self.description)
+        topMsg.grid(row=0, column=0, columnspan = 2 * self.nCol, sticky=tk.E + tk.W,
+            padx=10, pady=5)
         # find out number of items etc
-        colParam = 0
-        for opt in self.options:
-            if opt.has_key('label'):
-                colParam += 1
-            if opt.has_key('chooseFrom'):
-                colParam += len( opt['chooseFrom']) -1
-            if opt.has_key('chooseOneOf'):
-                colParam += len( opt['chooseOneOf']) -1
-        if colParam / self.nCol * self.nCol == colParam:
-            colParam /= self.nCol
-        else:
-            colParam = colParam/self.nCol + 1
-        colCount = 0
-        colIndex = 0
+        numRows = self.getNumOfRows(True)
+        rowIndex = 0
         # all entries
-        for g in range(len(self.options)):
-            opt = self.options[g]
-            if not opt.has_key('label'):
+        for g,opt in enumerate(self.options):
+            if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
-            # --------- entryWidget ----------------------------------------------
+            colIndex = rowIndex / numRows
+            value = self.values[g]
             # use different entry method for different types
+            if opt.has_key('separator'):
+                self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'],
+                    font=tkFont.Font(size=12, weight='bold'))
+                self.labelWidgets[g].grid(column=colIndex*2, row= rowIndex % numRows + 1,
+                    ipadx=0, padx=0, sticky=tk.E)
+                emptyInput = tk.Label(self.app, text='')
+                emptyInput.grid(column = colIndex*2 + 1, row= rowIndex % numRows + 1,
+                    ipadx=0, padx=0)
+                self.entryWidgets[g] = None
+                rowIndex += 1
+                continue
             if opt.has_key('chooseOneOf'):    # single choice
+                height = len(opt['chooseOneOf'])
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-                    rowspan = len(opt['chooseOneOf']), sticky=tk.E)
-                self.entryWidgets[g] = tk.Listbox(self.app, width=40, selectmode=tk.SINGLE, \
-                    exportselection=0, height=len(opt['chooseOneOf']))
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
-                    rowspan = len(opt['chooseOneOf']))
-                colCount += len(opt['chooseOneOf'])
+                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
+                    padx=5, rowspan = height, sticky=tk.E)
+                self.entryWidgets[g] = tk.Listbox(self.app, selectmode=tk.SINGLE,
+                    exportselection=0, height = height)
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
+                    padx=5, rowspan = height)
+                rowIndex += height
                 for entry in opt['chooseOneOf']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
-                if self.values[g] is not None:
-                    self.entryWidgets[g].select_set( opt['chooseOneOf'].index(self.values[g]))
+                if value is not None:
+                    self.entryWidgets[g].select_set(opt['chooseOneOf'].index(value))
             elif opt.has_key('chooseFrom'):    # multiple choice
+                height = len(opt['chooseFrom'])
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
-                    rowspan = len(opt['chooseFrom']), sticky=tk.E)
-                self.entryWidgets[g] = tk.Listbox(self.app, width=40, selectmode=tk.EXTENDED, \
-                    exportselection=0, height=len( opt['chooseFrom']))
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
-                    rowspan = len(opt['chooseFrom']))
-                colCount += len(opt['chooseFrom'])
+                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
+                    padx=5, rowspan = height, sticky=tk.E)
+                self.entryWidgets[g] = tk.Listbox(self.app, selectmode=tk.EXTENDED,
+                    exportselection=0, height = height)
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
+                    padx=5, rowspan = height)
+                rowIndex += height
                 for entry in opt['chooseFrom']:
                     self.entryWidgets[g].insert(tk.END, str(entry))
-                if self.values[g] is not None:
-                    if type(self.values[g]) in [types.TupleType, types.ListType]:
-                        for val in self.values[g]:
+                if value is not None:
+                    if type(value) in [types.TupleType, types.ListType]:
+                        for val in value:
                             self.entryWidgets[g].select_set( opt['chooseFrom'].index(val))
                     else:
-                        self.entryWidgets[g].select_set( opt['chooseFrom'].index( self.values[g] ))
+                        self.entryWidgets[g].select_set( opt['chooseFrom'].index( value ))
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10,
+                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1, padx=10,
                     rowspan = 1, sticky=tk.E)
-                # replace self.values[g] by a tk IntVar() because tk.Checkbutton has to store
-                # its value in such a variable. self.values[g].get() will be used to return the
+                # replace value by a tk IntVar() because tk.Checkbutton has to store
+                # its value in such a variable. value.get() will be used to return the
                 # state of this Checkbutton.
                 # c.f. http://infohost.nmt.edu/tcc/help/pubs/tkinter/control-variables.html
                 iv = tk.IntVar()
-                iv.set(self.values[g] == True) # self.values[g] can be None, True or False
-                self.values[g] = iv
+                iv.set(value == True) # value can be None, True or False
+                value = iv
                 self.entryWidgets[g] = tk.Checkbutton(self.app, height=1,
-                         text = "Yes / No", variable=self.values[g])
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10,
-                    rowspan = 1)
-                colCount += 1
+                    text = "Yes / No", variable=value)
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, padx=5,
+                    sticky=tk.W)
+                rowIndex += 1
                 self.entryWidgets[g].deselect()
             else:
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=colCount%colParam+1, padx=10, sticky=tk.E)
-                self.entryWidgets[g] = tk.Entry(self.app, width=40)
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=colCount%colParam+1, padx=10)
-                colCount += 1
+                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1, 
+                    padx=5, sticky=tk.E)
+                self.entryWidgets[g] = tk.Entry(self.app)
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, 
+                    padx=5, padx=0, ipadx=0)
+                rowIndex += 1
                  # put default value into the entryWidget
-                if self.values[g] is not None:
-                    self.entryWidgets[g].insert(0, prettyOutput(self.values[g]))
-            colIndex = colCount /colParam
-            self.entryWidgets[g].bind("<Return>", self.doGetText)
-            self.entryWidgets[g].bind("<Escape>", self.doCancel)
+                if value is not None:
+                    self.entryWidgets[g].insert(0, prettyOutput(value))
+            self.entryWidgets[g].bind("<Return>", self.onOK)
+            self.entryWidgets[g].bind("<Escape>", self.onCancel)
         # help button
         helpButton = tk.Button(self.app, takefocus=1, text="Help")
-        helpButton.bind("<Return>", self.doHelp)
-        helpButton.bind("<Button-1>", self.doHelp)
-        helpButton.grid(column=0, columnspan=self.nCol, row = colParam+1, pady=20)
+        helpButton.bind("<Return>", self.onHelp)
+        helpButton.bind("<Button-1>", self.onHelp)
+        helpButton.grid(column=0, columnspan=self.nCol, row = numRows+1, pady=20)
         # ok button
         okButton = tk.Button(self.app, takefocus=1, text="Run!")
-        okButton.bind("<Return>", self.doGetText)
-        okButton.bind("<Button-1>", self.doGetText)
-        okButton.grid( column=self.nCol, columnspan=self.nCol, row = colParam+1, pady=20)
+        okButton.bind("<Return>", self.onOK)
+        okButton.bind("<Button-1>", self.onOK)
+        okButton.grid( column=self.nCol, columnspan=self.nCol, row = numRows+1, pady=20)
         # cancel button
         cancelButton = tk.Button(self.app, takefocus=1, text="Cancel")
-        cancelButton.bind("<Return>", self.doCancel)
-        cancelButton.bind("<Button-1>", self.doCancel)
-        cancelButton.grid( column=0, columnspan=2*self.nCol, row = colParam+1, pady=20)
-
-    def runDialog(self):
+        cancelButton.bind("<Return>", self.onCancel)
+        cancelButton.bind("<Button-1>", self.onCancel)
+        cancelButton.grid( column=0, columnspan=2*self.nCol, row = numRows+1, pady=20)
+        #
+        self.app.bind("<Escape>", self.onCancel)
         # first un-none
         for g in range(len(self.options)):
             if self.entryWidgets[g] is not None:
                 self.entryWidgets[g].focus_force()
                 break
+
+    def runDialog(self):
         self.app.mainloop()    # run it!
         self.app.destroy()    # button_click didn't destroy self.app, so we do it now
 
@@ -1362,6 +1372,7 @@ if par_useTkinter or not useWxPython:
         imp.find_module('Tkinter')
         if not par_noDialog:
             import Tkinter as tk
+            import tkFont as tkFont
     except:
         print "Tkinter can not be loaded. Please check your Python installation."
         useTkinter = False
