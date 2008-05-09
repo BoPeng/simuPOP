@@ -1538,7 +1538,7 @@ def mixExpandedPopulation(pop, par):
         ops = getOperators(pop, par,
             progress=True, visualization=True, selection=True,
             mutation=True, migration=False, recombination=True)
-            + migr + ancOps,
+            + [migr] + ancOps,
         gen = par.migrGen
     )
     pop = simu.getPopulation(0, True)
