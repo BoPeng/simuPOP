@@ -885,6 +885,7 @@ class admixtureParams:
         # adjust parameters startPos, endPos etc.
         self.prepareMarkerParams()
         # marker list file and ld map file.
+        self.trajFile = os.path.join(self.name, 'trajectory.csv')
         self.markerListFile = os.path.join(self.name, 'markers.lst')
         self.markerMapFile = os.path.join(self.name, 'ld.map')
         # parameters for ld plots
@@ -1002,21 +1003,16 @@ class admixtureParams:
             }[self.mlSelModel]
         numDSL = len(self.ctrlLoci)
         if numDSL > 1 and self.mlSelModel is None:
-            self.fitness = []
+            self.fitness = [1, 1, 1]
         elif self.mlSelModel == 'interaction':
             if numDSL == 1:
                 raise ValueError("Interaction model can only be used with more than one DSL");
             if len(self.fitness) != 3**numDSL:
                 raise ValueError("Please specify 3^n fitness values for n DSL");
-        else:
-            if self.fitness == []:    # neutral process
-                self.fitness = [1,1,1]*numDSL
-            else:
-                # for a single DSL
-                if len(self.fitness) == 3:
-                    self.fitness = [self.fitness]*numDSL
-                elif len(self.fitness) != numDSL*3:
-                    raise ValueError("Please specify fitness for each DSL")
+        elif len(self.fitness) == 3:
+            self.fitness = self.fitness*numDSL
+        elif len(self.fitness) != numDSL*3:
+            raise ValueError("Please specify fitness for each DSL")
         #
         if len(self.forCtrlFreq) > 0:
             if type(self.forCtrlFreq[0]) in [TupleType, ListType]:
@@ -1035,14 +1031,6 @@ class admixtureParams:
             self.backCtrlFreq = self.backCtrlFreq * len(self.backCtrlLoci)
         elif len(self.backCtrlFreq) != len(self.backCtrlLoci):
             raise ValueError('Number of backward controlled freq does not match the number of such loci')
-        #
-        # scale fitness
-        for i in range(numDSL):
-            f = self.fitness[i]
-            f = [x/f[0] for x in f]
-            f[1] = 1 + (f[1] - 1) * self.scale 
-            f[2] = 1 + (f[2] - 1) * self.scale
-            self.fitness[i] = f   
 
 
 #####################################################################
@@ -1101,6 +1089,21 @@ def writeMarkerInfo(pop, par):
                 '\t'.join(['%.3f' % pop.dvars(x).alleleFreq[loc][1] for x in range(pop.numSubPop())]),
                 pop.dvars().alleleFreq[loc][1])
     markers.close()
+
+
+def writeTrajectory(popFunc, trajFunc, gen, file):
+    'Save trajectory to a file'
+    sz = popFunc(0)
+    t = trajFunc(0)
+    numSP = len(sz)
+    numLoci = len(t) / len(sz)
+    file = open(file, 'w')
+    print >> file, 'gen, %s, %s' % (', '.join(['sp_%d' % x for x in range(numSP)]),
+        ' ,'.join(['traj_loc%d_sp%d' % (x, y) for x in range(numSP) for y in range(numLoci)]))
+    for g in range(gen):
+        print >> file, '%d, %s, %s' % (g, ', '.join([str(x) for x in popFunc(g)]),
+            ', '.join(['%.4f' % x for x in trajFunc(g)]))
+    file.close()
 
 
 def writeMapFile(pop, par):
@@ -1307,7 +1310,8 @@ def createInitialPopulation(par):
     writeMapFile(pop, par)
     # write a LD plot.
     pop.dvars().stage = 'hapmap'
-    drawLDPlot(pop, par)
+    if par.drawLDPlot:
+        drawLDPlot(pop, par)
     return pop
 
 
@@ -1350,6 +1354,7 @@ def forCtrlExpand(pop, par):
         curFreq = currentFreq,
         freq = par.forCtrlFreq,
         fitness = par.fitness,
+        migrRate = par.backMigrRate,
         NtFunc = popSizeFunc,
         maxAttempts = 10000
     )
@@ -1361,6 +1366,10 @@ def forCtrlExpand(pop, par):
     # define a trajectory function
     def trajFunc(gen):
         return [x[gen] for x in traj]
+    # record trajectory
+    print 'Writing allele frequency trajectories to %s' % par.trajFile
+    writeTrajectory(popSizeFunc, trajFunc, par.initGen + par.expandGen,
+        par.trajFile)
     #
     print "Using controlled random mating on markers %s" % (', '.join(par.ctrlLoci))
     simu = simulator(pop,
@@ -1423,6 +1432,10 @@ def backCtrlExpand(pop, par):
             else:
                 freq.append(t[gen - par.initGen - par.expandGen + len(t) - 1])
         return freq
+    # record trajectory
+    print 'Writing allele frequency trajectories to %s' % par.trajFile
+    writeTrajectory(popSizeFunc, trajFunc, par.initGen + par.expandGen,
+        par.trajFile)
     #
     print 'Start population expansion using a controlled random mating scheme'
     simu = simulator(pop,
