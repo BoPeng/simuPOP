@@ -621,7 +621,9 @@ options = [
      'allowedTypes': [TupleType, ListType],
      'description': '''A list of allele frequency ranges for each controlled locus.
                 If a single range is given, it is assumed for all markers. An example
-                of the parameter is [[0.18, 0.20], [0.09, 0.11]].'''
+                of the parameter is [[0.18, 0.20], [0.09, 0.11]]. If there are multiple
+                populations, the disease alleles are distributed in proportion to
+                their distribution in the hapmap population.'''
     },
     {'longarg': 'backCtrlLoci=',
      'label': 'Backward controlled loci',
@@ -640,7 +642,9 @@ options = [
      'default': [],
      'useDefault': True,
      'allowedTypes': [TupleType, ListType],
-     'description': '''A list of allele frequency (not a list of ranges as parameter controlledFreq)''',
+     'description': '''A list of allele frequency (not a list of ranges as parameter controlledFreq).
+                if there are several populations, allele frequency should be given in the order of
+                LOC0: sp0, sp1, sp2, LOC1: sp0, sp1, sp2,...''',
     },
     {'longarg': 'fitness=',
      'default': [1, 1, 1],
@@ -1028,9 +1032,10 @@ class admixtureParams:
                 self.forCtrlFreq = [self.forCtrlFreq] * len(self.forCtrlLoci)
         # backward controlled freq
         if len(self.backCtrlFreq) == 1:
-            self.backCtrlFreq = self.backCtrlFreq * len(self.backCtrlLoci)
-        elif len(self.backCtrlFreq) != len(self.backCtrlLoci):
-            raise ValueError('Number of backward controlled freq does not match the number of such loci')
+            self.backCtrlFreq = self.backCtrlFreq * len(self.backCtrlLoci) * len(self.pops)
+        elif len(self.backCtrlFreq) != len(self.backCtrlLoci) * len(self.pops):
+            raise ValueError('Number of backward controlled freq does not match the number of '
+                'controlled loci multiplied by number of populations')
 
 
 #####################################################################
@@ -1337,7 +1342,7 @@ def forCtrlExpand(pop, par):
     # simulate a frequency trajectory
     Stat(pop, alleleFreq=par.ctrlLociIdx)
     currentFreq = []
-    # in the order: LOC0: sp0, sp1, sp2, LOC1: sp1, sp2, sp3, ...
+    # in the order: LOC0: sp0, sp1, sp2, LOC1: sp0, sp1, sp2, ...
     for idx,loc in enumerate(par.ctrlLociIdx):
         print "Current overall frequency %s: %.3f (aiming at: %.3f ~ %.3f)" % \
             (pop.locusName(loc), pop.dvars().alleleFreq[loc][1],
@@ -1404,33 +1409,43 @@ def backCtrlExpand(pop, par):
             ind.setAllele(0, loc, 1)
     print 'Simulate allele frequency trajectory using a backward approach'
     # NOTE:
-    # The current version of this script assumes only one subpopulation
-    # when a marker is backward controlled.
     popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
         par.initGen, par.expandGen)
-    traj = FreqTrajectoryMultiStoch(
-        curGen = par.initGen + par.expandGen,
-        freq = par.backCtrlFreq,
-        NtFunc = popSizeFunc,
-        fitness = par.fitness,
-        minMutAge = 0,
-        maxMutAge = par.expandGen,
-        restartIfFail = True)
-    introOps = [pointMutator(locus=par.backCtrlLociIdx[i], toAllele=1, inds=[i],
-            at = [par.expandGen - len(traj[i]) + 1], stage=PreMating)
-            for i in range(len(par.backCtrlLoci))]
-    if len(traj) == 0:
-        raise ValueError('''Failed to simulate trajectory
-            Initial allele frequency: %s
-            Ending allele frequency: %s''' % (currentFreq, par.backCtrlFreq))
+    allTraj = []
+    introOps = []
+    for sp in range(len(par.pops)):
+        def spSizeFunc(gen, sz=[]):
+            return [popSizeFunc(gen, sz)[sp]]
+        spFreq = [par.backCtrlFreq[x*len(par.pops) + sp] for x in range(len(par.backCtrlLoci))]
+        traj = FreqTrajectoryMultiStoch(
+            curGen = par.initGen + par.expandGen,
+            freq = spFreq,
+            NtFunc = spSizeFunc,
+            fitness = par.fitness,
+            minMutAge = 0,
+            maxMutAge = par.expandGen,
+            restartIfFail = True)
+        if len(traj) == 0:
+            raise ValueError('''Failed to simulate trajectory for subpopulation %d
+                Initial allele frequency: %s
+                Ending allele frequency: %s''' % (sp, currentFreq, par.backCtrlFreq))
+        allTraj.append(traj)
+        # how to introduce mutants to this subpopulation?
+        for idx,loc in enumerate(par.backCtrlLoci):
+            genIntro = par.expandGen - len(traj[i]) + 1
+            indIntro = sum(popSizeFunc(g)[:sp]) # mutate the first individual at that subpopulation
+            introOps.append(pointMutator(locus=loc, toAllele=1, inds=[indIntro],
+                at = [genIntro], stage=PreMating))
     # define a trajectory function
     def trajFunc(gen):
         freq = []
-        for t in traj:
-            if gen < par.initGen + par.expandGen - len(t) + 1:
-                freq.append(0)
-            else:
-                freq.append(t[gen - par.initGen - par.expandGen + len(t) - 1])
+        for i in range(len(par.backCtrlLoci)):
+            for spTraj in traj: # spTraj is an array for each subpopulation
+                t = spTraj[i]
+                if gen < par.initGen + par.expandGen - len(t) + 1:
+                    freq.append(0)
+                else:
+                    freq.append(t[gen - par.initGen - par.expandGen + len(t) - 1])
         return freq
     # record trajectory
     print 'Writing allele frequency trajectories to %s' % par.trajFile
