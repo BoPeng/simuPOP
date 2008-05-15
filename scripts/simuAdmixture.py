@@ -493,7 +493,7 @@ options = [
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'minAF=',
-     'default': 0.05,
+     'default': 0,
      'useDefault': True,
      'label': 'Minimal allele frequency',
      'description': '''Minimal allele frequency, only used for picking markers
@@ -637,7 +637,7 @@ options = [
                 only one of --forCtrlLoci and --backCtrlLoci is allowed. Note that allele
                 frequencies are only controlled in the expansion stage.''',
     },
-    {'longarg': 'backControlledFreq=',
+    {'longarg': 'backCtrlFreq=',
      'label': 'Ending allele frequency at backward controlled loci',
      'default': [],
      'useDefault': True,
@@ -750,7 +750,7 @@ options = [
      'validate': valueGE(100)
     },
     {'longarg': 'expandGen=',
-     'default': 1000,
+     'default': 500,
      'useDefault': True,
      'label': 'Generations to expand',
      'description': '''Number of generations to evolve during the population
@@ -859,27 +859,40 @@ class admixtureParams:
     This class also clean up/validate parameters and calcualtes some derived
     parameters for later uses.
     '''
-    def __init__(self, allParam):
+    def __init__(self, name='simu', useSavedExpanded=False,
+            step=100, showAlleleFreq=True, figureStep=200, drawLDPlot=False,
+            haploview='haploview', ldRegions=[0, 500], ldSampleSize=200,
+            HapMap_dir='../HapMap', pops=['CEU'], markerList='', chrom=[2],
+            numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
+            minDist=0, mutaRate=1e-6, recMap='genetic', recIntensity=0.01,
+            convProb=0, convMode='Tract length', convParam=0.02, 
+            forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
+            fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
+            scale=10, custom='', initCopy=10, initGen=100, initSize=4800,
+            expandGen=500, expandSize=42000, expandedName='expanded.bin',
+            migrModel='Continuous Gene Glow', migrGen=5, migrRate=[[0.99, 0.01], [0, 1.]],
+            ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
-        (self.name, self.useSavedExpanded,
-            self.step, self.showAlleleFreq, self.figureStep,
-            self.drawLDPlot, self.haploview, self.ldRegions,
-            self.ldSampleSize,
-            #
-            self.HapMap_dir, self.pops, self.markerList, self.chrom,
-            self.numMarkers, self.startPos, self.endingPos,
-            self.minAF, self.minDiffAF, self.minDist,
-            #
+        (self.name, self.useSavedExpanded, self.step, self.showAlleleFreq, self.figureStep,
+            self.drawLDPlot, self.haploview, self.ldRegions, self.ldSampleSize,
+            self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
+            self.startPos, self.endingPos, self.minAF, self.minDiffAF, self.minDist,
             self.mutaRate, self.recMap, self.recIntensity, self.convProb,
             self.convMode, self.convParam, self.forCtrlLoci, self.forCtrlFreq,
             self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
             self.backMigrRate, self.scale, self.custom,
-            #
             self.initCopy, self.initGen, self.initSize,
             self.expandGen, self.expandSize, self.expandedName,
-            #
             self.migrModel, self.migrGen, self.migrRate,
-            self.ancestry, self.matingScheme, self.admixedName) = allParam[1:]
+            self.ancestry, self.matingScheme, self.admixedName) \
+        = (name, useSavedExpanded, step,
+            showAlleleFreq, figureStep, drawLDPlot, haploview, ldRegions,
+            ldSampleSize, HapMap_dir, pops, markerList, chrom, numMarkers,
+            startPos, endingPos, minAF, minDiffAF, minDist, mutaRate, recMap,
+            recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
+            backCtrlLoci, backCtrlFreq, fitness, mlSelModel, backMigrRate, scale,
+            custom, initCopy, initGen, initSize, expandGen, expandSize, expandedName,
+            migrModel, migrGen, migrRate, ancestry, matingScheme, admixedName)
         # preparations
         self.createSimulationDir()
         self.expandedFile = self.setFile(self.expandedName)
@@ -1605,5 +1618,5 @@ if __name__ == '__main__':
     # save current configuration
     saveConfig(options, cfgFile, allParam)
     # create a parameter class and run simuAdmixture
-    simuAdmixture(admixtureParams(allParam))
+    simuAdmixture(admixtureParams(*allParam[1:]))
 
