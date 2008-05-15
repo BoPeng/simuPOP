@@ -870,7 +870,7 @@ class admixtureParams:
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
             scale=10, custom='', initCopy=10, initGen=100, initSize=4800,
             expandGen=500, expandSize=42000, expandedName='expanded.bin',
-            migrModel='Continuous Gene Glow', migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
+            migrModel='Continuous Gene Flow', migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
         (self.name, self.useSavedExpanded, self.step, self.showAlleleFreq, self.figureStep,
