@@ -321,7 +321,7 @@ from hapMapUtil import getMarkersFromName, getMarkersFromRange
 import os, sys, math
 from types import *
 from exceptions import ValueError, SystemError
-from simuUtil import SaveQTDT, SaveMerlinPedFile, MigrIslandRates
+from simuUtil import SaveQTDT, SaveMerlinPedFile, MigrIslandRates, Tee
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
@@ -803,7 +803,7 @@ options = [
      'validate': valueOneOf(['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'])
     },
     {'longarg': 'migrGen=',
-     'default': 5,
+     'default': 0,
      'label': 'Migration generations',
      'description': '''Length of migration stage. If set to zero, the migration stage
                 is ignored''',
@@ -870,7 +870,7 @@ class admixtureParams:
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
             scale=10, custom='', initCopy=10, initGen=100, initSize=4800,
             expandGen=500, expandSize=42000, expandedName='expanded.bin',
-            migrModel='Continuous Gene Glow', migrGen=5, migrRate=[[0.99, 0.01], [0, 1.]],
+            migrModel='Continuous Gene Glow', migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
         (self.name, self.useSavedExpanded, self.step, self.showAlleleFreq, self.figureStep,
@@ -905,6 +905,8 @@ class admixtureParams:
         self.trajFile = os.path.join(self.name, 'trajectory.csv')
         self.markerListFile = os.path.join(self.name, 'markers.lst')
         self.markerMapFile = os.path.join(self.name, 'ld.map')
+        self.logFile = os.path.join(self.name, 'logfile.txt')
+        Tee(open(self.logFile, 'w'))
         # parameters for ld plots
         if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
             self.ldRegions = [self.ldRegions]
@@ -927,7 +929,6 @@ class admixtureParams:
         # cutomized migrator and mating schemes
         if self.custom != '':
             exec('import %s as custom' % self.custom)
-
 
     def createSimulationDir(self):
         '''Create a directory with simulation name'''
@@ -999,8 +1000,6 @@ class admixtureParams:
         self.startPos = self.expandToList(self.startPos, numChrom,
             'Wrong starting positions')
         self.endingPos = self.expandToList(self.endingPos, numChrom,
-            'Wrong endinging positions')
-        self.numMarkers = self.expandToList(self.numMarkers, numChrom,
             'Wrong endinging positions')
         # now, which subpopulations are needed?
         self.popsIdx = []
@@ -1491,7 +1490,7 @@ def backCtrlExpand(pop, par):
 def mixExpandedPopulation(pop, par):
     ''' Evolve the seed population
     '''
-    if par.migrGen <= 0:
+    if par.migrGen <= 0 or pop.numSubPop() == 1:
         print 'No migration stage'
         return pop
     # migration part.
@@ -1507,6 +1506,8 @@ def mixExpandedPopulation(pop, par):
     elif par.migrModel == 'Customized':
         print 'Using customized migration model'
         migr = pyMigrator(rateFunc=migrFunc, mode=MigrByProbability)
+    else:
+        raise ValueError('Unknown migration model %s' % par.migrModel)
     #
     ancOps = []
     if par.ancestry and len(par.pops) > 1:
