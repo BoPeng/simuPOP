@@ -16,6 +16,7 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: load fine-scale recombinate rate and set variable genDist in loaded
 	HapMap populations. (loadHapMap.py)
   - CHG: polish tkInter and wxPython parameter input dialog.
+  - NEW: add a Tee class to simuUtil to write output to a log file.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
