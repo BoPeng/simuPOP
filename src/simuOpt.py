@@ -621,7 +621,7 @@ class _tkParamDialog(_paramDialog):
                     padx=5, sticky=tk.E)
                 self.entryWidgets[g] = tk.Entry(self.app)
                 self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, 
-                    padx=5, padx=0, ipadx=0)
+                    padx=5, ipadx=0)
                 rowIndex += 1
                  # put default value into the entryWidget
                 if value is not None:
