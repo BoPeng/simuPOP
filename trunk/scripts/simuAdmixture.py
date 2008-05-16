@@ -701,7 +701,7 @@ options = [
      'default': 10,
      'useDefault': True,
      'allowedTypes': [IntType, LongType, FloatType],
-     'label': 'Scale parameter',
+     'label': 'Acceleration scale',
      'description': '''This parameter is used to speed up recombination, mutation
                 and selection. Briefly speaking, certain parts of the evolutionary
                 process is accelerated but random genetic drift is kept. Please
