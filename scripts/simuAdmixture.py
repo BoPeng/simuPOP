@@ -390,9 +390,12 @@ options = [
      'default': 'haploview',
      'useDefault': True,
      'allowedTypes': [StringType],
-     'label': 'Command to start haploview',
+     'label': 'Command and options to run haploview',
      'description': '''Path to haploview or command to start haploview. It can simply
                 be haploview, but can be something like '/path/to/jave /path/to/haploview.jar'.
+                This script adds "-pedfile pedfile -map mapfile -compressedpng -q -n" to this
+                argument. Other options such as '-dprime' (output D' values), '-spacing' 
+                (proportion) as part of this parameter.
                 If haploview is not found, no LD plot will be displayed.'''
     },
     {'longarg': 'ldRegions=',
