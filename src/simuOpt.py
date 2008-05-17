@@ -987,15 +987,36 @@ def usage(options, before=''):
     return message
 
 
-def prettyOutput(value):
+def prettyOutput(value, quoted=False, outer=True):
     '''Return a value in good format, the main purpose is to
-      avoid [0.90000001, 0.2]
+      avoid [0.90000001, 0.2].
     '''
+    def quote(txt):
+        if not quoted:
+            return txt
+        if not "'" in txt:
+            return "'%s'" % txt
+        elif not '"' in txt:
+            return '"%s"' % txt
+        elif not "'''" in txt:
+            return "'''%s'''" % txt
+        elif not '"""' in txt:
+            return '"""%s"""' % txt
+        else:
+            return "'%s'" % txt.replace("'", "\\'")
+    #
     if type(value) in [types.ListType, types.TupleType] and len(value)>1:
-        txt = '[' + ', '.join([prettyOutput(x) for x in value]) + ']'
+        txt = '[' + ', '.join([prettyOutput(x, True, False) for x in value]) + ']'
+        if outer:
+            return quote(txt)
+        else:
+            return txt
+    elif type(value) == types.StringType:
+        return quote(value)
+    elif outer:
+        return quote(str(value))
     else:
-        txt = str(value)
-    return txt
+        return str(value)
 
 
 def saveConfig(opt, file, param):
@@ -1046,13 +1067,7 @@ def saveConfig(opt, file, param):
                 else:
                     arg = options[p]['longarg']
                 # write out option value, try to make it python readable
-                if type(param[p]) == type(''):
-                    if "'" in param[p]:
-                        print >> f, '%s = "%s"' % (arg, prettyOutput(param[p]))
-                    else:
-                        print >> f, "%s = '%s'" % (arg, prettyOutput(param[p]))
-                else:
-                    print >> f, "%s = %s" % (arg, prettyOutput(param[p]))
+                print >> f, "%s = %s" % (arg, prettyOutput(param[p], quoted=True))
     print >> f, "\n\n#The same options can be given by command line options (subject to minor changes)"
     cmd = "#    --noDialog "
     # shorter version
@@ -1064,20 +1079,20 @@ def saveConfig(opt, file, param):
             if options[p]['longarg'][-1] == '=':
                 if str(param[p]).find(",") >= 0:    # has single quote
                     arg = " --" + options[p]['longarg'][0:-1] \
-                        + '="' + prettyOutput(param[p]) + '"'
+                        + '=' + prettyOutput(param[p], quoted=True)
                     cmd += arg
                     if not defaultVal:
                         scmd += arg
                 else:
                     arg = " --" + options[p]['longarg'][0:-1] \
-                        + "='" + prettyOutput(param[p]) + "'"
+                        + "=" + prettyOutput(param[p], quoted=True)
                     cmd += arg
                     if not defaultVal:
                         scmd += arg
             elif param[p]: # this option is True
                 cmd += " --" + options[p]['longarg']
                 if not defaultVal:
-                    cmd += " --" + options[p]['longarg']
+                    scmd += " --" + options[p]['longarg']
     print >> f, ' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False))
     # print out shorter version
     print >> f, "\n\n#Or a shorter version if default arguments are ignored"
