@@ -395,7 +395,9 @@ options = [
                 be haploview, but can be something like '/path/to/jave /path/to/haploview.jar'.
                 This script adds "-pedfile pedfile -map mapfile -compressedpng -q -n" to this
                 argument. Other options such as '-dprime' (output D' values), '-spacing' 
-                (proportion) as part of this parameter.
+                (proportion) as part of this parameter. When '-dprime' is given, LD (D')
+                values of markers at the same distance are averaged and saved to an
+                average LD file.
                 If haploview is not found, no LD plot will be displayed.'''
     },
     {'longarg': 'ldRegions=',
@@ -407,14 +409,6 @@ options = [
                 is plotted. If there are 1000 markers on each chromosome, viewRegions
                 can be [[0, 500], [1200, 1700]]. A single region such as [0, 500] is
                 allowed.'''
-    },
-    {'longarg': 'ldSampleSize=',
-     'default': 200,
-     'label': 'Sample size for LD plotting',
-     'useDefault': True,
-     'allowedTypes': [IntType, LongType],
-     'description': '''A random sample of specified size will be draw from each subpopulation
-                for haploview plot.'''
     },
     #
     {'separator': 'Populations and markers to use'},
@@ -864,7 +858,7 @@ class admixtureParams:
     '''
     def __init__(self, name='simu', useSavedExpanded=False,
             step=100, showAlleleFreq=True, figureStep=200, drawLDPlot=False,
-            haploview='haploview', ldRegions=[0, 500], ldSampleSize=200,
+            haploview='haploview', ldRegions=[0, 500], 
             HapMap_dir='../HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
             minDist=0, mutaRate=1e-6, recMap='genetic', recIntensity=0.01,
@@ -877,7 +871,7 @@ class admixtureParams:
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
         (self.name, self.useSavedExpanded, self.step, self.showAlleleFreq, self.figureStep,
-            self.drawLDPlot, self.haploview, self.ldRegions, self.ldSampleSize,
+            self.drawLDPlot, self.haploview, self.ldRegions, 
             self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
             self.startPos, self.endingPos, self.minAF, self.minDiffAF, self.minDist,
             self.mutaRate, self.recMap, self.recIntensity, self.convProb,
@@ -890,7 +884,7 @@ class admixtureParams:
             self.ancestry, self.matingScheme, self.admixedName) \
         = (name, useSavedExpanded, step,
             showAlleleFreq, figureStep, drawLDPlot, haploview, ldRegions,
-            ldSampleSize, HapMap_dir, pops, markerList, chrom, numMarkers,
+            HapMap_dir, pops, markerList, chrom, numMarkers,
             startPos, endingPos, minAF, minDiffAF, minDist, mutaRate, recMap,
             recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
             backCtrlLoci, backCtrlFreq, fitness, mlSelModel, backMigrRate, scale,
@@ -904,6 +898,8 @@ class admixtureParams:
         self.ctrlLoci = self.forCtrlLoci + self.backCtrlLoci
         # adjust parameters startPos, endPos etc.
         self.prepareMarkerParams()
+        # this parameter does not need to be configurable.
+        self.ldSampleSize = 200
         # marker list file and ld map file.
         self.trajFile = os.path.join(self.name, 'trajectory.csv')
         self.markerListFile = os.path.join(self.name, 'markers.lst')
@@ -914,13 +910,15 @@ class admixtureParams:
         if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
             self.ldRegions = [self.ldRegions]
         # scaling
-        self.mutaRate *= self.scale
-        self.recIntensity *= self.scale
-        self.backMigrRate *= self.scale
-        self.step /= self.scale
-        self.figureStep /= self.scale
-        self.initGen /= self.scale
-        self.expandGen /= self.scale
+        if self.scale != 1:
+            print "The simulation will be accelerated by %.1f times " % self.scale
+            self.mutaRate *= self.scale
+            self.recIntensity *= self.scale
+            self.backMigrRate *= self.scale
+            self.step = int(self.step / self.scale)
+            self.figureStep = int(self.figureStep / self.scale)
+            self.initGen = int(self.initGen / self.scale)
+            self.expandGen = int(self.expandGen / self.scale)
         self.convMode = {
             'Tract length': CONVERT_TractLength,
             'Number of markers': CONVERT_NumMarkers,
@@ -1136,11 +1134,53 @@ def writeMapFile(pop, par):
     file.close()
 
 
-def drawLDPlot(pop, par):
+def calcMeanLD(LDFile, mapFile):
+    '''Calculate mean LD (D') for each distance. This will
+    only be called if the -dprime parameter of haploview is
+    given so a LD file is saved to disk.
+    '''
+    map = []
+    file = open(mapFile)
+    file.readline()
+    for line in file.readlines():
+        fields = line.split()
+        map.append(int(float(fields[2])*1000000))
+    #
+    ld = {}
+    file = open(LDFile)
+    file.readline()
+    for line in file.readlines():
+        fields = line.split()
+        m1 = int(fields[0])
+        m2 = int(fields[1])
+        dist = map[m2-1] - map[m1-1]
+        if ld.has_key(dist):
+            ld[dist].append(float(fields[2]))
+        else:
+            ld[dist] = [float(fields[2])]
+    # distance
+    dist = ld.keys()
+    dist.sort()
+    avgLD = []
+    for d in dist:
+        avgLD.append(sum(ld[d])/len(ld[d]))
+    # write result
+    print 'Saving mean LD to %s.avg' % LDFile
+    avgFile = open(LDFile + '.avg', 'w')
+    print >> avgFile, "Distance (kb), Average LD (D')"
+    for d,l in zip(dist, avgLD):
+        print >> avgFile, '%.3f\t%.3f' % (d/1000., l)
+    avgFile.close()
+
+def drawLDPlot(pop, par, preMating=True):
     '''Draw and display ld plot'''
     # NOTE: RandomSample will add information field oldindex etc
     # to pop so the population structure of pop will be changed.
     # This may disrupt evolution.
+    if preMating:
+        gen = pop.gen() * par.scale
+    else:
+        gen = (pop.gen() + 1) * par.scale - 1
     if True in [pop.subPopSize(x) < par.ldSampleSize for x in range(pop.numSubPop())]:
         sample = pop.clone()
     else:
@@ -1152,7 +1192,7 @@ def drawLDPlot(pop, par):
         spSample.removeSubPops(toBeRemoved)
         for reg in par.ldRegions:
             name = 'LD_%s_%d-%d_%s_%d' % (subPop, reg[0], reg[1],
-                pop.dvars().stage, pop.gen()*par.scale)
+                pop.dvars().stage, gen)
             filename = os.path.join(par.name, name)
             regSample = spSample.clone()
             regSample.removeLoci(keep=range(reg[0], reg[1]))
@@ -1160,12 +1200,22 @@ def drawLDPlot(pop, par):
                 (subPop, reg[0], reg[1], par.ldSampleSize)
             SaveMerlinPedFile(regSample, output=filename,
                 outputAffection=True, affectionCode=['1', '2'])
-            cmd = '%s -pedfile %s.ped -map %s/ld.map -compressedpng -q -n' % \
-                (par.haploview, filename, par.name)
+            cmd = '%s -pedfile %s.ped -map %s -compressedpng -q -n' % \
+                (par.haploview, filename, par.markerMapFile)
             print 'Command: %s' % cmd
             os.system(cmd)
+            # if an LD file is produced as the result of -dprime parameter, calculate
+            # average D' for dist
+            if os.path.isfile(filename + '.ped.LD'):
+                print 'Calculating mean LD from %s.ped.LD' % filename
+                calcMeanLD(filename + '.ped.LD', par.markerListFile)
     return True
 
+def preDrawLDPlot(pop, par):
+    return drawLDPlot(pop, par, True)
+
+def postDrawLDPlot(pop, par):
+    return drawLDPlot(pop, par, False)
 
 def getOperators(pop, par, progress=False, visualization=False, mutation=False,
         migration=False, recombination=False, selection=False):
@@ -1174,28 +1224,30 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
     if progress:
         # statistics calculation and display
         exp = ['gen %3d', 'size=%s']
-        var = ['gen*scale', 'subPopSize']
+        preGen = 'gen*scale'
+        postGen = '(gen+1)*scale-1'
+        var = ['%s', 'subPopSize']
         if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
             exp.append('alleleFreq=%s')
-            var.append('", ".join(["%.3f" % alleleFreq[x][1] for x in ctrlLoci])')
+            var.append('", ".join(["%%.3f" % alleleFreq[x][1] for x in ctrlLoci])')
         if len(par.pops) > 1:
             exp.append('Fst=%.3f')
             var.append('AvgFst')
         ops.extend([
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
                 step = par.step, stage=PreMating),
-            pyEval(r'"At the beginning of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var)),
+            pyEval(r'"At the beginning of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % preGen),
                 step=par.step, stage=PreMating),
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
                 at = [par.initGen - 1, -1]),
-            pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var)),
+            pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % endGen),
                 at = [par.initGen - 1, -1])
         ])
     if visualization and par.drawLDPlot and par.figureStep > 0 \
-        and par.ldSampleSize > 0 and len(par.ldRegions) > 0:
+        and len(par.ldRegions) > 0:
         ops.extend([
-            pyOperator(func=drawLDPlot, param = par, step=par.figureStep, stage=PreMating),
-            pyOperator(func=drawLDPlot, param = par, at=[par.initGen - 1, -1])
+            pyOperator(func=preDrawLDPlot, param = par, step=par.figureStep, stage=PreMating),
+            pyOperator(func=postDrawLDPlot, param = par, at=[par.initGen - 1, -1])
         ])
     if mutation:    
         ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
