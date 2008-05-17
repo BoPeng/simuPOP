@@ -342,9 +342,9 @@ options = [
                 will be created. Configuration file (.cfg), marker list and
                 various populations will be saved to this directory''',
     },
-    {'longarg': 'useSavedExpanded',
+    {'longarg': 'useSavedExpanded=',
      'default': False,
-     'useDefault': False,
+     'useDefault': True,
      'allowedTypes': [BooleanType],
      'jump': 'expandedName',
      'label': 'Use saved expanded population',
@@ -650,10 +650,10 @@ options = [
      'description': '''Fitness of genotype, can be:
                 f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
                 f1, f2, f3: if multiple DSL, the same fitness for each locus
-                [a1, a2, a3, b1, b2, b3, ...] if selMultiLocusModel = 'additive'
+                [a1, a2, a3, b1, b2, b3, ...] if mlSelModel = 'additive'
                     or multiplicative, fitness at each locus. The overall fitness
-                    is determined by selMultiLocusModel
-                [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and selMultiLocusModel = interaction.
+                    is determined by mlSelModel
+                [a1, a2, a3, b1, b2, b3, c1, c2, c3, ...] and mlSelModel = interaction.
                     For example, in the 2-DSL case, the numbers are (by row)
                         BB Bb bb
                     AA  a1 a2 a3
@@ -663,7 +663,7 @@ options = [
         ''',
      'validate': valueListOf(valueGE(0.)),
     },
-    {'longarg': 'selMultiLocusModel=',
+    {'longarg': 'mlSelModel=',
     'default': 'none',
     'label': 'Multi-locus selection model',
     'description': '''Model of overall fitness value given fitness values for each DSL.
