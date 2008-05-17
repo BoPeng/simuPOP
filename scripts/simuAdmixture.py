@@ -1240,7 +1240,7 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
                 step=par.step, stage=PreMating),
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
                 at = [par.initGen - 1, -1]),
-            pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % endGen),
+            pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % postGen),
                 at = [par.initGen - 1, -1])
         ])
     if visualization and par.drawLDPlot and par.figureStep > 0 \
