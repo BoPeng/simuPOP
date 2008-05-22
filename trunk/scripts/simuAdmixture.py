@@ -1091,6 +1091,16 @@ def expDemoFunc(N0, N1, N2, gen1, gen2):
     return func
 
 
+def effPopSize(func, gen):
+    '''Estimate effective population size for a given demographic function'''
+    nSP = len(func(0))
+    Ne = [0]*nSP
+    for i in range(gen):
+        for j in range(nSP):
+            Ne[j] += 1./func(i)[j]
+    return [gen/x for x in Ne]
+
+
 def writeMarkerInfo(pop, par):
     'Save marker info'
     # print marker list fine
@@ -1134,10 +1144,14 @@ def writeMapFile(pop, par):
     file.close()
 
 
-def calcMeanLD(LDFile, mapFile):
-    '''Calculate mean LD (D') for each distance. This will
+def calcMeanLD(LDFile, mapFile, width=10, maxDist=500):
+    '''Calculate mean LD (D') for each distance (each kb). This will
     only be called if the -dprime parameter of haploview is
     given so a LD file is saved to disk.
+    LDFile: haploview generated LD file
+    mapFile: markers.lst produced by this script
+    width: width of the bins of distances, default to 10kb
+    maxDist: maximum distance.
     '''
     map = []
     file = open(mapFile)
@@ -1153,7 +1167,10 @@ def calcMeanLD(LDFile, mapFile):
         fields = line.split()
         m1 = int(fields[0])
         m2 = int(fields[1])
-        dist = map[m2-1] - map[m1-1]
+        # each kb
+        dist = int(map[m2-1] - map[m1-1])/1000/width
+        if dist * width > maxDist:
+            continue
         if ld.has_key(dist):
             ld[dist].append(float(fields[2]))
         else:
@@ -1169,8 +1186,9 @@ def calcMeanLD(LDFile, mapFile):
     avgFile = open(LDFile + '.avg', 'w')
     print >> avgFile, "Distance (kb), Average LD (D')"
     for d,l in zip(dist, avgLD):
-        print >> avgFile, '%.3f\t%.3f' % (d/1000., l)
+        print >> avgFile, '%d\t%.3f' % (d*width, l)
     avgFile.close()
+
 
 def drawLDPlot(pop, par, preMating=True):
     '''Draw and display ld plot'''
@@ -1392,6 +1410,7 @@ def freeExpand(pop, par):
     #
     popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
         par.initGen, par.expandGen)
+    print 'Estimated effective population size is', effPopSize(popSizeFunc, par.initGen + par.expandGen)
     #
     # evolve it. This is the simplest case.
     print "Evolving the population freely..."
@@ -1419,6 +1438,7 @@ def forCtrlExpand(pop, par):
     print 'Simulating frequency trajectory ...'
     popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
         par.initGen, par.expandGen)
+    print 'Estimated effective population size is', effPopSize(popSizeFunc, par.initGen + par.expandGen)
     #
     traj = ForwardFreqTrajectory(
         curGen = 0,
@@ -1478,6 +1498,7 @@ def backCtrlExpand(pop, par):
     # NOTE:
     popSizeFunc = expDemoFunc(pop.subPopSizes(), par.initSize, par.expandSize, 
         par.initGen, par.expandGen)
+    print 'Estimated effective population size is', effPopSize(popSizeFunc, par.initGen + par.expandGen)
     allTraj = []
     introOps = []
     for sp in range(len(par.pops)):
