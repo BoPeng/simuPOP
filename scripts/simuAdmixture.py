@@ -177,139 +177,17 @@ The result of this stage will be saved to $name/admixed.bin (--param admixedName
 Test scripts
 ==============
 
-def migrFunc(gen, curSize):
-    """This is an example of how to define a time-dependent
-    migration rate function
-    """
-    # this is a sample function that migrate to
-    # a third population, with increasing intensity
-    return [[0, 0, 0.05*gen], [0, 0, 0.05*gen]]
+1. Example1:
 
-The following test scripts demonstrate the use of this script using a small
-number of loci. Note that some parameters can be ignored if their
-default values are used.
+This example uses mostly default parameters, it can be executed by
 
-simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' \
-    --chrom="range(1,3)"  --markerList='../../Affy/mapAffySNPs.txt' \
-    --startPos="[0]" --endingPos='[0]' --numMarkers="[100,100]" --minAF='0' --minDist='0'  \
-    --pops="['CEU', 'YRI', 'JPT+CHB']" --initCopy='10' --initGen='20' --initSize='3600'  \
+simuAdmixture.py  --name='example1' --chrom='[2]' \
+    --numMarkers='[2000]' --startPos='[51]'
 
-simuAdmixture.py --noDialog  --seedName=test_seed.bin --migrGen='5' \
-    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])"
+If you would like to draw LD plot and have a look at average LD, please
+specify parameter --drawLDPlot and --haploview='/path/to/haploview -dprime'.
+Option '-dprime' of haploview is needed to calculate pairwise LD.
 
-
-simulation for XJ Gu et al (2008)
-====================================
-
-# 1: Hybrid isolation.
-simuAdmixture.py --noDialog  --name='IH' \
-    --HapMap_dir='../../HapMap' --pops="['CEU']" --chrom="range(1, 23)" \
-    --markerList='../../Affy/mapAffySNPs.txt'  --initCopy='10' \
-    --gen='200' --size='4800' --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed --migrModel='None' --migrGen='1' \
-    --migrRate="()" --chromWithDSL="(1, 2, 3, 4)" \
-    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.005, 0.01, 0.03, 0.05)" \
-    --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
-    --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
-
-simuAdmixture.py --noDialog  --name='admix' --initPop='' --HapMap_dir='../../HapMap' \
-    --pops="['CEU', 'YRI', 'JPT+CHB']" --chrom="(2, 3)" --markerList='' --numMarkers="(1000, 1000)" \
-    --startPos='[0]' --endingPos='[0]' --minAF='0.05' --minDiffAF='0' --minDist='0' --initCopy='10' \
-    --gen='200' --size='4800' --useSavedExpanded --expandGen='100' --expandSize='24000' \
-    --useSavedAdmixed --migrModel='Continuous Gene Flow' --migrGen='5' \
-    --migrRate="([0.90000000000000002, 0.10000000000000001], [0.0, 1.0])" --chromWithDSL="(1, 2, 3, 4)" \
-    --freqDSL='0.2' --freqDev='0.02' --dslVar="(0.050000000000000003, 0.10000000000000001, 0.29999999999999999, 0.5)" \
-    --cutoff='-0.5' --DSLpene='[]' --peneFunc='None' --parameter='[0.5]' --ccSampleSize="(600, 600)" \
-    --ccSampleName='case-control' --randomSampleSize='800' --randomSampleName='random'
-
-
-Evolve seed population:
-
-simuAdmixture.py --noDialog  --expandGen='100' --expandSize='24000' \
-    --migrModel='Continuous Gene Flow' --migrGen='5' \
-    --migrRate="([0, 0.10000000000000001], [0.0, 1.0])" \
-    --DSLpene='[0]' --pene="(0.10000000000000001, 0.25, 0.5)"  \
-    --resample='False' --sampleSize="(500, 500)"  \
-    --name='admix'
-
-Or use some default values
-
-simuAdmixture.py --noDialog  --seed=admix_seed.bin --migrGen='5' \
-    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --chromWithDSL="[1,2,3,4]" \
-    --sampleSize="(600, 600)" --freqDSL=0.15 --freqDev=0.01 --cutoff=1 \
-    --dslVar="[0.005, 0.01, 0.03, 0.05]"  --name='admix'
-
-# test
-simuAdmixture.py --noDialog  --seed=test_seed.bin --migrGen='5' \
-    --migrRate="([1, 0, 0], [1, 0, 0], [1, 0, 0])" --chromWithDSL="[1,2]" \
-    --sampleSize="(5, 5)" --freqDSL=0.1 --cutoff=1 \
-    --dslVar="[0.05, 0.1]"   --name='test'
-
-Evolve a different seed population
-
-simuAdmixture.py --noDialog  -s=seed1.bin --migrGen='5' \
-    --migrRate="([0, 0.1], [0, 1])" --DSLpene=100 \
-    --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
-    --name='admix'
-
-Resample from the saved population:
-
-simuAdmixture.py --noDialog --resample=True --DSLpene=100 \
-    --pene="(0.1, 0.25, 0.5)"  --sampleSize="(500, 500)"  \
-    --name='admix'
-
-Two disease susceptibility loci:
-
-simuAdmixture.py --noDialog --resample=True --DSLpene='[10, 50]' \
-    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
-    --sampleSize="(500, 500)"   --name='admix'
-
-Create a new subpopulation (the third population is created):
-
-simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
-    --DSLpene='[10, 50]' \
-    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
-    --sampleSize="(500, 500)"   --name='admix'
-
-Sample only from the last (newly created population)
-
-simuAdmixture.py --noDialog --migrRate='[[0, 0, 0.1], [0, 0, 0.1]]' \
-    --DSLpene='[10, 50]' \
-    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
-    --sampleSize="([0,0,500], [0,0,500])"   --name='admix'
-
-Use a varying migration rate model:
-
-Modify migrFunc to fit your need. Then
-
-simuAdmixture.py --noDialog --migrModel='Customized' --DSLpene='[10, 50]' \
-    --pene="(0.1, 0.25, 0.5, 0.1, 0.25, .5, 0.2, 0.4, 0.6)" \
-    --sampleSize="([0,0,500], [0,0,500])" --name='admix'
-
-
-Dr. Reddon simulation one:
-
-Seed population:
-
-500 markers from chromosome 2, initial allele frequency > 0.1, initial
-allele frequency difference between CEU and YRI populations > 0.2,
-minimal distance between adjacent markers 0.05cM
-
-simuAdmixture.py --noDialog  --HapMap_dir='../../HapMap' --chrom='[2]' \
-   --numMarkers=500 --startPos=100  --minAF=0.1 --minDiffAF=0.2 \
-   --minDist=0.05 --pops="['CEU', 'YRI']"
-
-250 sample from CEU, 250 sample from YRI, 500 sample from admixed population
-when 10% of the CEU popopulation migrate to YRI for 5 generations.
-
-Round 1: expand and get sample from CEU
-
-simuAdmixture.py  --noDialog --useSavedExpanded --migrModel='None' --migrGen='0'
-
-Round 2: load expanded population and get sample from YRI
-
-simuAdmixture.py  --noDialog --remix=True --migrModel='None' --migrGen='0' --sampleType='random'\
-  --sampleSize="(0, 250)" --sampleName='YRI' --name='simu2'
 
 '''
 
@@ -321,7 +199,7 @@ from hapMapUtil import getMarkersFromName, getMarkersFromRange
 import os, sys, math
 from types import *
 from exceptions import ValueError, SystemError
-from simuUtil import SaveQTDT, SaveMerlinPedFile, MigrIslandRates, Tee
+from simuUtil import SaveQTDT, SaveMerlinPedFile, MigrIslandRates
 
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
@@ -401,7 +279,7 @@ options = [
                 If haploview is not found, no LD plot will be displayed.'''
     },
     {'longarg': 'ldRegions=',
-     'default': [0, 500],
+     'default': [0, 1000],
      'useDefault': True,
      'allowedTypes': [TupleType, ListType],
      'label': 'Regions to plot LD structure',
@@ -413,7 +291,7 @@ options = [
     #
     {'separator': 'Populations and markers to use'},
     {'longarg': 'HapMap_dir=',
-     'default': '../HapMap',
+     'default': 'HapMap',
      'useDefault': True,
      'label': 'HapMap data directory',
      'description': '''Directory to store HapMap data in simuPOP format. Hapmap
@@ -427,7 +305,7 @@ options = [
      #'validate': valueValidDir(),
     },
     {'longarg': 'pops=',
-     'default' : ['CEU', 'YRI', 'JPT+CHB'],
+     'default' : ['CEU'],
      'useDefault': True,
      'label' : 'HapMap populations',
      'description': '''Which HapMap populations to use?''',
@@ -470,7 +348,7 @@ options = [
      'validate': valueOr(valueGT(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'startPos=',
-     'default': 0,
+     'default': [0],
      'useDefault': True,
      'label': 'staring position',
      'description': '''Starting position of the markers. If multiple
@@ -480,7 +358,7 @@ options = [
      'validate': valueOr(valueGE(0), valueListOf(valueGE(0)))
     },
     {'longarg': 'endingPos=',
-     'default': 0,
+     'default': [0],
      'useDefault': True,
      'label': 'Ending position',
      'description': '''Ending position of the markers. Ignored if its value
@@ -519,7 +397,8 @@ options = [
     #
     {'separator': 'Mutation, recombination, etc'},
     {'longarg': 'mutaRate=',
-     'default': 1e-6,
+     'default': 2e-6,
+     'useDefault': True,
      'label': 'Mutation rate',
      'allowedTypes': [IntType, FloatType],
      'description': '''Mutation rate using a 2-allele model (kam). Note that mutation
@@ -646,6 +525,7 @@ options = [
     {'longarg': 'fitness=',
      'default': [1, 1, 1],
      'label': 'Fitness of genotype AA,Aa,aa',
+     'useDefault': True,
      'allowedTypes': [ListType, TupleType],
      'description': '''Fitness of genotype, can be:
                 f1, f2, f3: if one DSL, the fitness for genotype AA, Aa and aa
@@ -665,6 +545,7 @@ options = [
     },
     {'longarg': 'mlSelModel=',
     'default': 'none',
+    'useDefault': True,
     'label': 'Multi-locus selection model',
     'description': '''Model of overall fitness value given fitness values for each DSL.
                 multiplicative: f =  Prod(f_i)
@@ -707,7 +588,7 @@ options = [
     },
     {'longarg': 'custom=',
      'default': '',
-     'useDefault': False,
+     'useDefault': True,
      'allowedTypes': [StringType],
      'label': 'Modual for customized definitions',
      'description': '''A python module that provides customized,
@@ -716,7 +597,7 @@ options = [
     },
     {'separator': 'Population expansion'},
     {'longarg': 'initCopy=',
-     'default': 10,
+     'default': 20,
      'useDefault': True,
      'label': 'Initial propagation',
      'description': '''How to expand the initial small HapMap sample to
@@ -726,7 +607,7 @@ options = [
      'validate': valueGT(0)
     },
     {'longarg': 'initGen=',
-     'default': 100,
+     'default': 20,
      'useDefault': True,
      'label': 'Generations to evolve',
      'description': '''Number of generations to evolve to get the seed
@@ -737,7 +618,7 @@ options = [
      'validate': valueGT(0)
     },
     {'longarg': 'initSize=',
-     'default': 4800,
+     'default': 5000,
      'useDefault': True,
      'label': 'Size of the seed population',
      'description': '''Size of the seed population. The default value is the recommended
@@ -758,7 +639,8 @@ options = [
      'validate': valueGT(0)
     },
     {'longarg': 'expandSize=',
-     'default': 42000,
+     'default': 50000,
+     'useDefault': True,
      'label': 'Expanded population size',
      'description': '''Size of the expanded population. The default value if the recommended
                 value when all hapmap populations are used (60+60+90)*200. You may want to
@@ -801,6 +683,7 @@ options = [
     },
     {'longarg': 'migrGen=',
      'default': 0,
+     'useDefault': True,
      'label': 'Migration generations',
      'description': '''Length of migration stage. If set to zero, the migration stage
                 is ignored''',
@@ -809,6 +692,7 @@ options = [
     },
     {'longarg': 'migrRate=',
      'default': [[0.99, 0.01], [0., 1.]],
+     'useDefault': True,
      'label': 'Migration rate matrix',
      'description': '''Migration rate matrix. Use only for the continuous gene flow model.
                 A_ij of this matrix represents the probability of moving from population i
@@ -850,6 +734,42 @@ options = [
 ]
 
 
+class Tee(object):
+    '''
+    A Tee object. Write to this object will write to stdout, and to
+    specified file objects.
+    '''
+    def __init__(self, *args):
+        self.files = args
+        self.stdout = sys.stdout
+        sys.stdout = self
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        for f in self.files:
+            f.close()
+        if self.stdout is not None:
+            sys.stdout = self.stdout
+            self.stdout = None
+        self.files = []
+
+    def write(self, data):
+        self.stdout.write(data)
+        for f in self.files:
+            f.write(data)
+
+    def writelines(self, data):
+        for i in seq:
+            self.write(i)
+
+    def flush(self):
+        for f in self.files:
+            f.flush()
+        self.stdout.flush()
+
+
 class admixtureParams:
     ''' This class is used to wrap all parameters to a single object so that
     I do not have to pass a bunch of parameters here and there.
@@ -858,15 +778,15 @@ class admixtureParams:
     '''
     def __init__(self, name='simu', useSavedExpanded=False,
             step=100, showAlleleFreq=True, figureStep=200, drawLDPlot=False,
-            haploview='haploview', ldRegions=[0, 500], 
-            HapMap_dir='../HapMap', pops=['CEU'], markerList='', chrom=[2],
+            haploview='haploview', ldRegions=[0, 1000], 
+            HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
-            minDist=0, mutaRate=1e-6, recMap='genetic', recIntensity=0.01,
+            minDist=0, mutaRate=2e-6, recMap='genetic', recIntensity=0.01,
             convProb=0, convMode='Tract length', convParam=0.02, 
             forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
-            scale=10, custom='', initCopy=10, initGen=100, initSize=4800,
-            expandGen=500, expandSize=42000, expandedName='expanded.bin',
+            scale=10, custom='', initCopy=20, initGen=20, initSize=5000,
+            expandGen=500, expandSize=50000, expandedName='expanded.bin',
             migrModel='Continuous Gene Flow', migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
@@ -909,16 +829,6 @@ class admixtureParams:
         # parameters for ld plots
         if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
             self.ldRegions = [self.ldRegions]
-        # scaling
-        if self.scale != 1:
-            print "The simulation will be accelerated by %.1f times " % self.scale
-            self.mutaRate *= self.scale
-            self.recIntensity *= self.scale
-            self.backMigrRate *= self.scale
-            self.step = int(self.step / self.scale)
-            self.figureStep = int(self.figureStep / self.scale)
-            self.initGen = int(self.initGen / self.scale)
-            self.expandGen = int(self.expandGen / self.scale)
         self.convMode = {
             'Tract length': CONVERT_TractLength,
             'Number of markers': CONVERT_NumMarkers,
@@ -930,6 +840,18 @@ class admixtureParams:
         # cutomized migrator and mating schemes
         if self.custom != '':
             exec('import %s as custom' % self.custom)
+
+    def scaleParam(self, scale):
+        if scale != 1:
+            print "The simulation will be accelerated by %.1f times " % scale
+            self.mutaRate *= scale
+            self.recIntensity *= scale
+            self.backMigrRate *= scale
+            self.step = int(self.step / scale)
+            self.figureStep = int(self.figureStep / scale)
+            self.initGen = int(self.initGen / scale)
+            self.expandGen = int(self.expandGen / scale)
+            self.curScale = scale
 
     def createSimulationDir(self):
         '''Create a directory with simulation name'''
@@ -1196,9 +1118,9 @@ def drawLDPlot(pop, par, preMating=True):
     # to pop so the population structure of pop will be changed.
     # This may disrupt evolution.
     if preMating:
-        gen = pop.gen() * par.scale
+        gen = pop.gen() * par.curScale
     else:
-        gen = (pop.gen() + 1) * par.scale - 1
+        gen = (pop.gen() + 1) * par.curScale - 1
     if True in [pop.subPopSize(x) < par.ldSampleSize for x in range(pop.numSubPop())]:
         sample = pop.clone()
     else:
@@ -1566,6 +1488,7 @@ def backCtrlExpand(pop, par):
 def mixExpandedPopulation(pop, par):
     ''' Evolve the seed population
     '''
+    par.setCtrlLociIndex(pop)
     if par.migrGen <= 0 or pop.numSubPop() == 1:
         print 'No migration stage'
         return pop
@@ -1585,7 +1508,7 @@ def mixExpandedPopulation(pop, par):
     else:
         raise ValueError('Unknown migration model %s' % par.migrModel)
     #
-    ancOps = []
+    ancOps = noneOp()
     if par.ancestry and len(par.pops) > 1:
         def calcAncestry(parAncestry):
             '''parAncestry will be ancestry values of parents
@@ -1611,8 +1534,11 @@ def mixExpandedPopulation(pop, par):
                     # initialize as 0
                     val.extend([0]*pop.subPopSize(j))
             pop.setIndInfo(val, sp)
-        ancOps = [pyTagger(func=calcAncestry, infoFields=par.pops)]
+        ancOps = pyTagger(func=calcAncestry, infoFields=par.pops)
     #
+    if par.migrModel == 'Hybrid Isolation':
+        print 'Merge all subpopulations'
+        pop.setSubPopStru([pop.popSize()])
     if par.matingScheme == 'random':
         simu = simulator(pop, randomMating())
     else:
@@ -1621,7 +1547,7 @@ def mixExpandedPopulation(pop, par):
         ops = getOperators(pop, par,
             progress=True, visualization=True, selection=True,
             mutation=True, migration=False, recombination=True)
-            + [migr] + ancOps,
+            + [migr, ancOps],
         gen = par.migrGen
     )
     pop = simu.getPopulation(0, True)
@@ -1634,7 +1560,8 @@ def mixExpandedPopulation(pop, par):
 
 def simuAdmixture(par):
     '''The main program'''
-    #
+    # accerate
+    par.scaleParam(par.scale)
     # if both files exists, skip this stage
     if par.useSavedExpanded and os.path.isfile(par.expandedFile):
         print 'Loading expanded population from file ', par.expandedFile
@@ -1644,7 +1571,7 @@ def simuAdmixture(par):
     else:
         pop = createInitialPopulation(par)
         # used to generate plots
-        pop.dvars().scale = par.scale
+        pop.dvars().scale = par.curScale
         pop.dvars().stage = 'expand'
         #
         newSize = [x*par.initCopy for x in pop.subPopSizes()]
@@ -1664,7 +1591,8 @@ def simuAdmixture(par):
         print 'Saving expanded population to %s...' % par.expandedFile
         expandedPop.savePopulation(par.expandedFile)
     #
-    # admixture
+    # admixture, not accerlation
+    par.scaleParam(1./par.scale)
     expandedPop.dvars().scale = 1
     expandedPop.dvars().stage = 'mix'
     admixedPop = mixExpandedPopulation(expandedPop, par)

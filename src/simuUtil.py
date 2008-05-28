@@ -36,43 +36,6 @@ import exceptions, operator, types, os, sys, getopt, re, math, tempfile, shutil
 
 from simuPOP import *
 
-class Tee(object):
-    '''
-    A Tee object 
-    '''
-    def __init__(self, *args):
-        self.files = args
-        self.stdout = sys.stdout
-        self.stderr = sys.stderr
-        sys.stdout = self
-        sys.stderr = self
-
-    def __del__(self):
-        self.close()
-
-    def close(self):
-        for f in self.files:
-            f.close()
-        sys.stdout = self.stdout
-        sys.stderr = self.stderr
-        self.stdout = None
-        self.files = []
-
-    def write(self, data):
-        self.stdout.write(data)
-        for f in self.files:
-            f.write(data)
-
-    def writelines(self, data):
-        for i in seq:
-            self.write(i)
-
-    def flush(self):
-        for f in self.files:
-            f.flush()
-        self.stdout.flush()
-
-
 def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
     '''EXPERIMENTAL
     Obtain genotype as specified by parameters
