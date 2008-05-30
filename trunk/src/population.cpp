@@ -1937,22 +1937,18 @@ void population::adjustGenoPosition(bool order)
 
 
 /// CPPONLY
-void population::adjustInfoPosition(bool order)
+void population::adjustInfoPosition()
 {
-	DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
+	if (m_infoOrdered)
+		return;
 
-	// everyone in strict order
-	/*
-	   if(order)
-	   {
-	 */
-	DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
+	DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
 	UINT is = infoSize();
-	size_t i;
 	vectorinfo tmpInfo(m_popSize * is);
 	vectorinfo::iterator infoPtr = tmpInfo.begin();
 	vectorinfo::iterator tmp;
 
+	size_t i;
 	for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
 		tmp = ind->infoBegin();
 		for (i = 0; i < is; ++i)
@@ -1997,7 +1993,7 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 	size_t i = 0;
 
 	if (order)
-		pop.adjustInfoPosition(true);
+		pop.adjustInfoPosition();
 	IndInfoIterator it = pop.infoBegin(0, true);
 	IndInfoIterator it_end = pop.infoEnd(0, true);
 	for (; it != it_end; ++it)

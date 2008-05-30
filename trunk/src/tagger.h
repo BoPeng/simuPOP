@@ -268,7 +268,7 @@ class infoTagger : public tagger
 public:
 	infoTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL,
-	           int stage = PostMating, string output = "", string outputExpr = "",
+	           int stage = PostMating, string output = ">", string outputExpr = "",
 	           const vectorstr & infoFields = vectorstr()) :
 		tagger(output, outputExpr, begin, end, step, at, rep, grp, infoFields)
 	{
@@ -292,7 +292,7 @@ public:
 	   This is used by Linkage format.
 	 */
 	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-	          int stage = PostMating, string output = "", string outputExpr = "",
+	          int stage = PostMating, string output = ">", string outputExpr = "",
 	          const vectorstr & infoFields = vectorstr());
 
 	bool apply(population & pop);
@@ -313,7 +313,7 @@ public:
 	   This is used by Linkage format.
 	 */
 	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-	                int stage = PostMating, string output = "", string outputExpr = "",
+	                int stage = PostMating, string output = ">", string outputExpr = "",
 	                const vectorstr & infoFields = vectorstr());
 
 	bool apply(population & pop);
