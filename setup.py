@@ -532,8 +532,8 @@ if __name__ == '__main__':
         (max( [os.path.getmtime(x) for x in HEADER_FILES] ) > \
          min( [os.path.getmtime(WRAP_INFO[x][0]) for x in MODULES])):
         (v1, v2, v3) = swig_version()
-        if (v1, v2, v3) < (1, 3, 30):
-            print 'Swig >= 1.3.30 is required, please upgrade it.'
+        if (v1, v2, v3) < (1, 3, 35):
+            print 'Swig >= 1.3.35 is required, please upgrade it.'
             sys.exit(1)
         # generate header file 
         print "Generating external runtime header file..."
