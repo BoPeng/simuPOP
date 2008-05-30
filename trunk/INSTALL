@@ -572,7 +572,7 @@ MPI version of simuPOP. boost/svn is needed for its boost/MPI library.
 3.3. Installing SWIG
 =====================
 
-SWIG is needed to generate wrapper files. SWIG >= 1.3.30 required.
+SWIG is needed to generate wrapper files. SWIG >= 1.3.35 required.
 
 3.4. Using setup.py to build
 =============================
