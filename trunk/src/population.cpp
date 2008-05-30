@@ -1994,8 +1994,8 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 
 	if (order)
 		pop.adjustInfoPosition();
-	IndInfoIterator it = pop.infoBegin(0, true);
-	IndInfoIterator it_end = pop.infoEnd(0, true);
+	IndInfoIterator it = pop.infoBegin(0);
+	IndInfoIterator it_end = pop.infoEnd(0);
 	for (; it != it_end; ++it)
 		a[i++] = *it;
 	return a;

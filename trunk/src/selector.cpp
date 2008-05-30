@@ -29,14 +29,14 @@ bool selector::apply(population & pop)
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
 	if (m_subPops.empty()) {
-		IndInfoIterator fitness = pop.infoBegin(fit_id, true);
+		IndInfoIterator fitness = pop.infoBegin(fit_id);
 		// fitness may change with generation so pass generation information
 		for (IndIterator it = pop.indBegin(); it.valid(); ++it)
 			*fitness++ = indFitness(& * it, pop.gen()) ;
 		pop.turnOnSelection();
 	} else {
 		for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp) {
-			IndInfoIterator fitness = pop.infoBegin(fit_id, *sp, true);
+			IndInfoIterator fitness = pop.infoBegin(fit_id, *sp);
 			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
 				"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
 				toStr(pop.numSubPop()) + ")");
