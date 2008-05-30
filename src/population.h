@@ -1163,12 +1163,11 @@ public:
 	{
 		CHECKRANGEINFO(idx);
 
-		adjustInfoPosition();
 		// if there is virtual subpop, use individual based iterator
 		// or
 		// if requires order, but the information is not ordered
 		// use individual based
-		if (hasActivatedVirtualSubPop())
+		if (hasActivatedVirtualSubPop() || !m_infoOrdered)
 			return IndInfoIterator(idx, indBegin());
 		else
 			// if not required order, or if the information is ordered
@@ -1180,8 +1179,7 @@ public:
 	IndInfoIterator infoEnd(UINT idx)
 	{
 		CHECKRANGEINFO(idx);
-		adjustInfoPosition();
-		if (hasActivatedVirtualSubPop())
+		if (hasActivatedVirtualSubPop() || !m_infoOrdered)
 			return IndInfoIterator(idx, indEnd());
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
@@ -1195,8 +1193,7 @@ public:
 		CHECKRANGESUBPOP(subPop);
 		
 		// has to adjust order because of parameter subPop
-		adjustInfoPosition();
-		if (hasActivatedVirtualSubPop(subPop))
+		if (hasActivatedVirtualSubPop(subPop) || !m_infoOrdered)
 			return IndInfoIterator(idx, indBegin(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
@@ -1210,8 +1207,7 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		// has to adjust order because of parameter subPop
-		adjustInfoPosition();
-		if (hasActivatedVirtualSubPop(subPop))
+		if (hasActivatedVirtualSubPop(subPop) || !m_infoOrdered)
 			return IndInfoIterator(idx, indEnd(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());

@@ -1939,7 +1939,7 @@ void population::adjustGenoPosition(bool order)
 /// CPPONLY
 void population::adjustInfoPosition()
 {
-	if (m_infoOrdered)
+	if (m_infoOrdered && !m_shallowCopied)
 		return;
 
 	DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
