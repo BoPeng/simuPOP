@@ -987,9 +987,9 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 {
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
-		scratch.setSubPopStru(pop.subPopSizes(), true);
-	else if (!m_subPopSize.empty())  // set subPoplation size
-		scratch.setSubPopStru(m_subPopSize, true);
+		scratch.fitSubPopStru(pop.subPopSizes());
+    else if (!m_subPopSize.empty())  // set subPoplation size
+		scratch.fitSubPopStru(m_subPopSize);
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {
 		m_subPopSizeExpr.setLocalDict(pop.dict());
@@ -999,7 +999,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 		for (size_t i = 0, iEnd = sizef.size(); i < iEnd; i++)
 			sz[i] = static_cast<ULONG>(sizef[i]);
 
-		scratch.setSubPopStru(sz, true);
+		scratch.fitSubPopStru(sz);
 	} else {                                                                            // use m_subPopSizeFunc
 		// get generation number
 		int gen = pop.gen();
@@ -1021,10 +1021,9 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 			sz[i] = static_cast<ULONG>(res[i]);
 
 		// allow change of pop size of scratch
-		scratch.setSubPopStru(sz, true);
+		scratch.fitSubPopStru(sz);
 	}
 	// this is not absolutely necessary but will reduce confusions
-	scratch.clearInfoValues();
 	scratch.copyVirtualSplitters(pop);
 
 	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
@@ -1058,6 +1057,7 @@ void mating::submitScratch(population & pop, population & scratch)
 	pop.turnOffSelection();
 	// use scratch population,
 	pop.pushAndDiscard(scratch);
+    scratch.validate();
 	DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 }
 
@@ -1230,7 +1230,7 @@ bool pedigreeMating::mate(population & pop, population & scratch,
                           vector<baseOperator * > & ops, bool submit)
 {
 	// scrtach will have the right structure.
-	scratch.setSubPopStru(m_pedParentsChooser.subPopSizes(pop.gen()), true);
+	scratch.fitSubPopStru(m_pedParentsChooser.subPopSizes(pop.gen()));
 	scratch.copyVirtualSplitters(pop);
 
 	DBG_DO(DBG_MATING, m_famSize.clear());

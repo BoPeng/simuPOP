@@ -241,14 +241,6 @@ options = [
      'description': '''Gap between generations at which population statistics are
                 calculated and reported. (This parameter is affected by --scale)'''
     },
-    {'longarg': 'showAlleleFreq',
-     'default': True,
-     'useDefault': True,
-     'allowedTypes': [BooleanType],
-     'label': 'Show allele frequency at specified loci',
-     'description': '''If set, display allele frequency of loci specified in parameters
-                --forCtrlLoci or --backCtrlLoci''',
-    },
     {'longarg': 'figureStep=',
      'default': 200,
      'label': 'Figure update interval',
@@ -757,7 +749,7 @@ class admixtureParams:
     parameters for later uses.
     '''
     def __init__(self, name='simu', useSavedExpanded=False,
-            step=100, showAlleleFreq=True, figureStep=200, drawLDPlot=False,
+            step=100, figureStep=200, drawLDPlot=False,
             haploview='haploview', ldRegions=[0, 1000], 
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
@@ -770,7 +762,7 @@ class admixtureParams:
             admixGen=0, migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
-        (self.name, self.useSavedExpanded, self.step, self.showAlleleFreq, self.figureStep,
+        (self.name, self.useSavedExpanded, self.step, self.figureStep,
             self.drawLDPlot, self.haploview, self.ldRegions, 
             self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
             self.startPos, self.endingPos, self.minAF, self.minDiffAF, self.minDist,
@@ -783,7 +775,7 @@ class admixtureParams:
             self.admixGen, self.migrGen, self.migrRate,
             self.ancestry, self.matingScheme, self.admixedName) \
         = (name, useSavedExpanded, step,
-            showAlleleFreq, figureStep, drawLDPlot, haploview, ldRegions,
+            figureStep, drawLDPlot, haploview, ldRegions,
             HapMap_dir, pops, markerList, chrom, numMarkers,
             startPos, endingPos, minAF, minDiffAF, minDist, mutaRate, recMap,
             recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
@@ -970,8 +962,8 @@ def customizedMatingScheme(pop):
     return heteroMating(
         [randomMating(), # random mating for both subpopulations
          #randomMating(subPop=0, virtualSubPop=0), # assortative mating for subpop 1
-         randomMating(subPop=0, virtualSubPop=0, weight=-0.25),
-         randomMating(subPop=0, virtualSubPop=1, weight=-0.25)]) # assostative mating for subpop 1
+         randomMating(subPop=0, virtualSubPop=0, weight=-0.40),
+         randomMating(subPop=0, virtualSubPop=1, weight=-0.40)]) # assostative mating for subpop 1
 
 
 
@@ -1166,7 +1158,7 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
         preGen = 'gen*scale'
         postGen = '(gen+1)*scale-1'
         var = ['%s', 'subPopSize']
-        if len(par.ctrlLoci) > 0 and par.showAlleleFreq:
+        if len(par.ctrlLoci) > 0:
             exp.append('alleleFreq=%s')
             var.append('", ".join(["%%.3f" % alleleFreq[x][1] for x in ctrlLoci])')
         if len(par.pops) > 1:

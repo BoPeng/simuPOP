@@ -117,7 +117,7 @@ population::population(ULONG size,
 		m_info.resize(m_popSize * is);
 
 		// set subpopulation indexes, do not allow popsize change
-		setSubPopStru(subPop, false);
+		setSubPopStru(subPop);
 
 		// set individual pointers
 		// reset individual pointers
@@ -416,73 +416,58 @@ PyObject * population::arrGenotype(UINT subPop, bool order)
 }
 
 
-void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSizeChange)
+void population::validate()
 {
-	// make sure this is a proper population
+#ifndef OPTIMIZED
 	DBG_ASSERT(m_info.size() == m_popSize * infoSize(), SystemError,
 		"Wrong information size");
 	DBG_ASSERT(m_genotype.size() == m_popSize * genoSize(), SystemError,
 		"Wrong genotype size for this population");
-
-	// case 1: remove all subpopulation structure
-	// do not change population size
-	// individuals are valid....
-	if (newSubPopSizes.empty() ) {
-		m_numSubPop = 1;
-		m_subPopSize.resize(1, m_popSize);
-		m_subPopIndex.resize(2);
-	} else {                                                                          // may change populaiton size
-		m_numSubPop = newSubPopSizes.size();
-		m_subPopSize = newSubPopSizes;
-		m_subPopIndex.resize(m_numSubPop + 1);
-
-		ULONG totSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
-
-		// usually, totSize == m_popSize, individuals are valid
-		if (totSize != m_popSize) {
-			DBG_DO(DBG_POPULATION, "Populaiton size changed to " + toStr(totSize) +
-				" Genotype information may be lost");
-
-#ifndef OPTIMIZED
-			if (!allowPopSizeChange) {
-				DBG_DO(DBG_POPULATION, cout << "Total new size " << totSize << endl);
-				DBG_DO(DBG_POPULATION, cout << "Attempted subpop " << newSubPopSizes << endl);
-				DBG_DO(DBG_POPULATION, cout << "Total current " << m_popSize << endl);
-				DBG_DO(DBG_POPULATION, cout << "Current subpop size " <<
-					this->subPopSizes() << endl);
-				throw ValueError("Population size is fixed (by allowPopSizeChange parameter).\n"
-					             " Subpop sizes should add up to popsize");
-			}
-#endif
-
-			// change populaiton size
-			// genotype and individual info will be kept
-			// but pointers need to be recalibrated.
-			m_popSize = totSize;
-
-			try {
-				m_genotype.resize(m_popSize * genoSize());
-				m_info.resize(m_popSize * infoSize());
-				m_inds.resize(m_popSize);
-
-			} catch (...) {
-				throw OutOfMemory("Memory allocation fail");
-			}
-			// reset individual pointers
-			GenoIterator ptr = m_genotype.begin();
-			InfoIterator infoPtr = m_info.begin();
-			UINT step = genoSize();
-			UINT is = infoSize();
-			for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
-				m_inds[i].setGenoPtr(ptr);
-				m_inds[i].setInfoPtr(infoPtr);
-				m_inds[i].setGenoStruIdx(genoStruIdx());
-				m_inds[i].setShallowCopied(false);
-			}
-			m_shallowCopied = false;
-			m_infoOrdered = true;
-		}
+	InfoIterator ib = m_info.begin();
+	InfoIterator ie = m_info.end();
+	GenoIterator gb = m_genotype.begin();
+	GenoIterator ge = m_genotype.end();
+	
+	for (IndIterator it = indBegin(); it.valid(); ++it) {
+		DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
+			"Wrong genotype pointer");
+		DBG_ASSERT(it->infoPtr() >= ib && it->infoPtr() < ie, SystemError,
+			"Wrong information field pointer");
 	}
+#endif
+}
+
+
+void population::fitSubPopStru(const vectorlu & newSubPopSizes)
+{
+	m_numSubPop = newSubPopSizes.size();
+	m_subPopSize = newSubPopSizes;
+	m_subPopIndex.resize(m_numSubPop + 1);
+
+	ULONG m_popSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
+
+	try {
+		m_genotype.resize(m_popSize * genoSize());
+		m_info.resize(m_popSize * infoSize());
+		m_inds.resize(m_popSize);
+	} catch (...) {
+		throw OutOfMemory("Memory allocation fail");
+	}
+	// reset individual pointers
+	GenoIterator ptr = m_genotype.begin();
+	InfoIterator infoPtr = m_info.begin();
+	UINT step = genoSize();
+	UINT is = infoSize();
+	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
+		m_inds[i].setGenoPtr(ptr);
+		m_inds[i].setInfoPtr(infoPtr);
+		m_inds[i].setGenoStruIdx(genoStruIdx());
+		m_inds[i].setShallowCopied(false);
+	}
+	m_shallowCopied = false;
+	m_infoOrdered = true;
+	// help clear confusing
+	std::fill(m_info.begin(), m_info.end(), 0.);
 
 	// build subPop index
 	UINT i = 1;
@@ -491,6 +476,32 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSiz
 	//
 	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
 		DBG_DO(DBG_GENERAL,
+			cout << "Virtual subpopulation splitters are removed due to population structure changes");
+		m_virtualSubPops.clear();
+	}
+}
+
+
+void population::setSubPopStru(const vectorlu & newSubPopSizes)
+{
+	// make sure this is a proper population
+	if (newSubPopSizes.empty())
+		return;
+
+	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0L) == m_popSize, ValueError,
+		"Overall population size should not be changed in setSubPopStru");
+
+	m_numSubPop = newSubPopSizes.size();
+	m_subPopSize = newSubPopSizes;
+	m_subPopIndex.resize(m_numSubPop + 1);
+
+	// build subPop index
+	UINT i = 1;
+	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	//
+	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
+		DBG_DO(DBG_POPULATION,
 			cout << "Virtual subpopulation splitters are removed due to population structure changes");
 		m_virtualSubPops.clear();
 	}
@@ -720,7 +731,7 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 		vectorlu spSizes = subPopSizes();
 		for (UINT i = 0; i < pendingEmptySubPops; ++i)
 			spSizes.push_back(0);
-		setSubPopStru(spSizes, false);
+		setSubPopStru(spSizes);
 	}
 	if (removeEmptySubPops)
 		this->removeEmptySubPops();
@@ -747,7 +758,7 @@ void population::removeIndividuals(const vectoru & inds, int subPop, bool remove
 		vectorlu spSizes = subPopSizes();
 		for (int i = 0; i < pendingEmptySubPops; ++i)
 			spSizes.push_back(0);
-		setSubPopStru(spSizes, false);
+		setSubPopStru(spSizes);
 	}
 	if (removeEmptySubPops)
 		this->removeEmptySubPops();
@@ -763,7 +774,7 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 	if (subPops.empty()) {
 		// [ popSize() ]
 		vectorlu sz(1, popSize());
-		setSubPopStru(sz, false);
+		setSubPopStru(sz);
 		return;
 	}
 
@@ -781,7 +792,7 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 		vectorlu spSizes = subPopSizes();
 		for (int i = 0; i < pendingEmptySubPops; ++i)
 			spSizes.push_back(0);
-		setSubPopStru(spSizes, false);
+		setSubPopStru(spSizes);
 	}
 
 	if (removeEmptySubPops)
