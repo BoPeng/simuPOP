@@ -136,7 +136,9 @@ patterns. Please see Peng 2008, in preparation, for a detailed description.
 Step 3. Mix the subpopulations (optional)
 ==========================================
 
-Mix the populations using given migration model. Two basic models,
+A migration rate matrix can be given to migrate individuals between
+population for a specified generations. Migration is stopped afterwards
+to allow 
 namely 'Hybrid Isolations' and 'Continuous Gene Flow' are provided.
 The first model simply mix the subpopulations and form a single population.
 The second model allows stable migration between subpopulations during
@@ -401,9 +403,7 @@ options = [
      'useDefault': True,
      'label': 'Mutation rate',
      'allowedTypes': [IntType, FloatType],
-     'description': '''Mutation rate using a 2-allele model (kam). Note that mutation
-                can generally be ignored during short period of time unless you
-                intentionally set a higher mutation rate.''',
+     'description': '''Mutation rate using a k-allele model with k = 2.''',
      'validate': valueBetween(0,1),
     },
     {'longarg': 'recMap=',
@@ -586,15 +586,6 @@ options = [
                 refer to Peng 2008 for more details''',
      'validate': valueGT(0),
     },
-    {'longarg': 'custom=',
-     'default': '',
-     'useDefault': True,
-     'allowedTypes': [StringType],
-     'label': 'Modual for customized definitions',
-     'description': '''A python module that provides customized,
-        migration and mating schemes. Only needed when 'customized' is 
-        selected for migration and mating scheme'''
-    },
     {'separator': 'Population expansion'},
     {'longarg': 'initCopy=',
      'default': 20,
@@ -657,36 +648,21 @@ options = [
     },
     #
     {'separator': 'Population admixture'},
-    {'longarg': 'migrModel=',
-     'default': 'Continuous Gene Flow',
+    {'longarg': 'admixGen=',
+     'default': 0,
      'useDefault': True,
-     'label': 'Migration model',
-     'description': '''Migration model used in the admixture stage, It can be
-                'Hybrid Isoloation', 'Continuous Gene Flow', 'Customized' and 'None'.
-                In the HI model, admixture occurs in a single generation and
-                is followed by recombination and drift, with no further genetic
-                contribution from either parental populations. In the CGF
-                model, migration happens with given migration matrix during
-                the migration stage. For example, [[0.9, 0.1], [0, 1]] means
-                moving 10% from population 1 to 2. 'Custimized' migration model
-                allows you to define your own migration model. A function
-                cusMigrModel needs to be defined in $custom.py which returns
-                a migration rate at each generation. (e.g. 
-                "def cusMigrModel(gen, curSize)"). If 'None' is chose, there will be
-                no migration. Note that the merge of two populations can be
-                mimiced by a Hybrid Isolation migration of rate [[1, 0], [1, 0]].
-                That is to say, everyone from the second subpopulationmoves to the
-                first. The three subpopulation case is similar.''',
-     'chooseOneOf': ['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'],
-     'allowedTypes': [StringType],
-     'validate': valueOneOf(['Hybrid Isolation', 'Continuous Gene Flow', 'Customized', 'None'])
+     'label': 'Admix generations',
+     'description': '''Length of the admixture stage, If set to zero, the admixture stage
+                is ignored''',
+     'allowedTypes': [IntType, LongType],
+     'validate': valueGE(0),
     },
     {'longarg': 'migrGen=',
      'default': 0,
      'useDefault': True,
      'label': 'Migration generations',
-     'description': '''Length of migration stage. If set to zero, the migration stage
-                is ignored''',
+     'description': '''Number of generations with migration. This number should be
+                less than or equal to admixGen''',
      'allowedTypes': [IntType, LongType],
      'validate': valueGE(0),
     },
@@ -694,12 +670,13 @@ options = [
      'default': [[0.99, 0.01], [0., 1.]],
      'useDefault': True,
      'label': 'Migration rate matrix',
-     'description': '''Migration rate matrix. Use only for the continuous gene flow model.
-                A_ij of this matrix represents the probability of moving from population i
-                to j, and A_ii is the probability of staying in the same population, and
-                is calculated as 1-sum_(j \\ne i) A_ij. It is possible to create another
+     'description': '''Migration rate matrix. A_ij of this matrix represents the
+                probability of moving from population i to j, A_ii is the probability
+                of staying in the same population, which is calculated as
+                1-sum_(j \\ne i) A_ij. It is possible to create another
                 subpopulation in this way, like sending some individuals from both parental
-                populations to a new subpopulation. ''',
+                populations to a new subpopulation.
+                ''',
      'allowedTypes': [TupleType, ListType],
      'validate': valueListOf(valueListOf(valueBetween(0,1))),
     },
@@ -718,12 +695,14 @@ options = [
      'default': 'random',
      'label': 'Mating scheme during population mixing',
      'useDefault': True,
-     'chooseOneOf': ['random', 'customized'],
+     'chooseOneOf': ['random', 'assortative', 'customized'],
      'allowedTypes': [StringType],
      'validate': valueOneOf(['random', 'customized']),
-     'description': '''Mating scheme used during the population mixing stage. This is usually
-                some sort of positive assortative mating scheme that is defined in
-                $custom.py. The name of the mating scheme has to be cusMatScheme'''
+     'description': '''Mating scheme used during the population mixing stage. If 'random'
+                is chosen, migrants will mate freely with all individuals in the population.
+                If 'customized' is chose, an assortative mating scheme will be used in which
+                migrants tend to mate within their ethnic group. This serves as an example
+                for more complicated mating schemes that can be defined.''',
     },
     {'longarg': 'admixedName=',
      'default': 'admixed.bin',
@@ -739,34 +718,35 @@ class Tee(object):
     A Tee object. Write to this object will write to stdout, and to
     specified file objects.
     '''
-    def __init__(self, *args):
-        self.files = args
-        self.stdout = sys.stdout
+    def __init__(self, file):
+        self.file = file
+        if isinstance(sys.stdout, Tee):
+            self.stdout = sys.stdout.stdout
+        else:
+            self.stdout = sys.stdout
         sys.stdout = self
 
     def __del__(self):
         self.close()
-
+        
     def close(self):
-        for f in self.files:
-            f.close()
+        if self.file is not None:
+            self.file.close()
+            self.file = None
         if self.stdout is not None:
             sys.stdout = self.stdout
             self.stdout = None
-        self.files = []
 
     def write(self, data):
         self.stdout.write(data)
-        for f in self.files:
-            f.write(data)
+        self.file.write(data)
 
     def writelines(self, data):
         for i in seq:
             self.write(i)
 
     def flush(self):
-        for f in self.files:
-            f.flush()
+        self.file.flush()
         self.stdout.flush()
 
 
@@ -785,9 +765,9 @@ class admixtureParams:
             convProb=0, convMode='Tract length', convParam=0.02, 
             forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
-            scale=10, custom='', initCopy=20, initGen=20, initSize=5000,
+            scale=10, initCopy=20, initGen=20, initSize=5000,
             expandGen=500, expandSize=50000, expandedName='expanded.bin',
-            migrModel='Continuous Gene Flow', migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
+            admixGen=0, migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
         (self.name, self.useSavedExpanded, self.step, self.showAlleleFreq, self.figureStep,
@@ -797,10 +777,10 @@ class admixtureParams:
             self.mutaRate, self.recMap, self.recIntensity, self.convProb,
             self.convMode, self.convParam, self.forCtrlLoci, self.forCtrlFreq,
             self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
-            self.backMigrRate, self.scale, self.custom,
+            self.backMigrRate, self.scale, 
             self.initCopy, self.initGen, self.initSize,
             self.expandGen, self.expandSize, self.expandedName,
-            self.migrModel, self.migrGen, self.migrRate,
+            self.admixGen, self.migrGen, self.migrRate,
             self.ancestry, self.matingScheme, self.admixedName) \
         = (name, useSavedExpanded, step,
             showAlleleFreq, figureStep, drawLDPlot, haploview, ldRegions,
@@ -808,8 +788,8 @@ class admixtureParams:
             startPos, endingPos, minAF, minDiffAF, minDist, mutaRate, recMap,
             recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
             backCtrlLoci, backCtrlFreq, fitness, mlSelModel, backMigrRate, scale,
-            custom, initCopy, initGen, initSize, expandGen, expandSize, expandedName,
-            migrModel, migrGen, migrRate, ancestry, matingScheme, admixedName)
+            initCopy, initGen, initSize, expandGen, expandSize, expandedName,
+            admixGen, migrGen, migrRate, ancestry, matingScheme, admixedName)
         # preparations
         self.createSimulationDir()
         self.expandedFile = self.setFile(self.expandedName)
@@ -837,9 +817,9 @@ class admixtureParams:
             }[self.convMode]
         #
         self.prepareFitnessParams()
-        # cutomized migrator and mating schemes
-        if self.custom != '':
-            exec('import %s as custom' % self.custom)
+        #
+        if self.migrGen > self.admixGen:
+            self.migrGen = self.admixGen
 
     def scaleParam(self, scale):
         if scale != 1:
@@ -977,6 +957,25 @@ class admixtureParams:
 # You have realized how many lines of code is used for parameter
 # handling and comments. Now, the utility function part...
 #####################################################################
+
+# Example of a cutomized mating scheme
+def customizedMatingScheme(pop):
+    # define virtual subpopulations by ethnicity
+    # YRI:     0 ~ 0.2, weak YRI origin, they will mate within
+    #               this group.
+    # YRI:     0.9 ~ 1, strong YRI origin, they will mate within
+    #               this group.
+    pop.setVirtualSplitter(infoSplitter(info='YRI',
+        cutoff = [0.5]))
+    return heteroMating(
+        [randomMating(), # random mating for both subpopulations
+         #randomMating(subPop=0, virtualSubPop=0), # assortative mating for subpop 1
+         randomMating(subPop=0, virtualSubPop=0, weight=-0.25),
+         randomMating(subPop=0, virtualSubPop=1, weight=-0.25)]) # assostative mating for subpop 1
+
+
+
+######################################################################
 
 def expDemoFunc(N0, N1, N2, gen1, gen2):
     '''
@@ -1489,24 +1488,13 @@ def mixExpandedPopulation(pop, par):
     ''' Evolve the seed population
     '''
     par.setCtrlLociIndex(pop)
-    if par.migrGen <= 0 or pop.numSubPop() == 1:
+    if par.admixGen <= 0 or pop.numSubPop() == 1:
         print 'No migration stage'
         return pop
     # migration part.
-    if par.migrModel == 'Hybrid Isolation':
-        print 'Using %s model' % par.migrModel
-        migr = noneOp()
-    elif par.migrModel == 'None':
-        print 'Do not migrate'
-        migr = noneOp()
-    elif par.migrModel == 'Continuous Gene Flow':
-        print 'Using %s with migration rate %s' % (par.migrModel, par.migrRate)
-        migr = migrator(rate=par.migrRate, mode=MigrByProbability)
-    elif par.migrModel == 'Customized':
-        print 'Using customized migration model'
-        migr = pyMigrator(rateFunc=migrFunc, mode=MigrByProbability)
-    else:
-        raise ValueError('Unknown migration model %s' % par.migrModel)
+    print 'Migrate %d generations using migration rate %s' % (par.migrGen, par.migrRate)
+    migr = migrator(rate=par.migrRate, mode=MigrByProbability,
+        end=par.migrGen)
     #
     ancOps = noneOp()
     if par.ancestry and len(par.pops) > 1:
@@ -1536,19 +1524,17 @@ def mixExpandedPopulation(pop, par):
             pop.setIndInfo(val, sp)
         ancOps = pyTagger(func=calcAncestry, infoFields=par.pops)
     #
-    if par.migrModel == 'Hybrid Isolation':
-        print 'Merge all subpopulations'
-        pop.setSubPopStru([pop.popSize()])
     if par.matingScheme == 'random':
         simu = simulator(pop, randomMating())
     else:
-        simu = simulator(pop, custom.custMateScheme)
+        print 'Using a customized mating scheme'
+        simu = simulator(pop, customizedMatingScheme(pop))
     simu.evolve(
         ops = getOperators(pop, par,
             progress=True, visualization=True, selection=True,
             mutation=True, migration=False, recombination=True)
             + [migr, ancOps],
-        gen = par.migrGen
+        gen = par.admixGen
     )
     pop = simu.getPopulation(0, True)
     # save this population
@@ -1593,6 +1579,7 @@ def simuAdmixture(par):
     #
     # admixture, not accerlation
     par.scaleParam(1./par.scale)
+    par.step = 1
     expandedPop.dvars().scale = 1
     expandedPop.dvars().stage = 'mix'
     admixedPop = mixExpandedPopulation(expandedPop, par)
