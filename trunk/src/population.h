@@ -1134,10 +1134,8 @@ public:
 		DBG_ASSERT(values.size() == popSize(), IndexError,
 			"Size of values should be the same as population size");
 		UINT is = infoSize();
-		adjustInfoPosition();
 		typename T::const_iterator infoIter = values.begin();
-		for (vectorinfo::iterator ptr = m_info.begin() + idx;
-		     ptr != m_info.end() + idx; ptr += is) {
+		for (IndInfoIterator ptr = infoBegin(idx); ptr != infoEnd(idx); ++ptr) {
 			*ptr = static_cast<InfoType>(*infoIter++);
 		}
 	}
@@ -1324,9 +1322,6 @@ public:
 	   order=false: make individuals in each subpopulation
 	 */
 	void adjustGenoPosition(bool order);
-
-	/// CPPONLY
-	void adjustInfoPosition();
 
 	/// save population to a file
 	/**

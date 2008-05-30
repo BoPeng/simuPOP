@@ -1945,33 +1945,6 @@ void population::adjustGenoPosition(bool order)
 }
 
 
-/// CPPONLY
-void population::adjustInfoPosition()
-{
-	if (m_infoOrdered && !m_shallowCopied)
-		return;
-
-	DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
-	UINT is = infoSize();
-	vectorinfo tmpInfo(m_popSize * is);
-	vectorinfo::iterator infoPtr = tmpInfo.begin();
-	vectorinfo::iterator tmp;
-
-	size_t i;
-	for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
-		tmp = ind->infoBegin();
-		for (i = 0; i < is; ++i)
-			infoPtr[i] = tmp[i];
-		ind->setInfoPtr(infoPtr);
-		infoPtr += is;
-	}
-	// discard original genotype
-	m_info.swap(tmpInfo);
-	setInfoOrdered(true);
-	return;
-}
-
-
 population & LoadPopulation(const string & file, const string & format)
 {
 #ifndef _NO_SERIALIZATION_
@@ -2001,8 +1974,6 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 	vectorf a(pop.popSize());
 	size_t i = 0;
 
-	if (order)
-		pop.adjustInfoPosition();
 	IndInfoIterator it = pop.infoBegin(0);
 	IndInfoIterator it_end = pop.infoEnd(0);
 	for (; it != it_end; ++it)
