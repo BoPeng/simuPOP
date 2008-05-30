@@ -286,7 +286,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.individual(1).info('age'), 1)
         pop.setIndInfo(range(10), 'age')
         self.assertEqual(pop.individual(0).info('age'), 0)
-        #print pop.indInfo('age', True)
+        #print pop.indInfo('age')
         pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
         for i in range(10):
             self.assertEqual(pop.individual(i).info('age'), i)
@@ -318,8 +318,8 @@ class TestPopulation(unittest.TestCase):
         ###
         ###  ARRINDINFO is only valid for head node.
         ###
-        self.assertEqual(pop.arrIndInfo(True), range(10,15))
-        self.assertEqual(pop1.arrIndInfo(True), range(10))
+##         self.assertEqual(pop.arrIndInfo(), range(10,15))
+##         self.assertEqual(pop1.arrIndInfo(), range(10))
         self.assertEqual(pop.popSize(), 5)
         self.assertEqual(pop1.popSize(), 10)
 
@@ -432,10 +432,10 @@ class TestPopulation(unittest.TestCase):
         pop = population(size=[2,4,5], infoFields=['age'])
         self.assertEqual( pop.numSubPop(), 3)
         pop.setIndInfo(range(11), 0)
-        self.assertEqual(pop.arrIndInfo(True), range(11))
+##         self.assertEqual(pop.arrIndInfo(), range(11))
         pop.removeSubPops([1])
-        self.assertEqual(pop.arrIndInfo(0, True), range(2))
-        self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
+##         self.assertEqual(pop.arrIndInfo(0, True), range(2))
+##         self.assertEqual(pop.arrIndInfo(1, True), range(6,11))
     
     def testRemoveIndividuals(self):
         'Testing function removeIndividuals'
@@ -462,10 +462,10 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(11), 0)
         pop.removeIndividuals([2,3,4,5])
         self.assertEqual(pop.subPopSizes(), (2,0,5))
-        self.assertEqual(pop.arrIndInfo(0, True), range(2))
-        self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
+##         self.assertEqual(pop.arrIndInfo(0, True), range(2))
+##         self.assertEqual(pop.arrIndInfo(2, True), range(6,11))
         # nothing in the middle left
-        self.assertEqual(pop.arrIndInfo(True), range(2) + range(6,11))
+##         self.assertEqual(pop.arrIndInfo(), range(2) + range(6,11))
     
     
     def testMergeSubPops(self):
@@ -494,8 +494,8 @@ class TestPopulation(unittest.TestCase):
         pop.mergeSubPops([0,2], removeEmptySubPops=True)
         self.assertEqual(pop.subPopSizes(), (7,4))
         # the order may be different
-        self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
-        self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
+##         self.assertEqual(sum(pop.arrIndInfo(0, False)), sum(range(2)+range(6,11)))
+##         self.assertEqual(pop.arrIndInfo(1, True), range(2,6))
         
 
     def testReorderSubPops(self):
@@ -530,8 +530,8 @@ class TestPopulation(unittest.TestCase):
         pop.reorderSubPops(rank=[1,3,0,2])
         self.assertEqual( pop.subPopSizes(), (3,1,4,2))
         newInfoSums = [sum([3,4,5]), sum([0]), sum([6,7,8,9]), sum([1,2])]
-        for i in range(4):
-            self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
+##         for i in range(4):
+##             self.assertEqual(sum(pop.arrIndInfo(i, True)), newInfoSums[i])
         
 
     def testNewPopByIndID(self):
@@ -651,12 +651,12 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(pop.individual(j).info(i), i*10+j)
         ind = pop.individual(0)
         self.assertEqual(ind.arrInfo(), (0,10,20))
-        self.assertEqual(pop.arrIndInfo(True)[:8], (0,10,20,1,11,21,2,12))
-        self.assertEqual(pop.arrIndInfo(0, True)[:8], (0,10,20,1,11,21,2,12))
-        self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1, True)
+##         self.assertEqual(pop.arrIndInfo()[:8], (0,10,20,1,11,21,2,12))
+##         self.assertEqual(pop.arrIndInfo(0, True)[:8], (0,10,20,1,11,21,2,12))
+##         self.assertRaises(exceptions.IndexError, pop.arrIndInfo, 1, True)
         # access by name
         #pop.setIndInfo(range(30,40), 'sex')
-        #pop.arrIndInfo('sex')
+##         #pop.arrIndInfo('sex')
         self.assertRaises(exceptions.IndexError, ind.info, 'sex')
         ind.setInfo(18, 'age')
         self.assertEqual(ind.info('age'), 18)
@@ -685,8 +685,8 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.individual(i).info(0), i+1)
         # set info by name
         pop = population(10, infoFields=['age', 'fitness'])
-        #print pop.indInfo('fitness', True)
-        #print pop.indInfo('age', True)
+        #print pop.indInfo('fitness')
+        #print pop.indInfo('age')
         for i in range(10):
             pop.individual(i).setInfo(i+50, 'fitness')
             self.assertEqual(pop.individual(i).info('fitness'), i+50)
@@ -699,10 +699,10 @@ class TestPopulation(unittest.TestCase):
         pop = population(size=[4,6], infoFields=['age', 'fitness'])
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
-        self.assertEqual(pop.indInfo('age', 1, True), tuple([float(x) for x in range(4, 10)]))
-        self.assertEqual(pop.indInfo('fitness', 0, True), tuple([float(x) for x in range(100, 104)]))
+        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age', 1), tuple([float(x) for x in range(4, 10)]))
+        self.assertEqual(pop.indInfo('fitness', 0), tuple([float(x) for x in range(100, 104)]))
         #
         # test reset info fields
         pop = population(size=10, infoFields=['age'])
@@ -712,8 +712,8 @@ class TestPopulation(unittest.TestCase):
         # set values
         pop.setIndInfo(range(10), 'age')
         pop.setIndInfo(range(100, 110), 'fitness')
-        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(100, 110)]))
+        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(100, 110)]))
         # add an existing field
         pop.addInfoField('fitness')
         self.assertEqual(pop.infoSize(), 2)
@@ -721,8 +721,8 @@ class TestPopulation(unittest.TestCase):
         pop.addInfoField('misc')
         self.assertEqual(pop.infoSize(), 3)
         pop.setIndInfo(range(200, 210), 'fitness')
-        self.assertEqual(pop.indInfo('age', True), tuple([float(x) for x in range(10)]))
-        self.assertEqual(pop.indInfo('fitness', True), tuple([float(x) for x in range(200, 210)]))
+        self.assertEqual(pop.indInfo('age'), tuple([float(x) for x in range(10)]))
+        self.assertEqual(pop.indInfo('fitness'), tuple([float(x) for x in range(200, 210)]))
 
         
     def testPopVars(self):
@@ -816,10 +816,10 @@ class TestPopulation(unittest.TestCase):
         pop.pushAndDiscard(pop1)
         # test info
         self.assertEqual(pop.popSize(), 20)
-        self.assertEqual(pop.arrIndInfo(True)[:4], [100, 110, 101, 111])
+##         self.assertEqual(pop.arrIndInfo()[:4], [100, 110, 101, 111])
         pop.useAncestralPop(1)
         self.assertEqual(pop.popSize(), 10)
-        self.assertEqual(pop.arrIndInfo(True)[:4], [0, 10, 1, 11])
+##         self.assertEqual(pop.arrIndInfo()[:4], [0, 10, 1, 11])
 
 
     def testSaveLoadPopulation(self):
@@ -1298,7 +1298,7 @@ class TestPopulation(unittest.TestCase):
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)), 0)
         self.assertEqual(pop.numVirtualSubPop(0), 5)
-        infos = list(pop.indInfo('x', False))
+        infos = list(pop.indInfo('x'))
         self.assertEqual(pop.virtualSubPopName(0, 0), "x = 10")
         self.assertEqual(pop.virtualSubPopName(0, 1), "x = 11")
         self.assertEqual(pop.virtualSubPopName(0, 4), "x = 14")
@@ -1420,7 +1420,7 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals(0):
             self.assertEqual(ind.info('x'), 11)
         # this makes sure that the new infoIterator can skip invisible individuals.
-        self.assertEqual(pop.indInfo('x', True), tuple([11.0]*pop.virtualSubPopSize(0, 1)))
+        self.assertEqual(pop.indInfo('x'), tuple([11.0]*pop.virtualSubPopSize(0, 1)))
         pop.deactivateVirtualSubPop(0)
 
 

@@ -61,7 +61,7 @@ class TestPenetrance(unittest.TestCase):
             infoFields=['penetrance'])
         Stat(pop, numOfAffected=1)
         self.assertEqual(pop.dvars().numOfAffected, 1425)
-        self.assertEqual(sum(pop.indInfo('penetrance', False)), 1425)
+        self.assertEqual(sum(pop.indInfo('penetrance')), 1425)
         
 
         

@@ -828,8 +828,8 @@ class TestMatingSchemes(unittest.TestCase):
             ops = [parentsTagger()],
             gen = 1)
         # there is only one Male...
-        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx', True))), 1000)
-        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx', True))), 1000)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx'))), 1000)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx'))), 1000)
         #
         # the next generation is unlikely to have exact number of male and female so replenish is needed
         self.assertRaises(exceptions.IndexError, simu.step)
@@ -850,11 +850,11 @@ class TestMatingSchemes(unittest.TestCase):
             ops = [parentsTagger()],
             gen = 1)
         # there is only one Male...
-        fi = simu.population(0).indInfo('father_idx', True)
+        fi = simu.population(0).indInfo('father_idx')
         self.assertEqual(fi[0], fi[1])
         self.assertEqual(fi[0], fi[5])
         self.assertNotEqual(fi[0], fi[6])
-        mi = simu.population(0).indInfo('mother_idx', True)
+        mi = simu.population(0).indInfo('mother_idx')
         self.assertEqual(mi[0], mi[1])
         self.assertNotEqual(mi[0], mi[2])
         #
