@@ -227,6 +227,16 @@ public:
 		return "<simuPOP::population of size " + toStr(popSize()) + ">";
 	}
 
+	/// CPPONLY
+	/// Validate if a population is in good shape. This is mostly used
+	/// to detect if scratch population is prepared properly during
+	/// evolution
+	void validate();
+
+	/// CPPONLY
+	/// Fix a population, resize it if necessary. The content
+	/// of the population will be cleared.
+	void fitSubPopStru(const vectorlu & newSubPopSizes);
 
 	/// if a population has any activated virtual subpopulations
 	/// CPPONLY
@@ -275,15 +285,12 @@ public:
 
 	/// set population/subpopulation structure given subpopulation sizes
 	/**
-	 \param newSubPopSizes an array of new subpopulation sizes.
-	   The population may or may not change according to
-	   parameter \c allowPopSizeChange if the sum of \c subPopSize
-	   does not match \c popSize.
-	 \param allowPopSizeChange if this parameter is \c True, population will be resized.
+	 \param newSubPopSizes an array of new subpopulation sizes. The overall
+	 population size should not be changed.
 	 \return none
-	 \sa migration, mating
+	 \sa mating
 	 */
-	void setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSizeChange = false);
+	void setSubPopStru(const vectorlu & newSubPopSizes);
 
 	///  number of subpopulations in a population.
 	/**
@@ -1113,15 +1120,6 @@ public:
 	}
 
 
-	// int requestInfoField(const string name);
-
-	/// CPPONLY
-	void clearInfoValues()
-	{
-		std::fill(m_info.begin(), m_info.end(), 0.0);
-	}
-
-
 	/// set individual information for the given information field \c idx
 	/**
 	 \param values an array that has the same length as population size.
@@ -1133,11 +1131,9 @@ public:
 		CHECKRANGEINFO(idx);
 		DBG_ASSERT(values.size() == popSize(), IndexError,
 			"Size of values should be the same as population size");
-		UINT is = infoSize();
 		typename T::const_iterator infoIter = values.begin();
-		for (IndInfoIterator ptr = infoBegin(idx); ptr != infoEnd(idx); ++ptr) {
+		for (IndInfoIterator ptr = infoBegin(idx); ptr != infoEnd(idx); ++ptr)
 			*ptr = static_cast<InfoType>(*infoIter++);
-		}
 	}
 
 
