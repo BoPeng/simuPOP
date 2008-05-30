@@ -1264,37 +1264,6 @@ public:
 		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
-
-	/// get an editable array (Python list) of all information fields
-	/**
-	   The length of the array is <tt>infoSize()*popSize()</tt>.
-	 \return a python list that has all information fields for all individual
-	   values of information fields of the same individual are put together.
-	 */
-	PyObject * arrIndInfo()
-	{
-		adjustInfoPosition();
-
-		return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
-	}
-
-
-	/// get an editable array (Python list) of all information fields in \c subPop
-	/**
-	 \return a python list that has all information fields for all individual
-	   values of information fields of the same individual are put together.
-	 */
-	PyObject * arrIndInfo(UINT subPop)
-	{
-		CHECKRANGESUBPOP(subPop);
-
-		adjustInfoPosition();
-
-		return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop] * infoSize(),
-			m_info.begin() + m_subPopIndex[subPop + 1] * infoSize());
-	}
-
-
 	///	add an information field to a population
 	/**
 	 \param field new information field. If it already exists, it will

@@ -276,7 +276,7 @@ class TestPerformance(unittest.TestCase):
             c1 = time.clock()
             for i in range(200):
                 MaPenetrance(pop, locus = 0, penetrance=[0.2, 0.4, 0.8])
-                info = pop.indInfo('fitness', True)
+                info = pop.indInfo('fitness')
             c2 = time.clock()
             print " %.2f " % (c2 - c1),
         print 

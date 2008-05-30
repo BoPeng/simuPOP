@@ -16,6 +16,8 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: load fine-scale recombinate rate and set variable genDist in loaded
 	HapMap populations. (loadHapMap.py)
   - CHG: polish tkInter and wxPython parameter input dialog.
+  - CHG: Remove parameter order from information field related functions.
+  - BUG: Fix a information field + migration bug.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008

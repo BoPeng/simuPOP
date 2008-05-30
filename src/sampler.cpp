@@ -142,7 +142,7 @@ void sample::resetParentalIndex(population & pop, const string & fatherField,
 	for (size_t ans = 0; ans < pop.ancestralDepth(); ++ans) {
 		// parents... get their old index
 		pop.useAncestralPop(ans + 1);
-		vectorf oldindex = pop.indInfo(indexIdx, true);
+		vectorf oldindex = pop.indInfo(indexIdx);
 		// children
 		pop.useAncestralPop(ans);
 		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
@@ -183,8 +183,8 @@ void sample::findOffspringAndSpouse(population & pop, unsigned ancestralDepth,
 
 	for (unsigned ans = 1; ans <= ancestralDepth; ++ans) {
 		pop.useAncestralPop(ans - 1);
-		vectorf dad = pop.indInfo(fatherIdx, true);
-		vectorf mom = pop.indInfo(motherIdx, true);
+		vectorf dad = pop.indInfo(fatherIdx);
+		vectorf mom = pop.indInfo(motherIdx);
 		//
 		pop.useAncestralPop(ans);
 		//
@@ -813,7 +813,7 @@ population & largePedigreeSample::drawsample(population & pop)
 	for (size_t i = 0; i < m_maxOffspring; ++i)
 		offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
 	pop.useAncestralPop(2);
-	vectorf grandIdx = pop.indInfo(pedindexIdx, true);
+	vectorf grandIdx = pop.indInfo(pedindexIdx);
 	int newPedID = 0;
 	for (pedArray::iterator ped = acceptedPeds.begin(); ped != acceptedPeds.end(); ++ped, ++newPedID) {
 		double pedID = boost::get<0>(*ped);

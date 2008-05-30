@@ -215,7 +215,7 @@ class TestOperator(unittest.TestCase):
         '''Testing operator infoEval'''
         pop = population(10, infoFields=['a', 'b'])
         InfoEval(pop, expr='b', stmts='b=a+1')
-        self.assertEqual(pop.indInfo('b', True), tuple([1]*10))
+        self.assertEqual(pop.indInfo('b'), tuple([1]*10))
         #
         # use population variable
         pop.vars()['c'] = 5
@@ -229,9 +229,9 @@ class TestOperator(unittest.TestCase):
         '''Testing operator infoExec'''
         pop = population(10, infoFields=['a', 'b'])
         InfoExec(pop, 'b=a+1')
-        self.assertEqual(pop.indInfo('b', True), tuple([1]*10))
+        self.assertEqual(pop.indInfo('b'), tuple([1]*10))
         InfoExec(pop, 'a+=1')
-        self.assertEqual(pop.indInfo('a', True), tuple([1]*10))
+        self.assertEqual(pop.indInfo('a'), tuple([1]*10))
         # this will not do anything because there is no c to be updated.
         InfoExec(pop, 'c=a+b')
         #
@@ -241,7 +241,7 @@ class TestOperator(unittest.TestCase):
         self.assertRaises(exceptions.SystemError, InfoExec, pop, 'b=c+4')
         # usePopVars is needed
         InfoExec(pop, 'b=c+4', usePopVars=True)
-        self.assertEqual(pop.indInfo('b', True), tuple([9]*10))
+        self.assertEqual(pop.indInfo('b'), tuple([9]*10))
         #
         # as an operator
         simu = simulator(pop, cloneMating())
