@@ -100,7 +100,10 @@ population::population(ULONG size,
 		                   << sizeof(Allele) << '*' << genoSize() << endl
 		                   << ", infoPtr: " << sizeof(double *)
 		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
-		                   << ", plus genoStru" << endl);
+		                   << ", plus genoStru"
+						   << "\ngenoSize " << genoSize()
+						   << "\npopSize " << m_popSize
+						   << endl);
 
 	try {
 		// allocate memory here (not in function definition)
@@ -415,6 +418,12 @@ PyObject * population::arrGenotype(UINT subPop, bool order)
 
 void population::setSubPopStru(const vectorlu & newSubPopSizes, bool allowPopSizeChange)
 {
+	// make sure this is a proper population
+	DBG_ASSERT(m_info.size() == m_popSize * infoSize(), SystemError,
+		"Wrong information size");
+	DBG_ASSERT(m_genotype.size() == m_popSize * genoSize(), SystemError,
+		"Wrong genotype size for this population");
+
 	// case 1: remove all subpopulation structure
 	// do not change population size
 	// individuals are valid....
