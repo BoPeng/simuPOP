@@ -537,14 +537,6 @@ public:
 	}
 
 
-	/// CPPONLY
-	bool infoOrdered() const
-	{
-		return m_infoOrdered;
-	}
-
-
-	/// CPPONLY
 	void setInfoOrdered(bool s)
 	{
 		m_infoOrdered = s;
@@ -1134,17 +1126,15 @@ public:
 	/**
 	 \param values an array that has the same length as population size.
 	 \param idx index to the information field.
-	 \param order if true, info will be in the order of individuals
 	 */
 	template<typename T, typename T1>
-	void setIndInfo(const T & values, T1 idx, bool order = true)
+	void setIndInfo(const T & values, T1 idx)
 	{
 		CHECKRANGEINFO(idx);
 		DBG_ASSERT(values.size() == popSize(), IndexError,
 			"Size of values should be the same as population size");
 		UINT is = infoSize();
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
+		adjustInfoPosition();
 		typename T::const_iterator infoIter = values.begin();
 		for (vectorinfo::iterator ptr = m_info.begin() + idx;
 		     ptr != m_info.end() + idx; ptr += is) {
@@ -1159,25 +1149,26 @@ public:
 	   equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
 	 */
 	template<class T>
-	void setIndInfo(const T & values, const string & name, bool order = true)
+	void setIndInfo(const T & values, const string & name)
 	{
 		// for mpi version , use gloal idx
 		int idx = infoIdx(name);
 
-		setIndInfo<T, UINT>(values, idx, order);
+		setIndInfo<T, UINT>(values, idx);
 	}
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx, bool order)
+	IndInfoIterator infoBegin(UINT idx)
 	{
 		CHECKRANGEINFO(idx);
 
+		adjustInfoPosition();
 		// if there is virtual subpop, use individual based iterator
 		// or
 		// if requires order, but the information is not ordered
 		// use individual based
-		if (hasActivatedVirtualSubPop() || (order && !infoOrdered()))
+		if (hasActivatedVirtualSubPop())
 			return IndInfoIterator(idx, indBegin());
 		else
 			// if not required order, or if the information is ordered
@@ -1186,10 +1177,11 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx, bool order)
+	IndInfoIterator infoEnd(UINT idx)
 	{
 		CHECKRANGEINFO(idx);
-		if (hasActivatedVirtualSubPop() || (order && !infoOrdered()))
+		adjustInfoPosition();
+		if (hasActivatedVirtualSubPop())
 			return IndInfoIterator(idx, indEnd());
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
@@ -1197,11 +1189,14 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx, UINT subPop, bool order)
+	IndInfoIterator infoBegin(UINT idx, UINT subPop)
 	{
 		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
-		if (hasActivatedVirtualSubPop(subPop) || (order && !infoOrdered()))
+		
+		// has to adjust order because of parameter subPop
+		adjustInfoPosition();
+		if (hasActivatedVirtualSubPop(subPop))
 			return IndInfoIterator(idx, indBegin(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
@@ -1209,12 +1204,14 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx, UINT subPop, bool order)
+	IndInfoIterator infoEnd(UINT idx, UINT subPop)
 	{
 		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop(subPop) || (order && !infoOrdered()))
+		// has to adjust order because of parameter subPop
+		adjustInfoPosition();
+		if (hasActivatedVirtualSubPop(subPop))
 			return IndInfoIterator(idx, indEnd(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
@@ -1224,26 +1221,24 @@ public:
 	/// get information field \c idx of all individuals
 	/**
 	 \param idx index of the information field
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(UINT idx, bool order)
+	vectorinfo indInfo(UINT idx)
 	{
-		return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 
 
 	/// get information field \c name of all individuals
 	/**
 	 \param name name of the information field
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(const string & name, bool order)
+	vectorinfo indInfo(const string & name)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, order), infoEnd(idx, order));
+		return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 
 
@@ -1251,13 +1246,12 @@ public:
 	/**
 	 \param idx index of the information field
 	 \param subPop subpopulation index
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(UINT idx, UINT subPop, bool order)
+	vectorinfo indInfo(UINT idx, UINT subPop)
 	{
-		return vectorinfo(infoBegin(idx, subPop, order),
-			infoEnd(idx, subPop, order));
+		return vectorinfo(infoBegin(idx, subPop),
+			infoEnd(idx, subPop));
 	}
 
 
@@ -1265,28 +1259,25 @@ public:
 	/**
 	 \param name name of the information field
 	 \param subPop subpopulation index
-	 \param order if true, sort returned vector in individual order
 	 \return a vector with value of the information field
 	 */
-	vectorinfo indInfo(const string & name, UINT subPop, bool order)
+	vectorinfo indInfo(const string & name, UINT subPop)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, subPop, order), infoEnd(idx, subPop, order));
+		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
 
 	/// get an editable array (Python list) of all information fields
 	/**
 	   The length of the array is <tt>infoSize()*popSize()</tt>.
-	 \param order whether or not the list has the same order as individuals
 	 \return a python list that has all information fields for all individual
 	   values of information fields of the same individual are put together.
 	 */
-	PyObject * arrIndInfo(bool order)
+	PyObject * arrIndInfo()
 	{
-		if (order && !infoOrdered())
-			adjustInfoPosition(true);
+		adjustInfoPosition();
 
 		return Info_Vec_As_NumArray(m_info.begin(), m_info.end());
 	}
@@ -1294,16 +1285,14 @@ public:
 
 	/// get an editable array (Python list) of all information fields in \c subPop
 	/**
-	 \param order whether or not the list has the same order as individuals
 	 \return a python list that has all information fields for all individual
 	   values of information fields of the same individual are put together.
 	 */
-	PyObject * arrIndInfo(UINT subPop, bool order)
+	PyObject * arrIndInfo(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		if (!infoOrdered())
-			adjustInfoPosition(order);
+		adjustInfoPosition();
 
 		return Info_Vec_As_NumArray(m_info.begin() + m_subPopIndex[subPop] * infoSize(),
 			m_info.begin() + m_subPopIndex[subPop + 1] * infoSize());
@@ -1372,7 +1361,7 @@ public:
 	void adjustGenoPosition(bool order);
 
 	/// CPPONLY
-	void adjustInfoPosition(bool order);
+	void adjustInfoPosition();
 
 	/// save population to a file
 	/**
