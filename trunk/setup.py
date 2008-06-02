@@ -382,8 +382,9 @@ SIMUPOP_FILES = [
 #
 # The patch can be found here:
 #     http://sf.net/tracker/index.php?func=detail&aid=1700146&group_id=1645&atid=301645
-SWIG_FLAGS = '-O -templatereduce -shadow -python -outdir src -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
+SWIG_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
+SWIG_OUTDIR = '.'
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
@@ -541,7 +542,7 @@ if __name__ == '__main__':
         # try the first option set with the first library
         for lib in MODULES:
             print "Generating wrap file " + WRAP_INFO[lib][0]
-            if os.system('%s %s %s -o %s %s' % (SWIG, SWIG_FLAGS, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
+            if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_FLAGS, SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
                 sys.exit(1)
         print

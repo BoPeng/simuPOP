@@ -43,7 +43,7 @@ if not os.path.isfile('SConstruct'):
 from SCons import __version__
 __version__ = __version__.split('d')[0]
 version = map(int, __version__.split('.'))
-if version != [0, 96, 93] and version[:2] != [0, 97]:
+if version[0] == 0 and version[1] <=97:
     print "Scons version 0.96.93 or >= 0.97 is required."
     Exit(1)
 
@@ -116,8 +116,9 @@ else:
 
 # for swig 1.3.30, but do not use -outdir src, use -outdir . instead
 # because the scons/swig module requires .py in the current directory (a bug, I would say).
-env['SWIGFLAGS'] = SWIG_FLAGS.replace('-outdir src', '-outdir .')
-env.Command('$build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS.replace('-outdir src', '-outdir .')])
+env['SWIGFLAGS'] = SWIG_FLAGS # .replace('-outdir src', '-outdir .')
+env['SWIGOUTDIR'] = '$build_dir'
+env.Command('$build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FLAGS])
 
 # this lib may contain gsl, boost/iostreams and boost/serialization
 extra_lib = env.StaticLibrary(
@@ -176,7 +177,7 @@ for mod in targets:
     Alias(mod, lib)
     Alias('all', lib)
     dp1 = env.InstallAs(os.path.join(dest_dir, 'simuPOP_%s.py' % mod),
-        'simuPOP_%s.py' % mod)
+        '$build_dir/simuPOP_%s.py' % mod)
     dp2 = env.InstallAs(os.path.join(dest_dir, '_simuPOP_%s%s' % (mod, so_ext)),
         lib[0])
     env.Depends(dp1, dp2)
