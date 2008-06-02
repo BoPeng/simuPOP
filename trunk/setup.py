@@ -181,7 +181,7 @@ def replaceIntHeader(file):
         os.utime(file, (-1, time))
     except:
         pass
-    
+
 #
 # SOURCE FILES
 #
