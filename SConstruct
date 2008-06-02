@@ -11,13 +11,13 @@
 #      standard scons options like -j (number of threads)
 #
 #    options:
-#      prefix=/path/to/prefix:  
+#      prefix=/path/to/prefix:
 #          prefix of installation, equivalent to the --prefix option of python setup.py
 #      include-dirs=/path/to/include:/path/to/includes2
 #          extra include directories, usually to boost library. The path separator is ; under windows.
 #      library-dirs=/path/to/lib:/path/to/lib2
 #          extra library directories, usually to boost library. The path separator is ; under windows.
-#      
+#
 #   targets: one of more of
 #      std op la laop ba baop: individual module
 #      all = all modules
@@ -43,8 +43,8 @@ if not os.path.isfile('SConstruct'):
 from SCons import __version__
 __version__ = __version__.split('d')[0]
 version = map(int, __version__.split('.'))
-if version[0] == 0 and version[1] <=97:
-    print "Scons version 0.96.93 or >= 0.97 is required."
+if version[0] == 0 and version[1] <= 97:
+    print "Scons version > 0.97 is required."
     Exit(1)
 
 # load all the module information from setup.py
@@ -75,7 +75,7 @@ opts.AddOptions(
     PathOption('include-dirs', 'Extra include directories, see "python setup.py build_ext --help"', None),
     PathOption('library-dirs', 'Extra library directories, see "python setup.py build_ext --help"', None),
 )
-    
+
 env = Environment(
     options=opts,
 	# pass all environment variables because MSVC needs INCLUDE and LIB
@@ -134,7 +134,7 @@ for key in all_modu:
     if key in BUILD_TARGETS:
         targets.append(key)
 if targets == []:
-    targets = all_modu 
+    targets = all_modu
 if 'all' in BUILD_TARGETS:
     targets = all_modu
 
@@ -190,6 +190,3 @@ for pyfile in SIMUPOP_FILES:
 
 # install to share directory, later.
 Default('install')
-
-
-

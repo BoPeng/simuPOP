@@ -470,9 +470,9 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 	std::fill(m_info.begin(), m_info.end(), 0.);
 
 	// build subPop index
-	UINT i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
-		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	UINT sp = 1;
+	for (m_subPopIndex[0] = 0; sp <= m_numSubPop; ++sp)
+		m_subPopIndex[sp] = m_subPopIndex[sp - 1] + m_subPopSize[sp - 1];
 	//
 	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
 		DBG_DO(DBG_GENERAL,
@@ -488,7 +488,7 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 	if (newSubPopSizes.empty())
 		return;
 
-	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0L) == m_popSize, ValueError,
+	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru");
 
 	m_numSubPop = newSubPopSizes.size();
