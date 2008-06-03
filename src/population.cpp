@@ -33,12 +33,11 @@ namespace io = boost::iostreams;
 
 namespace simuPOP {
 
-population::population(ULONG size,
+population::population(const vectorlu & size,
                        float ploidy,
                        const vectoru & loci,
                        bool sexChrom,
                        const vectorf & lociPos,
-                       const vectorlu & subPop,
                        int ancestralDepth,
                        const vectorstr & chromNames,
                        const vectorstr & alleleNames,
@@ -47,10 +46,10 @@ population::population(ULONG size,
                        const vectorstr & infoFields)
 	:
 	GenoStruTrait(),
-	m_popSize(size),
-	m_numSubPop(subPop.size()),
-	m_subPopSize(subPop),
-	m_subPopIndex(subPop.size() + 1),
+	m_popSize(0),
+	m_numSubPop(size.size()),
+	m_subPopSize(size),
+	m_subPopIndex(size.size() + 1),
 	m_virtualSubPops(),
 	m_genotype(0),                                                                          // resize later
 	m_info(0),
@@ -78,23 +77,12 @@ population::population(ULONG size,
 	DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
 		"Number of subpopulations exceed maximum allowed subpopulation numbers");
 
-	// if specify subPop but not m_popSize
-	if (!subPop.empty() ) {
-		if (size == 0)
-			m_popSize = accumulate(subPop.begin(), subPop.end(), 0UL);
-		else
-			DBG_ASSERT(m_popSize == accumulate(subPop.begin(), subPop.end(), 0UL),
-				ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
-	} else {
-		m_subPopSize.resize(1, m_popSize);
-	}
-
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
 	// a whole set of functions ploidy() etc in GenoStruTriat can be used after this step.
 	DBG_FAILIF(static_cast<UINT>(ploidy) * 1.0 != ploidy && fcmp_ne(ploidy, Haplodiploid),
 		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
 
-	this->setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
+	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
 		loci, sexChrom, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
 		lociNames, maxAllele, infoFields);
 
@@ -104,16 +92,12 @@ population::population(ULONG size,
 		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
 		                   << ", plus genoStru"
 						   << "\ngenoSize " << genoSize()
-						   << "\npopSize " << m_popSize
 						   << endl);
 
-	try {
-		fitSubPopStru(m_subPopSize);
-	} catch (...) {
-		cout << "Memory allocation fail. A population of size 1 is created." << endl;
-		*this = population(0);
-		throw OutOfMemory("Memory allocation fail");
-	}
+	// m_popSize will be defined in fitSubPopStru
+	if (m_subPopSize.empty())
+		m_subPopSize.resize(1, 0);
+	fitSubPopStru(m_subPopSize);
 	// set local variable
 	setRep(-1);
 	setGrp(-1);
@@ -164,8 +148,6 @@ population::population(const population & rhs) :
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
 	} catch (...) {
-		cout << "Memory allocation fail. A population of size 1 is created." << endl;
-		*this = population(0);
 		throw OutOfMemory("Memory allocation fail");
 	}
 
@@ -179,8 +161,8 @@ population::population(const population & rhs) :
 	// point outside of subpopulation region.
 	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
-	UINT step = this->genoSize();
-	UINT infoStep = this->infoSize();
+	UINT step = genoSize();
+	UINT infoStep = infoSize();
 	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
@@ -200,7 +182,7 @@ population::population(const population & rhs) :
 			const vector<individual> & rinds = rp.m_inds;
 
 			GenoIterator lg = lp.m_genotype.begin();
-			constGenoIterator rg = rp.m_genotype.begin();
+			ConstGenoIterator rg = rp.m_genotype.begin();
 
 			InfoIterator li = lp.m_info.begin();
 			ConstInfoIterator ri = rp.m_info.begin();
@@ -395,23 +377,30 @@ PyObject * population::arrGenotype(UINT subPop, bool order)
 }
 
 
-void population::validate()
+void population::validate(const string & msg) const
 {
 #ifndef OPTIMIZED
 	DBG_ASSERT(m_info.size() == m_popSize * infoSize(), SystemError,
-		"Wrong information size");
+		msg + "Wrong information size");
 	DBG_ASSERT(m_genotype.size() == m_popSize * genoSize(), SystemError,
-		"Wrong genotype size for this population");
-	InfoIterator ib = m_info.begin();
-	InfoIterator ie = m_info.end();
-	GenoIterator gb = m_genotype.begin();
-	GenoIterator ge = m_genotype.end();
+		msg + "Wrong genotype size for this population");
+	ConstInfoIterator ib = m_info.begin();
+	ConstInfoIterator ie = m_info.end();
+	ConstGenoIterator gb = m_genotype.begin();
+	ConstGenoIterator ge = m_genotype.end();
 	
-	for (IndIterator it = indBegin(); it.valid(); ++it) {
-		DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
-			"Wrong genotype pointer");
-		DBG_ASSERT(it->infoPtr() >= ib && it->infoPtr() < ie, SystemError,
-			"Wrong information field pointer");
+	if (genoSize() > 0) {
+		for (ConstIndIterator it = indBegin(); it.valid(); ++it) {
+			DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
+				msg + "Wrong genotype pointer");
+		}
+	}
+	if (infoSize() > 0) {
+		for (ConstIndIterator it = indBegin(); it.valid(); ++it) {
+			DBG_ASSERT(it->infoPtr() >= ib && it->infoPtr() < ie, SystemError,
+				msg + "Wrong information field pointer. (number of information fields: " 
+				+ toStr(infoSize()) + ")");
+		}
 	}
 #endif
 }
@@ -424,19 +413,19 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 	bool needsResize = m_popSize != newSize;
 	
 	if (needsResize) {
-		ULONG m_popSize = newSize;
+		UINT is = infoSize();
+		UINT step = genoSize();
+		m_popSize = newSize;
 		try {
-			m_genotype.resize(m_popSize * genoSize());
-			m_info.resize(m_popSize * infoSize());
+			m_genotype.resize(m_popSize * step);
+			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
-			throw OutOfMemory("Memory allocation fail");
+			throw OutOfMemory("Memory allocation fail. (popSize=" + toStr(m_popSize) + ")");
 		}
 		// reset individual pointers
 		GenoIterator ptr = m_genotype.begin();
 		InfoIterator infoPtr = m_info.begin();
-		UINT step = genoSize();
-		UINT is = infoSize();
 		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
@@ -457,10 +446,10 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 {
 	// make sure this is a proper population
 	DBG_FAILIF(newSubPopSizes.empty(), ValueError,
-		"Empty newSubPopSizes is given");
+		"Empty newSubPopSizes is given.");
 
 	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
-		"Overall population size should not be changed in setSubPopStru");
+		"Overall population size should not be changed in setSubPopStru.");
 
 	m_numSubPop = newSubPopSizes.size();
 	m_subPopSize = newSubPopSizes;
@@ -1202,7 +1191,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 	DBG_DO(DBG_POPULATION, cout << "newPopByIndIDPerGen: New population size: " << sz << endl);
 
 	// create a population with this size
-	population * pop = new population(0, ploidy(), numLoci(), sexChrom(), lociPos(), sz, 0,
+	population * pop = new population(sz, ploidy(), numLoci(), sexChrom(), lociPos(), 0,
 		chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields());
 	// copy individuals over
 	IndIterator from = indBegin();
@@ -1956,7 +1945,7 @@ void population::adjustInfoPosition()
 population & LoadPopulation(const string & file, const string & format)
 {
 #ifndef _NO_SERIALIZATION_
-	population * p = new population(1);
+	population * p = new population();
 	p->loadPopulation(file, format);
 	return *p;
 #else

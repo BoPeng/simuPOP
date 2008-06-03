@@ -121,7 +121,7 @@ typedef unsigned char & AlleleRef;
 #endif
 
 typedef std::vector<Allele>::iterator GenoIterator;
-typedef std::vector<Allele>::const_iterator constGenoIterator;
+typedef std::vector<Allele>::const_iterator ConstGenoIterator;
 
 // max allowed allele state
 const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();

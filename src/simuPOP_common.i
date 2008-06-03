@@ -652,7 +652,7 @@ def SaveSimulator(simu, *args, **kwargs):
 #SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
-def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False, 
+def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False, 
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
     maxAllele=ModuleMaxAllele, infoFields=[]):
     if subPop != []:
@@ -660,11 +660,9 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
         if size != 0:
             print 'In addition, you can not specify both size and subPop'
         size = subPop
-    if type(size) == type(0):
-        sz = size
-        sp = []
+    if type(size) in [type(0), type(0L)]:
+        sp = [size]
     elif type(size) in [types.TupleType, types.ListType]:
-        sz = 0
         sp = size
     if type(infoFields) not in (type([]), type(())):
         raise exceptions.ValueError('infoFields needs to be an array')
@@ -679,9 +677,9 @@ def new_population(self, size=0, ploidy=2, loci=[], sexChrom=False,
     if len(lociNames) > 0 and type(lociNames[0]) in [types.TupleType, types.ListType]:
         ln = []
         for i in range(0, len(lociNames)):
-            ln.extend( lociNames[i])
+            ln.extend(lociNames[i])
     cppModule.population_swiginit(self,
-        cppModule.new_population(sz, ploidy, loci, sexChrom, ld, sp, 
+        cppModule.new_population(sp, ploidy, loci, sexChrom, ld,
             ancestralDepth, chromNames, alleleNames, ln, maxAllele, infoFields))
 
 new_population.__doc__ = population.__init__.__doc__

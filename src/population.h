@@ -171,12 +171,11 @@ public:
 	 \sa simulator, baseOperator, mating schemes
 	 \test src_population.log Population initialization and member functions
 	 */
-	population(ULONG size = 0,
+	population(const vectorlu & size = vectorlu(),
 	           float ploidy = 2,
 	           const vectoru & loci = vectoru(),
 	           bool sexChrom = false,
 	           const vectorf & lociPos = vectorf(),
-	           const vectorlu & subPop = vectorlu(),
 	           int ancestralDepth = 0,
 	           const vectorstr & chromNames = vectorstr(),
 	           const vectorstr & alleleNames = vectorstr(),
@@ -231,7 +230,7 @@ public:
 	/// Validate if a population is in good shape. This is mostly used
 	/// to detect if scratch population is prepared properly during
 	/// evolution
-	void validate();
+	void validate(const string & msg) const;
 
 	/// CPPONLY
 	/// Fix a population, resize it if necessary. The content
