@@ -214,7 +214,6 @@ public:
 		std::swap(m_indOrdered, rhs.m_indOrdered);
 	}
 
-
 	/// destroy a population
 	~population();
 
@@ -1651,7 +1650,7 @@ private:
 
 		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 		// GenoStructure genoStru = this->genoStru();
-		ar & make_nvp("geno_structure", this->genoStru());
+		ar & make_nvp("geno_structure", genoStru());
 		ar & make_nvp("subPop_sizes", m_subPopSize);
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 #ifdef BINARYALLELE
@@ -1747,7 +1746,6 @@ private:
 	template<class Archive>
 	void load(Archive & ar, const UINT version)
 	{
-
 		ULONG ma;
 		ar & make_nvp("libraryMaxAllele", ma);
 
@@ -2043,6 +2041,10 @@ private:
 		vectora m_genotype;
 		vectorinfo m_info;
 		vector<individual> m_inds;
+		bool m_indOrdered;
+
+		// swap between a popData and existing data.
+		void swap(population & pop);
 	};
 
 	std::deque<popData> m_ancestralPops;
