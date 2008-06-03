@@ -1474,7 +1474,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			ULONG numOfAlleles = 0;
 			for (size_t sp = 0; sp < numSP; ++sp) {
 				ULONG n = 0;
-				if (pop.shallowCopied()) {
+				if (!pop.indOrdered()) {
 					for (IndIterator it = pop.indBegin(sp); it.valid(); ++it)
 						for (p = 0; p < pldy; ++p)
 							if (it->allele(locus, p) == allele)
@@ -1516,7 +1516,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 				Allele allele = alleles[i];
 				ULONG n = 0;
 				// go through all alleles
-				if (pop.shallowCopied()) {
+				if (!pop.indOrdered()) {
 					for (IndIterator it = pop.indBegin(sp); it.valid(); ++it)
 						for (p = 0; p < pldy; ++p)
 							if (it->allele(locus, p) == allele)
@@ -2067,7 +2067,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {
 			std::random_shuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
-			pop.setShallowCopied(true);
+			pop.setIndOrdered(false);
 		}
 	}                        // each subpopulation.
 	if (submit)

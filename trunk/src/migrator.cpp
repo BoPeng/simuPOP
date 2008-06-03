@@ -247,7 +247,7 @@ bool splitSubPop::apply(population & pop)
 		std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
 		// not actully required since spliSubPop will do this.
 		// this is to remind myself this step is important.
-		pop.setShallowCopied(true);
+		pop.setIndOrdered(false);
 	}
 	if (!m_subPopSizes.empty())
 		pop.splitSubPop(m_which, m_subPopSizes, m_subPopID);

@@ -62,12 +62,6 @@ PyObject * individual::arrInfo()
 
 individual & individual::operator=(const individual & rhs)
 {
-	setShallowCopied(true);
-
-	// when the source is being moved. Its relative position may change
-	// so it also becomes shallowCopied.
-	const_cast<individual &>(rhs).setShallowCopied(true);
-
 	m_flags = rhs.m_flags;
 	setSubPopID(rhs.subPopID());
 	setGenoPtr(rhs.genoPtr());
@@ -86,7 +80,6 @@ individual & individual::copyFrom(const individual & rhs)
 	copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
 	// also copy genoStru pointer...
 	this->setGenoStruIdx(rhs.genoStruIdx());
-	setShallowCopied(false);
 	return *this;
 }
 
@@ -141,8 +134,6 @@ void individual::swap(individual & ind, bool swapContent)
 			ind.m_genoPtr[i] = tmp;
 		}
 	} else {
-		setShallowCopied(true);
-		ind.setShallowCopied(true);
 		std::swap(m_genoPtr, ind.m_genoPtr);
 	}
 }

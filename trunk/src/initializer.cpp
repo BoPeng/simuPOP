@@ -83,7 +83,7 @@ bool initByFreq::apply(population & pop)
 		DBG_ASSERT(fcmp_eq(std::accumulate(alleleFreq.begin(), alleleFreq.end(), 0.), 1),
 			SystemError, "Allele frequecies should add up to one.");
 
-		pop.adjustGenoPosition(true);
+		pop.sortIndividuals();
 		if (m_identicalInds) {
 			if (m_atLoci.empty()) {                                         // to all loci
 				if (m_atPloidy == -1) {                                     // all chromosomes
