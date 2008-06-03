@@ -85,6 +85,8 @@ population::population(ULONG size,
 		else
 			DBG_ASSERT(m_popSize == accumulate(subPop.begin(), subPop.end(), 0UL),
 				ValueError, "If both size and subPop are specified, size should equal to sum(subPop)");
+	} else {
+		m_subPopSize.resize(1, m_popSize);
 	}
 
 	// get a GenoStructure with parameters. GenoStructure may be shared by some populations
@@ -106,30 +108,7 @@ population::population(ULONG size,
 						   << endl);
 
 	try {
-		// allocate memory here (not in function definition)
-		m_inds.resize(m_popSize);
-
-		// create genotype vector holding alleles for all individuals.
-		m_genotype.resize(m_popSize * genoSize());
-		/// allocate info
-		size_t is = infoSize();
-		DBG_ASSERT(is == infoFields.size(), SystemError, "Wrong geno structure");
-		m_info.resize(m_popSize * is);
-
-		// set subpopulation indexes, do not allow popsize change
-		setSubPopStru(subPop);
-
-		// set individual pointers
-		// reset individual pointers
-		GenoIterator ptr = m_genotype.begin();
-		InfoIterator infoPtr = m_info.begin();
-		UINT step = genoSize();
-		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
-			m_inds[i].setGenoPtr(ptr);
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-			m_inds[i].setShallowCopied(false);
-			m_inds[i].setInfoPtr(infoPtr);
-		}
+		fitSubPopStru(m_subPopSize);
 	} catch (...) {
 		cout << "Memory allocation fail. A population of size 1 is created." << endl;
 		*this = population(0);
