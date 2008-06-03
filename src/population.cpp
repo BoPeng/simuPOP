@@ -61,8 +61,7 @@ population::population(const vectorlu & size,
 	m_grp(-1),
 	m_gen(0),
 	m_curAncestralGen(0),
-	m_shallowCopied(false),
-	m_infoOrdered(true),
+	m_indOrdered(true),
 	m_selectionFlags()
 {
 	DBG_FAILIF(maxAllele > ModuleMaxAllele, ValueError,
@@ -91,8 +90,8 @@ population::population(const vectorlu & size,
 		                   << ", infoPtr: " << sizeof(double *)
 		                   << ", GenoPtr: " << sizeof(Allele *) << ", Flag: " << sizeof(unsigned char)
 		                   << ", plus genoStru"
-						   << "\ngenoSize " << genoSize()
-						   << endl);
+		                   << "\ngenoSize " << genoSize()
+		                   << endl);
 
 	// m_popSize will be defined in fitSubPopStru
 	if (m_subPopSize.empty())
@@ -135,8 +134,7 @@ population::population(const population & rhs) :
 	m_grp(-1),
 	m_gen(0),
 	m_curAncestralGen(rhs.m_curAncestralGen),
-	m_shallowCopied(false),
-	m_infoOrdered(true),
+	m_indOrdered(true),
 	m_selectionFlags()
 {
 	DBG_DO(DBG_POPULATION,
@@ -354,9 +352,8 @@ int population::__cmp__(const population & rhs) const
 
 PyObject * population::arrGenotype(bool order)
 {
-	if (shallowCopied() && order)
-		// adjust position. deep=true
-		adjustGenoPosition(true);
+	if (order)
+		sortIndividuals();
 	// directly expose values. Do not copy data over.
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
 }
@@ -371,8 +368,7 @@ PyObject * population::arrGenotype(bool order)
 PyObject * population::arrGenotype(UINT subPop, bool order)
 {
 	CHECKRANGESUBPOP(subPop);
-	if (shallowCopied())
-		adjustGenoPosition(order);
+	sortIndividuals();
 	return Allele_Vec_As_NumArray(genoBegin(subPop, order), genoEnd(subPop, order));
 }
 
@@ -388,7 +384,7 @@ void population::validate(const string & msg) const
 	ConstInfoIterator ie = m_info.end();
 	ConstGenoIterator gb = m_genotype.begin();
 	ConstGenoIterator ge = m_genotype.end();
-	
+
 	if (genoSize() > 0) {
 		for (ConstIndIterator it = indBegin(); it.valid(); ++it) {
 			DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
@@ -398,7 +394,7 @@ void population::validate(const string & msg) const
 	if (infoSize() > 0) {
 		for (ConstIndIterator it = indBegin(); it.valid(); ++it) {
 			DBG_ASSERT(it->infoPtr() >= ib && it->infoPtr() < ie, SystemError,
-				msg + "Wrong information field pointer. (number of information fields: " 
+				msg + "Wrong information field pointer. (number of information fields: "
 				+ toStr(infoSize()) + ")");
 		}
 	}
@@ -411,7 +407,7 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 	ULONG newSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
 
 	bool needsResize = m_popSize != newSize;
-	
+
 	if (needsResize) {
 		UINT is = infoSize();
 		UINT step = genoSize();
@@ -430,10 +426,8 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 			m_inds[i].setGenoStruIdx(genoStruIdx());
-			m_inds[i].setShallowCopied(false);
 		}
-		m_shallowCopied = false;
-		m_infoOrdered = true;
+		setIndOrdered(true);
 	}
 	// help clear confusing
 	std::fill(m_info.begin(), m_info.end(), 0.);
@@ -480,8 +474,7 @@ void population::setSubPopByIndID(vectori id)
 	DBG_DO(DBG_POPULATION, cout << "Sorting individuals." << endl);
 	// sort individuals first
 	std::sort(indBegin(), indEnd());
-	setShallowCopied(true);
-	setInfoOrdered(false);
+	setIndOrdered(false);
 
 	// sort individuals first
 	// remove individuals with negative index.
@@ -525,8 +518,7 @@ void population::setSubPopByIndID(vectori id)
 		m_inds.swap(newInds);
 
 		m_popSize = newPopSize;
-		setShallowCopied(false);
-		setInfoOrdered(true);
+		setIndOrdered(true);
 	}
 
 	if (m_inds.empty()) {
@@ -799,8 +791,7 @@ void population::mergePopulationPerGen(const population & pop, const vectorlu & 
 	m_info.swap(newInfo);
 	m_inds.swap(newInds);
 	m_popSize = newPopSize;
-	setShallowCopied(false);
-	setInfoOrdered(true);
+	setIndOrdered(true);
 	if (newSubPopSizes.empty())
 		m_subPopSize = newSS;
 	else
@@ -944,7 +935,9 @@ void population::mergePopulationByLoci(const population & pop,
 	if (!newNumLoci.empty() || !newLociPos.empty())
 		rearrangeLoci(newNumLoci, newLociPos);
 
-	setShallowCopied(false);
+	if (!indOrdered())
+		// sort information only
+		sortIndividuals(true);
 }
 
 
@@ -1007,7 +1000,8 @@ void population::insertBeforeLoci(const vectoru & idx, const vectorf & pos, cons
 		}
 		m_genotype.swap(newGenotype);
 	}
-	setShallowCopied(false);
+	if (!indOrdered())
+		sortIndividuals(true);
 }
 
 
@@ -1071,7 +1065,8 @@ void population::insertAfterLoci(const vectoru & idx, const vectorf & pos, const
 		}
 		m_genotype.swap(newGenotype);
 	}
-	setShallowCopied(false);
+	if (!indOrdered())
+		sortIndividuals(true);
 }
 
 
@@ -1115,8 +1110,7 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	m_info.swap(newInfo);
 	m_inds.swap(newInds);
 	m_popSize = newPopSize;
-	setShallowCopied(false);
-	setInfoOrdered(true);
+	setIndOrdered(true);
 	m_subPopSize = newSubPopSizes;
 	// rebuild index
 	size_t idx = 1;
@@ -1314,7 +1308,7 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 		}
 		m_genotype.swap(newGenotype);
 	}
-	setShallowCopied(false);
+	setIndOrdered(true);
 }
 
 
@@ -1378,12 +1372,6 @@ void population::pushAndDiscard(population & rhs, bool force)
 		// swap with real data
 		// current population may *not* be in order
 		pd.m_subPopSize.swap(m_subPopSize);
-		// store starting geno ptr,
-		// if m_genotype is re-allocated, reset pointers
-		// in m_inds
-#ifndef OPTIMIZED
-		pd.m_startingGenoPtr = m_genotype.begin();
-#endif
 		pd.m_info.swap(m_info);
 		pd.m_genotype.swap(m_genotype);
 		pd.m_inds.swap(m_inds);
@@ -1583,11 +1571,6 @@ void population::useAncestralPop(UINT idx)
 		pd.m_info.swap(m_info);
 		pd.m_inds.swap(m_inds);
 		m_curAncestralGen = 0;
-#ifndef OPTIMIZED
-		//DBG_FAILIF( pd.m_startingGenoPtr != m_genotype.begin(),
-		//	SystemError, "Starting genoptr has been changed.");
-		pd.m_startingGenoPtr = pd.m_genotype.begin();
-#endif
 		if (idx == 0) {                                                                   // restore key paraemeters from data
 			m_popSize = m_inds.size();
 			m_numSubPop = m_subPopSize.size();
@@ -1614,9 +1597,6 @@ void population::useAncestralPop(UINT idx)
 	pd.m_genotype.swap(m_genotype);
 	pd.m_info.swap(m_info);
 	pd.m_inds.swap(m_inds);
-#ifndef OPTIMIZED
-	pd.m_startingGenoPtr = pd.m_genotype.begin();
-#endif
 	// use pd
 	m_popSize = m_inds.size();
 	m_numSubPop = m_subPopSize.size();
@@ -1780,17 +1760,30 @@ PyObject * population::dict(int subPop)
 
 
 /// CPPONLY
-void population::adjustGenoPosition(bool order)
+void population::sortIndividuals(bool infoOnly)
 {
-	DBG_DO(DBG_POPULATION, cout << "Adjust geno position " << endl);
+	if (indOrdered())
+		return;
 
-	// everyone in strict order
-	if (order) {
-		DBG_DO(DBG_POPULATION, cout << "Refresh all order " << endl);
-		vectora tmpGenotype(m_popSize * genoSize());
-		size_t sz = genoSize();
-		vectorinfo tmpInfo(m_popSize * infoSize());
+	if (infoOnly) {
+		DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
 		UINT is = infoSize();
+		vectorinfo tmpInfo(m_popSize * is);
+		vectorinfo::iterator infoPtr = tmpInfo.begin();
+
+		for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
+			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
+			ind->setInfoPtr(infoPtr);
+			infoPtr += is;
+		}
+		m_info.swap(tmpInfo);
+	} else {
+		DBG_DO(DBG_POPULATION, cout << "Adjust geno and info position " << endl);
+
+		size_t sz = genoSize();
+		UINT is = infoSize();
+		vectora tmpGenotype(m_popSize * genoSize());
+		vectorinfo tmpInfo(m_popSize * infoSize());
 		vectora::iterator it = tmpGenotype.begin();
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
@@ -1801,144 +1794,17 @@ void population::adjustGenoPosition(bool order)
 			copy(ind->genoBegin(), ind->genoEnd(), it);
 #endif
 			ind->setGenoPtr(it);
+			it += sz;
+			
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
-			it += sz;
 			infoPtr += is;
-			ind->setShallowCopied(false);
 		}
 		// discard original genotype
-		tmpGenotype.swap(m_genotype);
-		tmpInfo.swap(m_info);
-		// set geno pointer
-		setShallowCopied(false);
-		setInfoOrdered(true);
-		return;
+		m_genotype.swap(tmpGenotype);
+		m_info.swap(tmpInfo);
 	}
-
-	/// find out how many individuals are shallow copied.
-	vectorl scIndex(0);
-	ULONG j, k = 0, jEnd;
-
-	for (UINT sp = 0, spEd = numSubPop(); sp < spEd;  sp++) {
-		GenoIterator spBegin = m_genotype.begin() + m_subPopIndex[sp] * genoSize();
-		GenoIterator spEnd = m_genotype.begin() + m_subPopIndex[sp + 1] * genoSize();
-		for (j = 0, jEnd = subPopSize(sp); j < jEnd;  j++) {
-			if (m_inds[k].shallowCopied() ) {
-				if (indGenoBegin(k) < spBegin || indGenoEnd(k) > spEnd)
-					/// record individual index and genoPtr
-					scIndex.push_back(k);
-				else
-					m_inds[k].setShallowCopied(false);
-			}
-			k++;
-		}
-	}
-
-	if (scIndex.empty()) {
-		//setShallowCopied(false);
-		return;
-	}
-
-	/// to further save time, deal with a special case that there are
-	/// only two shallowCopied individuals
-	if (scIndex.size() == 2) {
-		// swap!
-		GenoIterator tmp = m_inds[ scIndex[0] ].genoPtr();
-		m_inds[scIndex[0] ].setGenoPtr(m_inds[ scIndex[1] ].genoPtr() );
-		m_inds[scIndex[1] ].setGenoPtr(tmp);
-
-		Allele tmp1;
-		for (UINT a = 0; a < genoSize(); ++a) {
-			tmp1 = m_inds[ scIndex[0] ].allele(a);
-			m_inds[scIndex[0] ].setAllele(m_inds[ scIndex[1] ].allele(a), a);
-			m_inds[scIndex[1] ].setAllele(tmp1, a);
-		}
-
-		// copy info
-		InfoType tmp2;
-		for (UINT a = 0; a < infoSize(); ++a) {
-			tmp2 = m_inds[ scIndex[0] ].info(a);
-			m_inds[scIndex[0] ].setInfo(m_inds[ scIndex[1] ].info(a), a);
-			m_inds[scIndex[1] ].setInfo(tmp2, a);
-		}
-
-		m_inds[scIndex[0] ].setShallowCopied(false);
-		m_inds[scIndex[1] ].setShallowCopied(false);
-		setShallowCopied(false);
-		setInfoOrdered(true);
-		return;
-	}
-
-	/// save genotypic info
-	vectora scGeno(scIndex.size() * totNumLoci() * ploidy());
-	vectorinfo scInfo(scIndex.size() * infoSize());
-	vector<GenoIterator> scPtr(scIndex.size() );
-	vector<InfoIterator> scInfoPtr(scIndex.size() );
-
-	size_t i, iEnd;
-
-	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
-		scPtr[i] = m_inds[ scIndex[i]].genoPtr();
-#ifdef BINARYALLELE
-		copyGenotype(indGenoBegin(scIndex[i]), scGeno.begin() + i * genoSize(), genoSize());
-#else
-		copy(indGenoBegin(scIndex[i]), indGenoEnd(scIndex[i]), scGeno.begin() + i * genoSize());
-#endif
-		scInfoPtr[i] = m_inds[ scIndex[i]].infoPtr();
-		copy(ind(scIndex[i]).infoBegin(), ind(scIndex[i]).infoEnd(),
-			scInfo.begin() + i * infoSize());
-	}
-
-	DBG_DO(DBG_POPULATION, cout << "Shallow copied" << scIndex << endl);
-
-	/// sort the pointers!
-	sort(scPtr.begin(), scPtr.end());
-	sort(scInfoPtr.begin(), scInfoPtr.end());
-
-	/// copy back.
-	for (i = 0, iEnd = scIndex.size(); i < iEnd;  i++) {
-		m_inds[ scIndex[i] ].setGenoPtr(scPtr[i]);
-
-#ifdef BINARYALLELE
-		copyGenotype(scGeno.begin() + i * genoSize(), indGenoBegin(scIndex[i]), genoSize());
-#else
-		copy(scGeno.begin() + i * genoSize(), scGeno.begin() + (i + 1) * genoSize(),
-			indGenoBegin(scIndex[i]));
-#endif
-		m_inds[ scIndex[i] ].setInfoPtr(scInfoPtr[i]);
-		copy(scInfo.begin() + i * infoSize(), scInfo.begin() + (i + 1) * infoSize(),
-			ind(scIndex[i]).infoBegin());
-		m_inds[ scIndex[i] ].setShallowCopied(false);
-	}
-	//setShallowCopied(false);
-	return;
-}
-
-
-void population::adjustInfoPosition()
-{
-	if (m_infoOrdered && !m_shallowCopied)
-		return;
-
-	DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
-	UINT is = infoSize();
-	vectorinfo tmpInfo(m_popSize * is);
-	vectorinfo::iterator infoPtr = tmpInfo.begin();
-	vectorinfo::iterator tmp;
-
-	size_t i;
-	for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
-		tmp = ind->infoBegin();
-		for (i = 0; i < is; ++i)
-			infoPtr[i] = tmp[i];
-			ind->setInfoPtr(infoPtr);
-			infoPtr += is;
-		}
-	// discard original genotype
-	m_info.swap(tmpInfo);
-	setInfoOrdered(true);
-	return;
+	setIndOrdered(true);
 }
 
 
@@ -1973,6 +1839,7 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 
 	IndInfoIterator it = pop.infoBegin(0);
 	IndInfoIterator it_end = pop.infoEnd(0);
+
 	for (; it != it_end; ++it)
 		a[i++] = *it;
 	return a;

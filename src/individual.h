@@ -97,12 +97,6 @@ namespace simuPOP {
  \note
  \li \c individual does \em not manage memory. Instead, it use a pointer passed
    from \c population class. This may cause a \em lot of troubles.
- \li \c operator= uses shallow copy. This is required by \em sort algorithm since
-   otherwise individuals will not be able to be copied. However, in population
-   memory management, it is sometimes required that genotypic information within
-   one subpopulation should go together. This is done by using a \c shollow_copied
-   flag for each individual and for all individuals. Population might have to rearrange
-   individuals to solve this problem.
  \li Output of \c individual can be adjusted by \c setOutputDelimeter.
  */
 class individual : public GenoStruTrait
@@ -115,12 +109,9 @@ protected:
 	/// if this individual is affect
 	static const size_t m_flagAffected = 2;
 
-	/// if this individual is the result of a shoallow copy
-	static const size_t m_flagShallowCopied = 4;
-
 	/// if this individual is visible. This is used
 	/// to implement virtual subpopulations
-	static const size_t m_flagVisible = 8;
+	static const size_t m_flagVisible = 4;
 
 	/// if this individual is iteratable. This will
 	/// not affect how activated virtual subpoulations
@@ -130,7 +121,7 @@ protected:
 	/// In short, this is supposed to be a temporary, light
 	/// weight flag that help iterators go through virtual
 	/// subpopulation.
-	static const size_t m_flagIteratable = 16;
+	static const size_t m_flagIteratable = 8;
 
 public:
 	///  @name constructor, destructor etc
@@ -144,14 +135,13 @@ public:
 	}
 
 
-	/// CPPONLY copy constructor will be a shallow copied one
+	/// CPPONLY 
 	individual(const individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
 		m_subPopID(ind.m_subPopID),
 		m_genoPtr(ind.m_genoPtr),
 		m_infoPtr(ind.m_infoPtr)
 	{
-		setShallowCopied(true);
 	}
 
 
@@ -616,23 +606,6 @@ public:
 	/// @name misc (only relevant to developers)
 	//@{
 
-	/// CPPONLY is this individual a result of shallow copy?
-	bool shallowCopied() const
-	{
-		return ISSETFLAG(m_flags, m_flagShallowCopied);
-	}
-
-
-	/// CPPONLY set shallowCopied flag
-	void setShallowCopied(bool shallowCopied)
-	{
-		if (shallowCopied)
-			SETFLAG(m_flags, m_flagShallowCopied);
-		else
-			RESETFLAG(m_flags, m_flagShallowCopied);
-	}
-
-
 	/// CPPONLY
 	void display(ostream & out, int width = 1, const vectori & chrom = vectori(), const vectori & loci = vectori() );
 
@@ -668,8 +641,6 @@ private:
 		if (b) SETFLAG(m_flags, m_flagAffected);
 		SETFLAG(m_flags, m_flagVisible);
 		SETFLAG(m_flags, m_flagIteratable);
-
-		RESETFLAG(m_flags, m_flagShallowCopied);
 
 		if (version < 1) {
 			std::pair<int, int> tag;

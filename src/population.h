@@ -119,7 +119,7 @@ public:
 	///Create a population object with given size and genotypic structure.
 	/**
 	 \param size An array of subpopulation sizes. If a single number is given,
-		it will be the size of a single subpopulation of the whole population.
+	   	it will be the size of a single subpopulation of the whole population.
 	 \param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
 	   	Please use \c Haplodiploid to specify a haplodiploid population. Note that
 	   	the ploidy number returned for such a population will be 2 and male
@@ -211,8 +211,7 @@ public:
 		std::swap(m_grp, rhs.m_grp);
 		std::swap(m_gen, rhs.m_gen);
 		std::swap(m_curAncestralGen, rhs.m_curAncestralGen);
-		std::swap(m_shallowCopied, rhs.m_shallowCopied);
-		std::swap(m_infoOrdered, rhs.m_infoOrdered);
+		std::swap(m_indOrdered, rhs.m_indOrdered);
 	}
 
 
@@ -225,6 +224,7 @@ public:
 	{
 		return "<simuPOP::population of size " + toStr(popSize()) + ">";
 	}
+
 
 	/// CPPONLY
 	/// Validate if a population is in good shape. This is mostly used
@@ -285,7 +285,7 @@ public:
 	/// set population/subpopulation structure given subpopulation sizes
 	/**
 	 \param newSubPopSizes an array of new subpopulation sizes. The overall
-	 population size should not changed.
+	   population size should not changed.
 	 \return none
 	 \sa mating
 	 */
@@ -530,22 +530,16 @@ public:
 
 
 	/// CPPONLY
-	bool shallowCopied()
+	bool indOrdered()
 	{
-		return m_shallowCopied;
+		return m_indOrdered;
 	}
 
 
 	/// CPPONLY
-	void setShallowCopied(bool s)
+	void setIndOrdered(bool s)
 	{
-		m_shallowCopied = s;
-	}
-
-
-	void setInfoOrdered(bool s)
-	{
-		m_infoOrdered = s;
+		m_indOrdered = s;
 	}
 
 
@@ -719,7 +713,7 @@ public:
 		// or
 		// if requires order, but the alleles are not ordered
 		// use individual based
-		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
 			return IndAlleleIterator(locus, indBegin(), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
@@ -730,7 +724,7 @@ public:
 	IndAlleleIterator alleleEnd(UINT locus, bool order)
 	{
 		CHECKRANGEABSLOCUS(locus);
-		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
 			return IndAlleleIterator(locus, indEnd(), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
@@ -747,7 +741,7 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
 			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
@@ -761,7 +755,7 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop() || (order && shallowCopied()))
+		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
 			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
@@ -778,9 +772,9 @@ public:
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
-			
-		if (order && shallowCopied())
-			adjustGenoPosition(true);
+
+		if (order && !indOrdered())
+			sortIndividuals();
 
 		return m_genotype.begin();
 	}
@@ -791,8 +785,8 @@ public:
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
-		if (order && shallowCopied())
-			adjustGenoPosition(true);
+		if (order && !indOrdered())
+			sortIndividuals();
 
 		return m_genotype.end();
 	}
@@ -809,8 +803,7 @@ public:
 			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
 
-		if (shallowCopied())
-			adjustGenoPosition(order);
+		sortIndividuals();
 
 		return m_genotype.begin() + m_subPopIndex[subPop] * genoSize();
 	}
@@ -822,8 +815,7 @@ public:
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
-		if (shallowCopied())
-			adjustGenoPosition(order);
+		sortIndividuals(order);
 
 		return m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize();
 	}
@@ -1169,7 +1161,7 @@ public:
 		// or
 		// if requires order, but the information is not ordered
 		// use individual based
-		if (hasActivatedVirtualSubPop() || !m_infoOrdered)
+		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndInfoIterator(idx, indBegin());
 		else
 			// if not required order, or if the information is ordered
@@ -1181,7 +1173,7 @@ public:
 	IndInfoIterator infoEnd(UINT idx)
 	{
 		CHECKRANGEINFO(idx);
-		if (hasActivatedVirtualSubPop() || !m_infoOrdered)
+		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndInfoIterator(idx, indEnd());
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
@@ -1193,9 +1185,9 @@ public:
 	{
 		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
-		
+
 		// has to adjust order because of parameter subPop
-		if (hasActivatedVirtualSubPop(subPop) || !m_infoOrdered)
+		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indBegin(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
@@ -1209,7 +1201,7 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		// has to adjust order because of parameter subPop
-		if (hasActivatedVirtualSubPop(subPop) || !m_infoOrdered)
+		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indEnd(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
@@ -1265,6 +1257,7 @@ public:
 
 		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
+
 
 	///	add an information field to a population
 	/**
@@ -1322,12 +1315,8 @@ public:
 	   some iterators requires that genotype information is within
 	   each subpopulation. We need to adjust genotypic info to
 	   obey this.
-	   order=true: make individuals in order
-	   order=false: make individuals in each subpopulation
 	 */
-	void adjustGenoPosition(bool order);
-	/// CPPONLY
-	void adjustInfoPosition();
+	void sortIndividuals(bool infoOnly = false);
 
 	/// save population to a file
 	/**
@@ -1656,8 +1645,7 @@ private:
 	void save(Archive & ar, const UINT version) const
 	{
 		// deep adjustment: everyone in order
-		const_cast<population*>(this)->adjustGenoPosition(true);
-		const_cast<population*>(this)->adjustInfoPosition();
+		const_cast<population *>(this)->sortIndividuals();
 
 		ar & make_nvp("libraryMaxAllele", ModuleMaxAllele);
 
@@ -1706,7 +1694,7 @@ private:
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
 			const_cast<population *>(this)->useAncestralPop(i + 1);
 			// need to make sure ancestral pop also in order
-			const_cast<population *>(this)->adjustGenoPosition(true);
+			const_cast<population *>(this)->sortIndividuals();
 			ar & make_nvp("subPop_sizes", m_subPopSize);
 #ifdef BINARYALLELE
 			size_t size = m_genotype.size();
@@ -1996,8 +1984,6 @@ private:
 				inds[i].setInfoPtr(infoPtr);
 				// set new genoStructure
 				inds[i].setGenoStruIdx(genoStruIdx());
-				// fresh copy so clear shallowcopied flag.
-				inds[i].setShallowCopied(false);
 			}
 		}
 
@@ -2011,8 +1997,7 @@ private:
 			cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
 		}
 
-		m_shallowCopied = false;
-		m_infoOrdered = true;
+		setIndOrdered(true);
 	}
 
 
@@ -2054,9 +2039,6 @@ private:
 	/// need to store: subPopSize, genotype and m_inds
 	struct popData
 	{
-#ifndef OPTIMIZED
-		GenoIterator m_startingGenoPtr;
-#endif
 		vectorlu m_subPopSize;
 		vectora m_genotype;
 		vectorinfo m_info;
@@ -2074,11 +2056,8 @@ private:
 	/// current ancestral depth
 	int m_curAncestralGen;
 
-	/// whether or not individual genotype is in order
-	bool m_shallowCopied;
-
-	/// whether or not information is ordered
-	bool m_infoOrdered;
+	/// whether or not individual genotype and information are in order
+	bool m_indOrdered;
 
 	/// selection flags for each subpopulation.
 	/// empty means no selection
