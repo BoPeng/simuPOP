@@ -207,7 +207,16 @@ population::population(const population & rhs) :
 	setRep(-1);
 	setGrp(-1);
 }
+	
 
+void population::popData::swap(population & pop)
+{
+	pop.m_subPopSize.swap(m_subPopSize);
+	pop.m_genotype.swap(m_genotype);
+	pop.m_info.swap(m_info);
+	pop.m_inds.swap(m_inds);
+	std::swap(pop.m_indOrdered, m_indOrdered);
+}
 
 ///
 population * population::clone(int keepAncestralPops) const
@@ -438,15 +447,16 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 
 void population::setSubPopStru(const vectorlu & newSubPopSizes)
 {
-	// make sure this is a proper population
-	DBG_FAILIF(newSubPopSizes.empty(), ValueError,
-		"Empty newSubPopSizes is given.");
-
 	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru.");
 
-	m_numSubPop = newSubPopSizes.size();
-	m_subPopSize = newSubPopSizes;
+	if (newSubPopSizes.empty()) {
+		m_numSubPop = 1;
+		m_subPopSize = vectorlu(1, 0);
+	} else {
+		m_numSubPop = newSubPopSizes.size();
+		m_subPopSize = newSubPopSizes;
+	}
 	m_subPopIndex.resize(m_numSubPop + 1);
 
 	// build subPop index
@@ -1371,17 +1381,11 @@ void population::pushAndDiscard(population & rhs, bool force)
 		popData & pd = m_ancestralPops.front();
 		// swap with real data
 		// current population may *not* be in order
-		pd.m_subPopSize.swap(m_subPopSize);
-		pd.m_info.swap(m_info);
-		pd.m_genotype.swap(m_genotype);
-		pd.m_inds.swap(m_inds);
+		pd.swap(*this);
 	}
 
 	// then swap out data
-#ifndef OPTIMIZED
-	GenoIterator rhsStartingGenoPtr = rhs.m_genotype.begin();
-	GenoIterator lhsStartingGenoPtr = m_genotype.begin();
-#endif
+	// can not use population::swap because it swaps too much data
 	m_popSize = rhs.m_popSize;
 	m_numSubPop = rhs.m_numSubPop;
 	m_subPopSize.swap(rhs.m_subPopSize);
@@ -1390,12 +1394,6 @@ void population::pushAndDiscard(population & rhs, bool force)
 	m_genotype.swap(rhs.m_genotype);
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
-#ifndef OPTIMIZED
-	DBG_FAILIF(rhsStartingGenoPtr != m_genotype.begin(),
-		SystemError, "Starting genoptr has been changed.");
-	DBG_FAILIF(lhsStartingGenoPtr != rhs.m_genotype.begin(),
-		SystemError, "Starting genoptr has been changed.");
-#endif
 	// current population should be working well
 	// (with all datamember copied form rhs
 	// rhs may not be working well since m_genotype etc
@@ -1404,13 +1402,10 @@ void population::pushAndDiscard(population & rhs, bool force)
 		// keep size if pop size is OK.
 		// remove all supopulation structure of rhs
 		rhs.m_popSize = rhs.m_inds.size();
-		rhs.m_numSubPop = 1;
-		rhs.m_subPopSize.resize(1, rhs.m_popSize);
-		rhs.m_subPopIndex.resize(2, 0);
-		rhs.m_subPopIndex[1] = rhs.m_popSize;
-		rhs.m_virtualSubPops.clear();
-		// no need to set genoPtr or genoStru()
+		rhs.setSubPopStru(rhs.m_subPopSize);
 	}
+	validate("Current population after push and discard:");
+	rhs.validate("Outside population after push and discard:");
 }
 
 
@@ -1565,21 +1560,12 @@ void population::useAncestralPop(UINT idx)
 		"Curidx: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
-		popData & pd = m_ancestralPops[ m_curAncestralGen - 1 ];
-		pd.m_subPopSize.swap(m_subPopSize);
-		pd.m_genotype.swap(m_genotype);
-		pd.m_info.swap(m_info);
-		pd.m_inds.swap(m_inds);
+		popData & pd = m_ancestralPops[ m_curAncestralGen - 1];
+		pd.swap(*this);
 		m_curAncestralGen = 0;
-		if (idx == 0) {                                                                   // restore key paraemeters from data
+		if (idx == 0) {                                               // restore key parameters from data
 			m_popSize = m_inds.size();
-			m_numSubPop = m_subPopSize.size();
-			m_subPopIndex.resize(m_numSubPop + 1);
-			// build subPop index
-			UINT i = 1;
-			for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
-				m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
-
+			setSubPopStru(m_subPopSize);
 			return;
 		}
 	}
@@ -1592,18 +1578,10 @@ void population::useAncestralPop(UINT idx)
 	m_curAncestralGen = idx;
 	// swap  1 ==> 0, 2 ==> 1
 
-	popData & pd = m_ancestralPops[ m_curAncestralGen - 1];
-	pd.m_subPopSize.swap(m_subPopSize);
-	pd.m_genotype.swap(m_genotype);
-	pd.m_info.swap(m_info);
-	pd.m_inds.swap(m_inds);
-	// use pd
+	popData & pd = m_ancestralPops[m_curAncestralGen - 1];
+	pd.swap(*this);
 	m_popSize = m_inds.size();
-	m_numSubPop = m_subPopSize.size();
-	m_subPopIndex.resize(m_numSubPop + 1);
-	UINT i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
-		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	setSubPopStru(m_subPopSize);
 }
 
 
