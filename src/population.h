@@ -286,7 +286,7 @@ public:
 	/// set population/subpopulation structure given subpopulation sizes
 	/**
 	 \param newSubPopSizes an array of new subpopulation sizes. The overall
-	 population size should not be changed.
+	 population size should not changed.
 	 \return none
 	 \sa mating
 	 */
@@ -777,6 +777,9 @@ public:
 	 */
 	GenoIterator genoBegin(bool order)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
+			
 		if (order && shallowCopied())
 			adjustGenoPosition(true);
 
@@ -787,6 +790,8 @@ public:
 	///  CPPONLY allele iterator
 	GenoIterator genoEnd(bool order)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
 		if (order && shallowCopied())
 			adjustGenoPosition(true);
 
@@ -801,6 +806,8 @@ public:
 	 */
 	GenoIterator genoBegin(UINT subPop, bool order)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
 
 		if (shallowCopied())
@@ -813,6 +820,8 @@ public:
 	/// CPPONLY allele iterator in a subpopulation.
 	GenoIterator genoEnd(UINT subPop, bool order)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This function is not valid with an activated virtual subpopulation");
 		CHECKRANGESUBPOP(subPop);
 		if (shallowCopied())
 			adjustGenoPosition(order);
@@ -1318,6 +1327,8 @@ public:
 	   order=false: make individuals in each subpopulation
 	 */
 	void adjustGenoPosition(bool order);
+	/// CPPONLY
+	void adjustInfoPosition();
 
 	/// save population to a file
 	/**
@@ -1645,9 +1656,9 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const UINT version) const
 	{
-
 		// deep adjustment: everyone in order
-		//const_cast<population*>(this)->adjustGenoPosition(true);
+		const_cast<population*>(this)->adjustGenoPosition(true);
+		const_cast<population*>(this)->adjustInfoPosition();
 
 		ar & make_nvp("libraryMaxAllele", ModuleMaxAllele);
 

@@ -440,53 +440,45 @@ void population::validate()
 
 void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 {
-	m_numSubPop = newSubPopSizes.size();
-	m_subPopSize = newSubPopSizes;
-	m_subPopIndex.resize(m_numSubPop + 1);
+	ULONG newSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
 
-	ULONG m_popSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
-
-	try {
-		m_genotype.resize(m_popSize * genoSize());
-		m_info.resize(m_popSize * infoSize());
-		m_inds.resize(m_popSize);
-	} catch (...) {
-		throw OutOfMemory("Memory allocation fail");
+	bool needsResize = m_popSize != newSize;
+	
+	if (needsResize) {
+		ULONG m_popSize = newSize;
+		try {
+			m_genotype.resize(m_popSize * genoSize());
+			m_info.resize(m_popSize * infoSize());
+			m_inds.resize(m_popSize);
+		} catch (...) {
+			throw OutOfMemory("Memory allocation fail");
+		}
+		// reset individual pointers
+		GenoIterator ptr = m_genotype.begin();
+		InfoIterator infoPtr = m_info.begin();
+		UINT step = genoSize();
+		UINT is = infoSize();
+		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
+			m_inds[i].setGenoPtr(ptr);
+			m_inds[i].setInfoPtr(infoPtr);
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			m_inds[i].setShallowCopied(false);
+		}
+		m_shallowCopied = false;
+		m_infoOrdered = true;
 	}
-	// reset individual pointers
-	GenoIterator ptr = m_genotype.begin();
-	InfoIterator infoPtr = m_info.begin();
-	UINT step = genoSize();
-	UINT is = infoSize();
-	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += is) {
-		m_inds[i].setGenoPtr(ptr);
-		m_inds[i].setInfoPtr(infoPtr);
-		m_inds[i].setGenoStruIdx(genoStruIdx());
-		m_inds[i].setShallowCopied(false);
-	}
-	m_shallowCopied = false;
-	m_infoOrdered = true;
 	// help clear confusing
 	std::fill(m_info.begin(), m_info.end(), 0.);
 
-	// build subPop index
-	UINT sp = 1;
-	for (m_subPopIndex[0] = 0; sp <= m_numSubPop; ++sp)
-		m_subPopIndex[sp] = m_subPopIndex[sp - 1] + m_subPopSize[sp - 1];
-	//
-	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
-		DBG_DO(DBG_GENERAL,
-			cout << "Virtual subpopulation splitters are removed due to population structure changes");
-		m_virtualSubPops.clear();
-	}
+	setSubPopStru(newSubPopSizes);
 }
 
 
 void population::setSubPopStru(const vectorlu & newSubPopSizes)
 {
 	// make sure this is a proper population
-	if (newSubPopSizes.empty())
-		return;
+	DBG_FAILIF(newSubPopSizes.empty(), ValueError,
+		"Empty newSubPopSizes is given");
 
 	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru");
@@ -1952,6 +1944,32 @@ void population::adjustGenoPosition(bool order)
 		m_inds[ scIndex[i] ].setShallowCopied(false);
 	}
 	//setShallowCopied(false);
+	return;
+}
+
+
+void population::adjustInfoPosition()
+{
+	if (m_infoOrdered && !m_shallowCopied)
+		return;
+
+	DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
+	UINT is = infoSize();
+	vectorinfo tmpInfo(m_popSize * is);
+	vectorinfo::iterator infoPtr = tmpInfo.begin();
+	vectorinfo::iterator tmp;
+
+	size_t i;
+	for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
+		tmp = ind->infoBegin();
+		for (i = 0; i < is; ++i)
+			infoPtr[i] = tmp[i];
+			ind->setInfoPtr(infoPtr);
+			infoPtr += is;
+		}
+	// discard original genotype
+	m_info.swap(tmpInfo);
+	setInfoOrdered(true);
 	return;
 }
 
