@@ -267,17 +267,15 @@ class TestPopulation(unittest.TestCase):
         #
         pop = population(size=10)
         self.assertEqual( pop.subPopSizes(), (10,) )
-        pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
+        pop.setSubPopStru(newSubPopSizes=[2,8])
         self.assertEqual( pop.subPopSizes(), (2,8) )
         # can set empty subpop
-        pop.setSubPopStru(newSubPopSizes=[0,0,1,0,2,7,0], allowPopSizeChange=False)
+        pop.setSubPopStru(newSubPopSizes=[0,0,1,0,2,7,0])
         self.assertEqual( pop.subPopSizes(), (0,0,1,0,2,7,0) )
         # by default, can not change population size
         self.assertRaises(exceptions.ValueError, 
-            pop.setSubPopStru, newSubPopSizes=[10,20], allowPopSizeChange=False)
+            pop.setSubPopStru, newSubPopSizes=[10,20])
         # can change population size if allow... is set to True
-        pop.setSubPopStru(newSubPopSizes=[10, 20], allowPopSizeChange=True)
-        self.assertEqual( pop.subPopSizes(), (10, 20) )
         #
         pop = population(size=10, infoFields=['age'])
         pop.individual(1).setInfo(1, 'age')
@@ -287,7 +285,7 @@ class TestPopulation(unittest.TestCase):
         pop.setIndInfo(range(10), 'age')
         self.assertEqual(pop.individual(0).info('age'), 0)
         #print pop.indInfo('age')
-        pop.setSubPopStru(newSubPopSizes=[2,8], allowPopSizeChange=False)
+        pop.setSubPopStru(newSubPopSizes=[2,8])
         for i in range(10):
             self.assertEqual(pop.individual(i).info('age'), i)
         
@@ -344,7 +342,7 @@ class TestPopulation(unittest.TestCase):
         #, 5,6, 11,12,13,14,15,16,17, 7,8,9,10])
         #
         # recover population
-        pop.setSubPopStru([5,6,7], False)
+        pop.setSubPopStru([5,6,7])
         pop.arrGenotype(True)[:] = range(pop.popSize())
         # function form
         SplitSubPop(pop, 1, [2,4], subPopID=[4,1], randomize=False)
@@ -381,7 +379,7 @@ class TestPopulation(unittest.TestCase):
         self.assertGenotype(pop, 3, [7,8,9,10])
         #
         # recover population
-        pop.setSubPopStru([5,6,7], False)
+        pop.setSubPopStru([5,6,7])
         pop.arrGenotype(True)[:] = range(pop.popSize())
         SplitSubPop(pop, 1, proportions=[2/5.,3/5.], subPopID=[4,1], randomize=False)
         self.assertEqual(pop.subPopSizes(), (5,4,7,0,2))
