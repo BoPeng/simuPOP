@@ -812,10 +812,10 @@ class admixtureParams:
         #
         if self.migrGen > self.admixGen:
             self.migrGen = self.admixGen
+        self.curScale = 1.
 
     def scaleParam(self, scale):
         if scale != 1:
-            print "The simulation will be accelerated by %.1f times " % scale
             self.mutaRate *= scale
             self.recIntensity *= scale
             self.backMigrRate *= scale
@@ -823,7 +823,12 @@ class admixtureParams:
             self.figureStep = int(self.figureStep / scale)
             self.initGen = int(self.initGen / scale)
             self.expandGen = int(self.expandGen / scale)
-            self.curScale = scale
+            self.curScale *= scale
+            if self.curScale == 1.:
+                print "The simulation is not accelerated."
+            else:
+                print "The simulation will be accelerated by %.1f times." % self.curScale
+
 
     def createSimulationDir(self):
         '''Create a directory with simulation name'''
@@ -952,18 +957,18 @@ class admixtureParams:
 
 # Example of a cutomized mating scheme
 def customizedMatingScheme(pop):
-    # define virtual subpopulations by ethnicity
-    # YRI:     0 ~ 0.2, weak YRI origin, they will mate within
-    #               this group.
-    # YRI:     0.9 ~ 1, strong YRI origin, they will mate within
-    #               this group.
+    '''
+    The population is divided into two virtual subpopulations depending
+    on individual ancestry values. Individuals with YRI < 0.5 (native)
+    and YRI >= 0.5 (migrants) mate mostly within their own virtual subpopulations.
+    Only 20% of the individuals mate randomly with others.
+    '''
     pop.setVirtualSplitter(infoSplitter(info='YRI',
         cutoff = [0.5]))
     return heteroMating(
         [randomMating(), # random mating for both subpopulations
-         #randomMating(subPop=0, virtualSubPop=0), # assortative mating for subpop 1
-         randomMating(subPop=0, virtualSubPop=0, weight=-0.40),
-         randomMating(subPop=0, virtualSubPop=1, weight=-0.40)]) # assostative mating for subpop 1
+         randomMating(subPop=0, virtualSubPop=0, weight=-0.80),
+         randomMating(subPop=0, virtualSubPop=1, weight=-0.80)])
 
 
 
@@ -1101,6 +1106,7 @@ def calcMeanLD(LDFile, mapFile, width=10, maxDist=500):
     for d,l in zip(dist, avgLD):
         print >> avgFile, '%d\t%.3f' % (d*width, l)
     avgFile.close()
+    return [x*width for x in dist], avgLD
 
 
 def drawLDPlot(pop, par, preMating=True):
@@ -1148,7 +1154,7 @@ def preDrawLDPlot(pop, par):
 def postDrawLDPlot(pop, par):
     return drawLDPlot(pop, par, False)
 
-def getOperators(pop, par, progress=False, visualization=False, mutation=False,
+def getOperators(pop, par, progress=False, vsp=False, visualization=False, mutation=False,
         migration=False, recombination=False, selection=False):
     '''Return mutation and recombination operators'''
     ops = []
@@ -1164,6 +1170,9 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
         if len(par.pops) > 1:
             exp.append('Fst=%.3f')
             var.append('AvgFst')
+        if vsp:
+            exp.append('VSP=%s')
+            var.append('virtualPopSize')
         ops.extend([
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
                 step = par.step, stage=PreMating),
@@ -1180,7 +1189,7 @@ def getOperators(pop, par, progress=False, visualization=False, mutation=False,
             pyOperator(func=preDrawLDPlot, param = par, step=par.figureStep, stage=PreMating),
             pyOperator(func=postDrawLDPlot, param = par, at=[par.initGen - 1, -1])
         ])
-    if mutation:    
+    if mutation:
         ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
     if migration and len(par.pops) > 1:
         ops.append(migrator(MigrIslandRates(par.backMigrRate, len(par.pops))))
@@ -1522,7 +1531,7 @@ def mixExpandedPopulation(pop, par):
         print 'Using a customized mating scheme'
         simu = simulator(pop, customizedMatingScheme(pop))
     simu.evolve(
-        ops = getOperators(pop, par,
+        ops = getOperators(pop, par, vsp = par.matingScheme != 'random',
             progress=True, visualization=True, selection=True,
             mutation=True, migration=False, recombination=True)
             + [migr, ancOps],
