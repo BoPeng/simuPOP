@@ -1,4 +1,4 @@
-#LyX 1.5.5svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -6231,15 +6231,6 @@ status open
 pyMigratorRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
@@ -6247,20 +6238,18 @@ status open
 splitSubPopRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 mergeSubPopsRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+resizeSubPopsRef
 \end_layout
 
 \end_inset

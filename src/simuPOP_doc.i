@@ -12195,6 +12195,10 @@ Usage:
 
 %feature("docstring") simuPOP::resizeSubPops "
 
+Function form:
+
+    ResizeSubPops
+
 Description:
 
     resize subpopulations
@@ -12206,7 +12210,6 @@ Details:
     size is smaller than the original one, the remaining individuals
     are discarded. If the new size if greater, individuals will be
     copied again if propagate is true, and be empty otherwise.
-    <FuncForm>ResizeSubPops</FuncForm>
 
 "; 
 
