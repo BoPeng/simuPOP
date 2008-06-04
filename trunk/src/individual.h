@@ -135,7 +135,7 @@ public:
 	}
 
 
-	/// CPPONLY 
+	/// CPPONLY
 	individual(const individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
 		m_subPopID(ind.m_subPopID),

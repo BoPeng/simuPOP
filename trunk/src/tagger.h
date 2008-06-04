@@ -98,8 +98,8 @@ public:
 	{
 		DBG_ASSERT(infoSize() > 0, ValueError,
 			"At least one information field is needed.");
-        DBG_FAILIF(infoSize() == 1 && mode == TAG_Both, ValueError,
-            "Two information fields are needed in mode TAG_Both");
+		DBG_FAILIF(infoSize() == 1 && mode == TAG_Both, ValueError,
+			"Two information fields are needed in mode TAG_Both");
 	};
 
 	virtual ~inheritTagger()

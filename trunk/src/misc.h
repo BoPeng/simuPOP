@@ -161,13 +161,13 @@ matrix FreqTrajectoryMultiStoch(
 //    maxAttempts    How many times to try to get a valid path? Default 10000
 //
 // Return the trajectory for each locus at each subpopulation. In the order
-// of 
+// of
 //    LOC0: sp0, sp1, sp2,.. LOC1: sp0, sp1, sp2
 // Each trajectory will have length endGen - curGen + 1.
 //
 // If maxAttempts is exceeded, an empty matrix will be returned.
-// 
-// Of course, you should specify only one of N/NtFunc and one of 
+//
+// Of course, you should specify only one of N/NtFunc and one of
 // fitness and fitnessFunc.
 //
 matrix ForwardFreqTrajectory(

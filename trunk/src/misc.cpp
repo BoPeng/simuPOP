@@ -649,24 +649,24 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 
 
 matrix ForwardFreqTrajectory(
-	ULONG curGen,
-	ULONG endGen,
-	// frequency of each loci at each subpopulation
-	vectorf curFreq,
-	matrix endFreq,
-	vectorlu N,
-	PyObject * NtFunc,
-	vectorf fitness,
-	PyObject * fitnessFunc,
-	double migr,
-	int ploidy,
-	long maxAttempts)
+                             ULONG curGen,
+                             ULONG endGen,
+                             // frequency of each loci at each subpopulation
+                             vectorf curFreq,
+                             matrix endFreq,
+                             vectorlu N,
+                             PyObject * NtFunc,
+                             vectorf fitness,
+                             PyObject * fitnessFunc,
+                             double migr,
+                             int ploidy,
+                             long maxAttempts)
 {
 	size_t nLoci = endFreq.size();
 	size_t nSP = curFreq.size() / nLoci;
 
 	DBG_ASSERT(nLoci > 0, ValueError, "Number of loci should be at least one");
-	
+
 	for (size_t i = 0; i < nLoci; ++i) {
 		DBG_FAILIF(endFreq[i].size() != 2, ValueError,
 			"Please specify frequency range of each marker");
@@ -692,28 +692,28 @@ matrix ForwardFreqTrajectory(
 	size_t nGen = endGen - curGen + 1;
 	ULONG idx = curGen;
 
-	matrix result(nLoci*nSP, vectorf(nGen));
+	matrix result(nLoci * nSP, vectorf(nGen));
 
 	// population size at each generation
 	vector<vectori> Nt;
-	for (idx = curGen; idx <= endGen; ++ idx) {
+	for (idx = curGen; idx <= endGen; ++idx) {
 		vectori Ntmp(N.begin(), N.end());
 		if (NtFunc != NULL) {
 			PyObject * lastSize = PyTuple_New(nSP);
 			for (size_t i = 0; i < nSP; ++i)
-				PyTuple_SetItem(lastSize, i, 
-					PyInt_FromLong(idx == curGen ? 0 : Nt[idx-curGen-1][i]));
+				PyTuple_SetItem(lastSize, i,
+					PyInt_FromLong(idx == curGen ? 0 : Nt[idx - curGen - 1][i]));
 			PyCallFunc2(NtFunc, "(iO)", idx, lastSize, Ntmp, PyObj_As_IntArray);
 			Py_XDECREF(lastSize);
 			DBG_ASSERT(Ntmp.size() == nSP, ValueError,
 				"Return value from NtFunc should be an array of size " + toStr(nSP));
 		}
 		Nt.push_back(Ntmp);
-		DBG_DO(DBG_DEVEL, cout << "Popsize at gen " << idx << " is " 
-			<< Nt[idx-curGen] << endl);
+		DBG_DO(DBG_DEVEL, cout << "Popsize at gen " << idx << " is "
+			                   << Nt[idx - curGen] << endl);
 	}
 	// selection pressure.
-	vectorf sAll(nLoci*3);
+	vectorf sAll(nLoci * 3);
 	bool interaction = false;
 	if (ValidPyObject(fitnessFunc)) {
 		if (!PyCallable_Check(fitnessFunc) )
@@ -748,13 +748,13 @@ matrix ForwardFreqTrajectory(
 			// initialize allele frequency at curGen
 			for (size_t sp = 0; sp < nSP; ++sp)
 				for (size_t loc = 0; loc < nLoci; ++loc) {
-					a_frq[sp][loc] = curFreq[sp + loc*nSP];
+					a_frq[sp][loc] = curFreq[sp + loc * nSP];
 					result[sp + loc * nSP][0] = a_frq[sp][loc];
 				}
 		}
 		// then selection coefficient. Note that allele frequency
 		// can be different, so selection coefficient can be different
-		// 
+		//
 		for (size_t sp = 0; sp < nSP; ++sp) {
 			// update allele frequency
 			if (ValidPyObject(fitnessFunc)) {
@@ -783,68 +783,68 @@ matrix ForwardFreqTrajectory(
 			}
 
 			DBG_DO(DBG_DEVEL, cout << "Selection coef at sp " << sp << " is " << sAll << endl);
-	
+
 			// with s1 and s2 in hand, calculate freq at the next generation
 			for (size_t loc = 0; loc < nLoci; ++loc) {
 				double xt_1 = a_frq[sp][loc];
 				double s1 = sAll[3 * loc + 1];
 				double s2 = sAll[3 * loc + 2];
 				size_t N_t = Nt[idx - curGen + 1][sp];
-				
-				double xt_prime = xt_1 *(1 + s2 * xt_1 + s1 * (1 - xt_1)) / 
-					(1 + s2 * xt_1 * xt_1 + 2 * s1 * xt_1 *(1- xt_1));
+
+				double xt_prime = xt_1 * (1 + s2 * xt_1 + s1 * (1 - xt_1)) /
+				                  (1 + s2 * xt_1 * xt_1 + 2 * s1 * xt_1 * (1 - xt_1));
 				ULONG it = rng().randBinomial(ploidy * N_t, xt_prime);
 				a_frq[sp][loc] = it / static_cast<double>(ploidy * N_t);
-				result[sp + loc*nSP][idx - curGen + 1] = a_frq[sp][loc];
+				result[sp + loc * nSP][idx - curGen + 1] = a_frq[sp][loc];
 
-				DBG_DO(DBG_DEVEL, cout << "Gen: " << idx << " SP: " << sp 
-					<< " Size: " << N_t << " Loc: " << loc << " xt_1: " << xt_1 << " xt: " << a_frq[sp][loc] << endl);
+				DBG_DO(DBG_DEVEL, cout << "Gen: " << idx << " SP: " << sp
+					                   << " Size: " << N_t << " Loc: " << loc << " xt_1: " << xt_1 << " xt: " << a_frq[sp][loc] << endl);
 			}
 		} // each subpopulation
-		
+
 		// check if alleles get lost in any of the subpopulations
-		for (size_t sp = 0; sp < nSP; ++ sp) {
-			for (size_t loc = 0; loc < nLoci; ++ loc)
+		for (size_t sp = 0; sp < nSP; ++sp) {
+			for (size_t loc = 0; loc < nLoci; ++loc)
 				if (a_frq[sp][loc] == 0) {
 					idx = curGen;
 					continue;
 				}
 		}
-		
+
 		// now migration
 		if (migr != 0 && nSP > 1) {
 			matrix a_tmp(nSP, vectorf(nLoci, 0.));
-			for (size_t sp_from = 0; sp_from < nSP; ++ sp_from) {
+			for (size_t sp_from = 0; sp_from < nSP; ++sp_from) {
 				size_t N_from = Nt[idx - curGen + 1][sp_from];
-				for (size_t sp_to = 0; sp_to < nSP; ++ sp_to) {
+				for (size_t sp_to = 0; sp_to < nSP; ++sp_to) {
 					size_t N_to = Nt[idx - curGen + 1][sp_to];
-					if (sp_from == sp_to || N_from == 0 || N_to == 0 )
+					if (sp_from == sp_to || N_from == 0 || N_to == 0)
 						continue;
 					//
-					for (size_t loc = 0; loc < nLoci; ++ loc) {
+					for (size_t loc = 0; loc < nLoci; ++loc) {
 						double migrants = a_frq[sp_from][loc] * N_from * ploidy * migr;
 						a_tmp[sp_to][loc] += migrants;
 						a_tmp[sp_from][loc] -= migrants;
-					}						
+					}
 				}
 			}
 			// adjust rates
-			for (size_t sp = 0; sp < nSP; ++ sp) {
+			for (size_t sp = 0; sp < nSP; ++sp) {
 				size_t N_t = Nt[idx - curGen + 1][sp];
-				for (size_t loc = 0; loc < nLoci; ++ loc) {
-					a_frq[sp][loc] += (a_frq[sp][loc] * ploidy * N_t + a_tmp[sp][loc]) 
-						/ (ploidy * N_t);
+				for (size_t loc = 0; loc < nLoci; ++loc) {
+					a_frq[sp][loc] += (a_frq[sp][loc] * ploidy * N_t + a_tmp[sp][loc])
+					                  / (ploidy * N_t);
 					if (a_frq[sp][loc] <= 0 || a_frq[sp][loc] >= 1) {
 						idx = curGen;
 						continue;
 					}
-					result[sp + loc*nSP][idx - curGen + 1] = a_frq[sp][loc];
+					result[sp + loc * nSP][idx - curGen + 1] = a_frq[sp][loc];
 				}
 			}
 		}
-		
+
 		// go to next generation
-		idx ++;
+		idx++;
 
 		if (idx == endGen) {
 			// overall frequency
@@ -875,7 +875,7 @@ matrix ForwardFreqTrajectory(
 	if (NtFunc != NULL)
 		Py_DECREF(NtFunc);
 	if (ValidPyObject(fitnessFunc))
-		Py_DECREF(fitnessFunc);		
+		Py_DECREF(fitnessFunc);
 	return result;
 }
 
