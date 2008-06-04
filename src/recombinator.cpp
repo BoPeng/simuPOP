@@ -92,8 +92,8 @@ void recombinator::prepareRecRates(population & pop,
 				DBG_WARNING(fcmp_gt(vecP[index], 0.5),
 					"Recombination rate after marker " + toStr(index) + " is out of range ("
 					+ toStr(vecP[index]) + " ) so it is set to 0.5. This may happen \n"
-					"when you use recombination intensity instead of rate, and your loci \n"
-					"distance is too high.)");
+					                       "when you use recombination intensity instead of rate, and your loci \n"
+					                       "distance is too high.)");
 				if (fcmp_gt(vecP[index], 0.5))
 					vecP[index] = 0.5;
 				index++;
@@ -156,7 +156,7 @@ void recombinator::prepareRecRates(population & pop,
 			}
 			vecP.push_back(.5);
 
-			DBG_WARNING(find(afterLoci.begin(), afterLoci.end(), index) != afterLoci.end(), 
+			DBG_WARNING(find(afterLoci.begin(), afterLoci.end(), index) != afterLoci.end(),
 				"Specified recombination rate for the last locus on a chromosome is discarded.");
 
 			// add between chromosomes....

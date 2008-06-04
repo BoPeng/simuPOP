@@ -207,7 +207,7 @@ population::population(const population & rhs) :
 	setRep(-1);
 	setGrp(-1);
 }
-	
+
 
 void population::popData::swap(population & pop)
 {
@@ -217,6 +217,7 @@ void population::popData::swap(population & pop)
 	pop.m_inds.swap(m_inds);
 	std::swap(pop.m_indOrdered, m_indOrdered);
 }
+
 
 ///
 population * population::clone(int keepAncestralPops) const
@@ -1773,7 +1774,7 @@ void population::sortIndividuals(bool infoOnly)
 #endif
 			ind->setGenoPtr(it);
 			it += sz;
-			
+
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
 			infoPtr += is;

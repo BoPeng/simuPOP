@@ -62,11 +62,12 @@ combinedSplitter::combinedSplitter(const vectorvsp & splitters)
 		for (size_t j = 0; j < splitters[i]->numVirtualSubPop(); ++j) {
 			m_splitter.push_back(i);
 			m_vsp.push_back(j);
-			m_numVSP ++;
+			m_numVSP++;
 		}
 	}
 }
-	
+
+
 combinedSplitter::~combinedSplitter()
 {
 	for (size_t i = 0; i < m_splitters.size(); ++i)
@@ -77,7 +78,7 @@ combinedSplitter::~combinedSplitter()
 vspSplitter * combinedSplitter::clone() const
 {
 	return new combinedSplitter(m_splitters);
-}	
+}
 
 
 ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const
@@ -88,7 +89,7 @@ ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID v
 
 
 void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-		activateType type)
+                                activateType type)
 {
 	m_curSplitter = m_splitter[virtualSubPop];
 	m_splitters[m_curSplitter]->activate(pop, subPop,
@@ -589,6 +590,7 @@ string genotypeSplitter::name(SubPopID subPop)
 bool genotypeSplitter::match(const individual * it, const vectori & alleles) const
 {
 	unsigned types = alleles.size() / it->ploidy() / m_loci.size();
+
 	DBG_FAILIF(alleles.size() != types * it->ploidy() * m_loci.size(),
 		ValueError, "Given genotype does not match population ploidy.");
 
@@ -597,16 +599,18 @@ bool genotypeSplitter::match(const individual * it, const vectori & alleles) con
 		return matchSingle(it, alleles);
 	for (unsigned t = 0; t < types; ++t) {
 		vectori partial(alleles.begin() + t * ploidy * m_loci.size(),
-			alleles.begin() + (t + 1) * ploidy * m_loci.size());
+		                alleles.begin() + (t + 1) * ploidy * m_loci.size());
 		if (matchSingle(it, partial))
 			return true;
 	}
 	return false;
 }
 
+
 bool genotypeSplitter::matchSingle(const individual * it, const vectori & alleles) const
 {
 	int ploidy = it->ploidy();
+
 	if (m_phase || ploidy == 1) {
 		UINT idx = 0;
 		vectori::const_iterator loc = m_loci.begin();

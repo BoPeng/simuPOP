@@ -149,6 +149,7 @@ public:
 		return m_name;
 	}
 
+
 private:
 	/// expression to evaluate
 	Expression m_expr, m_postExpr;
@@ -205,34 +206,34 @@ public:
 
 
 /** Unlike operator pyEval and pyExec that work at the population level, in
-  its local namespace, infoEval works at the individual level, working
-  with individual information fields.
-  is statement can
-  change the value of existing information fields. Optionally, variables in
-  population's local namespace can be used in the statement, but this should
-  be used with caution.
+   its local namespace, infoEval works at the individual level, working
+   with individual information fields.
+   is statement can
+   change the value of existing information fields. Optionally, variables in
+   population's local namespace can be used in the statement, but this should
+   be used with caution.
    <funcForm>infoEval</funcForm>
-*/
+ */
 class infoEval : public stator
 {
 public:
 	/// evaluate Python statements with variables being an individual's information fields
 	/**
-	The expression and statements will be executed for each individual, in a
-	Python namespace (dictionary) where individual information fields are made
-	available as variables. Population dictionary can be made avaialbe with option
-	usePopVars. Changes to these variables will change the corresponding information
-	fields of individuals.
+	   The expression and statements will be executed for each individual, in a
+	   Python namespace (dictionary) where individual information fields are made
+	   available as variables. Population dictionary can be made avaialbe with option
+	   usePopVars. Changes to these variables will change the corresponding information
+	   fields of individuals.
 
-	Please note that,
-	1. If population variables are used, and there are name conflicts between
-	  information fields and variables, population variables will be overridden
-	  by information fields, without any warning.
-	2. Information fields are float numbers. An exceptions will raise if an information
-	  field can not be converted to a float number.
-	3. This operator can be used in all stages. When it is used during-mating,
-	  it will act on each offspring.
-	
+	   Please note that,
+	   1. If population variables are used, and there are name conflicts between
+	   information fields and variables, population variables will be overridden
+	   by information fields, without any warning.
+	   2. Information fields are float numbers. An exceptions will raise if an information
+	   field can not be converted to a float number.
+	   3. This operator can be used in all stages. When it is used during-mating,
+	   it will act on each offspring.
+
 	 \param expr the expression to be evaluated. The result will be sent to \c output.
 	 \param stmts the statement that will be executed before the expression
 	 \param subPop a shortcut to <tt>subPops=[subPop]</tt>
@@ -241,16 +242,16 @@ public:
 	 \param exposePop if \c True, expose the current population as a variable named \c pop
 	 \param name used to let pure Python operator to identify themselves
 	 \param output default to \c >. I.e., output to standard output. Note that
-		because the expression will be executed for each individual, the output
-		can be large.
+	   	because the expression will be executed for each individual, the output
+	   	can be large.
 	 */
-	infoEval(const string & expr = "", const string & stmts = "", const vectoru & subPops = vectoru(), 
-			bool usePopVars = false,  bool exposePop = false, const string & name = "",
-			string output = ">", string outputExpr = "",
-	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	infoEval(const string & expr = "", const string & stmts = "", const vectoru & subPops = vectoru(),
+	         bool usePopVars = false,  bool exposePop = false, const string & name = "",
+	         string output = ">", string outputExpr = "",
+	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: stator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
-		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop), 
+		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
 		m_name(name), m_dict(NULL)
 	{
 	}
@@ -294,6 +295,7 @@ public:
 		return m_name;
 	}
 
+
 private:
 	void prepareDict(population & pop);
 
@@ -329,12 +331,12 @@ public:
 	   Please refer to class \c infoEval for parameter descriptions.
 	 */
 	infoExec(const string & stmts = "",  const vectoru & subPops = vectoru(), bool usePopVars = false,
-	       bool exposePop = false, const string & name = "",
-	       string output = ">", string outputExpr = "",
-	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	         bool exposePop = false, const string & name = "",
+	         string output = ">", string outputExpr = "",
+	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output, outputExpr,
-		         stage, begin, end, step, at, rep, grp, infoFields)
+		           stage, begin, end, step, at, rep, grp, infoFields)
 	{
 	}
 
@@ -356,8 +358,9 @@ public:
 	{
 		return "<simuPOP::infoExec " + this->name() + ">";
 	}
-};
 
+
+};
 
 
 // The following classes apply various statistics
@@ -1483,13 +1486,13 @@ public:
 	/// create an \c stat operator
 	/**
 
-	 \param popSize whether or not calculate population and virtual subpopulation 
-        sizes. This parameter will set the following variables:
+	 \param popSize whether or not calculate population and virtual subpopulation
+	   	sizes. This parameter will set the following variables:
 	 \li \c numSubPop the number of subpopulations.
 	 \li \c subPopSize an array of subpopulation sizes.
-     \li \c virtualSubPopSize (optional) an array of virtual subpopulation sizes.
-        If a subpopulation does not have any virtual subpopulation, the
-        subpopulation size is returned.
+	 \li \c virtualSubPopSize (optional) an array of virtual subpopulation sizes.
+	   	If a subpopulation does not have any virtual subpopulation, the
+	   	subpopulation size is returned.
 	 \li \c popSize, <tt>subPop[sp]['popSize']</tt> the population/subpopulation size.
 
 	 \param numOfMale whether or not count the numbers or proportions of males and females.
@@ -1732,7 +1735,7 @@ public:
 	     string output = "", string outputExpr = "",
 	     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	     int rep = REP_ALL, int grp = GRP_ALL,
-		 const vectorstr & infoFields = vectorstr());
+	     const vectorstr & infoFields = vectorstr());
 
 	~stat()
 	{

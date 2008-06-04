@@ -988,7 +988,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
 		scratch.fitSubPopStru(pop.subPopSizes());
-    else if (!m_subPopSize.empty())  // set subPoplation size
+	else if (!m_subPopSize.empty())  // set subPoplation size
 		scratch.fitSubPopStru(m_subPopSize);
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {
@@ -1057,7 +1057,7 @@ void mating::submitScratch(population & pop, population & scratch)
 	pop.turnOffSelection();
 	// use scratch population,
 	pop.pushAndDiscard(scratch);
-    scratch.validate("after push and discard");
+	scratch.validate("after push and discard");
 	DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 }
 

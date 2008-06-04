@@ -114,20 +114,20 @@ protected:
 typedef std::vector<vspSplitter *> vectorvsp;
 
 /** This plitter takes several splitters, and stacks their virtual
-subpopulations together. For example, if the first splitter has
-three vsp, the second has two. The two vsp from the second splitter
-will be the fouth (index 3) and fifth (index 4) of the combined 
-splitter. 
-*/
+   subpopulations together. For example, if the first splitter has
+   three vsp, the second has two. The two vsp from the second splitter
+   will be the fouth (index 3) and fifth (index 4) of the combined
+   splitter.
+ */
 class combinedSplitter : public vspSplitter
 {
 public:
 	combinedSplitter(const vectorvsp & splitters = vectorvsp());
-	
+
 	~combinedSplitter();
-	
+
 	vspSplitter * clone() const;
-	
+
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
@@ -137,6 +137,7 @@ public:
 	{
 		return m_numVSP;
 	}
+
 
 	/// mark individuals in the given vsp as visible, and others invisible.
 	/// CPPONLY
@@ -152,8 +153,8 @@ public:
 
 private:
 	/// the splitters
-	vector<vspSplitter*> m_splitters;
-	
+	vector<vspSplitter *> m_splitters;
+
 	/// total number of vsp
 	int m_numVSP;
 	/// the splitter correspond to a vsp
@@ -267,12 +268,12 @@ class infoSplitter : public vspSplitter
 {
 public:
 	/**
-	\param info name of the information field
-	\param values a list of values, each defines a virtual subpopulation
-	\param cutoff a list of cutoff values. For example, cutoff=[1, 2]
-		defines three virtual subpopulations with v < 1, 1 <= v < 2,
-		and v >= 2.
-	*/
+	 \param info name of the information field
+	 \param values a list of values, each defines a virtual subpopulation
+	 \param cutoff a list of cutoff values. For example, cutoff=[1, 2]
+	   	defines three virtual subpopulations with v < 1, 1 <= v < 2,
+	   	and v >= 2.
+	 */
 	infoSplitter(string info, vectorinfo const & values = vectorinfo(),
 	             vectorf const & cutoff = vectorf());
 
@@ -316,9 +317,9 @@ class proportionSplitter : public vspSplitter
 {
 public:
 	/** \param proportions A list of float numbers (between 0 and 1) that
-		defines the proportion of individuals in each virtual subpopulation.
-		These numbers should add up to one.
-	*/
+	   	defines the proportion of individuals in each virtual subpopulation.
+	   	These numbers should add up to one.
+	 */
 	proportionSplitter(vectorf const & proportions = vectorf());
 
 	vspSplitter * clone() const
@@ -352,7 +353,7 @@ private:
 
 
 /** split the population according to individual range. The ranges
-can overlap and does not have to add up to the whole subpopulation.
+   can overlap and does not have to add up to the whole subpopulation.
  */
 class rangeSplitter : public vspSplitter
 {
@@ -402,24 +403,24 @@ public:
 	 \param locus a shortcut to loci=[locus]
 	 \param loci A list of locus at which alleles are used to classify individuals
 	 \param alleles a list (for each virtual subpopulation), of a list
-		of alleles at each locus. If phase if true, the order of alleles
-		is significant. If more than one set of alleles are given, 
-		individuals having either of them is qualified.
-	\param phase whether or not phase is respected.
+	   	of alleles at each locus. If phase if true, the order of alleles
+	   	is significant. If more than one set of alleles are given,
+	   	individuals having either of them is qualified.
+	 \param phase whether or not phase is respected.
 
-	For example,
-	Genotype Aa or aa at locus 1:
-		locus = 1, alleles = [0, 1]
-	Genotype Aa at locus 1 (assuming A is 1):
-		locus = 1, alleles = [1, 0], phase = True
-	Genotype AaBb at loci 1 and 2:
-		loci = [1, 2], alleles = [1, 0, 1, 0], phase = True
-	Two virtual subpopulations with Aa and aa
-		locus = 1, alleles = [[1, 0], [0, 0]], phase = True
-	A virtual subpopulation with Aa or aa
-		locus = 1, alleles = [1, 0, 0, 0]
-	Two virtual subpopulation with genotype AA and the rest
-		locus = 1, alleles = [[1, 1], [1, 0, 0, 0]], phase = False
+	   For example,
+	   Genotype Aa or aa at locus 1:
+	   	locus = 1, alleles = [0, 1]
+	   Genotype Aa at locus 1 (assuming A is 1):
+	   	locus = 1, alleles = [1, 0], phase = True
+	   Genotype AaBb at loci 1 and 2:
+	   	loci = [1, 2], alleles = [1, 0, 1, 0], phase = True
+	   Two virtual subpopulations with Aa and aa
+	   	locus = 1, alleles = [[1, 0], [0, 0]], phase = True
+	   A virtual subpopulation with Aa or aa
+	   	locus = 1, alleles = [1, 0, 0, 0]
+	   Two virtual subpopulation with genotype AA and the rest
+	   	locus = 1, alleles = [[1, 1], [1, 0, 0, 0]], phase = False
 	 */
 	genotypeSplitter(const vectori & loci,
 	                 const intMatrix & alleles, bool phase = false);
@@ -451,6 +452,7 @@ public:
 
 private:
 	bool match(const individual * ind, const vectori & alleles) const;
+
 	bool matchSingle(const individual * ind, const vectori & alleles) const;
 
 private:

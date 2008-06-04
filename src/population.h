@@ -214,6 +214,7 @@ public:
 		std::swap(m_indOrdered, rhs.m_indOrdered);
 	}
 
+
 	/// destroy a population
 	~population();
 

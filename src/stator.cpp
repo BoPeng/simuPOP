@@ -46,6 +46,7 @@ bool pyEval::apply(population & pop)
 	return true;
 }
 
+
 void infoEval::prepareDict(population & pop)
 {
 	if (m_usePopVars && m_exposePop) {
@@ -64,9 +65,10 @@ void infoEval::prepareDict(population & pop)
 }
 
 
-string infoEval::evalInfo(individual* ind)
+string infoEval::evalInfo(individual * ind)
 {
 	vectorstr infos = ind->infoFields();
+
 	// update dictionary
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		string name = infos[idx];
@@ -86,7 +88,7 @@ string infoEval::evalInfo(individual* ind)
 			PyObj_As_Double(var, info);
 			ind->setInfo(info, idx);
 		} catch (...) {
-			DBG_WARNING(true, "Failed to update information field " + name + 
+			DBG_WARNING(true, "Failed to update information field " + name +
 				" from a dictionary of information fields.");
 		}
 	}
@@ -128,12 +130,12 @@ bool infoEval::apply(population & pop)
 
 
 bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
-		individual * dad, individual * mom)
+                                 individual * dad, individual * mom)
 {
 	// FIXME: This potentially can be very slow.
 	prepareDict(pop);
 
-	string res = evalInfo(&*offspring);
+	string res = evalInfo(& * offspring);
 
 	if (!this->noOutput() ) {
 		ostream & out = this->getOstream(pop.dict());
@@ -154,52 +156,53 @@ string haploKey(const vectori & seq)
 	return key + "'}";
 }
 
+
 stat::stat(
-	 bool popSize,
-	 //
-	 bool numOfMale,
-	 strDict numOfMale_param,
-	 //
-	 bool numOfAffected,
-	 strDict numOfAffected_param,
-	 //
-	 vectori numOfAlleles,
-	 strDict numOfAlleles_param,
-	 //
-	 vectori alleleFreq,
-	 strDict alleleFreq_param,
-	 //
-	 vectori heteroFreq,
-	 vectori expHetero,
-	 strDict expHetero_param,
-	 //
-	 vectori homoFreq,
-	 vectori genoFreq,
-	 strDict genoFreq_param,
-	 intMatrix haploFreq,
-	 //
-	 intMatrix LD,
-	 strDict LD_param,
-	 //
-	 intMatrix association,
-	 strDict association_param,
-	 //
-	 vectori Fst,
-	 strDict Fst_param,
-	 //
-	 intMatrix relGroups,
-	 vectori relLoci,
-	 strDict rel_param,
-	 //
-	 bool relBySubPop,                                          // internal use
-	 vectori relMethod,
-	 int relMinScored,                                             // minimal number of loci required.
-	 bool hasPhase,
-	 bool midValues,                                            // this parameter will be removed after all _param parameter is given.
-	 // regular parameters
-	 string output, string outputExpr,
-	 int stage, int begin, int end, int step, vectorl at,
-	 int rep, int grp, const vectorstr & infoFields)
+           bool popSize,
+           //
+           bool numOfMale,
+           strDict numOfMale_param,
+           //
+           bool numOfAffected,
+           strDict numOfAffected_param,
+           //
+           vectori numOfAlleles,
+           strDict numOfAlleles_param,
+           //
+           vectori alleleFreq,
+           strDict alleleFreq_param,
+           //
+           vectori heteroFreq,
+           vectori expHetero,
+           strDict expHetero_param,
+           //
+           vectori homoFreq,
+           vectori genoFreq,
+           strDict genoFreq_param,
+           intMatrix haploFreq,
+           //
+           intMatrix LD,
+           strDict LD_param,
+           //
+           intMatrix association,
+           strDict association_param,
+           //
+           vectori Fst,
+           strDict Fst_param,
+           //
+           intMatrix relGroups,
+           vectori relLoci,
+           strDict rel_param,
+           //
+           bool relBySubPop,                                        // internal use
+           vectori relMethod,
+           int relMinScored,                                        // minimal number of loci required.
+           bool hasPhase,
+           bool midValues,                                          // this parameter will be removed after all _param parameter is given.
+           // regular parameters
+           string output, string outputExpr,
+           int stage, int begin, int end, int step, vectorl at,
+           int rep, int grp, const vectorstr & infoFields)
 	: stator("", outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
@@ -215,7 +218,7 @@ stat::stat(
 	m_association(m_alleleFreq, m_haploFreq, association, association_param),
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
 	m_relatedness(m_alleleFreq, relGroups, relBySubPop, relLoci,
-				  relMethod, relMinScored, rel_param)
+	              relMethod, relMinScored, rel_param)
 {
 }
 
@@ -250,19 +253,19 @@ bool statPopSize::apply(population & pop)
 
 	// type mismatch, can not use subPopSizes() directly.
 	vectori spSize(numSP);
-    vectori vspSize;
+	vectori vspSize;
 	for (size_t sp = 0; sp < numSP; ++sp) {
 		spSize[sp] = pop.subPopSize(sp);
-        size_t numVSP = pop.numVirtualSubPop(sp);
-        if (numVSP == 0)
-            pop.setIntVar(virtualPopSize_String + string("[") + toStr(sp) + "]", spSize[sp]);
-        else {
-            vspSize.clear();
-            for (size_t vsp = 0; vsp < numVSP; ++vsp)
-                vspSize.push_back(pop.virtualSubPopSize(sp, vsp));
-            pop.setIntVectorVar(virtualPopSize_String + string("[") + toStr(sp) + "]", vspSize);
-        }
-    }
+		size_t numVSP = pop.numVirtualSubPop(sp);
+		if (numVSP == 0)
+			pop.setIntVar(virtualPopSize_String + string("[") + toStr(sp) + "]", spSize[sp]);
+		else {
+			vspSize.clear();
+			for (size_t vsp = 0; vsp < numVSP; ++vsp)
+				vspSize.push_back(pop.virtualSubPopSize(sp, vsp));
+			pop.setIntVectorVar(virtualPopSize_String + string("[") + toStr(sp) + "]", vspSize);
+		}
+	}
 
 	pop.setIntVectorVar(subPopSize_String, spSize);
 

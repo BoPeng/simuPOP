@@ -613,12 +613,12 @@ class Doxy2SWIG:
                     add_desc = False
 
 
-    def scan_module(self, file):
+    def scan_module(self, module):
         ''' scan python module file and retrieve function definitions '''
-        module = inspect.getmodulename(file)
         # add module entry
         # load module
         try:
+            # resolve is defined in pydoc
             object, name = resolve(module, True)
             #exec('import ' + module)
         except Exception, e:
@@ -1062,10 +1062,10 @@ if __name__ == '__main__':
     p.write(interface_file, type='swig')
     # add some other functions
     p.scan_interface('../src/simuPOP_common.i')
-    p.scan_module('../src/simuOpt.py')
-    p.scan_module('../src/simuUtil.py')
-    p.scan_module('../src/simuRPy.py')
-    p.scan_module('../src/hapMapUtil.py')
+    p.scan_module('simuOpt')
+    p.scan_module('simuUtil')
+    p.scan_module('simuRPy')
+    p.scan_module('hapMapUtil')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     # clear unique name

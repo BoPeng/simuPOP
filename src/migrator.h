@@ -415,5 +415,72 @@ private:
 	bool m_removeEmptySubPops;
 };
 
+
+/// resize subpopulations
+/**
+   This operator resize subpopulations \c subPops to a
+   another size. If \c subPops is ignored, all subpopulations will be resized.
+   If the new size is smaller than the original one, the remaining individuals
+   are discarded. If the new size if greater, individuals will be copied
+   again if propagate is true, and be empty otherwise.
+   <FuncForm>ResizeSubPops</FuncForm>
+ */
+class resizeSubPops : public baseOperator
+{
+
+public:
+	/// resize subpopulations
+	/**
+	 \param newSizes of the specified (or all) subpopulations.
+	 \param subPops subpopulations to be resized. Default to all.
+	 \param propagate if true (default) and the new size if greater than
+	   	the original size, individuals will be copied over.
+	 */
+	resizeSubPops(vectorlu newSizes = vectorlu(), vectoru subPops = vectoru(), bool propagate = true,
+	              int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	              int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+		m_newSizes(newSizes), m_subPops(subPops), m_propagate(propagate)
+	{
+		DBG_FAILIF(!subPops.empty() && subPops.size() != newSizes.size(), ValueError,
+			"Please specify new sizes for each specified subpopulation");
+	}
+
+
+	/// destructor
+	virtual ~resizeSubPops()
+	{
+	}
+
+
+	/// deep copy of a \c resizeSubPops operator
+	virtual baseOperator * clone() const
+	{
+		return new resizeSubPops(*this);
+	}
+
+
+	/// apply a \c resizeSubPops operator
+	virtual bool apply(population & pop);
+
+
+	/// used by Python print function to print out the general information of the \c resizeSubPops operator
+	virtual string __repr__()
+	{
+		return "<simuPOP::resize subpopulations>" ;
+	}
+
+
+private:
+	///
+	vectorlu m_newSizes;
+
+	///
+	vectoru m_subPops;
+
+	///
+	bool m_propagate;
+};
+
 }
 #endif

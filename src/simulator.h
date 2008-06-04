@@ -303,7 +303,7 @@ public:
 		// cur = 5,
 		// end = 6
 		// will go two steps.
-		return evolve(ops, preOps, postOps, - 1, steps, dryrun);
+		return evolve(ops, preOps, postOps, -1, steps, dryrun);
 	}
 
 
@@ -330,8 +330,8 @@ public:
 	 \c evolve() function will \em not check if they are active.
 	 \param gen generations to evolve. Default to \c -1. In this case, there
 	   is no ending generation and a simulator will only be ended by a
-	   terminator. Note that simu.gen() refers to the begining of a 
-	   generation, and starts at 0.	 
+	   terminator. Note that simu.gen() refers to the begining of a
+	   generation, and starts at 0.
 	 \param dryrun dryrun mode. Default to \c False.
 	 \result True if evolution performed successfully.
 	 \sa simulator::step()

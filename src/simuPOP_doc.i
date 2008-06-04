@@ -209,7 +209,7 @@ Description:
 Usage:
 
     affectionTagger(code=[], begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, stage=PostMating, output=\"\",
+      rep=REP_ALL, grp=GRP_ALL, stage=PostMating, output=\">\",
       outputExpr=\"\", infoFields=[])
 
 Arguments:
@@ -3592,10 +3592,6 @@ Usage:
 
 %ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
 
-%ignore simuPOP::individual::shallowCopied() const;
-
-%ignore simuPOP::individual::setShallowCopied(bool shallowCopied);
-
 %ignore simuPOP::individual::display(ostream &out, int width=1, const vectori &chrom=vectori(), const vectori &loci=vectori());
 
 %feature("docstring") simuPOP::IndividualIterator "
@@ -3972,7 +3968,7 @@ Description:
 Usage:
 
     infoTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, stage=PostMating, output=\"\", outputExpr=\"\",
+      grp=GRP_ALL, stage=PostMating, output=\">\", outputExpr=\"\",
       infoFields=[])
 
 "; 
@@ -8126,10 +8122,9 @@ Description:
 
 Usage:
 
-    population(size=0, ploidy=2, loci=[], sexChrom=False,
-      lociPos=[], subPop=[], ancestralDepth=0, chromNames=[],
-      alleleNames=[], lociNames=[], maxAllele=ModuleMaxAllele,
-      infoFields=[])
+    population(size=[], ploidy=2, loci=[], sexChrom=False,
+      lociPos=[], ancestralDepth=0, chromNames=[], alleleNames=[],
+      lociNames=[], maxAllele=ModuleMaxAllele, infoFields=[])
 
 Arguments:
 
@@ -8345,6 +8340,10 @@ Usage:
 
 "; 
 
+%ignore simuPOP::population::validate(const string &msg) const ;
+
+%ignore simuPOP::population::fitSubPopStru(const vectorlu &newSubPopSizes);
+
 %ignore simuPOP::population::hasActivatedVirtualSubPop() const;
 
 %ignore simuPOP::population::hasActivatedVirtualSubPop(SubPopID subPop) const ;
@@ -8451,16 +8450,12 @@ Description:
 
 Usage:
 
-    x.setSubPopStru(newSubPopSizes, allowPopSizeChange=False)
+    x.setSubPopStru(newSubPopSizes)
 
 Arguments:
 
-    newSubPopSizes: an array of new subpopulation sizes. The
-                    population may or may not change according to
-                    parameter allowPopSizeChange if the sum of
-                    subPopSize does not match popSize.
-    allowPopSizeChange:if this parameter is True,  population will be
-                    resized.
+    newSubPopSizes: an array of new subpopulation sizes. The overall
+                    population size should not changed.
 
 "; 
 
@@ -8677,13 +8672,9 @@ Usage:
 
 %ignore simuPOP::population::ind(ULONG ind, UINT subPop=0) const ;
 
-%ignore simuPOP::population::shallowCopied();
+%ignore simuPOP::population::indOrdered();
 
-%ignore simuPOP::population::setShallowCopied(bool s);
-
-%ignore simuPOP::population::infoOrdered() const;
-
-%ignore simuPOP::population::setInfoOrdered(bool s);
+%ignore simuPOP::population::setIndOrdered(bool s);
 
 %ignore simuPOP::population::indBegin();
 
@@ -9297,8 +9288,6 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::clearInfoValues();
-
 %feature("docstring") simuPOP::population::setIndInfo "
 
 Description:
@@ -9307,14 +9296,13 @@ Description:
 
 Usage:
 
-    x.setIndInfo(values, idx, order=True)
+    x.setIndInfo(values, idx)
 
 Arguments:
 
     values:         an array that has the same length as  population
                     size.
     idx:            index to the information field.
-    order:          if true, info will be in the order of individuals
 
 "; 
 
@@ -9326,7 +9314,7 @@ Description:
 
 Usage:
 
-    x.setIndInfo(values, name, order=True)
+    x.setIndInfo(values, name)
 
 Details:
 
@@ -9335,9 +9323,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::infoBegin(UINT idx, bool order);
+%ignore simuPOP::population::infoBegin(UINT idx);
 
-%ignore simuPOP::population::infoEnd(UINT idx, bool order);
+%ignore simuPOP::population::infoEnd(UINT idx);
 
 %feature("docstring") simuPOP::population::indInfo "
 
@@ -9347,12 +9335,11 @@ Description:
 
 Usage:
 
-    x.indInfo(idx, order)
+    x.indInfo(idx)
 
 Arguments:
 
     idx:            index of the information field
-    order:          if true, sort returned vector in  individual order
 
 "; 
 
@@ -9364,12 +9351,11 @@ Description:
 
 Usage:
 
-    x.indInfo(name, order)
+    x.indInfo(name)
 
 Arguments:
 
     name:           name of the information field
-    order:          if true, sort returned vector in  individual order
 
 "; 
 
@@ -9382,13 +9368,12 @@ Description:
 
 Usage:
 
-    x.indInfo(idx, subPop, order)
+    x.indInfo(idx, subPop)
 
 Arguments:
 
     idx:            index of the information field
     subPop:         subpopulation index
-    order:          if true, sort returned vector in  individual order
 
 "; 
 
@@ -9401,52 +9386,12 @@ Description:
 
 Usage:
 
-    x.indInfo(name, subPop, order)
+    x.indInfo(name, subPop)
 
 Arguments:
 
     name:           name of the information field
     subPop:         subpopulation index
-    order:          if true, sort returned vector in  individual order
-
-"; 
-
-%feature("docstring") simuPOP::population::arrIndInfo "
-
-Description:
-
-    get an editable array (Python list) of all information fields
-
-Usage:
-
-    x.arrIndInfo(order)
-
-Details:
-
-    The length of the array is  infoSize()*popSize().
-
-Arguments:
-
-    order:          whether or not the list has the same order as
-                    individuals
-
-"; 
-
-%feature("docstring") simuPOP::population::arrIndInfo "
-
-Description:
-
-    get an editable array (Python list) of all information fields in
-    subPop
-
-Usage:
-
-    x.arrIndInfo(subPop, order)
-
-Arguments:
-
-    order:          whether or not the list has the same order as
-                    individuals
 
 "; 
 
@@ -9542,9 +9487,7 @@ Arguments:
 
 %ignore simuPOP::population::equalTo(const population &rhs);
 
-%ignore simuPOP::population::adjustGenoPosition(bool order);
-
-%ignore simuPOP::population::adjustInfoPosition(bool order);
+%ignore simuPOP::population::sortIndividuals(bool infoOnly=false);
 
 %feature("docstring") simuPOP::population::savePopulation "
 
@@ -12250,6 +12193,94 @@ Usage:
 
 %ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
+%feature("docstring") simuPOP::resizeSubPops "
+
+Description:
+
+    resize subpopulations
+
+Details:
+
+    This operator resize subpopulations subPops to a another size. If
+    subPops is ignored, all subpopulations will be resized. If the new
+    size is smaller than the original one, the remaining individuals
+    are discarded. If the new size if greater, individuals will be
+    copied again if propagate is true, and be empty otherwise.
+    <FuncForm>ResizeSubPops</FuncForm>
+
+"; 
+
+%feature("docstring") simuPOP::resizeSubPops::resizeSubPops "
+
+Description:
+
+    resize subpopulations
+
+Usage:
+
+    resizeSubPops(newSizes=[], subPops=[], propagate=True,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
+
+Arguments:
+
+    newSizes:       of the specified (or all) subpopulations.
+    subPops:        subpopulations to be resized. Default to all.
+    propagate:      if true (default) and the new size if greater than
+                    the original size, individuals will be copied
+                    over.
+
+"; 
+
+%feature("docstring") simuPOP::resizeSubPops::~resizeSubPops "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~resizeSubPops()
+
+"; 
+
+%feature("docstring") simuPOP::resizeSubPops::clone "
+
+Description:
+
+    deep copy of a  resizeSubPops operator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::resizeSubPops::apply "
+
+Description:
+
+    apply a  resizeSubPops operator
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::resizeSubPops::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the  resizeSubPops operator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
 %feature("docstring") simuPOP::RNG "
 
 Description:
@@ -13216,7 +13247,7 @@ Description:
 Usage:
 
     sexTagger(code=[], begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, stage=PostMating, output=\"\", outputExpr=\"\",
+      grp=GRP_ALL, stage=PostMating, output=\">\", outputExpr=\"\",
       infoFields=[])
 
 Arguments:
@@ -16054,8 +16085,8 @@ Description:
 Usage:
 
     ForwardFreqTrajectory(curGen=0, endGen=0, curFreq=[], freq=[],
-      N=[], NtFunc=None, fitness=[], fitnessFunc=None, ploidy=2,
-      maxAttempts=1000)
+      N=[], NtFunc=None, fitness=[], fitnessFunc=None, migrRate=0,
+      ploidy=2, maxAttempts=1000)
 
 "; 
 
