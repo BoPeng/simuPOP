@@ -1062,14 +1062,16 @@ def writeMapFile(pop, par):
     file.close()
 
 
-def calcMeanLD(LDFile, mapFile, width=10, maxDist=500):
+def calcMeanLD(LDFile, mapFile, width=10, dist=.7):
     '''Calculate mean LD (D') for each distance (each kb). This will
     only be called if the -dprime parameter of haploview is
     given so a LD file is saved to disk.
     LDFile: haploview generated LD file
     mapFile: markers.lst produced by this script
     width: width of the bins of distances, default to 10kb
-    maxDist: maximum distance.
+    dist: Only LD between markers within this distance is summarized,
+        specified as the percentage of the distance between the first
+        and last markers.
     '''
     map = []
     file = open(mapFile)
@@ -1077,6 +1079,7 @@ def calcMeanLD(LDFile, mapFile, width=10, maxDist=500):
     for line in file.readlines():
         fields = line.split()
         map.append(int(float(fields[2])*1000000))
+    maxDist = dist * (map[-1] - map[0]) / 1000.
     #
     ld = {}
     file = open(LDFile)
@@ -1173,15 +1176,19 @@ def getOperators(pop, par, progress=False, vsp=False, visualization=False, mutat
         if vsp:
             exp.append('VSP=%s')
             var.append('virtualPopSize')
+        if pop.dvars().stage == 'expand':
+            keyGens = [par.initGen - 1, -1]
+        elif pop.dvars().stage == 'mix':
+            keyGens = [par.migrGen - 1, -1]
         ops.extend([
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
                 step = par.step, stage=PreMating),
             pyEval(r'"At the beginning of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % preGen),
                 step=par.step, stage=PreMating),
             stat(popSize = True, alleleFreq = par.ctrlLociIdx, Fst = range(pop.totNumLoci()),
-                at = [par.initGen - 1, -1]),
+                at = keyGens),
             pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % postGen),
-                at = [par.initGen - 1, -1])
+                at = keyGens)
         ])
     if visualization and par.drawLDPlot and par.figureStep > 0 \
         and len(par.ldRegions) > 0:
