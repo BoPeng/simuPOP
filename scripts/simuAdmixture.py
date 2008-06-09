@@ -391,7 +391,7 @@ options = [
     #
     {'separator': 'Mutation, recombination, etc'},
     {'longarg': 'mutaRate=',
-     'default': 2e-6,
+     'default': 2.2e-6,
      'useDefault': True,
      'label': 'Mutation rate',
      'allowedTypes': [IntType, FloatType],
@@ -753,7 +753,7 @@ class admixtureParams:
             haploview='haploview', ldRegions=[0, 1000], 
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
-            minDist=0, mutaRate=2e-6, recMap='genetic', recIntensity=0.01,
+            minDist=0, mutaRate=2.2e-6, recMap='genetic', recIntensity=0.01,
             convProb=0, convMode='Tract length', convParam=0.02, 
             forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
