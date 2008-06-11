@@ -37,9 +37,29 @@ namespace simuPOP {
 
 const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
 
-pedigree::pedigree(const string & pedfile)
-	: m_numParents(0)
+#define CHECK_PARENTAL() DBG_FAILIF(m_numParents != 2, ValueError, \
+		"Only pedigree with two parents have paternal information")
+
+#define CHECK_GEN(gen) DBG_FAILIF(gen >= m_maternal.size(), IndexError, \
+		"Generation number " + toStr(gen) + " out of range (<" \
+		+ toStr(m_maternal.size()) + ")")
+	
+#define CHECK_INDEX(gen, idx) DBG_FAILIF(idx >= m_maternal[gen].size(), \
+		IndexError,	"Individual index out of range.")
+
+#define CHECK_SUBPOP(gen, subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= m_pedSize[gen].size(), \
+		IndexError,	"Subpopulation index out of bound")
+
+#define CHECK_SUBPOP_INDEX(gen, subPop, idx) DBG_FAILIF(idx >= m_pedSize[gen][subPop], \
+		IndexError, "Individual index out of bound")
+
+
+pedigree::pedigree(int numParents, const string & pedfile)
+	: m_numParents(numParents)
 {
+	DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
+		"Individuals in a pedigree can have one or two parents");
+
 	if (!pedfile.empty())
 		load(pedfile);
 }
@@ -47,33 +67,30 @@ pedigree::pedigree(const string & pedfile)
 
 ULONG pedigree::father(ULONG gen, ULONG idx)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
-		"Father index out of bound");
+	CHECK_PARENTAL();
+	CHECK_GEN(gen);
+	CHECK_INDEX(gen, idx);
+
 	return m_paternal[gen][idx];
 }
 
 
 ULONG pedigree::mother(ULONG gen, ULONG idx)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_maternal[gen].size(), IndexError,
-		"Mother index out of bound");
+	CHECK_GEN(gen);
+	CHECK_INDEX(gen, idx);
+
 	return m_maternal[gen][idx];
 }
 
 
 ULONG pedigree::father(ULONG gen, SubPopID subPop, ULONG idx)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		"Father index out of bound");
+	CHECK_PARENTAL();
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+	CHECK_SUBPOP_INDEX(gen, subPop, idx);
+
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -83,11 +100,10 @@ ULONG pedigree::father(ULONG gen, SubPopID subPop, ULONG idx)
 
 ULONG pedigree::mother(ULONG gen, SubPopID subPop, ULONG idx)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		"Mother index out of bound");
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+	CHECK_SUBPOP_INDEX(gen, subPop, idx);
+
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -97,46 +113,33 @@ ULONG pedigree::mother(ULONG gen, SubPopID subPop, ULONG idx)
 
 void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
-		"Father index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_paternal[gen - 1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	CHECK_PARENTAL();
+	CHECK_GEN(gen);
+	CHECK_INDEX(gen, idx);
+	CHECK_INDEX(gen + 1, parent);
+
 	m_paternal[gen][idx] = parent;
 }
 
 
 void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
+	CHECK_GEN(gen);
+	CHECK_INDEX(gen, idx);
+	CHECK_INDEX(gen + 1, parent);
 
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_maternal[gen].size(), IndexError,
-		"Mother index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_maternal[gen - 1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
 	m_maternal[gen][idx] = parent;
 }
 
 
 void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		"Father index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_paternal[gen - 1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	CHECK_PARENTAL();
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+	CHECK_SUBPOP_INDEX(gen, subPop, idx);
+	CHECK_INDEX(gen + 1, parent);
+	
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -146,15 +149,11 @@ void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 
 void pedigree::setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		"Mother index out of bound");
-	DBG_FAILIF(gen >= 1 && parent >= m_maternal[gen - 1].size(),
-		IndexError, "Given parent index is out of bound of the parental population");
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+	CHECK_SUBPOP_INDEX(gen, subPop, idx);
+	CHECK_INDEX(gen + 1, parent);
+
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -164,11 +163,9 @@ void pedigree::setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 
 double pedigree::info(ULONG gen, ULONG idx, const string & name)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
-		"Father index out of bound");
+	CHECK_GEN(gen);
+	CHECK_INDEX(gen, idx);
+
 	for (size_t i = 0; i < m_infoNames.size(); ++i)
 		if (m_infoNames[i] == name)
 			return m_info[gen][idx][i];
@@ -179,9 +176,8 @@ double pedigree::info(ULONG gen, ULONG idx, const string & name)
 
 vectorf pedigree::info(ULONG gen, const string & name)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
+	CHECK_GEN(gen);
+
 	int idx = -1;
 	for (size_t i = 0; i < m_infoNames.size(); ++i)
 		if (m_infoNames[i] == name)
@@ -197,11 +193,10 @@ vectorf pedigree::info(ULONG gen, const string & name)
 
 double pedigree::info(ULONG gen, SubPopID subPop, ULONG idx, const string & name)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		"Father index out of bound");
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+	CHECK_SUBPOP_INDEX(gen, subPop, idx);
+
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -215,13 +210,9 @@ double pedigree::info(ULONG gen, SubPopID subPop, ULONG idx, const string & name
 
 void pedigree::setInfo(double info, ULONG gen, ULONG idx, const string & name)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_paternal[gen].size(), IndexError,
-		"Father index out of bound");
+	CHECK_GEN(gen);
+	CHECK_INDEX(gen, idx);
+
 	for (size_t i = 0; i < m_infoNames.size(); ++i)
 		if (m_infoNames[i] == name) {
 			m_info[gen][idx][i] = info;
@@ -233,13 +224,10 @@ void pedigree::setInfo(double info, ULONG gen, ULONG idx, const string & name)
 
 void pedigree::setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const string & name)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(idx >= m_pedSize[gen][subPop], IndexError,
-		"Father index out of bound");
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+	CHECK_SUBPOP_INDEX(gen, subPop, idx);
+
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];
@@ -254,29 +242,22 @@ void pedigree::setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const
 
 vectorlu pedigree::subPopSizes(ULONG gen)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
+	CHECK_GEN(gen);
 	return m_pedSize[gen];
 }
 
 
 ULONG pedigree::subPopSize(ULONG gen, SubPopID subPop)
 {
-	DBG_FAILIF(gen >= m_paternal.size(), IndexError,
-		"Generation number " + toStr(gen) + " out of bound (<"
-		+ toStr(m_paternal.size()) + ")");
-	DBG_FAILIF(static_cast<size_t>(subPop) >= m_pedSize[gen].size(), IndexError,
-		"SubPop index out of bound");
+	CHECK_GEN(gen);
+	CHECK_SUBPOP(gen, subPop);
+
 	return m_pedSize[gen][subPop];
 }
 
 
 void pedigree::addGen(const vectorlu & sizes)
 {
-	DBG_FAILIF(m_numParents == 0, ValueError,
-		"Please set number of parents before change the pedigree");
-
 	ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
 	m_paternal.push_back(vectorlu(popSize));
 	if (m_numParents == 2)
