@@ -947,7 +947,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 						pedAffected++;
 				}
 			}
-			if (pedSize > m_minPedSize && pedAffected > m_minAffected)
+			if (pedSize >= m_minPedSize && pedAffected >= m_minAffected)
 				m_validPedigrees[sp].push_back(boost::tie(i, pedSize));
 		}
 		nPed += m_validPedigrees[sp].size();
