@@ -1093,7 +1093,7 @@ def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
     #
     # get unique pedgree id numbers
     from sets import Set
-    peds = Set(pop.indInfo('pedindex', False))
+    peds = Set(pop.indInfo('pedindex'))
     # do not count peds
     peds.discard(-1)
     if len(peds) == 0:
@@ -1274,7 +1274,7 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
     # get unique pedgree id numbers
     from sets import Set
     if pop.hasInfoField('pedindex') and pop.ancestralDepth() >= 1:
-        peds = Set(pop.indInfo('pedindex', False))
+        peds = Set(pop.indInfo('pedindex'))
         # do not count peds
         peds.discard(-1)
         if len(peds) == 0:
