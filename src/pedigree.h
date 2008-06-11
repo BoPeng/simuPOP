@@ -25,13 +25,31 @@
 #define _PEDIGREE_H
 /**
  \file
- \brief head file of class mating and its subclasses
+ \brief head file of class pedigree
  */
 #include "utility.h"
 
 namespace simuPOP {
 
 /// A pedigree manipulation class
+/**
+A pedigree has all the pedigree information that is needed to look at parent
+offspring relationship in a multi-generation population.
+
+Conceptually, there are n generations with the latest generation being
+generation 0. The number of generations (c.f. gen()) is the number of
+parental generations plus 1. Therefore, each individual can be identified
+by (gen, idx).
+
+Each individual can have a few properties
+1. mother (c.f. mother())
+2. father (c.f. father(), optional because a pedigree can have only one sex)
+3. subpopulation (if subpopulation structure is given)
+4. sex (c.f. info('sex'))
+5. affection (c.f. info('affection')
+6. arbitrary information fields (c.f. info())
+
+*/
 class pedigree
 {
 private:
@@ -41,7 +59,7 @@ private:
 	/// Because pedigree can be large, it makes sense to treat
 	/// them separately.
 
-	typedef vector<vectorlu > Pedigree;
+	typedef vector<vectorlu> Pedigree;
 	// pedigree subpopulation size information ...
 	typedef Pedigree PedSize;
 	typedef vector<vector<vectorf> > PedInfo;
@@ -49,7 +67,7 @@ private:
 public:
 	/// create a pedigree. If a filename \c pedfile is given, the pedgree
 	/// will be loaded from this file.
-	pedigree(const string & pedfile = string());
+	pedigree(int numParents = 2, const string & pedfile = string());
 
 	/// population size at generation \c gen
 	ULONG popSize(ULONG gen)
@@ -65,15 +83,6 @@ public:
 	UINT numParents()
 	{
 		return m_numParents;
-	}
-
-
-	/// Set the number of parents for each individual
-	void setNumParents(int numParents)
-	{
-		DBG_ASSERT(numParents == 1 || numParents == 2, ValueError,
-			"Number of parents has to be 1 or 2");
-		m_numParents = numParents;
 	}
 
 
