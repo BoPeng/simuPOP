@@ -426,6 +426,12 @@ def Dump(pop, *args, **kwargs):
 if dumper.__init__.__doc__ is not None:
 	Dump.__doc__ = "Function version of operator dump whose __init__ function is \n" + dumper.__init__.__doc__
 
+def InitSex(pop, *args, **kwargs):
+    initSex(*args, **kwargs).apply(pop)
+
+if initSex.__init__.__doc__ is not None:
+	InitSex.__doc__ = "Function version of operator initSex whose __init__ function is \n" + initSex.__init__.__doc__
+
 def InitByFreq(pop, *args, **kwargs):
     initByFreq(*args, **kwargs).apply(pop)
 

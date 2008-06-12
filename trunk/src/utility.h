@@ -1025,6 +1025,7 @@ private:
 	unsigned long m_seed;
 };
 
+
 // weighted sampling using Walker's alias algorithm
 class Weightedsampler
 {
