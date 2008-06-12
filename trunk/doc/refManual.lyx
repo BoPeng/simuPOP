@@ -6034,65 +6034,32 @@ status open
 initializerRef
 \end_layout
 
-\end_inset
+\begin_layout Standard
 
 
+\backslash
+initSexRef
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 initByFreqRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 initByValueRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 spreadRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 pyInitRef

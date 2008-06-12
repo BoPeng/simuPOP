@@ -126,6 +126,8 @@ protected:
 /** An operator to initialize individual sex. For convenience, this
 operator is included by other initializers such as initByFreq, initByValue,
 or pyInit.
+<funcForm>InitSex</funcForm>
+
 */
 class initSex : public initializer
 {
