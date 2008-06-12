@@ -91,70 +91,169 @@ bool migrator::apply(population & pop)
 	// set info of individual
 	pop.setIndSubPopIDWithID();
 
-	vectorlu toIndices(0);
+	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), ValueError,
+		"Migration can not be applied to virtual subpopulations");
 
-	Weightedsampler ws(rng());
 
 	for (UINT from = 0, fromEnd = m_from.size(); from < fromEnd; ++from) {
 		UINT spFrom = m_from[from];
 		// rateSize might be toSize + 1, the last one is from->from
-		UINT toSize = m_to.size(), toIndex;
+		UINT toSize = m_to.size();
+		UINT toIndex;
 
 		// m_from out of range.... ignore.
 		if (spFrom >= pop.numSubPop() )
 			continue;
 
-		if (m_mode == MigrByProbability) {                // migrate by probability
-			ws.set(m_rate[from]);
+		if (m_mode == MigrByProbability) {
+			if (m_maleRatio.empty()) {                // migrate by probability
+				Weightedsampler ws(rng(), m_rate[from]);
 
-			// for each individual, migrate according to migration probability
-			for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind) {
-				//toIndex = rng().randIntByFreq( rateSize, &m_rate[from][0] ) ;
-				toIndex = ws.get();
+				// for each individual, migrate according to migration probability
+				for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind) {
+					//toIndex = rng().randIntByFreq( rateSize, &m_rate[from][0] ) ;
+					toIndex = ws.get();
 
-				DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
-					"Return index out of range.");
+					DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
+						"Return index out of range.");
 
-				// rateSize==toSize (no i->i addition)
-				//   toIndex < toSize
-				// rateSize = toSize + 1, ignore i->1 (last one)
-				//  toIndex < toSize
-				if (toIndex < toSize && m_to[toIndex] != spFrom)
-					ind->setSubPopID(m_to[toIndex]);
+					// rateSize==toSize (no i->i addition)
+					//   toIndex < toSize
+					// rateSize = toSize + 1, ignore i->1 (last one)
+					//  toIndex < toSize
+					if (toIndex < toSize && m_to[toIndex] != spFrom)
+						ind->setSubPopID(m_to[toIndex]);
+				}
+			} else {
+				// male and female will have different probability
+				vectorf maleRate = m_rate[from];
+				vectorf femaleRate = m_rate[from];
+				//
+				double maleMigr = 0;
+				double femaleMigr = 0;
+				for (size_t i = 0; i < maleRate.size(); ++i) {
+					if (i == from)
+						continue;
+					maleRate[i] *= m_maleRatio[from][i];
+					femaleRate[i] *= 1 - m_maleRatio[from][i];
+					maleMigr += maleRate[i];
+					femaleMigr += femaleRate[i];
+				}
+				maleRate[from] = 1. - maleMigr;
+				femaleRate[from] = 1. - femaleMigr;
+				
+				Weightedsampler ws(rng(), maleRate);
+				Weightedsampler fws(rng(), femaleRate);
+
+				// for each individual, migrate according to migration probability
+				for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind) {
+					//toIndex = rng().randIntByFreq( rateSize, &m_rate[from][0] ) ;
+					if (ind->sex() == Male)
+						toIndex = ws.get();
+					else
+						toIndex = fws.get();
+
+					DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
+						"Return index out of range.");
+
+					// rateSize==toSize (no i->i addition)
+					//   toIndex < toSize
+					// rateSize = toSize + 1, ignore i->1 (last one)
+					//  toIndex < toSize
+					if (toIndex < toSize && m_to[toIndex] != spFrom)
+						ind->setSubPopID(m_to[toIndex]);
+				}
 			}
 			continue;
 		}
 
-		// 2nd, or 3rd method
-		// first find out how many people will move to other subPop
-		// then randomly assign individuals to move
-		vectorlu toNum(toSize);
-		ULONG spSize = pop.subPopSize(spFrom);
-		if (m_mode == MigrByProportion) {
-			for (UINT i = 0; i < toSize; ++i)
-				toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
-		} else {                                                                  // by count
-			for (UINT i = 0; i < toSize; ++i)
-				toNum[i] = static_cast<ULONG>(m_rate[from][i]);
+		if (m_maleRatio.empty()) {
+			// 2nd, or 3rd method
+			// first find out how many people will move to other subPop
+			// then randomly assign individuals to move
+			vectorlu toNum(toSize);
+			ULONG spSize = pop.subPopSize(spFrom);
+			if (m_mode == MigrByProportion) {
+				for (UINT i = 0; i < toSize; ++i)
+					toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
+			} else {                                                                  // by count
+				for (UINT i = 0; i < toSize; ++i)
+					toNum[i] = static_cast<ULONG>(m_rate[from][i]);
+			}
+			// create a vector and assign indexes, then random shuffle
+			// and assign info
+			vectorlu toIndices(spSize);
+			UINT k = 0;
+			for (UINT i = 0; i < toSize && k < spSize; ++i)
+				for (UINT j = 0; j < toNum[i] && k < spSize; ++j)
+					toIndices[k++] = m_to[i];
+
+			while (k < spSize)
+				toIndices[k++] = spFrom;
+
+			random_shuffle(toIndices.begin(), toIndices.end());
+			IndIterator ind = pop.indBegin(spFrom);
+			// set info
+			for (UINT i = 0; ind.valid(); ++i, ++ind)
+				// SubPopID is signed short, to save a few bits
+				ind->setSubPopID(static_cast<SubPopID>(toIndices[i]));
+		} else {
+			vectorlu toMale(toSize);
+			vectorlu toFemale(toSize);
+			ULONG spSize = pop.subPopSize(spFrom);
+			if (m_mode == MigrByProportion) {
+				for (UINT i = 0; i < toSize; ++i) {
+					toMale[i] = static_cast<ULONG>(spSize * m_rate[from][i] * m_maleRatio[from][i]);
+					toFemale[i] = static_cast<ULONG>(spSize * m_rate[from][i] * (1 - m_maleRatio[from][i]));
+				}
+			} else {                                                                  // by count
+				for (UINT i = 0; i < toSize; ++i) {
+					toMale[i] = static_cast<ULONG>(m_rate[from][i] * m_maleRatio[from][i]);
+					toFemale[i] = static_cast<ULONG>(m_rate[from][i] * (1 - m_maleRatio[from][i]));
+				}
+			}
+			// count number of males and females
+			ULONG numMale = 0;
+			IndIterator ind = pop.indBegin(spFrom);
+			for (; ind.valid(); ++ind)
+				if (ind->sex() == Male)
+					numMale++;
+			ULONG numFemale = spSize - numMale;
+			
+			// create a vector and assign indexes, then random shuffle
+			// and assign info
+			vectorlu toMaleIndices(numMale);
+			vectorlu toFemaleIndices(numFemale);
+			UINT kMale = 0;
+			UINT kFemale = 0;
+			// for each to subpopulation
+			for (UINT i = 0; i < toSize; ++i) {
+				// assign toMale[i] individuals...
+				for (UINT j = 0; j < toMale[i] && kMale < numMale; ++j)
+					toMaleIndices[kMale++] = m_to[i];
+				for (UINT j = 0; j < toFemale[i] && kFemale < numFemale; ++j)
+					toFemaleIndices[kFemale++] = m_to[i];
+			}
+
+			while (kMale < spSize)
+				toMaleIndices[kMale++] = spFrom;
+			while (kFemale < spSize)
+				toFemaleIndices[kFemale++] = spFrom;
+
+			random_shuffle(toMaleIndices.begin(), toMaleIndices.end());
+			random_shuffle(toFemaleIndices.begin(), toFemaleIndices.end());
+			// set info
+			ind = pop.indBegin(spFrom);
+			for (UINT iM = 0, iF = 0; ind.valid(); ++ind) {
+				if (ind->sex() == Male)
+					// SubPopID is signed short, to save a few bits
+					ind->setSubPopID(static_cast<SubPopID>(toMaleIndices[iM++]));
+				else
+					ind->setSubPopID(static_cast<SubPopID>(toFemaleIndices[iF++]));
+			}
+
 		}
-		// create a vector and assign indexes, then random shuffle
-		// and assign info
-		toIndices.resize(spSize);
-		UINT k = 0;
-		for (UINT i = 0; i < toSize && k < spSize; ++i)
-			for (UINT j = 0; j < toNum[i] && k < spSize; ++j)
-				toIndices[k++] = m_to[i];
-
-		while (k < spSize)
-			toIndices[k++] = spFrom;
-
-		random_shuffle(toIndices.begin(), toIndices.end());
-		IndIterator ind = pop.indBegin(spFrom);
-		// set info
-		for (UINT i = 0; i < spSize; ++i)
-			// SubPopID is signed short, to save a few bits
-			(ind + i)->setSubPopID(static_cast<SubPopID>(toIndices[i]));
-	}                                                                                         /// for all subPop.
+	} /// for all subPop.
 
 	// do migration.
 	// true: rearrange individuals
