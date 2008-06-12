@@ -270,5 +270,24 @@ class TestInitialization(unittest.TestCase):
                         gt.append(initAllele(x, p, sp))
             self.assertGenotype(pop, gt, subPop=[sp])
         
+    def testInitSex(self):
+        'Testing operator initSex'
+        #
+        pop = population(size=[500, 1000], loci=[1])
+        InitSex(pop, sex=[Male, Female, Female])
+        for sp in range(2):
+            for idx, ind in enumerate(pop.individuals(sp)):
+                if idx % 3 == 0:
+                    self.assertEqual(ind.sex(), Male)
+                else:
+                    self.assertEqual(ind.sex(), Female)
+        #
+        InitSex(pop, maleFreq=0.3)
+        count = 0
+        for ind in pop.individuals():
+            if ind.sex() == Male:
+                count += 1
+        assert count * 1.0 / 1500 > 0.25 and count * 1.0 /1500 < 0.35
+
 if __name__ == '__main__':
     unittest.main()
