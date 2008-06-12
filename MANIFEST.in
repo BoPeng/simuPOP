@@ -202,6 +202,7 @@ include gsl/cdf/gamma.c
 
 
 # bundled scripts
+include scripts/loadHapMap.py
 include scripts/simuViewPop.py
 include scripts/simuCDCV.py
 include scripts/simuLDDecay.py
