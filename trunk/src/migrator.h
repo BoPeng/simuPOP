@@ -75,6 +75,9 @@ public:
 	 \param rate migration rate, can be a proportion or counted number. Determined by
 	   	parameter \c mode. \c rate should be an m by n matrix. If a number is given,
 	   	the migration rate will be a \c m by \c n matrix of value \c r
+	 \param maleRatio A matrix with the same dimension as \c rate that controlls the
+	    ratio of males among migrants. This parameter is by default empty, meaning
+		sex information is ignored.
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
 	 \param fromSubPop an array of 'from' subpopulations. Default to all. If a single subpopulation
 	   	is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt> is equvalent to \c a.
@@ -95,10 +98,11 @@ public:
 	 */
 	migrator(const matrix & rate, int mode = MigrByProbability,
 	         vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
+			 const matrix & maleRatio = matrix(),
 	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
-		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
+		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop), m_maleRatio(maleRatio)
 	{
 		// when migrator is constructed from a pyMigrator, initial
 		// rate is empty
@@ -109,6 +113,10 @@ public:
 			DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
 				ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
+			DBG_FAILIF(!m_maleRatio.empty() && ( m_rate.size() != m_maleRatio.size() ||
+				m_rate[0].size() != m_maleRatio[0].size()),
+				ValueError, "If maleRatio is given, it should have the same size as migration rate");
+			
 			setRates(rate, mode);
 		}
 	};
@@ -160,6 +168,8 @@ protected:
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
 	vectoru m_from, m_to;
+
+	matrix m_maleRatio;
 };
 
 /// a more flexible Python migrator
@@ -174,6 +184,7 @@ protected:
  \li <tt>func(ind, genotype)</tt> when \c loci is given.
  \li <tt>func(ind, param)</tt> when \c param is given.
  \li <tt>func(ind, genotype, param)</tt> when both \c loci and \c param are given.
+
  */
 class pyMigrator : public migrator
 {
@@ -192,11 +203,11 @@ public:
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, int mode = MigrByProbability,
 	           vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
-	           PyObject * indFunc = NULL,
+	           PyObject * indFunc = NULL, const matrix & maleRatio = matrix(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, grp, infoFields),
+		: migrator(matrix(), mode, fromSubPop, toSubPop, maleRatio, stage, begin, end, step, at, rep, grp, infoFields),
 		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
 		// carray of python list/typle
