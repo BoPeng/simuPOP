@@ -47,15 +47,32 @@ void initializer::setRanges(population & pop)
 }
 
 
-Sex initializer::nextSex()
+bool initSex::apply(population & pop)
 {
-	DBG_ASSERT(*m_sexItr == int (Male) || *m_sexItr == int (Female),
-		ValueError, "sex must be array of Male or Female. "
-		+ toStr(*m_sexItr) + " given.");
-	Sex s = *m_sexItr++ == 1 ? Male : Female;
-	if (m_sexItr == m_sex.end())
-		m_sexItr = m_sex.begin();
-	return s;
+	setRanges(pop);
+
+	for (size_t rg = 0; rg < m_ranges.size(); ++rg) {
+		ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
+
+		// call randUnif once for each individual
+		// (initialize allele need to call randUnif for each locus
+		if (m_sex.empty()) {
+			for (ULONG ind = left; ind != right; ++ind) {
+				if (rng().randUniform01() < m_maleFreq)
+					pop.ind(ind).setSex(Male);
+				else
+					pop.ind(ind).setSex(Female);
+			}
+		} else {
+			vectori::iterator sexIter = m_sex.begin();
+			for (ULONG ind = left; ind != right; ++ind, ++sexIter) {
+				if (sexIter == m_sex.end())
+					sexIter = m_sex.begin();
+				pop.ind(ind).setSex(*sexIter == 1 ? Male : Female);
+			}
+		}
+	}
+	return true;
 }
 
 
@@ -63,8 +80,6 @@ bool initByFreq::apply(population & pop)
 {
 	/// initialize m_ranges
 	setRanges(pop);
-
-	initSexIter();
 
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != m_ranges.size(),
 		ValueError, "Ranges and values should have the same length");
@@ -143,30 +158,13 @@ bool initByFreq::apply(population & pop)
 				}
 			}
 		}
-		// initialize sex
-		// call randUnif once for each individual
-		// (initialize allele need to call randUnif for each locus
-		if (m_sex.empty()) {
-			for (ULONG ind = left; ind != right; ++ind) {
-				if (rng().randUniform01() < m_maleFreq)
-					pop.ind(ind).setSex(Male);
-				else
-					pop.ind(ind).setSex(Female);
-			}
-		} else {                                                                  // use provided sex array
-			for (ULONG ind = left; ind != right; ++ind) {
-				pop.ind(ind).setSex(nextSex());
-			}
-		}                                                                                           // set sex
 	}                                                                                               // range
-	return true;
+	return initSex::apply(pop);
 }
 
 
 bool initByValue::apply(population & pop)
 {
-
-	initSexIter();
 
 	for (size_t i = 0; i < m_value.size(); ++i) {
 		// extend m_value
@@ -251,14 +249,6 @@ bool initByValue::apply(population & pop)
 							  m_atLoci[loc % lociSz] + loc / lociSz * totNumLoci) = src[loc];
 					}
 				}
-				if (m_sex.empty()) {
-					if (rng().randUniform01() < m_maleFreq)
-						pop.ind(ind).setSex(Male);
-					else
-						pop.ind(ind).setSex(Female);
-				} else {
-					pop.ind(ind).setSex(nextSex() );
-				}                                                                 // set sex
 			}
 		}
 	} else {                                                                          // use proportion.
@@ -326,26 +316,15 @@ bool initByValue::apply(population & pop)
 						}
 					}
 				}
-				if (m_sex.empty()) {
-					if (rng().randUniform01() < m_maleFreq)
-						pop.ind(ind).setSex(Male);
-					else
-						pop.ind(ind).setSex(Female);
-				} else {
-					pop.ind(ind).setSex(nextSex() );
-				}                                                                 // set sex
 			}
 		}
-
 	}
-	return true;
+	return initSex::apply(pop);
 }
 
 
 bool pyInit::apply(population & pop)
 {
-	this->initSexIter();
-
 	for (UINT al = 0, alEnd = pop.totNumLoci(); al < alEnd; ++al) {
 		for (UINT sp = 0, numSP = pop.numSubPop(); sp < numSP; ++sp) {
 			for (ULONG it = 0, itEnd = pop.subPopSize(sp); it < itEnd; ++it) {
@@ -357,22 +336,7 @@ bool pyInit::apply(population & pop)
 			}
 		}
 	}
-	// initialize sex
-	// call randUnif once for each individual
-	// (initialize allele need to call randUnif for each locus
-	if (this->m_sex.empty()) {
-		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
-			if (rng().randUniform01() < this->m_maleFreq)
-				it->setSex(Male);
-			else
-				it->setSex(Female);
-		}
-	} else {
-		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
-			it->setSex(this->nextSex() );
-		}
-	}
-	return true;
+	return initSex::apply(pop);
 }
 
 

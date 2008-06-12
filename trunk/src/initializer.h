@@ -58,19 +58,17 @@ public:
 	 \param loci a vector of locus indexes at which initialization will be done. If empty, apply to all loci.
 	 \param locus a shortcut to \c loci
 	 \param atPloidy initialize which copy of chromosomes. Default to all.
-	 \param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
 	 */
 	initializer(const vectoru & subPop = vectoru(),
 	            intMatrix indRange = intMatrix(),
 	            const vectoru & loci = vectoru(),
 	            int atPloidy = -1,
-	            double maleFreq = 0.5, const vectori & sex = vectori(),
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+				const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_subPop(subPop), m_indRange(indRange),
-		m_atLoci(loci), m_atPloidy(atPloidy),
-		m_maleFreq(maleFreq), m_sex(sex)
+		m_atLoci(loci), m_atPloidy(atPloidy)
 	{
 		for (size_t i = 0; i < m_indRange.size(); ++i) {
 			// allow for singleton
@@ -107,17 +105,6 @@ public:
 	/// CPPONLY
 	void setRanges(population & pop);
 
-	/// CPPONLY
-	void initSexIter()
-	{
-		if (!m_sex.empty())
-			m_sexItr = m_sex.begin();
-	}
-
-
-	/// CPPONLY
-	Sex nextSex();
-
 protected:
 	/// applicable subpop
 	vectoru m_subPop;
@@ -131,19 +118,75 @@ protected:
 	/// at which ploidy, -1 means all
 	int m_atPloidy;
 
+	/// populaiton specific range
+	intMatrix m_ranges;
+};
+
+
+/** An operator to initialize individual sex. For convenience, this
+operator is included by other initializers such as initByFreq, initByValue,
+or pyInit.
+*/
+class initSex : public initializer
+{
+public:
+	/// initialize individual sex.
+	/**
+	 \param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
+	 \param sex a list of sexes (Male or Female) and will be applied to individuals in in turn.
+		If specified, parameter \c maleFreq is ignored.
+	 */
+	initSex(double maleFreq = 0.5, const vectori & sex = vectori(),
+			const vectoru & subPop = vectoru(),
+	            intMatrix indRange = intMatrix(),
+	            const vectoru & loci = vectoru(),
+	            int atPloidy = -1,
+	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, 
+				const vectorstr & infoFields = vectorstr())
+		: initializer(subPop, indRange, loci, atPloidy, stage, begin, end,
+			step, at, rep, grp, infoFields),
+		m_maleFreq(maleFreq), m_sex(sex)
+	{
+		if (!m_sex.empty()) {
+			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
+				DBG_ASSERT(*it == int (Male) || *it == int (Female),
+					ValueError, "Parameter sex must be an array of Male or Female. ");
+			}
+		}
+	}
+
+
+	/// destructor
+	virtual ~initSex()
+	{
+	}
+
+
+	/// deep copy of an initSex
+	virtual baseOperator * clone() const
+	{
+		return new initSex(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the initSex
+	virtual string __repr__()
+	{
+		return "<simuPOP::initSex>";
+	}
+
+	/// apply this operator to population \c pop
+	bool apply(population & pop);
+
+protected:
 	/// sex frequency
 	double m_maleFreq;
 
 	/// specify sex
 	vectori m_sex;
-
-	/// iterator to sex
-	vectori::iterator m_sexItr;
-
-	/// populaiton specific range
-	intMatrix m_ranges;
-
 };
+
 
 /// initialize genotypes by given allele frequencies, and sex by male frequency
 /**
@@ -154,7 +197,7 @@ protected:
    frequencies for different subpopulation or individual ranges.
    <funcForm>InitByFreq</funcForm>
  */
-class initByFreq : public initializer
+class initByFreq : public initSex
 {
 public:
 	/// randomly assign alleles according to given allele frequencies
@@ -178,8 +221,7 @@ public:
 	           double maleFreq = 0.5, const vectori & sex = vectori(),
 	           int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: initializer(subPop, indRange, loci,
-		              atPloidy, maleFreq, sex,
+		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
 		              stage, begin, end, step, at, rep, grp, infoFields),
 		m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
 	{
@@ -221,7 +263,6 @@ private:
 
 	///
 	bool m_identicalInds;
-
 };
 
 /// initialize genotype by value and then copy to all individuals
@@ -239,7 +280,7 @@ private:
 
    <funcForm>InitByValue</funcForm>
  */
-class initByValue : public initializer
+class initByValue : public initSex
 {
 public:
 	/// initialize a population by given alleles
@@ -267,7 +308,7 @@ public:
 	            double maleFreq = 0.5, const vectori & sex = vectori(),
 	            int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: initializer(subPop, indRange, loci, atPloidy, maleFreq, sex,
+		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
 		              stage, begin, end, step, at, rep, grp, infoFields),
 		m_value(value), m_proportion(proportions)
 	{
@@ -394,7 +435,7 @@ private:
 
    <funcForm>PyInit</funcForm>
  */
-class pyInit : public initializer
+class pyInit : public initSex
 {
 
 	/// initialize populations using given user function
@@ -420,7 +461,7 @@ public:
 	       double maleFreq = 0.5, const vectori & sex = vectori(),
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: initializer(subPop, indRange, loci, atPloidy, maleFreq, sex,
+		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
 		              stage, begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
@@ -441,7 +482,7 @@ public:
 
 
 	/// CPPONLY
-	pyInit(const pyInit & rhs) : initializer(rhs), m_func(rhs.m_func)
+	pyInit(const pyInit & rhs) : initSex(rhs), m_func(rhs.m_func)
 	{
 		if (m_func != NULL)
 			Py_INCREF(m_func);
