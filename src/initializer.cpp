@@ -52,23 +52,24 @@ bool initSex::apply(population & pop)
 	setRanges(pop);
 
 	for (size_t rg = 0; rg < m_ranges.size(); ++rg) {
-		ULONG left = m_ranges[rg][0], right = m_ranges[rg][1];
+		IndIterator ind = pop.indBegin() + m_ranges[rg][0];
+		IndIterator right = pop.indBegin() + m_ranges[rg][1];
 
 		// call randUnif once for each individual
 		// (initialize allele need to call randUnif for each locus
 		if (m_sex.empty()) {
-			for (ULONG ind = left; ind != right; ++ind) {
+			for (; ind != right; ++ind) {
 				if (rng().randUniform01() < m_maleFreq)
-					pop.ind(ind).setSex(Male);
+					ind->setSex(Male);
 				else
-					pop.ind(ind).setSex(Female);
+					ind->setSex(Female);
 			}
 		} else {
 			vectori::iterator sexIter = m_sex.begin();
-			for (ULONG ind = left; ind != right; ++ind, ++sexIter) {
+			for (; ind != right; ++ind, ++sexIter) {
 				if (sexIter == m_sex.end())
 					sexIter = m_sex.begin();
-				pop.ind(ind).setSex(*sexIter == 1 ? Male : Female);
+				ind->setSex(*sexIter == 1 ? Male : Female);
 			}
 		}
 	}
@@ -325,13 +326,18 @@ bool initByValue::apply(population & pop)
 
 bool pyInit::apply(population & pop)
 {
-	for (UINT al = 0, alEnd = pop.totNumLoci(); al < alEnd; ++al) {
-		for (UINT sp = 0, numSP = pop.numSubPop(); sp < numSP; ++sp) {
-			for (ULONG it = 0, itEnd = pop.subPopSize(sp); it < itEnd; ++it) {
+	setRanges(pop);
+
+	for (size_t rg = 0; rg < m_ranges.size(); ++rg) {
+		ULONG it = m_ranges[rg][0];
+		ULONG right = m_ranges[rg][1];
+		for (; it != right; ++it) {
+			UINT sp = pop.subPopIndPair(it).first;
+			for (UINT al = 0, alEnd = pop.totNumLoci(); al < alEnd; ++al) {
 				for (UINT p = 0, pEnd = pop.ploidy(); p < pEnd; ++p) {
 					int resInt;
 					PyCallFunc3(m_func, "(iii)", al, p, sp, resInt, PyObj_As_Int);
-					pop.ind(it, sp).setAllele(static_cast<Allele>(resInt), al, p);
+					pop.ind(it).setAllele(static_cast<Allele>(resInt), al, p);
 				}
 			}
 		}

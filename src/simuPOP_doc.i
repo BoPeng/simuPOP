@@ -4341,8 +4341,8 @@ Description:
 Usage:
 
     initializer(subPop=[], indRange=[], loci=[], atPloidy=-1,
-      maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -4361,8 +4361,6 @@ Arguments:
     locus:          a shortcut to loci
     atPloidy:       initialize which copy of chromosomes. Default to
                     all.
-    maleFreq:       male frequency. Default to 0.5. Sex will be
-                    initialized with this parameter.
 
 "; 
 
@@ -4405,9 +4403,90 @@ Usage:
 
 %ignore simuPOP::initializer::setRanges(population &pop);
 
-%ignore simuPOP::initializer::initSexIter();
+%feature("docstring") simuPOP::initSex "
 
-%ignore simuPOP::initializer::nextSex();
+Function form:
+
+    InitSex
+
+Details:
+
+    An operator to initialize  individual sex. For convenience, this
+    operator is included by other initializers such as  initByFreq,
+    initByValue, or  pyInit.
+
+"; 
+
+%feature("docstring") simuPOP::initSex::initSex "
+
+Description:
+
+    initialize  individual sex.
+
+Usage:
+
+    initSex(maleFreq=0.5, sex=[], subPop=[], indRange=[], loci=[],
+      atPloidy=-1, stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+
+Arguments:
+
+    maleFreq:       male frequency. Default to 0.5. Sex will be
+                    initialized with this parameter.
+    sex:            a list of sexes (Male or Female) and will be
+                    applied to individuals in in turn. If specified,
+                    parameter maleFreq is ignored.
+
+"; 
+
+%feature("docstring") simuPOP::initSex::~initSex "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~initSex()
+
+"; 
+
+%feature("docstring") simuPOP::initSex::clone "
+
+Description:
+
+    deep copy of an  initSex
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::initSex::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the  initSex
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::initSex::apply "
+
+Description:
+
+    apply this operator to  populationpop
+
+Usage:
+
+    x.apply(pop)
+
+"; 
 
 %feature("docstring") simuPOP::IOError "
 
@@ -5609,8 +5688,8 @@ Description:
 Usage:
 
     migrator(rate, mode=MigrByProbability, fromSubPop=[],
-      toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      toSubPop=[], maleRatio=[], stage=PreMating, begin=0, end=-1,
+      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -5618,6 +5697,10 @@ Arguments:
                     number. Determined by parameter mode. rate should
                     be an m by n matrix. If a number is given, the
                     migration rate will be a m by n matrix of value r
+    maleRatio:      A matrix with the same dimension as rate that
+                    controlls the ratio of males among migrants. This
+                    parameter is by default empty, meaning sex
+                    information is ignored.
     mode:           one of MigrByProbability (default),
                     MigrByProportion or MigrByCounts
     fromSubPop:     an array of 'from' subpopulations. Default to all.
@@ -7220,6 +7303,20 @@ Description:
 
     A  pedigree manipulation class.
 
+Details:
+
+    A  pedigree has all the  pedigree information that is needed to
+    look at parent offspring relationship in a multi-generation
+    population.Conceptually, there are n generations with the latest
+    generation being generation 0. The number of generations (c.f.
+    gen()) is the number of parental generations plus 1. Therefore,
+    each  individual can be identified by (gen, idx).Each  individual
+    can have a few properties 1. mother (c.f.  mother()) 2. father
+    (c.f.  father(), optional because a  pedigree can have only one
+    sex) 3. subpopulation (if subpopulation structure is given) 4. sex
+    (c.f. info('sex')) 5. affection (c.f. info('affection') 6.
+    arbitrary information fields (c.f.  info())
+
 "; 
 
 %feature("docstring") simuPOP::pedigree::pedigree "
@@ -7231,7 +7328,7 @@ Description:
 
 Usage:
 
-    pedigree(pedfile=string)
+    pedigree(numParents=2, pedfile=string)
 
 "; 
 
@@ -7256,18 +7353,6 @@ Description:
 Usage:
 
     x.numParents()
-
-"; 
-
-%feature("docstring") simuPOP::pedigree::setNumParents "
-
-Description:
-
-    Set the number of parents for each  individual.
-
-Usage:
-
-    x.setNumParents(numParents)
 
 "; 
 
@@ -10357,9 +10442,9 @@ Description:
 Usage:
 
     pyMigrator(rateFunc=None, mode=MigrByProbability, fromSubPop=[],
-      toSubPop=[], indFunc=None, loci=[], param=None, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+      toSubPop=[], indFunc=None, maleRatio=[], loci=[], param=None,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
