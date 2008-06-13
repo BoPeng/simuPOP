@@ -90,6 +90,63 @@ class TestMigrator(unittest.TestCase):
         assert abs(pop.subPopSize(0) - 1800) < 50
         assert abs(pop.subPopSize(1) - 4100) < 50
         assert abs(pop.subPopSize(2) - 4100) < 50
+
+    def testMigrateBySexAndCounts(self):
+        'Testing migrate by sex and counts'
+        # everyone is Male
+        pop = population(size=[2000,4000,4000], loci=[2])
+        Migrate(pop, mode=MigrByCounts, 
+            rate = [ [0, 50, 50],
+                             [0, 0, 0],
+                             [0, 0, 0] ])
+        assert pop.subPopSizes() == (1900, 4050, 4050)
+        Migrate(pop, mode=MigrByCounts, 
+            rate = [ [0, 50, 50],
+                             [50, 0, 0],
+                             [50, 0, 0] ])
+        assert pop.subPopSizes() == (1900, 4050, 4050)
+        # rate should be a matrix
+        self.assertRaises(exceptions.ValueError, 
+            Migrate, pop, [ [0, 50],
+                             [50, 0, 0],
+                             [50, 0, 0] ], MigrByCounts)
+        
+    def testMigrateBySexAndProportion(self):
+        'Testing migrate by sex and proportion'
+        pop = population(size=[2000,4000,4000], loci=[2])
+        # now if we want to inject a mutation whenever fixation happens
+        Migrate(pop, mode=MigrByProportion, 
+            rate = [ [0, .05, .05],
+                             [0.025, 0, 0],
+                             [0.025, 0, 0] ])
+        assert pop.subPopSizes() == (2000, 4000, 4000)
+        Migrate(pop, mode=MigrByProportion, 
+            rate = [ [0, .25, .25],
+                             [0.25, 0, 0],
+                             [0, 0.25, 0] ])
+        assert pop.subPopSizes() == (2000, 4500, 3500)
+        
+    def testMigrateBySexAndProbability(self):
+        'Testing migrate by sex and probability'
+        pop = population(size=[2000,4000,4000], loci=[2])
+        # now if we want to inject a mutation whenever fixation happens
+        Migrate(pop, mode=MigrByProbability, 
+            rate = [ [0, .05, .05],
+                             [0.025, 0, 0],
+                             [0.025, 0, 0] ])
+        # print pop.subPopSizes()
+        assert abs(pop.subPopSize(0) - 2000) < 100
+        assert abs(pop.subPopSize(1) - 4000) < 100
+        assert abs(pop.subPopSize(2) - 4000) < 100
+        Migrate(pop, mode=MigrByProbability, 
+            rate = [ [0, .25, .25],
+                             [0.25, 0, 0],
+                             [0, 0.25, 0] ])
+        # print pop.subPopSizes()
+        assert abs(pop.subPopSize(0) - 2000) < 100
+        assert abs(pop.subPopSize(1) - 4500) < 100
+        assert abs(pop.subPopSize(2) - 3500) < 100
+
     
     def testMigrConstAlleleFreq(self):
         'Testing that migration does not change allele frequency'
