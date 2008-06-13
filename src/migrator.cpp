@@ -101,6 +101,8 @@ bool migrator::apply(population & pop)
 		UINT toSize = m_to.size();
 		UINT toIndex;
 
+		ULONG spSize = pop.subPopSize(spFrom);
+
 		// m_from out of range.... ignore.
 		if (spFrom >= pop.numSubPop() )
 			continue;
@@ -125,17 +127,34 @@ bool migrator::apply(population & pop)
 						ind->setSubPopID(m_to[toIndex]);
 				}
 			} else {
-				// male and female will have different probability
-				vectorf maleRate = m_rate[from];
-				vectorf femaleRate = m_rate[from];
-				//
+				// male and female will have different probability. These
+				// probabilities are actually dependent on the number of 
+				// males and females in the population.
+				
+				// count number of males and females
+				ULONG numMale = 0;
+				IndIterator ind = pop.indBegin(spFrom);
+				for (; ind.valid(); ++ind)
+					if (ind->sex() == Male)
+						numMale++;
+				ULONG numFemale = spSize - numMale;
+				
+				// expected migrant
+				vectorf maleRate(toSize);
+				vectorf femaleRate(toSize);
 				double maleMigr = 0;
 				double femaleMigr = 0;
-				for (size_t i = 0; i < maleRate.size(); ++i) {
+				
+				for (size_t i = 0; i < toSize; ++i) {
 					if (i == from)
 						continue;
-					maleRate[i] *= m_maleRatio[from][i];
-					femaleRate[i] *= 1 - m_maleRatio[from][i];
+					maleRate[i] = std::min(1., spSize * m_rate[from][i] * m_maleRatio[from][i] / numMale);
+					femaleRate[i] = std::min(1., spSize * m_rate[from][i] * (1 - m_maleRatio[from][i]) / numFemale);
+					// it is possible that there is no one left for the next subpopulation
+					if (maleRate[i] > 1. - maleMigr)
+						maleRate[i] = 1. - maleMigr;
+					if (femaleRate[i] > 1. - femaleMigr)
+						femaleRate[i] = 1. - femaleMigr;
 					maleMigr += maleRate[i];
 					femaleMigr += femaleRate[i];
 				}
@@ -172,7 +191,6 @@ bool migrator::apply(population & pop)
 			// first find out how many people will move to other subPop
 			// then randomly assign individuals to move
 			vectorlu toNum(toSize);
-			ULONG spSize = pop.subPopSize(spFrom);
 			if (m_mode == MigrByProportion) {
 				for (UINT i = 0; i < toSize; ++i)
 					toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
@@ -200,14 +218,15 @@ bool migrator::apply(population & pop)
 		} else {
 			vectorlu toMale(toSize);
 			vectorlu toFemale(toSize);
-			ULONG spSize = pop.subPopSize(spFrom);
 			if (m_mode == MigrByProportion) {
 				for (UINT i = 0; i < toSize; ++i) {
+					DBG_ASSERT(i < m_maleRatio[from].size(), IndexError, "Wrong size of maleRatio");
 					toMale[i] = static_cast<ULONG>(spSize * m_rate[from][i] * m_maleRatio[from][i]);
 					toFemale[i] = static_cast<ULONG>(spSize * m_rate[from][i] * (1 - m_maleRatio[from][i]));
 				}
 			} else {                                                                  // by count
 				for (UINT i = 0; i < toSize; ++i) {
+					DBG_ASSERT(i < m_maleRatio[from].size(), IndexError, "Wrong size of maleRatio");
 					toMale[i] = static_cast<ULONG>(m_rate[from][i] * m_maleRatio[from][i]);
 					toFemale[i] = static_cast<ULONG>(m_rate[from][i] * (1 - m_maleRatio[from][i]));
 				}
@@ -220,6 +239,7 @@ bool migrator::apply(population & pop)
 					numMale++;
 			ULONG numFemale = spSize - numMale;
 			
+
 			// create a vector and assign indexes, then random shuffle
 			// and assign info
 			vectorlu toMaleIndices(numMale);
@@ -228,6 +248,8 @@ bool migrator::apply(population & pop)
 			UINT kFemale = 0;
 			// for each to subpopulation
 			for (UINT i = 0; i < toSize; ++i) {
+				if (i == from)
+					continue;
 				// assign toMale[i] individuals...
 				for (UINT j = 0; j < toMale[i] && kMale < numMale; ++j)
 					toMaleIndices[kMale++] = m_to[i];
@@ -235,9 +257,13 @@ bool migrator::apply(population & pop)
 					toFemaleIndices[kFemale++] = m_to[i];
 			}
 
-			while (kMale < spSize)
+			DBG_DO(DBG_MIGRATOR, cout << "Subpop " << spFrom << " has " << numMale << " males and "
+				<< numFemale << " females\nMale migrant counts are " << toMale << "\nFemale migrant counts are "
+				<< toFemale << "\nActually migrant out of subpopulation " << spFrom <<
+				" are " << kMale << " males and " << kFemale << " females" << endl);
+			while (kMale < numMale)
 				toMaleIndices[kMale++] = spFrom;
-			while (kFemale < spSize)
+			while (kFemale < numFemale)
 				toFemaleIndices[kFemale++] = spFrom;
 
 			random_shuffle(toMaleIndices.begin(), toMaleIndices.end());

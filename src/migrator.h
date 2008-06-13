@@ -77,7 +77,8 @@ public:
 	   	the migration rate will be a \c m by \c n matrix of value \c r
 	 \param maleRatio A matrix with the same dimension as \c rate that controlls the
 	    ratio of males among migrants. This parameter is by default empty, meaning
-		sex information is ignored.
+		sex information is ignored. If a number is given, it will be expanded to
+		a matrix of the same size as \c rate.
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
 	 \param fromSubPop an array of 'from' subpopulations. Default to all. If a single subpopulation
 	   	is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt> is equvalent to \c a.
@@ -113,11 +114,11 @@ public:
 			DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
 				ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
+			setRates(rate, mode);
+			
 			DBG_FAILIF(!m_maleRatio.empty() && ( m_rate.size() != m_maleRatio.size() ||
 				m_rate[0].size() != m_maleRatio[0].size()),
 				ValueError, "If maleRatio is given, it should have the same size as migration rate");
-			
-			setRates(rate, mode);
 		}
 	};
 
@@ -199,11 +200,16 @@ public:
 	   	genotypes and parameters, then returns a subpopulation ID. This
 	   	method can be used to separate a population according to individual
 	   	genotype.
+	 \param maleRatio A matrix with the same dimension as \c rate that controlls the
+	    ratio of males among migrants. This parameter is by default empty, meaning
+		sex information is ignored. If a number is given, it will be expanded to
+		a matrix of the same size as \c rate.
 	 \param stage default to \c PreMating
 	 */
-	pyMigrator(PyObject * rateFunc = NULL, int mode = MigrByProbability,
+	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc=NULL,
+				int mode = MigrByProbability,
 	           vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
-	           PyObject * indFunc = NULL, const matrix & maleRatio = matrix(),
+	            const matrix & maleRatio = matrix(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
