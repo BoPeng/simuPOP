@@ -118,6 +118,7 @@ class TestPenetrance(unittest.TestCase):
         )
 
     def testPyPenetrance(self):
+        'Testing python penetrance operator'
         def pen(geno):
             if geno == [0, 0]:
                 return 0

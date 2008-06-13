@@ -5700,7 +5700,9 @@ Arguments:
     maleRatio:      A matrix with the same dimension as rate that
                     controlls the ratio of males among migrants. This
                     parameter is by default empty, meaning sex
-                    information is ignored.
+                    information is ignored. If a number is given, it
+                    will be expanded to a matrix of the same size as
+                    rate.
     mode:           one of MigrByProbability (default),
                     MigrByProportion or MigrByCounts
     fromSubPop:     an array of 'from' subpopulations. Default to all.
@@ -10441,8 +10443,8 @@ Description:
 
 Usage:
 
-    pyMigrator(rateFunc=None, mode=MigrByProbability, fromSubPop=[],
-      toSubPop=[], indFunc=None, maleRatio=[], loci=[], param=None,
+    pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
+      fromSubPop=[], toSubPop=[], maleRatio=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
 
@@ -10457,6 +10459,12 @@ Arguments:
                     subpopulation ID. This method can be used to
                     separate a  population according to  individual
                     genotype.
+    maleRatio:      A matrix with the same dimension as rate that
+                    controlls the ratio of males among migrants. This
+                    parameter is by default empty, meaning sex
+                    information is ignored. If a number is given, it
+                    will be expanded to a matrix of the same size as
+                    rate.
     stage:          default to PreMating
 
 "; 
