@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 ############################################################################
-#    Copyright (C) 2004 by Bo Peng                                         
+#    Copyright (C) 2004 by Bo Peng
 #    bpeng@mdanderson.org
-#                                                                          
-#    $LastChangedDate: 2007-04-13 15:55:29 -0500 (Fri, 13 Apr 2007) $          
-#    $Rev: 909 $                       
-#                                                                          
-#    This program is free software; you can redistribute it and/or modify  
-#    it under the terms of the GNU General Public License as published by  
-#    the Free Software Foundation; either version 2 of the License, or     
-#    (at your option) any later version.                                   
-#                                                                                                                                                    
-#    This program is distributed in the hope that it will be useful,             
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of                
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
-#    GNU General Public License for more details.                                                    
-#                                                                                                                                                    
-#    You should havereceived a copy of the GNU General Public License         
-#    along with this program; if not, write to the                                                 
-#    Free Software Foundation, Inc.,                                                                             
-#    59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
+#
+#    $LastChangedDate: 2007-04-13 15:55:29 -0500 (Fri, 13 Apr 2007) $
+#    $Rev: 909 $
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+#    GNU General Public License for more details.
+#
+#    You should havereceived a copy of the GNU General Public License
+#    along with this program; if not, write to the
+#    Free Software Foundation, Inc.,
+#    59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.
 ############################################################################
 
 '''
-Utility functions to manipulate HapMap data. These functions 
+Utility functions to manipulate HapMap data. These functions
 are provided as examples on how to load and evolve the HapMap
 dataset. They tend to change frequently so do not call
 these functions directly. It is recommended that you
-copy these function to your script when you need to use 
+copy these function to your script when you need to use
 them.
 
 '''
@@ -40,38 +40,38 @@ from simuPOP import *
 from simuUtil import SaveQTDT
 
 # choose some markers to work with
-# 
+#
 # Method 1: give a list of marker names, get a population with these
 # markers
-# 
+#
 HapMap_pops = ['CEU', 'YRI', 'JPT+CHB']
 
 def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0, numMarkers=[]):
     '''
-    Get population from marker names. This function 
+    Get population from marker names. This function
         returns a tuple with a population with found markers and names of
         markers that can not be located in the HapMap data. The returned
         population has three subpopulations, corresponding to CEU, YRI and
         JPT+CHB HapMap populations.
-    
+
     HapMap_dir: where HapMap data in simuPOP format is stored. The files
         should have been prepared by scripts/loadHapMap.py.
 
-    names: names of markers. It can either be a stright list of names, or 
-        a dictionary of names categorized by chromosome number. 
-    
+    names: names of markers. It can either be a stright list of names, or
+        a dictionary of names categorized by chromosome number.
+
     chroms: a list of chromosomes to look in. If empty, all 22 autosomes
         will be tried. Chromosome index starts from 1. (1, ..., 22).
 
     hapmap_pops: hapmap populations to load, can be a list of 'CEU', 'YRI'
-        or 'JPT+CHB', or a list of 0, 1, 2. If empty (default), all three 
+        or 'JPT+CHB', or a list of 0, 1, 2. If empty (default), all three
         populations will be loaded.
 
     minDiffAF: minimal allele frequency difference between hapmap populations.
         If three subpopulations are loaded, use the maximal of three pair-wise
         allele frequency differences for comparison. This option is ignored
         if hapmap_pops has length one.
-    
+
     numMarkers: number of markers to use for each chromosome. Must have
         the same length as chroms.
     '''
@@ -151,7 +151,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
 # and minimal distance between adjacent markers
 #
 # For example,
-# 
+#
 # get 5000 markers
 #    getMarkersFromRange(2, 0, sys.maxint, 5000, 0, 0)
 # get 5000 markers with minimal allele frequency 0.1
@@ -160,32 +160,32 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
 #    getMarkersFromRange(2, 0, 100, sys.maxint. 0, 0.1)
 
 
-def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum, 
+def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum,
     minAF=0, minDiffAF=0, minDist=0, maxDist=0):
     '''
     Get a population with markers from given range
-    
+
         HapMap_dir: where HapMap data in simuPOP format is stored. The files
             should have been prepared by scripts/loadHapMap.py.
-    
+
         hapmap_pops: HapMap populations to load. It can be a list of 'CEU', 'YRI'
             or 'JPT+CHB', or a list of 0, 1, 2. If empty, all hapmap populations
             will be loaded.
 
         chrom:    chromosome number (1-based index)
-        
+
         startPos: starting position (in cM)
-        
+
         endPos:   ending position (in cM). If 0, ignore this parameter.
-        
+
         maxNum:   maximum number of markers to get. If 0, ignore this parameter.
-        
+
         minAF:    minimal minor allele frequency
-        
+
         minDiffAf: minimal allele frequency between HapMap populations.
-        
+
         minDist:  minimal distance between two adjacent markers, in cM
-        
+
         maxDist: maximum distance. If exceed, try to pick up a marker ASAP.
     '''
     print "Loading HapMap population hapmap_%d.bin" % chrom
@@ -243,58 +243,58 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
 # Evole the hapmap population
 #
 # NOTE1: use uniform recombination rate for now.
-# 
+#
 # NOTE2: no mutation at the last generation to avoid
 #        mendelian inconsistency error.
-# 
+#
 ###########################################################
-def evolveHapMap(pop, 
-    endingSize, 
+def evolveHapMap(pop,
+    endingSize,
     gen,
     migr=noneOp(),
     expand='exponential',
-    mergeAt=10000, 
-    initMultiple=1, 
-    recIntensity=0.01, 
+    mergeAt=10000,
+    initMultiple=1,
+    recIntensity=0.01,
     mutRate=1e-7,
-    step=10, 
-    keepParents=False, 
+    step=10,
+    keepParents=False,
     numOffspring=1,
     recordAncestry=False):
     ''' Evolve and expand the hapmap population
-    
+
     gen: total evolution generation
-    
+
     initMultiple: copy each individual initMultiple times, to avoid
         rapid loss of genotype variation when population size is small.
-    
+
     endingSize: ending poplation size
-    
+
     expand: expanding method, can be linear or exponential
-    
+
     mergeAt: when to merge population?
-    
+
     gen: generations to evolve
-    
+
     migr: a migrator to be used.
-    
+
     recIntensity: recombination intensity
-    
+
     mutRate: mutation rate
-    
+
     step: step at which to display statistics
-    
+
     keepParents: whether or not keep parental generations
-    
+
     numOffspring: number of offspring at the last generation
-    
+
     recordAncestry: whether or not calculate ancestry to an information field
-        ancestry. Only usable with two hapmap populations.    
+        ancestry. Only usable with two hapmap populations.
     '''
     print "Starting population size is ", pop.subPopSizes()
     if initMultiple > 1:
         print 'Propagating population to size %s' % [x*initMultiple for x in pop.subPopSizes()]
-        pop.resize([x*initMultiple for x in pop.subPopSizes()], 
+        pop.resize([x*initMultiple for x in pop.subPopSizes()],
             propagate=True)
     #
     N0 = pop.popSize()
@@ -320,7 +320,7 @@ def evolveHapMap(pop,
         pyEval(r'"gen=%d, size=%s\n" % (gen, subPopSize)', step=step, begin=step-1)
     ]
     def calcAncestry(anc):
-        return [(anc[0] + anc[1])/2]        
+        return [(anc[0] + anc[1])/2]
     if recordAncestry:
         pop.addInfoField('ancestry', 0)
         assert pop.numSubPop() == 2
@@ -338,7 +338,7 @@ def evolveHapMap(pop,
         # evolve, but without mutation
         simu.step(ops=operators[1:] + [parentsTagger()])
     return simu.getPopulation(0, True)
- 
+
 
 #
 #
@@ -349,13 +349,13 @@ def sample1DSL(pop, DSL, DA, pene, name, sampleSize):
     '''Sample from the final population, using a single lcous penetrance model.
 
     DSL: disease locus
-    
+
     DA: disease allele
-    
+
     pene: penetrance
-    
+
     name: name of directory to save (it must exist)
-    
+
     sampleSize: sample size, in this case, sampleSize/4 is the number of families
     '''
     # applying penetrance
@@ -375,19 +375,19 @@ def sample1DSL(pop, DSL, DA, pene, name, sampleSize):
     #
     # draw sample
     samples = AffectedSibpairSample(pop, size=sampleSize/4)
-    SaveQTDT(samples[0], output=os.path.join(name, 'sample'), 
+    SaveQTDT(samples[0], output=os.path.join(name, 'sample'),
         affectionCode=['1', '2'], fields=['affection'])
 
 
 def sample2DSL(pop, DSL, pene, name, size):
     '''Sample from the final population, using a two locus penetrance model
-    
+
     DSL: disease loci (two locus)
-    
+
     pene: penetrance value, assuming a two-locus model
-    
+
     name: name to save sample
-    
+
     size: sample size
     '''
     Stat(pop, alleleFreq=DSL)
@@ -407,8 +407,8 @@ def sample2DSL(pop, DSL, pene, name, size):
     print "Disease alleles at the DSL are %d, %d" % (da, db)
     # applying penetrance
     def peneFunc(geno):
-        # 
-        # 
+        #
+        #
         if da == 0:
             aa = 2 - (geno[0] + geno[1])
         else:

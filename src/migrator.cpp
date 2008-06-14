@@ -156,7 +156,7 @@ bool migrator::apply(population & pop)
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
 				// SubPopID is signed short, to save a few bits
 				ind->setSubPopID(static_cast<SubPopID>(toIndices[i]));
-	
+
 	} /// for all subPop.
 
 	// do migration.
