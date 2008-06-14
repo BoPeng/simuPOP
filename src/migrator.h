@@ -75,15 +75,13 @@ public:
 	 \param rate migration rate, can be a proportion or counted number. Determined by
 	   	parameter \c mode. \c rate should be an m by n matrix. If a number is given,
 	   	the migration rate will be a \c m by \c n matrix of value \c r
-	 \param maleRatio A matrix with the same dimension as \c rate that controlls the
-	    ratio of males among migrants. This parameter is by default empty, meaning
-		sex information is ignored. If a number is given, it will be expanded to
-		a matrix of the same size as \c rate.
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-	 \param fromSubPop an array of 'from' subpopulations. Default to all. If a single subpopulation
-	   	is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt> is equvalent to \c a.
-	 \param toSubPop an array of 'to' subpopulations. Default to all subpopulations. If a single
-	   	subpopulation is specified, <tt>[]</tt> can be ignored.
+	 \param fromSubPop an array of 'from' subpopulations. Default to all. If a single 
+	 	subpopulation is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt>
+	       	is equvalent to \c a.
+	 \param toSubPop an array of 'to' subpopulations. Default to all
+		subpopulations. If a single subpopulation is specified, 
+		<tt>[]</tt> can be ignored.
 	 \param stage default to \c PreMating
 
 	 \note
@@ -99,11 +97,10 @@ public:
 	 */
 	migrator(const matrix & rate, int mode = MigrByProbability,
 	         vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
-			 const matrix & maleRatio = matrix(),
 	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
-		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop), m_maleRatio(maleRatio)
+		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 	{
 		// when migrator is constructed from a pyMigrator, initial
 		// rate is empty
@@ -115,10 +112,6 @@ public:
 				ValueError, "Length of param toSubPop must match columns of rate matrix.");
 
 			setRates(rate, mode);
-			
-			DBG_FAILIF(!m_maleRatio.empty() && ( m_rate.size() != m_maleRatio.size() ||
-				m_rate[0].size() != m_maleRatio[0].size()),
-				ValueError, "If maleRatio is given, it should have the same size as migration rate");
 		}
 	};
 
@@ -169,8 +162,6 @@ protected:
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
 	vectoru m_from, m_to;
-
-	matrix m_maleRatio;
 };
 
 /// a more flexible Python migrator
@@ -200,20 +191,15 @@ public:
 	   	genotypes and parameters, then returns a subpopulation ID. This
 	   	method can be used to separate a population according to individual
 	   	genotype.
-	 \param maleRatio A matrix with the same dimension as \c rate that controlls the
-	    ratio of males among migrants. This parameter is by default empty, meaning
-		sex information is ignored. If a number is given, it will be expanded to
-		a matrix of the same size as \c rate.
 	 \param stage default to \c PreMating
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc=NULL,
 				int mode = MigrByProbability,
 	           vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
-	            const matrix & maleRatio = matrix(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: migrator(matrix(), mode, fromSubPop, toSubPop, maleRatio, stage, begin, end, step, at, rep, grp, infoFields),
+		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, grp, infoFields),
 		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
 		// carray of python list/typle
