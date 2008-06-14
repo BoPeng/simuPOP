@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
 # testing operator behaviors for simupoop.
-# 
+#
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
 #
@@ -21,10 +21,10 @@ def genRecorder(pop):
     except:
         pop.dvars().hist = [pop.gen()]
     return True
-    
+
 def opRecorder(*args, **kwargs):
     return pyOperator(func=genRecorder, *args, **kwargs)
-    
+
 class TestOperator(unittest.TestCase):
 
     def testStage(self):
@@ -44,7 +44,7 @@ class TestOperator(unittest.TestCase):
             #dryrun=True,
             gen=10
         )
-    
+
     def testActiveGen(self):
         'Testing active generation specifications'
         def getActiveGens(endGen=20, *args, **kwargs):
@@ -52,11 +52,11 @@ class TestOperator(unittest.TestCase):
             simu = simulator(population(), noMating())
             simu.evolve(ops=[d], gen=endGen)
             return simu.population(0).dvars().hist
-        self.assertEqual(getActiveGens(begin=2, end=10), 
+        self.assertEqual(getActiveGens(begin=2, end=10),
             range(2,11))
-        self.assertEqual(getActiveGens(begin=2, end=10, step=2), 
+        self.assertEqual(getActiveGens(begin=2, end=10, step=2),
             range(2,11,2))
-        self.assertEqual(getActiveGens(begin=2, step=2), 
+        self.assertEqual(getActiveGens(begin=2, step=2),
             range(2,20,2))
         self.assertEqual(getActiveGens(step=2), range(0,19,2))
         self.assertEqual(getActiveGens(), range(0,20))
@@ -65,17 +65,17 @@ class TestOperator(unittest.TestCase):
         self.assertEqual(getActiveGens(begin=-10), range(10,20))
         # 20=-1, 16=-5
         self.assertEqual(getActiveGens(begin=-10, end=-5), range(10,16))
-        # 
+        #
         self.assertEqual(getActiveGens(begin=-10, step=2, end=-5), range(10,16,2))
         self.assertRaises( exceptions.ValueError,
             getActiveGens, begin=-10, step=-3, end=-5 )
-        
+
     def testGroup(self):
         'Testing group related functions'
         simu = simulator(population(), noMating(), rep=3)
         simu.setGroup([1,1,2])
         simu.evolve(
-            ops = [opRecorder(grp=1)], 
+            ops = [opRecorder(grp=1)],
             gen=10
         )
         self.assertEqual(simu.population(0).dvars().hist, range(10))
@@ -89,7 +89,7 @@ class TestOperator(unittest.TestCase):
         'Testing replicate related functions'
         simu = simulator(population(), noMating(), rep=3)
         simu.evolve(
-            ops = [opRecorder(rep=REP_LAST)], 
+            ops = [opRecorder(rep=REP_LAST)],
             gen=10
         )
         try:
@@ -101,16 +101,16 @@ class TestOperator(unittest.TestCase):
         except exceptions.AttributeError:
             pass
         self.assertEqual(simu.population(2).dvars().hist, range(10))
-        
+
     def assertFileContent(self, file, text):
         f = open(file)
         t = f.read()
         f.close()
         self.assertEqual(t, text)
-        
+
     def testOutput(self):
         'Testing output specifications'
-        simu = simulator( population(), 
+        simu = simulator( population(),
                 noMating(), rep=5)
         simu.evolve([
             pyOutput("a", output=">a.txt"),
@@ -163,13 +163,13 @@ class TestOperator(unittest.TestCase):
             pyEval("gen", output=">>a.txt", grp=1),
             ], gen=10)
         # a is appended 5 rep * 11 generations
-        self.assertFileContent("a.txt", 
+        self.assertFileContent("a.txt",
             ''.join( [ str(x)*3 for x in range(10)] ))
         os.remove('a.txt')
 
     def testOutputExpr(self):
         'Testing the usage of output expression'
-        simu = simulator( population(), 
+        simu = simulator( population(),
             noMating(), rep=5)
         # each replicate
         simu.evolve([
@@ -210,7 +210,7 @@ class TestOperator(unittest.TestCase):
         for i in range(10):
             self.assertFileContent("gen%d.txt"%i, 'a'*5)
             os.remove('gen%d.txt'%i)
-     
+
     def testInfoEval(self):
         '''Testing operator infoEval'''
         pop = population(10, infoFields=['a', 'b'])
@@ -254,8 +254,8 @@ class TestOperator(unittest.TestCase):
             ],
             gen = 4
         )
-            
 
-         
+
+
 if __name__ == '__main__':
     unittest.main()

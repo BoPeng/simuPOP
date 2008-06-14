@@ -5,10 +5,10 @@
 # This is a unittest file for population object
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -63,18 +63,18 @@ class TestCarray(unittest.TestCase):
         self.assertEqual( arr1, [30, 40] )
         self.assertEqual( arr, [1,2,3,30,40,6,7])
         # assign vector of different length
-        try: 
+        try:
             arr1[:] = [50, 60, 70]
         except exceptions.ValueError:
             pass
-        try: 
+        try:
             arr1[:] = arr[1:2]
         except exceptions.ValueError:
             pass
         # assign from another part
         arr[1:3] = arr[3:5]
         self.assertEqual( arr, [1, 30,40, 30,40,6,7])
-        
+
     def testGenotypeCarray(self):
         'Testing allele carray type returned by arrGenotype'
         pop = population(size=2, loci=[2,1])
@@ -151,11 +151,11 @@ class TestCarray(unittest.TestCase):
         else:
             self.assertEqual( arr, [0,1,1,0,0,1,0,1,1,0,1,1])
         # assign vector of different length
-        try: 
+        try:
             arr1[:] = [50, 60, 70]
         except exceptions.ValueError:
             pass
-        try: 
+        try:
             arr1[:] = arr[1:2]
         except exceptions.ValueError:
             pass

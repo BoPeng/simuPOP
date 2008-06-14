@@ -3,10 +3,10 @@
 # Testing plotting with R
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision: 149 $
 # $LastChangedDate: 2006-02-03 15:51:04 -0600 (Fri, 03 Feb 2006) $
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -25,7 +25,7 @@ except exceptions.ImportError:
     hasRPy = False
 
 class TestRPy(unittest.TestCase):
-    
+
     def testAggregator(self):
         'Testing aggregator, the internal data collector for plotter'
         a = dataAggregator(maxRecord=3, recordSize=4)
@@ -39,7 +39,7 @@ class TestRPy(unittest.TestCase):
         # the first record should be removed
         a.push(3, [2,3,4,5])
         #print a.data
-        self.assertEqual(a.data, 
+        self.assertEqual(a.data,
             [[2, 2, 2], [2, 4, 3], [3, 5, 4], [4, 6, 5]])
         #
         # test push one number
@@ -54,7 +54,7 @@ class TestRPy(unittest.TestCase):
         a.push(1, [4,3,2,1])
         self.assertRaises(exceptions.ValueError,
             a.push, 1, [1,2,3,4])
-        
+
     def testVarPlotterByRep(self):
         'Testing byRep parameter of varPlotter'
         if not hasRPy:
@@ -66,9 +66,9 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
+             migr,
              stator,
-             varPlotter('subPopSize', numRep=3, byRep=True, 
+             varPlotter('subPopSize', numRep=3, byRep=True,
                  varDim=3, win=10, title='subPop size')
              ],
              end=30
@@ -87,17 +87,17 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
-             stator, 
-             varPlotter('[x**2 for x in subPopSize]', 
-                 numRep=3, byVal=True, 
+             migr,
+             stator,
+             varPlotter('[x**2 for x in subPopSize]',
+                 numRep=3, byVal=True,
                  varDim=3, win=10, title='subPop size')
              ],
              end=30
         )
         sleep(1)
         r.dev_off()
-        
+
     def testVarPlotterSeparate(self):
         'Testing separate parameter of varPlotter'
         if not hasRPy:
@@ -109,12 +109,12 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
+             migr,
              stator,
-             varPlotter('subPopSize', numRep=3, 
-                 byVal=True, 
-                 varDim=3, win=10, 
-                 title='subPop size', 
+             varPlotter('subPopSize', numRep=3,
+                 byVal=True,
+                 varDim=3, win=10,
+                 title='subPop size',
                  separate=1)
              ],
              end=30
@@ -133,9 +133,9 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
+             migr,
              stator,
-             varPlotter('[x**2 for x in subPopSize]', numRep=3, byRep=True, 
+             varPlotter('[x**2 for x in subPopSize]', numRep=3, byRep=True,
                  varDim=3, win=10, update=5, title='subPop size',
                  saveAs='demo')
              ],
@@ -145,7 +145,7 @@ class TestRPy(unittest.TestCase):
             os.remove('demo%d.eps' % f)
         sleep(1)
         r.dev_off()
-        
+
     def testVarPlotterYlim(self):
         'Testing ylim parameter of varPlotter'
         if not hasRPy:
@@ -157,7 +157,7 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
+             migr,
              stator,
              varPlotter('subPopSize', numRep=3, byRep=True, ylim=[0,100],
                  separate=True, varDim=3, win=10, update=5, title='subPop size')
@@ -166,7 +166,7 @@ class TestRPy(unittest.TestCase):
         )
         sleep(1)
         r.dev_off()
-    
+
     def testVarPlotterNoHistory(self):
         'Testing no history parameter of varPlotter'
         if not hasRPy:
@@ -178,18 +178,18 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
+             migr,
              stator,
-             varPlotter('[x**2 for x in subPopSize]', 
-                 history=False, 
-                 numRep=3, byRep=True, 
+             varPlotter('[x**2 for x in subPopSize]',
+                 history=False,
+                 numRep=3, byRep=True,
                  win=10, update=5, title='subPop size')
              ],
              end=30
         )
         sleep(1)
         r.dev_off()
-        
+
     def testVarPlotterNoHisSeparate(self):
         'Testing separate parameter in the no history case'
         if not hasRPy:
@@ -201,18 +201,18 @@ class TestRPy(unittest.TestCase):
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve([
-             migr, 
+             migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', history=False,
-                 numRep=3, win=10, update=5, separate=1, 
+                 numRep=3, win=10, update=5, separate=1,
                  title='subPop size')
              ],
              end=30
         )
         sleep(1)
         r.dev_off()
-        
-    def testVarPlotterImage(self): 
+
+    def testVarPlotterImage(self):
         'Testing the image parameter of varPlotter'
         if not hasRPy:
             return True
@@ -226,7 +226,7 @@ class TestRPy(unittest.TestCase):
         stator = stat(popSize=1, stage=PreMating)
         simu.setGen(0)
         simu.evolve([
-             migr, 
+             migr,
              stator,
              varPlotter('subPopSize', history=True, numRep=nr, byRep=True,
                  win=10, update=5, plotType='image', varDim=3, title='subPop size')
@@ -254,7 +254,7 @@ class TestRPy(unittest.TestCase):
                 # count number of affected
                 stat(LD=[ [x, y] for x in range(0,10) for y in range(0,10)]),
                 # plot affected status
-                varPlotter(expr='LD', plotType='image', numRep=4, byRep=True, update=5, 
+                varPlotter(expr='LD', plotType='image', numRep=4, byRep=True, update=5,
                     title='pairwise LD', history=False),
                 # pause(rep=REP_LAST, step=5),
             ],
@@ -263,6 +263,6 @@ class TestRPy(unittest.TestCase):
         )
         sleep(1)
         r.dev_off()
-        
+
 if __name__ == '__main__':
     unittest.main()

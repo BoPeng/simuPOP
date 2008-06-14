@@ -6,7 +6,7 @@
 #
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=False)
@@ -15,16 +15,16 @@ from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestRecombinator(unittest.TestCase):
-    
+
     def testRecRate(self):
         'Testing to see if we actually recombine at this rate '
         a1, a2 = 0, 1
-            
+
         pop = population(10000, loci=[2,3,2])
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rate = 0.1) ] )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
@@ -37,8 +37,8 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[3,4])
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rate = 0.4, loci=[1,3]) ] )
         # 0.5
         assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
@@ -63,12 +63,12 @@ class TestRecombinator(unittest.TestCase):
         assert abs(simu.dvars(0).haploFreq['5-6']['0-0'] - 0.5) < 0.01
         #
         # alrorithm 0?
-        # 
+        #
         pop = population(10000, loci=[3,10])
         InitByValue(pop, value=[a1]*13+[a2]*13)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rate = 0.4, loci=[1,3,8]) ] )
         # 0.5
         assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
@@ -100,7 +100,7 @@ class TestRecombinator(unittest.TestCase):
         simu = simulator(pop, randomMating())
         rec = recombinator(rate = 0.4, convProb=1, loci=[1,3], convParam=1)
         simu.step( [
-            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]), 
+            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             rec ] )
         #print simu.dvars(0).haploFreq
         #print rec.convCounts()
@@ -135,8 +135,8 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[3,4])
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rate = 0.4, convProb=1, convParam=2, loci=[1,3]) ] )
         #
         assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
@@ -169,8 +169,8 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[3,10])
         InitByValue(pop, value=[a1]*13+[a2]*13)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rate = 0.4, convProb=1, convParam=2, loci=[1,3,8]) ] )
         #
         assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
@@ -199,7 +199,7 @@ class TestRecombinator(unittest.TestCase):
         assert abs(simu.dvars(0).haploFreq['5-6']['1-1'] - 0.3) < 0.01
         assert abs(simu.dvars(0).haploFreq['5-6']['1-0'] - 0.2) < 0.01
 
-                
+
     def testAtLociRecRates(self):
         'Testing loci parameter'
         if AlleleType() == 'binary':
@@ -209,8 +209,8 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[2,3,2])
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rate = [0.1,0.15,0.3], afterLoci=[0,2,5] ) ] )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
@@ -222,7 +222,7 @@ class TestRecombinator(unittest.TestCase):
             pass
         assert (simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
         assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.15) < 0.01
-                    
+
     def testRecIntensity(self):
         'Testing recombination intensity'
         if AlleleType() == 'binary':
@@ -232,8 +232,8 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(intensity = 0.1) ] )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
@@ -242,7 +242,7 @@ class TestRecombinator(unittest.TestCase):
         assert (simu.dvars(0).haploFreq['3-4']['%s-%s'%(a1,a2)] - 0.1)    < 0.01
         assert (simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
         assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.2)    < 0.01
-    
+
 
     def testRecIntensityAfterLoci(self):
         'Testing RecIntensity after loci'
@@ -253,8 +253,8 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[2,3,2], lociPos=[0,1,0,2,4,0,4] )
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        simu.step( [ 
-            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]), 
+        simu.step( [
+            stat( haploFreq = [[0,1], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(intensity = 0.1, afterLoci=[2,5]) ] )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
@@ -262,7 +262,7 @@ class TestRecombinator(unittest.TestCase):
         assert (simu.dvars(0).haploFreq['2-3']['%s-%s'%(a1,a2)] - 0.1)    < 0.01
         assert simu.dvars(0).haploFreq['3-4'].setdefault('%s-%s'%(a1,a2),0) == 0
         assert (simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
-        assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.2) < 0.01        
+        assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.2) < 0.01
 
 
     def testNoNewAllele(self):
@@ -290,9 +290,9 @@ class TestRecombinator(unittest.TestCase):
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
         #TurnOnDebug(DBG_RECOMBINATOR)
-        simu.step( [ 
+        simu.step( [
             stat( haploFreq = [[0,1], [2,3], [2,4], [5,6], [0,2], [0,6], [3,6]],
-                stage=PrePostMating), 
+                stage=PrePostMating),
             ## for debug purpose, output haploFreq
             #pyEval('haploFreq', stage=PrePostMating),
             recombinator(rate = 0) ] )
@@ -312,7 +312,7 @@ class TestRecombinator(unittest.TestCase):
         genoDad = [[0,0],[0,0],[0,0],[0,0],[0,1],[0,1],[0,1],[1,0],[1,0],[1,1]]
         genoMom = [[0,0],[0,1],[1,0],[1,1],[0,1],[1,0],[1,1],[1,0],[1,1],[1,1]]
         prop = [ [1, 0, 0, 0], [.5, .5, 0, 0], [.5, 0, 0.5, 0],
-            [0.5-r/2, r/2, r/2, 0.5-r/2], [0, 1, 0, 0], [r/2, .5-r/2, .5-r/2, r/2], 
+            [0.5-r/2, r/2, r/2, 0.5-r/2], [0, 1, 0, 0], [r/2, .5-r/2, .5-r/2, r/2],
             [0, .5, 0, .5], [0, 0, 1, 0], [0, 0, .5, .5], [0, 0, 0, 1] ]
         for i in range(0, len(genoDad)):
             pop = population(size=N, loci=[2])
@@ -320,7 +320,7 @@ class TestRecombinator(unittest.TestCase):
             simu = simulator(pop, randomMating())
             simu.step(
                     [ recombinator(rate=r),
-                        stat(haploFreq=[0,1]) 
+                        stat(haploFreq=[0,1])
                     ])
             hf = simu.dvars(0).haploFreq['0-1']
             assert not ((hf.setdefault('0-0',0) - prop[i][0]) > 0.01 or \
@@ -343,9 +343,9 @@ class TestRecombinator(unittest.TestCase):
             a1, a2 = 1, 2
         InitByValue(pop, value=[a1,a1,a2,a2])
         simu = simulator(pop, randomMating())
-        simu.evolve( 
+        simu.evolve(
             ops    = [ recombinator(rate=r) ],
-            postOps = [    stat(LD=[0,1]) ], 
+            postOps = [    stat(LD=[0,1]) ],
             gen=9)
         # check the change of LD, hopefully, the variation is not too high.
         assert abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) < 0.02, \
@@ -367,7 +367,7 @@ class TestRecombinator(unittest.TestCase):
             'Number of recombination event is not as expected. %d %d' % (rec.recCount(0), 2*N*r*G)
         assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
             'Number of recombination event is not as expected. %d %d' % (rec.recCount(9), 2*N*0.5*G)
-        
+
 
     def testNoMaleRec(self):
         'Testing recombination of male chromosome'
@@ -397,7 +397,7 @@ class TestRecombinator(unittest.TestCase):
                 # arrGenotype(ploidy, chrom), no dict parameter for efficiency purpose
                 #print ind.arrGenotype()
                 self.assertEqual(ind.arrGenotype(1, 1), [a3]*5)
-            else: 
+            else:
                 # there is no allele 3 anywhere (only non-binary...)
                 if AlleleType() != 'binary':
                     self.assertEqual(ind.arrGenotype().count(a3), 0)
@@ -428,7 +428,7 @@ class TestRecombinator(unittest.TestCase):
                  (CONVERT_TractLength, 2.5),
                  (CONVERT_NumMarkers, 2),
                  (CONVERT_ExponentialDistribution, 1)]:
-            rec = recombinator(rate=r, convProb=0.2, 
+            rec = recombinator(rate=r, convProb=0.2,
                 convMode=mode, convParam=param)
             pop = population(size=N, loci=[10,10])
             simu = simulator(pop, randomMating())
@@ -437,8 +437,8 @@ class TestRecombinator(unittest.TestCase):
             recCount = sum(rec.recCounts()) - max(rec.recCounts())
             convCount = sum(rec.convCounts().values())
             assert abs(recCount*0.2 - convCount) < 300
-        
+
 
 
 if __name__ == '__main__':
-    unittest.main()   
+    unittest.main()

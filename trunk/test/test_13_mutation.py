@@ -5,10 +5,10 @@
 #
 # Author:
 #    Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -18,7 +18,7 @@ from simuUtil import getGenotype
 import unittest, os, sys, exceptions
 
 class TestMutator(unittest.TestCase):
-    
+
     def assertGenotype(self, pop, genotype,
         loci=[], subPop=[], indRange=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
@@ -33,7 +33,7 @@ class TestMutator(unittest.TestCase):
                 self.assertEqual(geno, [genotype]*len(geno))
             else:
                 self.assertEqual(geno, genotype)
-            
+
     def assertGenotypeFreq(self, pop, freqLow, freqHigh,
         loci=[], subPop=[], indRange=[], atPloidy=[]):
         'Assert if the genotype has the correct allele frequency'
@@ -54,7 +54,7 @@ class TestMutator(unittest.TestCase):
             for i in range(len(freqLow)):
                 freq = geno.count(i)*1.0 / len(geno)
                 assert freq >= freqLow[i] and freq <= freqHigh[i]
-            
+
     def testMemberFunctions(self):
         'Testing common mutator functions'
         # need a parameter
@@ -81,9 +81,9 @@ class TestMutator(unittest.TestCase):
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
             randomMating() )
         simu.evolve([ kamMutator(rate=0.5, loci=[1,4])], gen=200)
-        self.assertGenotype(simu.population(0), 0, 
+        self.assertGenotype(simu.population(0), 0,
             loci=[0,2,3])
-     
+
     def testKamMutator(self):
         'Testing k-allele mutator'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
@@ -97,11 +97,11 @@ class TestMutator(unittest.TestCase):
             randomMating(), rep=5)
         simu.step([ kamMutator(rate=0.1, loci=[0,4])])
         # frequency seems to be OK.
-        self.assertGenotypeFreq(simu.population(0), 
+        self.assertGenotypeFreq(simu.population(0),
             [0.85],[0.95], loci=[0,4])
-        self.assertGenotype(simu.population(0), 0, 
+        self.assertGenotype(simu.population(0), 0,
             loci=[1,2,3])
-    
+
     def testSmmMutator(self):
         'Testing generalized step-wise mutation mutator'
         if AlleleType() == 'binary':
@@ -116,11 +116,11 @@ class TestMutator(unittest.TestCase):
             randomMating(), rep=5)
         simu.step([ smmMutator(rate=0.2, loci=[0,4])])
         # frequency seems to be OK.
-        self.assertGenotypeFreq(simu.population(0), 
+        self.assertGenotypeFreq(simu.population(0),
             [0.85],[0.95], loci=[0,4])
-        self.assertGenotype(simu.population(0), 0, 
+        self.assertGenotype(simu.population(0), 0,
             loci=[1,2,3])
-        
+
     def testGsmMutator(self):
         'Testing generalized step-wise mutation mutator (imcomplete)'
         if AlleleType() == 'binary':
@@ -135,7 +135,7 @@ class TestMutator(unittest.TestCase):
         simu.population(0).arrGenotype(True)[:] = 1
         simu.step([ gsmMutator(rate=0.2, loci=[0,4])])
         # frequency? Genometric distribution of step
-        #self.assertGenotypeFreq(simu.population(0), 
+        #self.assertGenotypeFreq(simu.population(0),
         #    [0.85],[0.95], loci=[0,4])
         self.assertGenotype(simu.population(0), 1,
             loci=[1,2,3])
@@ -149,7 +149,7 @@ class TestMutator(unittest.TestCase):
         m.apply(pop)
         assert pop.individual(0).allele(0) == 1, \
             "PyMutator failed"
-        
+
     def testMutationCount(self):
         N = 10000
         r = [0.001, 0.002, 0.003]
@@ -166,15 +166,15 @@ class TestMutator(unittest.TestCase):
             "Number of mutation event is not as expected."
         self.assertEqual( mut.mutationCount(1), 0)
         self.assertEqual( mut.mutationCount(3), 0)
-        
-    def testPointMutator(self):        
+
+    def testPointMutator(self):
         # test point mutator
         pop = population(size=10, ploidy=2, loci=[5])
         InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
         PointMutate(pop, inds=[1,2,3], toAllele=0, loci=[1,3])
         assert pop.individual(1).allele(1,0) == 0
         assert pop.individual(1).allele(1,1) != 0
-        PointMutate(pop, inds=[1,2,3], atPloidy=[1], 
+        PointMutate(pop, inds=[1,2,3], atPloidy=[1],
             toAllele=0, loci=[1,2])
         assert pop.individual(1).allele(2,1) == 0
         assert pop.individual(1).allele(2,0) != 0

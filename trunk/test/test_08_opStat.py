@@ -3,10 +3,10 @@
 # testing statistics calculation
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 
 import simuOpt
@@ -52,7 +52,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(0).numOfFemale, 100)
         self.assertEqual(pop.dvars(1).numOfMale, 100)
         self.assertEqual(pop.dvars(1).numOfFemale, 700)
-            
+
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'
         pop = population(size=[200, 800])
@@ -76,12 +76,12 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(0).propOfUnaffected, 0.5)
         self.assertEqual(pop.dvars(1).propOfAffected, 1/8.)
         self.assertEqual(pop.dvars(1).propOfUnaffected, 7/8.)
-        
+
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
-        pop = population(size=[500,100,1000], 
+        pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        InitByValue(pop, 
+        InitByValue(pop,
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             indRange = [[0,125], [125,375],[375,500],[500,550],
                 [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
@@ -106,7 +106,7 @@ class TestStat(unittest.TestCase):
         assert not pop.vars().has_key('numOfAlleles')
         # This assert fails right now because of some implementation issue
         #assert not pop.vars(0).has_key('alleleNum')
-        
+
 
     def testNumOfAlleles(self):
         'Testing calculation of number of alleles'
@@ -121,13 +121,13 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars().numOfAlleles[0], 3)
             self.assertEqual(pop.dvars(0).numOfAlleles[0], 3)
             self.assertEqual(pop.dvars(1).numOfAlleles[0], 3)
-        
+
     def testHeteroFreq(self):
         'Testing counting of heterozygote frequency'
-        pop = population(size=[500,100,1000], 
+        pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
         if AlleleType() == 'binary':
-            InitByValue(pop, 
+            InitByValue(pop,
                 value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
                 indRange = [[0,125], [125,375],[375,500],[500,550],
                     [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
@@ -157,7 +157,7 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroFreq[0][0], 0.6)
             self.assertEqual(pop.dvars(2).heteroFreq[0][1], 0.6)
         else:
-            InitByValue(pop, 
+            InitByValue(pop,
                 value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
                 indRange = [[0,125], [125,375],[375,500],[500,550],
                     [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
@@ -194,12 +194,12 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroFreq[0][1], 0.1)
             self.assertEqual(pop.dvars(2).heteroFreq[0][2], 0.6)
             self.assertEqual(pop.dvars(2).heteroFreq[0][3], 0.5)
-        
+
     def testExpHetero(self):
         'Testing expected heterozygosity 1-sum p_i2'
-        pop = population(size=[500,100,1000], 
+        pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        InitByValue(pop, 
+        InitByValue(pop,
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             indRange = [[0,125], [125,375],[375,500],[500,550],
                 [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
@@ -212,9 +212,9 @@ class TestStat(unittest.TestCase):
 
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'
-        pop = population(size=[500,100,1000], 
+        pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        InitByValue(pop, 
+        InitByValue(pop,
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             indRange = [[0,125], [125,375],[375,500],[500,550],
                 [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
@@ -249,10 +249,10 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).genoFreq[0][1][1], 0.4)
 
     def testFst(self):
-        'Testing calculation of Fst value'    
-        pop = population(size=[500,100,1000], 
+        'Testing calculation of Fst value'
+        pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        InitByValue(pop, 
+        InitByValue(pop,
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             indRange = [[0,125], [125,375],[375,500],[500,550],
                 [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
@@ -285,7 +285,7 @@ class TestStat(unittest.TestCase):
             assert abs(pop.dvars().haploFreq['2-5']['0-0'] - 0.3) < 0.05
             assert abs(pop.dvars().haploFreq['2-5']['1-1'] - 0.7) < 0.05
         else:
-            InitByValue(pop, value=[[1]*10,[2]*10,[3]*10], 
+            InitByValue(pop, value=[[1]*10,[2]*10,[3]*10],
                 proportions=[.2,.3,.5])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
             assert abs(pop.dvars().haploFreq['0-1-5']['1-1-1'] - 0.2) < 0.05
@@ -298,7 +298,7 @@ class TestStat(unittest.TestCase):
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
         #TurnOnDebug(DBG_STATOR)
-        pop = population(size=[500,100,1000], 
+        pop = population(size=[500,100,1000],
             ploidy=2, loci = [5])
         InitByFreq(pop, freq)
         if AlleleType() == 'binary':
@@ -309,7 +309,7 @@ class TestStat(unittest.TestCase):
             p = var.alleleFreq[loc1][allele1]
             q = var.alleleFreq[loc2][allele2]
             pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
-            return pq-p*q    
+            return pq-p*q
         def LD(var, loc1, loc2):
             LD = 0
             #allele1 is alleles in loc1
@@ -342,7 +342,7 @@ class TestStat(unittest.TestCase):
             p = var.alleleFreq[loc1][allele1]
             q = var.alleleFreq[loc2][allele2]
             pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
-            return (pq-p*q)**2/(p*q*(1-p)*(1-q))            
+            return (pq-p*q)**2/(p*q*(1-p)*(1-q))
         def R2(var, loc1, loc2):
             R2 = 0
             #allele1 is alleles in loc1
@@ -379,7 +379,7 @@ class TestStat(unittest.TestCase):
             else:
                 assert (Delta2(pop.dvars(sp), 2, 4) - pop.dvars(sp).Delta2[2][4]) < 1e-6
         # test for single allele cases
-        # for binary alleles, LD should be the same 
+        # for binary alleles, LD should be the same
         # for standard or long alleles, LD should be different from average LD
         Stat(pop, LD=[1,3,0,1], LD_param={'midValues':True})
         assert (abs(LD_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld['1-3']['0-1'])) < 1e-6
@@ -406,12 +406,12 @@ class TestStat(unittest.TestCase):
         assert not pop.vars(0).has_key('LD_prime')
         if pop.dvars().numOfAlleles[2] <= 2 or pop.dvars().numOfAlleles[3] <= 2:
             assert pop.vars().has_key('Delta2')
-                    
+
     def testLD(self):
         '''Testing LD for both dialleleic and multi-allelic cases'''
         self.TestLD([.2, .8])
         self.TestLD([.2, .3, .5])
-        
+
     def testAssociation(self):
         'Testing calculation of association between two loci'
         #TurnOnDebug(DBG_STATO
@@ -420,8 +420,8 @@ class TestStat(unittest.TestCase):
         # FIXME:
         #
         # In this test, we use and assume consecutive alleles, i.e. allele 0, 1 and 2
-        # In simuPOP, these alleles can be discrete, i.e. something like 
-        # 
+        # In simuPOP, these alleles can be discrete, i.e. something like
+        #
         #    InitByFreq(pop, [0, 0, .2, .3, .5])
         #
         # This has not passed our test yet. (degree of freedom problem?)
@@ -502,8 +502,8 @@ class TestStat(unittest.TestCase):
         pop.dvars().alleleFreq[2][0]
         pop.dvars().haploFreq['1-2']
         pop.dvars().haploFreq['1-3']
-            
-        
+
+
 
 if __name__ == '__main__':
     unittest.main()

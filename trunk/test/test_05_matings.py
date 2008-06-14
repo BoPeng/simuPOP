@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # unittests for mating schemes
-# 
+#
 # Author:
 #   Bo Peng (bpeng@rice.edu)
 #
@@ -18,7 +18,7 @@ import unittest, os, sys, random, math, sets
 def setGen(pop, off, dad, mom):
     off.setAllele(pop.gen(), 0)
     return True
-        
+
 class TestMatingSchemes(unittest.TestCase):
 
     def testNoMating(self):
@@ -37,33 +37,33 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing binomialSelection mating scheme (FIXME: imcomplete)'
         simu = simulator(population(10, loci=[1], ploidy=1),
             binomialSelection())
-        
+
     def testSelection(self):
         'Testing selections (FIXME: imcomplete)'
         pass
-     
+
     def testPopSizeChange(self):
         'Testing means to change population size (FIXME: imcomplete)'
         pass
-        
+
     def getFamSize(self, mate, endGen=1, size=1000):
         simu = simulator(population(size, loci=[1]), mate)
         simu.evolve(ops=[], gen=endGen)
         return simu.population(0).dvars().famSizes
-        
+
     def testNumOffspring(self):
         'Testing means to control number of offspring (FIXME: check distribution)'
         TurnOnDebug(DBG_MATING)
-        self.assertEqual( 
+        self.assertEqual(
             self.getFamSize(binomialSelection(numOffspring=2)),
             [2]*500)
         # numOffspringFunc
         def nos(gen):
             return gen%2+1
-        self.assertEqual( 
+        self.assertEqual(
             self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=2),
             [2]*500)
-        self.assertEqual( 
+        self.assertEqual(
             self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=3),
             [1]*1000)
         # what if each family have different number of offspring?
@@ -79,19 +79,19 @@ class TestMatingSchemes(unittest.TestCase):
             assert num[i] < mean + 50 and num[i] > mean - 50
         #
         # MATE_GeometricDistribution
-        cnt = self.getFamSize( randomMating(numOffspring=.3, 
+        cnt = self.getFamSize( randomMating(numOffspring=.3,
                 mode=MATE_GeometricDistribution))
-        #print cnt    
+        #print cnt
         # MATE_BinomialDistribution
-        cnt = self.getFamSize( randomMating(numOffspring=.3, 
+        cnt = self.getFamSize( randomMating(numOffspring=.3,
             maxNumOffspring=5, mode=MATE_BinomialDistribution))
         #print cnt
         # MATE_PoissonDistribution
-        cnt = self.getFamSize( randomMating(numOffspring=.3, 
+        cnt = self.getFamSize( randomMating(numOffspring=.3,
             mode=MATE_PoissonDistribution))
         #print cnt
         TurnOffDebug(DBG_MATING)
-        
+
 ##     def testTrajectory(self):
 ##         'Testing trajectory prediction functions'
 ##         sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1
@@ -100,7 +100,7 @@ class TestMatingSchemes(unittest.TestCase):
 ##         low, high = 0.5, 0.55
 ##         mutage, grate, N0, sco = 840, 0.01, 1000000, 0.0
 ##         path = FreqTrajectoryForward(low, high, mutage, grate, N0, sco)
-## 
+##
 ##     def testTrajectoryStoch(self):
 ##         'Testing the trajectory obtained from backward binomial sampling'
 ##         # fitness
@@ -109,7 +109,7 @@ class TestMatingSchemes(unittest.TestCase):
 ##         # constant population size
 ##         # s is default to neutral process
 ##         path = FreqTrajectoryStoch(freq=0.3, N=10000)
-##         # advantageous allele, s2>s1>0 
+##         # advantageous allele, s2>s1>0
 ##         path = FreqTrajectoryStoch(freq=0.3, N=10000,fitness=[1, 1, 1.01])
 ##         # overdominance, s1 > s2 > 0
 ##         path = FreqTrajectoryStoch(freq=0.3, N=10000,fitness=[1, 1.02, 1])
@@ -123,7 +123,7 @@ class TestMatingSchemes(unittest.TestCase):
 ##                 return [10000*math.exp(0.001*(gen-5000))]
 ##         # neutral
 ##         path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc)
-##         # advantageous allele, s2>s1>0 
+##         # advantageous allele, s2>s1>0
 ##         path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc,fitness=[1, 1, 1.01])
 ##         # overdominance, s1 > s2 > 0
 ##         path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc,fitness=[1, 1.02, 1])
@@ -139,12 +139,12 @@ class TestMatingSchemes(unittest.TestCase):
 ##         # neutral
 ##         path = FreqTrajectoryStoch(curGen=10000, freq=0.3, NtFunc=NtFunc, fitnessFunc=fitnessFunc)
 ##         # print path
-## 
+##
 ##     def testTrajectoryMultiStoch(self):
 ##         'Testing the trajectory obtained from backward binomial sampling'
-##         #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000, 
+##         #path = FreqTrajectoryMultiStoch(freq=[0.1], N=10000,
 ##         # fitness=[1, 1,01, 1.02], maxMutAge=100000)
-##         path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000, 
+##         path = FreqTrajectoryMultiStoch(freq=[0.05, 0.1], N=10000,
 ##            fitness=[1, 1.01, 1.02, 1, 1.002, 1.002],
 ##            maxMutAge=100000)
 ##         # using sFunc
@@ -153,12 +153,12 @@ class TestMatingSchemes(unittest.TestCase):
 ##                 return [1, 1.01, 1.02, 1, 1.002, 1.002]
 ##             else:
 ##                 return [1, 0.99, 0.98, 1, 0.999, 0.998]
-##         path = FreqTrajectoryMultiStoch(curGen=10000, 
-##             freq=[0.05, 0.1], N=10000, 
+##         path = FreqTrajectoryMultiStoch(curGen=10000,
+##             freq=[0.05, 0.1], N=10000,
 ##             fitnessFunc=s, maxMutAge=10000)
 ##         # then , with frequency dependent?
 ##         #print path.numTraj(), path.maxLen(), path.traj(0), path.traj(1)
-##    
+##
 
     def testControlledMating(self):
         'Testing controlled mating'
@@ -179,29 +179,29 @@ class TestMatingSchemes(unittest.TestCase):
             return [expected, expected + 0.05]
         #
         # turn On debug
-        simu = simulator( population(100, loci=[1], ploidy=2), 
-            controlledMating( matingScheme=randomMating(), 
-                locus=0, allele=1, freqFunc=freqRange ) 
+        simu = simulator( population(100, loci=[1], ploidy=2),
+            controlledMating( matingScheme=randomMating(),
+                locus=0, allele=1, freqFunc=freqRange )
             )
         #print "Simulator created"
-        simu.evolve( 
+        simu.evolve(
             preOps=[
                 initByValue([0])
                 ],
             ops=[
-                pointMutator(loci=[0], 
-                    toAllele=1, 
+                pointMutator(loci=[0],
+                    toAllele=1,
                     inds = [0],
                     at = [burnin+1],
                     stage = PreMating),
                 stat(alleleFreq=[0]),
                 # pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
-            ], 
+            ],
             gen=burnin+mutAge
         )
-            
 
-        
+
+
     def testControlledRandomMating(self):
         'Testing controlled random mating'
         # planned trajectory
@@ -219,32 +219,32 @@ class TestMatingSchemes(unittest.TestCase):
                 return [freq[gen-1-burnin]]
         #
         # turn On debug
-        simu = simulator( population(100, loci=[1], ploidy=2), 
-            controlledRandomMating( locus=0, allele=1, freqFunc=freqRange ) 
+        simu = simulator( population(100, loci=[1], ploidy=2),
+            controlledRandomMating( locus=0, allele=1, freqFunc=freqRange )
             )
         #print "Simulator created"
-        simu.evolve( 
+        simu.evolve(
             preOps=[
                 initByValue([0])
                 ],
             ops=[
-                pointMutator(loci=[0], 
-                    toAllele=1, 
+                pointMutator(loci=[0],
+                    toAllele=1,
                     inds = [0],
                     at = [burnin+1],
                     stage = PreMating),
                 stat(alleleFreq=[0]),
                 #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
-            ], 
+            ],
             gen=burnin+mutAge
         )
-        
+
     def testControlledMultiRandomMating(self):
         'Testing the multi-locus version of controlled random mating'
         N = 5000
         # planned trajectory
-        traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N, 
-            maxMutAge=500, restartIfFail=True)        
+        traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N,
+            maxMutAge=500, restartIfFail=True)
         # staring from when?
         burnin = 100
         mutAge = max([len(x) for x in traj])
@@ -255,29 +255,29 @@ class TestMatingSchemes(unittest.TestCase):
         from simuUtil import trajFunc
         expectedFreq = trajFunc(endingGen, traj)
         #
-        simu = simulator( population(N, loci=[1,1], ploidy=2), 
-            controlledRandomMating( loci=[0,1], 
-                alleles=[1]*2, freqFunc=expectedFreq ) 
+        simu = simulator( population(N, loci=[1,1], ploidy=2),
+            controlledRandomMating( loci=[0,1],
+                alleles=[1]*2, freqFunc=expectedFreq )
             )
         #print "Simulator created"
-        simu.evolve( 
+        simu.evolve(
             preOps=[
                 initByValue([0]*2)
                 ],
             ops=[
-                pointMutator(loci=[0], 
-                    toAllele=1, 
+                pointMutator(loci=[0],
+                    toAllele=1,
                     inds = [0],
                     at = [endingGen-len(traj[0])+1],
                     stage = PreMating),
-                pointMutator(loci=[1], 
-                    toAllele=1, 
+                pointMutator(loci=[1],
+                    toAllele=1,
                     inds = [1],
                     at = [endingGen-len(traj[1])+1],
                     stage = PreMating),
                 stat(alleleFreq=[0,1]),
                 #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])', begin=burnin)
-            ], 
+            ],
             gen=endingGen
         )
 
@@ -308,7 +308,7 @@ class TestMatingSchemes(unittest.TestCase):
             fitnessFunc=fitness)
         if len(traj) == 0:
             for i in range(3):
-                assert traj[i] >= freq[i][0] and traj[i] <= freq[i][1] 
+                assert traj[i] >= freq[i][0] and traj[i] <= freq[i][1]
         # for t in traj:
         #    print ', '.join(['%.2f' % x for x in t])
         # one locus
@@ -325,7 +325,7 @@ class TestMatingSchemes(unittest.TestCase):
             lastFrq = [x[-1] for x in traj]
             lastSize = [1000]*3
             avgFrq = sum([lastFrq[x]*lastSize[x] for x in range(3)]) / sum(lastSize)
-            assert avgFrq >= freq[0][0] and avgFrq <= freq[0][1] 
+            assert avgFrq >= freq[0][0] and avgFrq <= freq[0][1]
         # for t in traj:
         #    print ', '.join(['%.2f' % x for x in t])
         # planned trajectory
@@ -344,7 +344,7 @@ class TestMatingSchemes(unittest.TestCase):
                 lastFrq = [traj[loc*2+sp][-1] for sp in range(2)]
                 lastSize = Nt[20]
                 avgFrq = sum([lastFrq[x]*lastSize[x] for x in range(2)]) / sum(lastSize)
-                assert avgFrq >= freq[loc][0] and avgFrq <= freq[loc][1] 
+                assert avgFrq >= freq[loc][0] and avgFrq <= freq[loc][1]
         #for t in traj:
         #    print ', '.join(['%.2f' % x for x in t])
 
@@ -365,7 +365,7 @@ class TestMatingSchemes(unittest.TestCase):
             ops=[],
             gen=10)
 
-    
+
     def testPyMating(self):
         'Test pyMating mating scheme'
         ver = sys.version_info[:3]
@@ -467,7 +467,7 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(getOffSize(1000, [2, -0.1, 3]), [360, 100, 540])
         self.assertEqual(getOffSize(1000, [-0.2, -0.1, 0]), [200, 100, 700])
         TurnOffDebug(DBG_MATING)
-    
+
     def testHeteroMating(self):
         'Testing heterogeneous mating schemes'
         TurnOnDebug(DBG_MATING)
@@ -604,8 +604,8 @@ class TestMatingSchemes(unittest.TestCase):
         )
         ped = pedigree('pedigree.dat')
         #
-        simu1 = simulator(pop, 
-            pedigreeMating(generator=selfingOffspringGenerator(), 
+        simu1 = simulator(pop,
+            pedigreeMating(generator=selfingOffspringGenerator(),
                 pedigree=ped))
         simu1.evolve(
             ops = [parentTagger(output='>>pedigree_rep.dat',
@@ -618,8 +618,8 @@ class TestMatingSchemes(unittest.TestCase):
         ped.markUnrelated()
         ped.removeUnrelated()
         ped.save('ped_shrink.dat')
-        simu2 = simulator(pop, 
-            pedigreeMating(generator=selfingOffspringGenerator(), 
+        simu2 = simulator(pop,
+            pedigreeMating(generator=selfingOffspringGenerator(),
             pedigree=ped))
         simu2.evolve(
             ops = [parentTagger(output='>>ped_shrink_rep.dat',
@@ -631,7 +631,7 @@ class TestMatingSchemes(unittest.TestCase):
         for file in ['pedigree.dat', 'pedigree_rep.dat',
                 'ped_shrink.dat', 'ped_shrink_rep.dat']:
             os.remove(file)
-        
+
 
     def testMateRandomSex(self):
         '''Testing assigning offspring sex by random'''
@@ -722,18 +722,18 @@ class TestMatingSchemes(unittest.TestCase):
 ##       curGen = endingGen,
 ##       # five dsl, five subpopulation
 ##       numLoci=numLoci,
-##       freq=[0.5]*(numSubPop*5), 
-##       NtFunc=popSizeFunc, 
-##       fitness=[1, 1.0007, 1.0014]*5, 
-##       minMutAge=endingGen-splitGen, 
-##       maxMutAge=endingGen-burninGen, 
+##       freq=[0.5]*(numSubPop*5),
+##       NtFunc=popSizeFunc,
+##       fitness=[1, 1.0007, 1.0014]*5,
+##       minMutAge=endingGen-splitGen,
+##       maxMutAge=endingGen-burninGen,
 ##       restartIfFail=True)
 ##     self.assertEqual( len(trajFunc(splitGen)), numLoci*numSubPop)
 ##     self.assertEqual( len(trajFunc(splitGen-1)), numLoci)
 ##     for i in range(len(gens)):
 ##       assert trajFunc(gens[i])[i] > 0
 ##       assert trajFunc(gens[i]-1)[i] == 0
-  
+
     def testHaplodiploid(self):
         'Testing recombination in haplodiploid populations'
         pop = population(size=[20, 20], ploidy=Haplodiploid, loci=[3,5])
@@ -860,7 +860,7 @@ class TestMatingSchemes(unittest.TestCase):
         #
         #
 
-        
+
 if __name__ == '__main__':
   unittest.main()
   sys.exit(0)
