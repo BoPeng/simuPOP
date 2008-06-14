@@ -144,7 +144,7 @@ public:
 	            const vectoru & loci = vectoru(),
 	            int atPloidy = -1,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, 
+	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
 				const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci, atPloidy, stage, begin, end,
 			step, at, rep, grp, infoFields),

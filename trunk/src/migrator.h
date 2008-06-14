@@ -76,11 +76,11 @@ public:
 	   	parameter \c mode. \c rate should be an m by n matrix. If a number is given,
 	   	the migration rate will be a \c m by \c n matrix of value \c r
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-	 \param fromSubPop an array of 'from' subpopulations. Default to all. If a single 
+	 \param fromSubPop an array of 'from' subpopulations. Default to all. If a single
 	 	subpopulation is specified, <tt>[]</tt> can be ignored. I.e., <tt>[a]</tt>
 	       	is equvalent to \c a.
 	 \param toSubPop an array of 'to' subpopulations. Default to all
-		subpopulations. If a single subpopulation is specified, 
+		subpopulations. If a single subpopulation is specified,
 		<tt>[]</tt> can be ignored.
 	 \param stage default to \c PreMating
 

@@ -43,7 +43,7 @@ const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max()
 #define CHECK_GEN(gen) DBG_FAILIF(gen >= m_maternal.size(), IndexError, \
 		"Generation number " + toStr(gen) + " out of range (<" \
 		+ toStr(m_maternal.size()) + ")")
-	
+
 #define CHECK_INDEX(gen, idx) DBG_FAILIF(idx >= m_maternal[gen].size(), \
 		IndexError,	"Individual index out of range.")
 
@@ -139,7 +139,7 @@ void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
 	CHECK_INDEX(gen + 1, parent);
-	
+
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
 		shift += m_pedSize[gen][i];

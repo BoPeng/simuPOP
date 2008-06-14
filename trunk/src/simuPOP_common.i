@@ -1,28 +1,28 @@
 ///////////////////////////////////////////////////////////////////
-//     Copyright (C) 2004 by Bo Peng                                                                                 
-//     bpeng@rice.edu                                                                                                                
-//                                                                                                                                                 
+//     Copyright (C) 2004 by Bo Peng
+//     bpeng@rice.edu
+//
 //     $LastChangedDate$
 //     $Rev$
-//                                                                                                                                                 
-//     This program is free software; you can redistribute it and/or modify    
-//     it under the terms of the GNU General Public License as published by    
-//     the Free Software Foundation; either version 2 of the License, or         
-//     (at your option) any later version.                                                                     
-//                                                                                                                                                 
-//     This program is distributed in the hope that it will be useful,             
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of                
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the                 
-//     GNU General Public License for more details.                                                    
-//                                                                                                                                                 
-//     You should have received a copy of the GNU General Public License         
-//     along with this program; if not, write to the                                                 
-//     Free Software Foundation, Inc.,                                                                             
-//     59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.                         
+//
+//     This program is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program; if not, write to the
+//     Free Software Foundation, Inc.,
+//     59 Temple Place - Suite 330, Boston, MA    02111-1307, USA.
 //
 ///////////////////////////////////////////////////////////////////
 
-// for uint16_t 
+// for uint16_t
 %include "stdint.i"
 
 ////////////////////////// INCLUDE FILES //////////////////////////
@@ -216,7 +216,7 @@ namespace std
 %ignore simuPOP::IndAlleleIterator;
 %ignore simuPOP::IndInfoIterator;
 
-// individual and population are type names, and can not be used 
+// individual and population are type names, and can not be used
 // as function name. ind and pop are used instead.
 // at the python level, individual and population are better.
 %rename(individual) ind(ULONG, UINT);
@@ -290,7 +290,7 @@ namespace std
 
 ////////////////////////// Provide a iterator as pop.individuals() ////////////////
 // This part is now implemented at the C++ level (see population.h)
-// Performance comparison shows 12.18s vs. 4.10s, the individual(i) method 
+// Performance comparison shows 12.18s vs. 4.10s, the individual(i) method
 // takes 4.7 to 5.1s
 //
 //%pythoncode %{
@@ -370,7 +370,7 @@ def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
                         merged[j] = None
                         break
         if count == 1:
-            break 
+            break
     res = merged[0]
     if len(newSubPopSizes) != 0:
         if sum(newSubPopSizes) != res.popSize():
@@ -404,7 +404,7 @@ def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=Fals
                         merged[j] = None
                         break
         if count == 1:
-            break 
+            break
     res = merged[0]
     if len(newNumLoci) != 0:
         if sum(newNumLoci) != res.totNumLoci():
@@ -414,7 +414,7 @@ def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=Fals
         res.rearrangeLoci(newNumLoci, newLociPos)
     return res
 
-    
+
 #### /////////////////// FUNCTION COUNTERPART OF OPERATORS ////////////////////////////
 
 
@@ -550,7 +550,7 @@ def MapSelect(pop, *args, **kwargs):
     mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
 
 if mapSelector.__init__.__doc__ is not None:
-	MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__ 
+	MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
 
 def MaSelect(pop, *args, **kwargs):
     maSelector(stage=PostMating, *args, **kwargs).apply(pop)
@@ -629,7 +629,7 @@ if sample.__init__.__doc__ is not None:
 def RandomSample(pop, *args, **kwargs):
     s = randomSample(*args, **kwargs)
     s.apply(pop)
-    return s.samples(pop) 
+    return s.samples(pop)
 
 if randomSample.__init__.__doc__ is not None:
 	RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
@@ -706,7 +706,7 @@ if simulator.saveSimulator.__doc__ is not None:
 	SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
-def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False, 
+def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False,
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
     maxAllele=ModuleMaxAllele, infoFields=[]):
     if subPop != []:
@@ -760,13 +760,13 @@ def new_dumper(self, chrom=[], subPop=[], indRange=[], *args, **kwargs):
             ir.extend(i)
     cppModule.dumper_swiginit(self,
         cppModule.new_dumper(chrom=ch, subPop=sp, indRange=ir, *args, **kwargs))
- 
+
 new_dumper.__doc__ = dumper.__init__.__doc__
 del dumper.__init__
 dumper.__init__ = new_dumper
 
 
-def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[], 
+def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[],
     allele=-1, alleles=[], *args, **kwargs):
     # parameter locus
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
@@ -785,16 +785,16 @@ def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[],
         al = alleles
     else:
         raise exceptions.TypeError('Please specify allele or alleles')
-    cppModule.controlledMating_swiginit(self, 
-        cppModule.new_controlledMating(matingScheme=matingScheme, 
+    cppModule.controlledMating_swiginit(self,
+        cppModule.new_controlledMating(matingScheme=matingScheme,
             loci=loc, alleles=al, freqFunc=freqFunc, *args, **kwargs))
- 
+
 new_controlledMating.__doc__ = controlledMating.__init__.__doc__
 del controlledMating.__init__
 controlledMating.__init__ = new_controlledMating
 
 
-def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[], 
+def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
     allele=-1, alleles=[], *args, **kwargs):
     # parameter locus
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
@@ -814,9 +814,9 @@ def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
     else:
         raise exceptions.TypeError('Please specify allele or alleles')
     cppModule.controlledRandomMating_swiginit(self,
-        cppModule.new_controlledRandomMating( loci=loc, alleles=al, 
+        cppModule.new_controlledRandomMating( loci=loc, alleles=al,
         freqFunc=freqFunc, *args, **kwargs))
- 
+
 new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
 del controlledRandomMating.__init__
 controlledRandomMating.__init__ = new_controlledRandomMating
@@ -852,7 +852,7 @@ def new_kamMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
         loc = loci
     cppModule.kamMutator_swiginit(self,
         cppModule.new_kamMutator(rate=r, loci=loc, *args, **kwargs))
- 
+
 new_kamMutator.__doc__ = kamMutator.__init__.__doc__
 del kamMutator.__init__
 kamMutator.__init__ = new_kamMutator
@@ -872,7 +872,7 @@ def new_smmMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
         loc = loci
     cppModule.smmMutator_swiginit(self,
         cppModule.new_smmMutator(rate=r, loci=loc, *args, **kwargs))
- 
+
 new_smmMutator.__doc__ = smmMutator.__init__.__doc__
 del smmMutator.__init__
 smmMutator.__init__ = new_smmMutator
@@ -892,7 +892,7 @@ def new_gsmMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
         loc = loci
     cppModule.gsmMutator_swiginit(self,
         cppModule.new_gsmMutator(rate=r, loci=loc, *args, **kwargs))
- 
+
 new_gsmMutator.__doc__ = gsmMutator.__init__.__doc__
 del gsmMutator.__init__
 gsmMutator.__init__ = new_gsmMutator
@@ -910,9 +910,9 @@ def new_pyMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
         loc = atLoci
     else:
         loc = loci
-    cppModule.pyMutator_swiginit(self, 
+    cppModule.pyMutator_swiginit(self,
         cppModule.new_pyMutator(rate=r, loci=loc, *args, **kwargs))
- 
+
 new_pyMutator.__doc__ = pyMutator.__init__.__doc__
 del pyMutator.__init__
 pyMutator.__init__ = new_pyMutator
@@ -922,12 +922,12 @@ def new_pointMutator(self, locus=None, loci=[], atLoci=[], *args, **kwargs):
         print 'Parameter atLoci is obsolete. Please use locus or loci'
         loc = atLoci
     elif locus != None:
-        loc = [locus]    
+        loc = [locus]
     else:
         loc = loci
-    cppModule.pointMutator_swiginit(self, 
+    cppModule.pointMutator_swiginit(self,
         cppModule.new_pointMutator(loci=loc, *args, **kwargs))
- 
+
 new_pointMutator.__doc__ = pointMutator.__init__.__doc__
 del pointMutator.__init__
 pointMutator.__init__ = new_pointMutator
@@ -943,7 +943,7 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
         if len(rate) == 0:
             raise exceptions.ValueError('Migration rate can not be empty')
         elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
-            r = [rate]            
+            r = [rate]
     # parameter fromSubPop
     if type(fromSubPop) in [types.IntType, types.LongType]:
         fs = [fromSubPop]
@@ -982,7 +982,7 @@ pyMigrator.__init__ = new_pyMigrator
 
 
 def new_recombinator(self, intensity=-1, rate=[],
-    locus=None, loci=[], afterLoci=[], 
+    locus=None, loci=[], afterLoci=[],
     maleIntensity=-1, maleRate=[],
     maleLocus=None, maleLoci=[], maleAfterLoci=[], *args, **kwargs):
     # parameter loci
@@ -1017,12 +1017,12 @@ def new_recombinator(self, intensity=-1, rate=[],
     else:
         mr = maleRate
     cppModule.recombinator_swiginit(self,
-        cppModule.new_recombinator(intensity=intensity, 
-        rate=r, afterLoci=loci, 
-        maleIntensity=maleIntensity, 
-        maleRate=mr, maleAfterLoci=maleLoci, 
+        cppModule.new_recombinator(intensity=intensity,
+        rate=r, afterLoci=loci,
+        maleIntensity=maleIntensity,
+        maleRate=mr, maleAfterLoci=maleLoci,
         *args, **kwargs))
- 
+
 new_recombinator.__doc__ = recombinator.__init__.__doc__
 del recombinator.__init__
 recombinator.__init__ = new_recombinator
@@ -1069,7 +1069,7 @@ def new_initByFreq(self, alleleFreq=[], locus=-1, loci=[], atLoci=[], indRange=[
     cppModule.initByFreq_swiginit(self,
         cppModule.new_initByFreq(alleleFreq=af, loci=loc, indRange=ir, subPop=sp,
             *args, **kwargs))
- 
+
 new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
 initByFreq.__init__ = new_initByFreq
@@ -1113,7 +1113,7 @@ def new_initByValue(self, value=[], indRange=[], locus=-1, loci=[], atLoci=[], s
         sp = []
     cppModule.initByValue_swiginit(self,
         cppModule.new_initByValue(value=val, loci=loc, indRange=ir, subPop=sp, *args, **kwargs))
- 
+
 new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
 initByValue.__init__ = new_initByValue
@@ -1142,13 +1142,13 @@ def new_pyInit(self, locus=-1, loci=[], atLoci=[], indRange=[], *args, **kwargs)
         loc = []
     cppModule.pyInit_swiginit(self,
         cppModule.new_pyInit(indRange=ir, loci=loc, *args, **kwargs))
- 
+
 new_pyInit.__doc__ = pyInit.__init__.__doc__
 del pyInit.__init__
 pyInit.__init__ = new_pyInit
 
 
-def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association_param={}, 
+def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association_param={},
     relGroups=[], relMethod=[], midValues=None, *args, **kwargs):
     # midValues is now obsolete
     if midValues is not None:
@@ -1199,12 +1199,12 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association
         rm = [relMethod]
     else:
         rm = relMethod
-    cppModule.stat_swiginit(self, 
-        cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp, 
-            association=Association, association_param=assp, 
+    cppModule.stat_swiginit(self,
+        cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp,
+            association=Association, association_param=assp,
             relGroups=rg, relBySubPop=useSubPop,
             relMethod =rm, *args, **kwargs))
- 
+
 new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__
 stat.__init__ = new_stat
@@ -1218,7 +1218,7 @@ def new_randomSample(self, size=[], *args, **kwargs):
         sz = size
     cppModule.randomSample_swiginit(self,
         cppModule.new_randomSample(size=sz, *args, **kwargs))
- 
+
 new_randomSample.__doc__ = randomSample.__init__.__doc__
 del randomSample.__init__
 randomSample.__init__ = new_randomSample
@@ -1238,9 +1238,9 @@ def new_caseControlSample(self, cases=[], controls=[], *args, **kwargs):
         ct = controls
         spSample = True
     cppModule.caseControlSample_swiginit(self,
-        cppModule.new_caseControlSample(cases=ca, controls=ct, 
+        cppModule.new_caseControlSample(cases=ca, controls=ct,
             spSample=spSample, *args, **kwargs))
- 
+
 new_caseControlSample.__doc__ = caseControlSample.__init__.__doc__
 del caseControlSample.__init__
 caseControlSample.__init__ = new_caseControlSample
@@ -1253,7 +1253,7 @@ def new_affectedSibpairSample(self,size=[], *args, **kwargs):
         sz = size
     cppModule.affectedSibpairSample_swiginit(self,
         cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
- 
+
 new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
 del affectedSibpairSample.__init__
 affectedSibpairSample.__init__ = new_affectedSibpairSample
@@ -1266,7 +1266,7 @@ def new_largePedigreeSample(self, size=[], *args, **kwargs):
         sz = size
     cppModule.largePedigreeSample_swiginit(self,
         cppModule.new_largePedigreeSample(size=sz, *args, **kwargs))
- 
+
 new_largePedigreeSample.__doc__ = largePedigreeSample.__init__.__doc__
 del largePedigreeSample.__init__
 largePedigreeSample.__init__ = new_largePedigreeSample
@@ -1279,7 +1279,7 @@ def new_nuclearFamilySample(self, size=[], *args, **kwargs):
         sz = size
     cppModule.nuclearFamilySample_swiginit(self,
         cppModule.new_nuclearFamilySample(size=sz, *args, **kwargs))
- 
+
 new_nuclearFamilySample.__doc__ = nuclearFamilySample.__init__.__doc__
 del nuclearFamilySample.__init__
 nuclearFamilySample.__init__ = new_nuclearFamilySample
@@ -1306,7 +1306,7 @@ def new_mapSelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwa
         sp = []
     cppModule.mapSelector_swiginit(self,
         cppModule.new_mapSelector(loci=loc, subPops=sp, *args, **kwargs))
- 
+
 new_mapSelector.__doc__ = mapSelector.__init__.__doc__
 del mapSelector.__init__
 mapSelector.__init__ = new_mapSelector
@@ -1354,7 +1354,7 @@ def new_mlSelector(self, selectors=[], subPop=-1, subPops=[], *args, **kwargs):
         sp = []
     cppModule.mlSelector_swiginit(self,
         cppModule.new_mlSelector(selectors, subPops=sp, *args, **kwargs))
- 
+
 
 new_mlSelector.__doc__ = mlSelector.__init__.__doc__
 del mlSelector.__init__
@@ -1379,9 +1379,9 @@ def new_pySelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwar
         sp = subPops
     else:
         sp = []
-    cppModule.pySelector_swiginit(self, 
+    cppModule.pySelector_swiginit(self,
         cppModule.new_pySelector(loci=loc, subPops=sp, *args, **kwargs))
- 
+
 new_pySelector.__doc__ = pySelector.__init__.__doc__
 del pySelector.__init__
 pySelector.__init__ = new_pySelector
@@ -1398,7 +1398,7 @@ def new_mapPenetrance(self, locus=-1, loci=[], penetrance={}, *args, **kwargs):
         raise exceptions.TypeError('Please specify locus or loci')
     cppModule.mapPenetrance_swiginit(self,
         cppModule.new_mapPenetrance(loci=loc, penet=penetrance, *args, **kwargs))
- 
+
 new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
 del mapPenetrance.__init__
 mapPenetrance.__init__ = new_mapPenetrance
@@ -1418,7 +1418,7 @@ def new_maPenetrance(self, locus=-1, loci=[], wildtype=[0], penetrance=[], *args
         wt = wildtype
     cppModule.maPenetrance_swiginit(self,
         cppModule.new_maPenetrance(loci=loc, wildtype=wt, penet=penetrance, *args, **kwargs))
- 
+
 new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__
 del maPenetrance.__init__
 maPenetrance.__init__ = new_maPenetrance
@@ -1434,7 +1434,7 @@ def new_pyPenetrance(self, locus=-1, loci=[], *args, **kwargs):
         raise exceptions.TypeError('Please specify locus or loci')
     cppModule.pyPenetrance_swiginit(self,
         cppModule.new_pyPenetrance(loci=loc, *args, **kwargs))
- 
+
 new_pyPenetrance.__doc__ = pyPenetrance.__init__.__doc__
 del pyPenetrance.__init__
 pyPenetrance.__init__ = new_pyPenetrance
@@ -1450,7 +1450,7 @@ def new_mapQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
         raise exceptions.TypeError('Please specify locus or loci')
     cppModule.mapQuanTrait_swiginit(self,
         cppModule.new_mapQuanTrait(loci=loc, *args, **kwargs))
- 
+
 new_mapQuanTrait.__doc__ = mapQuanTrait.__init__.__doc__
 del mapQuanTrait.__init__
 mapQuanTrait.__init__ = new_mapQuanTrait
@@ -1476,7 +1476,7 @@ def new_maQuanTrait(self, locus=-1, loci=[], wildtype=[0], sigma=[0], qtrait=[],
         s = sigma
     cppModule.maQuanTrait_swiginit(self,
         cppModule.new_maQuanTrait(loci=loc, wildtype=wt, sigma=s, qtrait=qtrait, *args, **kwargs))
- 
+
 new_maQuanTrait.__doc__ = maQuanTrait.__init__.__doc__
 del maQuanTrait.__init__
 maQuanTrait.__init__ = new_maQuanTrait
@@ -1492,7 +1492,7 @@ def new_pyQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
         raise exceptions.TypeError('Please specify locus or loci')
     cppModule.pyQuanTrait_swiginit(self,
         cppModule.new_pyQuanTrait(loci=loc, *args, **kwargs))
- 
+
 new_pyQuanTrait.__doc__ = pyQuanTrait.__init__.__doc__
 del pyQuanTrait.__init__
 pyQuanTrait.__init__ = new_pyQuanTrait
@@ -1508,7 +1508,7 @@ def new_rangeSplitter(self, range=[], ranges=[], *args, **kwargs):
             raise exceptions.TypeError("Expecting a range: %s" % r)
     cppModule.rangeSplitter_swiginit(self,
         cppModule.new_rangeSplitter(ranges=rg, *args, **kwargs))
- 
+
 new_rangeSplitter.__doc__ = rangeSplitter.__init__.__doc__
 del rangeSplitter.__init__
 rangeSplitter.__init__ = new_rangeSplitter
@@ -1528,7 +1528,7 @@ def new_genotypeSplitter(self, locus=None, loci=[],
         als = alleles
     cppModule.genotypeSplitter_swiginit(self,
         cppModule.new_genotypeSplitter(loci=loc, alleles=als, *args, **kwargs))
- 
+
 new_genotypeSplitter.__doc__ = genotypeSplitter.__init__.__doc__
 del genotypeSplitter.__init__
 genotypeSplitter.__init__ = new_genotypeSplitter
@@ -1539,7 +1539,7 @@ def new_pedigreeMating(self, generator=None, pedigree=None, *args, **kwargs):
         generator = mendelianOffspringGenerator()
     cppModule.pedigreeMating_swiginit(self,
         cppModule.new_pedigreeMating(generator=generator, ped=pedigree, *args, **kwargs))
- 
+
 new_pedigreeMating.__doc__ = pedigreeMating.__init__.__doc__
 del pedigreeMating.__init__
 pedigreeMating.__init__ = new_pedigreeMating

@@ -617,10 +617,10 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g].deselect()
             else:
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
-                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1, 
+                self.labelWidgets[g].grid(column=colIndex*2, row=rowIndex%numRows+1,
                     padx=5, sticky=tk.E)
                 self.entryWidgets[g] = tk.Entry(self.app)
-                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1, 
+                self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
                     padx=5, ipadx=0)
                 rowIndex += 1
                  # put default value into the entryWidget
@@ -753,7 +753,7 @@ class _wxParamDialog(_paramDialog):
         for g,opt in enumerate(self.options):
             if not (opt.has_key('label') or opt.has_key('separator')) :
                 continue
-            value = self.values[g]                
+            value = self.values[g]
             colIndex = rowIndex / numRows
             if opt.has_key('separator'):
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
