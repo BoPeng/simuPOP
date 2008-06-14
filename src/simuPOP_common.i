@@ -933,7 +933,7 @@ del pointMutator.__init__
 pointMutator.__init__ = new_pointMutator
 
 
-def new_migrator(self, rate, fromSubPop=[], toSubPop=[], maleRatio=[], *args, **kwargs):
+def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
     # parameter rate
     r = rate
     if type(rate) in [types.IntType, types.LongType, types.FloatType]:
@@ -954,21 +954,15 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], maleRatio=[], *args, **
         ts = [toSubPop]
     else:
         ts = toSubPop
-    # parameter maleRatio
-    if type(maleRatio) in [types.IntType, types.LongType, types.FloatType]:
-        mr = [[maleRatio]*len(r[0])]*len(r)
-    else:
-        mr = maleRatio
     cppModule.migrator_swiginit(self,
-        cppModule.new_migrator(rate=r, fromSubPop=fs, toSubPop=ts, maleRatio=mr, 
-			*args, **kwargs))
+        cppModule.new_migrator(rate=r, fromSubPop=fs, toSubPop=ts, *args, **kwargs))
 
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__
 migrator.__init__ = new_migrator
 
 
-def new_pyMigrator(self, fromSubPop=[], toSubPop=[], maleRatio=[], *args, **kwargs):
+def new_pyMigrator(self, fromSubPop=[], toSubPop=[], *args, **kwargs):
     # parameter fromSubPop
     if type(fromSubPop) in [types.IntType, types.LongType]:
         fs = [fromSubPop]
@@ -979,13 +973,8 @@ def new_pyMigrator(self, fromSubPop=[], toSubPop=[], maleRatio=[], *args, **kwar
         ts = [toSubPop]
     else:
         ts = toSubPop
-    # parameter maleRatio
-    if type(maleRatio) in [types.IntType, types.LongType, types.FloatType]:
-        mr = [[maleRatio]*len(r[0])]*len(r)
-    else:
-        mr = maleRatio
     cppModule.pyMigrator_swiginit(self,
-        cppModule.new_pyMigrator(fromSubPop=fs, toSubPop=ts, maleRatio=mr, *args, **kwargs))
+        cppModule.new_pyMigrator(fromSubPop=fs, toSubPop=ts, *args, **kwargs))
 
 new_pyMigrator.__doc__ = pyMigrator.__init__.__doc__
 del pyMigrator.__init__

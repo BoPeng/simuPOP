@@ -15,10 +15,10 @@ from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestTagger(unittest.TestCase):
-    
+
     def testParentsTagger(self):
         'Testing parents tagger.'
-        simu = simulator( 
+        simu = simulator(
             population(size=[5,15], ploidy=2, loci=[2,4],
                     infoFields=['father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
@@ -81,7 +81,7 @@ class TestTagger(unittest.TestCase):
         file = '>>parents.tag'
         simu.evolve(ops=[parentsTagger(output=file, infoFields=[])], end=10)
         pop = simu.population(0)
-        ped = pedigree('parents.tag')
+        ped = pedigree(pedfile = 'parents.tag')
         return
         ped.write('par_orig.tag')
         ped.selectIndividuals([0, 1, 4, 5, 10, 12, 15, 18])
@@ -139,7 +139,7 @@ class TestTagger(unittest.TestCase):
                 ],
             end=10
         )
-        ped = pedigree('pedigree.dat')
+        ped = pedigree(pedfile='pedigree.dat')
         ped.loadInfo('affection.dat', 'affection')
         ped.saveInfo('aff1.dat', 'affection')
         ped.loadInfo('info.dat', ['x', 'y'])
@@ -164,6 +164,6 @@ class TestTagger(unittest.TestCase):
         self.assertEqual(ped.father(11, 0), 5)
         self.assertEqual(ped.mother(11, 0), 5)
 
-        
+
 if __name__ == '__main__':
     unittest.main()     

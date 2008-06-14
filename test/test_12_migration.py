@@ -91,95 +91,95 @@ class TestMigrator(unittest.TestCase):
         assert abs(pop.subPopSize(1) - 4100) < 50
         assert abs(pop.subPopSize(2) - 4100) < 50
 
-    def testMigrateBySexAndCounts(self):
-        'Testing migrate by sex and counts'
-        # everyone is Male
-        pop = population(size=[2000, 4000,4000], loci=[2])
-        InitSex(pop, maleFreq=0, subPop=[0])
-        InitSex(pop, maleFreq=1, subPop=[1])
-        InitSex(pop, maleFreq=1, subPop=[2])
-        Migrate(pop, mode=MigrByCounts, 
-            rate = [ [0, 50, 50],
-                             [0, 0, 0],
-                             [0, 0, 0] ],
-                maleRatio=[[1, 1, 1],
-                    [0, 0, 0],
-                    [0, 0, 0]])
-        assert pop.subPopSizes() == (2000, 4000, 4000)
-        Migrate(pop, mode=MigrByCounts, 
-            rate = [ [0, 50, 50],
-                             [50, 0, 0],
-                             [50, 0, 0] ],
-                     maleRatio=[[1, 0.5, .5],
-                    [0, 0, 0],
-                    [0, 0, 0]])
-        assert pop.subPopSizes() == (1950, 4025, 4025)
-        
-    def testMigrateBySexAndProportion(self):
-        'Testing migrate by sex and proportion'
-        pop = population(size=[2000,4000,4000], loci=[2])
-        InitSex(pop, maleFreq=0, subPop=[0])
-        InitSex(pop, maleFreq=1, subPop=[1])
-        InitSex(pop, maleFreq=1, subPop=[2])
-        # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=MigrByProportion, 
-            rate = [ [0, .05, .05],
-                             [0.025, 0, 0],
-                             [0.025, 0, 0] ],
-                    maleRatio=1)
-        # no one move out from sp 1, move in 200
-        # 200 male, 2000 female
-        # 3900 male
-        # 3900 male
-        self.assertEqual(pop.subPopSizes(), (2200, 3900, 3900))
-        Stat(pop, numOfMale=True)
-        self.assertEqual(pop.dvars(0).numOfMale, 200)
-        self.assertEqual(pop.dvars(0).numOfFemale, 2000)
-        self.assertEqual(pop.dvars(1).numOfMale, 3900)
-        self.assertEqual(pop.dvars(1).numOfFemale, 0)
-        self.assertEqual(pop.dvars(2).numOfMale, 3900)
-        self.assertEqual(pop.dvars(2).numOfFemale, 0)
-        Migrate(pop, mode=MigrByProportion, 
-            rate = [ [0, .1, .1],
-                             [0.1, 0, 0],
-                             [0, 0.1, 0] ],
-                    maleRatio=[[0.5, 0.5, 0.5],[0,0,0],[0,0,0]])
-        # 220 to sp1 and sp2
-        # noone goes from sp1 or sp2 to sp0.
-        self.assertEqual(pop.subPopSizes(), (2200-420, 3900+220, 3900+200))
-
-
-    def testMigrateBySexAndProbability(self):
-        'Testing migrate by sex and probability'
-        pop = population(size=[2000,4000,4000], loci=[2])
-        InitSex(pop, maleFreq=0, subPop=[0])
-        InitSex(pop, maleFreq=1, subPop=[1])
-        InitSex(pop, maleFreq=1, subPop=[2])
-        # now if we want to inject a mutation whenever fixation happens
-        Migrate(pop, mode=MigrByProbability, 
-            rate = [ [0, .1, .1],
-                             [0.1, 0, 0],
-                             [0.1, 0, 0]],
-                     maleRatio = 1   )
-        # 2000 female -> 0
-        # 4000 male -> 400 to 0
-        # 4000 male -> 400 to 0
-        assert abs(pop.subPopSize(0) - 2800) < 100
-        assert abs(pop.subPopSize(1) - 3600) < 100
-        assert abs(pop.subPopSize(2) - 3600) < 100
-        v = pop.subPopSizes() 
-        Migrate(pop, mode=MigrByProbability, 
-            rate = [ [0, 0.1, 0.1],
-                             [0.1, 0, 0],
-                             [0, 0.1, 0] ],
-                             maleRatio=0)
-        # 2000 female, 800 male -> 280 female to each
-        # 3600 male no
-        # 3600 male no
-        assert abs(pop.subPopSize(0) - v[0]*0.8) < 100
-        assert abs(pop.subPopSize(1) - v[1] - v[0]*0.1) < 100
-        assert abs(pop.subPopSize(2) - v[1] - v[0]*0.1) < 100
-
+##     def testMigrateBySexAndCounts(self):
+##         'Testing migrate by sex and counts'
+##         # everyone is Male
+##         pop = population(size=[2000, 4000,4000], loci=[2])
+##         InitSex(pop, maleFreq=0, subPop=[0])
+##         InitSex(pop, maleFreq=1, subPop=[1])
+##         InitSex(pop, maleFreq=1, subPop=[2])
+##         Migrate(pop, mode=MigrByCounts, 
+##             rate = [ [0, 50, 50],
+##                              [0, 0, 0],
+##                              [0, 0, 0] ],
+##                 maleRatio=[[1, 1, 1],
+##                     [0, 0, 0],
+##                     [0, 0, 0]])
+##         assert pop.subPopSizes() == (2000, 4000, 4000)
+##         Migrate(pop, mode=MigrByCounts, 
+##             rate = [ [0, 50, 50],
+##                              [50, 0, 0],
+##                              [50, 0, 0] ],
+##                      maleRatio=[[1, 0.5, .5],
+##                     [0, 0, 0],
+##                     [0, 0, 0]])
+##         assert pop.subPopSizes() == (1950, 4025, 4025)
+##         
+##     def testMigrateBySexAndProportion(self):
+##         'Testing migrate by sex and proportion'
+##         pop = population(size=[2000,4000,4000], loci=[2])
+##         InitSex(pop, maleFreq=0, subPop=[0])
+##         InitSex(pop, maleFreq=1, subPop=[1])
+##         InitSex(pop, maleFreq=1, subPop=[2])
+##         # now if we want to inject a mutation whenever fixation happens
+##         Migrate(pop, mode=MigrByProportion, 
+##             rate = [ [0, .05, .05],
+##                              [0.025, 0, 0],
+##                              [0.025, 0, 0] ],
+##                     maleRatio=1)
+##         # no one move out from sp 1, move in 200
+##         # 200 male, 2000 female
+##         # 3900 male
+##         # 3900 male
+##         self.assertEqual(pop.subPopSizes(), (2200, 3900, 3900))
+##         Stat(pop, numOfMale=True)
+##         self.assertEqual(pop.dvars(0).numOfMale, 200)
+##         self.assertEqual(pop.dvars(0).numOfFemale, 2000)
+##         self.assertEqual(pop.dvars(1).numOfMale, 3900)
+##         self.assertEqual(pop.dvars(1).numOfFemale, 0)
+##         self.assertEqual(pop.dvars(2).numOfMale, 3900)
+##         self.assertEqual(pop.dvars(2).numOfFemale, 0)
+##         Migrate(pop, mode=MigrByProportion, 
+##             rate = [ [0, .1, .1],
+##                              [0.1, 0, 0],
+##                              [0, 0.1, 0] ],
+##                     maleRatio=[[0.5, 0.5, 0.5],[0,0,0],[0,0,0]])
+##         # 220 to sp1 and sp2
+##         # noone goes from sp1 or sp2 to sp0.
+##         self.assertEqual(pop.subPopSizes(), (2200-420, 3900+220, 3900+200))
+## 
+## 
+##     def testMigrateBySexAndProbability(self):
+##         'Testing migrate by sex and probability'
+##         pop = population(size=[2000,4000,4000], loci=[2])
+##         InitSex(pop, maleFreq=0, subPop=[0])
+##         InitSex(pop, maleFreq=1, subPop=[1])
+##         InitSex(pop, maleFreq=1, subPop=[2])
+##         # now if we want to inject a mutation whenever fixation happens
+##         Migrate(pop, mode=MigrByProbability, 
+##             rate = [ [0, .1, .1],
+##                              [0.1, 0, 0],
+##                              [0.1, 0, 0]],
+##                      maleRatio = 1   )
+##         # 2000 female -> 0
+##         # 4000 male -> 400 to 0
+##         # 4000 male -> 400 to 0
+##         assert abs(pop.subPopSize(0) - 2800) < 100
+##         assert abs(pop.subPopSize(1) - 3600) < 100
+##         assert abs(pop.subPopSize(2) - 3600) < 100
+##         v = pop.subPopSizes() 
+##         Migrate(pop, mode=MigrByProbability, 
+##             rate = [ [0, 0.1, 0.1],
+##                              [0.1, 0, 0],
+##                              [0, 0.1, 0] ],
+##                              maleRatio=0)
+##         # 2000 female, 800 male -> 280 female to each
+##         # 3600 male no
+##         # 3600 male no
+##         assert abs(pop.subPopSize(0) - v[0]*0.8) < 100
+##         assert abs(pop.subPopSize(1) - v[1] - v[0]*0.1) < 100
+##         assert abs(pop.subPopSize(2) - v[1] - v[0]*0.1) < 100
+## 
     
     def testMigrConstAlleleFreq(self):
         'Testing that migration does not change allele frequency'
