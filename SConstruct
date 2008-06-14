@@ -95,10 +95,12 @@ if ldshared != '':
     env['SHLINK'] = ldshared
 
 if env.has_key('prefix') and env['prefix'] is not None:
-    dest_dir  = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=env['prefix'])
+    dest_dir = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=env['prefix'])
+    prefix = env['prefix']
     print "Installing to", dest_dir
 else:
-    dest_dir  = os.path.join(lib_dest, 'site-packages')
+    dest_dir = os.path.join(lib_dest, 'site-packages')
+    prefix = sys.prefix
 
 if env.has_key('include-dirs') and env['include-dirs'] is not None:
     boost_inc_search_paths.extend(env['include-dirs'].split(os.pathsep))
@@ -188,5 +190,10 @@ for pyfile in SIMUPOP_FILES:
     env.Install(dest_dir, 'src/%s.py' % pyfile)
     Alias('install', dest_dir)
 
-# install to share directory, later.
+for data in DATA_FILES:
+    dest = data[0]
+    for file in data[1]:
+        env.Install(os.path.join(prefix, dest), file)
+        Alias('install', os.path.join(prefix, dest))
+
 Default('install')
