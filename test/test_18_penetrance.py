@@ -2,13 +2,13 @@
 #
 # Purpose:
 #     Testing penetrance.
-# 
+#
 # Author:
 #     Bo Peng (bpeng@rice.edu)
 #
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -104,7 +104,7 @@ class TestPenetrance(unittest.TestCase):
         MlPenetrance(pop, [
             maPenetrance(locus=0,    wildtype=0,
                 penetrance=[0, .3, .5]),
-            mapPenetrance(locus=1, 
+            mapPenetrance(locus=1,
                 penetrance={'0-0':0, '0-1':1, '1-1':1})
             ],
             mode=PEN_Additive
@@ -113,7 +113,7 @@ class TestPenetrance(unittest.TestCase):
         MlPenetrance(pop, [
             maPenetrance(locus=2,    wildtype=0,
                 penetrance=[0, .3, .5]),
-            mapPenetrance(locus=4, 
+            mapPenetrance(locus=4,
                 penetrance={'0-0':0, '0-1':1, '1-1':1})
             ],
             mode=PEN_Multiplicative
@@ -136,13 +136,13 @@ class TestPenetrance(unittest.TestCase):
         assert abs(self.pop.dvars(0).numOfAffected - 250*0.5 - 125) < 30
         assert abs(self.pop.dvars(1).numOfAffected - 30*0.5 - 20) < 15
         assert abs(self.pop.dvars(2).numOfAffected - 600*0.5 - 400) < 50
-        
+
     def testAncestralPenetrance(self):
         'Testing the ancestralGen parameter... (FIXME)'
         # test the ancestralGen parameter
         # 0: set affection status for the current generation
         # -1: for all generation
         # otherwise: up to this level of ancestral generation
-        
+
 if __name__ == '__main__':
-    unittest.main()        
+    unittest.main()

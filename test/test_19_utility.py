@@ -4,10 +4,10 @@
 #    testing of interfaces of random number selector
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 
 import simuOpt
@@ -33,13 +33,13 @@ class TestUtility(unittest.TestCase):
         rg = rng()
         for n in range(1,10):
             rg.randBinomial(10, .7)
-    
+
     def testUniform01(self):
         'Testing uniform distribution generator'
         rg = rng()
         for n in range(1,10):
             rg.randUniform01()
-    
+
     def testLogging(self):
         'Testing logging output to a file'
         setLogOutput("session.log")
@@ -131,11 +131,11 @@ class TestUtility(unittest.TestCase):
         #
         def comb(geno):
             return sum(geno)+1
-        SampleLargePedigree(pop, numPedigree=10, minPedSize=5, minAffected=0, 
+        SampleLargePedigree(pop, numPedigree=10, minPedSize=5, minAffected=0,
             maxOffspring=5, output='ped', loci=[], combine=comb)
         simuUtil.VC_merlin('ped')
 
-        
+
     def TestLeakLoadPopulation(self):
         'Testing if loadPopulation leaks'
         # run this and see if memory usage goes up continuously

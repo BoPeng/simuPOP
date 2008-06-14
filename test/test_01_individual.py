@@ -5,13 +5,13 @@
 # This is a unittest file for individual object
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 import simuOpt
 simuOpt.setOptions(quiet=True)
- 
+
 from simuPOP import *
 import unittest, os, sys, exceptions
 
@@ -20,13 +20,13 @@ class TestIndividual(unittest.TestCase):
     def testIndProperties(self):
         'Testing individual properties'
         if AlleleType() != 'binary':
-            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
-                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                maxAllele=4, alleleNames=['_','A','C','T','G']) 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                maxAllele=4, alleleNames=['_','A','C','T','G'])
         else:
-            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
-                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                alleleNames=['1','2']) 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                alleleNames=['1','2'])
         #
         pop.individual(99)
         pop.individual(19, 0)
@@ -36,7 +36,7 @@ class TestIndividual(unittest.TestCase):
         pop.individual(20, 0)
         self.assertRaises(exceptions.IndexError, pop.individual, 80, 1)
         self.assertRaises(exceptions.IndexError, pop.individual, 0, 2)
-        # 
+        #
         ind = pop.individual(10)
         #
         self.assertEqual(ind.ploidy(), 2)
@@ -99,18 +99,18 @@ class TestIndividual(unittest.TestCase):
         self.assertRaises(exceptions.ValueError, pop.lociByNames, ['somename', 'other'])
         self.assertEqual(pop.lociByNames(['lb', 'lc']), (1, 2))
         self.assertEqual(pop.lociByNames(['lb', 'la']), (1, 0))
-        
+
 
     def testIndGenotype(self):
         'Testing individual genotype manipulation function'
         if AlleleType() != 'binary':
-            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
-                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                maxAllele=4, alleleNames=['_','A','C','T','G']) 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                maxAllele=4, alleleNames=['_','A','C','T','G'])
         else: # binary
-            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
-                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                alleleNames=['1','2']) 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                alleleNames=['1','2'])
         ind = pop.individual(0)
         gt = ind.arrGenotype()
         if AlleleType() == 'binary':
@@ -134,7 +134,7 @@ class TestIndividual(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, ind.arrGenotype, 2)
         self.assertRaises(exceptions.IndexError, ind.arrGenotype, 0, 2)
         if AlleleType() == 'binary':
-            # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1 
+            # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
             self.assertEqual( ind.allele(0), 0)
             self.assertEqual( ind.allele(1), 1)
             self.assertEqual( ind.allele(5), 1)
@@ -148,7 +148,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.allele, 0, 2)
             self.assertRaises(exceptions.IndexError, ind.allele, 0, 0, 2)
         else:
-            # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4 
+            # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4
             self.assertEqual( ind.allele(0), 2)
             self.assertEqual( ind.allele(1), 3)
             self.assertEqual( ind.allele(5), 4)
@@ -162,7 +162,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.allele, 0, 2)
             self.assertRaises(exceptions.IndexError, ind.allele, 0, 0, 2)
         if AlleleType() == 'binary':
-            # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1 
+            # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
             self.assertEqual( ind.alleleChar(0), '1')
             self.assertEqual( ind.alleleChar(1), '2')
             self.assertEqual( ind.alleleChar(5), '2')
@@ -176,7 +176,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, 2)
             self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, 0, 2)
         else:
-            # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4 
+            # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4
             # ACTG
             self.assertEqual( ind.alleleChar(0), 'C')
             self.assertEqual( ind.alleleChar(1), 'T')
@@ -192,7 +192,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.alleleChar, 0, 0, 2)
         if AlleleType() == 'binary':
             # set allele
-            # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1 
+            # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
             ind.setAllele(0,1)
             self.assertEqual( ind.allele(0), 0)
             ind.setAllele(0,5)
@@ -211,7 +211,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 2)
             self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 0, 2)
         else:
-            # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4 
+            # layout 2 3 4 2 3 | 4 2 3 4 2 3 4 || 2 3 4 2 3 | 4 2 3 4 2 3 4
             ind.setAllele(1,1)
             self.assertEqual( ind.allele(1), 1)
             ind.setAllele(2,1)
@@ -243,7 +243,7 @@ class TestIndividual(unittest.TestCase):
         ind.setAffected(True)
         self.assertEqual(ind.affected(), True)
         self.assertEqual(ind.unaffected(), False)
-        
+
     def testCompare(self):
         'Testing individual comparison'
         pop = population(10, loci=[2, 1])

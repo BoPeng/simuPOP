@@ -5,10 +5,10 @@
 #     Unittest testcases for ascertainment operators
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=True)
@@ -21,7 +21,7 @@ class TestAscertainment(unittest.TestCase):
     def setUp(self):
         simu = simulator(
             population(size=[1000,2000], ploidy=2, loci=[5,10],
-                ancestralDepth=2, 
+                ancestralDepth=2,
                 infoFields=['fitness', 'father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
         simu.evolve(
@@ -32,9 +32,9 @@ class TestAscertainment(unittest.TestCase):
                     penetrance={'0-0':0,'0-1':.7,'1-1':1}),
                 parentsTagger(),
             ],
-            preOps=[    
+            preOps=[
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))     
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
             ],
             gen=4
         )
@@ -52,14 +52,14 @@ class TestAscertainment(unittest.TestCase):
                     penetrance={'0-0':0,'0-1':.7,'1-1':1}),
                 parentsTagger(),
             ],
-            preOps=[    
+            preOps=[
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))     
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
             ],
             gen=10
         )
         self.largepop = simu1.getPopulation(0)
-    
+
     def testRandomSample(self):
         'Testing random sampling (imcomplete)'
         (s,) = RandomSample(self.pop, 10)
@@ -72,7 +72,7 @@ class TestAscertainment(unittest.TestCase):
             #old index?
             inpop = self.pop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
-        
+
     def testCaseControlSample(self):
         'Testing case control sampling (imcomplete)'
         # case control sampling.
@@ -98,7 +98,7 @@ class TestAscertainment(unittest.TestCase):
 
     def testAffectedSibpairSample(self):
         'Testing affected sibpair sampling (imcomplete)'
-		# FIXME: testing sharing of parents 
+		# FIXME: testing sharing of parents
 		# (father_idx and mother_idx of original and sample population,
 		# and if the parents are the same.)
 		#
@@ -128,14 +128,14 @@ class TestAscertainment(unittest.TestCase):
 
     def testLargePedigreeSample(self):
         'Testing large pedigree sampling (FIXME)'
-        (s,) = LargePedigreeSample(self.largepop, minTotalSize=20, maxOffspring=5, 
+        (s,) = LargePedigreeSample(self.largepop, minTotalSize=20, maxOffspring=5,
             minPedSize=3, minAffected=0)
         assert s.ancestralDepth() == 2
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
-        (s,) = LargePedigreeSample(self.largepop, 50, minTotalSize=5, maxOffspring=5, 
+        (s,) = LargePedigreeSample(self.largepop, 50, minTotalSize=5, maxOffspring=5,
             minPedSize=3, minAffected=0)
         for ind in s.individuals():
             #old index?
@@ -163,7 +163,7 @@ class TestAscertainment(unittest.TestCase):
             inpop = self.largepop.individual(int(ind.info('oldindex')))
             self.assertEqual(ind, inpop)
 
-        
+
 
 if __name__ == '__main__':
     unittest.main()

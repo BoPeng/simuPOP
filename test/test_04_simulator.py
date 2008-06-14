@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
 # testing for simulator
-# 
+#
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision$
 # $LastChangedDate$
 #
@@ -20,11 +20,11 @@ def genRecorder(pop):
     except:
         pop.dvars().hist = [pop.gen()]
     return True
-    
+
 def opRecorder(*args, **kwargs):
     return pyOperator(func=genRecorder, *args, **kwargs)
-    
-    
+
+
 class TestSimulator(unittest.TestCase):
 
     def testPopulations(self):
@@ -47,7 +47,7 @@ class TestSimulator(unittest.TestCase):
         pop2 = simu.getPopulation(0, True)
         self.assertEqual(pop1, pop2)
         self.assertEqual(simu.population(0).popSize(), 0)
-    
+
     def testProperties(self):
         'Testing simulator properties'
         pop = population(size=1, loci=[1])
@@ -59,7 +59,7 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual( simu.group(), (1,1,2) )
         simu.setGen(10)
         self.assertEqual( simu.gen(), 10)
-        
+
     def testEvolve(self):
         'Testing function evolve and step'
         pop = population(size=1, loci=[1])
@@ -89,20 +89,20 @@ class TestSimulator(unittest.TestCase):
             ops = [stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 20
         )
-        
-        
+
+
 
     def testGenoStru(self):
         'Testing genotypic structure related functions'
         # genetic structure can also be accessed from simulator
         if AlleleType() != 'binary':
-            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
-                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                maxAllele=4, alleleNames=['_','A','C','T','G']) 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                maxAllele=4, alleleNames=['_','A','C','T','G'])
         else:
-            pop = population(size=[20,80], ploidy=2, loci=[5, 7], 
-                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]], 
-                alleleNames=['1','2']) 
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                alleleNames=['1','2'])
         #
         simu = simulator(pop, noMating() )
         #
@@ -149,7 +149,7 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(simu.locusName(1), 'loc1-2')
         self.assertEqual(simu.locusName(5), 'loc2-1')
         self.assertRaises(exceptions.IndexError, simu.locusName, 12)
-        
+
     def testTerminator(self):
         'Testing terminator'
         simu = simulator(population(1), noMating() )
@@ -168,12 +168,12 @@ class TestSimulator(unittest.TestCase):
     def testMultiRep(self):
         'Testing multi-replicates related functions'
         simu = simulator(population(1), noMating(), rep=3 )
-        simu.evolve( 
-            ops=[ 
-                opRecorder(), 
+        simu.evolve(
+            ops=[
+                opRecorder(),
                 terminateIf( 'gen==10', rep=0 ),
                 terminateIf( 'gen==15', rep=1 ),
-                terminateIf( 'gen==20', rep=2 ) 
+                terminateIf( 'gen==20', rep=2 )
             ]
         )
         # by default, run until the last resplicate die
@@ -184,12 +184,12 @@ class TestSimulator(unittest.TestCase):
         #
         # if    set stopIfOneRepStop
         simu = simulator(population(1), noMating(), rep=3, stopIfOneRepStops=True )
-        simu.evolve( 
-            ops=[ 
-                opRecorder(), 
+        simu.evolve(
+            ops=[
+                opRecorder(),
                 terminateIf( 'gen==10', rep=0 ),
                 terminateIf( 'gen==15', rep=1 ),
-                terminateIf( 'gen==20', rep=2 ) 
+                terminateIf( 'gen==20', rep=2 )
             ]
         )
         # by default, run until the last resplicate die
@@ -200,12 +200,12 @@ class TestSimulator(unittest.TestCase):
         #
         # if set applyOpToStoppedReps
         simu = simulator(population(1), noMating(), rep=3, applyOpToStoppedReps=True )
-        simu.evolve( 
-            ops=[ 
-                opRecorder(), 
+        simu.evolve(
+            ops=[
+                opRecorder(),
                 terminateIf( 'gen==10', rep=0 ),
                 terminateIf( 'gen==15', rep=1 ),
-                terminateIf( 'gen==20', rep=2 ) 
+                terminateIf( 'gen==20', rep=2 )
             ]
         )
         # by default, run until the last resplicate die
@@ -229,8 +229,8 @@ class TestSimulator(unittest.TestCase):
         simu.population(0).addInfoField('l')
         self.assertRaises(exceptions.ValueError, simu.addInfoField, 'j')
         self.assertRaises(exceptions.ValueError, simu.evolve, ops=[])
-        
 
-        
+
+
 if __name__ == '__main__':
     unittest.main()

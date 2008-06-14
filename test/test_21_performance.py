@@ -4,10 +4,10 @@
 #    testing of performance of various parts
 #
 # Bo Peng (bpeng@rice.edu)
-# 
+#
 # $LastChangedRevision: 475 $
 # $LastChangedDate: 2006-10-04 01:00:38 -0500 (Wed, 04 Oct 2006) $
-# 
+#
 
 
 #
@@ -54,7 +54,7 @@ class TestPerformance(unittest.TestCase):
         # result: (optimized module)
 
         # Conclusion: (strange)
-        # 
+        #
         # N=10000
         # From ind: 0.030000
         # From pop, no rearrange: 0.030000
@@ -67,14 +67,14 @@ class TestPerformance(unittest.TestCase):
         # From ind: 10.490000
         # From pop, no rearrange: 9.710000
         # From pop, with rearrange: 14.150000
-        # 
+        #
         # This discourage the use of gappedIteartor
         # and enougrage the use of individual iterator
-        # I am not sure why, but mating schemes have been 
-        # rewitten according to this. 
+        # I am not sure why, but mating schemes have been
+        # rewitten according to this.
         #
         # version 0.8.2, gcc 4.2
-        # 
+        #
         # N=10000
         # From ind: 0.030000
         # From pop, no rearrange: 0.030000
@@ -137,7 +137,7 @@ class TestPerformance(unittest.TestCase):
             #   5.19, 6.3, 7.95
             #   54.72, 67.75, 85.74
             #   581, ,,,
-            # 
+            #
             # After using ind iterator
             #
             #  4.09, 5.13, 6.85
@@ -149,18 +149,18 @@ class TestPerformance(unittest.TestCase):
             # 0.28, 0.33, 0.50
             # 3.73, 6.95, 9.07
             # 81.5, ...
-            # 
+            #
             # 10/30/2006, baop module
             # 0.38, 0.50, 0.69
             # 5.19, 8.73, 11.43
             # 86.81, ...
-            # 
+            #
             # 10/30/2006, laop module (is setSex is implemented in bitset)
             # 0.27, 0.33, 0.5 (0.29, 0.33, 0.52)
             # 3.98, 7.43, 9.8 (4.5, 7.6, 10.4)
             # 84.79, ...
             #
-            # 
+            #
             # Tried to change maleIndex to IndIterator, but
             # the performance is slightly worse. (42,34, 64.35 etc)
             #
@@ -171,26 +171,26 @@ class TestPerformance(unittest.TestCase):
             #
             # Version 0.8.2, rewrite offspringGenerators, GCC 4.1.2
             #
-            # 11/8/2007 
+            # 11/8/2007
             #
             # op (standard)
             # 0.31, 0.37, 0.55   (0.51, 0.66, 0.99)
             # 4.31, 7.81, 9.93   (6.15,...)
             # 93.81, 123, 153
-            # 
+            #
             # baop
             # 0.41, 0.51, 0.71
             # 5.6, 9.61, 12.05
             # 98.84, ...
-            # 
+            #
             # laop
             # 0.32, 0.35, 0.54
             # 4.43, 8.42, 10.55
             # 97.44
-            # 
+            #
             # Using IndIterator with m_allInds (no obvious performance penalty)
             #
-            # op 
+            # op
             # 0.31, 0.38, 0.58
             # 4.22, 7.94, 10.42
             # 92.87, 121.83, 152.49
@@ -200,14 +200,14 @@ class TestPerformance(unittest.TestCase):
             # 5.64, 9.70, 12.66
             # 100.48,
             #
-            # Using IndIterator.valid(), should be quicker, 
+            # Using IndIterator.valid(), should be quicker,
             # but there is no performance gain.
             #
             # op
             # 0.31, 0.38, 0.61
             # 4.26, 8.00, 10.8
             # 92.62, 121.88, 155.84
-            # 
+            #
             # baop
             # 0.42, 0.51, 0.78
             # 5.59, 9.72, 12.91
@@ -217,7 +217,7 @@ class TestPerformance(unittest.TestCase):
             # 0.31, 0.39, 0.64
             # 4.22, 7.70, 10.88
             # 92.92
-            # 
+            #
             # Using The visible algorithm of IndIterator,
             # Storing IndIterator.rawIter() in parentsChooser
             #
@@ -237,7 +237,7 @@ class TestPerformance(unittest.TestCase):
             # laop
             #
             # baop
-            
+
 
     def TestInfoIterator(self):
         'Testing the performance of info iterator'
@@ -256,7 +256,7 @@ class TestPerformance(unittest.TestCase):
             )
             c2 = time.clock()
             print " %.2f " % (c2 - c1),
-        print 
+        print
         for N in [10000, 100000, 1000000]:
             # with sel
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
@@ -269,7 +269,7 @@ class TestPerformance(unittest.TestCase):
             )
             c2 = time.clock()
             print " %.2f " % (c2 - c1),
-        print 
+        print
         for N in [10000, 100000, 1000000]:
             # with sel
             pop = population(N, loci=[1], infoFields=['a', 'fitness'])
@@ -279,7 +279,7 @@ class TestPerformance(unittest.TestCase):
                 info = pop.indInfo('fitness')
             c2 = time.clock()
             print " %.2f " % (c2 - c1),
-        print 
+        print
 
         #
         # With the old infoIterator,
@@ -318,12 +318,12 @@ class TestPerformance(unittest.TestCase):
         # 0.51   6.12   62.07
 		#
         # With the combined iterator, we have
-        # 
+        #
         # op:
         # 0.38   7.94   113.23
         # 0.23   4.70   59.12
         # 0.21   3.02   31.17
-        # 
+        #
         # laop:
         # 0.37   8.18   114.80
         # 0.23   5.12   69.29
@@ -334,7 +334,7 @@ class TestPerformance(unittest.TestCase):
         # 0.35   6.19   76.71
         # 0.48   5.77   58.70
         #
-        
+
     def TestAlleleIterator(self):
         'Testing the performance of the new combined allele iterator'
         for N in [10000, 100000, 1000000]:
@@ -371,7 +371,7 @@ class TestPerformance(unittest.TestCase):
         # op: 2.46  25.18 250.65
         # baop: 3.85 37.41 372.60
 
-          
+
     def TestLongGenome(self):
         'Testing the performance of recombination with long genome'
         sel = maSelector(loci=[0], fitness=[1, 1-0.001/2, 1-0.001], wildtype=[0])
@@ -425,7 +425,7 @@ class TestPerformance(unittest.TestCase):
     #
     # long allele
     # 5.53, 34.81, 57.75
-    #  
+    #
     #
     # using the special case for low recombination rate (use the search-valid algorithm),
     #
@@ -459,9 +459,9 @@ class TestPerformance(unittest.TestCase):
             print "p = %f: %f " % (pi, c2 - c1)
         #
     #
-    # 
+    #
     # using vector<bool> as storage engine
-    # 
+    #
     # p = 0.000010: 2.870000
     # p = 0.001000: 13.650000
     # p = 0.100000: 1212.650000
@@ -475,11 +475,11 @@ class TestPerformance(unittest.TestCase):
     # p = 0.500000: 142.570000
     # p = 0.990000: 111.770000
 
-    # 
+    #
 
-        
-   
-            
+
+
+
 
     def TestMatingAlgorithm(self):
         'Testing the performance of mating algorithm'
@@ -514,16 +514,16 @@ class TestPerformance(unittest.TestCase):
         #      0.69 (bin), 1.94 (random mating), 14.63, 34.45
         #   binary:
         #      0.98, 2.41, 17.9, 36.77
-        #      
+        #
         # change indIterator to reference
         # use iterator comparison
         # separate generateOffspring function
-        #     
+        #
         # std:
         #   0.72, 1.96, 15.05, 34.57
-        # binary: 
+        # binary:
         #   0.97, 2.42, 17.22, 39.64
-        # 
+        #
         # STRANGE: I can not reproduce this wonderful result
         # something went wrong with this run...
         #   0.17, 1.26, 1.67, 12.68
@@ -532,18 +532,18 @@ class TestPerformance(unittest.TestCase):
         #   0.78, 1.38, 17.89, 53.31
         # binary:
         #   1.00, 1.79, 17.56, 34.66
-        # 
+        #
 
     def TestSimuComplexDisease(self):
         ''' recording the runtime of simuComplexDisease.py '''
         cmd = '''time python /home/bpeng/simuPOP/scripts/simuComplexDisease.py --noDialog
             --numChrom='8' --optimized
-            --numLoci='10' --markerType='SNP' --DSL='(15, 26, 37, 48)' 
-            --DSLLoc='(0.5, 0.5, 0.5, 0.5)' --initSize='1000' --endingSize='50000' 
-            --growthModel='exponential' --burninGen='300' --splitGen='500' --mixingGen='800' 
+            --numLoci='10' --markerType='SNP' --DSL='(15, 26, 37, 48)'
+            --DSLLoc='(0.5, 0.5, 0.5, 0.5)' --initSize='1000' --endingSize='50000'
+            --growthModel='exponential' --burninGen='300' --splitGen='500' --mixingGen='800'
             --endingGen='1000' --numSubPop='1' --migrModel='stepping stone' --migrRate='0.0001'
             --alleleDistInSubPop='even' --curAlleleFreq="[0.1]*4" --minMutAge='0' --maxMutAge='0'
-            --fitness='(1, 1, 1)' --selMultiLocusModel='none' --mutaRate='0.0001' 
+            --fitness='(1, 1, 1)' --selMultiLocusModel='none' --mutaRate='0.0001'
             --recRate='[0.0005]' --savePop='[]' --simuName='simu' --saveFormat='txt'
             '''
         cmd = ' '.join(cmd.split())
@@ -553,7 +553,7 @@ class TestPerformance(unittest.TestCase):
         # 0.7.3  (baop):       the same (134u, 2min 14s)
         #
         # 0.7.4: use no-stack algorithm: 2min 29s (why more?)
-        # 
+        #
         # Use stack (mixed method)
         # 0.7.4 (baop):       89u, 1min 17s
         #  direct gepped allele count does oot improve anything
@@ -572,7 +572,7 @@ class TestPerformance(unittest.TestCase):
         c1 = time.clock()
         simu = simulator(
             population(size=[1000]*10, loci=[200]),
-            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             rep=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
@@ -585,14 +585,14 @@ class TestPerformance(unittest.TestCase):
         )
         c2 = time.clock()
         print "One chromosome with no recombination: %f " % (c2 - c1)
-    
+
     def TestRecombinationAlgorithm1(self):
         ''' Testing the performance of different recombination algorithms '''
         # form 1
         c1 = time.clock()
         simu = simulator(
             population(size=[1000]*10, loci=[200]),
-            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             rep=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
@@ -612,7 +612,7 @@ class TestPerformance(unittest.TestCase):
         c1 = time.clock()
         simu = simulator(
             population(size=[1000]*10, loci=[1]*200),
-            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             rep=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
@@ -624,13 +624,13 @@ class TestPerformance(unittest.TestCase):
         )
         c2 = time.clock()
         print "200 chromosomes: %f " % (c2 - c1)
-    
+
     def TestRecombinationAlgorithm3(self):
         # form 1
         c1 = time.clock()
         simu = simulator(
             population(size=[1000]*10, loci=[200]*10),
-            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution), 
+            randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
             rep=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
@@ -657,13 +657,13 @@ class TestPerformance(unittest.TestCase):
         #   case 0: 5.52
         #   case 1L 47.96
         #   case 2: 25.83
-        #   case 3: 59.00, 55.8 
+        #   case 3: 59.00, 55.8
         #
         # conclusion: accept this.
 
     def TestSerialization(self):
         import stat
-        pop = LoadPopulation('exp3_0_9.txt') 
+        pop = LoadPopulation('exp3_0_9.txt')
         #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
         #InitByFreq(pop, [.2, .8])
         #simu = simulator(pop, randomMating(), rep=1)
@@ -679,7 +679,7 @@ class TestPerformance(unittest.TestCase):
                 c1 = time.clock()
                 pop.savePopulation('exp_%s.%s' % (label, format), compress=comp)
                 c2 = time.clock()
-                print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1, 
+                print "%s, save, %s: %.1f, size: %.2fM " % (format, label, c2 - c1,
                     os.stat('exp_%s.%s' % (label, format) )[stat.ST_SIZE]/1024./1024.)
                 c1 = time.clock()
                 pop1 = LoadPopulation('exp_%s.%s' % (label, format))
@@ -701,7 +701,7 @@ class TestPerformance(unittest.TestCase):
         #  bin, load, comp: 30.5
         #  bin, save, nocomp: 23.1, size: 548.83M
         #  bin, load, nocomp: 24.8
-        
+
         #
         # BINARY MODULES
         # Using the new 32bit/block save/load method
@@ -718,7 +718,7 @@ class TestPerformance(unittest.TestCase):
         # xml, save, small: 191.0, size: 120.16M
 
 
-        
+
 
 if __name__ == '__main__':
     unittest.main()

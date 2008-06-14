@@ -6,7 +6,7 @@
 #
 # $LastChangedRevision$
 # $LastChangedDate$
-# 
+#
 
 import simuOpt
 simuOpt.setOptions(quiet=False)
@@ -50,12 +50,12 @@ class TestTagger(unittest.TestCase):
             self.assertNotEqual( pop.individual(i,0).info('paternal_tag'), 2 )
         for i in range(pop.subPopSize(1)):
             self.assertNotEqual( pop.individual(i,1).info('paternal_tag'), 1 )
-        # from this test, we can see that genetic drift 
+        # from this test, we can see that genetic drift
         # can easily remove a signal (tag) from population.
 
     def testInheritTaggerToFile(self):
         'Testing inherit tagger that record indexes to a file'
-        pop = population(size=[5,15], ploidy=2, loci=[2,4], 
+        pop = population(size=[5,15], ploidy=2, loci=[2,4],
                 infoFields=['paternal_tag', 'maternal_tag'])
         for ind in pop.individuals(0):
             ind.setInfo(1, 'paternal_tag')
@@ -111,7 +111,7 @@ class TestTagger(unittest.TestCase):
         simu.evolve( ops = [
                 pyTagger(infoFields=['trait1', 'trait2'], func=myfunc),
                 #pyIndOperator(func=printTrait),
-                #output('\n', rep=REP_LAST),                
+                #output('\n', rep=REP_LAST),
             ],
             end = 3)
         pop = simu.population(0)
@@ -166,4 +166,4 @@ class TestTagger(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()     
+    unittest.main()
