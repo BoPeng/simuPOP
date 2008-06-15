@@ -38,7 +38,7 @@ def podParentsChooser(pop, sp):
             female = females[random.randint(0, len(females)-1)]
             if pods[female] != pod:
                 break
-        yield (male, female)
+        yield (female, male)
 
 
 def simuPodMating(numPods, podSize):

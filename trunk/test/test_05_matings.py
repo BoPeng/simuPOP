@@ -602,7 +602,7 @@ class TestMatingSchemes(unittest.TestCase):
                 infoFields=[])],
             gen=10
         )
-        ped = pedigree(pedfile='pedigree.dat')
+        ped = pedigree(numParents=1, pedfile='pedigree.dat')
         #
         simu1 = simulator(pop,
             pedigreeMating(generator=selfingOffspringGenerator(),
