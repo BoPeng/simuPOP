@@ -212,6 +212,7 @@ public:
 		std::swap(m_gen, rhs.m_gen);
 		std::swap(m_curAncestralGen, rhs.m_curAncestralGen);
 		std::swap(m_indOrdered, rhs.m_indOrdered);
+		std::swap(m_vspSplitter, rhs.m_vspSplitter);
 	}
 
 
@@ -249,7 +250,7 @@ public:
 	bool hasVirtualSubPop() const;
 
 	/// CPPONLY
-	vspSplitter * virtualSplitter() { return m_vspSplitter; }
+	vspSplitter * virtualSplitter() const { return m_vspSplitter; }
 
 	/// set a virtual splitter to the population. If multiple splitter is needed
 	/// for different subpopulations, use a combined splitter.

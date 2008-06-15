@@ -120,7 +120,7 @@ population::population(const population & rhs) :
 	m_numSubPop(rhs.m_numSubPop),
 	m_subPopSize(rhs.m_subPopSize),
 	m_subPopIndex(rhs.m_subPopIndex),
-	m_vspSplitter(),
+	m_vspSplitter(NULL),
 	m_genotype(0),
 	m_info(0),
 	m_inds(0),
@@ -197,8 +197,7 @@ population::population(const population & rhs) :
 	}
 
 	// copy virtual subpop splitters
-	if (rhs.m_vspSplitter)
-		m_vspSplitter = rhs.m_vspSplitter->clone();
+	setVirtualSplitter(rhs.virtualSplitter());
 
 	// set local variable
 	setRep(-1);
