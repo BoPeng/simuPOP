@@ -750,7 +750,7 @@ public:
 	{
 		// m_it need to point to the first valid
 		// individual. otherwise *it will fail.
-		while (!m_it->visible() && m_it < m_end)
+		while (m_it < m_end && !m_it->visible())
 			++m_it;
 	}
 
