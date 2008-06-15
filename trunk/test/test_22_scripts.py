@@ -19,7 +19,7 @@ sys.path.append('../scripts')
 
 class TestScripts(unittest.TestCase):
 
-    def testLoadHapMap(self):
+    def TestLoadHapMap(self):
         if os.path.isfile('hapmap_21.bin'):
             os.remove('hapmap_21.bin')
         if os.path.isfile('hapmap_22.bin'):
