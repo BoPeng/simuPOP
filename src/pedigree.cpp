@@ -116,7 +116,7 @@ void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
 	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_INDEX(gen, idx);
-	CHECK_INDEX(gen + 1, parent);
+	CHECK_INDEX(gen - 1, parent);
 
 	m_paternal[gen][idx] = parent;
 }
@@ -126,7 +126,7 @@ void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
 {
 	CHECK_GEN(gen);
 	CHECK_INDEX(gen, idx);
-	CHECK_INDEX(gen + 1, parent);
+	CHECK_INDEX(gen - 1, parent);
 
 	m_maternal[gen][idx] = parent;
 }
@@ -138,7 +138,7 @@ void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 	CHECK_GEN(gen);
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
-	CHECK_INDEX(gen + 1, parent);
+	CHECK_INDEX(gen - 1, parent);
 
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
@@ -152,7 +152,7 @@ void pedigree::setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 	CHECK_GEN(gen);
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
-	CHECK_INDEX(gen + 1, parent);
+	CHECK_INDEX(gen - 1, parent);
 
 	size_t shift = 0;
 	for (SubPopID i = 0; i < subPop; ++i)
