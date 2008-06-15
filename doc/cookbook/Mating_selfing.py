@@ -10,7 +10,7 @@ Purpose:
 $Date$
 $Revision$
 $HeadURL$
-''' 
+'''
 
 from simuPOP import *
 
@@ -22,8 +22,8 @@ def simuSelfing(perc, N, n_rep, gen):
     gen     generations to run
     '''
     pop = population(N, loci=[2])
-    pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]), 0)
-    
+    pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]))
+
     simu = simulator(pop,
         heteroMating([
             selfMating(subPop=0, virtualSubPop=0),
@@ -45,7 +45,7 @@ def simuSelfing(perc, N, n_rep, gen):
     )
     print simu.dvars(0).ld_hist
     return 0
-    
+
 
 if __name__ == '__main__':
     simuSelfing(.4, 1000, 10, 100)
