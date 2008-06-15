@@ -15,11 +15,11 @@ Purpose:
   2. Male and female in the same pod does not mate
   3. Male from one pod will mate with female from other
      pods
-  
+
 $Date$
 $Revision$
 $HeadURL$
-''' 
+'''
 
 from simuPOP import *
 import random
@@ -49,7 +49,7 @@ def simuPodMating(numPods, podSize):
     pop = population(numPods * podSize, loci=[2], infoFields=['pod'])
     InitByFreq(pop, [0.2, 0.8])
     pop.setIndInfo([x for z in range(numPods) for x in [z]*podSize], 'pod')
-    pop.setVirtualSplitter(infoSplitter('pod', range(numPods)), 0)
+    pop.setVirtualSplitter(infoSplitter('pod', range(numPods)))
 
     simu = simulator(pop, pyMating(
         pyParentsChooser(podParentsChooser),
@@ -66,6 +66,6 @@ def simuPodMating(numPods, podSize):
             ],
         end = 10
     )
-            
+
 if __name__ == '__main__':
     simuPodMating(5, 100)

@@ -13,7 +13,7 @@ Purpose:
   2. random mating between individuals with homozygous wildtype allele (0, 0)
   3. random mating between individuals having at least one mutant (0, 1) or
       (1,1).
-  
+
   A parameter w determines the proportion of offspring produced by the general
   random mating scheme. w = 1 means no assortative mating. The numbers of offspring
   produced by other two mating schemes are proportional to the size of the
@@ -25,10 +25,10 @@ Purpose:
 
   During the evolution, number of individuals having genotype (0, 0), (0, 1)
   and (1, 1) are printed, along with the frequency of allele 0.
-  
+
   The simulation confirms that positive assortative mating would lead to the
   loss of heterozygotes.
-  
+
 $Date$
 $Revision$
 $HeadURL$
@@ -36,7 +36,7 @@ $HeadURL$
 
 import sys
 from simuPOP import *
-    
+
 def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     '''
         w       proportion of general random mating.
@@ -48,8 +48,8 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     # define four virtual subpopulations. Individuals in the first three virtual
     # subpopulation have genotype (0, 0), (0, 1) or (1, 0), and (1, 1) respectively,
     # and have at leat one mutant (allele 1) in the last virtual subpopulation.
-    pop.setVirtualSplitter(genotypeSplitter(locus=0, 
-        alleles=[[0, 0], [0, 1], [1, 1], [0, 0, 0, 1], [0, 1, 1, 1]]), 0)
+    pop.setVirtualSplitter(genotypeSplitter(locus=0,
+        alleles=[[0, 0], [0, 1], [1, 1], [0, 0, 0, 1], [0, 1, 1, 1]]))
 
     # Negative weight means fixed size (weight * current subpopulation size).
     # In the case of no positive weight, zero weights means proportional to

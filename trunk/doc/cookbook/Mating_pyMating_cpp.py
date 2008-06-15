@@ -5,12 +5,12 @@
  choose a female that is geographically closest to a random male. A hybrid
  parent chooser pyParentsChooser is used, which will call a Python
  generator function repeatedly to get parents.
- 
+
  Such hybrid- and pure- Python operators and mating schemes provide a
  very powerful and flexible interface to implement customized genetic effects
  and mating schemes. However, because these functions are implemented in Python,
  they can significantly reduce the performance of your simuPOP script if complex
- algorithms are involved, especially when the Python functions are called 
+ algorithms are involved, especially when the Python functions are called
  repeatedly. This problem can be addressed by implementing these functions in
  C++.
 
@@ -24,21 +24,21 @@
  2. .h and/or .cpp files to re-impmenent the most time-consuming parts in C++.
  3. An interface file Mating_pyMating_cpp.i, which tells an automatic wrapper
     generating program SWIG how to wrap the code.
- 
+
  To compile and load functions defined in this interface file, you will need
  to:
 
  1. download and install SWIG.
- 
+
  2. generate a wrap using command:
- 
+
 	> swig -python -templatereduce -c++ -shadow -nodefaultctor  -keyword Mating_pyMating_cpp.i
 
 	A wrapper file Mating_pyMating_cpp_wrap.cxx will be generated. Options -c++
     -shadow are not needed if the header file only contains C/C++ functions.
- 
+
  3. compile the wrapper, and your .cpp files (if available)
- 
+
     Under unix/linux, using g++, you can compile this file using
 
 	> g++ -fpic -c Mating_pyMating_cpp_wrap.cxx -I /usr/local/include/python2.5/
@@ -58,7 +58,7 @@ if you do not use C++ and shadow classes.
 
 
 '''
- 
+
 
 from simuPOP import *
 from random import normalvariate, randint
@@ -71,7 +71,7 @@ try:
 except:
     has_rpy = False
 
-# try to load a more efficient version of parentsChooser, which is defined in 
+# try to load a more efficient version of parentsChooser, which is defined in
 # Mating_pyMating_cpp.h and .i. This file must be compiled to a Python-lodablebe
 # module to be imported into this script.
 try:
@@ -103,7 +103,7 @@ def plotInds(pop):
     if not has_rpy:
         return True
     r.postscript('loc_%d.eps' % pop.gen())
-    r.plot(0, 0, xlim=[-5, 5], ylim=[-5, 5], type='n', 
+    r.plot(0, 0, xlim=[-5, 5], ylim=[-5, 5], type='n',
         xlab='x', ylab='y',
         main='Locations of individuals at generation %d' % pop.gen())
     for ind in pop.individuals():

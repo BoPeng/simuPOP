@@ -10,7 +10,7 @@ Purpose:
 
   Individuals in this population has an information field 'age', which
   is manipulated as follows:
-  
+
   1. Individuals are initialized with random ages between 0 and maxAge.
   2. At each generation, individual ages are increased by 1.
   3. Individuals with age over maxAge are not involved in mating. (died)
@@ -18,7 +18,7 @@ Purpose:
   5. Individuals in mating ages performs rangom mating and produce
      offspring with age 0.
   6. Rpeat from step 2 for desired generations.
-  
+
 $Date$
 $Revision$
 $HeadURL$
@@ -39,16 +39,16 @@ def simuOverlappingGeneration(size, maxAge, minMatingAge, maxMatingAge, gen):
     '''
     pop = population(size, loci=[2], infoFields=['age'])
     pop.setIndInfo([random.randint(0, maxAge) for x in range(size)], 'age')
-    # define virtual subpopulations 
+    # define virtual subpopulations
     # age < minMatingAge
     # age >= minMatingAge and age < maxMatingAge + 0.1 (age <= maxMatingAge)
     # age >= maxMatingAge + 0.1 and age < maxAge + 0.1 (maxMatingAge < age <= maxAge)
     # age >= maxAge + 0.1 (age > maxAge)
     #
-    # Note that we use a cutoff infoSplitter here, it is also possible to 
+    # Note that we use a cutoff infoSplitter here, it is also possible to
     # provide a list of values, each corresponding to a virtual subpopulation.
     pop.setVirtualSplitter(infoSplitter('age',
-        cutoff=[minMatingAge, maxMatingAge + 0.1, maxAge + 0.1]), 0)
+        cutoff=[minMatingAge, maxMatingAge + 0.1, maxAge + 0.1]))
     #
     simu = simulator(pop, heteroMating(
         # age <= maxAge, copy to the next generation (weight=-1)
