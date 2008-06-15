@@ -135,7 +135,7 @@ public:
 
 	/// generate \c numOff offspring
 	/// CPPONLY
-	virtual UINT generateOffspring(population & pop, individual * mom, individual * dad,
+	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops) = 0;
@@ -263,7 +263,7 @@ public:
 
 
 	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * mom, individual * dad,
+	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);
@@ -316,7 +316,7 @@ public:
 		RawIndIterator & it, int ploidy, int count);
 
 	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * mom, individual * dad,
+	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);
@@ -411,7 +411,7 @@ public:
 
 
 	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * mom, individual * dad,
+	UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);

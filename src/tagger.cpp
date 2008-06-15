@@ -161,8 +161,8 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 	if (m_subPopSize.size() < spID + 1)
 		m_subPopSize.resize(spID + 1, 0);
 	m_subPopSize[spID]++;
-	out << momIdx << '\t';
 	out << dadIdx << '\t';
+	out << momIdx << '\t';
 	closeOstream();
 	return true;
 }
