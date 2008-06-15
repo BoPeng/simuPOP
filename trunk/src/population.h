@@ -65,6 +65,17 @@ using boost::serialization::make_nvp;
 #include "individual.h"
 #include "virtualSubPop.h"
 
+const string POP_ParentsFields[2] = { "father_idx", "mother_idx" };
+
+enum RelativeType
+{
+	REL_Self,
+	REL_Offspring,
+	REL_Spouse,
+	REL_Sibling,
+};
+
+
 namespace simuPOP {
 
 class population;
@@ -88,7 +99,7 @@ class population;
    chromosome etc. The most important components of a population are:
 
  \li subpopulations. A population is divided into subpopulations (unstructured
-   population has a single	subpopulation, which is the whole population itself).
+   population has a single subpopulation, which is the whole population itself).
    Subpopulation structure limits the usually random exchange of genotypes between
    individuals by disallowing mating between individuals from different subpopulations.
    In the presence of subpopualtion structure, exchange of genetic information
@@ -1286,6 +1297,23 @@ public:
 	 \param init initial value for the new fields.
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);
+
+
+	/// Find relatives of each individual and fill the given information fields with their indexes.
+	/** This function locates relatives of each individual and store their indexes
+	 * in given information fields.
+	 * \param type Relative type, can be
+			\li REL_Self index of individual themselfs
+			\li REL_Offspring index of offspring in the offspring generation. If only one
+				parent is given, only paternal or maternal relationship is considered. For example,
+				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
+	 * \param infoFields information fields to hold relatives. If more than one relatives
+	 * \param parentsFields information fields that stores parental indexes. Default to
+	 *		['father_idx', 'mother_idx']
+	 * are found, only the first several relatives are stored.
+	*/
+	void locateRelatives(RelativeType type, const vectorstr & infoFields,
+		const vectorstr & parentFields = vectorstr(POP_ParentsFields, POP_ParentsFields + 2));
 
 	/// set ancestral depth
 	/**

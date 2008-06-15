@@ -31,10 +31,10 @@ PyObject * sample::samples(population & pop)
 
 	// save sample to local namespace?
 	string sampleName = "", saveAsName = "";
-	if (!m_nameExpr.empty() ) {
+	if (!m_nameExpr.empty()) {
 		m_nameExpr.setLocalDict(pop.dict());
 		sampleName = m_nameExpr.valueAsString();
-	} else if (!m_name.empty() )
+	} else if (!m_name.empty())
 		sampleName = m_name;
 
 	try {
@@ -106,20 +106,6 @@ bool sample::apply(population & pop)
 	}
 
 	return true;
-}
-
-
-void sample::saveIndIndex(population & pop, const string & indexField)
-{
-	UINT fieldIdx = pop.infoIdx(indexField);
-
-	for (size_t ans = 0; ans <= pop.ancestralDepth(); ++ans) {
-		pop.useAncestralPop(ans);
-		// need to save old index
-		for (size_t idx = 0; idx < pop.popSize(); ++idx)
-			pop.ind(idx).setInfo(idx, fieldIdx);
-	}
-	pop.useAncestralPop(0);
 }
 
 
@@ -239,7 +225,7 @@ bool randomSample::prepareSample(population & pop)
 		ValueError, "Length of size and number of subpops do not match.");
 
 	pop.addInfoField("oldindex", -1);
-	saveIndIndex(pop, "oldindex");
+	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
 	if (m_size.size() > 1) {
 		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 			DBG_WARNING(m_size[sp] > pop.subPopSize(sp),
@@ -293,7 +279,7 @@ bool caseControlSample::prepareSample(population & pop)
 {
 	// record the index in the old population, for samples.
 	pop.addInfoField("oldindex", -1);
-	saveIndIndex(pop, "oldindex");
+	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
 	if (!m_spSample) {                                                        // sample from the whole population.
 		DBG_FAILIF(m_numCases.size() > 1 || m_numControls.size() > 1,
 			ValueError, "Cases, controls need to be a number if sample from the whole population.");
@@ -467,7 +453,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	fields[3] = "offspring1";
 	fields[4] = "spouse";
 	pop.addInfoFields(fields, -1);
-	saveIndIndex(pop, "oldindex");
+	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
 	UINT pedindexIdx = pop.infoIdx("pedindex");
 	UINT off0Idx = pop.infoIdx("offspring0");
 	UINT off1Idx = pop.infoIdx("offspring1");
@@ -633,7 +619,7 @@ bool largePedigreeSample::prepareSample(population & pop)
 	for (size_t i = 0; i < m_maxOffspring; ++i)
 		offspringIdx[i] = pop.infoIdx(fields[i]);
 	// save old index
-	saveIndIndex(pop, "oldindex");
+	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
 	//
 	// 2 means find till grandfather.
 	findOffspringAndSpouse(pop, 2, m_maxOffspring, "father_idx", "mother_idx",
@@ -905,7 +891,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 	for (size_t i = 0; i < m_maxOffspring; ++i)
 		offspringIdx[i] = pop.infoIdx(fields[i]);
 	// save old index
-	saveIndIndex(pop, "oldindex");
+	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
 	//
 	// 1 means find till parents
 	findOffspringAndSpouse(pop, 1, m_maxOffspring, "father_idx", "mother_idx",
