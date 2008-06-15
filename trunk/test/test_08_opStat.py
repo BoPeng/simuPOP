@@ -458,7 +458,8 @@ class TestStat(unittest.TestCase):
             CramerV = math.sqrt(ChiSq(var, loc1, loc2)/(var.popSize * min(r - 1, c - 1)))
             return CramerV
         assert abs(ChiSq(pop.dvars(), 2, 4) - pop.dvars().ChiSq[2][4]) < 1e-6
-        assert abs(ChiSq_P(pop.dvars(), 2, 4) - pop.dvars().ChiSq_P[2][4]) < 1e-6
+        if has_rpy:
+            assert abs(ChiSq_P(pop.dvars(), 2, 4) - pop.dvars().ChiSq_P[2][4]) < 1e-6
         assert abs(UC_U(pop.dvars(), 2, 4) - pop.dvars().UC_U[2][4]) < 1e-6
         assert abs(CramerV(pop.dvars(), 2, 4) - pop.dvars().CramerV[2][4]) < 1e-6
         for sp in range(3):
