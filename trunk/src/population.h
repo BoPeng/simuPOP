@@ -248,10 +248,10 @@ public:
 	/// if a subpopulation has any virtual subpopulation
 	bool hasVirtualSubPop(SubPopID subpop) const;
 
-	/// set a virtual splitter to a given subpopulation.
+	/// set a virtual splitter to the population. If multiple splitter is needed
+	/// for different subpopulations, use a combined splitter.
 	/// \param vsp a virtual subpop splitter
-	/// \param sp subpopulation ID, default to zero
-	vspSplitter * setVirtualSplitter(vspSplitter * vsp, SubPopID sp = 0);
+	vspSplitter * setVirtualSplitter(vspSplitter * vsp);
 
 	/// number of virtual subpopulation of a given subpopulation.
 	UINT numVirtualSubPop(SubPopID subPop) const;
@@ -264,11 +264,6 @@ public:
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
 		vspSplitter::activateType type = vspSplitter::Visible);
-
-	/// CPPONLY
-	/// Copy virtual splitters if two populations have
-	/// the same number of subpopulations.
-	void copyVirtualSplitters(const population & rhs);
 
 	/** deactivate virtual subpopulations in a given
 	   subpopulation. In another word, all individuals
@@ -2016,7 +2011,7 @@ private:
 	vectorlu m_subPopIndex;
 
 	///
-	vectorvsp m_virtualSubPops;
+	vspSplitter * m_vspSplitter;
 
 	/// pool of genotypic information
 	vectora m_genotype;

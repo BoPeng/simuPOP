@@ -50,7 +50,7 @@ population::population(const vectorlu & size,
 	m_numSubPop(size.size()),
 	m_subPopSize(size),
 	m_subPopIndex(size.size() + 1),
-	m_virtualSubPops(),
+	m_vspSplitter(NULL),
 	m_genotype(0),                                                                          // resize later
 	m_info(0),
 	m_inds(0),                                                                              // default constructor will be called.
@@ -106,12 +106,8 @@ population::population(const vectorlu & size,
 /// destroy a population
 population::~population()
 {
-	vectorvsp::const_iterator it = m_virtualSubPops.begin();
-	vectorvsp::const_iterator it_end = m_virtualSubPops.end();
-
-	for (; it != it_end; ++it)
-		if (*it != NULL)
-			delete * it;
+	if (m_vspSplitter)
+		delete m_vspSplitter;
 
 	DBG_DO(DBG_POPULATION,
 		cout << "Destructor of population is called" << endl);
@@ -124,7 +120,7 @@ population::population(const population & rhs) :
 	m_numSubPop(rhs.m_numSubPop),
 	m_subPopSize(rhs.m_subPopSize),
 	m_subPopIndex(rhs.m_subPopIndex),
-	m_virtualSubPops(),
+	m_vspSplitter(),
 	m_genotype(0),
 	m_info(0),
 	m_inds(0),
@@ -201,7 +197,8 @@ population::population(const population & rhs) :
 	}
 
 	// copy virtual subpop splitters
-	copyVirtualSplitters(rhs);
+	if (rhs.m_vspSplitter)
+		m_vspSplitter = rhs.m_vspSplitter->clone();
 
 	// set local variable
 	setRep(-1);
@@ -241,7 +238,7 @@ ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) con
 	    // if no vsp is specified, but has actived vsp, return the size of this vsp
 	    (virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop)))
 		return subPopSize(subPop);
-	return m_virtualSubPops[subPop]->size(*this, subPop, virtualSubPop);
+	return m_vspSplitter->size(*this, subPop, virtualSubPop);
 }
 
 
@@ -252,69 +249,44 @@ string population::virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop) co
 		"Subpopulation id is not virtual");
 	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
 		"There is no virtual subpopulation in subpop " + toStr(subPop));
-	return m_virtualSubPops[subPop]->name(virtualSubPop);
+	return m_vspSplitter->name(virtualSubPop);
 }
 
 
 bool population::hasActivatedVirtualSubPop() const
 {
-	if (m_virtualSubPops.empty())
-		return false;
-	vectorvsp::const_iterator it = m_virtualSubPops.begin();
-	vectorvsp::const_iterator it_end = m_virtualSubPops.end();
-	for (; it != it_end; ++it)
-		if (*it != NULL && (*it)->activated())
-			return true;
+	if (m_vspSplitter != NULL && m_vspSplitter->activated())
+		return true;
 	return false;
 }
 
 
 bool population::hasActivatedVirtualSubPop(SubPopID subPop) const
 {
-	return !m_virtualSubPops.empty() &&
-	       m_virtualSubPops[subPop] != NULL &&
-	       m_virtualSubPops[subPop]->activated();
+	return m_vspSplitter != NULL &&
+	       m_vspSplitter->activated();
 }
 
 
 bool population::hasVirtualSubPop(SubPopID subPop) const
 {
-	return !m_virtualSubPops.empty() &&
-	       m_virtualSubPops[subPop] != NULL;
+	return m_vspSplitter != NULL;
 }
 
 
-vspSplitter * population::setVirtualSplitter(vspSplitter * vsp, SubPopID subPop)
+vspSplitter * population::setVirtualSplitter(vspSplitter * vsp)
 {
-	CHECKRANGESUBPOP(subPop);
-	if (m_virtualSubPops.size() != numSubPop())
-		m_virtualSubPops.resize(numSubPop(), NULL);
-	vspSplitter * old = m_virtualSubPops[subPop];
-	m_virtualSubPops[subPop] = vsp->clone();
+	vspSplitter * old = m_vspSplitter;
+	m_vspSplitter = vsp->clone();
 	return old;
 }
 
 
-UINT population::numVirtualSubPop(SubPopID subPop) const
+UINT population::numVirtualSubPop() const
 {
 	return hasVirtualSubPop(subPop)
-	       ? m_virtualSubPops[subPop]->numVirtualSubPop()
+	       ? m_vspSplitter->numVirtualSubPop()
 		   : 0;
-}
-
-
-void population::copyVirtualSplitters(const population & rhs)
-{
-	if (m_virtualSubPops.empty())
-		m_virtualSubPops.resize(rhs.m_virtualSubPops.size(), NULL);
-	for (size_t i = 0; i < rhs.m_virtualSubPops.size(); ++i) {
-		if (m_virtualSubPops[i] != NULL)
-			delete m_virtualSubPops[i];
-		if (rhs.m_virtualSubPops[i] == NULL)
-			m_virtualSubPops[i] = NULL;
-		else
-			m_virtualSubPops[i] = rhs.m_virtualSubPops[i]->clone();
-	}
 }
 
 
@@ -325,7 +297,7 @@ void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop,
 	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError, "Given virtual subpopulation ID is wrong");
 	DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
 		"Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
-	m_virtualSubPops[subPop]->activate(*this, subPop, virtualSubPop, type);
+	m_vspSplitter[subPop]->activate(*this, subPop, virtualSubPop, type);
 }
 
 
@@ -334,7 +306,7 @@ void population::deactivateVirtualSubPop(SubPopID subPop)
 	CHECKRANGESUBPOP(subPop);
 	if (!hasActivatedVirtualSubPop(subPop))
 		return;
-	m_virtualSubPops[subPop]->deactivate(*this, subPop);
+	m_vspSplitter[subPop]->deactivate(*this, subPop);
 }
 
 
@@ -465,10 +437,10 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 	//
-	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
+	if (!m_vspSplitter.empty() && m_vspSplitter.size() != m_numSubPop) {
 		DBG_DO(DBG_POPULATION,
 			cout << "Virtual subpopulation splitters are removed due to population structure changes");
-		m_virtualSubPops.clear();
+		m_vspSplitter.clear();
 	}
 }
 
@@ -552,10 +524,10 @@ void population::setSubPopByIndID(vectori id)
 	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 	//
-	if (!m_virtualSubPops.empty() && m_virtualSubPops.size() != m_numSubPop) {
+	if (!m_vspSplitter.empty() && m_vspSplitter.size() != m_numSubPop) {
 		DBG_DO(DBG_GENERAL,
 			cout << "Virtual subpopulation splitters are removed due to population structure changes");
-		m_virtualSubPops.clear();
+		m_vspSplitter.clear();
 	}
 }
 
@@ -634,14 +606,14 @@ void population::removeEmptySubPops()
 			newSPNum--;
 		else {
 			newSPSize.push_back(m_subPopSize[sp]);
-			if (!m_virtualSubPops.empty())
-				newVSP.push_back(m_virtualSubPops[sp]);
+			if (!m_vspSplitter.empty())
+				newVSP.push_back(m_vspSplitter[sp]);
 		}
 	}
 	m_numSubPop = newSPNum;
 	m_subPopSize.swap(newSPSize);
 	m_subPopIndex.resize(m_numSubPop + 1);
-	m_virtualSubPops.swap(newVSP);
+	m_vspSplitter.swap(newVSP);
 	// rebuild index
 	size_t i = 1;
 	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
@@ -668,11 +640,11 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 			RawIndIterator ind_end = rawIndEnd(sp);
 			for (; ind != ind_end; ++ind)
 				ind->setSubPopID(-1); // remove
-			if (!m_virtualSubPops.empty() && m_virtualSubPops[sp] != NULL)
-				delete m_virtualSubPops[sp];
+			if (!m_vspSplitter.empty() && m_vspSplitter[sp] != NULL)
+				delete m_vspSplitter[sp];
 		} else {
-			if (!m_virtualSubPops.empty())
-				newVSP.push_back(m_virtualSubPops[sp]);
+			if (!m_vspSplitter.empty())
+				newVSP.push_back(m_vspSplitter[sp]);
 			// other subpop shift left
 			if (shiftSubPopID) {
 				RawIndIterator ind = rawIndBegin(sp);
@@ -683,7 +655,7 @@ void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool
 		}
 	}
 	// copy pointer directly...
-	m_virtualSubPops.swap(newVSP);
+	m_vspSplitter.swap(newVSP);
 
 	UINT pendingEmptySubPops = 0;
 	for (UINT i = m_numSubPop - 1; i >= 0 && (subPopSize(i) == 0
@@ -1391,7 +1363,7 @@ void population::pushAndDiscard(population & rhs, bool force)
 	m_numSubPop = rhs.m_numSubPop;
 	m_subPopSize.swap(rhs.m_subPopSize);
 	m_subPopIndex.swap(rhs.m_subPopIndex);
-	m_virtualSubPops.swap(rhs.m_virtualSubPops);
+	m_vspSplitter.swap(rhs.m_vspSplitter);
 	m_genotype.swap(rhs.m_genotype);
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
