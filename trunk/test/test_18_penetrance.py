@@ -25,7 +25,6 @@ class TestPenetrance(unittest.TestCase):
             value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             indRange = [[0,125], [125,375],[375,500],[500,550],
                 [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
-        Dump(self.pop)
 
     def testMapPenetrance(self):
         'Testing map penetrance'
