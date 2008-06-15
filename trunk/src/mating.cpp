@@ -1981,8 +1981,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
 		}
-		// DBG_DO(DBG_MATING, cout << "Positive mating scheme weights: " << w_pos << '\n'
-		//	                    << "Negative mating scheme weights: " << w_neg << endl);
+		DBG_DO(DBG_DEVEL, cout << "Positive mating scheme weights: " << w_pos << '\n'
+			                    << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -2004,6 +2004,10 @@ bool heteroMating::mate(population & pop, population & scratch,
 				all -= vspSize[i];
 			}
 		}
+        if (fcmp_eq(overall_neg, 1.0) && all != 0) { // numerical problem?
+            vspSize[m.size() - 1] += all;
+            all = 0;
+        }
 		// then count positive ones
 		ULONG all_pos = all;
 		for (size_t i = 0; i < m.size(); ++i) {
@@ -2017,7 +2021,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			}
 		}
 		DBG_FAILIF(fcmp_eq(overall_pos, 0) && all > 0, ValueError,
-			"An exact (all negative) weight system is used, but offspring subpopulation size does not match");
+			"An exact (all negative) weight system is used, but does not fill offspring subpopulation.");
 
 		// individuals left by floating point calculation is added to
 		// the last non-zero, positive weight virtual subpopulation.
@@ -2028,8 +2032,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 					break;
 				}
 		}
-		// DBG_DO(DBG_MATING, cout << "VSP sizes in subpop " << sp << " is "
-		//	                    << vspSize << endl);
+		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is "
+			                    << vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();

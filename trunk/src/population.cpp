@@ -233,9 +233,7 @@ ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) con
 {
 	CHECKRANGESUBPOP(subPop);
 	// if there is no virtual subpopulation,
-	if (!hasVirtualSubPop() || \
-	    // if no vsp is specified, but has actived vsp, return the size of this vsp
-	    (virtualSubPop == InvalidSubPopID && !hasActivatedVirtualSubPop(subPop)))
+	if (virtualSubPop == InvalidSubPopID)
 		return subPopSize(subPop);
 	return m_vspSplitter->size(*this, subPop, virtualSubPop);
 }
