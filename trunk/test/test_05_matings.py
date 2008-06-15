@@ -297,7 +297,7 @@ class TestMatingSchemes(unittest.TestCase):
         def fitness1(gen, frq):
             return [1, 1+gen/10000., 1+gen/5000.]
         # one subpopulation
-        freq = [[0.08, 0.15], [0.12, 0.24], [0.15, 0.27]]
+        freq = [[0.05, 0.15], [0.05, 0.24], [0.15, 0.30]]
         traj = ForwardFreqTrajectory(
             curGen = 10,
             endGen = 20,

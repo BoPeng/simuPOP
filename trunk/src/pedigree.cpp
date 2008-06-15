@@ -38,13 +38,13 @@ namespace simuPOP {
 const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
 
 #define CHECK_PARENTAL() DBG_FAILIF(m_numParents != 2, ValueError, \
-		"Only pedigree with two parents have paternal information")
+		"Only pedigree with two parents have maternal information")
 
-#define CHECK_GEN(gen) DBG_FAILIF(gen >= m_maternal.size(), IndexError, \
+#define CHECK_GEN(gen) DBG_FAILIF(gen >= m_paternal.size(), IndexError, \
 		"Generation number " + toStr(gen) + " out of range (<" \
-		+ toStr(m_maternal.size()) + ")")
+		+ toStr(m_paternal.size()) + ")")
 
-#define CHECK_INDEX(gen, idx) DBG_FAILIF(idx >= m_maternal[gen].size(), \
+#define CHECK_INDEX(gen, idx) DBG_FAILIF(idx >= m_paternal[gen].size(), \
 		IndexError,	"Individual index out of range.")
 
 #define CHECK_SUBPOP(gen, subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= m_pedSize[gen].size(), \
@@ -67,7 +67,6 @@ pedigree::pedigree(int numParents, const string & pedfile)
 
 ULONG pedigree::father(ULONG gen, ULONG idx)
 {
-	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_INDEX(gen, idx);
 
@@ -77,6 +76,7 @@ ULONG pedigree::father(ULONG gen, ULONG idx)
 
 ULONG pedigree::mother(ULONG gen, ULONG idx)
 {
+	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_INDEX(gen, idx);
 
@@ -86,7 +86,6 @@ ULONG pedigree::mother(ULONG gen, ULONG idx)
 
 ULONG pedigree::father(ULONG gen, SubPopID subPop, ULONG idx)
 {
-	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
@@ -100,6 +99,7 @@ ULONG pedigree::father(ULONG gen, SubPopID subPop, ULONG idx)
 
 ULONG pedigree::mother(ULONG gen, SubPopID subPop, ULONG idx)
 {
+	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
@@ -113,7 +113,6 @@ ULONG pedigree::mother(ULONG gen, SubPopID subPop, ULONG idx)
 
 void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
 {
-	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_INDEX(gen, idx);
 	CHECK_INDEX(gen - 1, parent);
@@ -124,6 +123,7 @@ void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
 
 void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
 {
+	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_INDEX(gen, idx);
 	CHECK_INDEX(gen - 1, parent);
@@ -134,7 +134,6 @@ void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
 
 void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 {
-	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
@@ -149,6 +148,7 @@ void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 
 void pedigree::setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
 {
+	CHECK_PARENTAL();
 	CHECK_GEN(gen);
 	CHECK_SUBPOP(gen, subPop);
 	CHECK_SUBPOP_INDEX(gen, subPop, idx);
