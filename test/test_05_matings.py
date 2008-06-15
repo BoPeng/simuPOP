@@ -564,7 +564,7 @@ class TestMatingSchemes(unittest.TestCase):
                 infoFields=[])],
             gen=10
         )
-        ped = pedigree('pedigree.dat')
+        ped = pedigree(pedfile='pedigree.dat')
         #
         simu1 = simulator(pop, pedigreeMating(pedigree=ped))
         simu1.evolve(
@@ -602,7 +602,7 @@ class TestMatingSchemes(unittest.TestCase):
                 infoFields=[])],
             gen=10
         )
-        ped = pedigree('pedigree.dat')
+        ped = pedigree(pedfile='pedigree.dat')
         #
         simu1 = simulator(pop,
             pedigreeMating(generator=selfingOffspringGenerator(),
