@@ -24,6 +24,8 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		and add a new operator initSex.
   - BUG: Fix a iterator bug that affects populations with ancestralDepth > 1 
 		during evolution.
+  - CHG: Remove subpopulation specific virtual subpopulation. This is no longer
+		needed with combined virtual splitter.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008

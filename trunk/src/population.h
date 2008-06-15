@@ -245,16 +245,19 @@ public:
 	/// CPPONLY
 	bool hasActivatedVirtualSubPop(SubPopID subPop) const;
 
-	/// if a subpopulation has any virtual subpopulation
-	bool hasVirtualSubPop(SubPopID subpop) const;
+	/// if a population has any virtual subpopulation
+	bool hasVirtualSubPop() const;
+
+	/// CPPONLY
+	vspSplitter * virtualSplitter() { return m_vspSplitter; }
 
 	/// set a virtual splitter to the population. If multiple splitter is needed
 	/// for different subpopulations, use a combined splitter.
 	/// \param vsp a virtual subpop splitter
-	vspSplitter * setVirtualSplitter(vspSplitter * vsp);
+	void setVirtualSplitter(vspSplitter * vsp);
 
-	/// number of virtual subpopulation of a given subpopulation.
-	UINT numVirtualSubPop(SubPopID subPop) const;
+	/// number of virtual subpopulations.
+	UINT numVirtualSubPop() const;
 
 	/// activate a virtual subpopulation.
 	/**
@@ -488,7 +491,13 @@ public:
 #ifndef OPTIMIZED
 		CHECKRANGESUBPOP(subPop);
 #endif
-		DBG_ASSERT(hasVirtualSubPop(subPop), ValueError,
+		DBG_FAILIF(virtualSubPop == InvalidSubPopID, ValueError,
+			"Invalid virtual subpoulation");
+
+		DBG_FAILIF(hasActivatedVirtualSubPop(subPop), ValueError,
+			"This operation is not allowed for an activated subpopulation");
+
+		DBG_ASSERT(static_cast<UINT>(virtualSubPop) < numVirtualSubPop(), IndexError,
 			"Population does not have any virtual subpopulation");
 
 		// this does not need to be deactivated...
