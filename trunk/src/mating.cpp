@@ -288,7 +288,7 @@ void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
 }
 
 
-UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual * mom, individual * dad,
+UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
                                                     RawIndIterator & it,
                                                     RawIndIterator & it_end,
                                                     vector<baseOperator *> & ops)
@@ -346,7 +346,7 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 
 
 UINT selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
-                                                  individual * dad,
+                                                  individual * mom,
                                                   RawIndIterator & it,
                                                   RawIndIterator & it_end,
                                                   vector<baseOperator *> & ops)
@@ -358,7 +358,7 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 		"Offspring generator is used for two different types of populations");
 
 	DBG_FAILIF(parent == NULL, ValueError, "selfing offspring generator: Parent is NULL");
-	DBG_FAILIF(dad != NULL, ValueError, "selfing offspring generator: the second parent should be NULL");
+	DBG_FAILIF(mom != NULL, ValueError, "selfing offspring generator: the second parent should be NULL");
 
 	// generate numOffspring offspring per mating
 	UINT count = 0;
@@ -427,8 +427,8 @@ void haplodiploidOffspringGenerator::copyParentalGenotype(individual * parent,
 }
 
 
-UINT haplodiploidOffspringGenerator::generateOffspring(population & pop, individual * mom,
-                                                       individual * dad,
+UINT haplodiploidOffspringGenerator::generateOffspring(population & pop, individual * dad,
+                                                       individual * mom,
                                                        RawIndIterator & it,
                                                        RawIndIterator & it_end,
                                                        vector<baseOperator *> & ops)
@@ -531,8 +531,8 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents()
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
 
-	individual * mom = NULL;
 	individual * dad = NULL;
+	individual * mom = NULL;
 
 	if (m_curMale == m_numMale)
 		m_curMale = 0;
@@ -549,7 +549,7 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents()
 		mom = & * (m_femaleIndex[m_curFemale++]);
 	else
 		mom = & * (m_maleIndex[m_curMale++]);
-	return std::make_pair(mom, dad);
+	return std::make_pair(dad, mom);
 }
 
 
@@ -565,18 +565,18 @@ void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
 
 parentChooser::individualPair pedigreeParentsChooser::chooseParents()
 {
-	individual * mom = NULL;
 	individual * dad = NULL;
+	individual * mom = NULL;
 
-	mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
+	dad = & * (m_begin + m_pedigree.father(m_gen, m_subPop, m_index));
 	if (m_pedigree.numParents() == 2)
-		dad = & * (m_begin + m_pedigree.father(m_gen, m_subPop, m_index));
+		mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
 	DBG_FAILIF(m_index >= m_pedigree.subPopSize(m_gen, m_subPop), IndexError,
 		"Trying to retrieve more indiviudals (index=" +
 		toStr(m_index) + " than what are available from the pedigree ("
 		+ toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
 	m_index++;
-	return std::make_pair(mom, dad);
+	return std::make_pair(dad, mom);
 }
 
 
@@ -812,7 +812,7 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 				m_lastParent = dad;
 			}
 		}
-		return std::make_pair(mom, dad);
+		return std::make_pair(dad, mom);
 	}
 	// using weidhted sampler.
 	if (dad == NULL) {
@@ -851,7 +851,7 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 			m_lastParent = mom;
 		}
 	}
-	return std::make_pair(mom, dad);
+	return std::make_pair(dad, mom);
 }
 
 
@@ -1167,8 +1167,7 @@ bool baseRandomMating::mateSubPop(population & pop, SubPopID subPop,
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
-		UINT numOff = m_offspringGenerator.generateOffspring(pop,
-			parents.first, parents.second, it, offEnd, ops);
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
@@ -1200,8 +1199,7 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
-		UINT numOff = m_offspringGenerator.generateOffspring(pop,
-			parents.first, parents.second, it, offEnd, ops);
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
@@ -1268,8 +1266,7 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
 			ValueError, "Imcompatible parents chooser and offspring generator");
 		//
-		UINT numOff = m_offspringGenerator->generateOffspring(pop,
-			parents.first, parents.second, it, offEnd, ops);
+		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
 		(void)numOff;             // silent warning about unused variable.
 		DBG_ASSERT(numOff == 1, ValueError,
 			"Pedigree offspring generator can only generate one offspring each time");
@@ -1303,8 +1300,7 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 		//
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
-		UINT numOff = m_offspringGenerator.generateOffspring(pop,
-			parent, NULL, it, offEnd, ops);
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parent, NULL, it, offEnd, ops);
 		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
@@ -1661,8 +1657,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			itBegin = it;
 			// generate numOffspring offspring per mating
 			// it moves forward
-			numOff = m_offspringGenerator.generateOffspring(pop,
-				parents.first, parents.second, it, it_end, ops);
+			numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, it_end, ops);
 
 			// count alleles in this family
 			// count number of alleles in the family.
@@ -1873,20 +1868,19 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * mom = NULL;
 		individual * dad = NULL;
+		individual * mom = NULL;
 		if (m_parentChooser->numParents() == 1)
-			mom = m_parentChooser->chooseParent();
+			dad = m_parentChooser->chooseParent();
 		// 0 or 2, that is to say, dad or mom can be NULL
 		else {
 			parentChooser::individualPair const parents = m_parentChooser->chooseParents();
-			mom = parents.first;
-			dad = parents.second;
+			dad = parents.first;
+			mom = parents.second;
 		}
 
 		//
-		UINT numOff = m_offspringGenerator->generateOffspring(pop,
-			mom, dad, it, offEnd, ops);
+		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
 		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
 		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));

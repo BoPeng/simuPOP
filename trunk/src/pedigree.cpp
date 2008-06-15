@@ -274,8 +274,8 @@ void pedigree::addGen(const vectorlu & sizes)
 
 void pedigree::load(const string & filename)
 {
-	m_maternal.clear();
 	m_paternal.clear();
+	m_maternal.clear();
 	m_pedSize.clear();
 
 	ifstream ifs(filename.c_str());
@@ -316,20 +316,20 @@ void pedigree::load(const string & filename)
 			m_numParents = values.size() / popSize;
 		DBG_ASSERT(m_numParents * popSize == values.size(), ValueError,
 			"Number of parents does not match subpopulation sizes.\n"
-			"Line: " + toStr(m_maternal.size() + 1) + ", Individuals read: "
+			"Line: " + toStr(m_paternal.size() + 1) + ", Individuals read: "
 			+ toStr(values.size()) +
 			", Pop size: " + toStr(popSize));
 		m_pedSize.push_back(vectorlu());
 		m_pedSize.back().swap(sizes);
 		if (m_numParents == 1) {
-			m_maternal.push_back(vectorlu());
-			m_maternal.back().swap(values);
+			m_paternal.push_back(vectorlu());
+			m_paternal.back().swap(values);
 		} else if (m_numParents == 2) {
-			m_maternal.push_back(vectorlu(popSize));
 			m_paternal.push_back(vectorlu(popSize));
+			m_maternal.push_back(vectorlu(popSize));
 			for (size_t i = 0; i < popSize; ++i) {
-				m_maternal.back()[i] = values[2 * i];
-				m_paternal.back()[i] = values[2 * i + 1];
+				m_paternal.back()[i] = values[2 * i];
+				m_maternal.back()[i] = values[2 * i + 1];
 			}
 		} else {
 			DBG_ASSERT(false, SystemError,
@@ -371,14 +371,14 @@ void pedigree::loadInfo(const string & filename, const vectorstr & names)
 			values.push_back(value);
 			input >> ws;
 		}
-		DBG_FAILIF(gen >= m_maternal.size(), ValueError,
+		DBG_FAILIF(gen >= m_paternal.size(), ValueError,
 			"Information pedigree is larger than parental pedigree");
-		ULONG size = m_maternal[gen].size();
+		ULONG size = m_paternal[gen].size();
 
 		DBG_FAILIF(numInfo * size != values.size(), ValueError,
 			"At generation " + toStr(gen) + ", number of information read is "
 			+ toStr(values.size()) + ", which is not a multiple of number of individuals "
-			+ toStr(m_maternal[gen].size()));
+			+ toStr(m_paternal[gen].size()));
 		//
 		if (m_info.size() <= gen)
 			m_info.push_back(vector<vectorf>(size));
@@ -419,18 +419,18 @@ void pedigree::save(const string & filename)
 
 	DBG_FAILIF(!ofs, SystemError, "Can not open pedigree file " + filename + " to write.");
 
-	for (size_t gen = 0; gen < m_maternal.size(); ++gen) {
-		size_t sz = m_maternal[gen].size();
+	for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
+		size_t sz = m_paternal[gen].size();
 		for (size_t idx = 0; idx < sz; ++idx) {
-			if (m_maternal[gen][idx] == UnusedIndividual)
+			if (m_paternal[gen][idx] == UnusedIndividual)
 				ofs << -1;
 			else
-				ofs << m_maternal[gen][idx];
+				ofs << m_paternal[gen][idx];
 			if (m_numParents == 2) {
-				if (m_paternal[gen][idx] == UnusedIndividual)
+				if (m_maternal[gen][idx] == UnusedIndividual)
 					ofs << "\t-1";
 				else
-					ofs << '\t' << m_paternal[gen][idx];
+					ofs << '\t' << m_maternal[gen][idx];
 			}
 			ofs << '\t';
 		}
