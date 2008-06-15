@@ -20,15 +20,12 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
   2.2 group paremter of operators. I have never used them.
   2.3 combine infoXXX and taggerXXX in taggers?
 
-4. Remove subpopulation-specific virtual splitters. With combined
-     splitter, there is no use for them.
+4. Efficiency improvement and possible use of openMP.
 
-5. Efficiency improvement and possible use of openMP.
-
-6. Use virtual subpopulation for sex-specific recombination?, for
+5. Use virtual subpopulation for sex-specific recombination?, for
 	sex-specific migration etc.
 
-7. Test later version of boost and see if the gzip problem has been
+6. Test later version of boost and see if the gzip problem has been
 	addressed under windows.
 
 
