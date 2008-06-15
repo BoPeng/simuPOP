@@ -66,7 +66,7 @@ public:
 				female = i;
 			}
 		}
-		return std::make_pair(male, female);
+		return std::make_pair(female, male);
 	}
 
 private:

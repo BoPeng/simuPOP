@@ -143,7 +143,7 @@ def parentsChooser(pop, sp):
         dist = [diff_x[i]**2 + diff_y[i]**2 for i in range(len(females))]
         female = females[dist.index(min(dist))]
         #print male, female
-        yield (male, female)
+        yield (female, male)
 
 
 def simuGeoMating(size, gen):

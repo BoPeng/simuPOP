@@ -274,8 +274,8 @@ void pedigree::addGen(const vectorlu & sizes)
 
 void pedigree::load(const string & filename)
 {
-	m_paternal.clear();
 	m_maternal.clear();
+	m_paternal.clear();
 	m_pedSize.clear();
 
 	ifstream ifs(filename.c_str());
@@ -322,8 +322,8 @@ void pedigree::load(const string & filename)
 		m_pedSize.push_back(vectorlu());
 		m_pedSize.back().swap(sizes);
 		if (m_numParents == 1) {
-			m_paternal.push_back(vectorlu());
-			m_paternal.back().swap(values);
+			m_maternal.push_back(vectorlu());
+			m_maternal.back().swap(values);
 		} else if (m_numParents == 2) {
 			m_paternal.push_back(vectorlu(popSize));
 			m_maternal.push_back(vectorlu(popSize));
@@ -419,18 +419,18 @@ void pedigree::save(const string & filename)
 
 	DBG_FAILIF(!ofs, SystemError, "Can not open pedigree file " + filename + " to write.");
 
-	for (size_t gen = 0; gen < m_paternal.size(); ++gen) {
-		size_t sz = m_paternal[gen].size();
+	for (size_t gen = 0; gen < m_maternal.size(); ++gen) {
+		size_t sz = m_maternal[gen].size();
 		for (size_t idx = 0; idx < sz; ++idx) {
-			if (m_paternal[gen][idx] == UnusedIndividual)
+			if (m_maternal[gen][idx] == UnusedIndividual)
 				ofs << -1;
 			else
-				ofs << m_paternal[gen][idx];
+				ofs << m_maternal[gen][idx];
 			if (m_numParents == 2) {
-				if (m_maternal[gen][idx] == UnusedIndividual)
+				if (m_paternal[gen][idx] == UnusedIndividual)
 					ofs << "\t-1";
 				else
-					ofs << '\t' << m_maternal[gen][idx];
+					ofs << '\t' << m_paternal[gen][idx];
 			}
 			ofs << '\t';
 		}
