@@ -1981,8 +1981,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 				if (w_neg[i] == 0)
 					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
 		}
-		DBG_DO(DBG_MATING, cout << "Positive mating scheme weights: " << w_pos << '\n'
-			                    << "Negative mating scheme weights: " << w_neg << endl);
+		// DBG_DO(DBG_MATING, cout << "Positive mating scheme weights: " << w_pos << '\n'
+		//	                    << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -2028,8 +2028,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 					break;
 				}
 		}
-		DBG_DO(DBG_MATING, cout << "VSP sizes in subpop " << sp << " is "
-			                    << vspSize << endl);
+		// DBG_DO(DBG_MATING, cout << "VSP sizes in subpop " << sp << " is "
+		//	                    << vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();
