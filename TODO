@@ -2,6 +2,36 @@ RoadMap of simuPOP
 
 Towards simuPOP 1.0
 
+simuPOP 1.0 should have a consistently defined and well documented interface.
+
+1. Test and document each function and class.
+  1.1 Complete and expand test sets. If possible, repeat tests in many 
+	scenarios.
+  1.2 Check reference manuals for format and accuracy.
+
+2. Considering replacing SubPopID with vsp, reducing another parameter. 
+	Currently, there is a interface TypeError problem.
+
+3. Remove a few rarely used features.
+  2.1 arrXXXX? This function is very difficult to implement, but may
+        not be as useful as expected when they were designed.
+    2.1.1 test if arrXXX based functions are more efficient.
+    2.1.2 If not, remove them, and rewrite all the tests.
+  2.2 group paremter of operators. I have never used them.
+  2.3 combine infoXXX and taggerXXX in taggers?
+
+4. Remove subpopulation-specific virtual splitters. With combined
+     splitter, there is no use for them.
+
+5. Efficiency improvement and possible use of openMP.
+
+6. Use virtual subpopulation for sex-specific recombination?, for
+	sex-specific migration etc.
+
+7. Test later version of boost and see if the gzip problem has been
+	addressed under windows.
+
+
 Items are marked roughly
 Status: Onging (O), Done (DONE)
 1. Easy 1 --- difficult 9
@@ -15,42 +45,19 @@ Roadmap: test and documentation:
 O 3/8/N check help contents in C++ source code. 
 O 1/4/N Proofread simuPOP user's guide and reference manual
 O 2/5/P write more comprehensive test scripts 
-DONE    online help is not complete. Need re-write or fix the processing scripts.
-DONE    comprehensive testing scripts
 
 Roadmap: scripts:
 O 5/6/P add models from population genetics book
   7/7/P write simuEasyPop
-DONE    use checkbox for True/False option in simuOpt
-DONE    add things like listbox to tkGetParam function. Use wxPython when possible
-DONE    add other LD measures to simuLDDecay.py
-DONE    add a few population conversion, sampling scripts in scripts directory.
-        For example, a script that can load some formats and save to others, and
-        another script to sample from them.
 
 Roadmap: simuPOP core
-DONE    overlapped generations and continuous time reproduction. (mating in aged populations.)
-DONE    add other mating scheme. (Following easyPOP)
   6/7/C improve support for non-diploid individuals.
 O 5/5/C profile simuPOP and imporve efficiency (this is *always* needed for a simulation program like simuPOP)
-DONE    Sampling now copy populations and result in high RAM demand
-DONE    Add association measures displayed in http://www.sph.umich.edu/csg/abecasis/GOLD/docs/stats.html
-DONE    sex-difference recombination rate.
-DONE    aged population
 
 Roadmap: simuUtil
   3/2/P investigate the potential of python image module. See if it is easy to install and support
   1/1/P add a set of popular penetrance functions. It may be better to let user write their own
         function though, since these functions are easy to write but hard to memorize and document.
-DONE    save and load other popular formats like merlin and solar
-DONE    add wxPython version of listVars()
-DONE    change layout of simuRPy/varPlotter/image 
-DONE    save linkage of any pedigree. This is very troublesome considering the potentially very 
-        complicated pedigrees.
-DONE    add population size change function support like linear growth, exponential growth.
-        Basically simple nested functions. Update reference manual accordingly
-DONE    add migration models functions like stepstone, 2d stepstone etc. (Return 
-        a matrix with given rate and type. Update reference manual accordingly
 
 Roadmap: A real GUI other than the tk-based simple parameter dialog
   9/9/P wxPython or Tkinter? wxPython may be better for this large GUI project
@@ -58,12 +65,9 @@ Roadmap: A real GUI other than the tk-based simple parameter dialog
   8/4/P Visualization of active gens of objects.... 
   7/4/P Interactively change population, split, merge etc through menu
   8/4/P output and load simuPOP script
-DONE    Start/stop for easy debugging
 
 Roadmap: Parallel version of simuPOP
 O       feasibility study (give up the MPI version, investigating openMP).
 
 Roadmap: Distribution
-  2/2/N help the release and even development of RPy. rpy plays an important role in simuPOP
-        but installing it under windows has always been a problem.
   2/3/N test simuPOP under different machines and operating systems

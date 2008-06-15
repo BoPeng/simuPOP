@@ -22,7 +22,8 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a NuclearfamilySample bug regarding parameter minAffected.
   - NEW: separate sex initialization from initByFreq, initByValue and pyInit
 		and add a new operator initSex.
-  - NEW: Add parameter maleRatio to migrators to model sex-biased migration.
+  - BUG: Fix a iterator bug that affects populations with ancestralDepth > 1 
+		during evolution.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
