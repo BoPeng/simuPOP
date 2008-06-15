@@ -209,11 +209,6 @@ public:
 
 
 protected:
-	// service functions that can be used by everyone
-
-	/// save the index of each individual to a field (usually \c oldindex)
-	void saveIndIndex(population & pop, const string & indexField = "oldindex");
-
 	/// reset \c father_idx and \c mother_idx
 	void resetParentalIndex(population & pop, const string & fatherField = "father_idx",
 		const string & motherField = "mother_idx", const string & indexField = "oldindex");

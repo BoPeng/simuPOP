@@ -28,6 +28,9 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 6. Test later version of boost and see if the gzip problem has been
 	addressed under windows.
 
+7. Expand pedigree functions and move the logic of samplers out of sampler.cpp.
+
+8. Expand population::findRelative to locate arbitrary relatives.
 
 Items are marked roughly
 Status: Onging (O), Done (DONE)

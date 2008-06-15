@@ -1453,6 +1453,38 @@ class TestPopulation(unittest.TestCase):
         # this is different from the previous tests, where virtual subpopulation is activated
         self.assertEqual(pop.dvars().alleleNum[2][0] == 0, False)
 
+    def testLocateSelf(self):
+        'Testing set index for individuals themselves'
+        simu = simulator(population(1000, ancestralDepth=2, infoFields=['index']), randomMating())
+        simu.evolve(ops=[], gen=2)
+        pop = simu.getPopulation(0, True)
+        pop.locateRelatives(REL_Self, ['index'])
+        for ans in range(pop.ancestralDepth()):
+            pop.useAncestralPop(ans)
+            for idx,ind in enumerate(pop.individuals()):
+                self.assertEqual(ind.info('index'), idx)
+
+    def testLocateOffspring(self):
+        'Testing set index for offsprings of individuals'
+        simu = simulator(population([1000, 1000], ancestralDepth=4,
+            infoFields=['father_idx', 'mother_idx', 'off0', 'off1', 'off2', 'off3']),
+            randomMating(numOffspring=2))
+        simu.evolve(ops=[parentsTagger()], gen=10)
+        pop = simu.getPopulation(0, True)
+        pop.locateRelatives(REL_Offspring, ['off0', 'off1', 'off2', 'off3'])
+        for field in ['off0', 'off1', 'off2', 'off3']:
+            for ans in range(1, pop.ancestralDepth()):
+                # parental generation
+                pop.useAncestralPop(ans)
+                off = pop.indInfo('off0')
+                pop.useAncestralPop(ans-1)
+                for idx,ind in enumerate(off):
+                    if ind == -1:
+                        continue
+                    self.assertEqual(idx in [pop.individual(int(ind)).info('father_idx'),
+                        pop.individual(int(ind)).info('mother_idx')], True)
+        # FIXME: test single parent case
+    
 
 if __name__ == '__main__':
     unittest.main()

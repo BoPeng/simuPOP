@@ -1483,6 +1483,74 @@ void population::setInfoFields(const vectorstr & fields, double init)
 }
 
 
+void population::locateRelatives(RelativeType type, const vectorstr & infoFields,
+	const vectorstr & parentFields)
+{
+	if (type == REL_Self) {
+		DBG_ASSERT(infoFields.size() == 1, ValueError,
+			"Please provide one information field to store REL_Self individuals");
+		UINT fieldIdx = infoIdx(infoFields[0]);
+			
+		for (size_t ans = 0; ans <= ancestralDepth(); ++ans) {
+			useAncestralPop(ans);
+			for (size_t idx = 0; idx < popSize(); ++idx)
+				ind(idx).setInfo(idx, fieldIdx);
+		}
+		useAncestralPop(0);
+	} else if (type == REL_Spouse) {
+		DBG_ASSERT(parentFields.size() == 2, ValueError,
+			"This relative only exists when there are more than one parents for each indidivual");
+
+		DBG_ASSERT(infoFields.size() == 1, ValueError,
+			"Please provide one information field to store REL_Self individuals");
+
+	} else if (type == REL_Offspring) {
+		UINT maxOffspring = infoFields.size();
+
+		vectori offspringIdx(maxOffspring);
+		for (size_t i = 0; i < maxOffspring; ++i) {
+			offspringIdx[i] = infoIdx(infoFields[i]);
+			// clear these fields for the last generation
+			for (IndInfoIterator ptr = infoBegin(offspringIdx[i]);
+				ptr != infoEnd(offspringIdx[i]); ++ptr)
+				*ptr = static_cast<InfoType>(-1);
+		}
+
+		// start from the parental generation
+		for (unsigned ans = 1; ans <= ancestralDepth(); ++ans) {
+			vectoru numOffspring;
+			// for each type of parental relationship
+			for (vectorstr::const_iterator field = parentFields.begin();
+				field != parentFields.end(); ++field) {
+				useAncestralPop(ans - 1);
+				vectorf parent = indInfo(*field);
+				//
+				useAncestralPop(ans);
+				if (numOffspring.empty())
+					numOffspring.resize(popSize(), 0);
+				//
+				for (size_t idx = 0; idx < parent.size(); ++idx) {
+					DBG_ASSERT(fcmp_ne(parent[idx], -1), ValueError, "Invalid parental index (-1)");
+					ULONG p = static_cast<ULONG>(parent[idx]);
+					DBG_ASSERT(p < popSize(), IndexError, "Parental index out of range of 0 ~ " + toStr(popSize() - 1));
+					if (numOffspring[p] < maxOffspring) {
+						ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
+						++numOffspring[p];
+					}
+				}                                                                                           // idx
+			}                                                                                               // ancestal generations
+			// set the rest of the field to -1
+			for (size_t idx = 0; idx < popSize(); ++idx) {
+				for (size_t no = numOffspring[idx]; no < maxOffspring; ++no)
+					ind(idx).setInfo(-1, offspringIdx[no]);
+			}
+		}
+		useAncestralPop(0);
+	} else if (type == REL_Sibling ) {
+	}
+}
+
+
 // set ancestral depth, can be -1
 void population::setAncestralDepth(int depth)
 {
