@@ -460,7 +460,7 @@ class TestMatingSchemes(unittest.TestCase):
             return ret
         self.assertEqual(getOffSize(1000, [0,0]), [500, 500])
         self.assertEqual(getOffSize(1000, [-1,0]), [1000, 0])
-        self.assertEqual(getOffSize(1000, [-0.3, -0.7]), [300, 700])
+        self.assertEqual(getOffSize(1000, [-0.4, -0.6]), [400, 600])
         self.assertEqual(getOffSize(1000, [-0.5, 0, 0]), [500, 250, 250])
         self.assertEqual(getOffSize(1000, [-0.5, 2, 3]), [500, 200, 300])
         self.assertEqual(getOffSize(1000, [-0.5, 2, 3]), [500, 200, 300])
@@ -527,7 +527,7 @@ class TestMatingSchemes(unittest.TestCase):
             [1]*80+[2]*10+[4]*50)
         #
         # set proportional splitter
-        pop.setVirtualSplitter(proportionSplitter([0.6, 0.4]), 0)
+        pop.setVirtualSplitter(proportionSplitter([0.6, 0.4]))
         simu = simulator(pop,
             heteroMating(
                 [selfMating(numOffspring=1, subPop=0, virtualSubPop=0),
