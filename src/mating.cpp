@@ -1024,7 +1024,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 		scratch.fitSubPopStru(sz);
 	}
 	// this is not absolutely necessary but will reduce confusions
-	scratch.copyVirtualSplitters(pop);
+	scratch.setVirtualSplitter(pop.virtualSplitter());
 
 	DBG_DO(DBG_SIMULATOR, cout << "New subpop size " << scratch.subPopSizes() << endl);
 
@@ -1231,7 +1231,7 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 {
 	// scrtach will have the right structure.
 	scratch.fitSubPopStru(m_pedParentsChooser.subPopSizes(pop.gen()));
-	scratch.copyVirtualSplitters(pop);
+	scratch.setVirtualSplitter(pop.virtualSplitter());
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 

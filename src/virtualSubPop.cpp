@@ -29,20 +29,23 @@ namespace simuPOP {
 
 void vspSplitter::resetSubPop(population & pop, SubPopID subPop)
 {
-	if (!m_activated)
+	DBG_ASSERT(m_activated == InvalidSubPopID || m_activated == subPop,
+		ValueError, "Subpopulation " + toStr(subPop) + " is not activated.");
+
+	if (m_activated == InvalidSubPopID)
 		return;
 
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it)
 		it->setVisible(true);
-	m_activated = false;
+	m_activated = InvalidSubPopID;
 }
 
 
 ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) const
 {
-	if (!activated())
+	if (activatedSubPop() != subPop)
 		return pop.subPopSize(subPop);
 	ULONG count = 0;
 	ConstRawIndIterator it = pop.rawIndBegin(subPop);
@@ -140,7 +143,7 @@ void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSu
 		else
 			it->setIteratable(it->sex() == s);
 	if (type == Visible)
-		m_activated = true;
+		m_activated = subPop;
 }
 
 
@@ -181,7 +184,7 @@ void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID vir
 		else
 			it->setIteratable(it->affected() == aff);
 	if (type == Visible)
-		m_activated = true;
+		m_activated = subPop;
 }
 
 
@@ -322,7 +325,7 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 				it->setIteratable(fcmp_eq(it->info(idx), v));
 	}
 	if (type == Visible)
-		m_activated = true;
+		m_activated = subPop;
 }
 
 
@@ -420,7 +423,7 @@ void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID vi
 			it->setIteratable(sp == visibleSP);
 	}
 	if (type == Visible)
-		m_activated = true;
+		m_activated = subPop;
 }
 
 
@@ -489,7 +492,7 @@ void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtual
 		else
 			it->setIteratable(idx >= low && idx < high);
 	if (type == Visible)
-		m_activated = true;
+		m_activated = subPop;
 }
 
 
@@ -555,7 +558,7 @@ void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 		else
 			it->setIteratable(match(& * it, alleles));
 	if (type == Visible)
-		m_activated = true;
+		m_activated = subPop;
 }
 
 

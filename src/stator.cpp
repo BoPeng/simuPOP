@@ -256,7 +256,7 @@ bool statPopSize::apply(population & pop)
 	vectori vspSize;
 	for (size_t sp = 0; sp < numSP; ++sp) {
 		spSize[sp] = pop.subPopSize(sp);
-		size_t numVSP = pop.numVirtualSubPop(sp);
+		size_t numVSP = pop.numVirtualSubPop();
 		if (numVSP == 0)
 			pop.setIntVar(virtualPopSize_String + string("[") + toStr(sp) + "]", spSize[sp]);
 		else {

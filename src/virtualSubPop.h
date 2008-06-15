@@ -63,7 +63,7 @@ public:
 	};
 
 public:
-	vspSplitter() : m_activated(false)
+	vspSplitter() : m_activated(InvalidSubPopID)
 	{
 	}
 
@@ -77,7 +77,7 @@ public:
 
 	/// if the virtual subpopulation is activated.
 	/// CPPONLY
-	bool activated() const
+	SubPopID activatedSubPop() const
 	{
 		return m_activated;
 	}
@@ -105,7 +105,7 @@ public:
 protected:
 	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
 
-	bool m_activated;
+	SubPopID m_activated;
 
 	void resetSubPop(population & pop, SubPopID subPop);
 
