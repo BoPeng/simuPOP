@@ -316,7 +316,7 @@ void pedigree::load(const string & filename)
 			m_numParents = values.size() / popSize;
 		DBG_ASSERT(m_numParents * popSize == values.size(), ValueError,
 			"Number of parents does not match subpopulation sizes.\n"
-			"Line: " + toStr(m_paternal.size() + 1) + ", Individuals read: "
+			"Line: " + toStr(m_maternal.size() + 1) + ", Individuals read: "
 			+ toStr(values.size()) +
 			", Pop size: " + toStr(popSize));
 		m_pedSize.push_back(vectorlu());
@@ -325,11 +325,11 @@ void pedigree::load(const string & filename)
 			m_maternal.push_back(vectorlu());
 			m_maternal.back().swap(values);
 		} else if (m_numParents == 2) {
-			m_paternal.push_back(vectorlu(popSize));
 			m_maternal.push_back(vectorlu(popSize));
+			m_paternal.push_back(vectorlu(popSize));
 			for (size_t i = 0; i < popSize; ++i) {
-				m_paternal.back()[i] = values[2 * i];
-				m_maternal.back()[i] = values[2 * i + 1];
+				m_maternal.back()[i] = values[2 * i];
+				m_paternal.back()[i] = values[2 * i + 1];
 			}
 		} else {
 			DBG_ASSERT(false, SystemError,
@@ -371,14 +371,14 @@ void pedigree::loadInfo(const string & filename, const vectorstr & names)
 			values.push_back(value);
 			input >> ws;
 		}
-		DBG_FAILIF(gen >= m_paternal.size(), ValueError,
+		DBG_FAILIF(gen >= m_maternal.size(), ValueError,
 			"Information pedigree is larger than parental pedigree");
-		ULONG size = m_paternal[gen].size();
+		ULONG size = m_maternal[gen].size();
 
 		DBG_FAILIF(numInfo * size != values.size(), ValueError,
 			"At generation " + toStr(gen) + ", number of information read is "
 			+ toStr(values.size()) + ", which is not a multiple of number of individuals "
-			+ toStr(m_paternal[gen].size()));
+			+ toStr(m_maternal[gen].size()));
 		//
 		if (m_info.size() <= gen)
 			m_info.push_back(vector<vectorf>(size));
