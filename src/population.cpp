@@ -339,6 +339,36 @@ PyObject * population::arrGenotype(bool order)
 }
 
 
+void population::setIndSubPopID(const vectori & id, bool ancestralPops)
+{
+	int oldGen = ancestralGen();
+	size_t sz = id.size();
+	for (size_t anc = 0; anc <= ancestralDepth(); ++anc) {
+		if (!ancestralPops && anc != oldGen)
+			continue;
+		useAncestralPop(anc);
+		for (ULONG it = 0; it < m_popSize; ++it)
+			ind(it).setSubPopID(static_cast<SubPopID>(id[it % sz]));
+	}
+	useAncestralPop(oldGen);
+}
+
+
+void population::setIndSubPopIDWithID(bool ancestralPops)
+{
+	int oldGen = ancestralGen();
+	for (size_t anc = 0; anc <= ancestralDepth(); ++anc) {
+		if (!ancestralPops && anc != oldGen)
+			continue;
+		useAncestralPop(anc);
+		for (UINT i = 0, iEnd = numSubPop(); i < iEnd;  ++i)
+			for (IndIterator it = indBegin(i); it.valid();  ++it)
+				it->setSubPopID(i);
+	}
+	useAncestralPop(oldGen);
+}
+
+
 // get the whole genotype.
 // individuals will be in order before exposing
 // their genotypes.
