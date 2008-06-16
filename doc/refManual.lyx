@@ -2773,7 +2773,10 @@ There is currently no easy way to get the intersection or superset of two
 
 \begin_layout Standard
 The population class provies several functions to assign a splitter to a
- given subpopulation, retrieve virtual subpopulation sizes and names.
+ given population, retrieve virtual subpopulation sizes and names.
+ Note that one splitter is used for all subpopulations.
+ If different splitters are needed for different subpopulations, a combined
+ splitter can be used.
  More interestingly, the 
 \family typewriter
 individuals(subPop, virtualSubPop) 
@@ -6043,11 +6046,13 @@ initSexRef
 
 \begin_layout Standard
 
+
 \backslash
 initByFreqRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 initByValueRef
@@ -6055,11 +6060,13 @@ initByValueRef
 
 \begin_layout Standard
 
+
 \backslash
 spreadRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 pyInitRef
