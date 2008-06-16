@@ -495,6 +495,8 @@ public:
 			"Ancestray generation " + toStr(gen) + " does not exist");
 		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_inds.size(),
 			IndexError, "Individual index out of range");
+		if (gen == 0)
+			return this->ind(ind);
 		return m_ancestralPops[gen - 1].m_inds[ind];
 	}
 
@@ -512,6 +514,8 @@ public:
 			"Ancestray generation " + toStr(gen) + " does not exist");
 		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_inds.size(),
 			IndexError, "Individual index out of range");
+		if (gen == 0)
+			return this->ind(ind);
 		return m_ancestralPops[gen - 1].m_inds[ind];
 	}
 
@@ -531,6 +535,8 @@ public:
 			IndexError, "subpopulation index out of range");
 		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_subPopSize[subPop],
 			IndexError, "Individual index out of range");
+		if (gen == 0)
+			return this->ind(ind, subPop);
 		ULONG shift = 0;
 		if (subPop > 0) {
 			for (size_t i = 0; i < subPop; ++i)
@@ -554,6 +560,8 @@ public:
 			IndexError, "subpopulation index out of range");
 		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_subPopSize[subPop],
 			IndexError, "Individual index out of range");
+		if (gen == 0)
+			return this->ind(ind, subPop);
 		ULONG shift = 0;
 		if (subPop > 0) {
 			for (size_t i = 0; i < subPop; ++i)
