@@ -213,9 +213,6 @@ protected:
 	void resetParentalIndex(population & pop, const string & fatherField = "father_idx",
 		const string & motherField = "mother_idx", const string & indexField = "oldindex");
 
-	/// set all subpopulation IDs to \c -1 (remove)
-	void resetSubPopID(population & pop);
-
 private:
 	/// name to save sample, default to 'sample'
 	string m_name;

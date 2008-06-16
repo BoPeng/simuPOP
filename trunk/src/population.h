@@ -992,27 +992,20 @@ public:
 	   can be rearranged afterwards using \c setSubPopByIndID.
 
 	 \param id an array of the same length of population size, resprenting
-	   subpopulation ID of each individual.
+	   subpopulation ID of each individual. If the length of \id is less
+	   than population size, it is repeated to fill the whole population.
+	 \param ancestralPops If true (default to False), set subpop id for ancestral
+	   generations as well.
 	 \sa individual::setSubPopID, individual::subPopID
 	 */
-	void setIndSubPopID(const vectori & id)
-	{
-		DBG_ASSERT(id.size() == m_popSize, ValueError,
-			"Info should have the same length as pop size");
-
-		for (ULONG it = 0; it < m_popSize; ++it)
-			ind(it).setSubPopID(static_cast<SubPopID>(id[it]));
-	}
-
+	void setIndSubPopID(const vectori & id, bool ancestralPops=false);
 
 	/// set subpopulation ID of each individual with their current subpopulation ID
-	void setIndSubPopIDWithID()
-	{
-		for (UINT i = 0, iEnd = numSubPop(); i < iEnd;  ++i)
-			for (IndIterator it = indBegin(i), itEnd = indEnd(i); it != itEnd;  ++it)
-				it->setSubPopID(i);
-	}
-
+	/**
+	 \param ancestralPops If true (default to False), set subpop id for ancestral
+	   generations as well.
+	*/
+	void setIndSubPopIDWithID(bool ancestralPops=false);
 
 	/// move individuals to subpopulations according to individual subpopulation IDs
 	/**

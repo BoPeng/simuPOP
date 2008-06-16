@@ -150,19 +150,6 @@ void sample::resetParentalIndex(population & pop, const string & fatherField,
 }
 
 
-void sample::resetSubPopID(population & pop)
-{
-	int oldGen = pop.ancestralGen();
-
-	for (size_t anc = 0; anc <= pop.ancestralDepth(); ++anc) {
-		pop.useAncestralPop(anc);
-		for (IndIterator it = pop.indBegin(); it.valid(); ++it)
-			it->setSubPopID(-1);
-	}
-	pop.useAncestralPop(oldGen);
-}
-
-
 bool randomSample::prepareSample(population & pop)
 {
 	DBG_WARNING(m_size.size() == 1 && m_size[0] > pop.popSize(),
@@ -462,7 +449,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 population & affectedSibpairSample::drawsample(population & pop)
 {
 	// mark to remove everyone
-	resetSubPopID(pop);
+	pop.setIndSubPopID(vectori(1, -1));
 	vectorlu acceptedSibs;
 
 	if (m_size.size() <= 1) {                                         // draw from the whole population
@@ -717,7 +704,7 @@ population & largePedigreeSample::drawsample(population & pop)
 {
 	// sample sibpairs
 	DBG_DO(DBG_SELECTOR, cout << "Generating sample" << endl);
-	resetSubPopID(pop);
+	pop.setIndSubPopID(vectori(1, -1));
 	pedArray acceptedPeds;
 
 	if (m_size.size() <= 1) {                                         // draw from the whole population
@@ -923,7 +910,7 @@ bool nuclearFamilySample::prepareSample(population & pop)
 population & nuclearFamilySample::drawsample(population & pop)
 {
 	DBG_DO(DBG_SELECTOR, cout << "Generating nuclear family" << endl);
-	resetSubPopID(pop);
+	pop.setIndSubPopID(vectori(1, -1));
 	pedArray acceptedPeds;
 
 	if (m_size.size() <= 1) {                                         // draw from the whole population
