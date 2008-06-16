@@ -2957,6 +2957,34 @@ subPop
 'th subpopulations.
 \end_layout
 
+\begin_layout Itemize
+
+\family typewriter
+ancestor(ind, gen)
+\family default
+ returns the 
+\family typewriter
+ind
+\family default
+'th individual (absolute index) of the gen'th ancestral generation.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ancestor(ind, subPop, gen)
+\family default
+ returns the
+\family typewriter
+ ind
+\family default
+'th (relative index) individual in the
+\family typewriter
+ subPop
+\family default
+'th subpopulation.
+\end_layout
+
 \begin_layout Standard
 For example, example 
 \begin_inset LatexCommand ref
@@ -2980,6 +3008,24 @@ population::individuals()
 \family default
 .
  The latter is usually easier to use.
+\end_layout
+
+\begin_layout Standard
+You can also access individuals from the ancestral generations directly.
+ There is no batch access functions such as 
+\family typewriter
+individuals()
+\family default
+.
+ If they are needed, use 
+\family typewriter
+useAncestralPop()
+\family default
+ to switch to that ancestral generation and run
+\family typewriter
+ individuals()
+\family default
+ for the current generation.
 \end_layout
 
 \begin_layout Standard
