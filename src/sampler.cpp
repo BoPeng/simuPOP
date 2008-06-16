@@ -564,6 +564,8 @@ bool largePedigreeSample::prepareSample(population & pop)
 	pop.addInfoFields(fields, -1);
 	UINT pedindexIdx = pop.infoIdx("pedindex");
 	UINT spouseIdx = pop.infoIdx("spouse");
+	UINT fatherIdx = pop.infoIdx("father_idx");
+	UINT motherIdx = pop.infoIdx("mother_idx");
 	for (size_t i = 0; i < m_maxOffspring; ++i)
 		offspringIdx[i] = pop.infoIdx(fields[i]);
 	// save old index
@@ -616,6 +618,13 @@ bool largePedigreeSample::prepareSample(population & pop)
 			vectorlu parents;
 			for (vectorlu::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par) {
 				if (pop.ind(*par).info(pedindexIdx) == -1.) {
+					int ind_p = static_cast<int>(pop.ind(*par).info(fatherIdx));
+					int ind_m = static_cast<int>(pop.ind(*par).info(motherIdx));
+					// child with another spouse
+					if (grandspouse != ind_p && grandspouse != ind_m)
+						continue;
+					if (idx != ind_p && idx != ind_m)
+						continue;
 					parents.push_back(*par);
 					pedSize++;
 					if (pop.ind(*par).affected())
@@ -628,12 +637,12 @@ bool largePedigreeSample::prepareSample(population & pop)
 				// if there is spouse, add it in
 				if (spouse >= 0. && pop.ind(*par).info(pedindexIdx) == -1.) {
 					// if spouse relationship is mutual
-					if (static_cast<ULONG>(pop.ind(static_cast<ULONG>(spouse)).info(spouseIdx)) == *par) {
-						spouseofparents.push_back(static_cast<ULONG>(spouse));
-						pedSize++;
-						if (pop.ind(static_cast<ULONG>(spouse)).affected())
-							numAffected++;
-					}
+					if (static_cast<ULONG>(pop.ind(static_cast<ULONG>(spouse)).info(spouseIdx)) != *par)
+						continue;
+					spouseofparents.push_back(static_cast<ULONG>(spouse));
+					pedSize++;
+					if (pop.ind(static_cast<ULONG>(spouse)).affected())
+						numAffected++;
 					// there are children only when there is spouse
 					for (size_t x = 0; x < m_maxOffspring; ++x) {
 						InfoType off = pop.ind(*par).info(offspringIdx[x]);
@@ -650,6 +659,15 @@ bool largePedigreeSample::prepareSample(population & pop)
 			for (vectorlu::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child) {
 				// unoccupied.
 				if (pop.ind(*child).info(pedindexIdx) == -1.) {
+					ULONG ind_p = static_cast<ULONG>(pop.ind(*child).info(fatherIdx));
+					ULONG ind_m = static_cast<ULONG>(pop.ind(*child).info(motherIdx));
+					// 
+					if (find(parents.begin(), parents.end(), ind_m) == parents.end() &&
+						find(spouseofparents.begin(), spouseofparents.end(), ind_m) == spouseofparents.end())
+						continue;
+					if (find(parents.begin(), parents.end(), ind_p) == parents.end() &&
+						find(spouseofparents.begin(), spouseofparents.end(), ind_p) == spouseofparents.end())
+						continue;
 					children.push_back(*child);
 					pedSize++;
 					if (pop.ind(*child).affected())
@@ -781,24 +799,22 @@ population & largePedigreeSample::drawsample(population & pop)
 		pop.useAncestralPop(1);
 		vectorlu children;
 		for (vectorlu::iterator it = parents.begin(); it != parents.end(); ++it) {
-			if (pop.ind(*it).info(pedindexIdx) == pedID) {
-				pop.ind(*it).setSubPopID(newPedID);
-				ps++;
-				InfoType spouse = pop.ind(*it).info(spouseIdx);
-				// if there is spouse, add it in
-				if (spouse != -1) {
-					// It is possible that a spouse does not belong to this pedigree because
-					// it mated twice and counted as someone else' spouse.
-					if (pop.ind(static_cast<ULONG>(spouse)).info(spouseIdx) == *it) {
-						pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
-						ps++;
-					}
-					for (size_t x = 0; x < m_maxOffspring; ++x) {
-						InfoType off = pop.ind(*it).info(offspringIdx[x]);
-						if (off != -1)
-							children.push_back(static_cast<ULONG>(off));
-					}
-				}
+			if (pop.ind(*it).info(pedindexIdx) != pedID)
+				continue;
+			pop.ind(*it).setSubPopID(newPedID);
+			ps++;
+			InfoType spouse = pop.ind(*it).info(spouseIdx);
+			// if there is spouse, add it in
+			if (spouse == -1)
+				continue;
+			if (pop.ind(spouse).info(pedindexIdx) != pedID)
+				continue;
+			pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
+			ps++;
+			for (size_t x = 0; x < m_maxOffspring; ++x) {
+				InfoType off = pop.ind(*it).info(offspringIdx[x]);
+				if (off != -1)
+					children.push_back(static_cast<ULONG>(off));
 			}
 		}
 		// go to children
