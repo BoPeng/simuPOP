@@ -233,9 +233,9 @@ ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) con
 {
 	CHECKRANGESUBPOP(subPop);
 	// if there is no virtual subpopulation,
-	if (virtualSubPop == InvalidSubPopID)
-		return subPopSize(subPop);
-	return m_vspSplitter->size(*this, subPop, virtualSubPop);
+	if (hasActivatedVirtualSubPop() || virtualSubPop != InvalidSubPopID)
+		return m_vspSplitter->size(*this, subPop, virtualSubPop);
+	return subPopSize(subPop);
 }
 
 
@@ -293,6 +293,9 @@ void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop,
 	DBG_ASSERT(hasVirtualSubPop(), ValueError,
 		"Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
 	m_vspSplitter->activate(*this, subPop, virtualSubPop, type);
+	DBG_ASSERT(type !=  vspSplitter::Visible || 
+		m_vspSplitter->activatedSubPop() == subPop, SystemError,
+		"Failed to activate virtual subpopulation");
 }
 
 
