@@ -148,7 +148,7 @@ class TestAscertainment(unittest.TestCase):
         'Testing nuclear family sampling (imcomplete)'
         (s,) = NuclearFamilySample(self.largepop, 50, minTotalSize=50, maxOffspring=5,
             minPedSize=5, minAffected=0)
-        print s.subPopSizes()
+        #print s.subPopSizes()
         assert s.subPopSize(0) <= 5
         assert s.subPopSize(1) <= 5
         for ind in s.individuals():

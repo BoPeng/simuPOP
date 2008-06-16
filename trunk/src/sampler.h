@@ -213,11 +213,6 @@ protected:
 	void resetParentalIndex(population & pop, const string & fatherField = "father_idx",
 		const string & motherField = "mother_idx", const string & indexField = "oldindex");
 
-	/// find offspring and spouse
-	void findOffspringAndSpouse(population & pop, unsigned ancestralDepth, unsigned maxOffspring,
-		const string & fatherField, const string & motherField,
-		const string & spouseField, const string & offspringField);
-
 	/// set all subpopulation IDs to \c -1 (remove)
 	void resetSubPopID(population & pop);
 
