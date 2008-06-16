@@ -1511,5 +1511,46 @@ class TestPopulation(unittest.TestCase):
         # FIXME: test single parent case
     
 
+    def testAncestor(self):
+        'Testing direct access to ancestors'
+        pop = population([100, 200], loci=[10, 20], infoFields=['x', 'y'],
+            ancestralDepth=5)
+        InitByFreq(pop, [0.2, 0.8])
+        for ind in pop.individuals():
+            ind.setInfo(random.randint(4, 10), 'x')
+            ind.setInfo(random.randint(10, 100), 'y')
+        pop1 = population([200, 100], loci=[10, 20], infoFields=['x', 'y'])
+        InitByFreq(pop1, [0.5, 0.5])
+        for ind in pop1.individuals():
+            ind.setInfo(random.randint(4, 10), 'x')
+            ind.setInfo(random.randint(10, 100), 'y')
+        #
+        pop_c = pop.clone()
+        pop1_c = pop1.clone()
+        #
+        pop.pushAndDiscard(pop1)
+        #
+        for idx, ind in enumerate(pop_c.individuals()):
+            self.assertEqual(ind, pop.ancestor(idx, 1))
+            self.assertEqual(ind.info('x'), pop.ancestor(idx, 1).info('x'))
+            self.assertEqual(ind.info('y'), pop.ancestor(idx, 1).info('y'))
+        #
+        pop.pushAndDiscard(pop1)
+        #
+        for idx, ind in enumerate(pop1_c.individuals()):
+            self.assertEqual(ind, pop.ancestor(idx, 1))
+            self.assertEqual(ind.info('x'), pop.ancestor(idx, 1).info('x'))
+            self.assertEqual(ind.info('y'), pop.ancestor(idx, 1).info('y'))
+        for idx, ind in enumerate(pop_c.individuals()):
+            self.assertEqual(ind, pop.ancestor(idx, 2))
+            self.assertEqual(ind.info('x'), pop.ancestor(idx, 2).info('x'))
+            self.assertEqual(ind.info('y'), pop.ancestor(idx, 2).info('y'))
+        #
+        pop.useAncestralPop(2)
+        self.assertRaises(exceptions.ValueError, pop.ancestor, 1, 2)
+        pop.useAncestralPop(0)
+        self.assertRaises(exceptions.IndexError, pop.ancestor, 10000, 2)
+        self.assertRaises(exceptions.IndexError, pop.ancestor, 10000, 3)
+        
 if __name__ == '__main__':
     unittest.main()

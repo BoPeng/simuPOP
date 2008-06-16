@@ -26,6 +26,8 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		during evolution.
   - CHG: Remove subpopulation specific virtual subpopulation. This is no longer
 		needed with combined virtual splitter.
+  - NEW: Add population::ancestor(ind, gen) and population::ancestor(ind, subPop, gen)
+		to access an individual in an ancestory generation directly.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008

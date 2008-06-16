@@ -463,6 +463,106 @@ public:
 	}
 
 
+	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
+	/**
+	   Return individual \ind from subpopulation \subPop. This function
+	   is named \c individual in the Python interface.
+	 */
+	const individual & ind(ULONG ind, UINT subPop = 0) const
+	{
+#ifndef OPTIMIZED
+		if (subPop > 0) {
+			CHECKRANGESUBPOPMEMBER(ind, subPop);
+		} else {
+			CHECKRANGEIND(ind);
+		}
+#endif
+
+		return m_inds[ subPopBegin(subPop) + ind];
+	}
+
+
+	/// refrence to an individual \c ind in an ancestral generation
+	/**
+	This function gives access to individuals in an ancestral generation.
+	If gen == 0, this is the same as individual(ind). 
+	*/
+	individual & ancestor(ULONG ind, UINT gen)
+	{
+		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
+			"Population must be at the latest generation to use this function.");
+		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+			"Ancestray generation " + toStr(gen) + " does not exist");
+		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_inds.size(),
+			IndexError, "Individual index out of range");
+		return m_ancestralPops[gen - 1].m_inds[ind];
+	}
+
+
+	/// refrence to an individual \c ind in an ancestral generation
+	/**
+	This function gives access to individuals in an ancestral generation.
+	If gen == 0, this is the same as individual(ind). 
+	*/
+	const individual & ancestor(ULONG ind, UINT gen) const
+	{
+		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
+			"Population must be at the latest generation to use this function.");
+		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+			"Ancestray generation " + toStr(gen) + " does not exist");
+		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_inds.size(),
+			IndexError, "Individual index out of range");
+		return m_ancestralPops[gen - 1].m_inds[ind];
+	}
+
+
+	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
+	/**
+	This function gives access to individuals in an ancestral generation.
+	If gen == 0, this is the same as individual(ind). 
+	*/
+	individual & ancestor(ULONG ind, UINT subPop, UINT gen)
+	{
+		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
+			"Population must be at the latest generation to use this function.");
+		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+			"Ancestray generation " + toStr(gen) + " does not exist");
+		DBG_FAILIF(subPop > m_ancestralPops[gen - 1].m_subPopSize.size(),
+			IndexError, "subpopulation index out of range");
+		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_subPopSize[subPop],
+			IndexError, "Individual index out of range");
+		ULONG shift = 0;
+		if (subPop > 0) {
+			for (size_t i = 0; i < subPop; ++i)
+				shift += m_ancestralPops[gen - 1].m_subPopSize[i];
+		}
+		return m_ancestralPops[gen - 1].m_inds[shift + ind];
+	}
+
+	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
+	/**
+	This function gives access to individuals in an ancestral generation.
+	If gen == 0, this is the same as individual(ind, subPop). 
+	*/
+	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const
+	{
+		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
+			"Population must be at the latest generation to use this function.");
+		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+			"Ancestray generation " + toStr(gen) + " does not exist");
+		DBG_FAILIF(subPop > m_ancestralPops[gen - 1].m_subPopSize.size(),
+			IndexError, "subpopulation index out of range");
+		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_subPopSize[subPop],
+			IndexError, "Individual index out of range");
+		ULONG shift = 0;
+		if (subPop > 0) {
+			for (size_t i = 0; i < subPop; ++i)
+				shift += m_ancestralPops[gen - 1].m_subPopSize[i];
+		}
+		return m_ancestralPops[gen - 1].m_inds[shift + ind];
+	}
+
+
 	/// return an iterator that can be used to iterate through all individuals
 	/**
 	   Typical usage is \n <tt>for ind in pop.individuals():</tt>
@@ -523,25 +623,6 @@ public:
 			false,
 			// and we count visible, and iteratable individuals.
 			false);
-	}
-
-
-	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
-	/**
-	   Return individual \ind from subpopulation \subPop. This function
-	   is named \c individual in the Python interface.
-	 */
-	const individual & ind(ULONG ind, UINT subPop = 0) const
-	{
-#ifndef OPTIMIZED
-		if (subPop > 0) {
-			CHECKRANGESUBPOPMEMBER(ind, subPop);
-		} else {
-			CHECKRANGEIND(ind);
-		}
-#endif
-
-		return m_inds[ subPopBegin(subPop) + ind];
 	}
 
 
