@@ -625,6 +625,8 @@ bool largePedigreeSample::prepareSample(population & pop)
 						continue;
 					if (idx != ind_p && idx != ind_m)
 						continue;
+					
+					InfoType spouse = pop.ind(*par).info(spouseIdx);
 					parents.push_back(*par);
 					pedSize++;
 					if (pop.ind(*par).affected())
@@ -785,6 +787,8 @@ population & largePedigreeSample::drawsample(population & pop)
 		DBG_FAILIF(pop.ind(grandpar1).info(spouseIdx) == -1., SystemError,
 			"Grand parent's spouse is invalid");
 		size_t grandpar2 = static_cast<size_t>(pop.ind(grandpar1).info(spouseIdx));
+		DBG_FAILIF(pop.ind(grandpar2).info(pedindexIdx) != pedID, SystemError,
+			"Grand parent's spouse is invalid");
 		pop.ind(grandpar1).setSubPopID(newPedID);
 		pop.ind(grandpar2).setSubPopID(newPedID);
 		ps += 2;
@@ -804,11 +808,9 @@ population & largePedigreeSample::drawsample(population & pop)
 			pop.ind(*it).setSubPopID(newPedID);
 			ps++;
 			InfoType spouse = pop.ind(*it).info(spouseIdx);
+			if (spouse < 0 || pop.ind(spouse).info(pedindexIdx) != pedID)
+				continue;
 			// if there is spouse, add it in
-			if (spouse == -1)
-				continue;
-			if (pop.ind(spouse).info(pedindexIdx) != pedID)
-				continue;
 			pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
 			ps++;
 			for (size_t x = 0; x < m_maxOffspring; ++x) {
