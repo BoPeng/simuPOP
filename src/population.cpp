@@ -1535,22 +1535,37 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 				DBG_ASSERT(p < popSize() && m < popSize(), IndexError,
 					"Parental index out of range of 0 ~ " + toStr(popSize() - 1));
 				if (numSpouse[p] < maxSpouse) {
-					ind(p).setInfo(m, spouseIdx[numSpouse[p]]);
-					++numSpouse[p];
+					bool found = false;
+					for (size_t s = 0; s < numSpouse[p]; ++s)
+						if (ind(p).info(spouseIdx[s]) == m) {
+							found = true;
+							break;
+						}
+					if (!found) {
+						ind(p).setInfo(m, spouseIdx[numSpouse[p]]);
+						++numSpouse[p];
+					}
 				}
 				if (numSpouse[m] < maxSpouse) {
-					ind(m).setInfo(p, spouseIdx[numSpouse[m]]);
-					++numSpouse[m];
+					bool found = false;
+					for (size_t s = 0; s < numSpouse[m]; ++s)
+						if (ind(p).info(spouseIdx[s]) == p) {
+							found = true;
+							break;
+						}
+					if (!found) {
+						ind(m).setInfo(p, spouseIdx[numSpouse[m]]);
+						++numSpouse[m];
+					}
 				}				                                                                           // idx
 			}                                                                                               // ancestal generations
 			// set the rest of the field to -1
 			for (size_t idx = 0; idx < popSize(); ++idx) {
-				for (size_t no = numSpouse[idx]; no < maxSpouse; ++no)
-					ind(idx).setInfo(-1, spouseIdx[no]);
+				for (size_t ns = numSpouse[idx]; ns < maxSpouse; ++ns)
+					ind(idx).setInfo(-1, spouseIdx[ns]);
 			}
 		}
 		useAncestralPop(0);
-
 	} else if (type == REL_Offspring) {
 		DBG_ASSERT(infoFields.size() >= 1, ValueError,
 			"Please provide at least one information field to store offspring");

@@ -150,56 +150,6 @@ void sample::resetParentalIndex(population & pop, const string & fatherField,
 }
 
 
-void sample::findOffspringAndSpouse(population & pop, unsigned ancestralDepth,
-                                    unsigned maxOffspring,
-                                    const string & fatherField, const string & motherField,
-                                    const string & spouseField, const string & offspringField)
-{
-	vectori offspringIdx(maxOffspring);
-
-	for (size_t i = 0; i < maxOffspring; ++i)
-		offspringIdx[i] = pop.infoIdx(offspringField + toStr(i));
-	UINT spouseIdx = pop.infoIdx(spouseField);
-	UINT fatherIdx = pop.infoIdx(fatherField);
-	UINT motherIdx = pop.infoIdx(motherField);
-
-	DBG_DO(DBG_SELECTOR, cout << "Finding spouse and offspring of all individuals" << endl);
-	DBG_FAILIF(ancestralDepth > pop.ancestralDepth(), ValueError,
-		"The population does not have enough ancestral generations for this operation");
-
-	for (unsigned ans = 1; ans <= ancestralDepth; ++ans) {
-		pop.useAncestralPop(ans - 1);
-		vectorf dad = pop.indInfo(fatherIdx);
-		vectorf mom = pop.indInfo(motherIdx);
-		//
-		pop.useAncestralPop(ans);
-		//
-		for (size_t idx = 0; idx < dad.size(); ++idx) {
-			InfoType dadSpouse = pop.ind(static_cast<ULONG>(dad[idx])).info(spouseIdx);
-			InfoType momSpouse = pop.ind(static_cast<ULONG>(mom[idx])).info(spouseIdx);
-			// new case.
-			if (dadSpouse == -1. && momSpouse == -1) {
-				pop.ind(static_cast<ULONG>(dad[idx])).setInfo(mom[idx], spouseIdx);
-				pop.ind(static_cast<ULONG>(mom[idx])).setInfo(dad[idx], spouseIdx);
-				pop.ind(static_cast<ULONG>(dad[idx])).setInfo(idx, offspringIdx[0]);
-				pop.ind(static_cast<ULONG>(mom[idx])).setInfo(idx, offspringIdx[0]);
-			} else if (dadSpouse != -1 && momSpouse != -1 &&
-			           dadSpouse == mom[idx] && momSpouse == dad[idx]) {
-				// which offspring
-				for (size_t i = 1; i < maxOffspring; ++i) {
-					if (pop.ind(static_cast<ULONG>(dad[idx])).info(offspringIdx[i]) == -1.) {
-						pop.ind(static_cast<ULONG>(dad[idx])).setInfo(idx, offspringIdx[i]);
-						pop.ind(static_cast<ULONG>(mom[idx])).setInfo(idx, offspringIdx[i]);
-						break;
-					}
-				}
-			}
-		}                                                                                           // idx
-	}                                                                                               // ancestal generations
-	pop.useAncestralPop(0);
-}
-
-
 void sample::resetSubPopID(population & pop)
 {
 	int oldGen = pop.ancestralGen();
@@ -459,10 +409,8 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	UINT off1Idx = pop.infoIdx("offspring1");
 	UINT spouseIdx = pop.infoIdx("spouse");
 
-	// 1: one ancestralDepth
-	// 2: two offsprings
-	findOffspringAndSpouse(pop, 1, 2, "father_idx", "mother_idx",
-		"spouse", "offspring");                             // ans = 1, 2
+	pop.locateRelatives(REL_Offspring, vectorstr(fields.begin() + 2, fields.begin() + 4));
+	pop.locateRelatives(REL_Spouse, vectorstr(fields.begin() + 4, fields.end()));
 	//
 	// find sibpairs from the parental generation.
 	pop.useAncestralPop(1);
@@ -620,10 +568,9 @@ bool largePedigreeSample::prepareSample(population & pop)
 		offspringIdx[i] = pop.infoIdx(fields[i]);
 	// save old index
 	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
-	//
-	// 2 means find till grandfather.
-	findOffspringAndSpouse(pop, 2, m_maxOffspring, "father_idx", "mother_idx",
-		"spouse", "offspring");                             // ans = 1, 2
+	pop.locateRelatives(REL_Offspring, vectorstr(fields.begin(), fields.begin() + m_maxOffspring));
+	pop.locateRelatives(REL_Spouse, vectorstr(1, "spouse"));
+
 	//
 	pop.useAncestralPop(2);
 	m_validPedigrees.resize(pop.numSubPop());
@@ -643,7 +590,8 @@ bool largePedigreeSample::prepareSample(population & pop)
 			int grandspouse = static_cast<int>(pop.ind(idx).info(spouseIdx));
 			// no spuse? one of grandparents belong to another pedigree?
 			if (grandspouse < 0 || pop.ind(idx).info(pedindexIdx) >= 1 ||
-			    pop.ind(grandspouse).info(pedindexIdx) >= 1)
+			    static_cast<size_t>(pop.ind(grandspouse).info(spouseIdx)) != idx || // spouse not paired
+				pop.ind(grandspouse).info(pedindexIdx) >= 1)
 				continue;
 			if (pop.ind(idx).affected())
 				numAffected++;
@@ -679,10 +627,13 @@ bool largePedigreeSample::prepareSample(population & pop)
 				InfoType spouse = pop.ind(*par).info(spouseIdx);
 				// if there is spouse, add it in
 				if (spouse >= 0. && pop.ind(*par).info(pedindexIdx) == -1.) {
-					spouseofparents.push_back(static_cast<ULONG>(spouse));
-					pedSize++;
-					if (pop.ind(static_cast<ULONG>(spouse)).affected())
-						numAffected++;
+					// if spouse relationship is mutual
+					if (static_cast<ULONG>(pop.ind(static_cast<ULONG>(spouse)).info(spouseIdx)) == *par) {
+						spouseofparents.push_back(static_cast<ULONG>(spouse));
+						pedSize++;
+						if (pop.ind(static_cast<ULONG>(spouse)).affected())
+							numAffected++;
+					}
 					// there are children only when there is spouse
 					for (size_t x = 0; x < m_maxOffspring; ++x) {
 						InfoType off = pop.ind(*par).info(offspringIdx[x]);
@@ -836,10 +787,12 @@ population & largePedigreeSample::drawsample(population & pop)
 				InfoType spouse = pop.ind(*it).info(spouseIdx);
 				// if there is spouse, add it in
 				if (spouse != -1) {
-					pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
-					ps++;
-					DBG_ASSERT(pop.ind(static_cast<ULONG>(spouse)).info(pedindexIdx) == pedID,
-						ValueError, "Spouse does not belong to this pedigree, something wrong.");
+					// It is possible that a spouse does not belong to this pedigree because
+					// it mated twice and counted as someone else' spouse.
+					if (pop.ind(static_cast<ULONG>(spouse)).info(spouseIdx) == *it) {
+						pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
+						ps++;
+					}
 					for (size_t x = 0; x < m_maxOffspring; ++x) {
 						InfoType off = pop.ind(*it).info(offspringIdx[x]);
 						if (off != -1)
@@ -892,10 +845,8 @@ bool nuclearFamilySample::prepareSample(population & pop)
 		offspringIdx[i] = pop.infoIdx(fields[i]);
 	// save old index
 	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
-	//
-	// 1 means find till parents
-	findOffspringAndSpouse(pop, 1, m_maxOffspring, "father_idx", "mother_idx",
-		"spouse", "offspring");
+	pop.locateRelatives(REL_Offspring, vectorstr(fields.begin(), fields.begin() + m_maxOffspring));
+	pop.locateRelatives(REL_Spouse, vectorstr(1, "spouse"));
 	// offspring index
 	m_validPedigrees.resize(pop.numSubPop());
 	size_t pedIdx = 0;
