@@ -1304,11 +1304,14 @@ public:
 	 * in given information fields.
 	 * \param type Relative type, can be
 			\li REL_Self index of individual themselfs
+			\li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
+				having an offspring with shared \c parentFields. If more than one \c infoFields is given,
+				multiple spouses can be identified.
 			\li REL_Offspring index of offspring in the offspring generation. If only one
 				parent is given, only paternal or maternal relationship is considered. For example,
 				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
 	 * \param infoFields information fields to hold relatives. If more than one relatives
-	 * \param parentsFields information fields that stores parental indexes. Default to
+	 * \param parentFields information fields that stores parental indexes. Default to
 	 *		['father_idx', 'mother_idx']
 	 * are found, only the first several relatives are stored.
 	*/

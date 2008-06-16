@@ -1499,12 +1499,62 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 		useAncestralPop(0);
 	} else if (type == REL_Spouse) {
 		DBG_ASSERT(parentFields.size() == 2, ValueError,
-			"This relative only exists when there are more than one parents for each indidivual");
+			"This relative only exists when there are two parents for each indidivual");
 
-		DBG_ASSERT(infoFields.size() == 1, ValueError,
-			"Please provide one information field to store REL_Self individuals");
+		DBG_ASSERT(infoFields.size() >= 1, ValueError,
+			"Please provide at least one information field to store REL_Self individuals");
+
+		UINT maxSpouse = infoFields.size();
+
+		vectori spouseIdx(maxSpouse);
+		for (size_t i = 0; i < maxSpouse; ++i) {
+			spouseIdx[i] = infoIdx(infoFields[i]);
+			// clear these fields for the last generation
+			for (IndInfoIterator ptr = infoBegin(spouseIdx[i]);
+				ptr != infoEnd(spouseIdx[i]); ++ptr)
+				*ptr = static_cast<InfoType>(-1);
+		}
+
+		// start from the parental generation
+		for (unsigned ans = 1; ans <= ancestralDepth(); ++ans) {
+			vectoru numSpouse;
+			// go to offspring generation
+			useAncestralPop(ans - 1);
+			vectorf father = indInfo(parentFields[0]);
+			vectorf mother = indInfo(parentFields[1]);
+			//
+			useAncestralPop(ans);
+			if (numSpouse.empty())
+				numSpouse.resize(popSize(), 0);
+			//
+			for (size_t idx = 0; idx < father.size(); ++idx) {
+				DBG_FAILIF(fcmp_eq(father[idx], -1) || fcmp_eq(mother[idx], -1), ValueError,
+					"Invalid parental index (-1)");
+				ULONG p = static_cast<ULONG>(father[idx]);
+				ULONG m = static_cast<ULONG>(mother[idx]);
+				DBG_ASSERT(p < popSize() && m < popSize(), IndexError,
+					"Parental index out of range of 0 ~ " + toStr(popSize() - 1));
+				if (numSpouse[p] < maxSpouse) {
+					ind(p).setInfo(m, spouseIdx[numSpouse[p]]);
+					++numSpouse[p];
+				}
+				if (numSpouse[m] < maxSpouse) {
+					ind(m).setInfo(p, spouseIdx[numSpouse[m]]);
+					++numSpouse[m];
+				}				                                                                           // idx
+			}                                                                                               // ancestal generations
+			// set the rest of the field to -1
+			for (size_t idx = 0; idx < popSize(); ++idx) {
+				for (size_t no = numSpouse[idx]; no < maxSpouse; ++no)
+					ind(idx).setInfo(-1, spouseIdx[no]);
+			}
+		}
+		useAncestralPop(0);
 
 	} else if (type == REL_Offspring) {
+		DBG_ASSERT(infoFields.size() >= 1, ValueError,
+			"Please provide at least one information field to store offspring");
+
 		UINT maxOffspring = infoFields.size();
 
 		vectori offspringIdx(maxOffspring);

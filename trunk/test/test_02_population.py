@@ -1464,6 +1464,31 @@ class TestPopulation(unittest.TestCase):
             for idx,ind in enumerate(pop.individuals()):
                 self.assertEqual(ind.info('index'), idx)
 
+    def testLocateSpouse(self):
+        'Testing set index for spouse of individuals'
+        # it is possible for someone to have many spouse so we need to be safe here.
+        spouseFields = ['spouse%d' % x for x in range(10)]
+        simu = simulator(population([1000, 1000], ancestralDepth=4,
+            infoFields=['father_idx', 'mother_idx'] + spouseFields),
+            randomMating(numOffspring=2))
+        simu.evolve(ops=[parentsTagger()], gen=10)
+        pop = simu.getPopulation(0, True)
+        pop.locateRelatives(REL_Spouse, spouseFields)
+        for ans in range(1, pop.ancestralDepth()):
+            # parental generation
+            pop.useAncestralPop(ans)
+            allPairs = []
+            for field in spouseFields:
+                spouse = pop.indInfo(field)
+                pairs = [(x, spouse[x]) for x in range(len(spouse)) if spouse[x] != -1]
+                allPairs += pairs
+                allPairs += [(y,x) for x,y in pairs]
+            pop.useAncestralPop(ans-1)
+            for ind in pop.individuals():
+                pair = (ind.info('father_idx'), ind.info('mother_idx'))
+                self.assertEqual(pair in allPairs, True)
+    
+
     def testLocateOffspring(self):
         'Testing set index for offsprings of individuals'
         simu = simulator(population([1000, 1000], ancestralDepth=4,
