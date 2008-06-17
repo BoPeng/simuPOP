@@ -397,7 +397,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	UINT spouseIdx = pop.infoIdx("spouse");
 
 	pop.locateRelatives(REL_Offspring, vectorstr(fields.begin() + 2, fields.begin() + 4));
-	pop.locateRelatives(REL_Spouse, vectorstr(fields.begin() + 4, fields.end()));
+	pop.locateRelatives(REL_Spouse, vectorstr(1, "spouse"));
 	//
 	// find sibpairs from the parental generation.
 	pop.useAncestralPop(1);
@@ -405,20 +405,34 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	int pedIdx = 0;
 	// valid sibpairs for each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		for (IndIterator it = pop.indBegin(sp); it.valid(); ++it) {
+		for (ULONG it = 0; it < pop.subPopSize(sp); ++it) {
+			individual & ind = pop.ind(it, sp);
 			// individual already belongs to another family
-			if (it->info(pedindexIdx) != -1.)
+			if (ind.info(pedindexIdx) != -1.)
 				continue;
-			double spouse = it->info(spouseIdx);
-			// has spouse, spouse does not belong to anther ped, and two kids
-			if (spouse != -1. && pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) == -1.
-			    && it->info(off1Idx) != -1.) {
-				it->setInfo(pedIdx, pedindexIdx);
-				pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
-				off.push_back(static_cast<ULONG>(it->info(off0Idx)));
-				off.push_back(static_cast<ULONG>(it->info(off1Idx)));
-				pedIdx++;
-			}
+			double spouse = ind.info(spouseIdx);
+			// if no spouse, or spouse belongs to anther pedigree, or there are less than two kids
+			if (spouse == -1. || pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) >= 0
+			    || pop.ind(static_cast<UINT>(spouse)).info(spouseIdx) != it
+			    || ind.info(off1Idx) == -1.)
+		       		continue;
+			ULONG child0 = static_cast<ULONG>(ind.info(off0Idx));
+			ULONG child1 = static_cast<ULONG>(ind.info(off1Idx));
+			ULONG child0_f = static_cast<ULONG>(pop.ancestor(child0, 0).info(m_father_id));
+			ULONG child0_m = static_cast<ULONG>(pop.ancestor(child0, 0).info(m_mother_id));
+			ULONG child1_f = static_cast<ULONG>(pop.ancestor(child1, 0).info(m_father_id));
+			ULONG child1_m = static_cast<ULONG>(pop.ancestor(child1, 0).info(m_mother_id));
+			// invalid child
+			if ((child0_f != it && child0_f != spouse) ||
+				(child0_m != it && child0_m != spouse) ||
+				(child1_f != it && child1_f != spouse) ||
+				(child1_m != it && child1_m != spouse))
+				continue;
+			ind.setInfo(pedIdx, pedindexIdx);
+			pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
+			off.push_back(static_cast<ULONG>(ind.info(off0Idx)));
+			off.push_back(static_cast<ULONG>(ind.info(off1Idx)));
+			pedIdx++;
 		}
 		DBG_DO(DBG_SELECTOR, cout << "Number of sibpairs in subpop " << sp << " is "
 			                      << m_validSibs[sp].size() << endl);

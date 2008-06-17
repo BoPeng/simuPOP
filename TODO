@@ -38,6 +38,9 @@ Status: Onging (O), Done (DONE)
 2. Workload 1 - 9
 3. Requires skills in P (python), C (C++), N (None)
 
+9. Add pedigreeSample and subclass all pedigree related samplers to this class.
+These classes only need to define a probePedigree function to find a valid
+pedigree from a proband.
 
 Roadmap: test and documentation:
   3/5/N document each class whether or not they are suitable only for diploid population.
