@@ -2671,6 +2671,8 @@ Virtual subpopulations allow easy handling of heterogeneous populations,
  and mixed mating schems.
  By limiting operators to virtual subpopulations, one can apply different
  genetic forces to different groups of individuals.
+ A good example is to migrant only male from a subpopulation to other subpopulat
+ions.
  It is also easy to calculate statistics at a finer scale, such as allele
  frequency of all males.
 \end_layout

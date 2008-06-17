@@ -49,7 +49,7 @@ namespace simuPOP {
 
 typedef std::vector<vsp> vectorvsp;
 
-/// migrate individuals from a (sub)population to another (sub)population
+/// migrate individuals from (virtual) subpopulations to other subpopulations
 /**
    Migrator is the only way to mix genotypes of several subpopulations
    because mating is strictly within subpopulations in simuPOP. Migrators
