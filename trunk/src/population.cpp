@@ -329,6 +329,71 @@ int population::__cmp__(const population & rhs) const
 	return 0;
 }
 
+individual & population::ancestor(ULONG ind, UINT gen)
+{
+	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+		"Ancestray generation " + toStr(gen) + " does not exist");
+	if (gen == m_curAncestralGen)
+		return this->ind(ind);
+	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(ind > m_ancestralPops[idx].m_inds.size(),
+		IndexError, "Individual index out of range");
+	return m_ancestralPops[idx].m_inds[ind];
+}
+
+
+const individual & population::ancestor(ULONG ind, UINT gen) const
+{
+	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+		"Ancestray generation " + toStr(gen) + " does not exist");
+	if (gen == m_curAncestralGen)
+		return this->ind(ind);
+	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(ind > m_ancestralPops[idx].m_inds.size(),
+		IndexError, "Individual index out of range");
+	return m_ancestralPops[idx].m_inds[ind];
+}
+
+
+individual & population::ancestor(ULONG ind, UINT subPop, UINT gen)
+{
+	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+		"Ancestray generation " + toStr(gen) + " does not exist");
+	if (gen == m_curAncestralGen)
+		return this->ind(ind, subPop);
+	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(subPop > m_ancestralPops[idx].m_subPopSize.size(),
+		IndexError, "subpopulation index out of range");
+	DBG_FAILIF(ind > m_ancestralPops[idx].m_subPopSize[subPop],
+		IndexError, "Individual index out of range");
+	ULONG shift = 0;
+	if (subPop > 0) {
+		for (size_t i = 0; i < subPop; ++i)
+			shift += m_ancestralPops[idx].m_subPopSize[i];
+	}
+	return m_ancestralPops[idx].m_inds[shift + ind];
+}
+
+
+const individual & population::ancestor(ULONG ind, UINT subPop, UINT gen) const
+{
+	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
+		"Ancestray generation " + toStr(gen) + " does not exist");
+	if (gen == m_curAncestralGen)
+		return this->ind(ind, subPop);
+	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(subPop > m_ancestralPops[idx].m_subPopSize.size(),
+		IndexError, "subpopulation index out of range");
+	DBG_FAILIF(ind > m_ancestralPops[idx].m_subPopSize[subPop],
+		IndexError, "Individual index out of range");
+	ULONG shift = 0;
+	if (subPop > 0) {
+		for (size_t i = 0; i < subPop; ++i)
+			shift += m_ancestralPops[idx].m_subPopSize[i];
+	}
+	return m_ancestralPops[idx].m_inds[shift + ind];
+}
+
 
 PyObject * population::arrGenotype(bool order)
 {
