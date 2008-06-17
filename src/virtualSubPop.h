@@ -36,6 +36,29 @@ namespace simuPOP {
 
 class individual;
 class population;
+
+/**
+ * A class to specify virtual subpopulation, which is composed of a subPopulation
+ * ID and a virtual subpopulation ID.
+ * 
+ */
+class vsp
+{
+public:
+	vsp(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID)
+		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
+	{
+	}
+
+	SubPopID subPop() { return m_subPop; }
+	SubPopID virtualSubPop() { return m_virtualSubPop; }
+	bool isVirtual() { return m_virtualSubPop != InvalidSubPopID; }
+
+private:
+	SubPopID m_subPop;
+	SubPopID m_virtualSubPop;
+};
+
 /** virtual subpopss split a subpopulation into virtual sub-subpopulations.
    The virtual subpopulations do not have to add up to the whole
    subpopulation, nor they have to be distinct. For example,
@@ -111,7 +134,7 @@ protected:
 
 };
 
-typedef std::vector<vspSplitter *> vectorvsp;
+typedef std::vector<vspSplitter *> vectorsplitter;
 
 /** This plitter takes several splitters, and stacks their virtual
    subpopulations together. For example, if the first splitter has
@@ -122,7 +145,7 @@ typedef std::vector<vspSplitter *> vectorvsp;
 class combinedSplitter : public vspSplitter
 {
 public:
-	combinedSplitter(const vectorvsp & splitters = vectorvsp());
+	combinedSplitter(const vectorsplitter & splitters = vectorsplitter());
 
 	~combinedSplitter();
 

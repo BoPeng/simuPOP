@@ -247,6 +247,7 @@ namespace std
 
 namespace std
 {
+    %template()    vector<simuPOP::vsp >;
     %template()    vector<simuPOP::vspSplitter * >;
 }
 
@@ -948,7 +949,8 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
     if type(fromSubPop) in [types.IntType, types.LongType]:
         fs = [fromSubPop]
     else:
-        fs = fromSubPop
+        fs = [vsp(x) for x in fromSubPop]
+    print 'from subpopulations ', fromSubPop, fs
     # parameter toSubPop
     if type(toSubPop) in [types.IntType, types.LongType]:
         ts = [toSubPop]
