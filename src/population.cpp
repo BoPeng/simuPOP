@@ -406,9 +406,9 @@ PyObject * population::arrGenotype(bool order)
 
 void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 {
-	int oldGen = ancestralGen();
+	UINT oldGen = ancestralGen();
 	size_t sz = id.size();
-	for (size_t anc = 0; anc <= ancestralDepth(); ++anc) {
+	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
 		useAncestralPop(anc);
@@ -421,8 +421,8 @@ void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 
 void population::setIndSubPopIDWithID(bool ancestralPops)
 {
-	int oldGen = ancestralGen();
-	for (size_t anc = 0; anc <= ancestralDepth(); ++anc) {
+	UINT oldGen = ancestralGen();
+	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
 		useAncestralPop(anc);

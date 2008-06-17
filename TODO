@@ -32,6 +32,9 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 
 8. Expand population::findRelative to locate arbitrary relatives.
 
+9. Check what is wrong with simuRPy.py.
+
+
 Items are marked roughly
 Status: Onging (O), Done (DONE)
 1. Easy 1 --- difficult 9
