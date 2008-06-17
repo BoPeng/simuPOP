@@ -1536,18 +1536,20 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.info('y'), pop.ancestor(idx, 1).info('y'))
         #
         pop.pushAndDiscard(pop1)
+        # setting ancestral pop should not matter
+        pop.useAncestralPop(2)
         #
         for idx, ind in enumerate(pop1_c.individuals()):
             self.assertEqual(ind, pop.ancestor(idx, 1))
             self.assertEqual(ind.info('x'), pop.ancestor(idx, 1).info('x'))
             self.assertEqual(ind.info('y'), pop.ancestor(idx, 1).info('y'))
+        # setting ancestral pop should not matter
+        pop.useAncestralPop(1)
         for idx, ind in enumerate(pop_c.individuals()):
             self.assertEqual(ind, pop.ancestor(idx, 2))
             self.assertEqual(ind.info('x'), pop.ancestor(idx, 2).info('x'))
             self.assertEqual(ind.info('y'), pop.ancestor(idx, 2).info('y'))
         #
-        pop.useAncestralPop(2)
-        self.assertRaises(exceptions.ValueError, pop.ancestor, 1, 2)
         pop.useAncestralPop(0)
         self.assertRaises(exceptions.IndexError, pop.ancestor, 10000, 2)
         self.assertRaises(exceptions.IndexError, pop.ancestor, 10000, 3)
