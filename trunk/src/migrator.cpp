@@ -95,7 +95,6 @@ bool migrator::apply(population & pop)
 	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), ValueError,
 		"Migration can not be applied to virtual subpopulations");
 
-
 	for (UINT from = 0, fromEnd = m_from.size(); from < fromEnd; ++from) {
 		UINT spFrom = m_from[from].subPop();
 		// rateSize might be toSize + 1, the last one is from->from
@@ -103,9 +102,13 @@ bool migrator::apply(population & pop)
 		UINT toIndex;
 
 		// m_from out of range.... ignore.
-		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError, "Subpopulation index " + toStr(spFrom) + " out of range");
+		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError,
+			"Subpopulation index " + toStr(spFrom) + " out of range");
 
-		ULONG spSize = pop.subPopSize(spFrom);
+		if (m_from[from].isVirtual()) {
+			pop.activateVirtualSubPop(spFrom, m_from[from].virtualSubPop());
+		}
+		ULONG spSize = pop.virtualSubPopSize(spFrom);
 
 		if (m_mode == MigrByProbability) {
 			Weightedsampler ws(rng(), m_rate[from]);
@@ -125,38 +128,38 @@ bool migrator::apply(population & pop)
 				if (toIndex < toSize && m_to[toIndex] != spFrom)
 					ind->setSubPopID(m_to[toIndex]);
 			}
-			continue;
+		} else {
+			// 2nd, or 3rd method
+			// first find out how many people will move to other subPop
+			// then randomly assign individuals to move
+			vectorlu toNum(toSize);
+			if (m_mode == MigrByProportion) {
+				for (UINT i = 0; i < toSize; ++i)
+					toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
+			} else {                                                                      // by count
+				for (UINT i = 0; i < toSize; ++i)
+					toNum[i] = static_cast<ULONG>(m_rate[from][i]);
+			}
+			// create a vector and assign indexes, then random shuffle
+			// and assign info
+			vectorlu toIndices(spSize);
+			UINT k = 0;
+			for (UINT i = 0; i < toSize && k < spSize; ++i)
+				for (UINT j = 0; j < toNum[i] && k < spSize; ++j)
+					toIndices[k++] = m_to[i];
+
+			while (k < spSize)
+				toIndices[k++] = spFrom;
+
+			random_shuffle(toIndices.begin(), toIndices.end());
+			IndIterator ind = pop.indBegin(spFrom);
+			// set info
+			for (UINT i = 0; ind.valid(); ++i, ++ind)
+				// SubPopID is signed short, to save a few bits
+				ind->setSubPopID(static_cast<SubPopID>(toIndices[i]));
 		}
-
-		// 2nd, or 3rd method
-		// first find out how many people will move to other subPop
-		// then randomly assign individuals to move
-		vectorlu toNum(toSize);
-		if (m_mode == MigrByProportion) {
-			for (UINT i = 0; i < toSize; ++i)
-				toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
-		} else {                                                                      // by count
-			for (UINT i = 0; i < toSize; ++i)
-				toNum[i] = static_cast<ULONG>(m_rate[from][i]);
-		}
-		// create a vector and assign indexes, then random shuffle
-		// and assign info
-		vectorlu toIndices(spSize);
-		UINT k = 0;
-		for (UINT i = 0; i < toSize && k < spSize; ++i)
-			for (UINT j = 0; j < toNum[i] && k < spSize; ++j)
-				toIndices[k++] = m_to[i];
-
-		while (k < spSize)
-			toIndices[k++] = spFrom;
-
-		random_shuffle(toIndices.begin(), toIndices.end());
-		IndIterator ind = pop.indBegin(spFrom);
-		// set info
-		for (UINT i = 0; ind.valid(); ++i, ++ind)
-			// SubPopID is signed short, to save a few bits
-			ind->setSubPopID(static_cast<SubPopID>(toIndices[i]));
-
+		if (m_from[from].isVirtual())
+			pop.deactivateVirtualSubPop(spFrom);
 	} /// for all subPop.
 
 	// do migration.
