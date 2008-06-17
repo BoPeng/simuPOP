@@ -485,91 +485,38 @@ public:
 	/// refrence to an individual \c ind in an ancestral generation
 	/**
 	This function gives access to individuals in an ancestral generation.
-	If gen == 0, this is the same as individual(ind). 
+	It will refer to the correct generation even if the current
+	generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	always individual(ind).
 	*/
-	individual & ancestor(ULONG ind, UINT gen)
-	{
-		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
-			"Population must be at the latest generation to use this function.");
-		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
-			"Ancestray generation " + toStr(gen) + " does not exist");
-		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_inds.size(),
-			IndexError, "Individual index out of range");
-		if (gen == 0)
-			return this->ind(ind);
-		return m_ancestralPops[gen - 1].m_inds[ind];
-	}
-
+	individual & ancestor(ULONG ind, UINT gen);
 
 	/// refrence to an individual \c ind in an ancestral generation
 	/**
 	This function gives access to individuals in an ancestral generation.
-	If gen == 0, this is the same as individual(ind). 
+	It will refer to the correct generation even if the current
+	generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	always individual(ind).
 	*/
-	const individual & ancestor(ULONG ind, UINT gen) const
-	{
-		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
-			"Population must be at the latest generation to use this function.");
-		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
-			"Ancestray generation " + toStr(gen) + " does not exist");
-		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_inds.size(),
-			IndexError, "Individual index out of range");
-		if (gen == 0)
-			return this->ind(ind);
-		return m_ancestralPops[gen - 1].m_inds[ind];
-	}
-
+	const individual & ancestor(ULONG ind, UINT gen) const;
 
 	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
 	/**
 	This function gives access to individuals in an ancestral generation.
-	If gen == 0, this is the same as individual(ind). 
+	It will refer to the correct generation even if the current
+	generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	always individual(ind).
 	*/
-	individual & ancestor(ULONG ind, UINT subPop, UINT gen)
-	{
-		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
-			"Population must be at the latest generation to use this function.");
-		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
-			"Ancestray generation " + toStr(gen) + " does not exist");
-		DBG_FAILIF(subPop > m_ancestralPops[gen - 1].m_subPopSize.size(),
-			IndexError, "subpopulation index out of range");
-		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_subPopSize[subPop],
-			IndexError, "Individual index out of range");
-		if (gen == 0)
-			return this->ind(ind, subPop);
-		ULONG shift = 0;
-		if (subPop > 0) {
-			for (size_t i = 0; i < subPop; ++i)
-				shift += m_ancestralPops[gen - 1].m_subPopSize[i];
-		}
-		return m_ancestralPops[gen - 1].m_inds[shift + ind];
-	}
+	individual & ancestor(ULONG ind, UINT subPop, UINT gen);
 
 	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
 	/**
 	This function gives access to individuals in an ancestral generation.
-	If gen == 0, this is the same as individual(ind, subPop). 
+	It will refer to the correct generation even if the current
+	generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	always individual(ind).
 	*/
-	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const
-	{
-		DBG_ASSERT(m_curAncestralGen == 0, ValueError,
-			"Population must be at the latest generation to use this function.");
-		DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
-			"Ancestray generation " + toStr(gen) + " does not exist");
-		DBG_FAILIF(subPop > m_ancestralPops[gen - 1].m_subPopSize.size(),
-			IndexError, "subpopulation index out of range");
-		DBG_FAILIF(ind > m_ancestralPops[gen - 1].m_subPopSize[subPop],
-			IndexError, "Individual index out of range");
-		if (gen == 0)
-			return this->ind(ind, subPop);
-		ULONG shift = 0;
-		if (subPop > 0) {
-			for (size_t i = 0; i < subPop; ++i)
-				shift += m_ancestralPops[gen - 1].m_subPopSize[i];
-		}
-		return m_ancestralPops[gen - 1].m_inds[shift + ind];
-	}
-
+	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const;
 
 	/// return an iterator that can be used to iterate through all individuals
 	/**
