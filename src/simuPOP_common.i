@@ -425,199 +425,199 @@ def Dump(pop, *args, **kwargs):
     dumper(*args, **kwargs).apply(pop)
 
 if dumper.__init__.__doc__ is not None:
-	Dump.__doc__ = "Function version of operator dump whose __init__ function is \n" + dumper.__init__.__doc__
+    Dump.__doc__ = "Function version of operator dump whose __init__ function is \n" + dumper.__init__.__doc__
 
 def InitSex(pop, *args, **kwargs):
     initSex(*args, **kwargs).apply(pop)
 
 if initSex.__init__.__doc__ is not None:
-	InitSex.__doc__ = "Function version of operator initSex whose __init__ function is \n" + initSex.__init__.__doc__
+    InitSex.__doc__ = "Function version of operator initSex whose __init__ function is \n" + initSex.__init__.__doc__
 
 def InitByFreq(pop, *args, **kwargs):
     initByFreq(*args, **kwargs).apply(pop)
 
 if initByFreq.__init__.__doc__ is not None:
-	InitByFreq.__doc__ = "Function version of operator initByFreq whose __init__ function is \n" + initByFreq.__init__.__doc__
+    InitByFreq.__doc__ = "Function version of operator initByFreq whose __init__ function is \n" + initByFreq.__init__.__doc__
 
 def InitByValue(pop, *args, **kwargs):
     initByValue(*args, **kwargs).apply(pop)
 
 if initByValue.__init__.__doc__ is not None:
-	InitByValue.__doc__ = "Function version of operator initByValue whose __init__ function is \n" + initByValue.__init__.__doc__
+    InitByValue.__doc__ = "Function version of operator initByValue whose __init__ function is \n" + initByValue.__init__.__doc__
 
 def PyInit(pop, *args, **kwargs):
     pyInit(*args, **kwargs).apply(pop)
 
 if pyInit.__init__.__doc__ is not None:
-	PyInit.__doc__ = "Function version of operator pyInit whose __init__ function is \n" + pyInit.__init__.__doc__
+    PyInit.__doc__ = "Function version of operator pyInit whose __init__ function is \n" + pyInit.__init__.__doc__
 
 def Spread(pop,    *args, **kwargs):
     spread(*args, **kwargs).apply(pop)
 
 if spread.__init__.__doc__ is not None:
-	Spread.__doc__ = "Function version of operator spread whose __init__ function is \n" + spread.__init__.__doc__
+    Spread.__doc__ = "Function version of operator spread whose __init__ function is \n" + spread.__init__.__doc__
 
 def PyEval(pop, *args, **kwargs):
     pyEval(*args, **kwargs).apply(pop)
 
 if pyEval.__init__.__doc__ is not None:
-	PyEval.__doc__ = "Function version of operator pyEval whose __init__ function is \n" + pyEval.__init__.__doc__
+    PyEval.__doc__ = "Function version of operator pyEval whose __init__ function is \n" + pyEval.__init__.__doc__
 
 def PyExec(pop, *args, **kwargs):
     pyExec(*args, **kwargs).apply(pop)
 
 if pyExec.__init__.__doc__ is not None:
-	PyExec.__doc__ = "Function version of operator pyExec whose __init__ function is \n" + pyExec.__init__.__doc__
+    PyExec.__doc__ = "Function version of operator pyExec whose __init__ function is \n" + pyExec.__init__.__doc__
 
 def Stat(pop, *args, **kwargs):
     stat(*args, **kwargs).apply(pop)
 
 if stat.__init__.__doc__ is not None:
-	Stat.__doc__ = "Function version of operator stat whose __init__ function is \n" + stat.__init__.__doc__
+    Stat.__doc__ = "Function version of operator stat whose __init__ function is \n" + stat.__init__.__doc__
 
 def KamMutate(pop, *args, **kwargs):
     kamMutator(*args, **kwargs).apply(pop)
 
 if kamMutator.__init__.__doc__ is not None:
-	KamMutate.__doc__ = "Function version of operator kamMutator whose __init__ function is \n" + kamMutator.__init__.__doc__
+    KamMutate.__doc__ = "Function version of operator kamMutator whose __init__ function is \n" + kamMutator.__init__.__doc__
 
 def SmmMutate(pop, *args, **kwargs):
     smmMutator(*args, **kwargs).apply(pop)
 
 if smmMutator.__init__.__doc__ is not None:
-	SmmMutate.__doc__ = "Function version of operator smmMutator whose __init__ function is \n" + smmMutator.__init__.__doc__
+    SmmMutate.__doc__ = "Function version of operator smmMutator whose __init__ function is \n" + smmMutator.__init__.__doc__
 
 def GsmMutate(pop, *args, **kwargs):
     gsmMutator(*args, **kwargs).apply(pop)
 
 if gsmMutator.__init__.__doc__ is not None:
-	GsmMutate.__doc__ = "Function version of operator gsmMutator whose __init__ function is \n" + gsmMutator.__init__.__doc__
+    GsmMutate.__doc__ = "Function version of operator gsmMutator whose __init__ function is \n" + gsmMutator.__init__.__doc__
 
 def PyMutate(pop, *args, **kwargs):
     pyMutator(*args, **kwargs).apply(pop)
 
 if pyMutator.__init__.__doc__ is not None:
-	PyMutate.__doc__ = "Function version of operator pyMutator whose __init__ function is \n" + pyMutator.__init__.__doc__
+    PyMutate.__doc__ = "Function version of operator pyMutator whose __init__ function is \n" + pyMutator.__init__.__doc__
 
 def PointMutate(pop, *args, **kwargs):
     pointMutator(*args, **kwargs).apply(pop)
 
 if pointMutator.__init__.__doc__ is not None:
-	PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
+    PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
 
 def Migrate(pop, *args, **kwargs):
     migrator(*args, **kwargs).apply(pop)
 
 if migrator.__init__.__doc__ is not None:
-	Migrate.__doc__ = "Function version of operator migrator whose __init__ function is \n" + migrator.__init__.__doc__
+    Migrate.__doc__ = "Function version of operator migrator whose __init__ function is \n" + migrator.__init__.__doc__
 
 def PyMigrate(pop, *args, **kwargs):
     pyMigrator(*args, **kwargs).apply(pop)
 
 if pyMigrator.__init__.__doc__ is not None:
-	PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
+    PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
 
 def SplitSubPop(pop, *args, **kwargs):
     splitSubPop(*args, **kwargs).apply(pop)
 
 if splitSubPop.__init__.__doc__ is not None:
-	SplitSubPop.__doc__ = "Function version of operator splitSubPops whose __init__ function is \n" + splitSubPop.__init__.__doc__
+    SplitSubPop.__doc__ = "Function version of operator splitSubPops whose __init__ function is \n" + splitSubPop.__init__.__doc__
 
 def MergeSubPops(pop, *args, **kwargs):
     mergeSubPops(*args, **kwargs).apply(pop)
 
 if mergeSubPops.__init__.__doc__ is not None:
-	MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + mergeSubPops.__init__.__doc__
+    MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + mergeSubPops.__init__.__doc__
 
 def ResizeSubPops(pop, *args, **kwargs):
     resizeSubPops(*args, **kwargs).apply(pop)
 
 if resizeSubPops.__init__.__doc__ is not None:
-	ResizeSubPops.__doc__ = "Function version of operator resizeSubPops whose __init__ function is \n" + resizeSubPops.__init__.__doc__
+    ResizeSubPops.__doc__ = "Function version of operator resizeSubPops whose __init__ function is \n" + resizeSubPops.__init__.__doc__
 
 def RemoveSubPops(pop, *args, **kwargs):
     pop.removeSubPops(*args, **kwargs)
 
 if population.removeSubPops.__doc__ is not None:
-	RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
+    RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
 def RemoveEmptySubPops(pop, *args, **kwargs):
     pop.removeEmptySubPops(*args, **kwargs)
 
 if population.removeEmptySubPops.__doc__ is not None:
-	RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
+    RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
 
 def MapSelect(pop, *args, **kwargs):
     mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
 
 if mapSelector.__init__.__doc__ is not None:
-	MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
+    MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
 
 def MaSelect(pop, *args, **kwargs):
     maSelector(stage=PostMating, *args, **kwargs).apply(pop)
 
 if maSelector.__init__.__doc__ is not None:
-	MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
+    MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
 
 def MlSelect(pop, *args, **kwargs):
     mlSelector(stage=PostMating, *args, **kwargs).apply(pop)
 
 if mlSelector.__init__.__doc__ is not None:
-	MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
+    MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
 
 def PySelect(pop, *args, **kwargs):
     pySelector(stage=PostMating, *args, **kwargs).apply(pop)
 
 if pySelector.__init__.__doc__ is not None:
-	PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
+    PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
 def MapPenetrance(pop, *args, **kwargs):
     mapPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
 
 if mapPenetrance.__init__.__doc__ is not None:
-	MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
+    MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
 
 def MaPenetrance(pop, *args, **kwargs):
     maPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
 
 if maPenetrance.__init__.__doc__ is not None:
-	MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
+    MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
 
 def MlPenetrance(pop, *args, **kwargs):
     mlPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
 
 if mlPenetrance.__init__.__doc__ is not None:
-	MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
+    MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
 
 def PyPenetrance(pop, *args, **kwargs):
     pyPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
 
 if pyPenetrance.__init__.__doc__ is not None:
-	PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
+    PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
 
 def MapQuanTrait(pop, *args, **kwargs):
     mapQuanTrait(*args, **kwargs).apply(pop)
 
 if mapQuanTrait.__init__.__doc__ is not None:
-	MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
+    MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
 
 def MaQuanTrait(pop, *args, **kwargs):
     maQuanTrait(*args, **kwargs).apply(pop)
 
 if maQuanTrait.__init__.__doc__ is not None:
-	MaQuanTrait.__doc__ = "Function version of operator maQuanTrait whose __init__ function is \n" + maQuanTrait.__init__.__doc__
+    MaQuanTrait.__doc__ = "Function version of operator maQuanTrait whose __init__ function is \n" + maQuanTrait.__init__.__doc__
 
 def MlQuanTrait(pop, *args, **kwargs):
     mlQuanTrait(*args, **kwargs).apply(pop)
 
 if mlQuanTrait.__init__.__doc__ is not None:
-	MlQuanTrait.__doc__ = "Function version of operator mlQuanTrait whose __init__ function is \n" + mlQuanTrait.__init__.__doc__
+    MlQuanTrait.__doc__ = "Function version of operator mlQuanTrait whose __init__ function is \n" + mlQuanTrait.__init__.__doc__
 
 def PyQuanTrait(pop, *args, **kwargs):
     pyQuanTrait(*args, **kwargs).apply(pop)
 
 if pyQuanTrait.__init__.__doc__ is not None:
-	PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
+    PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
 
 def Sample(pop, *args, **kwargs):
     s = sample(*args, **kwargs)
@@ -625,7 +625,7 @@ def Sample(pop, *args, **kwargs):
     return s.sample(pop)
 
 if sample.__init__.__doc__ is not None:
-	Sample.__doc__ = "Function version of operator sample whose __init__function is \n" + sample.__init__.__doc__
+    Sample.__doc__ = "Function version of operator sample whose __init__function is \n" + sample.__init__.__doc__
 
 def RandomSample(pop, *args, **kwargs):
     s = randomSample(*args, **kwargs)
@@ -633,7 +633,7 @@ def RandomSample(pop, *args, **kwargs):
     return s.samples(pop)
 
 if randomSample.__init__.__doc__ is not None:
-	RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
+    RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
 
 def CaseControlSample(pop, *args, **kwargs):
     s = caseControlSample(*args, **kwargs)
@@ -641,7 +641,7 @@ def CaseControlSample(pop, *args, **kwargs):
     return s.samples(pop)
 
 if caseControlSample.__init__.__doc__ is not None:
-	CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
+    CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
 
 def PySample(pop, *args, **kwargs):
     s = pySample(*args, **kwargs)
@@ -649,7 +649,7 @@ def PySample(pop, *args, **kwargs):
     return s.samples(pop)
 
 if pySample.__init__.__doc__ is not None:
-	PySample.__doc__ = "Function version of operator pySample whose __init__function is \n" + pySample.__init__.__doc__
+    PySample.__doc__ = "Function version of operator pySample whose __init__function is \n" + pySample.__init__.__doc__
 
 def AffectedSibpairSample(pop, *args, **kwargs):
     s = affectedSibpairSample(*args, **kwargs)
@@ -657,7 +657,7 @@ def AffectedSibpairSample(pop, *args, **kwargs):
     return s.samples(pop)
 
 if affectedSibpairSample.__init__.__doc__ is not None:
-	AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
+    AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
 
 def LargePedigreeSample(pop, *args, **kwargs):
     s = largePedigreeSample(*args, **kwargs)
@@ -665,7 +665,7 @@ def LargePedigreeSample(pop, *args, **kwargs):
     return s.samples(pop)
 
 if largePedigreeSample.__init__.__doc__ is not None:
-	LargePedigreeSample.__doc__ = "Function version of operator largePedigreeSample whose __init__function is \n" + largePedigreeSample.__init__.__doc__
+    LargePedigreeSample.__doc__ = "Function version of operator largePedigreeSample whose __init__function is \n" + largePedigreeSample.__init__.__doc__
 
 def NuclearFamilySample(pop, *args, **kwargs):
     s = nuclearFamilySample(*args, **kwargs)
@@ -673,38 +673,38 @@ def NuclearFamilySample(pop, *args, **kwargs):
     return s.samples(pop)
 
 if nuclearFamilySample.__init__.__doc__ is not None:
-	NuclearFamilySample.__doc__ = "Function version of operator nuclearFamilySample whose __init__function is \n" + nuclearFamilySample.__init__.__doc__
+    NuclearFamilySample.__doc__ = "Function version of operator nuclearFamilySample whose __init__function is \n" + nuclearFamilySample.__init__.__doc__
 
 def PySubset(pop, *args, **kwargs):
     s = pySubset(*args, **kwargs)
     s.apply(pop)
 
 if pySubset.__init__.__doc__ is not None:
-	PySubset.__doc__ = "Function version of operator pySubset whose __init__function is \n" + pySubset.__init__.__doc__
+    PySubset.__doc__ = "Function version of operator pySubset whose __init__function is \n" + pySubset.__init__.__doc__
 
 def InfoEval(pop, *args, **kwargs):
     infoEval(*args, **kwargs).apply(pop)
 
 if infoEval.__init__.__doc__ is not None:
-	InfoEval.__doc__ = "Function version of operator infoEval whose __init__function is \n" + infoEval.__init__.__doc__
+    InfoEval.__doc__ = "Function version of operator infoEval whose __init__function is \n" + infoEval.__init__.__doc__
 
 def InfoExec(pop, *args, **kwargs):
     infoExec(*args, **kwargs).apply(pop)
 
 if infoExec.__init__.__doc__ is not None:
-	InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
+    InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
 def SavePopulation(pop, *args, **kwargs):
     pop.savePopulation(*args, **kwargs)
 
 if population.savePopulation.__doc__ is not None:
-	SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__
+    SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__
 
 def SaveSimulator(simu, *args, **kwargs):
     simu.saveSimulator(*args, **kwargs)
 
 if simulator.saveSimulator.__doc__ is not None:
-	SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
+    SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False,
@@ -946,18 +946,23 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
         elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
             r = [rate]
     # parameter fromSubPop
-    if type(fromSubPop) in [types.IntType, types.LongType]:
+    if type(fromSubPop) not in [types.TupleType, types.ListType]:
         fs = [fromSubPop]
     else:
-        fs = [vsp(x) for x in fromSubPop]
-    print 'from subpopulations ', fromSubPop, fs
+        fs = fromSubPop
+    fsp = []
+    for f in fs:
+        if isinstance(f, vsp):
+            fsp.append(f)
+        else:
+            fsp.append(vsp(f))
     # parameter toSubPop
     if type(toSubPop) in [types.IntType, types.LongType]:
         ts = [toSubPop]
     else:
         ts = toSubPop
     cppModule.migrator_swiginit(self,
-        cppModule.new_migrator(rate=r, fromSubPop=fs, toSubPop=ts, *args, **kwargs))
+        cppModule.new_migrator(rate=r, fromSubPop=fsp, toSubPop=ts, *args, **kwargs))
 
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__
@@ -966,17 +971,23 @@ migrator.__init__ = new_migrator
 
 def new_pyMigrator(self, fromSubPop=[], toSubPop=[], *args, **kwargs):
     # parameter fromSubPop
-    if type(fromSubPop) in [types.IntType, types.LongType]:
+    if type(fromSubPop) not in [types.TupleType, types.ListType]:
         fs = [fromSubPop]
     else:
         fs = fromSubPop
+    fsp = []
+    for f in fs:
+        if isinstance(f, vsp):
+            fsp.append(f)
+        else:
+            fsp.append(vsp(f))
     # parameter toSubPop
     if type(toSubPop) in [types.IntType, types.LongType]:
         ts = [toSubPop]
     else:
         ts = toSubPop
     cppModule.pyMigrator_swiginit(self,
-        cppModule.new_pyMigrator(fromSubPop=fs, toSubPop=ts, *args, **kwargs))
+        cppModule.new_pyMigrator(fromSubPop=fsp, toSubPop=ts, *args, **kwargs))
 
 new_pyMigrator.__doc__ = pyMigrator.__init__.__doc__
 del pyMigrator.__init__

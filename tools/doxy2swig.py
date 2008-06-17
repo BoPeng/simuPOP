@@ -375,6 +375,8 @@ class Doxy2SWIG:
             '["paternal_tag"@ "maternal_tag"]')
         txt = txt.replace('vectorstr(TAG_ParentsFields, TAG_ParentsFields+2)',
             '["father_idx"@ "mother_idx"]')
+        txt = txt.replace('vectorstr(POP_ParentsFields, POP_ParentsFields+2)',
+            '["father_idx"@ "mother_idx"]')
         txt = txt.replace('vectorstr(ASC_AS_Fields, ASC_AS_Fields+2)',
             '["father_idx"@ "mother_idx"]')
         # re function used to replace the following sentances
@@ -397,7 +399,7 @@ class Doxy2SWIG:
             if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 # re function used to repalce the following sentances
-                vect = re.compile('vector(lu|u|l|i|f|a|op|str|vsp|info)')
+                vect = re.compile('vector(lu|u|l|i|f|a|op|str|vsp|info|splitter)')
                 defVal = vect.sub('[]', defVal)
                 #defVal = defVal.replace('vectorlu','[]')
                 #defVal = defVal.replace('vectorstr','[]')
