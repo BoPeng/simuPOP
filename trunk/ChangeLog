@@ -28,6 +28,9 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		needed with combined virtual splitter.
   - NEW: Add population::ancestor(ind, gen) and population::ancestor(ind, subPop, gen)
 		to access an individual in an ancestory generation directly.
+  - NEW: support virtual subpopulation in fromSubPop parameter of a migrator.
+		This allows sex-specific migraton and more complicated migration
+		schemes.
 
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008

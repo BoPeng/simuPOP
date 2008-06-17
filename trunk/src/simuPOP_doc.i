@@ -1291,7 +1291,7 @@ Details:
 
     This plitter takes several splitters, and stacks their virtual
     subpopulations together. For example, if the first splitter has
-    three vsp, the second has two. The two vsp from the second
+    three  vsp, the second has two. The two  vsp from the second
     splitter will be the fouth (index 3) and fifth (index 4) of the
     combined splitter.
 
@@ -5656,8 +5656,8 @@ Usage:
 
 Description:
 
-    migrate individuals from a (sub) population to another (sub)
-    population
+    migrate individuals from (virtual) subpopulations to other
+    subpopulations
 
 Details:
 
@@ -5688,8 +5688,8 @@ Description:
 Usage:
 
     migrator(rate, mode=MigrByProbability, fromSubPop=[],
-      toSubPop=[], maleRatio=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
 Arguments:
 
@@ -5697,17 +5697,17 @@ Arguments:
                     number. Determined by parameter mode. rate should
                     be an m by n matrix. If a number is given, the
                     migration rate will be a m by n matrix of value r
-    maleRatio:      A matrix with the same dimension as rate that
-                    controlls the ratio of males among migrants. This
-                    parameter is by default empty, meaning sex
-                    information is ignored. If a number is given, it
-                    will be expanded to a matrix of the same size as
-                    rate.
     mode:           one of MigrByProbability (default),
                     MigrByProportion or MigrByCounts
-    fromSubPop:     an array of 'from' subpopulations. Default to all.
-                    If a single subpopulation is specified, [] can be
-                    ignored. I.e., [a] is equvalent to a.
+    fromSubPop:     an array of 'from' (virtual) subpopulations.
+                    Default to all. If a single (virtual)
+                    subpopulation is specified, [] can be ignored. A
+                    virtual subpopulation should be as vsp(subPop,
+                    virtualSubPop). For example, if you define a
+                    virtual subpopulation by sex, you can use
+                    fromSubPop=vsp(0, 0) to choose migrants only from
+                    the first virtual subpopulation of subpopulation
+                    0.
     toSubPop:       an array of 'to' subpopulations. Default to all
                     subpopulations. If a single subpopulation is
                     specified, [] can be ignored.
@@ -8439,28 +8439,30 @@ Usage:
 
 Description:
 
-    if a subpopulation has any virtual subpopulation
+    if a  population has any virtual subpopulation
 
 Usage:
 
-    x.hasVirtualSubPop(subpop)
+    x.hasVirtualSubPop()
 
 "; 
+
+%ignore simuPOP::population::virtualSplitter() const;
 
 %feature("docstring") simuPOP::population::setVirtualSplitter "
 
 Description:
 
-    set a virtual splitter to a given subpopulation.
+    set a virtual splitter to the  population. If multiple splitter is
+    needed for different subpopulations, use a combined splitter.
 
 Usage:
 
-    x.setVirtualSplitter(vsp, sp=0)
+    x.setVirtualSplitter(vsp)
 
 Arguments:
 
     vsp:            a virtual subpop splitter
-    sp:             subpopulation ID, default to zero
 
 "; 
 
@@ -8468,11 +8470,11 @@ Arguments:
 
 Description:
 
-    number of virtual subpopulation of a given subpopulation.
+    number of virtual subpopulations.
 
 Usage:
 
-    x.numVirtualSubPop(subPop)
+    x.numVirtualSubPop()
 
 "; 
 
@@ -8497,8 +8499,6 @@ Note:
     this function is currently not recommended to be used.
 
 "; 
-
-%ignore simuPOP::population::copyVirtualSplitters(const population &rhs);
 
 %feature("docstring") simuPOP::population::deactivateVirtualSubPop "
 
@@ -8714,6 +8714,47 @@ Arguments:
 
 "; 
 
+%ignore simuPOP::population::ind(ULONG ind, UINT subPop=0) const ;
+
+%feature("docstring") simuPOP::population::ancestor "
+
+Description:
+
+    refrence to an  individualind in an ancestral generation
+
+Usage:
+
+    x.ancestor(ind, gen)
+
+Details:
+
+    This function gives access to individuals in an ancestral
+    generation. It will refer to the correct generation even if the
+    current generation is not the latest one. That is to say,
+    ancestor(ind, 0) is not always individual(ind).
+
+"; 
+
+%feature("docstring") simuPOP::population::ancestor "
+
+Description:
+
+    refrence to an  individualind in a specified subpopulaton or an
+    ancestral generation
+
+Usage:
+
+    x.ancestor(ind, subPop, gen)
+
+Details:
+
+    This function gives access to individuals in an ancestral
+    generation. It will refer to the correct generation even if the
+    current generation is not the latest one. That is to say,
+    ancestor(ind, 0) is not always individual(ind).
+
+"; 
+
 %feature("docstring") simuPOP::population::individuals "
 
 Description:
@@ -8756,8 +8797,6 @@ Usage:
     x.individuals(subPop, virtualSubPop)
 
 "; 
-
-%ignore simuPOP::population::ind(ULONG ind, UINT subPop=0) const ;
 
 %ignore simuPOP::population::indOrdered();
 
@@ -8863,7 +8902,7 @@ Description:
 
 Usage:
 
-    x.setIndSubPopID(id)
+    x.setIndSubPopID(id, ancestralPops=False)
 
 Details:
 
@@ -8874,6 +8913,10 @@ Arguments:
 
     id:             an array of the same length of  population size,
                     resprenting subpopulation ID of each  individual.
+                    If the length of  is less than  population size,
+                    it is repeated to fill the whole  population.
+    ancestralPops:  If true (default to False), set subpop id for
+                    ancestral generations as well.
 
 "; 
 
@@ -8886,7 +8929,12 @@ Description:
 
 Usage:
 
-    x.setIndSubPopIDWithID()
+    x.setIndSubPopIDWithID(ancestralPops=False)
+
+Arguments:
+
+    ancestralPops:  If true (default to False), set subpop id for
+                    ancestral generations as well.
 
 "; 
 
@@ -9534,6 +9582,46 @@ Arguments:
 
     fields:         an array of fields
     init:           initial value for the new fields.
+
+"; 
+
+%feature("docstring") simuPOP::population::locateRelatives "
+
+Description:
+
+    Find relatives of each  individual and fill the given information
+    fields with their indexes.
+
+Usage:
+
+    x.locateRelatives(type, infoFields, parentFields=[\"father_idx\",
+      \"mother_idx\"])
+
+Details:
+
+    This function locates relatives of each  individual and store
+    their indexes in given information fields.
+
+Arguments:
+
+    type:           Relative type, can be
+                    * REL_Self index of  individual themselfs
+                    * REL_Spouse index of spouse in the current
+                    generation. Spouse is defined as two individuals
+                    having an offspring with shared parentFields. If
+                    more than one infoFields is given, multiple
+                    spouses can be identified.
+                    * REL_Offspring index of offspring in the
+                    offspring generation. If only one parent is given,
+                    only paternal or maternal relationship is
+                    considered. For example,
+                    parentFields=['father_idx'] will locate offspring
+                    for all fathers.
+    infoFields:     information fields to hold relatives. If more than
+                    one relatives
+    parentFields:   information fields that stores parental indexes.
+                    Default to ['father_idx', 'mother_idx'] are found,
+                    only the first several relatives are stored.
 
 "; 
 
@@ -10444,7 +10532,7 @@ Description:
 Usage:
 
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
-      fromSubPop=[], toSubPop=[], maleRatio=[], loci=[], param=None,
+      fromSubPop=[], toSubPop=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       grp=GRP_ALL, infoFields=[])
 
@@ -10459,12 +10547,6 @@ Arguments:
                     subpopulation ID. This method can be used to
                     separate a  population according to  individual
                     genotype.
-    maleRatio:      A matrix with the same dimension as rate that
-                    controlls the ratio of males among migrants. This
-                    parameter is by default empty, meaning sex
-                    information is ignored. If a number is given, it
-                    will be expanded to a matrix of the same size as
-                    rate.
     stage:          default to PreMating
 
 "; 
@@ -15963,6 +16045,63 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::vsp "
+
+Details:
+
+    A class to specify virtual subpopulation, which is composed of a
+    subPopulation ID and a virtual subpopulation ID.
+
+"; 
+
+%feature("docstring") simuPOP::vsp::vsp "
+
+Description:
+
+    simuPOP::vsp::vsp
+
+Usage:
+
+    vsp(subPop, virtualSubPop=InvalidSubPopID)
+
+"; 
+
+%feature("docstring") simuPOP::vsp::subPop "
+
+Description:
+
+    simuPOP::vsp::subPop
+
+Usage:
+
+    x.subPop()
+
+"; 
+
+%feature("docstring") simuPOP::vsp::virtualSubPop "
+
+Description:
+
+    simuPOP::vsp::virtualSubPop
+
+Usage:
+
+    x.virtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::vsp::isVirtual "
+
+Description:
+
+    simuPOP::vsp::isVirtual
+
+Usage:
+
+    x.isVirtual()
+
+"; 
+
 %feature("docstring") simuPOP::vspSplitter "
 
 Details:
@@ -16013,7 +16152,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::vspSplitter::activated() const;
+%ignore simuPOP::vspSplitter::activatedSubPop() const;
 
 %ignore simuPOP::vspSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
