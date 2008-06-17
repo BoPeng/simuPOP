@@ -619,15 +619,14 @@ bool largePedigreeSample::prepareSample(population & pop)
 			vectorlu parents;
 			for (vectorlu::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par) {
 				if (pop.ind(*par).info(pedindexIdx) == -1.) {
-					int ind_p = static_cast<int>(pop.ind(*par).info(fatherIdx));
-					int ind_m = static_cast<int>(pop.ind(*par).info(motherIdx));
+					size_t ind_p = static_cast<size_t>(pop.ind(*par).info(fatherIdx));
+					size_t ind_m = static_cast<size_t>(pop.ind(*par).info(motherIdx));
 					// child with another spouse
 					if (grandspouse != ind_p && grandspouse != ind_m)
 						continue;
 					if (idx != ind_p && idx != ind_m)
 						continue;
 					
-					InfoType spouse = pop.ind(*par).info(spouseIdx);
 					parents.push_back(*par);
 					pedSize++;
 					if (pop.ind(*par).affected())

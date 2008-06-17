@@ -1159,7 +1159,7 @@ public:
 	   function. \c useAncestralPop(0) should always be used to set a population
 	   to its usual ancestral order after operations to the ancestral generation are done.
 	 */
-	int ancestralGen() const
+	UINT ancestralGen() const
 	{
 		return m_curAncestralGen;
 	}
@@ -2122,7 +2122,7 @@ private:
 	ULONG m_gen;
 
 	/// current ancestral depth
-	int m_curAncestralGen;
+	UINT m_curAncestralGen;
 
 	/// whether or not individual genotype and information are in order
 	bool m_indOrdered;
