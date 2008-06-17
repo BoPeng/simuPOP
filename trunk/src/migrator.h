@@ -43,7 +43,11 @@ using std::random_shuffle;
 #include <math.h>
 // using std::sqrt;
 
+#include "virtualSubPop.h"
+
 namespace simuPOP {
+
+typedef std::vector<vsp> vectorvsp;
 
 /// migrate individuals from a (sub)population to another (sub)population
 /**
@@ -96,7 +100,7 @@ public:
 	   which migrate from subpopulation \c a to \c b with given rate \c r.
 	 */
 	migrator(const matrix & rate, int mode = MigrByProbability,
-	         vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
+	         const vectorvsp & fromSubPop = vectorvsp(), vectoru toSubPop = vectoru(),
 	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
@@ -161,7 +165,8 @@ protected:
 
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
-	vectoru m_from, m_to;
+	vectorvsp m_from;
+	vectoru m_to;
 };
 
 /// a more flexible Python migrator
@@ -195,7 +200,7 @@ public:
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc=NULL,
 				int mode = MigrByProbability,
-	           vectoru fromSubPop = vectoru(), vectoru toSubPop = vectoru(),
+	           vectorvsp fromSubPop = vectorvsp(), vectoru toSubPop = vectoru(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())

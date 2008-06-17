@@ -57,7 +57,7 @@ ULONG vspSplitter::countVisibleInds(const population & pop, SubPopID subPop) con
 }
 
 
-combinedSplitter::combinedSplitter(const vectorvsp & splitters)
+combinedSplitter::combinedSplitter(const vectorsplitter & splitters)
 	: vspSplitter(), m_numVSP(0), m_splitter(), m_vsp(), m_curSplitter(0)
 {
 	for (size_t i = 0; i < splitters.size(); ++i) {

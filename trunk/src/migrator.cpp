@@ -21,6 +21,7 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 
+#include "virtualSubPop.h"
 #include "migrator.h"
 
 namespace simuPOP {
@@ -34,7 +35,7 @@ void migrator::setRates(const matrix & rate, int mode)
 
 	if (m_from.empty() )
 		for (UINT i = 0; i < szFrom; ++i)
-			m_from.push_back(i);
+			m_from.push_back(vsp(i));
 
 	if (m_to.empty() )
 		for (UINT i = 0; i < szTo; ++i)
@@ -64,7 +65,7 @@ void migrator::setRates(const matrix & rate, int mode)
 	if (m_mode == MigrByProbability || m_mode == MigrByProportion) {
 		for (UINT i = 0; i < szFrom; i++) {               // from
 			// look for from=to cell.
-			UINT spFrom = m_from[i];
+			UINT spFrom = m_from[i].subPop();
 			double sum = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0);
 			//
 			vectoru::iterator spTo = find(m_to.begin(), m_to.end(), spFrom);
@@ -96,16 +97,15 @@ bool migrator::apply(population & pop)
 
 
 	for (UINT from = 0, fromEnd = m_from.size(); from < fromEnd; ++from) {
-		UINT spFrom = m_from[from];
+		UINT spFrom = m_from[from].subPop();
 		// rateSize might be toSize + 1, the last one is from->from
 		UINT toSize = m_to.size();
 		UINT toIndex;
 
-		ULONG spSize = pop.subPopSize(spFrom);
-
 		// m_from out of range.... ignore.
-		if (spFrom >= pop.numSubPop() )
-			continue;
+		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError, "Subpopulation index " + toStr(spFrom) + " out of range");
+
+		ULONG spSize = pop.subPopSize(spFrom);
 
 		if (m_mode == MigrByProbability) {
 			Weightedsampler ws(rng(), m_rate[from]);
