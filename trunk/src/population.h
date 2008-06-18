@@ -1378,7 +1378,7 @@ public:
 
 	For example,
 	<tt>
-	    copyRelativeFrom(pathGen = [0, 1, 1, 0],
+	    setInfoWithRelatives(pathGen = [0, 1, 1, 0],
 			pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
 				['off1', 'off2']],
 			pathSex = [AnySex, MaleOnly, FemaleOnly],
@@ -1396,7 +1396,7 @@ public:
 
 	In short, this function locates father or mother's brother's daughters.
 	*/
-	void traceRelativeInfo(const vectori & pathGen,
+	void setIndexesOfRelatives(const vectori & pathGen,
 		const stringMatrix & pathFields,
 		const vectori & pathSex,
 		const vectorstr & resultFields);

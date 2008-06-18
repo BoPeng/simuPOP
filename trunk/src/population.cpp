@@ -1877,12 +1877,12 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 }
 
 
-void population::traceRelativeInfo(const vectori & pathGen,
+void population::setIndexesOfRelatives(const vectori & pathGen,
 		const stringMatrix & pathFields,
 		const vectori & pathSex,
 		const vectorstr & resultFields)
 {
-	DBG_ASSERT(pathGen.size() == pathFields.size(), ValueError,
+	DBG_ASSERT(pathGen.size() == pathFields.size() + 1, ValueError,
 		"Parameter pathGen should be one element longer than pathFields");
 	DBG_FAILIF(!pathSex.empty() && pathSex.size() != pathFields.size(),
 		ValueError,
@@ -1903,7 +1903,7 @@ void population::traceRelativeInfo(const vectori & pathGen,
 		for (size_t j = 0; j < pathFields[i].size(); ++j)
 			pathIdx[i][j] = infoIdx(pathFields[i][j]);
 	}
-	// convert pathSex to ...
+	// convert pathSex to type SexChoices
 	vector<SexChoice> sexes(pathIdx.size(), AnySex);
 	for (size_t i = 0; i < pathSex.size(); ++i)
 		sexes[i] = static_cast<SexChoice>(pathSex[i]);
@@ -1912,9 +1912,11 @@ void population::traceRelativeInfo(const vectori & pathGen,
 	for (IndIterator ind = indBegin(); ind.valid(); ++ind, ++idx) {
 		// start from one individual from pathGen[0]
 		Sex mySex = ind->sex();
-		vectorlu inds = vectorlu(idx);
+		vectorlu inds = vectorlu(1, idx);
 		// go through the path
 		for (int path = 0; path < pathFields.size(); ++path) {
+			DBG_DO(DBG_POPULATION, cout << "Start of path " << path 
+				<< " : " << inds << endl);
 			int fromGen = pathGen[path];
 			int toGen = pathGen[path + 1];
 			const vectori & fields = pathIdx[path];
@@ -1936,15 +1938,17 @@ void population::traceRelativeInfo(const vectori & pathGen,
 					newInds.push_back(static_cast<ULONG>(sIdx));
 				}
 			}
-			if (newInds.empty())
+			inds.swap(newInds);
+			if (inds.empty())
 				break;
-			else
-				inds.swap(newInds);
 		}
+		DBG_DO(DBG_POPULATION, cout << "Ind " << idx << " has relatives " << inds << endl);
 		// ind has the results
-		for (size_t i = 0; i < inds.size(); ++i) {
-			if (i < maxResult)
-				ind->setInfo(inds[i], i);
+		for (size_t i = 0; i < maxResult; ++i) {
+			if (i < inds.size())
+				ind->setInfo(inds[i], resultIdx[i]);
+			else
+				ind->setInfo(-1, resultIdx[i]);
 		}
 	}
 }

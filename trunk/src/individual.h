@@ -448,6 +448,16 @@ public:
 		return m_infoPtr[idx];
 	}
 
+    /// get information field \c idx as an integer. This is the same as <tt>int(info(idx)) </tt>
+	/**
+	 \param idx index of the information field
+	 */
+    int intInfo(UINT idx) const
+    {
+        CHECKRANGEINFO(idx);
+        return static_cast<int>(m_infoPtr[idx]);
+    }
+
 
 	/// get information field \c name
 	/**
@@ -463,6 +473,19 @@ public:
 		return m_infoPtr[idx];
 	}
 
+	/// get information field \c name as an integer
+	/**
+	   Equivalent to <tt>int(info(name))</tt>.
+	 \param name name of the information field
+	 */
+	int intInfo(const string & name) const
+	{
+		int idx = infoIdx(name);
+
+		DBG_ASSERT(idx >= 0, IndexError,
+			"Info name " + name + " is not a valid info field name");
+		return static_cast<int>(m_infoPtr[idx]);
+	}
 
 	/// set information field by \c idx
 	void setInfo(InfoType value, UINT idx)
