@@ -31,7 +31,8 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: support virtual subpopulation in fromSubPop parameter of a migrator.
 		This allows sex-specific migraton and more complicated migration
 		schemes.
-
+  - NEW: add functions population::locateRelatives and population::setIndexesOfRelatives
+  - NEW: add functions individual::indInfo(idx) and individual::indInfo(name)
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
   - BUG: fix a bug that prevents a cloned simulator from evolving again.

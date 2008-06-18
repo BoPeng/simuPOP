@@ -1546,6 +1546,51 @@ class TestPopulation(unittest.TestCase):
         # FIXME: test sex choices
 
 
+    def testTraceRelativeInfo(self):
+        'Testing tracing relatives and set indexes'
+        offFields = ['off%d' % x for x in range(20)]
+        fullsibFields = ['fullsib%d' % x for x in range(20)]
+        cousinFields = ['cousin%d' % x for x in range(20)]
+        mcFields = ['mc%d' % x for x in range(20)]
+        fcFields = ['fc%d' % x for x in range(20)]
+        simu = simulator(population([1000, 1000], ancestralDepth=4,
+            infoFields=['father_idx', 'mother_idx'] + fullsibFields 
+                + cousinFields + offFields + mcFields + fcFields),
+            randomMating(numOffspring=2))
+        simu.evolve(ops=[parentsTagger()], gen=10)
+        pop = simu.getPopulation(0, True)
+        pop.locateRelatives(REL_Offspring, offFields)
+        pop.locateRelatives(REL_FullSibling, fullsibFields)
+        #
+        pop.setIndexesOfRelatives(pathGen=[0, 1, 1, 0],
+            pathFields = [['father_idx', 'mother_idx'], fullsibFields,
+                offFields],
+            pathSex = [AnySex]*3,
+            resultFields = cousinFields)
+        pop.setIndexesOfRelatives(pathGen=[0, 1, 1, 0],
+            pathFields = [['father_idx', 'mother_idx'], fullsibFields,
+                offFields],
+            pathSex = [AnySex, AnySex, MaleOnly],
+            resultFields = mcFields)
+        pop.setIndexesOfRelatives(pathGen=[0, 1, 1, 0],
+            pathFields = [['father_idx', 'mother_idx'], fullsibFields,
+                offFields],
+            pathSex = [AnySex, AnySex, FemaleOnly],
+            resultFields = fcFields)
+        for idx,ind in enumerate(pop.individuals()):
+            cousins = [ind.intInfo(x) for x in cousinFields if ind.info(x) != -1]
+            maleCousins = [ind.intInfo(x) for x in mcFields if ind.info(x) != -1]
+            femaleCousins = [ind.intInfo(x) for x in fcFields if ind.info(x) != -1]
+            for m in maleCousins:
+                self.assertEqual(pop.individual(m).sex(), Male)
+            for f in femaleCousins:
+                self.assertEqual(pop.individual(f).sex(), Female)
+            self.assertEqual(len(cousins), len(maleCousins) + len(femaleCousins))
+            # cousin is mutual
+            for c in cousins:
+                ccousins = [pop.individual(c).intInfo(x) for x in cousinFields if pop.individual(c).info(x) != -1]
+                self.assertEqual(idx in ccousins, True)
+
     def testAncestor(self):
         'Testing direct access to ancestors'
         pop = population([100, 200], loci=[10, 20], infoFields=['x', 'y'],
