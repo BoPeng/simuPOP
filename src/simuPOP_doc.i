@@ -3507,6 +3507,23 @@ Arguments:
 
 "; 
 
+%feature("docstring") simuPOP::individual::intInfo "
+
+Description:
+
+    get information field idx as an integer. This is the same as
+    int(info(idx))
+
+Usage:
+
+    x.intInfo(idx)
+
+Arguments:
+
+    idx:            index of the information field
+
+"; 
+
 %feature("docstring") simuPOP::individual::info "
 
 Description:
@@ -3520,6 +3537,26 @@ Usage:
 Details:
 
     Equivalent to info(infoIdx(name)).
+
+Arguments:
+
+    name:           name of the information field
+
+"; 
+
+%feature("docstring") simuPOP::individual::intInfo "
+
+Description:
+
+    get information field name as an integer
+
+Usage:
+
+    x.intInfo(name)
+
+Details:
+
+    Equivalent to int(info(name)).
 
 Arguments:
 
@@ -9594,8 +9631,8 @@ Description:
 
 Usage:
 
-    x.locateRelatives(type, infoFields, parentFields=[\"father_idx\",
-      \"mother_idx\"])
+    x.locateRelatives(relType, infoFields, gen=-1, sex=AnySex,
+      parentFields=[\"father_idx\", \"mother_idx\"])
 
 Details:
 
@@ -9604,7 +9641,7 @@ Details:
 
 Arguments:
 
-    type:           Relative type, can be
+    relType:        Relative type, can be
                     * REL_Self index of  individual themselfs
                     * REL_Spouse index of spouse in the current
                     generation. Spouse is defined as two individuals
@@ -9617,11 +9654,71 @@ Arguments:
                     considered. For example,
                     parentFields=['father_idx'] will locate offspring
                     for all fathers.
-    infoFields:     information fields to hold relatives. If more than
-                    one relatives
+                    * REL_FullSibling all siblings with the same
+                    parents
+                    * REL_Sibling all sibs with at least one shared
+                    parent
+    infoFields:     information fields to hold relatives. The number
+                    of these fields limits the number of relatives to
+                    locate.
+    gen:            Find relatives for individuals for how many
+                    generations. Default to -1, meaning for all
+                    generations. If a non-negative number is given, up
+                    till generation gen will be processed.
+    sex:            Whether or not only locate relative or certain
+                    sex. It can be AnySex (do not care, default),
+                    MaleOnly, FemaleOnly, or OppositeSex (only locate
+                    relatives of opposite sex.
     parentFields:   information fields that stores parental indexes.
-                    Default to ['father_idx', 'mother_idx'] are found,
-                    only the first several relatives are stored.
+                    Default to ['father_idx', 'mother_idx']
+
+"; 
+
+%feature("docstring") simuPOP::population::setIndexesOfRelatives "
+
+Description:
+
+    Trace a relative path in a  population and record the result in
+    the given information fields.
+
+Usage:
+
+    x.setIndexesOfRelatives(pathGen, pathFields, pathSex,
+      resultFields)
+
+Details:
+
+    For example,  setInfoWithRelatives(pathGen = [0, 1, 1, 0],
+    pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
+    ['off1', 'off2']], pathSex = [AnySex, MaleOnly, FemaleOnly],
+    resultFields = ['cousin1', 'cousin2'])  This function will 1.
+    locate father_idx and mother_idx for each  individual at
+    generation 0 (pathGen[0]) 2. find AnySex individuals referred by
+    father_idx and mother_idx at generation 1 (pathGen[1]) 3. find
+    informaton fields sib1 and sib2 from these parents 4. locate
+    MaleOnly individuals referred by sib1 and sib2 from generation 1
+    (pathGen[2]) 5. find information fields off1 and off2 from these
+    individuals, and 6. locate FemaleOnly indiviudals referred by off1
+    and  from geneartion 0 (pathGen[3]) 7. Save index of these
+    individuals to information fields cousin1 and cousin2 at
+    genearation pathGen[0].In short, this function locates father or
+    mother's brother's daughters.
+
+Arguments:
+
+    pathGen:        A list of generations that form a relative path.
+                    This array is one element longer than pathFields,
+                    with gen_i, gen_i+1 indicating the current and
+                    destinating generation of information fields
+                    path_i.
+    pathFields:     A list of list of information fields forming a
+                    path to trace a certain type of relative.
+    resultFields:   Where to store located relatives. Note that the
+                    result will be saved in the starting generation
+                    specified in pathGen[0], which is usually 0.
+    pathSex:        (Optional) A list of sex choices, AnySex, Male,
+                    Female or OppositeSex, that is used to choose
+                    individuals at each step. Default to AnySex.
 
 "; 
 
