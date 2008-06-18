@@ -495,7 +495,7 @@ void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individual * sequentialParentChooser::chooseParent()
+individual * sequentialParentChooser::chooseParent(RawIndIterator)
 {
 	if (m_ind == m_end)
 		m_ind = m_begin;
@@ -526,7 +526,7 @@ void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair sequentialParentsChooser::chooseParents()
+parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -563,7 +563,7 @@ void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair pedigreeParentsChooser::chooseParents()
+parentChooser::individualPair pedigreeParentsChooser::chooseParents(RawIndIterator)
 {
 	individual * dad = NULL;
 	individual * mom = NULL;
@@ -615,7 +615,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individual * randomParentChooser::chooseParent()
+individual * randomParentChooser::chooseParent(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -759,7 +759,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair randomParentsChooser::chooseParents()
+parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -855,6 +855,72 @@ parentChooser::individualPair randomParentsChooser::chooseParents()
 }
 
 
+void infoParentsChooser::initialize(population & pop, SubPopID sp)
+{
+	// indexes
+	m_infoIdx.resize(m_infoFields.size());
+	for (size_t i = 0; i < m_infoFields.size(); ++i)
+		m_infoIdx[i] = pop.infoIdx(m_infoFields[i]);
+	UINT infoSz = m_infoIdx.size();
+
+	m_selection = pop.selectionOn(sp);
+	m_index.clear();
+
+	// In a virtual subpopulation, because m_begin + ... is **really** slow
+	// It is a good idea to cache IndIterators. This is however inefficient
+	// for non-virtual populations
+	IndIterator it = pop.indBegin(sp);
+	vectorf fitness;
+	UINT fit_id = 0;
+	if (m_selection)
+		fit_id = pop.infoIdx("fitness");
+	for (; it.valid(); ++it) {
+		Sex mySex = it->sex();
+		for (size_t i = 0; i < infoSz; ++i)
+			// we only choose individual with an valid information field
+			// and is of opposite sex
+			if (it->info(i) >= 0 && pop.ind(it->intInfo(i)).sex() != mySex) {
+				m_index.push_back(it.rawIter());
+				if (m_selection)
+					fitness.push_back(it->info(fit_id));
+				break;
+			}
+	}
+
+	if (m_selection)
+		m_sampler.set(fitness);
+	else
+		m_size = m_index.size();
+
+	if (!m_replacement)
+		std::random_shuffle(m_index.begin(), m_index.end());
+
+	DBG_FAILIF(!m_replacement && m_selection, ValueError,
+		"Selection is not allowed in random sample without replacement");
+
+	m_initialized = true;
+}
+
+
+parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator basePtr)
+{
+	DBG_ASSERT(initialized(), SystemError,
+		"Please initialize this parent chooser before using it");
+	individual * par1 = chooseParent(basePtr);
+	Sex sex1 = par1->sex();
+	// the way this parent chooser is initialized guranttees that
+	// theres is at lest one valid field.
+	vector<individual*> validInds;
+	for (size_t  i = 0; i < m_infoIdx.size(); ++i) {
+		RawIndIterator par2 = basePtr + par1->intInfo(m_infoIdx[i]);
+		if (par2->sex() != sex1)
+			validInds.push_back(&*par2);
+	}
+	individual * par2 = validInds[rng().randInt(validInds.size())];
+	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
+}
+
+
 pyParentsChooser::pyParentsChooser(PyObject * pc)
 	: parentChooser(0), m_func(pc), m_generator(NULL), m_parIterator(NULL)
 {
@@ -896,7 +962,7 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-parentChooser::individualPair pyParentsChooser::chooseParents()
+parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -1039,6 +1105,7 @@ bool mating::mate(population & pop, population & scratch,
 {
 	// scrtach will have the right structure.
 	prepareScratchPop(pop, scratch);
+	preparePopulation(pop);
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -1093,7 +1160,7 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * parent = pc.chooseParent();
+		individual * parent = pc.chooseParent(pop.rawIndBegin(subPop));
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
 		//
@@ -1125,7 +1192,7 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 	// choose a parent and genereate m_numOffspring offspring
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * parent = pc.chooseParent();
+		individual * parent = pc.chooseParent(pop.rawIndBegin(subPop));
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
 		//
@@ -1163,7 +1230,7 @@ bool baseRandomMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents();
+		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin(subPop));
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
@@ -1195,7 +1262,7 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents();
+		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin(subPop));
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
@@ -1262,7 +1329,7 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents();
+		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents(pop.rawIndBegin(subPop));
 		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
 			ValueError, "Imcompatible parents chooser and offspring generator");
 		//
@@ -1296,7 +1363,7 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * const parent = pc.chooseParent();
+		individual * const parent = pc.chooseParent(pop.rawIndBegin(subPop));
 		//
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
@@ -1334,6 +1401,43 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 					alleleNum[l]++;
 		}
 	}
+}
+
+
+void consanguineousMating::preparePopulation(population & pop)
+{
+}
+
+
+bool consanguineousMating::mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator *> & ops)
+{
+	// nothing to do.
+	if (offBegin == offEnd)
+		return true;
+
+	if (!m_offspringGenerator.initialized())
+		m_offspringGenerator.initialize(pop, ops);
+
+	infoParentsChooser pc;
+	pc.initialize(pop, subPop);
+
+	// generate scratch.subPopSize(sp) individuals.
+	RawIndIterator it = offBegin;
+	while (it != offEnd) {
+		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin(subPop));
+		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
+			"Random parents chooser returns invalid parent");
+		//
+		UINT numOff = m_offspringGenerator.generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+		(void)numOff;             // silent warning about unused variable.
+		// record family size (this may be wrong for the last family)
+		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+	}
+	pc.finalize(pop, subPop);
+	m_offspringGenerator.finalize(pop);
+	return true;
 }
 
 
@@ -1646,7 +1750,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 
 			// randomly choose parents
-			parentChooser::individualPair parents = pc.chooseParents();
+			parentChooser::individualPair parents = pc.chooseParents(pop.rawIndBegin(sp));
 
 			// generate m_numOffspring offspring per mating
 			// record family size (this may be wrong for the last family)
@@ -1871,10 +1975,10 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 		individual * dad = NULL;
 		individual * mom = NULL;
 		if (m_parentChooser->numParents() == 1)
-			dad = m_parentChooser->chooseParent();
+			dad = m_parentChooser->chooseParent(pop.rawIndBegin(subPop));
 		// 0 or 2, that is to say, dad or mom can be NULL
 		else {
-			parentChooser::individualPair const parents = m_parentChooser->chooseParents();
+			parentChooser::individualPair const parents = m_parentChooser->chooseParents(pop.rawIndBegin(subPop));
 			dad = parents.first;
 			mom = parents.second;
 		}

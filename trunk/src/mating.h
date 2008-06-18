@@ -472,14 +472,14 @@ public:
 
 
 	/// CPPONLY
-	virtual individual * chooseParent()
+	virtual individual * chooseParent(RawIndIterator basePtr)
 	{
 		return NULL;
 	}
 
 
 	/// CPPONLY
-	virtual individualPair chooseParents()
+	virtual individualPair chooseParents(RawIndIterator basePtr)
 	{
 		return individualPair(NULL, NULL);
 	}
@@ -487,10 +487,8 @@ public:
 
 	virtual ~parentChooser() { }
 
-private:
-	int m_numParents;
-
 protected:
+	int m_numParents;
 	bool m_initialized;
 };
 
@@ -516,7 +514,7 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individual * chooseParent();
+	individual * chooseParent(RawIndIterator basePtr);
 
 private:
 	bool m_selection;
@@ -554,7 +552,7 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individualPair chooseParents();
+	individualPair chooseParents(RawIndIterator basePtr);
 
 	/// CPPONLY
 	ULONG numMale() { return m_numMale; }
@@ -604,7 +602,7 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individualPair chooseParents();
+	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	pedigree m_pedigree;
@@ -652,9 +650,9 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individual * chooseParent();
+	individual * chooseParent(RawIndIterator basePtr);
 
-private:
+protected:
 	bool m_replacement;
 	bool m_replenish;
 
@@ -739,7 +737,7 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individualPair chooseParents();
+	individualPair chooseParents(RawIndIterator basePtr);
 
 	/// CPPONLY
 	ULONG numMale() { return m_numMale; }
@@ -779,6 +777,61 @@ private:
 	Weightedsampler m_malesampler;
 	Weightedsampler m_femalesampler;
 
+};
+
+
+/** This parents chooser choose an individual randomly, but choose
+	his/her spouse from a given set of information fields, which stores
+	indexes of individuals in the same generation. A field will be ignored
+	if its value is negative, or if sex is compatible.
+
+	Depending on what indexes are stored in these information fields,
+	this parent chooser can be used to implement consanguineous mating
+	where close relatives are located for each individual, or certain
+	non-random mating schemes where each individual can only mate with a small
+	number of pre-determinable individuals.
+	
+	This parent chooser (currently) uses \c randomParentChooser to choose
+	one parent and randomly choose another one from the information fields.
+	Because of potentially non-even distribution of valid information
+	fields, the overall process may not be as random as expected, especially
+	when selection is applied.
+*/
+class infoParentsChooser : public randomParentChooser
+{
+public:
+	/**
+	\param infoFields information fields that store index of matable
+			individuals.
+	\param replacement if replacement is false, a parent can not
+	   		be chosen more than once.
+	\param replenish if all parent has been chosen, choose from
+	   		the whole parental population again.
+	*/
+	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
+		bool replacement = true, bool replenish = false) :
+		randomParentChooser(replacement, replenish),
+		m_infoFields(infoFields)
+	{
+		m_numParents = 2;
+		DBG_FAILIF(m_infoFields.empty(), ValueError,
+			"At least one information field should be provided");
+	}
+	
+	parentChooser * clone() const
+	{
+		return new infoParentsChooser(*this);
+	}
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individualPair chooseParents(RawIndIterator basePtr);
+
+private:
+	vectorstr m_infoFields;
+	vectori m_infoIdx;
 };
 
 
@@ -838,7 +891,7 @@ public:
 
 
 	/// CPPONLY
-	individualPair chooseParents();
+	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
 #ifndef OPTIMIZED
@@ -959,6 +1012,8 @@ public:
 		return "<simuPOP::generic mating scheme>";
 	}
 
+	/// CPPONLY
+	virtual void preparePopulation(population & pop) {}
 
 	/// CPPONLY
 	/// a common submit procedure is defined.
@@ -1850,6 +1905,93 @@ public:
 
 protected:
 	selfingOffspringGenerator m_offspringGenerator;
+};
+
+/// a mating scheme of consanguineous mating
+/**
+   In this mating scheme, a parent is choosen randomly and mate with a
+   relative that has been located and written to a number of information
+   fields. What this mating scheme do are
+
+   1. before mating, call
+       population::locateRelatives
+	   population::setIndexOfRelatives
+	to store indexes of relatives to some given information fields
+   2. use infoParentsChooser to choose parents and use mendelianOffspringGenerator
+	to produce offspring.
+
+	If a different offspring generator is desired, a pyMating scheme should be
+	used, with locateRelatives and setIndexOfRelatives prepared in a Python
+	operator.
+ */
+class consanguineousMating : public mating
+{
+public:
+	/// create a consanguineous mating scheme
+	/**
+
+	   Please refer to class \c mating for descriptions of other parameters.
+	 */
+	consanguineousMating(double numOffspring = 1.,
+	           PyObject * numOffspringFunc = NULL,
+	           UINT maxNumOffspring = 0,
+	           UINT mode = MATE_NumOffspring,
+	           double sexParam = 0.5,
+	           UINT sexMode = MATE_RandomSex,
+	           vectorlu newSubPopSize = vectorlu(),
+	           PyObject * newSubPopSizeFunc = NULL,
+	           string newSubPopSizeExpr = "",
+	           bool contWhenUniSex = true,
+	           SubPopID subPop = InvalidSubPopID,
+	           SubPopID virtualSubPop = InvalidSubPopID,
+	           double weight = 0)
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		m_offspringGenerator(numOffspring, numOffspringFunc,
+		                     maxNumOffspring, mode, sexParam, sexMode)
+	{
+	}
+
+
+	/// destructor
+	~consanguineousMating()
+	{
+	}
+
+
+	/// deep copy of a consanguineous mating scheme
+	virtual mating * clone() const
+	{
+		return new consanguineousMating(*this);
+	}
+
+
+	/// CPPONLY
+	virtual bool isCompatible(const population & pop) const
+	{
+#ifndef OPTIMIZED
+		if (pop.ploidy() != 2)
+			cout << "Warning: This mating type only works with diploid population." << endl;
+#endif
+		return true;
+	}
+
+
+	/// used by Python print function to print out the general information of the consanguineous mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::consanguineous mating>";
+	}
+
+	/// CPPONLY
+	virtual void preparePopulation(population & pop);
+
+	/// CPPONLY perform consanguineous mating
+	virtual bool mateSubPop(population & pop, SubPopID subPop,
+		RawIndIterator offBegin, RawIndIterator offEnd,
+		vector<baseOperator *> & ops);
+
+protected:
+	mendelianOffspringGenerator m_offspringGenerator;
 };
 
 
