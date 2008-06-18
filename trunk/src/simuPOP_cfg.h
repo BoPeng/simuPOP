@@ -130,7 +130,7 @@ const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 #define PopSWIGType "simuPOP::population *"
 #define IndSWIGType "simuPOP::individual *"
 
-enum Sex { Male = 1, Female = 2 };
+enum Sex {Male = 1, Female = 2};
 
 // info is usually used for subpopulation index.
 // signed short should be enough.
