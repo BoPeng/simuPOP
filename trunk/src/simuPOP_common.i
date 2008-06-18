@@ -153,6 +153,7 @@ namespace std
 
     %template()         vector< vector<int> >;
     %template()         vector< vector<double> >;
+	%template()         vector< vector<string> >;
 }
 
 

@@ -1364,28 +1364,42 @@ public:
 		int gen = -1, SexChoice sex = AnySex,
 		const vectorstr & parentFields = vectorstr(POP_ParentsFields, POP_ParentsFields + 2));
 
-	/// Copy non-negative values from individuals of a parental generation to the current generation.
-	/* This function is used to copy the indexes of certain relatives from parental information fields.
-	 * 
-	 * \param ancestralGen from which generation information fields are copied
-	 * \param ancestralFields from which information fields values are copied
-	 * \param sourceFields these fields provide indexes of parental individuals
-	 * \param resultFields where result values are stored
-	 *
-	 * The usage of this function can be demonstrated through an example. Assuming
-	 * that all indviduals stores their fullsibs and offspring in information fields
-	 * sib1, sib2, off1, and off2. The following call will get indexes of everyone's
-	 * cousin:
-	  <tt>
-	    copyRelativeFrom(ancestralGen = 1, ancestralFields = ['sib1', 'sib2'],
-		    sourceFields = ['father_idx', 'mother_idx'], resultFields = ['aunt1', 'aunt2'])
-	    copyRelativeFrom(ancestralGen = 1, ancestralFields = ['off1', 'off2'],
-		    sourceFields = ['aunt1', 'aunt2'], resultFields = ['cousin1', 'cousin2'])
-	  </tt>
-	  Of course, all these information fields have to be prepared in advance.
+	/// Trace a relative path in a population and record the result in the given information fields.
+	/**
+	\param pathGen A list of generations that form a relative path. This array is one element longer
+		than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
+		of information fields path_i.
+	\param pathFields A list of list of information fields forming a path to trace a certain
+		type of relative.
+	\param resultFields Where to store located relatives. Note that the result will be saved
+		in the starting generation specified in \c pathGen[0], which is usually 0.
+	\param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
+		that is used to choose individuals at each step. Default to AnySex.
+
+	For example,
+	<tt>
+	    copyRelativeFrom(pathGen = [0, 1, 1, 0],
+			pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
+				['off1', 'off2']],
+			pathSex = [AnySex, MaleOnly, FemaleOnly],
+			resultFields = ['cousin1', 'cousin2'])
+	</tt>
+	This function will
+	1. locate father_idx and mother_idx for each individual at generation 0 (\c pathGen[0])
+	2. find AnySex individuals referred by father_idx and mother_idx at generation 1 (\c pathGen[1])
+	3. find informaton fields \c sib1 and \c sib2 from these parents
+	4. locate MaleOnly individuals referred by \c sib1 and \c sib2 from generation 1 (\c pathGen[2])
+	5. find information fields \c off1 and \c off2 from these individuals, and
+	6. locate FemaleOnly indiviudals referred by \c off1 and \of2 from geneartion 0 (\c pathGen[3])
+	7. Save index of these individuals to information fields \c cousin1 and \c cousin2 at
+		genearation \c pathGen[0].
+
+	In short, this function locates father or mother's brother's daughters.
 	*/
-	void copyInfoFromRelatives(int ancestralGen, const vectorstr & ancestralFields,
-		const vectorstr & sourceFields, const vectorstr & resultFields);
+	void traceRelativeInfo(const vectori & pathGen,
+		const stringMatrix & pathFields,
+		const vectori & pathSex,
+		const vectorstr & resultFields);
 
 	/// set ancestral depth
 	/**

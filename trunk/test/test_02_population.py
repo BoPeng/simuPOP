@@ -1491,17 +1491,18 @@ class TestPopulation(unittest.TestCase):
 
     def testLocateOffspring(self):
         'Testing set index for offsprings of individuals'
+        offFields = ['off%d' % x for x in range(10)]
         simu = simulator(population([1000, 1000], ancestralDepth=4,
-            infoFields=['father_idx', 'mother_idx', 'off0', 'off1', 'off2', 'off3']),
+            infoFields=['father_idx', 'mother_idx'] + offFields),
             randomMating(numOffspring=2))
         simu.evolve(ops=[parentsTagger()], gen=10)
         pop = simu.getPopulation(0, True)
-        pop.locateRelatives(REL_Offspring, ['off0', 'off1', 'off2', 'off3'])
-        for field in ['off0', 'off1', 'off2', 'off3']:
+        pop.locateRelatives(REL_Offspring, offFields)
+        for field in offFields:
             for ans in range(1, pop.ancestralDepth()):
                 # parental generation
                 pop.useAncestralPop(ans)
-                off = pop.indInfo('off0')
+                off = pop.indInfo(field)
                 pop.useAncestralPop(ans-1)
                 for idx,ind in enumerate(off):
                     if ind == -1:
@@ -1510,6 +1511,40 @@ class TestPopulation(unittest.TestCase):
                         pop.individual(int(ind)).info('mother_idx')], True)
         # FIXME: test single parent case
     
+
+    def testLocateSibling(self):
+        'Testing set index for sibling of individuals'
+        offFields = ['off%d' % x for x in range(20)]
+        sibFields = ['sib%d' % x for x in range(20)]
+        fullsibFields = ['fullsib%d' % x for x in range(20)]
+        simu = simulator(population([1000, 1000], ancestralDepth=4,
+            infoFields=['father_idx', 'mother_idx'] + fullsibFields 
+                + sibFields + offFields),
+            randomMating(numOffspring=2))
+        simu.evolve(ops=[parentsTagger()], gen=10)
+        pop = simu.getPopulation(0, True)
+        pop.locateRelatives(REL_Offspring, offFields)
+        pop.locateRelatives(REL_Sibling, sibFields)
+        pop.locateRelatives(REL_FullSibling, fullsibFields)
+        for ans in range(0, pop.ancestralDepth()):
+            pop.useAncestralPop(ans)
+            for idx,ind in enumerate(pop.individuals()):
+                father = int(ind.info('father_idx'))
+                mother = int(ind.info('mother_idx'))
+                father_off = [pop.ancestor(father, ans + 1).info(x) for x in offFields 
+                    if pop.ancestor(father, ans + 1).info(x) != -1]
+                mother_off = [pop.ancestor(mother, ans + 1).info(x) for x in offFields 
+                    if pop.ancestor(mother, ans + 1).info(x) != -1]
+                self.assertEqual(idx in father_off and idx in mother_off, True)
+                #
+                sibs = [ind.info(x) for x in sibFields if ind.info(x) != -1]
+                fullsibs = [ind.info(x) for x in fullsibFields if ind.info(x) != -1]
+                for sib in sibs:
+                    self.assertEqual((sib in father_off) or (sib in mother_off), True)
+                for sib in fullsibs:
+                    self.assertEqual((sib in father_off) and (sib in mother_off), True)
+        # FIXME: test sex choices
+
 
     def testAncestor(self):
         'Testing direct access to ancestors'
