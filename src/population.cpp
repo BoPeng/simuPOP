@@ -1742,11 +1742,12 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 
 		// start from the parental generation
 		for (unsigned ans = 0; ans <= topGen; ++ans) {
+			useAncestralPop(ans);
 			// if top generation, no information about sibling
 			if (ans == ancestralDepth()) {
 				for (IndIterator it = indBegin(); it.valid(); ++it)
 					for (size_t i = 0; i < maxSibling; ++i)
-						it->setInfo(-1, i);
+						it->setInfo(-1, siblingIdx[i]);
 				continue;
 			}
 			// when parents information are available.
@@ -1774,14 +1775,14 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 				//
 				vector<Sex> sexes(sibs.size());
 				for (size_t i = 0; i < sibs.size(); ++i)
-					sexes[i] = ind(i).sex();
+					sexes[i] = ind(sibs[i]).sex();
 				// 
 				for (size_t i = 0; i < sibs.size(); ++i) {
 					for (size_t j = 0; j < sibs.size(); ++j) {
 						if (i == j)
 							continue;
 						if ((sex == MaleOnly && sexes[j] == Female) ||
-							(sex == FemaleOnly && sexes[i] == Male) ||
+							(sex == FemaleOnly && sexes[j] == Male) ||
 							(sex == OppositeSex && sexes[i] == sexes[j]))
 							continue;
 						if (numSibling[sibs[i]] < maxSibling) {
@@ -1790,11 +1791,11 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 						}
 					}
 				}                                                                                           // idx
-				// set the rest of the field to -1
-				for (size_t idx = 0; idx < popSize(); ++idx) {
-					for (size_t no = numSibling[idx]; no < maxSibling; ++no)
-						ind(idx).setInfo(-1, siblingIdx[no]);
-				}
+			}
+			// set the rest of the field to -1
+			for (size_t idx = 0; idx < popSize(); ++idx) {
+				for (size_t no = numSibling[idx]; no < maxSibling; ++no)
+					ind(idx).setInfo(-1, siblingIdx[no]);
 			}
 		}
 		useAncestralPop(0);
@@ -1813,11 +1814,12 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 
 		// start from the parental generation
 		for (unsigned ans = 0; ans <= topGen; ++ans) {
+			useAncestralPop(ans);
 			// if top generation, no information about sibling
 			if (ans == ancestralDepth()) {
 				for (IndIterator it = indBegin(); it.valid(); ++it)
 					for (size_t i = 0; i < maxSibling; ++i)
-						it->setInfo(-1, i);
+						it->setInfo(-1, siblingIdx[i]);
 				continue;
 			}
 			// when parents information are available.
@@ -1825,9 +1827,10 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 			// for each type of parental relationship
 			map<pair<ULONG, ULONG>, vector<ULONG> > par_map;
 			vectorf father = indInfo(parentFields[0]);
-			vectorf mother = indInfo(parentFields[0]);
+			vectorf mother = indInfo(parentFields[1]);
 			for (size_t idx = 0; idx != father.size(); ++idx) {
-				pair<ULONG, ULONG> parents(father[idx], mother[idx]);
+				pair<ULONG, ULONG> parents(static_cast<ULONG>(father[idx]), 
+					static_cast<ULONG>(mother[idx]));
 				map<pair<ULONG, ULONG>, vector<ULONG> >::iterator item = par_map.find(parents);
 				if (item == par_map.end())
 					par_map[parents] = vector<ULONG>(1, idx);
@@ -1841,17 +1844,19 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 				const vector<ULONG> & sibs = it->second;
 				if (sibs.size() <= 1)
 					continue;
+				DBG_DO(DBG_POPULATION, cout << "Children from parent " << it->first
+					<< " are " << sibs << endl);
 				//
 				vector<Sex> sexes(sibs.size());
 				for (size_t i = 0; i < sibs.size(); ++i)
-					sexes[i] = ind(i).sex();
+					sexes[i] = ind(sibs[i]).sex();
 				// 
 				for (size_t i = 0; i < sibs.size(); ++i) {
 					for (size_t j = 0; j < sibs.size(); ++j) {
 						if (i == j)
 							continue;
 						if ((sex == MaleOnly && sexes[j] == Female) ||
-							(sex == FemaleOnly && sexes[i] == Male) ||
+							(sex == FemaleOnly && sexes[j] == Male) ||
 							(sex == OppositeSex && sexes[i] == sexes[j]))
 							continue;
 						if (numSibling[sibs[i]] < maxSibling) {
@@ -1860,11 +1865,11 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 						}
 					}
 				}                                                                                           // idx
-				// set the rest of the field to -1
-				for (size_t idx = 0; idx < popSize(); ++idx) {
-					for (size_t no = numSibling[idx]; no < maxSibling; ++no)
-						ind(idx).setInfo(-1, siblingIdx[no]);
-				}
+			}
+			// set the rest of the field to -1
+			for (size_t idx = 0; idx < popSize(); ++idx) {
+				for (size_t no = numSibling[idx]; no < maxSibling; ++no)
+					ind(idx).setInfo(-1, siblingIdx[no]);
 			}
 		}
 		useAncestralPop(0);
@@ -1872,37 +1877,74 @@ void population::locateRelatives(RelativeType type, const vectorstr & infoFields
 }
 
 
-void population::copyInfoFromRelatives(int ancestralGen, const vectorstr & ancestralFields,
-		const vectorstr & sourceFields, const vectorstr & resultFields)
+void population::traceRelativeInfo(const vectori & pathGen,
+		const stringMatrix & pathFields,
+		const vectori & pathSex,
+		const vectorstr & resultFields)
 {
-	vectoru ancestralIdx(ancestralFields.size());
-	vectoru sourceIdx(sourceFields.size());
-	vectoru resultIdx(resultFields.size());
-	for (size_t i = 0; i < ancestralIdx.size(); ++i)
-		ancestralIdx[i] = infoIdx(ancestralFields[i]);
-	for (size_t i = 0; i < sourceIdx.size(); ++i)
-		sourceIdx[i] = infoIdx(sourceFields[i]);
+	DBG_ASSERT(pathGen.size() == pathFields.size(), ValueError,
+		"Parameter pathGen should be one element longer than pathFields");
+	DBG_FAILIF(!pathSex.empty() && pathSex.size() != pathFields.size(),
+		ValueError,
+		"Parameter pathSex, if given, should have the same length of pathFields");
+	
+	vectori resultIdx(resultFields.size());
 	for (size_t i = 0; i < resultIdx.size(); ++i)
 		resultIdx[i] = infoIdx(resultFields[i]);
-	//
+	// start generation, and at which result will be saved.
+	useAncestralPop(pathGen[0]);
 	vectoru numResult(popSize(), 0);
 	UINT maxResult = resultIdx.size();
+	
+	// convert pathFields to pathIdx
+	intMatrix pathIdx(pathFields.size());
+	for (size_t i = 0; i < pathFields.size(); ++i) {
+		pathIdx[i] = vectori(pathFields[i].size());
+		for (size_t j = 0; j < pathFields[i].size(); ++j)
+			pathIdx[i][j] = infoIdx(pathFields[i][j]);
+	}
+	// convert pathSex to ...
+	vector<SexChoice> sexes(pathIdx.size(), AnySex);
+	for (size_t i = 0; i < pathSex.size(); ++i)
+		sexes[i] = static_cast<SexChoice>(pathSex[i]);
+	
 	ULONG idx = 0;
 	for (IndIterator ind = indBegin(); ind.valid(); ++ind, ++idx) {
-		// for all indexes in sourceIdx
-		for (size_t s = 0; s < sourceIdx.size(); ++s) {
-			InfoType sIdx = ind->info(sourceIdx[s]);
-			if (sIdx < 0)
-				continue;
-			// 
-			individual & anc = ancestor(static_cast<ULONG>(sIdx), ancestralGen);
-			for (size_t a = 0; a < ancestralIdx.size(); ++a) {
-				InfoType aIdx = anc.info(ancestralIdx[a]);
-				if (aIdx < 0)
-					continue;
-				if (numResult[idx] < maxResult)
-					ind->setInfo(aIdx, resultIdx[numResult[idx]]);
+		// start from one individual from pathGen[0]
+		Sex mySex = ind->sex();
+		vectorlu inds = vectorlu(idx);
+		// go through the path
+		for (int path = 0; path < pathFields.size(); ++path) {
+			int fromGen = pathGen[path];
+			int toGen = pathGen[path + 1];
+			const vectori & fields = pathIdx[path];
+			SexChoice sex = sexes[path];
+
+			vectorlu newInds;
+			// for all individuals
+			for (size_t i = 0; i < inds.size(); ++i) {
+				// for all fields
+				for (size_t s = 0; s < fields.size(); ++s) {
+					InfoType sIdx = ancestor(inds[i], fromGen).info(fields[s]);
+					if (sIdx < 0)
+						continue;
+					Sex indSex = ancestor(static_cast<ULONG>(sIdx), toGen).sex();
+					if ((sex == MaleOnly && indSex == Female) ||
+						(sex == FemaleOnly && indSex == Male) ||
+						(sex == OppositeSex && indSex == mySex))
+						continue;
+					newInds.push_back(static_cast<ULONG>(sIdx));
+				}
 			}
+			if (newInds.empty())
+				break;
+			else
+				inds.swap(newInds);
+		}
+		// ind has the results
+		for (size_t i = 0; i < inds.size(); ++i) {
+			if (i < maxResult)
+				ind->setInfo(inds[i], i);
 		}
 	}
 }
