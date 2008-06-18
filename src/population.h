@@ -78,10 +78,10 @@ enum RelativeType
 
 enum SexChoice
 {
-	NoSex = 0,
-	Male = 1,
-	Female = 2,
-	OppsiteSex = 3
+	AnySex = 0,
+	MaleOnly = 1,
+	FemaleOnly = 2,
+	OppositeSex = 3
 };
 
 namespace simuPOP {
@@ -1355,19 +1355,37 @@ public:
 	 *      meaning for all generations. If a non-negative number is given, up till generation
 	 *      gen will be processed.
 	 * \param sex Whether or not only locate relative or certain sex. It can be
-	 *		NoSex (do not care, default), Male, Female, or OppositeSex (only locate 
+	 *		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate 
 	 *      relatives of opposite sex.
-	 *
 	 * \param parentFields information fields that stores parental indexes. Default to
 	 *		['father_idx', 'mother_idx']
-	 * are found, only the first several relatives are stored.
-	 * 
 	*/
 	void locateRelatives(RelativeType relType, const vectorstr & infoFields,
-		int gen = -1, SexChoice sex = NoSex,
-		const vectorstr & relFields = vectorstr(), int fromGen = -1, 
-		const vectorstr & fromFields = vectorstr(), 
+		int gen = -1, SexChoice sex = AnySex,
 		const vectorstr & parentFields = vectorstr(POP_ParentsFields, POP_ParentsFields + 2));
+
+	/// Copy non-negative values from individuals of a parental generation to the current generation.
+	/* This function is used to copy the indexes of certain relatives from parental information fields.
+	 * 
+	 * \param ancestralGen from which generation information fields are copied
+	 * \param ancestralFields from which information fields values are copied
+	 * \param sourceFields these fields provide indexes of parental individuals
+	 * \param resultFields where result values are stored
+	 *
+	 * The usage of this function can be demonstrated through an example. Assuming
+	 * that all indviduals stores their fullsibs and offspring in information fields
+	 * sib1, sib2, off1, and off2. The following call will get indexes of everyone's
+	 * cousin:
+	  <tt>
+	    copyRelativeFrom(ancestralGen = 1, ancestralFields = ['sib1', 'sib2'],
+		    sourceFields = ['father_idx', 'mother_idx'], resultFields = ['aunt1', 'aunt2'])
+	    copyRelativeFrom(ancestralGen = 1, ancestralFields = ['off1', 'off2'],
+		    sourceFields = ['aunt1', 'aunt2'], resultFields = ['cousin1', 'cousin2'])
+	  </tt>
+	  Of course, all these information fields have to be prepared in advance.
+	*/
+	void copyInfoFromRelatives(int ancestralGen, const vectorstr & ancestralFields,
+		const vectorstr & sourceFields, const vectorstr & resultFields);
 
 	/// set ancestral depth
 	/**
@@ -2138,7 +2156,8 @@ private:
 	std::deque<popData> m_ancestralPops;
 
 	/// curent replicate, group number
-	int m_rep, m_grp;
+	int m_rep;
+	int m_grp;
 
 	/// generation
 	ULONG m_gen;
