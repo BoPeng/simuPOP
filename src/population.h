@@ -69,12 +69,20 @@ const string POP_ParentsFields[2] = { "father_idx", "mother_idx" };
 
 enum RelativeType
 {
-	REL_Self,
-	REL_Offspring,
-	REL_Spouse,
-	REL_Sibling,
+	REL_Self,		// individual himself or herself.
+	REL_Offspring,	// All offspring with all spouses (if there are more than one spouse)
+	REL_Spouse,		// All spouses (with at least one offspring)
+	REL_FullSibling,// Siblings who share two parents
+	REL_Sibling,	// Siblings who share at least one parent
 };
 
+enum SexChoice
+{
+	NoSex = 0,
+	Male = 1,
+	Female = 2,
+	OppsiteSex = 3
+};
 
 namespace simuPOP {
 
@@ -1331,7 +1339,7 @@ public:
 	/// Find relatives of each individual and fill the given information fields with their indexes.
 	/** This function locates relatives of each individual and store their indexes
 	 * in given information fields.
-	 * \param type Relative type, can be
+	 * \param relType Relative type, can be
 			\li REL_Self index of individual themselfs
 			\li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
 				having an offspring with shared \c parentFields. If more than one \c infoFields is given,
@@ -1339,12 +1347,26 @@ public:
 			\li REL_Offspring index of offspring in the offspring generation. If only one
 				parent is given, only paternal or maternal relationship is considered. For example,
 				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
-	 * \param infoFields information fields to hold relatives. If more than one relatives
+			\li REL_FullSibling all siblings with the same parents
+			\li REL_Sibling all sibs with at least one shared parent
+	 * \param infoFields information fields to hold relatives. The number of these fields
+	 *		limits the number of relatives to locate.
+	 * \param gen Find relatives for individuals for how many generations. Default to -1,
+	 *      meaning for all generations. If a non-negative number is given, up till generation
+	 *      gen will be processed.
+	 * \param sex Whether or not only locate relative or certain sex. It can be
+	 *		NoSex (do not care, default), Male, Female, or OppositeSex (only locate 
+	 *      relatives of opposite sex.
+	 *
 	 * \param parentFields information fields that stores parental indexes. Default to
 	 *		['father_idx', 'mother_idx']
 	 * are found, only the first several relatives are stored.
+	 * 
 	*/
-	void locateRelatives(RelativeType type, const vectorstr & infoFields,
+	void locateRelatives(RelativeType relType, const vectorstr & infoFields,
+		int gen = -1, SexChoice sex = NoSex,
+		const vectorstr & relFields = vectorstr(), int fromGen = -1, 
+		const vectorstr & fromFields = vectorstr(), 
 		const vectorstr & parentFields = vectorstr(POP_ParentsFields, POP_ParentsFields + 2));
 
 	/// set ancestral depth
