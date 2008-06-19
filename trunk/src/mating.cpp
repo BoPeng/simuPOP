@@ -879,7 +879,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 		for (size_t i = 0; i < infoSz; ++i)
 			// we only choose individual with an valid information field
 			// and is of opposite sex
-			if (it->info(i) >= 0 && pop.ind(it->intInfo(i)).sex() != mySex) {
+			if (it->info(m_infoIdx[i]) >= 0 && pop.ind(it->intInfo(m_infoIdx[i])).sex() != mySex) {
 				m_index.push_back(it.rawIter());
 				if (m_selection)
 					fitness.push_back(it->info(fit_id));
@@ -888,8 +888,10 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	}
 	//
 	m_degenerate = m_index.empty();
+	DBG_WARNING(m_degenerate, "There is no valid index for any individual.\n"
+		                      "A second parent will be chosen from the whole population");
 	if (m_degenerate) {
-		for (; it.valid(); ++it) {
+		for (it = pop.indBegin(sp); it.valid(); ++it) {
 			m_index.push_back(it.rawIter());
 			if (m_selection)
 				fitness.push_back(it->info(fit_id));
@@ -929,13 +931,20 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 	}
 	// the way this parent chooser is initialized guranttees that
 	// theres is at lest one valid field.
-	vector<individual*> validInds;
-	for (size_t  i = 0; i < m_infoIdx.size(); ++i) {
-		RawIndIterator par2 = basePtr + par1->intInfo(m_infoIdx[i]);
+	vector<individual *> validInds;
+	for (size_t i = 0; i < m_infoIdx.size(); ++i) {
+		int info = par1->intInfo(m_infoIdx[i]);
+		if (info < 0)
+			continue;
+		RawIndIterator par2 = basePtr + info;
 		if (par2->sex() != sex1)
-			validInds.push_back(&*par2);
+			validInds.push_back(& * par2);
 	}
+	DBG_FAILIF(validInds.empty(), SystemError,
+		"No valid relative is found");
 	individual * par2 = validInds[rng().randInt(validInds.size())];
+	DBG_DO(DBG_MATING, cout << "infoParentsChooser: par1: " << par1 - & * basePtr
+		                    << " par2: " << par2 - & * basePtr << endl);
 	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 }
 
@@ -1179,7 +1188,7 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * parent = pc.chooseParent(pop.rawIndBegin(subPop));
+		individual * parent = pc.chooseParent(pop.rawIndBegin());
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
 		//
@@ -1211,7 +1220,7 @@ bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
 	// choose a parent and genereate m_numOffspring offspring
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * parent = pc.chooseParent(pop.rawIndBegin(subPop));
+		individual * parent = pc.chooseParent(pop.rawIndBegin());
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
 		//
@@ -1249,7 +1258,7 @@ bool baseRandomMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin(subPop));
+		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin());
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
@@ -1281,7 +1290,7 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin(subPop));
+		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin());
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
@@ -1348,7 +1357,7 @@ bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents(pop.rawIndBegin(subPop));
+		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents(pop.rawIndBegin());
 		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
 			ValueError, "Imcompatible parents chooser and offspring generator");
 		//
@@ -1382,7 +1391,7 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		individual * const parent = pc.chooseParent(pop.rawIndBegin(subPop));
+		individual * const parent = pc.chooseParent(pop.rawIndBegin());
 		//
 		DBG_FAILIF(parent == NULL, ValueError,
 			"Random parent chooser returns invalid parent");
@@ -1423,6 +1432,44 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 }
 
 
+consanguineousMating::consanguineousMating(
+                                           const vectorstr & relativeFields,
+                                           PyObject * func,
+                                           PyObject * param,
+                                           bool replacement,
+                                           bool replenish,
+                                           double numOffspring,
+                                           PyObject * numOffspringFunc,
+                                           UINT maxNumOffspring,
+                                           UINT mode,
+                                           double sexParam,
+                                           UINT sexMode,
+                                           vectorlu newSubPopSize,
+                                           PyObject * newSubPopSizeFunc,
+                                           string newSubPopSizeExpr,
+                                           bool contWhenUniSex,
+                                           SubPopID subPop,
+                                           SubPopID virtualSubPop,
+                                           double weight)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+	m_offspringGenerator(numOffspring, numOffspringFunc,
+	                     maxNumOffspring, mode, sexParam, sexMode),
+	m_relativeFields(relativeFields),
+	m_func(func), m_param(param),
+	m_replacement(replacement),
+	m_replenish(replenish)
+{
+	if (func) {
+		if (!PyCallable_Check(func))
+			throw ValueError("Passed variable is not a callable Python function.");
+		Py_XINCREF(func);
+	}
+
+	if (param != NULL)
+		Py_XINCREF(param);
+}
+
+
 void consanguineousMating::preparePopulation(population & pop)
 {
 	if (m_func) {
@@ -1430,7 +1477,7 @@ void consanguineousMating::preparePopulation(population & pop)
 		// if pop is valid?
 		if (popObj == NULL)
 			throw SystemError("Could not pass population to the provided function. \n"
-			              "Compiled with the wrong version of SWIG?");
+				              "Compiled with the wrong version of SWIG?");
 
 		// parammeter list, ref count increased
 		bool resBool;
@@ -1447,8 +1494,8 @@ void consanguineousMating::preparePopulation(population & pop)
 
 
 bool consanguineousMating::mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator *> & ops)
+                                      RawIndIterator offBegin, RawIndIterator offEnd,
+                                      vector<baseOperator *> & ops)
 {
 	// nothing to do.
 	if (offBegin == offEnd)
@@ -1457,13 +1504,13 @@ bool consanguineousMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	infoParentsChooser pc(m_infoFields, m_replacement, m_replenish);
+	infoParentsChooser pc(m_relativeFields, m_replacement, m_replenish);
 	pc.initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
 	while (it != offEnd) {
-		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin(subPop));
+		parentChooser::individualPair const parents = pc.chooseParents(pop.rawIndBegin());
 		DBG_FAILIF(parents.first == NULL || parents.second == NULL, ValueError,
 			"Random parents chooser returns invalid parent");
 		//
@@ -1787,7 +1834,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 
 			// randomly choose parents
-			parentChooser::individualPair parents = pc.chooseParents(pop.rawIndBegin(sp));
+			parentChooser::individualPair parents = pc.chooseParents(pop.rawIndBegin());
 
 			// generate m_numOffspring offspring per mating
 			// record family size (this may be wrong for the last family)
@@ -2012,10 +2059,10 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 		individual * dad = NULL;
 		individual * mom = NULL;
 		if (m_parentChooser->numParents() == 1)
-			dad = m_parentChooser->chooseParent(pop.rawIndBegin(subPop));
+			dad = m_parentChooser->chooseParent(pop.rawIndBegin());
 		// 0 or 2, that is to say, dad or mom can be NULL
 		else {
-			parentChooser::individualPair const parents = m_parentChooser->chooseParents(pop.rawIndBegin(subPop));
+			parentChooser::individualPair const parents = m_parentChooser->chooseParents(pop.rawIndBegin());
 			dad = parents.first;
 			mom = parents.second;
 		}
@@ -2123,7 +2170,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
 		}
 		DBG_DO(DBG_DEVEL, cout << "Positive mating scheme weights: " << w_pos << '\n'
-			                    << "Negative mating scheme weights: " << w_neg << endl);
+			                   << "Negative mating scheme weights: " << w_neg << endl);
 
 		// weight.
 		double overall_pos = std::accumulate(w_pos.begin(), w_pos.end(), 0.);
@@ -2145,10 +2192,10 @@ bool heteroMating::mate(population & pop, population & scratch,
 				all -= vspSize[i];
 			}
 		}
-        if (fcmp_eq(overall_neg, 1.0) && all != 0) { // numerical problem?
-            vspSize[m.size() - 1] += all;
-            all = 0;
-        }
+		if (fcmp_eq(overall_neg, 1.0) && all != 0) { // numerical problem?
+			vspSize[m.size() - 1] += all;
+			all = 0;
+		}
 		// then count positive ones
 		ULONG all_pos = all;
 		for (size_t i = 0; i < m.size(); ++i) {
@@ -2174,7 +2221,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 				}
 		}
 		DBG_DO(DBG_DEVEL, cout << "VSP sizes in subpop " << sp << " is "
-			                    << vspSize << endl);
+			                   << vspSize << endl);
 
 		// it points to the first mating scheme.
 		it = m.begin();

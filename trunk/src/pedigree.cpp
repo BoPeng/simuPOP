@@ -38,20 +38,20 @@ namespace simuPOP {
 const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
 
 #define CHECK_PARENTAL() DBG_FAILIF(m_numParents != 2, ValueError, \
-		"Only pedigree with two parents have maternal information")
+	"Only pedigree with two parents have maternal information")
 
 #define CHECK_GEN(gen) DBG_FAILIF(gen >= m_paternal.size(), IndexError, \
-		"Generation number " + toStr(gen) + " out of range (<" \
-		+ toStr(m_paternal.size()) + ")")
+	"Generation number " + toStr(gen) + " out of range (<" \
+	+ toStr(m_paternal.size()) + ")")
 
 #define CHECK_INDEX(gen, idx) DBG_FAILIF(idx >= m_paternal[gen].size(), \
-		IndexError,	"Individual index out of range.")
+	IndexError, "Individual index out of range.")
 
 #define CHECK_SUBPOP(gen, subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= m_pedSize[gen].size(), \
-		IndexError,	"Subpopulation index out of bound")
+	IndexError, "Subpopulation index out of bound")
 
 #define CHECK_SUBPOP_INDEX(gen, subPop, idx) DBG_FAILIF(idx >= m_pedSize[gen][subPop], \
-		IndexError, "Individual index out of bound")
+	IndexError, "Individual index out of bound")
 
 
 pedigree::pedigree(int numParents, const string & pedfile)
@@ -259,6 +259,7 @@ ULONG pedigree::subPopSize(ULONG gen, SubPopID subPop)
 void pedigree::addGen(const vectorlu & sizes)
 {
 	ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
+
 	m_paternal.push_back(vectorlu(popSize));
 	if (m_numParents == 2)
 		m_maternal.push_back(vectorlu(popSize));

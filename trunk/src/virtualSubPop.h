@@ -40,7 +40,7 @@ class population;
 /**
  * A class to specify virtual subpopulation, which is composed of a subPopulation
  * ID and a virtual subpopulation ID.
- * 
+ *
  */
 class vsp
 {
@@ -49,6 +49,7 @@ public:
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
 	{
 	}
+
 
 	SubPopID subPop() { return m_subPop; }
 	SubPopID virtualSubPop() { return m_virtualSubPop; }

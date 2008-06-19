@@ -10,7 +10,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
 import unittest, os, sys, random, math, sets
@@ -94,14 +94,27 @@ class TestMatingSchemes(unittest.TestCase):
 
     def testConsanguineousMating(self):
         'Testing consanguineous mating'
+        parFields = ['father_idx', 'mother_idx']
+        sibFields = ['sibling%d' % x for x in range(4)]
+        offFields = ['offspring%d' % x for x in range(4)]
+        cousinFields = ['cousin%d' % x for x in range(4)]
         pop = population([100, 1000], loci=[10], ancestralDepth=3,
-            infoFields=['father_idx', 'mother_idx', 'offspring1', 'offspring2', 'cousin'])
-        simu = simulator(pop,
-            consanguineousMating(
+            infoFields = parFields + sibFields + offFields + cousinFields)
+        def findCousin(pop):
+            pop.locateRelatives(REL_Offspring, offFields);
+            pop.locateRelatives(REL_FullSibling, sibFields);
+            pop.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
+                pathFields = [parFields, sibFields, offFields],
+                resultFields = cousinFields)
+        #
+        simu = simulator(pop, consanguineousMating(relativeFields = cousinFields,
+                func=findCousin, numOffspring=2)) 
         simu.evolve(
+            preOps = [initByFreq([0.2, 0.8])],
             ops = [parentsTagger()],
             gen = 10
         )
+        self.assertEqual(simu.gen(), 10)
 
         
 ##     def testTrajectory(self):
