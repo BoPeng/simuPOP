@@ -1363,6 +1363,114 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::consanguineousMating "
+
+Description:
+
+    a  mating scheme of consanguineous  mating
+
+Details:
+
+    In this  mating scheme, a parent is choosen randomly and mate with
+    a relative that has been located and written to a number of
+    information fields. What this  mating scheme do are1. before
+    mating, call  population::locateRelatives
+    population::setIndexOfRelatives to store indexes of relatives to
+    some given information fields 2. use  infoParentsChooser to choose
+    parents and use  mendelianOffspringGenerator to produce
+    offspring.If a different offspring generator is desired, a
+    pyMating scheme should be used, with locateRelatives and
+    setIndexOfRelatives prepared in a Python operator.
+
+"; 
+
+%feature("docstring") simuPOP::consanguineousMating::consanguineousMating "
+
+Description:
+
+    create a consanguineous  mating scheme
+
+Usage:
+
+    consanguineousMating(relativeFields=[], func=None, param=None,
+      replacement=False, replenish=True, numOffspring=1.,
+      numOffspringFunc=None, maxNumOffspring=0,
+      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
+      newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
+      contWhenUniSex=True, subPop=InvalidSubPopID,
+      virtualSubPop=InvalidSubPopID, weight=0)
+
+Details:
+
+    This  mating scheme randomly choose a parent and then choose
+    his/her spouse from indexes stored in infoFields. Please refer to
+    infoParentsChooser and  mendelianOffspringGenerator for other
+    parameters.
+
+Arguments:
+
+    relativeFields: The information fields that stores indexes to
+                    other individuals in a  population. If more than
+                    one valid (positive value) indexes exist, a random
+                    index will be chosen. (c.f.  infoParentsChooser )
+                    If there is no  individual having any valid index,
+                    the second parent will be chosen randomly from the
+                    whole  population.
+    func:           A python function that can be used to prepare the
+                    indexes of these information fields. For example,
+                    functions  population::locateRelatives and/or
+                    population::setIndexesOfRelatives can be used to
+                    locate certain types of relatives of each
+                    individual.
+    param:          An optional parameter that can be passed to func.
+
+"; 
+
+%feature("docstring") simuPOP::consanguineousMating::~consanguineousMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~consanguineousMating()
+
+"; 
+
+%ignore simuPOP::consanguineousMating::consanguineousMating(const consanguineousMating &rhs);
+
+%feature("docstring") simuPOP::consanguineousMating::clone "
+
+Description:
+
+    deep copy of a consanguineous  mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::consanguineousMating::isCompatible(const population &pop) const ;
+
+%feature("docstring") simuPOP::consanguineousMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the consanguineous  mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::consanguineousMating::preparePopulation(population &pop);
+
+%ignore simuPOP::consanguineousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+
 %feature("docstring") simuPOP::continueIf "
 
 Description:
@@ -3894,6 +4002,67 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::infoParentsChooser "
+
+Details:
+
+    This parents chooser choose an  individual randomly, but choose
+    his/her spouse from a given set of information fields, which
+    stores indexes of individuals in the same generation. A field will
+    be ignored if its value is negative, or if sex is
+    compatible.Depending on what indexes are stored in these
+    information fields, this parent chooser can be used to implement
+    consanguineous  mating where close relatives are located for each
+    individual, or certain non-random  mating schemes where each
+    individual can only mate with a small number of pre-determinable
+    individuals.This parent chooser (currently) uses
+    randomParentChooser to choose one parent and randomly choose
+    another one from the information fields. Because of potentially
+    non-even distribution of valid information fields, the overall
+    process may not be as random as expected, especially when
+    selection is applied.Note: if there is no valid  individual, this
+    parents chooser works like a double  parentChooser.
+
+"; 
+
+%feature("docstring") simuPOP::infoParentsChooser::infoParentsChooser "
+
+Description:
+
+    simuPOP::infoParentsChooser::infoParentsChooser
+
+Usage:
+
+    infoParentsChooser(infoFields=[], replacement=True,
+      replenish=False)
+
+Arguments:
+
+    infoFields:     information fields that store index of matable
+                    individuals.
+    replacement:    if replacement is false, a parent can not be
+                    chosen more than once.
+    replenish:      if all parent has been chosen, choose from the
+                    whole parental  population again.
+
+"; 
+
+%feature("docstring") simuPOP::infoParentsChooser::clone "
+
+Description:
+
+    simuPOP::infoParentsChooser::clone
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::infoParentsChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::infoParentsChooser::chooseParents(RawIndIterator basePtr);
+
 %feature("docstring") simuPOP::InformationIterator "
 
 Details:
@@ -5547,6 +5716,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::mating::preparePopulation(population &pop);
+
 %ignore simuPOP::mating::submitScratch(population &pop, population &scratch);
 
 %ignore simuPOP::mating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
@@ -7042,9 +7213,9 @@ Usage:
 
 %ignore simuPOP::parentChooser::numParents();
 
-%ignore simuPOP::parentChooser::chooseParent();
+%ignore simuPOP::parentChooser::chooseParent(RawIndIterator basePtr);
 
-%ignore simuPOP::parentChooser::chooseParents();
+%ignore simuPOP::parentChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::parentChooser::~parentChooser "
 
@@ -7892,7 +8063,7 @@ Usage:
 
 %ignore simuPOP::pedigreeParentsChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::pedigreeParentsChooser::chooseParents();
+%ignore simuPOP::pedigreeParentsChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::penetrance "
 
@@ -9631,8 +9802,8 @@ Description:
 
 Usage:
 
-    x.locateRelatives(relType, infoFields, gen=-1, sex=AnySex,
-      parentFields=[\"father_idx\", \"mother_idx\"])
+    x.locateRelatives(relType, relFields, gen=-1, relSex=AnySex,
+      parentFields=[])
 
 Details:
 
@@ -9658,14 +9829,14 @@ Arguments:
                     parents
                     * REL_Sibling all sibs with at least one shared
                     parent
-    infoFields:     information fields to hold relatives. The number
+    relFields:      information fields to hold relatives. The number
                     of these fields limits the number of relatives to
                     locate.
     gen:            Find relatives for individuals for how many
                     generations. Default to -1, meaning for all
                     generations. If a non-negative number is given, up
                     till generation gen will be processed.
-    sex:            Whether or not only locate relative or certain
+    relSex:         Whether or not only locate relative or certain
                     sex. It can be AnySex (do not care, default),
                     MaleOnly, FemaleOnly, or OppositeSex (only locate
                     relatives of opposite sex.
@@ -9683,8 +9854,8 @@ Description:
 
 Usage:
 
-    x.setIndexesOfRelatives(pathGen, pathFields, pathSex,
-      resultFields)
+    x.setIndexesOfRelatives(pathGen, pathFields, pathSex=[],
+      resultFields=[])
 
 Details:
 
@@ -11132,7 +11303,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyParentsChooser::chooseParents();
+%ignore simuPOP::pyParentsChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::pyPenetrance "
 
@@ -11945,7 +12116,7 @@ Usage:
 
 %ignore simuPOP::randomParentChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::randomParentChooser::chooseParent();
+%ignore simuPOP::randomParentChooser::chooseParent(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::randomParentsChooser "
 
@@ -12023,7 +12194,7 @@ Usage:
 
 %ignore simuPOP::randomParentsChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::randomParentsChooser::chooseParents();
+%ignore simuPOP::randomParentsChooser::chooseParents(RawIndIterator basePtr);
 
 %ignore simuPOP::randomParentsChooser::numMale();
 
@@ -13315,7 +13486,7 @@ Usage:
 
 %ignore simuPOP::sequentialParentChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::sequentialParentChooser::chooseParent();
+%ignore simuPOP::sequentialParentChooser::chooseParent(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::sequentialParentsChooser "
 
@@ -13353,7 +13524,7 @@ Usage:
 
 %ignore simuPOP::sequentialParentsChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::sequentialParentsChooser::chooseParents();
+%ignore simuPOP::sequentialParentsChooser::chooseParents(RawIndIterator basePtr);
 
 %ignore simuPOP::sequentialParentsChooser::numMale();
 

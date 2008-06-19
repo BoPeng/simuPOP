@@ -1497,7 +1497,7 @@ class TestPopulation(unittest.TestCase):
             randomMating(numOffspring=2))
         simu.evolve(ops=[parentsTagger()], gen=10)
         pop = simu.getPopulation(0, True)
-        pop.locateRelatives(REL_Offspring, offFields)
+        self.assertEqual(pop.locateRelatives(REL_Offspring, offFields), True)
         for field in offFields:
             for ans in range(1, pop.ancestralDepth()):
                 # parental generation
@@ -1505,10 +1505,14 @@ class TestPopulation(unittest.TestCase):
                 off = pop.indInfo(field)
                 pop.useAncestralPop(ans-1)
                 for idx,ind in enumerate(off):
+                    # idx is for the parental generation
+                    # ind is for the offspring generation
+                    # one of ind's parent should be idx.
                     if ind == -1:
                         continue
-                    self.assertEqual(idx in [pop.individual(int(ind)).info('father_idx'),
-                        pop.individual(int(ind)).info('mother_idx')], True)
+                    self.assertEqual(idx in 
+                        [pop.ancestor(int(ind), ans-1).info('father_idx'),
+                        pop.ancestor(int(ind), ans-1).info('mother_idx')], True)
         # FIXME: test single parent case
     
 

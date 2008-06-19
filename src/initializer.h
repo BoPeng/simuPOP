@@ -65,7 +65,7 @@ public:
 	            int atPloidy = -1,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-				const vectorstr & infoFields = vectorstr())
+	            const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
 		m_subPop(subPop), m_indRange(indRange),
 		m_atLoci(loci), m_atPloidy(atPloidy)
@@ -124,11 +124,11 @@ protected:
 
 
 /** An operator to initialize individual sex. For convenience, this
-operator is included by other initializers such as initByFreq, initByValue,
-or pyInit.
-<funcForm>InitSex</funcForm>
+   operator is included by other initializers such as initByFreq, initByValue,
+   or pyInit.
+   <funcForm>InitSex</funcForm>
 
-*/
+ */
 class initSex : public initializer
 {
 public:
@@ -136,18 +136,18 @@ public:
 	/**
 	 \param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
 	 \param sex a list of sexes (Male or Female) and will be applied to individuals in in turn.
-		If specified, parameter \c maleFreq is ignored.
+	   	If specified, parameter \c maleFreq is ignored.
 	 */
 	initSex(double maleFreq = 0.5, const vectori & sex = vectori(),
-			const vectoru & subPop = vectoru(),
-	            intMatrix indRange = intMatrix(),
-	            const vectoru & loci = vectoru(),
-	            int atPloidy = -1,
-	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
-				const vectorstr & infoFields = vectorstr())
+	        const vectoru & subPop = vectoru(),
+	        intMatrix indRange = intMatrix(),
+	        const vectoru & loci = vectoru(),
+	        int atPloidy = -1,
+	        int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	        vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	        const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci, atPloidy, stage, begin, end,
-			step, at, rep, grp, infoFields),
+		              step, at, rep, grp, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex)
 	{
 		if (!m_sex.empty()) {
@@ -177,6 +177,7 @@ public:
 	{
 		return "<simuPOP::initSex>";
 	}
+
 
 	/// apply this operator to population \c pop
 	bool apply(population & pop);
@@ -224,7 +225,7 @@ public:
 	           int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		              stage, begin, end, step, at, rep, grp, infoFields),
+		          stage, begin, end, step, at, rep, grp, infoFields),
 		m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
 	{
 
@@ -311,7 +312,7 @@ public:
 	            int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		              stage, begin, end, step, at, rep, grp, infoFields),
+		          stage, begin, end, step, at, rep, grp, infoFields),
 		m_value(value), m_proportion(proportions)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
@@ -464,7 +465,7 @@ public:
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
 	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		              stage, begin, end, step, at, rep, grp, infoFields)
+		          stage, begin, end, step, at, rep, grp, infoFields)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
 			IndexError, "male frequency in the population should be in the range of [0,1]");

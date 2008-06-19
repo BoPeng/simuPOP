@@ -80,15 +80,15 @@ public:
 	   	parameter \c mode. \c rate should be an m by n matrix. If a number is given,
 	   	the migration rate will be a \c m by \c n matrix of value \c r
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-	 \param fromSubPop an array of 'from' (virtual) subpopulations. Default to all. 
-		If a single (virtual) subpopulation is specified, <tt>[]</tt> can be ignored.
-		A virtual subpopulation should be as <tt>vsp(subPop, virtualSubPop)</tt>. For example,
-		if you define a virtual subpopulation by sex, you can use
-		<tt>fromSubPop=vsp(0, 0)</tt> to choose migrants only from the first virtual subpopulation
-		of subpopulation 0.
+	 \param fromSubPop an array of 'from' (virtual) subpopulations. Default to all.
+	   	If a single (virtual) subpopulation is specified, <tt>[]</tt> can be ignored.
+	   	A virtual subpopulation should be as <tt>vsp(subPop, virtualSubPop)</tt>. For example,
+	   	if you define a virtual subpopulation by sex, you can use
+	   	<tt>fromSubPop=vsp(0, 0)</tt> to choose migrants only from the first virtual subpopulation
+	   	of subpopulation 0.
 	 \param toSubPop an array of 'to' subpopulations. Default to all
-		subpopulations. If a single subpopulation is specified,
-		<tt>[]</tt> can be ignored.
+	   	subpopulations. If a single subpopulation is specified,
+	   	<tt>[]</tt> can be ignored.
 	 \param stage default to \c PreMating
 
 	 \note
@@ -201,8 +201,8 @@ public:
 	   	genotype.
 	 \param stage default to \c PreMating
 	 */
-	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc=NULL,
-				int mode = MigrByProbability,
+	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc = NULL,
+	           int mode = MigrByProbability,
 	           vectorvsp fromSubPop = vectorvsp(), vectoru toSubPop = vectoru(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),

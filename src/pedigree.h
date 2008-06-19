@@ -33,23 +33,23 @@ namespace simuPOP {
 
 /// A pedigree manipulation class
 /**
-A pedigree has all the pedigree information that is needed to look at parent
-offspring relationship in a multi-generation population.
+   A pedigree has all the pedigree information that is needed to look at parent
+   offspring relationship in a multi-generation population.
 
-Conceptually, there are n generations with the latest generation being
-generation 0. The number of generations (c.f. gen()) is the number of
-parental generations plus 1. Therefore, each individual can be identified
-by (gen, idx).
+   Conceptually, there are n generations with the latest generation being
+   generation 0. The number of generations (c.f. gen()) is the number of
+   parental generations plus 1. Therefore, each individual can be identified
+   by (gen, idx).
 
-Each individual can have a few properties
-1. mother (c.f. mother())
-2. father (c.f. father(), optional because a pedigree can have only one sex)
-3. subpopulation (if subpopulation structure is given)
-4. sex (c.f. info('sex'))
-5. affection (c.f. info('affection')
-6. arbitrary information fields (c.f. info())
+   Each individual can have a few properties
+   1. mother (c.f. mother())
+   2. father (c.f. father(), optional because a pedigree can have only one sex)
+   3. subpopulation (if subpopulation structure is given)
+   4. sex (c.f. info('sex'))
+   5. affection (c.f. info('affection')
+   6. arbitrary information fields (c.f. info())
 
-*/
+ */
 class pedigree
 {
 private:

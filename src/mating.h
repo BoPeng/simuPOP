@@ -781,50 +781,52 @@ private:
 
 
 /** This parents chooser choose an individual randomly, but choose
-	his/her spouse from a given set of information fields, which stores
-	indexes of individuals in the same generation. A field will be ignored
-	if its value is negative, or if sex is compatible.
+   	his/her spouse from a given set of information fields, which stores
+   	indexes of individuals in the same generation. A field will be ignored
+   	if its value is negative, or if sex is compatible.
 
-	Depending on what indexes are stored in these information fields,
-	this parent chooser can be used to implement consanguineous mating
-	where close relatives are located for each individual, or certain
-	non-random mating schemes where each individual can only mate with a small
-	number of pre-determinable individuals.
-	
-	This parent chooser (currently) uses \c randomParentChooser to choose
-	one parent and randomly choose another one from the information fields.
-	Because of potentially non-even distribution of valid information
-	fields, the overall process may not be as random as expected, especially
-	when selection is applied.
+   	Depending on what indexes are stored in these information fields,
+   	this parent chooser can be used to implement consanguineous mating
+   	where close relatives are located for each individual, or certain
+   	non-random mating schemes where each individual can only mate with a small
+   	number of pre-determinable individuals.
 
-	Note: if there is no valid individual, this parents chooser works like
-	a double parentChooser.
-*/
+   	This parent chooser (currently) uses \c randomParentChooser to choose
+   	one parent and randomly choose another one from the information fields.
+   	Because of potentially non-even distribution of valid information
+   	fields, the overall process may not be as random as expected, especially
+   	when selection is applied.
+
+   	Note: if there is no valid individual, this parents chooser works like
+   	a double parentChooser.
+ */
 class infoParentsChooser : public randomParentChooser
 {
 public:
 	/**
-	\param infoFields information fields that store index of matable
-			individuals.
-	\param replacement if replacement is false, a parent can not
+	 \param infoFields information fields that store index of matable
+	   		individuals.
+	 \param replacement if replacement is false, a parent can not
 	   		be chosen more than once.
-	\param replenish if all parent has been chosen, choose from
+	 \param replenish if all parent has been chosen, choose from
 	   		the whole parental population again.
-	*/
+	 */
 	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
-		bool replacement = true, bool replenish = false) :
+	                   bool replacement = true, bool replenish = false) :
 		randomParentChooser(replacement, replenish),
 		m_infoFields(infoFields), m_degenerate(false)
 	{
 		m_numParents = 2;
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
-			"At least one information field should be provided");
+			"At least one information field should be provided for this infoParentsChooser");
 	}
-	
+
+
 	parentChooser * clone() const
 	{
 		return new infoParentsChooser(*this);
 	}
+
 
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
@@ -1018,8 +1020,9 @@ public:
 		return "<simuPOP::generic mating scheme>";
 	}
 
+
 	/// CPPONLY
-	virtual void preparePopulation(population & pop) {}
+	virtual void preparePopulation(population & pop) { }
 
 	/// CPPONLY
 	/// a common submit procedure is defined.
@@ -1920,77 +1923,59 @@ protected:
    fields. What this mating scheme do are
 
    1. before mating, call
-       population::locateRelatives
-	   population::setIndexOfRelatives
-	to store indexes of relatives to some given information fields
+   	   population::locateRelatives
+   	   population::setIndexOfRelatives
+   	to store indexes of relatives to some given information fields
    2. use infoParentsChooser to choose parents and use mendelianOffspringGenerator
-	to produce offspring.
+   	to produce offspring.
 
-	If a different offspring generator is desired, a pyMating scheme should be
-	used, with locateRelatives and setIndexOfRelatives prepared in a Python
-	operator.
+   	If a different offspring generator is desired, a pyMating scheme should be
+   	used, with locateRelatives and setIndexOfRelatives prepared in a Python
+   	operator.
  */
 class consanguineousMating : public mating
 {
 public:
 	/// create a consanguineous mating scheme
 	/**
-	This mating scheme randomly choose a parent and then choose his/her spouse from indexes
-	stored in \c infoFields.
+	   This mating scheme randomly choose a parent and then choose his/her spouse from indexes
+	   stored in \c infoFields.
 
-	\param infoFields The information fields that stores indexes to other individuals
-		in a population. If more than one valid (positive value) indexes exist, a random
-		index will be chosen. (c.f. \c infoParentsChooser ) If there is no individual
-		having any valid index, the second parent will be chosen randomly from the
-		whole population.
-	
-	\param func A python function that can be used to prepare the indexes of these
-		information fields. For example, functions population::locateRelatives and/or
-		population::setIndexesOfRelatives can be used to locate certain types of relatives
-		of each individual.
+	 \param relativeFields The information fields that stores indexes to other individuals
+	   	in a population. If more than one valid (positive value) indexes exist, a random
+	   	index will be chosen. (c.f. \c infoParentsChooser ) If there is no individual
+	   	having any valid index, the second parent will be chosen randomly from the
+	   	whole population.
 
-	\param param An optional parameter that can be passed to \c func.
-	
-	Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
-	other parameters.
+	 \param func A python function that can be used to prepare the indexes of these
+	   	information fields. For example, functions population::locateRelatives and/or
+	   	population::setIndexesOfRelatives can be used to locate certain types of relatives
+	   	of each individual.
+
+	 \param param An optional parameter that can be passed to \c func.
+
+	   Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
+	   other parameters.
 	 */
 	consanguineousMating(
-			const vectorstr & infoFields = vectorstr(),
-			PyObject * func = NULL,
-			PyObject * param = NULL,
-			double numOffspring = 1.,
-			bool replacement = false,
-			bool replenish = true,
-	           PyObject * numOffspringFunc = NULL,
-	           UINT maxNumOffspring = 0,
-	           UINT mode = MATE_NumOffspring,
-	           double sexParam = 0.5,
-	           UINT sexMode = MATE_RandomSex,
-	           vectorlu newSubPopSize = vectorlu(),
-	           PyObject * newSubPopSizeFunc = NULL,
-	           string newSubPopSizeExpr = "",
-	           bool contWhenUniSex = true,
-	           SubPopID subPop = InvalidSubPopID,
-	           SubPopID virtualSubPop = InvalidSubPopID,
-	           double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
-		m_offspringGenerator(numOffspring, numOffspringFunc,
-		                     maxNumOffspring, mode, sexParam, sexMode),
-			m_infoFields(infoFields),
-			m_func(func), m_param(param),
-			m_replacement(replacement),
-			m_replenish(replenish)
-	{
-		if (func) {
-			if (!PyCallable_Check(func))
-				throw ValueError("Passed variable is not a callable Python function.");
-			Py_XINCREF(func);
-		}
-
-		if (param != NULL)
-			Py_XINCREF(param);
-	}
-
+	                     const vectorstr & relativeFields = vectorstr(),
+	                     PyObject * func = NULL,
+	                     PyObject * param = NULL,
+	                     bool replacement = false,
+	                     bool replenish = true,
+	                     double numOffspring = 1.,
+	                     PyObject * numOffspringFunc = NULL,
+	                     UINT maxNumOffspring = 0,
+	                     UINT mode = MATE_NumOffspring,
+	                     double sexParam = 0.5,
+	                     UINT sexMode = MATE_RandomSex,
+	                     vectorlu newSubPopSize = vectorlu(),
+	                     PyObject * newSubPopSizeFunc = NULL,
+	                     string newSubPopSizeExpr = "",
+	                     bool contWhenUniSex = true,
+	                     SubPopID subPop = InvalidSubPopID,
+	                     SubPopID virtualSubPop = InvalidSubPopID,
+	                     double weight = 0);
 
 	/// destructor
 	~consanguineousMating()
@@ -2001,17 +1986,23 @@ public:
 			Py_DECREF(m_param);
 	}
 
-	
+
+	/// CPPONLY
 	consanguineousMating(const consanguineousMating & rhs) :
 		mating(rhs),
+		m_offspringGenerator(rhs.m_offspringGenerator),
+		m_relativeFields(rhs.m_relativeFields),
 		m_func(rhs.m_func),
-		m_param(rhs.m_param)
+		m_param(rhs.m_param),
+		m_replacement(rhs.m_replacement),
+		m_replenish(rhs.m_replenish)
 	{
 		if (m_func)
 			Py_INCREF(m_func);
 		if (m_param)
 			Py_INCREF(m_param);
 	}
+
 
 	/// deep copy of a consanguineous mating scheme
 	virtual mating * clone() const
@@ -2037,6 +2028,7 @@ public:
 		return "<simuPOP::consanguineous mating>";
 	}
 
+
 	/// CPPONLY
 	virtual void preparePopulation(population & pop);
 
@@ -2045,15 +2037,13 @@ public:
 		RawIndIterator offBegin, RawIndIterator offEnd,
 		vector<baseOperator *> & ops);
 
-protected:
-	mendelianOffspringGenerator m_offspringGenerator;
-
 private:
-	vectorstr       m_infoFields;
-	PyObject *      m_func;
-	PyObject *      m_param;
-	bool			m_replacement;
-	bool			m_replenish;
+	mendelianOffspringGenerator m_offspringGenerator;
+	vectorstr m_relativeFields;
+	PyObject * m_func;
+	PyObject * m_param;
+	bool m_replacement;
+	bool m_replenish;
 };
 
 

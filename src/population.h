@@ -65,18 +65,16 @@ using boost::serialization::make_nvp;
 #include "individual.h"
 #include "virtualSubPop.h"
 
-enum RelativeType
-{
-	REL_None,       // do nothing
-	REL_Self,		// individual himself or herself.
-	REL_Offspring,	// All offspring with all spouses (if there are more than one spouse)
-	REL_Spouse,		// All spouses (with at least one offspring)
-	REL_FullSibling,// Siblings who share two parents
-	REL_Sibling,	// Siblings who share at least one parent
+enum RelativeType {
+	REL_None,           // do nothing
+	REL_Self,           // individual himself or herself.
+	REL_Offspring,      // All offspring with all spouses (if there are more than one spouse)
+	REL_Spouse,         // All spouses (with at least one offspring)
+	REL_FullSibling,    // Siblings who share two parents
+	REL_Sibling,        // Siblings who share at least one parent
 };
 
-enum SexChoice
-{
+enum SexChoice {
 	AnySex = 0,
 	MaleOnly = 1,
 	FemaleOnly = 2,
@@ -491,38 +489,38 @@ public:
 
 	/// refrence to an individual \c ind in an ancestral generation
 	/**
-	This function gives access to individuals in an ancestral generation.
-	It will refer to the correct generation even if the current
-	generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	always individual(ind).
-	*/
+	   This function gives access to individuals in an ancestral generation.
+	   It will refer to the correct generation even if the current
+	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	   always individual(ind).
+	 */
 	individual & ancestor(ULONG ind, UINT gen);
 
 	/// refrence to an individual \c ind in an ancestral generation
 	/**
-	This function gives access to individuals in an ancestral generation.
-	It will refer to the correct generation even if the current
-	generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	always individual(ind).
-	*/
+	   This function gives access to individuals in an ancestral generation.
+	   It will refer to the correct generation even if the current
+	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	   always individual(ind).
+	 */
 	const individual & ancestor(ULONG ind, UINT gen) const;
 
 	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
 	/**
-	This function gives access to individuals in an ancestral generation.
-	It will refer to the correct generation even if the current
-	generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	always individual(ind).
-	*/
+	   This function gives access to individuals in an ancestral generation.
+	   It will refer to the correct generation even if the current
+	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	   always individual(ind).
+	 */
 	individual & ancestor(ULONG ind, UINT subPop, UINT gen);
 
 	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
 	/**
-	This function gives access to individuals in an ancestral generation.
-	It will refer to the correct generation even if the current
-	generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	always individual(ind).
-	*/
+	   This function gives access to individuals in an ancestral generation.
+	   It will refer to the correct generation even if the current
+	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
+	   always individual(ind).
+	 */
 	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const;
 
 	/// return an iterator that can be used to iterate through all individuals
@@ -952,14 +950,14 @@ public:
 	   generations as well.
 	 \sa individual::setSubPopID, individual::subPopID
 	 */
-	void setIndSubPopID(const vectori & id, bool ancestralPops=false);
+	void setIndSubPopID(const vectori & id, bool ancestralPops = false);
 
 	/// set subpopulation ID of each individual with their current subpopulation ID
 	/**
 	 \param ancestralPops If true (default to False), set subpop id for ancestral
 	   generations as well.
-	*/
-	void setIndSubPopIDWithID(bool ancestralPops=false);
+	 */
+	void setIndSubPopIDWithID(bool ancestralPops = false);
 
 	/// move individuals to subpopulations according to individual subpopulation IDs
 	/**
@@ -1339,66 +1337,68 @@ public:
 	/** This function locates relatives of each individual and store their indexes
 	 * in given information fields.
 	 * \param relType Relative type, can be
-			\li REL_Self index of individual themselfs
-			\li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
-				having an offspring with shared \c parentFields. If more than one \c infoFields is given,
-				multiple spouses can be identified.
-			\li REL_Offspring index of offspring in the offspring generation. If only one
-				parent is given, only paternal or maternal relationship is considered. For example,
-				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
-			\li REL_FullSibling all siblings with the same parents
-			\li REL_Sibling all sibs with at least one shared parent
+	 \li REL_Self index of individual themselfs
+	 \li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
+	   			having an offspring with shared \c parentFields. If more than one \c infoFields is given,
+	   			multiple spouses can be identified.
+	 \li REL_Offspring index of offspring in the offspring generation. If only one
+	   			parent is given, only paternal or maternal relationship is considered. For example,
+	   			<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
+	 \li REL_FullSibling all siblings with the same parents
+	 \li REL_Sibling all sibs with at least one shared parent
 	 * \param relFields information fields to hold relatives. The number of these fields
 	 *		limits the number of relatives to locate.
 	 * \param gen Find relatives for individuals for how many generations. Default to -1,
 	 *      meaning for all generations. If a non-negative number is given, up till generation
 	 *      gen will be processed.
 	 * \param relSex Whether or not only locate relative or certain sex. It can be
-	 *		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate 
+	 *		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate
 	 *      relatives of opposite sex.
 	 * \param parentFields information fields that stores parental indexes. Default to
 	 *		['father_idx', 'mother_idx']
-	*/
-	void locateRelatives(RelativeType relType, const vectorstr & relFields,
+	 * \return if relatives are successfully located. Possible problems are
+	 *      father and mother indexes are not available, or insufficient parental generations.
+	 */
+	bool locateRelatives(RelativeType relType, const vectorstr & relFields,
 		int gen = -1, SexChoice relSex = AnySex,
 		const vectorstr & parentFields = vectorstr());
 
 	/// Trace a relative path in a population and record the result in the given information fields.
 	/**
-	\param pathGen A list of generations that form a relative path. This array is one element longer
-		than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
-		of information fields path_i.
-	\param pathFields A list of list of information fields forming a path to trace a certain
-		type of relative.
-	\param resultFields Where to store located relatives. Note that the result will be saved
-		in the starting generation specified in \c pathGen[0], which is usually 0.
-	\param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
-		that is used to choose individuals at each step. Default to AnySex.
+	 \param pathGen A list of generations that form a relative path. This array is one element longer
+	   	than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
+	   	of information fields path_i.
+	 \param pathFields A list of list of information fields forming a path to trace a certain
+	   	type of relative.
+	 \param resultFields Where to store located relatives. Note that the result will be saved
+	   	in the starting generation specified in \c pathGen[0], which is usually 0.
+	 \param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
+	   	that is used to choose individuals at each step. Default to AnySex.
 
-	For example,
-	<tt>
-	    setInfoWithRelatives(pathGen = [0, 1, 1, 0],
-			pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
-				['off1', 'off2']],
-			pathSex = [AnySex, MaleOnly, FemaleOnly],
-			resultFields = ['cousin1', 'cousin2'])
-	</tt>
-	This function will
-	1. locate father_idx and mother_idx for each individual at generation 0 (\c pathGen[0])
-	2. find AnySex individuals referred by father_idx and mother_idx at generation 1 (\c pathGen[1])
-	3. find informaton fields \c sib1 and \c sib2 from these parents
-	4. locate MaleOnly individuals referred by \c sib1 and \c sib2 from generation 1 (\c pathGen[2])
-	5. find information fields \c off1 and \c off2 from these individuals, and
-	6. locate FemaleOnly indiviudals referred by \c off1 and \of2 from geneartion 0 (\c pathGen[3])
-	7. Save index of these individuals to information fields \c cousin1 and \c cousin2 at
-		genearation \c pathGen[0].
+	   For example,
+	   <tt>
+	   	setInfoWithRelatives(pathGen = [0, 1, 1, 0],
+	   		pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
+	   			['off1', 'off2']],
+	   		pathSex = [AnySex, MaleOnly, FemaleOnly],
+	   		resultFields = ['cousin1', 'cousin2'])
+	   </tt>
+	   This function will
+	   1. locate father_idx and mother_idx for each individual at generation 0 (\c pathGen[0])
+	   2. find AnySex individuals referred by father_idx and mother_idx at generation 1 (\c pathGen[1])
+	   3. find informaton fields \c sib1 and \c sib2 from these parents
+	   4. locate MaleOnly individuals referred by \c sib1 and \c sib2 from generation 1 (\c pathGen[2])
+	   5. find information fields \c off1 and \c off2 from these individuals, and
+	   6. locate FemaleOnly indiviudals referred by \c off1 and \of2 from geneartion 0 (\c pathGen[3])
+	   7. Save index of these individuals to information fields \c cousin1 and \c cousin2 at
+	   	genearation \c pathGen[0].
 
-	In short, this function locates father or mother's brother's daughters.
-	*/
-	void setIndexesOfRelatives(const vectori & pathGen,
+	   In short, this function locates father or mother's brother's daughters.
+	 */
+	bool setIndexesOfRelatives(const vectoru & pathGen,
 		const stringMatrix & pathFields,
-		const vectori & pathSex,
-		const vectorstr & resultFields);
+		const vectori & pathSex = vectori(),
+		const vectorstr & resultFields = vectorstr());
 
 	/// set ancestral depth
 	/**

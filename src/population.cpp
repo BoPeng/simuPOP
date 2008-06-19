@@ -293,7 +293,7 @@ void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop,
 	DBG_ASSERT(hasVirtualSubPop(), ValueError,
 		"Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
 	m_vspSplitter->activate(*this, subPop, virtualSubPop, type);
-	DBG_ASSERT(type !=  vspSplitter::Visible || 
+	DBG_ASSERT(type != vspSplitter::Visible ||
 		m_vspSplitter->activatedSubPop() == subPop, SystemError,
 		"Failed to activate virtual subpopulation");
 }
@@ -328,6 +328,7 @@ int population::__cmp__(const population & rhs) const
 
 	return 0;
 }
+
 
 individual & population::ancestor(ULONG ind, UINT gen)
 {
@@ -408,6 +409,7 @@ void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 {
 	UINT oldGen = ancestralGen();
 	size_t sz = id.size();
+
 	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
@@ -422,6 +424,7 @@ void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 void population::setIndSubPopIDWithID(bool ancestralPops)
 {
 	UINT oldGen = ancestralGen();
+
 	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
@@ -1581,24 +1584,24 @@ void population::setInfoFields(const vectorstr & fields, double init)
 }
 
 
-void population::locateRelatives(RelativeType relType, const vectorstr & relFields,
-	int gen, SexChoice relSex, const vectorstr & fields)
+bool population::locateRelatives(RelativeType relType, const vectorstr & relFields,
+                                 int gen, SexChoice relSex, const vectorstr & fields)
 {
 	if (relType == REL_None)
-		return;
+		return true;
 
 	UINT topGen = gen == -1 ? ancestralDepth() : std::min(ancestralDepth(), static_cast<UINT>(gen));
 	vectorstr parentFields(fields.begin(), fields.end());
 	if (fields.empty()) {
 		parentFields.push_back("father_idx");
 		parentFields.push_back("mother_idx");
-	}		
+	}
 
 	if (relType == REL_Self) {
 		DBG_ASSERT(relFields.size() == 1, ValueError,
 			"Please provide one information field to store REL_Self individuals");
 		UINT fieldIdx = infoIdx(relFields[0]);
-			
+
 		for (size_t ans = 0; ans <= topGen; ++ans) {
 			useAncestralPop(ans);
 			for (size_t idx = 0; idx < popSize(); ++idx)
@@ -1619,7 +1622,7 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 			spouseIdx[i] = infoIdx(relFields[i]);
 			// clear these fields for the last generation
 			for (IndInfoIterator ptr = infoBegin(spouseIdx[i]);
-				ptr != infoEnd(spouseIdx[i]); ++ptr)
+			     ptr != infoEnd(spouseIdx[i]); ++ptr)
 				*ptr = static_cast<InfoType>(-1);
 		}
 
@@ -1646,7 +1649,7 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 					bool valid = true;
 					// if sex is not interested
 					if ((ind(m).sex() == Male && relSex == FemaleOnly) ||
-						(ind(m).sex() == Female && relSex == MaleOnly))
+					    (ind(m).sex() == Female && relSex == MaleOnly))
 						valid = false;
 					// duplicate spouse
 					if (valid) {
@@ -1665,7 +1668,7 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 					bool valid = true;
 					// if sex is not interested
 					if ((ind(p).sex() == Male && relSex == FemaleOnly) ||
-						(ind(p).sex() == Female && relSex == MaleOnly))
+					    (ind(p).sex() == Female && relSex == MaleOnly))
 						valid = false;
 					// duplicate spouse
 					if (valid) {
@@ -1679,7 +1682,7 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 						ind(m).setInfo(p, spouseIdx[numSpouse[m]]);
 						++numSpouse[m];
 					}
-				}				                                                                           // idx
+				}                                                                                           // idx
 			}                                                                                               // ancestal generations
 			// set the rest of the field to -1
 			for (size_t idx = 0; idx < popSize(); ++idx) {
@@ -1699,7 +1702,7 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 			offspringIdx[i] = infoIdx(relFields[i]);
 			// clear these fields for the last generation
 			for (IndInfoIterator ptr = infoBegin(offspringIdx[i]);
-				ptr != infoEnd(offspringIdx[i]); ++ptr)
+			     ptr != infoEnd(offspringIdx[i]); ++ptr)
 				*ptr = static_cast<InfoType>(-1);
 		}
 
@@ -1708,9 +1711,10 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 			vectoru numOffspring;
 			// for each type of parental relationship
 			for (vectorstr::const_iterator field = parentFields.begin();
-				field != parentFields.end(); ++field) {
+			     field != parentFields.end(); ++field) {
 				useAncestralPop(ans - 1);
 				vectorf parent = indInfo(*field);
+				DBG_DO(DBG_POPULATION, cout << "Parents " << parent << endl);
 				//
 				useAncestralPop(ans);
 				if (numOffspring.empty())
@@ -1723,15 +1727,16 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 					if (numOffspring[p] < maxOffspring) {
 						Sex offSex = relSex == AnySex ? Male : ancestor(idx, ans - 1).sex();
 						if ((relSex == MaleOnly && offSex != Male) ||
-							(relSex == FemaleOnly && offSex != Female) ||
-							(relSex == OppositeSex && offSex == ind(p).sex()))
+						    (relSex == FemaleOnly && offSex != Female) ||
+						    (relSex == OppositeSex && offSex == ind(p).sex()))
 							continue;
 						ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
 						++numOffspring[p];
 					}
 				}                                                                                           // idx
 			}                                                                                               // ancestal generations
-			// set the rest of the field to -1
+			// only the last gen is cleared in advance.
+			// other generations should be done...
 			for (size_t idx = 0; idx < popSize(); ++idx) {
 				for (size_t no = numOffspring[idx]; no < maxOffspring; ++no)
 					ind(idx).setInfo(-1, offspringIdx[no]);
@@ -1764,10 +1769,10 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 			vectoru numSibling(popSize(), 0);
 			// for each type of parental relationship
 			map<pair<ULONG, ULONG>, vector<ULONG> > par_map;
-			
+
 			if (relType == REL_Sibling) { // one or two parents
 				for (vectorstr::const_iterator field = parentFields.begin();
-					field != parentFields.end(); ++field) {
+				     field != parentFields.end(); ++field) {
 					vectorf parent = indInfo(*field);
 					for (size_t idx = 0; idx != parent.size(); ++idx) {
 						pair<ULONG, ULONG> parents(static_cast<ULONG>(parent[idx]), 0);
@@ -1782,14 +1787,14 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 				vectorf father = indInfo(parentFields[0]);
 				vectorf mother = indInfo(parentFields[1]);
 				for (size_t idx = 0; idx != father.size(); ++idx) {
-					pair<ULONG, ULONG> parents(static_cast<ULONG>(father[idx]), 
-						static_cast<ULONG>(mother[idx]));
+					pair<ULONG, ULONG> parents(static_cast<ULONG>(father[idx]),
+					                           static_cast<ULONG>(mother[idx]));
 					map<pair<ULONG, ULONG>, vector<ULONG> >::iterator item = par_map.find(parents);
 					if (item == par_map.end())
 						par_map[parents] = vector<ULONG>(1, idx);
 					else
-						item->second.push_back(idx);						
-				}				
+						item->second.push_back(idx);
+				}
 			}
 			// now, each par_map has offsprings as siblings
 			map<pair<ULONG, ULONG>, vector<ULONG> >::const_iterator it = par_map.begin();
@@ -1802,14 +1807,14 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 				vector<Sex> sexes(sibs.size());
 				for (size_t i = 0; i < sibs.size(); ++i)
 					sexes[i] = ind(sibs[i]).sex();
-				// 
+				//
 				for (size_t i = 0; i < sibs.size(); ++i) {
 					for (size_t j = 0; j < sibs.size(); ++j) {
 						if (i == j)
 							continue;
 						if ((relSex == MaleOnly && sexes[j] == Female) ||
-							(relSex == FemaleOnly && sexes[j] == Male) ||
-							(relSex == OppositeSex && sexes[i] == sexes[j]))
+						    (relSex == FemaleOnly && sexes[j] == Male) ||
+						    (relSex == OppositeSex && sexes[i] == sexes[j]))
 							continue;
 						if (numSibling[sibs[i]] < maxSibling) {
 							ind(sibs[i]).setInfo(sibs[j], siblingIdx[numSibling[sibs[i]]]);
@@ -1825,24 +1830,25 @@ void population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 			}
 		}
 		useAncestralPop(0);
-	} 
+	}
+	return true;
 }
 
 
-void population::setIndexesOfRelatives(const vectori & pathGen,
-		const stringMatrix & pathFields,
-		const vectori & pathSex,
-		const vectorstr & resultFields)
+bool population::setIndexesOfRelatives(const vectoru & pathGen,
+                                       const stringMatrix & pathFields,
+                                       const vectori & pathSex,
+                                       const vectorstr & resultFields)
 {
 	if (pathGen.empty())
-		return;
+		return true;
 
 	DBG_ASSERT(pathGen.size() == pathFields.size() + 1, ValueError,
 		"Parameter pathGen should be one element longer than pathFields");
 	DBG_FAILIF(!pathSex.empty() && pathSex.size() != pathFields.size(),
 		ValueError,
 		"Parameter pathSex, if given, should have the same length of pathFields");
-	
+
 	vectori resultIdx(resultFields.size());
 	for (size_t i = 0; i < resultIdx.size(); ++i)
 		resultIdx[i] = infoIdx(resultFields[i]);
@@ -1850,7 +1856,10 @@ void population::setIndexesOfRelatives(const vectori & pathGen,
 	useAncestralPop(pathGen[0]);
 	vectoru numResult(popSize(), 0);
 	UINT maxResult = resultIdx.size();
-	
+	// clear values
+	for (IndIterator ind = indBegin(); ind.valid(); ++ind)
+		for (size_t i = 0; i < maxResult; ++i)
+			ind->setInfo(-1, resultIdx[i]);
 	// convert pathFields to pathIdx
 	intMatrix pathIdx(pathFields.size());
 	for (size_t i = 0; i < pathFields.size(); ++i) {
@@ -1862,7 +1871,7 @@ void population::setIndexesOfRelatives(const vectori & pathGen,
 	vector<SexChoice> sexes(pathIdx.size(), AnySex);
 	for (size_t i = 0; i < pathSex.size(); ++i)
 		sexes[i] = static_cast<SexChoice>(pathSex[i]);
-	
+
 	ULONG idx = 0;
 	for (IndIterator ind = indBegin(); ind.valid(); ++ind, ++idx) {
 		// start from one individual from pathGen[0]
@@ -1870,10 +1879,16 @@ void population::setIndexesOfRelatives(const vectori & pathGen,
 		vectorlu inds = vectorlu(1, idx);
 		// go through the path
 		for (size_t path = 0; path < pathFields.size(); ++path) {
-			DBG_DO(DBG_POPULATION, cout << "Start of path " << path 
-				<< " : " << inds << endl);
-			int fromGen = pathGen[path];
-			int toGen = pathGen[path + 1];
+			DBG_DO(DBG_POPULATION, cout << "Start of path " << path
+				                        << " : " << inds << endl);
+			UINT fromGen = pathGen[path];
+			UINT toGen = pathGen[path + 1];
+
+			if (fromGen > ancestralDepth() || toGen > ancestralDepth()) {
+				DBG_WARNING(true, "Insufficient ancestral generation numbers");
+				return false;
+			}
+
 			const vectori & fields = pathIdx[path];
 			SexChoice sex = sexes[path];
 
@@ -1887,8 +1902,8 @@ void population::setIndexesOfRelatives(const vectori & pathGen,
 						continue;
 					Sex indSex = ancestor(static_cast<ULONG>(sIdx), toGen).sex();
 					if ((sex == MaleOnly && indSex == Female) ||
-						(sex == FemaleOnly && indSex == Male) ||
-						(sex == OppositeSex && indSex == mySex))
+					    (sex == FemaleOnly && indSex == Male) ||
+					    (sex == OppositeSex && indSex == mySex))
 						continue;
 					newInds.push_back(static_cast<ULONG>(sIdx));
 				}
@@ -1899,13 +1914,12 @@ void population::setIndexesOfRelatives(const vectori & pathGen,
 		}
 		DBG_DO(DBG_POPULATION, cout << "Ind " << idx << " has relatives " << inds << endl);
 		// ind has the results
-		for (size_t i = 0; i < maxResult; ++i) {
+		for (size_t i = 0; i < maxResult; ++i)
 			if (i < inds.size())
 				ind->setInfo(inds[i], resultIdx[i]);
-			else
-				ind->setInfo(-1, resultIdx[i]);
-		}
+
 	}
+	return true;
 }
 
 

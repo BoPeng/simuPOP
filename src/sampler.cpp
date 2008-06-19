@@ -415,7 +415,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 			if (spouse == -1. || pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) >= 0
 			    || pop.ind(static_cast<UINT>(spouse)).info(spouseIdx) != it
 			    || ind.info(off1Idx) == -1.)
-		       		continue;
+				continue;
 			ULONG child0 = static_cast<ULONG>(ind.info(off0Idx));
 			ULONG child1 = static_cast<ULONG>(ind.info(off1Idx));
 			ULONG child0_f = static_cast<ULONG>(pop.ancestor(child0, 0).info(m_father_id));
@@ -424,9 +424,9 @@ bool affectedSibpairSample::prepareSample(population & pop)
 			ULONG child1_m = static_cast<ULONG>(pop.ancestor(child1, 0).info(m_mother_id));
 			// invalid child
 			if ((child0_f != it && child0_f != spouse) ||
-				(child0_m != it && child0_m != spouse) ||
-				(child1_f != it && child1_f != spouse) ||
-				(child1_m != it && child1_m != spouse))
+			    (child0_m != it && child0_m != spouse) ||
+			    (child1_f != it && child1_f != spouse) ||
+			    (child1_m != it && child1_m != spouse))
 				continue;
 			ind.setInfo(pedIdx, pedindexIdx);
 			pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
@@ -594,7 +594,7 @@ bool largePedigreeSample::prepareSample(population & pop)
 			// no spuse? one of grandparents belong to another pedigree?
 			if (grandspouse < 0 || pop.ind(idx).info(pedindexIdx) >= 1 ||
 			    static_cast<size_t>(pop.ind(grandspouse).info(spouseIdx)) != idx || // spouse not paired
-				pop.ind(grandspouse).info(pedindexIdx) >= 1)
+			    pop.ind(grandspouse).info(pedindexIdx) >= 1)
 				continue;
 			if (pop.ind(idx).affected())
 				numAffected++;
@@ -626,7 +626,7 @@ bool largePedigreeSample::prepareSample(population & pop)
 						continue;
 					if (idx != ind_p && idx != ind_m)
 						continue;
-					
+
 					parents.push_back(*par);
 					pedSize++;
 					if (pop.ind(*par).affected())
@@ -663,12 +663,12 @@ bool largePedigreeSample::prepareSample(population & pop)
 				if (pop.ind(*child).info(pedindexIdx) == -1.) {
 					ULONG ind_p = static_cast<ULONG>(pop.ind(*child).info(fatherIdx));
 					ULONG ind_m = static_cast<ULONG>(pop.ind(*child).info(motherIdx));
-					// 
+					//
 					if (find(parents.begin(), parents.end(), ind_m) == parents.end() &&
-						find(spouseofparents.begin(), spouseofparents.end(), ind_m) == spouseofparents.end())
+					    find(spouseofparents.begin(), spouseofparents.end(), ind_m) == spouseofparents.end())
 						continue;
 					if (find(parents.begin(), parents.end(), ind_p) == parents.end() &&
-						find(spouseofparents.begin(), spouseofparents.end(), ind_p) == spouseofparents.end())
+					    find(spouseofparents.begin(), spouseofparents.end(), ind_p) == spouseofparents.end())
 						continue;
 					children.push_back(*child);
 					pedSize++;
