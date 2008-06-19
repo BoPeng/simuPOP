@@ -83,7 +83,9 @@ def simuConsanguineousMating(w, size, gen, numFields=4):
         randomMating(numOffspring=2, weight = w),
         consanguineousMating(relativeFields = cousinFields, func=findCousin,
             param = [parFields, sibFields, offFields, cousinFields],
-            numOffspring = 2, weight = 1 - w)]))
+            numOffspring = 2, weight = 1 - w)
+        ])
+    )
     #
     simu.evolve(
         preOps = [ initByFreq([0.5, 0.5]) ],
