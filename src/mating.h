@@ -1929,10 +1929,68 @@ class consanguineousMating : public mating
 public:
 	/// create a consanguineous mating scheme
 	/**
+	This mating scheme randomly choose a parent and then choose his/her spouse from indexes
+	stored in \c infoFields.
 
-	   Please refer to class \c mating for descriptions of other parameters.
+	If indexes in \c infoFields are already prepared, this mating schemes equals to
+	a \c pyMating with an \c infoParentsChooser and a mendelianOffspringGenerator.
+	Otherwise, a number of parameters can help locate relatives of each individual, by
+	calling
+	<tt>
+		population::locateRelatives(relType, relFields, -1, relSex, parentFields);
+		population::setIndexesOfRelatives(pathGen, pathFields, pathSex, infoFields);
+	</tt>
+	The first function locates certain simple relatives such as spouse and offspring, the
+	second function follows the pedigree to find more complicated relationships. The function
+	will be ignored if relType = REL_None (default), and the second function will be ignored
+	if pathGen is empty (default). Please refer to doc/cookbook/Mating_consaguieous.py for
+	an example on how to use this mating scheme.
+
+
+	\param infoFields Information fields to store relative indexes, and for information
+		fields based parents chooser.
+	\param relType Relative type, can be
+			\li REL_Self index of individual themselfs
+			\li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
+				having an offspring with shared \c parentFields. If more than one \c infoFields is given,
+				multiple spouses can be identified.
+			\li REL_Offspring index of offspring in the offspring generation. If only one
+				parent is given, only paternal or maternal relationship is considered. For example,
+				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
+			\li REL_FullSibling all siblings with the same parents
+			\li REL_Sibling all sibs with at least one shared parent
+	  \param relFields information fields to hold relatives. The number of these fields
+	 		limits the number of relatives to locate.
+	  \param gen Find relatives for individuals for how many generations. Default to -1,
+	       meaning for all generations. If a non-negative number is given, up till generation
+	       gen will be processed.
+	  \param sex Whether or not only locate relative or certain sex. It can be
+	 		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate 
+	       relatives of opposite sex.
+	  \param parentFields information fields that stores parental indexes. Default to
+	 		['father_idx', 'mother_idx']
+	 	\param pathGen A list of generations that form a relative path. This array is one element longer
+		than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
+		of information fields path_i.
+	\param pathFields A list of list of information fields forming a path to trace a certain
+		type of relative.
+	\param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
+		that is used to choose individuals at each step. Default to AnySex.
+
+	Please refer to class \c infoParentsChooser and \c mendelianOffspringGenerator for descriptions of other parameters.
 	 */
-	consanguineousMating(double numOffspring = 1.,
+	consanguineousMating(
+			const vectorstr & infoFields = vectorstr(),
+			RelativeType relType = REL_None,
+			const vectorstr & relFields = vectorstr(),
+			SexChoice relSex = AnySex,
+			const vectori & pathGen = vectori(),
+			const stringMatrix & pathFields = stringMatrix(),
+			const vectori & pathSex = vectori(),
+			const vectorstr & parentFields = vectorstr(),
+			double numOffspring = 1.,
+			bool replacement = false,
+			bool replenish = true,
 	           PyObject * numOffspringFunc = NULL,
 	           UINT maxNumOffspring = 0,
 	           UINT mode = MATE_NumOffspring,
@@ -1947,7 +2005,17 @@ public:
 	           double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
-		                     maxNumOffspring, mode, sexParam, sexMode)
+		                     maxNumOffspring, mode, sexParam, sexMode),
+			m_infoFields(infoFields),
+			m_relType(relType),
+			m_relFields(relFields),
+			m_relSex(relSex),
+			m_pathGen(pathGen),
+			m_pathFields(pathFields),
+			m_pathSex(pathSex),
+			m_parentFields(parentFields),
+			m_replacement(replacement),
+			m_replenish(replenish)
 	{
 	}
 
@@ -1992,6 +2060,18 @@ public:
 
 protected:
 	mendelianOffspringGenerator m_offspringGenerator;
+
+private:
+	vectorstr		m_infoFields;
+	RelativeType	m_relType;
+	vectorstr		m_relFields;
+	SexChoice		m_relSex;
+	vectori			m_pathGen;
+	stringMatrix	m_pathFields;
+	vectori			m_pathSex;
+	vectorstr		m_parentFields;
+	bool			m_replacement;
+	bool			m_replenish;
 };
 
 

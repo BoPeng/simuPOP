@@ -1406,6 +1406,8 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 
 void consanguineousMating::preparePopulation(population & pop)
 {
+	pop.locateRelatives(m_relType, m_relFields, -1, m_relSex, m_parentFields);
+	pop.setIndexesOfRelatives(m_pathGen, m_pathFields, m_pathSex, m_infoFields);
 }
 
 
@@ -1420,7 +1422,7 @@ bool consanguineousMating::mateSubPop(population & pop, SubPopID subPop,
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 
-	infoParentsChooser pc;
+	infoParentsChooser pc(m_infoFields, m_replacement, m_replenish);
 	pc.initialize(pop, subPop);
 
 	// generate scratch.subPopSize(sp) individuals.
