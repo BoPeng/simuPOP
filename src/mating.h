@@ -1938,62 +1938,26 @@ public:
 	This mating scheme randomly choose a parent and then choose his/her spouse from indexes
 	stored in \c infoFields.
 
-	If indexes in \c infoFields are already prepared, this mating schemes equals to
-	a \c pyMating with an \c infoParentsChooser and a mendelianOffspringGenerator.
-	Otherwise, a number of parameters can help locate relatives of each individual, by
-	calling
-	<tt>
-		population::locateRelatives(relType, relFields, -1, relSex, parentFields);
-		population::setIndexesOfRelatives(pathGen, pathFields, pathSex, infoFields);
-	</tt>
-	The first function locates certain simple relatives such as spouse and offspring, the
-	second function follows the pedigree to find more complicated relationships. The function
-	will be ignored if relType = REL_None (default), and the second function will be ignored
-	if pathGen is empty (default). Please refer to doc/cookbook/Mating_consaguieous.py for
-	an example on how to use this mating scheme.
+	\param infoFields The information fields that stores indexes to other individuals
+		in a population. If more than one valid (positive value) indexes exist, a random
+		index will be chosen. (c.f. \c infoParentsChooser ) If there is no individual
+		having any valid index, the second parent will be chosen randomly from the
+		whole population.
+	
+	\param func A python function that can be used to prepare the indexes of these
+		information fields. For example, functions population::locateRelatives and/or
+		population::setIndexesOfRelatives can be used to locate certain types of relatives
+		of each individual.
 
-
-	\param infoFields Information fields to store relative indexes, and for information
-		fields based parents chooser.
-	\param relType Relative type, can be
-			\li REL_Self index of individual themselfs
-			\li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
-				having an offspring with shared \c parentFields. If more than one \c infoFields is given,
-				multiple spouses can be identified.
-			\li REL_Offspring index of offspring in the offspring generation. If only one
-				parent is given, only paternal or maternal relationship is considered. For example,
-				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
-			\li REL_FullSibling all siblings with the same parents
-			\li REL_Sibling all sibs with at least one shared parent
-	  \param relFields information fields to hold relatives. The number of these fields
-	 		limits the number of relatives to locate.
-	  \param gen Find relatives for individuals for how many generations. Default to -1,
-	       meaning for all generations. If a non-negative number is given, up till generation
-	       gen will be processed.
-	  \param sex Whether or not only locate relative or certain sex. It can be
-	 		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate 
-	       relatives of opposite sex.
-	  \param parentFields information fields that stores parental indexes. Default to
-	 		['father_idx', 'mother_idx']
-	 	\param pathGen A list of generations that form a relative path. This array is one element longer
-		than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
-		of information fields path_i.
-	\param pathFields A list of list of information fields forming a path to trace a certain
-		type of relative.
-	\param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
-		that is used to choose individuals at each step. Default to AnySex.
-
-	Please refer to class \c infoParentsChooser and \c mendelianOffspringGenerator for descriptions of other parameters.
+	\param param An optional parameter that can be passed to \c func.
+	
+	Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
+	other parameters.
 	 */
 	consanguineousMating(
 			const vectorstr & infoFields = vectorstr(),
-			RelativeType relType = REL_None,
-			const vectorstr & relFields = vectorstr(),
-			SexChoice relSex = AnySex,
-			const vectori & pathGen = vectori(),
-			const stringMatrix & pathFields = stringMatrix(),
-			const vectori & pathSex = vectori(),
-			const vectorstr & parentFields = vectorstr(),
+			PyObject * func = NULL,
+			PyObject * param = NULL,
 			double numOffspring = 1.,
 			bool replacement = false,
 			bool replenish = true,
@@ -2013,24 +1977,41 @@ public:
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode),
 			m_infoFields(infoFields),
-			m_relType(relType),
-			m_relFields(relFields),
-			m_relSex(relSex),
-			m_pathGen(pathGen),
-			m_pathFields(pathFields),
-			m_pathSex(pathSex),
-			m_parentFields(parentFields),
+			m_func(func), m_param(param),
 			m_replacement(replacement),
 			m_replenish(replenish)
 	{
+		if (func) {
+			if (!PyCallable_Check(func))
+				throw ValueError("Passed variable is not a callable Python function.");
+			Py_XINCREF(func);
+		}
+
+		if (param != NULL)
+			Py_XINCREF(param);
 	}
 
 
 	/// destructor
 	~consanguineousMating()
 	{
+		if (m_func)
+			Py_DECREF(m_func);
+		if (m_param)
+			Py_DECREF(m_param);
 	}
 
+	
+	consanguineousMating(const consanguineousMating & rhs) :
+		mating(rhs),
+		m_func(rhs.m_func),
+		m_param(rhs.m_param)
+	{
+		if (m_func)
+			Py_INCREF(m_func);
+		if (m_param)
+			Py_INCREF(m_param);
+	}
 
 	/// deep copy of a consanguineous mating scheme
 	virtual mating * clone() const
@@ -2068,14 +2049,9 @@ protected:
 	mendelianOffspringGenerator m_offspringGenerator;
 
 private:
-	vectorstr		m_infoFields;
-	RelativeType	m_relType;
-	vectorstr		m_relFields;
-	SexChoice		m_relSex;
-	vectori			m_pathGen;
-	stringMatrix	m_pathFields;
-	vectori			m_pathSex;
-	vectorstr		m_parentFields;
+	vectorstr       m_infoFields;
+	PyObject *      m_func;
+	PyObject *      m_param;
 	bool			m_replacement;
 	bool			m_replenish;
 };
