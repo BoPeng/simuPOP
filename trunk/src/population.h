@@ -65,10 +65,9 @@ using boost::serialization::make_nvp;
 #include "individual.h"
 #include "virtualSubPop.h"
 
-const string POP_ParentsFields[2] = { "father_idx", "mother_idx" };
-
 enum RelativeType
 {
+	REL_None,       // do nothing
 	REL_Self,		// individual himself or herself.
 	REL_Offspring,	// All offspring with all spouses (if there are more than one spouse)
 	REL_Spouse,		// All spouses (with at least one offspring)
@@ -1349,20 +1348,20 @@ public:
 				<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
 			\li REL_FullSibling all siblings with the same parents
 			\li REL_Sibling all sibs with at least one shared parent
-	 * \param infoFields information fields to hold relatives. The number of these fields
+	 * \param relFields information fields to hold relatives. The number of these fields
 	 *		limits the number of relatives to locate.
 	 * \param gen Find relatives for individuals for how many generations. Default to -1,
 	 *      meaning for all generations. If a non-negative number is given, up till generation
 	 *      gen will be processed.
-	 * \param sex Whether or not only locate relative or certain sex. It can be
+	 * \param relSex Whether or not only locate relative or certain sex. It can be
 	 *		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate 
 	 *      relatives of opposite sex.
 	 * \param parentFields information fields that stores parental indexes. Default to
 	 *		['father_idx', 'mother_idx']
 	*/
-	void locateRelatives(RelativeType relType, const vectorstr & infoFields,
-		int gen = -1, SexChoice sex = AnySex,
-		const vectorstr & parentFields = vectorstr(POP_ParentsFields, POP_ParentsFields + 2));
+	void locateRelatives(RelativeType relType, const vectorstr & relFields,
+		int gen = -1, SexChoice relSex = AnySex,
+		const vectorstr & parentFields = vectorstr());
 
 	/// Trace a relative path in a population and record the result in the given information fields.
 	/**
