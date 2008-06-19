@@ -796,6 +796,9 @@ private:
 	Because of potentially non-even distribution of valid information
 	fields, the overall process may not be as random as expected, especially
 	when selection is applied.
+
+	Note: if there is no valid individual, this parents chooser works like
+	a double parentChooser.
 */
 class infoParentsChooser : public randomParentChooser
 {
@@ -811,7 +814,7 @@ public:
 	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
 		bool replacement = true, bool replenish = false) :
 		randomParentChooser(replacement, replenish),
-		m_infoFields(infoFields)
+		m_infoFields(infoFields), m_degenerate(false)
 	{
 		m_numParents = 2;
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
@@ -832,6 +835,9 @@ public:
 private:
 	vectorstr m_infoFields;
 	vectori m_infoIdx;
+	// if there is no valid individual, this mating schemes
+	// works like a double parentChooser.
+	bool m_degenerate;
 };
 
 
