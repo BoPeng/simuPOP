@@ -70,7 +70,7 @@ class TestAscertainment(unittest.TestCase):
         self.assertEqual(s.subPopSize(1), 8)
         for ind in s.individuals():
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.pop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
 
     def testCaseControlSample(self):
@@ -89,12 +89,12 @@ class TestAscertainment(unittest.TestCase):
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.pop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
         for ind in s.individuals(1):
             self.assertEqual(ind.affected(), False)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.pop.individual(ind.intInfo('oldindex'))
 
     def testAffectedSibpairSample(self):
         'Testing affected sibpair sampling (imcomplete)'
@@ -109,12 +109,12 @@ class TestAscertainment(unittest.TestCase):
         for ind in s.individuals(0):
             self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.pop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
         for ind in s.individuals(1):
             self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.pop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
         #
         (s,) = AffectedSibpairSample(self.pop, 2)
@@ -122,7 +122,7 @@ class TestAscertainment(unittest.TestCase):
         for ind in s.individuals():
             self.assertEqual(ind.affected(), True)
             #old index?
-            inpop = self.pop.individual(int(ind.info('oldindex')))
+            inpop = self.pop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
 
 
@@ -133,13 +133,13 @@ class TestAscertainment(unittest.TestCase):
         assert s.ancestralDepth() == 2
         for ind in s.individuals():
             #old index?
-            inpop = self.largepop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
         (s,) = LargePedigreeSample(self.largepop, 50, minTotalSize=5, maxOffspring=5,
             minPedSize=3, minAffected=0)
         for ind in s.individuals():
             #old index?
-            inpop = self.largepop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
         #
 
@@ -153,14 +153,14 @@ class TestAscertainment(unittest.TestCase):
         assert s.subPopSize(1) <= 5
         for ind in s.individuals():
             #old index?
-            inpop = self.largepop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
         #
         (s,) = NuclearFamilySample(self.largepop, size=[2, 3], maxOffspring=5)
         assert s.subPopSize(0) <= 5
         for ind in s.individuals():
             #old index?
-            inpop = self.largepop.individual(int(ind.info('oldindex')))
+            inpop = self.largepop.individual(ind.intInfo('oldindex'))
             self.assertEqual(ind, inpop)
 
 
