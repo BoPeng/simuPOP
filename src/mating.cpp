@@ -888,8 +888,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	}
 	//
 	m_degenerate = m_index.empty();
-	DBG_WARNING(m_degenerate, "There is no valid index for any individual.\n"
-		                      "A second parent will be chosen from the whole population");
+	DBG_WARNING(m_degenerate, "Parents are chosen randomly because there is no valid index.");
 	if (m_degenerate) {
 		for (it = pop.indBegin(sp); it.valid(); ++it) {
 			m_index.push_back(it.rawIter());
@@ -943,8 +942,8 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 	DBG_FAILIF(validInds.empty(), SystemError,
 		"No valid relative is found");
 	individual * par2 = validInds[rng().randInt(validInds.size())];
-	DBG_DO(DBG_MATING, cout << "infoParentsChooser: par1: " << par1 - & * basePtr
-		                    << " par2: " << par2 - & * basePtr << endl);
+	DBG_DO(DBG_DEVEL, cout << "infoParentsChooser: par1: " << par1 - & * basePtr
+		                   << " par2: " << par2 - & * basePtr << endl);
 	return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 }
 
@@ -2127,6 +2126,10 @@ bool heteroMating::mate(population & pop, population & scratch,
 {
 	// scrtach will have the right structure.
 	prepareScratchPop(pop, scratch);
+	vectormating::const_iterator it = m_matingSchemes.begin();
+	vectormating::const_iterator it_end = m_matingSchemes.end();
+	for (; it != it_end; ++it)
+		(*it)->preparePopulation(pop);
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 

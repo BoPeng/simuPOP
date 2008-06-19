@@ -1626,6 +1626,7 @@ bool population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 				*ptr = static_cast<InfoType>(-1);
 		}
 
+		DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
 		// start from the parental generation
 		for (unsigned ans = 1; ans <= topGen; ++ans) {
 			vectoru numSpouse;
@@ -1706,6 +1707,7 @@ bool population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 				*ptr = static_cast<InfoType>(-1);
 		}
 
+		DBG_WARNING(topGen == 0, "Offspring can not be located because there is no parental generation.");
 		// start from the parental generation
 		for (unsigned ans = 1; ans <= topGen; ++ans) {
 			vectoru numOffspring;
@@ -1755,6 +1757,7 @@ bool population::locateRelatives(RelativeType relType, const vectorstr & relFiel
 		for (size_t i = 0; i < maxSibling; ++i)
 			siblingIdx[i] = infoIdx(relFields[i]);
 
+		DBG_WARNING(topGen == 0, "Sibling can not be located because there is no parental generation.");
 		// start from the parental generation
 		for (unsigned ans = 0; ans <= topGen; ++ans) {
 			useAncestralPop(ans);
@@ -1885,7 +1888,7 @@ bool population::setIndexesOfRelatives(const vectoru & pathGen,
 			UINT toGen = pathGen[path + 1];
 
 			if (fromGen > ancestralDepth() || toGen > ancestralDepth()) {
-				DBG_WARNING(true, "Insufficient ancestral generation numbers");
+				DBG_WARNING(true, "Insufficient ancestral generations to trace relatives.");
 				return false;
 			}
 
