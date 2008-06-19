@@ -3,7 +3,9 @@ ChangeLog of simuPOP
 BUGS:
   - all known bugs have been cleared.
 
-version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.6 - (Rev 1657) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.
   - NEW: add a function ForwardFreqTrajetory to simulate trajectory of varying
 		population size and selection pressure.
@@ -33,6 +35,9 @@ version 0.8.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		schemes.
   - NEW: add functions population::locateRelatives and population::setIndexesOfRelatives
   - NEW: add functions individual::indInfo(idx) and individual::indInfo(name)
+  - NEW: add a new parent chooser infoParentsChooser and a new mating scheme
+		consanguineousMating, along with an example doc/cookbook/Mating_consanguineous.py.
+
 
 version 0.8.5 - (Rev 1488) Apr 3, 2008
   - BUG: fix a bug that prevents a cloned simulator from evolving again.
