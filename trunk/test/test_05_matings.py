@@ -92,6 +92,18 @@ class TestMatingSchemes(unittest.TestCase):
         #print cnt
         TurnOffDebug(DBG_MATING)
 
+    def testConsanguineousMating(self):
+        'Testing consanguineous mating'
+        pop = population([100, 1000], loci=[10], ancestralDepth=3,
+            infoFields=['father_idx', 'mother_idx', 'offspring1', 'offspring2', 'cousin'])
+        simu = simulator(pop,
+            consanguineousMating(
+        simu.evolve(
+            ops = [parentsTagger()],
+            gen = 10
+        )
+
+        
 ##     def testTrajectory(self):
 ##         'Testing trajectory prediction functions'
 ##         sel, Ne, freq, h, selection = 0.5, 100, 0.50, 2, 1

@@ -886,6 +886,15 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 				break;
 			}
 	}
+	//
+	m_degenerate = m_index.empty();
+	if (m_degenerate) {
+		for (; it.valid(); ++it) {
+			m_index.push_back(it.rawIter());
+			if (m_selection)
+				fitness.push_back(it->info(fit_id));
+		}
+	}
 
 	if (m_selection)
 		m_sampler.set(fitness);
@@ -908,6 +917,16 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 		"Please initialize this parent chooser before using it");
 	individual * par1 = chooseParent(basePtr);
 	Sex sex1 = par1->sex();
+	// there is no valid information field value
+	if (m_degenerate) {
+		int attempt = 0;
+		while (++attempt < 1000) {
+			individual * par2 = chooseParent(basePtr);
+			if (par2->sex() != sex1)
+				return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
+		}
+		throw ValueError("Can not locate any individual of opposite sex");
+	}
 	// the way this parent chooser is initialized guranttees that
 	// theres is at lest one valid field.
 	vector<individual*> validInds;
