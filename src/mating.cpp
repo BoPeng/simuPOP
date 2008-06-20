@@ -1649,7 +1649,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 		vectorlu totalAlleles(nLoci);
 		for (i = 0; i < nLoci; ++i) {
 			int locus = loci[i];
-			Allele allele = alleles[i];
+			Allele allele = static_cast<Allele>(alleles[i]);
 
 			totalAlleles[i] = static_cast<ULONG>(expFreq[i] * pop.popSize() * pop.ploidy());
 			// make sure one allele (our seed :-) exists
@@ -1874,7 +1874,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			for (i = 0; i < nLoci; ++i) {
 				GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
 				for (size_t j = 0; j < numOff * pldy; ++j, ptr += totNumLoci) {
-					if (*ptr == m_alleles[i]) {
+					if (*ptr == static_cast<Allele>(m_alleles[i])) {
 						na[i]++;
 						hasAff = true;
 					}
