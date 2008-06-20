@@ -581,7 +581,7 @@ if __name__ == '__main__':
         name = "simuPOP",
         version = SIMUPOP_VER,
         author = "Bo Peng",
-        author_email = "bpeng@rice.edu",
+        author_email = "bpeng@mdanderson.org",
         description = "Forward-time population genetics simulation environment",
         long_description = DESCRIPTION, 
         url = "http://simupop.sourceforge.net",
