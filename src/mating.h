@@ -1920,18 +1920,7 @@ protected:
 /**
    In this mating scheme, a parent is choosen randomly and mate with a
    relative that has been located and written to a number of information
-   fields. What this mating scheme do are
-
-   1. before mating, call
-   	   population::locateRelatives
-   	   population::setIndexOfRelatives
-   	to store indexes of relatives to some given information fields
-   2. use infoParentsChooser to choose parents and use mendelianOffspringGenerator
-   	to produce offspring.
-
-   	If a different offspring generator is desired, a pyMating scheme should be
-   	used, with locateRelatives and setIndexOfRelatives prepared in a Python
-   	operator.
+   fields.
  */
 class consanguineousMating : public mating
 {
