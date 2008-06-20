@@ -5,7 +5,7 @@ BUGS:
 
 version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
 
-version 0.8.6 - (Rev 1657) Jun 20, 2008
+version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.
   - NEW: add a function ForwardFreqTrajetory to simulate trajectory of varying
 		population size and selection pressure.
