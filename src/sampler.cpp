@@ -405,7 +405,7 @@ bool affectedSibpairSample::prepareSample(population & pop)
 	int pedIdx = 0;
 	// valid sibpairs for each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		for (ULONG it = 0; it < pop.subPopSize(sp); ++it) {
+		for (int it = 0; it < static_cast<int>(pop.subPopSize(sp)); ++it) {
 			individual & ind = pop.ind(it, sp);
 			// individual already belongs to another family
 			if (ind.info(pedindexIdx) != -1.)
@@ -464,7 +464,7 @@ population & affectedSibpairSample::drawsample(population & pop)
 {
 	// mark to remove everyone
 	pop.setIndSubPopID(vectori(1, -1));
-	vectorlu acceptedSibs;
+	vectori acceptedSibs;
 
 	if (m_size.size() <= 1) {                                         // draw from the whole population
 		// collect all families
