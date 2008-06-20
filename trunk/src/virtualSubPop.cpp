@@ -620,7 +620,7 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 		vectori::const_iterator loc_end = m_loci.end();
 		for (; loc != loc_end; ++loc)
 			for (int p = 0; p < ploidy; ++p)
-				if (it->allele(*loc, p) != alleles[idx++])
+				if (static_cast<int>(it->allele(*loc, p)) != alleles[idx++])
 					return false;
 		return true;
 	} else if (ploidy == 2) {
@@ -628,8 +628,8 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 		vectori::const_iterator loc = m_loci.begin();
 		vectori::const_iterator loc_end = m_loci.end();
 		for (; loc != loc_end; ++loc) {
-			Allele a1 = it->allele(*loc, 0);
-			Allele a2 = it->allele(*loc, 1);
+			int a1 = it->allele(*loc, 0);
+			int a2 = it->allele(*loc, 1);
 			if ((a1 == alleles[idx] && a2 == alleles[idx + 1]) ||
 			    (a1 == alleles[idx + 1] && a2 == alleles[idx]))
 				idx += 2;

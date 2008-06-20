@@ -115,7 +115,7 @@ void kamMutator::mutate(AlleleRef allele)
 #ifdef BINARYALLELE
 	allele = !allele;
 #else
-	Allele new_allele = rng().randInt(maxAllele());
+	Allele new_allele = static_cast<Allele>(rng().randInt(maxAllele()));
 	if (new_allele >= allele)
 		allele = new_allele + 1;
 	else
