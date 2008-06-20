@@ -384,7 +384,9 @@ SIMUPOP_FILES = [
 #     http://sf.net/tracker/index.php?func=detail&aid=1700146&group_id=1645&atid=301645
 SWIG_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
-SWIG_OUTDIR = '.'
+# python setup.py reads py_modules from src so we have to produce simuPOP_std.py
+# etc to this directory.
+SWIG_OUTDIR = 'src'
                 
 MACROS = {
     'std':    [('SIMUPOP_MODULE', 'simuPOP_std')],
@@ -585,7 +587,7 @@ if __name__ == '__main__':
         description = "Forward-time population genetics simulation environment",
         long_description = DESCRIPTION, 
         url = "http://simupop.sourceforge.net",
-        package_dir = {'': 'src' }, 
+        package_dir = {'': 'src'}, 
         py_modules = SIMUPOP_FILES,
         ext_modules = EXT_MODULES,
         data_files = DATA_FILES,
