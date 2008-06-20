@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.5 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.6 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -3119,7 +3119,7 @@ individualRef
 
 \end_inset
 
-
+ 
 \end_layout
 
 \begin_layout Section
@@ -3203,6 +3203,13 @@ polygamousMatingRef
 
 
 \backslash
+consanguineousMatingRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
 alphaMatingRef
 \end_layout
 
@@ -3269,6 +3276,13 @@ randomParentChooserRef
 
 \backslash
 randomParentsChooserRef
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+infoParentsChooserRef
 \end_layout
 
 \begin_layout Standard
