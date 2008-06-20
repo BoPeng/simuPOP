@@ -518,7 +518,7 @@ population & affectedSibpairSample::drawsample(population & pop)
 			continue;
 		int spouse = ind.intInfo(spouseIdx);
 		// only look forward
-		if (spouse < i)
+		if (spouse < static_cast<int>(i))
 			continue;
 		// if this family is selected
 		if (find(acceptedSibs.begin(), acceptedSibs.end(), infoPedIdx) != acceptedSibs.end()) {
@@ -581,8 +581,8 @@ bool largePedigreeSample::prepareSample(population & pop)
 	DBG_DO(DBG_SELECTOR, cout << "Finding all three-generation pedigrees" << endl);
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		m_validPedigrees[sp].clear();
-		size_t g3start = pop.subPopBegin(sp);
-		size_t g3end = pop.subPopEnd(sp);
+		int g3start = pop.subPopBegin(sp);
+		int g3end = pop.subPopEnd(sp);
 		//
 		for (int idx = g3start; idx < g3end; ++idx) {
 			pop.useAncestralPop(2);
@@ -807,7 +807,7 @@ population & largePedigreeSample::drawsample(population & pop)
 				continue;
 			pop.ind(*it).setSubPopID(newPedID);
 			ps++;
-			InfoType spouse = pop.ind(*it).info(spouseIdx);
+			int spouse = pop.ind(*it).intInfo(spouseIdx);
 			if (spouse < 0 || pop.ind(spouse).info(pedindexIdx) != pedID)
 				continue;
 			// if there is spouse, add it in
@@ -985,7 +985,7 @@ population & nuclearFamilySample::drawsample(population & pop)
 			continue;
 		int spouse = ind.intInfo(spouseIdx);
 		// only look forward
-		if (spouse < i)
+		if (spouse < static_cast<int>(i))
 			continue;
 		// if this family is selected
 		for (pedArray::iterator it = acceptedPeds.begin(); it != acceptedPeds.end(); ++it) {
