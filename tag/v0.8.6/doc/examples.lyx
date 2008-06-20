@@ -1,0 +1,462 @@
+#LyX 1.5.0svn created this file. For more info see http://www.lyx.org/
+\lyxformat 271
+\begin_document
+\begin_header
+\textclass beamer
+\begin_preamble
+% meta information
+\usepackage{hyperref}
+\hypersetup{
+  pdfauthor={Bo Peng},
+  pdftitle = {On the allelic structure of human diseases, a simulation study},
+  pdfkeywords = {common disease common variant, simuPOP, simulation, allelic spectrum},
+  pdfcreator = {pdflatex + latex/beamer class},
+  pdfproducer = {pdflatex},
+  pdfpagemode=FullScreen
+}
+
+\beamertemplateshadingbackground{red!5}{structure!5}
+
+\usepackage{times}
+\usepackage{beamerthemeshadow}
+%\usetheme{JuanLesPins}
+\end_preamble
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false"
+\tracking_changes false
+\output_changes false
+\author "Bo Peng" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Forward-time simulations using simuPOP, a tutorial
+\begin_inset OptArg
+status collapsed
+
+\begin_layout Standard
+simuPOP tutorial
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Bo Peng
+\end_layout
+
+\begin_layout Institute
+Ph.D.
+\newline
+Department of Epidemiology
+\newline
+UT MD Anderson Cancer Center
+\newline
+Houston, TX
+\end_layout
+
+\begin_layout Date
+June.
+ 6, 2007
+\newline
+Programmers' Cross Training
+\newline
+UT MD Anderson Cancer Center
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+% Show the table of contents at the beginning
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+% of every subsection.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+AtBeginSubsection[]{
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+  
+\backslash
+frame<handout:0>{ 
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+    
+\backslash
+frametitle{Outline}   
+\backslash
+tableofcontents[sections={
+\backslash
+thesection},currentsubsection] }
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+outline
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[subsectionstyle=hide]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\begin_layout Section
+What is simuPOP
+\end_layout
+
+\begin_layout Subsection
+simuPOP overview
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+simu
+\end_layout
+
+\end_inset
+
+lation of 
+\begin_inset CharStyle Alert
+show_label true
+status inlined
+
+\begin_layout Standard
+pop
+\end_layout
+
+\end_inset
+
+ulations
+\end_layout
+
+\begin_layout Standard
+simuPOP is a forward-time population genetics simulation environment, it
+ provides
+\end_layout
+
+\begin_layout Itemize
+An environment to manipulate populations, namely, a collection of individuals
+ with the same genotypic structure.
+\end_layout
+
+\begin_layout BeginFrame
+What can you do with simuPOP
+\end_layout
+
+\begin_layout Itemize
+Studying the evolution of whatever
+\end_layout
+
+\begin_layout Itemize
+Manipulate populations
+\end_layout
+
+\begin_layout BeginFrame
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+[<+->]
+\end_layout
+
+\end_inset
+
+A few quick statistics
+\end_layout
+
+\begin_layout Itemize
+12 modules (short, long, binary) 
+\begin_inset Formula $\times$
+\end_inset
+
+ (standard, optimized) 
+\begin_inset Formula $\times$
+\end_inset
+
+ (standard, parallel)
+\end_layout
+
+\begin_layout Itemize
+60+ operators
+\end_layout
+
+\begin_layout Itemize
+...
+\end_layout
+
+\begin_layout Subsection
+A simple example
+\end_layout
+
+\begin_layout BeginPlainFrame
+A simple example
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/simpleExample.log}[basicstyle=\small\ttfamily,lastline=20]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginPlainFrame
+Output of the example
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/simpleExample.log}[basicstyle=\small\ttfamily,firstline=21,lastline=25]
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout BeginFrame
+simuPOP modules
+\end_layout
+
+\begin_layout BeginFrame
+population
+\end_layout
+
+\begin_layout BeginFrame
+operator
+\end_layout
+
+\begin_layout BeginFrame
+simulator
+\end_layout
+
+\begin_layout BeginFrame
+mating scheme
+\end_layout
+
+\begin_layout BeginFrame
+evolve!
+\end_layout
+
+\begin_layout BeginFrame
+Exercise time!
+\end_layout
+
+\begin_layout Standard
+simuLDDecay.py
+\end_layout
+
+\begin_layout Section
+simuPOP components
+\end_layout
+
+\begin_layout Subsection
+Population object
+\end_layout
+
+\begin_layout BeginPlainFrame
+Illustration
+\end_layout
+
+\begin_layout BeginFrame
+Create a population
+\end_layout
+
+\begin_layout BeginFrame
+Genotypic structure
+\end_layout
+
+\begin_layout BeginFrame
+Individuals
+\end_layout
+
+\begin_layout BeginFrame
+Population strcuture
+\end_layout
+
+\begin_layout BeginFrame
+Information fields
+\end_layout
+
+\begin_layout BeginFrame
+Variables
+\end_layout
+
+\begin_layout Subsection
+Operators
+\end_layout
+
+\begin_layout BeginFrame
+Stages
+\end_layout
+
+\begin_layout BeginFrame
+Stages, an example
+\end_layout
+
+\begin_layout BeginFrame
+Output
+\end_layout
+
+\begin_layout BeginFrame
+Table-like output
+\end_layout
+
+\begin_layout Subsection
+Mating scheme, Simulator and forward-time simulation
+\end_layout
+
+\begin_layout BeginFrame
+Mating schemes
+\end_layout
+
+\begin_layout BeginFrame
+Simulator
+\end_layout
+
+\begin_layout BeginFrame
+Evolve?!
+\end_layout
+
+\begin_layout Section
+A real example
+\end_layout
+
+\begin_layout Subsection
+Handling of HapMap data
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+A quick Python tutorial
+\end_layout
+
+\begin_layout Section
+Some more examples
+\end_layout
+
+\begin_layout Subsection
+Example 1
+\end_layout
+
+\begin_layout BeginFrame
+Manipulating of HapMap data
+\end_layout
+
+\begin_layout Subsection
+Example 2
+\end_layout
+
+\begin_layout Section
+Advanced topics
+\end_layout
+
+\begin_layout EndFrame
+
+\end_layout
+
+\end_body
+\end_document

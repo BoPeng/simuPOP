@@ -1,0 +1,614 @@
+simuPOP installation guide
+============================
+
+0. General introduction
+1. install from binary distributions
+  1.1. Installing Python
+  1.2. Installing simuPOP (binary)
+  1.3. Installing R and RPy (optional)
+  1.4. Installing wxPython (optional)
+2. Build simuPOP from Source
+  2.1. General instructions
+    2.1.1. Installing boost libraries (optional)
+	2.1.2. Building and installing simuPOP modules
+	2.1.3. Building binary packages
+  2.2. Platform-specific instructions	
+    2,2.1. Windows system using mingw (without cygwin)
+    2.2.2. Windows using VC++ .NET 2003
+    2.2.3. Linux Systems
+    2.2.4. Solaris (SunOS) System
+    2.2.5. Mac OS (Intel and PPC) systems
+    2.2.6. Linux using intel C++
+  2.3. Building the MPI version of simuPOP
+  2.4. Testing simuPOP
+3. Working with the latest simuPOP subversion version
+  3.1. Get simuPOP/svn
+  3.2. Installing boost (Optional)
+  3.3. Installing SWIG
+  3.4. Using setup.py to build
+  3.5. Using scons for faster rebuild
+  3.6. Sending your patch to simuPOP mailing list
+
+
+0. General Introduction
+=======================
+
+simuPOP consists of a set of Python modules and its installation follows
+other python modules. Briefly, binary packages are provided for specific
+combinations of architecture (32 or 64 bit), operating systems (windows,
+Linux) and Python (2.3, 2.4, 2.5). If there is a binary package for your
+system, installation should be pretty straightforward.
+
+If there is no binary package for your system, or if you would like to
+build a special version of simuPOP, such us building simuPOP using intel
+C++, you can compile simuPOP from source. If you have working python and
+a C++ compiler, the process is usually as easy as 'python setup.py install'.
+
+If you are interested in the development of simuPOP, you can use the
+subversion version of simuPOP. Some supporting tools are recommended
+for conveniences.
+
+The following sections explain each case in details.
+
+
+1. install from binary distributions
+====================================
+
+A complete simuPOP environment is consist of the following:
+
+Required
+---------
+
+1. Python   simuPOP is provided as python modules so a working python is 
+            required.
+2. simuPOP  the simuPOP modules            
+
+
+Optional
+---------
+1. R         R statistical computing environment, for plotting and 
+             statistical analysis
+2. RPy       Python module that provides link between R and Python
+3. wxPython  simuPOP can use wxPython instead of Tkinter if wxPython
+             is available. Some functions can also use wxPython. The most
+             common one is ListVars().
+
+These optional tools extend the power of simuPOP but is not required
+to run any simuPOP simulations. Because rpy and/or wxPython can be
+tricky to install, first time users may want to ignore these tools.
+
+
+1.1 Installing Python
+=====================
+
+simuPOP works as a python library so a working version of python is 
+required. Python is widely available on Linux/Mac systems but not for
+windows. For windows system, you can use 
+
+  - Official python  http://www.python.org, or
+  - ActiveState python  http://www.activestate.com/Products/ActivePython/ 
+
+simuPOP currently supports Python 2.2, 2.3, 2.4 and 2.5 but binary
+packages are generally provided for Python >= 2.3 and some simuPOP
+scripts may not work for Python 2.2.
+
+To test if you have python installed, open a terminal (or command window) 
+and type in the command
+
+  > python
+
+You may need to type full path name (e.f. c:\python24\python) or add
+python path to your $PATH, which is platform specific.
+
+
+1.2. Installing simuPOP (binary)
+================================
+
+Download the latest simuPOP binary that matches your python distribution. 
+For example, if you have enthough Python 2.3.3 installed, you should 
+download simupop-x.x.x-py23-win32.exe. The installation procedure is
+platform dependent and should be familiar to you. 
+
+Windows/ .exe
+--------------
+
+Double click the downloaded .exe file, follow the instructions. SimuPOP
+libraries will be installed to the Python site-packages directory.
+
+NOTE: A simuPOP user reported that simuPOP was not usable after installation
+due to a missing file called msvcp71.dll. He solved the problem by downloading
+the file from http://www.dll-files.com/dllindex/dll-files.shtml?msvcp71
+at put it to c:\windows\system. More information about this issue can be found
+at http://mail.python.org/pipermail/python-list/2005-February/305172.html .
+
+
+Linux, MacOSX, Solaris / .tar.gz
+---------------------------------
+
+Unpack the file with
+
+  > tar -zxf simuPOP-XXX.tar.gz 
+
+and you can see directories like
+	usr/lib64/python2.3/site-packages
+	usr/share/simuPOP
+	usr/share/simuPOP/doc
+	usr/share/simuPOP/misc
+	usr/share/simuPOP/scripts
+	usr/share/simuPOP/test
+
+Copy python modules under site-packages to an appropriate directory, which is
+usually the python library directory. On a *nix system, it is something similar
+to /usr/lib/python/lib64/site-packages. You can copy the 'share' directory
+to any directory you like.
+
+If you do not have write permission to system python library directory,
+you can unpack simuPOP to a local directory and set environment variable
+PYTHONPATH to the local site-packages directory.
+
+
+Linux / .rpm
+-------------
+
+Install with command
+
+  > rpm -ihv simuPOP-XXX.rpm
+
+
+
+1.3. Installing R/RPy (optional)
+=================================
+
+windows users
+-------------
+
+Install R, and then Rpy using the windows installers. 
+
+Linux users
+------------
+
+You first need to check if R is available as a shared library (existence of libR.so).
+if R or libR is not available, you should install it from rpm, or build R by yourself.
+The procedure is:
+
+  - download the latest R source code
+  - unpack, for example,
+    > tar zxf R-2.1.0.tar.gz
+  - build R with --enable-R-shlib
+    > cd R-2.1.0
+    > ./configure --prefix=/usr --enable-R-shlib
+    > make; make install
+
+NOTE: if you go not have administrative privilege, use can install R locally
+by using ./configure --prefix=/home/username/R ...
+
+Then, you can build Rpy by  
+
+  - download the latest Rpy source code
+  - unpack, for example 
+    > tar zxf rpy-0.4.1.tar.gz
+  - build rpy
+    > cd rpy-0.4.1
+    > python setup.py install
+
+
+1.4. Installing wxPython (optional)
+===================================
+
+There are detailed instructions at wxPython homepage.
+
+
+2. Build simuPOP from Source
+=============================
+
+2.1. General instructions.
+
+There are a few reasons why you might need to install simuPOP from source
+  1. Binary package for your system is not provided.
+  2. You would like to build special version of Python and simuPOP for maximum
+     efficiently. For example, simuPOP built with intel C++ compiler (icc) 
+	 usually runs 20% to 30% faster than g++ compiled ones. Since intel C++ 
+	 for linux is free for non-commercial users, using intel C++ is a good choice 
+	 on linux systems.
+  3. simuPOP has a MPI version that can spread populations over a cluster and
+	 simulate huge genome likes what is used in genome-wide association studies. 
+	 No binary is provided since there are many different implementations of MPI. 
+	 You will have to compile by yourself if want to use simuPOP/MPI.
+
+
+For simple installation, boost and swig is not needed and simple
+  > python setup.py install
+usually suffice. If you have modified simuPOP source code, you will have to 
+install SWIG to generate wrap files for your new code.
+
+
+2.1.1. Installing boost libraries (iostreams, serialization and/or MPI)
+=======================================================================
+
+Starting from simuPOP-0.7.8, boost 1.33.1 is bundled with simuPOP source
+and setup.py will build iostreams and serialization libraries automatically.
+Other versions of boost can be used if you remove the boost_1_33_1 directory
+from the simuPOP directory.
+
+If you use simuPOP snapshot (SVN version), you may want to download and 
+unpack boost 1.33.1. You can choose to install boost libraries system wide
+(as shown below), or simply unpack to simuPOP top source directory.
+
+Installing boost is generally difficult because it uses a special build
+system bjam. Under a *nix system, you can try to use
+  > ./configure
+  > make; make install
+with fingers crossed. On other systems, you generally need to build bjam
+from boost source code tree and use bjam to build boost serialization and
+iostreams libraries. 
+
+Note that:
+  1. If you prefer static library (so no LD_LIBRARY_PATH is needed), it is 
+     important that you build boost libraries with -fPIC flag so that they 
+     can be linked with simuPOP to generate shared libraries. The command line 
+     is likely to be:
+
+     Boost 1.33.1:
+       > bjam -j4 --prefix=/usr "-sBUILD=release <runtime-link>static <cxxflags>-fPIC" \
+	     "-sTOOLS=gcc"  --with-serialization --with-iostreams --prefix=/usr install
+     Boost CVS:
+       > bjam toolset=gcc/cxxflags=-fPIC -j6 -d+2 --prefix=/usr \
+	     --with-serialization --with-iostreams  --with-mpi install
+		 
+     Note that link=static can not be used here (because of a bjam bug).
+
+  2. It is difficult to build boost libraries using MS Visual C++. simuPOP/win32
+	 directory provides windows boost libraries built with it.
+
+
+2.1.2. Building and installing simuPOP modules
+==============================================
+
+You first need to download and unpack simuPOP source package. For example
+    > tar zxf simuPOP-xxx-src.tar.gz
+	> cd simuPOP-xxx
+
+With bundled boost and a decent C++ compiler, you can build simuPOP with command
+    > python setup.py build
+
+To build and install simuPOP to your system, use command
+    > python setup.py install
+
+If you do not have write permission to system python library directory, use
+option --prefix. For example
+    > python setup.py install --prefix=/home/username/simuPOP
+
+
+2.1.3. Building binary packages
+================================
+
+You can also use setup.py to build binary packages. bdist command needs to be
+used and you can specify the format of binary packages like:
+    > python setup.py bdist
+  windows .exe installer
+    > python setup.py bdist_wininst
+  linux rpm
+    > python setup.py bdist --formats=rpm
+  tar.gz
+    > python setup.py bdist --formats=gztar
+  dumb (usually in tar.gz format)
+    > python setup.py bdist_dumb
+
+The binary packages will be put to the dist directory. If you would like to
+share your binary package with others (so others do not have to compile), rename
+your binary package to simuPOP-version-platform-arch-pyver.suffix (E.g.
+simuPOP-0.7.8-fedora5-x86_64-py25.rpm) and upload this file to 
+upload.sourceforge.net/incoming and send an email to simuPOP mailing list.
+I will put this file to general downloading area.
+
+
+2.2. Platform-specific instructions
+====================================
+
+2.2.1 Windows system using mingw (without cygwin)
+==================================================
+
+The problem with cygwin is that it has its own gcc, zlib and boost and it is tricky
+to not use them. Using a system without cygwin, you can
+
+  1. download mingw.exe, choose g++ and install, add c:/mingw/bin to $PATH
+  
+  2. download zlib, unpack to c:\zlib
+  
+  3. (Optional) download and install boost, using commands like:
+    > cd \boost\boost-1_33_1\tools\build\jam_src
+	> build.bat
+	copy bjam.exe to c:\boost\boost-1_33_1,
+	> cd \boost\boost-1_33_1
+	> bjam.exe -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
+     -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
+	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll --prefix=c:/boost \
+	 --with-iostreams --with-serialization install
+
+  4. download python, install to c:\python24, add c:\python24 to $PATH
+  
+  5. download and unpack simuPOP source to c:\simuPOP
+
+  6. if needed, download swig, unpack to c:\swigwin and add c:\swigwin to $PATH
+
+  7. from the simuPOP directory, do
+     > python setup.py bdist_wininst
+	setup.py looks in the win32 directory for boost and zlib libraries. If you 
+	would like to link to your versions of them, remove this directory and add
+	  --library-dirs
+	option to point to your libraries.
+
+
+NOTE: for python2.4, you can get error saying 
+    import error: DSLL load failed: The specified procedure could not be found
+  This is because of a compatibility problem of mingw32/msvcrt and msv/msvcrt71. 
+  please see http://jove.prohosting.com/iwave/ipython/issues.html for details. 
+  My fix is go to python24/Lib/distutils/cygwinccompiler.py, at line 139, change
+    self.dll_libraries = [] 
+  to
+    self.dll_libraries = ['msvcrt', 'python' + ''.join(sys.winver.split('.'))]
+  and comment out the following if/else block. This will force simuPOP to use 
+  msvcrt, not msvcrt70 or msvcrt71 with msvc.
+
+
+2.2.2. Windows using VC++ .NET 2003
+===================================
+
+  1. Find a copy of VC++ 2003 and install. This is the version used to 
+     compile python and is the version VC uses.
+
+  2. in vc command prompt windows,
+    > python setup.py bdist_wininst
+	or
+	> python setup.py install
+	if you only need to install to your local machine.
+
+Optionally, you can install scons (www.scons.org) and use
+    > scons install
+see later scons section 3.1 for details.
+
+NOTE: this process is *not* easy for me since I spent *a lot* of time building
+boost libraries and put them under win32 directory. I also had to include a 
+portable copy of stdint.h under win32 since msvc does not provide this header
+file.
+  
+
+2.2.3. Linux System
+===================
+
+  1. download and unpack simuPOP source, goto simuPOP-XXX directory
+ 
+  2. Run
+     > python setup.py build
+
+  3. create binary library distribution with 
+      > python setup.py bdist --formats=rpm
+    or
+      > python setup.py bdist --formats=gztar
+    or install simuPOP directly
+      > python setup.py install
+  
+  You might need to use 
+    > sudo python setup.py install
+  to install. If you do not have root privilege,
+    > python setup.py install --home=/path/to/simuPOP
+  and then set PYTHONPATH to where simuPOP locates.
+  
+  Note that you may need to use command like
+    > python setup.py config --include-dirs=/usr/include/linux install
+  if zlib.h is not in standard directories.
+
+
+2.2.4 Solaris (SunOS) System
+=============================
+
+The same as Linux, but scons can not be used.
+
+
+2.2.5. Mac OS (Intel or PPC) systems
+====================================
+
+  1. Install python 
+  2. Install Xcode from here 
+     http://developer.apple.com/tools/download/
+  3. Download and unpack simuPOP source code, open terminal and, from the 
+     simupop directory, type "python setup.py install"
+
+
+2.2.6. Linux using intel C++
+=============================
+
+Because Python has to be compiled with the same compiler as simuPOP, you will
+have to build python by yourself as well. I assume that you do not want to 
+override system python, so here is what you need to do
+
+  1. download intel C++ compiler (linux, non-commercial version) and install.
+     icc can be installed locally. Note that for 64bit systems, the bin directory
+     is intel/cce/xxx/bin, not intel/cc/xxx/bin. Make sure you source file
+     intel/cce/xxx/bin/ccvars.xxx for the shell you use.
+  2. download python source. Run, for example,
+     > tar zxf Python-2.4.3.tgz
+     > cd Python-2.4.3
+     > setenv CC icc (for csh)
+     > setenv CXX icpc (for csh)
+     > ./configure --with-cxx=icpc --prefix=/home/username/Python24
+     > make
+     > make install
+  3. build and install simuPOP
+     > cd simuPOP
+     > /home/username/Python24/bin/python setup.py install
+     simuPOP modules will be put under /home/username/Python24/lib(or lib64)/site-packages,
+
+
+2.3. Building the MPI version of simuPOP
+========================================
+
+NOTE: I have have access to LAM/MPI, openMPI and HP/MPI under linux system. The setup.py 
+is created with this limitation. If setup.py does not work for your particular MPI 
+implementation, please modify this script and send me a patch.
+
+  1. do 'module load mpi' or whatever appropriate to make mpiCC available.
+  2. run 'python setup.py build' as usual, with fingers crossed.
+
+Potential Problem: HP/MPI
+-------------------------
+Using a version of HP/MPI, there is no libmpiCC.so and the version of libmpiCC.a is
+not compiled with -fPIC flag. You will get a link error like: 
+
+/usr/bin/ld: /opt/hpmpi/lib/linux_amd64/libmpiCC.a(mpicxx.o): relocation R_X86_64_32 against `__dso_handle' can not be used when making a shared object; recompile with -fPIC
+/opt/hpmpi/lib/linux_amd64/libmpiCC.a: could not read symbols: Bad value
+collect2: ld returned 1 exit status
+error: command 'c++' failed with exit status 1
+
+Solution:
+---------
+  1. go to /path/to/hpmpi/arch/lib and copy a directory named mpiCCsrc to your
+     local directory. If you can not find this directory, send an email to your 
+     system admin and ask for it. There should be Makefile, mpicxx.cc and 
+     intercepts.cc under this directory.
+  2. change the last line of Makefile to (add -fPIC)
+        $(CXX) -fPIC -c $< -I$(MPI_ROOT)/include -DHPMP_BUILD_CXXBINDING
+  3. run make and get a local version of libmpiCC.a
+  4. copy libmpiCC.a to directory 'build' under the simuPOP directory, if this 
+     directory does not exist, create one.
+  5. run python setup.py as usual, since -Lbuild is before -L/path/to/hpmpi, 
+     build/libmpiCC.a will be used instead of the system one.
+
+Note: setup.py accepts parameters like --library-dirs=/home/username/mpiCC but 
+-L/home/username/mpiCC is put after system -L options during linking. This is 
+why we need to put libmpiCC.a into simuPOP/build.
+
+
+Potential Problem: LAM/MPI
+--------------------------
+The same sympton as HP/MPI. liblammpi++.a is not compiled with -fPIC.
+
+
+Solution:
+---------
+Since there is no shared libraries provided by default, you have to build LAM from 
+scratch, or at least override some system libraries,
+  1. Get LAM/MPI source. Redhat/RHEL4 does not provide the source code for its
+     lam package. If you plan to override system LAM package, get the latest 
+     version (7.1.2), otherwise, get a version that matches your system LAM version.
+  2. run 
+        $ ./configure --enable-shared --prefix=/usr
+        $ make 
+     from the top source directory.
+  3. If you have root privilege, clear /usr/lib (and lib64)/libmpi* liblam*, run
+        $ make install
+     to override your existing LAM installation. Otherwise, copy
+       share/mpi/.libs/libmpi.a
+       share/mpi/.libs/liblam.a
+       share/mpi/cxx/.libs/liblammpi++.a
+     to simuPOP/build. These libraries will override system libraries. 
+  4. run
+        $ python setup.py install 
+     as usual. For new installations, command ldconfig may be needed to
+     setup path to LAM/MPI libraries.
+
+
+Potential Problem: Other MPI
+----------------------------
+MPI module is not built, because mpiCC is not found, or 'mpiCC -show' or 
+'mpiCC -showme' does not work.
+
+Solution:
+---------
+setup.py runs 'mpiCC -show', and if failed, 'mpiCC -showme' to get the compiler flags of 
+mpiCC. Check the correct syntax for your mpi distribution and modify setup.py.
+
+
+
+2.4. test simuPOP
+=================
+
+After installation, you can test simuPOP and other components by
+
+  $ Python
+  .......
+  >>> import simuPOP
+  >>> import wx
+  >>> import rpy
+  >>> rpy.r.plot(1)
+  >>> execfile('/usr/share/simuPOP/scripts/simuLDDecay.py')
+
+And then run a thorough tests (using windows as an example)
+  $ cd c:\python25\share\simuPOP\test
+  $ c:\python25\python run_tests.py
+  $ set SIMUALLELETYPE=binary
+  $ c:\python25\python run_tests.py
+  $ set SIMUALLELETYPE=long
+  $ c:\python25\python run_tests.py
+Under *nix (with shell), do
+  $ run_tests.sh
+
+
+3 Working with simuPOP subversion version
+=========================================
+
+If you are interested in modifying simuPOP, using the latest version of
+simuPOP from subversion repository is the best option. In addition, you
+will need to install and use the following tools:
+
+3.1. Get simuPOP/svn
+====================
+
+Install a subversion client. tortoiseSVN is popular under windows but 
+command line tool is also available and sometimes more convenient. 
+Then, get simuPOP/svn from https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+
+3.2. Installing boost (Optional)
+================================
+
+You can choose to install boost completely or unpack boost 1.33.1 as boost_1_33_1
+under the top source directory of simuPOP. In the later case, simuPOP will automatically
+compile the needed libraries from boost source.
+
+This step is optional, but is needed if you would like to compile the
+MPI version of simuPOP. boost/svn is needed for its boost/MPI library.
+
+3.3. Installing SWIG
+=====================
+
+SWIG is needed to generate wrapper files. SWIG >= 1.3.35 required.
+
+3.4. Using setup.py to build
+=============================
+
+If you have a compiler (MSVS .NET 2003 is needed under windows), you can then
+try to compile simuPOP from source
+
+  $ scons std install
+
+
+3.5. Using scons
+=================
+
+Using the standard python distutils package,
+  $ python setup.py bdist
+is the official way to build simuPOP. However, every execution of this command
+will recompile all the modules, using a single thread. This is unbearable if you
+need to build simuPOP again and again, or if your machine can make use of multiple
+processes.
+
+Scons (www.scons.org) is an alternative build tool for simuPOP. Using commands like
+  $ scons laop -j4 install
+you can build only one module (laop) using four threads and install to system directory.
+This makes scons idea for developing simuPOP.
+
+The disadvantage of this approach is that you can not create rpm or .exe binary
+packages in this way. 
+
+NOTE: Only scons 0.96.92 and 0.96.93 are tested. 0.96.95 does not seem to work.
+
+
+3.6. Sending your patch to simuPOP mailing list
+================================================
+
+If you would like to add your modifications to simuPOP, please run
+  $ svn diff > patch.diff
+or use 'make diff' menu item from tortoiseSVN, and send your patch to simuPOP
+user list.
+
