@@ -410,18 +410,18 @@ bool affectedSibpairSample::prepareSample(population & pop)
 			// individual already belongs to another family
 			if (ind.info(pedindexIdx) != -1.)
 				continue;
-			double spouse = ind.info(spouseIdx);
+			int spouse = ind.intInfo(spouseIdx);
 			// if no spouse, or spouse belongs to anther pedigree, or there are less than two kids
-			if (spouse == -1. || pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) >= 0
-			    || pop.ind(static_cast<UINT>(spouse)).info(spouseIdx) != it
+			if (spouse == -1 || pop.ind(spouse).info(pedindexIdx) >= 0
+			    || pop.ind(spouse).info(spouseIdx) != it
 			    || ind.info(off1Idx) == -1.)
 				continue;
-			ULONG child0 = static_cast<ULONG>(ind.info(off0Idx));
-			ULONG child1 = static_cast<ULONG>(ind.info(off1Idx));
-			ULONG child0_f = static_cast<ULONG>(pop.ancestor(child0, 0).info(m_father_id));
-			ULONG child0_m = static_cast<ULONG>(pop.ancestor(child0, 0).info(m_mother_id));
-			ULONG child1_f = static_cast<ULONG>(pop.ancestor(child1, 0).info(m_father_id));
-			ULONG child1_m = static_cast<ULONG>(pop.ancestor(child1, 0).info(m_mother_id));
+			int child0 = ind.intInfo(off0Idx);
+			int child1 = ind.intInfo(off1Idx);
+			int child0_f = pop.ancestor(child0, 0).intInfo(m_father_id);
+			int child0_m = pop.ancestor(child0, 0).intInfo(m_mother_id);
+			int child1_f = pop.ancestor(child1, 0).intInfo(m_father_id);
+			int child1_m = pop.ancestor(child1, 0).intInfo(m_mother_id);
 			// invalid child
 			if ((child0_f != it && child0_f != spouse) ||
 			    (child0_m != it && child0_m != spouse) ||
@@ -429,9 +429,9 @@ bool affectedSibpairSample::prepareSample(population & pop)
 			    (child1_m != it && child1_m != spouse))
 				continue;
 			ind.setInfo(pedIdx, pedindexIdx);
-			pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
-			off.push_back(static_cast<ULONG>(ind.info(off0Idx)));
-			off.push_back(static_cast<ULONG>(ind.info(off1Idx)));
+			pop.ind(spouse).setInfo(pedIdx, pedindexIdx);
+			off.push_back(ind.intInfo(off0Idx));
+			off.push_back(ind.intInfo(off1Idx));
 			pedIdx++;
 		}
 		DBG_DO(DBG_SELECTOR, cout << "Number of sibpairs in subpop " << sp << " is "
@@ -513,19 +513,19 @@ population & affectedSibpairSample::drawsample(population & pop)
 
 	for (size_t i = 0; i < pop.popSize(); ++i) {
 		individual & ind = pop.ind(i);
-		double infoPedIdx = ind.info(pedindexIdx);
-		if (infoPedIdx == -1.)
+		int infoPedIdx = ind.intInfo(pedindexIdx);
+		if (infoPedIdx == -1)
 			continue;
-		double spouse = ind.info(spouseIdx);
+		int spouse = ind.intInfo(spouseIdx);
 		// only look forward
 		if (spouse < i)
 			continue;
 		// if this family is selected
-		if (find(acceptedSibs.begin(), acceptedSibs.end(), static_cast<ULONG>(infoPedIdx)) != acceptedSibs.end()) {
+		if (find(acceptedSibs.begin(), acceptedSibs.end(), infoPedIdx) != acceptedSibs.end()) {
 			ind.setSubPopID(pedIdx);
-			pop.ind(static_cast<UINT>(spouse)).setSubPopID(pedIdx);
-			off.push_back(static_cast<ULONG>(ind.info(off0Idx)));
-			off.push_back(static_cast<ULONG>(ind.info(off1Idx)));
+			pop.ind(spouse).setSubPopID(pedIdx);
+			off.push_back(ind.intInfo(off0Idx));
+			off.push_back(ind.intInfo(off1Idx));
 			pedIdx++;
 		}
 	}
@@ -584,16 +584,16 @@ bool largePedigreeSample::prepareSample(population & pop)
 		size_t g3start = pop.subPopBegin(sp);
 		size_t g3end = pop.subPopEnd(sp);
 		//
-		for (size_t idx = g3start; idx < g3end; ++idx) {
+		for (int idx = g3start; idx < g3end; ++idx) {
 			pop.useAncestralPop(2);
 			unsigned pedSize = 2;
 			unsigned numAffected = 0;
 			//
 			// already belong to other pedigree
-			int grandspouse = static_cast<int>(pop.ind(idx).info(spouseIdx));
+			int grandspouse = pop.ind(idx).intInfo(spouseIdx);
 			// no spuse? one of grandparents belong to another pedigree?
 			if (grandspouse < 0 || pop.ind(idx).info(pedindexIdx) >= 1 ||
-			    static_cast<size_t>(pop.ind(grandspouse).info(spouseIdx)) != idx || // spouse not paired
+			    pop.ind(grandspouse).intInfo(spouseIdx) != idx || // spouse not paired
 			    pop.ind(grandspouse).info(pedindexIdx) >= 1)
 				continue;
 			if (pop.ind(idx).affected())
@@ -603,7 +603,7 @@ bool largePedigreeSample::prepareSample(population & pop)
 			//
 			vectorlu parentsTmp;
 			for (size_t x = 0; x < m_maxOffspring; ++x) {
-				int off = static_cast<int>(pop.ind(idx).info(offspringIdx[x]));
+				int off = pop.ind(idx).intInfo(offspringIdx[x]);
 				if (off != -1)
 					parentsTmp.push_back(off);
 			}
@@ -619,8 +619,8 @@ bool largePedigreeSample::prepareSample(population & pop)
 			vectorlu parents;
 			for (vectorlu::iterator par = parentsTmp.begin(); par != parentsTmp.end(); ++par) {
 				if (pop.ind(*par).info(pedindexIdx) == -1.) {
-					size_t ind_p = static_cast<size_t>(pop.ind(*par).info(fatherIdx));
-					size_t ind_m = static_cast<size_t>(pop.ind(*par).info(motherIdx));
+					int ind_p = pop.ind(*par).intInfo(fatherIdx);
+					int ind_m = pop.ind(*par).intInfo(motherIdx);
 					// child with another spouse
 					if (grandspouse != ind_p && grandspouse != ind_m)
 						continue;
@@ -635,21 +635,21 @@ bool largePedigreeSample::prepareSample(population & pop)
 			}
 			//
 			for (vectorlu::iterator par = parents.begin(); par != parents.end(); ++par) {
-				InfoType spouse = pop.ind(*par).info(spouseIdx);
+				int spouse = pop.ind(*par).intInfo(spouseIdx);
 				// if there is spouse, add it in
-				if (spouse >= 0. && pop.ind(*par).info(pedindexIdx) == -1.) {
+				if (spouse >= 0 && pop.ind(*par).info(pedindexIdx) == -1.) {
 					// if spouse relationship is mutual
-					if (static_cast<ULONG>(pop.ind(static_cast<ULONG>(spouse)).info(spouseIdx)) != *par)
+					if (pop.ind(spouse).info(spouseIdx) != *par)
 						continue;
-					spouseofparents.push_back(static_cast<ULONG>(spouse));
+					spouseofparents.push_back(spouse);
 					pedSize++;
-					if (pop.ind(static_cast<ULONG>(spouse)).affected())
+					if (pop.ind(spouse).affected())
 						numAffected++;
 					// there are children only when there is spouse
 					for (size_t x = 0; x < m_maxOffspring; ++x) {
-						InfoType off = pop.ind(*par).info(offspringIdx[x]);
-						if (off != -1.)
-							childrenTmp.push_back(static_cast<ULONG>(off));
+						int off = pop.ind(*par).intInfo(offspringIdx[x]);
+						if (off != -1)
+							childrenTmp.push_back(off);
 					}
 				}
 			}
@@ -661,8 +661,8 @@ bool largePedigreeSample::prepareSample(population & pop)
 			for (vectorlu::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child) {
 				// unoccupied.
 				if (pop.ind(*child).info(pedindexIdx) == -1.) {
-					ULONG ind_p = static_cast<ULONG>(pop.ind(*child).info(fatherIdx));
-					ULONG ind_m = static_cast<ULONG>(pop.ind(*child).info(motherIdx));
+					ULONG ind_p = pop.ind(*child).intInfo(fatherIdx);
+					ULONG ind_m = pop.ind(*child).intInfo(motherIdx);
 					//
 					if (find(parents.begin(), parents.end(), ind_m) == parents.end() &&
 					    find(spouseofparents.begin(), spouseofparents.end(), ind_m) == spouseofparents.end())
@@ -783,26 +783,26 @@ population & largePedigreeSample::drawsample(population & pop)
 		vectorf::iterator tmp = find(grandIdx.begin(), grandIdx.end(), pedID);
 		DBG_FAILIF(tmp == grandIdx.end(), ValueError, "Can not find pedigree");
 		//
-		size_t grandpar1 = tmp - grandIdx.begin();
+		int grandpar1 = tmp - grandIdx.begin();
 		DBG_FAILIF(pop.ind(grandpar1).info(spouseIdx) == -1., SystemError,
 			"Grand parent's spouse is invalid");
-		size_t grandpar2 = static_cast<size_t>(pop.ind(grandpar1).info(spouseIdx));
+		int grandpar2 = pop.ind(grandpar1).intInfo(spouseIdx);
 		DBG_FAILIF(pop.ind(grandpar2).info(pedindexIdx) != pedID, SystemError,
 			"Grand parent's spouse is invalid");
 		pop.ind(grandpar1).setSubPopID(newPedID);
 		pop.ind(grandpar2).setSubPopID(newPedID);
 		ps += 2;
 		// find parents
-		vectorlu parents;
+		vectori parents;
 		for (size_t x = 0; x < m_maxOffspring; ++x) {
-			InfoType off = pop.ind(grandpar1).info(offspringIdx[x]);
-			if (off != -1.)
-				parents.push_back(static_cast<ULONG>(off));
+			int off = pop.ind(grandpar1).intInfo(offspringIdx[x]);
+			if (off != -1)
+				parents.push_back(off);
 		}
 		//
 		pop.useAncestralPop(1);
-		vectorlu children;
-		for (vectorlu::iterator it = parents.begin(); it != parents.end(); ++it) {
+		vectori children;
+		for (vectori::iterator it = parents.begin(); it != parents.end(); ++it) {
 			if (pop.ind(*it).info(pedindexIdx) != pedID)
 				continue;
 			pop.ind(*it).setSubPopID(newPedID);
@@ -811,17 +811,17 @@ population & largePedigreeSample::drawsample(population & pop)
 			if (spouse < 0 || pop.ind(spouse).info(pedindexIdx) != pedID)
 				continue;
 			// if there is spouse, add it in
-			pop.ind(static_cast<ULONG>(spouse)).setSubPopID(newPedID);
+			pop.ind(spouse).setSubPopID(newPedID);
 			ps++;
 			for (size_t x = 0; x < m_maxOffspring; ++x) {
-				InfoType off = pop.ind(*it).info(offspringIdx[x]);
+				int off = pop.ind(*it).intInfo(offspringIdx[x]);
 				if (off != -1)
-					children.push_back(static_cast<ULONG>(off));
+					children.push_back(off);
 			}
 		}
 		// go to children
 		pop.useAncestralPop(0);
-		for (vectorlu::iterator it = children.begin(); it != children.end(); ++it) {
+		for (vectori::iterator it = children.begin(); it != children.end(); ++it) {
 			if (pop.ind(*it).info(pedindexIdx) == pedID) {
 				pop.ind(*it).setSubPopID(newPedID);
 				ps++;
@@ -871,19 +871,19 @@ bool nuclearFamilySample::prepareSample(population & pop)
 	DBG_DO(DBG_SELECTOR, cout << "Finding all two-generation pedigrees" << endl);
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		pop.useAncestralPop(1);
-		vectorf off;
+		vectori off;
 		for (IndIterator it = pop.indBegin(sp); it.valid(); ++it) {
 			// individual already belongs to another family
 			if (it->info(pedindexIdx) != -1.)
 				continue;
-			double spouse = it->info(spouseIdx);
+			int spouse = it->intInfo(spouseIdx);
 			// has spouse, spouse does not belong to anther ped
-			if (spouse != -1. && pop.ind(static_cast<UINT>(spouse)).info(pedindexIdx) == -1.) {
+			if (spouse != -1. && pop.ind(spouse).info(pedindexIdx) == -1.) {
 				it->setInfo(pedIdx, pedindexIdx);
-				pop.ind(static_cast<UINT>(spouse)).setInfo(pedIdx, pedindexIdx);
+				pop.ind(spouse).setInfo(pedIdx, pedindexIdx);
 				// many of the offspring may be -1.
 				for (UINT oi = 0; oi < m_maxOffspring; ++oi)
-					off.push_back(it->info(offspringIdx[oi]));
+					off.push_back(it->intInfo(offspringIdx[oi]));
 				pedIdx++;
 			}
 		}
@@ -895,10 +895,10 @@ bool nuclearFamilySample::prepareSample(population & pop)
 			UINT pedAffected = 0;
 			for (UINT oi = 0; oi < m_maxOffspring; ++oi) {
 				// valid offspring
-				if (off[i * m_maxOffspring + oi] != -1.) {
-					pop.ind(static_cast<ULONG>(off[i * m_maxOffspring + oi])).setInfo(i, pedindexIdx);
+				if (off[i * m_maxOffspring + oi] != -1) {
+					pop.ind(off[i * m_maxOffspring + oi]).setInfo(i, pedindexIdx);
 					pedSize++;
-					if (pop.ind(static_cast<ULONG>(off[i * m_maxOffspring + oi])).affected())
+					if (pop.ind(off[i * m_maxOffspring + oi]).affected())
 						pedAffected++;
 				}
 			}
@@ -975,25 +975,25 @@ population & nuclearFamilySample::drawsample(population & pop)
 	for (size_t i = 0; i < m_maxOffspring; ++i)
 		offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
 	pop.useAncestralPop(1);
-	vectorf off;
+	vectori off;
 	int pedIdx = 0;
 
 	for (size_t i = 0; i < pop.popSize(); ++i) {
 		individual & ind = pop.ind(i);
-		double infoPedIdx = ind.info(pedindexIdx);
-		if (infoPedIdx == -1.)
+		int infoPedIdx = ind.intInfo(pedindexIdx);
+		if (infoPedIdx == -1)
 			continue;
-		double spouse = ind.info(spouseIdx);
+		int spouse = ind.intInfo(spouseIdx);
 		// only look forward
-		if (static_cast<size_t>(spouse) < i)
+		if (spouse < i)
 			continue;
 		// if this family is selected
 		for (pedArray::iterator it = acceptedPeds.begin(); it != acceptedPeds.end(); ++it) {
-			if (boost::get<0>(*it) == static_cast<ULONG>(infoPedIdx)) {
+			if (boost::get<0>(*it) == infoPedIdx) {
 				ind.setSubPopID(pedIdx);
-				pop.ind(static_cast<UINT>(spouse)).setSubPopID(pedIdx);
+				pop.ind(spouse).setSubPopID(pedIdx);
 				for (UINT oi = 0; oi < m_maxOffspring; ++oi)
-					off.push_back(ind.info(offspringIdx[oi]));
+					off.push_back(ind.intInfo(offspringIdx[oi]));
 				pedIdx++;
 				break;
 			}
@@ -1001,8 +1001,8 @@ population & nuclearFamilySample::drawsample(population & pop)
 	}
 	pop.useAncestralPop(0);
 	for (size_t i = 0; i < off.size(); ++i) {
-		if (off[i] != -1.)
-			pop.ind(static_cast<ULONG>(off[i])).setSubPopID(i / m_maxOffspring);
+		if (off[i] != -1)
+			pop.ind(off[i]).setSubPopID(i / m_maxOffspring);
 	}
 	population & newPop = pop.newPopByIndID(1);
 	//
