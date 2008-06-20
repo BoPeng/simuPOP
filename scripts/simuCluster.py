@@ -9,7 +9,7 @@
 # $Rev: 110 $
 # 
 
-import os, sys, getopt, re
+import os, sys, getopt, re, time
 
 Usage = '''
 1. create a list file (a python script), that defines
@@ -48,6 +48,15 @@ like:
   $HOME/.simuCluster. simuCluster.py process this python file and use the
   variables to subsititute variables in script. 
 
+4. Job submit:
+  If -r option is specified, $command will be used to send the jobs to a 
+  job management system. If $queue_size and $check_command are specified,
+  this script will work as a demon process that
+  a): run $check_command to check the number of running (or queued) jobs.
+    The number is determined by the number of lines of the returned result.
+  b): If this number is less than $queue_size, submit jobs so that the number
+    of running or queued jobs is $queue_size
+  c): repeat this until all jobs are submitted.
 
 To use this script:
   python simuCluster.py [options]
@@ -165,6 +174,17 @@ def readConfigFile():
         execfile(config, tmp, res)
     return res
 
+def numberOfJobs(options):
+    ''''
+    Check the number of running or queued jobs.
+    '''
+    if options.has_key('check_command') and options.has_key('queue_size'):
+        command = options['check_command'].replace('$queue', options['queue'])
+        print 'Running: %s' % command
+        output = os.popen(command)
+        lines = len(output.readlines())
+        return lines
+    return 0
 
 if __name__ == '__main__':
     # get pptions
@@ -246,6 +266,8 @@ if __name__ == '__main__':
                     proc_jobs.append(j)
     # create .pbs scripts, run them if -r
     print "Creating .pbs files for job ", ' '.join(proc_jobs)
+    demon_mode = options.has_key('check_command') and options.has_key('queue_size')
+    curJobs = -1
     for job in proc_jobs:
         if job in all_jobs:
             pbs_script = getScript(job, options)
@@ -267,9 +289,22 @@ if __name__ == '__main__':
             if run:
                 command = options['command'].replace('$name', job)
                 command = command.replace('$queue', options['queue'])
+                if demon_mode and curJobs <= 0:
+                    time.sleep(10)
+                    while True:
+                        runningJobs = numberOfJobs(options)
+                        print 'Number of running (or pending) jobs are', runningJobs
+                        curJobs =  int(options['queue_size']) - runningJobs
+                        if curJobs <= 0:
+                            print 'Too many running jobs, let us wait a while'
+                            time.sleep(60)
+                        else:
+                            print 'Submitting an additional %d jobs' % curJobs
+                            break
                 print "Submitting %d job using command '%s %s.pbs'" % (repeat, command, job)
                 for r in range(repeat):
                     os.system('%s %s.pbs' % (command, job))
+                    curJobs -= repeat
         else:
             print "Job %s does not exist" % job
 
