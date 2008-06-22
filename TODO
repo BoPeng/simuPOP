@@ -30,8 +30,6 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 
 7. Expand pedigree functions and move the logic of samplers out of sampler.cpp.
 
-8. Expand population::findRelative to locate arbitrary relatives.
-
 9. Check what is wrong with simuRPy.py.
 
 10. Add pedigreeSample and subclass all pedigree related samplers to this class.
