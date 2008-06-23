@@ -1220,7 +1220,7 @@ def getOperators(pop, par, progress=False, vsp=False, visualization=False, mutat
                 end = pop.chromEnd(ch)
                 loc.extend(range(beg, end - 1))
                 rate.extend([(pos[x+1] - pos[x])*par.recIntensity for x in range(beg, end - 1)])
-            print 'Scaled recombination at %.3f cM/Mb over %.2f Morgan genetic (%.2f Mb physical) distance (first chromosome)' % \
+            print 'Scaled recombination at %.3f cM/Mb over %.2f centiMorgan genetic (%.2f Mb physical) distance (first chromosome)' % \
                 (par.recIntensity*100, (pop.dvars().genDist[pop.locusName(pop.numLoci(0)-1)] - \
                     pop.dvars().genDist[pop.locusName(0)]), pop.lociDist(0, pop.numLoci(0)-1))
             # recombination rate at the end of each chromosome will be invalid
