@@ -784,6 +784,7 @@ class admixtureParams:
             admixGen, migrGen, migrRate, ancestry, matingScheme, admixedName)
         # preparations
         self.createSimulationDir()
+        self.initFile = self.setFile('init.bin')
         self.expandedFile = self.setFile(self.expandedName)
         self.admixedFile = self.setFile(self.admixedName)
         #
@@ -1329,6 +1330,8 @@ def createInitialPopulation(par):
     writeMapFile(pop, par)
     # write a LD plot.
     pop.dvars().stage = 'hapmap'
+    print 'Saving initial population to ', par.initFile
+    pop.savePopulation(par.initFile)
     if par.drawLDPlot:
         drawLDPlot(pop, par)
     return pop
@@ -1496,9 +1499,6 @@ def mixExpandedPopulation(pop, par):
     ''' Evolve the seed population
     '''
     par.setCtrlLociIndex(pop)
-    if par.admixGen <= 0 or pop.numSubPop() == 1:
-        print 'No migration stage'
-        return pop
     # migration part.
     print 'Migrate %d generations using migration rate %s' % (par.migrGen, par.migrRate)
     migr = migrator(rate=par.migrRate, mode=MigrByProbability,
@@ -1590,6 +1590,9 @@ def simuAdmixture(par):
     par.step = 1
     expandedPop.dvars().scale = 1
     expandedPop.dvars().stage = 'mix'
+    if par.admixGen <= 0 or pop.numSubPop() == 1:
+        print 'No migration stage'
+        return
     admixedPop = mixExpandedPopulation(expandedPop, par)
     print 'Saving admixed population to ', par.admixedFile
     admixedPop.savePopulation(par.admixedFile)
