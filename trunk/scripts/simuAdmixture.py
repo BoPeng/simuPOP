@@ -1064,7 +1064,7 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
         ops.extend([
             pyEval(r"'Saving current generation to expand_%d.bin\n' % (gen*scale)",
                 step=par.saveStep, stage=PreMating),
-            savePopulation(outputExpr="'expand_%d.bin' % (gen*scale)",
+            savePopulation(outputExpr="'%s/expand_%%d.bin' %% (gen*scale)" % par.name,
                 step=par.saveStep, stage=PreMating),
         ])
     if mutation:
