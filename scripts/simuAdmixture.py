@@ -186,10 +186,6 @@ This example uses mostly default parameters, it can be executed by
 simuAdmixture.py  --name='example1' --chrom='[2]' \
     --numMarkers='[2000]' --startPos='[51]'
 
-If you would like to draw LD plot and have a look at average LD, please
-specify parameter --drawLDPlot and --haploview='/path/to/haploview -dprime'.
-Option '-dprime' of haploview is needed to calculate pairwise LD.
-
 
 '''
 
@@ -240,6 +236,17 @@ options = [
      'allowedTypes': [IntType, LongType],
      'description': '''Gap between generations at which population statistics are
                 calculated and reported. (This parameter is affected by --scale)'''
+    },
+    {'longarg': 'saveStep=',
+     'default': 0,
+     'label': 'Save population interval',
+     'useDefault': True,
+     'allowedTypes': [IntType, LongType],
+     'description': '''Initial, expanded and admixed populations will be saved. This option
+                allows you to save populations every --saveStep generations, starting
+                from population expansion. If saveStep = 0 (default), no intermediate population
+                will be saved. Otherwise, populations at generation 0, saveStep, 2*saveStep, ...
+                will be saved as expand_xx.bin where xx is generation number.''',
     },
     {'separator': 'Populations and markers to use'},
     {'longarg': 'HapMap_dir=',
@@ -345,6 +352,12 @@ options = [
      'allowedTypes': [IntType, LongType, FloatType],
      'description': '''Minimal distance between markers (in the unit of cM).
                 Can be used for both methods.''',
+    },
+    {'longarg': 'initName=',
+     'default': 'init.bin',
+     'useDefault': True,
+     'description': '''Name of the initial population, relative to simulation path''',
+     'allowedTypes': [StringType],
     },
     #
     {'separator': 'Mutation, recombination, etc'},
@@ -706,11 +719,11 @@ class admixtureParams:
     This class also clean up/validate parameters and calcualtes some derived
     parameters for later uses.
     '''
-    def __init__(self, name='simu', useSavedExpanded=False, step=100,
+    def __init__(self, name='simu', useSavedExpanded=False, step=100, saveStep=0,
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
-            numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
-            minDist=0, mutaRate=2.2e-6, recMap='genetic', recIntensity=0.01,
-            convProb=0, convMode='Tract length', convParam=0.02, 
+            numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0, minDist=0,
+            initName='init.bin', mutaRate=2.2e-6, recMap='genetic', recIntensity=0.01,
+            convProb=0, convMode='Tract length', convParam=0.02,
             forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
             scale=10, initCopy=20, initGen=20, initSize=5000,
@@ -718,27 +731,27 @@ class admixtureParams:
             admixGen=0, migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
-        (self.name, self.useSavedExpanded, self.step, 
+        (self.name, self.useSavedExpanded, self.step, self.saveStep,
             self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
             self.startPos, self.endingPos, self.minAF, self.minDiffAF, self.minDist,
-            self.mutaRate, self.recMap, self.recIntensity, self.convProb,
+            self.initName, self.mutaRate, self.recMap, self.recIntensity, self.convProb,
             self.convMode, self.convParam, self.forCtrlLoci, self.forCtrlFreq,
             self.backCtrlLoci, self.backCtrlFreq, self.fitness, self.mlSelModel,
-            self.backMigrRate, self.scale, 
+            self.backMigrRate, self.scale,
             self.initCopy, self.initGen, self.initSize,
             self.expandGen, self.expandSize, self.expandedName,
             self.admixGen, self.migrGen, self.migrRate,
             self.ancestry, self.matingScheme, self.admixedName) \
-        = (name, useSavedExpanded, step,
-            HapMap_dir, pops, markerList, chrom, numMarkers,
-            startPos, endingPos, minAF, minDiffAF, minDist, mutaRate, recMap,
+        = (name, useSavedExpanded, step, saveStep,
+            HapMap_dir, pops, markerList, chrom, numMarkers, startPos, endingPos,
+            minAF, minDiffAF, minDist, initName, mutaRate, recMap,
             recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
             backCtrlLoci, backCtrlFreq, fitness, mlSelModel, backMigrRate, scale,
             initCopy, initGen, initSize, expandGen, expandSize, expandedName,
             admixGen, migrGen, migrRate, ancestry, matingScheme, admixedName)
         # preparations
         self.createSimulationDir()
-        self.initFile = self.setFile('init.bin')
+        self.initFile = self.setFile(self.initName)
         self.expandedFile = self.setFile(self.expandedName)
         self.admixedFile = self.setFile(self.admixedName)
         #
@@ -772,6 +785,7 @@ class admixtureParams:
             self.recIntensity *= scale
             self.backMigrRate *= scale
             self.step = int(self.step / scale)
+            self.saveStep = int(self.saveStep / scale)
             self.initGen = int(self.initGen / scale)
             self.expandGen = int(self.expandGen / scale)
             self.curScale *= scale
@@ -1013,7 +1027,7 @@ def writeMapFile(pop, par):
     file.close()
 
 
-def getOperators(pop, par, progress=False, vsp=False, mutation=False,
+def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=False,
         migration=False, recombination=False, selection=False):
     '''Return mutation and recombination operators'''
     ops = []
@@ -1045,6 +1059,13 @@ def getOperators(pop, par, progress=False, vsp=False, mutation=False,
                 at = keyGens),
             pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % postGen),
                 at = keyGens)
+        ])
+    if savePop and par.saveStep > 0:
+        ops.extend([
+            pyEval(r"'Saving current generation to expand_%d.bin\n' % (gen*scale)",
+                step=par.saveStep, stage=PreMating),
+            savePopulation(outputExpr="'expand_%d.bin' % (gen*scale)",
+                step=par.saveStep, stage=PreMating),
         ])
     if mutation:
         ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
@@ -1181,8 +1202,6 @@ def createInitialPopulation(par):
     pop.dvars().stage = 'hapmap'
     print 'Saving initial population to ', par.initFile
     pop.savePopulation(par.initFile)
-    if par.drawLDPlot:
-        drawLDPlot(pop, par)
     return pop
 
 
@@ -1198,7 +1217,7 @@ def freeExpand(pop, par):
     simu = simulator(pop, randomMating(newSubPopSizeFunc = popSizeFunc))
     simu.evolve(
         ops = getOperators(pop, par,
-            progress=True, selection=True,
+            progress=True, savePop=True, selection=True,
             mutation=True, migration=True, recombination=True),
         gen = par.initGen + par.expandGen)
     return simu.getPopulation(0, True)
