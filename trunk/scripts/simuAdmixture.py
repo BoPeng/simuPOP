@@ -248,6 +248,12 @@ options = [
                 will be saved. Otherwise, populations at generation 0, saveStep, 2*saveStep, ...
                 will be saved as expand_xx.bin where xx is generation number.''',
     },
+    {'longarg': 'saveName=',
+     'default': 'expand_',
+     'useDefault': True,
+     'description': '''Prefix of the intermediately saved populations, relative to simulation path''',
+     'allowedTypes': [StringType],
+    },
     {'separator': 'Populations and markers to use'},
     {'longarg': 'HapMap_dir=',
      'default': 'HapMap',
@@ -719,7 +725,8 @@ class admixtureParams:
     This class also clean up/validate parameters and calcualtes some derived
     parameters for later uses.
     '''
-    def __init__(self, name='simu', useSavedExpanded=False, step=100, saveStep=0,
+    def __init__(self, name='simu', useSavedExpanded=False, step=100,
+            saveStep=0, saveName='expand_',
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0, minDist=0,
             initName='init.bin', mutaRate=2.2e-6, recMap='genetic', recIntensity=0.01,
@@ -731,7 +738,7 @@ class admixtureParams:
             admixGen=0, migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
-        (self.name, self.useSavedExpanded, self.step, self.saveStep,
+        (self.name, self.useSavedExpanded, self.step, self.saveStep, self.saveName,
             self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
             self.startPos, self.endingPos, self.minAF, self.minDiffAF, self.minDist,
             self.initName, self.mutaRate, self.recMap, self.recIntensity, self.convProb,
@@ -742,7 +749,7 @@ class admixtureParams:
             self.expandGen, self.expandSize, self.expandedName,
             self.admixGen, self.migrGen, self.migrRate,
             self.ancestry, self.matingScheme, self.admixedName) \
-        = (name, useSavedExpanded, step, saveStep,
+        = (name, useSavedExpanded, step, saveStep, saveName,
             HapMap_dir, pops, markerList, chrom, numMarkers, startPos, endingPos,
             minAF, minDiffAF, minDist, initName, mutaRate, recMap,
             recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
@@ -1062,9 +1069,9 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
         ])
     if savePop and par.saveStep > 0:
         ops.extend([
-            pyEval(r"'Saving current generation to expand_%d.bin\n' % (gen*scale)",
+            pyEval(r"'Saving current generation to %s%%d.bin\n' %% (gen*scale)" % par.saveName,
                 step=par.saveStep, stage=PreMating),
-            savePopulation(outputExpr="'%s/expand_%%d.bin' %% (gen*scale)" % par.name,
+            savePopulation(outputExpr="'%s/%s%%d.bin' %% (gen*scale)" % (par.name, par.saveName),
                 step=par.saveStep, stage=PreMating),
         ])
     if mutation:
