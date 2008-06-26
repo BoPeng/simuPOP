@@ -36,6 +36,7 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 These classes only need to define a probePedigree function to find a valid
 pedigree from a proband.
 
+11. A portable bin format?
 
 Items are marked roughly
 Status: Onging (O), Done (DONE)

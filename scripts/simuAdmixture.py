@@ -1465,7 +1465,7 @@ def simuAdmixture(par):
     par.step = 1
     expandedPop.dvars().scale = 1
     expandedPop.dvars().stage = 'mix'
-    if par.admixGen <= 0 or pop.numSubPop() == 1:
+    if par.admixGen <= 0 or len(par.pops) == 1:
         print 'No migration stage'
         return
     admixedPop = mixExpandedPopulation(expandedPop, par)
