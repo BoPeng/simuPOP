@@ -232,7 +232,7 @@ options = [
                 skip population expansion'''
     },
     #
-    {'separator': 'Progress report and plots'},
+    {'separator': 'Progress record and report'},
     {'longarg': 'step=',
      'default': 100,
      'label': 'Progress report interval',
@@ -241,48 +241,6 @@ options = [
      'description': '''Gap between generations at which population statistics are
                 calculated and reported. (This parameter is affected by --scale)'''
     },
-    {'longarg': 'figureStep=',
-     'default': 200,
-     'label': 'Figure update interval',
-     'useDefault': True,
-     'allowedTypes': [IntType, LongType],
-     'description': '''Gap between generations at which LD plots are
-                draw. Default to 200. (This parameter is affected by scale)'''
-    },
-    {'longarg': 'drawLDPlot',
-     'default': False,
-     'useDefault': True,
-     'allowedTypes': [BooleanType],
-     'label': 'Draw LD plots at specified regions',
-     'description': '''If set, draw LD structure (using haploview, available) on specified
-                regions (--ldRegions). The figures will be saved in names such as
-                CEU_stage_start-end_gen.PNG''',
-    },
-    {'longarg': 'haploview=',
-     'default': 'haploview',
-     'useDefault': True,
-     'allowedTypes': [StringType],
-     'label': 'Command and options to run haploview',
-     'description': '''Path to haploview or command to start haploview. It can simply
-                be haploview, but can be something like '/path/to/jave /path/to/haploview.jar'.
-                This script adds "-pedfile pedfile -map mapfile -compressedpng -q -n" to this
-                argument. Other options such as '-dprime' (output D' values), '-spacing' 
-                (proportion) as part of this parameter. When '-dprime' is given, LD (D')
-                values of markers at the same distance are averaged and saved to an
-                average LD file.
-                If haploview is not found, no LD plot will be displayed.'''
-    },
-    {'longarg': 'ldRegions=',
-     'default': [0, 1000],
-     'useDefault': True,
-     'allowedTypes': [TupleType, ListType],
-     'label': 'Regions to plot LD structure',
-     'description': '''A list of regions, in terms of marker position that LD structure
-                is plotted. If there are 1000 markers on each chromosome, viewRegions
-                can be [[0, 500], [1200, 1700]]. A single region such as [0, 500] is
-                allowed.'''
-    },
-    #
     {'separator': 'Populations and markers to use'},
     {'longarg': 'HapMap_dir=',
      'default': 'HapMap',
@@ -748,9 +706,7 @@ class admixtureParams:
     This class also clean up/validate parameters and calcualtes some derived
     parameters for later uses.
     '''
-    def __init__(self, name='simu', useSavedExpanded=False,
-            step=100, figureStep=200, drawLDPlot=False,
-            haploview='haploview', ldRegions=[0, 1000], 
+    def __init__(self, name='simu', useSavedExpanded=False, step=100,
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0,
             minDist=0, mutaRate=2.2e-6, recMap='genetic', recIntensity=0.01,
@@ -762,8 +718,7 @@ class admixtureParams:
             admixGen=0, migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
             ancestry=True, matingScheme='random', admixedName='admixed.bin'):
         # expand all params to different options
-        (self.name, self.useSavedExpanded, self.step, self.figureStep,
-            self.drawLDPlot, self.haploview, self.ldRegions, 
+        (self.name, self.useSavedExpanded, self.step, 
             self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
             self.startPos, self.endingPos, self.minAF, self.minDiffAF, self.minDist,
             self.mutaRate, self.recMap, self.recIntensity, self.convProb,
@@ -775,7 +730,6 @@ class admixtureParams:
             self.admixGen, self.migrGen, self.migrRate,
             self.ancestry, self.matingScheme, self.admixedName) \
         = (name, useSavedExpanded, step,
-            figureStep, drawLDPlot, haploview, ldRegions,
             HapMap_dir, pops, markerList, chrom, numMarkers,
             startPos, endingPos, minAF, minDiffAF, minDist, mutaRate, recMap,
             recIntensity, convProb, convMode, convParam, forCtrlLoci, forCtrlFreq,
@@ -799,9 +753,6 @@ class admixtureParams:
         self.markerMapFile = os.path.join(self.name, 'ld.map')
         self.logFile = os.path.join(self.name, 'logfile.txt')
         Tee(open(self.logFile, 'w'))
-        # parameters for ld plots
-        if len(self.ldRegions) == 2 and type(self.ldRegions[0]) in [IntType, LongType]:
-            self.ldRegions = [self.ldRegions]
         self.convMode = {
             'Tract length': CONVERT_TractLength,
             'Number of markers': CONVERT_NumMarkers,
@@ -821,7 +772,6 @@ class admixtureParams:
             self.recIntensity *= scale
             self.backMigrRate *= scale
             self.step = int(self.step / scale)
-            self.figureStep = int(self.figureStep / scale)
             self.initGen = int(self.initGen / scale)
             self.expandGen = int(self.expandGen / scale)
             self.curScale *= scale
@@ -1063,102 +1013,7 @@ def writeMapFile(pop, par):
     file.close()
 
 
-def calcMeanLD(LDFile, mapFile, width=10, dist=.7):
-    '''Calculate mean LD (D') for each distance (each kb). This will
-    only be called if the -dprime parameter of haploview is
-    given so a LD file is saved to disk.
-    LDFile: haploview generated LD file
-    mapFile: markers.lst produced by this script
-    width: width of the bins of distances, default to 10kb
-    dist: Only LD between markers within this distance is summarized,
-        specified as the percentage of the distance between the first
-        and last markers.
-    '''
-    map = []
-    file = open(mapFile)
-    file.readline()
-    for line in file.readlines():
-        fields = line.split()
-        map.append(int(float(fields[2])*1000000))
-    maxDist = dist * (map[-1] - map[0]) / 1000.
-    #
-    ld = {}
-    file = open(LDFile)
-    file.readline()
-    for line in file.readlines():
-        fields = line.split()
-        m1 = int(fields[0])
-        m2 = int(fields[1])
-        # each kb
-        dist = int(map[m2-1] - map[m1-1])/1000/width
-        if dist * width > maxDist:
-            continue
-        if ld.has_key(dist):
-            ld[dist].append(float(fields[2]))
-        else:
-            ld[dist] = [float(fields[2])]
-    # distance
-    dist = ld.keys()
-    dist.sort()
-    avgLD = []
-    for d in dist:
-        avgLD.append(sum(ld[d])/len(ld[d]))
-    # write result
-    print 'Saving mean LD to %s.avg' % LDFile
-    avgFile = open(LDFile + '.avg', 'w')
-    print >> avgFile, "Distance (kb), Average LD (D')"
-    for d,l in zip(dist, avgLD):
-        print >> avgFile, '%d\t%.3f' % (d*width, l)
-    avgFile.close()
-    return [x*width for x in dist], avgLD
-
-
-def drawLDPlot(pop, par, preMating=True):
-    '''Draw and display ld plot'''
-    # NOTE: RandomSample will add information field oldindex etc
-    # to pop so the population structure of pop will be changed.
-    # This may disrupt evolution.
-    if preMating:
-        gen = pop.gen() * par.curScale
-    else:
-        gen = (pop.gen() + 1) * par.curScale - 1
-    if True in [pop.subPopSize(x) < par.ldSampleSize for x in range(pop.numSubPop())]:
-        sample = pop.clone()
-    else:
-        sample = RandomSample(pop.clone(), [par.ldSampleSize]*pop.numSubPop())[0]
-    for idx,subPop in enumerate(par.pops):
-        toBeRemoved = range(pop.numSubPop())
-        toBeRemoved.remove(idx)
-        spSample = sample.clone()
-        spSample.removeSubPops(toBeRemoved)
-        for reg in par.ldRegions:
-            name = 'LD_%s_%d-%d_%s_%d' % (subPop, reg[0], reg[1],
-                pop.dvars().stage, gen)
-            filename = os.path.join(par.name, name)
-            regSample = spSample.clone()
-            regSample.removeLoci(keep=range(reg[0], reg[1]))
-            print 'Drawing LD plot for population %s between loci %d and %d, using %d individuals' % \
-                (subPop, reg[0], reg[1], par.ldSampleSize)
-            SaveMerlinPedFile(regSample, output=filename,
-                outputAffection=True, affectionCode=['1', '2'])
-            cmd = '%s -pedfile %s.ped -map %s -compressedpng -q -n' % \
-                (par.haploview, filename, par.markerMapFile)
-            print 'Command: %s' % cmd
-            os.system(cmd)
-            # if an LD file is produced as the result of -dprime parameter, calculate
-            # average D' for dist
-            if os.path.isfile(filename + '.ped.LD'):
-                print 'Calculating mean LD from %s.ped.LD' % filename
-                calcMeanLD(filename + '.ped.LD', par.markerListFile)
-    return True
-
-def preDrawLDPlot(pop, par):
-    return drawLDPlot(pop, par, True)
-
-def postDrawLDPlot(pop, par):
-    return drawLDPlot(pop, par, False)
-
-def getOperators(pop, par, progress=False, vsp=False, visualization=False, mutation=False,
+def getOperators(pop, par, progress=False, vsp=False, mutation=False,
         migration=False, recombination=False, selection=False):
     '''Return mutation and recombination operators'''
     ops = []
@@ -1190,12 +1045,6 @@ def getOperators(pop, par, progress=False, vsp=False, visualization=False, mutat
                 at = keyGens),
             pyEval(r'"At the end of %s\n" %% (%s)' % (', '.join(exp), ', '.join(var) % postGen),
                 at = keyGens)
-        ])
-    if visualization and par.drawLDPlot and par.figureStep > 0 \
-        and len(par.ldRegions) > 0:
-        ops.extend([
-            pyOperator(func=preDrawLDPlot, param = par, step=par.figureStep, stage=PreMating),
-            pyOperator(func=postDrawLDPlot, param = par, at=[par.initGen - 1, -1])
         ])
     if mutation:
         ops.append(kamMutator(rate=par.mutaRate, loci=range(pop.totNumLoci())))
@@ -1349,7 +1198,7 @@ def freeExpand(pop, par):
     simu = simulator(pop, randomMating(newSubPopSizeFunc = popSizeFunc))
     simu.evolve(
         ops = getOperators(pop, par,
-            progress=True, visualization=True, selection=True,
+            progress=True, selection=True,
             mutation=True, migration=True, recombination=True),
         gen = par.initGen + par.expandGen)
     return simu.getPopulation(0, True)
@@ -1405,7 +1254,7 @@ def forCtrlExpand(pop, par):
     )
     simu.evolve(
         ops = getOperators(pop, par,
-            progress=True, visualization=True, selection=True,
+            progress=True, selection=True,
             mutation=True, migration=True, recombination=True),
         gen = par.initGen + par.expandGen
     )
@@ -1482,7 +1331,7 @@ def backCtrlExpand(pop, par):
     )
     simu.evolve(
         ops = getOperators(pop, par,
-            progress=True, visualization=True, selection=True,
+            progress=True, selection=True,
             mutation=True, migration=True, recombination=True)
             + introOps,
         gen = par.initGen + par.expandGen
@@ -1539,7 +1388,7 @@ def mixExpandedPopulation(pop, par):
         simu = simulator(pop, customizedMatingScheme(pop))
     simu.evolve(
         ops = getOperators(pop, par, vsp = par.matingScheme != 'random',
-            progress=True, visualization=True, selection=True,
+            progress=True, selection=True,
             mutation=True, migration=False, recombination=True)
             + [migr, ancOps],
         gen = par.admixGen
