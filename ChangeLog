@@ -4,6 +4,7 @@ BUGS:
   - all known bugs have been cleared.
 
 version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - NEW: allow the use of a list to specify a virtual subpopulation.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.

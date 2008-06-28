@@ -246,6 +246,8 @@ namespace std
 %include "genoStru.h"
 %include "individual.h"
 
+%implicitconv vsp;
+
 namespace std
 {
     %template()    vector<simuPOP::vsp >;

@@ -82,10 +82,11 @@ public:
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
 	 \param fromSubPop an array of 'from' (virtual) subpopulations. Default to all.
 	   	If a single (virtual) subpopulation is specified, <tt>[]</tt> can be ignored.
-	   	A virtual subpopulation should be as <tt>vsp(subPop, virtualSubPop)</tt>. For example,
+	   	A virtual subpopulation should be specified as <tt>vsp(subPop, virtualSubPop)</tt>, or
+		simply (subPop, virtualSubPop) when there is no ambiguity. For example,
 	   	if you define a virtual subpopulation by sex, you can use
-	   	<tt>fromSubPop=vsp(0, 0)</tt> to choose migrants only from the first virtual subpopulation
-	   	of subpopulation 0.
+	   	<tt>fromSubPop=[vsp(0, 0), 1]</tt> or <tt>fromSubpop=[(0,0), 1]</tt> to choose migrate 
+		from the first virtual subpopulation of subpopulation 0, and from subpopulation 1.
 	 \param toSubPop an array of 'to' subpopulations. Default to all
 	   	subpopulations. If a single subpopulation is specified,
 	   	<tt>[]</tt> can be ignored.
