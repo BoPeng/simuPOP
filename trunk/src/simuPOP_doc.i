@@ -5903,12 +5903,14 @@ Arguments:
     fromSubPop:     an array of 'from' (virtual) subpopulations.
                     Default to all. If a single (virtual)
                     subpopulation is specified, [] can be ignored. A
-                    virtual subpopulation should be as vsp(subPop,
-                    virtualSubPop). For example, if you define a
-                    virtual subpopulation by sex, you can use
-                    fromSubPop=vsp(0, 0) to choose migrants only from
-                    the first virtual subpopulation of subpopulation
-                    0.
+                    virtual subpopulation should be specified as
+                    vsp(subPop, virtualSubPop), or simply (subPop,
+                    virtualSubPop) when there is no ambiguity. For
+                    example, if you define a virtual subpopulation by
+                    sex, you can use fromSubPop=[vsp(0, 0), 1] or
+                    fromSubpop=[(0,0), 1] to choose migrate from the
+                    first virtual subpopulation of subpopulation 0,
+                    and from subpopulation 1.
     toSubPop:       an array of 'to' subpopulations. Default to all
                     subpopulations. If a single subpopulation is
                     specified, [] can be ignored.
@@ -16323,7 +16325,7 @@ Description:
 
 Usage:
 
-    vsp(subPop, virtualSubPop=InvalidSubPopID)
+    vsp(subPop)
 
 "; 
 

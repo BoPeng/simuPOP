@@ -45,6 +45,14 @@ class population;
 class vsp
 {
 public:
+	vsp(const vectori & subPop)
+	{
+		DBG_FAILIF(subPop.size() != 2, ValueError,
+			"Please specify both subPop and virtualSubPop ID or a virtual subpopulation");
+		m_subPop = subPop[0];
+		m_virtualSubPop = subPop[1];
+	}
+
 	vsp(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID)
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
 	{

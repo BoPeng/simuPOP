@@ -104,13 +104,13 @@ class TestMigrator(unittest.TestCase):
             rate = [ [0, 50, 50],
                              [0, 0, 0],
                              [0, 0, 0] ],
-            fromSubPop = [vsp(0, 0), 1, 2])
+            fromSubPop = [(0, 0), 1, 2])
         self.assertEqual(pop.subPopSizes(), (2000, 4000, 4000))
         Migrate(pop, mode=MigrByCounts,
             rate = [ [0, 50, 50],
                              [0, 0, 0],
                              [0, 0, 0] ],
-            fromSubPop = [vsp(0, 1), 1, 2])
+            fromSubPop = [(0, 1), 1, 2])
         self.assertEqual(pop.subPopSizes(), (1900, 4050, 4050))
         self.assertEqual(pop.virtualSubPopSize(0, 0), 0)
         self.assertEqual(pop.virtualSubPopSize(0, 1), 1900)
@@ -123,7 +123,7 @@ class TestMigrator(unittest.TestCase):
                      [0, 25, 25],
                              [50, 0, 0],
                              [50, 0, 0] ],
-            fromSubPop=[vsp(0,0), vsp(0,1), 1, 2])
+            fromSubPop=[(0,0), (0,1), 1, 2])
         # 25F, 0 -> 1
         # 25F, 0 -> 2
         # 0M migrated.
@@ -144,7 +144,7 @@ class TestMigrator(unittest.TestCase):
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ],
-            fromSubPop = [vsp(0,0), vsp(1,0), vsp(2,0)])
+            fromSubPop = [(0,0), (1,0), (2,0)])
         # no one move out from sp 1, move in 200
         # 200 male, 2000 female
         # 3900 male
@@ -166,7 +166,7 @@ class TestMigrator(unittest.TestCase):
                      [0, .1, .1],
                              [0.1, 0, 0],
                              [0, 0.1, 0] ],
-            fromSubPop=[vsp(0,0), vsp(0,1), 1, 2]
+            fromSubPop=[(0,0), (0,1), 1, 2]
         )
         # 220 to sp1 and sp2
         # noone goes from sp1 or sp2 to sp0.
@@ -185,7 +185,7 @@ class TestMigrator(unittest.TestCase):
             rate = [ [0, .1, .1],
                              [0.1, 0, 0],
                              [0.1, 0, 0]],
-            fromSubPop = [vsp(0,0), vsp(1,0), vsp(2,0)])
+            fromSubPop = [(0,0), (1,0), (2,0)])
         # 2000 female -> 0
         # 4000 male -> 400 to 0
         # 4000 male -> 400 to 0
@@ -199,7 +199,7 @@ class TestMigrator(unittest.TestCase):
             rate = [ [0, 0.1, 0.1],
                              [0.1, 0, 0],
                              [0, 0.1, 0] ],
-            fromSubPop = [vsp(0,1), vsp(1,1), vsp(2,1)])
+            fromSubPop = [(0,1), (1,1), (2,1)])
         # 2000 female, 800 male -> 200 female to each
         # 3600 male no
         # 3600 male no
