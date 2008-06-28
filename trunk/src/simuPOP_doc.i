@@ -5900,17 +5900,16 @@ Arguments:
                     migration rate will be a m by n matrix of value r
     mode:           one of MigrByProbability (default),
                     MigrByProportion or MigrByCounts
-    fromSubPop:     an array of 'from' (virtual) subpopulations.
-                    Default to all. If a single (virtual)
-                    subpopulation is specified, [] can be ignored. A
-                    virtual subpopulation should be specified as
-                    vsp(subPop, virtualSubPop), or simply (subPop,
-                    virtualSubPop) when there is no ambiguity. For
-                    example, if you define a virtual subpopulation by
-                    sex, you can use fromSubPop=[vsp(0, 0), 1] or
-                    fromSubpop=[(0,0), 1] to choose migrate from the
+    fromSubPop:     an array of 'from' subpopulations (a number) or
+                    virtual subpopulations (a pair of numbers).
+                    Default to all subpopulations. For example, if you
+                    define a virtual subpopulation by sex, you can use
+                    fromSubpop=[(0,0), 1] to choose migrants from the
                     first virtual subpopulation of subpopulation 0,
-                    and from subpopulation 1.
+                    and from subpopulation 1. If a single number sp is
+                    given, it is intepretted as [sp]. Note that
+                    fromSubPop=(0, 1) (two subpopulation) is different
+                    from fromSubPop=[(0,1)] (a virtual subpopulation).
     toSubPop:       an array of 'to' subpopulations. Default to all
                     subpopulations. If a single subpopulation is
                     specified, [] can be ignored.

@@ -80,13 +80,13 @@ public:
 	   	parameter \c mode. \c rate should be an m by n matrix. If a number is given,
 	   	the migration rate will be a \c m by \c n matrix of value \c r
 	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-	 \param fromSubPop an array of 'from' (virtual) subpopulations. Default to all.
-	   	If a single (virtual) subpopulation is specified, <tt>[]</tt> can be ignored.
-	   	A virtual subpopulation should be specified as <tt>vsp(subPop, virtualSubPop)</tt>, or
-		simply (subPop, virtualSubPop) when there is no ambiguity. For example,
-	   	if you define a virtual subpopulation by sex, you can use
-	   	<tt>fromSubPop=[vsp(0, 0), 1]</tt> or <tt>fromSubpop=[(0,0), 1]</tt> to choose migrate 
+	 \param fromSubPop an array of 'from' subpopulations (a number) or virtual subpopulations
+		(a pair of numbers). Default to all subpopulations. For example, if you define a
+		virtual subpopulation by sex, you can use <tt>fromSubpop=[(0,0), 1]</tt> to choose migrants 
 		from the first virtual subpopulation of subpopulation 0, and from subpopulation 1.
+		If a single number \c sp is given, it is intepretted as [sp]. Note that
+		<tt>fromSubPop=(0, 1)</tt> (two subpopulation) is different from <tt>fromSubPop=[(0,1)]</tt>
+		(a virtual subpopulation).
 	 \param toSubPop an array of 'to' subpopulations. Default to all
 	   	subpopulations. If a single subpopulation is specified,
 	   	<tt>[]</tt> can be ignored.
