@@ -9,8 +9,7 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 	scenarios.
   1.2 Check reference manuals for format and accuracy.
 
-2. Considering replacing SubPopID with vsp, reducing another parameter. 
-	Currently, there is a interface TypeError problem.
+2. Replacing SubPopID with vsp, reducing another parameter. 
 
 3. Remove a few rarely used features.
   2.1 arrXXXX? This function is very difficult to implement, but may
