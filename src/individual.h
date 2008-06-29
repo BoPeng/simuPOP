@@ -215,10 +215,10 @@ public:
 	 \param index absolute index from the beginning of the genotype, ranging from \c 0
 	   	to <tt> totNumLoci()*ploidy() </tt>
 	 */
-	Allele allele(UINT index) const
+	UINT allele(UINT index) const
 	{
 		CHECKRANGEGENOSIZE(index);
-		return *(m_genoPtr + index);
+		return static_cast<UINT>(*(m_genoPtr + index));
 	}
 
 
@@ -228,11 +228,11 @@ public:
 	 \c 0 to <tt> totNumLoci() </tt>
 	 \param p index of the ploidy
 	 */
-	Allele allele(UINT index, UINT p) const
+	UINT allele(UINT index, UINT p) const
 	{
 		CHECKRANGEABSLOCUS(index);
 		CHECKRANGEPLOIDY(p);
-		return *(m_genoPtr + index + p * totNumLoci() );
+		return static_cast<UINT>(*(m_genoPtr + index + p * totNumLoci() ));
 	}
 
 
@@ -243,12 +243,12 @@ public:
 	 \param p index of the polidy
 	 \param ch index of the chromosome in the \c p-th chromosome set
 	 */
-	Allele allele(UINT index, UINT p, UINT ch) const
+	UINT allele(UINT index, UINT p, UINT ch) const
 	{
 		CHECKRANGELOCUS(ch, index);
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(ch);
-		return *(m_genoPtr + index + p * totNumLoci() + chromBegin(ch));
+		return static_cast<UINT>(*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch)));
 	}
 
 

@@ -579,7 +579,7 @@ public:
 
 
 	/// return the name of an allele (if previously specified). Default to allele index.
-	string alleleName(const Allele allele) const;
+	string alleleName(const UINT allele) const;
 
 	/// return an array of allele names
 	vectorstr alleleNames() const

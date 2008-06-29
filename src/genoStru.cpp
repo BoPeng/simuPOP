@@ -530,28 +530,17 @@ std::pair<UINT, UINT> GenoStruTrait::chromLocusPair(UINT locus) const
 }
 
 
-string GenoStruTrait::alleleName(const Allele allele) const
+string GenoStruTrait::alleleName(const UINT allele) const
 {
-#ifndef BINARYALLELE
 	DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
 		IndexError, "Allele out of range of 0 ~ " +
 		toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
 	if (allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ) {
 		DBG_FAILIF(allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size(),
-			IndexError, "No name for allele " + toStr(static_cast<UINT>(allele)));
-
+			IndexError, "No name for allele " + toStr(allele));
 		return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
 	} else
-		return toStr(static_cast<int>(allele));
-#else
-	if (static_cast<unsigned>(allele) < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() )
-		return s_genoStruRepository[m_genoStruIdx].m_alleleNames[allele];
-	else if (allele)
-		return "1";
-	else
-		return "0";
-#endif
-
+		return toStr(allele);
 }
 
 
