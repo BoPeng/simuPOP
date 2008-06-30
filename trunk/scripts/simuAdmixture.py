@@ -800,6 +800,12 @@ class admixtureParams:
                 print "The simulation is not accelerated."
             else:
                 print "The simulation will be accelerated by %.1f times." % self.curScale
+            if self.initGen == 0:
+                raise ValueError('No initial stage. It is possible '
+                    'that you scale parameter is larger than initGen')
+            if self.expandGen == 0:
+                raise ValueError('No expansion stage. It is possible '
+                    'that you scale parameter is larger than initGen')
 
 
     def createSimulationDir(self):
