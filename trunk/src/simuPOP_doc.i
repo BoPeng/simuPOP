@@ -14355,6 +14355,14 @@ Usage:
       randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, grp=GRP_ALL, infoFields=[])
 
+Details:
+
+    Split a subpopulation by sizes or proportions. Individuals are
+    randomly (by default) assigned to the resulting subpopulations.
+    Because  mating schemes may introduce certain order to
+    individuals, randomization ensures that split subpopulations have
+    roughly even distribution of genotypes.
+
 Arguments:
 
     which:          which subpopulation to split. If there is no
@@ -14368,6 +14376,8 @@ Arguments:
     subPopID:       new subpopulation IDs. Otherwise, the operator
                     will automatically set new subpopulation IDs to
                     new subpopulations.
+    randomize:      Whether or not randomize individuals before
+                    population split. Default to True.
 
 Example:
 
