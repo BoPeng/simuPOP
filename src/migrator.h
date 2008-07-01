@@ -299,6 +299,11 @@ class splitSubPop : public baseOperator
 public:
 	/// split a subpopulation
 	/**
+	 Split a subpopulation by sizes or proportions. Individuals are randomly (by default)
+	 assigned to the resulting subpopulations. Because mating schemes may introduce
+	 certain order to individuals, randomization ensures that split subpopulations have
+	 roughly even distribution of genotypes.
+
 	 \param which which subpopulation to split. If there is no subpopulation structure,
 	   	use \c 0 as the first (and only) subpopulation.
 	 \param sizes new subpopulation sizes. The sizes should be added up to the original
@@ -306,6 +311,8 @@ public:
 	 \param proportions proportions of new subpopulations. Should be added up to \c 1.
 	 \param subPopID new subpopulation IDs. Otherwise, the operator will automatically
 	   	set new subpopulation IDs to new subpopulations.
+	 \param randomize Whether or not randomize individuals before population split. Default
+		to True.
 	 \test src_splitSubPop.log Operator \c splitSubPop
 	 */
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
