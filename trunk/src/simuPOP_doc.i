@@ -14680,46 +14680,49 @@ Arguments:
                     the following options: numOfAlleles, alleleNum,
                     and alleleFreq.
     genoFreq:       an array of loci at which all genotype frequencies
-                    will be calculated (genoFreq=[loc1, loc2, ...]
-                    where loc1 etc. are loci where genotype
-                    frequencies will be calculated). All the genotypes
-                    in the  population will be counted. You may use
-                    hasPhase to set if a/b and b/a are the same
-                    genotype. This parameter will set the following
-                    dictionary variables. Note that unlike list used
-                    for alleleFreq etc., the indexes a, b of
-                    genoFreq[a][b] are dictionary keys, so you will
-                    get a KeyError when you used a wrong key. Usually,
-                    genoNum.setDefault(a,{}) is preferred.
-                    * genoNum[a][geno] and
-                    subPop[sp]['genoNum'][a][geno], the number of
-                    genotype geno at allele a. geno has the form x-y.
-                    * genoFreq[a][geno] and
-                    subPop[sp]['genoFreq'][a][geno], the frequency of
-                    genotype geno at allele a.
+                    will be calculated (genoFreq=[loc1, loc2, ...].
+                    You may use parameter genoFreq_param to control if
+                    a/b and b/a are the same genotype. This parameter
+                    will set the following dictionary variables. Note
+                    that unlike list used for alleleFreq etc., the
+                    indexes a, b of genoFreq[loc][a][b] are dictionary
+                    keys, so you will get a KeyError when you used a
+                    wrong key. You can get around this problem by
+                    using expressions like
+                    genoNum[loc].setDefault(a,{}).
+                    * genoNum[loc][allele1][allele2] and
+                    subPop[sp]['genoNum'][loc][allele1][allele2], the
+                    number of genotype allele1-allele2 at locus loc.
+                    * genoFreq[loc][allele1][allele2] and
+                    subPop[sp]['genoFreq'][loc][allele1][allele2], the
+                    frequency of genotype allele1-allele2 at locus
+                    loc.
                     * genoFreq_param a dictionary of parameters of
                     phase = 0 or 1.
-    heteroFreq:     an array of loci to calculate observed
-                    heterozygosities and expected heterozygosities
-                    (heteroFreq=[loc1, loc2, ...]). This parameter
-                    will set the following variables (arrays of
-                    observed heterozygosities). Note that
-                    heteroNum[loc][1] is the number of heterozygote
-                    1x,  $ x \\ne 1 $. Numbers and frequencies
-                    (proportions) of heterozygotes are calculated for
-                    each allele. HeteroNum[loc] and HeterFreq[loc] are
-                    the overall heterozygosity number and frequency.
-                    I.e., the number and frequency of genotype xy,  $
-                    x \\ne y $. From these numbers, we can easily
-                    derive the number and frequency of homozygosity.
+    heteroFreq:     an array of loci at which observed
+                    heterozygosities will be calculated
+                    (heteroFreq=[loc1, loc2, ...]). For each locus,
+                    the number and frequency of allele specific and
+                    overall heterozygotes will be calcuated and stored
+                    in four  population variables. For example,
+                    heteroNum[loc][1] stores number of heterozygotes
+                    at locus loc, with respect to allele 1, which is
+                    the number of all genotype 1x or x1 where  does
+                    not equal to 1. All other genotypes such as 02 are
+                    considered as homozygotes when heteroFreq[loc][1]
+                    is calculated. The overall number of heterozygotes
+                    (HeteroNum[loc]) is the number of genotype xy if x
+                    does not equal to y.
                     * HeteroNum[loc], subPop[sp]['HeteroNum'][loc],
-                    the overall heterozygote number.
+                    the overall heterozygote count.
                     * HeteroFreq[loc], subPop[sp]['HeteroFreq'][loc],
                     the overall heterozygote frequency.
                     * heteroNum[loc][allele],
-                    subPop[sp]['heteroNum'][loc][allele].
+                    subPop[sp]['heteroNum'][loc][allele], allele-
+                    specific heterozygote counts.
                     * heteroFreq[loc][allele],
-                    subPop[sp]['heteroFreq'][loc][allele].
+                    subPop[sp]['heteroFreq'][loc][allele], allele-
+                    specific heterozygote frequency.
     homoFreq:       an array of loci to calculate observed
                     homozygosities and expected homozygosities
                     (homoFreq=[loc1, loc2, ...]). This parameter will
