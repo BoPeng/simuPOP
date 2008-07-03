@@ -1550,33 +1550,32 @@ public:
 	 \c alleleNum, and \c alleleFreq.
 
 	 \param genoFreq an array of loci at which all genotype frequencies will be
-	   calculated (<tt>genoFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
-	   loci where genotype frequencies will be calculated). All the genotypes
-	   in the population will be counted. You may use \c hasPhase to set if
-	   a/b and b/a are the same genotype. This parameter will set the following
+	   calculated (<tt>genoFreq=[loc1, loc2, ...]</tt>. You may use parameter 
+	   \c genoFreq_param to control if <tt>a/b</tt> and <tt>b/a</tt> are the same
+	   genotype. This parameter will set the following
 	   dictionary variables. Note that unlike list used for \c alleleFreq etc.,
-	   the indexes \c a, \c b of <tt>genoFreq[a][b]</tt> are dictionary keys,
-	   so you will get a \em KeyError when you used a wrong key. Usually,
-	   <tt>genoNum.setDefault(a,{})</tt> is preferred.
-	 \li <tt>genoNum[a][geno]</tt> and <tt>subPop[sp]['genoNum'][a][geno]</tt>,
-	   the number of genotype \c geno at allele \c a. \c geno has the form <tt>x-y</tt>.
-	 \li <tt>genoFreq[a][geno]</tt> and <tt>subPop[sp]['genoFreq'][a][geno]</tt>,
-	   the frequency of genotype \c geno at allele \c a.
+	   the indexes \c a, \c b of <tt>genoFreq[loc][a][b]</tt> are dictionary keys,
+	   so you will get a \em KeyError when you used a wrong key. You can get around
+	   this problem by using expressions like <tt>genoNum[loc].setDefault(a,{})</tt>.
+	 \li <tt>genoNum[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoNum'][loc][allele1][allele2]</tt>,
+	   the number of genotype \c allele1-allele2 at locus \c loc.
+	 \li <tt>genoFreq[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoFreq'][loc][allele1][allele2]</tt>,
+	   the frequency of genotype \c allele1-allele2 at locus \c loc.
 	 \li genoFreq_param a dictionary of parameters of \c phase = 0 or 1.
 
-	 \param heteroFreq an array of loci to calculate observed heterozygosities
-	   and expected heterozygosities (<tt>heteroFreq=[loc1, loc2, ...]</tt>).
-	   This parameter will set the following
-	   variables (arrays of observed heterozygosities). Note that <tt>heteroNum[loc][1]</tt>
-	   is the number of heterozygote \b 1x, \f$ x \ne 1 \f$. Numbers and frequencies
-	   (proportions) of heterozygotes are calculated for each allele. <tt>HeteroNum[loc]</tt>
-	   and <tt>HeterFreq[loc]</tt> are the overall heterozygosity number and
-	   frequency. I.e., the number and frequency of genotype \b xy, \f$ x \ne y \f$.
-	   From these numbers, we can easily derive the number and frequency of homozygosity.
-	 \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote number.
+	 \param heteroFreq an array of loci at which observed heterozygosities will be calculated
+	   (<tt>heteroFreq=[loc1, loc2, ...]</tt>). For each locus, the number and frequency of
+	   allele specific and overall heterozygotes will be calcuated and stored in four population
+	   variables. For example, <tt>heteroNum[loc][1]</tt> stores number of heterozygotes
+	   at locus \c loc, with respect to allele \c 1, which is the number of all genotype
+	   \c 1x or \c x1 where \x does not equal to \c 1. All other genotypes such as \c 02 are
+	   considered as homozygotes when <tt>heteroFreq[loc][1]</tt> is calculated.
+	   The overall number of heterozygotes (<tt>HeteroNum[loc]</tt>) is the number of 
+	   genotype \c xy if \c x does not equal to \c y.
+	 \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote count.
 	 \li <tt>HeteroFreq[loc]</tt>, <tt>subPop[sp]['HeteroFreq'][loc]</tt>, the overall heterozygote frequency.
-	 \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>.
-	 \li <tt>heteroFreq[loc][allele]</tt>, <tt>subPop[sp]['heteroFreq'][loc][allele]</tt>.
+	 \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>, allele-specific heterozygote counts.
+	 \li <tt>heteroFreq[loc][allele]</tt>, <tt>subPop[sp]['heteroFreq'][loc][allele]</tt>, allele-specific heterozygote frequency.
 
 	 \param homoFreq an array of loci to calculate observed homozygosities
 	   and expected homozygosities (<tt>homoFreq=[loc1, loc2, ...]</tt>).
