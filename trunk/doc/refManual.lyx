@@ -1,4 +1,4 @@
-#LyX 1.5.6svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -5388,7 +5388,7 @@ or at the population level
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx, order), pop.indInfo(name, order)
+pop.indInfo(idx), pop.indInfo(name)
 \family default
  return an information field (referred by index or name) of all individuals
 \end_layout
@@ -5396,7 +5396,7 @@ pop.indInfo(idx, order), pop.indInfo(name, order)
 \begin_layout Itemize
 
 \family typewriter
-pop.indInfo(idx, subPop, order), pop.indInfo(name, subPop, order)
+pop.indInfo(idx, subPop), pop.indInfo(name, subPop)
 \family default
  return an information field (referred by index or name) of all individuals
  in a subpopulation 
@@ -5409,27 +5409,9 @@ subPop
 \begin_layout Itemize
 
 \family typewriter
-pop.setIndInfo(values, idx, order), pop.setInfIndo(values, name, order)
+pop.setIndInfo(values, idx), pop.setInfIndo(values, name)
 \family default
  set information fields of all individuals with values in an array.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.arrIndInfo(order) 
-\family default
-return an carray of all information fields
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.arrIndInfo(subPop, order) 
-\family default
-return an carray of all information fields of subpopulation 
-\family typewriter
-subPop.
 \end_layout
 
 \begin_layout Standard
@@ -5455,89 +5437,10 @@ idx
  idx=pop.infoIdx(name),
 \family default
  is faster.
- Although population information fields are kept in a population object
- linearly, there is no guarantee that they are ordered.
- If you would like to access 
-\family typewriter
-info
-\family default
- individual by individual, passing 
-\family typewriter
-order=True
-\family default
- to these functions will ensure that the returned information fields are
- ordered by individual order.
- If you only need to get a summary of some information fields, passing 
-\family typewriter
-order=False
-\family default
- will speed up the process.
- 
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-ind.arrInfo()
-\family default
- returns an carray 
-\family typewriter
-f1, f2, f3
-\family default
- (assuming 
-\family typewriter
-infoSize()==3
-\family default
-) of individual 
-\family typewriter
-ind
-\family default
-.
- At a population level, 
-\family typewriter
-pop.arrIndInfo([subPop], order)
-\family default
- returns a carray of 
-\family typewriter
-f1, f2, f3, f1, f2, f3, ...
-
-\family default
- of individual information fields, which are not necessarily in the order
- of individuals unless 
-\family typewriter
-order = True
-\family default
- is set.
- 
-\family typewriter
-indInfo
-\family default
- is more convenient but it is less efficient than 
-\family typewriter
-arrIndInfo
-\family default
-.
- For example, the following two examples both assign an information field
- from the value of another one, but 
-\begin_inset LatexCommand ref
-reference "carray-info"
-
-\end_inset
-
- is more efficient.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Include \lstinputlisting{log/ref_info1.log}[caption={Use regular information field function},label={regu-info}]
-preview false
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_info2.log}[caption={Use carray information fields function},label={carray-info}]
 preview false
 
 \end_inset
@@ -5599,7 +5502,7 @@ usePopVars=True
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \lstinputlisting{log/ref_info3.log}[caption={Use carray information fields function},label={carray-info}]
+\begin_inset Include \lstinputlisting{log/ref_info2.log}[caption={Use infoExec and infoEval operators},label={infoExec}]
 preview false
 
 \end_inset
