@@ -750,11 +750,11 @@ debug
 \family default
  is a comma-separated list of debug options specified by 
 \family typewriter
-listDebugCode
+ListDebugCode
 \family default
 
 \begin_inset LatexCommand index
-name "listDebugCode"
+name "ListDebugCode"
 
 \end_inset
 
@@ -1559,63 +1559,19 @@ Random seed
 
 \begin_layout Standard
 When simuPOP is loaded, it creates a random number generator.
- This RNG gets its seed from:
-\end_layout
-
-\begin_layout Itemize
-random number from 
-\family typewriter
-/dev/urandom
-\family default
- if it is available
-\end_layout
-
-\begin_layout Itemize
-random number from 
-\family typewriter
-/dev/random
-\family default
- if it is available
-\end_layout
-
-\begin_layout Itemize
-use Python 
-\family typewriter
-random 
-\family default
-module and assign random seed with
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Standard
-
-(random.randint(0, sys.maxint) + int(time.time())) % sys.maxint
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-The last method is used mostly under windows, on which random devices are
- not available.
- It tries to avoid sole use of system time because simultaneously started
- jobs may get the same random seed.
+ This RNG gets its seed from system random number generator that gurantees
+ random seed for all instances of simuPOP even if they are initialized at
+ the same time.
 \end_layout
 
 \begin_layout Standard
-Random seed can be retrieved using 
+Random seed can be set manually after simuPOP is loaded.
+ This can be used to repeat a simulation with its random seed saved by the
+ 
 \family typewriter
-rng().seed()
+function rng().seed()
 \family default
- function, which can be saved for future reference.
+.
 \end_layout
 
 \begin_layout Standard
