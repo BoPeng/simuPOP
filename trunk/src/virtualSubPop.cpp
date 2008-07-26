@@ -284,7 +284,7 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	if (m_values.empty()) {
-		DBG_FAILIF(static_cast<UINT>(subPop) > m_cutoff.size(), IndexError,
+		DBG_FAILIF(static_cast<UINT>(virtualSubPop) > m_cutoff.size(), IndexError,
 			"Virtual Subpoplation index out of range of 0 ~ "
 			+ toStr(m_cutoff.size()));
 
@@ -314,7 +314,7 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 			}
 		}
 	} else {
-		DBG_FAILIF(static_cast<UINT>(subPop) >= m_values.size(), IndexError,
+		DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_values.size(), IndexError,
 			"Virtual Subpoplation index out of range of 0 ~ "
 			+ toStr(m_values.size() - 1));
 		double v = m_values[virtualSubPop];
