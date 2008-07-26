@@ -182,23 +182,10 @@ for ind in pop.individuals():
     a = ind.info(aIdx)
     ind.setInfo(a+1, bIdx)
 
-print pop.indInfo(bIdx, False)
+print pop.indInfo(bIdx)
 #end
-
 
 #file log/ref_info2.log
-pop = population(10, infoFields=['a', 'b'])
-aIdx = pop.infoIdx('a')
-bIdx = pop.infoIdx('b')
-info = pop.arrIndInfo(False)
-sz = pop.infoSize()
-for idx in range(pop.popSize()):
-    info[sz*idx + bIdx] = info[sz*idx + aIdx] + 1
-
-print pop.indInfo(bIdx, False)
-#end
-
-#file log/ref_info3.log
 pop = population(5, infoFields=['a', 'b'])
 InfoExec(pop, 'import random\na=random.randint(2,10)')
 InfoExec(pop, 'b=a+a*2')
@@ -209,7 +196,7 @@ InfoExec(pop, 'b=c+a')
 # but we can also make use of population variables.
 pop.vars()['c'] = 6
 InfoExec(pop, 'b=c+a', usePopVars=True)
-print pop.indInfo('b', True)
+print pop.indInfo('b')
 #end
 
 #file log/ref_ancestralPop.log
