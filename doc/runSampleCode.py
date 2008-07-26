@@ -41,7 +41,6 @@ def runScript(inputFile, outputFile):
     
     # set stdin, stderr, stdout
     sys.stdin = wrapper(sys.stdin)
-    #sys.stderr = sys.stdout
     sys.stderr = outFile
     sys.stdout = outFile
     
@@ -80,6 +79,9 @@ def splitFile(outputFile, runCommand=True):
             else:
                 file = file.replace('.log', '.py')
                 print "Writing source to %s" % file
+            dir = os.path.split(file)[0]
+            if not os.path.isdir(dir):
+                os.mkdir(dir)
             out = open(file, 'w')
             first = True
         elif end_re.match(line):

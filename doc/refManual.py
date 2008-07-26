@@ -251,7 +251,7 @@ for ind in pop.individuals():
     ind.setInfo(random.randint(0,5), 'age')
 
 # split by age
-pop.setVirtualSplitter(infoSplitter('age', values=[2,4]), 0)
+pop.setVirtualSplitter(infoSplitter('age', values=[2,4]))
 pop.virtualSubPopSize(0, 0)
 pop.virtualSubPopName(0, 1)
 
