@@ -257,8 +257,7 @@ pop.virtualSubPopName(0, 1)
 
 # split by genotype
 a = pop.setVirtualSplitter(
-    genotypeSplitter(locus=2, alleles=[[0,1], [1,1]], phase=True),
-    0)
+    genotypeSplitter(locus=2, alleles=[[0,1], [1,1]], phase=True))
 pop.virtualSubPopSize(0, 0)
 pop.virtualSubPopSize(0, 1)
 

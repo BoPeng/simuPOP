@@ -423,92 +423,7 @@ Note:
 
 Example:
 
->>> simu = simulator(population(1),binomialSelection(), rep=2)
->>> op1 = pyOutput(\"a\", begin=5, end=20, step=3)
->>> op2 = pyOutput(\"a\", begin=-5, end=-1, step=2)
->>> op3 = pyOutput(\"a\", at=[2,5,10])
->>> op4 = pyOutput(\"a\", at=[-10,-5,-1])
->>> simu.evolve( [ pyEval(r\"str(gen)+'\\\\n'\", begin=5, end=-1, step=2)],
-...                              end=10)
-5
-5
-7
-7
-9
-9
-True
->>> #
->>> #
->>> # operator group
->>> from simuUtil import *
->>> simu = simulator(population(1),binomialSelection(), rep=4,
-...     grp=[1,2,1,2])
->>> simu.step(
-...     ops = [ 
-...         pyEval(r\"grp+3\", grp=1),
-...         pyEval(r\"grp+6\", grp=2),
-...         pyOutput('\\\\n', rep=REP_LAST)
-...     ]
-... )
-4848
-True
->>> 
->>> #
->>> # parameter output 
->>> simu = simulator(population(100), randomMating(), rep=2)
->>> simu.step(
-...     preOps=[
-...         initByFreq([0.2, 0.8], rep=0),
-...         initByFreq([0.5, 0.5], rep=1) ],
-...     ops = [
-...         stat(alleleFreq=[0]),
-...         pyEval('alleleFreq[0][0]', output='a.txt')
-...     ]
-... )
-True
->>> # only from rep 1
->>> print open('a.txt').read()
-0.465
->>> 
->>> simu.step(
-...     ops = [
-...         stat(alleleFreq=[0]),
-...         pyEval('alleleFreq[0][0]', output='>>a.txt')
-...     ])
-True
->>> # from both rep0 and rep1
->>> print open(\"a.txt\").read()
-0.220.45
->>> 
->>> outfile='>>>a.txt'
->>> simu.step(
-...     ops = [
-...         stat(alleleFreq=[0]),
-...         pyEval('alleleFreq[0][0]', output=outfile),
-...         pyOutput(\"\\\\t\", output=outfile),
-...         pyOutput(\"\\\\n\", output=outfile, rep=0)
-...     ],
-... )
-True
->>> print open(\"a.txt\").read()
-0.220.450.245	
-0.45	
->>> #
->>> # Output expression
->>> outfile=\"'>>a'+str(rep)+'.txt'\"
->>> simu.step(
-...     ops = [
-...         stat(alleleFreq=[0]),
-...         pyEval('alleleFreq[0][0]', outputExpr=outfile)
-...     ]
-... )
-True
->>> print open(\"a0.txt\").read()
-0.26
->>> print open(\"a1.txt\").read()
-0.475
->>>
-
+Testsrc_operator.log Common features of all operators 
 
 "; 
 
@@ -810,7 +725,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::BernulliTrials::trialSize() const;
+%ignore simuPOP::BernulliTrials::trialSize() const ;
 
 %feature("docstring") simuPOP::BernulliTrials::probSize "
 
@@ -1986,7 +1901,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::GenoStructure::locusPos(UINT locus) const;
+%ignore simuPOP::GenoStructure::locusPos(UINT locus) const ;
 
 %ignore simuPOP::GenoStructure::chromIndex(UINT ch) const ;
 
@@ -2022,40 +1937,7 @@ Usage:
 
 Example:
 
->>> # create a population, most parameters have default values
->>> pop = population(size=5, ploidy=2, loci=[5,10],
-...     lociPos=[range(0,5),range(0,20,2)],
-...     alleleNames=['A','C','T','G'],
-...     subPop=[2,3], maxAllele=3)
->>> print pop.popSize()
-5
->>> print pop.ploidy()
-2
->>> print pop.ploidyName()
-diploid
->>> print pop.numChrom()
-2
->>> print pop.locusPos(2)
-2.0
->>> print pop.alleleName(1)
-C
->>> # get the fourth individual of the population
->>> ind = pop.individual(3)
->>> # access genotypic structure info
->>> print ind.ploidy()
-2
->>> print ind.numChrom()
-2
->>> print ind.numLoci(0)
-5
->>> print ind.genoSize()
-30
->>> # and from simulator level
->>> simu = simulator(pop, randomMating(), rep=3)
->>> print simu.numChrom()
-2
->>>
-
+Testsrc_genoStruTrait.log Genotypic structure 
 
 "; 
 
@@ -2125,9 +2007,9 @@ Usage:
 
 %ignore simuPOP::GenoStruTrait::insertAfterLociToGenoStru(const vectoru &idx, const vectorf &pos, const vectorstr &names) const ;
 
-%ignore simuPOP::GenoStruTrait::genoStru() const;
+%ignore simuPOP::GenoStruTrait::genoStru() const ;
 
-%ignore simuPOP::GenoStruTrait::genoStruIdx() const;
+%ignore simuPOP::GenoStruTrait::genoStruIdx() const ;
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidy "
 
@@ -2296,7 +2178,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::chromIndex() const;
+%ignore simuPOP::GenoStruTrait::chromIndex() const ;
 
 %feature("docstring") simuPOP::GenoStruTrait::chromBegin "
 
@@ -2681,62 +2563,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(population(size=3, loci=[3,5]), noMating())
->>> simu.step([
-...     initByFreq( [.2,.3,.5]),
-...     gsmMutator(rate=1, p=.8, incProb=.8),
-...     dumper(alleleOnly=True, stage=PrePostMating)])
-individual info: 
-sub population 0:
-   0: FU   2  1  1   2  0  2  1  2 |   0  0  2   1  0  2  2  0 
-   1: FU   2  2  0   1  2  2  2  0 |   2  2  1   2  0  0  2  0 
-   2: MU   1  2  2   2  2  0  2  2 |   1  2  2   0  0  2  1  0 
-End of individual info.
-
-
-No ancenstral population recorded.
-individual info: 
-sub population 0:
-   0: FU   4  2  2   3  1  3  0  3 |   3  0  3   2  1  1  3  0 
-   1: FU   3  3  1   2  3  3  3  1 |   4  3  0   3  1  1  4  2 
-   2: MU   2  3  3   3  1  1  3  3 |   0  3  4   1  1  3  0  1 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>> 
->>> import random
->>> def rndInt():
-...   return random.randrange(3,6)
-... 
->>> simu.step([
-...     initByFreq( [.2,.3,.5]),
-...     gsmMutator(rate=1, func=rndInt, incProb=.8),
-...     dumper(alleleOnly=True, stage=PrePostMating)
-...     ]
-... )
-individual info: 
-sub population 0:
-   0: MU   2  2  2   2  1  0  2  1 |   0  2  2   2  2  0  1  2 
-   1: MU   0  2  1   2  2  2  0  1 |   2  2  1   2  1  1  2  1 
-   2: FU   2  1  2   0  2  1  0  2 |   1  0  2   1  2  1  0  2 
-End of individual info.
-
-
-No ancenstral population recorded.
-individual info: 
-sub population 0:
-   0: MU   0  7  0   0  6  4  0  6 |   4  6  7   7  7  4  5  0 
-   1: MU   5  7  6   6  0  6  4  5 |   0  7  4   5  4  0  5  6 
-   2: FU   5  4  7   3  7  5  5  0 |   5  4  6   6  5  6  4  0 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_gsmMutator.log Operator <tt> gsmMutator</tt>
 
 "; 
 
@@ -3056,34 +2883,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(
-...     population(size=1000, loci=[1]),
-...     randomMating(), rep=4)
->>> simu.evolve(
-...   preOps = [ initByValue([1,1])],
-...   ops = [
-...     # penetrance, additve penetrance
-...     maPenetrance(locus=0, wildtype=[1], penetrance=[0,0.5,1]),
-...     # count number of affected
-...     stat(numOfAffected=True),
-...     # introduce disease if no one is affected
-...     ifElse(cond='numOfAffected==0',
-...       ifOp=kamMutator(rate=0.01, maxAllele=2)),
-...     ifElse(cond='numOfAffected==0',
-...         ifOp=pyEval(r'\"No affected at gen %d\\\\n\" % gen'))
-...   ],
-...   end=50
-... )
-No affected at gen 0
-No affected at gen 0
-No affected at gen 0
-No affected at gen 0
-No affected at gen 11
-No affected at gen 12
-No affected at gen 41
-True
->>>
-
+Testsrc_ifElse.log Operator <tt> ifElse</tt>
 
 "; 
 
@@ -3200,39 +3000,7 @@ Usage:
 
 Example:
 
->>> pop = population(500, loci=[2, 5, 10])
->>> # get an individual
->>> ind = pop.individual(9)
->>> # oops, wrong index
->>> ind = pop.individual(3)
->>> # you can access genotypic structure info
->>> print ind.ploidy()
-2
->>> print ind.numChrom()
-3
->>> # ...
->>> # as well as genotype
->>> print ind.allele(1) 
-0
->>> ind.setAllele(1,5)
->>> print ind.allele(1)
-0
->>> # you can also use an overloaded function
->>> # with a second parameter being the ploidy index
->>> print ind.allele(1,1) # second locus at the second copy of chromosome
-0
->>> # other information
->>> print ind.affected()
-False
->>> print ind.affectedChar()
-U
->>> ind.setAffected(1)
->>> print ind.affectedChar()
-A
->>> print ind.sexChar()
-M
->>>
-
+Testsrc_individual.log Individual member functions 
 
 "; 
 
@@ -3256,9 +3024,9 @@ Usage:
 
 %ignore simuPOP::individual::copyFrom(const individual &rhs);
 
-%ignore simuPOP::individual::genoPtr() const;
+%ignore simuPOP::individual::genoPtr() const ;
 
-%ignore simuPOP::individual::infoPtr() const;
+%ignore simuPOP::individual::infoPtr() const ;
 
 %feature("docstring") simuPOP::individual::arrGenotype "
 
@@ -3552,11 +3320,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::individual::iteratable() const;
+%ignore simuPOP::individual::iteratable() const ;
 
 %ignore simuPOP::individual::setIteratable(bool iteratable);
 
-%ignore simuPOP::individual::visible() const;
+%ignore simuPOP::individual::visible() const ;
 
 %ignore simuPOP::individual::setVisible(bool visible);
 
@@ -3689,9 +3457,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::individual::genoBegin() const;
+%ignore simuPOP::individual::genoBegin() const ;
 
-%ignore simuPOP::individual::genoEnd() const;
+%ignore simuPOP::individual::genoEnd() const ;
 
 %ignore simuPOP::individual::genoBegin(UINT p) const ;
 
@@ -3699,9 +3467,9 @@ Usage:
 
 %ignore simuPOP::individual::genoBegin(UINT p, UINT chrom) const ;
 
-%ignore simuPOP::individual::infoBegin() const;
+%ignore simuPOP::individual::infoBegin() const ;
 
-%ignore simuPOP::individual::infoEnd() const;
+%ignore simuPOP::individual::infoEnd() const ;
 
 %feature("docstring") simuPOP::individual::__cmp__ "
 
@@ -4113,7 +3881,7 @@ Arguments:
 
 "; 
 
-%ignore simuPOP::infoSplitter::clone() const;
+%ignore simuPOP::infoSplitter::clone() const ;
 
 %ignore simuPOP::infoSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
@@ -4307,28 +4075,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator( 
-...     population(subPop=[2,3], loci=[5,7], maxAllele=1),
-...     randomMating(), rep=1)
->>> simu.step([
-...     initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
-...     dumper(alleleOnly=True)
-...   ])
-individual info: 
-sub population 0:
-   0: FU 11111 1111111 | 11111 1111111 
-   1: FU 11111 0111111 | 11111 1111111 
-sub population 1:
-   2: FU 00000 0000000 | 00000 0000000 
-   3: FU 10100 0000000 | 00000 0001000 
-   4: FU 00000 0000000 | 00000 0001000 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_initByFreq.log Operator <tt> initByFreq</tt>
 
 "; 
 
@@ -4442,27 +4189,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(
-...     population(subPop=[2,3], loci=[5,7], maxAllele=9),
-...     randomMating(), rep=1)
->>> simu.step([
-...     initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
-...     dumper(alleleOnly=True)])
-individual info: 
-sub population 0:
-   0: FU 33333 2222222 | 33333 2222222 
-   1: MU 11111 4444444 | 11111 4444444 
-sub population 1:
-   2: FU 33333 4444444 | 33333 2222222 
-   3: FU 11111 4444444 | 11111 2222222 
-   4: FU 11111 2222222 | 33333 2222222 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_initByValue.log Operator <tt> initByValue</tt>
 
 "; 
 
@@ -4769,24 +4496,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(population(size=5, loci=[3,5]), noMating())
->>> simu.step([
-...     kamMutator( rate=[.2,.6,.5], loci=[0,2,6], maxAllele=9),
-...     dumper(alleleOnly=True)])
-individual info: 
-sub population 0:
-   0: MU   0  0  5   0  0  0  0  0 |   0  0  9   0  0  0  0  0 
-   1: MU   2  0  5   0  0  0  2  0 |   0  0  0   0  0  0  1  0 
-   2: MU   0  0  3   0  0  0  4  0 |   0  0  2   0  0  0  0  0 
-   3: MU   0  0  8   0  0  0  0  0 |   6  0  7   0  0  0  0  0 
-   4: MU   0  0  0   0  0  0  0  0 |   0  0  5   0  0  0  0  0 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_kamMutator.log Operator <tt> kamMutator</tt>
 
 "; 
 
@@ -4991,12 +4701,7 @@ Arguments:
 
 Example:
 
->>> pop = population(size=10, ploidy=2, loci=[2], subPop=[2, 8])
->>> InitByFreq(pop, [.2, .8])
->>> MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0, 1, 1])
->>> Stat(pop, numOfAffected=1)
->>>
-
+Testsrc_maPenetrance.log Operator <tt> maPenetrance</tt>
 
 "; 
 
@@ -5082,13 +4787,7 @@ Arguments:
 
 Example:
 
->>> pop = population(size=10, ploidy=2, loci=[2], subPop=[2, 8])
->>> InitByFreq(pop, [.2, .8])
->>> MapPenetrance(pop, locus=0, 
-...     penetrance={'0-0':0, '0-1':1, '1-1':1})
->>> Stat(pop, numOfAffected=1)
->>>
-
+Testsrc_mapPenetrance.log Operator <tt> mapPenetrance</tt>
 
 "; 
 
@@ -5267,25 +4966,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(
-...     population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
-...     randomMating())
->>> s1 = .1
->>> s2 = .2
->>> simu.evolve([
-...     stat( alleleFreq=[0], genoFreq=[0]),
-...     mapSelector(locus=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
-...     pyEval(r\"'%.4f\\\\n' % alleleFreq[0][1]\", step=100)
-...     ],
-...     preOps=[  initByFreq(alleleFreq=[.2,.8])],
-...     end=300)
-0.7740
-0.3210
-0.3380
-0.3175
-True
->>>
-
+Testsrc_mapSelector.log Operator <tt> mapSelector</tt>
 
 "; 
 
@@ -5483,26 +5164,7 @@ Note:
 
 Example:
 
->>> simu = simulator(
-...     population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
-...     randomMating())
->>> s1 = .1
->>> s2 = .2
->>> simu.evolve(
-...     preOps=[initByFreq(alleleFreq=[.2,.8])],
-...     ops = [
-...         stat( alleleFreq=[0], genoFreq=[0]),
-...         maSelector(locus=0, fitness=[1-s1, 1, 1-s2]),
-...         pyEval(r\"'%.4f\\\\n' % alleleFreq[0][1]\", step=100)
-...     ],
-...     end=300)
-0.7975
-0.3645
-0.3085
-0.3110
-True
->>>
-
+Testsrc_maSelector.log Operator <tt> maSelector</tt>
 
 "; 
 
@@ -5622,45 +5284,7 @@ Arguments:
 
 Example:
 
->>> # arbitrary demographic model
->>> def lin_inc(gen, oldsize=[]):
-...     return [10+gen]*5
-... 
->>> simu = simulator(
-...     population(subPop=[5]*5, loci=[1]),
-...     randomMating(newSubPopSizeFunc=lin_inc)
-... )
->>> simu.evolve(
-...     ops = [
-...         stat(popSize=True),
-...         pyEval(r'\"%d %d\\\\n\"%(gen, subPop[0][\"popSize\"])'),
-...     ],
-...     end=5
-... )
-0 10
-1 11
-2 12
-3 13
-4 14
-5 15
-True
->>> 
->>> #
->>> # control the number of offspring per mating event
->>> # famSizes is only defined when DBG_MATING is defined
->>> TurnOnDebug(DBG_MATING)
->>> simu = simulator(population(50, loci=[1]),
-...     randomMating(numOffspring=2, 
-...         maxNumOffspring=5,
-...         mode=MATE_UniformDistribution))
->>> simu.step(ops=[])
-True
->>> print simu.population(0).dvars().famSizes
-[5, 2, 4, 2, 4, 3, 4, 3, 3, 2, 3, 5, 5, 2, 3]
->>> TurnOffDebug(DBG_MATING)
-Debug code DBG_MATING is turned off. cf. ListDebugCode(), TurnOnDebug().
->>>
-
+Testsrc_mating.log Demographic models and control of number of offspring per  mating event 
 
 "; 
 
@@ -5678,11 +5302,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mating::subPop() const;
+%ignore simuPOP::mating::subPop() const ;
 
-%ignore simuPOP::mating::virtualSubPop() const;
+%ignore simuPOP::mating::virtualSubPop() const ;
 
-%ignore simuPOP::mating::weight() const;
+%ignore simuPOP::mating::weight() const ;
 
 %feature("docstring") simuPOP::mating::clone "
 
@@ -6059,20 +5683,7 @@ Arguments:
 
 Example:
 
->>> pop = population(1000, loci=[3])
->>> InitByFreq(pop, [0.3, 0.7])
->>> pen = []
->>> for loc in (0, 1, 2):
-...     pen.append( maPenetrance(locus=loc, wildtype=[1],
-...         penetrance=[0, 0.3, 0.6] ) )
-... 
->>> # the multi-loci penetrance
->>> MlPenetrance(pop, mode=PEN_Multiplicative, peneOps=pen)
->>> Stat(pop, numOfAffected=True)
->>> print pop.dvars().numOfAffected
-8
->>>
-
+Testsrc_mlPenetrance.log Operator <tt> mlPenetrance</tt>
 
 "; 
 
@@ -6256,24 +5867,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(
-...     population(size=10, ploidy=2, loci=[2], 
-...     infoFields=['fitness', 'spare']),
-...     randomMating())
->>> simu.evolve(
-...     [ mlSelector([
-...          mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-...          mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-...          ], mode=SEL_Additive),
-...     ],
-...     preOps = [
-...         initByFreq(alleleFreq=[.2,.8])
-...     ],
-...     end=2
-... )
-True
->>>
-
+Testsrc_mlSelector.log Operator <tt> mlSelector</tt>
 
 "; 
 
@@ -6663,19 +6257,7 @@ Usage:
 
 Example:
 
->>> # this may be set from command line option
->>> savePop = False
->>> # then, saveOp is defined accordingly
->>> if savePop:
-...     saveOp = savePopulation(output='a.txt')
-... else:
-...     saveOp = noneOp()
-... 
->>> simu = simulator(population(10), randomMating())
->>> simu.step([saveOp])
-True
->>>
-
+Testsrc_noneOp.log Operator <tt> noneOp</tt>
 
 "; 
 
@@ -6926,7 +6508,7 @@ Usage:
 
 %ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
-%ignore simuPOP::offspringGenerator::fixedFamilySize() const;
+%ignore simuPOP::offspringGenerator::fixedFamilySize() const ;
 
 %ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
@@ -6960,11 +6542,11 @@ Arguments:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::initialized() const;
+%ignore simuPOP::offspringGenerator::initialized() const ;
 
 %ignore simuPOP::offspringGenerator::setNumParents(int numParents);
 
-%ignore simuPOP::offspringGenerator::numParents() const;
+%ignore simuPOP::offspringGenerator::numParents() const ;
 
 %ignore simuPOP::OstreamManager;
 
@@ -7203,7 +6785,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::parentChooser::initialized() const;
+%ignore simuPOP::parentChooser::initialized() const ;
 
 %ignore simuPOP::parentChooser::numParents();
 
@@ -8373,10 +7955,7 @@ Description:
 
 Details:
 
-    A  simuPOP population consists of individuals of the same
-    genotypic structure, which refers to the number of chromosomes,
-    numbers and positions of loci on each chromosome etc. The most
-    important components of a  population are:
+    details
     * subpopulations. A  population is divided into subpopulations
     (unstructured  population has a single subpopulation, which is the
     whole  population itself). Subpopulation structure limits the
@@ -8399,6 +7978,10 @@ Details:
     all) ancestral generations are saved. Functions to switch between
     ancestral generations are provided so that one can examine and
     modify ancestral generations.
+
+Arguments:
+
+    \note:          
 
 "; 
 
@@ -8487,87 +8070,7 @@ Arguments:
 
 Example:
 
->>> # use of population function
->>> # a Wright-Fisher population
->>> WF = population(size=100, ploidy=1, loci=[1])
->>> 
->>> # a diploid population of size 10
->>> # there are two chromosomes with 5 and 7 loci respectively
->>> pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
->>> 
->>> # a population with SNP markers (with names A,C,T,G)
->>> # range() are python functions
->>> pop = population(size=5, ploidy=2, loci=[5,10],
-...     lociPos=[range(0,5),range(0,20,2)],
-...     alleleNames=['A','C','T','G'],
-...     subPop=[2,3], maxAllele=3)
->>> 
->>> #
->>> # population structure functions
->>> print pop.popSize()
-5
->>> print pop.numSubPop()
-2
->>> print pop.subPopSize(0)
-2
->>> print pop.subPopSizes()
-(2, 3)
->>> print pop.subPopBegin(1)
-2
->>> print pop.subPopEnd(1)
-5
->>> print pop.subPopIndPair(3)
-(1, 1)
->>> print pop.absIndIndex(1,1)
-3
->>> 
->>> #
->>> # functions of setting population structure
->>> pop.setIndSubPopID([1,2,2,3,1])
->>> pop.setSubPopByIndID()
->>> pop.removeLoci(keep=range(2,7))
->>> Dump(pop)
-Ploidy:         	2
-Number of chrom:	2
-Number of loci: 	3 2 
-Maximum allele state:	3
-Loci positions: 
-		2 3 4 
-		0 2 
-Loci names: 
-		loc1-3 loc1-4 loc1-5 
-		loc2-1 loc2-2 
-population size:	5
-Number of subPop:	4
-Subpop sizes:   	0 2 2 1 
-Number of ancestral populations:	0
-individual info: 
-sub population 1:
-   0: MU AAA AA | AAA AA 
-   1: MU AAA AA | AAA AA 
-sub population 2:
-   2: MU AAA AA | AAA AA 
-   3: MU AAA AA | AAA AA 
-sub population 3:
-   4: MU AAA AA | AAA AA 
-End of individual info.
-
-
-No ancenstral population recorded.
->>> 
->>> #
->>> # save and load population
->>> # save it in various formats, default format is \"txt\"
->>> pop = population(1000, loci=[2, 5, 10])
->>> pop.savePopulation(\"pop.txt\")
->>> pop.savePopulation(\"pop.txt\", compress=False)
->>> pop.savePopulation(\"pop.xml\", format=\"xml\")
->>> pop.savePopulation(\"pop.bin\", format=\"bin\")
->>> 
->>> # load it in another population
->>> pop1 = LoadPopulation(\"pop.xml\", format=\"xml\")
->>>
-
+Testsrc_population.log Population initialization and member functions 
 
 "; 
 
@@ -8633,7 +8136,7 @@ Usage:
 
 %ignore simuPOP::population::fitSubPopStru(const vectorlu &newSubPopSizes);
 
-%ignore simuPOP::population::hasActivatedVirtualSubPop() const;
+%ignore simuPOP::population::hasActivatedVirtualSubPop() const ;
 
 %ignore simuPOP::population::hasActivatedVirtualSubPop(SubPopID subPop) const ;
 
@@ -8649,7 +8152,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::population::virtualSplitter() const;
+%ignore simuPOP::population::virtualSplitter() const ;
 
 %feature("docstring") simuPOP::population::setVirtualSplitter "
 
@@ -9012,11 +8515,11 @@ Usage:
 
 %ignore simuPOP::population::indEnd(UINT subPop);
 
-%ignore simuPOP::population::indBegin() const;
+%ignore simuPOP::population::indBegin() const ;
 
-%ignore simuPOP::population::indEnd() const;
+%ignore simuPOP::population::indEnd() const ;
 
-%ignore simuPOP::population::indEnd(UINT subPop) const;
+%ignore simuPOP::population::indEnd(UINT subPop) const ;
 
 %ignore simuPOP::population::rawIndBegin();
 
@@ -9026,11 +8529,11 @@ Usage:
 
 %ignore simuPOP::population::rawIndEnd(UINT subPop);
 
-%ignore simuPOP::population::rawIndBegin() const;
+%ignore simuPOP::population::rawIndBegin() const ;
 
-%ignore simuPOP::population::rawIndEnd() const;
+%ignore simuPOP::population::rawIndEnd() const ;
 
-%ignore simuPOP::population::rawIndEnd(UINT subPop) const;
+%ignore simuPOP::population::rawIndEnd(UINT subPop) const ;
 
 %ignore simuPOP::population::alleleBegin(UINT locus, bool order);
 
@@ -9947,7 +9450,7 @@ Arguments:
 
 %ignore simuPOP::population::loadPopulation(const string &filename, const string &format="auto");
 
-%ignore simuPOP::population::selectionOn() const;
+%ignore simuPOP::population::selectionOn() const ;
 
 %ignore simuPOP::population::selectionOn(UINT sp) const ;
 
@@ -10069,7 +9572,7 @@ Usage:
 
 %ignore simuPOP::population::getVarAsIntDict(const string &name, bool nameError=true);
 
-%ignore simuPOP::population::varsAsString() const;
+%ignore simuPOP::population::varsAsString() const ;
 
 %ignore simuPOP::population::varsFromString(const string &vars);
 
@@ -10481,27 +9984,7 @@ Arguments:
 
 Example:
 
->>> def indFunc(ind, param):
-...     ind.setInfo(ind.info('info2')+param[1], 'info2')
-...     print ind.info('info2')
-...     return True
-... 
->>> simu = simulator(
-...     population(5, loci=[2,5], infoFields=['info1', 'info2']),
-...     randomMating(), rep=1)
->>> simu.step(
-...     ops = [
-...         pyIndOperator(func=indFunc, param=(3,2)), 
-...     ],
-... )
-2.0
-2.0
-2.0
-2.0
-2.0
-True
->>>
-
+Testsrc_pyIndOperator.log Applying a <tt> pyIndOperator</tt>
 
 "; 
 
@@ -10609,30 +10092,7 @@ Arguments:
 
 Example:
 
->>> def initAllele(ind, p, sp):
-...   return sp + ind + p
-... 
->>> simu = simulator( 
-...     population(subPop=[2,3], loci=[5,7]),
-...     randomMating(), rep=1)
->>> simu.step([
-...     pyInit(func=initAllele),
-...     dumper(alleleOnly=True, dispWidth=2)])
-individual info: 
-sub population 0:
-   0: MU   0  1  2  3  4   6  7  8  9 10 11 12 |   1  2  3  4  5   5  6  7  8  9 10 11 
-   1: MU   0  1  2  3  4   5  6  7  8  9 10 11 |   0  1  2  3  4   5  6  7  8  9 10 11 
-sub population 1:
-   2: MU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
-   3: FU   1  2  3  4  5   6  7  8  9 10 11 12 |   1  2  3  4  5   7  8  9 10 11 12 13 
-   4: MU   2  3  4  5  6   6  7  8  9 10 11 12 |   2  3  4  5  6   7  8  9 10 11 12 13 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_pyInit.log Operator <tt> pyInit</tt>
 
 "; 
 
@@ -10898,25 +10358,7 @@ Usage:
 
 Example:
 
->>> def mut(x):
-...   return 8
-... 
->>> simu = simulator(population(size=3, loci=[3,5]), noMating())
->>> simu.step([
-...   pyMutator(rate=.5, loci=[3,4,5], func=mut),
-...   dumper(alleleOnly=True)])
-individual info: 
-sub population 0:
-   0: MU   0  0  0   0  8  8  0  0 |   0  0  0   0  8  0  0  0 
-   1: MU   0  0  0   8  0  8  0  0 |   0  0  0   0  8  8  0  0 
-   2: MU   0  0  0   8  0  8  0  0 |   0  0  0   8  0  0  0  0 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_pyMutator.log Operator <tt> pyMutator</tt>
 
 "; 
 
@@ -10999,43 +10441,7 @@ Details:
 
 Example:
 
->>> def dynaMutator(pop, param):
-...   ''' this mutator mutate common loci with low mutation rate
-...   and rare loci with high mutation rate, as an attempt to
-...   bring allele frequency of these loci at an equal level.'''
-...   # unpack parameter
-...   (cutoff, mu1, mu2) = param;
-...   Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-...   for i in range( pop.totNumLoci() ):
-...     # 1-freq of wild type = total disease allele frequency
-...     if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-...       KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
-...     else:
-...       KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
-...   return True
-... 
->>> pop = population(size=10000, ploidy=2, loci=[2, 3])
->>> 
->>> simu = simulator(pop, randomMating())
->>> 
->>> simu.evolve(
-...   preOps = [ 
-...     initByFreq( [.6, .4], loci=[0,2,4]),
-...     initByFreq( [.8, .2], loci=[1,3]) ],
-...   ops = [ 
-...     pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
-...     stat(alleleFreq=range(5)),
-...     pyEval(r'\"%f\\\\t%f\\\\n\"%(alleleFreq[0][1],alleleFreq[1][1])', step=10)
-...     ],
-...   end = 30
-... )        
-0.401300	0.203750
-0.405600	0.200750
-0.425150	0.201700
-0.416850	0.196500
-True
->>>
-
+Testsrc_pyOperator.log Operator <tt> pyOperator</tt>
 
 "; 
 
@@ -11355,31 +10761,7 @@ Arguments:
 
 Example:
 
->>> pop = population(1000, loci=[3])
->>> InitByFreq(pop, [0.3, 0.7])
->>> def peneFunc(geno):
-...     p = 1
-...     for l in range(len(geno)/2):
-...         p *= (geno[l*2]+geno[l*2+1])*0.3
-...     return p
-... 
->>> PyPenetrance(pop, func=peneFunc, loci=(0, 1, 2))
->>> Stat(pop, numOfAffected=True)
->>> print pop.dvars().numOfAffected
-62
->>> #
->>> # You can also define a function, that returns a penetrance
->>> # function using given parameters
->>> def peneFunc(table):
-...     def func(geno):
-...       return table[geno[0]][geno[1]]
-...     return func
-... 
->>> # then, given a table, you can do
->>> PyPenetrance(pop, loci=(0, 1, 2),
-...     func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
->>>
-
+Testsrc_pyPenetrance.log Operator <tt> pyPenetrance</tt>
 
 "; 
 
@@ -11665,42 +11047,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(
-...     population(size=1000, ploidy=2, loci=[3], infoFields=['fitness'] ),
-...     randomMating())
->>> 
->>> s1 = .2
->>> s2 = .3
->>> # the second parameter gen can be used for varying selection pressure
->>> def sel(arr, gen=0):
-...   if arr[0] == 1 and arr[1] == 1:
-...     return 1 - s1
-...   elif arr[0] == 1 and arr[1] == 2:
-...     return 1
-...   elif arr[0] == 2 and arr[1] == 1:
-...     return 1
-...   else:
-...     return 1 - s2
-... 
->>> # test func
->>> print sel([1,1])
-0.8
->>> 
->>> simu.evolve([
-...     stat( alleleFreq=[0], genoFreq=[0]),
-...     pySelector(loci=[0,1],func=sel),
-...     pyEval(r\"'%.4f\\\\n' % alleleFreq[0][1]\", step=25)
-...     ],
-...     preOps=[  initByFreq(alleleFreq=[.2,.8])],
-...     end=100)
-0.7980
-1.0000
-1.0000
-1.0000
-1.0000
-True
->>>
-
+Testsrc_pySelector.log Operator <tt> pySelector</tt>
 
 "; 
 
@@ -12487,56 +11834,7 @@ Note:
 
 Example:
 
->>> simu = simulator(
-...     population(4, loci=[4,5,6], maxAllele=9,
-...     infoFields=['father_idx', 'mother_idx']),
-...     randomMating())
->>> simu.step([
-...   parentsTagger(),
-...   ],
-...   preOps = [initByFreq([.2,.2,.4,.2]), dumper(alleleOnly=True) ],
-...   postOps = [ dumper(alleleOnly=True)]
-... )
-individual info: 
-sub population 0:
-   0: MU 2200 03300 020102 | 1223 21120 022312 
-   1: MU 1032 13121 232001 | 1103 32333 223232 
-   2: MU 0002 23111 223220 | 2222 22133 011010 
-   3: FU 3122 20122 301231 | 1231 20223 213032 
-End of individual info.
-
-
-No ancenstral population recorded.
-individual info: 
-sub population 0:
-   0: FU 0002 22133 011010 | 3122 20223 213032 
-   1: FU 2200 03300 020102 | 1231 20223 213032 
-   2: MU 1223 21120 020102 | 1231 20122 213032 
-   3: FU 1223 03300 020102 | 1231 20122 301231 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>> simu.step([
-...   parentsTagger(),
-...   recombinator(rate=[1,1,1], afterLoci=[2,6,10])
-...   ],
-...   postOps = [ dumper(alleleOnly=True)]
-... )
-individual info: 
-sub population 0:
-   0: FU 3122 20233 211010 | 1221 21122 210102 
-   1: MU 2201 03323 023032 | 1233 21122 023032 
-   2: FU 1233 03322 300102 | 1221 20120 023032 
-   3: MU 2201 20200 023032 | 1233 20120 023032 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_recombinator.log Operator <tt> recombinator</tt>
 
 "; 
 
@@ -13792,7 +13090,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::SharedVariables::asString() const;
+%ignore simuPOP::SharedVariables::asString() const ;
 
 %feature("docstring") simuPOP::SharedVariables::fromString "
 
@@ -14025,7 +13323,7 @@ Usage:
 
 %ignore simuPOP::simulator::setPopulation(population &pop, UINT rep);
 
-%ignore simuPOP::simulator::curRep() const;
+%ignore simuPOP::simulator::curRep() const ;
 
 %feature("docstring") simuPOP::simulator::numRep "
 
@@ -14259,32 +13557,7 @@ Arguments:
 
 Example:
 
->>> simu = simulator(population(size=3, loci=[3,5]), noMating())
->>> simu.step([
-...     initByFreq( [.2,.3,.5]),
-...     smmMutator(rate=1,  incProb=.8),
-...     dumper(alleleOnly=True, stage=PrePostMating)])
-individual info: 
-sub population 0:
-   0: FU   0  1  2   2  2  0  0  1 |   1  2  0   0  0  0  1  1 
-   1: MU   1  2  1   0  0  0  2  1 |   0  2  2   2  2  2  2  1 
-   2: MU   2  2  1   2  1  0  2  2 |   2  1  1   0  0  1  2  2 
-End of individual info.
-
-
-No ancenstral population recorded.
-individual info: 
-sub population 0:
-   0: FU   1  2  1   3  3  1  1  2 |   2  1  1   0  1  0  2  2 
-   1: MU   0  3  2   0  1  1  3  2 |   1  1  3   3  1  3  1  2 
-   2: MU   3  3  2   3  2  1  1  3 |   3  2  2   1  1  2  1  3 
-End of individual info.
-
-
-No ancenstral population recorded.
-True
->>>
-
+Testsrc_smmMutator.log Operator <tt> smmMutator</tt>
 
 "; 
 
@@ -14381,13 +13654,7 @@ Arguments:
 
 Example:
 
->>> pop = population(size=10, loci=[2,6])
->>> InitByFreq(pop, [.2,.4,.4])
->>> SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
->>> print pop.subPopSizes()
-(2, 8)
->>>
-
+Testsrc_splitSubPop.log Operator <tt> splitSubPop</tt>
 
 "; 
 
@@ -14471,40 +13738,7 @@ Usage:
 
 Example:
 
->>> pop = population(ploidy=2, loci=[2], subPop=[4, 4])
->>> InitByFreq(pop, [.5, .5])
->>> Spread(pop, 2, subPop=[1]),
-(None,)
->>> Dump(pop)
-Ploidy:         	2
-Number of chrom:	1
-Number of loci: 	2 
-Maximum allele state:	255
-Loci positions: 
-		1 2 
-Loci names: 
-		loc1-1 loc1-2 
-population size:	8
-Number of subPop:	2
-Subpop sizes:   	4 4 
-Number of ancestral populations:	0
-individual info: 
-sub population 0:
-   0: FU   1  0 |   1  1 
-   1: MU   1  1 |   1  1 
-   2: MU   1  1 |   1  0 
-   3: MU   1  1 |   1  0 
-sub population 1:
-   4: FU   1  1 |   1  0 
-   5: MU   1  1 |   1  0 
-   6: MU   1  1 |   1  0 
-   7: FU   1  1 |   1  0 
-End of individual info.
-
-
-No ancenstral population recorded.
->>>
-
+Testsrc_spread.log Operator <tt> spread</tt>
 
 "; 
 
@@ -16427,7 +15661,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::vspSplitter::activatedSubPop() const;
+%ignore simuPOP::vspSplitter::activatedSubPop() const ;
 
 %ignore simuPOP::vspSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
