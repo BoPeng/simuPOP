@@ -6640,17 +6640,7 @@ status open
 selectorRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 mapSelectorRef
@@ -6712,33 +6702,13 @@ status open
 maSelectorRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 mlSelectorRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 pySelectorRef
@@ -6765,70 +6735,29 @@ status open
 
 \begin_layout Standard
 
-
 \backslash
 penetranceRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 mapPenetranceRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 maPenetranceRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 mlPenetranceRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
 
 \backslash
 pyPenetranceRef
@@ -6860,30 +6789,12 @@ status open
 quanTraitRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 mapQuanTraitRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -6892,30 +6803,12 @@ status open
 maQuanTraitRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 mlQuanTraitRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -6955,30 +6848,12 @@ status open
 sampleRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 pySubsetRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -6987,30 +6862,12 @@ status open
 pySampleRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 randomSampleRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -7019,15 +6876,6 @@ status open
 caseControlSampleRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
@@ -7035,30 +6883,12 @@ status open
 affectedSibpairSampleRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 largePedigreeSampleRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -7086,15 +6916,6 @@ status open
 \backslash
 statorRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -7258,30 +7079,12 @@ status open
 terminatorRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 terminateIfRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
@@ -7555,15 +7358,6 @@ status open
 turnOnDebugRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
@@ -7573,7 +7367,7 @@ turnOffDebugRef
 
 \end_inset
 
- 
+
 \end_layout
 
 \begin_layout Section
@@ -7591,15 +7385,6 @@ status open
 noneOpRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
@@ -7607,30 +7392,12 @@ status open
 pauseRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Standard
 
 
 \backslash
 ticTocRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Standard
 
