@@ -103,6 +103,7 @@ def splitFile(outputFile, runCommand=True):
                 else:
                     print >> out, '#!/usr/bin/env python'
                     print >> out, 'from simuPOP import *'
+                    print >> out, 'rng().setSeed(12345)'
                     print >> out
                     if line.startswith('## '):
                         print >> out, line[3:],
