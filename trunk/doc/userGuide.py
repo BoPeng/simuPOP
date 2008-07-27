@@ -26,6 +26,9 @@ if not os.path.isdir('log'):
 #file log/importSimuPOP.log
 from simuPOP import *
 #end
+# make sure each run generates the same output to avoid unnecessary
+# documentation changes.
+rng().setSeed(12345)
 
 #file log/addSysPath.log
 import sys
@@ -356,7 +359,7 @@ simu.step()
 #file log/heteroMating.log
 TurnOnDebug(DBG_MATING)
 pop = population(100, loci=[2])
-pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]), 0)
+pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
 simu = simulator(pop, heteroMating(
     [selfMating(numOffspring=5, subPop=0, virtualSubPop=0),
     randomMating(numOffspring=20, subPop=0, virtualSubPop=1)]))
@@ -680,36 +683,6 @@ simu.evolve([
 #PS /usr/bin/convert log/simuDemo16.eps log/simuDemo16.png
 #PS /bin/rm -f log/simuDemo*.eps
 
-#file log/ifElse.log
-from simuRPy import *
-from simuUtil import *
-numRep=4
-popSize=100
-endGen=50
-
-simu = simulator(population(size=popSize, loci=[1]),
-  randomMating(), rep=numRep)
-simu.evolve(
-  preOps = [ initByValue([1,1])],
-  ops = [
-    # penetrance, additve penetrance
-    maPenetrance(locus=0, wildtype=[1], penetrance=[0,0.5,1]),
-    # count number of affected
-    stat(numOfAffected=True),
-    # introduce disease if no one is affected
-    ifElse(cond='numOfAffected==0',
-      ifOp=kamMutator(rate=0.01, maxAllele=2)),
-    # expose affected status
-    pyExec('pop.exposeAffectedness()', exposePop=True),
-    # plot affected status
-    varPlotter(expr='affected',plotType="image", byRep=1, update=endGen, 
-      varDim=popSize, win=endGen, numRep=numRep,
-      title='affected status', saveAs="ifElse")
-  ],
-  gen=endGen,
-  dryrun=False
-)
-#end
 
 #file log/rng.log
 print ListAllRNG()

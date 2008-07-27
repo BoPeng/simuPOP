@@ -26,6 +26,9 @@ if not os.path.isdir('log'):
 import simuOpt
 simuOpt.setOptions(optimized=False, alleleType='long', quiet=True)
 from simuPOP import *
+# make sure each run generates the same output to avoid unnecessary
+# documentation changes.
+rng().setSeed(12345)
 # remember that global functions start with captical letters
 print AlleleType()
 print Optimized()
