@@ -324,8 +324,6 @@ for i in a:
 #end
 
 #file log/generator_random.log
-from random import randint
-
 def randomChooser(pop, sp):
     males = [x for x in range(pop.subPopSize(sp)) \
         if pop.individual(x, sp).sex() == Male]
@@ -334,7 +332,7 @@ def randomChooser(pop, sp):
     nm = len(males)
     nf = len(females)
     while True:
-        yield males[randint(0, nm-1)], females[randint(0, nf-1)]
+        yield males[rng().randInt(nm)], females[rng().randInt(nf)]
 
 pop = population(size=[100, 20], loci=[1])
 # this will initialize sex randomly
