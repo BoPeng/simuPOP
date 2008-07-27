@@ -1,4 +1,4 @@
-#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -397,21 +397,23 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-This reference manual assumes that you have read the 
+This reference manual assumes that you are reasonably familiar with the
+ Python programming language.
+ If you are new to Python, you may want to go through a few online tutorials
+ and courses before you continue.
+ Because this is a reference manual to all the features of simuPOP, it is
+ recommended that you learn the basic concepts of simuPOP from the 
 \emph on
 simuPOP User's Guide
 \emph default
- and know the basic concepts of simuPOP.
- It is also remcommended that you learn some basics of Python before you
- continue.
- I have listed a few Python resources at the end of this chapter, along
- with links to some simuPOP tutorials.
+ before getting lost in the details.
 \end_layout
 
 \begin_layout Standard
-Almost all information contained in this manual can be accessed from command
- line, after you install and import the simuPOP module.
- For example, you can use 
+Most of the help information contained in this document is also available
+ from command line.
+ For example, after you install and import the simuPOP module, you can use
+ 
 \family typewriter
 help(population.addInfoField) 
 \family default
@@ -424,9 +426,6 @@ addInfoField
 population
 \family default
 .
-
-\family typewriter
- 
 \end_layout
 
 \begin_layout Standard
@@ -447,7 +446,7 @@ The constructor of a class is named
 \family typewriter
 __init__
 \family default
- in python.
+ in Python.
  That is to say, you should use the following command to display the help
  information of the constructor of class 
 \family typewriter
@@ -525,10 +524,8 @@ Loading simuPOP
 \end_layout
 
 \begin_layout Standard
-simuPOP is composed of six modules: standard short, long and binary alleles,
- each of them have standard and optimized modules.
- A Message Passing Interface (MPI) version is under development but not
- yet available.
+simuPOP is composed of six modules: three standard modules with short, long
+ or binary alleles, respectively, and their optimized counterparts.
  The short modules use 1 byte to store each allele which limits the possible
  allele states to 256.
  This is enough most of the times but not so if you need to simulate models
@@ -575,8 +572,8 @@ reference "lst:Use-of-optimized-module"
 
  demonstrate the differences between standard and optimized modules, by
  executing two invalid commands.
- The standard module returns proper error messages, while the optimized
- module returns erroneous results and even crashes.
+ A standard module returns proper error messages, while an optimized module
+ returns erroneous results and or simply crashes.
 \end_layout
 
 \begin_layout Standard
@@ -1522,6 +1519,25 @@ mt19937
 \end_layout
 
 \begin_layout Standard
+When simuPOP is loaded, it creates a default random number generator of
+ type 
+\family typewriter
+mt19937
+\family default
+.
+ This RNG gets its seed from a system random number generator that gurantees
+ different random seeds for all instances of simuPOP even if they are initialize
+d at the same time.
+ After simuPOP is loaded, you can reset this system RNG with a different
+ RNG or re-initialize it with a different seed.
+ Random seed of the current session can be retrieved through function 
+\family typewriter
+rng().seed()
+\family default
+.
+\end_layout
+
+\begin_layout Standard
 If you need to use a RNG in your simuPOP script, you can either use Python
  random module (
 \family typewriter
@@ -1537,11 +1553,18 @@ name "function!rng"
 
 ()
 \family default
- function to get the RNG of simuPOP, or create a separate RNG using 
+ function to get the RNG of simuPOP, or create a separate RNG using the
+ 
 \family typewriter
 RNG(name, seed)
 \family default
  function.
+ Using a single source of random number generator through the 
+\family typewriter
+rng()
+\family default
+function allows the whole simulation to be repeated if its original random
+ seed is reused.
 \end_layout
 
 \begin_layout Standard
@@ -1551,27 +1574,6 @@ preview false
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Random seed
-\end_layout
-
-\begin_layout Standard
-When simuPOP is loaded, it creates a random number generator.
- This RNG gets its seed from system random number generator that gurantees
- random seed for all instances of simuPOP even if they are initialized at
- the same time.
-\end_layout
-
-\begin_layout Standard
-Random seed can be set manually after simuPOP is loaded.
- This can be used to repeat a simulation with its random seed saved by the
- 
-\family typewriter
-function rng().seed()
-\family default
-.
 \end_layout
 
 \begin_layout Standard
@@ -1756,12 +1758,18 @@ name "GenoStruTrait!ploidyName"
 \end_layout
 
 \begin_layout Itemize
-the number of chromosomes (c.f.
+the names and number of chromosomes (c.f.
  
 \family typewriter
 numChrom
 \begin_inset LatexCommand index
 name "GenoStruTrait!numChrom"
+
+\end_inset
+
+(), chromName
+\begin_inset LatexCommand index
+name "GenoStruTrait!chromName"
 
 \end_inset
 
@@ -4006,7 +4014,7 @@ A
 \family typewriter
 pyParensChooser
 \family default
- accepts a Python generator function, instead of a normal python function.
+ accepts a Python generator function, instead of a normal Python function.
  When this generator function is called, it returns a 
 \emph on
 generator
@@ -6175,11 +6183,13 @@ mutatorRef
 
 \begin_layout Standard
 
+
 \backslash
 kamMutatorRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 smmMutatorRef
@@ -6187,17 +6197,20 @@ smmMutatorRef
 
 \begin_layout Standard
 
+
 \backslash
 gsmMutatorRef
 \end_layout
 
 \begin_layout Standard
 
+
 \backslash
 pyMutatorRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 pointMutatorRef
@@ -6642,6 +6655,7 @@ selectorRef
 
 \begin_layout Standard
 
+
 \backslash
 mapSelectorRef
 \end_layout
@@ -6704,11 +6718,13 @@ maSelectorRef
 
 \begin_layout Standard
 
+
 \backslash
 mlSelectorRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 pySelectorRef
@@ -6735,11 +6751,13 @@ status open
 
 \begin_layout Standard
 
+
 \backslash
 penetranceRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 mapPenetranceRef
@@ -6747,17 +6765,20 @@ mapPenetranceRef
 
 \begin_layout Standard
 
+
 \backslash
 maPenetranceRef
 \end_layout
 
 \begin_layout Standard
 
+
 \backslash
 mlPenetranceRef
 \end_layout
 
 \begin_layout Standard
+
 
 \backslash
 pyPenetranceRef
