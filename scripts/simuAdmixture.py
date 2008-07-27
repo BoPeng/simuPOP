@@ -368,7 +368,7 @@ options = [
     #
     {'separator': 'Mutation, recombination, etc'},
     {'longarg': 'mutaRate=',
-     'default': 2.2e-6,
+     'default': 5e-7,
      'useDefault': True,
      'label': 'Mutation rate',
      'allowedTypes': [IntType, FloatType],
@@ -729,7 +729,7 @@ class admixtureParams:
             saveStep=0, saveName='expand_',
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0, minDist=0,
-            initName='init.bin', mutaRate=2.2e-6, recMap='genetic', recIntensity=0.01,
+            initName='init.bin', mutaRate=5e-7, recMap='genetic', recIntensity=0.01,
             convProb=0, convMode='Tract length', convParam=0.02,
             forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
