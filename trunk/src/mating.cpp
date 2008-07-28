@@ -2195,14 +2195,10 @@ bool heteroMating::mate(population & pop, population & scratch,
 				all -= vspSize[i];
 			}
 		}
-		if (fcmp_eq(overall_neg, 1.0) && all != 0) { // numerical problem?
-			vspSize[m.size() - 1] += all;
-			all = 0;
-		}
 		// then count positive ones
 		ULONG all_pos = all;
 		for (size_t i = 0; i < m.size(); ++i) {
-			if (fcmp_gt(w_pos[i], 0.)) {
+			if (all > 0 && fcmp_gt(w_pos[i], 0.)) {
 				vspSize[i] = static_cast<ULONG>(all_pos * w_pos[i] / overall_pos);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
 					"Not enough offspring to accommodate specified weight scheme. "
@@ -2256,7 +2252,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			ind += *itSize;
 		}
 		DBG_ASSERT(ind == scratch.rawIndEnd(sp), SystemError,
-			"Maing somehow does not go to the last individual.");
+			"Mating scheme somehow does not fill the whole offspring population.");
 		pop.deactivateVirtualSubPop(sp);
 		// if more than two mating schemes working on the same subpopulation,
 		// it is better to shuffle offspring afterwards,
