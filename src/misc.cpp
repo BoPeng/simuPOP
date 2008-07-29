@@ -858,8 +858,12 @@ matrix ForwardFreqTrajectory(
 					all += Nt[idx - curGen][sp];
 				}
 				double frq = count / static_cast<double>(all);
-				if (frq < endFreq[loc][0] || frq > endFreq[loc][1])
+				if (frq < endFreq[loc][0] || frq > endFreq[loc][1]) {
+                    cout << "Restart due to locus " << loc << ": simulated " 
+                        << frq << ", expected " << endFreq[loc][0] << " - " 
+                        << endFreq[loc][1] << endl;
 					succ = false;
+                }
 			}
 			// success?
 			if (succ)

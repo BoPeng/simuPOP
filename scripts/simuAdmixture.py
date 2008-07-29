@@ -771,7 +771,7 @@ class admixtureParams:
         self.trajFile = os.path.join(self.name, 'trajectory.csv')
         self.markerListFile = os.path.join(self.name, 'markers.lst')
         self.markerMapFile = os.path.join(self.name, 'ld.map')
-        self.logFile = os.path.join(self.name, 'logfile.txt')
+        self.logFile = os.path.join(self.name, self.name + '.log')
         Tee(open(self.logFile, 'w'))
         self.convMode = {
             'Tract length': CONVERT_TractLength,
@@ -844,9 +844,11 @@ class admixtureParams:
             self.backCtrlLociIdx = pop.lociByNames(self.backCtrlLoci)
             self.ctrlLociIdx = pop.lociByNames(self.ctrlLoci)
         except:
-            raise ValueError('''Can not find one of the controlled loci %s in this population
-                Please check markers.lst for a list of used markers and their frequency''' % \
-                ', '.join(self.ctrlLoci))
+            names = pop.lociNames()
+            for locus in self.ctrlLoci:
+                if not locus in names:
+                    raise ValueError('Can not find locus ' + locus + ' in this population. ' +
+                        'Please check markers.lst for a list of used markers and their frequency.')
         # this is used for statistical output
         pop.dvars().ctrlLoci = self.ctrlLociIdx
 
@@ -914,7 +916,7 @@ class admixtureParams:
                     raise ValueError('Please specify frequency range for each controlled locus')
                 for rng in self.forCtrlFreq:
                     if len(rng) != 2:
-                        raise ValueError('Wrong allele frequency range: %s' % rng)
+                        raise ValueError('Wrong allele frequency range: %s. A list of frequency pairs is expected.' % rng)
             # give only one
             else:
                 if len(self.forCtrlFreq) != 2:
@@ -1004,8 +1006,8 @@ def writeMarkerInfo(pop, par):
     # write marker information
     print 'Writing a marker list file'
     markers = open(par.markerListFile, 'w')
-    print >> markers, 'Name\tchrom\tlocation\t%s\tfreq' % \
-        ('\t'.join([x + '_freq' for x in par.pops]))
+    print >> markers, 'Name\tchrom\tlocation\t%s\tfreq(allele1)' % \
+        ('\t'.join([x + '_freq(allele1)' for x in par.pops]))
     for ch in range(pop.numChrom()):
         for loc in range(pop.chromBegin(ch), pop.chromEnd(ch)):
             print >> markers, '%s\t%d\t%.6f\t%s\t%.3f' % (pop.locusName(loc),
@@ -1052,7 +1054,7 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
         var = ['%s', 'subPopSize']
         if len(par.ctrlLoci) > 0:
             exp.append('alleleFreq=%s')
-            var.append('", ".join(["%%.3f" % alleleFreq[x][1] for x in ctrlLoci])')
+            var.append('", ".join(["%%.3f" %% alleleFreq[x][1] for x in ctrlLoci])')
         if len(par.pops) > 1:
             exp.append('Fst=%.3f')
             var.append('AvgFst')
@@ -1115,7 +1117,7 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
         if par.mlSelModel in [SEL_Additive, SEL_Multiplicative]:
             ops.append(mlSelector(
                 # with five multiple-allele selector as parameter
-                [ maSelector(locus=loci[x], wildtype=[0],
+                [ maSelector(locus=par.ctrlLociIdx[x], wildtype=[0],
                     fitness=[par.fitness[3*x], par.fitness[3*x+1], par.fitness[3*x+2]]) \
                         for x in range(len(par.ctrlLociIdx)) ],
                 mode=par.mlSelModel))
@@ -1207,10 +1209,11 @@ def createInitialPopulation(par):
     # if this population fine?
     if pop.numChrom() != len(par.chrom):
         raise ValueError('Something wrong. The population does not have enough chromosomes')
-    par.setCtrlLociIndex(pop)
     # write marker and map file
     writeMarkerInfo(pop, par)
     writeMapFile(pop, par)
+    #
+    par.setCtrlLociIndex(pop)
     # write a LD plot.
     pop.dvars().stage = 'hapmap'
     print 'Saving initial population to ', par.initFile
@@ -1243,7 +1246,7 @@ def forCtrlExpand(pop, par):
     currentFreq = []
     # in the order: LOC0: sp0, sp1, sp2, LOC1: sp0, sp1, sp2, ...
     for idx,loc in enumerate(par.ctrlLociIdx):
-        print "Current overall frequency %s: %.3f (aiming at: %.3f ~ %.3f)" % \
+        print "Current overall frequency of allele 1 at %s: %.3f (aiming at: %.3f ~ %.3f)" % \
             (pop.locusName(loc), pop.dvars().alleleFreq[loc][1],
             par.forCtrlFreq[idx][0], par.forCtrlFreq[idx][1])
         for sp in range(pop.numSubPop()):
@@ -1277,6 +1280,7 @@ def forCtrlExpand(pop, par):
         par.trajFile)
     #
     print "Using controlled random mating on markers %s" % (', '.join(par.ctrlLoci))
+    pop.addInfoField('fitness')
     simu = simulator(pop,
         controlledRandomMating(
             loci = par.ctrlLociIdx,
@@ -1354,6 +1358,7 @@ def backCtrlExpand(pop, par):
         par.trajFile)
     #
     print 'Start population expansion using a controlled random mating scheme'
+    pop.addInfoField('fitness')
     simu = simulator(pop,
         controlledRandomMating(
             loci = par.backCtrlLociIdx,
