@@ -1209,6 +1209,9 @@ def createInitialPopulation(par):
     # if this population fine?
     if pop.numChrom() != len(par.chrom):
         raise ValueError('Something wrong. The population does not have enough chromosomes')
+    # We do not hapmap does not have sex information. To evolve the population naturally
+    # we set random sex to all individuals.
+    InitSex(pop)
     # write marker and map file
     writeMarkerInfo(pop, par)
     writeMapFile(pop, par)
@@ -1267,13 +1270,15 @@ def forCtrlExpand(pop, par):
         maxAttempts = 10000
     )
     if len(traj) == 0:
-        raise SystemError('Failed to generated trajectory after 10000 attempts'
+        raise SystemError('Failed to generated trajectory after 10000 attempts. '
             'This usually means that the demographic and genetic settings are '
             'very extreme which makes it very likely for an allele to reach designed'
             'allele frequency. Please adjust your parameters and try again.')
     # define a trajectory function
     def trajFunc(gen):
         return [x[gen] for x in traj]
+    #for i in range(par.initGen + par.expandGen + 1):
+    #    print trajFunc(i)
     # record trajectory
     print 'Writing allele frequency trajectories to %s' % par.trajFile
     writeTrajectory(popSizeFunc, trajFunc, par.initGen + par.expandGen,
@@ -1298,7 +1303,7 @@ def forCtrlExpand(pop, par):
     Stat(pop, alleleFreq=par.ctrlLociIdx)
     for i,loc in enumerate(par.ctrlLociIdx):
         print "Locus %s: designed freq: (%.3f, %.3f), simulated freq: %.3f" % \
-            (pop.alleleName(loc), par.forCtrlFreq[i][0],
+            (pop.locusName(loc), par.forCtrlFreq[i][0],
             par.forCtrlFreq[i][1], pop.dvars().alleleFreq[loc][1])
     return pop
 
