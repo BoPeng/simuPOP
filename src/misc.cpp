@@ -653,7 +653,7 @@ matrix ForwardFreqTrajectory(
                              ULONG endGen,
                              // frequency of each loci at each subpopulation
                              vectorf curFreq,
-                             matrix endFreq,
+                             matrix destFreq,
                              vectorlu N,
                              PyObject * NtFunc,
                              vectorf fitness,
@@ -662,13 +662,13 @@ matrix ForwardFreqTrajectory(
                              int ploidy,
                              long maxAttempts)
 {
-	size_t nLoci = endFreq.size();
+	size_t nLoci = destFreq.size();
 	size_t nSP = curFreq.size() / nLoci;
 
 	DBG_ASSERT(nLoci > 0, ValueError, "Number of loci should be at least one");
 
 	for (size_t i = 0; i < nLoci; ++i) {
-		DBG_FAILIF(endFreq[i].size() != 2, ValueError,
+		DBG_FAILIF(destFreq[i].size() != 2, ValueError,
 			"Please specify frequency range of each marker");
 	}
 
@@ -677,6 +677,15 @@ matrix ForwardFreqTrajectory(
 	if (fitnessFunc != NULL)
 		Py_INCREF(fitnessFunc);
 
+	// record mean, min, and max destination freq for this particular
+	// initial freq + demography + selection settings.
+	// This will help users modify parameters if a trajectory is hard to simulate.
+	vectorf meanEndFreq(nLoci);
+	vectorf minEndFreq(nLoci, 1.);
+	vectorf maxEndFreq(nLoci, 0.);
+	// combined frequency of the ending generation
+	vectorf endFreq(nLoci, 0.);
+	
 	DBG_ASSERT(curGen <= endGen, ValueError,
 		"Current generation should be less than ending generation");
 
@@ -857,23 +866,42 @@ matrix ForwardFreqTrajectory(
 					count += static_cast<ULONG>(a_frq[sp][loc] * Nt[idx - curGen][sp]);
 					all += Nt[idx - curGen][sp];
 				}
-				double frq = count / static_cast<double>(all);
-				if (frq < endFreq[loc][0] || frq > endFreq[loc][1]) {
+				endFreq[loc] = count / static_cast<double>(all);
+				//
+				if (endFreq[loc] < minEndFreq[loc])
+					minEndFreq[loc] = endFreq[loc];
+				if (endFreq[loc] > maxEndFreq[loc])
+					maxEndFreq[loc] = endFreq[loc];
+				meanEndFreq[loc] += endFreq[loc];
+				//
+				if (endFreq[loc] < destFreq[loc][0] || endFreq[loc] > destFreq[loc][1]) {
                     cout << "Restart due to locus " << loc << ": simulated " 
-                        << frq << ", expected " << endFreq[loc][0] << " - " 
-                        << endFreq[loc][1] << endl;
+                        << endFreq[loc] << ", expected " << destFreq[loc][0] << " - " 
+                        << destFreq[loc][1] << endl;
 					succ = false;
                 }
 			}
 			// success?
-			if (succ)
+			if (succ) {
+				cout << "Allele frequency trajectories generated after " << failedCount << " attempts." << endl;
 				break;
-			else if (++failedCount > maxAttempts) {
-				DBG_DO_(cout << "Maximum attempts exceeded." << endl);
-				return matrix();
+			}
+			else if (++failedCount >= maxAttempts) {
+				cout << "Failed to generate allele frequency trajectories after " << failedCount << " attempts." << endl;
+				result.clear();
+				break;
 			} else
 				idx = curGen;
 		}
+	}
+	for (size_t loc = 0; loc < nLoci; ++loc) {
+		cout << "Locus " << loc << ": ";
+		if (result.size() > 0)
+			cout << "simulated " << endFreq[loc] << ", ";
+		cout << "expected " << destFreq[loc][0] << " - " << destFreq[loc][1]
+			<< ", min hit " << minEndFreq[loc]
+			<< ", mean hit " << (failedCount == 0 ? minEndFreq[loc] : (meanEndFreq[loc] / failedCount))
+			<< ", max hit " << maxEndFreq[loc] << endl;
 	}
 	// clean up
 	if (NtFunc != NULL)
