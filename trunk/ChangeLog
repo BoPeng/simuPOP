@@ -9,6 +9,8 @@ version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		will be returned from the binary modules.
   - DOC: Correct documentation about variables related to genotype and heterozygote frequency.
   - BUG: Fix a bug when a zero-sized virtual subpopulation has weight -1.
+  - BUG: Fix a bug when calculating expected heterozygosity with increased
+		number of subpopulations.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.

@@ -558,15 +558,23 @@ bool statHeteroFreq::apply(population & pop)
 	if (m_atLoci.empty())
 		return true;
 
+	UINT numSP = pop.numSubPop();
+	UINT numLoci = m_atLoci.size();
+
 	pop.removeVar(HeteroNum_String);
 	pop.removeVar(HeteroFreq_String);
 	pop.removeVar(AllHeteroNum_String);
 	pop.removeVar(AllHeteroFreq_String);
 	pop.removeVar(HomoNum_String);
 	pop.removeVar(HomoFreq_String);
-
-	UINT numSP = pop.numSubPop();
-	UINT numLoci = m_atLoci.size();
+	for (UINT sp = 0; sp < numSP; ++sp) {
+		pop.removeVar(subPopVar_String(sp, HeteroNum_String));
+		pop.removeVar(subPopVar_String(sp, HeteroFreq_String));
+		pop.removeVar(subPopVar_String(sp, AllHeteroNum_String));
+		pop.removeVar(subPopVar_String(sp, AllHeteroFreq_String));
+		pop.removeVar(subPopVar_String(sp, HomoNum_String));
+		pop.removeVar(subPopVar_String(sp, HomoFreq_String));
+	}
 
 	// may be resizing for different replicate of populations.
 	// if not initialized or m_atLoci/numSP changes
@@ -726,10 +734,12 @@ bool statExpHetero::apply(population & pop)
 	if (m_atLoci.empty())
 		return true;
 
-	pop.removeVar(ExpHetero_String);
-
 	UINT numSP = pop.numSubPop();
 	UINT numLoci = m_atLoci.size();
+
+	pop.removeVar(ExpHetero_String);
+	for (UINT sp = 0; sp < numSP; ++sp)
+		pop.removeVar(subPopVar_String(sp, ExpHetero_String));
 
 	if (m_expHetero.size() != numSP + 1)
 		m_expHetero.resize(numSP + 1);
@@ -737,8 +747,8 @@ bool statExpHetero::apply(population & pop)
 	for (size_t i = 0; i < numLoci; ++i) {
 		UINT loc = m_atLoci[i];
 
-		if (loc + 1 >= m_expHetero[0].size()) {
-			for (UINT sp = 0; sp < numSP + 1;  ++sp)
+		for (UINT sp = 0; sp < numSP + 1;  ++sp) {
+			if (m_expHetero[sp].size() < loc + 1)
 				m_expHetero[sp].resize(loc + 1, 0.0);
 		}
 
@@ -770,6 +780,7 @@ bool statExpHetero::apply(population & pop)
 			m_expHetero[sp]);
 	pop.setDoubleVectorVar(ExpHetero_String,
 		m_expHetero[numSP]);
+
 	return true;
 }
 
@@ -791,9 +802,6 @@ bool statGenoFreq::apply(population & pop)
 {
 	if (m_atLoci.empty())
 		return true;
-
-	pop.removeVar(GenotypeNum_String);
-	pop.removeVar(GenotypeFreq_String);
 
 	UINT numSP = pop.numSubPop();
 	ULONG popSize = pop.popSize();
@@ -918,6 +926,10 @@ bool statHaploFreq::apply(population & pop)
 
 	pop.removeVar(HaplotypeNum_String);
 	pop.removeVar(HaplotypeFreq_String);
+	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
+		pop.removeVar(subPopVar_String(sp, HaplotypeNum_String));
+		pop.removeVar(subPopVar_String(sp, HaplotypeFreq_String));
+	}
 
 	UINT nHap = m_haplotypes.size();
 
