@@ -1754,7 +1754,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	// at each subpopulation.
 	UINT numSP = pop.numSubPop();
 	vectoru expAlleles(nLoci * numSP);
-	getExpectedAlleles(pop, expFreq, m_loci, m_alleles, expAlleles);
+	getExpectedAlleles(scratch, expFreq, m_loci, m_alleles, expAlleles);
 	DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
 	/// whether or not use stack.
@@ -1766,7 +1766,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 
 	/// controlled random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		ULONG spSize = pop.subPopSize(sp);
+		ULONG spSize = scratch.subPopSize(sp);
 		if (spSize == 0)
 			continue;
 
@@ -1778,12 +1778,18 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 		vectoru totAllele(nLoci);
 		// currently available disease allele. (in the offspring generation)
 		vectoru curAllele(nLoci, 0);
+        // We control allele 1 if expected allele frequency is less than 0.5
+        vector<bool> flip(nLoci, false);
 		for (i = 0; i < nLoci; ++i) {
-			totAllele[i] = expAlleles[sp + numSP * i];
+    		totAllele[i] = expAlleles[sp + numSP * i];
 			if (totAllele[i] > spSize * pldy) {
 				cout << "Warning: number of planned affected alleles exceed population size.";
 				totAllele[i] = spSize * pldy;
 			}
+            if (2 * totAllele[i] > spSize * pldy) {
+                flip[i] = true;
+	    		totAllele[i] = spSize * pldy - totAllele[i];
+            }
 		}
 
 		randomParentsChooser pc;
@@ -1797,8 +1803,6 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 					             "(same sex mating if have to) options to get around this problem.");
 		}
 
-		// ploidy
-		vectori na(nLoci, 0);
 		// it is possible that no disease allele is required
 		// so everyone is accepted
 		bool freqRequMet = true;
@@ -1809,7 +1813,6 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			}
 		}
 		// if a family has disease allele.
-		bool hasAff;
 		bool stackStage = false;
 		// start!
 		RawIndIterator it = scratch.rawIndBegin(sp);
@@ -1838,9 +1841,6 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 			// generate m_numOffspring offspring per mating
 			// record family size (this may be wrong for the last family)
 
-			// this is the basic scheme,
-			// use stage 1, stage 2 as described in the paper
-
 			itBegin = it;
 			// generate numOffspring offspring per mating
 			// it moves forward
@@ -1848,33 +1848,14 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 
 			// count alleles in this family
 			// count number of alleles in the family.
-			for (i = 0; i < nLoci; ++i)
-				na[i] = 0;
-			hasAff = false;
-			/*
-			   for(IndIterator tmp=itBegin; tmp != it; ++tmp)
-			   {
-			   	// success count na, nu
-			   	for(i=0; i<nLoci; ++i)
-			   	{
-			   		for(p=0; p<pldy; ++p)
-			   		{
-			   			if(tmp->allele(m_loci[i], p) == m_alleles[i])
-			   			{
-			   				na[i]++;
-			   hasAff = true;
-			   }
-			   }
-			   }
-			   }								  // family generated.
-			 */
+		    vectori na(nLoci, 0);
+			bool hasAff = false;
 			// we know that scratch population has ordered linear genotype
-
-			// this, to my surprise, does not improve performance.
 			for (i = 0; i < nLoci; ++i) {
 				GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
 				for (size_t j = 0; j < numOff * pldy; ++j, ptr += totNumLoci) {
-					if (*ptr == static_cast<Allele>(m_alleles[i])) {
+					if (flip[i] ? (*ptr != static_cast<Allele>(m_alleles[i]))
+                        : (*ptr == static_cast<Allele>(m_alleles[i]))) {
 						na[i]++;
 						hasAff = true;
 					}
@@ -1929,11 +1910,13 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 				}
 				DBG_DO(DBG_DEVEL, cout << "Accept " << na << " CUR " << curAllele << " TOT  " << totAllele << endl);
 
+                // accept this family
+				for (i = 0; i < nLoci; ++i)
+					curAllele[i] += na[i];
 				// accpet this family, see if all done.
 				if (!freqRequMet) {
 					freqRequMet = true;
 					for (i = 0; i < nLoci; ++i) {
-						curAllele[i] += na[i];
 						if (curAllele[i] < totAllele[i])
 							freqRequMet = false;
 					}
@@ -1954,10 +1937,23 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 					DBG_DO(DBG_MATING, cout << "Stack stage " << m_stack.size() << endl);
 				}
 				if (freqRequMet && stackStage) {
-					DBG_DO(DBG_MATING, cout << "Finish generating offspring" << endl);
+#ifndef OPTIMIZED                    
+					if (debug(DBG_MATING)) {
+                        cout << "Finish generating offspring. subpopulation size: " << spSize << endl;
+                        cout << "Expected:"; 
+                        for (size_t ii = 0; ii < nLoci; ++ii)
+                            cout << " " << expAlleles[sp + numSP * ii] << " (" 
+                                << (expAlleles[sp + numSP * ii]*1.0/(spSize*pldy)) << ")";
+                        cout << endl << "Simulated:";
+                        for (size_t ii = 0; ii < nLoci; ++ii)
+                            cout << " " << (flip[ii] ? spSize * pldy  - curAllele[ii] : curAllele[ii]) << " ("
+                                << (flip[ii] ? 1.  - curAllele[ii]/(1.0*spSize*pldy) : curAllele[ii]/(1.0*spSize*pldy)) << ")";
+                        cout << endl;
+                    }
+#endif
 					break;
 				}
-			} else {
+			} else {        // if do not use stack.
 				// now check if this family is usable.
 				bool accept = false;
 				// all disease alleles have been satidfied.
@@ -1995,10 +1991,11 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 				DBG_DO(DBG_MATING, if (it - scratch.rawIndBegin(sp) < 100) cout << "Accept " << na << endl;);
 
 				// accpet this family, see if all done.
+				for (i = 0; i < nLoci; ++i)
+					curAllele[i] += na[i];
 				if (!freqRequMet) {
 					freqRequMet = true;
 					for (i = 0; i < nLoci; ++i) {
-						curAllele[i] += na[i];
 						if (curAllele[i] < totAllele[i])
 							freqRequMet = false;
 					}
@@ -2006,8 +2003,17 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 				// see if break
 				if (it == it_end) {
 					if (!freqRequMet)
-						cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation "
-						     << pop.gen() << ".\nThis is usually caused by multiple high disease allele frequency." << endl;
+						cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation " << pop.gen() << endl;
+#ifndef OPTIMIZED                        
+                    if (!freqRequMet || debug(DBG_MATING)) {
+                        cout << "Subpopulation size " << spSize << "\nExpected:"; 
+                        for (size_t ii = 0; ii < nLoci; ++ii)
+                            cout << " " << expAlleles[sp + numSP * ii];
+                        cout << endl << "Simulated:";
+                        for (size_t ii = 0; ii < nLoci; ++ii)
+                            cout << " " << (flip[ii] ? spSize * pldy  - curAllele[ii] : curAllele[ii]);
+                    }
+#endif
 					break;
 				}
 			}

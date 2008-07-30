@@ -11,6 +11,8 @@ version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug when a zero-sized virtual subpopulation has weight -1.
   - BUG: Fix a bug when calculating expected heterozygosity with increased
 		number of subpopulations.
+  - BUG: Fix a bug in controlled random mating where number of affected alleles
+		are calculated from current instead of offspring populations.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.
