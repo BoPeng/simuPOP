@@ -1415,14 +1415,14 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
 		Allele ale = alleles[l];
 		// go through all alleles
 		if (subpop == -1) {
-			IndAlleleIterator a = pop.alleleBegin(loc, false);
-			IndAlleleIterator aEnd = pop.alleleEnd(loc, false);
+			IndAlleleIterator a = pop.alleleBegin(loc);
+			IndAlleleIterator aEnd = pop.alleleEnd(loc);
 			for (; a != aEnd; ++a)
 				if (AlleleUnsigned(*a) == ale)
 					alleleNum[l]++;
 		} else {
-			IndAlleleIterator a = pop.alleleBegin(loc, subpop, false);
-			IndAlleleIterator aEnd = pop.alleleEnd(loc, subpop, false);
+			IndAlleleIterator a = pop.alleleBegin(loc, subpop);
+			IndAlleleIterator aEnd = pop.alleleEnd(loc, subpop);
 			for (; a != aEnd; ++a)
 				if (AlleleUnsigned(*a) == ale)
 					alleleNum[l]++;
@@ -1667,8 +1667,8 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 							if (it->allele(locus, p) == allele)
 								n++;
 				} else {
-					IndAlleleIterator a = pop.alleleBegin(locus, sp, false);
-					IndAlleleIterator aEnd = pop.alleleEnd(locus, sp, false);
+					IndAlleleIterator a = pop.alleleBegin(locus, sp);
+					IndAlleleIterator aEnd = pop.alleleEnd(locus, sp);
 					for (; a != aEnd; ++a)
 						if (AlleleUnsigned(*a) == allele)
 							n++;
@@ -1709,8 +1709,8 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 							if (it->allele(locus, p) == allele)
 								n++;
 				} else {
-					IndAlleleIterator a = pop.alleleBegin(locus, sp, false);
-					IndAlleleIterator aEnd = pop.alleleEnd(locus, sp, false);
+					IndAlleleIterator a = pop.alleleBegin(locus, sp);
+					IndAlleleIterator aEnd = pop.alleleEnd(locus, sp);
 					for (; a != aEnd; ++a) {
 						if (AlleleUnsigned(*a) == allele)
 							n++;

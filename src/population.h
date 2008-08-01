@@ -762,7 +762,7 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-	IndAlleleIterator alleleBegin(UINT locus, bool order)
+	IndAlleleIterator alleleBegin(UINT locus)
 	{
 		CHECKRANGEABSLOCUS(locus);
 
@@ -770,7 +770,7 @@ public:
 		// or
 		// if requires order, but the alleles are not ordered
 		// use individual based
-		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
+		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndAlleleIterator(locus, indBegin(), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
@@ -778,10 +778,10 @@ public:
 
 
 	/// CPPONLY allele iterator
-	IndAlleleIterator alleleEnd(UINT locus, bool order)
+	IndAlleleIterator alleleEnd(UINT locus)
 	{
 		CHECKRANGEABSLOCUS(locus);
-		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
+		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndAlleleIterator(locus, indEnd(), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
@@ -793,12 +793,12 @@ public:
 	   order = True: keep order
 	   order = false: repect subpop
 	 */
-	IndAlleleIterator alleleBegin(UINT locus, UINT subPop, bool order)
+	IndAlleleIterator alleleBegin(UINT locus, UINT subPop)
 	{
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
+		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
@@ -807,12 +807,12 @@ public:
 
 
 	///  CPPONLY allele iterator
-	IndAlleleIterator alleleEnd(UINT locus, UINT subPop, bool order)
+	IndAlleleIterator alleleEnd(UINT locus, UINT subPop)
 	{
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop() || (order && !indOrdered()))
+		if (hasActivatedVirtualSubPop() || !indOrdered())
 			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
@@ -2178,6 +2178,7 @@ private:
 	UINT m_curAncestralGen;
 
 	/// whether or not individual genotype and information are in order
+	/// within a population.
 	bool m_indOrdered;
 
 	/// selection flags for each subpopulation.

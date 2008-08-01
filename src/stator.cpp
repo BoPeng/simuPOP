@@ -451,8 +451,8 @@ bool statAlleleFreq::apply(population & pop)
 				num.resize(2, 0);
 
 			// go through all alleles
-			IndAlleleIterator a = pop.alleleBegin(loc, sp, false);
-			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp, false);
+			IndAlleleIterator a = pop.alleleBegin(loc, sp);
+			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp);
 			for (; a != aEnd; ++a) {
 				if (AlleleUnsigned(*a) >= num.size())
 					num.resize(*a + 1, 0);
@@ -604,8 +604,8 @@ bool statHeteroFreq::apply(population & pop)
 
 			// go through all alleles
 			//?>> \todo here we assume diploid population
-			IndAlleleIterator a = pop.alleleBegin(loc, sp, false);
-			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp, false);
+			IndAlleleIterator a = pop.alleleBegin(loc, sp);
+			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp);
 			for (; a != aEnd; a += 2) {
 				if (AlleleUnsigned(*a) >= num.size() )
 					num.resize(*a + 1);
@@ -847,8 +847,8 @@ bool statGenoFreq::apply(population & pop)
 			vector<intDict> num;
 
 			/// go through a single allele for all individual, all diploid
-			IndAlleleIterator it = pop.alleleBegin(loc, sp, false);
-			IndAlleleIterator itEnd = pop.alleleEnd(loc, sp, false);
+			IndAlleleIterator it = pop.alleleBegin(loc, sp);
+			IndAlleleIterator itEnd = pop.alleleEnd(loc, sp);
 			for (; it != itEnd;  it += 2) {
 				a = *it;
 				b = *(it + 1);
@@ -969,8 +969,8 @@ bool statHaploFreq::apply(population & pop)
 
 			vectori sampleHap(sz);
 
-			IndAlleleIterator it = pop.alleleBegin(0, sp, false);
-			IndAlleleIterator itEnd = pop.alleleEnd(0, sp, false);
+			IndAlleleIterator it = pop.alleleBegin(0, sp);
+			IndAlleleIterator itEnd = pop.alleleEnd(0, sp);
 			for (; it != itEnd; ++it) {
 				for (size_t hap = 0; hap < sz; ++hap)
 					sampleHap[hap] = *(it.ptr() + haplotype[hap]);
