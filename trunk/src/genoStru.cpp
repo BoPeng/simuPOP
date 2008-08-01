@@ -96,11 +96,14 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, b
 	}
 #ifndef OPTIMIZED
 	else {
+        map<string, int> nameMap;
 		// check uniqueness of the names
-		for (i = 0; i < m_totNumLoci; ++i)
-			for (j = i + 1; j < m_totNumLoci; ++j)
-				if (m_lociNames[i] == m_lociNames[j])
-					throw ValueError("Given loci names should be unique");
+		for (i = 0; i < m_totNumLoci; ++i) {
+            if (nameMap.find(m_lociNames[i]) != nameMap.end())
+				throw ValueError("Given loci names should be unique");
+            else
+                nameMap[m_lociNames[i]] = 0;
+        }
 	}
 #endif
 
