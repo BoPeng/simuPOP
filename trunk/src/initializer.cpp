@@ -121,13 +121,13 @@ bool initByFreq::apply(population & pop)
 				for (vectoru::iterator locus = m_atLoci.begin(); locus != m_atLoci.end(); ++locus) {
 					// all chromosomes
 					if (m_atPloidy == -1) {
-						ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-							pop.alleleBegin(*locus, false) + (left + 1) * pop.ploidy() );
+						ws.get(pop.alleleBegin(*locus) + left * pop.ploidy(),
+							pop.alleleBegin(*locus) + (left + 1) * pop.ploidy() );
 
 						for (ULONG ind = left + 1; ind < right; ++ind)
-							copy(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-								pop.alleleBegin(*locus, false) + (left + 1) * pop.ploidy(),
-								pop.alleleBegin(*locus, false) + ind * pop.ploidy());
+							copy(pop.alleleBegin(*locus) + left * pop.ploidy(),
+								pop.alleleBegin(*locus) + (left + 1) * pop.ploidy(),
+								pop.alleleBegin(*locus) + ind * pop.ploidy());
 					} else {                                          // only one of the copies (do it one by one?)
 						UINT a = ws.get();
 						for (ULONG ind = left; ind != right; ++ind)
@@ -148,8 +148,8 @@ bool initByFreq::apply(population & pop)
 			} else {                                                          // at certain loci
 				if (m_atPloidy == -1) {
 					for (vectoru::iterator locus = m_atLoci.begin(); locus != m_atLoci.end(); ++locus)
-						ws.get(pop.alleleBegin(*locus, false) + left * pop.ploidy(),
-							pop.alleleBegin(*locus, false) + right * pop.ploidy() );
+						ws.get(pop.alleleBegin(*locus) + left * pop.ploidy(),
+							pop.alleleBegin(*locus) + right * pop.ploidy() );
 				} else {                                                  // for only one ploidy
 					for (vectoru::iterator locus = m_atLoci.begin(); locus != m_atLoci.end(); ++locus) {
 						for (ULONG ind = left; ind != right; ++ind)

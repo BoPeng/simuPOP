@@ -15,6 +15,8 @@ version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		are calculated from current instead of offspring populations.
   - CHG: Only write (compressed if possible) in text format. simuPOP can still
 		read binary and xml formats.
+  - BUG: Fix a bug that is related to the calculation of Fst in populations with
+		unordered individuals.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.
