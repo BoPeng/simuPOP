@@ -1147,10 +1147,10 @@ def createInitialPopulation(par):
     '''
     # load markers!
     for ch in par.chrom:
-        if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.bin' % ch)):
+        if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.txt' % ch)):
             try:
                 import loadHapMap
-                loadHapMap.loadHapMap([ch], par.HapMap_dir)
+                loadHapMap.loadHapMap([ch], par.HapMap_dir, format='txt')
             except Exception, e:
                 print e
             if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.bin' % ch)):
