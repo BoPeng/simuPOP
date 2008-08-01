@@ -61,7 +61,7 @@ def downloadIfNeeded(URL, path, file):
     diskfile = os.path.join(path, file)
     if os.path.isfile(diskfile):
         return        
-    print 'Downloading %s to %s...' % (file, path)
+    print 'Downloading %s to %s ...' % (file, path)
     urllib.urlretrieve('%s/%s' % (URL, file), diskfile)
     if not os.path.isfile(diskfile):
         raise exceptions.SystemError('Failed to download file %s from URL %s' \
@@ -237,15 +237,18 @@ def loadHapMap(chroms, dest='.'):
     ps = [0,0,0]
     for ch in chroms:
         popFile = "hapmap_%d.bin" % ch
-        print "\n\nCreating population %s" % popFile
+        print "\n\nLoading HapMap chromosome %d\n" % ch
         (lociPos, lociName) = getLoci(ch, dest)
+        print "%d loci (%.2f - %.2f cM) are located\n" % (len(lociPos), lociPos[0], lociPos[-1])
         popSize = getPopSize(len(lociPos), ch, dest)
+        print 'Sample sizes are %d, %d, %d' % tuple(popSize)
         if ps[0] == 0:
             ps = popSize
         else:
             if ps[0] != popSize[0] or ps[1] != popSize[1] or ps[2] != popSize[2]:
                 print "Population size does not match across chromosomes"
                 sys.exit(1)
+        print 'Creating population %s' % popFile
         pop = population(size=popSize, ploidy=2, loci=[len(lociPos)],
             lociPos=lociPos, lociNames=lociName, chromNames=[str(ch)])
         print 'Loading CEU population',
