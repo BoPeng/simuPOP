@@ -1439,20 +1439,19 @@ public:
 	/// save population to a file
 	/**
 	 \param filename save to filename
-	 \param format format to save. Can be one of the following: 'txt', 'bin', or 'xml',
-	   	or 'auto' which is determined by the extension of \c filename.
+	 \param format obsolete parameter
+	 \param compress obsolete parameter
 	 \sa global function loadPopulation
 	 */
-	void savePopulation(const string & filename, const string & format = "auto", bool compress = true) const;
+	void savePopulation(const string & filename, const string & format = "", bool compress = true) const;
 
 	/// CPPONLY load population from a file
 	/**
 	 \param filename load from filename
-	 \param format format to load. Can be one of "text", "bin", "xml". It should match
-	   the format used to save the population.
+	 \param format obsolete parameter
 	 \sa savePopulation
 	 */
-	void loadPopulation(const string & filename, const string & format = "auto");
+	void loadPopulation(const string & filename, const string & format = "");
 
 private:
 	population & newPopByIndIDPerGen(const vectori & id = vectori(),

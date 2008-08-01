@@ -407,21 +407,18 @@ public:
 	/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
 	/**
 	 \param filename filename to save the simulator. Default to \c simu.
-	 \param format format to save. Default to \c auto. I.e., determine the
-	   format by file extensions.
-	 \param compress whether or not compress the file in \c 'gzip' format
-	 \sa global function loadsimulator
+	 \param format obsolete parameter
+	 \param compress obsolete parameter
 	 */
-	void saveSimulator(string filename, string format = "auto", bool compress = true) const;
+	void saveSimulator(string filename, string format = "", bool compress = true) const;
 
 	/// CPPONLY load simulator from a file
 	/**
 	 \param filename load from filename
-	 \param format format to load. Can be one of "text", "bin", "xml". It should match
-	   the format used to save the simulator.
+	 \param format obsolete parameter
 	 \sa saveSimulator
 	 */
-	void loadSimulator(string filename, string format = "auto");
+	void loadSimulator(string filename, string format = "");
 
 	// allow str(population) to get something better looking
 	/// used by Python print function to print out the general information of the simulator
