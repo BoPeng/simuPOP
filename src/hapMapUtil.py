@@ -103,7 +103,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
     genDist = {}
     for chIdx,i in enumerate(chroms):
         markers = []
-        pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.txt' % i))
+        pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.pop' % i))
         if type(names) == type({}):
             chNames = names[i]
         else:
@@ -188,8 +188,8 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
 
         maxDist: maximum distance. If exceed, try to pick up a marker ASAP.
     '''
-    print "Loading HapMap population hapmap_%d.txt" % chrom
-    pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.txt' % chrom))
+    print "Loading HapMap population hapmap_%d.pop" % chrom
+    pop = LoadPopulation(os.path.join(HapMap_dir, 'hapmap_%d.pop' % chrom))
     markers = []
     lastPos = 0
     # hapmap_pops
