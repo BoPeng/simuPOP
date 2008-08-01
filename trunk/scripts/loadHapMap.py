@@ -232,11 +232,11 @@ def set_map_dist(pop, ch, dest):
     pop.dvars().genDist = map
 
     
-def loadHapMap(chroms, dest='.'):
+def loadHapMap(chroms, dest='.', format='txt'):
     '''Download, import and save hapmap data of given chromosomes'''
     ps = [0,0,0]
     for ch in chroms:
-        popFile = "hapmap_%d.bin" % ch
+        popFile = "hapmap_%d.%s" % (ch, format)
         print "\n\nLoading HapMap chromosome %d" % ch
         (lociPos, lociName) = getLoci(ch, dest)
         print "%d loci (%.2f - %.2f cM) are located" % (len(lociPos), lociPos[0], lociPos[-1])
