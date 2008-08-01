@@ -286,18 +286,12 @@ Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
 #end
 
 #file log/ref_simulatorsaveload.log
-simu.saveSimulator("s.txt")
-simu.saveSimulator("s.xml", format="xml")
-simu.saveSimulator("s.bin", format="bin")
-simu1 = LoadSimulator("s.txt", randomMating())
-simu2 = LoadSimulator("s.xml", randomMating(), format="xml")
-simu3 = LoadSimulator("s.bin", randomMating(), format="bin")
+simu.saveSimulator("s.sim")
+simu1 = LoadSimulator("s.sim", randomMating())
 #end
 
 # remove these files
-os.remove('s.txt')
-os.remove('s.xml')
-os.remove('s.bin')
+os.remove('s.sim')
 os.remove('a0.txt')
 os.remove('a1.txt')
 

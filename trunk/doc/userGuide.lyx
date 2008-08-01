@@ -684,20 +684,10 @@ Special notes for windows users
 \end_layout
 
 \begin_layout Standard
-Because large populations tend to take lots of disk spaces, simuPOP compresses
- text, binary or XML output in gzip format by default, despite the slower
- saving time.
- Because gzip format is not well supported under windows, this feature is
- disabled under windows.
- The 
-\family typewriter
-compress=True
-\family default
- option of 
-\family typewriter
-savePopulation
-\family default
- is ignored.
+simuPOP compresses its population and simulator files in gzip format because
+ large populations tend to take a lot of disk spaces.
+ However, because gzip format is not well supported under windows, this
+ feature is disabled under windows.
 \end_layout
 
 \begin_layout LyX-Code
