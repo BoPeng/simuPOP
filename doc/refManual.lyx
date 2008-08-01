@@ -1,4 +1,4 @@
-#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -2291,43 +2291,7 @@ Save and Load a Population
 \end_layout
 
 \begin_layout Standard
-Internally, population can be saved/loaded in 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-txt
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-xml
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-
-\family typewriter
-bin
-\family default
-
-\begin_inset Quotes erd
-\end_inset
-
- formats using 
+Internally, population can be saved to or loaded from disk files using 
 \family typewriter
 savePopulation
 \begin_inset LatexCommand index
@@ -2335,7 +2299,7 @@ name "savePopulation"
 
 \end_inset
 
-(file, format, compress=True)
+(file)
 \family default
  member function, global 
 \family typewriter
@@ -2345,7 +2309,7 @@ name "Function!SavePopulation"
 
 \end_inset
 
-(pop, file, format)
+(pop, file)
 \family default
  and 
 \family typewriter
@@ -2368,7 +2332,7 @@ Load..
 load..
 
 \family default
- since 
+ because 
 \family typewriter
 savePopulation
 \family default
@@ -2376,82 +2340,17 @@ savePopulation
 \family typewriter
 LoadPopulation
 \family default
- is a global function.) These formats have their own advantages and disadvantages
-:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-xml
-\begin_inset LatexCommand index
-name "xml format"
-
-\end_inset
-
-:
-\family default
- most readable, easy transformation to other formats, largest file size
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-bin
-\begin_inset LatexCommand index
-name "bin format"
-
-\end_inset
-
-:
-\family default
- not readable, small file size.
- May not be portable.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-txt
-\begin_inset LatexCommand index
-name "text format"
-
-\end_inset
-
-:
-\family default
- human readable with no structure, portable, median file size.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-auto
-\family default
+ is a global function.).
+ Although files in any extension can be saved/loaded correctly, extension
  
 \family typewriter
-
-\begin_inset LatexCommand index
-name "text format"
-
-\end_inset
-
-:
+.pop
 \family default
- the format is determined by the filename extension specified.
-\end_layout
-
-\begin_layout Standard
-Populations are by default compressed in gzip format.
- If you are interested in viewing the content of the file, you can use 
-\family typewriter
-compress=False
-\family default
- when saving a population, or decompress the saved files using 
-\family typewriter
-gzip -d
-\family default
- command.
+ is usually used.
+ Populations are by default compressed in gzip format to save some disk
+ space.
+ However, because gzip format is not well supported under windows, this
+ feature is temporarily disabled under windows.
 \end_layout
 
 \begin_layout Standard
@@ -2520,7 +2419,7 @@ pop.dvars().diseaseLoci = [4, 30]
 
 \begin_layout Standard
 
-SavePopulation(pop, 'pop.bin')
+SavePopulation(pop, 'example.pop')
 \end_layout
 
 \end_inset
@@ -4845,20 +4744,14 @@ Using function
 \family typewriter
 saveSimulator
 \family default
-, we can save a simulator to a file in the format of 
+, we can save a simulator to a file.
+ Although files with any extension can be correctly saved/loaded, extension
+ 
 \family typewriter
-'txt'
+.sim
 \family default
-,
-\family typewriter
- 'bin'
-\family default
-, or 
-\family typewriter
-'xml'
-\family default
-.
- However, a mating scheme can not be saved and has to be re-specified in
+ is usually used.
+ Note that a mating scheme can not be saved and has to be re-specified in
  
 \family typewriter
 LoadSimulator

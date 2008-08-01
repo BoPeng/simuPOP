@@ -9934,18 +9934,17 @@ Description:
 
 Usage:
 
-    x.savePopulation(filename, format=\"auto\", compress=True)
+    x.savePopulation(filename, format=\"\", compress=True)
 
 Arguments:
 
     filename:       save to filename
-    format:         format to save. Can be one of the following:
-                    'txt', 'bin', or 'xml', or 'auto' which is
-                    determined by the extension of filename.
+    format:         obsolete parameter
+    compress:       obsolete parameter
 
 "; 
 
-%ignore simuPOP::population::loadPopulation(const string &filename, const string &format="auto");
+%ignore simuPOP::population::loadPopulation(const string &filename, const string &format="");
 
 %ignore simuPOP::population::selectionOn() const;
 
@@ -14188,18 +14187,17 @@ Description:
 
 Usage:
 
-    x.saveSimulator(filename, format=\"auto\", compress=True)
+    x.saveSimulator(filename, format=\"\", compress=True)
 
 Arguments:
 
     filename:       filename to save the  simulator. Default to simu.
-    format:         format to save. Default to auto. I.e., determine
-                    the format by file extensions.
-    compress:       whether or not compress the file in 'gzip' format
+    format:         obsolete parameter
+    compress:       obsolete parameter
 
 "; 
 
-%ignore simuPOP::simulator::loadSimulator(string filename, string format="auto");
+%ignore simuPOP::simulator::loadSimulator(string filename, string format="");
 
 %feature("docstring") simuPOP::simulator::__repr__ "
 
