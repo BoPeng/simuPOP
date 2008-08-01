@@ -1980,30 +1980,20 @@ void population::useAncestralPop(UINT idx)
 
 void population::savePopulation(const string & filename, const string & format, bool compress) const
 {
+	DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
+
 	io::filtering_ostream ofs;
-	// get file extension
-	string ext = fileExtension(filename);
 
 #ifndef DISABLE_COMPRESSION
-	if (compress || (ext.size() > 3 && ext.substr(ext.size() - 3, 3) == ".gz"))
-		ofs.push(io::gzip_compressor());
+	ofs.push(io::gzip_compressor());
 #endif
 	ofs.push(io::file_sink(filename));
 
 	if (!ofs)
 		throw ValueError("Can not open file " + filename);
 
-	if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz"))) {
-		boost::archive::text_oarchive oa(ofs);
-		oa << *this;
-	} else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz"))) {
-		boost::archive::xml_oarchive oa(ofs);
-		oa << boost::serialization::make_nvp("population", *this);
-	} else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz"))) {
-		boost::archive::binary_oarchive oa(ofs);
-		oa << *this;
-	} else
-		throw ValueError("Wrong format type. Use one of text, xml, bin or appropriate extension txt, xml or bin");
+	boost::archive::text_oarchive oa(ofs);
+	oa << *this;
 }
 
 
@@ -2023,28 +2013,14 @@ void population::loadPopulation(const string & filename, const string & format)
 	if (!ifs)
 		throw ValueError("Can not open file " + filename);
 
-	// get file extension
-	string ext = fileExtension(filename);
-
-	// try to load the file, according to file extension.
+	// try to load the file
 	try {
-		if (format == "text" || (format == "auto" && (ext == "txt" || ext == "txt.gz") )) {
-			boost::archive::text_iarchive ia(ifs);
-			ia >> *this;
-		} else if (format == "xml" || (format == "auto" && (ext == "xml" || ext == "xml.gz") )) {
-			boost::archive::xml_iarchive ia(ifs);
-			ia >> boost::serialization::make_nvp("population", *this);
-		} else if (format == "bin" || (format == "auto" && (ext == "bin" || ext == "bin.gz") )) {
-			boost::archive::binary_iarchive ia(ifs);
-			ia >> *this;
-		} else                                                                              // need special handling
-			throw;
+		boost::archive::text_iarchive ia(ifs);
+		ia >> *this;
 	} catch (...) {                                                                         // if any error happens, or can not determine format, try different methods
 		// first close the file handle.
-
 		DBG_DO(DBG_POPULATION,
 			cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
-
 		// open a fresh ifstream
 		io::filtering_istream ifbin;
 		if (gzipped)
@@ -2056,26 +2032,17 @@ void population::loadPopulation(const string & filename, const string & format)
 		{
 			boost::archive::binary_iarchive ia(ifbin);
 			ia >> *this;
-		} catch (...) {                                                             // not binary, text?
-			io::filtering_istream iftxt;
+		} catch (...) {
+			io::filtering_istream ifxml;
 			if (gzipped)
-				iftxt.push(io::gzip_decompressor());
-			iftxt.push(io::file_source(filename));
+				ifxml.push(io::gzip_decompressor());
+			ifxml.push(io::file_source(filename));
 			try {
-				boost::archive::text_iarchive ia(iftxt);
-				ia >> *this;
-			} catch (...) {                                                     // then xml?
-				io::filtering_istream ifxml;
-				if (gzipped)
-					ifxml.push(io::gzip_decompressor());
-				ifxml.push(io::file_source(filename));
-				try {
-					boost::archive::xml_iarchive ia(ifxml);
-					ia >> boost::serialization::make_nvp("population", *this);
-				} catch (...) {
-					throw ValueError("Failed to load population " + filename + " in " + format + " format.\n");
-				}
-			}                                                                                       // try xml
+				boost::archive::xml_iarchive ia(ifxml);
+				ia >> boost::serialization::make_nvp("population", *this);
+			} catch (...) {
+				throw ValueError("Failed to load population " + filename + ".\n");
+			}
 		}                                                                                           // try text
 	}                                                                                               // try bin
 }

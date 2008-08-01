@@ -14,6 +14,8 @@ version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		number of subpopulations.
   - BUG: Fix a bug in controlled random mating where number of affected alleles
 		are calculated from current instead of offspring populations.
+  - CHG: Only write (compressed if possible) in text format. simuPOP can still
+		read binary and xml formats.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.

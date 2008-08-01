@@ -837,20 +837,19 @@ class TestPopulation(unittest.TestCase):
             InitByFreq(pop, [.2, .8])
             pop.setIndInfo(range(10), 'age')
             pop.setIndInfo(range(100, 110), 'fitness')
-        # .xml format may not be available (under mac)
-        for file in ['a.txt', 'a.bin', 'a.xml', 'a.txt.gz', 'a.bin.gz', 'a.xml.gz']:
-            pop.savePopulation(file, compress=False)
-            assert os.path.isfile(file), "File %s does not exist" % file
-            pop1 = LoadPopulation(file)
-            self.assertEqual(pop, pop1)
-            pop.savePopulation(file, compress=True)
-            assert os.path.isfile(file), "File %s does not exist" % file
-            pop1 = LoadPopulation(file)
-            self.assertEqual(pop, pop1)
-            os.remove(file)
+        file = 'a.pop'
+        pop.savePopulation(file, compress=False)
+        assert os.path.isfile(file), "File %s does not exist" % file
+        pop1 = LoadPopulation(file)
+        self.assertEqual(pop, pop1)
+        pop.savePopulation(file, compress=True)
+        assert os.path.isfile(file), "File %s does not exist" % file
+        pop1 = LoadPopulation(file)
+        self.assertEqual(pop, pop1)
+        os.remove(file)
         # can load file with wrong extension
         # can load file with wrong extension
-        pop.savePopulation('a.txt', format='bin')
+        pop.savePopulation('a.txt')
         pop1 = LoadPopulation('a.txt')
         self.assertEqual(pop, pop1)
         os.remove('a.txt')
