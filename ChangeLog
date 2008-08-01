@@ -1,7 +1,8 @@
 ChangeLog of simuPOP
 
 BUGS:
-  - all known bugs have been cleared.
+  - Save/load saved population in binary format under Windows may fail.
+	For example, files saved by LoadHapMap can not be loaded correctly. :-(
 
 version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: allow the use of a list to specify a virtual subpopulation.
