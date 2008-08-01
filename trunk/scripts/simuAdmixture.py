@@ -11,7 +11,7 @@ Step 0: Prepare HapMap dataset (call scripts/loadHapMap.py if available)
 This script makes use of the HapMap dataset. The dataset is downloaded, imported
 and saved in simuPOP format automatically, using script scripts/loadHapMap.py.
 If loadHapMap.py can not be imported (not in the working directory or in $PYTHONPATH),
-please try to run loadHapMap.py manually and provide a path with files hapmap_XX.bin
+please try to run loadHapMap.py manually and provide a path with files hapmap_XX.txt
 to parameter --HapMap_dir.
 
 
@@ -123,7 +123,7 @@ Evolve the population subject to rapid population expansion for another
 population expansion in the past 20k years. Exponential population
 growth model is used.
 
-The resulting population of this generation is saved as $name/expanded.bin
+The resulting population of this generation is saved as $name/expanded.txt
 (--param expandedName). If this file exists, and parameter --useSavedExpanded
 is specified, the population will be loaded directly.
 
@@ -173,7 +173,7 @@ e.g.
     population 1 and 2 at each generation.
 
 
-The result of this stage will be saved to $name/admixed.bin (--param admixedName)
+The result of this stage will be saved to $name/admixed.txt (--param admixedName)
 
 
 Test scripts
@@ -224,7 +224,7 @@ options = [
      'allowedTypes': [BooleanType],
      'jump': 'expandedName',
      'label': 'Use saved expanded population',
-     'description': '''If set to true, load specified or saved $name/expanded.bin and
+     'description': '''If set to true, load specified or saved $name/expanded.txt and
                 skip population expansion'''
     },
     #
@@ -246,7 +246,7 @@ options = [
                 allows you to save populations every --saveStep generations, starting
                 from population expansion. If saveStep = 0 (default), no intermediate population
                 will be saved. Otherwise, populations at generation 0, saveStep, 2*saveStep, ...
-                will be saved as expand_xx.bin where xx is generation number.''',
+                will be saved as expand_xx.txt where xx is generation number.''',
     },
     {'longarg': 'saveName=',
      'default': 'expand_',
@@ -260,7 +260,7 @@ options = [
      'useDefault': True,
      'label': 'HapMap data directory',
      'description': '''Directory to store HapMap data in simuPOP format. Hapmap
-                data file hapmap_??.bin in this directory, if exits, will be
+                data file hapmap_??.txt in this directory, if exits, will be
                 loaded directly. Otherwise, module loadHapMap.py (usually under
                 /path/to/simuPOP/scripts) will be used to download, import, and
                 save HapMap data in simuPOP formats. If this module can not be
@@ -360,7 +360,7 @@ options = [
                 Can be used for both methods.''',
     },
     {'longarg': 'initName=',
-     'default': 'init.bin',
+     'default': 'init.txt',
      'useDefault': True,
      'description': '''Name of the initial population, relative to simulation path''',
      'allowedTypes': [StringType],
@@ -610,7 +610,7 @@ options = [
      'validate': valueGE(100)
     },
     {'longarg': 'expandedName=',
-     'default': 'expanded.bin',
+     'default': 'expanded.txt',
      'useDefault': True,
      'description': '''Name of the expanded population, relative to simulation path''',
      'allowedTypes': [StringType],
@@ -674,7 +674,7 @@ options = [
                 for more complicated mating schemes that can be defined.''',
     },
     {'longarg': 'admixedName=',
-     'default': 'admixed.bin',
+     'default': 'admixed.txt',
      'useDefault': True,
      'description': '''Name of the admixed, relative to simulation path''',
      'allowedTypes': [StringType],
@@ -729,14 +729,14 @@ class admixtureParams:
             saveStep=0, saveName='expand_',
             HapMap_dir='HapMap', pops=['CEU'], markerList='', chrom=[2],
             numMarkers=[1000], startPos=0, endingPos=0, minAF=0, minDiffAF=0, minDist=0,
-            initName='init.bin', mutaRate=5e-7, recMap='genetic', recIntensity=0.01,
+            initName='init.txt', mutaRate=5e-7, recMap='genetic', recIntensity=0.01,
             convProb=0, convMode='Tract length', convParam=0.02,
             forCtrlLoci=[], forCtrlFreq=[], backCtrlLoci=[], backCtrlFreq=[],
             fitness=[1,1,1], mlSelModel='none', backMigrRate=0.0001,
             scale=10, initCopy=20, initGen=20, initSize=5000,
-            expandGen=500, expandSize=50000, expandedName='expanded.bin',
+            expandGen=500, expandSize=50000, expandedName='expanded.txt',
             admixGen=0, migrGen=0, migrRate=[[0.99, 0.01], [0, 1.]],
-            ancestry=True, matingScheme='random', admixedName='admixed.bin'):
+            ancestry=True, matingScheme='random', admixedName='admixed.txt'):
         # expand all params to different options
         (self.name, self.useSavedExpanded, self.step, self.saveStep, self.saveName,
             self.HapMap_dir, self.pops, self.markerList, self.chrom, self.numMarkers,
@@ -1077,9 +1077,9 @@ def getOperators(pop, par, progress=False, savePop=False, vsp=False, mutation=Fa
         ])
     if savePop and par.saveStep > 0:
         ops.extend([
-            pyEval(r"'Saving current generation to %s%%d.bin\n' %% (gen*scale)" % par.saveName,
+            pyEval(r"'Saving current generation to %s%%d.txt\n' %% (gen*scale)" % par.saveName,
                 step=par.saveStep, stage=PreMating),
-            savePopulation(outputExpr="'%s/%s%%d.bin' %% (gen*scale)" % (par.name, par.saveName),
+            savePopulation(outputExpr="'%s/%s%%d.txt' %% (gen*scale)" % (par.name, par.saveName),
                 step=par.saveStep, stage=PreMating),
         ])
     if mutation:
@@ -1153,7 +1153,7 @@ def createInitialPopulation(par):
                 loadHapMap.loadHapMap([ch], par.HapMap_dir, format='txt')
             except Exception, e:
                 print e
-            if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.bin' % ch)):
+            if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.txt' % ch)):
                 raise ValueError('''Failed to load or download hapmap data for chromosome %d
                     Please copy script loadHapMap.py to the current directory, or add
                     path to this script to environmental variable$PYTHONPATH,
