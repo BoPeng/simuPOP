@@ -237,9 +237,9 @@ def loadHapMap(chroms, dest='.'):
     ps = [0,0,0]
     for ch in chroms:
         popFile = "hapmap_%d.bin" % ch
-        print "\n\nLoading HapMap chromosome %d\n" % ch
+        print "\n\nLoading HapMap chromosome %d" % ch
         (lociPos, lociName) = getLoci(ch, dest)
-        print "%d loci (%.2f - %.2f cM) are located\n" % (len(lociPos), lociPos[0], lociPos[-1])
+        print "%d loci (%.2f - %.2f cM) are located" % (len(lociPos), lociPos[0], lociPos[-1])
         popSize = getPopSize(len(lociPos), ch, dest)
         print 'Sample sizes are %d, %d, %d' % tuple(popSize)
         if ps[0] == 0:
