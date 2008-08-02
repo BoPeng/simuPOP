@@ -236,7 +236,10 @@ def loadHapMap(chroms, dest='.'):
     '''Download, import and save hapmap data of given chromosomes'''
     ps = [0,0,0]
     for ch in chroms:
-        popFile = "hapmap_%d.pop" % ch
+        popFile = os.path.join(dest, "hapmap_%d.pop" % ch)
+        if os.path.isfile(popFile):
+            print "Population %s already exists. Please remove it first if you would like to regenerate this file." % popFile
+            continue
         print "\n\nLoading HapMap chromosome %d" % ch
         (lociPos, lociName) = getLoci(ch, dest)
         print "%d loci (%.2f - %.2f cM) are located" % (len(lociPos), lociPos[0], lociPos[-1])
@@ -248,7 +251,7 @@ def loadHapMap(chroms, dest='.'):
             if ps[0] != popSize[0] or ps[1] != popSize[1] or ps[2] != popSize[2]:
                 print "Population size does not match across chromosomes"
                 sys.exit(1)
-        print 'Creating population %s' % popFile
+        print 'Creating a simuPOP population from chromosome %d' % ch
         pop = population(size=popSize, ploidy=2, loci=[len(lociPos)],
             lociPos=lociPos, lociNames=lociName, chromNames=[str(ch)])
         print 'Loading CEU population',
@@ -262,8 +265,36 @@ def loadHapMap(chroms, dest='.'):
         print 'Calculating allele frequency ...'
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         print "Saving population to %s..." % popFile
-        SavePopulation(pop, os.path.join(dest, popFile))
+        SavePopulation(pop, popFile)
         
 
 if __name__ == '__main__':
-    loadHapMap(range(1, 23))
+    dest = '.'
+    start = 1
+    end = 22
+    try:
+        if len(sys.argv) > 1:
+            dest = sys.argv[1]
+            if not os.path.isdir(dest):
+                print dest, 'is not a valid directory'
+                raise
+        if len(sys.argv) == 3:
+            start = end = int(sys.argv[2])
+        elif len(sys.argv) == 4:
+            start, end = int(sys.argv[2]), int(sys.argv[3])
+    except:
+        print 'Usage: loadHapMap.py [dest] [start_chr] [end_chr]'
+        print '    dest: where to put saved populations, default to current directory'
+        print '    start_chr: starting chromosome, default to 1'
+        print '    end_chr: ending chromosome, default to 22 (sex chromosome is not handled)'
+        print 'If only start_chr is given, end_chr = start_chr.'
+        print 
+        print 'For example:'
+        print '    # load all chromosomes to the current directory'
+        print '    loadHapMap.py'
+        print '    # load chromosome 5 to another directory'
+        print '    loadHapMap.py ../HapMap 5'
+        print '    # load chromosome 5 through 8 to the current directory'
+        print '    loadHapMap.py . 5 8'
+        sys.exit(0)
+    loadHapMap(range(start, end + 1), dest)
