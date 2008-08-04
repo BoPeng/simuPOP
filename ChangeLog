@@ -17,6 +17,7 @@ version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/s
 		read binary and xml formats.
   - BUG: Fix a bug that is related to the calculation of Fst in populations with
 		unordered individuals.
+  - BUG: Fix activation and deactivation of combinedVirtualSplitter.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.
