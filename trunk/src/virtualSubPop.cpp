@@ -97,12 +97,15 @@ void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 	m_curSplitter = m_splitter[virtualSubPop];
 	m_splitters[m_curSplitter]->activate(pop, subPop,
 		m_vsp[virtualSubPop], type);
+	if (type == Visible)
+		m_activated = subPop;
 }
 
 
 void combinedSplitter::deactivate(population & pop, SubPopID sp)
 {
 	m_splitters[m_curSplitter]->deactivate(pop, sp);
+    m_activated = InvalidSubPopID;
 }
 
 
