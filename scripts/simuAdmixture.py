@@ -1150,7 +1150,7 @@ def createInitialPopulation(par):
         if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.pop' % ch)):
             try:
                 import loadHapMap
-                loadHapMap.loadHapMap([ch], par.HapMap_dir, format='txt')
+                loadHapMap.loadHapMap([ch], par.HapMap_dir)
             except Exception, e:
                 print e
             if not os.path.isfile(os.path.join(par.HapMap_dir, 'hapmap_%d.pop' % ch)):
