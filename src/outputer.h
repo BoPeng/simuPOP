@@ -321,12 +321,21 @@ class savePopulation : public outputer
 {
 public:
 	/// save population
+	/**
+		\param output output filename.
+		\param outputExpr An expression that will be evalulated dynamically to
+			determine file name. Parameter \c output will be ignored if this
+			parameter is given.
+		\param format obsolete parameter
+		\param compress obsolete parameter
+	*/
 	savePopulation(string output = "", string outputExpr = "",
-	               string format = "bin", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
+	               string format = "", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
 	               int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
 		outputer("", "", stage, begin, end, step, at, rep, grp, infoFields),
-		m_filename(output), m_filenameParser(outputExpr), m_format(format), m_compress(compress)
+		m_filename(output), m_filenameParser(outputExpr)
 	{
+		DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
 		if (output == "" && outputExpr == "")
 			throw ValueError("Please specify one of output and outputExpr.");
 	}
@@ -357,12 +366,6 @@ private:
 
 	/// or an expression that will be evaluated dynamically
 	Expression m_filenameParser;
-
-	/// can specify format, default to 'auto'
-	string m_format;
-
-	/// whether or not compress population
-	bool m_compress;
 };
 
 }
