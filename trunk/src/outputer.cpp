@@ -191,7 +191,7 @@ bool savePopulation::apply(population & pop)
 		filename = m_filenameParser.valueAsString();
 	}
 	DBG_DO(DBG_OUTPUTER, cout << "Save to file " << filename << endl);
-	pop.savePopulation(filename, m_format, m_compress);
+	pop.savePopulation(filename);
 	return true;
 }
 
