@@ -994,6 +994,8 @@ public:
 	 \note
 	 \li Output to \c output or \c outputExpr is not supported. That is to say,
 	   you have to open/close/append to files explicitly in the Python function.
+	   Because files specified by \c output or \c outputExpr are controlled (opened/closed) by
+	   simulators, they should not be manipulated in a \c pyOperator operator.
 	 \li This operator can be applied \c Pre-, \c During- or <tt>Post- Mating</tt> and is applied \c PostMating
 	   by default. For example, if you would like to examine the fitness values set by
 	   a selector, a \c PreMating Python operator should be used.
