@@ -28,7 +28,6 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
 
-namespace io = boost::iostreams;
 
 namespace simuPOP {
 
@@ -535,12 +534,12 @@ void simulator::saveSimulator(string filename, string format, bool compress) con
 {
 	DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
 
-	io::filtering_ostream ofs;
+	boost::iostreams::filtering_ostream ofs;
 
 #ifndef DISABLE_COMPRESSION
-	ofs.push(io::gzip_compressor());
+	ofs.push(boost::iostreams::gzip_compressor());
 #endif
-	ofs.push(io::file_sink(filename));
+	ofs.push(boost::iostreams::file_sink(filename));
 
 	if (!ofs)
 		throw ValueError("Can not open file " + filename);
@@ -552,15 +551,15 @@ void simulator::saveSimulator(string filename, string format, bool compress) con
 
 void simulator::loadSimulator(string filename, string format)
 {
-	io::filtering_istream ifs;
+	boost::iostreams::filtering_istream ifs;
 
 	if (isGzipped(filename))
 #ifdef DISABLE_COMPRESSION
 		throw ValueError("This version of simuPOP can not handle compressed file");
 #else
-		ifs.push(io::gzip_decompressor());
+		ifs.push(boost::iostreams::gzip_decompressor());
 #endif
-	ifs.push(io::file_source(filename));
+	ifs.push(boost::iostreams::file_source(filename));
 
 	// do not need to test again
 	if (!ifs)
@@ -575,20 +574,20 @@ void simulator::loadSimulator(string filename, string format)
 			cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
 
 		// open a fresh ifstream
-		io::filtering_istream ifbin;
+		boost::iostreams::filtering_istream ifbin;
 		if (isGzipped(filename))
-			ifbin.push(io::gzip_decompressor());
-		ifbin.push(io::file_source(filename));
+			ifbin.push(boost::iostreams::gzip_decompressor());
+		ifbin.push(boost::iostreams::file_source(filename));
 		// try to load the file using different iarchives.
 		try                                                                               // binary?
 		{
 			boost::archive::binary_iarchive ia(ifbin);
 			ia >> *this;
 		} catch (...) {                                                             // not binary, text?
-			io::filtering_istream ifxml;
+			boost::iostreams::filtering_istream ifxml;
 			if (isGzipped(filename))
-				ifxml.push(io::gzip_decompressor());
-			ifxml.push(io::file_source(filename));
+				ifxml.push(boost::iostreams::gzip_decompressor());
+			ifxml.push(boost::iostreams::file_source(filename));
 			try {
 				boost::archive::xml_iarchive ia(ifxml);
 				ia >> boost::serialization::make_nvp("simulator", *this);
