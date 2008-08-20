@@ -269,7 +269,7 @@ include misc/README
 include misc/python-mode.el
 include misc/emacs-python.el 
 
-# bundle boost 1.33.1
-recursive-include boost_1_33_1/boost *.hpp *.ipp
-recursive-include boost_1_33_1/libs/iostreams/src *.cpp *.hpp *.ipp
-recursive-include boost_1_33_1/libs/serialization/src *.cpp *.hpp *.ipp
+# bundle boost 1.36.0
+recursive-include boost_1_36_0/boost *.hpp *.ipp
+recursive-include boost_1_36_0/libs/iostreams/src *.cpp *.hpp *.ipp
+recursive-include boost_1_36_0/libs/serialization/src *.cpp *.hpp *.ipp

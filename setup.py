@@ -9,12 +9,12 @@ install swig >= 1.3.27 to generate the wrap files.
 import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions.
-boost_versions = ['1_33_1', '1_34_0', '1_34_1', '1_35']
+boost_versions = ['1_33_1', '1_34_0', '1_34_1', '1_35_0', '1_36_0']
 
 # if the source package is districuted with boost 1.33.1, use
 # this bundled version.
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
-included_boost_dir = 'boost_1_33_1'
+included_boost_dir = 'boost_1_36_0'
 if len(included_version) > 0:
     included_boost = True
     included_boost_dir = 'boost_' + included_version[0]
@@ -26,7 +26,7 @@ else:
 
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
-# 
+#
 # use_vc is used only once to indicate if a portable stdint.h
 # need to be used. (msvc does not ship with stdint.h)
 if os.name == 'nt':
@@ -339,7 +339,6 @@ if included_boost and os.name != 'nt':
         'basic_iserializer.cpp',
         'basic_oserializer.cpp',
         'basic_pointer_oserializer.cpp',
-        'basic_archive_impl.cpp',
         'basic_xml_archive.cpp',
         'xml_grammar.cpp',
         'xml_iarchive.cpp',

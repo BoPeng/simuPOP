@@ -19,8 +19,7 @@ simuPOP installation guide
     2.2.4. Solaris (SunOS) System
     2.2.5. Mac OS (Intel and PPC) systems
     2.2.6. Linux using intel C++
-  2.3. Building the MPI version of simuPOP
-  2.4. Testing simuPOP
+  2.3. Testing simuPOP
 3. Working with the latest simuPOP subversion version
   3.1. Get simuPOP/svn
   3.2. Installing boost (Optional)
@@ -225,13 +224,13 @@ install SWIG to generate wrap files for your new code.
 2.1.1. Installing boost libraries (iostreams, serialization and/or MPI)
 =======================================================================
 
-Starting from simuPOP-0.7.8, boost 1.33.1 is bundled with simuPOP source
+Starting from simuPOP-0.7.8, boost 1.36 is bundled with simuPOP source
 and setup.py will build iostreams and serialization libraries automatically.
-Other versions of boost can be used if you remove the boost_1_33_1 directory
+Other versions of boost can be used if you remove the boost_1_36_0 directory
 from the simuPOP directory.
 
 If you use simuPOP snapshot (SVN version), you may want to download and 
-unpack boost 1.33.1. You can choose to install boost libraries system wide
+unpack boost 1.36. You can choose to install boost libraries system wide
 (as shown below), or simply unpack to simuPOP top source directory.
 
 Installing boost is generally difficult because it uses a special build
@@ -248,7 +247,7 @@ Note that:
      can be linked with simuPOP to generate shared libraries. The command line 
      is likely to be:
 
-     Boost 1.33.1:
+     Boost 1.36:
        > bjam -j4 --prefix=/usr "-sBUILD=release <runtime-link>static <cxxflags>-fPIC" \
 	     "-sTOOLS=gcc"  --with-serialization --with-iostreams --prefix=/usr install
      Boost CVS:
@@ -316,10 +315,10 @@ to not use them. Using a system without cygwin, you can
   2. download zlib, unpack to c:\zlib
   
   3. (Optional) download and install boost, using commands like:
-    > cd \boost\boost-1_33_1\tools\build\jam_src
+    > cd \boost\boost-1_36_0\tools\build\jam_src
 	> build.bat
-	copy bjam.exe to c:\boost\boost-1_33_1,
-	> cd \boost\boost-1_33_1
+	copy bjam.exe to c:\boost\boost-1_36_0,
+	> cd \boost\boost-1_36_0
 	> bjam.exe -j4 "-sBUILD=debug release <cxxflags>-fPIC" "-sTOOLS=mingw" \
      -sNO_COMPRESSION=0 -sNO_BZIP2=1 -sNO_ZLIB=0 -sZLIB_INCLUDE=c:/zlib/include \
 	 -sZLIB_LIBRARY=c:/zlib/lib -sZLIB_BINARY=zdll --prefix=c:/boost \
@@ -440,87 +439,7 @@ override system python, so here is what you need to do
      simuPOP modules will be put under /home/username/Python24/lib(or lib64)/site-packages,
 
 
-2.3. Building the MPI version of simuPOP
-========================================
-
-NOTE: I have have access to LAM/MPI, openMPI and HP/MPI under linux system. The setup.py 
-is created with this limitation. If setup.py does not work for your particular MPI 
-implementation, please modify this script and send me a patch.
-
-  1. do 'module load mpi' or whatever appropriate to make mpiCC available.
-  2. run 'python setup.py build' as usual, with fingers crossed.
-
-Potential Problem: HP/MPI
--------------------------
-Using a version of HP/MPI, there is no libmpiCC.so and the version of libmpiCC.a is
-not compiled with -fPIC flag. You will get a link error like: 
-
-/usr/bin/ld: /opt/hpmpi/lib/linux_amd64/libmpiCC.a(mpicxx.o): relocation R_X86_64_32 against `__dso_handle' can not be used when making a shared object; recompile with -fPIC
-/opt/hpmpi/lib/linux_amd64/libmpiCC.a: could not read symbols: Bad value
-collect2: ld returned 1 exit status
-error: command 'c++' failed with exit status 1
-
-Solution:
----------
-  1. go to /path/to/hpmpi/arch/lib and copy a directory named mpiCCsrc to your
-     local directory. If you can not find this directory, send an email to your 
-     system admin and ask for it. There should be Makefile, mpicxx.cc and 
-     intercepts.cc under this directory.
-  2. change the last line of Makefile to (add -fPIC)
-        $(CXX) -fPIC -c $< -I$(MPI_ROOT)/include -DHPMP_BUILD_CXXBINDING
-  3. run make and get a local version of libmpiCC.a
-  4. copy libmpiCC.a to directory 'build' under the simuPOP directory, if this 
-     directory does not exist, create one.
-  5. run python setup.py as usual, since -Lbuild is before -L/path/to/hpmpi, 
-     build/libmpiCC.a will be used instead of the system one.
-
-Note: setup.py accepts parameters like --library-dirs=/home/username/mpiCC but 
--L/home/username/mpiCC is put after system -L options during linking. This is 
-why we need to put libmpiCC.a into simuPOP/build.
-
-
-Potential Problem: LAM/MPI
---------------------------
-The same sympton as HP/MPI. liblammpi++.a is not compiled with -fPIC.
-
-
-Solution:
----------
-Since there is no shared libraries provided by default, you have to build LAM from 
-scratch, or at least override some system libraries,
-  1. Get LAM/MPI source. Redhat/RHEL4 does not provide the source code for its
-     lam package. If you plan to override system LAM package, get the latest 
-     version (7.1.2), otherwise, get a version that matches your system LAM version.
-  2. run 
-        $ ./configure --enable-shared --prefix=/usr
-        $ make 
-     from the top source directory.
-  3. If you have root privilege, clear /usr/lib (and lib64)/libmpi* liblam*, run
-        $ make install
-     to override your existing LAM installation. Otherwise, copy
-       share/mpi/.libs/libmpi.a
-       share/mpi/.libs/liblam.a
-       share/mpi/cxx/.libs/liblammpi++.a
-     to simuPOP/build. These libraries will override system libraries. 
-  4. run
-        $ python setup.py install 
-     as usual. For new installations, command ldconfig may be needed to
-     setup path to LAM/MPI libraries.
-
-
-Potential Problem: Other MPI
-----------------------------
-MPI module is not built, because mpiCC is not found, or 'mpiCC -show' or 
-'mpiCC -showme' does not work.
-
-Solution:
----------
-setup.py runs 'mpiCC -show', and if failed, 'mpiCC -showme' to get the compiler flags of 
-mpiCC. Check the correct syntax for your mpi distribution and modify setup.py.
-
-
-
-2.4. test simuPOP
+2.3. test simuPOP
 =================
 
 After installation, you can test simuPOP and other components by
@@ -562,7 +481,7 @@ Then, get simuPOP/svn from https://simupop.svn.sourceforge.net/svnroot/simupop/t
 3.2. Installing boost (Optional)
 ================================
 
-You can choose to install boost completely or unpack boost 1.33.1 as boost_1_33_1
+You can choose to install boost completely or unpack boost 1.36 as boost_1_36_0
 under the top source directory of simuPOP. In the later case, simuPOP will automatically
 compile the needed libraries from boost source.
 
