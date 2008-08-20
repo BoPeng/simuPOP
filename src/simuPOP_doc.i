@@ -10538,7 +10538,9 @@ Note:
 
     * Output to output or outputExpr is not supported. That is to say,
     you have to open/close/append to files explicitly in the Python
-    function.
+    function. Because files specified by output or outputExpr are
+    controlled (opened/closed) by simulators, they should not be
+    manipulated in a  pyOperator operator.
     * This operator can be applied Pre-, During- or Post- Mating and
     is applied PostMating by default. For example, if you would like
     to examine the fitness values set by a selector, a PreMating

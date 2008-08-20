@@ -27,8 +27,7 @@ def run(cmd):
 def removeTempFiles():
     ''' remove unnecessary files '''
     # walk down the file hierarchy
-    modules = ['std', 'op', 'la', 'laop', 'ba', 'baop', \
-        'mpi', 'opmpi', 'lampi', 'laopmpi', 'bampi', 'baopmpi']
+    modules = ['std', 'op', 'la', 'laop', 'ba', 'baop']
     for root,path,files in os.walk('.'):
         # check file type
         for file in files:
@@ -63,9 +62,6 @@ def setVersionRevision(release):
     ''' if release = snapshot, do not change simuPOP.release
         by returning current ver and rev numbers
         otherwise, update simuPOP.release
-
-        last_version_file and last_revision_file will always
-        be updated.
     '''
     if release != 'snapshot':
         rev = cmdOutput('svnversion .')
@@ -73,13 +69,6 @@ def setVersionRevision(release):
             rev = rev.split(':')[0]
     else:
         rev = '9999'
-    # write last_revision_file and last_version_file
-    file = open(last_revision_file, 'w')
-    file.write(rev)
-    file.close()
-    file = open(last_version_file, 'w')
-    file.write(release)
-    file.close()
     # replace simuPOP.release
     (old_ver, old_rev) = writeReleaseFile(release, rev)
     return (release, rev, old_ver, old_rev)
@@ -106,16 +95,11 @@ def build_doc(ver, rev):
     os.chdir(d)
 
 
-def build_src():
+def build_src(ver):
     d = os.getcwd()
-    ver = open(last_version_file).read()
-
-    if ver == 'snapshot':
-        rev = cmdOutput('svnversion .')
-        if ':' in rev:
-            rev = rev.split(':')[0]
-    else:
-        rev = open(last_revision_file).read()
+    rev = cmdOutput('svnversion .')
+    if ':' in rev:
+        rev = rev.split(':')[0]
     #
     # replace simuPOP.release file
     (old_ver, old_rev) = writeReleaseFile(ver, rev)
@@ -217,8 +201,6 @@ Options:
     --dryrun                show command, do not run
     --config=file           configuration file
         This configuration file should define:
-        last_version_file: a file that has the last version, e.g.  1.7.5
-        last_revision_file: a file that has the last revision. e.g. 567
         release_file: the release file or simuPOP distribution
         download_directory: where to put resulting packages
         doc_directory: doc directory of simuPOP source
@@ -283,7 +265,7 @@ if __name__ == '__main__':
         if release != 'snapshot':
             makeReleaseTag(release)
     if 'src' in actions:
-        build_src()
+        build_src(release)
     if 'doc' in actions:
         build_doc(ver, rev)
     if 'x86_64' in actions:
