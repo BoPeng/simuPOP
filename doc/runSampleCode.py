@@ -80,7 +80,7 @@ def splitFile(outputFile, runCommand=True):
                 file = file.replace('.log', '.py')
                 print "Writing source to %s" % file
             dir = os.path.split(file)[0]
-            if not os.path.isdir(dir):
+            if dir != '' and not os.path.isdir(dir):
                 os.mkdir(dir)
             out = open(file, 'w')
             first = True
