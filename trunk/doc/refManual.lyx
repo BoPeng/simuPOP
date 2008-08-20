@@ -1,4 +1,4 @@
-#LyX 1.5.6svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.6 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.7 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -2347,10 +2347,7 @@ LoadPopulation
 .pop
 \family default
  is usually used.
- Populations are by default compressed in gzip format to save some disk
- space.
- However, because gzip format is not well supported under windows, this
- feature is temporarily disabled under windows.
+ Populations are compressed in gzip format to save some disk space.
 \end_layout
 
 \begin_layout Standard
