@@ -1202,7 +1202,6 @@ bool cloneMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
-///
 bool binomialSelection::mateSubPop(population & pop, SubPopID subPop,
                                    RawIndIterator offBegin, RawIndIterator offEnd,
                                    vector<baseOperator * > & ops)
@@ -1248,7 +1247,7 @@ bool baseRandomMating::mateSubPop(population & pop, SubPopID subPop,
 	randomParentsChooser pc(m_replacement, m_replenish, m_polySex,
 	                        m_polyNum, m_alphaSex, m_alphaNum, m_alphaField);
 	pc.initialize(pop, subPop);
-	/// now, all individuals of needToFind sex is collected
+	// now, all individuals of needToFind sex is collected
 	if ( (pc.numMale() == 0 || pc.numFemale() == 0) && !m_contWhenUniSex)
 		throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
 			             "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
@@ -1405,7 +1404,6 @@ bool selfMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
-/// CPPONLY
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
                   vectorlu & alleleNum)
 {
@@ -1620,9 +1618,8 @@ bool controlledMating::mate(population & pop, population & scratch, vector<baseO
 }
 
 
-/// give expected frequency for the whole population, or all subpopulations
-/// return expected number of alleles at each subpopulations.
-/// CPPONLY
+// give expected frequency for the whole population, or all subpopulations
+// return expected number of alleles at each subpopulations.
 void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loci,
                         const vectori & alleles, vectoru & expAlleles)
 {
@@ -1757,14 +1754,14 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	getExpectedAlleles(scratch, expFreq, m_loci, m_alleles, expAlleles);
 	DBG_DO(DBG_MATING, cout << "expected alleles " << expAlleles << endl);
 
-	/// whether or not use stack.
+	// whether or not use stack.
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
 	bool useStack = m_offspringGenerator.fixedFamilySize();
 	// use to go through offspring generation to count alleles
 	UINT totNumLoci = pop.totNumLoci();
 
-	/// controlled random mating happens within each subpopulation
+	// controlled random mating happens within each subpopulation
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		ULONG spSize = scratch.subPopSize(sp);
 		if (spSize == 0)
@@ -1819,8 +1816,8 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 		RawIndIterator it_end = scratch.rawIndEnd(sp);
 		RawIndIterator itBegin = it;
 		UINT numOff = 0;
-		/// if mor ethan noAAattempt times, no pure homo found,
-		/// accept non-homo cases.
+		// if mor ethan noAAattempt times, no pure homo found,
+		// accept non-homo cases.
 		int AAattempt = 200;
 		while (true) {
 			// the logic is complicated here and I will try to be explicit

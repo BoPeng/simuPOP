@@ -104,10 +104,8 @@ using std::greater;
 
 namespace simuPOP {
 
-// ////////////////////////////////////////////////////////////
-// / Debug functions
-// ////////////////////////////////////////////////////////////
-// / debug codes in a bitset.
+// Debug functions
+// debug codes in a bitset.
 DbgBitSet g_dbgCode;
 
 // debug code string. For output purpose only.
@@ -244,9 +242,7 @@ void checkRefCount()
 
 #endif
 
-// ////////////////////////////////////////////////////////////
-// / Some common functions/templates
-// ////////////////////////////////////////////////////////////
+// Some common functions/templates
 
 #if  defined (_WIN32) || defined (__WIN32__)
 int simuPOP_kbhit()
@@ -354,11 +350,9 @@ unsigned pow3(unsigned n)
 
 namespace simuPOP {
 
-// ///////////////////////////////////////////////////////////////
 //
 // shared variables
 //
-// ///////////////////////////////////////////////////////////////
 
 // utility functions: python => C++ conversion
 void PyObj_As_Bool(PyObject * obj, bool & val)
@@ -617,8 +611,6 @@ char * NumArray_Data(PyObject * obj)
 	return carray_data(obj);
 }
 
-
-// //////////////////////////////////////////////////////
 
 // copy constructor
 SharedVariables::SharedVariables(const SharedVariables & rhs)
@@ -1393,9 +1385,7 @@ void SharedVariables::fromString(const string & vars)
 }
 
 
-// //////////// END OF SharedVars ///////
 
-// //////////// BEGIN of SimuVars
 // simuVars will hold replicate specific Shared Variables.
 
 // global dictionary
@@ -1428,9 +1418,7 @@ PyObject * pyIndObj(void * p)
 }
 
 
-// ////////////////////////////////////////////////////////////
 // Expression evaluation
-// ////////////////////////////////////////////////////////////
 // because of ref count, need to define copier
 
 Expression::Expression(const Expression & rhs)
@@ -1618,9 +1606,7 @@ intDict Expression::valueAsIntDict()
 }
 
 
-// ////////////////////////////////////////////////////////////
-// / Stream element, can be of different types
-// ////////////////////////////////////////////////////////////
+// Stream element, can be of different types
 
 StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool useString)
 	: m_filename(name)
@@ -1773,9 +1759,7 @@ string StreamElem::info()
 }
 
 
-// ////////////////////////////////////////////////////////////
-// / OStream Manager
-// ////////////////////////////////////////////////////////////
+// OStream Manager
 
 OstreamManager::OstreamManager() : m_ostreams()
 {
@@ -1853,9 +1837,7 @@ OstreamManager & ostreamManager()
 }
 
 
-// ////////////////////////////////////////////////////////////
-// / Stream provider
-// ////////////////////////////////////////////////////////////
+// Stream provider
 
 // all flags will be cleared to 0
 StreamProvider::StreamProvider(const string & output, const string & outputExpr)
@@ -2018,9 +2000,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 }
 
 
-// ////////////////////////////////////////////////////////////
-// / Random number generator
-// ////////////////////////////////////////////////////////////
+// Random number generator
 RNG::RNG(const char * rng, unsigned long seed) : m_RNG(NULL)
 {
 	setRNG(rng, seed);
@@ -2174,9 +2154,7 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 }
 
 
-// /////////// Weighted sampler //////////////
-// / FIXME: consider adopting R's implementation.
-// / They may be quicker.
+// They may be quicker.
 void Weightedsampler::set(const vectorf & weight)
 {
 	m_N = weight.size();
@@ -2243,7 +2221,6 @@ void Weightedsampler::set(const vectorf & weight)
 }
 
 
-// //////////// Bernulli trials ///////////
 
 // this is used for BernulliTrials and copyGenotype
 WORDTYPE g_bitMask[WORDBIT];
@@ -2628,9 +2605,7 @@ vectorstr listAllRNG()
 }
 
 
-// ////////////////////////////////////////////////////////////
-// /  Global debug and initialization related functions
-// ////////////////////////////////////////////////////////////
+// Global debug and initialization related functions
 
 void gsl_error_handler(const char * reason, const char *,
                        int, int gsl_errno)
@@ -2686,6 +2661,7 @@ protected:
 };
 
 // create a null stream buf that discard everything
+/// CPPONLY
 class NullStreamBuf : public streambuf
 {
 public:
@@ -2703,10 +2679,10 @@ protected:
 
 };
 
-// create an object
+/// CPPONLY
 PythonCoutBuf g_pythonCoutBuf;
 
-// null stream buf
+/// CPPONLY
 NullStreamBuf g_nullStreamBuf;
 
 // null stream
@@ -3163,7 +3139,7 @@ bool initialize()
     if (g_swigPopType == NULL || g_swigindividual == NULL)
 		throw SystemError("Can not get population and individual type pointer, your SWIG version may be run.");
 
-    /// load carray function and type
+    // load carray function and type
     initcarray();
 
     // set gsl error handler

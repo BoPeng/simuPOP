@@ -24,7 +24,7 @@
 #include "penetrance.h"
 
 namespace simuPOP {
-/// set pentrance to all individuals and record penetrance if requested.
+// set pentrance to all individuals and record penetrance if requested.
 bool penetrance::apply(population & pop)
 {
 	double p;
@@ -87,7 +87,7 @@ double mapPenetrance::penet(individual * ind)
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
-		/// get genotype of ind
+		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);
 
@@ -115,7 +115,7 @@ double maPenetrance::penet(individual * ind)
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
-		/// get genotype of ind
+		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);
 
