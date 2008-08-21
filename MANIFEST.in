@@ -7,7 +7,7 @@ include ChangeLog
 include COPYING
 include TODO
 include AUTHORS
-include simuPOP.release
+include simuPOP_version.py
 include MANIFEST.in 
 include setup.py
 include SConstruct
