@@ -846,7 +846,7 @@ bool statGenoFreq::apply(population & pop)
 
 			vector<intDict> num;
 
-			/// go through a single allele for all individual, all diploid
+			// go through a single allele for all individual, all diploid
 			IndAlleleIterator it = pop.alleleBegin(loc, sp);
 			IndAlleleIterator itEnd = pop.alleleEnd(loc, sp);
 			for (; it != itEnd;  it += 2) {
@@ -868,7 +868,7 @@ bool statGenoFreq::apply(population & pop)
 
 			// register values for this subpopulation
 			for (a = 0; a < num.size(); ++a) {
-				/// need to replace previous values
+				// need to replace previous values
 				// if( num[a].empty() )
 				//   continue;
 
@@ -1948,7 +1948,7 @@ statRelatedness::fraction statRelatedness::relRel(individual ind1,
 
 
 // between group i and j if method=REL_Queller and REL_Lynch
-/// for group i and locus j otherwise
+// for group i and locus j otherwise
 double statRelatedness::groupRelatedness(population & pop, int i, int j, int method)
 {
 	statRelatedness::fraction res(0., 0.);

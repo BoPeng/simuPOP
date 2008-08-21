@@ -170,7 +170,7 @@ void gsmMutator::mutate(AlleleRef allele)
 }
 
 
-/// mutate according to the mixed model
+// mutate according to the mixed model
 void pyMutator::mutate(AlleleRef allele)
 {
 	int resInt;

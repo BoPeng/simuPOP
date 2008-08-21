@@ -27,7 +27,7 @@ bool dumper::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
-	/// dump population structure
+	// dump population structure
 	if (!alleleOnly() ) {
 		out << "Ploidy:         \t" << pop.ploidy() << endl;
 		out << "Number of chrom:\t" << pop.numChrom() << endl;
@@ -60,7 +60,7 @@ bool dumper::apply(population & pop)
 	}
 
 	if (!m_infoOnly) {
-		/// dump all genotypic info
+		// dump all genotypic info
 		if (pop.maxAllele() >= 10 && pop.maxAllele() < 100)
 			m_width = 2;
 		else if (pop.maxAllele() >= 100)

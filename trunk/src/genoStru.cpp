@@ -138,8 +138,6 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
 
 
-/// distance between loci \c loc1 and \c loc2. These two loci should be
-/// on the same chromosome.
 double GenoStruTrait::lociDist(UINT loc1, UINT loc2) const
 {
 	// right now, it is assumed that locus is not the first
@@ -196,9 +194,9 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sex
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                                      const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
 {
-	/// only allow for TraitMaxIndex-1 different genotype structures
-	/// As a matter of fact, most simuPOP scripts have only one
-	/// population type.
+	// only allow for TraitMaxIndex-1 different genotype structures
+	// As a matter of fact, most simuPOP scripts have only one
+	// population type.
 	if (s_genoStruRepository.size() == TraitMaxIndex - 1) {
 		throw SystemError("This simuPOP library only allows " + toStr(TraitMaxIndex - 1)
 			+ " different genotype structures. \n" +
@@ -347,7 +345,6 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 #undef addLocusName
 }
 
-/// CPPONLY
 GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, const vectoru & keep)
 {
 	vectoru loci;
@@ -385,7 +382,6 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 }
 
 
-/// CPPONLY add some loci to genotype structure
 GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const
 {
 	DBG_FAILIF(idx.size() != pos.size(), ValueError,
@@ -432,7 +428,6 @@ GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, c
 }
 
 
-/// CPPONLY append some loci to genotype structure
 GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const
 {
 	DBG_FAILIF(idx.size() != pos.size(), ValueError,
@@ -571,7 +566,6 @@ GenoStructure & GenoStruTrait::struAddInfoFields(const vectorstr & fields)
 }
 
 
-/// CPPONLY should should only be called from population
 GenoStructure & GenoStruTrait::struSetInfoFields(const vectorstr & fields)
 {
 	GenoStructure * gs = new GenoStructure(s_genoStruRepository[m_genoStruIdx]);

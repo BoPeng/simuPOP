@@ -55,7 +55,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	string key;
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		/// get genotype of ind
+		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);
 
@@ -76,14 +76,14 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 }
 
 
-/// currently assuming diploid
+// currently assuming diploid
 double maSelector::indFitness(individual * ind, ULONG gen)
 {
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		/// get genotype of ind
+		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);
 
@@ -122,7 +122,6 @@ double mlSelector::indFitness(individual * ind, ULONG gen)
 			fit -= 1 - static_cast<selector * >(*s)->indFitness(ind, gen);
 		return fit < 0 ? 0. : fit;
 	} else if (m_mode == SEL_Heterogeneity) {
-		/// fixme
 		double fit = 1;
 		for (vectorop::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)

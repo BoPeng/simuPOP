@@ -160,7 +160,7 @@ bool migrator::apply(population & pop)
 		}
 		if (m_from[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
-	} /// for all subPop.
+	} // for all subPop.
 
 	// do migration.
 	// true: rearrange individuals

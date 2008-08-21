@@ -81,7 +81,7 @@ void recombinator::prepareRecRates(population & pop,
 				break;
 			}
 
-			/// get loci distance * rate and then recombinant points
+			// get loci distance * rate and then recombinant points
 			for (UINT loc = 0, locEnd = pop.numLoci(ch) - 1;
 			     loc < locEnd; ++loc) {
 				if (useLociDist)
@@ -124,7 +124,7 @@ void recombinator::prepareRecRates(population & pop,
 				break;
 			}
 
-			/// get loci distance * rate and then recombinant points
+			// get loci distance * rate and then recombinant points
 			for (UINT loc = 0, locEnd = pop.numLoci(ch) - 1;
 			     loc < locEnd; ++loc) {
 				// if this locus will be recombined.
@@ -184,9 +184,9 @@ void recombinator::prepareRecRates(population & pop,
 			                          << vecP << " before " << recBeforeLoci << endl);
 	}
 
-	/// initialize recombination counter,
-	/// This will count recombination events after
-	/// each locus.
+	// initialize recombination counter,
+	// This will count recombination events after
+	// each locus.
 	DBG_DO_(m_recCount.resize(pop.totNumLoci(), 0));
 	return;
 }

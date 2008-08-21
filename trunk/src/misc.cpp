@@ -271,7 +271,6 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 //      index = 0*3+1
 // second loop
 //      index = 1*3 + 2 = 5
-/// CPPONLY
 double fitOfGeno(unsigned loc, const vectori & allgeno, const vectorf & fitness, const vectorf::const_iterator & freq)
 {
 	int index = 0;
@@ -294,7 +293,6 @@ double fitOfGeno(unsigned loc, const vectori & allgeno, const vectorf & fitness,
 }
 
 
-/// CPPONLY
 // get individual fitness, accounting interaction
 void interFitness(unsigned nLoci, const vectorf & fitness, const vectorf::const_iterator & freq, vectorf & sAll)
 {
@@ -336,7 +334,6 @@ void interFitness(unsigned nLoci, const vectorf & fitness, const vectorf::const_
 
 
 // the python version of interaction Fitness, for convenience purpose.
-/// CPPONLY
 vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf & freq)
 {
 	vectorf sAll(3, 1);

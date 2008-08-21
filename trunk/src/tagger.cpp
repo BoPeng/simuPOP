@@ -24,7 +24,7 @@
 #include "tagger.h"
 
 namespace simuPOP {
-/// create a \c tagger, default to be always active but no output
+// create a \c tagger, default to be always active but no output
 tagger::tagger(string output, string outputExpr,
                int begin, int end, int step, vectorl at, int rep, int grp,
                const vectorstr & infoFields) :

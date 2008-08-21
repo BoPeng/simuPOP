@@ -102,7 +102,6 @@ population::population(const vectorlu & size,
 }
 
 
-/// destroy a population
 population::~population()
 {
 	if (m_vspSplitter)
@@ -214,7 +213,6 @@ void population::popData::swap(population & pop)
 }
 
 
-///
 population * population::clone(int keepAncestralPops) const
 {
 	population * p = new population(*this);
@@ -1387,7 +1385,7 @@ population & population::newPopWithPartialLoci(
 
 void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos)
 {
-	/// total number of loci can not change
+	// total number of loci can not change
 	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 		"Re-arrange loci must keep the same total number of loci");
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
@@ -1562,7 +1560,6 @@ void population::addInfoFields(const vectorstr & fields, double init)
 }
 
 
-/// set fields
 void population::setInfoFields(const vectorstr & fields, double init)
 {
 	setGenoStructure(struSetInfoFields(fields));
@@ -2089,7 +2086,6 @@ PyObject * population::dict(int subPop)
 }
 
 
-/// CPPONLY
 void population::sortIndividuals(bool infoOnly)
 {
 	if (indOrdered())

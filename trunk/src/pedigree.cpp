@@ -452,7 +452,6 @@ void pedigree::saveInfo(const string & filename, const string & name)
 }
 
 
-/// save auxiliary information \c name to a file
 void pedigree::saveInfo(const string & filename, const vectorstr & names)
 {
 	vectoru idx;

@@ -106,7 +106,6 @@ simulator::~simulator()
 }
 
 
-/// CPPONLY
 simulator::simulator(const simulator & rhs) :
 	GenoStruTrait(rhs),
 	m_gen(rhs.m_gen),

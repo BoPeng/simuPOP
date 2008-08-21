@@ -79,7 +79,7 @@ bool initSex::apply(population & pop)
 
 bool initByFreq::apply(population & pop)
 {
-	/// initialize m_ranges
+	// initialize m_ranges
 	setRanges(pop);
 
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != m_ranges.size(),
@@ -230,7 +230,6 @@ bool initByValue::apply(population & pop)
 							"Length of value does not match geno size");
 						copy(src.begin(), src.end(), pop.indGenoBegin(ind));
 					} else {                                                // one of the copied.
-						/// fixme: check length of src?
 						DBG_ASSERT(src.size() == pop.totNumLoci(), ValueError,
 							"Ploidy is specified but the length of alleles do not match length of chromosome. val size: ");
 						copy(src.begin(), src.end(), pop.ind(ind).genoBegin(m_atPloidy));
@@ -287,7 +286,7 @@ bool initByValue::apply(population & pop)
 							copy(m_value[idx].begin(), m_value[idx].end(),
 								pop.ind(ind).genoBegin(m_atPloidy));
 					}
-				} else {                                                    /// atLoci is in effect
+				} else {                                                    // atLoci is in effect
 					if (srcSz == lociSz) {                                  // one by one
 						if (m_atPloidy == -1) {
 							for (UINT p = 0; p < pop.ploidy(); ++p) {
