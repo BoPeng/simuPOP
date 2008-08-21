@@ -96,7 +96,7 @@ def build_doc(ver, rev):
     os.environ['SIMUPOP_DOC_DIR'] = doc_directory
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
-    run('doxygen Doxyfile')
+    run('doxygen Doxy_doc')
     os.chdir('tools')
     run('python doxy2swig.py')
     os.chdir(d)
@@ -107,7 +107,7 @@ def build_src_doc(ver, rev):
     os.environ['SIMUPOP_DOC_DIR'] = doc_directory
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
-    run('doxygen Doxyfile')
+    run('doxygen Doxy_web')
     run('rsync -v --rsh="ssh -l simupop" --recursive doxygen_doc/html ' +
         'shell.sourceforge.net:/home/groups/s/si/simupop/htdocs/src_doc')
 
