@@ -4,8 +4,6 @@ Towards simuPOP 1.0
 
 simuPOP 1.0 should have a consistently defined and well documented interface.
 
-0. Fix the gzip problem under windows.
-
 1. Test and document each function and class.
   1.1 Complete and expand test sets. If possible, repeat tests in many 
 	scenarios.
@@ -26,18 +24,14 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 5. Use virtual subpopulation for sex-specific recombination?, for
 	sex-specific migration etc.
 
-6. Test later version of boost and see if the gzip problem has been
-	addressed under windows.
+6. Expand pedigree functions and move the logic of samplers out of sampler.cpp.
 
-7. Expand pedigree functions and move the logic of samplers out of sampler.cpp.
+7. Check what is wrong with simuRPy.py.
 
-9. Check what is wrong with simuRPy.py.
-
-10. Add pedigreeSample and subclass all pedigree related samplers to this class.
+8. Add pedigreeSample and subclass all pedigree related samplers to this class.
 These classes only need to define a probePedigree function to find a valid
 pedigree from a proband.
 
-11. A portable bin format?
 
 Items are marked roughly
 Status: Onging (O), Done (DONE)
@@ -77,3 +71,4 @@ O       feasibility study (give up the MPI version, investigating openMP).
 
 Roadmap: Distribution
   2/3/N test simuPOP under different machines and operating systems
+
