@@ -442,7 +442,7 @@ if os.name == 'nt':
     DATA_FILES += [('Lib/site-packages', ['win32/zlib1.dll'])]
 
 
-def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
+def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
     if included_boost and os.name != 'nt':
         boost_inc_path = included_boost_include_dir
         boost_lib_names = []
@@ -516,6 +516,8 @@ else:
 if __name__ == '__main__':
     try:
         import simuPOP_version
+        SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
+        SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
     except:
         SIMUPOP_VER = 'snapshot'
         SIMUPOP_REV = '9999'
