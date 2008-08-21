@@ -10,6 +10,8 @@
 
 import os, sys, time, shutil
 
+release_file = 'simuPOP_version.py'
+
 def cmdOutput(cmd):
     ''' utility function: run a command and get its output as a string
         cmd: command to run
@@ -48,14 +50,19 @@ def commitModification():
 
 def writeReleaseFile(release, revision):
     ' write release file only in release mode '
-    res = {}
-    execfile(release_file, res, res)
+    try:
+        import simuPOP_version
+        SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
+        SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
+    except:
+        SIMUPOP_VER = 'snapshot'
+        SIMUPOP_REV = '9999'
     file = open(release_file, 'w')
     file.write('''SIMUPOP_VER = "%s"
 SIMUPOP_REV = "%s"
 ''' % (release, revision))
     file.close()
-    return (res['SIMUPOP_VER'], res['SIMUPOP_REV'])
+    return (SIMUPOP_VER, SIMUPOP_REV)
 
 
 def setVersionRevision(release):
@@ -93,6 +100,16 @@ def build_doc(ver, rev):
     os.chdir('tools')
     run('python doxy2swig.py')
     os.chdir(d)
+
+
+def build_src_doc(ver, rev):
+    ' build doxygen document and update source document to sourceforge'
+    os.environ['SIMUPOP_DOC_DIR'] = doc_directory
+    os.environ['SIMUPOP_VER'] = ver
+    os.environ['SIMUPOP_REV'] = rev
+    run('doxygen Doxyfile')
+    run('rsync -v --rsh="ssh -l simupop" --recursive doxygen_doc/html ' +
+        'shell.sourceforge.net:/home/groups/s/si/simupop/htdocs/src_doc')
 
 
 def build_src(ver):
@@ -225,7 +242,7 @@ if __name__ == '__main__':
     release = 'snapshot'
     actions = []
     dryrun = False
-    all_actions = ['all', 'svn', 'src', 'doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'suse', 'sol', 'fedora5']
+    all_actions = ['all', 'svn', 'src', 'doc', 'src_doc', 'x86_64', 'rhel4', 'mac', 'win', 'mdk', 'suse', 'sol', 'fedora5']
 
     if len(sys.argv) == 1:
         print Usage
@@ -268,6 +285,8 @@ if __name__ == '__main__':
         build_src(release)
     if 'doc' in actions:
         build_doc(ver, rev)
+    if 'src_doc' in actions:
+        build_src_doc(ver, rev)
     if 'x86_64' in actions:
         build_x86_64(ver)
     if 'mdk' in actions:
