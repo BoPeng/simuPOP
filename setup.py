@@ -425,7 +425,7 @@ binding of coaSim.
 # find all test files
 DATA_FILES = [
     ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
-        'COPYING', 'TODO', 'simuPOP.release']), 
+        'COPYING', 'TODO', 'simuPOP_version.py']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
     ('share/simuPOP/doc/cookbook', ['doc/cookbook/%s' % x for x in 
         ('Mating_assortativeMating.py', 'Mating_overlappingGeneration.py',
@@ -442,7 +442,7 @@ if os.name == 'nt':
     DATA_FILES += [('Lib/site-packages', ['win32/zlib1.dll'])]
 
 
-def ModuInfo(modu, SIMUPOP_VER='9.9.9', SIMUPOP_REV='9999'):
+def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if included_boost and os.name != 'nt':
         boost_inc_path = included_boost_include_dir
         boost_lib_names = []
@@ -514,14 +514,11 @@ else:
     shutil.copy('config_linux.h', 'config.h')
 
 if __name__ == '__main__':
-    # for every official release, there will be a file recording release info
-    # Othersise, SIMUPOP_VER and SIMUPOP_REV will be provided as environmental
-    # variables.
-    if os.environ.has_key('SIMUPOP_VER') and os.environ.has_key('SIMUPOP_REV'):
-        SIMUPOP_VER = os.environ['SIMUPOP_VER']
-        SIMUPOP_REV = os.environ['SIMUPOP_REV']
-    else:
-        execfile('simuPOP.release')
+    try:
+        import simuPOP_version
+    except:
+        SIMUPOP_VER = 'snapshot'
+        SIMUPOP_REV = '9999'
     # create source file for each module
     MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
     SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
