@@ -61,6 +61,14 @@ else:
 # if you need to use full path name for swig, change it here.
 SWIG = 'swig'
 
+# this file is not under version control, and will be generated
+# by build.py (a release) or here (a snapshot).
+if not os.path.isfile('simuPOP_version.py'):
+    ver = open('simuPOP_version.py', 'w')
+    print >> ver, "SIMUPOP_VER = 'snapshot'"
+    print >> ver, "SIMUPOP_REV = '9999'"
+    ver.close()
+
 ############################################################################
 #
 # THE FOLLOWING IS NOT SUPPOSED TO BE MODIFIED
@@ -514,13 +522,9 @@ else:
     shutil.copy('config_linux.h', 'config.h')
 
 if __name__ == '__main__':
-    try:
-        import simuPOP_version
-        SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
-        SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
-    except:
-        SIMUPOP_VER = 'snapshot'
-        SIMUPOP_REV = '9999'
+    import simuPOP_version
+    SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
+    SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
     # create source file for each module
     MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
     SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
