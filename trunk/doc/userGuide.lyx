@@ -86,7 +86,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
@@ -1995,6 +1995,49 @@ rep, grp, begin, end, step, at, stage
 \family default
  properties and act accordingly.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+The evolutionary process
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename evolve.png
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
