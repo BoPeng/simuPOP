@@ -31,18 +31,12 @@ else:
 # need to be used. (msvc does not ship with stdint.h)
 if os.name == 'nt':
     use_vc = True
-    # under windows, boost/iostreams/gzip decompressor seems
-    # to be broken. has to be disabled by now.
-    disable_compression = True
-    # win32 is default since 1.33.1 libraries are bundled with simuPOP windows
-    # distribution
     boost_lib_search_paths = [r'win32', r'c:\boost\lib', r'c:\program files\boost\lib']
     boost_inc_search_paths = [included_boost_dir, r'c:\boost', r'c:\program files\boost']
     boost_lib_prefix = ''
     boost_lib_suffix = '.lib'
 else:    
     use_vc = False
-    disable_compression = False
     boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
     boost_inc_search_paths = [included_boost_dir, '/usr/include', '/usr/local/include']
     home = os.environ.get('HOME', None)
@@ -324,7 +318,7 @@ LIB_FILES = [
     'gsl/error.c' 
 ]
 
-if included_boost and os.name != 'nt':
+if included_boost:
     LIB_FILES.extend([os.path.join(included_boost_serialization_dir, x) for x in [
         'basic_archive.cpp',
         'basic_iarchive.cpp',
@@ -355,7 +349,7 @@ if included_boost and os.name != 'nt':
     ])
 
 
-if included_boost and os.name != 'nt':
+if included_boost:
     LIB_FILES.extend([os.path.join(included_boost_iostreams_dir, x) for x in [
         'mapped_file.cpp',
         'file_descriptor.cpp',
@@ -451,7 +445,7 @@ if os.name == 'nt':
 
 
 def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
-    if included_boost and os.name != 'nt':
+    if included_boost:
         boost_inc_path = included_boost_include_dir
         boost_lib_names = []
         boost_lib_path = None
@@ -481,6 +475,7 @@ def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
     else:
         res['library_dirs'] = ['build', boost_lib_path]
     if use_vc:
+        # zdll.lib is under win32
         res['library_dirs'].append('win32')
     if os.name == 'nt':
         # msvc does not have O3 option
@@ -492,10 +487,9 @@ def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
     # define_macros (deep copy)
     res['define_macros'] = [x for x in MACROS[modu]]
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
-    if disable_compression:
-        res['define_macros'].extend([('DISABLE_COMPRESSION', None)])
     if os.name == 'nt':
-        res['define_macros'].extend([('BOOST_ALL_NO_LIB', None)])
+        res['define_macros'].extend([('BOOST_ALL_NO_LIB', None),
+            ('NO_ZLIB', 0), ('NO_BZIP' , 1)])
     res['undef_macros'] = []
     return res
 
