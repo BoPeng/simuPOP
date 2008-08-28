@@ -7,7 +7,7 @@ include ChangeLog
 include COPYING
 include TODO
 include AUTHORS
-include simuPOP_version.py
+include simuPOP.release
 include MANIFEST.in 
 include setup.py
 include SConstruct
@@ -261,13 +261,8 @@ include doc/cookbook/Operator_pyOperator.py
 include win32/stdint.h  
 include win32/zlib1.dll
 include win32/zdll.lib
-include win32/boost_iostreams-vc71-mt-1_33_1.lib
-include win32/boost_serialization-vc71-mt-1_33_1.lib  
-
-# misc files
-include misc/README 
-include misc/python-mode.el
-include misc/emacs-python.el 
+include win32/zlib.h
+include win32/zconf.h
 
 # bundle boost 1.36.0
 recursive-include boost_1_36_0/boost *.hpp *.ipp
