@@ -63,15 +63,9 @@ typedef struct arrayobject
     // pointer to the beginning of the item.
     struct iterator
     {
-#ifdef SIMUMPI
-		UINT ob_trunk_size;
-		vectori ob_piece_map;
-		UINT ob_shift;
-#else		
         char *ob_item;
         // this will be used by binary type only.
         GenoIterator ob_iter;
-#endif		
     } ob_iterator;
     // description of the type, the exact get and set item functions.
     struct arraydescr *ob_descr;
@@ -102,25 +96,7 @@ in bounds; that's the responsibility of the caller.
 static PyObject *
 a_getitem(arrayobject *ap, int i)
 {
-#ifdef SIMUMPI
-	UINT trunk = (i + ap->ob_iterator.ob_shift) / ap->ob_iterator.ob_trunk_size;
-	UINT idx = (i + ap->ob_iterator.ob_shift) - trunk * ap->ob_iterator.ob_trunk_size;
-	// using the piece map, figure out which rank has the data
-	for (size_t i = 0; i < ap->ob_iterator.ob_piece_map.size()-1; ++i)
-		if (idx >= ap->ob_iterator.ob_piece_map[i] && idx < ap->ob_iterator.ob_piece_map[i+1])
-			break;
-	// rank is now i+1
-	// this code is only executed by rank 0...
-	int action = SLAVE_POPULATION_GET_ALLELE;
-	mpiComm().send(i+1, 0, action);
-	// mpiComm().send(i+1, 1, ap->ob_iterator.ob_pop_id);
-	mpiComm().send(i+1, 2, idx);
-	Allele a;
-	mpiComm().recv(i+1, 0, a);
-	return PyInt_FromLong(a);
-#else
     return PyInt_FromLong( *(ap->ob_iterator.ob_iter+i) );
-#endif
 }
 
 
@@ -135,28 +111,11 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
          the overflow checking */
     if (!PyArg_Parse(v, "h;array item must be integer", &x))
         return -1;
-#ifdef SIMUMPI
-	UINT trunk = (i + ap->ob_iterator.ob_shift)  / ap->ob_iterator.ob_trunk_size;
-	UINT idx = (i + ap->ob_iterator.ob_shift) - trunk * ap->ob_iterator.ob_trunk_size;
-	if (idx >= ap->ob_iterator.ob_piece_begin && idx < ap->ob_iterator.ob_piece_end)
-	{
-    // force the value to bool to avoid a warning
-#ifdef BINARYALLELE
-	    *(ap->ob_iterator.ob_iter + trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
-			+ idx - ap->ob_iterator.ob_piece_begin) = (x != 0);
-#else
-		*(ap->ob_iterator.ob_iter + trunk*(ap->ob_iterator.ob_piece_end - ap->ob_iterator.ob_piece_begin)
-			+ idx - ap->ob_iterator.ob_piece_begin) = Allele(x);
-#endif
-	}
-#else
     // force the value to bool to avoid a warning
 #ifdef BINARYALLELE
     *(ap->ob_iterator.ob_iter+i) = (x != 0);
 #else
     *(ap->ob_iterator.ob_iter+i) = Allele(x);
-#endif
-
 #endif
     return 0;
 }
@@ -529,14 +488,8 @@ carray_init(PyTypeObject *type, PyObject *args, PyObject *kwds)
 // declaration only to avoid use of Arraytype
 /// CPPONLY
 PyObject * newcarrayobject(char* ptr, char type, int size);
-#ifdef SIMUMPI
-/// CPPONLY
-PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end, 
-	ULONG size, UINT s_size, vectoru s_map, UINT shift);
-#else
 /// CPPONLY
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end);
-#endif
 
 /// CPPONLY
 static PyObject * getarrayitem(PyObject *op, int i)
@@ -832,17 +785,8 @@ static PyObject * array_slice(arrayobject *a, Py_ssize_t ilow, Py_ssize_t ihigh)
     else if (ihigh > a->ob_size)
         ihigh = a->ob_size;
     if( a->ob_descr->typecode == 'a')
-#ifdef SIMUMPI	
-        np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter,
-            a->ob_iterator.ob_iter + ihigh,
-			ihigh - ilow, // real size
-			a->ob_iterator.ob_trunk_size, 
-			a->ob_iterator.ob_piece_map, 
-			ilow);
-#else			
         np = (arrayobject *) newcarrayiterobject(a->ob_iterator.ob_iter + ilow,
             a->ob_iterator.ob_iter + ihigh);
-#endif			
     else
         np = (arrayobject *) newcarrayobject(a->ob_iterator.ob_item + ilow*a->ob_descr->itemsize,
             a->ob_descr->typecode, ihigh - ilow);
@@ -1311,11 +1255,7 @@ PyObject * newcarrayobject(char* ptr, char type, int size)
 
 
 /// CPPONLY
-#ifdef SIMUMPI
-PyObject * newcarrayiterobject(ULONG shift, ULONG size, UINT s_size, vectoru s_map)
-#else
 PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
-#endif
 {
     // create an object and copy data
     arrayobject *op;
@@ -1328,14 +1268,7 @@ PyObject * newcarrayiterobject(GenoIterator begin, GenoIterator end)
     }
     //
     op->ob_descr = descriptors;
-#ifdef SIMUMPI	
-	op->ob_iterator.ob_trunk_size = s_size;
-	op->ob_iterator.ob_piece_map = s_map;
-	op->ob_iterator.ob_shift = shift;
-    op->ob_size = size;
-#else	
     op->ob_iterator.ob_iter = begin;
     op->ob_size = end - begin;
-#endif	
     return (PyObject *) op;
 }
