@@ -436,7 +436,6 @@ DATA_FILES = [
          'Operator_pyOperator.py')]),
     ('share/simuPOP/test', glob.glob('test/test_*.py') + \
         ['test/run_tests.py', 'test/run_tests.sh']),
-    ('share/simuPOP/misc', ['misc/README', 'misc/python-mode.el', 'misc/emacs-python.el']),
     ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
 ]
 
