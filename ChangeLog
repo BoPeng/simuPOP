@@ -1,9 +1,12 @@
 ChangeLog of simuPOP
 
 BUGS:
-  - All known bugs have been fixed.
+  - Multi-locus version of controlled random mating in test_05_matings.py 
+	does not seem to work.
 
-version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.7 - (Rev 1755) Aug 29, 2008
   - NEW: allow the use of a list to specify a virtual subpopulation.
   - NEW: change the return type of allele() so that no boolean value (True or False)
 		will be returned from the binary modules.
