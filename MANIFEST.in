@@ -258,11 +258,8 @@ include doc/cookbook/Mating_consanguineous.py
 include doc/cookbook/Operator_pyOperator.py
 
 # win32 files
-include win32/stdint.h  
-include win32/zlib1.dll
-include win32/zdll.lib
-include win32/zlib.h
-include win32/zconf.h
+include win32/stdint.h
+recursive-include win32/zlib-1.2.3 *.h *.c
 
 # bundle boost 1.36.0
 recursive-include boost_1_36_0/boost *.hpp *.ipp
