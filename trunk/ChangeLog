@@ -20,6 +20,9 @@ version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix activation and deactivation of combinedVirtualSplitter.
   - BUG: Fix a bug that prevents simuPOP from compressing population files.
   - NEW: Make boost 1.36.0 the default built-in boost version.
+  - BUG: Fix a carray genotype slice assignment bug under windows and python2.5.
+  - NEW: Stop distributing zlib1.dll by building zlib from source under
+		windows.
 
 version 0.8.6 - (Rev 1666) Jun 20, 2008
   - NEW: Polish command line arguments output in a configuration file.

@@ -358,6 +358,25 @@ if included_boost:
     ])
 
 
+# build zlib from source for windows system to avoid distributing zlib1.dll
+# along with simuPOP.
+if os.name == 'nt':
+    LIB_FILES.extend([os.path.join('win32', 'zlib-1.2.3', x) for x in [
+        'adler32.c',
+        'compress.c',
+        'crc32.c',
+        'gzio.c',
+        'uncompr.c',
+        'deflate.c',
+        'trees.c',
+        'zutil.c',
+        'inflate.c',
+        'infback.c',
+        'inftrees.c',
+        'inffast.c'
+        ]
+    ])
+
 SIMUPOP_FILES = [
     'simuPOP', 
     'simuOpt', 
@@ -439,9 +458,6 @@ DATA_FILES = [
     ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
 ]
 
-if os.name == 'nt':
-    DATA_FILES += [('Lib/site-packages', ['win32/zlib1.dll'])]
-
 
 def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
     if included_boost:
@@ -459,15 +475,16 @@ def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
         res['src'].append(src[:-4] + '_' + modu + '.cpp')
     res['src'].extend(LIB_FILES)
     # lib
-    if os.name == 'nt':    # Windows
-        res['libraries'] = ['zdll']
+    if os.name == 'nt':    # Windows, build zlib from source
+        res['libraries'] = []
     else:
         res['libraries'] = ['stdc++', 'z']
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', boost_inc_path]
     if use_vc:
-        # I have a portable stdint.h for msvc
-        res['include_dirs'].append('win32')
+        # I have a portable stdint.h for msvc, to avoid distributing
+        # zdll1.dll, I also build zlib from source
+        res['include_dirs'].extend(['win32', 'win32/zlib-1.2.3'])
     #
     if included_boost:
         res['library_dirs'] = ['build']
@@ -477,8 +494,8 @@ def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
         # zdll.lib is under win32
         res['library_dirs'].append('win32')
     if os.name == 'nt':
-        # msvc does not have O3 option
-        res['extra_compile_args'] = ['/O2']
+        # msvc does not have O3 option, /GR is to fix a C4541 warning
+        res['extra_compile_args'] = ['/O2', '/GR']
     else:
         # force the use of static boost libraries because I do not
         # want to bundle boost libraries with simuPOP distributions.
