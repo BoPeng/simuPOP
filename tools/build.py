@@ -66,7 +66,7 @@ SIMUPOP_REV = "%s"
 
 
 def setVersionRevision(release):
-    ''' if release = snapshot, do not change simuPOP.release
+    ''' if release i snapshot, do not change simuPOP.release
         by returning current ver and rev numbers
         otherwise, update simuPOP.release
     '''
@@ -74,6 +74,9 @@ def setVersionRevision(release):
         rev = cmdOutput('svnversion .')
         if ':' in rev:
             rev = rev.split(':')[0]
+        if rev.endswith('M'):
+            print 'Please commit all changes before releasing a source package'
+            sys.exit(1)
     else:
         rev = '9999'
     # replace simuPOP.release
