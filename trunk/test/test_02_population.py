@@ -151,8 +151,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.alleleNames(), ('1','2') )
             self.assertEqual(pop.alleleName(0), '1')
             self.assertEqual(pop.alleleName(1), '2')
-            # 5 is passed to be function as bool
-            self.assertEqual(pop.alleleName(5), '2')
+            self.assertRaises(exceptions.IndexError, pop.alleleName, 5)
         else:
             self.assertEqual(pop.alleleName(0), 'A')
             self.assertEqual(pop.alleleName(1), 'C')

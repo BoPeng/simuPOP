@@ -31,6 +31,8 @@ class TestScripts(unittest.TestCase):
         pass
 
     def testSimuCDCV(self):
+        if AlleleType() != 'short':
+             return
         import simuCDCV
         if not os.path.isdir('cdcv'):
             os.mkdir('cdcv')
