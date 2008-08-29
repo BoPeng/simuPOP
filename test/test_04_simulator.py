@@ -134,8 +134,7 @@ class TestSimulator(unittest.TestCase):
             self.assertEqual(simu.alleleNames(), ('1','2') )
             self.assertEqual(simu.alleleName(0), '1')
             self.assertEqual(simu.alleleName(1), '2')
-            # 5 is passed to be function as bool
-            self.assertEqual(simu.alleleName(5), '2')
+            self.assertRaises(exceptions.IndexError, simu.alleleName, 5)
         else:
             self.assertEqual(simu.alleleName(0), '_')
             self.assertEqual(simu.alleleName(1), 'A')
