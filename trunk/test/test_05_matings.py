@@ -264,12 +264,14 @@ class TestMatingSchemes(unittest.TestCase):
             gen=burnin+mutAge
         )
 
-    def testControlledMultiRandomMating(self):
-        'Testing the multi-locus version of controlled random mating'
+    def TestControlledMultiRandomMating(self):
+        'Testing the multi-locus version of controlled random mating (FIXME)'
         N = 5000
         # planned trajectory
-        traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N,
-            maxMutAge=500, restartIfFail=True)
+        traj = ((), ())
+        while len(traj[0]) == 0:
+            traj = FreqTrajectoryMultiStoch(freq=[0.05, 0.10], N=N,
+                maxMutAge=500, restartIfFail=True)
         # staring from when?
         burnin = 100
         mutAge = max([len(x) for x in traj])
@@ -293,12 +295,12 @@ class TestMatingSchemes(unittest.TestCase):
                 pointMutator(loci=[0],
                     toAllele=1,
                     inds = [0],
-                    at = [endingGen-len(traj[0])+1],
+                    at = [endingGen-len(traj[0])],
                     stage = PreMating),
                 pointMutator(loci=[1],
                     toAllele=1,
                     inds = [1],
-                    at = [endingGen-len(traj[1])+1],
+                    at = [endingGen-len(traj[1])],
                     stage = PreMating),
                 stat(alleleFreq=[0,1]),
                 #pyEval(r'"%d %6.4f %6.4f\n"%(gen, 1-alleleFreq[0][0], 1-alleleFreq[1][0])', begin=burnin)
