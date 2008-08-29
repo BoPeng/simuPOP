@@ -109,7 +109,7 @@ a_setitem(arrayobject *ap, int i, PyObject *v)
     /* PyArg_Parse's 'b' formatter is for an unsigned char, therefore
          must use the next size up that is signed ('h') and manually do
          the overflow checking */
-    if (!PyArg_Parse(v, "h;array item must be integer", &x))
+    if (!PyArg_Parse(v, "i;array item must be integer", &x))
         return -1;
     // force the value to bool to avoid a warning
 #ifdef BINARYALLELE

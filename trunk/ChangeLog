@@ -1,10 +1,7 @@
 ChangeLog of simuPOP
 
 BUGS:
-  - Under windows, Python 2.5, the slice assignment operation of the carray type returned
-    by arrGenotype does not work correctly. This is likely the result of Py_ssize_t type
-    change from 2.4 to 2.5. Because this feature is going to be removed, I will not fix
-    this bug now.
+  - All known bugs have been fixed.
 
 version 0.8.7 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: allow the use of a list to specify a virtual subpopulation.
