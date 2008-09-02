@@ -1304,8 +1304,8 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 
 
 // parameters about subpopulation size is ignored
-pedigreeMating::pedigreeMating(offspringGenerator & generator,
-                               pedigree & ped,
+pedigreeMating::pedigreeMating(pedigree & ped,
+                               offspringGenerator & generator,
                                vectorlu newSubPopSize,
                                PyObject * newSubPopSizeFunc,
                                string newSubPopSizeExpr,
