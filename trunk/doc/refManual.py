@@ -486,8 +486,6 @@ print ind.sex()
 print ind.sexChar()
 ind.setSex(Female)
 ind.setAffected(True)
-print ind.tag()
-ind.setTag([1,2])
 Dump(pop)
 #end
 
