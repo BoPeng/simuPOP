@@ -1790,7 +1790,7 @@ public:
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	pedigreeMating(pedigree & ped,
-                   offspringGenerator & generator = mendelianOffspringGenerator(),
+                   offspringGenerator & generator,
 	               vectorlu newSubPopSize = vectorlu(),
 	               PyObject * newSubPopSizeFunc = NULL,
 	               string newSubPopSizeExpr = "",
