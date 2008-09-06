@@ -131,9 +131,9 @@ public:
 	             UINT convMode = CONVERT_NumMarkers,
 	             double convParam = 1.,
 	             int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	             int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		:
-		baseOperator("", "", DuringMating, begin, end, step, at, rep, grp, infoFields)
+		baseOperator("", "", DuringMating, begin, end, step, at, rep, infoFields)
 		, m_intensity(intensity), m_maleIntensity(maleIntensity),
 		m_rate(rate), m_maleRate(maleRate),
 		m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),

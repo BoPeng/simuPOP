@@ -224,7 +224,6 @@ public:
 		m_vars.swap(rhs.m_vars);
 		m_ancestralPops.swap(rhs.m_ancestralPops);
 		std::swap(m_rep, rhs.m_rep);
-		std::swap(m_grp, rhs.m_grp);
 		std::swap(m_gen, rhs.m_gen);
 		std::swap(m_curAncestralGen, rhs.m_curAncestralGen);
 		std::swap(m_indOrdered, rhs.m_indOrdered);
@@ -1544,23 +1543,6 @@ public:
 			m_vars.setIntVar("rep", rep);
 	}
 
-
-	/// current group ID in a simulator which is not meaningful for a stand-alone population.
-	int grp()
-	{
-		return m_grp;
-	}
-
-
-	/// CPPONLY
-	void setGrp(int grp, bool setVar = true)
-	{
-		m_grp = grp;
-		if (setVar)
-			m_vars.setIntVar("grp", grp);
-	}
-
-
 	/// current generation during evolution
 	ULONG gen()
 	{
@@ -2167,9 +2149,8 @@ private:
 
 	std::deque<popData> m_ancestralPops;
 
-	/// curent replicate, group number
+	/// curent replicate number
 	int m_rep;
-	int m_grp;
 
 	/// generation
 	ULONG m_gen;

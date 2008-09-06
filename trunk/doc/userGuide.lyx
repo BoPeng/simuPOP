@@ -1,4 +1,4 @@
-#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -583,7 +583,7 @@ Easy developing/debugging using Python interactive shell, or run in batch
 \begin_layout Itemize
 A wide variety of operators are provided.
  They can act on the populations at selected generations, at different stages
- of a life-cycle, on different replicate or replicate group.
+ of a life-cycle, on different replicate.
  
 \end_layout
 
@@ -741,10 +741,10 @@ The following words in function names are abbreviated:
 pos (position),  info (information), migr (migration), subPop (subpopulation),
  
 \newline
-(rep) replicate, gen (generation), grp (group(s)), ops (operators), 
+(rep) replicate, gen (generation), ops (operators), 
 \newline
-expr
- (expression), stmts (statements) 
+expr (expression),
+ stmts (statements) 
 \end_layout
 
 \begin_layout Section
@@ -1907,16 +1907,15 @@ You do not have to know the type of an operator to use them.
  same fashion.
  Such parameters include 
 \family typewriter
-rep, grp, begin, step, end
+rep, begin, step, end
 \family default
  and 
 \family typewriter
 at
 \family default
 .
- The first two indicate that the operator only applies to one or a group
- of replicates, and the rest control which generation(s) the operator will
- be applied to.
+ The first two indicate that the operator only applies to one replicate,
+ and the rest control which generation(s) the operator will be applied to.
  There are also parameters that redirect operator output to files.
  For details please refer to the reference manual.
 \end_layout
@@ -1991,7 +1990,7 @@ ops
 ' will be applied at every generation.
  Of course, a simulator will probe and respect each operator's 
 \family typewriter
-rep, grp, begin, end, step, at, stage
+rep, begin, end, step, at, stage
 \family default
  properties and act accordingly.
  

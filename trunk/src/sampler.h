@@ -57,8 +57,8 @@ public:
 	 */
 	pySubset(const vectori & keep = vectori(),
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_keep(keep)
 	{
 	}
@@ -156,8 +156,8 @@ public:
 	sample(const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 	       const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_name(name), m_nameExpr(nameExpr, ""), m_times(times), m_saveAs(saveAs),
 		m_saveAsExpr(saveAsExpr), m_format(format)
 	{
@@ -262,9 +262,9 @@ public:
 	             const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 	             const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	             int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-		         stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, infoFields),
 		m_size(size)
 	{
 	}
@@ -334,9 +334,9 @@ public:
 	                  bool spSample = false, const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 	                  const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 	                  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	                  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	                  int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-		         stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep,infoFields),
 		m_numCases(cases), m_numControls(controls), m_spSample(spSample),
 		m_caseIdx(0), m_controlIdx(0)
 	{
@@ -423,10 +423,10 @@ public:
 	                      const string & format = "auto",
 	                      int stage = PostMating, int begin = 0, int end = -1,
 	                      int step = 1, vectorl at = vectorl(),
-	                      int rep = REP_ALL, int grp = GRP_ALL,
+	                      int rep = REP_ALL,
 	                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-		         stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, infoFields),
 		m_size(size), m_affectedness(!chooseUnaffected), m_countOnly(countOnly),
 		m_validSibs(0)
 	{
@@ -502,10 +502,10 @@ public:
 	                    const string & format = "auto",
 	                    int stage = PostMating, int begin = 0, int end = -1,
 	                    int step = 1, vectorl at = vectorl(),
-	                    int rep = REP_ALL, int grp = GRP_ALL,
+	                    int rep = REP_ALL,
 	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-		         stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, infoFields),
 		m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 		m_minPedSize(minPedSize), m_minAffected(minAffected),
 		m_countOnly(countOnly), m_validPedigrees()
@@ -584,10 +584,10 @@ public:
 	                    const string & format = "auto",
 	                    int stage = PostMating, int begin = 0, int end = -1,
 	                    int step = 1, vectorl at = vectorl(),
-	                    int rep = REP_ALL, int grp = GRP_ALL,
+	                    int rep = REP_ALL,
 	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-		         stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, infoFields),
 		m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 		m_minPedSize(minPedSize), m_minAffected(minAffected),
 		m_countOnly(countOnly), m_validPedigrees()
@@ -671,9 +671,9 @@ public:
 	         const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 	         const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-		         stage, begin, end, step, at, rep, grp, infoFields),
+		         stage, begin, end, step, at, rep, infoFields),
 		m_keepAncestralPops(keepAncestralPops)
 	{
 		DBG_ASSERT(PyObj_Is_IntNumArray(keep), ValueError,

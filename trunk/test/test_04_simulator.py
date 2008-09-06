@@ -54,9 +54,6 @@ class TestSimulator(unittest.TestCase):
         simu = simulator(pop, randomMating(), rep=3, stopIfOneRepStops=True)
         self.assertEqual( simu.numRep(), 3)
         self.assertEqual( simu.gen(), 0)
-        self.assertEqual( simu.group(), (0,1,2) )
-        simu.setGroup([1,1,2])
-        self.assertEqual( simu.group(), (1,1,2) )
         simu.setGen(10)
         self.assertEqual( simu.gen(), 10)
 

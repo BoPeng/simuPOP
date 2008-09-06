@@ -96,10 +96,7 @@ namespace simuPOP {
    from the last generation, using negative generation numbers. \n
 
    Most operators are applied to every replicate of a simulator during
-   evolution. However, you can apply operators to one (parameter \c rep)
-   or a group of replicates only (parameter \c grp). For example, you
-   can initialize different replicates with different initial values
-   and then start evolution. c.f. <tt>simulator::setGroup</tt>.
+   evolution. 
 
    Operators can have outputs, which can be standard (terminal) or a file.
    Output can vary with replicates and/or generations, and outputs from different
@@ -146,8 +143,6 @@ public:
 	 \param rep applicable replicates. It can be a valid replicate number, \c REP_ALL
 	   (all replicates, default), or \c REP_LAST (only the last replicate). \c REP_LAST
 	   is useful in adding newlines to a table output.
-	 \param grp applicable group. Default to \c GRP_ALL.  A group number for each
-	   replicate is set by <tt>simulator.__init__</tt> or <tt>simulator::setGroup()</tt>.
 	 \param output a string of the output filename. Different operators will have
 	   different default \c output (most commonly \c '>' or \c '').
 	 \param outputExpr an expression that determines the output filename dynamically. This
@@ -159,7 +154,7 @@ public:
 	 \li Negative generation numbers are allowed for parameters \c begin, \c end and \c at. They are
 	   interpreted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
 	   <tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
-	 \li <tt>REP_ALL, REP_LAST, GRP_ALL</tt> are special constant that can only be used in the
+	 \li <tt>REP_ALL, REP_LAST</tt> are special constant that can only be used in the
 	   constructor of an operator. That is to say, explicit test of <tt>rep() == REP_LAST</tt>
 	   will not work.
 
@@ -167,9 +162,9 @@ public:
 	 */
 	baseOperator(string output, string outputExpr, int stage,
 	             int begin, int end, int step, vectorl at,
-	             int rep, int grp, const vectorstr & infoFields) :
+	             int rep, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
-		m_flags(0), m_rep(rep), m_grp(grp),
+		m_flags(0), m_rep(rep),
 		m_ostream(output, outputExpr), m_infoFields(infoFields)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
@@ -194,37 +189,17 @@ public:
 
 	//@}
 
-	/** @name  applicable generations (also judge from rep and group). use of parameter start, end, every, at, group, rep
+	/** @name  applicable generations (also judge from rep). use of parameter start, end, every, at, rep
 	 */
 	//@{
 
 	/// CPPONLY determine if this operator is active
 	/**
 	   Determine if this operator is active under the conditions such as the current
-	   replicate, group number of the current replicate, current generation, ending generation etc.
+	   replicate, current generation, ending generation etc.
 	 \note This function will be called by simulators before applying.
 	 */
-	bool isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly = false);
-
-	/// return applicable group
-	/// CPPONLY
-	int applicableGroup()
-	{
-		return m_grp;
-	}
-
-
-	/// CPPONLY set applicable group
-	/**
-	   Default to \c GRP_ALL (applicable to all groups).
-	   Otherwise, the operator is applicable to only \em one group of replicates.
-	   Groups can be set in \c simulator::setGroup().
-	 */
-	void setApplicableGroup(int grp = GRP_ALL)
-	{
-		m_grp = grp;
-	}
-
+	bool isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly = false);
 
 	/// return applicable replicate
 	/// CPPONLY
@@ -509,9 +484,6 @@ private:
 	/// apply to all (-1) or one of the replicates.
 	int m_rep;
 
-	/// apply to all (-1) or one of the groups of simulatior replicates.
-	int m_grp;
-
 	/// the output stream
 	StreamProvider m_ostream;
 
@@ -555,8 +527,8 @@ public:
 	      bool exposePop = true, string popName = "pop",
 	      string output = ">", string outputExpr = "",
 	      int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	      int rep = REP_LAST, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+	      int rep = REP_LAST, const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 		m_exposePop(exposePop), m_popName(popName)
 	{
@@ -612,8 +584,8 @@ public:
 	 */
 	noneOp(string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = 0, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields)
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, infoFields)
 	{
 	}
 
@@ -691,8 +663,8 @@ public:
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
 	{
 		if (ifOp != NULL)
@@ -768,8 +740,8 @@ public:
 	/// create a timer
 	ticToc(string output = ">", string outputExpr = "",
 	       int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields)
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields)
 	{
 		time(&m_startTime);
 		m_lastTime = m_startTime;
@@ -815,8 +787,8 @@ public:
 	/// create a \c setAncestralDepth operator
 	setAncestralDepth(int depth, string output = ">", string outputExpr = "",
 	                  int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	                  int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+	                  int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_depth(depth)
 	{
 	};
@@ -871,8 +843,8 @@ public:
 	/// create a \c turnOnDebug operator
 	turnOnDebug(DBG_CODE code,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_code(code)
 	{
 	};
@@ -920,8 +892,8 @@ public:
 	/// create a \c turnOffDebug operator
 	turnOffDebug(DBG_CODE code,
 	             int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+	             int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_code(code)
 	{
 	};
@@ -1003,8 +975,8 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 	           int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
 	           int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+	           int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 	{
 		if (!PyCallable_Check(func))
@@ -1103,8 +1075,8 @@ public:
 	pyIndOperator(PyObject * func, const vectoru & loci = vectoru(), PyObject * param = NULL,
 	              int stage = PostMating, bool formOffGenotype = false,
 	              int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	              int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, grp, infoFields),
+	              int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_func(func), m_loci(loci), m_param(param)
 	{
 		if (!PyCallable_Check(func))

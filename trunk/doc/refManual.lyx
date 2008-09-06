@@ -1,4 +1,4 @@
-#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -1646,10 +1646,10 @@ The following words in function names are abbreviated:
 pos (position),  info (information), migr (migration), subPop (subpopulation),
  
 \newline
-(rep) replicate, gen (generation), grp (group(s)), ops (operators), 
+(rep) replicate, gen (generation), ops (operators), 
 \newline
-expr
- (expression), stmts (statements) 
+expr (expression),
+ stmts (statements) 
 \end_layout
 
 \begin_layout Section
@@ -4623,9 +4623,9 @@ begin, end, step, at
 \family default
  parameters), and to specified replicates (controlled by 
 \family typewriter
-rep, grp
+rep
 \family default
- parameters).
+ parameter).
  The order of applying operators usually does not matter but errors may
  occur if you are not careful.
  For example, 

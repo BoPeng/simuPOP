@@ -782,10 +782,6 @@ public:
 	   The file has to be created by >>| or >>>| specifier.
 	 \param gen current generation
 	 \param rep calling replicate
-	 \param group group index of calling replicate
-
-	   these three parameters may be used to determine filename (when %grp etc
-	   are used in filename specification.
 
 	 */
 	ostream & getOstream(PyObject * dict = NULL, bool readable = false);

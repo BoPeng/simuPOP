@@ -294,7 +294,6 @@ enum DBG_CODE {
 #define REP_ALL             -2
 #define REP_CUR             -2
 #define REP_LAST            -1
-#define GRP_ALL             -1
 #define PreMating            1
 #define DuringMating         2
 #define PostMating           4

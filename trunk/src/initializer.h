@@ -64,9 +64,9 @@ public:
 	            const vectoru & loci = vectoru(),
 	            int atPloidy = -1,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	            vectorl at = vectorl(), int rep = REP_ALL,
 	            const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_subPop(subPop), m_indRange(indRange),
 		m_atLoci(loci), m_atPloidy(atPloidy)
 	{
@@ -144,10 +144,10 @@ public:
 	        const vectoru & loci = vectoru(),
 	        int atPloidy = -1,
 	        int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	        vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	        vectorl at = vectorl(), int rep = REP_ALL,
 	        const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci, atPloidy, stage, begin, end,
-		              step, at, rep, grp, infoFields),
+		              step, at, rep, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex)
 	{
 		if (!m_sex.empty()) {
@@ -223,9 +223,9 @@ public:
 	           const vectoru & loci = vectoru(), int atPloidy = -1,
 	           double maleFreq = 0.5, const vectori & sex = vectori(),
 	           int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	           int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		          stage, begin, end, step, at, rep, grp, infoFields),
+		          stage, begin, end, step, at, rep, infoFields),
 		m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
 	{
 
@@ -310,9 +310,9 @@ public:
 	            const vectorf & proportions = vectorf(),
 	            double maleFreq = 0.5, const vectori & sex = vectori(),
 	            int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		          stage, begin, end, step, at, rep, grp, infoFields),
+		          stage, begin, end, step, at, rep, infoFields),
 		m_value(value), m_proportion(proportions)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
@@ -376,8 +376,8 @@ public:
 	 */
 	spread(ULONG ind, vectoru subPop = vectoru(),
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_ind(ind), m_subPop(subPop)
 	{
 	}
@@ -463,9 +463,9 @@ public:
 	       intMatrix indRange = intMatrix(),
 	       double maleFreq = 0.5, const vectori & sex = vectori(),
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		          stage, begin, end, step, at, rep, grp, infoFields)
+		          stage, begin, end, step, at, rep, infoFields)
 	{
 		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
 			IndexError, "male frequency in the population should be in the range of [0,1]");

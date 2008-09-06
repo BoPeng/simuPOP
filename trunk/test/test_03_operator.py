@@ -70,21 +70,6 @@ class TestOperator(unittest.TestCase):
         self.assertRaises( exceptions.ValueError,
             getActiveGens, begin=-10, step=-3, end=-5 )
 
-    def testGroup(self):
-        'Testing group related functions'
-        simu = simulator(population(), noMating(), rep=3)
-        simu.setGroup([1,1,2])
-        simu.evolve(
-            ops = [opRecorder(grp=1)],
-            gen=10
-        )
-        self.assertEqual(simu.population(0).dvars().hist, range(10))
-        self.assertEqual(simu.population(1).dvars().hist, range(10))
-        try:
-            simu.population(2).dvars().hist
-        except exceptions.AttributeError:
-            pass
-
     def testReplicate(self):
         'Testing replicate related functions'
         simu = simulator(population(), noMating(), rep=3)
@@ -146,25 +131,6 @@ class TestOperator(unittest.TestCase):
             ], gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*10)
-        # if we use >>>, append to the end
-        simu.setGen(0)
-        simu.setGroup([0,0,1,1,1])
-        simu.evolve([
-            pyOutput("b", output=">>>a.txt", grp=1),
-            ], gen=10)
-        # a is appended 5 rep * 11 generations
-        self.assertFileContent("a.txt", 'a'*10+'b'*30)
-        os.remove('a.txt')
-        #
-        # now, we can use eval instead of output
-        simu.setGen(0)
-        simu.setGroup([0,0,1,1,1])
-        simu.evolve([
-            pyEval("gen", output=">>a.txt", grp=1),
-            ], gen=10)
-        # a is appended 5 rep * 11 generations
-        self.assertFileContent("a.txt",
-            ''.join( [ str(x)*3 for x in range(10)] ))
         os.remove('a.txt')
 
     def testOutputExpr(self):
