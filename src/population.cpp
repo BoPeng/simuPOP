@@ -57,7 +57,6 @@ population::population(const vectorlu & size,
 	m_vars(NULL, true),                                                                     // invalid shared variables initially
 	m_ancestralPops(0),                                                                     // no history first
 	m_rep(-1),
-	m_grp(-1),
 	m_gen(0),
 	m_curAncestralGen(0),
 	m_indOrdered(true),
@@ -98,7 +97,6 @@ population::population(const vectorlu & size,
 	fitSubPopStru(m_subPopSize);
 	// set local variable
 	setRep(-1);
-	setGrp(-1);
 }
 
 
@@ -125,7 +123,6 @@ population::population(const population & rhs) :
 	m_ancestralDepth(rhs.m_ancestralDepth),
 	m_vars(rhs.m_vars),                                                                     // variables will be copied
 	m_rep(-1),                                                                              // rep is set to -1 for new pop (until simulator really set them
-	m_grp(-1),
 	m_gen(0),
 	m_curAncestralGen(rhs.m_curAncestralGen),
 	m_indOrdered(true),
@@ -199,7 +196,6 @@ population::population(const population & rhs) :
 
 	// set local variable
 	setRep(-1);
-	setGrp(-1);
 }
 
 

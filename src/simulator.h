@@ -123,8 +123,6 @@ public:
 	   Its content will not be changed.
 	 \param matingScheme a mating scheme
 	 \param rep number of replicates. Default to \c 1.
-	 \param grp group number for each replicate. Operators can
-	   be applied to a group of replicates using its \c grp parameter.
 	 \param applyOpToStoppedReps 	If set, the simulator will continue to apply operators
 	   to all stopped replicates until all replicates are marked
 	   'stopped'.
@@ -135,7 +133,7 @@ public:
 	simulator(const population & pop, mating & matingScheme,
 	          bool stopIfOneRepStops = false,
 	          bool applyOpToStoppedReps = false,
-	          int rep = 1, vectori grp = vectori());
+	          int rep = 1);
 
 	/// destroy a simulator along with all its populations
 	/**
@@ -258,24 +256,6 @@ public:
 	{
 		return m_gen;
 	}
-
-
-	/// CPPONLY
-	int grp()
-	{
-		return m_groups[m_curRep];
-	}
-
-
-	/// return group indexes
-	vectori group()
-	{
-		return m_groups;
-	}
-
-
-	/// set groups for replicates
-	void setGroup(const vectori & grp);
 
 	/// set the current generation. Usually used to reset a simulator.
 	/**
@@ -441,7 +421,6 @@ private:
 		// ignore scratch population
 		for (UINT i = 0; i < m_numRep; i++)
 			ar & make_nvp("populations", *m_ptrRep[i]);
-		ar & make_nvp("groups", m_groups);
 	}
 
 
@@ -464,7 +443,11 @@ private:
 		m_scratchPop = new population(*m_ptrRep[0]);
 		setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
 
-		ar & make_nvp("groups", m_groups);
+		// a previous version saves groups, which is not supported now
+		if (version < 1) {
+			vectori groups;
+			ar & make_nvp("groups", groups);
+		}
 
 		m_stopIfOneRepStops = false;
 		m_applyOpToStoppedReps = false;
@@ -504,9 +487,6 @@ private:
 	/// number of replicates of population
 	UINT m_numRep;
 
-	/// groups
-	vectori m_groups;
-
 	/// replicate pointers
 	population ** m_ptrRep;
 
@@ -533,4 +513,13 @@ simulator & LoadSimulator(const string & file,
 	string format = "auto");
 
 }
+
+#ifndef SWIG
+#  ifndef _NO_SERIALIZATION_
+// version 0: base
+// version 1: do not save groups
+BOOST_CLASS_VERSION(simuPOP::simulator, 1)
+#  endif
+#endif
+
 #endif

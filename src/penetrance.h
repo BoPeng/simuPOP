@@ -79,9 +79,9 @@ public:
 	 */
 	penetrance(int ancestralGen = -1, int stage = DuringMating,
 	           int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL, int grp = GRP_ALL,
+	           int rep = REP_ALL,
 	           const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields),
+		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
 	}
@@ -151,9 +151,9 @@ public:
 	 */
 	mapPenetrance(vectoru loci, const strDict & penet, bool phase = false,
 	              int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	              vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	              vectorl at = vectorl(), int rep = REP_ALL,
 	              const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
+		penetrance(ancestralGen, stage, begin, end, step, at, rep, infoFields),
 		m_loci(loci), m_dict(penet), m_phase(phase)
 	{
 	};
@@ -220,9 +220,9 @@ public:
 	maPenetrance(vectoru loci, const vectorf & penet, const vectora & wildtype,
 	             int ancestralGen = -1,
 	             int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	             vectorl at = vectorl(), int rep = REP_ALL,
 	             const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
+		penetrance(ancestralGen, stage, begin, end, step, at, rep, infoFields),
 		m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -296,9 +296,9 @@ public:
 	 */
 	mlPenetrance(const vectorop peneOps, int mode = PEN_Multiplicative,
 	             int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	             vectorl at = vectorl(), int rep = REP_ALL,
 	             const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
+		penetrance(ancestralGen, stage, begin, end, step, at, rep, infoFields),
 		m_peneOps(0), m_mode(mode)
 	{
 		DBG_FAILIF(peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -378,9 +378,9 @@ public:
 	/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 	pyPenetrance(const vectoru & loci, PyObject * func, int ancestralGen = -1,
 	             int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	             vectorl at = vectorl(), int rep = REP_ALL,
 	             const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, grp, infoFields),
+		penetrance(ancestralGen, stage, begin, end, step, at, rep, infoFields),
 		m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!PyCallable_Check(func))

@@ -49,8 +49,8 @@ public:
 	 \param message a message that will be displayed when the evolution is terminated.
 	 */
 	terminator(string message = "", string output = ">", string outputExpr = "",
-	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
 		m_message(message)
 	{
 	};
@@ -99,9 +99,9 @@ public:
 	terminateIf(string condition = "", string message = "", string var = "terminate",
 	            string output = "", string outputExpr = "",
 	            int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
 		terminator(message, output, outputExpr, stage, begin, end, step, at,
-		           rep, grp), m_expr(condition), m_var(var)
+		           rep), m_expr(condition), m_var(var)
 	{
 	}
 
@@ -169,9 +169,9 @@ public:
 	continueIf(string condition = "", string message = "", string var = "terminate",
 	           string output = "", string outputExpr = "",
 	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
+	           int rep = REP_ALL,const vectorstr & infoFields = vectorstr()) :
 		terminator(message, output, outputExpr, stage, begin, end, step, at,
-		           rep, grp), m_expr(condition), m_var(var)
+		           rep), m_expr(condition), m_var(var)
 	{
 	}
 

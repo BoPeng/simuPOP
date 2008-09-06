@@ -35,8 +35,8 @@ simulator::simulator(const population & pop,
                      mating & matingScheme,
                      bool stopIfOneRepStops,
                      bool applyOpToStoppedReps,
-                     int rep, vectori grp)
-	: m_gen(0), m_curRep(0), m_numRep(rep), m_groups(0),
+                     int rep)
+	: m_gen(0), m_curRep(0), m_numRep(rep),
 	m_stopIfOneRepStops(stopIfOneRepStops),
 	m_applyOpToStoppedReps(applyOpToStoppedReps)
 {
@@ -79,8 +79,6 @@ simulator::simulator(const population & pop,
 
 	m_curRep = 0;
 
-	setGroup(grp);
-
 	// set generation number for all replicates
 	setGen(0);
 
@@ -112,7 +110,6 @@ simulator::simulator(const simulator & rhs) :
 	m_curRep(rhs.m_curRep),
 	m_matingScheme(NULL),
 	m_numRep(rhs.m_numRep),
-	m_groups(rhs.m_groups),
 	m_ptrRep(NULL),
 	m_scratchPop(NULL),
 	m_stopIfOneRepStops(rhs.m_stopIfOneRepStops),
@@ -203,25 +200,6 @@ void simulator::setMatingScheme(const mating & matingScheme)
 	m_matingScheme = matingScheme.clone();
 }
 
-
-void simulator::setGroup(const vectori & grp)
-{
-	m_groups = grp;
-
-	if (m_groups.empty() ) {
-		m_groups.resize(m_numRep);
-		for (UINT i = 0; i < m_numRep; ++i)
-			m_groups[i] = i;
-	}
-
-	DBG_ASSERT(m_groups.size() == m_numRep, ValueError,
-		"Specified group index should have equal length to numRep()");
-
-	for (UINT i = 0; i < m_numRep; ++i)
-		m_ptrRep[i]->setGrp(m_groups[i]);
-}
-
-
 bool simulator::evolve(const vectorop & ops,
                        const vectorop & preOps,
                        const vectorop & postOps,
@@ -269,7 +247,6 @@ bool simulator::evolve(const vectorop & ops,
 
 	vectorop preMatingOps, durmatingOps, postMatingOps, activeDurmatingOps;
 
-	// an operator can belong to more than one groups.
 	for (size_t i = 0; i < ops.size(); ++i) {
 		if (ops[i]->canApplyPreMating())
 			preMatingOps.push_back(ops[i]);
@@ -354,12 +331,12 @@ bool simulator::evolve(const vectorop & ops,
 
 				for (it = 0; it < preMatingOps.size(); ++it) {
 					if (dryrun) {
-						if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true) )
+						if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0,true) )
 							cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
 						continue;
 					}
 
-					if (!preMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end, grp()))
+					if (!preMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end))
 						continue;
 
 					try {
@@ -391,7 +368,7 @@ bool simulator::evolve(const vectorop & ops,
 				if (dryrun)
 					cout << "      - " << (*op)->__repr__() << (*op)->atRepr() << endl;
 
-				if ( (*op)->isActive(m_curRep, m_numRep, m_gen, end, grp()))
+				if ( (*op)->isActive(m_curRep, m_numRep, m_gen, end))
 					activeDurmatingOps.push_back(*op);
 			}
 
@@ -420,12 +397,12 @@ bool simulator::evolve(const vectorop & ops,
 				for (it = 0; it < postMatingOps.size(); ++it) {
 
 					if (dryrun) {
-						if (postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true) )
+						if (postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, true) )
 							cout << "      - " << postMatingOps[it]->__repr__() << postMatingOps[it]->atRepr() << endl;
 						continue;
 					}
 
-					if (!postMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end, grp()))
+					if (!postMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end))
 						continue;
 
 					try {
@@ -492,7 +469,6 @@ bool simulator::evolve(const vectorop & ops,
 
 bool simulator::apply(const vectorop ops, bool dryrun)
 {
-	// an operator can belong to more than one groups.
 	for (size_t i = 0; i < ops.size(); ++i) {
 		if (ops[i]->canApplyDuringMating())
 			throw TypeError("During-mating operator has to be called by a simulator.");
@@ -516,7 +492,7 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 				continue;
 			}
 
-			if (!ops[it]->isActive(m_curRep, m_numRep, 0, 0, grp(), true))
+			if (!ops[it]->isActive(m_curRep, m_numRep, 0, 0, true))
 				continue;
 
 			ops[it]->applyWithScratch(curpopulation(),

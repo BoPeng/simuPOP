@@ -250,8 +250,6 @@ pop.useAncestralPop(0)
 simu = simulator(population(10),noMating(), rep=2)
 # evaluate an expression in different areas
 print simu.vars(0)
-print simu.population(0).evaluate("grp*2")
-print simu.population(1).evaluate("grp*2")
 print simu.population(0).evaluate("gen+1")
 # a statement (no return value)
 simu.population(0).execute("myRep=2+rep*rep")
@@ -384,17 +382,6 @@ op3 = output("a", at=[2,5,10])
 op4 = output("a", at=[-10,-5,-1])
 simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
                gen=10)
-#end
-
-
-#file log/operatorgrp.log
-from simuUtil import *
-simu = simulator(population(1),binomialSelection(), rep=4,
-                 grp=[1,2,1,2])
-simu.step([ pyEval(r"grp+3", grp=1),
-             pyEval(r"grp+6", grp=2),
-             output('\n', rep=REP_LAST)]
-)
 #end
 
 #file log/operatoroutput.log

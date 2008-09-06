@@ -59,8 +59,8 @@ public:
 	/// create a stator
 	stator(string output = "", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields)
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields)
 	{
 	};
 
@@ -106,8 +106,8 @@ public:
 	       const string & postStmts = "", bool exposePop = false, const string & name = "",
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: stator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+		: stator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
 		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
 	{
 		if (preStmts != "")
@@ -176,9 +176,9 @@ public:
 	       bool exposePop = false, const string & name = "",
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", "",
-		         stage, begin, end, step, at, rep, grp, infoFields)
+		         stage, begin, end, step, at, rep, infoFields)
 	{
 	}
 
@@ -249,8 +249,8 @@ public:
 	         bool usePopVars = false,  bool exposePop = false, const string & name = "",
 	         string output = ">", string outputExpr = "",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
-		: stator(output, outputExpr, stage, begin, end, step, at, rep, grp, infoFields),
+	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+		: stator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
 		m_name(name), m_dict(NULL)
 	{
@@ -334,9 +334,9 @@ public:
 	         bool exposePop = false, const string & name = "",
 	         string output = ">", string outputExpr = "",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr())
+	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output, outputExpr,
-		           stage, begin, end, step, at, rep, grp, infoFields)
+		           stage, begin, end, step, at, rep, infoFields)
 	{
 	}
 
@@ -1668,8 +1668,7 @@ public:
 	   The relatedness values between two individuals, or two groups of individuals are calculated according
 	   to Queller & Goodnight (1989) (<tt>method=REL_Queller</tt>) and Lynch et al. (1999) (<tt>method=REL_Lynch</tt>).
 	   The results are pairwise relatedness values, in the form of a matrix. Original group or subpopulation
-	   numbers are discarded. <tt>relatedness[grp1][grp2]</tt> is the relatedness value between \c grp1
-	   and \c grp2. There is no subpopulation level relatedness value.
+	   numbers are discarded. There is no subpopulation level relatedness value.
 
 	 \param relGroups calculate pairwise relatedness between groups. Can be in the form of either
 	   <tt>[[1,2,3],[5,6,7],[8,9]]</tt> or <tt>[2,3,4]</tt>. The first one specifies groups of
@@ -1733,7 +1732,7 @@ public:
 	     // regular parameters
 	     string output = "", string outputExpr = "",
 	     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	     int rep = REP_ALL, int grp = GRP_ALL,
+	     int rep = REP_ALL,
 	     const vectorstr & infoFields = vectorstr());
 
 	~stat()

@@ -154,8 +154,6 @@ newPopSize
 simu = simulator(population(10),noMating(), rep=2)
 # evaluate an expression in different areas
 print simu.vars(1)
-print simu.population(0).evaluate("grp*2")
-print simu.population(1).evaluate("grp*2")
 # a statement (no return value)
 simu.population(0).execute("myRep=2+rep*rep")
 simu.population(1).execute("myRep=2*rep")

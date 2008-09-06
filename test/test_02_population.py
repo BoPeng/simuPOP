@@ -726,7 +726,6 @@ class TestPopulation(unittest.TestCase):
         'Testing population variables'
         # FIXME: currently variable is stored on all nodes.
         pop = population()
-        self.assertEqual( pop.grp(), -1)
         self.assertEqual( pop.rep(), -1)
         # var will be copied?
         pop.dvars().x = 1

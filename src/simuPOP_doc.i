@@ -39,8 +39,8 @@ Usage:
     affectedSibpairSample(size=[], chooseUnaffected=False,
       countOnly=False, name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\",
       saveAsExpr=\"\", format=\"auto\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[\"father_idx\", \"mother_idx\"])
+      step=1, at=[], rep=REP_ALL, infoFields=[\"father_idx\",
+      \"mother_idx\"])
 
 Details:
 
@@ -208,8 +208,8 @@ Description:
 Usage:
 
     affectionTagger(code=[], begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, stage=PostMating, output=\">\",
-      outputExpr=\"\", infoFields=[])
+      rep=REP_ALL, stage=PostMating, output=\">\", outputExpr=\"\",
+      infoFields=[])
 
 Arguments:
 
@@ -356,13 +356,9 @@ Details:
     be counted from the last generation, using negative generation
     numbers.
     Most operators are applied to every replicate of a simulator
-    during evolution. However, you can apply operators to one
-    (parameter rep) or a group of replicates only (parameter grp). For
-    example, you can initialize different replicates with different
-    initial values and then start evolution. c.f.
-    simulator::setGroup.Operators can have outputs, which can be
-    standard (terminal) or a file. Output can vary with replicates
-    and/or generations, and outputs from different operators can be
+    during evolution.Operators can have outputs, which can be standard
+    (terminal) or a file. Output can vary with replicates and/or
+    generations, and outputs from different operators can be
     accumulated to the same file to form table-like outputs.
     Filenames can have the following format:
     * 'filename' this file will be overwritten each time. If two
@@ -392,7 +388,7 @@ Description:
 Usage:
 
     baseOperator(output, outputExpr, stage, begin, end, step, at,
-      rep, grp, infoFields)
+      rep, infoFields)
 
 Arguments:
 
@@ -408,9 +404,6 @@ Arguments:
                     number, REP_ALL (all replicates, default), or
                     REP_LAST (only the last replicate). REP_LAST is
                     useful in adding newlines to a table output.
-    grp:            applicable group. Default to GRP_ALL. A group
-                    number for each replicate is set by
-                    simulator.__init__ or  simulator::setGroup().
     output:         a string of the output filename. Different
                     operators will have different default output (most
                     commonly '>' or '').
@@ -426,9 +419,9 @@ Note:
     * Negative generation numbers are allowed for parameters begin,
     end and at. They are interpreted as endGen + gen + 1. For example,
     begin = -2 in simu.evolve(..., end=20) starts at generation 19.
-    * REP_ALL, REP_LAST, GRP_ALL are special constant that can only be
-    used in the constructor of an operator. That is to say, explicit
-    test of rep() == REP_LAST will not work.
+    * REP_ALL, REP_LAST are special constant that can only be used in
+    the constructor of an operator. That is to say, explicit test of
+    rep() == REP_LAST will not work.
 
 Example:
 
@@ -460,11 +453,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly=false);
-
-%ignore simuPOP::baseOperator::applicableGroup();
-
-%ignore simuPOP::baseOperator::setApplicableGroup(int grp=GRP_ALL);
+%ignore simuPOP::baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly=false);
 
 %ignore simuPOP::baseOperator::applicableReplicate();
 
@@ -982,7 +971,7 @@ Usage:
     caseControlSample(cases=[], controls=[], spSample=False,
       name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\",
       format=\"auto\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -1400,7 +1389,7 @@ Usage:
 
     continueIf(condition=\"\", message=\"\", var=\"terminate\", output=\"\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -1660,7 +1649,7 @@ Usage:
     dumper(alleleOnly=False, infoOnly=False, ancestralPops=False,
       dispWidth=1, max=100, chrom=[], loci=[], subPop=[], indRange=[],
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -2551,7 +2540,7 @@ Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
       func=None, output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -2875,7 +2864,7 @@ Usage:
 
     ifElse(cond, ifOp=None, elseOp=None, output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -3582,7 +3571,7 @@ Usage:
     infoEval(expr=\"\", stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Details:
 
@@ -3719,7 +3708,7 @@ Usage:
     infoExec(stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Details:
 
@@ -3936,8 +3925,7 @@ Description:
 Usage:
 
     infoTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, stage=PostMating, output=\">\", outputExpr=\"\",
-      infoFields=[])
+      stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
 
 "; 
 
@@ -3981,7 +3969,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, output=\"\", outputExpr=\"\",
+      rep=REP_ALL, output=\"\", outputExpr=\"\",
       infoFields=[\"paternal_tag\", \"maternal_tag\"])
 
 Arguments:
@@ -4074,7 +4062,7 @@ Usage:
     initByFreq(alleleFreq=[], identicalInds=False, subPop=[],
       indRange=[], loci=[], atPloidy=-1, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -4185,7 +4173,7 @@ Usage:
     initByValue(value=[], loci=[], atPloidy=-1, subPop=[],
       indRange=[], proportions=[], maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -4289,7 +4277,7 @@ Usage:
 
     initializer(subPop=[], indRange=[], loci=[], atPloidy=-1,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -4374,7 +4362,7 @@ Usage:
 
     initSex(maleFreq=0.5, sex=[], subPop=[], indRange=[], loci=[],
       atPloidy=-1, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -4499,7 +4487,7 @@ Usage:
 
     kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -4589,7 +4577,7 @@ Usage:
       minPedSize=5, minAffected=0, countOnly=False, name=\"sample\",
       nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
+      infoFields=[\"father_idx\", \"mother_idx\"])
 
 Details:
 
@@ -4701,7 +4689,7 @@ Usage:
 
     maPenetrance(loci, penet, wildtype, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -4801,7 +4789,7 @@ Usage:
 
     mapPenetrance(loci, penet, phase=False, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -4890,7 +4878,7 @@ Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[\"qtrait\"])
+      at=[], rep=REP_ALL, infoFields=[\"qtrait\"])
 
 Arguments:
 
@@ -4989,7 +4977,7 @@ Usage:
 
     mapSelector(loci, fitness, phase=False, subPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"fitness\"])
+      infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -5092,7 +5080,7 @@ Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancestralGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"qtrait\"])
+      infoFields=[\"qtrait\"])
 
 Details:
 
@@ -5197,7 +5185,7 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype, subPops=[], stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       infoFields=[\"fitness\"])
 
 Details:
@@ -5514,7 +5502,7 @@ Usage:
 
     mergeSubPops(subPops=[], removeEmptySubPops=False,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -5608,7 +5596,7 @@ Usage:
 
     migrator(rate, mode=MigrByProbability, fromSubPop=[],
       toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -5767,7 +5755,7 @@ Usage:
 
     mlPenetrance(peneOps, mode=PEN_Multiplicative, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -5869,7 +5857,7 @@ Usage:
 
     mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[\"qtrait\"])
+      at=[], rep=REP_ALL, infoFields=[\"qtrait\"])
 
 Details:
 
@@ -5968,7 +5956,7 @@ Usage:
 
     mlSelector(selectors, mode=SEL_Multiplicative, subPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"fitness\"])
+      infoFields=[\"fitness\"])
 
 Details:
 
@@ -6128,7 +6116,7 @@ Usage:
 
     mutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -6376,7 +6364,7 @@ Description:
 Usage:
 
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=0, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      end=0, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Example:
 
@@ -6457,7 +6445,7 @@ Usage:
       minPedSize=5, minAffected=0, countOnly=False, name=\"sample\",
       nameExpr=\"\", times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[\"father_idx\", \"mother_idx\"])
+      infoFields=[\"father_idx\", \"mother_idx\"])
 
 Details:
 
@@ -6612,7 +6600,7 @@ Description:
 Usage:
 
     outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -6664,7 +6652,7 @@ Usage:
 
     outputHelper(str=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -6838,7 +6826,7 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, output=\"\", outputExpr=\"\", infoFields=[\"father_idx\",
+      output=\"\", outputExpr=\"\", infoFields=[\"father_idx\",
       \"mother_idx\"])
 
 "; 
@@ -6930,8 +6918,7 @@ Description:
 Usage:
 
     parentTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, output=\"\", outputExpr=\"\",
-      infoFields=[\"parent_idx\"])
+      output=\"\", outputExpr=\"\", infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -7034,8 +7021,7 @@ Usage:
 
     pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
       popName=\"pop\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_LAST, grp=GRP_ALL,
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=REP_LAST, infoFields=[])
 
 Arguments:
 
@@ -7495,7 +7481,7 @@ Details:
 
 Usage:
 
-    pedigreeMating(generator, ped, newSubPopSize=[],
+    pedigreeMating(ped, generator, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
       subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
 
@@ -7644,7 +7630,7 @@ Description:
 Usage:
 
     penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -7754,7 +7740,7 @@ Usage:
 
     pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -9545,21 +9531,6 @@ Usage:
 
 %ignore simuPOP::population::setRep(int rep, bool setVar=true);
 
-%feature("docstring") simuPOP::population::grp "
-
-Description:
-
-    current group ID in a simulator which is not meaningful for a
-    stand-alone population.
-
-Usage:
-
-    x.grp()
-
-"; 
-
-%ignore simuPOP::population::setGrp(int grp, bool setVar=true);
-
 %feature("docstring") simuPOP::population::gen "
 
 Description:
@@ -9768,7 +9739,7 @@ Usage:
     pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -9883,7 +9854,7 @@ Usage:
 
     pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
       name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -10024,7 +9995,7 @@ Usage:
 
     pyIndOperator(func, loci=[], param=None, stage=PostMating,
       formOffGenotype=False, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -10127,7 +10098,7 @@ Usage:
 
     pyInit(func, subPop=[], loci=[], atPloidy=-1, indRange=[],
       maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -10311,7 +10282,7 @@ Usage:
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
       fromSubPop=[], toSubPop=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -10409,7 +10380,7 @@ Usage:
 
     pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Example:
 
@@ -10511,7 +10482,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -10622,8 +10593,7 @@ Description:
 Usage:
 
     pyOutput(str=\"\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -10795,8 +10765,7 @@ Description:
 Usage:
 
     pyPenetrance(loci, func, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -10899,7 +10868,7 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancestralGen=-1, stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL,
       infoFields=[\"qtrait\"])
 
 Details:
@@ -11000,7 +10969,7 @@ Usage:
     pySample(keep, keepAncestralPops=-1, name=\"sample\", nameExpr=\"\",
       times=1, saveAs=\"\", saveAsExpr=\"\", format=\"auto\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Details:
 
@@ -11103,8 +11072,7 @@ Description:
 Usage:
 
     pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[\"fitness\"])
+      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -11206,7 +11174,7 @@ Description:
 Usage:
 
     pySubset(keep=[], stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -11287,7 +11255,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, output=\"\", outputExpr=\"\", infoFields=[])
+      output=\"\", outputExpr=\"\", infoFields=[])
 
 Arguments:
 
@@ -11385,7 +11353,7 @@ Description:
 Usage:
 
     quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[\"qtrait\"])
+      step=1, at=[], rep=REP_ALL, infoFields=[\"qtrait\"])
 
 "; 
 
@@ -11679,8 +11647,7 @@ Usage:
 
     randomSample(size=[], name=\"sample\", nameExpr=\"\", times=1,
       saveAs=\"\", saveAsExpr=\"\", format=\"auto\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL,
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -11851,7 +11818,7 @@ Usage:
     recombinator(intensity=-1, rate=[], afterLoci=[],
       maleIntensity=-1, maleRate=[], maleAfterLoci=[], convProb=0,
       convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -12062,7 +12029,7 @@ Usage:
 
     resizeSubPops(newSizes=[], subPops=[], propagate=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -12439,7 +12406,7 @@ Usage:
 
     sample(name=\"sample\", nameExpr=\"\", times=1, saveAs=\"\",
       saveAsExpr=\"\", format=\"auto\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -12550,7 +12517,7 @@ Usage:
 
     savePopulation(output=\"\", outputExpr=\"\", format=\"\",
       compress=True, stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Arguments:
 
@@ -12667,7 +12634,7 @@ Description:
 Usage:
 
     selector(subPops=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[\"fitness\"])
+      at=[], rep=REP_ALL, infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -12958,7 +12925,7 @@ Usage:
 
     setAncestralDepth(depth, output=\">\", outputExpr=\"\",
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 "; 
 
@@ -13095,8 +13062,7 @@ Description:
 Usage:
 
     sexTagger(code=[], begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, stage=PostMating, output=\">\", outputExpr=\"\",
-      infoFields=[])
+      stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
 
 Arguments:
 
@@ -13270,7 +13236,7 @@ Description:
 Usage:
 
     simulator(pop, matingScheme, stopIfOneRepStops=False,
-      applyOpToStoppedReps=False, rep=1, grp=[])
+      applyOpToStoppedReps=False, rep=1)
 
 Arguments:
 
@@ -13279,9 +13245,6 @@ Arguments:
                     simulator. Its content will not be changed.
     matingScheme:   a mating scheme
     rep:            number of replicates. Default to 1.
-    grp:            group number for each replicate. Operators can be
-                    applied to a group of replicates using its grp
-                    parameter.
     applyOpToStoppedReps:If set, the simulator will continue to apply
                     operators to all stopped replicates until all
                     replicates are marked 'stopped'.
@@ -13468,32 +13431,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::simulator::grp();
-
-%feature("docstring") simuPOP::simulator::group "
-
-Description:
-
-    return group indexes
-
-Usage:
-
-    x.group()
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setGroup "
-
-Description:
-
-    set groups for replicates
-
-Usage:
-
-    x.setGroup(grp)
-
-"; 
-
 %feature("docstring") simuPOP::simulator::setGen "
 
 Description:
@@ -13660,7 +13597,7 @@ Usage:
 
     smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -13744,7 +13681,7 @@ Usage:
 
     splitSubPop(which=0, sizes=[], proportions=[], subPopID=[],
       randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 Details:
 
@@ -13852,7 +13789,7 @@ Description:
 Usage:
 
     spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      at=[], rep=REP_ALL, infoFields=[])
 
 Example:
 
@@ -13949,7 +13886,7 @@ Usage:
       relBySubPop=False, relMethod=[], relMinScored=10,
       hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -14190,9 +14127,8 @@ Arguments:
                     al. (1999) (method=REL_Lynch). The results are
                     pairwise relatedness values, in the form of a
                     matrix. Original group or subpopulation numbers
-                    are discarded. relatedness[grp1][grp2] is the
-                    relatedness value between grp1 and grp2. There is
-                    no subpopulation level relatedness value.
+                    are discarded. There is no subpopulation level
+                    relatedness value.
     relGroups:      calculate pairwise relatedness between groups. Can
                     be in the form of either [[1,2,3],[5,6,7],[8,9]]
                     or [2,3,4]. The first one specifies groups of
@@ -14922,7 +14858,7 @@ Description:
 Usage:
 
     stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -15245,7 +15181,7 @@ Description:
 Usage:
 
     tagger(output=\"\", outputExpr=\"\", begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -15314,7 +15250,7 @@ Usage:
 
     terminateIf(condition=\"\", message=\"\", var=\"terminate\",
       output=\"\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      step=1, at=[], rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -15390,7 +15326,7 @@ Usage:
 
     terminator(message=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      grp=GRP_ALL, infoFields=[])
+      infoFields=[])
 
 Arguments:
 
@@ -15455,7 +15391,7 @@ Description:
 Usage:
 
     ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -15533,7 +15469,7 @@ Description:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      at=[], rep=REP_ALL, infoFields=[])
 
 "; 
 
@@ -15617,7 +15553,7 @@ Description:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, grp=GRP_ALL, infoFields=[])
+      at=[], rep=REP_ALL, infoFields=[])
 
 "; 
 

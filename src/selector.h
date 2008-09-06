@@ -76,8 +76,8 @@ public:
 	 \param subPops subpopulations that the selector will apply to. Default to all.
 	 */
 	selector(const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         int rep = REP_ALL, int grp = GRP_ALL, const vectorstr & infoFields = vectorstr(1, "fitness"))
-		: baseOperator("", "", stage, begin, end, step, at, rep, grp, infoFields), m_subPops(subPops)
+	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr(1, "fitness"))
+		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields), m_subPops(subPops)
 	{
 	}
 
@@ -140,9 +140,9 @@ public:
 	 */
 	mapSelector(vectoru loci, const strDict & fitness, bool phase = false,
 	            const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	            vectorl at = vectorl(), int rep = REP_ALL,
 	            const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
+		selector(subPops, stage, begin, end, step, at, rep, infoFields),
 		m_loci(loci), m_dict(fitness), m_phase(phase)
 	{
 	};
@@ -217,9 +217,9 @@ public:
 	 */
 	maSelector(vectoru loci, const vectorf & fitness, const vectora & wildtype,
 	           const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	           vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	           vectorl at = vectorl(), int rep = REP_ALL,
 	           const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
+		selector(subPops, stage, begin, end, step, at, rep, infoFields),
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -294,9 +294,9 @@ public:
 	 */
 	mlSelector(const vectorop selectors, int mode = SEL_Multiplicative,
 	           const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	           vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	           vectorl at = vectorl(), int rep = REP_ALL,
 	           const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
+		selector(subPops, stage, begin, end, step, at, rep, infoFields),
 		m_selectors(0), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
@@ -376,9 +376,9 @@ public:
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(vectoru loci, PyObject * func, const vectoru & subPops = vectoru(),
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	           vectorl at = vectorl(), int rep = REP_ALL, int grp = GRP_ALL,
+	           vectorl at = vectorl(), int rep = REP_ALL,
 	           const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, grp, infoFields),
+		selector(subPops, stage, begin, end, step, at, rep, infoFields),
 		m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!PyCallable_Check(func))

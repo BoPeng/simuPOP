@@ -25,22 +25,17 @@
 
 namespace simuPOP {
 
-bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, int grp, bool repOnly)
+bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly)
 {
 	// rep does not match
 	if ( (m_rep >= 0 && static_cast<UINT>(m_rep) != rep) ||
 	    (m_rep == REP_LAST && rep != numRep - 1) )
 		return false;
 
-	// group does not match
-	if (m_grp >= 0 && m_grp != grp)
-		return false;
-
-	// only check for rep and grp values.
+	// only check for rep value.
 	if (repOnly)
 		return true;
 
-	// if gen < 0, we are testing only group info
 	if (gen < 0)
 		return true;
 
