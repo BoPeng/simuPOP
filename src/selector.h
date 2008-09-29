@@ -118,11 +118,13 @@ private:
 	vectoru m_subPops;
 };
 
-/// selection according to the genotype at one locus
+/// selection according to the genotype at one or more loci
 /**
-   This map selector implements selection at one locus. A user provided dictionary (map) of
-   genotypes will be used in this selector to set each individual's fitness value.
+   This map selector implements selection according to genotype at one or more loci.
+   A user provided dictionary (map) of genotypes will be used in this selector to set
+   each individual's fitness value.
    <funcForm>MapSelector</funcForm>
+   <applicability>all ploidy</applicability>
  */
 class mapSelector : public selector
 {
@@ -132,7 +134,9 @@ public:
 	 \param locus the locus index. A shortcut to <tt> loci=[locus] </tt>
 	 \param loci the locus indexes. The genotypes at these loci will be used to determine the fitness value.
 	 \param fitness a dictionary of fitness values. The genotype must be in the form of <tt>'a-b'</tt>
-	   	for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci.
+	   	for a single locus, and <tt>'a-b|c-d|e-f'</tt> for multi-loci. In the haploid case, the genotype
+		should be specified in the form of <tt>'a'</tt> for single locus, and <tt>'a|b|c'</tt> for multi-locus
+		models.
 	 \param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to \c False.
 	 \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 

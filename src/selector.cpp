@@ -53,18 +53,35 @@ bool selector::apply(population & pop)
 double mapSelector::indFitness(individual * ind, ULONG gen)
 {
 	string key;
+	size_t ply = ind->ploidy();
+	vector<int> alleles(ply);
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
-		// get genotype of ind
-		Allele a = ind->allele(*loc, 0);
-		Allele b = ind->allele(*loc, 1);
-
 		if (loc != m_loci.begin() )
 			key += '|';
-		if (!m_phase && a > b)  // ab=ba
-			key += toStr(static_cast<int>(b)) + "-" + toStr(static_cast<int>(a));
-		else
-			key += toStr(static_cast<int>(a)) + "-" + toStr(static_cast<int>(b));
+		for (int p = 0; p < ply; ++p)
+			alleles[p] = ind->allele(*loc, p);
+		// if no phase, sort alleles...
+		if (!m_phase && ply > 1) {
+			if (ply == 2) {
+				if (alleles[0] > alleles[1]) { // swap
+					int tmp = alleles[0];
+					alleles[0] = alleles[1];
+					alleles[1] = tmp;
+				}
+			} else
+				std::sort(alleles.begin(), alleles.end());
+		}
+		// get key
+		if (ply == 1)
+			key += toStr(alleles[0]);
+		else if (ply == 2)
+			key += toStr(alleles[0]) + "-" + toStr(alleles[1]);
+		else {
+			key += toStr(alleles[0]);
+			for (size_t i = 1; i < ply; ++i)
+				key += "-" + toStr(alleles[i]);
+		}
 	}
 
 	strDict::iterator pos = m_dict.find(key);

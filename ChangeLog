@@ -6,6 +6,8 @@ BUGS:
 
 version 0.8.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - CHG: Remove the replicate group feature.
+  - NEW: Allow mapSelector to work for all ploidy.
+  - DOC: Add keyword applicability to indicate applicability of operators.
 
 version 0.8.7 - (Rev 1755) Aug 29, 2008
   - NEW: allow the use of a list to specify a virtual subpopulation.
