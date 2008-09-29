@@ -489,13 +489,13 @@ class Doxy2SWIG:
                 piece2 = piece1[1].split('</funcForm>')
                 entry['Details'] = piece1[0] + piece2[1]
                 entry['funcForm'] = '<tt>' + piece2[0] + '</tt>'
-        # add funcForm key to content and delete function form from Details
+        # add applicability to each function.
         for entry in self.content:
-            if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
-                piece1 = entry['Details'].split('<funcForm>')
-                piece2 = piece1[1].split('</funcForm>')
+            if (entry.has_key('Details') and '<applicability>' in entry['Details']):
+                piece1 = entry['Details'].split('<applicability>')
+                piece2 = piece1[1].split('</applicability>')
                 entry['Details'] = piece1[0] + piece2[1]
-                entry['funcForm'] = '<tt>' + piece2[0] + '</tt>'
+                entry['Applicability'] = '<tt>' + piece2[0] + '</tt>'
         # destructor can not be CPPONLY, this will cause memory leak. Let us check this
         for entry in self.content:
             if entry['ignore'] and '~' in entry['Name']:
@@ -552,6 +552,8 @@ class Doxy2SWIG:
             if entry.has_key('funcForm'):
                 print >> out, 'Function form:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['funcForm'], 0, 4)
+            if entry.has_key('Applicability'):
+                print >> out, 'Applicability: %s\n' % self.swig_text(entry['Applicability'], 0, 4)
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, 'Description:'
                 print >> out, '\n    %s\n' % self.swig_text(entry['Description'], 0, 4)
@@ -879,9 +881,16 @@ class Doxy2SWIG:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\n\\subsection{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
-            if entry.has_key('funcForm'):
-                print >> out, '  (Function form: %s\index{function!%s})' % (
-                    self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
+            if entry.has_key('funcForm') or entry.has_key('Applicability'):
+                annotation = '  ('
+                if entry.has_key('funcForm'):
+                    annotation += 'Function form: %s\index{function!%s}' % (
+                        self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
+                if entry.has_key('Applicability'):
+                    if entry.has_key('funcForm'):
+                        annotation += ', '
+                    annotation += 'Applicable to %s' % self.latex_text(entry['Applicability'])
+                print >> out, annotation + ')'
             print >> out, '}\n'
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Description'])
