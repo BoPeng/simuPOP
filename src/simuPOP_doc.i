@@ -4955,15 +4955,18 @@ Function form:
 
     MapSelector
 
+Applicability: all ploidy
+
 Description:
 
-    selection according to the genotype at one locus
+    selection according to the genotype at one or more loci
 
 Details:
 
-    This map selector implements selection at one locus. A user
-    provided dictionary (map) of genotypes will be used in this
-    selector to set each individual's fitness value.
+    This map selector implements selection according to genotype at
+    one or more loci. A user provided dictionary (map) of genotypes
+    will be used in this selector to set each individual's fitness
+    value.
 
 "; 
 
@@ -4986,7 +4989,10 @@ Arguments:
                     will be used to determine the fitness value.
     fitness:        a dictionary of fitness values. The genotype must
                     be in the form of 'a-b' for a single locus, and
-                    'a-b|c-d|e-f' for multi-loci.
+                    'a-b|c-d|e-f' for multi-loci. In the haploid case,
+                    the genotype should be specified in the form of
+                    'a' for single locus, and 'a|b|c' for multi-locus
+                    models.
     phase:          if True, genotypes a-b and b-a will have different
                     fitness values. Default to False.
     output:         and other parameters please refer to help
