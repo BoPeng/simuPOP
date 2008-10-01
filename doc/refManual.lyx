@@ -1,4 +1,4 @@
-#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -7548,7 +7548,7 @@ status open
 No bibliography for now.
 \begin_inset LatexCommand bibtex
 options "bibtotoc,plainnat"
-bibfiles "bib/all"
+bibfiles "simuPOP"
 
 \end_inset
 
