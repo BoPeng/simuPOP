@@ -68,8 +68,9 @@ namespace simuPOP {
  \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
  \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
 
-   This is the base class of all parent choosers, and should not
+   This is the base class of all offspring generators, and should not
    be used directly.
+   <applicability>all ploidy</applicability>
  */
 class offspringGenerator
 {
@@ -234,6 +235,7 @@ private:
    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
  \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
    ignored.
+   <applicability>all ploidy</applicability>
  */
 class cloneOffspringGenerator : public offspringGenerator
 {
@@ -279,7 +281,7 @@ public:
  \c maxNumOffspring and \c mode. Recombination will not happen unless
    a during-mating operator recombinator is used.
 
-   This offspring generator only works for diploid populations.
+   <applicability>diploid only</applicability>
  */
 class mendelianOffspringGenerator : public offspringGenerator
 {
@@ -341,6 +343,7 @@ protected:
    randomly to form the parental copy of the offspring chromosome, and
    is chosen randomly again to form the maternal copy of the offspring
    chromosome.
+   <applicability>diploid only</applicability>
  */
 class selfingOffspringGenerator : public mendelianOffspringGenerator
 {
@@ -383,6 +386,7 @@ public:
 
    Female offspring has two sets of chromosomes, one from mother and one from
    father. Male offspring has one set of chromosomes from his mother.
+   <applicability>haplodiploid only</applicability>
  */
 class haplodiploidOffspringGenerator : public mendelianOffspringGenerator
 {
@@ -495,6 +499,7 @@ protected:
 
 /** This parent chooser chooses a parent linearly, regardless of sex
    or fitness values (selection is not considered).
+   <applicability>all ploidy</applicability>
  */
 class sequentialParentChooser : public parentChooser
 {
@@ -530,6 +535,7 @@ private:
 /** This parents chooser chooses two parents sequentially. The
    parents are chosen from their respective sex groups. Selection
    is not considered.
+   <applicability>all ploidy</applicability>
  */
 class sequentialParentsChooser : public parentChooser
 {
@@ -576,6 +582,7 @@ private:
 /** This parents chooser chooses one or two parents from
    	a given pedigree. It works even when only one parent
    	is needed.
+   <applicability>all ploidy</applicability>
  */
 class pedigreeParentsChooser : public parentChooser
 {
@@ -622,6 +629,7 @@ private:
    Note that selection is not allowed when \c replacement=false
    because this poses a particular order on individuals in the
    offspring generation.
+   <applicability>all ploidy</applicability>
  */
 class randomParentChooser : public parentChooser
 {
@@ -681,6 +689,7 @@ protected:
    a parent multiple times when returning parents, and allows
    specification of a few alpha individuals who will be the only
    mating individuals in their sex group.
+   <applicability>all ploidy</applicability>
  */
 class randomParentsChooser : public parentChooser
 {
@@ -799,6 +808,7 @@ private:
 
    	Note: if there is no valid individual, this parents chooser works like
    	a double parentChooser.
+   <applicability>all ploidy</applicability>
  */
 class infoParentsChooser : public randomParentChooser
 {
@@ -847,6 +857,7 @@ private:
    repeatedly an index (relative to each subpopulation) of a parent, or
    indexes of two parents as a Python list of tuple. The generator function
    is responsible for handling sex or selection if needed.
+   <applicability>all ploidy</applicability>
  */
 class pyParentsChooser : public parentChooser
 {
@@ -1093,6 +1104,7 @@ public:
    Note that because the offspring population is the same as parental population,
    this mating scheme can not be used with other mating schemes in a heterogeneous
    mating scheme. cloneMating is recommended for that purpose.
+   <applicability>all ploidy</applicability>
  */
 class noMating : public mating
 {
@@ -1167,6 +1179,7 @@ public:
    cloned more than once.
  \li numOffspring interface is respected.
  \li during mating operators are applied.
+   <applicability>all ploidy</applicability>
  */
 class cloneMating : public mating
 {
@@ -1242,6 +1255,7 @@ protected:
  \li population size changes are allowed;
  \li selection is possible;
  \li haploid population is allowed.
+   <applicability>all ploidy</applicability>
  */
 class binomialSelection : public mating
 {
@@ -1320,6 +1334,7 @@ protected:
  \c randomMating, \c monogemousMating, \c polygemousMating,
  \c alphaMating are all special cases of this mating scheme.
    They should be used whenever possible.
+   <applicability>diploid only</applicability>
  */
 class baseRandomMating : public mating
 {
@@ -1442,6 +1457,7 @@ protected:
    father and mother. If only one sex exists in a subpopulation, a
    parameter (\c contWhenUniSex) can be set to determine the behavior.
    Default to continuing without warning.
+   <applicability>diploid only</applicability>
  */
 class randomMating : public baseRandomMating
 {
@@ -1497,6 +1513,7 @@ public:
    the same mother must share the same father. In case that all parental
    pairs are exhausted, parameter \c replenish=True allows for the replenishment
    of one or both sex groups.
+   <applicability>diploid only</applicability>
  */
 class monogamousMating : public baseRandomMating
 {
@@ -1552,6 +1569,7 @@ public:
    a male (or female) parent will have more than one sex partner (\c numPartner).
    Parents returned from this parents chooser will yield the same male (or female)
    parents, each with varying partners.
+   <applicability>diploid only</applicability>
  */
 class polygamousMating : public baseRandomMating
 {
@@ -1614,6 +1632,7 @@ public:
    individual (male or female) are determined by \c alphaNum or an information field. Then,
    only these alpha individuals are able to mate with random individuals of
    opposite sex.
+   <applicability>diploid only</applicability>
  */
 class alphaMating : public baseRandomMating
 {
@@ -1685,6 +1704,7 @@ public:
    two copies of chromosomes from the female parent, and the first copy
    of chromosomes from the male parent. Note that if a recombinator
    is used, it should disable recombination of male parent.
+   <applicability>haplodiploid only</applicability>
  */
 class haplodiploidMating : public mating
 {
@@ -1782,6 +1802,7 @@ protected:
    as the default offspring generator. You can use another offspring generator
    by setting the generator parameter. Note that the offspring generator can
    generate one and only one offspring each time.
+   <applicability>all ploid</applicability>
  */
 class pedigreeMating : public mating
 {
@@ -1845,6 +1866,7 @@ protected:
    is chosen randomly, regardless of sex. If selection is turned on,
    the probability that an individual is chosen is proportional to
    his/her fitness.
+   <applicability>diploid only</applicability>
  */
 class selfMating : public mating
 {
@@ -1921,6 +1943,7 @@ protected:
    In this mating scheme, a parent is choosen randomly and mate with a
    relative that has been located and written to a number of information
    fields.
+   <applicability>diploid only</applicability>
  */
 class consanguineousMating : public mating
 {
@@ -2047,6 +2070,7 @@ void countAlleles(population & pop, int subpop, const vectori & loci, const vect
    at the offspring generation does not fall into the given range, the offspring generation
    is regenerated. Any mating scheme can be used with this mating scheme by passing through
    parameter \c matingScheme.
+   <applicability>diploid only</applicability>
  */
 class controlledMating : public mating
 {
@@ -2171,6 +2195,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
    until the expected number of disease alleles are met. At the second
    step, only families with wide type alleles are accepted to populate
    the rest of the offspring generation.
+   <applicability>diploid only</applicability>
  */
 class controlledRandomMating : public randomMating
 {
@@ -2302,6 +2327,7 @@ private:
    	It requires a parent chooser, and an offspring generator. The parent
    	chooser chooses parent(s) and pass them to the offspring generator to
    	produce offspring.
+   <applicability>all ploidy</applicability>
  */
 class pyMating : public mating
 {
@@ -2373,6 +2399,7 @@ typedef std::vector<mating *> vectormating;
 
 /** a heterogeneous mating scheme that applies a list of mating
    schemes to different (virtual) subpopulations.
+   <applicability>diploid only</applicability>
  */
 class heteroMating : public mating
 {

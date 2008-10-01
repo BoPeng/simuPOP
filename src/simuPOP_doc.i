@@ -232,6 +232,8 @@ Usage:
 
 %feature("docstring") simuPOP::alphaMating "
 
+Applicability: diploid only
+
 Description:
 
     Only a number of alpha individuals can mate with individuals of
@@ -573,6 +575,8 @@ Usage:
 
 %feature("docstring") simuPOP::baseRandomMating "
 
+Applicability: diploid only
+
 Details:
 
     This base class defines a general random mating scheme that makes
@@ -856,6 +860,8 @@ Usage:
 
 %feature("docstring") simuPOP::binomialSelection "
 
+Applicability: all ploidy
+
 Description:
 
     a mating scheme that uses binomial selection, regardless of sex
@@ -1029,6 +1035,8 @@ Usage:
 
 %feature("docstring") simuPOP::cloneMating "
 
+Applicability: all ploidy
+
 Description:
 
     a clone mating that copy everyone from parental to offspring
@@ -1108,6 +1116,8 @@ Usage:
 %ignore simuPOP::cloneMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::cloneOffspringGenerator "
+
+Applicability: all ploidy
 
 Details:
 
@@ -1267,6 +1277,8 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::consanguineousMating "
+
+Applicability: diploid only
 
 Description:
 
@@ -1444,6 +1456,8 @@ Usage:
 
 %feature("docstring") simuPOP::controlledMating "
 
+Applicability: diploid only
+
 Description:
 
     a controlled mating scheme
@@ -1533,6 +1547,8 @@ Usage:
 %ignore simuPOP::controlledMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::controlledRandomMating "
+
+Applicability: diploid only
 
 Description:
 
@@ -2612,6 +2628,8 @@ Usage:
 
 %feature("docstring") simuPOP::haplodiploidMating "
 
+Applicability: haplodiploid only
+
 Description:
 
     haplodiploid mating scheme of many hymemopterans
@@ -2697,6 +2715,8 @@ Usage:
 
 %feature("docstring") simuPOP::haplodiploidOffspringGenerator "
 
+Applicability: haplodiploid only
+
 Details:
 
     haplodiploid offspring generator mimics sex-determination in honey
@@ -2753,6 +2773,8 @@ Usage:
 %ignore simuPOP::haplodiploidOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::heteroMating "
+
+Applicability: diploid only
 
 Details:
 
@@ -3754,6 +3776,8 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::infoParentsChooser "
+
+Applicability: all ploidy
 
 Details:
 
@@ -5419,6 +5443,8 @@ Usage:
 
 %feature("docstring") simuPOP::mendelianOffspringGenerator "
 
+Applicability: diploid only
+
 Details:
 
     Mendelian offspring generator accepts two parents and pass their
@@ -5429,8 +5455,7 @@ Details:
     offspring. The number of offspring produced is controled by
     parameters numOffspring, numOffspringFunc, maxNumOffspring and
     mode. Recombination will not happen unless a during-mating
-    operator recombinator is used.This offspring generator only works
-    for diploid populations.
+    operator recombinator is used.
 
 "; 
 
@@ -6029,6 +6054,8 @@ Usage:
 
 %feature("docstring") simuPOP::monogamousMating "
 
+Applicability: diploid only
+
 Description:
 
     a mating scheme of monogamy
@@ -6267,6 +6294,8 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::noMating "
+
+Applicability: all ploidy
 
 Description:
 
@@ -7461,6 +7490,8 @@ Usage:
 
 %feature("docstring") simuPOP::pedigreeMating "
 
+Applicability: all ploid
+
 Description:
 
     a mating scheme that follows a given pedigree
@@ -7541,6 +7572,8 @@ Usage:
 %ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::pedigreeParentsChooser "
+
+Applicability: all ploidy
 
 Details:
 
@@ -7833,6 +7866,8 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::polygamousMating "
+
+Applicability: diploid only
 
 Description:
 
@@ -10181,6 +10216,8 @@ Usage:
 
 %feature("docstring") simuPOP::pyMating "
 
+Applicability: all ploidy
+
 Description:
 
     a Python mating scheme
@@ -10669,6 +10706,8 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::pyParentsChooser "
+
+Applicability: all ploidy
 
 Details:
 
@@ -11426,6 +11465,8 @@ Usage:
 
 %feature("docstring") simuPOP::randomMating "
 
+Applicability: diploid only
+
 Description:
 
     a mating scheme of basic sexually random mating
@@ -11490,6 +11531,8 @@ Usage:
 
 %feature("docstring") simuPOP::randomParentChooser "
 
+Applicability: all ploidy
+
 Details:
 
     This parent chooser chooses a parent randomly from the parental
@@ -11540,6 +11583,8 @@ Usage:
 %ignore simuPOP::randomParentChooser::chooseParent(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::randomParentsChooser "
+
+Applicability: all ploidy
 
 Details:
 
@@ -12703,6 +12748,8 @@ Usage:
 
 %feature("docstring") simuPOP::selfingOffspringGenerator "
 
+Applicability: diploid only
+
 Details:
 
     selfing offspring generator works similarly as a mendelian
@@ -12744,6 +12791,8 @@ Usage:
 %ignore simuPOP::selfingOffspringGenerator::generateOffspring(population &pop, individual *parent, individual *, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::selfMating "
+
+Applicability: diploid only
 
 Description:
 
@@ -12828,6 +12877,8 @@ Usage:
 
 %feature("docstring") simuPOP::sequentialParentChooser "
 
+Applicability: all ploidy
+
 Details:
 
     This parent chooser chooses a parent linearly, regardless of sex
@@ -12864,6 +12915,8 @@ Usage:
 %ignore simuPOP::sequentialParentChooser::chooseParent(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::sequentialParentsChooser "
+
+Applicability: all ploidy
 
 Details:
 
