@@ -8616,51 +8616,9 @@ Usage:
 
 %ignore simuPOP::population::indGenoEnd(ULONG ind) const ;
 
-%feature("docstring") simuPOP::population::arrGenotype "
+%feature("docstring") simuPOP::population::arrGenotype "Obsolete or undocumented function."
 
-Description:
-
-    get the whole genotypes
-
-Usage:
-
-    x.arrGenotype(order)
-
-Details:
-
-    Return an editable array of all genotypes of the population. You
-    need to know how these genotypes are organized to safely
-    read/write genotype directly.
-
-Arguments:
-
-    order:          if order is true, individuals will be ordered such
-                    that pop.individual(x). arrGenotype() ==
-                    pop.arrGenotype()[x*pop. genoSize():(x+1)*pop.
-                    genoSize()].
-
-"; 
-
-%feature("docstring") simuPOP::population::arrGenotype "
-
-Description:
-
-    get the whole genotypes of individuals in a subpopulation
-
-Usage:
-
-    x.arrGenotype(subPop, order)
-
-Details:
-
-    Return an editable array of all genotype in a subpopulation.
-
-Arguments:
-
-    subPop:         index of subpopulation (start from 0)
-    order:          if order is true, individuals will be ordered.
-
-"; 
+%feature("docstring") simuPOP::population::arrGenotype "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::population::setIndSubPopID "
 

@@ -913,7 +913,7 @@ public:
 	}
 
 
-	/// get the whole genotypes
+	/// get the whole genotypes HIDDEN
 	/**
 	   Return an editable array of all genotypes of the population. You need to
 	   know how these genotypes are organized to safely read/write genotype
@@ -923,7 +923,7 @@ public:
 	 */
 	PyObject * arrGenotype(bool order);
 
-	/// get the whole genotypes of individuals in a subpopulation
+	/// get the whole genotypes of individuals in a subpopulation HIDDEN
 	/**
 	   Return an editable array of all genotype in a subpopulation.
 	 \param subPop index of subpopulation (start from 0)
