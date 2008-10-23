@@ -76,9 +76,10 @@ InitByFreq(pop, [.2, .3, .4, .1])
 
 
 #file log/ref_carray.log
-# obtain an object using one of the arrXXX functions
-pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
-arr = pop.arrLociPos()
+# obtain an object using a genotype function
+pop = population(size=2, loci=[1,2])
+InitByValue(pop, [1,2,3])
+arr = pop.genotype()
 # print and expression (just like list)
 print arr
 str(arr)
@@ -87,31 +88,37 @@ arr.count(2)
 # index 
 arr.index(2)
 # can read write
-arr[0] = 0.5
+arr[0] = 0
 # the underlying locus position is also changed
-print pop.lociPos()
+print pop.genotype()
 # convert to list
 arr.tolist()
 # or simply
 list(arr)
 # compare to list directly
-arr == [0.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
+arr == [0, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
 # you can also convert and compare
-list(arr) == [0.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
+list(arr) == [0, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
 # slice
-arr[:] = [1,2,3,4,5,6,7]
+arr[:] = [3,2,1]*4
 # assign from another part
 arr[1:3] = arr[3:5]
-# arr1 is 1,2,3
-arr1 = arr[:3]
-# assign slice from a number
-# arr will also be affected since arr1 point to a part of arr
-arr1[:] = 10
-# assign vector of the same length
-len(arr1)
-arr1[:] = [30,40, 50]
 #end
 
+#file log/ref_genotype.log
+pop = population(size=[3, 2], loci=[2])
+for ind in pop.individuals(1):
+    for marker in range(pop.totNumLoci()):
+        ind.setAllele(marker % 2, marker, 0)
+        ind.setAllele(marker % 2, marker, 1)
+        print '%d ' % ind.allele(marker),
+    print
+    print ind.genotype()
+    ind.setGenotype([2, 1])
+
+# print all genotypes
+print pop.genotype(1)
+#end
 
 #file log/ref_dumpPop.log
 pop = population(size=[2,3], ploidy=2, loci=[5,10],

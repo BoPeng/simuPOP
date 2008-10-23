@@ -1184,12 +1184,12 @@ pop = simu.getPopulation(rep, destructive=True)
 \emph on
 extract
 \emph default
- population 
+ the 
 \family typewriter
-rep 
+rep
 \family default
-from the simulator instead of copying it, and bypassing a potentially very
- costly process.
+th population from the simulator instead of copying it, and bypassing a
+ potentially very costly process.
 \end_layout
 
 \begin_layout Section
@@ -1455,10 +1455,28 @@ name "carray"
 \end_layout
 
 \begin_layout Standard
-The return value of simuPOP functions with names starting with 
-\family typewriter
-arr
-\family default
+The return value of two simuPOP functions, namely 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Standard
+individual::genotype([p, [ch]])
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Standard
+population::genotype([sp])
+\end_layout
+
+\end_inset
+
  is of a special Python type 
 \family typewriter
 carray
@@ -1477,6 +1495,15 @@ count
 \family default
  list functions can be used, but all comparison, assignment and slice operations
  are allowed.
+ If you would like to copy the content of this 
+\family typewriter
+carray
+\family default
+ to a Python list, use the 
+\family typewriter
+list()
+\family default
+ function.
 \end_layout
 
 \begin_layout Standard
@@ -1486,20 +1513,6 @@ preview false
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-Important note:
-\series default
- Objects returned from 
-\family typewriter
-arrXXX
-\family default
- functions should be considered temporary.
- There is no guarantee that the underlying array will still be valid after
- any population operation.
 \end_layout
 
 \begin_layout Section
@@ -2751,6 +2764,10 @@ name "sub:Individuals"
 Individuals
 \end_layout
 
+\begin_layout Subsection
+Access individuals from a population object
+\end_layout
+
 \begin_layout Standard
 Individuals of a population can be accessed through 
 \family typewriter
@@ -2964,6 +2981,20 @@ for ind in pop.individuals(2):
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Access individual genotype
+\end_layout
+
+\begin_layout Standard
+simuPOP provies several functions to read/write individual genotype.
+ It is important to understand how simuPOP store these genotypes before
+ you use these functions.
+ Regardless of internal implementation, you can consider the genotype of
+ an individual as an array of alleles, ordered by marker, chromosome and
+ ploidy.
+ 
 \end_layout
 
 \begin_layout Standard
