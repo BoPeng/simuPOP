@@ -2142,39 +2142,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::arrLociPos "
+%feature("docstring") simuPOP::GenoStruTrait::arrLociPos "Obsolete or undocumented function."
 
-Description:
-
-    return a carray of loci positions of all loci
-
-Usage:
-
-    x.arrLociPos()
-
-Note:
-
-    Modifying loci position directly using this function is strongly
-    discouraged.
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::arrLociPos "
-
-Description:
-
-    return a carray of loci positions on a given chromosome
-
-Usage:
-
-    x.arrLociPos(chrom)
-
-Note:
-
-    Modifying loci position directly using this function is strongly
-    discouraged.
-
-"; 
+%feature("docstring") simuPOP::GenoStruTrait::arrLociPos "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::numChrom "
 

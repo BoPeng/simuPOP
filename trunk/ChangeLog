@@ -14,6 +14,8 @@ version 0.8.8 - Not released, available at https://simupop.svn.sourceforge.net/s
 		and will be removed later.
   - NEW: add individual::genotype (previously called arrGenotype) and
 		individual::arrGenotype.
+  - CHG: genoStruTrait::arrLociPos is marked obsolete and will be removed
+		later.
 
 version 0.8.7 - (Rev 1755) Aug 29, 2008
   - NEW: allow the use of a list to specify a virtual subpopulation.
