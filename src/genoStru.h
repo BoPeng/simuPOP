@@ -469,7 +469,7 @@ public:
 	}
 
 
-	/// return a \c carray of loci positions of all loci
+	/// HIDDEN return a \c carray of loci positions of all loci
 	/**
 	 \note Modifying loci position directly using this function is strongly discouraged.
 	 */
@@ -480,7 +480,7 @@ public:
 	}
 
 
-	/// return a \c carray of loci positions on a given chromosome
+	/// HIDDEN return a \c carray of loci positions on a given chromosome
 	/**
 	 \note Modifying loci position directly using this function is strongly discouraged.
 	 */
