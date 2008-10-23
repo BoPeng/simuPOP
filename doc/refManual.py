@@ -107,16 +107,26 @@ arr[1:3] = arr[3:5]
 
 #file log/ref_genotype.log
 pop = population(size=[3, 2], loci=[2])
+# single allele access
 for ind in pop.individuals(1):
     for marker in range(pop.totNumLoci()):
         ind.setAllele(marker % 2, marker, 0)
         ind.setAllele(marker % 2, marker, 1)
-        print '%d ' % ind.allele(marker),
-    print
-    print ind.genotype()
-    ind.setGenotype([2, 1])
+        print '%d %d ' % (ind.allele(marker, 0), ind.allele(marker, 1))
 
-# print all genotypes
+# batch access
+ind = pop.individual(4)
+geno = ind.genotype()
+print geno
+geno[2] = 3
+print ind.genotype()
+# direct modification of the underlying genotype
+geno[2:4] = [3, 4]
+print ind.genotype()
+# set genotype
+ind.setGenotype([2, 1])
+print geno
+# print genotypes of all individuals in the second subpopulation.
 print pop.genotype(1)
 #end
 
