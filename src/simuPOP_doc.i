@@ -3043,63 +3043,13 @@ Usage:
 
 %ignore simuPOP::individual::infoPtr() const ;
 
-%feature("docstring") simuPOP::individual::arrGenotype "
+%feature("docstring") simuPOP::individual::arrGenotype "Obsolete or undocumented function."
 
-Description:
+%feature("docstring") simuPOP::individual::arrGenotype "Obsolete or undocumented function."
 
-    return an editable array (a carray of length
-    totNumLoci()*ploidy()) of genotypes of an individual
+%feature("docstring") simuPOP::individual::arrGenotype "Obsolete or undocumented function."
 
-Usage:
-
-    x.arrGenotype()
-
-Details:
-
-    This function returns the whole genotype. Although this function
-    is not as easy to use as other functions that access alleles, it
-    is the fastest one since you can read/write genotype directly.
-
-"; 
-
-%feature("docstring") simuPOP::individual::arrGenotype "
-
-Description:
-
-    return a carray with the genotypes of the p-th copy of the
-    chromosomes
-
-Usage:
-
-    x.arrGenotype(p)
-
-"; 
-
-%feature("docstring") simuPOP::individual::arrGenotype "
-
-Description:
-
-    return a carray with the genotypes of the ch-th chromosome in the
-    p-th chromosome set
-
-Usage:
-
-    x.arrGenotype(p, ch)
-
-"; 
-
-%feature("docstring") simuPOP::individual::arrInfo "
-
-Description:
-
-    return a carray of all information fields (of size  infoSize()) of
-    this individual
-
-Usage:
-
-    x.arrInfo()
-
-"; 
+%feature("docstring") simuPOP::individual::arrInfo "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::individual::allele "
 
@@ -3224,9 +3174,9 @@ Usage:
 Arguments:
 
     allele:         allele to be set
-    index:          index from the begining of the poloidy p, ranging
+    index:          index from the begining of the ploidy p, ranging
                     from 0 to  totNumLoci(p)
-    p:              index of the poloidy
+    p:              index of the ploidy
 
 "; 
 
@@ -3246,6 +3196,111 @@ Arguments:
     allele:         allele to be set
     index:          index from the begining of the chromosome, ranging
                     from 0 to numLoci(ch)
+    p:              index of the ploidy
+    ch:             index of the chromosome in ploidy p
+
+"; 
+
+%feature("docstring") simuPOP::individual::genotype "
+
+Description:
+
+    return an editable array (a carray of length
+    totNumLoci()*ploidy()) of genotypes of an individual.
+
+Usage:
+
+    x.genotype()
+
+"; 
+
+%feature("docstring") simuPOP::individual::genotype "
+
+Description:
+
+    return an editable array of alleles of the p-th copy of the
+    chromosomes
+
+Usage:
+
+    x.genotype(p)
+
+Arguments:
+
+    p:              index of the ploidy
+
+"; 
+
+%feature("docstring") simuPOP::individual::genotype "
+
+Description:
+
+    return an editable array of alleles of the ch-th chromosome in the
+    p-th chromosome set
+
+Usage:
+
+    x.genotype(p, ch)
+
+Arguments:
+
+    p:              index of the ploidy
+    ch:             index of the chromosome in ploidy p
+
+"; 
+
+%feature("docstring") simuPOP::individual::setGenotype "
+
+Description:
+
+    set the genotype of an individual
+
+Usage:
+
+    x.setGenotype(geno)
+
+Arguments:
+
+    geno:           genotype to be set. It will be reused if its
+                    length is less than the genotype length of the
+                    individual.
+
+"; 
+
+%feature("docstring") simuPOP::individual::setGenotype "
+
+Description:
+
+    set the genotype of the p-th copy of the chromosomes
+
+Usage:
+
+    x.setGenotype(geno, p)
+
+Arguments:
+
+    geno:           genotype to be set. It will be reused if its
+                    length is less than the total number of loci.
+    p:              index of the ploidy
+
+"; 
+
+%feature("docstring") simuPOP::individual::setGenotype "
+
+Description:
+
+    set the genotype of the ch-th chromosome in the p-th chromosome
+    set
+
+Usage:
+
+    x.setGenotype(geno, p, ch)
+
+Arguments:
+
+    geno:           genotype to be set. It will be reused if its
+                    length is less than the number of loci on
+                    chromosome ch.
     p:              index of the ploidy
     ch:             index of the chromosome in ploidy p
 

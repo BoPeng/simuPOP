@@ -10,6 +10,10 @@ version 0.8.8 - Not released, available at https://simupop.svn.sourceforge.net/s
   - DOC: Add keyword applicability to indicate applicability of operators.
   - DOC: Document applicability of mating schemes.
   - DOC: Fix bibtex references of user's guide and reference manual.
+  - CHG: indiviudal::arrGenotype, individual::arrInfo are marked obsolete
+		and will be removed later.
+  - NEW: add individual::genotype (previously called arrGenotype) and
+		individual::arrGenotype.
 
 version 0.8.7 - (Rev 1755) Aug 29, 2008
   - NEW: allow the use of a list to specify a virtual subpopulation.
