@@ -1461,6 +1461,7 @@ inline true
 status open
 
 \begin_layout Standard
+
 individual::genotype([p, [ch]])
 \end_layout
 
@@ -1472,6 +1473,7 @@ inline true
 status open
 
 \begin_layout Standard
+
 population::genotype([sp])
 \end_layout
 
@@ -2994,7 +2996,83 @@ simuPOP provies several functions to read/write individual genotype.
  Regardless of internal implementation, you can consider the genotype of
  an individual as an array of alleles, ordered by marker, chromosome and
  ploidy.
+ This is illustrated in Figure 
+\begin_inset LatexCommand ref
+reference "fig:genotype-layout"
+
+\end_inset
+
+.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:genotype-layout"
+
+\end_inset
+
+Memory layout of individual genotype
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename genotype.pdf
+	lyxscale 30
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is worth noting that, instead of copying genotypes of an individual to
+ a Python tuple or list, the return value of function 
+\family typewriter
+genotype([p, [ch]])
+\family default
+ is a special python carray object that reflects the underlying genotypes.
+ Modifying elements of this array will change the genotype of an individual
+ directly.
+ This is demonstrated in the following example.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \lstinputlisting{log/ref_genotype.log}[caption={Virtual subpopulation related functions},label={virtualSubPop}]
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
