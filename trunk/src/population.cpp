@@ -397,6 +397,55 @@ PyObject * population::arrGenotype(bool order)
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
 }
 
+// get the whole genotype.
+// individuals will be in order before exposing
+// their genotypes.
+//
+// if order: keep order
+// otherwise: respect subpop structure
+PyObject * population::arrGenotype(UINT subPop, bool order)
+{
+	CHECKRANGESUBPOP(subPop);
+	sortIndividuals();
+	return Allele_Vec_As_NumArray(genoBegin(subPop, order), genoEnd(subPop, order));
+}
+
+
+PyObject * population::genotype()
+{
+	sortIndividuals();
+	// directly expose values. Do not copy data over.
+	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+}
+
+
+PyObject * population::genotype(UINT subPop)
+{
+	CHECKRANGESUBPOP(subPop);
+	sortIndividuals();
+	// directly expose values. Do not copy data over.
+	return Allele_Vec_As_NumArray(genoBegin(subPop, true), genoEnd(subPop, true));
+}
+
+
+void population::setGenotype(vectora geno)
+{
+	GenoIterator ptr = m_genotype.begin();
+	ULONG sz = geno.size();
+	for (ULONG i = 0; i < popSize()*genoSize(); ++i)
+		*(ptr++) = geno[i % sz];
+}
+
+
+void population::setGenotype(vectora geno, UINT subPop)
+{
+	CHECKRANGESUBPOP(subPop);
+	GenoIterator ptr = genoBegin(subPop, true);
+	ULONG sz = geno.size();
+	for (ULONG i = 0; i < subPopSize(subPop)*genoSize(); ++i)
+		*(ptr++) = geno[i % sz];
+}
+
 
 void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 {
@@ -427,20 +476,6 @@ void population::setIndSubPopIDWithID(bool ancestralPops)
 				it->setSubPopID(i);
 	}
 	useAncestralPop(oldGen);
-}
-
-
-// get the whole genotype.
-// individuals will be in order before exposing
-// their genotypes.
-//
-// if order: keep order
-// otherwise: respect subpop structure
-PyObject * population::arrGenotype(UINT subPop, bool order)
-{
-	CHECKRANGESUBPOP(subPop);
-	sortIndividuals();
-	return Allele_Vec_As_NumArray(genoBegin(subPop, order), genoEnd(subPop, order));
 }
 
 

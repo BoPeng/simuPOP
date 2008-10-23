@@ -8645,6 +8645,81 @@ Usage:
 
 %feature("docstring") simuPOP::population::arrGenotype "Obsolete or undocumented function."
 
+%feature("docstring") simuPOP::population::genotype "
+
+Description:
+
+    Get an editable array of the genotype of all individuals in a
+    population.
+
+Usage:
+
+    x.genotype()
+
+Details:
+
+    Return an editable array of all genotypes of the population. You
+    need to know how these genotypes are organized to safely
+    read/write genotype directly.
+
+"; 
+
+%feature("docstring") simuPOP::population::genotype "
+
+Description:
+
+    Get an editable array of the genotype of all individuals in a
+    subpopulation.
+
+Usage:
+
+    x.genotype(subPop)
+
+Arguments:
+
+    subPop:         index of subpopulation (start from 0)
+
+"; 
+
+%feature("docstring") simuPOP::population::setGenotype "
+
+Description:
+
+    Set genotype to all individuals of a population.
+
+Usage:
+
+    x.setGenotype(geno)
+
+Arguments:
+
+    geno:           genotype to be set. It will be reused if its
+                    length is less than the genotype length of the
+                    population, which is
+                    popSize()*ploidy()*totNumLoci().
+
+"; 
+
+%feature("docstring") simuPOP::population::setGenotype "
+
+Description:
+
+    Set genotype to all individuals in a subpopulation.
+
+Usage:
+
+    x.setGenotype(geno, subPop)
+
+Arguments:
+
+    geno:           genotype to be set. It will be reused if its
+                    length is less than the genotype length of the
+                    population, which is
+                    subPopSize(subPop)*ploidy()*totNumLoci().
+    subPop:         index of subpopulation (start from 0)
+
+"; 
+
 %feature("docstring") simuPOP::population::setIndSubPopID "
 
 Description:
