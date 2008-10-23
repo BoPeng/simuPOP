@@ -913,7 +913,7 @@ public:
 	}
 
 
-	/// get the whole genotypes HIDDEN
+	/// HIDDEN get the whole genotypes
 	/**
 	   Return an editable array of all genotypes of the population. You need to
 	   know how these genotypes are organized to safely read/write genotype
@@ -923,13 +923,44 @@ public:
 	 */
 	PyObject * arrGenotype(bool order);
 
-	/// get the whole genotypes of individuals in a subpopulation HIDDEN
+	/// HIDDEN get the whole genotypes of individuals in a subpopulation
 	/**
 	   Return an editable array of all genotype in a subpopulation.
 	 \param subPop index of subpopulation (start from 0)
 	 \param order if order is \c true, individuals will be ordered.
 	 */
 	PyObject * arrGenotype(UINT subPop, bool order);
+
+	/// Get an editable array of the genotype of all individuals in a population
+	/**
+	   Return an editable array of all genotypes of the population. You need to
+	   know how these genotypes are organized to safely read/write genotype
+	   directly.
+	 */
+	PyObject * genotype();
+
+	/// Get an editable array of the genotype of all individuals in a subpopulation
+	/**
+	 \param subPop index of subpopulation (start from 0)
+	 */
+	PyObject * genotype(UINT subPop);
+
+	/// Set genotype to all individuals of a population
+	/**
+	 \param geno genotype to be set. It will be reused if its length
+		is less than the genotype length of the population, which is
+		popSize()*ploidy()*totNumLoci().
+	*/
+	void setGenotype(vectora geno);
+
+	/// Set genotype to all individuals in a subpopulation
+	/**
+	 \param geno genotype to be set. It will be reused if its length
+		is less than the genotype length of the population, which is
+		subPopSize(subPop)*ploidy()*totNumLoci().
+	\param subPop index of subpopulation (start from 0)
+	*/
+	void setGenotype(vectora geno, UINT subPop);
 
 	//@}
 
