@@ -111,7 +111,7 @@ class TestIndividual(unittest.TestCase):
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
                 alleleNames=['1','2'])
         ind = pop.individual(0)
-        gt = ind.arrGenotype()
+        gt = ind.genotype()
         if AlleleType() == 'binary':
             gt[:] = [0,1]*12
             self.assertEqual(gt, [0,1]*12)
@@ -119,19 +119,19 @@ class TestIndividual(unittest.TestCase):
             gt[:] = [2,3,4]*8
             self.assertEqual(gt, [2,3,4]*8)
         # ploidy 1
-        gt = ind.arrGenotype(1)
+        gt = ind.genotype(1)
         if AlleleType() == 'binary':
             self.assertEqual(gt, [0,1]*6)
         else:
             self.assertEqual(gt, [2,3,4]*4)
         # ploidy 1, ch 1
-        gt = ind.arrGenotype(1, 1)
+        gt = ind.genotype(1, 1)
         if AlleleType() == 'binary':
             self.assertEqual(gt, [1,0,1,0,1,0,1])
         else:
             self.assertEqual(gt, [4,2,3,4,2,3,4])
-        self.assertRaises(exceptions.IndexError, ind.arrGenotype, 2)
-        self.assertRaises(exceptions.IndexError, ind.arrGenotype, 0, 2)
+        self.assertRaises(exceptions.IndexError, ind.genotype, 2)
+        self.assertRaises(exceptions.IndexError, ind.genotype, 0, 2)
         if AlleleType() == 'binary':
             # layout 0 1 0 1 0 | 1 0 1 0 1 0 1 || 0 1 0 1 0 | 1 0 1 0 1 0 1
             self.assertEqual( ind.allele(0), 0)
@@ -242,7 +242,43 @@ class TestIndividual(unittest.TestCase):
         ind.setAffected(True)
         self.assertEqual(ind.affected(), True)
         self.assertEqual(ind.unaffected(), False)
-
+        
+    def testIndSetGenotype(self):
+        'Testing individual setGenotype manipulation function'
+        if AlleleType() != 'binary':
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                maxAllele=4, alleleNames=['_','A','C','T','G'])
+        else: # binary
+            pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+                lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+                alleleNames=['1','2'])
+        ind = pop.individual(0)
+        gt = ind.genotype()
+        if AlleleType() == 'binary':
+            ind.setGenotype([0,1])
+            self.assertEqual(gt, [0,1]*12)
+        else:
+            ind.setGenotype([2,3,4])
+            self.assertEqual(gt, [2,3,4]*8)
+        # ploidy 1
+        gt = ind.genotype(1)
+        if AlleleType() == 'binary':
+            ind.setGenotype([0,1], 1)
+            self.assertEqual(gt, [0,1]*6)
+        else:
+            ind.setGenotype([2,3,4],1)
+            self.assertEqual(gt, [2,3,4]*4)
+        # ploidy 1, ch 1
+        gt = ind.genotype(1, 1)
+        if AlleleType() == 'binary':
+            ind.setGenotype([1],1,1)
+            self.assertEqual(gt, [1,0,1,0,1,0,1])
+        else:
+            ind.setGenotype([4,2,3],1,1)
+            self.assertEqual(gt, [4,2,3,4,2,3,4])
+       
+     
     def testCompare(self):
         'Testing individual comparison'
         pop = population(10, loci=[2, 1])
