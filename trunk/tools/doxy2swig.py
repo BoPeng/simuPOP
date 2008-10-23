@@ -482,6 +482,13 @@ class Doxy2SWIG:
                 entry['ignore'] = True
             else:
                 entry['ignore'] = False
+        # mark all entries with 'HIDDEN' in description or details as ignore in documentation
+        for entry in self.content:
+            if (entry.has_key('Description') and 'HIDDEN' in entry['Description']) or \
+               (entry.has_key('Details') and 'HIDDEN' in entry['Details']):
+                entry['hidden'] = True
+            else:
+                entry['hidden'] = False
         # add funcForm key to content and delete function form from Details
         for entry in self.content:
             if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
@@ -548,6 +555,9 @@ class Doxy2SWIG:
                 else:
                     print >> out, '%%ignore %s;\n' % entry['Name']
                 continue
+            if entry['hidden']:
+                print >> out, '%%feature("docstring") %s "Obsolete or undocumented function."\n' % entry['Name']
+                continue
             print >> out, '%%feature("docstring") %s "\n' % entry['Name']
             if entry.has_key('funcForm'):
                 print >> out, 'Function form:'
@@ -588,7 +598,7 @@ class Doxy2SWIG:
         for line in open(file).readlines():
             if line.startswith('def '):
                 # remove def, and ending :
-                self.content.append({'type': 'global_function', 'ignore': False})
+                self.content.append({'type': 'global_function', 'ignore': False, 'hidden':False})
                 self.content[-1]['Name'] = line[4:].split('(')[0]
                 self.content[-1]['Usage'] = line[4:].strip()
                 self.content[-1]['Description'] = ''
@@ -649,7 +659,8 @@ class Doxy2SWIG:
                 des += '\n\nInitialization\n\n'
                 des += getdoc(value.__init__)
                 self.content[-1]['Description'] = des
-                self.content[-1]['ignore'] = 'UNDOCUMENTED' in des
+                self.content[-1]['ignore'] = 'CPPONLY' in des
+                self.content[-1]['hidden'] = 'HIDDEN' in des
         for key, value in inspect.getmembers(object, inspect.isroutine):
             if inspect.isbuiltin(value) or inspect.getmodule(value) is object:
                 if not visiblename(key) or not inspect.isfunction(value):
@@ -660,7 +671,8 @@ class Doxy2SWIG:
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 self.content[-1]['Description'] = getdoc(value)
-                self.content[-1]['ignore'] = 'EXPERIMENTAL' in self.content[-1]['Description'] 
+                self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Description'] 
+                self.content[-1]['hidden'] = 'HIDDEN' in self.content[-1]['Description']
 
 
     def latexName(self, name):
@@ -821,7 +833,7 @@ class Doxy2SWIG:
 
     def write_latex(self, out):
         # first handle glocal functions
-        for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] \
+        for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             if entry.has_key('Usage') and entry['Usage'] != '':
@@ -848,7 +860,7 @@ class Doxy2SWIG:
             print >> out, '}\n'
         # then python modules
         modules = sets.Set(
-            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore']])
+            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore'] and not x['hidden']])
         for module in modules:
             # class object
             mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
@@ -856,7 +868,7 @@ class Doxy2SWIG:
             print >> out, '\n\\subsection{Module \\texttt{%s}\index{module!%s}' % (module, module)
             print >> out, '}\n\\par %s' % self.latex_formatted_text(mod['Description'])
             # module functions
-            funcs = [x for x in self.content if x['type'] == 'module' and x['module'] == module and not x['ignore']]
+            funcs = [x for x in self.content if x['type'] == 'module' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
             funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
             # print all functions
@@ -877,7 +889,7 @@ class Doxy2SWIG:
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
             print >> out, '\\end{description}\n}\n'
         # then classes
-        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore']]:
+        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\n\\subsection{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
@@ -901,7 +913,7 @@ class Doxy2SWIG:
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '%s' % self.latex_text(entry['note'])
             # only use the first constructor
-            constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore']]
+            constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore'] and not x['hidden']]
             if len(constructor) == 0:
                 print >> out, '}\n'
                 continue
@@ -929,7 +941,7 @@ class Doxy2SWIG:
                 print >> out, '\\par\n\\strong{Note}\n\\par'
                 print >> out, '%s' % self.latex_text(cons['note'])
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
-                       not x['ignore'] and not '~' in x['Name'] and not '__' in x['Name']]
+                       not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
             for mem in members:
                 # change pop()->population() in simulator.h
                 # change ind()->individual() in population.h
@@ -1007,7 +1019,7 @@ xleftmargin=15pt}
 
 \lstlistoflistings
 \include{%s}''' % os.path.basename(os.path.splitext(ref_file)[0])
-        global_funcs = [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] \
+        global_funcs = [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
                 and 'test' not in x['Name']]
         global_funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
         for entry in global_funcs:
@@ -1015,11 +1027,11 @@ xleftmargin=15pt}
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         # modules
         modules = sets.Set(
-            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore']])
+            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore'] and not x['hidden']])
         for module in modules:
              print >> out, r'\%sRef' % module
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
-        for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore']]:
+        for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore'] and not x['hidden']]:
              print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}'
         print >> out, r'\end{document}'
