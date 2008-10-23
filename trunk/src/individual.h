@@ -193,7 +193,7 @@ public:
 	/// @name allele, info get/set functions
 	//@{
 
-	/// return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
+	/// HIDDEN return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
 	/**
 	   This function returns the whole genotype. Although this function is
 	   not as easy to use as other functions that access alleles,
@@ -201,13 +201,13 @@ public:
 	 */
 	PyObject * arrGenotype();
 
-	/// return a carray with the genotypes of the \c p-th copy of the chromosomes
+	/// HIDDEN return a carray with the genotypes of the \c p-th copy of the chromosomes
 	PyObject * arrGenotype(UINT p);
 
-	/// return a carray with the genotypes of the \c ch-th chromosome in the \c p-th chromosome set
+	/// HIDDEN return a carray with the genotypes of the \c ch-th chromosome in the \c p-th chromosome set
 	PyObject * arrGenotype(UINT p, UINT ch);
 
-	/// return a carray of all information fields (of size \c infoSize()) of this individual
+	/// HIDDEN return a carray of all information fields (of size \c infoSize()) of this individual
 	PyObject * arrInfo();
 
 	/// return the allele at locus \c index
@@ -298,8 +298,8 @@ public:
 	/// set the allele at locus \c index of the \c p-th copy of the chromosomes
 	/**
 	 \param allele allele to be set
-	 \param index index from the begining of the poloidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
-	 \param p index of the poloidy
+	 \param index index from the begining of the ploidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
+	 \param p index of the ploidy
 	 */
 	void setAllele(Allele allele, UINT index, UINT p)
 	{
@@ -322,6 +322,99 @@ public:
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(ch);
 		*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch) ) = allele;
+	}
+
+
+	/// return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual.
+	PyObject * genotype()
+	{
+		// The following implementation has comparable performance as
+		// the direct memory access implementation, but it has two 
+		// problems:
+		// 1. genotype has to be copied out, which requires additional
+		//    allocation of memory.
+		// 2. the return value is a tuple which lacks some functions of
+		//    a list, mostly notably the count() function.
+		/*
+		UINT num = ploidy() * totNumLoci();
+		vectora geno(num);	
+		for(UINT i =0; i < num; i++)
+			geno[i] = *(m_genoPtr + i);
+		return geno;
+		*/
+		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
+	}
+
+
+	/// return an editable array of alleles of the \c p-th copy of the chromosomes
+    /**
+	 \param p index of the ploidy
+	 */
+	PyObject * genotype(UINT p)
+	{
+		CHECKRANGEPLOIDY(p);
+	    return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
+			m_genoPtr + (p + 1) * totNumLoci() );
+	}
+
+
+	/// return an editable array of alleles of the \c ch-th chromosome in the \c p-th chromosome set
+    /**
+	 \param p index of the ploidy
+	  \param ch index of the chromosome in ploidy \c p
+	 */
+	PyObject * genotype(UINT p, UINT ch)
+	{
+		CHECKRANGEPLOIDY(p);
+		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
+			m_genoPtr + p * totNumLoci() + chromEnd(ch));
+	}
+
+
+	/// set the genotype of an individual
+	/**
+	 \param geno genotype to be set. It will be reused if its length
+		is less than the genotype length of the individual.
+	 */
+	void setGenotype(vectora geno) 
+	{
+		UINT sz = geno.size();
+		for(UINT i =0; i < totNumLoci()*ploidy(); i++)
+			*(m_genoPtr + i) = geno[i % sz];
+	}
+
+
+	/// set the genotype of the \c p-th copy of the chromosomes
+	/**
+	 \param geno genotype to be set. It will be reused if its length
+		is less than the total number of loci.
+	 \param p index of the ploidy
+	 */
+	void setGenotype(vectora geno, UINT p) 
+	{
+		CHECKRANGEPLOIDY(p);
+		GenoIterator ptr = m_genoPtr + p*totNumLoci();
+		UINT sz = geno.size();
+		for(UINT i =0; i < totNumLoci(); i++)
+			*(ptr + i) = geno[i % sz];
+	}
+
+
+	/// set the genotype of the \c ch-th chromosome in the \c p-th chromosome set
+	/**
+	 \param geno genotype to be set. It will be reused if its length
+		is less than the number of loci on chromosome \c ch.
+	 \param p index of the ploidy
+	 \param ch index of the chromosome in ploidy \c p
+	 */
+	void setGenotype(vectora geno, UINT p, UINT ch) 
+	{
+		CHECKRANGEPLOIDY(p);
+	    CHECKRANGECHROM(ch);
+		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(ch);
+		UINT sz = geno.size();
+		for(UINT i =0; i < numLoci(ch); i++)
+			*(ptr+i) = geno[i % sz];
 	}
 
 
