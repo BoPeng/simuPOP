@@ -12,11 +12,6 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 2. Replacing SubPopID with vsp, reducing another parameter. 
 
 3. Remove a few rarely used features.
-  2.1 arrXXXX? This function is very difficult to implement, but may
-        not be as useful as expected when they were designed.
-    2.1.1 test if arrXXX based functions are more efficient.
-    2.1.2 If not, remove them, and rewrite all the tests.
-  2.2 group paremter of operators. I have never used them.
   2.3 combine infoXXX and taggerXXX in taggers?
 
 4. Efficiency improvement and possible use of openMP.
