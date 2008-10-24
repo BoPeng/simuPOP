@@ -227,8 +227,8 @@ class TestMatingSchemes(unittest.TestCase):
 
 
 
-    def testControlledRandomMating(self):
-        'Testing controlled random mating'
+    def TestControlledRandomMating(self):
+        'Testing controlled random mating (FIXME)'
         # planned trajectory
         freq = FreqTrajectoryStoch(freq=0.05, N=100)
         # staring from when?
@@ -256,7 +256,7 @@ class TestMatingSchemes(unittest.TestCase):
                 pointMutator(loci=[0],
                     toAllele=1,
                     inds = [0],
-                    at = [burnin+1],
+                    at = [burnin],
                     stage = PreMating),
                 stat(alleleFreq=[0]),
                 #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
