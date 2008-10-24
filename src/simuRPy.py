@@ -175,8 +175,7 @@ class _VarPlotter_Base:
 
     def colorBar(self, level, lim):
         " draw a color bar to the right of the plot"
-        mar = [0]*4
-        mar[0] = [5, 1, 4, 2]
+        mar = [5, 1, 4, 2]
 
         self.color = r.rainbow(level, start=.7, end=.1)
         r.par(mar=mar)
