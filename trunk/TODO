@@ -27,6 +27,7 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 These classes only need to define a probePedigree function to find a valid
 pedigree from a proband.
 
+9. Add support for different types of chromosomes such as mitochondrial DNA.
 
 Items are marked roughly
 Status: Onging (O), Done (DONE)
