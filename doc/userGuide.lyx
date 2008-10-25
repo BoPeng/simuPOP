@@ -16,7 +16,7 @@
 
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.8.7 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.8.8 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -86,7 +86,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Standard
 \begin_inset ERT
@@ -256,7 +256,7 @@ copyright{}
 
 \end_inset
 
- 2004-2007 Bo Peng 
+ 2004-2008 Bo Peng 
 \begin_inset ERT
 status open
 
