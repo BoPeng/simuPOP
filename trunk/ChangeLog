@@ -4,7 +4,9 @@ BUGS:
   - Multi-locus version of controlled random mating in test_05_matings.py 
 	does not seem to work.
 
-version 0.8.8 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.8 - (Rev 1785) Oct 24, 2008
   - CHG: Remove the replicate group feature.
   - NEW: Allow mapSelector to work for all ploidy.
   - DOC: Add keyword applicability to indicate applicability of operators.
