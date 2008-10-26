@@ -1,0 +1,70 @@
+RoadMap of simuPOP
+
+Towards simuPOP 1.0
+
+simuPOP 1.0 should have a consistently defined and well documented interface.
+
+1. Test and document each function and class.
+  1.1 Complete and expand test sets. If possible, repeat tests in many 
+	scenarios.
+  1.2 Check reference manuals for format and accuracy.
+
+2. Replacing SubPopID with vsp, reducing another parameter. 
+
+3. Remove a few rarely used features.
+  2.3 combine infoXXX and taggerXXX in taggers?
+
+4. Efficiency improvement and possible use of openMP.
+
+5. Use virtual subpopulation for sex-specific recombination?, for
+	sex-specific migration etc.
+
+6. Expand pedigree functions and move the logic of samplers out of sampler.cpp.
+
+7. Check what is wrong with simuRPy.py.
+
+8. Add pedigreeSample and subclass all pedigree related samplers to this class.
+These classes only need to define a probePedigree function to find a valid
+pedigree from a proband.
+
+9. Add support for different types of chromosomes such as mitochondrial DNA.
+
+Items are marked roughly
+Status: Onging (O), Done (DONE)
+1. Easy 1 --- difficult 9
+2. Workload 1 - 9
+3. Requires skills in P (python), C (C++), N (None)
+
+Roadmap: test and documentation:
+  3/5/N document each class whether or not they are suitable only for diploid population.
+  3/7/P sample script and precise description for each class, put it in online help
+O 3/8/N check help contents in C++ source code. 
+O 1/4/N Proofread simuPOP user's guide and reference manual
+O 2/5/P write more comprehensive test scripts 
+
+Roadmap: scripts:
+O 5/6/P add models from population genetics book
+  7/7/P write simuEasyPop
+
+Roadmap: simuPOP core
+  6/7/C improve support for non-diploid individuals.
+O 5/5/C profile simuPOP and imporve efficiency (this is *always* needed for a simulation program like simuPOP)
+
+Roadmap: simuUtil
+  3/2/P investigate the potential of python image module. See if it is easy to install and support
+  1/1/P add a set of popular penetrance functions. It may be better to let user write their own
+        function though, since these functions are easy to write but hard to memorize and document.
+
+Roadmap: A real GUI other than the tk-based simple parameter dialog
+  9/9/P wxPython or Tkinter? wxPython may be better for this large GUI project
+  5/5/P GUI independent description for each class.
+  8/4/P Visualization of active gens of objects.... 
+  7/4/P Interactively change population, split, merge etc through menu
+  8/4/P output and load simuPOP script
+
+Roadmap: Parallel version of simuPOP
+O       feasibility study (give up the MPI version, investigating openMP).
+
+Roadmap: Distribution
+  2/3/N test simuPOP under different machines and operating systems
+
