@@ -325,7 +325,7 @@ class Doxy2SWIG:
                 if( defName == cname.split(':')[-1] ): # constructor
                     self.add_text( self.swig_text( defName, 0, 0 ) )
                 else:
-                    #self.add_text( 'x.' )
+                    self.add_text( 'x.' )
                     self.add_text( self.swig_text( defName, 0, 0 ) )
 
             for n in node.childNodes:
@@ -852,8 +852,8 @@ class Doxy2SWIG:
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'] != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '    %s\n' % self.latex_text(entry['Details'])
+                #print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '\n\\par    %s\n' % self.latex_text(entry['Details'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 for arg in entry['Arguments']:
                     print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
@@ -918,8 +918,8 @@ class Doxy2SWIG:
             if entry.has_key('Description') and entry['Description'] != '':
                 print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Description'])
             if entry.has_key('Details') and entry['Details'].strip() != '':
-                print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, r'\MakeUppercase %s' % self.latex_text(entry['Details'])
+                #print >> out, '\\par\n\\strong{Details}\n\\par'
+                print >> out, '\n\\par\\MakeUppercase %s' % self.latex_text(entry['Details'])
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note: }\n\\par'
                 print >> out, '%s' % self.latex_text(entry['note'])
@@ -974,7 +974,8 @@ class Doxy2SWIG:
             for mem in members:
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     usage = self.latex_text(mem['Usage'])
-                    usageName = usage.split('(')[0]
+                    assert usage.startswith('x.')
+                    usageName = usage.split('(')[0][2:]
                     usageParam = usage[len(usageName):].lstrip('(').rstrip(')')
                     print >> out, r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam)
                 else:
