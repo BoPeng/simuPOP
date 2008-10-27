@@ -5,6 +5,7 @@ BUGS:
 	does not seem to work.
 
 version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+  - DOC: Adjust reference output for simuPOP classes.
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
   - CHG: Remove the replicate group feature.
