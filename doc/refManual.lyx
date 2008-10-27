@@ -1592,18 +1592,6 @@ preview false
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-RNGRef
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -7581,6 +7569,26 @@ simuRevRef
 
 \backslash
 simuVerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Utility Classes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+RNGRef
 \end_layout
 
 \end_inset
