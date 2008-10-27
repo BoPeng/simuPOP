@@ -495,7 +495,8 @@ def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
         res['library_dirs'].append('win32')
     if os.name == 'nt':
         # msvc does not have O3 option, /GR is to fix a C4541 warning
-        res['extra_compile_args'] = ['/O2', '/GR']
+        # /EHsc is for VC exception handling
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc']
     else:
         # force the use of static boost libraries because I do not
         # want to bundle boost libraries with simuPOP distributions.
