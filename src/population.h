@@ -275,11 +275,10 @@ public:
 	/// number of virtual subpopulations.
 	UINT numVirtualSubPop() const;
 
-	/// activate a virtual subpopulation.
+	/// HIDDEN activate a virtual subpopulation.
 	/**
 	 \param id subpopulation id
 	 \param vid virtual subpopulation id
-	 \note this function is currently not recommended to be used.
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
 		vspSplitter::activateType type = vspSplitter::Visible);
