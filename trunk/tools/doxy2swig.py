@@ -976,12 +976,12 @@ class Doxy2SWIG:
                     usage = self.latex_text(mem['Usage'])
                     assert usage.startswith('x.')
                     usageName = usage.split('(')[0][2:]
-                    usageParam = usage[len(usageName):].lstrip('(').rstrip(')')
+                    usageParam = usage[len(usageName)+2:].lstrip('(').rstrip(')')
                     print >> out, r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam)
                 else:
                     print >> out, r'\begin{methoddesc}{%s}{}' % mem['Name'].split(':')[-1]
                 if mem.has_key('Description') and mem['Description'].strip() != '':
-                    print >> out, r'\MakeUppercase %s' % self.latex_text(mem['Description'])
+                    print >> out, '\\MakeUppercase %s\n' % self.latex_text(mem['Description'])
                 if mem.has_key('Details') and mem['Details'] != '':
                     # if we have short description, use a separate paragraph for details.
                     if mem.has_key('Description') and mem['Description'] != '':
