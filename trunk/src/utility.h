@@ -42,7 +42,10 @@
  * BernulliTrials
  */
 
+extern "C" {
 #include "Python.h"
+}
+
 #include "simuPOP_cfg.h"
 
 #include <iostream>

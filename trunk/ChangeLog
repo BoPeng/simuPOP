@@ -23,6 +23,7 @@ version 0.8.8 - (Rev 1787) Oct 24, 2008
   - NEW: add population::genotype and population::setGenoytpe.
   - BUG: Fix a bug in simuRPy.py that prevents varPlotter from plotting
 		images.
+  - NEW: Support Python 2.6.
 
 version 0.8.7 - (Rev 1755) Aug 29, 2008
   - NEW: allow the use of a list to specify a virtual subpopulation.
