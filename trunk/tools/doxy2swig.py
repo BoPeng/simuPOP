@@ -36,10 +36,47 @@ from xml.dom import minidom
 import re, textwrap, sys, types, os.path, sets, inspect
 from pydoc import *
 
-from docutils.core import publish_parts
+from docutils import core
+from docutils import writers
+from docutils.writers.latex2e import Writer
+from docutils.writers.latex2e import LaTeXTranslator
 
 overrides = {'input_encoding': 'ascii',
              'output_encoding': 'latin-1'}
+
+# customized latex output
+class myLaTeXTranslator(LaTeXTranslator):
+    def visit_definition_list(self, node):
+        self.body.append( '\n{\leftskip 0.3in \parindent=-0.3in ' )
+
+    def depart_definition_list(self, node):
+        self.body.append( '\\par}\n' )
+
+    def visit_term(self, node):
+        self.body.append('\\emph{')
+
+    def depart_term(self, node):
+        # definition list term.
+        # \leavevmode results in a line break if the term is followed by a item list.
+        self.body.append(': } ')
+
+    def visit_document(self, node):
+        self.body_prefix.append('\\begin{document}\n')
+        # REMOVE THIS FROM THE INITIAL IMPLEMENTAION
+        #self.body.append('\n\\setlength{\\locallinewidth}{\\linewidth}\n')
+
+    def visit_enumerated_list(self, node):
+        # STOP USING SELF-DEFINED ENUMERATION LIST
+        self.body.append('\\begin{enumerate}\n')
+
+    def depart_enumerated_list(self, node):
+        self.body.append('\\end{enumerate}\n')
+
+class myWriter(Writer):
+    def __init__(self):
+        Writer.__init__(self)
+        self.translator_class = myLaTeXTranslator
+
 
 
 class Doxy2SWIG:
@@ -746,24 +783,7 @@ class Doxy2SWIG:
 
     def latex_formatted_text(self, text):
         """format text according to some simple rules"""
-        latexCode = publish_parts(source=text, writer_name='latex2e')['body']
-        # we can not use this latex code directly so we have 
-        # postprocess it now. This should be done in docutils by adding
-        # a new writer, but I do not know how to do this. :-)
-        newCode = ''
-        for line in latexCode.split('\n'):
-            line = line.replace(r'\begin{description}', '')
-            line = line.replace(r'\end{description}', '')
-            if line.startswith(r'\setlength'):
-                continue
-            if line.startswith(r'\item['):
-                key = line.split(']')[0].split('[')[1]
-                after = line[len(key)+7:]
-                line = r'\emph' + key + after
-            newCode += line + '\n'
-        return newCode
-
-                 
+        return core.publish_parts(source=text, writer = myWriter())['body']
                 
     def swig_text(self, text, start_pos, indent):
         """ wrap text given current indent """
