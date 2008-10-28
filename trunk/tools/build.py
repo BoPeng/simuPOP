@@ -99,7 +99,7 @@ def build_doc(ver, rev):
     os.environ['SIMUPOP_DOC_DIR'] = doc_directory
     os.environ['SIMUPOP_VER'] = ver
     os.environ['SIMUPOP_REV'] = rev
-    run('doxygen Doxy_doc')
+    run('doxygen')
     os.chdir('tools')
     run('python doxy2swig.py')
     os.chdir(d)
