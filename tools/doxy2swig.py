@@ -532,45 +532,30 @@ class Doxy2SWIG:
         seen = []
         self.content = [x for x in self.content if not (myhash(x) in seen or seen.append(myhash(x)))]
         print "Unique entries: ", len(self.content)
-        # remove all empty entries
-        def notEmpty(entry):
-            'judge if an entry is empty'
-            return (entry.has_key('Description') and entry['Description'] != '') or \
-                (entry.has_key('Details') and entry['Details'] != '')
+        #
         for entry in self.content:
-            if not (entry.has_key('Description') and entry['Description'] != '') and \
-                not (entry.has_key('Details') and entry['Details'] != ''):
-                entry['Description'] = entry['Name']
-        # mark all entries with 'CPPONLY' in description or details as ignore
-        for entry in self.content:
-            if (entry.has_key('Description') and 'CPPONLY' in entry['Description']) or \
-               (entry.has_key('Details') and 'CPPONLY' in entry['Details']):
-                entry['ignore'] = True
-            else:
-                entry['ignore'] = False
-        # mark all entries with 'HIDDEN' in description or details as ignore in documentation
-        for entry in self.content:
-            if (entry.has_key('Description') and 'HIDDEN' in entry['Description']) or \
-               (entry.has_key('Details') and 'HIDDEN' in entry['Details']):
-                entry['hidden'] = True
-            else:
-                entry['hidden'] = False
-        # add funcForm key to content and delete function form from Details
-        for entry in self.content:
+            # add funcForm key to content and delete function form from Details
             if (entry.has_key('Details') and '<funcForm>' in entry['Details']):
                 piece1 = entry['Details'].split('<funcForm>')
                 piece2 = piece1[1].split('</funcForm>')
                 entry['Details'] = piece1[0] + piece2[1]
                 entry['funcForm'] = '<tt>' + piece2[0] + '</tt>'
-        # add applicability to each function.
-        for entry in self.content:
+            #
             if (entry.has_key('Details') and '<applicability>' in entry['Details']):
                 piece1 = entry['Details'].split('<applicability>')
                 piece2 = piece1[1].split('</applicability>')
                 entry['Details'] = piece1[0] + piece2[1]
                 entry['Applicability'] = '<tt>' + piece2[0] + '</tt>'
-        # destructor can not be CPPONLY, this will cause memory leak. Let us check this
-        for entry in self.content:
+            #
+            entry['Doc'] = ''
+            if entry.has_key('Description') and entry['Description'] != '':
+                entry['Doc'] += entry['Description']
+            if entry.has_key('Details') and entry['Details'] != '':
+                entry['Doc'] += entry['Details']
+            #
+            entry['ignore'] = 'CPPONLY' in entry['Doc']
+            entry['hidden'] = 'HIDDEN' in entry['Doc']
+            #
             if entry['ignore'] and '~' in entry['Name']:
                 print "Desctructor of %s has CPPONLY. Please correct it." % entry['Name']
                 sys.exit(1)
@@ -604,12 +589,7 @@ class Doxy2SWIG:
                     entry['ExampleFile'] = None
                     entry['ExampleTitle'] = title
                     print "File " + filename + " does not exist\n"
-        #for entry in self.content:
-        #    if entry.has_key('description') and 'PLOIDY:' in entry['description'];
-        #        if 'PLOIDY:ALL' in entry['description']:
-        #            self.content['ploidy'] = 'all'
-        #            self.content['description'].remove('PLOIDY:ALL')
-        # sort the entries
+        #
         self.content.sort(lambda x, y: x['Name'] > y['Name'])
 
 
@@ -668,6 +648,7 @@ class Doxy2SWIG:
                 self.content[-1]['Name'] = line[4:].split('(')[0]
                 self.content[-1]['Usage'] = line[4:].strip()
                 self.content[-1]['Description'] = ''
+                self.content[-1]['Doc'] = self.content[-1]['Description']
                 if line.strip().endswith(':'):
                     # remove ending :
                     self.content[-1]['Usage'] = self.content[-1]['Usage'][:-1]
@@ -689,6 +670,7 @@ class Doxy2SWIG:
                         continue
                     begin_desc = False
                 self.content[-1]['Description'] += ' ' + line.strip().strip('"').strip("'")
+                self.content[-1]['Doc'] = self.content[-1]['Description']
                 if line.endswith('"\n') or line.endswith("'\n"):
                     add_desc = False
 
@@ -727,6 +709,8 @@ class Doxy2SWIG:
                 self.content[-1]['Description'] = des
                 self.content[-1]['ignore'] = 'CPPONLY' in des
                 self.content[-1]['hidden'] = 'HIDDEN' in des
+                # these is no details...
+                self.content[-1]['Doc'] = self.content[-1]['Description']
         for key, value in inspect.getmembers(object, inspect.isroutine):
             if inspect.isbuiltin(value) or inspect.getmodule(value) is object:
                 if not visiblename(key) or not inspect.isfunction(value):
@@ -739,6 +723,8 @@ class Doxy2SWIG:
                 self.content[-1]['Description'] = getdoc(value)
                 self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Description'] 
                 self.content[-1]['hidden'] = 'HIDDEN' in self.content[-1]['Description']
+                # these is no details...
+                self.content[-1]['Doc'] = self.content[-1]['Description']
 
 
     def latexName(self, name):
@@ -846,15 +832,11 @@ class Doxy2SWIG:
                     (self.latex_text(func_name), self.latex_text(func_body))
             else:
                 print >> out, '\\par\n\\begin{funcdesc}{%s}{}\n\\par' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
-            if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Description'])
-            if entry.has_key('Details') and entry['Details'] != '':
-                #print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '\n\\par    %s\n' % self.latex_text(entry['Details'])
+            print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Doc'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 for arg in entry['Arguments']:
                     print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
-                        % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
+                        % (self.latex_text(arg['Name']), self.latex_text(arg['Doc']))
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note: }'
                 print >> out, '    %s\n' % self.latex_text(entry['note'])
@@ -872,7 +854,7 @@ class Doxy2SWIG:
             mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
             print >> out, '\\newcommand{\\%sRef}{' % module
             print >> out, '\n\\subsection{Module \\texttt{%s}\index{module!%s}' % (module, module)
-            print >> out, '}\n\\par %s' % self.latex_formatted_text(mod['Description'])
+            print >> out, '}\n\\par %s' % self.latex_formatted_text(mod['Doc'])
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
@@ -888,10 +870,7 @@ class Doxy2SWIG:
                         self.latex_text(func_body))
                 else:
                     print >> out, '\\begin{funcdesc}{%s}{}\n' % mem['Name']
-                if mem.has_key('Description') and mem['Description'] != '':
-                    print >> out, r' %s' % self.latex_formatted_text(mem['Description'])
-                if mem.has_key('Details') and mem['Details'] != '':
-                    print >> out, '%s' % self.latex_formatted_text(mem['Details'])
+                print >> out, r' %s' % self.latex_formatted_text(mem['Doc'])
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note: }%s\\par' % self.latex_text(mem['note'])
                 print >> out, '\\end{funcdesc}\n'
@@ -912,11 +891,7 @@ class Doxy2SWIG:
                     annotation += 'Applicable to %s' % self.latex_text(entry['Applicability'])
                 print >> out, annotation + ')'
             print >> out, '}\n'
-            if entry.has_key('Description') and entry['Description'] != '':
-                print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Description'])
-            if entry.has_key('Details') and entry['Details'].strip() != '':
-                #print >> out, '\\par\n\\strong{Details}\n\\par'
-                print >> out, '\n\\par\\MakeUppercase %s' % self.latex_text(entry['Details'])
+            print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
                 print >> out, '\\par\n\\strong{Note: }\n\\par'
                 print >> out, '%s' % self.latex_text(entry['note'])
@@ -930,8 +905,6 @@ class Doxy2SWIG:
             cons = constructor[0]
             #
             #print >> out, '\\par\n\\strong{Initialization}\n\\par'
-            if cons.has_key('Description') and cons['Description'] != '':
-                print >> out, r'\MakeUppercase %s\par' % self.latex_text(cons['Description'])
             if cons.has_key('Usage') and cons['Usage'] != '':
                 usage = self.latex_text(cons['Usage'])
                 usageName = usage.split('(')[0]
@@ -939,17 +912,17 @@ class Doxy2SWIG:
                 print >> out, r'\begin{classdesc}{%s}{%s}' % (usageName, usageParam)
             else:
                 print >> out, r'\begin{classdesc}{%s}{}' % entry['Name']
-            if cons.has_key('Details') and cons['Details'] != '':
-                print >> out, '%s\\par\n' % self.latex_text(cons['Details'])
-            else:
-                print >> out, '\\hspace{0pt}\\par\n'
             if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
                 print >> out, '\\par\n\n'
                 cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
                     print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
-                        % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
+                        % (self.latex_text(arg['Name']), self.latex_text(arg['Doc']))
+            if cons['Doc'] != '':
+                print >> out, '%s\\par\n' % self.latex_text(cons['Doc'])
+            else:
+                print >> out, '\\hspace{0pt}\\par\n'
             if cons.has_key('note') and cons['note'] != '':
                 print >> out, '\\par\n\\strong{Note} '
                 print >> out, '%s' % self.latex_text(cons['note'])
@@ -977,20 +950,12 @@ class Doxy2SWIG:
                     print >> out, r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam)
                 else:
                     print >> out, r'\begin{methoddesc}{%s}{}' % mem['Name'].split(':')[-1]
-                if mem.has_key('Description') and mem['Description'].strip() != '':
-                    print >> out, '\\MakeUppercase %s\n' % self.latex_text(mem['Description'])
-                if mem.has_key('Details') and mem['Details'] != '':
-                    # if we have short description, use a separate paragraph for details.
-                    if mem.has_key('Description') and mem['Description'] != '':
-                        print >> out, '\\par\n%s\\par' % self.latex_text(mem['Details'])
-                    # otherwise, use details as description
-                    else:
-                        print >> out, '%s' % self.latex_text(mem['Details'])
+                print >> out, '\\MakeUppercase %s\n' % self.latex_text(mem['Doc'])
                 if mem.has_key('Arguments') and mem['Arguments'] != '':
                     mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                     for arg in mem['Arguments']:
                         print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' % \
-                            (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
+                            (self.latex_text(arg['Name']), self.latex_text(arg['Doc']))
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
                 print >> out, r'\end{methoddesc}'
