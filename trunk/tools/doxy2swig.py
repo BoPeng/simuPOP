@@ -36,6 +36,12 @@ from xml.dom import minidom
 import re, textwrap, sys, types, os.path, sets, inspect
 from pydoc import *
 
+from docutils.core import publish_parts
+
+overrides = {'input_encoding': 'ascii',
+             'output_encoding': 'latin-1'}
+
+
 class Doxy2SWIG:
     """Converts Doxygen generated XML files into a data struture
     (self.content) that can be written in doctring and latex format
@@ -740,74 +746,23 @@ class Doxy2SWIG:
 
     def latex_formatted_text(self, text):
         """format text according to some simple rules"""
-        text = self.latex_text(text)
-        print "------------------------------"
-        print text
-        in_list = False
-        in_desc = False
-        in_code = False
-        end_list = 0
-        str = ''        
-        for line in text.split('\n'):
-            if line.strip().startswith('>{}>{}>{}'):
-                in_code = True
-                str += '\\par\\texttt{%s' % line
+        latexCode = publish_parts(source=text, writer_name='latex2e')['body']
+        # we can not use this latex code directly so we have 
+        # postprocess it now. This should be done in docutils by adding
+        # a new writer, but I do not know how to do this. :-)
+        newCode = ''
+        for line in latexCode.split('\n'):
+            line = line.replace(r'\begin{description}', '')
+            line = line.replace(r'\end{description}', '')
+            if line.startswith(r'\setlength'):
                 continue
-            else:
-                if in_code:
-                    in_code = False
-                    str += '}\\par\n'                
-            if line.lstrip().startswith('- ') and not in_desc:
-                if not in_list:
-                    str += '\\begin{itemize}\n' 
-                    in_list = True
-                str += r'\item ' + line.lstrip()[2:].lstrip() + '\n'
-                end_list = 0
-            elif ':' in line and not in_list and line.split(':')[0].strip().count(' ') < 3:
-                if not in_desc:
-                    str += '\\par\n'
-                    in_desc = True
-                else:
-                    str += '\\par}\n'
-                kword = line.split(':')[0].strip()
-                desc = line.split(':')[1]
-                str += r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: } %s' % (kword.replace('--', '---'), desc.lstrip())
-                end_list = 0
-            elif in_list or in_desc:
-                if line.strip() == '':
-                    end_list += 1
-                if end_list == 2:
-                    if in_list:
-                        str += '\n\\end{itemize}\n'
-                    else:
-                        str += '\\par}\n'
-                    end_list = 0
-                    in_list = False
-                    in_desc = False
-                else:
-                    str += line.strip() + '\n'
-            elif line.strip() != '':
-                str += line.strip() + '\n'
-        # '    xxx' is quote
-        # '  xx  ' is texttt
-        if in_list:
-            str += '\n\\end{itemize}\n'
-        if in_desc:
-            str += '\\par}\n'
-        paras = str.split('\n')
-        str = []
-        for para in paras:
-            pieces = para.split('  ')
-            for i in range(1, len(pieces), 2):
-                if pieces[i].count(' ') < 3:
-                    if r'\par' in pieces[i]:
-                        pieces[i] = r'\texttt{' + pieces[i].replace(r'\par', '') + r'}\par'
-                    else:
-                        pieces[i] = r'\texttt{' + pieces[i] + '}'
-            str.append(' '.join(pieces))
-        print "------------------------------"
-        print '\n'.join(str)
-        return '\n'.join(str)
+            if line.startswith(r'\item['):
+                key = line.split(']')[0].split('[')[1]
+                after = line[len(key)+7:]
+                line = r'\emph' + key + after
+            newCode += line + '\n'
+        return newCode
+
                  
                 
     def swig_text(self, text, start_pos, indent):
