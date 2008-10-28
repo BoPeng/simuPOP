@@ -37,7 +37,9 @@ import exceptions, operator, types, os, sys, getopt, re, math, tempfile, shutil
 from simuPOP import *
 
 def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
-    '''EXPERIMENTAL
+    '''HIDDEN
+
+::
     Obtain genotype as specified by parameters
         atLoci:     subset of loci, default to all
         subPop:     subset of subpopulations, default ao all
@@ -87,7 +89,7 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
 
 
 def _listVars(var, level=-1, name='', subPop=True, indent=0, curLevel=0):
-    ''' called by listVars. Will list variables recursively'''
+    '''called by listVars. Will list variables recursively'''
     if type(var) == type( dw({}) ):
         var = var.__dict__
     # all level or level < specified maximum level
@@ -150,6 +152,8 @@ def _listVars(var, level=-1, name='', subPop=True, indent=0, curLevel=0):
 
 def ListVars(var, level=-1, name='', subPop=True, useWxPython=True):
     '''
+::
+
         list a variable in tree format, either in text format or in a
             wxPython window.
 
@@ -190,8 +194,8 @@ def ListVars(var, level=-1, name='', subPop=True, useWxPython=True):
 #
 # demographic changes
 def ConstSize(size, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
-    ''' The population size is constant, but will split into
-        numSubPop subpopulations at generation split
+    '''The population size is constant, but will split into
+numSubPop subpopulations at generation split
     '''
     def func(gen, oldSize=[]):
         if gen == bottleneckGen:
@@ -207,8 +211,8 @@ def ConstSize(size, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
     return func
 
 def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
-    ''' Linearly expand population size from intiSize to endSize
-        after burnin, split the population at generation split.
+    '''Linearly expand population size from intiSize to endSize
+after burnin, split the population at generation split.
     '''
     inc = (endSize-initSize)/float(end-burnin)
     def func(gen, oldSize=[]):
@@ -233,8 +237,8 @@ def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bott
 
 
 def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
-    ''' Exponentially expand population size from intiSize to endSize
-        after burnin, split the population at generation split.
+    '''Exponentially expand population size from intiSize to endSize
+after burnin, split the population at generation split.
     '''
     rate = (math.log(endSize)-math.log(initSize))/(end-burnin)
     def func(gen, oldSize=[]):
@@ -257,8 +261,8 @@ def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1,
     return func
 
 def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
-    ''' Instaneously expand population size from intiSize to endSize
-        after burnin, split the population at generation split.
+    '''Instaneously expand population size from intiSize to endSize
+after burnin, split the population at generation split.
     '''
     def func(gen, oldSize=[]):
         if gen == bottleneckGen:
@@ -291,7 +295,8 @@ def testDemoFunc(end, func):
 # migration rate matrix generators
 def MigrIslandRates(r, n):
     '''
-     migration rate matrix
+::
+    migration rate matrix
 
              x m/(n-1) m/(n-1) ....
              m/(n-1) x ............
@@ -299,7 +304,7 @@ def MigrIslandRates(r, n):
              .... m/(n-1) m/(n-1) x
 
     where x = 1-m
-    '''
+'''
     # n==1?
     if n == 1:
         return [[1]]
@@ -314,13 +319,16 @@ def MigrIslandRates(r, n):
 def MigrSteppingStoneRates(r, n, circular=False):
     '''migration rate matrix, circular stepping stone model (X=1-m)
 
+::
            X   m/2               m/2
            m/2 X   m/2           0
            0   m/2 x   m/2 ......0
            ...
            m/2 0 ....       m/2  X
 
-   or non-circular
+or non-circular
+
+::
 
            X   m/2               m/2
            m/2 X   m/2           0
@@ -351,35 +359,48 @@ def MigrSteppingStoneRates(r, n, circular=False):
 # used by varPlotters
 class dataAggregator:
     """ EXPERIMENTAL
-    collect variables so that plotters can plot them all at once
+collect variables so that plotters can plot them all at once
 
-    You can of course put it in other uses
+You can of course put it in other uses
 
-    Usage:
+Usage
+
         a = dataAggregator( maxRecord=0, recordSize=0)
-            maxRecord:    if more data is pushed, the old ones are discarded
-            recordSize: size of record
+
+            maxRecord
+                if more data is pushed, the old ones are discarded
+
+            recordSize
+                size of record
+
         a.push(gen, data, idx=-1)
-            gen:    generation number
-            data:   one record (will set recordSize if the first time), or
-            idx:    if idx!=-1, set data at idx.
+
+            gen
+                generation number
+
+            data
+                one record (will set recordSize if the first time), or
+
+            idx
+                if idx!=-1, set data at idx.
+
         a.clear()
         a.range()    # return min, max of all data
         a.data[i]    # column i of the data
         a.gen        #
         a.ready()    # if all column has the same length, so data is ready
 
-    Internal data storage:
-        self.gen    [ .... ]
-        self.data   column1 [ ...... ]
-                    column2 [ ...... ]
-                                .......
-    each record is pushed at the end of
-    """
+
+Internal data storage::
+        self.gen   
+        self.data   column1
+        column2
+
+each record is pushed at the end of
+
+"""
     def __init__(self, maxRecord=0, recordSize=0):
-        """
-        maxRecord: maxRecorddow size. I.e., maximum generations of data to keep
-        """
+        """maxRecord: maxRecorddow size. I.e., maximum generations of data to keep"""
         self.gen = []
         self.data = []
         self.maxRecord = maxRecord
@@ -527,8 +548,7 @@ def collector(name, expr, **kwargs):
 
 def trajFunc(endingGen, traj):
     '''EXPERIMENTAL
-    return freq at each generation from a
-        simulated trajctories. '''
+return freq at each generation from a simulated trajctories. '''
     def func(gen):
         freq = []
         for tr in traj:
@@ -553,24 +573,29 @@ def FreqTrajectoryMultiStochWithSubPop(
         restartIfFail=True,
         fitnessFunc=None):
     ''' EXPERIMENTAL
-    Simulate frequency trajectory with subpopulation structure,
-        migration is currently ignored. The essential part of this
-        script is to simulate the trajectory of each subpopulation
-        independently by calling FreqTrajectoryMultiStoch with properly
-        wrapped NtFunc function.
+Simulate frequency trajectory with subpopulation structure,
+migration is currently ignored. The essential part of this
+script is to simulate the trajectory of each subpopulation
+independently by calling FreqTrajectoryMultiStoch with properly
+wrapped NtFunc function.
 
-        If mode = 'even' (default) When freq is the same length
-            of the number of loci. The allele frequency at the last
-            generation will be multi-nomially distributed. If freq
-            for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
-                loc2-sp1, .... This freq will be used directly.
-        If mode = 'uneven'. The number of disease alleles
-            will be proportional to the interval lengths of 0 x x x 1 while x are
-            uniform [0,1]. The distribution of interval lengths, are roughly
-            exponential (conditional on overall length 1). '
-        If mode = 'none', subpop will be ignored.
+If mode = 'even' (default)
+    When freq is the same length
+    of the number of loci. The allele frequency at the last
+    generation will be multi-nomially distributed. If freq
+    for each subpop is specified in the order of loc1-sp1, loc1-sp2, ..
+    loc2-sp1, .... This freq will be used directly.
 
-        This script assume a single-split model of NtFunc
+If mode = 'uneven'.
+    The number of disease alleles
+    will be proportional to the interval lengths of 0 x x x 1 while x are
+    uniform [0,1]. The distribution of interval lengths, are roughly
+    exponential (conditional on overall length 1). '
+
+If mode = 'none'
+    subpop will be ignored.
+
+This script assume a single-split model of NtFunc
     '''
     numSP = len(NtFunc(curGen))
     if maxMutAge == 0:
@@ -857,10 +882,9 @@ import re
 
 
 def LoadFstat(file, loci=[]):
-    '''
-    load population from fstat file 'file'
-    since fstat does not have chromosome structure
-    an additional parameter can be given
+    '''load population from fstat file 'file'
+since fstat does not have chromosome structure
+an additional parameter can be given
     '''
     try:
         f = open(file, "r")
@@ -942,8 +966,8 @@ def LoadFstat(file, loci=[]):
 
 
 def LoadGCData(file, loci=[]):
-    ''' EXPERIMENTAL
-    read GC data file in http://wpicr.wpic.pitt.edu/WPICCompGen/genomic_control/genomic_control.htm
+    '''EXPERIMENTAL
+read GC data file in http://wpicr.wpic.pitt.edu/WPICCompGen/genomic_control/genomic_control.htm
     '''
     # open file
     try:
@@ -983,28 +1007,35 @@ def LoadGCData(file, loci=[]):
 def SaveLinkage(pop, output='', outputExpr='', loci=[], shift=1, combine=None,
         fields = [], recombination=0.00001, penetrance=[0,0.25,0.5],
         affectionCode=['1', '2'],  pre=True, daf=0.001):
-    """ save population in Linkage format. Currently only
-        support affected sibpairs sampled with affectedSibpairSample
-        operator.
-
-        pop: population to be saved. Must have ancestralDepth 1.
-            paired individuals are sibs. Parental population are corresponding
-            parents. If pop is a filename, it will be loaded.
-
-       output: output.dat and output.ped will be the data and pedigree file.
-            You may need to rename them to be analyzed by LINKAGE. This allows
-            saving multiple files.
-
-        outputExpr: expression version of output.
-
-        affectionCode: default to '1': unaffected, '2': affected
-
-        pre: True. pedigree format to be fed to makeped. Non-pre format it is likely to
-            be wrong now for non-sibpair families.
-
-        Note:
-            the first child is always the proband.
     """
+save population in Linkage format. Currently only
+support affected sibpairs sampled with affectedSibpairSample
+operator.
+
+pop
+    population to be saved. Must have ancestralDepth 1.
+    paired individuals are sibs. Parental population are corresponding
+    parents. If pop is a filename, it will be loaded.
+
+output
+    Output.dat and output.ped will be the data and pedigree file.
+    You may need to rename them to be analyzed by LINKAGE. This allows
+    saving multiple files.
+
+outputExpr
+    expression version of output.
+
+affectionCode
+    default to '1': unaffected, '2': affected
+
+pre
+    True. pedigree format to be fed to makeped. Non-pre format it is likely to
+    be wrong now for non-sibpair families.
+
+Note
+    the first child is always the proband.
+
+"""
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     if output != '':
@@ -1143,7 +1174,7 @@ def saveLinkage(output='', outputExpr='', **kwargs):
 
 def SaveSolarFrqFile(pop, output='', outputExpr='', loci=[], calcFreq=True):
     '''Output a frequency file, in a format readable by solar
-        calcFreq: whether or not calculate allele frequency
+calcFreq: whether or not calculate allele frequency
     '''
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
@@ -1315,30 +1346,40 @@ def SaveMerlinPedFile(pop, output='', outputExpr='', loci=[], fields=[], header=
 def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
     affectionCode=['U', 'A'], fields=[], combine=None, shift=1, **kwargs):
     """
-    save population in Merlin/QTDT format. The population must have pedindex,
-    father_idx and mother_idx information fields.
+save population in Merlin/QTDT format. The population must have pedindex,
+father_idx and mother_idx information fields.
 
-        pop: population to be saved. If pop is a filename, it will be loaded.
+pop
+    population to be saved. If pop is a filename, it will be loaded.
 
-        output: base filename.
-        outputExpr: expression for base filename, will be evaluated in pop's
-            local namespace.
+output
+    base filename.
 
-        affectionCode: code for unaffected and affected. '1', '2' are default,
-            but 'U', and 'A' or others can be specified.
+outputExpr
+    expression for base filename, will be evaluated in pop's
+    local namespace.
 
-        loci: loci to output
+affectionCode
+    code for unaffected and affected. '1', '2' are default,
+    but 'U', and 'A' or others can be specified.
 
-        header: whether or not put head line in the ped file.
+loci
+    loci to output
 
-        fields: information fields to output
+header
+    whether or not put head line in the ped file.
 
-        combine: an optional function to combine two alleles of a diploid
-            individual.
+fields
+    information fields to output
 
-        shift: if combine is not given, output two alleles directly, adding
-            this value (default to 1).
-    """
+combine
+    an optional function to combine two alleles of a diploid
+    individual.
+
+shift
+    if combine is not given, output two alleles directly, adding
+    this value (default to 1).
+"""
     if type(pop) == type(''):
         pop = LoadPopulation(pop)
     #
@@ -1361,18 +1402,28 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
 
 def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
         loci=[], combine=None, shift=1, **kwargs):
-    """ save file in CSV format
-    fileds: information fields, 'sex' and 'affection' are special fields that
-        is treated differently.
-    genotype: list of loci to output, default to all.
-    combine: how to combine the markers. Default to None.
-       A function can be specified, that takes the form
+    """save file in CSV format
+
+fileds
+    information fields, 'sex' and 'affection' are special fields that
+    is treated differently.
+
+genotype
+    list of loci to output, default to all.
+
+combine
+    how to combine the markers. Default to None.
+    A function can be specified, that takes the form::
+
          def func(markers):
              return markers[0]+markers[1]
-    shift: since alleles in simuPOP is 0-based, shift=1 is usually needed to
-        output alleles starting from allele 1. This parameter is ignored if
-        combine is used.
-    """
+
+shift
+    since alleles in simuPOP is 0-based, shift=1 is usually needed to
+    output alleles starting from allele 1. This parameter is ignored if
+    combine is used.
+
+"""
     if output != '':
         file = output
     elif outputExpr != '':
@@ -1431,21 +1482,25 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
 
 def TDT_gh(file, gh='gh'):
     '''
-    Analyze data using genehunter/TDT. Note that this function may not work under
-    platforms other than linux, and may not work with your version of genehunter.
-    As a matter of fact, it is almost unrelated to simuPOP and is provided only
-    as an example how to use python to analyze data.
+Analyze data using genehunter/TDT. Note that this function may not work under
+platforms other than linux, and may not work with your version of genehunter.
+As a matter of fact, it is almost unrelated to simuPOP and is provided only
+as an example how to use python to analyze data.
 
-    Parameters:
-        file: file to analyze. This function will look for file.dat and file.pre
-            in linkage format.
-        loci: a list of loci at which p-value will be returned. If the list is empty,
-            all p-values are returned.
-        gh: name (or full path) of genehunter executable. Default to 'gh'
+Parameters
+    file
+        file to analyze. This function will look for file.dat and file.pre
+        in linkage format.
+    loci
+        a list of loci at which p-value will be returned. If the list is empty,
+        all p-values are returned.
+    gh
+        name (or full path) of genehunter executable. Default to 'gh'
 
-    Return value:
-        A list (for each chromosome) of list (for each locus) of p-values.
-    '''
+Return value
+    A list (for each chromosome) of list (for each locus) of p-values.
+
+'''
     if not os.path.isfile(file + '.dat') or not os.path.isfile(file + '.pre'):
         print 'Data (%s.dat) or pedigree (%s.pre) file does not exist' % (file, file)
         sys.exit(2)
@@ -1501,21 +1556,25 @@ q
 
 def LOD_gh(file, gh='gh'):
     '''
-    Analyze data using the linkage method of genehunter. Note that this function may not
-    work under platforms other than linux, and may not work with your version of
-    genehunter. As a matter of fact, it is almost unrelated to simuPOP and is provided
-    only as an example how to use python to analyze data.
+Analyze data using the linkage method of genehunter. Note that this function may not
+work under platforms other than linux, and may not work with your version of
+genehunter. As a matter of fact, it is almost unrelated to simuPOP and is provided
+only as an example how to use python to analyze data.
 
-    Parameters:
-        file: file to analyze. This function will look for file.dat and file.pre
-            in linkage format.
-        loci: a list of loci at which p-value will be returned. If the list is empty,
-            all p-values are returned.
-        gh: name (or full path) of genehunter executable. Default to 'gh'
+Parameters
+    file
+        file to analyze. This function will look for file.dat and file.pre
+        in linkage format.
+    loci
+        a list of loci at which p-value will be returned. If the list is empty,
+        all p-values are returned.
+    gh
+        name (or full path) of genehunter executable. Default to 'gh'
 
-    Return value:
-        A list (for each chromosome) of list (for each locus) of p-values.
-    '''
+Return value
+    A list (for each chromosome) of list (for each locus) of p-values.
+
+'''
     if not os.path.isfile(file + '.dat') or not os.path.isfile(file + '.pre'):
         print 'Data (%s.dat) or pedigree (%s.pre) file does not exist' % (file, file)
         sys.exit(2)
@@ -1558,18 +1617,20 @@ q
 
 
 def ChiSq_test(pop):
-    ''' perform case control test
+    '''perform case control test
 
-        pop: loaded population, or population file in simuPOP format.
-            This function assumes that pop has two
-            subpopulations, cases and controls, and have 0 as wildtype and 1 as
-            disease allele. pop can also be an loaded population object.
+pop
+    loaded population, or population file in simuPOP format.
+    This function assumes that pop has two
+    subpopulations, cases and controls, and have 0 as wildtype and 1 as
+    disease allele. pop can also be an loaded population object.
 
-    Return value:
-        A list of p-value at each locus.
+Return value
+    A list of p-value at each locus.
 
-    Note: this function requires rpy module.
-    '''
+Note: this function requires rpy module.
+
+'''
     # I can not load rpy with simuUtil.py, so here it is
     try:
         import rpy
@@ -1599,7 +1660,7 @@ def ChiSq_test(pop):
 
 
 def LOD_merlin(file, merlin='merlin'):
-    ''' run multi-point non-parametric linkage analysis using merlin
+    '''run multi-point non-parametric linkage analysis using merlin
     '''
     cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --npl' % (file, file, file)
     resline = re.compile('\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+([\d.+-]+)')
@@ -1621,10 +1682,13 @@ def LOD_merlin(file, merlin='merlin'):
 
 
 def VC_merlin(file, merlin='merlin'):
-    ''' run variance component method
-        file: file.ped, file.dat, file.map and file,mdl are expected.
-            file can contain directory name.
-    '''
+    '''run variance component method
+
+file
+    file.ped, file.dat, file.map and file,mdl are expected.
+    file can contain directory name.
+
+'''
     cmd = 'merlin -d %s.dat -p %s.ped -m %s.map  --vc' % (file, file, file)
     resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
     print "Running"
@@ -1647,8 +1711,7 @@ def VC_merlin(file, merlin='merlin'):
 
 
 def Regression_merlin(file, merlin='merlin-regress'):
-    ''' run merlin regression method
-    '''
+    '''run merlin regression method'''
     # get information
     cmd = '%s -d %s.dat -p %s.ped -m %s.map' % (merlin, file, file, file)
     print "Running"
@@ -1673,26 +1736,41 @@ def Regression_merlin(file, merlin='merlin-regress'):
 
 def Sibpair_TDT_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh='gh', keep_temp=False):
     '''
-    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    pene: penetrance function, if not given (None), existing affection
-        status will be used.
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    recRate: recombination rate, used in the Linkage file. If not given,
-        pop.dvars().recRate[0] will be used. If there is no such variable,
-        0.0001 is used.
-    daf: disease allele frequency. This is needed for the linkage format
-        but I am not sure if it is used by TDT.
-    gh: executable name of genehunter, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+    
+pene
+    penetrance function, if not given (None), existing affection
+    status will be used.
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+recRate
+    recombination rate, used in the Linkage file. If not given,
+    pop.dvars().recRate[0] will be used. If there is no such variable,
+    0.0001 is used.
+
+daf
+    disease allele frequency. This is needed for the linkage format
+    but I am not sure if it is used by TDT.
+
+gh
+    executable name of genehunter, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
@@ -1737,25 +1815,40 @@ def Sibpair_TDT_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh=
 
 def Sibpair_LOD_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh='gh', keep_temp=False):
     '''
-    Draw affected sibpair sample from pop, run Linkage analysis using GENEHUNTER
+Draw affected sibpair sample from pop, run Linkage analysis using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    pene: penetrance function, if not given (None), existing affection
-        status will be used.
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    recRate: recombination rate, used in the Linkage file. If not given,
-        pop.dvars().recRate[0] will be used. If there is no such variable,
-        0.0001 is used.
-    daf: disease allele frequency. This is needed for the linkage format
-        but I am not sure if it is used by TDT.
-    gh: executable name of genehunter, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
+
+pene
+    penetrance function, if not given (None), existing affection
+    status will be used.
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+recRate
+    recombination rate, used in the Linkage file. If not given,
+    pop.dvars().recRate[0] will be used. If there is no such variable,
+    0.0001 is used.
+
+daf
+    disease allele frequency. This is needed for the linkage format
+    but I am not sure if it is used by TDT.
+
+gh
+    executable name of genehunter, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
     '''
     # load population
     if type(pop) == type(''):
@@ -1800,22 +1893,33 @@ def Sibpair_LOD_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh=
 
 def Sibpair_LOD_merlin(pop, sampleSize, penetrance=None, merlin='merlin', keep_temp=False):
     '''
-    Draw affected sibpair sample from pop, run multi-point linkage
-    analysis using merlin
+Draw affected sibpair sample from pop, run multi-point linkage
+analysis using merlin
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    pene: penetrance function, if not given (None), existing affection
-        status will be used.
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    merlin: executable name of merlin, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+
+pene
+    penetrance function, if not given (None), existing affection
+    status will be used.
+    
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+merlin
+    executable name of merlin, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
@@ -1849,20 +1953,29 @@ def Sibpair_LOD_merlin(pop, sampleSize, penetrance=None, merlin='merlin', keep_t
 
 def CaseControl_ChiSq(pop, sampleSize, penetrance=None):
     '''
-    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    pene: penetrance function, if not given (None), existing affection
-        status will be used.
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+    
+pene
+    penetrance function, if not given (None), existing affection
+    status will be used.
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
@@ -1886,21 +1999,34 @@ def CaseControl_ChiSq(pop, sampleSize, penetrance=None):
 
 def QtraitSibs_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin-regress', keep_temp=False):
     '''
-    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+ Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    qtrait:     a function to calculate quantitative trait
-    infoField:  information field to store quantitative trait. Default to 'qtrait'
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    merlin: executable name of merlin, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+
+qtrait
+    a function to calculate quantitative trait
+
+infoField
+    information field to store quantitative trait. Default to 'qtrait'
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+merlin
+    executable name of merlin, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
@@ -1937,21 +2063,34 @@ def QtraitSibs_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merl
 
 def QtraitSibs_VC_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin', keep_temp=False):
     '''
-    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    qtrait:     a function to calculate quantitative trait
-    infoField:  information field to store quantitative trait. Default to 'qtrait'
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    merlin: executable name of merlin, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+
+qtrait
+    a function to calculate quantitative trait
+
+infoField
+    information field to store quantitative trait. Default to 'qtrait'
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+merlin
+    executable name of merlin, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
@@ -1987,21 +2126,34 @@ def QtraitSibs_VC_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merli
 
 def LargePeds_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin-regress', keep_temp=False):
     '''
-    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    qtrait:     a function to calculate quantitative trait
-    infoField:  information field to store quantitative trait. Default to 'qtrait'
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    merlin: executable name of merlin, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+
+qtrait
+    a function to calculate quantitative trait
+
+infoField
+    information field to store quantitative trait. Default to 'qtrait'
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+merlin
+    executable name of merlin, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
@@ -2035,22 +2187,34 @@ def LargePeds_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merli
 
 
 def LargePeds_VC_merlin(pop, sampleSize,  qtrait=None, infoField='qtrait', merlin='merlin', keep_temp=False):
-    '''
-    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+    '''Draw affected sibpair sample from pop, run TDT using GENEHUNTER
 
-    pop: simuPOP population. It can be a string if path to a file is given.
-        This population must
+pop
+    simuPOP population. It can be a string if path to a file is given.
+    This population must
+
         1. have at least one ancestral generation (parental generation)
         2. have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
         3. has only binary alleles
-    qtrait:     a function to calculate quantitative trait
-    infoField:  information field to store quantitative trait. Default to 'qtrait'
-    sampleSize: total sample size N. N/4 is the number of families to ascertain.
-    merlin: executable name of merlin, full path name can be given.
-    keep_temp: if True, do not remove sample data. Default to False.
-    '''
+
+qtrait
+    a function to calculate quantitative trait
+
+infoField
+    information field to store quantitative trait. Default to 'qtrait'
+
+sampleSize
+    total sample size N. N/4 is the number of families to ascertain.
+
+merlin
+    executable name of merlin, full path name can be given.
+
+keep_temp
+    if True, do not remove sample data. Default to False.
+
+'''
     # load population
     if type(pop) == type(''):
         print "Loading population %s " % pop
