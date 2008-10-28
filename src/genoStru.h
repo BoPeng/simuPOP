@@ -308,8 +308,9 @@ private:
 #define TraitMaxIndex 0xFF
 
 public:
-	/// This class is a base class for classes individual, population, and simulator.
-	/// It cannot be initialized directly.
+	/** This class is a base class for classes individual, population, and simulator.
+	 * It cannot be initialized directly.
+	 */
 	GenoStruTrait() : m_genoStruIdx(TraitMaxIndex)
 	{
 	}
