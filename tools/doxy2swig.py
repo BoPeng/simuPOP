@@ -553,6 +553,9 @@ class Doxy2SWIG:
             if entry.has_key('Details') and entry['Details'] != '':
                 entry['Doc'] += entry['Details']
             #
+            if entry['Doc'] == '':
+                entry['Doc'] = 'FIXME: No document'
+            #
             entry['ignore'] = 'CPPONLY' in entry['Doc']
             entry['hidden'] = 'HIDDEN' in entry['Doc']
             #
@@ -694,6 +697,7 @@ class Doxy2SWIG:
         self.content.append({'type': 'docofmodule_' + module, 
             'Name': module})
         self.content[-1]['Description'] = desc
+        self.content[-1]['Doc'] = desc
         for key, value in inspect.getmembers(object, inspect.isclass):
             if (inspect.getmodule(value) or object) is object:
                 if not visiblename(key):
@@ -832,7 +836,10 @@ class Doxy2SWIG:
                     (self.latex_text(func_name), self.latex_text(func_body))
             else:
                 print >> out, '\\par\n\\begin{funcdesc}{%s}{}\n\\par' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
-            print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Doc'])
+            if entry['Doc'] == '':
+                print >> out, r'FIXME: No document.\par'
+            else:
+                print >> out, r'\MakeUppercase %s\par' % self.latex_text(entry['Doc'])
             if entry.has_key('Arguments') and entry['Arguments'] != '':
                 for arg in entry['Arguments']:
                     print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
@@ -918,7 +925,7 @@ class Doxy2SWIG:
                 for arg in cons['Arguments']:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
                     print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
-                        % (self.latex_text(arg['Name']), self.latex_text(arg['Doc']))
+                        % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
             if cons['Doc'] != '':
                 print >> out, '%s\\par\n' % self.latex_text(cons['Doc'])
             else:
@@ -955,7 +962,7 @@ class Doxy2SWIG:
                     mem['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                     for arg in mem['Arguments']:
                         print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' % \
-                            (self.latex_text(arg['Name']), self.latex_text(arg['Doc']))
+                            (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note:} %s\\par' % self.latex_text(mem['note'])
                 print >> out, r'\end{methoddesc}'
