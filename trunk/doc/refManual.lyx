@@ -25,6 +25,8 @@ Last modified \\
 
 \renewcommand\lstlistlistingname{List of Examples}
 \renewcommand\lstlistingname{Example}
+
+\sloppy
 \end_preamble
 \language english
 \inputencoding auto
@@ -79,7 +81,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Standard
 \begin_inset ERT
