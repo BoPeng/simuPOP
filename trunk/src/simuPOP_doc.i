@@ -134,10 +134,6 @@ Details:
 
 %feature("docstring") simuPOP::affectionSplitter::affectionSplitter "
 
-Description:
-
-    simuPOP::affectionSplitter::affectionSplitter
-
 Usage:
 
     affectionSplitter()
@@ -145,10 +141,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::affectionSplitter::clone "
-
-Description:
-
-    simuPOP::affectionSplitter::clone
 
 Usage:
 
@@ -200,10 +192,6 @@ Details:
 "; 
 
 %feature("docstring") simuPOP::affectionTagger::affectionTagger "
-
-Description:
-
-    simuPOP::affectionTagger::affectionTagger
 
 Usage:
 
@@ -593,10 +581,6 @@ Details:
 
 %feature("docstring") simuPOP::baseRandomMating::baseRandomMating "
 
-Description:
-
-    simuPOP::baseRandomMating::baseRandomMating
-
 Usage:
 
     baseRandomMating(replacement=True, replenish=False,
@@ -675,19 +659,11 @@ Usage:
 
 %feature("docstring") simuPOP::BernulliTrials "
 
-Description:
-
-    simuPOP::BernulliTrials
-
 "; 
 
 %ignore simuPOP::BernulliTrials::BernulliTrials(RNG &rng);
 
 %feature("docstring") simuPOP::BernulliTrials::BernulliTrials "
-
-Description:
-
-    simuPOP::BernulliTrials::BernulliTrials
 
 Usage:
 
@@ -696,10 +672,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::~BernulliTrials "
-
-Description:
-
-    simuPOP::BernulliTrials::~BernulliTrials
 
 Usage:
 
@@ -720,10 +692,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::probSize "
-
-Description:
-
-    simuPOP::BernulliTrials::probSize
 
 Usage:
 
@@ -761,10 +729,6 @@ Usage:
 
 %feature("docstring") simuPOP::BernulliTrials::trialSucc "
 
-Description:
-
-    simuPOP::BernulliTrials::trialSucc
-
 Usage:
 
     x.trialSucc(idx)
@@ -772,10 +736,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::probFirstSucc "
-
-Description:
-
-    simuPOP::BernulliTrials::probFirstSucc
 
 Usage:
 
@@ -785,10 +745,6 @@ Usage:
 
 %feature("docstring") simuPOP::BernulliTrials::probNextSucc "
 
-Description:
-
-    simuPOP::BernulliTrials::probNextSucc
-
 Usage:
 
     x.probNextSucc(pos)
@@ -796,10 +752,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::trialFirstSucc "
-
-Description:
-
-    simuPOP::BernulliTrials::trialFirstSucc
 
 Usage:
 
@@ -809,10 +761,6 @@ Usage:
 
 %feature("docstring") simuPOP::BernulliTrials::trialNextSucc "
 
-Description:
-
-    simuPOP::BernulliTrials::trialNextSucc
-
 Usage:
 
     x.trialNextSucc(idx, pos)
@@ -820,10 +768,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::BernulliTrials::setTrialSucc "
-
-Description:
-
-    simuPOP::BernulliTrials::setTrialSucc
 
 Usage:
 
@@ -1131,10 +1075,6 @@ Details:
 
 %feature("docstring") simuPOP::cloneOffspringGenerator::cloneOffspringGenerator "
 
-Description:
-
-    simuPOP::cloneOffspringGenerator::cloneOffspringGenerator
-
 Usage:
 
     cloneOffspringGenerator(numOffspring=1, numOffspringFunc=None,
@@ -1149,10 +1089,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::cloneOffspringGenerator::clone "
-
-Description:
-
-    simuPOP::cloneOffspringGenerator::clone
 
 Usage:
 
@@ -1176,10 +1112,6 @@ Details:
 
 %feature("docstring") simuPOP::CombinedAlleleIterator::CombinedAlleleIterator "
 
-Description:
-
-    simuPOP::CombinedAlleleIterator::CombinedAlleleIterator
-
 Usage:
 
     CombinedAlleleIterator()
@@ -1187,10 +1119,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::CombinedAlleleIterator::ptr "
-
-Description:
-
-    simuPOP::CombinedAlleleIterator::ptr
 
 Usage:
 
@@ -1212,10 +1140,6 @@ Details:
 
 %feature("docstring") simuPOP::combinedSplitter::combinedSplitter "
 
-Description:
-
-    simuPOP::combinedSplitter::combinedSplitter
-
 Usage:
 
     combinedSplitter(splitters=[])
@@ -1224,10 +1148,6 @@ Usage:
 
 %feature("docstring") simuPOP::combinedSplitter::~combinedSplitter "
 
-Description:
-
-    simuPOP::combinedSplitter::~combinedSplitter
-
 Usage:
 
     x.~combinedSplitter()
@@ -1235,10 +1155,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::combinedSplitter::clone "
-
-Description:
-
-    simuPOP::combinedSplitter::clone
 
 Usage:
 
@@ -1443,10 +1359,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::continueIf::~continueIf "
-
-Description:
-
-    simuPOP::continueIf::~continueIf
 
 Usage:
 
@@ -1714,10 +1626,6 @@ Usage:
 
 %feature("docstring") simuPOP::dumper::setAlleleOnly "
 
-Description:
-
-    simuPOP::dumper::setAlleleOnly
-
 Usage:
 
     x.setAlleleOnly(alleleOnly)
@@ -1737,10 +1645,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::dumper::setInfoOnly "
-
-Description:
-
-    simuPOP::dumper::setInfoOnly
 
 Usage:
 
@@ -1762,10 +1666,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::dumper::~dumper "
-
-Description:
-
-    simuPOP::dumper::~dumper
 
 Usage:
 
@@ -1796,10 +1696,6 @@ Description:
 
 %feature("docstring") simuPOP::Exception::Exception "
 
-Description:
-
-    simuPOP::Exception::Exception
-
 Usage:
 
     Exception(msg)
@@ -1824,10 +1720,6 @@ Usage:
 
 %feature("docstring") simuPOP::Exception::~Exception "
 
-Description:
-
-    simuPOP::Exception::~Exception
-
 Usage:
 
     x.~Exception()
@@ -1838,10 +1730,6 @@ Usage:
 
 %feature("docstring") simuPOP::Expression::Expression "
 
-Description:
-
-    simuPOP::Expression::Expression
-
 Usage:
 
     Expression(expr=\"\", stmts=\"\", locals=None)
@@ -1849,10 +1737,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::Expression::~Expression "
-
-Description:
-
-    simuPOP::Expression::~Expression
 
 Usage:
 
@@ -1920,18 +1804,13 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait "
 
-Description:
-
-    genotypic structure related functions, can be accessed from
-    individuals, populations and simulator levels.
-
 Details:
 
-    Genotypic structure refers to the number of chromosomes, the
-    number and position of loci on each chromosome, and allele and
-    locus names etc. All individuals in a population share the same
-    genotypic structure. Because class  GenoStruTrait is inherited by
-    class population, class individual, and class simulator, functions
+    Genotypic structure refers to number of chromosomes, number and
+    position of loci on each chromosome, and allele and locus names
+    etc. All individuals in a population share the same genotypic
+    structure. Because class  GenoStruTrait is inherited by class
+    population, class individual, and class simulator, functions
     provided in this class can be accessed at the individual,
     population and simulator levels. This object can not be created
     directly. It is created by a population.
@@ -1940,17 +1819,14 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::GenoStruTrait "
 
-Description:
-
-    simuPOP::GenoStruTrait::GenoStruTrait
-
 Usage:
 
     GenoStruTrait()
 
-Example:
+Details:
 
-Testsrc_genoStruTrait.log Genotypic structure 
+    This class is a base class for classes individual, population, and
+    simulator. It cannot be initialized directly.
 
 "; 
 
@@ -2083,10 +1959,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::haplodiploid "
-
-Description:
-
-    simuPOP::GenoStruTrait::haplodiploid
 
 Usage:
 
@@ -2448,10 +2320,6 @@ Arguments:
 
 %feature("docstring") simuPOP::genotypeSplitter::clone "
 
-Description:
-
-    simuPOP::genotypeSplitter::clone
-
 Usage:
 
     x.clone()
@@ -2548,10 +2416,6 @@ Testsrc_gsmMutator.log Operator <tt> gsmMutator</tt>
 "; 
 
 %feature("docstring") simuPOP::gsmMutator::~gsmMutator "
-
-Description:
-
-    simuPOP::gsmMutator::~gsmMutator
 
 Usage:
 
@@ -2703,11 +2567,6 @@ Details:
 
 %feature("docstring") simuPOP::haplodiploidOffspringGenerator::haplodiploidOffspringGenerator "
 
-Description:
-
-    simuPOP::haplodiploidOffspringGenerator::haplodiploidOffspringGene
-    rator
-
 Usage:
 
     haplodiploidOffspringGenerator(numOffspring=1,
@@ -2718,10 +2577,6 @@ Usage:
 
 %feature("docstring") simuPOP::haplodiploidOffspringGenerator::copyParentalGenotype "
 
-Description:
-
-    simuPOP::haplodiploidOffspringGenerator::copyParentalGenotype
-
 Usage:
 
     x.copyParentalGenotype(parent, it, ploidy, count)
@@ -2729,10 +2584,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::haplodiploidOffspringGenerator::clone "
-
-Description:
-
-    simuPOP::haplodiploidOffspringGenerator::clone
 
 Usage:
 
@@ -2937,10 +2788,6 @@ Description:
 
 %feature("docstring") simuPOP::IndexError::IndexError "
 
-Description:
-
-    simuPOP::IndexError::IndexError
-
 Usage:
 
     IndexError(msg)
@@ -2974,10 +2821,6 @@ Details:
 "; 
 
 %feature("docstring") simuPOP::individual::individual "
-
-Description:
-
-    simuPOP::individual::individual
 
 Usage:
 
@@ -3555,10 +3398,6 @@ Details:
 
 %feature("docstring") simuPOP::IndividualIterator::IndividualIterator "
 
-Description:
-
-    simuPOP::IndividualIterator::IndividualIterator
-
 Usage:
 
     IndividualIterator()
@@ -3567,10 +3406,6 @@ Usage:
 
 %feature("docstring") simuPOP::IndividualIterator::valid "
 
-Description:
-
-    simuPOP::IndividualIterator::valid
-
 Usage:
 
     x.valid()
@@ -3578,10 +3413,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::IndividualIterator::rawIter "
-
-Description:
-
-    simuPOP::IndividualIterator::rawIter
 
 Usage:
 
@@ -3658,10 +3489,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::infoEval::~infoEval "
-
-Description:
-
-    simuPOP::infoEval::~infoEval
 
 Usage:
 
@@ -3765,10 +3592,6 @@ Details:
 
 %feature("docstring") simuPOP::infoExec::~infoExec "
 
-Description:
-
-    simuPOP::infoExec::~infoExec
-
 Usage:
 
     x.~infoExec()
@@ -3827,10 +3650,6 @@ Details:
 
 %feature("docstring") simuPOP::infoParentsChooser::infoParentsChooser "
 
-Description:
-
-    simuPOP::infoParentsChooser::infoParentsChooser
-
 Usage:
 
     infoParentsChooser(infoFields=[], replacement=True,
@@ -3848,10 +3667,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::infoParentsChooser::clone "
-
-Description:
-
-    simuPOP::infoParentsChooser::clone
 
 Usage:
 
@@ -3877,10 +3692,6 @@ Details:
 
 %feature("docstring") simuPOP::InformationIterator::InformationIterator "
 
-Description:
-
-    simuPOP::InformationIterator::InformationIterator
-
 Usage:
 
     InformationIterator()
@@ -3900,10 +3711,6 @@ Details:
 "; 
 
 %feature("docstring") simuPOP::infoSplitter::infoSplitter "
-
-Description:
-
-    simuPOP::infoSplitter::infoSplitter
 
 Usage:
 
@@ -3967,10 +3774,6 @@ Details:
 
 %feature("docstring") simuPOP::infoTagger::infoTagger "
 
-Description:
-
-    simuPOP::infoTagger::infoTagger
-
 Usage:
 
     infoTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
@@ -4029,10 +3832,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::inheritTagger::~inheritTagger "
-
-Description:
-
-    simuPOP::inheritTagger::~inheritTagger
 
 Usage:
 
@@ -4138,10 +3937,6 @@ Testsrc_initByFreq.log Operator <tt> initByFreq</tt>
 "; 
 
 %feature("docstring") simuPOP::initByFreq::~initByFreq "
-
-Description:
-
-    simuPOP::initByFreq::~initByFreq
 
 Usage:
 
@@ -4252,10 +4047,6 @@ Testsrc_initByValue.log Operator <tt> initByValue</tt>
 "; 
 
 %feature("docstring") simuPOP::initByValue::~initByValue "
-
-Description:
-
-    simuPOP::initByValue::~initByValue
 
 Usage:
 
@@ -4482,10 +4273,6 @@ Description:
 
 %feature("docstring") simuPOP::IOError::IOError "
 
-Description:
-
-    simuPOP::IOError::IOError
-
 Usage:
 
     IOError(msg)
@@ -4495,10 +4282,6 @@ Usage:
 %ignore simuPOP::isAffected;
 
 %feature("docstring") simuPOP::isAffected::isAffected "
-
-Description:
-
-    simuPOP::isAffected::isAffected
 
 Usage:
 
@@ -4558,10 +4341,6 @@ Testsrc_kamMutator.log Operator <tt> kamMutator</tt>
 "; 
 
 %feature("docstring") simuPOP::kamMutator::~kamMutator "
-
-Description:
-
-    simuPOP::kamMutator::~kamMutator
 
 Usage:
 
@@ -4764,10 +4543,6 @@ Testsrc_maPenetrance.log Operator <tt> maPenetrance</tt>
 
 %feature("docstring") simuPOP::maPenetrance::~maPenetrance "
 
-Description:
-
-    simuPOP::maPenetrance::~maPenetrance
-
 Usage:
 
     x.~maPenetrance()
@@ -4860,10 +4635,6 @@ Testsrc_mapPenetrance.log Operator <tt> mapPenetrance</tt>
 
 %feature("docstring") simuPOP::mapPenetrance::~mapPenetrance "
 
-Description:
-
-    simuPOP::mapPenetrance::~mapPenetrance
-
 Usage:
 
     x.~mapPenetrance()
@@ -4950,10 +4721,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::mapQuanTrait::~mapQuanTrait "
-
-Description:
-
-    simuPOP::mapQuanTrait::~mapQuanTrait
 
 Usage:
 
@@ -5054,10 +4821,6 @@ Testsrc_mapSelector.log Operator <tt> mapSelector</tt>
 "; 
 
 %feature("docstring") simuPOP::mapSelector::~mapSelector "
-
-Description:
-
-    simuPOP::mapSelector::~mapSelector
 
 Usage:
 
@@ -5273,10 +5036,6 @@ Testsrc_maSelector.log Operator <tt> maSelector</tt>
 
 %feature("docstring") simuPOP::maSelector::~maSelector "
 
-Description:
-
-    simuPOP::maSelector::~maSelector
-
 Usage:
 
     x.~maSelector()
@@ -5486,10 +5245,6 @@ Details:
 
 %feature("docstring") simuPOP::mendelianOffspringGenerator::mendelianOffspringGenerator "
 
-Description:
-
-    simuPOP::mendelianOffspringGenerator::mendelianOffspringGenerator
-
 Usage:
 
     mendelianOffspringGenerator(numOffspring=1,
@@ -5499,10 +5254,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::mendelianOffspringGenerator::clone "
-
-Description:
-
-    simuPOP::mendelianOffspringGenerator::clone
 
 Usage:
 
@@ -5827,10 +5578,6 @@ Testsrc_mlPenetrance.log Operator <tt> mlPenetrance</tt>
 
 %feature("docstring") simuPOP::mlPenetrance::~mlPenetrance "
 
-Description:
-
-    simuPOP::mlPenetrance::~mlPenetrance
-
 Usage:
 
     x.~mlPenetrance()
@@ -5927,10 +5674,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::mlQuanTrait::~mlQuanTrait "
-
-Description:
-
-    simuPOP::mlQuanTrait::~mlQuanTrait
 
 Usage:
 
@@ -6029,10 +5772,6 @@ Testsrc_mlSelector.log Operator <tt> mlSelector</tt>
 "; 
 
 %feature("docstring") simuPOP::mlSelector::~mlSelector "
-
-Description:
-
-    simuPOP::mlSelector::~mlSelector
 
 Usage:
 
@@ -6580,10 +6319,6 @@ Usage:
 
 %feature("docstring") simuPOP::OstreamManager::~OstreamManager "
 
-Description:
-
-    simuPOP::OstreamManager::~OstreamManager
-
 Usage:
 
     x.~OstreamManager()
@@ -6627,10 +6362,6 @@ Description:
 "; 
 
 %feature("docstring") simuPOP::OutOfMemory::OutOfMemory "
-
-Description:
-
-    simuPOP::OutOfMemory::OutOfMemory
 
 Usage:
 
@@ -6734,10 +6465,6 @@ Usage:
 
 %feature("docstring") simuPOP::outputHelper::~outputHelper "
 
-Description:
-
-    simuPOP::outputHelper::~outputHelper
-
 Usage:
 
     x.~outputHelper()
@@ -6795,10 +6522,6 @@ Details:
 
 %feature("docstring") simuPOP::parentChooser::parentChooser "
 
-Description:
-
-    simuPOP::parentChooser::parentChooser
-
 Usage:
 
     parentChooser(numParents)
@@ -6806,10 +6529,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::parentChooser::clone "
-
-Description:
-
-    simuPOP::parentChooser::clone
 
 Usage:
 
@@ -6820,10 +6539,6 @@ Usage:
 %ignore simuPOP::parentChooser::initialize(population &pop, SubPopID subPop);
 
 %feature("docstring") simuPOP::parentChooser::finalize "
-
-Description:
-
-    simuPOP::parentChooser::finalize
 
 Usage:
 
@@ -6840,10 +6555,6 @@ Usage:
 %ignore simuPOP::parentChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::parentChooser::~parentChooser "
-
-Description:
-
-    simuPOP::parentChooser::~parentChooser
 
 Usage:
 
@@ -6892,10 +6603,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::parentsTagger::~parentsTagger "
-
-Description:
-
-    simuPOP::parentsTagger::~parentsTagger
 
 Usage:
 
@@ -6983,10 +6690,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::parentTagger::~parentTagger "
-
-Description:
-
-    simuPOP::parentTagger::~parentTagger
 
 Usage:
 
@@ -7609,10 +7312,6 @@ Details:
 
 %feature("docstring") simuPOP::pedigreeParentsChooser::pedigreeParentsChooser "
 
-Description:
-
-    simuPOP::pedigreeParentsChooser::pedigreeParentsChooser
-
 Usage:
 
     pedigreeParentsChooser(ped)
@@ -7621,10 +7320,6 @@ Usage:
 
 %feature("docstring") simuPOP::pedigreeParentsChooser::clone "
 
-Description:
-
-    simuPOP::pedigreeParentsChooser::clone
-
 Usage:
 
     x.clone()
@@ -7632,10 +7327,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::pedigreeParentsChooser::subPopSizes "
-
-Description:
-
-    simuPOP::pedigreeParentsChooser::subPopSizes
 
 Usage:
 
@@ -7911,10 +7602,6 @@ Details:
 
 %feature("docstring") simuPOP::polygamousMating::polygamousMating "
 
-Description:
-
-    simuPOP::polygamousMating::polygamousMating
-
 Usage:
 
     polygamousMating(polySex=Male, polyNum=1, replacement=False,
@@ -8188,10 +7875,6 @@ Usage:
 %ignore simuPOP::population::virtualSplitter() const ;
 
 %feature("docstring") simuPOP::population::setVirtualSplitter "
-
-Description:
-
-    simuPOP::population::setVirtualSplitter
 
 Usage:
 
@@ -8504,10 +8187,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::population::individuals "
-
-Description:
-
-    simuPOP::population::individuals
 
 Usage:
 
@@ -9725,10 +9404,6 @@ Details:
 
 %feature("docstring") simuPOP::proportionSplitter::proportionSplitter "
 
-Description:
-
-    simuPOP::proportionSplitter::proportionSplitter
-
 Usage:
 
     proportionSplitter(proportions=[])
@@ -9743,10 +9418,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::proportionSplitter::clone "
-
-Description:
-
-    simuPOP::proportionSplitter::clone
 
 Usage:
 
@@ -9839,10 +9510,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::pyEval::~pyEval "
-
-Description:
-
-    simuPOP::pyEval::~pyEval
 
 Usage:
 
@@ -9943,10 +9610,6 @@ Details:
 
 %feature("docstring") simuPOP::pyExec::~pyExec "
 
-Description:
-
-    simuPOP::pyExec::~pyExec
-
 Usage:
 
     x.~pyExec()
@@ -9995,10 +9658,6 @@ Details:
 
 %feature("docstring") simuPOP::pyIndIterator::pyIndIterator "
 
-Description:
-
-    simuPOP::pyIndIterator::pyIndIterator
-
 Usage:
 
     pyIndIterator(begin, end, allInds, allVisibles)
@@ -10006,10 +9665,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::pyIndIterator::~pyIndIterator "
-
-Description:
-
-    simuPOP::pyIndIterator::~pyIndIterator
 
 Usage:
 
@@ -10019,10 +9674,6 @@ Usage:
 
 %feature("docstring") simuPOP::pyIndIterator::__iter__ "
 
-Description:
-
-    simuPOP::pyIndIterator::__iter__
-
 Usage:
 
     x.__iter__()
@@ -10030,10 +9681,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::pyIndIterator::next "
-
-Description:
-
-    simuPOP::pyIndIterator::next
 
 Usage:
 
@@ -10202,10 +9849,6 @@ Testsrc_pyInit.log Operator <tt> pyInit</tt>
 "; 
 
 %feature("docstring") simuPOP::pyInit::~pyInit "
-
-Description:
-
-    simuPOP::pyInit::~pyInit
 
 Usage:
 
@@ -10696,10 +10339,6 @@ Usage:
 
 %feature("docstring") simuPOP::pyOutput::~pyOutput "
 
-Description:
-
-    simuPOP::pyOutput::~pyOutput
-
 Usage:
 
     x.~pyOutput()
@@ -10759,10 +10398,6 @@ Details:
 
 %feature("docstring") simuPOP::pyParentsChooser::pyParentsChooser "
 
-Description:
-
-    simuPOP::pyParentsChooser::pyParentsChooser
-
 Usage:
 
     pyParentsChooser(parentsGenerator)
@@ -10777,10 +10412,6 @@ Arguments:
 
 %feature("docstring") simuPOP::pyParentsChooser::clone "
 
-Description:
-
-    simuPOP::pyParentsChooser::clone
-
 Usage:
 
     x.clone()
@@ -10790,10 +10421,6 @@ Usage:
 %ignore simuPOP::pyParentsChooser::initialize(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::pyParentsChooser::finalize "
-
-Description:
-
-    simuPOP::pyParentsChooser::finalize
 
 Usage:
 
@@ -10971,10 +10598,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::pyQuanTrait::~pyQuanTrait "
-
-Description:
-
-    simuPOP::pyQuanTrait::~pyQuanTrait
 
 Usage:
 
@@ -11357,10 +10980,6 @@ Arguments:
 
 %feature("docstring") simuPOP::pyTagger::~pyTagger "
 
-Description:
-
-    simuPOP::pyTagger::~pyTagger
-
 Usage:
 
     x.~pyTagger()
@@ -11587,10 +11206,6 @@ Details:
 
 %feature("docstring") simuPOP::randomParentChooser::randomParentChooser "
 
-Description:
-
-    simuPOP::randomParentChooser::randomParentChooser
-
 Usage:
 
     randomParentChooser(replacement=True, replenish=False)
@@ -11605,10 +11220,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::randomParentChooser::clone "
-
-Description:
-
-    simuPOP::randomParentChooser::clone
 
 Usage:
 
@@ -11685,10 +11296,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::randomParentsChooser::clone "
-
-Description:
-
-    simuPOP::randomParentsChooser::clone
 
 Usage:
 
@@ -11808,10 +11415,6 @@ Details:
 
 %feature("docstring") simuPOP::rangeSplitter::rangeSplitter "
 
-Description:
-
-    simuPOP::rangeSplitter::rangeSplitter
-
 Usage:
 
     rangeSplitter(ranges)
@@ -11824,10 +11427,6 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::rangeSplitter::clone "
-
-Description:
-
-    simuPOP::rangeSplitter::clone
 
 Usage:
 
@@ -11999,10 +11598,6 @@ Testsrc_recombinator.log Operator <tt>recombinator</tt>
 "; 
 
 %feature("docstring") simuPOP::recombinator::~recombinator "
-
-Description:
-
-    simuPOP::recombinator::~recombinator
 
 Usage:
 
@@ -12209,10 +11804,6 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::~RNG "
 
-Description:
-
-    simuPOP::RNG::~RNG
-
 Usage:
 
     x.~RNG()
@@ -12306,10 +11897,6 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::__repr__ "
 
-Description:
-
-    simuPOP::RNG::__repr__
-
 Usage:
 
     x.__repr__()
@@ -12380,10 +11967,6 @@ Usage:
 
 %feature("docstring") simuPOP::RNG::randExponential "
 
-Description:
-
-    simuPOP::RNG::randExponential
-
 Usage:
 
     x.randExponential(v)
@@ -12417,10 +12000,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::RNG::randMultinomialVal "
-
-Description:
-
-    simuPOP::RNG::randMultinomialVal
 
 Usage:
 
@@ -12621,10 +12200,6 @@ Arguments:
 
 %feature("docstring") simuPOP::savePopulation::~savePopulation "
 
-Description:
-
-    simuPOP::savePopulation::~savePopulation
-
 Usage:
 
     x.~savePopulation()
@@ -12802,10 +12377,6 @@ Details:
 
 %feature("docstring") simuPOP::selfingOffspringGenerator::selfingOffspringGenerator "
 
-Description:
-
-    simuPOP::selfingOffspringGenerator::selfingOffspringGenerator
-
 Usage:
 
     selfingOffspringGenerator(numOffspring=1, numOffspringFunc=None,
@@ -12815,10 +12386,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::selfingOffspringGenerator::clone "
-
-Description:
-
-    simuPOP::selfingOffspringGenerator::clone
 
 Usage:
 
@@ -12926,10 +12493,6 @@ Details:
 
 %feature("docstring") simuPOP::sequentialParentChooser::sequentialParentChooser "
 
-Description:
-
-    simuPOP::sequentialParentChooser::sequentialParentChooser
-
 Usage:
 
     sequentialParentChooser()
@@ -12937,10 +12500,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::sequentialParentChooser::clone "
-
-Description:
-
-    simuPOP::sequentialParentChooser::clone
 
 Usage:
 
@@ -12966,10 +12525,6 @@ Details:
 
 %feature("docstring") simuPOP::sequentialParentsChooser::sequentialParentsChooser "
 
-Description:
-
-    simuPOP::sequentialParentsChooser::sequentialParentsChooser
-
 Usage:
 
     sequentialParentsChooser()
@@ -12977,10 +12532,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::sequentialParentsChooser::clone "
-
-Description:
-
-    simuPOP::sequentialParentsChooser::clone
 
 Usage:
 
@@ -13085,10 +12636,6 @@ Details:
 
 %feature("docstring") simuPOP::sexSplitter::sexSplitter "
 
-Description:
-
-    simuPOP::sexSplitter::sexSplitter
-
 Usage:
 
     sexSplitter()
@@ -13096,10 +12643,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::sexSplitter::clone "
-
-Description:
-
-    simuPOP::sexSplitter::clone
 
 Usage:
 
@@ -13151,10 +12694,6 @@ Details:
 "; 
 
 %feature("docstring") simuPOP::sexTagger::sexTagger "
-
-Description:
-
-    simuPOP::sexTagger::sexTagger
 
 Usage:
 
@@ -13210,10 +12749,6 @@ Usage:
 
 %feature("docstring") simuPOP::SharedVariables::hasVar "
 
-Description:
-
-    simuPOP::SharedVariables::hasVar
-
 Usage:
 
     x.hasVar(name)
@@ -13262,10 +12797,6 @@ Usage:
 
 %feature("docstring") simuPOP::SharedVariables::dict "
 
-Description:
-
-    simuPOP::SharedVariables::dict
-
 Usage:
 
     x.dict()
@@ -13275,10 +12806,6 @@ Usage:
 %ignore simuPOP::SharedVariables::asString() const ;
 
 %feature("docstring") simuPOP::SharedVariables::fromString "
-
-Description:
-
-    simuPOP::SharedVariables::fromString
 
 Usage:
 
@@ -13715,10 +13242,6 @@ Testsrc_smmMutator.log Operator <tt> smmMutator</tt>
 
 %feature("docstring") simuPOP::smmMutator::~smmMutator "
 
-Description:
-
-    simuPOP::smmMutator::~smmMutator
-
 Usage:
 
     x.~smmMutator()
@@ -13895,10 +13418,6 @@ Testsrc_spread.log Operator <tt>spread</tt>
 "; 
 
 %feature("docstring") simuPOP::spread::~spread "
-
-Description:
-
-    simuPOP::spread::~spread
 
 Usage:
 
@@ -14250,10 +13769,6 @@ Arguments:
 
 %feature("docstring") simuPOP::stat::~stat "
 
-Description:
-
-    simuPOP::stat::~stat
-
 Usage:
 
     x.~stat()
@@ -14301,10 +13816,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAlleleFreq::statAlleleFreq "
 
-Description:
-
-    simuPOP::statAlleleFreq::statAlleleFreq
-
 Usage:
 
     statAlleleFreq(atLoci=[], param={})
@@ -14325,10 +13836,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAlleleFreq::addLocus "
 
-Description:
-
-    simuPOP::statAlleleFreq::addLocus
-
 Usage:
 
     x.addLocus(locus, post, subPop, numOfAlleles)
@@ -14336,10 +13843,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNumAll "
-
-Description:
-
-    simuPOP::statAlleleFreq::alleleNumAll
 
 Usage:
 
@@ -14349,10 +13852,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNumVec "
 
-Description:
-
-    simuPOP::statAlleleFreq::alleleNumVec
-
 Usage:
 
     x.alleleNumVec(loc)
@@ -14360,10 +13859,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleNum "
-
-Description:
-
-    simuPOP::statAlleleFreq::alleleNum
 
 Usage:
 
@@ -14373,10 +13868,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreqAll "
 
-Description:
-
-    simuPOP::statAlleleFreq::alleleFreqAll
-
 Usage:
 
     x.alleleFreqAll()
@@ -14384,10 +13875,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreqVec "
-
-Description:
-
-    simuPOP::statAlleleFreq::alleleFreqVec
 
 Usage:
 
@@ -14397,10 +13884,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAlleleFreq::alleleFreq "
 
-Description:
-
-    simuPOP::statAlleleFreq::alleleFreq
-
 Usage:
 
     x.alleleFreq(allele, loc)
@@ -14408,10 +13891,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::numOfAlleles "
-
-Description:
-
-    simuPOP::statAlleleFreq::numOfAlleles
 
 Usage:
 
@@ -14421,10 +13900,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAlleleFreq::alleles "
 
-Description:
-
-    simuPOP::statAlleleFreq::alleles
-
 Usage:
 
     x.alleles(loc)
@@ -14432,10 +13907,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAlleleFreq::apply "
-
-Description:
-
-    simuPOP::statAlleleFreq::apply
 
 Usage:
 
@@ -14447,10 +13918,6 @@ Usage:
 
 %feature("docstring") simuPOP::statAssociation::statAssociation "
 
-Description:
-
-    simuPOP::statAssociation::statAssociation
-
 Usage:
 
     statAssociation(alleleFreq, haploFreq, Association=[], param={})
@@ -14458,10 +13925,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statAssociation::apply "
-
-Description:
-
-    simuPOP::statAssociation::apply
 
 Usage:
 
@@ -14473,10 +13936,6 @@ Usage:
 
 %feature("docstring") simuPOP::statExpHetero::statExpHetero "
 
-Description:
-
-    simuPOP::statExpHetero::statExpHetero
-
 Usage:
 
     statExpHetero(alleleFreq, expHetero=[], param={})
@@ -14484,10 +13943,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statExpHetero::apply "
-
-Description:
-
-    simuPOP::statExpHetero::apply
 
 Usage:
 
@@ -14499,10 +13954,6 @@ Usage:
 
 %feature("docstring") simuPOP::statFst::statFst "
 
-Description:
-
-    simuPOP::statFst::statFst
-
 Usage:
 
     statFst(alleleFreq, heteroFreq, Fst=[], param={})
@@ -14510,10 +13961,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statFst::Fst "
-
-Description:
-
-    simuPOP::statFst::Fst
 
 Usage:
 
@@ -14523,10 +13970,6 @@ Usage:
 
 %feature("docstring") simuPOP::statFst::Fis "
 
-Description:
-
-    simuPOP::statFst::Fis
-
 Usage:
 
     x.Fis()
@@ -14535,10 +13978,6 @@ Usage:
 
 %feature("docstring") simuPOP::statFst::Fit "
 
-Description:
-
-    simuPOP::statFst::Fit
-
 Usage:
 
     x.Fit()
@@ -14546,10 +13985,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statFst::apply "
-
-Description:
-
-    simuPOP::statFst::apply
 
 Usage:
 
@@ -14561,10 +13996,6 @@ Usage:
 
 %feature("docstring") simuPOP::statGenoFreq::statGenoFreq "
 
-Description:
-
-    simuPOP::statGenoFreq::statGenoFreq
-
 Usage:
 
     statGenoFreq(genoFreq=[], param={})
@@ -14572,10 +14003,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statGenoFreq::apply "
-
-Description:
-
-    simuPOP::statGenoFreq::apply
 
 Usage:
 
@@ -14587,10 +14014,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHaploFreq::statHaploFreq "
 
-Description:
-
-    simuPOP::statHaploFreq::statHaploFreq
-
 Usage:
 
     statHaploFreq(haploFreq=[])
@@ -14598,10 +14021,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::~statHaploFreq "
-
-Description:
-
-    simuPOP::statHaploFreq::~statHaploFreq
 
 Usage:
 
@@ -14611,10 +14030,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHaploFreq::addHaplotype "
 
-Description:
-
-    simuPOP::statHaploFreq::addHaplotype
-
 Usage:
 
     x.addHaplotype(haplo, post=False)
@@ -14622,10 +14037,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::numOfHaplotypes "
-
-Description:
-
-    simuPOP::statHaploFreq::numOfHaplotypes
 
 Usage:
 
@@ -14635,10 +14046,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHaploFreq::haploNum "
 
-Description:
-
-    simuPOP::statHaploFreq::haploNum
-
 Usage:
 
     x.haploNum(haplo)
@@ -14647,10 +14054,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHaploFreq::haploFreq "
 
-Description:
-
-    simuPOP::statHaploFreq::haploFreq
-
 Usage:
 
     x.haploFreq(haplo)
@@ -14658,10 +14061,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHaploFreq::apply "
-
-Description:
-
-    simuPOP::statHaploFreq::apply
 
 Usage:
 
@@ -14673,10 +14072,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHeteroFreq::statHeteroFreq "
 
-Description:
-
-    simuPOP::statHeteroFreq::statHeteroFreq
-
 Usage:
 
     statHeteroFreq(heteroFreq=[], homoFreq=[])
@@ -14684,10 +14079,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::addLocus "
-
-Description:
-
-    simuPOP::statHeteroFreq::addLocus
 
 Usage:
 
@@ -14697,10 +14088,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHeteroFreq::heteroNum "
 
-Description:
-
-    simuPOP::statHeteroFreq::heteroNum
-
 Usage:
 
     x.heteroNum(allele, loc)
@@ -14709,10 +14096,6 @@ Usage:
 
 %feature("docstring") simuPOP::statHeteroFreq::heteroFreq "
 
-Description:
-
-    simuPOP::statHeteroFreq::heteroFreq
-
 Usage:
 
     x.heteroFreq(allele, loc)
@@ -14720,10 +14103,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::apply "
-
-Description:
-
-    simuPOP::statHeteroFreq::apply
 
 Usage:
 
@@ -14735,10 +14114,6 @@ Usage:
 
 %feature("docstring") simuPOP::statLD::statLD "
 
-Description:
-
-    simuPOP::statLD::statLD
-
 Usage:
 
     statLD(alleleFreq, haploFreq, LD=[], LD_param={})
@@ -14746,10 +14121,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statLD::apply "
-
-Description:
-
-    simuPOP::statLD::apply
 
 Usage:
 
@@ -14761,10 +14132,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfAffected::statNumOfAffected "
 
-Description:
-
-    simuPOP::statNumOfAffected::statNumOfAffected
-
 Usage:
 
     statNumOfAffected(numOfAffected=False, param={})
@@ -14772,10 +14139,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::~statNumOfAffected "
-
-Description:
-
-    simuPOP::statNumOfAffected::~statNumOfAffected
 
 Usage:
 
@@ -14785,10 +14148,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfAffected::activate "
 
-Description:
-
-    simuPOP::statNumOfAffected::activate
-
 Usage:
 
     x.activate(yes=True)
@@ -14796,10 +14155,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::numOfAffected "
-
-Description:
-
-    simuPOP::statNumOfAffected::numOfAffected
 
 Usage:
 
@@ -14809,10 +14164,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfAffected::numOfUnaffected "
 
-Description:
-
-    simuPOP::statNumOfAffected::numOfUnaffected
-
 Usage:
 
     x.numOfUnaffected()
@@ -14820,10 +14171,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statNumOfAffected::apply "
-
-Description:
-
-    simuPOP::statNumOfAffected::apply
 
 Usage:
 
@@ -14835,10 +14182,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfAlleles::statNumOfAlleles "
 
-Description:
-
-    simuPOP::statNumOfAlleles::statNumOfAlleles
-
 Usage:
 
     statNumOfAlleles(calc, atLoci=[], param={})
@@ -14847,10 +14190,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfAlleles::~statNumOfAlleles "
 
-Description:
-
-    simuPOP::statNumOfAlleles::~statNumOfAlleles
-
 Usage:
 
     x.~statNumOfAlleles()
@@ -14858,10 +14197,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statNumOfAlleles::apply "
-
-Description:
-
-    simuPOP::statNumOfAlleles::apply
 
 Usage:
 
@@ -14873,10 +14208,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfMale::statNumOfMale "
 
-Description:
-
-    simuPOP::statNumOfMale::statNumOfMale
-
 Usage:
 
     statNumOfMale(numOfMale=False, param={})
@@ -14884,10 +14215,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::activate "
-
-Description:
-
-    simuPOP::statNumOfMale::activate
 
 Usage:
 
@@ -14897,10 +14224,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfMale::numOfMale "
 
-Description:
-
-    simuPOP::statNumOfMale::numOfMale
-
 Usage:
 
     x.numOfMale()
@@ -14909,10 +14232,6 @@ Usage:
 
 %feature("docstring") simuPOP::statNumOfMale::numOfFemale "
 
-Description:
-
-    simuPOP::statNumOfMale::numOfFemale
-
 Usage:
 
     x.numOfFemale()
@@ -14920,10 +14239,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statNumOfMale::apply "
-
-Description:
-
-    simuPOP::statNumOfMale::apply
 
 Usage:
 
@@ -14987,10 +14302,6 @@ Usage:
 
 %feature("docstring") simuPOP::statPopSize::statPopSize "
 
-Description:
-
-    simuPOP::statPopSize::statPopSize
-
 Usage:
 
     statPopSize(popSize=False)
@@ -14999,10 +14310,6 @@ Usage:
 
 %feature("docstring") simuPOP::statPopSize::activate "
 
-Description:
-
-    simuPOP::statPopSize::activate
-
 Usage:
 
     x.activate()
@@ -15010,10 +14317,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statPopSize::apply "
-
-Description:
-
-    simuPOP::statPopSize::apply
 
 Usage:
 
@@ -15049,10 +14352,6 @@ Arguments:
 
 %feature("docstring") simuPOP::statRelatedness::relQueller "
 
-Description:
-
-    simuPOP::statRelatedness::relQueller
-
 Usage:
 
     x.relQueller(ind1, ind2)
@@ -15060,10 +14359,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::relLynch "
-
-Description:
-
-    simuPOP::statRelatedness::relLynch
 
 Usage:
 
@@ -15073,10 +14368,6 @@ Usage:
 
 %feature("docstring") simuPOP::statRelatedness::relIR "
 
-Description:
-
-    simuPOP::statRelatedness::relIR
-
 Usage:
 
     x.relIR(ind1, locus)
@@ -15085,10 +14376,6 @@ Usage:
 
 %feature("docstring") simuPOP::statRelatedness::relD2 "
 
-Description:
-
-    simuPOP::statRelatedness::relD2
-
 Usage:
 
     x.relD2(ind1, locus)
@@ -15096,10 +14383,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statRelatedness::relRel "
-
-Description:
-
-    simuPOP::statRelatedness::relRel
 
 Usage:
 
@@ -15121,10 +14404,6 @@ Usage:
 
 %feature("docstring") simuPOP::statRelatedness::apply "
 
-Description:
-
-    simuPOP::statRelatedness::apply
-
 Usage:
 
     x.apply(pop)
@@ -15141,10 +14420,6 @@ Description:
 
 %feature("docstring") simuPOP::StopIteration::StopIteration "
 
-Description:
-
-    simuPOP::StopIteration::StopIteration
-
 Usage:
 
     StopIteration(msg)
@@ -15154,10 +14429,6 @@ Usage:
 %ignore simuPOP::StreamElem;
 
 %feature("docstring") simuPOP::StreamElem::StreamElem "
-
-Description:
-
-    simuPOP::StreamElem::StreamElem
 
 Usage:
 
@@ -15215,10 +14486,6 @@ Usage:
 
 %feature("docstring") simuPOP::StreamProvider::~StreamProvider "
 
-Description:
-
-    simuPOP::StreamProvider::~StreamProvider
-
 Usage:
 
     x.~StreamProvider()
@@ -15242,10 +14509,6 @@ Description:
 "; 
 
 %feature("docstring") simuPOP::SystemError::SystemError "
-
-Description:
-
-    simuPOP::SystemError::SystemError
 
 Usage:
 
@@ -15389,10 +14652,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::terminateIf::~terminateIf "
-
-Description:
-
-    simuPOP::terminateIf::~terminateIf
 
 Usage:
 
@@ -15713,10 +14972,6 @@ Description:
 
 %feature("docstring") simuPOP::TypeError::TypeError "
 
-Description:
-
-    simuPOP::TypeError::TypeError
-
 Usage:
 
     TypeError(msg)
@@ -15732,10 +14987,6 @@ Description:
 "; 
 
 %feature("docstring") simuPOP::ValueError::ValueError "
-
-Description:
-
-    simuPOP::ValueError::ValueError
 
 Usage:
 
@@ -15754,10 +15005,6 @@ Details:
 
 %feature("docstring") simuPOP::vsp::vsp "
 
-Description:
-
-    simuPOP::vsp::vsp
-
 Usage:
 
     vsp(subPop)
@@ -15765,10 +15012,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::vsp::subPop "
-
-Description:
-
-    simuPOP::vsp::subPop
 
 Usage:
 
@@ -15778,10 +15021,6 @@ Usage:
 
 %feature("docstring") simuPOP::vsp::virtualSubPop "
 
-Description:
-
-    simuPOP::vsp::virtualSubPop
-
 Usage:
 
     x.virtualSubPop()
@@ -15789,10 +15028,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::vsp::isVirtual "
-
-Description:
-
-    simuPOP::vsp::isVirtual
 
 Usage:
 
@@ -15802,17 +15037,9 @@ Usage:
 
 %feature("docstring") simuPOP::Weightedsampler "
 
-Description:
-
-    simuPOP::Weightedsampler
-
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::Weightedsampler "
-
-Description:
-
-    simuPOP::Weightedsampler::Weightedsampler
 
 Usage:
 
@@ -15822,10 +15049,6 @@ Usage:
 
 %feature("docstring") simuPOP::Weightedsampler::~Weightedsampler "
 
-Description:
-
-    simuPOP::Weightedsampler::~Weightedsampler
-
 Usage:
 
     x.~Weightedsampler()
@@ -15833,10 +15056,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::set "
-
-Description:
-
-    simuPOP::Weightedsampler::set
 
 Usage:
 
@@ -15846,10 +15065,6 @@ Usage:
 
 %feature("docstring") simuPOP::Weightedsampler::biSearch "
 
-Description:
-
-    simuPOP::Weightedsampler::biSearch
-
 Usage:
 
     x.biSearch(a)
@@ -15857,10 +15072,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::get "
-
-Description:
-
-    simuPOP::Weightedsampler::get
 
 Usage:
 
@@ -15870,10 +15081,6 @@ Usage:
 
 %feature("docstring") simuPOP::Weightedsampler::q "
 
-Description:
-
-    simuPOP::Weightedsampler::q
-
 Usage:
 
     x.q()
@@ -15881,10 +15088,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::Weightedsampler::a "
-
-Description:
-
-    simuPOP::Weightedsampler::a
 
 Usage:
 
@@ -15897,10 +15100,6 @@ Usage:
 %ignore simuPOP::getExpectedAlleles(population &pop, vectorf &expFreq, const vectori &loci, const vectori &alleles, vectoru &expAlleles);
 
 %feature("docstring") simuPOP::FreqTrajectoryStoch "
-
-Description:
-
-    simuPOP::FreqTrajectoryStoch
 
 Usage:
 
@@ -15915,10 +15114,6 @@ Usage:
 
 %feature("docstring") simuPOP::FreqTrajectoryMultiStoch "
 
-Description:
-
-    simuPOP::FreqTrajectoryMultiStoch
-
 Usage:
 
     FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, NtFunc=None,
@@ -15928,10 +15123,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::ForwardFreqTrajectory "
-
-Description:
-
-    simuPOP::ForwardFreqTrajectory
 
 Usage:
 
@@ -15943,10 +15134,6 @@ Usage:
 
 %feature("docstring") simuPOP::FreqTrajectorySelSim "
 
-Description:
-
-    simuPOP::FreqTrajectorySelSim
-
 Usage:
 
     FreqTrajectorySelSim(sel, Ne, freq, dom_h, selection)
@@ -15954,10 +15141,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::FreqTrajectoryForward "
-
-Description:
-
-    simuPOP::FreqTrajectoryForward
 
 Usage:
 
@@ -16034,10 +15217,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::TurnOnDebug "
-
-Description:
-
-    simuPOP::TurnOnDebug
 
 Usage:
 
