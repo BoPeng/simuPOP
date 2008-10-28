@@ -3,7 +3,7 @@ This file describes how to release simuPOP.
 1. Update ChangeLog, marking release revision and date.
 
 2. Run the following commands to build simuPOP
-  > doxygen Doxy_doc
+  > doxygen   # process Doxyfile by default
   > cd tools; doxy2swig.py; cd ..
   > scons install
 
