@@ -967,7 +967,6 @@ an additional parameter can be given
 
 def LoadGCData(file, loci=[]):
     '''EXPERIMENTAL
-read GC data file in http://wpicr.wpic.pitt.edu/WPICCompGen/genomic_control/genomic_control.htm
     '''
     # open file
     try:
@@ -1742,11 +1741,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
     
 pene
     penetrance function, if not given (None), existing affection
@@ -1821,11 +1820,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
 
 pene
     penetrance function, if not given (None), existing affection
@@ -1900,11 +1899,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
 
 pene
     penetrance function, if not given (None), existing affection
@@ -1959,11 +1958,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
     
 pene
     penetrance function, if not given (None), existing affection
@@ -2005,11 +2004,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
 
 qtrait
     a function to calculate quantitative trait
@@ -2069,11 +2068,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
 
 qtrait
     a function to calculate quantitative trait
@@ -2132,11 +2131,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
 
 qtrait
     a function to calculate quantitative trait
@@ -2193,11 +2192,11 @@ pop
     simuPOP population. It can be a string if path to a file is given.
     This population must
 
-        1. have at least one ancestral generation (parental generation)
-        2. have a variable DSL (pop.dvars().DSL) indicating
+        - have at least one ancestral generation (parental generation)
+        - have a variable DSL (pop.dvars().DSL) indicating
            the Disease susceptibility loci. These DSL will be removed from
            the samples.
-        3. has only binary alleles
+        - has only binary alleles
 
 qtrait
     a function to calculate quantitative trait
