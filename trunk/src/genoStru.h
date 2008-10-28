@@ -293,10 +293,9 @@ BOOST_CLASS_VERSION(simuPOP::GenoStructure, 4)
 #endif
 
 namespace simuPOP {
-/// genotypic structure related functions, can be accessed from individuals, populations and simulator levels.
 /**
-   Genotypic structure refers to the number of chromosomes, the
-   number and position of loci on each chromosome, and allele and locus names etc. All individuals
+   Genotypic structure refers to number of chromosomes, number and position of
+   loci on each chromosome, and allele and locus names etc. All individuals
    in a population share the same genotypic structure. Because class \c GenoStruTrait
    is inherited by class \c population, class \c individual, and class \c simulator,
    functions provided in this class can be accessed at the individual, population and
@@ -309,10 +308,8 @@ private:
 #define TraitMaxIndex 0xFF
 
 public:
-	///
-	/**
-	 \test src_genoStruTrait.log Genotypic structure
-	 */
+	/// This class is a base class for classes individual, population, and simulator.
+	/// It cannot be initialized directly.
 	GenoStruTrait() : m_genoStruIdx(TraitMaxIndex)
 	{
 	}
