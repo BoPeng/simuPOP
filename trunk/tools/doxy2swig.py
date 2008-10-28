@@ -1070,24 +1070,28 @@ if __name__ == '__main__':
         print __doc__
         sys.exit(1)
     # to make my life a bit easier, provide some default parameters
+    if os.path.isfile('doxy2swig.py'):
+        src_path = '..'
+    else:
+        src_path = '.'
     # doxygen generated xml file
     if len(sys.argv) < 2:
-        xml_file = os.path.join('..', 'doxygen_doc', 'xml', 'index.xml')
+        xml_file = os.path.join(src_path, 'doxygen_doc', 'xml', 'index.xml')
     else:
         xml_file = sys.argv[1]
     # output interface file
     if len(sys.argv) < 3:
-        interface_file = os.path.join('..', 'src', 'simuPOP_doc.i')
+        interface_file = os.path.join(src_path, 'src', 'simuPOP_doc.i')
     else:
         interface_file = sys.argv[2]
     # output ref_single.tex file
     if len(sys.argv) < 4:
-        latex_file = os.path.join('..', 'doc', 'simuPOP_ref.tex')
+        latex_file = os.path.join(src_path, 'doc', 'simuPOP_ref.tex')
     else:
         latex_file = sys.argv[3]
     # output ref_all.tex file
     if len(sys.argv) < 5:
-        latex_testfile = os.path.join('..', 'doc', 'simuPOP_ref_test.tex')
+        latex_testfile = os.path.join(src_path, 'doc', 'simuPOP_ref_test.tex')
     else:
         latex_testfile = sys.argv[4]
     # read the XML file (actually a index.xml file that contains all others)
@@ -1100,7 +1104,8 @@ if __name__ == '__main__':
     print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')
     # add some other functions
-    p.scan_interface('../src/simuPOP_common.i')
+    p.scan_interface(os.path.join(src_path, 'src', 'simuPOP_common.i'))
+    sys.path = [os.path.join(src_path, 'src')] + sys.path
     p.scan_module('simuOpt')
     p.scan_module('simuUtil')
     p.scan_module('simuRPy')
