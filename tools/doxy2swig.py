@@ -72,6 +72,28 @@ class myLaTeXTranslator(LaTeXTranslator):
     def depart_enumerated_list(self, node):
         self.body.append('\\end{enumerate}\n')
 
+    def literal_block_env(self, begin_or_end):
+        # THIS WILL BE WRONG BECAUSE THIS CAN NOT
+        # EXTEND OVER SEVERAL LINES.
+        if begin_or_end == 'begin':
+            return '\\lstinline!'
+        return '!\n'
+
+    def visit_doctest_block(self, node):
+        self.literal_block = 1
+        self.insert_none_breaking_blanks = 1
+        self.body.append('{\\ttfamily \\raggedright \\noindent\n')
+        #self.body.append( '\\begin{verbatim}' )
+        #self.verbatim = 1
+
+    def depart_doctest_block(self, node):
+        #self.body.append( '\\end{verbatim}\n' )
+        #self.verbatim = 0
+        self.body.append('\n}')
+        self.insert_none_breaking_blanks = 0
+        self.literal_block = 0
+
+
 class myWriter(Writer):
     def __init__(self):
         Writer.__init__(self)

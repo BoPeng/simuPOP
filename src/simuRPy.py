@@ -575,67 +575,67 @@ class _VarPlotter_His(_VarPlotter_Base):
 #
 class varPlotter(pyOperator):
     '''
-Plotting with history
+    Plotting with history
 
-plot a number in the form of a variable or expression, use
+    plot a number in the form of a variable or expression, use
 
-varPlotter(var='expr')
+        >>> varPlotter(var='expr')
 
-plot a vector in the same window and there is only one replicate in
-the simulator, use
+    plot a vector in the same window and there is only one replicate in
+    the simulator, use
 
-varPlotter(var='expr', varDim=len)
+        >>> varPlotter(var='expr', varDim=len)
 
-where len is the dimension of your variable or expression. Each line
-in the figure represents the history of an item in the array.
+    where len is the dimension of your variable or expression. Each line
+    in the figure represents the history of an item in the array.
 
-plot a vector in the same window and there are several replicates, use
+    plot a vector in the same window and there are several replicates, use
 
-varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+        >>> varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
 
-varPlotter will try to use an appropriate layout for your subplots
-(for example, use 3x4 if  numRep=10  ). You can also specify parameter
-mfrow to change the layout.
+    varPlotter will try to use an appropriate layout for your subplots
+    (for example, use 3x4 if  numRep=10  ). You can also specify parameter
+    mfrow to change the layout.
 
-if you would like to plot each item of your array variables in a subplot,
-use
+    if you would like to plot each item of your array variables in a subplot,
+    use
 
-varPlotter(var='expr', varDim=len, byVal=1)
+        >>> varPlotter(var='expr', varDim=len, byVal=1)
 
-or in case of a single replicate
+    or in case of a single replicate
 
-varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
+        >>> varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
 
 
-There will be numRep lines in each subplot.
+    There will be numRep lines in each subplot.
 
-Use option ``history=False``  to plot with history. Parameters   byVal  ,  varDim  etc. will be ignored.
+    Use option ``history=False``  to plot with history. Parameters   byVal  ,  varDim  etc. will be ignored.
 
-Other options are
+    Other options are
 
-title, xtitle, ytitle
-    title of your figure(s). title is default to your expression, xtitle is defaulted to generation.
+    title, xtitle, ytitle
+        title of your figure(s). title is default to your expression, xtitle is defaulted to generation.
 
-win
-    window of generations. I.e., how many generations to keep in a figure. This is useful when you want to keep track of only recent changes.
+    win
+        window of generations. I.e., how many generations to keep in a figure. This is useful when you want to keep track of only recent changes.
 
-update
-    update figure after update generations. This is used when you do not want to update the figure at every generation.
+    update
+        update figure after update generations. This is used when you do not want to update the figure at every generation.
 
-saveAs
-    save figures in files saveAs#gen.eps. For example, if saveAs='demo', you will get files demo1.eps, demo2.eps etc.
+    saveAs
+        save figures in files saveAs#gen.eps. For example, if saveAs='demo', you will get files demo1.eps, demo2.eps etc.
 
-separate
-    plot data lines in separate panels.
+    separate
+        plot data lines in separate panels.
 
-image
-    use R image function to plot image, instead of lines.
+    image
+        use R image function to plot image, instead of lines.
 
-level
-    level of image colors (default to 20).
+    level
+        level of image colors (default to 20).
 
-leaveOpen
-    whether or not leave the plot open when plotting is done. Default to True.
+    leaveOpen
+        whether or not leave the plot open when plotting is done. Default to True.
 
     '''
     def __init__(self, expr, history=True, varDim=1, numRep=1, win=0, ylim=[0,0],
