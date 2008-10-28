@@ -8215,27 +8215,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::population::activateVirtualSubPop "
-
-Description:
-
-    activate a virtual subpopulation.
-
-Usage:
-
-    x.activateVirtualSubPop(subPop, virtualSubPop=InvalidSubPopID,
-      type=vspSplitter::Visible)
-
-Arguments:
-
-    id:             subpopulation id
-    vid:            virtual subpopulation id
-
-Note:
-
-    this function is currently not recommended to be used.
-
-"; 
+%feature("docstring") simuPOP::population::activateVirtualSubPop "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::population::deactivateVirtualSubPop "
 
