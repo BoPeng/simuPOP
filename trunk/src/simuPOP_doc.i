@@ -1905,7 +1905,7 @@ Usage:
 
 Details:
 
-    return the ploidy name of this population. Can be one of haploid,
+    return the ploidy name of this population, can be one of haploid,
     diploid, haplodiploid, triploid, tetraploid or #-ploid where # is
     the ploidy number.
 
@@ -1982,13 +1982,13 @@ Details:
 
 Usage:
 
-    x.locusPos(locus)
+    x.locusPos(loc)
 
 Details:
 
-    return the position of locus locus specified by the lociPos
+    return the position of locus loc specified by the lociPos
     parameter of the population function. An  IndexError will be
-    raised if the absolute index locus is greater than or equal to the
+    raised if the absolute index loc is greater than or equal to the
     total number of loci.
 
 "; 
@@ -2045,7 +2045,7 @@ Usage:
 
 Details:
 
-    return the index of the last locus on a chromosome plus 1.
+    return the index of the last locus on chromosome chrom plus 1.
 
 "; 
 
@@ -2121,7 +2121,7 @@ Usage:
 
 Details:
 
-    return the name of an allele specified by the alleleNames
+    return the name of allele allele specified by the alleleNames
     parameter of the population function. If the name of an allele is
     not specified, its index ('0', '1', '2', etc) is returned.
 
@@ -2149,8 +2149,8 @@ Usage:
 
 Details:
 
-    return the name of a locus specified by the lociNames parameter of
-    the population function. Default to locX-Y where X and Y are
+    return the name of locus loc specified by the lociNames parameter
+    of the population function. Default to locX-Y where X and Y are
     1-based chromosome and locus indexes (loc1-1, loc1-2, ... etc)
 
 "; 
