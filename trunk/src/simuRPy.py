@@ -262,74 +262,6 @@ class _VarPlotter_NoHis(_VarPlotter_Base):
             self.dynamicLim = 0
         self.level = level    # for image
 
-    def plot(self, pop, expr):
-        gen = pop.gen()
-        rep = pop.rep()
-        data = pop.evaluate(expr)
-        #
-        if type(data) == type(0) or type(data) == type(0.):
-            data = [data]
-
-        if rep >= self.numRep:
-            raise ValueError("Replicate out of range. (forget to set numRep?)")
-
-        # plot data
-        if rep==-1 or rep == 0:
-            # inc ...
-            if not self.CanUpdate(True):
-                return True
-        else:    # regular replicate
-            if not self.CanUpdate(False):
-                return True
-        self.setDev()
-        if rep == 0:
-            self.layout()
-
-        if self.dynamicLim and self.plotType != 'image':
-            self.xlim[0] = 0
-            self.xlim[1] = len(data)-1
-
-            self.ylim[0] = data[0]
-            self.ylim[1] = data[0]
-            for i in range(1, len(data)):
-                if data[i] < self.ylim[0]:
-                    self.ylim[0] = data[i]
-                if data[i] > self.ylim[1]:
-                    self.ylim[1] = data[i]
-        elif self.plotType == 'image':     # if plot type is image?
-            self.zlim=[data[0][0], data[0][0]]
-            for i in range(1, len(data)):
-                for j in range(1, len(data[i])):
-                    if data[i][j] < self.zlim[0]:
-                        self.zlim[0] = data[i][j]
-                    if data[i][j] > self.zlim[1]:
-                        self.zlim[1] = data[i][j]
-
-        if self.plotType == 'plot':
-            if self.byRep or rep <= 0 :
-                r.plot( range(0, len(data)), data,
-                    xlab=self.xlab, ylab=self.ylab,axes=self.axes,
-                    main=self.title[rep], type='l', xlim=self.xlim,
-                    ylim=self.ylim, lty=1)
-            else:
-                r.lines( range(0, len(data)), data, type='l', lty=rep+1)
-        elif self.plotType == 'image':
-            if rep == 0:
-                self.setDev()
-                self.colorBar(self.level, self.zlim)
-            d=[]
-            for i in range(0,len(data)):
-                d.extend(data[i])
-            r.image( z= with_mode(NO_CONVERSION, r.t)(
-                with_mode(NO_CONVERSION, r.matrix)(d, ncol=len(data))),
-                xlab=self.xlab, axes=self.axes,
-                ylab=self.ylab, main=self.title[rep], col=self.color)
-        else:
-            raise ValueError("Only 'plot' or 'image' is supported as plotType")
-
-        if self.saveAs != "":
-            self.save(self.saveAs, gen)
-        return True
 
 # with history
 class _VarPlotter_His(_VarPlotter_Base):
@@ -442,6 +374,221 @@ class _VarPlotter_His(_VarPlotter_Base):
     def clear(self):
         self.data=[]
 
+
+# currently, type can be plot, image
+# without history image
+class _VarPlotter_NoHis_Image(_VarPlotter_NoHis):
+    """
+    a class to plot image, potentially from different replicate
+    DO NOT PLOT HISTORY.
+
+    """
+
+    def plot(self, pop, expr):
+        gen = pop.gen()
+        rep = pop.rep()
+        data = pop.evaluate(expr)
+        #
+        if type(data) == type(0) or type(data) == type(0.):
+            data = [data]
+
+        if rep >= self.numRep:
+            raise ValueError("Replicate out of range. (forget to set numRep?)")
+
+        # plot data
+        
+        if rep==-1 or rep == 0:
+            # inc ...
+            if not self.CanUpdate(True):
+                return True
+        else:    # regular replicate
+            if not self.CanUpdate(False):
+                return True
+        self.setDev()
+        if rep == 0:
+            self.layout()
+
+        self.zlim=[data[0][0], data[0][0]]
+        for i in range(1, len(data)):
+            for j in range(1, len(data[i])):
+                if data[i][j] < self.zlim[0]:
+                    self.zlim[0] = data[i][j]
+                if data[i][j] > self.zlim[1]:
+                    self.zlim[1] = data[i][j]
+       
+       
+        if rep == 0:
+            self.setDev()
+            self.colorBar(self.level, self.zlim)
+        d=[]
+        for i in range(0,len(data)):
+            d.extend(data[i])
+        r.image( z= with_mode(NO_CONVERSION, r.t)(
+            with_mode(NO_CONVERSION, r.matrix)(d, ncol=len(data))),
+            xlab=self.xlab, axes=self.axes,
+            ylab=self.ylab, main=self.title[rep], col=self.color)
+
+        if self.saveAs != "":
+            self.save(self.saveAs, gen)
+        return True
+
+
+# without history plot
+class _VarPlotter_NoHis_Plot(_VarPlotter_NoHis):
+    """
+    a class to plot variable, potentially from different replicate
+    DO NOT PLOT HISTORY.
+
+    """
+
+    def plot(self, pop, expr):
+        gen = pop.gen()
+        rep = pop.rep()
+        data = pop.evaluate(expr)
+        #
+        if type(data) == type(0) or type(data) == type(0.):
+            data = [data]
+
+        if rep >= self.numRep:
+            raise ValueError("Replicate out of range. (forget to set numRep?)")
+
+        # plot data
+        
+        if rep==-1 or rep == 0:
+            # inc ...
+            if not self.CanUpdate(True):
+                return True
+        else:    # regular replicate
+            if not self.CanUpdate(False):
+                return True
+        self.setDev()
+        if rep == 0:
+            self.layout()
+
+        if self.dynamicLim:
+            self.xlim[0] = 0
+            self.xlim[1] = len(data)-1
+
+            self.ylim[0] = data[0]
+            self.ylim[1] = data[0]
+            for i in range(1, len(data)):
+                if data[i] < self.ylim[0]:
+                    self.ylim[0] = data[i]
+                if data[i] > self.ylim[1]:
+                    self.ylim[1] = data[i]
+                    
+        if self.byRep or rep <= 0 :
+            r.plot( range(0, len(data)), data,
+                xlab=self.xlab, ylab=self.ylab,axes=self.axes,
+                main=self.title[rep], type='l', xlim=self.xlim,
+                ylim=self.ylim, lty=1)
+        else:
+            r.lines( range(0, len(data)), data, type='l', lty=rep+1)
+
+        if self.saveAs != "":
+            self.save(self.saveAs, gen)
+        return True
+
+     
+# with history Image 
+class _VarPlotter_His_Image(_VarPlotter_His):
+    """
+    a class to plot image, potentially from different replicate
+    
+    """
+
+    def plot(self, pop, expr):
+        gen = pop.gen()
+        rep = pop.rep()
+        data = pop.evaluate(expr)
+        _data = data
+        # now start!
+        if type(_data) == type(0) or type(_data) == type(0.):
+            _data = [_data]
+
+        if type(data) == type({}):
+            raise ValueError("Variable is a dictionary. A vector is expected.")
+
+        if len(_data) != self.varDim:
+            print "Variable dimension is wrong (forget to set varDim?) varDim: ", \
+                self.varDim, " data: ", str(data)
+            if len(_data) > self.varDim:
+                _data = data[:self.varDim]
+            else:
+                for i in range(0, self.varDim - len(_data)):
+                    _data.append(0)
+            print "Change it to ", _data
+
+        if rep >= self.numRep:
+            raise ValueError("Replicate out of range. (forget to set numRep?)")
+
+        if self.byRep: # push all data in to an replicate-specific aggregator
+            if rep >= self.numRep:
+                raise ValueError("Replicate number out of range. (Use numRep parameter.")
+            self.data[rep].push( gen, _data)
+        else: # separate data
+            for d in range(0, self.varDim):
+                self.data[d].push( gen, _data[d], rep)
+
+        # plot data, only plot at the last replicate
+        if rep==-1 or rep == self.numRep-1:
+            # last replicate, but can not update
+            if not self.CanUpdate() or len( self.data[0].gen) == 1:
+                return True
+        # only update at the last replicate, so...
+        else:
+            return True
+
+        self.setDev()
+        self.layout()
+
+        self.xlim[0] = self.data[0].gen[0]
+        self.xlim[1] = self.data[0].gen[-1]
+
+        if self.win > 0 and self.xlim[1] - self.xlim[0] < self.win:
+            self.xlim[1] = self.xlim[0] + self.win
+
+        if self.dynamicLim:
+            self.ylim = self.data[0].dataRange()
+            for i in range(1, len(self.data)):
+                yl = self.data[i].dataRange()
+                if yl[0] < self.ylim[0]:
+                    self.ylim[0] = yl[0]
+                if yl[1] > self.ylim[1]:
+                    self.ylim[1] = yl[1]
+
+        if self.byRep:    
+			self.colorBar(self.level, self.ylim)
+			for rep in range(0, self.numRep):
+				r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
+					xlim=self.xlim,
+					z=with_mode(NO_CONVERSION, r.t)(
+						with_mode(NO_CONVERSION, r.matrix)(
+							self.data[rep].flatData(), byrow=True, ncol=len(self.data[rep].gen)
+							)
+						), xlab=self.xlab,
+					ylab=self.ylab, main=self.title[rep], col=self.color)
+          
+        if self.byVal: 
+			self.colorBar(self.level,self.ylim)
+			for rep in range(0, self.numRep):
+				r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
+					xlim=self.xlim, z= r.t(r.matrix(self.data[rep].flatData(),
+					byrow=True, ncol=len(self.data[rep].data[0]))), xlab=self.xlab,
+					axes=self.axes,
+					ylab=self.ylab, main=self.title[rep], col=self.color)
+          
+        self.save(gen)
+        return True
+
+
+# with history plot 
+class _VarPlotter_His_Plot(_VarPlotter_His):
+    """
+    a class to plot variable, potentially from different replicate
+
+    """
+
     def plot(self, pop, expr):
         gen = pop.gen()
         rep = pop.rep()
@@ -503,18 +650,7 @@ class _VarPlotter_His(_VarPlotter_Base):
                     self.ylim[1] = yl[1]
 
         if self.byRep:
-            if self.plotType == "image":                # use image
-                self.colorBar(self.level, self.ylim)
-                for rep in range(0, self.numRep):
-                    r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
-                        xlim=self.xlim,
-                        z=with_mode(NO_CONVERSION, r.t)(
-                            with_mode(NO_CONVERSION, r.matrix)(
-                                self.data[rep].flatData(), byrow=True, ncol=len(self.data[rep].gen)
-                                )
-                            ), xlab=self.xlab,
-                        ylab=self.ylab, main=self.title[rep], col=self.color)
-            elif self.separate == False or self.data[rep].recordSize == 1:
+            if self.separate == False or self.data[rep].recordSize == 1:
                 for rep in range(0, self.numRep):
                     r.plot( self.data[rep].gen, self.data[rep].data[0],
                         xlab=self.xlab, ylab=self.ylab,axes=self.axes,
@@ -538,15 +674,7 @@ class _VarPlotter_His(_VarPlotter_Base):
                             col=self.col[i])
 
         if self.byVal:
-            if self.plotType == "image":
-                self.colorBar(self.level,self.ylim)
-                for rep in range(0, self.numRep):
-                    r.image(x=self.data[rep].gen, y=range(0, self.data[rep].recordSize),
-                        xlim=self.xlim, z= r.t(r.matrix(self.data[rep].flatData(),
-                        byrow=True, ncol=len(self.data[rep].data[0]))), xlab=self.xlab,
-                        axes=self.axes,
-                        ylab=self.ylab, main=self.title[rep], col=self.color)
-            elif self.separate == False or self.data[rep].recordSize == 1:
+            if self.separate == False or self.data[rep].recordSize == 1:
                 for v in range(0, self.varDim):
                     r.plot( self.data[v].gen, self.data[v].data[0],
                         xlab=self.xlab, ylab=self.ylab,axes=self.axes,
@@ -571,7 +699,7 @@ class _VarPlotter_His(_VarPlotter_Base):
         self.save(gen)
         return True
 
-# currently, type can be plot, image
+
 #
 class varPlotter(pyOperator):
     '''
@@ -645,16 +773,31 @@ class varPlotter(pyOperator):
         *args, **kwargs):
         self.expr = expr
         if history == True:
-            self.plotter = _VarPlotter_His(numRep=numRep, varDim=varDim, win=win, ylim=ylim,
-                update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
-                byRep=byRep, byVal=byVal, separate=separate, plotType=plotType,
-                level=level, saveAs=saveAs, lty=lty, col=col,
-                leaveOpen=leaveOpen, dev=dev, width=width, height=height)
+			if plotType == "image":
+				self.plotter = _VarPlotter_His_Image(numRep=numRep, varDim=varDim, win=win, ylim=ylim,
+					update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
+					byRep=byRep, byVal=byVal, separate=separate, plotType=plotType,
+					level=level, saveAs=saveAs, lty=lty, col=col,
+					leaveOpen=leaveOpen, dev=dev, width=width, height=height)
+			else:
+				self.plotter = _VarPlotter_His_Plot(numRep=numRep, varDim=varDim, win=win, ylim=ylim,
+					update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
+					byRep=byRep, byVal=byVal, separate=separate, plotType=plotType,
+					level=level, saveAs=saveAs, lty=lty, col=col,
+					leaveOpen=leaveOpen, dev=dev, width=width, height=height)
         else:
-            self.plotter = _VarPlotter_NoHis(numRep=numRep, win=win, ylim=ylim,
-                update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
-                byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, lty=lty, col=col,
-                leaveOpen=leaveOpen, dev=dev, width=width, height=height)
+            if plotType == "image":
+				self.plotter = _VarPlotter_NoHis_Image(numRep=numRep, win=win, ylim=ylim,
+					update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
+					byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, lty=lty, col=col,
+					leaveOpen=leaveOpen, dev=dev, width=width, height=height)
+            else:
+				self.plotter = _VarPlotter_NoHis_Plot(numRep=numRep, win=win, ylim=ylim,
+					update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
+					byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, lty=lty, col=col,
+					leaveOpen=leaveOpen, dev=dev, width=width, height=height)
+            
+					
         # when apply is called, self.plotter.plot is called
         # *args, **kwargs may be things like rep=, gro=, at=, begin=
         pyOperator.__init__(self, func=self.plotter.plot,
