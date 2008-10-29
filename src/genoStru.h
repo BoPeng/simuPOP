@@ -294,12 +294,12 @@ BOOST_CLASS_VERSION(simuPOP::GenoStructure, 4)
 
 namespace simuPOP {
 /**
-   Genotypic structure refers to number of chromosomes, number and position of
-   loci on each chromosome, and allele and locus names etc. All individuals
-   in a population share the same genotypic structure. Because class \c GenoStruTrait
-   is inherited by class \c population, class \c individual, and class \c simulator,
-   functions provided in this class can be accessed at the individual, population and
-   simulator levels. This object can not be created directly. It is created by a population.
+ *  All individuals in a population share the same genotypic properties such as
+ *  such as number of chromosomes, number and position of loci, names of
+ *  alleles, markers, chromosomes, and information fields. These properties are
+ *  stored in this \c GenoStruTrait class and are accessible from \c individual,
+ *  \c population, and \c simulator classes. Some utility functions are also
+ *  provided.
  */
 class GenoStruTrait
 {
@@ -308,8 +308,9 @@ private:
 #define TraitMaxIndex 0xFF
 
 public:
-	/** This class is a base class for classes individual, population, and simulator.
-	 * It cannot be initialized directly.
+	/** 
+     * A \c GenoStruTrait object is created with the creation of a \c population
+	 * so it cannot be initialized directly.
 	 */
 	GenoStruTrait() : m_genoStruIdx(TraitMaxIndex)
 	{
@@ -338,21 +339,28 @@ public:
 	}
 
 
-	/// distance between loci \c loc1 and \c loc2. These two loci should be
-	/// on the same chromosome. The distance will be negative if \c loc1 is after
-	/// \c loc2.
+	/** Return the distance between loci \c loc1 and \c loc2 on the same
+     *  chromosome. A negative value will be returned if \c loc1 is after
+	 *  \c loc2.
+     */
 	double lociDist(UINT loc1, UINT loc2) const;
 
-	/// return the number of loci left on that chromosome, including locus \c loc
+	/** HIDDEN
+     * return the number of loci left on that chromosome, including locus \c loc
+     */
 	UINT lociLeft(UINT loc) const;
 
-	/// distance left to the right of the loc, till the end of chromosome
+	/** HIDDEN
+     *  Distance between locus \c loc and the last locus that is on the same
+     *  chromsome as \c loc.
+     */
 	double distLeft(UINT loc) const;
 
-	/// starting from \c loc, how many markers are covered by distance \c dist (>=0)
-	/// the result will be at least 1, even if dist = 0.
+	/** HIDDEN
+     *  starting from \c loc, how many markers are covered by distance \c dist (>=0)
+	 *  the result will be at least 1, even if dist = 0.
+     */
 	UINT lociCovered(UINT loc, double dist) const;
-
 
 	/// CPPONLY merge two genotype structure
 	GenoStructure & mergeGenoStru(size_t idx, bool byChromosome) const;
@@ -380,7 +388,11 @@ public:
 	}
 
 
-	/// return ploidy, the number of homologous sets of chromosomes
+	/** return the number of homologous sets of chromosomes, specified by the
+     *  \c ploidy parameter of the \c population function. Return 2 for a
+     *  haplodiploid population because two sets of chromosomes are stored
+     *  for both males and females in such a population.
+     */
 	UINT ploidy() const
 	{
 
@@ -391,10 +403,13 @@ public:
 	}
 
 
-	/// return ploidy name, \c haploid, \c diploid, or \c triploid etc.
+	/** return the ploidy name of this population. Can be one of \c haploid,
+     *  \c diploid, \c haplodiploid, \c triploid, \c tetraploid or \c #-ploid
+     *  where # is the ploidy number.
+     */
 	string ploidyName() const;
 
-	/// return the number of loci on chromosome \c chrom, equivalent to <tt> numLoci()[chrom] </tt>
+	/// return the number of loci on chromosome \c chrom, equivalent to <tt>numLoci()[chrom] </tt>
 	UINT numLoci(UINT chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -405,15 +420,15 @@ public:
 	}
 
 
-	/// return the number of loci on all chromosomes
+	/// return the number of loci on all chromosomes.
 	vectoru numLoci() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_numLoci;
 	}
 
 
-	/// determine whether or not the last chromosome is sex chromosome
-	bool sexChrom() const
+	/// Return \c True if the last chromosome is the sex chromosome.
+	bool hasSexChrom() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
@@ -421,14 +436,27 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
 	}
 
+	/// HIDDEN
+	bool sexChrom() const
+	{
+		return hasSexChrom();
+	}
 
-	bool haplodiploid() const
+
+    /// Return \c True if this population is haplodiploid.
+	bool isHaplodiploid() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_haplodiploid;
 	}
 
+    /// HIDDEN
+	bool haplodiploid() const
+	{
+		return isHaplodiploid();
+	}
 
-	/// return the total number of loci on all chromosomes
+
+	/// return the total number of loci on all chromosomes.
 	UINT totNumLoci() const
 	{
 
@@ -439,7 +467,10 @@ public:
 	}
 
 
-	/// return the total number of loci times ploidy
+	/** HIDDEN
+     *  return the total number of loci on all homologous chromosomes, which 
+     *  is <tt>totNumLoci()*ploidy()</tt>.
+     */
 	UINT genoSize() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -449,7 +480,11 @@ public:
 	}
 
 
-	/// return the position of a locus
+	/** return the position of locus \c locus specified by the \c lociPos
+     *  parameter of the \c population function. An \c IndexError will be
+     *  raised if the absolute index \c locus is greater than or equal to
+     *  the total number of loci.
+     */
 	double locusPos(UINT locus) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -460,7 +495,10 @@ public:
 	}
 
 
-	/// return loci positions
+	/** return the positions of all loci, specified by the \c lociPos prameter
+     *  of the \c population function. The default positions are 1, 2, 3, 4, ...
+     *  on each chromosome.
+     */
 	vectorf lociPos() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_lociPos;
@@ -492,7 +530,7 @@ public:
 	}
 
 
-	/// return the number of chromosomes
+	/// return the number of chromosomes.
 	UINT numChrom() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -509,7 +547,7 @@ public:
 	}
 
 
-	/// return the index of the first locus on a chromosome
+	/// return the index of the first locus on chromosome \c chrom.
 	UINT chromBegin(UINT chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -521,7 +559,7 @@ public:
 	}
 
 
-	/// return the index of the last locus on a chromosome plus 1
+	/// return the index of the last locus on a chromosome plus 1.
 	UINT chromEnd(UINT chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -533,7 +571,7 @@ public:
 	}
 
 
-	/// return the absolute index of a locus on a chromosome. c.f. \c chromLocusPair
+	/// return the absolute index of locus \c locus on chromosome \c chrom. c.f. \c chromLocusPair .
 	UINT absLocusIndex(UINT chrom, UINT locus)
 	{
 		CHECKRANGECHROM(chrom);
@@ -543,10 +581,16 @@ public:
 	}
 
 
-	/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index, c.f. \c absLocusIndex
+	/**
+     * return the chromosome and relative index of a locus using its absolute
+     * index \c locus. c.f. \c absLocusIndex .
+     */
 	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
-	/// return the name of an chrom
+	/**
+     * return the name of a chromosome \c chrom. Default to \c chrom# where #
+     * is the 1-based index of the chromosome.
+     */
 	string chromName(const UINT chrom) const
 	{
 		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numChrom, IndexError,
@@ -557,14 +601,14 @@ public:
 	}
 
 
-	/// return an array of chrom names
+	/// return a tuple of the names of all chromosomes.
 	vectorstr chromNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames;
 	}
 
 
-	/// return the index of a chromosome by its name
+	/// return the index of a chromosome by its \c name.
 	UINT chromByName(const string name) const
 	{
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_chromNames;
@@ -576,17 +620,27 @@ public:
 	}
 
 
-	/// return the name of an allele (if previously specified). Default to allele index.
+	/** return the name of an allele specified by the \c alleleNames parameter of
+     *  the \c population function. If the name of an allele is not specified, its
+     *  index (\c '0', \c '1', \c '2', etc) is returned.
+     */
 	string alleleName(const UINT allele) const;
 
-	/// return an array of allele names
+	/**
+     * return a list of allele names given by the \c alleleNames parameter of the
+     * \c population function. This list does not have to cover all possible allele
+     * states of a population.
+     */
 	vectorstr alleleNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
 	}
 
 
-	/// return the name of a locus
+	/** return the name of a locus specified by the \c lociNames parameter of
+     *  the \c population function. Default to \c locX-Y where \c X and \c Y
+     *  are 1-based chromosome and locus indexes (\c loc1-1, \c loc1-2, ... etc)
+     */
 	string locusName(const UINT loc) const
 	{
 		DBG_FAILIF(loc >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
@@ -597,14 +651,18 @@ public:
 	}
 
 
-	/// return names of all loci
+	/** return the names of all loci specified by the \c lociNames parameter of
+     *  the \c population function.
+     */
 	vectorstr lociNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_lociNames;
 	}
 
 
-	/// return the index of a locus by its locus name
+	/** return the index of a locus with name \c name. Raise a \c ValueError
+     *  if no locus is found.
+     */
 	UINT locusByName(const string name) const
 	{
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
@@ -616,7 +674,9 @@ public:
 	}
 
 
-	/// return an array of locus indexes by locus names
+	/** return the indexes of loci with names \c names. Raise a \c ValueError
+     *  if any of the loci cannot be found.
+     */
 	vectoru lociByNames(const vectorstr & names) const
 	{
 		vectoru indexes;
@@ -627,12 +687,10 @@ public:
 	}
 
 
-	/// return the maximum allele value for all loci. Default to maximum allowed allele state.
-	/**
-	   Maximum allele value has to be \c 1 for binary modules. \c maxAllele is
-	   the maximum possible allele value, which allows <tt>maxAllele+1</tt> alleles
-	   <tt>0, 1, ..., maxAllele</tt>.
-	 \sa setMaxAllele
+	/** return the maximum allele value specified by the \c maxAllele parameter
+     *  of the \c population function. Default to the maximum allowed allele state
+     *  of each module, namely \c 1 for binary modules, \c 255 for short modules and 
+     *  \c 65535 for long modules.
 	 */
 	UINT maxAllele() const
 	{
@@ -652,7 +710,9 @@ public:
 	}
 
 
-	/// determine if an information field exists
+	/** HIDDEN
+        Return \c True if \c name is one of the information fields of this population.
+     */
 	bool hasInfoField(const string & name) const
 	{
 		vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
@@ -661,21 +721,21 @@ public:
 	}
 
 
-	/// obtain the number of information fields
+	/// HIDDEN obtain the number of information fields
 	UINT infoSize() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 	}
 
 
-	/// return an array of all information fields
+	/// return a tuple of the names of all information fields of the population.
 	vectorstr infoFields() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields;
 	}
 
 
-	/// obtain the name of information field \c idx
+	/// return the name of information field \c idx.
 	string infoField(UINT idx) const
 	{
 		CHECKRANGEINFO(idx);
@@ -683,7 +743,9 @@ public:
 	}
 
 
-	/// return the index of the field \c name, return \c -1 if not found
+	/** return the index of information field \c name. Raise an \c IndexError
+     * if \c name is not one of the information fields.
+     */
 	UINT infoIdx(const string & name) const;
 
 	/// CPPONLY add a new information field

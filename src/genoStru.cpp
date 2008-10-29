@@ -549,9 +549,9 @@ UINT GenoStruTrait::infoIdx(const string & name) const
 	for (UINT i = 0; i < names.size(); ++i)
 		if (names[i] == name)
 			return i;
-	throw IndexError("Info field '" + name + "' is not found. "
-		                                     "Plese use infoFields=['" + name + "'] option of population() during construction\n"
-		                                                                        "or use addInfoField('" + name + "') to add to an existing population.");
+	throw IndexError("Info field '" + name + "' is not found. Plese use infoFields=['" 
+        + name + "'] option of population() during construction\n" +
+        "or use addInfoField('" + name + "') to add to an existing population.");
 	// this should never be reached.
 	return 0;
 }
