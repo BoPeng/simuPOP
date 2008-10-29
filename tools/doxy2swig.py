@@ -909,6 +909,7 @@ class Doxy2SWIG:
                 continue
             elif len(constructor) > 1:
                 print "Warning: multiple constructors: %s" % entry['Name']
+            print >> out, '\\vspace{6pt}\n'
             cons = constructor[0]
             #
             #print >> out, '\\par\n\\strong{Initialization}\n\\par'
