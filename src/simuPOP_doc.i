@@ -1806,14 +1806,13 @@ Usage:
 
 Details:
 
-    Genotypic structure refers to number of chromosomes, number and
-    position of loci on each chromosome, and allele and locus names
-    etc. All individuals in a population share the same genotypic
-    structure. Because class  GenoStruTrait is inherited by class
-    population, class individual, and class simulator, functions
-    provided in this class can be accessed at the individual,
-    population and simulator levels. This object can not be created
-    directly. It is created by a population.
+    All individuals in a population share the same genotypic
+    properties such as such as number of chromosomes, number and
+    position of loci, names of alleles, markers, chromosomes, and
+    information fields. These properties are stored in this
+    GenoStruTrait class and are accessible from individual,
+    population, and simulator classes. Some utility functions are also
+    provided.
 
 "; 
 
@@ -1825,8 +1824,8 @@ Usage:
 
 Details:
 
-    This class is a base class for classes individual, population, and
-    simulator. It cannot be initialized directly.
+    A  GenoStruTrait object is created with the creation of a
+    population so it cannot be initialized directly.
 
 "; 
 
@@ -1838,52 +1837,23 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::lociDist "
 
-Description:
-
-    loc2.
-
 Usage:
 
     x.lociDist(loc1, loc2)
 
-"; 
+Details:
 
-%feature("docstring") simuPOP::GenoStruTrait::lociLeft "
-
-Description:
-
-    return the number of loci left on that chromosome, including locus
-    loc
-
-Usage:
-
-    x.lociLeft(loc)
+    Return the distance between loci loc1 and loc2 on the same
+    chromosome. A negative value will be returned if loc1 is after
+    loc2.
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::distLeft "
+%feature("docstring") simuPOP::GenoStruTrait::lociLeft "Obsolete or undocumented function."
 
-Description:
+%feature("docstring") simuPOP::GenoStruTrait::distLeft "Obsolete or undocumented function."
 
-    distance left to the right of the loc, till the end of chromosome
-
-Usage:
-
-    x.distLeft(loc)
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::lociCovered "
-
-Description:
-
-    the result will be at least 1, even if dist = 0.
-
-Usage:
-
-    x.lociCovered(loc, dist)
-
-"; 
+%feature("docstring") simuPOP::GenoStruTrait::lociCovered "Obsolete or undocumented function."
 
 %ignore simuPOP::GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) const ;
 
@@ -1899,25 +1869,30 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidy "
 
-Description:
-
-    return ploidy, the number of homologous sets of chromosomes
-
 Usage:
 
     x.ploidy()
+
+Details:
+
+    return the number of homologous sets of chromosomes, specified by
+    the ploidy parameter of the population function. Return 2 for a
+    haplodiploid population because two sets of chromosomes are stored
+    for both males and females in such a population.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidyName "
 
-Description:
-
-    return ploidy name, haploid, diploid, or triploid etc.
-
 Usage:
 
     x.ploidyName()
+
+Details:
+
+    return the ploidy name of this population. Can be one of haploid,
+    diploid, haplodiploid, triploid, tetraploid or #-ploid where # is
+    the ploidy number.
 
 "; 
 
@@ -1938,7 +1913,7 @@ Usage:
 
 Description:
 
-    return the number of loci on all chromosomes
+    return the number of loci on all chromosomes.
 
 Usage:
 
@@ -1946,31 +1921,39 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::sexChrom "
+%feature("docstring") simuPOP::GenoStruTrait::hasSexChrom "
 
 Description:
 
-    determine whether or not the last chromosome is sex chromosome
+    Return True if the last chromosome is the sex chromosome.
 
 Usage:
 
-    x.sexChrom()
+    x.hasSexChrom()
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::haplodiploid "
+%feature("docstring") simuPOP::GenoStruTrait::sexChrom "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::GenoStruTrait::isHaplodiploid "
+
+Description:
+
+    Return True if this population is haplodiploid.
 
 Usage:
 
-    x.haplodiploid()
+    x.isHaplodiploid()
 
 "; 
+
+%feature("docstring") simuPOP::GenoStruTrait::haplodiploid "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::totNumLoci "
 
 Description:
 
-    return the total number of loci on all chromosomes
+    return the total number of loci on all chromosomes.
 
 Usage:
 
@@ -1978,39 +1961,34 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::GenoStruTrait::genoSize "
-
-Description:
-
-    return the total number of loci times ploidy
-
-Usage:
-
-    x.genoSize()
-
-"; 
+%feature("docstring") simuPOP::GenoStruTrait::genoSize "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::locusPos "
-
-Description:
-
-    return the position of a locus
 
 Usage:
 
     x.locusPos(locus)
 
+Details:
+
+    return the position of locus locus specified by the lociPos
+    parameter of the population function. An  IndexError will be
+    raised if the absolute index locus is greater than or equal to the
+    total number of loci.
+
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::lociPos "
 
-Description:
-
-    return loci positions
-
 Usage:
 
     x.lociPos()
+
+Details:
+
+    return the positions of all loci, specified by the lociPos
+    prameter of the population function. The default positions are 1,
+    2, 3, 4, ... on each chromosome.
 
 "; 
 
@@ -2022,7 +2000,7 @@ Usage:
 
 Description:
 
-    return the number of chromosomes
+    return the number of chromosomes.
 
 Usage:
 
@@ -2036,7 +2014,7 @@ Usage:
 
 Description:
 
-    return the index of the first locus on a chromosome
+    return the index of the first locus on chromosome chrom.
 
 Usage:
 
@@ -2048,7 +2026,7 @@ Usage:
 
 Description:
 
-    return the index of the last locus on a chromosome plus 1
+    return the index of the last locus on a chromosome plus 1.
 
 Usage:
 
@@ -2060,8 +2038,8 @@ Usage:
 
 Description:
 
-    return the absolute index of a locus on a chromosome. c.f.
-    chromLocusPair
+    return the absolute index of locus locus on chromosome chrom. c.f.
+    chromLocusPair .
 
 Usage:
 
@@ -2071,26 +2049,27 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::chromLocusPair "
 
-Description:
-
-    return a (chrom, locus) pair of an absolute locus index, c.f.
-    absLocusIndex
-
 Usage:
 
     x.chromLocusPair(locus)
+
+Details:
+
+    return the chromosome and relative index of a locus using its
+    absolute index locus. c.f. absLocusIndex .
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromName "
 
-Description:
-
-    return the name of an chrom
-
 Usage:
 
     x.chromName(chrom)
+
+Details:
+
+    return the name of a chromosome chrom. Default to chrom# where #
+    is the 1-based index of the chromosome.
 
 "; 
 
@@ -2098,7 +2077,7 @@ Usage:
 
 Description:
 
-    return an array of chrom names
+    return a tuple of the names of all chromosomes.
 
 Usage:
 
@@ -2110,7 +2089,7 @@ Usage:
 
 Description:
 
-    return the index of a chromosome by its name
+    return the index of a chromosome by its name.
 
 Usage:
 
@@ -2120,83 +2099,86 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::alleleName "
 
-Description:
-
-    return the name of an allele (if previously specified). Default to
-    allele index.
-
 Usage:
 
     x.alleleName(allele)
+
+Details:
+
+    return the name of an allele specified by the alleleNames
+    parameter of the population function. If the name of an allele is
+    not specified, its index ('0', '1', '2', etc) is returned.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::alleleNames "
 
-Description:
-
-    return an array of allele names
-
 Usage:
 
     x.alleleNames()
+
+Details:
+
+    return a list of allele names given by the alleleNames parameter
+    of the population function. This list does not have to cover all
+    possible allele states of a population.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::locusName "
 
-Description:
-
-    return the name of a locus
-
 Usage:
 
     x.locusName(loc)
+
+Details:
+
+    return the name of a locus specified by the lociNames parameter of
+    the population function. Default to locX-Y where X and Y are
+    1-based chromosome and locus indexes (loc1-1, loc1-2, ... etc)
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::lociNames "
 
-Description:
-
-    return names of all loci
-
 Usage:
 
     x.lociNames()
+
+Details:
+
+    return the names of all loci specified by the lociNames parameter
+    of the population function.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::locusByName "
 
-Description:
-
-    return the index of a locus by its locus name
-
 Usage:
 
     x.locusByName(name)
+
+Details:
+
+    return the index of a locus with name name. Raise a  ValueError if
+    no locus is found.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::lociByNames "
 
-Description:
-
-    return an array of locus indexes by locus names
-
 Usage:
 
     x.lociByNames(names)
 
+Details:
+
+    return the indexes of loci with names names. Raise a  ValueError
+    if any of the loci cannot be found.
+
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::maxAllele "
-
-Description:
-
-    return the maximum allele value for all loci. Default to maximum
-    allowed allele state.
 
 Usage:
 
@@ -2204,43 +2186,25 @@ Usage:
 
 Details:
 
-    Maximum allele value has to be 1 for binary modules. maxAllele is
-    the maximum possible allele value, which allows maxAllele+1
-    alleles 0, 1, ..., maxAllele.
+    return the maximum allele value specified by the maxAllele
+    parameter of the population function. Default to the maximum
+    allowed allele state of each module, namely 1 for binary modules,
+    255 for short modules and 65535 for long modules.
 
 "; 
 
 %ignore simuPOP::GenoStruTrait::setMaxAllele(UINT maxAllele);
 
-%feature("docstring") simuPOP::GenoStruTrait::hasInfoField "
+%feature("docstring") simuPOP::GenoStruTrait::hasInfoField "Obsolete or undocumented function."
 
-Description:
-
-    determine if an information field exists
-
-Usage:
-
-    x.hasInfoField(name)
-
-"; 
-
-%feature("docstring") simuPOP::GenoStruTrait::infoSize "
-
-Description:
-
-    obtain the number of information fields
-
-Usage:
-
-    x.infoSize()
-
-"; 
+%feature("docstring") simuPOP::GenoStruTrait::infoSize "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::infoFields "
 
 Description:
 
-    return an array of all information fields
+    return a tuple of the names of all information fields of the
+    population.
 
 Usage:
 
@@ -2252,7 +2216,7 @@ Usage:
 
 Description:
 
-    obtain the name of information field idx
+    return the name of information field idx.
 
 Usage:
 
@@ -2262,13 +2226,14 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::infoIdx "
 
-Description:
-
-    return the index of the field name, return -1 if not found
-
 Usage:
 
     x.infoIdx(name)
+
+Details:
+
+    return the index of information field name. Raise an  IndexError
+    if name is not one of the information fields.
 
 "; 
 
