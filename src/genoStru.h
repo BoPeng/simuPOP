@@ -357,9 +357,9 @@ public:
 	}
 
 
-	/** Return the distance between loci \c loc1 and \c loc2 on the same
-     *  chromosome. A negative value will be returned if \c loc1 is after
-	 *  \c loc2.
+	/** Return the distance between loci \e loc1 and \e loc2 on the same
+     *  chromosome. A negative value will be returned if \e loc1 is after
+	 *  \e loc2.
 	 *  <group>locus</group>
      */
 	double lociDist(UINT loc1, UINT loc2) const;
@@ -411,7 +411,7 @@ public:
 
 
 	/** return the number of homologous sets of chromosomes, specified by the
-     *  \c ploidy parameter of the \c population function. Return 2 for a
+     *  \e ploidy parameter of the \c population function. Return 2 for a
      *  haplodiploid population because two sets of chromosomes are stored
      *  for both males and females in such a population.
 	 *  <group>ploidy</group>
@@ -433,8 +433,8 @@ public:
      */
 	string ploidyName() const;
 
-	/** return the number of loci on chromosome \c chrom, equivalent to
-	 *  <tt>numLoci()[chrom]</tt>. 
+	/** return the number of loci on chromosome \e chrom, equivalent to
+	 *  <tt>numLoci()[</tt><em>chrom</em></tt>]</tt>. 
 	 *  <group>locus</group>
 	 */
 	UINT numLoci(UINT chrom) const
@@ -515,23 +515,23 @@ public:
 	}
 
 
-	/** return the position of locus \c locus specified by the \c lociPos
+	/** return the position of locus \e loc specified by the \e lociPos
      *  parameter of the \c population function. An \c IndexError will be
-     *  raised if the absolute index \c locus is greater than or equal to
+     *  raised if the absolute index \e loc is greater than or equal to
      *  the total number of loci.
 	 *  <group>locus</group>
      */
-	double locusPos(UINT locus) const
+	double locusPos(UINT loc) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		CHECKRANGEABSLOCUS(locus);
-		return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
+		CHECKRANGEABSLOCUS(loc);
+		return s_genoStruRepository[m_genoStruIdx].m_lociPos[loc];
 	}
 
 
-	/** return the positions of all loci, specified by the \c lociPos prameter
+	/** return the positions of all loci, specified by the \e lociPos prameter
      *  of the \c population function. The default positions are 1, 2, 3, 4, ...
      *  on each chromosome.
 	 *  <group>locus</group>
@@ -588,7 +588,7 @@ public:
 	}
 
 
-	/** return the index of the first locus on chromosome \c chrom.
+	/** return the index of the first locus on chromosome \e chrom.
 	 *  <group>chromosome</group>
 	 */
 	UINT chromBegin(UINT chrom) const
@@ -602,7 +602,7 @@ public:
 	}
 
 
-	/** return the index of the last locus on a chromosome plus 1.
+	/** return the index of the last locus on chromosome \e chrom plus 1.
 	 *  <group>chromosome</group>
 	 */
 	UINT chromEnd(UINT chrom) const
@@ -616,8 +616,8 @@ public:
 	}
 
 
-	/** return the absolute index of locus \c locus on chromosome \c chrom. 
-	 *  An \c IndexError will be raised if \c chrom or \c locus is out of
+	/** return the absolute index of locus \e locus on chromosome \e chrom. 
+	 *  An \c IndexError will be raised if \e chrom or \e locus is out of
 	 *  range. c.f. \c chromLocusPair.
 	 *  <group>locus</group>
 	 */
@@ -632,13 +632,13 @@ public:
 
 	/**
      * return the chromosome and relative index of a locus using its absolute
-     * index \c locus. c.f. \c absLocusIndex .
+     * index \e locus. c.f. \c absLocusIndex .
 	 *  <group>locus</group>
      */
 	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
 	/**
-     * return the name of a chromosome \c chrom. Default to \c chrom# where #
+     * return the name of a chromosome \e chrom. Default to \c chrom# where #
      * is the 1-based index of the chromosome.
 	 *  <group>chromosome</group>
      */
@@ -661,7 +661,7 @@ public:
 	}
 
 
-	/** return the index of a chromosome by its \c name.
+	/** return the index of a chromosome by its \e name.
 	 *  <group>chromosome</group>
 	 */
 	UINT chromByName(const string name) const
@@ -675,7 +675,7 @@ public:
 	}
 
 
-	/** return the name of an allele specified by the \c alleleNames parameter of
+	/** return the name of allele \e allele specified by the \e alleleNames parameter of
      *  the \c population function. If the name of an allele is not specified, its
      *  index (\c '0', \c '1', \c '2', etc) is returned.
 	 *  <group>allele</group>
@@ -683,7 +683,7 @@ public:
 	string alleleName(const UINT allele) const;
 
 	/**
-     * return a list of allele names given by the \c alleleNames parameter of the
+     * return a list of allele names given by the \e alleleNames parameter of the
      * \c population function. This list does not have to cover all possible allele
      * states of a population.
 	 *  <group>allele</group>
@@ -694,7 +694,7 @@ public:
 	}
 
 
-	/** return the name of a locus specified by the \c lociNames parameter of
+	/** return the name of locus \e loc specified by the \e lociNames parameter of
      *  the \c population function. Default to \c locX-Y where \c X and \c Y
      *  are 1-based chromosome and locus indexes (\c loc1-1, \c loc1-2, ... etc)
 	 *  <group>locus</group>
@@ -709,7 +709,7 @@ public:
 	}
 
 
-	/** return the names of all loci specified by the \c lociNames parameter of
+	/** return the names of all loci specified by the \e lociNames parameter of
      *  the \c population function.
 	 *  <group>locus</group>
      */
@@ -719,7 +719,7 @@ public:
 	}
 
 
-	/** return the index of a locus with name \c name. Raise a \c ValueError
+	/** return the index of a locus with name \e name. Raise a \c ValueError
      *  if no locus is found.
 	 *  <group>locus</group>
      */
@@ -734,7 +734,7 @@ public:
 	}
 
 
-	/** return the indexes of loci with names \c names. Raise a \c ValueError
+	/** return the indexes of loci with names \e names. Raise a \c ValueError
      *  if any of the loci cannot be found.
 	 *  <group>locus</group>
      */
@@ -798,7 +798,7 @@ public:
 	}
 
 
-	/** return the name of information field \c idx.
+	/** return the name of information field \e idx.
 	 *  <group>info</group>
 	 */
 	string infoField(UINT idx) const
@@ -808,8 +808,8 @@ public:
 	}
 
 
-	/** return the index of information field \c name. Raise an \c IndexError
-     * if \c name is not one of the information fields.
+	/** return the index of information field \e name. Raise an \c IndexError
+     * if \e name is not one of the information fields.
 	 *  <group>info</group>
      */
 	UINT infoIdx(const string & name) const;
