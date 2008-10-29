@@ -975,7 +975,7 @@ class varPlotter(pyOperator):
         leaveOpen
             whether or not leave the plot open when plotting is done. Default to True.
 
-    '''
+        '''
         self.expr = expr
         if history == True:
 			if plotType == "image":
@@ -1001,8 +1001,7 @@ class varPlotter(pyOperator):
 					update=update, title=title, xlab=xlab, ylab=ylab, axes=axes, mfrow=mfrow,
 					byRep=byRep, plotType=plotType, level=level, saveAs=saveAs, lty=lty, col=col,
 					leaveOpen=leaveOpen, dev=dev, width=width, height=height)
-            
-					
+        #
         # when apply is called, self.plotter.plot is called
         # *args, **kwargs may be things like rep=, gro=, at=, begin=
         pyOperator.__init__(self, func=self.plotter.plot,
