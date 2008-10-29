@@ -26,9 +26,9 @@
 
 
 """
-This module helps the use of  rpy  package with simuPOP. It defines an
-operator  varPlotter  that can be used to plot population expressions
-when  rpy  is installed.
+This module helps the use of ``rpy`` package with simuPOP. It defines an
+operator ``varPlotter`` that can be used to plot population expressions
+when ``rpy`` is installed.
 """
 
 from exceptions import *
@@ -53,7 +53,168 @@ if os.name == 'nt':
     r.options(windowsBuffered=False)
 
 from simuPOP import *
-from simuUtil import dataAggregator
+
+class _dataAggregator:
+    """
+    collect variables so that plotters can plot them all at once
+
+    Usage
+
+            a = _dataAggregator( maxRecord=0, recordSize=0)
+
+                maxRecord
+                    if more data is pushed, the old ones are discarded
+
+                recordSize
+                    size of record
+
+            a.push(gen, data, idx=-1)
+
+                gen
+                    generation number
+
+                data
+                    one record (will set recordSize if the first time), or
+
+                idx
+                    if idx!=-1, set data at idx.
+
+            a.clear()
+            a.range()    # return min, max of all data
+            a.data[i]    # column i of the data
+            a.gen        #
+            a.ready()    # if all column has the same length, so data is ready
+
+
+    Internal data storage::
+            self.gen   
+            self.data   column1
+            column2
+
+    each record is pushed at the end of
+
+    """
+    def __init__(self, maxRecord=0, recordSize=0):
+        """maxRecord: maxRecorddow size. I.e., maximum generations of data to keep"""
+        self.gen = []
+        self.data = []
+        self.maxRecord = maxRecord
+        self.recordSize = recordSize
+
+    def __repr__(self):
+        s = str(self.gen) + "\n"
+        for i in range(0, len(self.data)):
+            s += str(self.data[i]) + "\n"
+        return s
+
+    def clear(self):
+        self.gen = []
+        self.data = []
+
+    def ready(self):
+        return self.recordSize>0 and len(gen)>0 and len( data[0] ) == len( data[-1] )
+
+    def flatData(self):
+        res = []
+        for d in self.data:
+            res.extend( d )
+        return res
+
+    def dataRange(self):
+        if len(self.gen) == 0:
+            return [0,0]
+
+        y0 = min( [ min(x) for x in self.data] )
+        y1 = max( [ max(x) for x in self.data] )
+        return [y0,y1]
+
+    def push(self, _gen, _data, _idx=-1 ):
+        # first add data to allData
+        if len(self.gen) == 0:     # the first time
+            self.gen = [ _gen ]
+            if _idx == -1:        # given a full array of data
+                if self.recordSize == 0:
+                    self.recordSize = len(_data)
+                elif self.recordSize != len(_data):
+                    raise exceptions.ValueError("Data length does not equal specfied record size")
+                for i in range(self.recordSize):
+                    self.data.append( [_data[i]] )
+                return
+            elif _idx == 0:     # the only allowed case
+                if type(_data) in [type(()), type([])]:
+                    raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+                self.data = [ [_data] ]
+                return
+            else:                                                # data out of range
+                raise exceptions.ValueError("Appending data with wrong idx")
+        elif len(self.gen) == 1:             # still the first generation
+            if self.gen[-1] == _gen:        # still working on this generation
+                if _idx == -1:    # give a full array?
+                    raise exceptions.ValueError("Can not reassign data from this generation")
+                elif self.recordSize != 0 and    _idx >= self.recordSize:
+                    raise exceptions.ValueError("Data exceeding specified record size")
+                elif _idx == len(self.data):    # append
+                    if type(_data) in [type(()), type([])]:
+                        raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+                    self.data.append( [_data] )
+                elif _idx < len(self.data):    # change exsiting one?
+                    raise exceptions.ValueError("You can not change exisiting data")
+                else:                                                # data out of range
+                    raise exceptions.ValueError("Appending data with wrong idx")
+            else:                                                    # go to the next one!
+                if self.recordSize == 0:         # not specified
+                    self.recordSize = len(self.data)
+                elif self.recordSize != len(self.data):
+                    raise exceptions.ValueError("The first row is imcomplete")
+                self.gen.append( _gen )
+                if _idx == -1:        # given a full array of data
+                    if self.recordSize != len(_data):
+                        raise exceptions.ValueError("Data length does not equal specfied record size")
+                    for i in range(self.recordSize):
+                        self.data[i].append( _data[i] )
+                    return
+                elif _idx == 0:     # the only allowed case
+                    if type(_data) in [type(()), type([])]:
+                        raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+                    self.data[0].append(_data)
+                    return
+                else:                                                # data out of range
+                    raise exceptions.ValueError("Appending data with wrong idx")
+        else:     # already more than one record
+            # trim data if necessary
+            if self.maxRecord > 0 :
+                if _gen - self.gen[0] >= self.maxRecord:
+                    self.gen = self.gen[1:]
+                    for i in range(0, self.recordSize):
+                        self.data[i] = self.data[i][1:]
+            if self.gen[-1] == _gen:     # still this generation
+                if _idx == -1:    # give a full array?
+                    raise exceptions.ValueError("Can not reassign data from this generation")
+                elif _idx >= self.recordSize:
+                    raise exceptions.ValueError("Data exceeding specified record size")
+                elif _idx < len(self.data):    # change exsiting one?
+                    if type(_data) in [type(()), type([])]:
+                        raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+                    self.data[_idx].append( _data )
+                else:                                                # data out of range
+                    raise exceptions.ValueError("Appending data with wrong idx")
+            else:                                                    # go to the next one!
+                self.gen.append( _gen )
+                if _idx == -1:        # given a full array of data
+                    if self.recordSize != len(_data):
+                        raise exceptions.ValueError("Data length does not equal specfied record size")
+                    for i in range(self.recordSize):
+                        self.data[i].append( _data[i] )
+                    return
+                elif _idx == 0:     # the only allowed case
+                    if type(_data) in [type(()), type([])]:
+                        raise exceptions.ValueError("If idx is specified, _data should not be a list.")
+                    self.data[0].append(_data)
+                    return
+                else:                                                # data out of range
+                    raise exceptions.ValueError("Appending data with wrong idx")
+
+
 
 def rmatrix(mat):
     ''' Convert a Python 2d list to r matrix format
@@ -329,18 +490,18 @@ class _VarPlotter_His(_VarPlotter_Base):
             self.numRep = numRep
             nplot = numRep
             for rep in range(0, numRep):
-                self.data.append(dataAggregator(maxRecord=win, recordSize=varDim))
+                self.data.append(_dataAggregator(maxRecord=win, recordSize=varDim))
         elif byVal:
             nplot = varDim
             for d in range(0, varDim):
-                self.data.append(dataAggregator(maxRecord=win,recordSize=numRep))
+                self.data.append(_dataAggregator(maxRecord=win,recordSize=numRep))
         else:
             # otherwise, all data in one figure
             if numRep > 1:
-                self.data.append(dataAggregator(win, numRep))
+                self.data.append(_dataAggregator(win, numRep))
                 self.byVal = 1
             else:
-                self.data.append(dataAggregator(win, varDim))
+                self.data.append(_dataAggregator(win, varDim))
                 self.byRep = 1
 
         if lty==[]:
@@ -703,67 +864,53 @@ class _VarPlotter_His_Plot(_VarPlotter_His):
 #
 class varPlotter(pyOperator):
     '''
-    Plotting with history
+    This class defines a Python operator that uses R to plot a simuPOP express.
+    During the evolution, this express is evaluated in each replicate's local
+    namespace. How this expression is plotted depends on the dimension of the
+    return value (if a sequence is returned), number of replicates, whether or
+    not historical values (collected over several generations) are plotted,
+    and plot type (lines or images).
 
-    plot a number in the form of a variable or expression, use
+    The default behavior of this operator is to plot the history of an
+    expression. For example, when operator
 
-        >>> varPlotter(var='expr')
+        varPlotter(var='expr')
 
-    plot a vector in the same window and there is only one replicate in
-    the simulator, use
+    is used in simulator::evolve, the value of ``expr`` will be recorded each
+    time when this operator is applied. A line will be draw in a figure with
+    x-axis being the generation number. Parameters ``ylim`` can be used to
+    specify the range of y-axis.
 
-        >>> varPlotter(var='expr', varDim=len)
+    If the return value of expression ``expr`` is a sequence (tuple or list),
+    parameter ``varDim`` has to be used to indicate the dimension of this
+    expression. For example,
 
-    where len is the dimension of your variable or expression. Each line
-    in the figure represents the history of an item in the array.
+        varPlotter(var='expr', varDim=3)
 
-    plot a vector in the same window and there are several replicates, use
+    will plot three lines, corresponding to the histories of each item in the
+    array.
 
-        >>> varPlotter(var='expr', varDim=len, numRep=nr, byRep=1)
+    If the expression returns a number and there are several replicates,
+    parameter ``numRep``` should be used. In this case, each line will
+    correspond to a replicate.
 
-    varPlotter will try to use an appropriate layout for your subplots
-    (for example, use 3x4 if  numRep=10  ). You can also specify parameter
-    mfrow to change the layout.
+    If the expression returns a vector and there are several replicates, several
+    subplots will be used. Parameter ``byRep`` or ``byVar`` should be used
+    to tell ``varPlotter`` whether the subplots should be divided by replicate
+    or by variable. For example,
 
-    if you would like to plot each item of your array variables in a subplot,
-    use
+        varPlotter(var='expr', varDim=8, numRep=5, byRep=1)
 
-        >>> varPlotter(var='expr', varDim=len, byVal=1)
+    will use an appropriate layout for your subplots, which is, in this case,
+    2x3 for 5 replicates. Each subplot will have 8 lines. If byVal is ``True``,
+    there will be 3x3 subplots for 8 items in an array, and each subplot will
+    have 5 lines. Note that ``byRep`` or ``byVal`` can also be used when there
+    is only one replicate or if the dimension of the expression is one.
 
-    or in case of a single replicate
+    When ``history=False``, histories of each variable will be discarded so
+    the figure will always plot the current value of the expression.
 
-        >>> varPlotter(var='expr', varDim=len, byVal=1, numRep=nr)
-
-
-    There will be numRep lines in each subplot.
-
-    Use option ``history=False``  to plot with history. Parameters   byVal  ,  varDim  etc. will be ignored.
-
-    Other options are
-
-    title, xtitle, ytitle
-        title of your figure(s). title is default to your expression, xtitle is defaulted to generation.
-
-    win
-        window of generations. I.e., how many generations to keep in a figure. This is useful when you want to keep track of only recent changes.
-
-    update
-        update figure after update generations. This is used when you do not want to update the figure at every generation.
-
-    saveAs
-        save figures in files saveAs#gen.eps. For example, if saveAs='demo', you will get files demo1.eps, demo2.eps etc.
-
-    separate
-        plot data lines in separate panels.
-
-    image
-        use R image function to plot image, instead of lines.
-
-    level
-        level of image colors (default to 20).
-
-    leaveOpen
-        whether or not leave the plot open when plotting is done. Default to True.
+    
 
     '''
     def __init__(self, expr, history=True, varDim=1, numRep=1, win=0, ylim=[0,0],
@@ -771,6 +918,64 @@ class varPlotter(pyOperator):
         mfrow=[1,1], separate=False, byRep=False, byVal=False, plotType="plot",
         level=20, saveAs="", leaveOpen=True, dev='', width=0, height=0,
         *args, **kwargs):
+        '''
+        expr
+            expression that will be evaluate at each replicate's local namespace
+            when the operator is applied.
+
+        history
+            whether or not record and plot the history of an expression. Default
+            to True.
+
+        varDim
+            If the return value of ``expr`` is a sequence, ``varDim`` should be
+            set to the length of this sequence. Default to 1.
+
+        numRep
+            Number of replicates of the simulator. Default to 1.
+
+        win
+            Window of generations. I.e., how many generations to keep in a figure.
+            This is useful when you want to keep track of only recent changes of
+            an expression. The default value is 0, which will keep all histories.
+
+        ylim
+            The range of y-axis.
+
+        update
+            Update figure after update generations. This is used when you do not
+            want to update the figure every time when this operator is applied.
+
+        title, xlab, ylab
+            Title, label at x and y axes of your figure(s). xtitle is defaulted
+            to 'generation'.
+
+        axes
+            Whether or not plot axes. Default to ``True``.
+
+        lty
+            A list of line type for each line in the figure.
+
+        col
+            A list of colors for each line in the figure.
+
+        level
+            level of image colors (default to 20).
+
+        saveAs
+            save figures in files saveAs#gen.eps. For example, if saveAs='demo',
+            you will get files demo1.eps, demo2.eps etc.
+
+        separate
+            plot data lines in separate panels.
+
+        image
+            use R image function to plot image, instead of lines.
+
+        leaveOpen
+            whether or not leave the plot open when plotting is done. Default to True.
+
+    '''
         self.expr = expr
         if history == True:
 			if plotType == "image":
