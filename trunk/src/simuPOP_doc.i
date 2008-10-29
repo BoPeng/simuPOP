@@ -1807,12 +1807,27 @@ Usage:
 Details:
 
     All individuals in a population share the same genotypic
-    properties such as such as number of chromosomes, number and
-    position of loci, names of alleles, markers, chromosomes, and
-    information fields. These properties are stored in this
-    GenoStruTrait class and are accessible from individual,
-    population, and simulator classes. Some utility functions are also
-    provided.
+    properties such as number of chromosomes, number and position of
+    loci, names of alleles, markers, chromosomes, and information
+    fields. These properties are stored in this  GenoStruTrait class
+    and are accessible from individual, population, and simulator
+    classes. Currently, a genotypic structure consists of
+    * Ploidy, namely the number of homologous sets of chromosomes, of
+    a population. Haplodiploid population is also supported.
+    * Number of chromosomes and number of loci on each chromosome.
+    * Positions of loci, which determine the relative distance between
+    loci on the same chromosome. No unit is assumed so these positions
+    can be ordinal (1, 2, 3, ..., the default), in physical distance
+    (bp, kb or mb), or in map distance (e.g. centiMorgan) depending on
+    applications.
+    * Names of alleles. Although alleles at different loci usually
+    have different names,  simuPOP uses the same names for alleles
+    across loci for simplicity.
+    * Names of loci and chromosomes.
+    * Names of information fields attached to each individual. In
+    addition to basic property access functions, this class also
+    provides some utility functions such as locusByName, which looks
+    up a locus by its name.
 
 "; 
 
@@ -1898,38 +1913,38 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::numLoci "
 
-Description:
-
-    return the number of loci on chromosome chrom, equivalent to
-    numLoci()[chrom]
-
 Usage:
 
     x.numLoci(chrom)
+
+Details:
+
+    return the number of loci on chromosome chrom, equivalent to
+    numLoci()[chrom].
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::numLoci "
 
-Description:
-
-    return the number of loci on all chromosomes.
-
 Usage:
 
     x.numLoci()
+
+Details:
+
+    return the number of loci on all chromosomes.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::hasSexChrom "
 
-Description:
-
-    Return True if the last chromosome is the sex chromosome.
-
 Usage:
 
     x.hasSexChrom()
+
+Details:
+
+    Return True if the last chromosome is the sex chromosome.
 
 "; 
 
@@ -1937,13 +1952,13 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::isHaplodiploid "
 
-Description:
-
-    Return True if this population is haplodiploid.
-
 Usage:
 
     x.isHaplodiploid()
+
+Details:
+
+    Return True if this population is haplodiploid.
 
 "; 
 
@@ -1951,13 +1966,13 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::totNumLoci "
 
-Description:
-
-    return the total number of loci on all chromosomes.
-
 Usage:
 
     x.totNumLoci()
+
+Details:
+
+    return the total number of loci on all chromosomes.
 
 "; 
 
@@ -1998,13 +2013,13 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::numChrom "
 
-Description:
-
-    return the number of chromosomes.
-
 Usage:
 
     x.numChrom()
+
+Details:
+
+    return the number of chromosomes.
 
 "; 
 
@@ -2012,38 +2027,39 @@ Usage:
 
 %feature("docstring") simuPOP::GenoStruTrait::chromBegin "
 
-Description:
-
-    return the index of the first locus on chromosome chrom.
-
 Usage:
 
     x.chromBegin(chrom)
+
+Details:
+
+    return the index of the first locus on chromosome chrom.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromEnd "
 
-Description:
-
-    return the index of the last locus on a chromosome plus 1.
-
 Usage:
 
     x.chromEnd(chrom)
+
+Details:
+
+    return the index of the last locus on a chromosome plus 1.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::absLocusIndex "
 
-Description:
-
-    return the absolute index of locus locus on chromosome chrom. c.f.
-    chromLocusPair .
-
 Usage:
 
     x.absLocusIndex(chrom, locus)
+
+Details:
+
+    return the absolute index of locus locus on chromosome chrom. An
+    IndexError will be raised if chrom or locus is out of range. c.f.
+    chromLocusPair.
 
 "; 
 
@@ -2075,25 +2091,25 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::chromNames "
 
-Description:
-
-    return a tuple of the names of all chromosomes.
-
 Usage:
 
     x.chromNames()
+
+Details:
+
+    return a tuple of the names of all chromosomes.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::chromByName "
 
-Description:
-
-    return the index of a chromosome by its name.
-
 Usage:
 
     x.chromByName(name)
+
+Details:
+
+    return the index of a chromosome by its name.
 
 "; 
 
@@ -2186,10 +2202,9 @@ Usage:
 
 Details:
 
-    return the maximum allele value specified by the maxAllele
-    parameter of the population function. Default to the maximum
-    allowed allele state of each module, namely 1 for binary modules,
-    255 for short modules and 65535 for long modules.
+    return the maximum allowed allele state of the current  simuPOP
+    module, which is 1 for binary modules, 255 for short modules and
+    65535 for long modules.
 
 "; 
 
@@ -2201,26 +2216,26 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::infoFields "
 
-Description:
-
-    return a tuple of the names of all information fields of the
-    population.
-
 Usage:
 
     x.infoFields()
+
+Details:
+
+    return a tuple of the names of all information fields of the
+    population.
 
 "; 
 
 %feature("docstring") simuPOP::GenoStruTrait::infoField "
 
-Description:
-
-    return the name of information field idx.
-
 Usage:
 
     x.infoField(idx)
+
+Details:
+
+    return the name of information field idx.
 
 "; 
 
