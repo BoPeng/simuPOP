@@ -547,6 +547,19 @@ class Doxy2SWIG:
                 entry['Details'] = piece1[0] + piece2[1]
                 entry['Applicability'] = '<tt>' + piece2[0] + '</tt>'
             #
+            if (entry.has_key('Details') and '<group>' in entry['Details']):
+                piece1 = entry['Details'].split('<group>')
+                piece2 = piece1[1].split('</group>')
+                entry['Details'] = piece1[0] + piece2[1]
+                entry['group'] = piece2[0].strip()
+            elif (entry.has_key('Description') and '<group>' in entry['Description']):
+                piece1 = entry['Description'].split('<group>')
+                piece2 = piece1[1].split('</group>')
+                entry['Description'] = piece1[0] + piece2[1]
+                entry['group'] = piece2[0].strip()
+            else:
+                entry['group'] = ''
+            #
             entry['Doc'] = ''
             if entry.has_key('Description') and entry['Description'] != '':
                 entry['Doc'] += entry['Description']
@@ -936,20 +949,32 @@ class Doxy2SWIG:
                 print >> out, '%s' % self.latex_text(cons['note'])
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
-            for mem in members:
+            for entry in members:
                 # change pop()->population() in simulator.h
                 # change ind()->individual() in population.h
-                if mem['Name'] == 'simuPOP::simulator::pop':
-                    mem['Name'] = 'simuPOP::simulator::population'
-                    mem['Usage'] = mem['Usage'].replace('pop(', 'population(')
-                if mem['Name'] == 'simuPOP::population::ind':
-                    mem['Name'] = 'simuPOP::population::individual'
-                    mem['Usage'] = mem['Usage'].replace('ind(', 'individual(')
-            members.sort(lambda x, y: cmp(x['Name'], y['Name']))
+                if entry.has_key('Usage'):
+                    if entry['Name'] == 'simuPOP::simulator::pop':
+                        entry['Name'] = 'simuPOP::simulator::population'
+                        entry['Usage'] = entry['Usage'].replace('pop(', 'population(')
+                    if entry['Name'] == 'simuPOP::population::ind':
+                        entry['Name'] = 'simuPOP::population::individual'
+                        entry['Usage'] = entry['Usage'].replace('ind(', 'individual(')
+            def sort_member(x, y):
+                res = cmp(x['group'], y['group'])
+                if res == 0:
+                    return cmp(x['Name'], y['Name'])
+                else:
+                    return res
+            members.sort(sort_member)
             if len(members) == 0:
                 print >> out, '\\end{classdesc}\n}\n'
                 continue
+            group = ''
             for mem in members:
+                if group != mem['group']:
+                    if group != '':
+                        print >> out, '\\vspace{10pt}\n'
+                    group = mem['group']
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     usage = self.latex_text(mem['Usage'])
                     assert usage.startswith('x.')
