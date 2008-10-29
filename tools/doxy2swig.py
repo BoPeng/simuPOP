@@ -721,7 +721,6 @@ class Doxy2SWIG:
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 des = getdoc(value)
-                des += '\n\nInitialization\n\n'
                 des += getdoc(value.__init__)
                 self.content[-1]['Description'] = des
                 self.content[-1]['ignore'] = 'CPPONLY' in des
