@@ -972,6 +972,7 @@ class Doxy2SWIG:
                 continue
             group = ''
             for mem in members:
+                print "MEMBER %s, GROUP '%s'" % (mem['Name'], mem['group'])
                 if group != mem['group']:
                     if group != '':
                         print >> out, '\\vspace{10pt}\n'
