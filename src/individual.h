@@ -69,35 +69,25 @@ using std::dec;
 using std::pair;
 
 namespace simuPOP {
-/// individuals with genotype, affection status, sex etc.
 /**
-   Individuals are the building blocks of populations, each having
-   the following individual information:
- \li shared genotypic structure information
- \li genotype
- \li sex, affection status, subpopulation ID
- \li optional information fields
-
-   Individual genotypes are arranged by locus, chromosome, ploidy, in that order,
-   and can be accessed from a single index. For example, for a diploid individual with
-   two loci on the first chromosome, one locus on the second, its genotype is arranged
-   as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
-   chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
- \c allele(4) (by absolute index), \c allele(1, 1) (by index and ploidy) or \c allele(1, 1, 0)
-   (by index, ploidy and chromosome). Individuals are created by populations automatically.
-   Do not call the constructor function directly.
- */
-/*
-   Usage information: (for population class developers)
- \li for individuals created, you are responsible for setting their genotypic
-   pointer and genotypic information by using
-   <tt>setGenoStructure(GenoStructure gs)</tt>.
- \li \c setSubPopID() and \c subPopID() can be used for any \em temporary purpose.
-
- \note
- \li \c individual does \em not manage memory. Instead, it use a pointer passed
-   from \c population class. This may cause a \em lot of troubles.
- \li Output of \c individual can be adjusted by \c setOutputDelimeter.
+ *  A \c population consists of individuals with the same genotypic structure.
+ *  An \c individual object cannot be created independently, but refences to
+ *  inidividuals can be retrieved using member functions of a \c population
+ *  object. In addition to structural information shared by all individuals in
+ *  a population (provided by class \c genoStruTrait), a \c individual class
+ *  provides member functions to get and set \e genotype, \e sex, <em>affection
+ *  status</em> and <em>information fields</em> of an individual.
+ * 
+ *  \par
+ *  Genotypes of an individual are stored sequentially and can be accessed
+ *  locus by locus, or in batch. The alleles are arranged by position,
+ *  chromosome and ploidy. That is to say, the first allele on the first
+ *  chromosome of the first homologous set is followed by alleles at other loci
+ *  on the same chromsome, then markers on the second and later chromosomes,
+ *  followed by alleles on the second homologous set of the chromosomes. A
+ *  consequence of this memory layout is that two alleles at the same locus
+ *  of a diploid individual are separated by <tt>individual::totNumLoci()</tt>
+ *  loci.
  */
 class individual : public GenoStruTrait
 {
@@ -128,7 +118,9 @@ public:
 	//@{
 	///
 	/**
-	 \test src_individual.log Individual member functions
+	 * An \c individual object cannot be created directly. It has to be accessed
+	 * from a \c population object using functions such as
+	 * <tt>population::individual(</tt><em>idx</em><tt>)</tt>.
 	 */
 	individual() : m_flags(m_flagVisible), m_subPopID(0)
 	{
@@ -210,118 +202,117 @@ public:
 	/// HIDDEN return a carray of all information fields (of size \c infoSize()) of this individual
 	PyObject * arrInfo();
 
-	/// return the allele at locus \c index
-	/**
-	 \param index absolute index from the beginning of the genotype, ranging from \c 0
+	/** return allele at locus \c idx
+	 \param idx absolute idx from the beginning of the genotype, ranging from \c 0
 	   	to <tt> totNumLoci()*ploidy() </tt>
 	 */
-	UINT allele(UINT index) const
+	UINT allele(UINT idx) const
 	{
-		CHECKRANGEGENOSIZE(index);
-		return static_cast<UINT>(*(m_genoPtr + index));
+		CHECKRANGEGENOSIZE(idx);
+		return static_cast<UINT>(*(m_genoPtr + idx));
 	}
 
 
-	/// return the allele at locus \c index of the \c p-th copy of the chromosomes
+	/// return the allele at locus \c idx of the \c p-th copy of the chromosomes
 	/**
-	 \param index index from the begining of the \c p-th set of the chromosomes, ranging from
+	 \param index \e idx from the begining of the \c p-th set of the chromosomes, ranging from
 	 \c 0 to <tt> totNumLoci() </tt>
-	 \param p index of the ploidy
+	 \param p idx of the ploidy
 	 */
-	UINT allele(UINT index, UINT p) const
+	UINT allele(UINT idx, UINT p) const
 	{
-		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(p);
-		return static_cast<UINT>(*(m_genoPtr + index + p * totNumLoci() ));
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() ));
 	}
 
 
-	/// return the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
+	/// return the allele at locus \c idx of the \c ch-th chromosome in the \c p-th chromosome set
 	/**
-	 \param index index from the begining of chromosome \c ch of ploidy \c p,
+	 \param index \e idx from the begining of chromosome \c ch of ploidy \c p,
 	   	ranging from \c 0 to <tt> numLoci(ch) </tt>
-	 \param p index of the polidy
-	 \param ch index of the chromosome in the \c p-th chromosome set
+	 \param p idx of the polidy
+	 \param ch idx of the chromosome in the \c p-th chromosome set
 	 */
-	UINT allele(UINT index, UINT p, UINT ch) const
+	UINT allele(UINT idx, UINT p, UINT ch) const
 	{
-		CHECKRANGELOCUS(ch, index);
+		CHECKRANGELOCUS(ch, idx);
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(ch);
-		return static_cast<UINT>(*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch)));
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(ch)));
 	}
 
 
-	/// return the name of \c allele(index)
-	string alleleChar(UINT index) const
+	/// return the name of \c allele(idx)
+	string alleleChar(UINT idx) const
 	{
-		CHECKRANGEGENOSIZE(index);
+		CHECKRANGEGENOSIZE(idx);
 
-		return this->alleleName(allele(index));
+		return this->alleleName(allele(idx));
 	}
 
 
-	/// return the name of <tt>allele(index, p)</tt>
-	string alleleChar(UINT index, UINT p) const
+	/// return the name of <tt>allele(idx, p)</tt>
+	string alleleChar(UINT idx, UINT p) const
 	{
-		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(p);
 
-		return this->alleleName(allele(index, p));
+		return this->alleleName(allele(idx, p));
 	}
 
 
 	/// return the name of <tt>allele(idx, p, ch)</tt>
-	string alleleChar(UINT index, UINT p, UINT ch) const
+	string alleleChar(UINT idx, UINT p, UINT ch) const
 	{
-		CHECKRANGELOCUS(ch, index);
+		CHECKRANGELOCUS(ch, idx);
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(ch);
 
-		return this->alleleName(allele(index, p, ch));
+		return this->alleleName(allele(idx, p, ch));
 	}
 
 
-	/// set the allele at locus \c index
+	/// set the allele at locus \c idx
 	/**
 	 \param allele allele to be set
-	 \param index index from the begining of genotype, ranging from \c 0
+	 \param index \e idx from the begining of genotype, ranging from \c 0
 	   	to <tt> totNumLoci()*ploidy() </tt>
 	 */
-	void setAllele(Allele allele, UINT index)
+	void setAllele(Allele allele, UINT idx)
 	{
-		CHECKRANGEGENOSIZE(index);
-		*(m_genoPtr + index) = allele;
+		CHECKRANGEGENOSIZE(idx);
+		*(m_genoPtr + idx) = allele;
 	}
 
 
-	/// set the allele at locus \c index of the \c p-th copy of the chromosomes
+	/// set the allele at locus \c idx of the \c p-th copy of the chromosomes
 	/**
 	 \param allele allele to be set
-	 \param index index from the begining of the ploidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
-	 \param p index of the ploidy
+	 \param index \e idx from the begining of the ploidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
+	 \param p idx of the ploidy
 	 */
-	void setAllele(Allele allele, UINT index, UINT p)
+	void setAllele(Allele allele, UINT idx, UINT p)
 	{
-		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(p);
-		*(m_genoPtr + index + p * totNumLoci()) = allele;
+		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 	}
 
 
-	/// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
+	/// set the allele at locus \c idx of the \c ch-th chromosome in the \c p-th chromosome set
 	/**
 	 \param allele allele to be set
-	 \param index index from the begining of the chromosome, ranging from \c 0 to \c numLoci(ch)
-	 \param p index of the ploidy
-	 \param ch index of the chromosome in ploidy \c p
+	 \param index \e idx from the begining of the chromosome, ranging from \c 0 to \c numLoci(ch)
+	 \param p idx of the ploidy
+	 \param ch idx of the chromosome in ploidy \c p
 	 */
-	void setAllele(Allele allele, UINT index, UINT p, UINT ch)
+	void setAllele(Allele allele, UINT idx, UINT p, UINT ch)
 	{
-		CHECKRANGELOCUS(ch, index);
+		CHECKRANGELOCUS(ch, idx);
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(ch);
-		*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch) ) = allele;
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(ch) ) = allele;
 	}
 
 
@@ -348,7 +339,7 @@ public:
 
 	/// return an editable array of alleles of the \c p-th copy of the chromosomes
     /**
-	 \param p index of the ploidy
+	 \param p idx of the ploidy
 	 */
 	PyObject * genotype(UINT p)
 	{
@@ -360,8 +351,8 @@ public:
 
 	/// return an editable array of alleles of the \c ch-th chromosome in the \c p-th chromosome set
     /**
-	 \param p index of the ploidy
-	  \param ch index of the chromosome in ploidy \c p
+	 \param p idx of the ploidy
+	  \param ch idx of the chromosome in ploidy \c p
 	 */
 	PyObject * genotype(UINT p, UINT ch)
 	{
@@ -388,7 +379,7 @@ public:
 	/**
 	 \param geno genotype to be set. It will be reused if its length
 		is less than the total number of loci.
-	 \param p index of the ploidy
+	 \param p idx of the ploidy
 	 */
 	void setGenotype(vectora geno, UINT p) 
 	{
@@ -404,8 +395,8 @@ public:
 	/**
 	 \param geno genotype to be set. It will be reused if its length
 		is less than the number of loci on chromosome \c ch.
-	 \param p index of the ploidy
-	 \param ch index of the chromosome in ploidy \c p
+	 \param p idx of the ploidy
+	 \param ch idx of the chromosome in ploidy \c p
 	 */
 	void setGenotype(vectora geno, UINT p, UINT ch) 
 	{
@@ -447,28 +438,35 @@ public:
 	}
 
 
-	/// whether or not an individual is affected
+	/** Return \c True if this individual is affected
+	 * <group>affection</group>
+	 */
 	bool affected() const
 	{
 		return ISSETFLAG(m_flags, m_flagAffected);
 	}
 
 
-	/// equals to <tt>not affected()</tt>
+	/** HIDDEN
+	 */
 	bool unaffected() const
 	{
 		return !affected();
 	}
 
 
-	/// return \c A (affected) or \c U (unaffected) for affection status
+	/** Return \c A (or \c U) if this individual is affected (or unaffected).
+	 * <group>affection</group>
+	 */
 	char affectedChar() const
 	{
 		return affected() ? 'A' : 'U';
 	}
 
 
-	/// set affection status
+	/** set affection status to \e affected (\c True or \c False)
+	 * <group>affection</group>
+	 */
 	void setAffected(bool affected)
 	{
 		if (affected)
@@ -523,7 +521,9 @@ public:
 	}
 
 
-	/// set new subpopulation ID, \c pop.rearrangeByIndID will move this individual to that population
+	/** HIDDEN
+	 *set new subpopulation ID, \c pop.rearrangeByIndID will move this individual to that population
+	 */
 	void setSubPopID(SubPopID id)
 	{
 		m_subPopID = id;
@@ -532,7 +532,7 @@ public:
 
 	/// get information field \c idx
 	/**
-	 \param idx index of the information field
+	 \param index \e idx of the information field
 	 */
 	InfoType info(UINT idx) const
 	{
@@ -544,7 +544,7 @@ public:
 
 	/// get information field \c idx as an integer. This is the same as <tt>int(info(idx)) </tt>
 	/**
-	 \param idx index of the information field
+	 \param index \e idx of the information field
 	 */
 	int intInfo(UINT idx) const
 	{
@@ -832,7 +832,7 @@ private:
 	// current (initial individual)
 	vector<individual>::iterator m_index;
 
-	// ending index
+	// ending idx
 	vector<individual>::iterator m_end;
 
 	//
@@ -1150,7 +1150,7 @@ public:
 
 
 private:
-	// index of the information field
+	// idx of the information field
 	UINT m_info;
 	///
 	bool m_useGappedIterator;
@@ -1196,9 +1196,9 @@ public:
 	}
 
 
-	CombinedAlleleIterator(UINT index, IndividualIterator<T> it,
+	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it,
 	                       UINT ploidy, UINT size)
-		: m_index(index), m_useGappedIterator(false),
+		: m_index(idx), m_useGappedIterator(false),
 		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy), m_size(size)
 	{
 	}
