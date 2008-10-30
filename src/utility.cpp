@@ -2800,7 +2800,6 @@ void Limits()
          << hex << MaxIndexSize << endl;
     cout << "Maximum integer: " << hex << MaxIntNumber << endl;
     cout << "Maximum long integer: " << hex << MaxLongNumber << endl;
-
 }
 
 

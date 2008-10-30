@@ -8,6 +8,7 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - DOC: Adjust reference output for simuPOP classes.
   - CHG: Rename genoStruTrait::haplodiploid to isHaplodiploid.
   - CHG: Rename genoStruTrait::sexChrom to hasSexChrom.
+  - CHG: Remove the maxAllele parameter of population.
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
   - CHG: Remove the replicate group feature.

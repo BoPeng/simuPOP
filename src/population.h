@@ -174,11 +174,6 @@ public:
 	 \param lociNames an array or a matrix (separated by chromosomes) of names for
 	   each locus. Default to \c "locX-Y" where \c X is the chromosome index and \c Y
 	   is the locus number, both starting from 1.
-	 \param maxAllele maximum allele number. Default to the maximum allowed allele state
-	   of the current library. This will set a cap for all loci. For individual locus, you can
-	   specify \c maxAllele in mutation models, which can be smaller than the global \c maxAllele
-	   but not larger. Note that this number is the number of allele states minus 1 since
-	   allele number starts from 0.
 	 \param infoFields names of information fields that will be attached to each
 	   individual. For example, if you need to record the parents of each individual
 	   using operator
@@ -196,7 +191,6 @@ public:
 	           const vectorstr & chromNames = vectorstr(),
 	           const vectorstr & alleleNames = vectorstr(),
 	           const vectorstr & lociNames = vectorstr(),
-	           UINT maxAllele = ModuleMaxAllele,
 	           const vectorstr & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor

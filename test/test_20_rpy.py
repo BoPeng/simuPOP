@@ -12,7 +12,6 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-from simuUtil import dataAggregator
 import unittest, sys, os, exceptions
 
 from time import sleep

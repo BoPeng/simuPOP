@@ -144,11 +144,9 @@ string individual::__repr__()
 	ostringstream os;
 	int width = 1;
 
-	if (maxAllele() < 10)
+	if (maxAllele() == 1)
 		width = 1;
-	else if (maxAllele() >= 10 && maxAllele() < 100)
-		width = 2;
-	else if (maxAllele() >= 100)
+	else
 		width = 3;
 	display(os, width, vectori(), vectori());
 	const string & str = os.str();

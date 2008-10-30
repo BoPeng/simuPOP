@@ -26,17 +26,12 @@
 namespace simuPOP {
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
                              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-                             const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
+                             const vectorstr & lociNames, const vectorstr & infoFields)
 	: m_ploidy(ploidy), m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
 	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
-	m_maxAllele(maxAllele),
 	m_infoFields(infoFields)
 {
-#ifdef BINARYALLELE
-	DBG_ASSERT(maxAllele == 1, ValueError,
-		"max allele must be 1 for binary modules");
-#endif
 	DBG_ASSERT(ploidy >= 1, ValueError,
 		"Ploidy must be >= 1. Given " + toStr(ploidy) );
 
@@ -106,10 +101,6 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, b
         }
 	}
 #endif
-
-	DBG_WARNING( (!m_alleleNames.empty()) && m_alleleNames.size() != m_maxAllele + 1,
-		"Not all allele names are given. ");
-
 }
 
 
@@ -125,7 +116,6 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 	                     (m_chromNames == rhs.m_chromNames) &&
 	                     (m_alleleNames == rhs.m_alleleNames) &&
 	                     (m_lociNames == rhs.m_lociNames) &&
-	                     (m_maxAllele == rhs.m_maxAllele) &&
 	                     (m_infoFields == rhs.m_infoFields)
 	                     ))
 		return true;
@@ -192,7 +182,7 @@ UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
 
 void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-                                     const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields)
+                                     const vectorstr & lociNames, const vectorstr & infoFields)
 {
 	// only allow for TraitMaxIndex-1 different genotype structures
 	// As a matter of fact, most simuPOP scripts have only one
@@ -205,7 +195,7 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sex
 	}
 
 	GenoStructure tmp = GenoStructure(ploidy, loci, sexChrom, haplodiploid,
-		lociPos, chromNames, alleleNames, lociNames, maxAllele, infoFields);
+		lociPos, chromNames, alleleNames, lociNames, infoFields);
 
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size();
 	     ++it) {
@@ -319,9 +309,8 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 		DBG_DO(DBG_POPULATION, cout << "New loci positions: " << lociPos << endl);
 		DBG_DO(DBG_POPULATION, cout << "New loci names: " << lociNames << endl);
 		//
-		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 		return *new GenoStructure(gs1.m_ploidy, loci, sexChrom, gs1.m_haplodiploid, lociPos,
-			chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields);
+			chromNames, gs1.m_alleleNames, lociNames, gs1.m_infoFields);
 	} else {
 		vectoru loci = gs1.m_numLoci;
 		loci.insert(loci.end(), gs2.m_numLoci.begin(), gs2.m_numLoci.end());
@@ -338,9 +327,8 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 		for (vectorstr::const_iterator it = gs2.m_lociNames.begin(); it != gs2.m_lociNames.end(); ++it) {
 			addLocusName(*it);
 		}
-		UINT maxAllele = std::max(gs1.m_maxAllele, gs2.m_maxAllele);
 		return *new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, gs1.m_haplodiploid, lociPos,
-			chromNames, gs1.m_alleleNames, lociNames, maxAllele, gs1.m_infoFields);
+			chromNames, gs1.m_alleleNames, lociNames, gs1.m_infoFields);
 	}
 #undef addLocusName
 }
@@ -378,7 +366,7 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 		newLociNames.push_back(locusName(*loc));
 	}
 	return *new GenoStructure(ploidy(), newNumLoci, sexChrom(), haplodiploid(), newLociDist,
-		newChromNames, alleleNames(), newLociNames, maxAllele(), infoFields());
+		newChromNames, alleleNames(), newLociNames, infoFields());
 }
 
 
@@ -424,7 +412,7 @@ GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, c
 		}
 	}
 	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, gs.m_haplodiploid, lociPos,
-		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields);
+		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
 }
 
 
@@ -469,7 +457,7 @@ GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, co
 		}
 	}
 	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, gs.m_haplodiploid, lociPos,
-		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_maxAllele, gs.m_infoFields);
+		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
 }
 
 
@@ -530,9 +518,9 @@ std::pair<UINT, UINT> GenoStruTrait::chromLocusPair(UINT locus) const
 
 string GenoStruTrait::alleleName(const UINT allele) const
 {
-	DBG_FAILIF(allele > s_genoStruRepository[m_genoStruIdx].m_maxAllele,
+	DBG_FAILIF(allele > ModuleMaxAllele,
 		IndexError, "Allele " + toStr(allele) + " out of range of 0 ~ " +
-		toStr(s_genoStruRepository[m_genoStruIdx].m_maxAllele));
+		toStr(ModuleMaxAllele));
 	if (allele < s_genoStruRepository[m_genoStruIdx].m_alleleNames.size() ) {
 		DBG_FAILIF(allele >= s_genoStruRepository[m_genoStruIdx].m_alleleNames.size(),
 			IndexError, "No name for allele " + toStr(allele));
