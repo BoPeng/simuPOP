@@ -26,35 +26,6 @@ except exceptions.ImportError:
 
 class TestRPy(unittest.TestCase):
 
-    def testAggregator(self):
-        'Testing aggregator, the internal data collector for plotter'
-        a = dataAggregator(maxRecord=3, recordSize=4)
-        a.push(0, [1,2,3,4])
-        self.assertEqual(a.data, [[1], [2], [3], [4]])
-        a.push(1, [2,2,3,4])
-        self.assertEqual(a.data, [[1, 2], [2, 2], [3, 3], [4, 4]])
-        self.assertRaises(exceptions.ValueError,
-            a.push, 1, [2,2,3,4])
-        a.push(2, [2,4,5,6])
-        # the first record should be removed
-        a.push(3, [2,3,4,5])
-        #print a.data
-        self.assertEqual(a.data,
-            [[2, 2, 2], [2, 4, 3], [3, 5, 4], [4, 6, 5]])
-        #
-        # test push one number
-        a = dataAggregator(maxRecord=3)
-        a.push(0,1,0)
-        self.assertEqual(a.data, [[1]])
-        a.push(0,2,1)
-        self.assertRaises(exceptions.ValueError, a.push, 0, 3, 1)
-        a.push(0,3,2)
-        self.assertEqual(a.data, [[1],[2],[3]])
-        a.push(0,4,3)
-        a.push(1, [4,3,2,1])
-        self.assertRaises(exceptions.ValueError,
-            a.push, 1, [1,2,3,4])
-
     def testVarPlotterByRep(self):
         'Testing byRep parameter of varPlotter'
         if not hasRPy:
