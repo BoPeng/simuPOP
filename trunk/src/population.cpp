@@ -2029,33 +2029,8 @@ void population::loadPopulation(const string & filename, const string & format)
 	try {
 		boost::archive::text_iarchive ia(ifs);
 		ia >> *this;
-	} catch (...) {                                                                         // if any error happens, or can not determine format, try different methods
-		// first close the file handle.
-		DBG_DO(DBG_POPULATION,
-			cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
-		// open a fresh ifstream
-		boost::iostreams::filtering_istream ifbin;
-		if (gzipped)
-			ifbin.push(boost::iostreams::gzip_decompressor());
-		ifbin.push(boost::iostreams::file_source(filename));
-
-		// try to load the file using different iarchives.
-		try                                                                               // binary?
-		{
-			boost::archive::binary_iarchive ia(ifbin);
-			ia >> *this;
-		} catch (...) {
-			boost::iostreams::filtering_istream ifxml;
-			if (gzipped)
-				ifxml.push(boost::iostreams::gzip_decompressor());
-			ifxml.push(boost::iostreams::file_source(filename));
-			try {
-				boost::archive::xml_iarchive ia(ifxml);
-				ia >> boost::serialization::make_nvp("population", *this);
-			} catch (...) {
-				throw ValueError("Failed to load population " + filename + ".\n");
-			}
-		}                                                                                           // try text
+	} catch (...) {
+		throw ValueError("Failed to load population " + filename + ".\n");
 	}                                                                                               // try bin
 }
 

@@ -50,17 +50,11 @@ using std::deque;
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/version.hpp>
-using boost::serialization::make_nvp;
 
 #include "individual.h"
 #include "virtualSubPop.h"
@@ -1770,16 +1764,16 @@ private:
 		// deep adjustment: everyone in order
 		const_cast<population *>(this)->sortIndividuals();
 
-		ar & make_nvp("libraryMaxAllele", ModuleMaxAllele);
+		ar & ModuleMaxAllele;
 
 		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 		// GenoStructure genoStru = this->genoStru();
-		ar & make_nvp("geno_structure", genoStru());
-		ar & make_nvp("subPop_sizes", m_subPopSize);
+		ar & genoStru();
+		ar & m_subPopSize;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 #ifdef BINARYALLELE
 		size_t size = m_genotype.size();
-		ar & make_nvp("size", size);
+		ar & size;
 		WORDTYPE * ptr = BITPTR(m_genotype.begin());
 		size_t blks = size / WORDBIT;
 		size_t rest = size - blks * WORDBIT;
@@ -1791,7 +1785,7 @@ private:
 			for (size_t j = 0; j < WORDBIT / 32; ++j) {
 				tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
-				ar & make_nvp("blocks", tmp1);
+				ar & tmp1;
 			}
 		}
 		// last block
@@ -1800,28 +1794,28 @@ private:
 			for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
 				tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
-				ar & make_nvp("blocks", tmp1);
+				ar & tmp1;
 			}
 		}
 #else
-		ar & make_nvp("genotype", m_genotype);
+		ar & m_genotype;
 #endif
 		DBG_DO(DBG_POPULATION, cout << "Handling information" << endl);
-		ar & make_nvp("info", m_info);
+		ar & m_info;
 		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
-		ar & make_nvp("individuals", m_inds);
+		ar & m_inds;
 		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
-		ar & make_nvp("ancestry", m_ancestralDepth);
+		ar & m_ancestralDepth;
 		size_t sz = m_ancestralPops.size();
-		ar & make_nvp("numOfAncestralPops", sz);
+		ar & sz;
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
 			const_cast<population *>(this)->useAncestralPop(i + 1);
 			// need to make sure ancestral pop also in order
 			const_cast<population *>(this)->sortIndividuals();
-			ar & make_nvp("subPop_sizes", m_subPopSize);
+			ar & m_subPopSize;
 #ifdef BINARYALLELE
 			size_t size = m_genotype.size();
-			ar & make_nvp("size", size);
+			ar & size;
 			WORDTYPE * ptr = BITPTR(m_genotype.begin());
 			size_t blks = size / WORDBIT;
 			size_t rest = size - blks * WORDBIT;
@@ -1833,7 +1827,7 @@ private:
 				for (size_t j = 0; j < WORDBIT / 32; ++j) {
 					tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
-					ar & make_nvp("blocks", tmp1);
+					ar & tmp1;
 				}
 			}
 			// last block
@@ -1844,14 +1838,14 @@ private:
 				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
 					tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
-					ar & make_nvp("blocks", tmp1);
+					ar & tmp1;
 				}
 			}
 #else
-			ar & make_nvp("genotype", m_genotype);
+			ar & m_genotype;
 #endif
-			ar & make_nvp("info", m_info);
-			ar & make_nvp("individuals", m_inds);
+			ar & m_info;
+			ar & m_inds;
 		}
 		const_cast<population *>(this)->useAncestralPop(0);
 
@@ -1860,7 +1854,7 @@ private:
 		try {
 			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
 			string vars = varsAsString();
-			ar & make_nvp("vars", vars);
+			ar & vars;
 		} catch (...) {
 			cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
 		}
@@ -1871,7 +1865,7 @@ private:
 	void load(Archive & ar, const UINT version)
 	{
 		ULONG ma;
-		ar & make_nvp("libraryMaxAllele", ma);
+		ar & ma;
 
 		if (ma > ModuleMaxAllele)
 			cout << "Warning: The population is saved in library with more allele states. \n"
@@ -1880,12 +1874,12 @@ private:
 
 		GenoStructure stru;
 		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
-		ar & make_nvp("geno_structure", stru);
-		ar & make_nvp("subPop_sizes", m_subPopSize);
+		ar & stru;
+		ar & m_subPopSize;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 
 		if (version <= 1) {
-			ar & make_nvp("genotype", m_genotype);
+			ar & m_genotype;
 		}
 		// the new version
 		// the binary genotypes are saved in an efficient way
@@ -1894,7 +1888,7 @@ private:
 			// binary from binary
 			if (ma == 1) {
 				size_t size;
-				ar & make_nvp("size", size);
+				ar & size;
 				size_t blks = size / WORDBIT;
 				size_t rest = size - blks * WORDBIT;
 
@@ -1904,7 +1898,7 @@ private:
 				for (size_t i = 0; i < blks; ++i) {
 					tmp = 0;
 					for (size_t j = 0; j < WORDBIT / 32; ++j) {
-						ar & make_nvp("blocks", tmp1);
+						ar & tmp1;
 						tmp |= tmp1 << (j * 32);
 					}
 					*ptr++ = tmp;
@@ -1913,7 +1907,7 @@ private:
 				if (rest > 0) {
 					tmp = 0;
 					for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-						ar & make_nvp("blocks", tmp1);
+						ar & tmp1;
 						tmp |= tmp1 << (j * 32);
 					}
 					*ptr = tmp;
@@ -1923,7 +1917,7 @@ private:
 			else {
 				DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
 				vector<unsigned char> tmpgeno;
-				ar & make_nvp("genotype", tmpgeno);
+				ar & tmpgeno;
 				m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
 			}
 #else
@@ -1931,7 +1925,7 @@ private:
 			if (ma == 1) {
 				// for version 2 and higher, archive in 32bit blocks.
 				size_t size;
-				ar & make_nvp("size", size);
+				ar & size;
 				m_genotype.resize(size);
 				size_t blks = size / 32;
 				size_t rest = size - blks * 32;
@@ -1941,7 +1935,7 @@ private:
 				GenoIterator ptr = m_genotype.begin();
 				WORDTYPE tmp;
 				for (size_t i = 0; i < blks; ++i) {
-					ar & make_nvp("blocks", tmp);
+					ar & tmp;
 					for (size_t j = 0; j < 32; ++j) {
 						*ptr++ = (tmp & 1UL) != 0;
 						tmp = tmp >> 1;
@@ -1949,7 +1943,7 @@ private:
 				}
 				// last block
 				if (rest > 0) {
-					ar & make_nvp("blocks", tmp);
+					ar & tmp;
 					for (size_t j = 0; j < rest; ++j) {
 						*ptr++ = (tmp & 1UL) != 0;
 						tmp = tmp >> 1;
@@ -1959,17 +1953,17 @@ private:
 			else {                                                                          // for non-binary types, ...
 				DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
 				// long from long
-				ar & make_nvp("genotype", m_genotype);
+				ar & m_genotype;
 			}
 #endif
 		}                                                                                 // verion >= 2
 
 		if (version > 0) {
 			DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
-			ar & make_nvp("info", m_info);
+			ar & m_info;
 		}
 		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
-		ar & make_nvp("individuals", m_inds);
+		ar & m_inds;
 
 		// set genostructure, check duplication
 		// we can not use setGenoStruIdx since stru may be new.
@@ -2008,22 +2002,22 @@ private:
 
 		// ancestry populations
 		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
-		ar & make_nvp("ancestry", m_ancestralDepth);
+		ar & m_ancestralDepth;
 		size_t na;
-		ar & make_nvp("numOfAncestralPops", na);
+		ar & na;
 		for (size_t ap = 0; ap < na; ++ap) {
 			popData pd;
-			ar & make_nvp("subPop_sizes", pd.m_subPopSize);
+			ar & pd.m_subPopSize;
 			// version <= 1, direct handling
 			if (version <= 1) {
-				ar & make_nvp("genotype", pd.m_genotype);
+				ar & pd.m_genotype;
 			} else {
 #ifdef BINARYALLELE
 				// binary from binary
 				if (ma == 1) {
 					DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
 					size_t size;
-					ar & make_nvp("size", size);
+					ar & size;
 					size_t blks = size / WORDBIT;
 					size_t rest = size - blks * WORDBIT;
 
@@ -2033,7 +2027,7 @@ private:
 					for (size_t i = 0; i < blks; ++i) {
 						tmp = 0;
 						for (size_t j = 0; j < WORDBIT / 32; ++j) {
-							ar & make_nvp("blocks", tmp1);
+							ar & tmp1;
 							tmp |= tmp1 << (j * 32);
 						}
 						*ptr++ = tmp;
@@ -2042,7 +2036,7 @@ private:
 					if (rest > 0) {
 						tmp = 0;
 						for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-							ar & make_nvp("blocks", tmp1);
+							ar & tmp1;
 							tmp |= tmp1 << (j * 32);
 						}
 						*ptr = tmp;
@@ -2051,14 +2045,14 @@ private:
 					DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
 					// binary from long types
 					vector<unsigned char> tmpgeno;
-					ar & make_nvp("genotype", tmpgeno);
+					ar & tmpgeno;
 					pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
 				}
 #else
 				if (ma == 1) {
 					// long type from binary
 					size_t size;
-					ar & make_nvp("size", size);
+					ar & size;
 					pd.m_genotype.resize(size);
 					size_t blks = size / 32;
 					size_t rest = size - blks * 32;
@@ -2067,7 +2061,7 @@ private:
 					ptr = pd.m_genotype.begin();
 					WORDTYPE tmp;
 					for (size_t i = 0; i < blks; ++i) {
-						ar & make_nvp("blocks", tmp);
+						ar & tmp;
 						for (size_t j = 0; j < 32; ++j) {
 							*ptr++ = (tmp & 1UL) != 0;
 							tmp = tmp >> 1;
@@ -2075,7 +2069,7 @@ private:
 					}
 					// last block
 					if (rest > 0) {
-						ar & make_nvp("blocks", tmp);
+						ar & tmp;
 						for (size_t i = 0; i < rest; ++i) {
 							*ptr++ = (tmp & 1UL) != 0;
 							tmp = tmp >> 1;
@@ -2084,13 +2078,13 @@ private:
 				} else {
 					DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
 					// long type from long type.
-					ar & make_nvp("genotype", pd.m_genotype);
+					ar & pd.m_genotype;
 				}
 #endif
 			}
 			if (version > 0)
-				ar & make_nvp("info", pd.m_info);
-			ar & make_nvp("individuals", pd.m_inds);
+				ar & pd.m_info;
+			ar & pd.m_inds;
 			// set pointer after copy this thing again (push_back)
 			m_ancestralPops.push_back(pd);
 			// now set pointers
@@ -2113,7 +2107,7 @@ private:
 		try {
 			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
 			string vars;
-			ar & make_nvp("vars", vars);
+			ar & vars;
 			varsFromString(vars);
 		} catch (...) {
 			cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
