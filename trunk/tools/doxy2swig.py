@@ -311,6 +311,8 @@ class Doxy2SWIG:
 
 
     def do_para(self, node):
+        if self.curField == 'Details' and self.content[-1]['Details'] != '':
+            self.content[-1]['Details'] += '\n'
         self.parse_childnodes(node)
 
 
