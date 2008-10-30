@@ -22,7 +22,7 @@ class TestIndividual(unittest.TestCase):
         if AlleleType() != 'binary':
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=4, alleleNames=['_','A','C','T','G'])
+                alleleNames=['_','A','C','T','G'])
         else:
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
@@ -73,14 +73,12 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(pop.alleleNames(), ('1','2') )
             self.assertEqual(pop.alleleName(0), '1')
             self.assertEqual(pop.alleleName(1), '2')
-            self.assertRaises(exceptions.IndexError, pop.alleleName, 5)
         else:
             self.assertEqual(pop.alleleName(0), '_')
             self.assertEqual(pop.alleleName(1), 'A')
             self.assertEqual(pop.alleleName(2), 'C')
             self.assertEqual(pop.alleleName(3), 'T')
             self.assertEqual(pop.alleleName(4), 'G')
-            self.assertRaises(exceptions.IndexError, pop.alleleName, 5)
         # loci name, default, the name will be used by other programs
         # or file format, so we set it to be one based.
         self.assertEqual(pop.locusName(0), 'loc1-1')
@@ -105,7 +103,7 @@ class TestIndividual(unittest.TestCase):
         if AlleleType() != 'binary':
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=4, alleleNames=['_','A','C','T','G'])
+                alleleNames=['_','A','C','T','G'])
         else: # binary
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
@@ -248,7 +246,7 @@ class TestIndividual(unittest.TestCase):
         if AlleleType() != 'binary':
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=4, alleleNames=['_','A','C','T','G'])
+                alleleNames=['_','A','C','T','G'])
         else: # binary
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
