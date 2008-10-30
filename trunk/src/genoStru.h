@@ -69,7 +69,7 @@ using std::pair;
 
 namespace simuPOP {
 /// CPPONLY
-/** \brief genetic structure. Shared by individuals of one population
+/** genetic structure. Shared by individuals of one population
 
    populations create a copy of GenoStrcture and assign its pointer to each individual.
    This strcuture will be destroyed when population is destroyed.
@@ -294,9 +294,9 @@ BOOST_CLASS_VERSION(simuPOP::GenoStructure, 5)
 namespace simuPOP {
 /**
  *  All individuals in a population share the same genotypic properties such as
- *  number of chromosomes, number and position of loci, names of alleles,
- *  markers, chromosomes, and information fields. These properties are stored
- *  in this \c GenoStruTrait class and are accessible from \c individual,
+ *  number of chromosomes, number and position of loci, names of markers,
+ *  chromosomes, and information fields. These properties are stored in this
+ *  \c GenoStruTrait class and are accessible from \c individual,
  *  \c population, and \c simulator classes. Currently, a genotypic structure
  *  consists of
  *
