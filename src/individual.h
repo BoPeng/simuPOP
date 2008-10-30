@@ -33,24 +33,12 @@
 #include "simuPOP_cfg.h"
 #include "genoStru.h"
 
-//
-// the following is required by a vc7.1 bug.
-#if  defined (_WIN32) || defined (__WIN32__)
-#  include <boost/archive/binary_iarchive.hpp>
-#  include <boost/archive/binary_oarchive.hpp>
-#  include <fstream>
-using std::ofstream;
-using std::ifstream;
-#endif                                                                                    // win32
-
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/tracking.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
-using boost::serialization::make_nvp;
 
 #include <iterator>
 using std::ostream;
@@ -736,15 +724,14 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const UINT version) const
 	{
-		// ar & boost::serialization::make_nvp("base ptr",
 		//  boost::serialization::base_object<GenoStruTrait>(*this));
 		bool b;
 
 		b = ISSETFLAG(m_flags, m_flagFemale);
-		ar & boost::serialization::make_nvp("sex", b);
+		ar & b;
 
 		b = ISSETFLAG(m_flags, m_flagAffected);
-		ar & boost::serialization::make_nvp("affected", b);
+		ar & b;
 	}
 
 
@@ -754,17 +741,17 @@ private:
 		bool b;
 
 		m_flags = 0;
-		ar & boost::serialization::make_nvp("sex", b);
+		ar & b;
 		if (b) SETFLAG(m_flags, m_flagFemale);
-		ar & boost::serialization::make_nvp("affected", b);
+		ar & b;
 		if (b) SETFLAG(m_flags, m_flagAffected);
 		SETFLAG(m_flags, m_flagVisible);
 		SETFLAG(m_flags, m_flagIteratable);
 
 		if (version < 1) {
 			std::pair<int, int> tag;
-			ar & make_nvp("tag", tag);
-			ar & make_nvp("info", m_subPopID);
+			ar & tag;
+			ar & m_subPopID;
 		}
 	}
 

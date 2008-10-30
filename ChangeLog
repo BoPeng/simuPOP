@@ -10,6 +10,7 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Rename genoStruTrait::sexChrom to hasSexChrom.
   - CHG: Remove the maxAllele parameter of population.
   - CHG: Remove outputHelper operator, which has been replaced by pyOutput.
+  - CHG: Remove read support for XML and Binary formats.
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
   - CHG: Remove the replicate group feature.

@@ -43,13 +43,7 @@ using std::swap;
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-using boost::serialization::make_nvp;
 
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
@@ -415,12 +409,12 @@ private:
 	void save(Archive & ar, const UINT version) const
 	{
 		ULONG l_gen = gen();
-		ar & make_nvp("generation", l_gen);
-		ar & make_nvp("num_replicates", m_numRep);
+		ar & l_gen;
+		ar & m_numRep;
 
 		// ignore scratch population
 		for (UINT i = 0; i < m_numRep; i++)
-			ar & make_nvp("populations", *m_ptrRep[i]);
+			ar & (*m_ptrRep[i]);
 	}
 
 
@@ -429,15 +423,15 @@ private:
 	{
 		m_curRep = 1;
 		ULONG l_gen;
-		ar & make_nvp("generation", l_gen);
+		ar & l_gen;
 
-		ar & make_nvp("num_replicates", m_numRep);
+		ar & m_numRep;
 
 		m_ptrRep = new population *[m_numRep];
 
 		for (UINT i = 0; i < m_numRep; ++i) {
 			m_ptrRep[i] = new population();
-			ar & make_nvp("populations", *m_ptrRep[i]);
+			ar & (*m_ptrRep[i]);
 			m_ptrRep[i]->setRep(i);
 		}
 		m_scratchPop = new population(*m_ptrRep[0]);
@@ -446,7 +440,7 @@ private:
 		// a previous version saves groups, which is not supported now
 		if (version < 1) {
 			vectori groups;
-			ar & make_nvp("groups", groups);
+			ar & groups;
 		}
 
 		m_stopIfOneRepStops = false;
