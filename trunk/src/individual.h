@@ -72,10 +72,10 @@ namespace simuPOP {
  *  chromosome and ploidy. That is to say, the first allele on the first
  *  chromosome of the first homologous set is followed by alleles at other loci
  *  on the same chromsome, then markers on the second and later chromosomes,
- *  followed by alleles on the second homologous set of the chromosomes. A
- *  consequence of this memory layout is that two alleles at the same locus
- *  of a diploid individual are separated by <tt>individual::totNumLoci()</tt>
- *  loci.
+ *  followed by alleles on the second homologous set of the chromosomes for
+ *  a diploid individual. A consequence of this memory layout is that alleles
+ *  at the same locus of a non-haploid individual are separated by
+ *  <tt>individual::totNumLoci()</tt> loci.
  */
 class individual : public GenoStruTrait
 {
