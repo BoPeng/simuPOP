@@ -190,9 +190,9 @@ public:
 	/// HIDDEN return a carray of all information fields (of size \c infoSize()) of this individual
 	PyObject * arrInfo();
 
-	/** return allele at locus \c idx
-	 \param idx absolute idx from the beginning of the genotype, ranging from \c 0
-	   	to <tt> totNumLoci()*ploidy() </tt>
+	/** return the current allele at a locus, using its absolute index \e idx.
+	 *
+	 * <group>allele</group>
 	 */
 	UINT allele(UINT idx) const
 	{
@@ -201,11 +201,9 @@ public:
 	}
 
 
-	/// return the allele at locus \c idx of the \c p-th copy of the chromosomes
-	/**
-	 \param index \e idx from the begining of the \c p-th set of the chromosomes, ranging from
-	 \c 0 to <tt> totNumLoci() </tt>
-	 \param p idx of the ploidy
+	/** return the current allele at locus \e idx on the <em>p</em>-th set of
+	 *  homologous chromosomes.
+	 * <group>allele</group>
 	 */
 	UINT allele(UINT idx, UINT p) const
 	{
@@ -215,23 +213,23 @@ public:
 	}
 
 
-	/// return the allele at locus \c idx of the \c ch-th chromosome in the \c p-th chromosome set
-	/**
-	 \param index \e idx from the begining of chromosome \c ch of ploidy \c p,
-	   	ranging from \c 0 to <tt> numLoci(ch) </tt>
-	 \param p idx of the polidy
-	 \param ch idx of the chromosome in the \c p-th chromosome set
+	/** return the current allele at locus \e idx on chromosome \e chrom of
+	 *  the <em>p</em>-th set of homologous chromosomes.
+	 * <group>allele</group>
 	 */
-	UINT allele(UINT idx, UINT p, UINT ch) const
+	UINT allele(UINT idx, UINT p, UINT chrom) const
 	{
-		CHECKRANGELOCUS(ch, idx);
+		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(ch);
-		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(ch)));
+		CHECKRANGECHROM(chrom);
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 
 
-	/// return the name of \c allele(idx)
+	/** return the name of \c allele(idx)
+	 *  HIDDEN
+	 * <group>allele</group>
+	 */
 	string alleleChar(UINT idx) const
 	{
 		CHECKRANGEGENOSIZE(idx);
@@ -240,7 +238,10 @@ public:
 	}
 
 
-	/// return the name of <tt>allele(idx, p)</tt>
+	/** HIDDEN
+	 * return the name of <tt>allele(idx, p)</tt>
+	 * <group>allele</group>
+	 */
 	string alleleChar(UINT idx, UINT p) const
 	{
 		CHECKRANGEABSLOCUS(idx);
@@ -250,7 +251,10 @@ public:
 	}
 
 
-	/// return the name of <tt>allele(idx, p, ch)</tt>
+	/** HIDDEN
+	 * return the name of <tt>allele(idx, p, ch)</tt>
+	 * <group>allele</group>
+	 */
 	string alleleChar(UINT idx, UINT p, UINT ch) const
 	{
 		CHECKRANGELOCUS(ch, idx);
@@ -261,11 +265,8 @@ public:
 	}
 
 
-	/// set the allele at locus \c idx
-	/**
-	 \param allele allele to be set
-	 \param index \e idx from the begining of genotype, ranging from \c 0
-	   	to <tt> totNumLoci()*ploidy() </tt>
+	/** set allele \e allele to a locus, using its absolute index \e idx.
+	 * <group>allele</group>
 	 */
 	void setAllele(Allele allele, UINT idx)
 	{
@@ -274,11 +275,9 @@ public:
 	}
 
 
-	/// set the allele at locus \c idx of the \c p-th copy of the chromosomes
-	/**
-	 \param allele allele to be set
-	 \param index \e idx from the begining of the ploidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
-	 \param p idx of the ploidy
+	/** set allele \e allele to locus \e idx on the <em>p</em>-th homologous
+	 *  set of chromosomes.
+	 * <group>allele</group>
 	 */
 	void setAllele(Allele allele, UINT idx, UINT p)
 	{
@@ -288,23 +287,23 @@ public:
 	}
 
 
-	/// set the allele at locus \c idx of the \c ch-th chromosome in the \c p-th chromosome set
-	/**
-	 \param allele allele to be set
-	 \param index \e idx from the begining of the chromosome, ranging from \c 0 to \c numLoci(ch)
-	 \param p idx of the ploidy
-	 \param ch idx of the chromosome in ploidy \c p
+	/** set allele \e allele to locus \e idx on chromosome \e chrom of the
+	 *  <em>p</em>-th homologous set of chromosomes.
+	 *  <group>allele</group>
 	 */
-	void setAllele(Allele allele, UINT idx, UINT p, UINT ch)
+	void setAllele(Allele allele, UINT idx, UINT p, UINT chrom)
 	{
-		CHECKRANGELOCUS(ch, idx);
+		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(ch);
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(ch) ) = allele;
+		CHECKRANGECHROM(chrom);
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom) ) = allele;
 	}
 
 
-	/// return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual.
+	/** return an editable array (a \c carray of length <tt>totNumLoci()*ploidy()</tt>)
+	 *  that represents all alleles of an individual.
+	 * <group>genotype</group>
+	 */
 	PyObject * genotype()
 	{
 		// The following implementation has comparable performance as
@@ -325,9 +324,10 @@ public:
 	}
 
 
-	/// return an editable array of alleles of the \c p-th copy of the chromosomes
-    /**
-	 \param p idx of the ploidy
+    /** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
+	 *  that represents all alleles on the <em>p</em>-th homologous set of
+	 *  chromosomes.
+	 * <group>genotype</group>
 	 */
 	PyObject * genotype(UINT p)
 	{
@@ -337,23 +337,25 @@ public:
 	}
 
 
-	/// return an editable array of alleles of the \c ch-th chromosome in the \c p-th chromosome set
-    /**
-	 \param p idx of the ploidy
-	  \param ch idx of the chromosome in ploidy \c p
+	/** return an editable array (a \c carrary of legnth 
+	 *  <tt>numLoci(</tt><em>chrom</em><tt>)</tt>) that represents all alleles
+	 *  on chromosome \e chrom of the <em>p</em>-th homologous set of
+	 *  chromosomes.
+	 *  <group>genotype</group>
 	 */
-	PyObject * genotype(UINT p, UINT ch)
+	PyObject * genotype(UINT p, UINT chrom)
 	{
 		CHECKRANGEPLOIDY(p);
-		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
-			m_genoPtr + p * totNumLoci() + chromEnd(ch));
+		CHECKRANGECHROM(chrom);
+		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(chrom),
+			m_genoPtr + p * totNumLoci() + chromEnd(chrom));
 	}
 
 
-	/// set the genotype of an individual
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the genotype length of the individual.
+	/** Fill the genotype of an individual using a list of alleles \e geno.
+	 *  \c geno will be reused if its length is less than 
+	 *  <tt>totNumLoci()*ploidy()</tt>.
+	 *  <group>genotype</group>
 	 */
 	void setGenotype(vectora geno) 
 	{
@@ -363,11 +365,10 @@ public:
 	}
 
 
-	/// set the genotype of the \c p-th copy of the chromosomes
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the total number of loci.
-	 \param p idx of the ploidy
+	/** Fill the genotype of the <em>p</em>-th homologous set of chromosomes
+	 *  using a list of alleles \e geno. \c geno will be reused if its length
+	 *  is less than <tt>totNumLoci()</tt>.
+	 *  <group>genotype</group>
 	 */
 	void setGenotype(vectora geno, UINT p) 
 	{
@@ -379,25 +380,26 @@ public:
 	}
 
 
-	/// set the genotype of the \c ch-th chromosome in the \c p-th chromosome set
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the number of loci on chromosome \c ch.
-	 \param p idx of the ploidy
-	 \param ch idx of the chromosome in ploidy \c p
+	/** Fill the genotype of chromosome \e chrom on the <em>p</em>-th
+	 *  homologous set of chromosomes using a list of alleles \e geno.
+	 *  \c geno will be reused if its length is less than 
+	 *  <tt>mumLoci(</tt><em>chrom</em><tt>)</tt>.
+	 * <group>genotype</group>
 	 */
-	void setGenotype(vectora geno, UINT p, UINT ch) 
+	void setGenotype(vectora geno, UINT p, UINT chrom) 
 	{
 		CHECKRANGEPLOIDY(p);
-	    CHECKRANGECHROM(ch);
-		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(ch);
+	    CHECKRANGECHROM(chrom);
+		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(chrom);
 		UINT sz = geno.size();
 		for(UINT i =0; i < numLoci(ch); i++)
 			*(ptr+i) = geno[i % sz];
 	}
 
 
-	/// return the sex of an individual, \c 1 for males and \c 2 for females.
+	/** return the sex of an individual, \c 1 for male and \c 2 for female.
+	 * <group>sex</group>
+	 */
 	Sex sex() const
 	{
 		if (ISSETFLAG(m_flags, m_flagFemale) )
@@ -407,14 +409,18 @@ public:
 	}
 
 
-	/// return the sex of an individual, \c M or \c F
+	/** return the sex of an individual, \c M for male or \c F for \c female.
+	 * <group>sex</group>
+	 */
 	char sexChar() const
 	{
 		return sex() == Female ? 'F' : 'M';
 	}
 
 
-	/// set sex. \c sex can be \c Male of \c Female.
+	/** set individual sex to \c Male or \c Female.
+	 * <group>sex</group>
+	 */
 	void setSex(Sex sex)
 	{
 		CHECKRANGESEX(sex);
@@ -426,7 +432,7 @@ public:
 	}
 
 
-	/** Return \c True if this individual is affected
+	/** Return \c True if this individual is affected.
 	 * <group>affection</group>
 	 */
 	bool affected() const
@@ -443,7 +449,7 @@ public:
 	}
 
 
-	/** Return \c A (or \c U) if this individual is affected (or unaffected).
+	/** Return \c A if this individual is affected, or \c U otherwise.
 	 * <group>affection</group>
 	 */
 	char affectedChar() const
@@ -452,7 +458,7 @@ public:
 	}
 
 
-	/** set affection status to \e affected (\c True or \c False)
+	/** set affection status to \e affected (\c True or \c False).
 	 * <group>affection</group>
 	 */
 	void setAffected(bool affected)
@@ -499,7 +505,7 @@ public:
 
 
 	/// return the ID of the subpopulation to which this individual blongs
-	/**
+	/** HIDDEN
 	 \note \c subPopID is not set by default. It only corresponds to the subpopulation
 	   	in which this individual resides after \c pop::setIndSubPopID is called.
 	 */
@@ -518,9 +524,8 @@ public:
 	}
 
 
-	/// get information field \c idx
-	/**
-	 \param index \e idx of the information field
+	/** Return the value of an information field \e idx (an index).
+	 * <group>info</group>
 	 */
 	InfoType info(UINT idx) const
 	{
@@ -530,9 +535,8 @@ public:
 	}
 
 
-	/// get information field \c idx as an integer. This is the same as <tt>int(info(idx)) </tt>
-	/**
-	 \param index \e idx of the information field
+	/** Return the value of an information field \e idx (an index) as an integer number.
+	 * <group>info</group>
 	 */
 	int intInfo(UINT idx) const
 	{
@@ -541,10 +545,8 @@ public:
 	}
 
 
-	/// get information field \c name
-	/**
-	   Equivalent to <tt>info(infoIdx(name))</tt>.
-	 \param name name of the information field
+	/** Return the value of an information field \e name.
+	 *  <group>info</group>
 	 */
 	InfoType info(const string & name) const
 	{
@@ -556,10 +558,8 @@ public:
 	}
 
 
-	/// get information field \c name as an integer
-	/**
-	   Equivalent to <tt>int(info(name))</tt>.
-	 \param name name of the information field
+	/** Return the value of an information field \e name as an integer number.
+	 * <group>info</group>
 	 */
 	int intInfo(const string & name) const
 	{
@@ -571,7 +571,9 @@ public:
 	}
 
 
-	/// set information field by \c idx
+	/** set the value of an information field \e idx (an index) to \e value.
+	 *  <group>info</group>
+	 */
 	void setInfo(InfoType value, UINT idx)
 	{
 		CHECKRANGEINFO(idx);
@@ -579,7 +581,9 @@ public:
 	}
 
 
-	/// set information field by \c name
+	/** set the value of an information field \e name to \e value.
+	 *  <group>info</group>
+	 */
 	void setInfo(InfoType value, const string & name)
 	{
 		int idx = infoIdx(name);
@@ -698,9 +702,6 @@ public:
 	   pointer to genotypic info is swapped instead. This
 	   will lead to better performance for swapping but
 	   may affected performance of allele counting.
-
-	 \param ind individual to be swapped in
-	 \param swapContent swapContent or only the pointers.
 
 	   The guideline is that if we swap individuals across
 	   subpopulation, we should swap content. Otherwise,
