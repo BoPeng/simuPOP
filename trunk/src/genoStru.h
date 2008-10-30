@@ -87,7 +87,7 @@ public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
 		m_numLoci(0), m_sexChrom(false), m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
-		m_chromNames(), m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0)
+		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
 	{
 	}
 
@@ -101,12 +101,11 @@ public:
 	 \param chromNames chromosome names
 	 \param alleleNames allele names
 	 \param lociNames name of loci
-	 \param maxAllele maximum possible allele number for all alleles.
 	 \param length of info field
 	 */
 	GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
 	              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-	              const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
+	              const vectorstr & lociNames, const vectorstr & infoFields);
 
 	bool operator==(const GenoStructure & rhs);
 
@@ -182,7 +181,6 @@ private:
 		ar & make_nvp("chrom_name", m_chromNames);
 		ar & make_nvp("allele_name", m_alleleNames);
 		ar & make_nvp("loci_name", m_lociNames);
-		ar & make_nvp("max_allele", m_maxAllele);
 		ar & make_nvp("info_name", m_infoFields);
 		/// do not save load chromosome map
 	}
@@ -218,7 +216,10 @@ private:
 		}
 		ar & make_nvp("allele_name", m_alleleNames);
 		ar & make_nvp("loci_name", m_lociNames);
-		ar & make_nvp("max_allele", m_maxAllele);
+		if (version < 5) {
+			size_t maxAllele;
+			ar & make_nvp("max_allele", maxAllele);
+		}
 		if (version >= 2)
 			ar & make_nvp("info_name", m_infoFields);
 
@@ -271,9 +272,6 @@ private:
 	/// loci names
 	vectorstr m_lociNames;
 
-	/// max allele
-	UINT m_maxAllele;
-
 	/// name of the information field
 	vectorstr m_infoFields;
 
@@ -289,7 +287,8 @@ private:
 // version 2: add info name
 // version 3: add chromName
 // version 4: add haplodiploid
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 4)
+// version 5: do not save maxAllele
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 5)
 #endif
 
 namespace simuPOP {
@@ -338,7 +337,7 @@ public:
 	/// CPPONLY set genotypic structure
 	void setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
 		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-		const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
+		const vectorstr & lociNames, const vectorstr & infoFields);
 
 	/// CPPONLY set an existing geno structure
 	/**
@@ -755,19 +754,7 @@ public:
 	 */
 	UINT maxAllele() const
 	{
-		return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
-	}
-
-
-	/// CPPONLY set the maximum allele value for all loci
-	void setMaxAllele(UINT maxAllele)
-	{
-#ifdef BINARYALLELE
-		DBG_ASSERT(maxAllele == 1,  ValueError,
-			"max allele must be 1 for binary modules");
-#else
-		s_genoStruRepository[m_genoStruIdx].m_maxAllele = maxAllele;
-#endif
+		return ModuleMaxAllele;
 	}
 
 

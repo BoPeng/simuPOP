@@ -41,7 +41,6 @@ population::population(const vectorlu & size,
                        const vectorstr & chromNames,
                        const vectorstr & alleleNames,
                        const vectorstr & lociNames,
-                       UINT maxAllele,
                        const vectorstr & infoFields)
 	:
 	GenoStruTrait(),
@@ -62,13 +61,6 @@ population::population(const vectorlu & size,
 	m_indOrdered(true),
 	m_selectionFlags()
 {
-	DBG_FAILIF(maxAllele > ModuleMaxAllele, ValueError,
-		"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(ModuleMaxAllele) +
-		")\nPlease use simuOpt.setOptions(alleleType='long') to use the long allele version of simuPOP.");
-
-	DBG_FAILIF(maxAllele == 0, ValueError,
-		"maxAllele should be at least 1 (0,1 two states). ");
-
 	DBG_DO(DBG_POPULATION, cout << "Constructor of population is called\n");
 
 	DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
@@ -81,7 +73,7 @@ population::population(const vectorlu & size,
 
 	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
 		loci, sexChrom, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
-		lociNames, maxAllele, infoFields);
+		lociNames, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 		                   << sizeof(Allele) << '*' << genoSize() << endl
@@ -1275,7 +1267,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 
 	// create a population with this size
 	population * pop = new population(sz, ploidy(), numLoci(), sexChrom(), lociPos(), 0,
-		chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields());
+		chromNames(), alleleNames(), lociNames(), infoFields());
 	// copy individuals over
 	IndIterator from = indBegin();
 	vector<IndIterator> to;
@@ -1422,7 +1414,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
 		sexChrom(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
 		// chromosome names are discarded
-		vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields());
+		vectorstr(), alleleNames(), lociNames(), infoFields());
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
 		useAncestralPop(depth);
 

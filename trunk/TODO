@@ -4,8 +4,6 @@ Towards simuPOP 1.0
 
 simuPOP 1.0 should have a consistently defined and well documented interface.
 
-0. Remove the maxAllele parameter of population.
-
 1. Test and document each function and class.
   1.1 Complete and expand test sets. If possible, repeat tests in many 
 	scenarios.

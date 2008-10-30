@@ -712,7 +712,7 @@ if simulator.saveSimulator.__doc__ is not None:
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
 def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False,
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
-    maxAllele=ModuleMaxAllele, infoFields=[]):
+    maxAllele=None, infoFields=[]):
     if subPop != []:
         print 'Parameter subPop is obsolete. Please use size instead'
         if size != 0:
@@ -736,9 +736,11 @@ def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False,
         ln = []
         for i in range(0, len(lociNames)):
             ln.extend(lociNames[i])
+    if not maxAllele is None:
+        print 'Parameter maxAllele is obsolete'
     cppModule.population_swiginit(self,
         cppModule.new_population(sp, ploidy, loci, sexChrom, ld,
-            ancestralDepth, chromNames, alleleNames, ln, maxAllele, infoFields))
+            ancestralDepth, chromNames, alleleNames, ln, infoFields))
 
 new_population.__doc__ = population.__init__.__doc__
 del population.__init__
