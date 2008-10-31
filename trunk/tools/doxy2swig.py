@@ -551,8 +551,11 @@ class Doxy2SWIG:
             #
             if (entry.has_key('Details') and '<group>' in entry['Details']):
                 piece1 = entry['Details'].split('<group>')
-                piece2 = piece1[1].split('</group>')
-                entry['Details'] = piece1[0] + piece2[1]
+                try:
+                    piece2 = piece1[1].split('</group>')
+                    entry['Details'] = piece1[0] + piece2[1]
+                except:
+                    print 'WRONG GROUP INFORMATION: ', entry['Name'], entry['Details']
                 entry['group'] = piece2[0].strip()
             elif (entry.has_key('Description') and '<group>' in entry['Description']):
                 piece1 = entry['Description'].split('<group>')
