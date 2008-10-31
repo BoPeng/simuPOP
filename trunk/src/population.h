@@ -110,7 +110,6 @@ namespace simuPOP {
  *    access an ancestor, or make an ancestral generation the current generation
  *    for more efficient access.
  *  \li Save and load a population.
- *
  */
 class population : public GenoStruTrait
 {
@@ -119,17 +118,20 @@ public:
 	/** @name  constructors and destructor */
 	//@{
 
-	/**
-	 *   This function creates a population object.
+	/** The following parameters are used to create a population object:
 	 *
-     * 	 \param size An array of subpopulation sizes. If a single number is given,
-     * 	   	it will be the size of a single subpopulation of the whole population.
-     * 	 \param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
-     * 	   	Please use \c Haplodiploid to specify a haplodiploid population. Note that
-     * 	   	the ploidy number returned for such a population will be 2 and male
-     * 	   	individuals will store two copies of chromosomes. Operators such
-     * 	   	as a recombinator will recognize this population as haplodiploid
-     * 	   	and act accordingly.
+     *  \param size A list of subpopulation sizes. The length of this list
+	 *    determines the number of subpopulations of this population. If
+	 *    there is no subpopulation, <em>size</em><tt>=[popSize]</tt> can be
+	 *    written as <em>size</em><tt>=popSize</tt>.
+     * 	\param ploidy Number of homologous sets of chromosomes. Default to
+	 *    \c 2 (diploid). For efficiency considerations, all chromosomes have
+	 *    the same number of homologous sets, even if some chromosomes (e.g.
+	 *    mitochondrial) or some individuals (e.g. males in a haplodiploid
+	 *    population) have different numbers of homologous sets. The first
+	 *    case is handled by setting \e chromType of each chromosome. Only
+	 *    the haplodiploid populations are handled for the second case, for
+	 *    which <tt>ploidy=Haplodiploid</tt> should be used.
      * 	 \param loci an array of numbers of loci on each chromosome. The length
      * 	   	of parameter \c loci determines the number of chromosomes. Default
      * 	   	to <tt>[1]</tt>, meaning one chromosome with a single locus. \n
