@@ -24,10 +24,10 @@
 #include "genoStru.h"
 
 namespace simuPOP {
-GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
+GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
                              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                              const vectorstr & lociNames, const vectorstr & infoFields)
-	: m_ploidy(ploidy), m_numChrom(loci.size()), m_numLoci(loci), m_sexChrom(sexChrom),
+	: m_ploidy(ploidy), m_numChrom(loci.size()), m_numLoci(loci), m_chromTypes(),
 	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
 	m_infoFields(infoFields)
@@ -43,6 +43,9 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, b
 		m_numLoci[0] = 1;
 		m_chromIndex.resize(2);
 	}
+
+    // chromosome type
+    setChromTypes(chromTypes);
 
 	// build chromosome index
 	ULONG i, j;
@@ -110,7 +113,7 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 	if (this == &rhs || (
 	                     (m_ploidy == rhs.m_ploidy) &&
 	                     (m_numLoci == rhs.m_numLoci) &&
-	                     (m_sexChrom == rhs.m_sexChrom) &&
+	                     (m_chromTypes == rhs.m_chromTypes) &&
 	                     (m_haplodiploid == rhs.m_haplodiploid) &&
 	                     (m_lociPos == rhs.m_lociPos) &&
 	                     (m_chromNames == rhs.m_chromNames) &&
@@ -123,6 +126,44 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 		return false;
 }
 
+void GenoStructure::setChromTypes(const vectoru & chromTypes)
+{
+    DBG_ASSERT(chromTypes.empty() || chromTypes.size() == m_numChrom,
+		ValueError, "If chromosome type is given, it should be given to all chromosomes");
+		
+    if (chromTypes.empty())
+        m_chromTypes.resize(m_numChrom, Autosome);
+    else
+        m_chromTypes = chromTypes;
+    // has only one chromX?
+    m_chromX = -1;
+    for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+        if (m_chromTypes[i] == ChromosomeX) {
+            DBG_ASSERT(m_chromX == -1, ValueError,
+                "Only one chromosome X can be specified");
+            m_chromX = i;
+        }        
+    }
+    m_chromY = -1;
+    for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+        if (m_chromTypes[i] == ChromosomeY) {
+            DBG_ASSERT(m_chromY == -1, ValueError,
+                "Only one chromosome Y can be specified");
+            m_chromY = i;
+        }
+    }
+    DBG_FAILIF(m_chromX * m_chromY < 0, ValueError,
+        "It is invalid to set only chromosome X or Y.");
+    //
+    m_mitochondrial = -1;
+    for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+        if (m_chromTypes[i] == Mitochondrial) {
+            DBG_ASSERT(m_mitochondrial == -1, ValueError,
+                "Only one mitochondria chromosome can be specified");
+            m_mitochondrial = i;
+        }
+    }
+}
 
 // initialize static variable s)genoStruRepository.
 vector<GenoStructure> GenoStruTrait::s_genoStruRepository = vector<GenoStructure>();
@@ -180,7 +221,7 @@ UINT GenoStruTrait::lociCovered(UINT loc, double dist) const
 }
 
 
-void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
+void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                                      const vectorstr & lociNames, const vectorstr & infoFields)
 {
@@ -194,7 +235,7 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, bool sex
 			+ "recompile simuPOP.");
 	}
 
-	GenoStructure tmp = GenoStructure(ploidy, loci, sexChrom, haplodiploid,
+	GenoStructure tmp = GenoStructure(ploidy, loci, chromTypes, haplodiploid,
 		lociPos, chromNames, alleleNames, lociNames, infoFields);
 
 	for (TraitIndexType it = 0; it < s_genoStruRepository.size();
@@ -242,28 +283,24 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 	if (byChromosome) {
 		// loci
 		vectoru loci(std::max(gs1.m_numLoci.size(), gs2.m_numLoci.size()));
-		for (size_t ch = 0; ch < loci.size(); ++ch) {
-			if (ch < gs1.m_numLoci.size())
-				loci[ch] += gs1.m_numLoci[ch];
-			if (ch < gs2.m_numLoci.size())
-				loci[ch] += gs2.m_numLoci[ch];
-		}
 		vectorstr chromNames;
+		vectoru chromTypes;
 		for (size_t ch = 0; ch < loci.size(); ++ch) {
-			if (ch < gs1.m_numLoci.size())
+			DBG_FAILIF(ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size() && gs1.m_chromTypes[ch] != gs2.m_chromTypes[ch],
+				ValueError, "Chromosomes of different types can not be merged.");
+			if (ch < gs1.m_numLoci.size()) {
+				loci[ch] += gs1.m_numLoci[ch];
 				chromNames.push_back(gs1.m_chromNames[ch]);
-			else
+				chromTypes.push_back(gs1.m_chromTypes[ch]);
+			}
+			if (ch < gs2.m_numLoci.size()) {
+				loci[ch] += gs2.m_numLoci[ch];
 				chromNames.push_back(gs2.m_chromNames[ch]);
+				chromTypes.push_back(gs2.m_chromTypes[ch]);
+			}
 		}
 		DBG_DO(DBG_POPULATION, cout << "New number of loci " << loci << endl);
-		// sex chrom
-		DBG_FAILIF(gs1.m_sexChrom && gs2.m_sexChrom && gs1.m_numLoci.size() != gs2.m_numLoci.size(),
-			ValueError, "If both population has sex chromosome, they should be the same chromosome");
-		DBG_FAILIF(gs1.m_sexChrom && !gs2.m_sexChrom && gs1.m_numLoci.size() <= gs2.m_numLoci.size(),
-			ValueError, "The same chromosome of another population should also be the sex chromosome");
-		DBG_FAILIF(!gs1.m_sexChrom && gs2.m_sexChrom && gs2.m_numLoci.size() <= gs1.m_numLoci.size(),
-			ValueError, "The same chromosome of another population should also be the sex chromosome");
-		bool sexChrom = gs1.m_sexChrom || gs2.m_sexChrom;
+	
 		// loci pos and loci name
 		vectorf lociPos;
 		vectorstr lociNames;
@@ -309,25 +346,25 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 		DBG_DO(DBG_POPULATION, cout << "New loci positions: " << lociPos << endl);
 		DBG_DO(DBG_POPULATION, cout << "New loci names: " << lociNames << endl);
 		//
-		return *new GenoStructure(gs1.m_ploidy, loci, sexChrom, gs1.m_haplodiploid, lociPos,
+		return *new GenoStructure(gs1.m_ploidy, loci, chromTypes, gs1.m_haplodiploid, lociPos,
 			chromNames, gs1.m_alleleNames, lociNames, gs1.m_infoFields);
 	} else {
 		vectoru loci = gs1.m_numLoci;
 		loci.insert(loci.end(), gs2.m_numLoci.begin(), gs2.m_numLoci.end());
-		DBG_FAILIF(gs1.m_sexChrom, ValueError,
-			"Population with sex chromosome has to be at the end");
 		vectorf lociPos = gs1.m_lociPos;
 		lociPos.insert(lociPos.end(), gs2.m_lociPos.begin(), gs2.m_lociPos.end());
 		DBG_FAILIF(gs1.m_alleleNames != gs2.m_alleleNames, ValueError,
 			"Merged population should have the same allele names (sorry, no allele names at each locus for now)");
 		vectorstr lociNames = gs1.m_lociNames;
 		vectorstr chromNames = gs1.m_chromNames;
+		vectoru chromTypes = gs1.m_chromTypes;
 		chromNames.insert(chromNames.end(), gs2.m_chromNames.begin(), gs2.m_chromNames.end());
+		chromTypes.insert(chromTypes.end(), gs2.m_chromTypes.begin(), gs2.m_chromTypes.end());
 		// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
 		for (vectorstr::const_iterator it = gs2.m_lociNames.begin(); it != gs2.m_lociNames.end(); ++it) {
 			addLocusName(*it);
 		}
-		return *new GenoStructure(gs1.m_ploidy, loci, gs2.m_sexChrom, gs1.m_haplodiploid, lociPos,
+		return *new GenoStructure(gs1.m_ploidy, loci, chromTypes, gs1.m_haplodiploid, lociPos,
 			chromNames, gs1.m_alleleNames, lociNames, gs1.m_infoFields);
 	}
 #undef addLocusName
@@ -352,6 +389,7 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 	vectorf newLociDist;
 	vectorstr newLociNames;
 	vectorstr newChromNames;
+	vectoru newChromTypes;
 	UINT curCh = 999999;                                              // not 0, will be set to 0 soon.
 	for (vectoru::iterator loc = loci.begin();
 	     loc != loci.end(); ++loc) {
@@ -359,13 +397,14 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 		if (newNumLoci.empty() || curCh != ch) {
 			newNumLoci.push_back(1);
 			newChromNames.push_back(chromName(ch));
+			newChromTypes.push_back(chromType(ch));
 			curCh = ch;
 		} else
 			newNumLoci.back()++;
 		newLociDist.push_back(locusPos(*loc));
 		newLociNames.push_back(locusName(*loc));
 	}
-	return *new GenoStructure(ploidy(), newNumLoci, sexChrom(), haplodiploid(), newLociDist,
+	return *new GenoStructure(ploidy(), newNumLoci, newChromTypes, haplodiploid(), newLociDist,
 		newChromNames, alleleNames(), newLociNames, infoFields());
 }
 
@@ -411,7 +450,7 @@ GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, c
 				throw ValueError("Locus name " + names[i] + " already exists.");
 		}
 	}
-	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, gs.m_haplodiploid, lociPos,
+	return *new GenoStructure(gs.m_ploidy, loci, gs.m_chromTypes, gs.m_haplodiploid, lociPos,
 		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
 }
 
@@ -456,7 +495,7 @@ GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, co
 				throw ValueError("Locus name " + names[i] + " already exists.");
 		}
 	}
-	return *new GenoStructure(gs.m_ploidy, loci, gs.m_sexChrom, gs.m_haplodiploid, lociPos,
+	return *new GenoStructure(gs.m_ploidy, loci, gs.m_chromTypes, gs.m_haplodiploid, lociPos,
 		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
 }
 

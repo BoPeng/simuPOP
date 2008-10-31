@@ -115,6 +115,7 @@ class population : public GenoStruTrait
 {
 public:
 #define Haplodiploid 2.5
+
 	/** @name  constructors and destructor */
 	//@{
 
@@ -129,24 +130,27 @@ public:
 	 *    the same number of homologous sets, even if some chromosomes (e.g.
 	 *    mitochondrial) or some individuals (e.g. males in a haplodiploid
 	 *    population) have different numbers of homologous sets. The first
-	 *    case is handled by setting \e chromType of each chromosome. Only
+	 *    case is handled by setting \e chromTypes of each chromosome. Only
 	 *    the haplodiploid populations are handled for the second case, for
 	 *    which <tt>ploidy=Haplodiploid</tt> should be used.
-     * 	 \param loci an array of numbers of loci on each chromosome. The length
-     * 	   	of parameter \c loci determines the number of chromosomes. Default
-     * 	   	to <tt>[1]</tt>, meaning one chromosome with a single locus. \n
-     * 	   	The last chromosome can be sex chromosome. In this case, the maximum
-     * 	   	number of loci on X and Y should be provided. I.e., if there are 3
-     * 	   loci on Y chromosme and 5 on X chromosome, use \c 5.
-     * 	 \param sexChrom Diploid population only. If this parameter is \c True,
-     * 	   the last homologous chromosome will be treated as sex chromosome.
-     * 	   (XY for male and XX for female.) If X and Y have different numbers of loci,
-     * 	   the number of loci of the longer one of the last (sex) chromosome should be
-     * 	   specified in \c loci.
-     * 	 \param lociPos a 1-d or 2-d array specifying positions of loci on each
-     * 	   chromosome. You can use a nested array to specify loci position for
-     * 	   each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
-     * 	   when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for
+     *  \param loci A list of numbers of loci on each chromosome. The length of
+     * 	  this parameter determines the number of chromosomes. Default to
+	 *    <tt>[1]</tt>, meaning one chromosome with a single locus.
+	 *  \param chromTypes A list that specifies the type of each chromosome,
+	 *    which can be \c Autosome, \c ChromosomeX, \c ChromosomeY, or
+	 *    \c Mitochondrial. All chromosomes are assumed to be autosomes if
+	 *    this parameter is ignored. Sex chromosome can only be specified in a
+	 *    diploid population where the sex of an individual is determined by
+	 *    the existence of these chromosomes using the \c XX (\c Female) and
+	 *    \c XY (\c Male) convention. Both sex chromosomes have to be available
+	 *    and be specified only once. Because chromosomes \c X and \c Y are
+	 *    treated as two chromosomes, recombination on the pseudo-autosomal
+	 *    regions of the sex chromsomes is not supported. A \c Mitochondrial
+	 *    chromosome only exists in females and is inherited maternally.	 *
+     * 	\param lociPos a 1-d or 2-d array specifying positions of loci on each
+     * 	  chromosome. You can use a nested array to specify loci position for
+     * 	  each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
+     * 	  when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for
      * 	   <tt>loci=[2,3]</tt>. simuPOP does not assume a unit for these
      * 	   positions, although they are usually intepreted as centiMorgans.
      * 	   The default values are \c 1, \c 2, etc. on each chromosome.
@@ -173,7 +177,7 @@ public:
 	population(const vectorlu & size = vectorlu(),
 	           float ploidy = 2,
 	           const vectoru & loci = vectoru(),
-	           bool sexChrom = false,
+	           const vectoru & chromTypes = vectoru(),
 	           const vectorf & lociPos = vectorf(),
 	           int ancestralDepth = 0,
 	           const vectorstr & chromNames = vectorstr(),
