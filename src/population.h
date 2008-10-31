@@ -120,6 +120,8 @@ public:
 	//@{
 
 	/**
+	 *   This function creates a population object.
+	 *
      * 	 \param size An array of subpopulation sizes. If a single number is given,
      * 	   	it will be the size of a single subpopulation of the whole population.
      * 	 \param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
@@ -165,8 +167,6 @@ public:
      * 	   using operator
      * 	   <tt>parentTagger()</tt>, you will need two fields \c father_idx and \c mother_idx.
      * 	 \return no return value. Exception will be thrown when wrong parameters are given.
-     * 	 \sa simulator, baseOperator, mating schemes
-     * 	 \test src_population.log Population initialization and member functions
 	 */
 	population(const vectorlu & size = vectorlu(),
 	           float ploidy = 2,
@@ -359,12 +359,12 @@ public:
 	}
 
 
-	///  return the absolute index of an individual in a subpopulation.
 	/**
+	 *  <group>subpop</group>
+	  return the absolute index of an individual in a subpopulation.
 	 \param index index of an individual in a subpopulation \c subPop
 	 \param subPop subpopulation index (start from \c 0)
 	 \return the absolute index of an individual in a subpopulation
-	 *  <group>subpop</group>
 	 */
 	ULONG absIndIndex(ULONG ind, UINT subPop) const
 	{
@@ -377,8 +377,8 @@ public:
 
 	/// return the subpopulation ID and relative index of an individual with absolute index \c ind
 	/*
-	 \param absInd absolute index of an individual
-	 \return a pair of values (subPop, index)
+	  absInd absolute index of an individual
+	  a pair of values (subPop, index)
 	 *  <group>subpop</group>
 	 */
 	std::pair<UINT, ULONG> subPopIndPair(ULONG ind)
@@ -671,22 +671,25 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
+	/** CPPONLY individual iterator: without subPop info
+	 */
 	RawIndIterator rawIndBegin()
 	{
 		return m_inds.begin();
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
+	/** CPPONLY individual iterator: without subPop info
+	*/
 	RawIndIterator rawIndEnd()
 	{
 		return m_inds.end();
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// The iterator will skip invisible individuals
+	/** CPPONLY individual iterator: with subPop info.
+	 The iterator will skip invisible individuals
+	*/
 	RawIndIterator rawIndBegin(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -695,7 +698,8 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
+	/** CPPONLY individual iterator: with subPop info.
+	*/
 	RawIndIterator rawIndEnd(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -704,24 +708,27 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
-	/// The iterator will skip invisible individuals
+	/** CPPONLY individual iterator: without subPop info
+	  The iterator will skip invisible individuals
+	*/
 	ConstRawIndIterator rawIndBegin() const
 	{
 		return m_inds.begin();
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
-	/// It is recommended to use it.valid(), instead of it != indEnd()
+	/** CPPONLY individual iterator: without subPop info
+	  It is recommended to use it.valid(), instead of it != indEnd()
+	*/
 	ConstRawIndIterator rawIndEnd() const
 	{
 		return m_inds.end();
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// The iterator will skip invisible individuals
+	/** CPPONLY individual iterator: with subPop info.
+	  The iterator will skip invisible individuals
+	*/
 	ConstRawIndIterator rawIndBegin(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -730,8 +737,9 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// It is recommended to use it.valid(), instead of it != indEnd(sp)
+	/** CPPONLY individual iterator: with subPop info.
+	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
+	 */
 	ConstRawIndIterator rawIndEnd(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -1010,7 +1018,7 @@ public:
 	/// split a subpopulation into subpopulations of given proportions
 	/**
 	   The sum of given proportions should add up to one. Subpopulation IDs can be specified.
-	 \note \c subpop with negative ID will be removed. So, you can shrink one \c subpop by splitting and
+	  \c subpop with negative ID will be removed. So, you can shrink one \c subpop by splitting and
 	   setting one of the new \c subpop with negative ID.
 	 * <group>manipulate</group>
 	 */
@@ -1065,8 +1073,9 @@ public:
 	void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu(),
 		int keepAncestralPops = -1);
 
-	/// merge populations by loci
 	/**
+	 * <group>manipulate</group>
+	 merge populations by loci
 	   Two populations should have the same number of individuals. This also holds for
 	   any ancestral generations. By default, chromosomes of \c pop are appended to the current
 	   population.	You can change this arrangement in two ways
@@ -1088,13 +1097,13 @@ public:
 	   population have to have the same genotypic structure.
 
 
-	 * <group>manipulate</group>
 	 */
 	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
 
-	/// insert loci before given positions
-	/** Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
+	/** insert loci before given positions
+	 * <group>manipulate</group>
+	 Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
 	 \param idx an array of locus index. The loci will be inserted \em before each index.
 	   If you need to append to the last locus, use \c insertAfterLoci instead. If your index is the first
 	   locus of a chromosome, the inserted locus will become the first locus of that chromosome.
@@ -1104,7 +1113,6 @@ public:
 	   "insX_Y" will be given.
 	
 
-	 * <group>manipulate</group>
 	 */
 	void insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names = vectorstr());
 
@@ -1202,7 +1210,7 @@ public:
 	   	exist in the population, not necessarily equals to the number set by
 	 \c setAncestralDepth().
 
-	 * <group>ancestral<group>
+	 * <group>ancestral</group>
 	 */
 	UINT ancestralDepth() const
 	{
@@ -1218,7 +1226,8 @@ public:
 	   one of the parental generations, which is the information returned by this
 	   function. \c useAncestralPop(0) should always be used to set a population
 	   to its usual ancestral order after operations to the ancestral generation are done.
-	 * <group>ancestral<group>
+
+	 * <group>ancestral</group>
 	 */
 	UINT ancestralGen() const
 	{
@@ -1228,7 +1237,7 @@ public:
 
 	/// set individual information for the given information field \c idx
 	/**
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	template<typename T, typename T1>
 	void setIndInfo(const T & values, T1 idx)
@@ -1246,7 +1255,7 @@ public:
 	/**
 	   <tt>x.setIndInfo(values, name)</tt> is
 	   equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	template<class T>
 	void setIndInfo(const T & values, const string & name)
@@ -1317,7 +1326,7 @@ public:
 	/// get information field \c idx of all individuals
 	/**
 
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	vectorinfo indInfo(UINT idx)
 	{
@@ -1330,7 +1339,7 @@ public:
 	 \param name name of the information field
 	 \return a vector with value of the information field
 
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	vectorinfo indInfo(const string & name)
 	{
@@ -1342,7 +1351,7 @@ public:
 
 	/// get information field \c idx of all individuals in a subpopulation \c subPop
 	/**
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	vectorinfo indInfo(UINT idx, UINT subPop)
 	{
@@ -1353,7 +1362,7 @@ public:
 
 	/// get information field \c name of all individuals in a subpopulation \c subPop
 	/**
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	vectorinfo indInfo(const string & name, UINT subPop)
 	{
@@ -1365,7 +1374,7 @@ public:
 
 	///	add an information field to a population
 	/**
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	void addInfoField(const string field, double init = 0);
 
@@ -1374,7 +1383,7 @@ public:
 	 fields an array of new information fields. If one or more of the fields
 	   alreay exist, they will be re-initialized.
 	  init initial value for the new fields.
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	void addInfoFields(const vectorstr & fields, double init = 0);
 
@@ -1382,7 +1391,7 @@ public:
 	/**
 	  fields an array of fields
 	  init initial value for the new fields.
-	 * <group>info<group>
+	 * <group>info</group>
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);
 
@@ -1413,7 +1422,7 @@ public:
 	 * \return if relatives are successfully located. Possible problems are
 	 *      father and mother indexes are not available, or insufficient parental generations.
 	 *
-	 * <group>ancestral<group>
+	 * <group>ancestral</group>
 	 */
 	bool locateRelatives(RelativeType relType, const vectorstr & relFields,
 		int gen = -1, SexChoice relSex = AnySex,
@@ -1450,7 +1459,7 @@ public:
 	   	genearation \c pathGen[0].
 
 	   In short, this function locates father or mother's brother's daughters.
-	 * <group>ancestral<group>
+	 * <group>ancestral</group>
 	 */
 	bool setIndexesOfRelatives(const vectoru & pathGen,
 		const stringMatrix & pathFields,
@@ -1461,17 +1470,18 @@ public:
 	/**
 	  depth \c 0 for none, \c -1 for unlimited, a positive number sets
 	   the number of ancestral generations to save.
-	 * <group>ancestral<group>
+	 * <group>ancestral</group>
 	 */
 	void setAncestralDepth(int depth);
 
 	// idx = 0 (current), 1 (parents), 2 (grandparents...)
 	/// use an ancestral generation. \c 0 for the latest generation.
 	/**
-	 \param idx Index of the ancestral generation. \c 0 for current,
+	 idx Index of the ancestral generation. \c 0 for current,
 	 \c 1 for parental, etc. idx can not exceed ancestral depth
 	   (see setAncestralDepth).
-	 * <group>ancestral<group>
+
+	 * <group>ancestral</group>
 	 */
 	void useAncestralPop(UINT idx);
 
@@ -1590,7 +1600,9 @@ public:
 
 
 public:
-	/// current replicate in a simulator which is not meaningful for a stand-alone population
+	/** current replicate in a simulator which is not meaningful for a stand-alone population
+	 *	<group>evolve</group>
+	 */
 	int rep()
 	{
 		return m_rep;
@@ -1605,7 +1617,9 @@ public:
 			m_vars.setIntVar("rep", rep);
 	}
 
-	/// current generation during evolution
+	/** current generation during evolution
+		<group>evolve</group>
+	 */
 	ULONG gen()
 	{
 		return m_gen;
@@ -1621,7 +1635,7 @@ public:
 	}
 
 
-	/* return variables of a population. If \c subPop is given, return a dictionary for specified subpopulation.
+	/** return variables of a population. If \c subPop is given, return a dictionary for specified subpopulation.
 		<group>var</group>
 	 */ 
 	PyObject * vars(int subPop = -1);
