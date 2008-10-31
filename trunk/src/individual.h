@@ -392,7 +392,7 @@ public:
 	    CHECKRANGECHROM(chrom);
 		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(chrom);
 		UINT sz = geno.size();
-		for(UINT i =0; i < numLoci(ch); i++)
+		for(UINT i =0; i < numLoci(chrom); i++)
 			*(ptr+i) = geno[i % sz];
 	}
 

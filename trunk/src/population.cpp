@@ -35,7 +35,7 @@ namespace simuPOP {
 population::population(const vectorlu & size,
                        float ploidy,
                        const vectoru & loci,
-                       bool sexChrom,
+                       const vectoru & chromTypes,
                        const vectorf & lociPos,
                        int ancestralDepth,
                        const vectorstr & chromNames,
@@ -72,7 +72,7 @@ population::population(const vectorlu & size,
 		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
 
 	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
-		loci, sexChrom, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
+		loci, chromTypes, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
 		lociNames, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
@@ -1266,7 +1266,7 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 	DBG_DO(DBG_POPULATION, cout << "newPopByIndIDPerGen: New population size: " << sz << endl);
 
 	// create a population with this size
-	population * pop = new population(sz, ploidy(), numLoci(), sexChrom(), lociPos(), 0,
+	population * pop = new population(sz, ploidy(), numLoci(), chromTypes(), lociPos(), 0,
 		chromNames(), alleleNames(), lociNames(), infoFields());
 	// copy individuals over
 	IndIterator from = indBegin();
@@ -1412,7 +1412,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 		"Re-arrange loci must keep the same total number of loci");
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
-		sexChrom(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
+		chromTypes(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
 		// chromosome names are discarded
 		vectorstr(), alleleNames(), lociNames(), infoFields());
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
@@ -2171,5 +2171,6 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 
 
 }
+
 
 

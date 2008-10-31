@@ -84,7 +84,8 @@ class GenoStructure
 public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
-		m_numLoci(0), m_sexChrom(false), m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
+		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1),
+        m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
 	{
 	}
@@ -101,7 +102,7 @@ public:
 	 \param lociNames name of loci
 	 \param length of info field
 	 */
-	GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
+	GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
 	              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 	              const vectorstr & lociNames, const vectorstr & infoFields);
 
@@ -161,8 +162,11 @@ public:
 		ia >> *this;
 	}
 
-
 #endif                                                                    // win32
+
+    /// CPPONLY
+    void setChromTypes(const vectoru & chromTypes);
+
 
 private:
 	friend class boost::serialization::access;
@@ -173,7 +177,7 @@ private:
 		ar & m_ploidy;
 		ar & m_numChrom;
 		ar & m_numLoci;
-		ar & m_sexChrom;
+		ar & m_chromTypes;
 		ar & m_haplodiploid;
 		ar & m_lociPos;
 		ar & m_chromNames;
@@ -192,12 +196,16 @@ private:
 		ar & m_numChrom;
 		ar & m_numLoci;
 
-		// after simuPOP 0.6.8, we have m_sexChrom
-		// before that, there is no sex chromosome
-		if (version >= 1)
-			ar & m_sexChrom;
+		// after simuPOP 0.8.9, we handle
+        // sex chromosomes quite differently.
+		if (version < 6) {
+            bool sexChrom;
+			ar & sexChrom;
+        }
 		else
-			m_sexChrom = false;
+			ar & m_chromTypes;
+        // set m_chromX etc.
+        setChromTypes(m_chromTypes);
 		// haplodiploid flag is introduced in 0.8.5
 		if (version >= 4)
 			ar & m_haplodiploid;
@@ -250,9 +258,19 @@ private:
 	/// number of loci
 	vectoru m_numLoci;
 
-	/// whether or not the last chromosome is sex chromosome
-	bool m_sexChrom;
+    /// Type of each chromosome.
+    vectoru m_chromTypes;
 
+	/// index of chromosome X, -1 if not exist
+	int m_chromX;
+
+    /// index of chromosome Y, -1 if not exist
+    int m_chromY;
+
+    /// index of mitochondrial chromosome, -1 if not exist.
+    int m_mitochondrial;
+
+    /// whether or not this population is haplodiploid.
 	bool m_haplodiploid;
 
 	/// position of loci on chromosome, recommended with unit cM
@@ -286,7 +304,8 @@ private:
 // version 3: add chromName
 // version 4: add haplodiploid
 // version 5: do not save maxAllele
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 5)
+// version 6: replace sexchrom by chromtype
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 6)
 #endif
 
 namespace simuPOP {
@@ -333,7 +352,7 @@ public:
 
 
 	/// CPPONLY set genotypic structure
-	void setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
+	void setGenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
 		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 		const vectorstr & lociNames, const vectorstr & infoFields);
 
@@ -453,21 +472,45 @@ public:
 	}
 
 
-	/** Return \c True if the last chromosome is the sex chromosome.
+	/** Return the index of chromosome X, \c -1 if there is no X chromosome.
 	 *  <group>chromosome</group>
 	 */
-	bool hasSexChrom() const
+	int chromX() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
+		return s_genoStruRepository[m_genoStruIdx].m_chromX;
 	}
+
+	/** Return the index of chromosome Y, \c -1 if there is no Y chromosome.
+	 *  <group>chromosome</group>
+	 */
+	int chromY() const
+	{
+		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
+
+		return s_genoStruRepository[m_genoStruIdx].m_chromY;
+	}
+
+	/** Return the index of the mitochondrial chromosome, \c -1 if there is no
+	 *  mitochondrial hromosome.
+	 *  <group>chromosome</group>
+	 */
+	int mitochondrial() const
+	{
+		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
+
+		return s_genoStruRepository[m_genoStruIdx].m_mitochondrial;
+	}
+
 
 	/// HIDDEN
 	bool sexChrom() const
 	{
-		return hasSexChrom();
+		return chromX() != -1;
 	}
 
 
@@ -634,6 +677,7 @@ public:
      */
 	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
+
 	/**
      * return the name of a chromosome \e chrom. Default to \c chrom# where #
      * is the 1-based index of the chromosome.
@@ -657,6 +701,27 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames;
 	}
 
+	/**
+     * return the type of a chromosome \e chrom.
+	 *  <group>chromosome</group>
+     */
+	int chromType(const UINT chrom) const
+	{
+		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numChrom, IndexError,
+			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
+			toStr(s_genoStruRepository[m_genoStruIdx].m_numChrom));
+
+		return s_genoStruRepository[m_genoStruIdx].m_chromTypes[chrom];
+	}
+
+	/**
+     * return the type of all chromosomes \e chrom.
+	 *  <group>chromosome</group>
+     */
+	vectoru chromTypes() const
+	{
+		return s_genoStruRepository[m_genoStruIdx].m_chromTypes;
+	}
 
 	/** return the index of a chromosome by its \e name.
 	 *  <group>chromosome</group>
