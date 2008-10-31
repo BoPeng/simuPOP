@@ -937,6 +937,10 @@ class Doxy2SWIG:
                 print >> out, r'\begin{classdesc}{%s}{%s}' % (usageName, usageParam)
             else:
                 print >> out, r'\begin{classdesc}{%s}{}' % entry['Name']
+            if cons['Doc'] != '':
+                print >> out, '%s\\par\n' % self.latex_text(cons['Doc'])
+            else:
+                print >> out, '\\hspace{0pt}\\par\n'
             if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
                 print >> out, '\\par\n\n'
                 cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
@@ -944,10 +948,6 @@ class Doxy2SWIG:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
                     print >> out, r'{\leftskip 0.3in \parindent=-0.3in \emph{%s: }\MakeUppercase %s\par}' \
                         % (self.latex_text(arg['Name']), self.latex_text(arg['Description']))
-            if cons['Doc'] != '':
-                print >> out, '%s\\par\n' % self.latex_text(cons['Doc'])
-            else:
-                print >> out, '\\hspace{0pt}\\par\n'
             if cons.has_key('note') and cons['note'] != '':
                 print >> out, '\\par\n\\strong{Note} '
                 print >> out, '%s' % self.latex_text(cons['note'])
