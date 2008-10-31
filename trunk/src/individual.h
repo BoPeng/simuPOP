@@ -62,7 +62,7 @@ namespace simuPOP {
  *  An \c individual object cannot be created independently, but refences to
  *  inidividuals can be retrieved using member functions of a \c population
  *  object. In addition to structural information shared by all individuals in
- *  a population (provided by class \c genoStruTrait), a \c individual class
+ *  a population (provided by class \c genoStruTrait), an \c individual class
  *  provides member functions to get and set \e genotype, \e sex, <em>affection
  *  status</em> and <em>information fields</em> of an individual.
  * 
