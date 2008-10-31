@@ -42,14 +42,12 @@ using std::ofstream;
 using std::ifstream;
 #endif                                                                                    // win32
 
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/tracking.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
-using boost::serialization::make_nvp;
 
 #include <iterator>
 using std::ostream;
@@ -149,7 +147,7 @@ public:
 		ofstream ofs(filename.c_str());
 		boost::archive::binary_oarchive oa(ofs);
 
-		oa << boost::serialization::make_nvp("geno_structure", *this);
+		oa << *this;
 	}
 
 
@@ -160,7 +158,7 @@ public:
 
 		boost::archive::binary_iarchive ia(ifs);
 
-		ia >> boost::serialization::make_nvp("geno_structure", *this);
+		ia >> *this;
 	}
 
 
@@ -172,16 +170,16 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const UINT version) const
 	{
-		ar & make_nvp("ploidy", m_ploidy);
-		ar & make_nvp("num_of_chrom", m_numChrom);
-		ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
-		ar & make_nvp("sex_chromosome", m_sexChrom);
-		ar & make_nvp("haplodiploid", m_haplodiploid);
-		ar & make_nvp("loci_distance_on_chrom", m_lociPos);
-		ar & make_nvp("chrom_name", m_chromNames);
-		ar & make_nvp("allele_name", m_alleleNames);
-		ar & make_nvp("loci_name", m_lociNames);
-		ar & make_nvp("info_name", m_infoFields);
+		ar & m_ploidy;
+		ar & m_numChrom;
+		ar & m_numLoci;
+		ar & m_sexChrom;
+		ar & m_haplodiploid;
+		ar & m_lociPos;
+		ar & m_chromNames;
+		ar & m_alleleNames;
+		ar & m_lociNames;
+		ar & m_infoFields;
 		/// do not save load chromosome map
 	}
 
@@ -190,38 +188,38 @@ private:
 	void load(Archive & ar, const UINT version)
 	{
 
-		ar & make_nvp("ploidy", m_ploidy);
-		ar & make_nvp("num_of_chrom", m_numChrom);
-		ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
+		ar & m_ploidy;
+		ar & m_numChrom;
+		ar & m_numLoci;
 
 		// after simuPOP 0.6.8, we have m_sexChrom
 		// before that, there is no sex chromosome
 		if (version >= 1)
-			ar & make_nvp("sex_chromosome", m_sexChrom);
+			ar & m_sexChrom;
 		else
 			m_sexChrom = false;
 		// haplodiploid flag is introduced in 0.8.5
 		if (version >= 4)
-			ar & make_nvp("haplodiploid", m_haplodiploid);
+			ar & m_haplodiploid;
 		else
 			m_haplodiploid = false;
 		//
-		ar & make_nvp("loci_distance_on_chrom", m_lociPos);
+		ar & m_lociPos;
 		if (version >= 3)
-			ar & make_nvp("chrom_name", m_chromNames);
+			ar & m_chromNames;
 		else {
 			m_chromNames.resize(m_numChrom);
 			for (size_t i = 0; i < m_numChrom; ++i)
 				m_chromNames[i] = "chrom" + toStr(i + 1);
 		}
-		ar & make_nvp("allele_name", m_alleleNames);
-		ar & make_nvp("loci_name", m_lociNames);
+		ar & m_alleleNames;
+		ar & m_lociNames;
 		if (version < 5) {
 			size_t maxAllele;
-			ar & make_nvp("max_allele", maxAllele);
+			ar & maxAllele;
 		}
 		if (version >= 2)
-			ar & make_nvp("info_name", m_infoFields);
+			ar & m_infoFields;
 
 		// build chromosome index
 		m_chromIndex.resize(m_numLoci.size() + 1);
