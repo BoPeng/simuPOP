@@ -75,7 +75,9 @@ namespace simuPOP {
  *  followed by alleles on the second homologous set of the chromosomes for
  *  a diploid individual. A consequence of this memory layout is that alleles
  *  at the same locus of a non-haploid individual are separated by
- *  <tt>individual::totNumLoci()</tt> loci.
+ *  <tt>individual::totNumLoci()</tt> loci. It is worth noting that access to
+ *  invalid chromosomes, such as the Y chromosomes of female individuals, are
+ *  not restricted.
  */
 class individual : public GenoStruTrait
 {
