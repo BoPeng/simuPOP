@@ -35,8 +35,8 @@
 //
 // the following is required by a vc7.1 bug.
 #if  defined (_WIN32) || defined (__WIN32__)
-#  include <boost/archive/binary_iarchive.hpp>
-#  include <boost/archive/binary_oarchive.hpp>
+#  include <boost/archive/text_iarchive.hpp>
+#  include <boost/archive/text_oarchive.hpp>
 #  include <fstream>
 using std::ofstream;
 using std::ifstream;
@@ -146,7 +146,7 @@ public:
 	void saveStru(string filename)
 	{
 		ofstream ofs(filename.c_str());
-		boost::archive::binary_oarchive oa(ofs);
+		boost::archive::text_oarchive oa(ofs);
 
 		oa << *this;
 	}
@@ -157,7 +157,7 @@ public:
 	{
 		ifstream ifs(filename.c_str());
 
-		boost::archive::binary_iarchive ia(ifs);
+		boost::archive::text_iarchive ia(ifs);
 
 		ia >> *this;
 	}
