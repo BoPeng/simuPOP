@@ -194,7 +194,7 @@ public:
 
 	/** return the current allele at a locus, using its absolute index \e idx.
 	 *
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	UINT allele(UINT idx) const
 	{
@@ -205,7 +205,7 @@ public:
 
 	/** return the current allele at locus \e idx on the <em>p</em>-th set of
 	 *  homologous chromosomes.
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	UINT allele(UINT idx, UINT p) const
 	{
@@ -217,7 +217,7 @@ public:
 
 	/** return the current allele at locus \e idx on chromosome \e chrom of
 	 *  the <em>p</em>-th set of homologous chromosomes.
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	UINT allele(UINT idx, UINT p, UINT chrom) const
 	{
@@ -230,7 +230,7 @@ public:
 
 	/** return the name of \c allele(idx)
 	 *  HIDDEN
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	string alleleChar(UINT idx) const
 	{
@@ -242,7 +242,7 @@ public:
 
 	/** HIDDEN
 	 * return the name of <tt>allele(idx, p)</tt>
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	string alleleChar(UINT idx, UINT p) const
 	{
@@ -255,7 +255,7 @@ public:
 
 	/** HIDDEN
 	 * return the name of <tt>allele(idx, p, ch)</tt>
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	string alleleChar(UINT idx, UINT p, UINT ch) const
 	{
@@ -268,7 +268,7 @@ public:
 
 
 	/** set allele \e allele to a locus, using its absolute index \e idx.
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	void setAllele(Allele allele, UINT idx)
 	{
@@ -279,7 +279,7 @@ public:
 
 	/** set allele \e allele to locus \e idx on the <em>p</em>-th homologous
 	 *  set of chromosomes.
-	 * <group>allele</group>
+	 * <group>1-allele</group>
 	 */
 	void setAllele(Allele allele, UINT idx, UINT p)
 	{
@@ -291,7 +291,7 @@ public:
 
 	/** set allele \e allele to locus \e idx on chromosome \e chrom of the
 	 *  <em>p</em>-th homologous set of chromosomes.
-	 *  <group>allele</group>
+	 *  <group>1-allele</group>
 	 */
 	void setAllele(Allele allele, UINT idx, UINT p, UINT chrom)
 	{
@@ -304,7 +304,7 @@ public:
 
 	/** return an editable array (a \c carray of length <tt>totNumLoci()*ploidy()</tt>)
 	 *  that represents all alleles of an individual.
-	 * <group>genotype</group>
+	 * <group>2-genotype</group>
 	 */
 	PyObject * genotype()
 	{
@@ -329,7 +329,7 @@ public:
     /** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
 	 *  that represents all alleles on the <em>p</em>-th homologous set of
 	 *  chromosomes.
-	 * <group>genotype</group>
+	 * <group>2-genotype</group>
 	 */
 	PyObject * genotype(UINT p)
 	{
@@ -343,7 +343,7 @@ public:
 	 *  <tt>numLoci(</tt><em>chrom</em><tt>)</tt>) that represents all alleles
 	 *  on chromosome \e chrom of the <em>p</em>-th homologous set of
 	 *  chromosomes.
-	 *  <group>genotype</group>
+	 *  <group>2-genotype</group>
 	 */
 	PyObject * genotype(UINT p, UINT chrom)
 	{
@@ -357,7 +357,7 @@ public:
 	/** Fill the genotype of an individual using a list of alleles \e geno.
 	 *  \c geno will be reused if its length is less than 
 	 *  <tt>totNumLoci()*ploidy()</tt>.
-	 *  <group>genotype</group>
+	 *  <group>2-genotype</group>
 	 */
 	void setGenotype(vectora geno) 
 	{
@@ -370,7 +370,7 @@ public:
 	/** Fill the genotype of the <em>p</em>-th homologous set of chromosomes
 	 *  using a list of alleles \e geno. \c geno will be reused if its length
 	 *  is less than <tt>totNumLoci()</tt>.
-	 *  <group>genotype</group>
+	 *  <group>2-genotype</group>
 	 */
 	void setGenotype(vectora geno, UINT p) 
 	{
@@ -386,7 +386,7 @@ public:
 	 *  homologous set of chromosomes using a list of alleles \e geno.
 	 *  \c geno will be reused if its length is less than 
 	 *  <tt>mumLoci(</tt><em>chrom</em><tt>)</tt>.
-	 * <group>genotype</group>
+	 * <group>2-genotype</group>
 	 */
 	void setGenotype(vectora geno, UINT p, UINT chrom) 
 	{
@@ -400,7 +400,7 @@ public:
 
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
-	 * <group>sex</group>
+	 * <group>3-sex</group>
 	 */
 	Sex sex() const
 	{
@@ -412,7 +412,7 @@ public:
 
 
 	/** return the sex of an individual, \c M for male or \c F for \c female.
-	 * <group>sex</group>
+	 * <group>3-sex</group>
 	 */
 	char sexChar() const
 	{
@@ -421,7 +421,7 @@ public:
 
 
 	/** set individual sex to \c Male or \c Female.
-	 * <group>sex</group>
+	 * <group>3-sex</group>
 	 */
 	void setSex(Sex sex)
 	{
@@ -435,7 +435,7 @@ public:
 
 
 	/** Return \c True if this individual is affected.
-	 * <group>affection</group>
+	 * <group>4-affection</group>
 	 */
 	bool affected() const
 	{
@@ -452,7 +452,7 @@ public:
 
 
 	/** Return \c A if this individual is affected, or \c U otherwise.
-	 * <group>affection</group>
+	 * <group>4-affection</group>
 	 */
 	char affectedChar() const
 	{
@@ -461,7 +461,7 @@ public:
 
 
 	/** set affection status to \e affected (\c True or \c False).
-	 * <group>affection</group>
+	 * <group>4-affection</group>
 	 */
 	void setAffected(bool affected)
 	{
@@ -527,7 +527,7 @@ public:
 
 
 	/** Return the value of an information field \e idx (an index).
-	 * <group>info</group>
+	 * <group>5-info</group>
 	 */
 	InfoType info(UINT idx) const
 	{
@@ -538,7 +538,7 @@ public:
 
 
 	/** Return the value of an information field \e idx (an index) as an integer number.
-	 * <group>info</group>
+	 * <group>5-info</group>
 	 */
 	int intInfo(UINT idx) const
 	{
@@ -548,7 +548,7 @@ public:
 
 
 	/** Return the value of an information field \e name.
-	 *  <group>info</group>
+	 *  <group>5-info</group>
 	 */
 	InfoType info(const string & name) const
 	{
@@ -561,7 +561,7 @@ public:
 
 
 	/** Return the value of an information field \e name as an integer number.
-	 * <group>info</group>
+	 * <group>5-info</group>
 	 */
 	int intInfo(const string & name) const
 	{
@@ -574,7 +574,7 @@ public:
 
 
 	/** set the value of an information field \e idx (an index) to \e value.
-	 *  <group>info</group>
+	 *  <group>5-info</group>
 	 */
 	void setInfo(InfoType value, UINT idx)
 	{
@@ -584,7 +584,7 @@ public:
 
 
 	/** set the value of an information field \e name to \e value.
-	 *  <group>info</group>
+	 *  <group>5-info</group>
 	 */
 	void setInfo(InfoType value, const string & name)
 	{

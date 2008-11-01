@@ -376,27 +376,27 @@ public:
 	/** Return the distance between loci \e loc1 and \e loc2 on the same
      *  chromosome. A negative value will be returned if \e loc1 is after
 	 *  \e loc2.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	double lociDist(UINT loc1, UINT loc2) const;
 
 	/** HIDDEN
      * return the number of loci left on that chromosome, including locus \c loc
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	UINT lociLeft(UINT loc) const;
 
 	/** HIDDEN
      *  Distance between locus \c loc and the last locus that is on the same
      *  chromsome as \c loc.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	double distLeft(UINT loc) const;
 
 	/** HIDDEN
      *  starting from \c loc, how many markers are covered by distance \c dist (>=0)
 	 *  the result will be at least 1, even if dist = 0.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	UINT lociCovered(UINT loc, double dist) const;
 
@@ -430,7 +430,7 @@ public:
      *  \e ploidy parameter of the \c population function. Return 2 for a
      *  haplodiploid population because two sets of chromosomes are stored
      *  for both males and females in such a population.
-	 *  <group>ploidy</group>
+	 *  <group>1-ploidy</group>
      */
 	UINT ploidy() const
 	{
@@ -445,13 +445,13 @@ public:
 	/** return the ploidy name of this population, can be one of \c haploid,
      *  \c diploid, \c haplodiploid, \c triploid, \c tetraploid or \c #-ploid
      *  where \c # is the ploidy number.
-	 *  <group>ploidy</group>
+	 *  <group>1-ploidy</group>
      */
 	string ploidyName() const;
 
 	/** return the number of loci on chromosome \e chrom, equivalent to
 	 *  <tt>numLoci()[</tt><em>chrom</em></tt>]</tt>. 
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
 	 */
 	UINT numLoci(UINT chrom) const
 	{
@@ -464,7 +464,7 @@ public:
 
 
 	/** return the number of loci on all chromosomes.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
 	 */
 	vectoru numLoci() const
 	{
@@ -474,7 +474,7 @@ public:
 
 	/** CPPONLY
 	 *  Return the index of chromosome X, \c -1 if there is no X chromosome.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	int chromX() const
 	{
@@ -486,7 +486,7 @@ public:
 
 	/** CPPONLY
 	 *  Return the index of chromosome Y, \c -1 if there is no Y chromosome.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	int chromY() const
 	{
@@ -499,7 +499,7 @@ public:
 	/** CPPONLY
 	 *  Return the index of the mitochondrial chromosome, \c -1 if there is no
 	 *  mitochondrial hromosome.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	int mitochondrial() const
 	{
@@ -517,8 +517,9 @@ public:
 	}
 
 
-    /** Return \c True if this population is haplodiploid.
-	 *  <group>ploidy</group>
+    /** HIDDEN becuase it can be replaced by ploidyName() == 'haplodiploid'
+	 *  Return \c True if this population is haplodiploid.
+	 *  <group>1-ploidy</group>
 	 */
 	bool isHaplodiploid() const
 	{
@@ -533,7 +534,7 @@ public:
 
 
 	/** return the total number of loci on all chromosomes.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
 	 */
 	UINT totNumLoci() const
 	{
@@ -562,7 +563,7 @@ public:
      *  parameter of the \c population function. An \c IndexError will be
      *  raised if the absolute index \e loc is greater than or equal to
      *  the total number of loci.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	double locusPos(UINT loc) const
 	{
@@ -577,7 +578,7 @@ public:
 	/** return the positions of all loci, specified by the \e lociPos prameter
      *  of the \c population function. The default positions are 1, 2, 3, 4, ...
      *  on each chromosome.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	vectorf lociPos() const
 	{
@@ -588,7 +589,7 @@ public:
 	/// HIDDEN return a \c carray of loci positions of all loci
 	/**
 	 \note Modifying loci position directly using this function is strongly discouraged.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
 	 */
 	PyObject * arrLociPos()
 	{
@@ -600,7 +601,7 @@ public:
 	/// HIDDEN return a \c carray of loci positions on a given chromosome
 	/**
 	 \note Modifying loci position directly using this function is strongly discouraged.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
 	 */
 	PyObject * arrLociPos(UINT chrom)
 	{
@@ -613,7 +614,7 @@ public:
 
 
 	/** return the number of chromosomes.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	UINT numChrom() const
 	{
@@ -632,7 +633,7 @@ public:
 
 
 	/** return the index of the first locus on chromosome \e chrom.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	UINT chromBegin(UINT chrom) const
 	{
@@ -646,7 +647,7 @@ public:
 
 
 	/** return the index of the last locus on chromosome \e chrom plus 1.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	UINT chromEnd(UINT chrom) const
 	{
@@ -662,7 +663,7 @@ public:
 	/** return the absolute index of locus \e locus on chromosome \e chrom. 
 	 *  An \c IndexError will be raised if \e chrom or \e locus is out of
 	 *  range. c.f. \c chromLocusPair.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
 	 */
 	UINT absLocusIndex(UINT chrom, UINT locus)
 	{
@@ -676,7 +677,7 @@ public:
 	/**
      * return the chromosome and relative index of a locus using its absolute
      * index \e locus. c.f. \c absLocusIndex.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
@@ -684,7 +685,7 @@ public:
 	/**
      * return the name of a chromosome \e chrom. Default to \c chrom# where #
      * is the 1-based index of the chromosome.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
      */
 	string chromName(const UINT chrom) const
 	{
@@ -697,7 +698,7 @@ public:
 
 
 	/** return a list of the names of all chromosomes.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	vectorstr chromNames() const
 	{
@@ -706,7 +707,7 @@ public:
 
 	/** return the type of a chromosome \e chrom (\c 1 for \c Autosome, \c 2 for
 	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
      */
 	int chromType(const UINT chrom) const
 	{
@@ -719,7 +720,7 @@ public:
 
 	/** return the type of all chromosomes (\c 1 for \c Autosome, \c 2 for
 	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
      */
 	vectoru chromTypes() const
 	{
@@ -727,7 +728,7 @@ public:
 	}
 
 	/** return the index of a chromosome by its \e name.
-	 *  <group>chromosome</group>
+	 *  <group>2-chromosome</group>
 	 */
 	UINT chromByName(const string name) const
 	{
@@ -743,15 +744,15 @@ public:
 	/** return the name of allele \e allele specified by the \e alleleNames parameter of
      *  the \c population function. If the name of an allele is not specified, its
      *  index (\c '0', \c '1', \c '2', etc) is returned.
-	 *  <group>allele</group>
+	 *  <group>4-allele</group>
      */
 	string alleleName(const UINT allele) const;
 
-	/**
-     * return a list of allele names given by the \e alleleNames parameter of the
-     * \c population function. This list does not have to cover all possible allele
-     * states of a population.
-	 *  <group>allele</group>
+	/** return a list of allele names given by the \e alleleNames parameter of the
+     *  \c population function. This list does not have to cover all possible allele
+     *  states of a population so <tt>alleleNames()[</tt><em>allele</em><tt>]</tt>
+	 *  might fail (use <tt>alleleNames(</tt><em>allele</em><tt>)</tt> instead).
+	 *  <group>4-allele</group>
      */
 	vectorstr alleleNames() const
 	{
@@ -762,7 +763,7 @@ public:
 	/** return the name of locus \e loc specified by the \e lociNames parameter of
      *  the \c population function. Default to \c locX-Y where \c X and \c Y
      *  are 1-based chromosome and locus indexes (\c loc1-1, \c loc1-2, ... etc)
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	string locusName(const UINT loc) const
 	{
@@ -776,7 +777,7 @@ public:
 
 	/** return the names of all loci specified by the \e lociNames parameter of
      *  the \c population function.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	vectorstr lociNames() const
 	{
@@ -786,7 +787,7 @@ public:
 
 	/** return the index of a locus with name \e name. Raise a \c ValueError
      *  if no locus is found.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	UINT locusByName(const string name) const
 	{
@@ -801,7 +802,7 @@ public:
 
 	/** return the indexes of loci with names \e names. Raise a \c ValueError
      *  if any of the loci cannot be found.
-	 *  <group>locus</group>
+	 *  <group>3-locus</group>
      */
 	vectoru lociByNames(const vectorstr & names) const
 	{
@@ -832,7 +833,7 @@ public:
 
 
 	/** return a list of the names of all information fields of the population.
-	 *  <group>info</group>
+	 *  <group>5-info</group>
 	 */
 	vectorstr infoFields() const
 	{
@@ -841,7 +842,7 @@ public:
 
 
 	/** return the name of information field \e idx.
-	 *  <group>info</group>
+	 *  <group>5-info</group>
 	 */
 	string infoField(UINT idx) const
 	{
@@ -852,7 +853,7 @@ public:
 
 	/** return the index of information field \e name. Raise an \c IndexError
      * if \e name is not one of the information fields.
-	 *  <group>info</group>
+	 *  <group>5-info</group>
      */
 	UINT infoIdx(const string & name) const;
 
