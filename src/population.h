@@ -540,7 +540,7 @@ public:
 #endif
 		if (subPop.isVirtual()) {
 			// this does not need to be deactivated...
-			activateVirtualSubPop(sp, subPop.virtualSubPop(), vspSplitter::Iteratable);
+			activateVirtualSubPop(sp, vsp, vspSplitter::Iteratable);
 			// if there is no virtual subpop
 			return pyIndIterator(m_inds.begin() + subPopBegin(sp),
 				m_inds.begin() + subPopEnd(sp),
@@ -1226,6 +1226,9 @@ public:
 	template<typename T, typename T1>
 	void setIndInfo(const T & values, T1 idx)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This operation is not allowed when there is an activated virtual subpopulation");
+
 		CHECKRANGEINFO(idx);
 		DBG_ASSERT(values.size() == popSize(), IndexError,
 			"Size of values should be the same as population size");
@@ -1314,6 +1317,9 @@ public:
 	 */
 	vectorinfo indInfo(UINT idx)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This operation is not allowed when there is an activated virtual subpopulation");
+
 		return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 

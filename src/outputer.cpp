@@ -35,7 +35,7 @@ bool dumper::apply(population & pop)
 		for (UINT i = 0; i < pop.numChrom(); ++i)
 			out << pop.numLoci(i) << " ";
 		out << endl;
-		out << "Maximum allele state:\t" << pop.maxAllele() << endl;
+		out << "Maximum allele state:\t" << MaxAllele() << endl;
 		out << "Loci positions: " << endl;
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
 			cout << "\t" << pop.chromName(ch) << "\t";
@@ -61,9 +61,7 @@ bool dumper::apply(population & pop)
 
 	if (!m_infoOnly) {
 		// dump all genotypic info
-		if (pop.maxAllele() >= 10 && pop.maxAllele() < 100)
-			m_width = 2;
-		else if (pop.maxAllele() >= 100)
+		if (MaxAllele() > 1)
 			m_width = 3;
 
 		// get individual ranges from subpop

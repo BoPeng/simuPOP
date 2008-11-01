@@ -29,8 +29,8 @@ void mutator::initialize(population & pop)
 {
 #ifndef BINARYALLELE
 	if (m_maxAllele == 0)
-		m_maxAllele = pop.maxAllele();
-	else if (m_maxAllele > 0 && m_maxAllele > pop.maxAllele() )
+		m_maxAllele = MaxAllele();
+	else if (m_maxAllele > 0 && m_maxAllele > MaxAllele() )
 		throw ValueError("maxAllele exceeds population max allele.");
 #endif
 

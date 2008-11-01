@@ -394,6 +394,9 @@ PyObject * population::arrGenotype(UINT subPop, bool order)
 
 PyObject * population::genotype()
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
 	sortIndividuals();
 	// directly expose values. Do not copy data over.
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
@@ -402,6 +405,9 @@ PyObject * population::genotype()
 
 PyObject * population::genotype(UINT subPop)
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
 	CHECKRANGESUBPOP(subPop);
 	sortIndividuals();
 	// directly expose values. Do not copy data over.
@@ -411,6 +417,9 @@ PyObject * population::genotype(UINT subPop)
 
 void population::setGenotype(vectora geno)
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
 	GenoIterator ptr = m_genotype.begin();
 	ULONG sz = geno.size();
 	for (ULONG i = 0; i < popSize()*genoSize(); ++i)
