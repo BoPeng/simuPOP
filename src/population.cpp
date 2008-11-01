@@ -214,23 +214,12 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
-ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) const
+string population::virtualSubPopName(SubPopID virtualSubPop) const
 {
-	CHECKRANGESUBPOP(subPop);
-	// if there is no virtual subpopulation,
-	if (hasActivatedVirtualSubPop() || virtualSubPop != InvalidSubPopID)
-		return m_vspSplitter->size(*this, subPop, virtualSubPop);
-	return subPopSize(subPop);
-}
-
-
-string population::virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop) const
-{
-	CHECKRANGESUBPOP(subPop);
 	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError,
 		"Subpopulation id is not virtual");
 	DBG_ASSERT(hasVirtualSubPop(), ValueError,
-		"There is no virtual subpopulation in subpop " + toStr(subPop));
+		"No virtual subpopulation is defined for this population.");
 	return m_vspSplitter->name(virtualSubPop);
 }
 

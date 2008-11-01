@@ -47,7 +47,7 @@ using std::random_shuffle;
 
 namespace simuPOP {
 
-typedef std::vector<vsp> vectorvsp;
+typedef std::vector<vspID> vectorvsp;
 
 /// migrate individuals from (virtual) subpopulations to other subpopulations
 /**
