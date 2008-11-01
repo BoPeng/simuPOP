@@ -17,6 +17,7 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Merge population::subPopSize and population::virtualSubPopSize.
   - CHG: Change parameter of population::virtualSubPopName().
   - CHG: Merge population::individuals(sp) and population::individuals(sp, vsp).
+  - CHG: Remove genoStruTrait::maxAllele(). Use MaxAllele() instead.
 
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
