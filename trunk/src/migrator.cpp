@@ -35,7 +35,7 @@ void migrator::setRates(const matrix & rate, int mode)
 
 	if (m_from.empty() )
 		for (UINT i = 0; i < szFrom; ++i)
-			m_from.push_back(vsp(i));
+			m_from.push_back(vspID(i));
 
 	if (m_to.empty() )
 		for (UINT i = 0; i < szTo; ++i)
@@ -108,7 +108,9 @@ bool migrator::apply(population & pop)
 		if (m_from[from].isVirtual()) {
 			pop.activateVirtualSubPop(spFrom, m_from[from].virtualSubPop());
 		}
-		ULONG spSize = pop.virtualSubPopSize(spFrom);
+		// if subpopulation spFrom is activated, subPopSize can
+		// get the correct size.
+		ULONG spSize = pop.subPopSize(spFrom);
 
 		if (m_mode == MigrByProbability) {
 			Weightedsampler ws(rng(), m_rate[from]);

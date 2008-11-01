@@ -367,6 +367,7 @@ enum DBG_CODE {
 #define CHECKRANGEPLOIDY(p)  DBG_FAILIF(p >= ploidy(), IndexError, "index (" + toStr(p) + ") out of range of ploidy of 0 ~ " + toStr(ploidy() - 1))
 #define CHECKRANGESEX(sex) DBG_FAILIF(sex != Male && sex != Female, IndexError, "Wrong sex info. Male " + toStr(Male) + " or Fenamle " + toStr(Female) + " only.")
 #define CHECKRANGESUBPOP(subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= numSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numSubPop() - 1))
+#define CHECKRANGEVIRTUALSUBPOP(subPop) DBG_FAILIF(subPop != InvalidSubPopID && static_cast<UINT>(subPop) >= numVirtualSubPop(), IndexError, "Subpop index (" + toStr(subPop) + ") out of range of 0  - " + toStr(numVirtualSubPop() - 1))
 #define CHECKRANGECHROM(chrom)   DBG_FAILIF(chrom >= numChrom(), IndexError, "chromosome index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numChrom() - 1))
 #define CHECKRANGELOCUS(chrom, locus) DBG_FAILIF(locus >= numLoci(chrom), IndexError, "locus index (" + toStr(chrom) + ") out of range of 0 - " + toStr(numLoci(chrom) - 1))
 #define CHECKRANGEABSLOCUS(locus) DBG_FAILIF(locus >= totNumLoci(), IndexError, "absolute locus index (" + toStr(locus) + ") out of range of 0 - " + toStr(totNumLoci() - 1))

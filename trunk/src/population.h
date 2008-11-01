@@ -262,7 +262,10 @@ public:
 	 */
 	void setVirtualSplitter(vspSplitter * vsp);
 
-	/** number of virtual subpopulations.
+	/** number of virtual subpopulations (VSP) for each subpopulation. Note 
+	 *  that a splitter defines VSP for all subpopulations. If different VSPs
+	 *  are needed for different subpopulations, a \c combinedSplitter should
+	 *  be used to define both VSPs for all subpopulations.
 	 *  <group>VSP</group>
 	 */
 	UINT numVirtualSubPop() const;
@@ -308,36 +311,27 @@ public:
 	}
 
 
-	/// return size of a subpopulation \c subPop.
-	/**
-	 \param subPop index of subpopulation (start from 0)
-
-	 <group>subpop</group>
+	/** return the size of a subpopulation or a VSP \e subPop, which should
+	 *  be specified by a number or a pair of numbers respectively.
+	 *  <group>subpop</group>
 	 */
-	ULONG subPopSize(SubPopID subPop) const
+	ULONG subPopSize(vspID subPop) const
 	{
-		CHECKRANGESUBPOP(subPop);
-		return m_subPopSize[subPop];
+		CHECKRANGESUBPOP(subPop.subPop());
+		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+		if (hasActivatedVirtualSubPop() || subPop.isVirtual())
+			return m_vspSplitter->size(*this, subPop.subPop(),
+				subPop.virtualSubPop());
+		else
+			return m_subPopSize[subPop.subPop()];
 	}
 
 
-	/**
-	   return the size of virtual subpopulation subPop.
-	   if subPop is activated, and subPop does not specify
-	   which virtual subpopulation to count, the currently
-	   activated virtual subpop is returned. Therefore,
-	   When it is not certain if a subpopulation has activated
-	   virtual subpopulation, this function can be used.
-
-	<group>subpop</group>
-	 */
-	ULONG virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID) const;
-
-	/**
-	 *  name of the given virtual subpopulation.
+	/** Return the name of VSP \e virtualSubPop. Because VSPs are defined for
+	 *  all subpopulations, a subPop ID is not needed.
 	 *  <group>VSP</group>
 	 */
-	string virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID) const;
+	string virtualSubPopName(SubPopID virtualSubPop = InvalidSubPopID) const;
 
 	/**
 	  an array of size of subpopulations
@@ -529,56 +523,40 @@ public:
 	}
 
 
-	/** return an iterator that can be used to iterate through all individuals in subpopulation \c subPop
+	/** return an iterator that can be used to iterate through all individuals
+	 *  in a (virtual) subpopulation \c subPop.  A VSP can be specified by a
+	 *  pair of indexes <tt>(spID, vspID).
 	 *  <group>ind</group>
 	 */
-	pyIndIterator individuals(SubPopID subPop)
+	pyIndIterator individuals(vspID subPop)
 	{
+		SubPopID sp = subPop.subPop();
+		SubPopID vsp = subPop.virtualSubPop();
 #ifndef OPTIMIZED
-		CHECKRANGESUBPOP(subPop);
-#endif
-		// if a virtual subpopulation is activated, this will
-		// iterate through virtual subpopulation. However,
-		// users are not supposed to manually activate subpopulation
-		// so this feature is CPPONLY
-		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-			m_inds.begin() + subPopEnd(subPop),
-			// if there is no activated virtual subpopualtions
-			// iterate through all individuals.
-			!hasActivatedVirtualSubPop(subPop),
-			// otherwise, iterate through all visible individuals.
-			true);
-	}
-
-
-	/* return an iterator that iterate 
-	 *  <group>ind</group>
-	 */
-	pyIndIterator individuals(SubPopID subPop, SubPopID virtualSubPop)
-	{
-#ifndef OPTIMIZED
-		CHECKRANGESUBPOP(subPop);
-#endif
-		DBG_FAILIF(virtualSubPop == InvalidSubPopID, ValueError,
-			"Invalid virtual subpoulation");
-
-		DBG_FAILIF(hasActivatedVirtualSubPop(subPop), ValueError,
+		CHECKRANGESUBPOP(sp);
+		CHECKRANGEVIRTUALSUBPOP(vsp);
+		DBG_FAILIF(hasActivatedVirtualSubPop(sp), ValueError,
 			"This operation is not allowed for an activated subpopulation");
-
-		DBG_ASSERT(static_cast<UINT>(virtualSubPop) < numVirtualSubPop(), IndexError,
-			"Population does not have any virtual subpopulation");
-
-		// this does not need to be deactivated...
-		activateVirtualSubPop(subPop, virtualSubPop, vspSplitter::Iteratable);
-
-		// if there is no virtual subpop
-		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-			m_inds.begin() + subPopEnd(subPop),
-			// allInds will not work at all, because there will be
-			// virtual subpopulation
-			false,
-			// and we count visible, and iteratable individuals.
-			false);
+#endif
+		if (subPop.isVirtual()) {
+			// this does not need to be deactivated...
+			activateVirtualSubPop(sp, subPop.virtualSubPop(), vspSplitter::Iteratable);
+			// if there is no virtual subpop
+			return pyIndIterator(m_inds.begin() + subPopBegin(sp),
+				m_inds.begin() + subPopEnd(sp),
+				// allInds will not work at all, because there will be
+				// virtual subpopulation
+				false,
+				// and we count visible, and iteratable individuals.
+				false);
+		} else
+			return pyIndIterator(m_inds.begin() + subPopBegin(sp),
+				m_inds.begin() + subPopEnd(sp),
+				// if there is no activated virtual subpopualtions
+				// iterate through all individuals.
+				!hasActivatedVirtualSubPop(sp),
+				// otherwise, iterate through all visible individuals.
+				true);
 	}
 
 

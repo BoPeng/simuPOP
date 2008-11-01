@@ -144,7 +144,7 @@ string individual::__repr__()
 	ostringstream os;
 	int width = 1;
 
-	if (maxAllele() == 1)
+	if (MaxAllele() == 1)
 		width = 1;
 	else
 		width = 3;
