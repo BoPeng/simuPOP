@@ -600,7 +600,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	} else {
 		// get currently visible individuals. In case that sp is not virtual
 		// pop.subPopSize is called.
-		DBG_ASSERT(pop.virtualSubPopSize(sp) == m_index.size(),
+		DBG_ASSERT(pop.subPopSize(sp) == m_index.size(),
 			SystemError, "Something wrong with virtual population size calculation")
 		m_size = m_index.size();
 	}
@@ -2173,7 +2173,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			for (size_t i = 0; i < m.size(); ++i)
 				// if there is no negative weight...
 				if (w_neg[i] == 0)
-					w_pos[i] = pop.virtualSubPopSize(sp, m[i]->virtualSubPop());
+					w_pos[i] = pop.subPopSize(vspID(sp, m[i]->virtualSubPop()));
 		}
 		DBG_DO(DBG_DEVEL, cout << "Positive mating scheme weights: " << w_pos << '\n'
 			                   << "Negative mating scheme weights: " << w_neg << endl);
@@ -2190,7 +2190,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// first count negative ones
 		for (size_t i = 0; i < m.size(); ++i) {
 			if (fcmp_gt(w_neg[i], 0.)) {
-				vspSize[i] = static_cast<ULONG>(pop.virtualSubPopSize(sp, m[i]->virtualSubPop()) * w_neg[i]);
+				vspSize[i] = static_cast<ULONG>(pop.subPopSize(vspID(sp, m[i]->virtualSubPop())) * w_neg[i]);
 				DBG_ASSERT(all >= vspSize[i], ValueError,
 					"Not enough offspring to accommodate specified weight scheme. "
 					"Current item is " + toStr(i) + " requires " + toStr(vspSize[i])
