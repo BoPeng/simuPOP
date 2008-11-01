@@ -444,7 +444,7 @@ public:
 
 	/** return the ploidy name of this population, can be one of \c haploid,
      *  \c diploid, \c haplodiploid, \c triploid, \c tetraploid or \c #-ploid
-     *  where # is the ploidy number.
+     *  where \c # is the ploidy number.
 	 *  <group>ploidy</group>
      */
 	string ploidyName() const;
@@ -472,7 +472,8 @@ public:
 	}
 
 
-	/** Return the index of chromosome X, \c -1 if there is no X chromosome.
+	/** CPPONLY
+	 *  Return the index of chromosome X, \c -1 if there is no X chromosome.
 	 *  <group>chromosome</group>
 	 */
 	int chromX() const
@@ -483,7 +484,8 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_chromX;
 	}
 
-	/** Return the index of chromosome Y, \c -1 if there is no Y chromosome.
+	/** CPPONLY
+	 *  Return the index of chromosome Y, \c -1 if there is no Y chromosome.
 	 *  <group>chromosome</group>
 	 */
 	int chromY() const
@@ -494,7 +496,8 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_chromY;
 	}
 
-	/** Return the index of the mitochondrial chromosome, \c -1 if there is no
+	/** CPPONLY
+	 *  Return the index of the mitochondrial chromosome, \c -1 if there is no
 	 *  mitochondrial hromosome.
 	 *  <group>chromosome</group>
 	 */
@@ -672,7 +675,7 @@ public:
 
 	/**
      * return the chromosome and relative index of a locus using its absolute
-     * index \e locus. c.f. \c absLocusIndex .
+     * index \e locus. c.f. \c absLocusIndex.
 	 *  <group>locus</group>
      */
 	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
@@ -693,7 +696,7 @@ public:
 	}
 
 
-	/** return a tuple of the names of all chromosomes.
+	/** return a list of the names of all chromosomes.
 	 *  <group>chromosome</group>
 	 */
 	vectorstr chromNames() const
@@ -701,8 +704,8 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames;
 	}
 
-	/**
-     * return the type of a chromosome \e chrom.
+	/** return the type of a chromosome \e chrom (\c 1 for \c Autosome, \c 2 for
+	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
 	 *  <group>chromosome</group>
      */
 	int chromType(const UINT chrom) const
@@ -714,8 +717,8 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_chromTypes[chrom];
 	}
 
-	/**
-     * return the type of all chromosomes \e chrom.
+	/** return the type of all chromosomes (\c 1 for \c Autosome, \c 2 for
+	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
 	 *  <group>chromosome</group>
      */
 	vectoru chromTypes() const
@@ -810,17 +813,6 @@ public:
 	}
 
 
-	/** return the maximum allowed allele state of the current simuPOP module,
-	 *  which is \c 1 for binary modules, \c 255 for short modules and \c 65535
-     *  for long modules.
-	 *  <group>allele</group>
-	 */
-	UINT maxAllele() const
-	{
-		return ModuleMaxAllele;
-	}
-
-
 	/** HIDDEN
         Return \c True if \c name is one of the information fields of this population.
      */
@@ -839,7 +831,7 @@ public:
 	}
 
 
-	/** return a tuple of the names of all information fields of the population.
+	/** return a list of the names of all information fields of the population.
 	 *  <group>info</group>
 	 */
 	vectorstr infoFields() const
