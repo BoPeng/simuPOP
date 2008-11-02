@@ -18,6 +18,10 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Change parameter of population::virtualSubPopName().
   - CHG: Merge population::individuals(sp) and population::individuals(sp, vsp).
   - CHG: Remove genoStruTrait::maxAllele(). Use MaxAllele() instead.
+  - CHG: Make pedigree a subclass of population and move population::locateRelatives
+        and population::setRelativeIndex to this class.
+  - CHG: Temporarily disable all pedigree related features such as pedigree parent
+        chooser, pedigree mating scheme, and all samplers.
 
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008

@@ -584,40 +584,40 @@ private:
    	is needed.
    <applicability>all ploidy</applicability>
  */
-class pedigreeParentsChooser : public parentChooser
-{
-public:
-	pedigreeParentsChooser(const pedigree & ped) :
-		parentChooser(0), m_pedigree(ped), m_index(0)
-	{
-	}
-
-
-	parentChooser * clone() const
-	{
-		return new pedigreeParentsChooser(*this);
-	}
-
-
-	vectorlu subPopSizes(ULONG gen)
-	{
-		return m_pedigree.subPopSizes(gen);
-	}
-
-
-	/// CPPONLY
-	void initialize(population & pop, SubPopID sp);
-
-	/// CPPONLY
-	individualPair chooseParents(RawIndIterator basePtr);
-
-private:
-	pedigree m_pedigree;
-	UINT m_gen;
-	SubPopID m_subPop;
-	RawIndIterator m_begin;
-	ULONG m_index;
-};
+// class pedigreeParentsChooser : public parentChooser
+// {
+// public:
+// 	pedigreeParentsChooser(const pedigree & ped) :
+// 		parentChooser(0), m_pedigree(ped), m_index(0)
+// 	{
+// 	}
+// 
+// 
+// 	parentChooser * clone() const
+// 	{
+// 		return new pedigreeParentsChooser(*this);
+// 	}
+// 
+// 
+// 	vectorlu subPopSizes(ULONG gen)
+// 	{
+// 		return m_pedigree.subPopSizes(gen);
+// 	}
+// 
+// 
+// 	/// CPPONLY
+// 	void initialize(population & pop, SubPopID sp);
+// 
+// 	/// CPPONLY
+// 	individualPair chooseParents(RawIndIterator basePtr);
+// 
+// private:
+// 	pedigree m_pedigree;
+// 	UINT m_gen;
+// 	SubPopID m_subPop;
+// 	RawIndIterator m_begin;
+// 	ULONG m_index;
+// };
 
 /** This parent chooser chooses a parent randomly from the
    parental generation. If selection is turned on, parents are
@@ -1786,78 +1786,78 @@ protected:
 
 
 /// a mating scheme that follows a given pedigree
-/**
-   In this scheme, a pedigree is given and the mating scheme will
-   choose parents and produce offspring strictly following the pedigree.
-   Parameters setting number of offspring per mating event, and
-   size of the offspring generations are ignored.
-
-   To implement this mating scheme in pyMating,
-   1.) a newSubPopSizeFunc should be given to return the exact subpopulation
-   	size, returned from pedigree.subPopSizes(gen).
-   2.) use pedigreeChooser to choose parents
-   3.) use a suitable offspring generator to generate offspring.
-
-   This pedigreeMating helps you do 1 and 2, and use a mendelianOffspringGenerator
-   as the default offspring generator. You can use another offspring generator
-   by setting the generator parameter. Note that the offspring generator can
-   generate one and only one offspring each time.
-   <applicability>all ploid</applicability>
- */
-class pedigreeMating : public mating
-{
-public:
-	/**
-	   Please refer to class \c mating for descriptions of other parameters.
-	 */
-	pedigreeMating(pedigree & ped,
-                   offspringGenerator & generator,
-	               vectorlu newSubPopSize = vectorlu(),
-	               PyObject * newSubPopSizeFunc = NULL,
-	               string newSubPopSizeExpr = "",
-	               SubPopID subPop = InvalidSubPopID,
-	               SubPopID virtualSubPop = InvalidSubPopID,
-	               double weight = 0);
-
-	/// destructor
-	~pedigreeMating()
-	{
-	}
-
-
-	/// deep copy of a random mating scheme
-	virtual mating * clone() const
-	{
-		return new pedigreeMating(*this);
-	}
-
-
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-		return true;
-	}
-
-
-	/// used by Python print function to print out the general information of the random mating scheme
-	virtual string __repr__()
-	{
-		return "<simuPOP::pedigree-following mating>";
-	}
-
-
-	/// CPPONLY perform random mating
-	bool mateSubPop(population & pop, SubPopID subPop,
-		RawIndIterator offBegin, RawIndIterator offEnd,
-		vector<baseOperator * > & ops);
-
-	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
-
-protected:
-	pedigree * m_pedigree;
-	offspringGenerator * m_offspringGenerator;
-	pedigreeParentsChooser m_pedParentsChooser;
-};
+// /**
+//    In this scheme, a pedigree is given and the mating scheme will
+//    choose parents and produce offspring strictly following the pedigree.
+//    Parameters setting number of offspring per mating event, and
+//    size of the offspring generations are ignored.
+// 
+//    To implement this mating scheme in pyMating,
+//    1.) a newSubPopSizeFunc should be given to return the exact subpopulation
+//    	size, returned from pedigree.subPopSizes(gen).
+//    2.) use pedigreeChooser to choose parents
+//    3.) use a suitable offspring generator to generate offspring.
+// 
+//    This pedigreeMating helps you do 1 and 2, and use a mendelianOffspringGenerator
+//    as the default offspring generator. You can use another offspring generator
+//    by setting the generator parameter. Note that the offspring generator can
+//    generate one and only one offspring each time.
+//    <applicability>all ploid</applicability>
+//  */
+// class pedigreeMating : public mating
+// {
+// public:
+// 	/**
+// 	   Please refer to class \c mating for descriptions of other parameters.
+// 	 */
+// 	pedigreeMating(pedigree & ped,
+//                    offspringGenerator & generator,
+// 	               vectorlu newSubPopSize = vectorlu(),
+// 	               PyObject * newSubPopSizeFunc = NULL,
+// 	               string newSubPopSizeExpr = "",
+// 	               SubPopID subPop = InvalidSubPopID,
+// 	               SubPopID virtualSubPop = InvalidSubPopID,
+// 	               double weight = 0);
+// 
+// 	/// destructor
+// 	~pedigreeMating()
+// 	{
+// 	}
+// 
+// 
+// 	/// deep copy of a random mating scheme
+// 	virtual mating * clone() const
+// 	{
+// 		return new pedigreeMating(*this);
+// 	}
+// 
+// 
+// 	/// CPPONLY
+// 	virtual bool isCompatible(const population & pop) const
+// 	{
+// 		return true;
+// 	}
+// 
+// 
+// 	/// used by Python print function to print out the general information of the random mating scheme
+// 	virtual string __repr__()
+// 	{
+// 		return "<simuPOP::pedigree-following mating>";
+// 	}
+// 
+// 
+// 	/// CPPONLY perform random mating
+// 	bool mateSubPop(population & pop, SubPopID subPop,
+// 		RawIndIterator offBegin, RawIndIterator offEnd,
+// 		vector<baseOperator * > & ops);
+// 
+// 	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+// 
+// protected:
+// 	pedigree * m_pedigree;
+// 	offspringGenerator * m_offspringGenerator;
+// 	pedigreeParentsChooser m_pedParentsChooser;
+// };
 
 /// a mating scheme of selfing
 /**

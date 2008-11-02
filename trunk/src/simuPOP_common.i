@@ -698,7 +698,7 @@ if infoExec.__init__.__doc__ is not None:
     InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
 def SavePopulation(pop, *args, **kwargs):
-    pop.savePopulation(*args, **kwargs)
+    pop.save(*args, **kwargs)
 
 if population.savePopulation.__doc__ is not None:
     SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__

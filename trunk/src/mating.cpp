@@ -553,31 +553,31 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIter
 }
 
 
-void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
-{
-	m_gen = pop.gen();
-	m_subPop = subPop;
-	m_begin = pop.rawIndBegin();
-	m_index = 0;
-	m_initialized = true;
-}
-
-
-parentChooser::individualPair pedigreeParentsChooser::chooseParents(RawIndIterator)
-{
-	individual * dad = NULL;
-	individual * mom = NULL;
-
-	dad = & * (m_begin + m_pedigree.father(m_gen, m_subPop, m_index));
-	if (m_pedigree.numParents() == 2)
-		mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
-	DBG_FAILIF(m_index >= m_pedigree.subPopSize(m_gen, m_subPop), IndexError,
-		"Trying to retrieve more indiviudals (index=" +
-		toStr(m_index) + " than what are available from the pedigree ("
-		+ toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
-	m_index++;
-	return std::make_pair(dad, mom);
-}
+// void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
+// {
+// 	m_gen = pop.gen();
+// 	m_subPop = subPop;
+// 	m_begin = pop.rawIndBegin();
+// 	m_index = 0;
+// 	m_initialized = true;
+// }
+// 
+// 
+// parentChooser::individualPair pedigreeParentsChooser::chooseParents(RawIndIterator)
+// {
+// 	individual * dad = NULL;
+// 	individual * mom = NULL;
+// 
+// 	dad = & * (m_begin + m_pedigree.father(m_gen, m_subPop, m_index));
+// 	if (m_pedigree.numParents() == 2)
+// 		mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
+// 	DBG_FAILIF(m_index >= m_pedigree.subPopSize(m_gen, m_subPop), IndexError,
+// 		"Trying to retrieve more indiviudals (index=" +
+// 		toStr(m_index) + " than what are available from the pedigree ("
+// 		+ toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
+// 	m_index++;
+// 	return std::make_pair(dad, mom);
+// }
 
 
 void randomParentChooser::initialize(population & pop, SubPopID sp)
@@ -1303,73 +1303,73 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 }
 
 
-// parameters about subpopulation size is ignored
-pedigreeMating::pedigreeMating(pedigree & ped,
-                               offspringGenerator & generator,
-                               vectorlu newSubPopSize,
-                               PyObject * newSubPopSizeFunc,
-                               string newSubPopSizeExpr,
-                               SubPopID subPop,
-                               SubPopID virtualSubPop,
-                               double weight)
-	: mating(vectorlu(), "", NULL, subPop, virtualSubPop, weight),
-	m_pedParentsChooser(ped)
-{
-	m_offspringGenerator = generator.clone();
-}
-
-
-bool pedigreeMating::mate(population & pop, population & scratch,
-                          vector<baseOperator * > & ops, bool submit)
-{
-	// scrtach will have the right structure.
-	scratch.fitSubPopStru(m_pedParentsChooser.subPopSizes(pop.gen()));
-	scratch.setVirtualSplitter(pop.virtualSplitter());
-
-	DBG_DO(DBG_MATING, m_famSize.clear());
-
-	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
-		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
-				scratch.rawIndEnd(sp), ops))
-			return false;
-	if (submit)
-		submitScratch(pop, scratch);
-	return true;
-}
-
-
-bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
-                                RawIndIterator offBegin, RawIndIterator offEnd,
-                                vector<baseOperator * > & ops)
-{
-	// nothing to do.
-	if (offBegin == offEnd)
-		return true;
-
-	if (!m_offspringGenerator->initialized())
-		m_offspringGenerator->initialize(pop, ops);
-
-	// this parent chooser needs to be initialized each time.
-	m_pedParentsChooser.initialize(pop, subPop);
-
-	// generate scratch.subPopSize(sp) individuals.
-	RawIndIterator it = offBegin;
-	while (it != offEnd) {
-		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents(pop.rawIndBegin());
-		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
-			ValueError, "Imcompatible parents chooser and offspring generator");
-		//
-		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
-		(void)numOff;             // silent warning about unused variable.
-		DBG_ASSERT(numOff == 1, ValueError,
-			"Pedigree offspring generator can only generate one offspring each time");
-		// record family size (this may be wrong for the last family)
-		DBG_DO(DBG_MATING, m_famSize.push_back(1));
-	}
-	m_pedParentsChooser.finalize(pop, subPop);
-	m_offspringGenerator->finalize(pop);
-	return true;
-}
+// // parameters about subpopulation size is ignored
+// pedigreeMating::pedigreeMating(pedigree & ped,
+//                                offspringGenerator & generator,
+//                                vectorlu newSubPopSize,
+//                                PyObject * newSubPopSizeFunc,
+//                                string newSubPopSizeExpr,
+//                                SubPopID subPop,
+//                                SubPopID virtualSubPop,
+//                                double weight)
+// 	: mating(vectorlu(), "", NULL, subPop, virtualSubPop, weight),
+// 	m_pedParentsChooser(ped)
+// {
+// 	m_offspringGenerator = generator.clone();
+// }
+// 
+// 
+// bool pedigreeMating::mate(population & pop, population & scratch,
+//                           vector<baseOperator * > & ops, bool submit)
+// {
+// 	// scrtach will have the right structure.
+// 	scratch.fitSubPopStru(m_pedParentsChooser.subPopSizes(pop.gen()));
+// 	scratch.setVirtualSplitter(pop.virtualSplitter());
+// 
+// 	DBG_DO(DBG_MATING, m_famSize.clear());
+// 
+// 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(pop.numSubPop()); ++sp)
+// 		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
+// 				scratch.rawIndEnd(sp), ops))
+// 			return false;
+// 	if (submit)
+// 		submitScratch(pop, scratch);
+// 	return true;
+// }
+// 
+// 
+// bool pedigreeMating::mateSubPop(population & pop, SubPopID subPop,
+//                                 RawIndIterator offBegin, RawIndIterator offEnd,
+//                                 vector<baseOperator * > & ops)
+// {
+// 	// nothing to do.
+// 	if (offBegin == offEnd)
+// 		return true;
+// 
+// 	if (!m_offspringGenerator->initialized())
+// 		m_offspringGenerator->initialize(pop, ops);
+// 
+// 	// this parent chooser needs to be initialized each time.
+// 	m_pedParentsChooser.initialize(pop, subPop);
+// 
+// 	// generate scratch.subPopSize(sp) individuals.
+// 	RawIndIterator it = offBegin;
+// 	while (it != offEnd) {
+// 		parentChooser::individualPair const parents = m_pedParentsChooser.chooseParents(pop.rawIndBegin());
+// 		DBG_FAILIF((parents.first == NULL || parents.second == NULL) && m_offspringGenerator->numParents() == 2,
+// 			ValueError, "Imcompatible parents chooser and offspring generator");
+// 		//
+// 		UINT numOff = m_offspringGenerator->generateOffspring(pop, parents.first, parents.second, it, offEnd, ops);
+// 		(void)numOff;             // silent warning about unused variable.
+// 		DBG_ASSERT(numOff == 1, ValueError,
+// 			"Pedigree offspring generator can only generate one offspring each time");
+// 		// record family size (this may be wrong for the last family)
+// 		DBG_DO(DBG_MATING, m_famSize.push_back(1));
+// 	}
+// 	m_pedParentsChooser.finalize(pop, subPop);
+// 	m_offspringGenerator->finalize(pop);
+// 	return true;
+// }
 
 
 bool selfMating::mateSubPop(population & pop, SubPopID subPop,
