@@ -1041,7 +1041,7 @@ void population::insertBeforeLocus(UINT idx, double pos, const string & name)
 }
 
 
-void population::insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
+void population::insertLoci(const vectorf & pos, const vectorstr & names)
 {
 	// use loci to keep the position of old loci in the new structure
 	vectoru loci(totNumLoci());
