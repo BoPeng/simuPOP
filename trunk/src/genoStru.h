@@ -404,10 +404,12 @@ public:
 	GenoStructure & mergeGenoStru(size_t idx, bool byChromosome) const;
 
 	/// CPPONLY
-	GenoStructure & removeLociFromGenoStru(const vectoru & remove = vectoru(), const vectoru & keep = vectoru());
+	GenoStructure & removeLociFromGenoStru(const vectoru & remove = vectoru(),
+		        const vectoru & keep = vectoru());
 
 	/// CPPONLY add some loci to genotype structure
-	GenoStructure & insertLociToGenoStru(const vectorf & pos, const vectorstr & names) const;
+	GenoStructure & addLociToGenoStru(const vectoru & chrom, const vectorf & pos,
+		        const vectorstr & names) const;
 
 	/// CPPONLY return the GenoStructure
 	GenoStructure & genoStru() const

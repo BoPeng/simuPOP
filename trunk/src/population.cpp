@@ -1029,44 +1029,24 @@ void population::mergePopulationByLoci(const population & pop,
 }
 
 
-void population::insertBeforeLocus(UINT idx, double pos, const string & name)
-{
-	vectoru v_idx(1, idx);
-	vectorf v_pos(1, pos);
-
-	if (name == string())
-		return insertBeforeLoci(v_idx, v_pos, vectorstr());
-	else
-		return insertBeforeLoci(v_idx, v_pos, vectorstr(1, name));
-}
-
-
-void population::insertLoci(const vectorf & pos, const vectorstr & names)
-{
-	// use loci to keep the position of old loci in the new structure
-	vectoru loci(totNumLoci());
-
-	// 0, 1, 2, 3, 4, 5, 6, ...
-	for (size_t i = 0; i < totNumLoci(); ++i)
-		loci[i] = i;
-	// can insert multiple loci at the same location
-	for (size_t i = 0; i < idx.size(); ++i) {
-		CHECKRANGEABSLOCUS(idx[i]);
-		// 0, 1, 2, 3, 4, 5, 6, ...
-		// if idx[i] = 3 (before index 3)
-		// 0, 1, 2, 4, 5, 6, 7, ...
-		for (size_t j = idx[i]; j < totNumLoci(); ++j)
-			loci[j]++;
-	}
+vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
+	       	 const vectorstr & names)
+{	
+	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
+		"Chromosome and position lists should have the same length");
+	DBG_ASSERT(names.empty() || pos.size() == names.size(), ValueError,
+		"Please specifiy locus name for all inserted loci.");
 
 	// obtain new genotype structure and set it
-	setGenoStructure(insertBeforeLociToGenoStru(idx, pos, names));
+	setGenoStructure(addLociToGenoStru(chrom, pos, names));
+	// use loci to keep the position of old loci in the new structure
+	vectoru loci(totNumLoci());
 
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
 		useAncestralPop(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
+		vectora newGenotype(newPopGenoSize, 0);
 
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
@@ -1083,72 +1063,7 @@ void population::insertLoci(const vectorf & pos, const vectorstr & names)
 				     loc != loci.end(); ++loc) {
 					newPtr[*loc] = *(oldPtr++);
 				}
-				newPtr += totNumLoci();                   // next ploidy
-			}
-		}
-		m_genotype.swap(newGenotype);
-	}
-	if (!indOrdered())
-		sortIndividuals(true);
-}
-
-
-void population::insertAfterLocus(UINT idx, double pos, const string & name)
-{
-	vectoru v_idx(1, idx);
-	vectorf v_pos(1, pos);
-
-	if (name == string())
-		return insertAfterLoci(v_idx, v_pos, vectorstr());
-	else
-		return insertAfterLoci(v_idx, v_pos, vectorstr(1, name));
-}
-
-
-void population::insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
-{
-	// use loci to keep the position of old loci in the new structure
-	vectoru loci(totNumLoci());
-
-	// 0, 1, 2, 3, 4, 5, 6, ...
-	for (size_t i = 0; i < totNumLoci(); ++i)
-		loci[i] = i;
-	// can insert multiple loci at the same location
-	for (size_t i = 0; i < idx.size(); ++i) {
-		CHECKRANGEABSLOCUS(idx[i]);
-		// 0, 1, 2, 3, 4, 5, 6, ...
-		// if idx[i] = 3 (before index 3)
-		// 0, 1, 2, 3, 5, 6, 7, ...
-		if (idx[i] != totNumLoci() - 1)
-			for (size_t j = idx[i] + 1; j < totNumLoci(); ++j)
-				loci[j]++;
-	}
-
-	// obtain new genotype structure and set it
-	setGenoStructure(insertAfterLociToGenoStru(idx, pos, names));
-
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
-		//
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
-
-		// copy data over
-		GenoIterator newPtr = newGenotype.begin();
-		UINT pEnd = ploidy();
-		for (ULONG i = 0; i < m_popSize; ++i) {
-			// set new geno structure
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-			GenoIterator oldPtr = m_inds[i].genoPtr();
-			// new genotype
-			m_inds[i].setGenoPtr(newPtr);
-			// copy each chromosome
-			for (UINT p = 0; p < pEnd; ++p) {
-				for (vectoru::iterator loc = loci.begin();
-				     loc != loci.end(); ++loc) {
-					newPtr[*loc] = *(oldPtr++);
-				}
-				newPtr += totNumLoci();                   // next ploidy
+				newPtr += totNumLoci();
 			}
 		}
 		m_genotype.swap(newGenotype);

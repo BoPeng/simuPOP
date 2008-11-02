@@ -1057,12 +1057,15 @@ public:
 	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
 
-	/** Insert loci at given positions \e pos. These loci are arbitrarily named
-	 *  unless parameter \e names are given. Alleles at inserted loci are
-	 *  initialized with zero alleles.
-	 * <group>7-manipulate</group>
+	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
+	 *  These parameters should be lists of the same length, although
+	 *  \e names may be ignored, in which case random names will be given.
+	 *  Alleles at inserted loci are initialized with zero alleles. Indexes
+	 *  of the newly inserted loci are returned.
+	 *  <group>7-manipulate</group>
 	 */
-	void insertLoci(const vectorf & pos, const vectorstr & names = vectorstr());
+	vectoru addLoci(const vectoru & chrom, const vectorf & pos,
+		       const vectorstr & names = vectorstr());
 
 	/// resize current population
 	/**
