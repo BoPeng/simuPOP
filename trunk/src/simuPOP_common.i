@@ -622,69 +622,69 @@ def PyQuanTrait(pop, *args, **kwargs):
 if pyQuanTrait.__init__.__doc__ is not None:
     PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
 
-def Sample(pop, *args, **kwargs):
-    s = sample(*args, **kwargs)
-    s.apply(pop)
-    return s.sample(pop)
-
-if sample.__init__.__doc__ is not None:
-    Sample.__doc__ = "Function version of operator sample whose __init__function is \n" + sample.__init__.__doc__
-
-def RandomSample(pop, *args, **kwargs):
-    s = randomSample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples(pop)
-
-if randomSample.__init__.__doc__ is not None:
-    RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
-
-def CaseControlSample(pop, *args, **kwargs):
-    s = caseControlSample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples(pop)
-
-if caseControlSample.__init__.__doc__ is not None:
-    CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
-
-def PySample(pop, *args, **kwargs):
-    s = pySample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples(pop)
-
-if pySample.__init__.__doc__ is not None:
-    PySample.__doc__ = "Function version of operator pySample whose __init__function is \n" + pySample.__init__.__doc__
-
-def AffectedSibpairSample(pop, *args, **kwargs):
-    s = affectedSibpairSample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples(pop)
-
-if affectedSibpairSample.__init__.__doc__ is not None:
-    AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
-
-def LargePedigreeSample(pop, *args, **kwargs):
-    s = largePedigreeSample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples(pop)
-
-if largePedigreeSample.__init__.__doc__ is not None:
-    LargePedigreeSample.__doc__ = "Function version of operator largePedigreeSample whose __init__function is \n" + largePedigreeSample.__init__.__doc__
-
-def NuclearFamilySample(pop, *args, **kwargs):
-    s = nuclearFamilySample(*args, **kwargs)
-    s.apply(pop)
-    return s.samples(pop)
-
-if nuclearFamilySample.__init__.__doc__ is not None:
-    NuclearFamilySample.__doc__ = "Function version of operator nuclearFamilySample whose __init__function is \n" + nuclearFamilySample.__init__.__doc__
-
-def PySubset(pop, *args, **kwargs):
-    s = pySubset(*args, **kwargs)
-    s.apply(pop)
-
-if pySubset.__init__.__doc__ is not None:
-    PySubset.__doc__ = "Function version of operator pySubset whose __init__function is \n" + pySubset.__init__.__doc__
-
+# def Sample(pop, *args, **kwargs):
+#     s = sample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.sample(pop)
+# 
+# if sample.__init__.__doc__ is not None:
+#     Sample.__doc__ = "Function version of operator sample whose __init__function is \n" + sample.__init__.__doc__
+# 
+# def RandomSample(pop, *args, **kwargs):
+#     s = randomSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if randomSample.__init__.__doc__ is not None:
+#     RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
+# 
+# def CaseControlSample(pop, *args, **kwargs):
+#     s = caseControlSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if caseControlSample.__init__.__doc__ is not None:
+#     CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
+# 
+# def PySample(pop, *args, **kwargs):
+#     s = pySample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if pySample.__init__.__doc__ is not None:
+#     PySample.__doc__ = "Function version of operator pySample whose __init__function is \n" + pySample.__init__.__doc__
+# 
+# def AffectedSibpairSample(pop, *args, **kwargs):
+#     s = affectedSibpairSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if affectedSibpairSample.__init__.__doc__ is not None:
+#     AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
+# 
+# def LargePedigreeSample(pop, *args, **kwargs):
+#     s = largePedigreeSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if largePedigreeSample.__init__.__doc__ is not None:
+#     LargePedigreeSample.__doc__ = "Function version of operator largePedigreeSample whose __init__function is \n" + largePedigreeSample.__init__.__doc__
+# 
+# def NuclearFamilySample(pop, *args, **kwargs):
+#     s = nuclearFamilySample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if nuclearFamilySample.__init__.__doc__ is not None:
+#     NuclearFamilySample.__doc__ = "Function version of operator nuclearFamilySample whose __init__function is \n" + nuclearFamilySample.__init__.__doc__
+# 
+# def PySubset(pop, *args, **kwargs):
+#     s = pySubset(*args, **kwargs)
+#     s.apply(pop)
+# 
+# if pySubset.__init__.__doc__ is not None:
+#     PySubset.__doc__ = "Function version of operator pySubset whose __init__function is \n" + pySubset.__init__.__doc__
+# 
 def InfoEval(pop, *args, **kwargs):
     infoEval(*args, **kwargs).apply(pop)
 
@@ -697,22 +697,19 @@ def InfoExec(pop, *args, **kwargs):
 if infoExec.__init__.__doc__ is not None:
     InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
-def SavePopulation(pop, *args, **kwargs):
-    pop.save(*args, **kwargs)
+def SavePopulation(pop, filename):
+    'Save population to file with name filename'
+    pop.save(filename)
 
-if population.savePopulation.__doc__ is not None:
-    SavePopulation.__doc__ = "Function versionof member function population::savePopulation with help info:\n" + population.savePopulation.__doc__
+def SaveSimulator(simu, filename):
+    'Save simulator to file with name filename'
+    simu.saveSimulator(filename)
 
-def SaveSimulator(simu, *args, **kwargs):
-    simu.saveSimulator(*args, **kwargs)
-
-if simulator.saveSimulator.__doc__ is not None:
-    SaveSimulator.__doc__ = "Function versionof member function simulator::saveSimulator with help info:\n" + simulator.saveSimulator.__doc__
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
-def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False,
+def new_population(self, size=[], ploidy=2, loci=[], chromTypes=[],
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
-    maxAllele=None, infoFields=[]):
+    infoFields=[]):
     if subPop != []:
         print 'Parameter subPop is obsolete. Please use size instead'
         if size != 0:
@@ -736,10 +733,8 @@ def new_population(self, size=[], ploidy=2, loci=[], sexChrom=False,
         ln = []
         for i in range(0, len(lociNames)):
             ln.extend(lociNames[i])
-    if not maxAllele is None:
-        print 'Parameter maxAllele is obsolete'
     cppModule.population_swiginit(self,
-        cppModule.new_population(sp, ploidy, loci, sexChrom, ld,
+        cppModule.new_population(sp, ploidy, loci, chromTypes, ld,
             ancestralDepth, chromNames, alleleNames, ln, infoFields))
 
 new_population.__doc__ = population.__init__.__doc__
@@ -1229,79 +1224,79 @@ stat.__init__ = new_stat
 
 
 
-def new_randomSample(self, size=[], *args, **kwargs):
-    if type(size) in [types.IntType, types.LongType]:
-        sz=[size]
-    else:
-        sz = size
-    cppModule.randomSample_swiginit(self,
-        cppModule.new_randomSample(size=sz, *args, **kwargs))
-
-new_randomSample.__doc__ = randomSample.__init__.__doc__
-del randomSample.__init__
-randomSample.__init__ = new_randomSample
-
-
-def new_caseControlSample(self, cases=[], controls=[], *args, **kwargs):
-    if type(cases) in [types.IntType, types.LongType]:
-        ca = [cases]
-        spSample = False
-    else:
-        ca = cases
-        spSample = True
-    if type(controls) in [types.IntType, types.LongType]:
-        ct = [controls]
-        spSample = False
-    else:
-        ct = controls
-        spSample = True
-    cppModule.caseControlSample_swiginit(self,
-        cppModule.new_caseControlSample(cases=ca, controls=ct,
-            spSample=spSample, *args, **kwargs))
-
-new_caseControlSample.__doc__ = caseControlSample.__init__.__doc__
-del caseControlSample.__init__
-caseControlSample.__init__ = new_caseControlSample
-
-
-def new_affectedSibpairSample(self,size=[], *args, **kwargs):
-    if type(size) in [types.IntType, types.LongType]:
-        sz=[size]
-    else:
-        sz = size
-    cppModule.affectedSibpairSample_swiginit(self,
-        cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
-
-new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
-del affectedSibpairSample.__init__
-affectedSibpairSample.__init__ = new_affectedSibpairSample
-
-
-def new_largePedigreeSample(self, size=[], *args, **kwargs):
-    if type(size) in [types.IntType, types.LongType]:
-        sz= [size]
-    else:
-        sz = size
-    cppModule.largePedigreeSample_swiginit(self,
-        cppModule.new_largePedigreeSample(size=sz, *args, **kwargs))
-
-new_largePedigreeSample.__doc__ = largePedigreeSample.__init__.__doc__
-del largePedigreeSample.__init__
-largePedigreeSample.__init__ = new_largePedigreeSample
-
-
-def new_nuclearFamilySample(self, size=[], *args, **kwargs):
-    if type(size) in [types.IntType, types.LongType]:
-        sz= [size]
-    else:
-        sz = size
-    cppModule.nuclearFamilySample_swiginit(self,
-        cppModule.new_nuclearFamilySample(size=sz, *args, **kwargs))
-
-new_nuclearFamilySample.__doc__ = nuclearFamilySample.__init__.__doc__
-del nuclearFamilySample.__init__
-nuclearFamilySample.__init__ = new_nuclearFamilySample
-
+# def new_randomSample(self, size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz=[size]
+#     else:
+#         sz = size
+#     cppModule.randomSample_swiginit(self,
+#         cppModule.new_randomSample(size=sz, *args, **kwargs))
+# 
+# new_randomSample.__doc__ = randomSample.__init__.__doc__
+# del randomSample.__init__
+# randomSample.__init__ = new_randomSample
+# 
+# 
+# def new_caseControlSample(self, cases=[], controls=[], *args, **kwargs):
+#     if type(cases) in [types.IntType, types.LongType]:
+#         ca = [cases]
+#         spSample = False
+#     else:
+#         ca = cases
+#         spSample = True
+#     if type(controls) in [types.IntType, types.LongType]:
+#         ct = [controls]
+#         spSample = False
+#     else:
+#         ct = controls
+#         spSample = True
+#     cppModule.caseControlSample_swiginit(self,
+#         cppModule.new_caseControlSample(cases=ca, controls=ct,
+#             spSample=spSample, *args, **kwargs))
+# 
+# new_caseControlSample.__doc__ = caseControlSample.__init__.__doc__
+# del caseControlSample.__init__
+# caseControlSample.__init__ = new_caseControlSample
+# 
+# 
+# def new_affectedSibpairSample(self,size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz=[size]
+#     else:
+#         sz = size
+#     cppModule.affectedSibpairSample_swiginit(self,
+#         cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
+# 
+# new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
+# del affectedSibpairSample.__init__
+# affectedSibpairSample.__init__ = new_affectedSibpairSample
+# 
+# 
+# def new_largePedigreeSample(self, size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz= [size]
+#     else:
+#         sz = size
+#     cppModule.largePedigreeSample_swiginit(self,
+#         cppModule.new_largePedigreeSample(size=sz, *args, **kwargs))
+# 
+# new_largePedigreeSample.__doc__ = largePedigreeSample.__init__.__doc__
+# del largePedigreeSample.__init__
+# largePedigreeSample.__init__ = new_largePedigreeSample
+# 
+# 
+# def new_nuclearFamilySample(self, size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz= [size]
+#     else:
+#         sz = size
+#     cppModule.nuclearFamilySample_swiginit(self,
+#         cppModule.new_nuclearFamilySample(size=sz, *args, **kwargs))
+# 
+# new_nuclearFamilySample.__doc__ = nuclearFamilySample.__init__.__doc__
+# del nuclearFamilySample.__init__
+# nuclearFamilySample.__init__ = new_nuclearFamilySample
+# 
 
 def new_mapSelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwargs):
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
@@ -1552,13 +1547,13 @@ del genotypeSplitter.__init__
 genotypeSplitter.__init__ = new_genotypeSplitter
 
 
-def new_pedigreeMating(self, pedigree=None, generator=None, *args, **kwargs):
-    if generator is None:
-        generator = mendelianOffspringGenerator()
-    cppModule.pedigreeMating_swiginit(self,
-        cppModule.new_pedigreeMating(ped=pedigree, generator=generator, *args, **kwargs))
-
-new_pedigreeMating.__doc__ = pedigreeMating.__init__.__doc__
-del pedigreeMating.__init__
-pedigreeMating.__init__ = new_pedigreeMating
+# def new_pedigreeMating(self, pedigree=None, generator=None, *args, **kwargs):
+#     if generator is None:
+#         generator = mendelianOffspringGenerator()
+#     cppModule.pedigreeMating_swiginit(self,
+#         cppModule.new_pedigreeMating(ped=pedigree, generator=generator, *args, **kwargs))
+# 
+# new_pedigreeMating.__doc__ = pedigreeMating.__init__.__doc__
+# del pedigreeMating.__init__
+# pedigreeMating.__init__ = new_pedigreeMating
 %}

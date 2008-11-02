@@ -599,7 +599,7 @@ haplodiploidMatingRef
 
 \begin_layout Standard
 
-
+%
 \backslash
 pedigreeMatingRef
 \end_layout
@@ -655,7 +655,7 @@ infoParentsChooserRef
 
 \begin_layout Standard
 
-
+%
 \backslash
 pedigreeParentsChooserRef
 \end_layout
@@ -1176,56 +1176,56 @@ status open
 
 \begin_layout Standard
 
-
+%
 \backslash
 sampleRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 pySubsetRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 pySampleRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 randomSampleRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 caseControlSampleRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 affectedSibpairSampleRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 largePedigreeSampleRef
 \end_layout
 
 \begin_layout Standard
 
-
+%
 \backslash
 nuclearFamilySampleRef
 \end_layout
