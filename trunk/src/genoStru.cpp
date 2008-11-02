@@ -370,6 +370,7 @@ GenoStructure & GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) cons
 #undef addLocusName
 }
 
+
 GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, const vectoru & keep)
 {
 	vectoru loci;
@@ -409,11 +410,9 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 }
 
 
-GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const
+GenoStructure & GenoStruTrait::insertLociToGenoStru(const vectorf & pos, const vectorstr & names) const
 {
-	DBG_FAILIF(idx.size() != pos.size(), ValueError,
-		"Index and position should have the same length");
-	DBG_FAILIF(!names.empty() && idx.size() != names.size(), ValueError,
+	DBG_FAILIF(!names.empty() && pos.size() != names.size(), ValueError,
 		"LociNames, if given, should be the same length as idx");
 
 	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
@@ -446,51 +445,6 @@ GenoStructure & GenoStruTrait::insertBeforeLociToGenoStru(const vectoru & idx, c
 		for (size_t i = 0; i < idx.size(); ++i) {
 			if (std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
 				lociNames.insert(lociNames.begin() + idx[i] + i, names[i]);
-			else
-				throw ValueError("Locus name " + names[i] + " already exists.");
-		}
-	}
-	return *new GenoStructure(gs.m_ploidy, loci, gs.m_chromTypes, gs.m_haplodiploid, lociPos,
-		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
-}
-
-
-GenoStructure & GenoStruTrait::insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const
-{
-	DBG_FAILIF(idx.size() != pos.size(), ValueError,
-		"Index and position should have the same length");
-	DBG_FAILIF(!names.empty() && idx.size() != names.size(), ValueError,
-		"LociNames, if given, should be the same length as idx");
-
-	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
-
-	vectoru loci = gs.m_numLoci;
-	vectorf lociPos = gs.m_lociPos;
-	for (size_t i = 0; i < idx.size(); ++i) {
-		CHECKRANGEABSLOCUS(idx[i]);
-		lociPos.insert(lociPos.begin() + idx[i] + 1 + i, pos[i]);
-		loci[chromLocusPair(idx[i]).first]++;
-	}
-	vectorstr lociNames = gs.m_lociNames;
-	// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
-	if (names.empty()) {
-		for (size_t i = 0; i < idx.size(); ++i) {
-			int ch = chromLocusPair(idx[i]).first + 1;
-			int loc = chromLocusPair(idx[i]).second + 1;
-			string base_name = "app" + toStr(ch) + "_" + toStr(loc) + "_";
-			int n = 1;
-			while (true) {
-				string name = base_name + toStr(n++);
-				if (std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end()) {
-					lociNames.insert(lociNames.begin() + idx[i] + i + 1, name);
-					break;
-				}
-			}
-		}
-	} else {                                                                          // given names
-		for (size_t i = 0; i < idx.size(); ++i) {
-			if (std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
-				lociNames.insert(lociNames.begin() + idx[i] + i + 1, names[i]);
 			else
 				throw ValueError("Locus name " + names[i] + " already exists.");
 		}

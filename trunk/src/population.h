@@ -1057,48 +1057,12 @@ public:
 	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
 
-	/** insert loci before given positions
-	 * <group>7-manipulate</group>
-	 Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
-	 \param idx an array of locus index. The loci will be inserted \em before each index.
-	   If you need to append to the last locus, use \c insertAfterLoci instead. If your index is the first
-	   locus of a chromosome, the inserted locus will become the first locus of that chromosome.
-	   If you need to insert multiple loci before a locus, repeat that locus number.
-	 \param pos an array of locus positions. The positions of the appended loci have to be between adjacent markers.
-	 \param names an array of locus names. If this parameter is not given, some unique names such as
-	   "insX_Y" will be given.
-	 */
-	void insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names = vectorstr());
-
-	/**
-	 * <group>7-manipulate</group>
-	 * insert an locus before a given position
-	 *  <tt>insertBeforeLocus(idx, pos, name)</tt> is a shortcut to <tt>insertBeforeLoci([idx], [pos], [name])</tt>
-	 */
-	void insertBeforeLocus(UINT idx, double pos, const string & name = string());
-
-	/// append loci after given positions
-	/**
-	   Append loci at some given locations. Alleles at inserted loci are initialized with zero allele.
-	 \param idx an array of locus index. The loci will be added \em after each index.
-	   If you need to append to the first locus of a chromosome, use \c insertBeforeLoci instead.
-	   If your index is the last locus of a chromosome, the appended locus will become the last locus
-	   of that chromosome. If you need to append multiple loci after a locus, repeat that locus number.
-	 \param pos an array of locus positions. The positions of the appended loci have to be between adjacent markers.
-	 \param names an array of locus names. If this parameter is not given, some unique names such as
-	   "insX_Y" will be given.
-
-
+	/** Insert loci at given positions \e pos. These loci are arbitrarily named
+	 *  unless parameter \e names are given. Alleles at inserted loci are
+	 *  initialized with zero alleles.
 	 * <group>7-manipulate</group>
 	 */
-	void insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names = vectorstr());
-
-	/// append an locus after a given position
-	/**
-	   <tt>insertAfterLocus(idx, pos, name)</tt> is a shortcut to <tt>insertAfterLoci([idx], [pos], [name])</tt>.
-	 * <group>7-manipulate</group>
-	 */
-	void insertAfterLocus(UINT idx, double pos, const string & name = string());
+	void insertLoci(const vectorf & pos, const vectorstr & names = vectorstr());
 
 	/// resize current population
 	/**

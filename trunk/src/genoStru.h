@@ -407,10 +407,7 @@ public:
 	GenoStructure & removeLociFromGenoStru(const vectoru & remove = vectoru(), const vectoru & keep = vectoru());
 
 	/// CPPONLY add some loci to genotype structure
-	GenoStructure & insertBeforeLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
-
-	/// CPPONLY append some loci to genotype structure
-	GenoStructure & insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
+	GenoStructure & insertLociToGenoStru(const vectorf & pos, const vectorstr & names) const;
 
 	/// CPPONLY return the GenoStructure
 	GenoStructure & genoStru() const
