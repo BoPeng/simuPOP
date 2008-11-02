@@ -697,13 +697,14 @@ def InfoExec(pop, *args, **kwargs):
 if infoExec.__init__.__doc__ is not None:
     InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
-def SavePopulation(pop, filename):
-    'Save population to file with name filename'
-    pop.save(filename)
-
-def SaveSimulator(simu, filename):
-    'Save simulator to file with name filename'
-    simu.saveSimulator(filename)
+# These two functions are not really needed.
+#def SavePopulation(pop, filename):
+#    'Save population to file with name filename'
+#    pop.save(filename)
+#
+#def SaveSimulator(simu, filename):
+#    'Save simulator to file with name filename'
+#    simu.saveSimulator(filename)
 
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////

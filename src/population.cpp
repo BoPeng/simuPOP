@@ -307,29 +307,29 @@ int population::__cmp__(const population & rhs) const
 }
 
 
-individual & population::ancestor(ULONG ind, UINT gen)
+individual & population::ancestor(ULONG idx, UINT gen)
 {
 	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(gen) + " does not exist");
 	if (gen == m_curAncestralGen)
-		return this->ind(ind);
-	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(ind > m_ancestralPops[idx].m_inds.size(),
+		return this->ind(idx);
+	UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
 		IndexError, "Individual index out of range");
-	return m_ancestralPops[idx].m_inds[ind];
+	return m_ancestralPops[genIdx].m_inds[idx];
 }
 
 
-const individual & population::ancestor(ULONG ind, UINT gen) const
+const individual & population::ancestor(ULONG idx, UINT gen) const
 {
 	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(gen) + " does not exist");
 	if (gen == m_curAncestralGen)
-		return this->ind(ind);
-	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(ind > m_ancestralPops[idx].m_inds.size(),
+		return this->ind(idx);
+	UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
 		IndexError, "Individual index out of range");
-	return m_ancestralPops[idx].m_inds[ind];
+	return m_ancestralPops[genIdx].m_inds[idx];
 }
 
 

@@ -316,9 +316,8 @@ public:
 	}
 
 
-	/** Return the size of a subpopulation or a virtual subpopulation (VSP) \e
-	 *  subPop. A VSP should be specified by a tuple of subpopulation ID and
-	 *  VSP ID (e.g. <tt>subPopSize([1, 2])</tt>).
+	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
+	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>).
 	 *  <group>2-subpop</group>
 	 */
 	ULONG subPopSize(vspID vsp) const
@@ -339,7 +338,8 @@ public:
 	 */
 	string virtualSubPopName(vspID vsp) const;
 
-	/** Return the sizes of all subpopulations in a list.
+	/** Return the sizes of all subpopulations in a list. Virtual
+	 *  subpopulations are not considered.
 	 *  <group>2-subpop</group>
 	 */
 	vectorlu subPopSizes() const
@@ -363,7 +363,7 @@ public:
 	}
 
 
-	/** return the absolute index of an individual \e idx in a subpopulation \e subPop.
+	/** return the absolute index of an individual \e idx in subpopulation \e subPop.
 	 *  <group>2-subpop</group>
 	 */
 	ULONG absIndIndex(ULONG idx, UINT subPop) const
@@ -409,9 +409,9 @@ public:
 
 
 	/** Return the index of the last individual in subpopulation \e subPop plus
-	 *  \c 1, so that <tt>range(subPopBegin(</tt><em>subPop</em><tt>)</tt>,
-	 *  <tt>subPopEnd(</tt><em>subPop</em><tt>))</tt> can iterate through the
-	 *  index of all individuals in subpopulation \e subPop.
+	 *  \c 1, so that <tt>range(subPopBegin(subPop)</tt>,
+	 *  <tt>subPopEnd(subPop)</tt> can iterate through the index of all
+	 *  individuals in subpopulation \e subPop.
 	 *  <group>2-subpop</group>
 	 */
 	ULONG subPopEnd(UINT subPop) const
@@ -463,44 +463,23 @@ public:
 	}
 
 
-	/// refrence to an individual \c ind in an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
-	 *  <group>6-ancestry</group>
+	/** Return a reference to individual \c idx in ancestral generation \c gen.
+	 *  The correct individual will be returned even if the current generation
+	 *  is not the present one (see \c useAncestralPop).
+	 *  <group>6-ancestral</group>
 	 */
-	individual & ancestor(ULONG ind, UINT gen);
+	individual & ancestor(ULONG idx, UINT gen);
 
 	/// refrence to an individual \c ind in an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
-	 *  <group>6-ancestry</group>
-	 */
 	const individual & ancestor(ULONG ind, UINT gen) const;
 
-	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
-	 *  <group>6-ancestry</group>
+	/** Return a reference to individual \c idx of subpopulation \e subPop in
+	*   ancestral generation \c gen.
+	 *  <group>6-ancestral</group>
 	 */
 	individual & ancestor(ULONG ind, UINT subPop, UINT gen);
 
 	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
-	 *  <group>6-ancestry</group>
-	 */
 	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const;
 
 	/** Return a Python iterator that can be used to iterate through all
@@ -523,33 +502,33 @@ public:
 	 *  (<tt>vsp=[spID, vspID]</tt>).
 	 *  <group>4-ind</group>
 	 */
-	pyIndIterator individuals(vspID subPop)
+	pyIndIterator individuals(vspID vsp)
 	{
-		SubPopID sp = subPop.subPop();
-		SubPopID vsp = subPop.virtualSubPop();
+		SubPopID spID = vsp.subPop();
+		SubPopID vspID = vsp.virtualSubPop();
 #ifndef OPTIMIZED
-		CHECKRANGESUBPOP(sp);
-		CHECKRANGEVIRTUALSUBPOP(vsp);
-		DBG_FAILIF(hasActivatedVirtualSubPop(sp), ValueError,
+		CHECKRANGESUBPOP(spID);
+		CHECKRANGEVIRTUALSUBPOP(vspID);
+		DBG_FAILIF(hasActivatedVirtualSubPop(spID), ValueError,
 			"This operation is not allowed for an activated subpopulation");
 #endif
-		if (subPop.isVirtual()) {
+		if (vsp.isVirtual()) {
 			// this does not need to be deactivated...
-			activateVirtualSubPop(sp, vsp, vspSplitter::Iteratable);
+			activateVirtualSubPop(spID, vspID, vspSplitter::Iteratable);
 			// if there is no virtual subpop
-			return pyIndIterator(m_inds.begin() + subPopBegin(sp),
-				m_inds.begin() + subPopEnd(sp),
+			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
+				m_inds.begin() + subPopEnd(spID),
 				// allInds will not work at all, because there will be
 				// virtual subpopulation
 				false,
 				// and we count visible, and iteratable individuals.
 				false);
 		} else
-			return pyIndIterator(m_inds.begin() + subPopBegin(sp),
-				m_inds.begin() + subPopEnd(sp),
+			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
+				m_inds.begin() + subPopEnd(spID),
 				// if there is no activated virtual subpopualtions
 				// iterate through all individuals.
-				!hasActivatedVirtualSubPop(sp),
+				!hasActivatedVirtualSubPop(spID),
 				// otherwise, iterate through all visible individuals.
 				true);
 	}
@@ -1182,7 +1161,7 @@ public:
 	void pushAndDiscard(population & rhs, bool force = false);
 
 	/** Return the actual number of ancestral generations stored in a
-	 *  population, which does not necessarily equals to the number set by
+	 *  population, which does not necessarily equal to the number set by
 	 *  \c setAncestralDepth().
 	 *  <group>6-ancestral</group>
 	 */
@@ -1374,22 +1353,21 @@ public:
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);
 
-	/// set ancestral depth
-	/**
-	  depth \c 0 for none, \c -1 for unlimited, a positive number sets
-	   the number of ancestral generations to save.
-	 * <group>6-ancestral</group>
+	/** set the intended ancestral depth of a population to \e depth, which can
+	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
+	 *  ancestral generations), and a positive number (store \e depth ancestral
+	 *  generations.
+	 *  <group>6-ancestral</group>
 	 */
 	void setAncestralDepth(int depth);
 
-	// idx = 0 (current), 1 (parents), 2 (grandparents...)
-	/// use an ancestral generation. \c 0 for the latest generation.
-	/**
-	 idx Index of the ancestral generation. \c 0 for current,
-	 \c 1 for parental, etc. idx can not exceed ancestral depth
-	   (see setAncestralDepth).
-
-	 * <group>6-ancestral</group>
+	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
+	 *  for parental generation, \c 2 for grand-parental generation, etc) the
+	 *  current generation. This is an efficient way to access population
+	 *  properties of an ancestral generation. <tt>useAncestralPop(0)</tt>
+	 *  should always be called to restore the correct order of ancestral
+	 *  generations.
+	 *  <group>6-ancestral</group>
 	 */
 	void useAncestralPop(UINT idx);
 
@@ -1413,9 +1391,8 @@ public:
 	 */
 	void sortIndividuals(bool infoOnly = false);
 
-	/** Save population to a file \e filename, which can be loaded using a global
-	 *  function <tt>LoadPopulation(</tt><em>filename</em><tt>)</tt>.
-	 *  <tt>pop.save(filename)</tt> is equivalent to <tt>SavePopulation(pop, filename)</tt>.
+	/** Save population to a file \e filename. The population can be restored
+	 *  from this file, using a global function <tt>LoadPopulation(filename)</tt>.
 	 *  <group>1-pop</group>
 	 */
 	void save(const string & filename) const;
