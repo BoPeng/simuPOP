@@ -1652,13 +1652,15 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::lociCovered "Obsolete or undocumented function."
 
-%ignore simuPOP::GenoStruTrait::mergeGenoStru(size_t idx, bool byChromosome) const ;
+%ignore simuPOP::GenoStruTrait::gsAddChromFromStru(size_t idx) const ;
 
-%ignore simuPOP::GenoStruTrait::removeLociFromGenoStru(const vectoru &remove=vectoru(), const vectoru &keep=vectoru());
+%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx) const ;
 
-%ignore simuPOP::GenoStruTrait::addChromToGenoStru(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const ;
+%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &loci, vectoru &kept);
 
-%ignore simuPOP::GenoStruTrait::addLociToGenoStru(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const ;
+%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const ;
+
+%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const ;
 
 %ignore simuPOP::GenoStruTrait::genoStru() const ;
 
@@ -6641,7 +6643,7 @@ Details:
 Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
-      lociPos=[], ancestralDepth=0, chromNames=[], alleleNames=[],
+      lociPos=[], ancestralGens=0, chromNames=[], alleleNames=[],
       lociNames=[], infoFields=[])
 
 Details:
@@ -6689,7 +6691,7 @@ Arguments:
                     should be ordered. A nested list that specifies
                     positions of loci on each chromosome is also
                     acceptable.
-    ancestralDepth: Number of the most recent ancestral generations to
+    ancestralGens:  Number of the most recent ancestral generations to
                     keep during evolution. Default to 0, which means
                     only the current generation will be kept. If it is
                     set to -1, all ancestral generations will be kept
@@ -7141,46 +7143,24 @@ Details:
 
 %feature("docstring") simuPOP::population::splitSubPop "
 
-Description:
-
-    split a subpopulation into subpopulations of given sizes
-
 Usage:
 
-    x.splitSubPop(which, sizes, subPopID=[])
+    x.splitSubPop(subPop, sizes, keepOrder=True)
 
 Details:
 
-    The sum of given sizes should be equal to the size of the split
-    subpopulation. Subpopulation IDs can be specified. The
-    subpopulation IDs of non-split subpopulations will be kept. For
-    example, if subpopulation 1 of 0 1 2 3 is split into three parts,
-    the new subpop id will be 0 (1 4 5) 2 3.
-
-Note:
-
-    subpop with negative ID will be removed. So, you can shrink one
-    subpop by splitting and setting one of the new subpop with
-    negative ID.
-
-"; 
-
-%feature("docstring") simuPOP::population::splitSubPopByProportion "
-
-Description:
-
-    split a subpopulation into subpopulations of given proportions
-
-Usage:
-
-    x.splitSubPopByProportion(which, proportions, subPopID=[])
-
-Details:
-
-    The sum of given proportions should add up to one. Subpopulation
-    IDs can be specified. subpop with negative ID will be removed. So,
-    you can shrink one subpop by splitting and setting one of the new
-    subpop with negative ID.
+    Split subpopulation subPop into subpopulations of given sizes,
+    which should add up to the size of subpopulation subPop.
+    Alternatively, sizes can be a list of proportions (add up to 1)
+    from which the sizes of new subpopulations are determined. By
+    default, subpopulation indexes will be adjusted so that
+    individuals can keep their original order. That is to say, if
+    subpopulation 1 of a population having four subpopulations is
+    split into three subpopulation, the new subpopulation ID would be
+    0, 1.1->1, 1.2->2, 1.3->3, 2->4, 3->5. If keepOrder is set to
+    False, the subpopulation IDs of existing subpopulations will not
+    be changed so the new subpopulation IDs of the previous example
+    would be 0, 1.1->1, 2, 3, 1.2->4, 1.3->5.
 
 "; 
 
@@ -7192,26 +7172,21 @@ Usage:
 
 Details:
 
-    remove empty subpopulations by adjusting subpopulation IDs
+    remove empty subpopulations by adjusting subpopulation IDs.
 
 "; 
 
 %feature("docstring") simuPOP::population::removeSubPops "
 
-Description:
-
-    remove subpopulations and adjust subpopulation IDs so that there
-    will be no 'empty' subpopulation left
-
 Usage:
 
-    x.removeSubPops(subPops=[], shiftSubPopID=True,
-      removeEmptySubPops=False)
+    x.removeSubPops(subPops)
 
 Details:
 
-    Remove specified subpopulations (and all individuals within). If
-    shiftSubPopID is false, subPopID will be kept intactly.
+    Remove all individuals from subpopulations subPops. The removed
+    subpopulations will have size zero, and can be removed by function
+    removeEmptySubPops.
 
 "; 
 
@@ -7219,115 +7194,78 @@ Details:
 
 Usage:
 
-    x.removeIndividuals(inds=[], subPop=-1,
-      removeEmptySubPops=False)
+    x.removeIndividuals(inds)
 
 Details:
 
-    remove individuals. If a valid subPop is given, remove individuals
-    from this subpopulation. Indexes in inds will be treated as
-    relative indexes.
+    remove individuals inds (absolute indexes) from the current
+    population. A subpopulation will be kept even if all individuals
+    from it are removed.
 
 "; 
 
 %feature("docstring") simuPOP::population::mergeSubPops "
 
-Description:
-
-    merge given subpopulations
-
 Usage:
 
-    x.mergeSubPops(subPops=[], removeEmptySubPops=False)
+    x.mergeSubPops(subPops=[])
 
 Details:
 
-    Merge subpopulations, the first subpopulation ID (the first one in
-    array subPops) will be used as the ID of the new subpopulation.
-    That is to say, all merged subpopulations will take the ID of the
-    first one. The subpopulation ID of the empty subpopulations will
-    be kept (so that other subpopulations are unaffected, unless they
-    are removed by removeEmptySubPops = True).
+    Merge subpopulations subPops. If subPops is empty (default), all
+    subpopulations will be merged. Subpopulations subPops do not have
+    to be adjacent to each other. The ID of the first subpopulation in
+    parameter subPops will become the ID of the new large
+    subpopulation. Other subpopulations will keep their IDs although
+    their sizes become zero. Function removeEmptySubPops can be used
+    to remove these empty subpopulation.
 
 "; 
 
-%feature("docstring") simuPOP::population::mergePopulation "
-
-Description:
-
-    merge populations by individuals
+%feature("docstring") simuPOP::population::addIndFromPop "
 
 Usage:
 
-    x.mergePopulation(pop, newSubPopSizes=[], keepAncestralPops=-1)
+    x.addIndFromPop(pop)
 
 Details:
 
-    Merge individuals from pop to the current population. Two
-    populations should have the same genotypic structures. By default,
-    subpopulations of the merged populations are kept. I.e., if you
-    merge two populations with one subpopulation, the resulting
-    population will have two subpopulations. All ancestral generations
-    are also merged by default.
-
-Arguments:
-
-    newSubPopSizes: subpopulation sizes can be specified. The overall
-                    size should be the combined size of the two
-                    populations. Because this parameter will be used
-                    for all ancestral generations, it may fail if
-                    ancestral generations have different sizes. To
-                    avoid this problem, you can run mergePopulation
-                    without this parameter, and then adjust
-                    subpopulation sizes generation by generation.
-    keepAncestralPops:ancestral populations to merge, default to all
-                    (-1)
-
-Note:
-
-    Population variables are not copied to pop.
+    Add all individuals, including ancestors, in pop to the current
+    population. Two populations should have the same genotypic
+    structures and number of ancestral generations. Subpopulations in
+    population pop are kept.
 
 "; 
 
-%feature("docstring") simuPOP::population::mergePopulationByLoci "
+%feature("docstring") simuPOP::population::addChromFromPop "
 
 Usage:
 
-    x.mergePopulationByLoci(pop, newNumLoci=[], newLociPos=[],
-      byChromosome=False)
+    x.addChromFromPop(pop)
 
 Details:
 
-    merge populations by loci Two populations should have the same
-    number of individuals. This also holds for any ancestral
-    generations. By default, chromosomes of pop are appended to the
-    current population. You can change this arrangement in two ways
-    *  specify new chromosome structure using parameter newLoci and
-    newLociPos. Loci from new and old populations are still in their
-    original order, but chromosome number and positions can be changed
-    in this way.
-    *  specify byChromosome=true so that chromosomes will be merged
-    one by one. In this case, loci position of two popualtions are
-    important because loci will be arranged in the order of loci
-    position; and identical loci position of two loci in two
-    populations will lead to error.
+    Add chromosomes in population pop to the current population.
+    Population pop should have the same number of individuals as the
+    current population in the current and all ancestral generations.
+    This function merges genotypes on the new chromosomes from
+    population pop individual by individual.
 
-Arguments:
+"; 
 
-    newNumLoci:     the new number of loci for the combined genotypic
-                    structure.
-    newLociPos:     the new loci position if number of loci on each
-                    chromosomes are changed with newNumLoci. New loci
-                    positions should be in order on the new
-                    chromosomes.
-    byChromosome:   merge chromosome by chromosome, loci are ordered
-                    by loci position Default to False.
+%feature("docstring") simuPOP::population::addLociFromPop "
 
-Note:
+Usage:
 
-    * Information fields are not merged.
-    * All ancestral generations are merged because all individuals in
-    a population have to have the same genotypic structure.
+    x.addLociFromPop(pop)
+
+Details:
+
+    Add loci from population pop, chromosome by chromosome. Added loci
+    will be inserted according to their position. Their position and
+    names should not overlap with any locus in the current population.
+    Population pop should have the same number of individuals as the
+    current population in the current and all ancestral generations.
 
 "; 
 
@@ -7369,112 +7307,49 @@ Details:
 
 %feature("docstring") simuPOP::population::resize "
 
-Description:
-
-    resize current population
-
 Usage:
 
     x.resize(newSubPopSizes, propagate=False)
 
 Details:
 
-    Resize population by giving new subpopulation sizes.
-
-Arguments:
-
-    newSubPopSizes: an array of new subpopulation sizes. If there is
-                    only one subpopulation, use [newPopSize].
-    propagate:      if propagate is true, copy individuals to new
-                    comers. I.e., 1, 2, 3 ==> 1, 2, 3, 1, 2, 3, 1
-
-Note:
-
-    This function only resizes the current generation.
+    Resize population by giving new subpopulation sizes
+    newSubPopSizes. Individuals at the end of some subpopulations will
+    be removed if the new subpopulation size is smaller than the old
+    one. New individuals will be appended to a subpopulation if the
+    new size is larger. Their genotypes will be set to zero (default),
+    or be copied from existing individuals if propagate is set to
+    True. More specifically, if a subpopulation with 3 individuals is
+    expanded to 7, the added individuals will copy genotypes from
+    individual 1, 2, 3, and 1 respectively. Note that this function
+    only resizes the current generation.
 
 "; 
 
-%feature("docstring") simuPOP::population::reorderSubPops "
+%ignore simuPOP::population::reorderSubPops(const vectoru &order=vectoru(), const vectoru &rank=vectoru(), bool removeEmptySubPops=false);
 
-Description:
-
-    reorder subpopulations by order or by rank
-
-Usage:
-
-    x.reorderSubPops(order=[], rank=[], removeEmptySubPops=False)
-
-Details:
-
-    
-
-Arguments:
-
-    order:          new order of the subpopulations. For examples, 3 2
-                    0 1 means subpop3, subpop2, subpop0, subpop1 will
-                    be the new layout.
-    rank:           you may also specify a new rank for each
-                    subpopulation. For example, 3,2,0,1 means the
-                    original subpopulations will have new IDs 3,2,0,1,
-                    respectively. To achive order 3,2,0,1, the rank
-                    should be 1 0 2 3.
-
-"; 
-
-%feature("docstring") simuPOP::population::newPopByIndID "
-
-Usage:
-
-    x.newPopByIndID(keepAncestralPops=-1, id=[],
-      removeEmptySubPops=False)
-
-Details:
-
-    Form a new population according to individual subpopulation ID.
-    Individuals with negative subpopulation ID will be removed.
-
-"; 
+%ignore simuPOP::population::newPopByIndID(int keepAncestralPops=-1, const vectori &id=vectori(), bool removeEmptySubPops=false);
 
 %feature("docstring") simuPOP::population::removeLoci "
 
 Usage:
 
-    x.removeLoci(remove=[], keep=[])
+    x.removeLoci(loci)
 
 Details:
 
-    remove some loci from the current population. Only one of the two
-    parameters can be specified.
-
-"; 
-
-%feature("docstring") simuPOP::population::newPopWithPartialLoci "
-
-Description:
-
-    obtain a new population with selected loci
-
-Usage:
-
-    x.newPopWithPartialLoci(remove=[], keep=[])
-
-Details:
-
-    Copy current population to a new one with selected loci keep or
-    remove specified loci remove (no change on the current
-    population), equivalent to
-    y=x.clone
-    y.removeLoci(remove, keep)
+    Remove loci (absolute indexes) and genotypes at these loci from
+    the current population.
 
 "; 
 
 %feature("docstring") simuPOP::population::pushAndDiscard "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::population::ancestralDepth "
+%feature("docstring") simuPOP::population::ancestralGens "
 
 Usage:
 
-    x.ancestralDepth()
+    x.ancestralGens()
 
 Details:
 
@@ -7488,25 +7363,19 @@ Details:
 
 %feature("docstring") simuPOP::population::setIndInfo "
 
-Description:
-
-    set individual information for the given information field idx
-
 Usage:
 
     x.setIndInfo(values, idx)
 
 Details:
 
-    
+    Set information field idx (an index) of the current population to
+    values. values will be reused if its length is smaller than
+    popSize().
 
 "; 
 
 %feature("docstring") simuPOP::population::setIndInfo "
-
-Description:
-
-    set individual information for the given information field name
 
 Usage:
 
@@ -7514,8 +7383,36 @@ Usage:
 
 Details:
 
-    x.setIndInfo(values, name) is equivalent to the idx version
-    x.setIndInfo(values, x.infoIdx(name)).
+    Set information field name of the current population to values.
+    values will be reused if its length is smaller than  popSize().
+
+"; 
+
+%feature("docstring") simuPOP::population::setIndInfo "
+
+Usage:
+
+    x.setIndInfo(values, idx, vsp)
+
+Details:
+
+    Set information field idx (an index) of a subpopulation (vsp=sp)
+    or a virtual subpopulation (vsp=[sp, vsp]) to values. values will
+    be reused if its length is smaller than subPopSize(vsp).
+
+"; 
+
+%feature("docstring") simuPOP::population::setIndInfo "
+
+Usage:
+
+    x.setIndInfo(values, name, vsp)
+
+Details:
+
+    Set information field name of a subpopulation (vsp=sp) or a
+    virtual subpopulation (vsp=[sp, vsp]) to values. values will be
+    reused if its length is smaller than subPopSize(vsp).
 
 "; 
 
@@ -7525,25 +7422,18 @@ Details:
 
 %feature("docstring") simuPOP::population::indInfo "
 
-Description:
-
-    get information field idx of all individuals
-
 Usage:
 
     x.indInfo(idx)
 
 Details:
 
-    
+    Return the information field idx (an index) of all individuals as
+    a list.
 
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
-
-Description:
-
-    get information field name of all individuals
 
 Usage:
 
@@ -7551,53 +7441,37 @@ Usage:
 
 Details:
 
-    
-
-Arguments:
-
-    name:           name of the information field
+    Return the information field name of all individuals as a list.
 
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
 
-Description:
-
-    get information field idx of all individuals in a subpopulation
-    subPop
-
 Usage:
 
-    x.indInfo(idx, subPop)
+    x.indInfo(idx, vsp)
 
 Details:
 
-    
+    Return the information field idx (an index) of all individuals in
+    (virtual) subpopulation vsp as a list.
 
 "; 
 
 %feature("docstring") simuPOP::population::indInfo "
 
-Description:
-
-    get information field name of all individuals in a subpopulation
-    subPop
-
 Usage:
 
-    x.indInfo(name, subPop)
+    x.indInfo(name, vsp)
 
 Details:
 
-    
+    Return the information field name of all individuals in (virtual)
+    subpopulation vsp as a list.
 
 "; 
 
 %feature("docstring") simuPOP::population::addInfoField "
-
-Description:
-
-    add an information field to a population
 
 Usage:
 
@@ -7605,15 +7479,12 @@ Usage:
 
 Details:
 
-    
+    Add an information field field to a population and initialize its
+    values to init.
 
 "; 
 
 %feature("docstring") simuPOP::population::addInfoFields "
-
-Description:
-
-    add one or more information fields to a population
 
 Usage:
 
@@ -7621,18 +7492,13 @@ Usage:
 
 Details:
 
-    fields an array of new information fields. If one or more of the
-    fields alreay exist, they will be re-initialized. init initial
-    value for the new fields.
+    Add information fields fields to a population and initialize their
+    values to init. If an information field alreay exists, it will be
+    re-initialized.
 
 "; 
 
 %feature("docstring") simuPOP::population::setInfoFields "
-
-Description:
-
-    set information fields for an existing population. The existing
-    fields will be removed.
 
 Usage:
 
@@ -7640,7 +7506,8 @@ Usage:
 
 Details:
 
-    fields an array of fields init initial value for the new fields.
+    Set information fields fields to a population and initialize them
+    with value init. All existing information fields will be removed.
 
 "; 
 
@@ -11271,7 +11138,7 @@ Description:
 
 Usage:
 
-    splitSubPop(which=0, sizes=[], proportions=[], subPopID=[],
+    splitSubPop(which=0, sizes=[], proportions=[], keepOrder=True,
       randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
       rep=REP_ALL, infoFields=[])
 
@@ -11293,9 +11160,6 @@ Arguments:
                     which) size.
     proportions:    proportions of new subpopulations. Should be added
                     up to 1.
-    subPopID:       new subpopulation IDs. Otherwise, the operator
-                    will automatically set new subpopulation IDs to
-                    new subpopulations.
     randomize:      Whether or not randomize individuals before
                     population split. Default to True.
 

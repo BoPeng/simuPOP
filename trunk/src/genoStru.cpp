@@ -398,42 +398,28 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx) const
 }
 
 
-GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & remove, const vectoru & keep)
+GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
+                                            vectoru & kept)
 {
-	vectoru loci;
+	kept.clear();
+	for (size_t loc = 0; loc < totNumLoci(); ++loc) {
+		if (find(loci.begin(), loci.end(), loc) == loci.end())
+			kept.push_back(loc);
+	}
 
-	DBG_FAILIF(remove.empty() && keep.empty(), ValueError,
-		"Please specify either remove or keep");
-	if (remove.empty())
-		loci = keep;
-	else {
-		for (size_t loc = 0; loc < totNumLoci(); ++loc)
-			// if not removed
-			if (find(remove.begin(), remove.end(), loc) == remove.end())
-				loci.push_back(loc);
-	}
 	// loci are now remainining loci
-	vectoru newNumLoci;
-	vectorf newLociDist;
-	vectorstr newLociNames;
-	vectorstr newChromNames;
-	vectoru newChromTypes;
-	UINT curCh = 999999;                                              // not 0, will be set to 0 soon.
-	for (vectoru::iterator loc = loci.begin();
-	     loc != loci.end(); ++loc) {
+	vectoru numLoci(numChrom(), 0);
+	vectorf lociPos;
+	vectorstr lociNames;
+	vectoru::iterator loc = kept.begin();
+	for (; loc != kept.end(); ++loc) {
 		UINT ch = chromLocusPair(*loc).first;
-		if (newNumLoci.empty() || curCh != ch) {
-			newNumLoci.push_back(1);
-			newChromNames.push_back(chromName(ch));
-			newChromTypes.push_back(chromType(ch));
-			curCh = ch;
-		} else
-			newNumLoci.back()++;
-		newLociDist.push_back(locusPos(*loc));
-		newLociNames.push_back(locusName(*loc));
+		numLoci[ch]++;
+		lociPos.push_back(locusPos(*loc));
+		lociNames.push_back(locusName(*loc));
 	}
-	return *new GenoStructure(ploidy(), newNumLoci, newChromTypes, haplodiploid(), newLociDist,
-		newChromNames, alleleNames(), newLociNames, infoFields());
+	return *new GenoStructure(ploidy(), numLoci, chromTypes(), haplodiploid(),
+		lociPos, chromNames(), alleleNames(), lociNames, infoFields());
 }
 
 

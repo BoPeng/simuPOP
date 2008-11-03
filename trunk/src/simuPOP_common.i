@@ -259,15 +259,6 @@ namespace std
 
 %include "operator.h"
 
-%extend simuPOP::population
-{
-    %template(setIndInfo) setIndInfo<vectori, UINT>;
-    %template(setIndInfo) setIndInfo<vectorf, UINT>;
-    %template(setIndInfo) setIndInfo<vectori>;
-    %template(setIndInfo) setIndInfo<vectorf>;
-}
-
-
 namespace std
 {
     %template()    vector<PyObject*>;

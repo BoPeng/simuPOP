@@ -650,65 +650,53 @@ void population::setSubPopByIndID(vectori id)
 }
 
 
-void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
+void population::splitSubPop(UINT subPop, vectorf sizes, bool keepOrder)
 {
-	DBG_ASSERT(accumulate(sizes.begin(), sizes.end(), 0UL) == subPopSize(which),
-		ValueError,
-		"Sum of subpopulation sizes does not equal to the size of subpopulation to be splitted.");
-
-	DBG_FAILIF(!subPopID.empty() && subPopID.size() != sizes.size(), ValueError,
-		"If subPopID is given, it should have the same length as subPOP");
-
-	if (sizes.size() == 1)
+	if (sizes.size() <= 1)
 		return;
+
+	double all = accumulate(sizes.begin(), sizes.end(), 0.);
+	DBG_ASSERT(static_cast<ULONG>(all) == subPopSize(subPop) || fcmp_eq(all, 1.),
+		ValueError,
+		"Sum of parameter sizes should be 1 (proportions) or the size of subpopulation subPop.");
+
+
+	ULONG spSize = subPopSize(subPop);
+	vectorlu newSizes(sizes.size());
+	for (size_t i = 0; i < sizes.size() - 1; ++i) {
+		if (fcmp_eq(all, 1.))
+			newSizes[i] = static_cast<ULONG>(floor(spSize * sizes[i]));
+		else
+			newSizes[i] = static_cast<ULONG>(sizes[i]);
+	}
+	// to avoid round off problem, calculate the last subpopulation
+	newSizes[sizes.size() - 1] = spSize - accumulate(newSizes.begin(), newSizes.end() - 1, 0L);
+
+	if (keepOrder) {
+		vectorlu subPopSizes;
+		for (size_t sp = 0; sp < numSubPop(); ++sp)
+			if (sp != subPop)
+				subPopSizes.push_back(subPopSize(sp));
+			else
+				subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
+		setSubPopStru(subPopSizes);
+		return;
+	}
 
 	// set initial info
 	setIndSubPopIDWithID();
 
 	UINT spID;
-	if (subPopID.empty())  // starting sp number
-		spID = which;
-	else {
-		spID = subPopID[0];
-		DBG_WARNING(spID != which && spID < numSubPop(),
-			"new subpop ID is already used. You are effectively merging two subpopulations")
-	}
-	ULONG sz = 0;                                                                     // idx within subpop
-	size_t newSPIdx = 0;
-	for (IndIterator ind = indBegin(which); ind.valid(); ++ind) {
-		if (sz == sizes[newSPIdx]) {
-			sz = 0;
-			newSPIdx++;
-			if (subPopID.empty())
-				spID = numSubPop() + newSPIdx - 1;
-			else {
-				DBG_WARNING(subPopID[newSPIdx] != which && subPopID[newSPIdx] < numSubPop(),
-					"new subpop ID is already used. You are effectively merging two subpopulations")
-				spID = subPopID[newSPIdx];
-			}
-		}
-		ind->setSubPopID(spID);
-		sz++;
+	for (size_t sp = 0, idx = 0; sp < newSizes.size(); ++sp) {
+		if (sp == 0)
+			spID = subPop;
+		else
+			spID = numSubPop() + sp - 1;
+		//
+		for (size_t i = 0; i < newSizes[sp]; ++i)
+			ind(idx++, subPop).setSubPopID(spID);
 	}
 	setSubPopByIndID();
-}
-
-
-void population::splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID)
-{
-	DBG_ASSERT(fcmp_eq(accumulate(proportions.begin(), proportions.end(), 0.), 1.), ValueError,
-		"Proportions do not add up to one.");
-
-	if (proportions.size() == 1)
-		return;
-
-	ULONG spSize = subPopSize(which);
-	vectorlu subPop(proportions.size());
-	for (size_t i = 0; i < proportions.size() - 1; ++i)
-		subPop[i] = static_cast<ULONG>(floor(spSize * proportions[i]));
-	// to avoid round off problem, calculate the last subpopulation
-	subPop[ subPop.size() - 1] = spSize - accumulate(subPop.begin(), subPop.end() - 1, 0L);
-	splitSubPop(which, subPop, subPopID);
 }
 
 
@@ -734,75 +722,50 @@ void population::removeEmptySubPops()
 }
 
 
-void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool removeEmptySubPops)
+void population::removeSubPops(const vectoru & subPops)
 {
 #ifndef OPTIMIZED
 	// check if subPops are valid
 	for (vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
-		DBG_WARNING(*sp >= m_numSubPop, "Subpopulation " + toStr(*sp) + " does not exist.");
+		DBG_WARNING(*sp >= numSubPop(), "Subpopulation " + toStr(*sp) + " does not exist.");
 	}
 #endif
 	setIndSubPopIDWithID();
 
-	int shift = 0;
 	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
-			shift++;
 			RawIndIterator ind = rawIndBegin(sp);
 			RawIndIterator ind_end = rawIndEnd(sp);
 			for (; ind != ind_end; ++ind)
 				ind->setSubPopID(-1); // remove
-		} else {
-			// other subpop shift left
-			if (shiftSubPopID) {
-				RawIndIterator ind = rawIndBegin(sp);
-				RawIndIterator ind_end = rawIndEnd(sp);
-				for (; ind != ind_end; ++ind)
-					ind->setSubPopID(sp - shift); // shift left
-			}
 		}
 	}
 
-	UINT pendingEmptySubPops = 0;
-	for (UINT i = m_numSubPop - 1; i >= 0 && (subPopSize(i) == 0
-	                                          || find(subPops.begin(), subPops.end(), i) != subPops.end()); --i, ++pendingEmptySubPops) ;
+	UINT oldNumSP = numSubPop();
 	setSubPopByIndID();
-	// what to do with pending empty subpops?
-	if (pendingEmptySubPops != 0 && !removeEmptySubPops) {
+	// try to keep these subpopulation IDs.
+	if (oldNumSP != numSubPop()) {
 		vectorlu spSizes = subPopSizes();
-		for (UINT i = 0; i < pendingEmptySubPops; ++i)
-			spSizes.push_back(0);
+		spSizes.resize(oldNumSP, 0);
 		setSubPopStru(spSizes);
 	}
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
 }
 
 
-void population::removeIndividuals(const vectoru & inds, int subPop, bool removeEmptySubPops)
+void population::removeIndividuals(const vectoru & inds)
 {
 	setIndSubPopIDWithID();
-	if (subPop == -1) {
-		for (size_t i = 0; i < inds.size(); ++i)
-			ind(inds[i]).setSubPopID(-1); // remove
-	} else {
-		for (size_t i = 0; i < inds.size(); ++i)
-			// remove
-			ind(inds[i], subPop).setSubPopID(-1);
-	}
+	for (size_t i = 0; i < inds.size(); ++i)
+		ind(inds[i]).setSubPopID(-1);
 
-	int oldNumSP = numSubPop();
+	UINT oldNumSP = numSubPop();
 	setSubPopByIndID();
-	int pendingEmptySubPops = oldNumSP - numSubPop();
-	// what to do with pending empty subpops?
-	if (pendingEmptySubPops != 0 && !removeEmptySubPops) {
+	// try to keep these subpopulation IDs.
+	if (oldNumSP != numSubPop()) {
 		vectorlu spSizes = subPopSizes();
-		for (int i = 0; i < pendingEmptySubPops; ++i)
-			spSizes.push_back(0);
+		spSizes.resize(oldNumSP, 0);
 		setSubPopStru(spSizes);
 	}
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
 }
 
 
@@ -825,7 +788,7 @@ void population::mergeSubPops(vectoru subPops)
 			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
 				ind->setSubPopID(id);
 	}
-	int oldNumSP = numSubPop();
+	UINT oldNumSP = numSubPop();
 	setSubPopByIndID();
 	// try to keep these subpopulation IDs.
 	if (oldNumSP != numSubPop()) {
@@ -1059,10 +1022,9 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 			m_inds[i].setGenoPtr(newPtr);
 			// copy each chromosome
 			for (UINT p = 0; p < pEnd; ++p) {
-				for (vectoru::iterator loc = loci.begin();
-				     loc != loci.end(); ++loc) {
+				vectoru::iterator loc = loci.begin();
+				for (; loc != loci.end(); ++loc)
 					newPtr[*loc] = *(oldPtr++);
-				}
 				newPtr += totNumLoci();
 			}
 		}
@@ -1073,6 +1035,7 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	//   anything, genotype may be resorted. Sort info to
 	//   so that the order is set to True.
 	sortIndividuals(true);
+	return newIndex;
 }
 
 
@@ -1245,55 +1208,20 @@ population & population::newPopByIndID(int keepAncestralPops,
 }
 
 
-void population::removeLoci(const vectoru & remove, const vectoru & keep)
+void population::removeLoci(const vectoru & loci)
 {
-	DBG_FAILIF(!keep.empty() && !remove.empty(), ValueError,
-		"Please specify one and only one of keep or remove.");
-
-	if (keep.empty() && remove.empty() )
+	if (loci.empty())
 		return;
 
-	vectoru loci;
-	if (!keep.empty())
-		loci = keep;
-	else {
-		for (size_t loc = 0; loc < this->totNumLoci(); ++loc)
-			// if not removed
-			if (find(remove.begin(), remove.end(), loc) == remove.end())
-				loci.push_back(loc);
-	}
-
-#ifndef OPTIMIZED
-	for (size_t i = 0; i < loci.size(); ++i) {
-		DBG_FAILIF(loci[i] >= this->totNumLoci(), ValueError,
-			"Given loci " + toStr(loci[i]) + " exceed max number of loci.");
-		DBG_FAILIF(i > 0 && loci[i] <= loci[i - 1], ValueError,
-			"Given loci should be in order.");
-	}
-#endif
-	// adjust order before doing anything
+	vectoru kept;
 	UINT oldTotNumLoci = totNumLoci();
-
-	// prepare data
-	//
-	// keep m_popSize;
-	// keep m_numSubPop;
-	// keep m_subPopSize;
-	// keep m_subPopIndex;
-
-	// genotype
-	// allocate new genotype and inds
 	// new geno structure is in effective now!
-	setGenoStructure(gsRemoveLoci(vectoru(), loci));
+	setGenoStructure(gsRemoveLoci(loci, kept));
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
-
 		//
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
-		// keep newInds();
-
+		vectora newGenotype(genoSize() * m_popSize);
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
 		UINT pEnd = ploidy();
@@ -1303,31 +1231,16 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
-			// copy each chromosome
 			for (UINT p = 0; p < pEnd; ++p) {
-				for (vectoru::iterator loc = loci.begin();
-				     loc != loci.end(); ++loc) {
+				vectoru::iterator loc = kept.begin();
+				for (; loc != kept.end(); ++loc)
 					*(newPtr++) = oldPtr[*loc];
-				}
-				oldPtr += oldTotNumLoci;                  // next ploidy
+				oldPtr += oldTotNumLoci;
 			}
 		}
 		m_genotype.swap(newGenotype);
 	}
 	setIndOrdered(true);
-}
-
-
-/** get a new population with selected loci */
-population & population::newPopWithPartialLoci(
-                                               const vectoru & remove,
-                                               const vectoru & keep)
-{
-	// copy the population over (info is also copied)
-	population * pop = new population(*this);
-
-	pop->removeLoci(remove, keep);
-	return *pop;
 }
 
 
@@ -1525,6 +1438,32 @@ void population::setInfoFields(const vectorstr & fields, double init)
 		m_info.swap(newInfo);
 	}
 	useAncestralGen(oldAncPop);
+}
+
+
+void population::setIndInfo(const vectorinfo & values, UINT idx)
+{
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	CHECKRANGEINFO(idx);
+	size_t valueSize = values.size();
+	IndInfoIterator ptr = infoBegin(idx);
+	for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
+		*ptr = static_cast<InfoType>(values[i % valueSize]);
+}
+
+
+void population::setIndInfo(const vectorinfo & values, UINT idx, vspID vsp)
+{
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	CHECKRANGEINFO(idx);
+	size_t valueSize = values.size();
+	IndInfoIterator ptr = infoBegin(idx, vsp);
+	for (size_t i = 0; ptr != infoEnd(idx, vsp); ++ptr, ++i)
+		*ptr = static_cast<InfoType>(values[i % valueSize]);
 }
 
 
