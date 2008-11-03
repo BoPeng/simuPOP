@@ -957,45 +957,40 @@ public:
 	 */
 	void setSubPopByIndID(vectori id = vectori());
 
-	/// split a subpopulation into subpopulations of given sizes
-	/**
-	   The sum of given sizes should be equal to the size of the split subpopulation. Subpopulation
-	   IDs can be specified. The subpopulation IDs of non-split subpopulations will be kept. For example, if
-	   subpopulation 1 of 0 1 2 3 is split into three parts, the new subpop id will be
-	   0 (1 4 5) 2 3.
-	   \note \c subpop with negative ID will be removed. So, you can shrink one \c subpop by splitting and
-	   setting one of the new \c subpop with negative ID.
-
-	 * <group>7-manipulate</group>
+	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
+	 *  which should add up to the size of subpopulation \e subPop.
+	 *  Alternatively, \e sizes can be a list of proportions (add up to \c 1)
+	 *  from which the sizes of new subpopulations are determined. By default,
+	 *  subpopulation indexes will be adjusted so that individuals can keep
+	 *  their original order. That is to say, if subpopulation \c 1 of a population
+	 *  having four subpopulations is split into three subpopulation, the new
+	 *  subpopulation ID would be \c 0, \c 1.1->1, \c 1.2->2, \c 1.3->3,
+	 *  \c 2->4, \c 3->5. If \e keepOrder is set to \c False, the subpopulation
+	 *  IDs of existing subpopulations will not be changed so the new subpopulation
+	 *  IDs of the previous example would be \c 0, \c 1.1->1, \c 2, \c 3,
+	 *  \c 1.2->4, \c 1.3->5.
+	 *  <group>7-manipulate</group>
 	 */
-	void splitSubPop(UINT which, vectorlu sizes, vectoru subPopID = vectoru());
+	void splitSubPop(UINT subPop, vectorf sizes, bool keepOrder = true);
 
-	/// split a subpopulation into subpopulations of given proportions
-	/**
-	   The sum of given proportions should add up to one. Subpopulation IDs can be specified.
-	   \c subpop with negative ID will be removed. So, you can shrink one \c subpop by splitting and
-	   setting one of the new \c subpop with negative ID.
-	 * <group>7-manipulate</group>
-	 */
-	void splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID = vectoru());
-
-	/** remove empty subpopulations by adjusting subpopulation IDs
+	/** remove empty subpopulations by adjusting subpopulation IDs.
 	 *  <group>7-manipulate</group>
 	 */
 	void removeEmptySubPops();
 
-	/// remove subpopulations and adjust subpopulation IDs so that there will be no \em 'empty' subpopulation left
-	/**
-	   Remove specified subpopulations (and all individuals within). If \c shiftSubPopID is false, \c subPopID
-	   will be kept intactly.
-	 * <group>7-manipulate</group>
+	/** Remove all individuals from subpopulations \e subPops. The removed
+	 *  subpopulations will have size zero, and can be removed by function
+	 *  <tt>removeEmptySubPops</tt>.
+	 *  <group>7-manipulate</group>
 	 */
-	void removeSubPops(const vectoru & subPops = vectoru(), bool shiftSubPopID = true, bool removeEmptySubPops = false);
+	void removeSubPops(const vectoru & subPops);
 
-	/** remove individuals. If a valid \c subPop is given, remove individuals from this subpopulation. Indexes in \c inds will be treated as relative indexes.
-	 * <group>7-manipulate</group>
+	/** remove individuals \e inds (absolute indexes) from the current
+	 *  population. A subpopulation will be kept even if all individuals from
+	 *  it are removed.
+	 *  <group>7-manipulate</group>
 	 */
-	void removeIndividuals(const vectoru & inds = vectoru(), int subPop = -1, bool removeEmptySubPops = false);
+	void removeIndividuals(const vectoru & inds);
 
 	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
 	 *  subpopulations will be merged. Subpopulations \e subPops do not have to
@@ -1057,34 +1052,33 @@ public:
 	vectoru addLoci(const vectoru & chrom, const vectorf & pos,
 		const vectorstr & names = vectorstr());
 
-	/// resize current population
-	/**
-	   Resize population by giving new subpopulation sizes.
-	   \param newSubPopSizes an array of new subpopulation sizes. If there
-	   is only one subpopulation, use <tt>[newPopSize]</tt>.
-	   \param propagate if \c propagate is \c true, copy individuals to new comers.
-	   I.e., 1, 2, 3 ==> 1, 2, 3, 1, 2, 3, 1
-	   \note This function only resizes the current generation.
-
-	 * <group>7-manipulate</group>
+	/** Resize population by giving new subpopulation sizes \e newSubPopSizes.
+	 *  Individuals at the end of some subpopulations will be removed if the
+	 *  new subpopulation size is smaller than the old one. New individuals
+	 *  will be appended to a subpopulation if the new size is larger. Their
+	 *  genotypes will be set to zero (default), or be copied from existing
+	 *  individuals if \e propagate is set to \c True. More specifically,
+	 *  if a subpopulation with \c 3 individuals is expanded to \c 7, the
+	 *  added individuals will copy genotypes from individual \c 1, \c 2,
+	 *  \c 3, and \c 1 respectively. Note that this function only resizes
+	 *  the current generation.
+	 *  <group>7-manipulate</group>
 	 */
 	void resize(const vectorlu & newSubPopSizes, bool propagate = false);
 
-	/// reorder subpopulations by \c order or by \c rank
-	/**
-	   \param order new order of the subpopulations. For examples, 3 2 0 1
-	   means \c subpop3, \c subpop2, \c subpop0, \c subpop1 will be the new layout.
-	   \param rank you may also specify a new rank for each subpopulation. For example, 3,2,0,1
-	   means the original subpopulations will have new IDs 3,2,0,1, respectively. To achive order 3,2,0,1,
-	   the rank should be 1 0 2 3.
-
-
-	 * <group>7-manipulate</group>
+	/** CPPONLY
+	 * reorder subpopulations by \c order or by \c rank
+	 *  \param order new order of the subpopulations. For examples, 3 2 0 1
+	 *  means \c subpop3, \c subpop2, \c subpop0, \c subpop1 will be the new layout.
+	 *  \param rank you may also specify a new rank for each subpopulation. For example, 3,2,0,1
+	 *  means the original subpopulations will have new IDs 3,2,0,1, respectively. To achive order 3,2,0,1,
+	 *  the rank should be 1 0 2 3.
+	 *  <group>7-manipulate</group>
 	 */
 	void reorderSubPops(const vectoru & order = vectoru(), const vectoru & rank = vectoru(),
 		bool removeEmptySubPops = false);
 
-	/**
+	/** CPPONLY
 	   Form a new population according to individual subpopulation ID. Individuals with negative subpopulation
 	   ID will be removed.
 	 * <group>7-manipulate</group>
@@ -1093,20 +1087,11 @@ public:
 		const vectori & id = vectori(),
 		bool removeEmptySubPops = false);
 
-	/** remove some loci from the current population. Only one of the two parameters can be specified.
-	 * <group>7-manipulate</group>
+	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
+	 *  current population.
+	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const vectoru & remove = vectoru(), const vectoru & keep = vectoru());
-
-	/// obtain a new population with selected loci
-	/**
-	   Copy current population to a new one with selected loci \c keep or remove specified loci \c remove
-	   (no change on the current population), equivalent to \n <tt>y=x.clone</tt> \n <tt>y.removeLoci(remove, keep)</tt>
-	 * <group>7-manipulate</group>
-	 */
-	population & newPopWithPartialLoci(
-		const vectoru & remove = vectoru(),
-		const vectoru & keep = vectoru());
+	void removeLoci(const vectoru & loci);
 
 	/// HIDDEN absorb \c rhs population as the current generation of a population
 	/**
@@ -1144,38 +1129,41 @@ public:
 	}
 
 
-	/// set individual information for the given information field \c idx
-	/**
-	 * <group>8-info</group>
+	/** Set information field \c idx (an index) of the current population to
+	 *  \e values. \e values will be reused if its length is smaller than
+	 *  <tt>popSize()</tt>.
+	 *  <group>8-info</group>
 	 */
-	template<typename T, typename T1>
-	void setIndInfo(const T & values, T1 idx)
-	{
-		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-			"This operation is not allowed when there is an activated virtual subpopulation");
+	void setIndInfo(const vectorinfo & values, UINT idx);
 
-		CHECKRANGEINFO(idx);
-		DBG_ASSERT(values.size() == popSize(), IndexError,
-			"Size of values should be the same as population size");
-		typename T::const_iterator infoIter = values.begin();
-		for (IndInfoIterator ptr = infoBegin(idx); ptr != infoEnd(idx); ++ptr)
-			*ptr = static_cast<InfoType>(*infoIter++);
+	/** Set information field \c name of the current population to \e values.
+	 *  \e values will be reused if its length is smaller than
+	 *  <tt>popSize()</tt>.
+	 *  <group>8-info</group>
+	 */
+	void setIndInfo(const vectorinfo & values, const string & name)
+	{
+		setIndInfo(values, infoIdx(name));
 	}
 
 
-	/// set individual information for the given information field \c name
-	/**
-	   <tt>x.setIndInfo(values, name)</tt> is
-	   equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
-	 * <group>8-info</group>
+	/** Set information field \c idx (an index) of a subpopulation
+	 *  (<tt>vsp=sp</tt>) or a virtual subpopulation (<tt>vsp=[sp, vsp]</tt>)
+	 *  to \e values. \e values will be reused if its length is smaller
+	 *  than <tt>subPopSize(vsp)</tt>.
+	 *  <group>8-info</group>
 	 */
-	template<class T>
-	void setIndInfo(const T & values, const string & name)
-	{
-		// for mpi version , use gloal idx
-		int idx = infoIdx(name);
+	void setIndInfo(const vectorinfo & values, UINT idx, vspID vsp);
 
-		setIndInfo<T, UINT>(values, idx);
+	/** Set information field \c name of a subpopulation (<tt>vsp=sp</tt>) or
+	 *  a virtual subpopulation (<tt>vsp=[sp, vsp]</tt>) to \e values.
+	 *  \e values will be reused if its length is smaller than
+	 *  <tt>subPopSize(vsp)</tt>.
+	 *  <group>8-info</group>
+	 */
+	void setIndInfo(const vectorinfo & values, const string & name, vspID vsp)
+	{
+		setIndInfo(values, infoIdx(name), vsp);
 	}
 
 
@@ -1208,10 +1196,13 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx, UINT subPop)
+	IndInfoIterator infoBegin(UINT idx, vspID vsp)
 	{
+		SubPopID subPop = vsp.subPop();
+
 		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
+		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
 		// has to adjust order because of parameter subPop
 		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
@@ -1222,10 +1213,12 @@ public:
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx, UINT subPop)
+	IndInfoIterator infoEnd(UINT idx, vspID vsp)
 	{
-		CHECKRANGEINFO(idx);
+		SubPopID subPop = vsp.subPop();
+
 		CHECKRANGESUBPOP(subPop);
+		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
 		// has to adjust order because of parameter subPop
 		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
@@ -1235,10 +1228,9 @@ public:
 	}
 
 
-	/// get information field \c idx of all individuals
-	/**
-
-	 * <group>8-info</group>
+	/** Return the information field \c idx (an index) of all individuals as a
+	 *  list.
+	 *  <group>8-info</group>
 	 */
 	vectorinfo indInfo(UINT idx)
 	{
@@ -1249,12 +1241,8 @@ public:
 	}
 
 
-	/// get information field \c name of all individuals
-	/**
-	   \param name name of the information field
-	   \return a vector with value of the information field
-
-	 * <group>8-info</group>
+	/** Return the information field \c name of all individuals as a list.
+	 *  <group>8-info</group>
 	 */
 	vectorinfo indInfo(const string & name)
 	{
@@ -1264,48 +1252,43 @@ public:
 	}
 
 
-	/// get information field \c idx of all individuals in a subpopulation \c subPop
-	/**
-	 * <group>8-info</group>
+	/** Return the information field \c idx (an index) of all individuals in
+	 *  (virtual) subpopulation \e vsp as a list.
+	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(UINT idx, UINT subPop)
+	vectorinfo indInfo(UINT idx, vspID vsp)
 	{
-		return vectorinfo(infoBegin(idx, subPop),
-			infoEnd(idx, subPop));
+		return vectorinfo(infoBegin(idx, vsp), infoEnd(idx, vsp));
 	}
 
 
-	/// get information field \c name of all individuals in a subpopulation \c subPop
-	/**
-	 * <group>8-info</group>
+	/** Return the information field \c name of all individuals in
+	 *  (virtual) subpopulation \e vsp as a list.
+	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(const string & name, UINT subPop)
+	vectorinfo indInfo(const string & name, vspID vsp)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		return vectorinfo(infoBegin(idx, vsp), infoEnd(idx, vsp));
 	}
 
 
-	///	add an information field to a population
-	/**
-	 * <group>8-info</group>
+	/**	Add an information field \e field to a population and initialize its
+	 *  values to \e init.
+	 *  <group>8-info</group>
 	 */
 	void addInfoField(const string field, double init = 0);
 
-	/// add one or more information fields to a population
-	/**
-	   fields an array of new information fields. If one or more of the fields
-	   alreay exist, they will be re-initialized.
-	   init initial value for the new fields.
+	/** Add information fields \e fields to a population and initialize their
+	 *  values to \e init. If an information field alreay exists, it will be
+	 *  re-initialized.
 	 * <group>8-info</group>
 	 */
 	void addInfoFields(const vectorstr & fields, double init = 0);
 
-	/// set information fields for an existing population. The existing fields will be removed.
-	/**
-	   fields an array of fields
-	   init initial value for the new fields.
+	/** Set information fields \e fields to a population and initialize them
+	 *  with value \e init. All existing information fields will be removed.
 	 * <group>8-info</group>
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);

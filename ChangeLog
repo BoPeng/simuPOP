@@ -27,6 +27,8 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Replace population::mergePopulationByLoci by population::addChromFromPop
 		and population::addLociFromPop.
   - CHG: Remove removeEmptySubPops parameter from population::mergeSubPops.
+  - CHG: Adjust interface to population::removeLoci.
+  - CHG: Adjust interface to population::removeSubPops.
 
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
