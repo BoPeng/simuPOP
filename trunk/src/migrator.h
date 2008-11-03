@@ -414,7 +414,9 @@ public:
 	/// apply a \c mergeSubPops operator
 	virtual bool apply(population & pop)
 	{
-		pop.mergeSubPops(m_subPops, m_removeEmptySubPops);
+		pop.mergeSubPops(m_subPops);
+		if (m_removeEmptySubPops)
+			pop.removeEmptySubPops();
 		return true;
 	}
 

@@ -806,7 +806,7 @@ void population::removeIndividuals(const vectoru & inds, int subPop, bool remove
 }
 
 
-void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
+void population::mergeSubPops(vectoru subPops)
 {
 	// set initial info
 	setIndSubPopIDWithID();
@@ -827,17 +827,12 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 	}
 	int oldNumSP = numSubPop();
 	setSubPopByIndID();
-	int pendingEmptySubPops = oldNumSP - numSubPop();
-	// what to do with pending empty subpops?
-	if (pendingEmptySubPops != 0 && !removeEmptySubPops) {
+	// try to keep these subpopulation IDs.
+	if (oldNumSP != numSubPop()) {
 		vectorlu spSizes = subPopSizes();
-		for (int i = 0; i < pendingEmptySubPops; ++i)
-			spSizes.push_back(0);
+		spSizes.resize(oldNumSP, 0);
 		setSubPopStru(spSizes);
 	}
-
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
 }
 
 
