@@ -33,15 +33,15 @@
 namespace simuPOP {
 
 population::population(const vectorlu & size,
-                       float ploidy,
-                       const vectoru & loci,
-                       const vectoru & chromTypes,
-                       const vectorf & lociPos,
-                       int ancestralDepth,
-                       const vectorstr & chromNames,
-                       const vectorstr & alleleNames,
-                       const vectorstr & lociNames,
-                       const vectorstr & infoFields)
+	float ploidy,
+	const vectoru & loci,
+	const vectoru & chromTypes,
+	const vectorf & lociPos,
+	int ancestralDepth,
+	const vectorstr & chromNames,
+	const vectorstr & alleleNames,
+	const vectorstr & lociNames,
+	const vectorstr & infoFields)
 	:
 	GenoStruTrait(),
 	m_popSize(0),
@@ -381,6 +381,7 @@ PyObject * population::arrGenotype(bool order)
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
 }
 
+
 // get the whole genotype.
 // individuals will be in order before exposing
 // their genotypes.
@@ -426,7 +427,7 @@ void population::setGenotype(vectora geno)
 	sortIndividuals();
 	GenoIterator ptr = m_genotype.begin();
 	ULONG sz = geno.size();
-	for (ULONG i = 0; i < popSize()*genoSize(); ++i)
+	for (ULONG i = 0; i < popSize() * genoSize(); ++i)
 		*(ptr++) = geno[i % sz];
 }
 
@@ -441,7 +442,7 @@ void population::setGenotype(vectora geno, SubPopID subPop)
 
 	GenoIterator ptr = genoBegin(subPop, true);
 	ULONG sz = geno.size();
-	for (ULONG i = 0; i < subPopSize(subPop)*genoSize(); ++i)
+	for (ULONG i = 0; i < subPopSize(subPop) * genoSize(); ++i)
 		*(ptr++) = geno[i % sz];
 }
 
@@ -1030,8 +1031,8 @@ void population::mergePopulationByLoci(const population & pop,
 
 
 void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
-	const string & chromName, UINT chromType)
-{	
+                          const string & chromName, UINT chromType)
+{
 	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
 		"Please specifiy locus name for all inserted loci.");
 
@@ -1074,9 +1075,10 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 	sortIndividuals(true);
 }
 
+
 vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
-	       	 const vectorstr & names)
-{	
+                            const vectorstr & names)
+{
 	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
 		"Chromosome and position lists should have the same length");
 	DBG_ASSERT(names.empty() || pos.size() == names.size(), ValueError,
@@ -1087,7 +1089,7 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	// obtain new genotype structure and set it
 	setGenoStructure(addLociToGenoStru(chrom, pos, names, newIndex));
 	// use loci to keep the position of old loci in the new structure
-	for (size_t i = 0, j=0; j < totNumLoci(); ++j) {
+	for (size_t i = 0, j = 0; j < totNumLoci(); ++j) {
 		// i is the index to loci before insertion.
 		// j is the index to loci after insertion.
 		if (find(newIndex.begin(), newIndex.end(), i) == newIndex.end()) {
@@ -1582,7 +1584,6 @@ void population::setInfoFields(const vectorstr & fields, double init)
 }
 
 
-
 // set ancestral depth, can be -1
 void population::setAncestralDepth(int depth)
 {
@@ -1727,7 +1728,7 @@ void population::sortIndividuals(bool infoOnly)
 	if (infoOnly) {
 		DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
 		UINT is = infoSize();
-		if (is == 0){
+		if (is == 0) {
 			setIndOrdered(true);
 			return;
 		}
@@ -1774,6 +1775,7 @@ void population::sortIndividuals(bool infoOnly)
 population & LoadPopulation(const string & file)
 {
 	population * p = new population();
+
 	p->load(file);
 	return *p;
 }
@@ -1805,6 +1807,5 @@ vectorf testGetinfoFromPop(population & pop, bool order)
 
 
 }
-
 
 
