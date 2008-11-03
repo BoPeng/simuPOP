@@ -70,8 +70,8 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 
 		for (i = 0; i < m_numChrom; ++i)
 			for (j = 0; j < m_numLoci[i]; ++j)
-				DBG_FAILIF(j > 0 && fcmp_lt(m_lociPos[m_chromIndex[i] + j], m_lociPos[m_chromIndex[i] + j - 1]),
-					ValueError, "Loci distance must be in order.");
+				DBG_FAILIF(j > 0 && fcmp_le(m_lociPos[m_chromIndex[i] + j], m_lociPos[m_chromIndex[i] + j - 1]),
+					ValueError, "Loci position should be distinct, and in increasing order.");
 	}
 #endif
 
@@ -83,6 +83,18 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		for (i = 0; i < m_numChrom; ++i)
 			m_chromNames[i] = "chrom" + toStr(i + 1);
 	}
+#ifndef OPTIMIZED
+	else {
+        map<string, int> nameMap;
+		// check uniqueness of the names
+		for (i = 0; i < m_numChrom; ++i) {
+            if (nameMap.find(m_chromNames[i]) != nameMap.end())
+				throw ValueError("Given chromosome names should be unique");
+            else
+                nameMap[m_chromNames[i]] = 0;
+        }
+	}
+#endif
 
 	DBG_ASSERT(m_lociNames.empty() || m_lociNames.size() == m_totNumLoci, ValueError,
 		"Loci names, if specified, should be given to every loci");
@@ -137,6 +149,12 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
         m_chromTypes = chromTypes;
     // has only one chromX?
     m_chromX = -1;
+	// check if the type is valid.
+    for (size_t i = 0; i < m_chromTypes.size(); ++i) {
+		UINT type = m_chromTypes[i];
+		DBG_ASSERT(type == Autosome || type == ChromosomeX || type == ChromosomeY || type == Mitochondrial,
+			ValueError, "Chromsome type can only be one of Autosome, ChromosomeX, ChromosomeY and Mitochondrial");
+	}
     for (size_t i = 0; i < m_chromTypes.size(); ++i) {
         if (m_chromTypes[i] == ChromosomeX) {
             DBG_ASSERT(m_chromX == -1, ValueError,
@@ -410,48 +428,122 @@ GenoStructure & GenoStruTrait::removeLociFromGenoStru(const vectoru & remove, co
 }
 
 
-GenoStructure & GenoStruTrait::insertLociToGenoStru(const vectorf & pos, const vectorstr & names) const
+GenoStructure & GenoStruTrait::addChromToGenoStru(const vectorf & lociPos,
+	const vectorstr & lociNames, const string & chromName, UINT chromType) const
 {
-	DBG_FAILIF(!names.empty() && pos.size() != names.size(), ValueError,
-		"LociNames, if given, should be the same length as idx");
+	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
+		"Please specify locus name for all inserted loci.");
+
+	for (size_t i = 1; i < lociPos.size(); ++i) {
+		DBG_ASSERT(lociPos[i-1] < lociPos[i], ValueError,
+			"Loci position hsould be distinct, and in increasing order.");
+	}
 
 	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
 
-	vectoru loci = gs.m_numLoci;
-	vectorf lociPos = gs.m_lociPos;
-	for (size_t i = 0; i < idx.size(); ++i) {
-		CHECKRANGEABSLOCUS(idx[i]);
-		lociPos.insert(lociPos.begin() + idx[i] + i, pos[i]);
-		loci[chromLocusPair(idx[i]).first]++;
-	}
-	vectorstr lociNames = gs.m_lociNames;
-	// add locus name, if there is no duplicate, fine. Otherwise, add '_' to the names.
-	if (names.empty()) {
-		for (size_t i = 0; i < idx.size(); ++i) {
-			int ch = chromLocusPair(idx[i]).first + 1;
-			int loc = chromLocusPair(idx[i]).second + 1;
-			string base_name = "ins" + toStr(ch) + "_" + toStr(loc) + "_";
-			int n = 1;
+	// original structure
+	vectoru newLoci = gs.m_numLoci;
+	newLoci.push_back(lociPos.size());
+	//
+	vectorf newLociPos = gs.m_lociPos;
+	newLociPos.insert(newLociPos.end(), lociPos.begin(), lociPos.end());
+	//
+	vectorstr newLociNames = gs.m_lociNames;
+	if (lociNames.empty()) {
+		for (size_t i = 0; i < lociPos.size(); ++i)
+			newLociNames.push_back("loc" + toStr(gs.m_numChrom + 1) + "-" + toStr(i + 1));
+	} else
+		newLociNames.insert(newLociNames.end(), lociNames.begin(), lociNames.end());
+	//
+	vectorstr newChromNames = gs.m_chromNames;
+	newChromNames.push_back(chromName.empty() ? "chrom" + toStr(gs.m_numChrom + 1) : chromName);
+	//
+	vectoru newChromTypes = gs.m_chromTypes;
+	newChromTypes.push_back(chromType);
+	
+	return *new GenoStructure(gs.m_ploidy, newLoci, newChromTypes, gs.m_haplodiploid,
+		newLociPos, newChromNames, gs.m_alleleNames, newLociNames, gs.m_infoFields);
+}
+
+
+GenoStructure & GenoStruTrait::addLociToGenoStru(const vectoru & chrom,
+	const vectorf & lociPos, const vectorstr & lociNames, vectoru & newIndex) const
+{
+	DBG_ASSERT(chrom.size() == lociPos.size(), ValueError,
+		"Please specify chromosome and position for all inserted loci.");
+
+	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
+		"Please specify locus name for all inserted loci.");
+
+	GenoStructure & gs = s_genoStruRepository[m_genoStruIdx];
+
+	// original names
+	vectorstr newLociNames = gs.m_lociNames;
+	// first, new names
+	vectorstr newNames = lociNames;
+	if (lociNames.empty()) {
+		for (size_t i = 0, j=0; i < lociPos.size(); ++i) {
 			while (true) {
-				string name = base_name + toStr(n++);
-				if (std::find(lociNames.begin(), lociNames.end(), name) == lociNames.end()) {
-					// +i because the array has shifted.
-					lociNames.insert(lociNames.begin() + idx[i] + i, name);
+				++j;
+				string name = "ins" + toStr(j);
+				if (std::find(newLociNames.begin(), newLociNames.end(), name) == newLociNames.end()) {
+					newNames.push_back(name);
 					break;
 				}
 			}
 		}
-	} else {                                                                          // given names
-		for (size_t i = 0; i < idx.size(); ++i) {
-			if (std::find(lociNames.begin(), lociNames.end(), names[i]) == lociNames.end())
-				lociNames.insert(lociNames.begin() + idx[i] + i, names[i]);
-			else
-				throw ValueError("Locus name " + names[i] + " already exists.");
-		}
 	}
-	return *new GenoStructure(gs.m_ploidy, loci, gs.m_chromTypes, gs.m_haplodiploid, lociPos,
-		gs.m_chromNames, gs.m_alleleNames, lociNames, gs.m_infoFields);
+
+	// the original structure...
+	vectoru newLoci = gs.m_numLoci;
+	vectorf newLociPos = gs.m_lociPos;
+	for (size_t i = 0; i < lociPos.size(); ++i) {
+		UINT ch = chrom[i];
+		double pos = lociPos[i];
+		string name = newNames[i];
+		DBG_ASSERT(ch < newLoci.size(), ValueError, "Chromosome index out of range\n"
+			"Please use addChrom function if a new chromosome is added");
+		//
+		newLoci[ch]++;
+		// find beginning and end of chromosome
+		size_t chBegin = 0;
+		size_t chEnd = newLoci[0];
+		for (size_t i = 1; i <= ch; ++i) {
+			chBegin += newLoci[i-1];
+			chEnd += newLoci[i];
+		}
+		// append to the last
+		if (pos > lociPos[chEnd-1] && ch == numChrom() - 1) {
+			newLociPos.push_back(pos);
+			newLociNames.push_back(name);
+			continue;
+		}
+		size_t insertPos = 0;
+		if (pos > lociPos[chEnd-1])
+			insertPos = chEnd;
+		else {
+			for (size_t i = chBegin; i < chEnd; ++i) {
+				if (pos < newLociPos[i]) {
+					insertPos = i;
+					break;
+				}
+			}
+		}
+		// insert here
+		newLociPos.insert(newLociPos.begin() + insertPos, pos);
+		newLociNames.insert(newLociNames.begin() + insertPos, name);
+	}
+
+	// set newIndex
+	newIndex.clear();
+	for (vectorstr::const_iterator name = newNames.begin();
+		name != newNames.end(); ++name)
+		newIndex.push_back(find(newLociNames.begin(), newLociNames.end(), *name)
+			- newLociNames.begin());	
+	return *new GenoStructure(gs.m_ploidy, newLoci, gs.m_chromTypes, gs.m_haplodiploid,
+		newLociPos, gs.m_chromNames, gs.m_alleleNames, newLociNames, gs.m_infoFields);
 }
+
 
 
 void GenoStruTrait::setGenoStructure(GenoStructure & rhs)

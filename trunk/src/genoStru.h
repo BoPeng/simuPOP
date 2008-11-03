@@ -407,9 +407,17 @@ public:
 	GenoStructure & removeLociFromGenoStru(const vectoru & remove = vectoru(),
 		        const vectoru & keep = vectoru());
 
-	/// CPPONLY add some loci to genotype structure
+	/** CPPONLY add a new chromosome to genotype structure.
+	 */
+	GenoStructure & addChromToGenoStru(const vectorf & lociPos,
+				const vectorstr & lociNames, const string & chromName, UINT chromType) const;
+
+	/** CPPONLY add some loci to genotype structure, newIndex
+	 *  is used to return the indexes of these loci in the new
+	 *  structure 
+	 */
 	GenoStructure & addLociToGenoStru(const vectoru & chrom, const vectorf & pos,
-		        const vectorstr & names) const;
+		        const vectorstr & names, vectoru & newIndex) const;
 
 	/// CPPONLY return the GenoStructure
 	GenoStructure & genoStru() const
@@ -725,6 +733,7 @@ public:
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_chromTypes;
 	}
+
 
 	/** return the index of a chromosome by its \e name.
 	 *  <group>2-chromosome</group>

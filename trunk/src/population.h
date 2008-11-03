@@ -77,8 +77,6 @@ enum SexChoice {
 
 namespace simuPOP {
 
-class population;
-
 /**
  *  A simuPOP population consists of individuals of the same genotypic
  *  structure, organized by generations, subpopulations and virtual
@@ -1051,21 +1049,32 @@ public:
 	 \note \li Information fields are not merged.
 	 \li All ancestral generations are merged because all individuals in a
 	   population have to have the same genotypic structure.
-
-
 	 */
 	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
 		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
 
+	/** Add chromosome \e chromName with given type \e chromType to a
+	 *  population, with loci \e lociNames inserted at position \e lociPos.
+	 *  \e lociPos should be ordered. \e lociNames and \e chromName should not
+	 *  exist in the current population. If they are not specified, simuPOP
+	 *  will try to assign default names, and raise a ValueError if the default
+	 *  names have been used.
+	 *  <group>7-manipulate</group>
+	 */
+	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
+		const string & chromName = "", UINT chromType = Autosome);
+
 	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
 	 *  \e names may be ignored, in which case random names will be given.
-	 *  Alleles at inserted loci are initialized with zero alleles. Indexes
-	 *  of the newly inserted loci are returned.
+	 *  Alleles at inserted loci are initialized with zero alleles. Note that
+	 *  loci have to be added to existing chromosomes. If loci on a new
+	 *  chromosome need to be added, function <tt>addChrom</tt> should be
+	 *  used. This function returns indexes of the inserted loci.
 	 *  <group>7-manipulate</group>
 	 */
 	vectoru addLoci(const vectoru & chrom, const vectorf & pos,
-		       const vectorstr & names = vectorstr());
+		const vectorstr & names = vectorstr());
 
 	/// resize current population
 	/**

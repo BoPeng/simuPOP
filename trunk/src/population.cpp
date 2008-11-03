@@ -1029,6 +1029,51 @@ void population::mergePopulationByLoci(const population & pop,
 }
 
 
+void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
+	const string & chromName, UINT chromType)
+{	
+	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
+		"Please specifiy locus name for all inserted loci.");
+
+	size_t oldNumLoci = totNumLoci();
+	// obtain new genotype structure and set it
+	setGenoStructure(addChromToGenoStru(lociPos, lociNames, chromName, chromType));
+
+	DBG_FAILIF(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
+		"Failed to add chromosome.");
+
+	for (int depth = ancestralDepth(); depth >= 0; --depth) {
+		useAncestralPop(depth);
+		//
+		ULONG newPopGenoSize = genoSize() * m_popSize;
+		vectora newGenotype(newPopGenoSize, 0);
+
+		// copy data over
+		GenoIterator newPtr = newGenotype.begin();
+		UINT pEnd = ploidy();
+		UINT gap = totNumLoci() - oldNumLoci;
+		for (ULONG i = 0; i < m_popSize; ++i) {
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			GenoIterator oldPtr = m_inds[i].genoPtr();
+			// new genotype
+			m_inds[i].setGenoPtr(newPtr);
+			// copy each chromosome
+			for (UINT p = 0; p < pEnd; ++p) {
+				for (size_t i = 0; i < oldNumLoci; ++i)
+					*(newPtr++) = *(oldPtr++);
+				newPtr += gap;
+			}
+		}
+		m_genotype.swap(newGenotype);
+	}
+	// if indOrdered is false:
+	//   individual genotype is now sorted. If we do not do
+	//   anything, genotype may be resorted. Sort info to
+	//   so that the order is set to True.
+	sortIndividuals(true);
+}
+
 vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	       	 const vectorstr & names)
 {	
@@ -1037,10 +1082,19 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	DBG_ASSERT(names.empty() || pos.size() == names.size(), ValueError,
 		"Please specifiy locus name for all inserted loci.");
 
-	// obtain new genotype structure and set it
-	setGenoStructure(addLociToGenoStru(chrom, pos, names));
-	// use loci to keep the position of old loci in the new structure
+	vectoru newIndex;
 	vectoru loci(totNumLoci());
+	// obtain new genotype structure and set it
+	setGenoStructure(addLociToGenoStru(chrom, pos, names, newIndex));
+	// use loci to keep the position of old loci in the new structure
+	for (size_t i = 0, j=0; j < totNumLoci(); ++j) {
+		// i is the index to loci before insertion.
+		// j is the index to loci after insertion.
+		if (find(newIndex.begin(), newIndex.end(), i) == newIndex.end()) {
+			loci[i] = j;
+			++i;
+		}
+	}
 
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
 		useAncestralPop(depth);
@@ -1068,8 +1122,11 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 		}
 		m_genotype.swap(newGenotype);
 	}
-	if (!indOrdered())
-		sortIndividuals(true);
+	// if indOrdered is false:
+	//   individual genotype is now sorted. If we do not do
+	//   anything, genotype may be resorted. Sort info to
+	//   so that the order is set to True.
+	sortIndividuals(true);
 }
 
 
@@ -1596,7 +1653,6 @@ void population::save(const string & filename) const
 void population::load(const string & filename)
 {
 	boost::iostreams::filtering_istream ifs;
-	bool gzipped = isGzipped(filename);
 
 	ifs.push(boost::iostreams::gzip_decompressor());
 	ifs.push(boost::iostreams::file_source(filename, std::ios::binary));
@@ -1671,6 +1727,10 @@ void population::sortIndividuals(bool infoOnly)
 	if (infoOnly) {
 		DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
 		UINT is = infoSize();
+		if (is == 0){
+			setIndOrdered(true);
+			return;
+		}
 		vectorinfo tmpInfo(m_popSize * is);
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
