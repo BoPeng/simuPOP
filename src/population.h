@@ -980,7 +980,7 @@ public:
 	void splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID = vectoru());
 
 	/** remove empty subpopulations by adjusting subpopulation IDs
-	 * <group>7-manipulate</group>
+	 *  <group>7-manipulate</group>
 	 */
 	void removeEmptySubPops();
 
@@ -997,15 +997,16 @@ public:
 	 */
 	void removeIndividuals(const vectoru & inds = vectoru(), int subPop = -1, bool removeEmptySubPops = false);
 
-	/**
-	   Merge subpopulations, the first subpopulation ID (the first one in array
-	   \c subPops) will be used as the ID of the new subpopulation. That is to
-	   say, all merged subpopulations will take the ID of the first one. The
-	   subpopulation ID of the empty subpopulations will be kept (so that other
-	   subpopulations are unaffected, unless they are removed by <tt>removeEmptySubPops = True</tt>).
-	 * <group>7-manipulate</group>
+	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
+	 *  subpopulations will be merged. Subpopulations \e subPops do not have to
+	 *  be adjacent to each other. The ID of the first subpopulation in
+	 *  parameter \e subPops will become the ID of the new large subpopulation.
+	 *  Other subpopulations will keep their IDs although their sizes become
+	 *  zero. Function <tt>removeEmptySubPops</tt> can be used to remove these
+	 *  empty subpopulation.
+	 *  <group>7-manipulate</group>
 	 */
-	void mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false);
+	void mergeSubPops(vectoru subPops = vectoru());
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures
