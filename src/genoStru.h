@@ -399,23 +399,37 @@ public:
 	 */
 	UINT lociCovered(UINT loc, double dist) const;
 
-	/// CPPONLY merge two genotype structure
-	GenoStructure & mergeGenoStru(size_t idx, bool byChromosome) const;
+	/** CPPONLY
+	 *  Add chromosomes from another genotypic structure and
+	 *  create a new structure.
+	 */
+	GenoStructure & gsAddChromFromStru(size_t idx) const;
 
-	/// CPPONLY
-	GenoStructure & removeLociFromGenoStru(const vectoru & remove = vectoru(),
+	/** CPPONLY
+	 *  Add loci (merge loci on the same chromsoomes) from another genotypic
+	 *  structure and create a new structure.
+	 */
+	GenoStructure & gsAddLociFromStru(size_t idx) const;
+
+	/** CPPONLY
+	 *  Remove a list of loci from the current genotypic structure
+	 *  and create a new structure.
+	 */
+	GenoStructure & gsRemoveLoci(const vectoru & remove = vectoru(),
 		const vectoru & keep = vectoru());
 
-	/** CPPONLY add a new chromosome to genotype structure.
+	/** CPPONLY
+	 *  add a new chromosome to genotype structure and create a new structure.
 	 */
-	GenoStructure & addChromToGenoStru(const vectorf & lociPos,
+	GenoStructure & gsAddChrom(const vectorf & lociPos,
 		const vectorstr & lociNames, const string & chromName, UINT chromType) const;
 
-	/** CPPONLY add some loci to genotype structure, newIndex
+	/** CPPONLY
+	 *  add some loci to genotype structure, newIndex
 	 *  is used to return the indexes of these loci in the new
 	 *  structure
 	 */
-	GenoStructure & addLociToGenoStru(const vectoru & chrom, const vectorf & pos,
+	GenoStructure & gsAddLoci(const vectoru & chrom, const vectorf & pos,
 		const vectorstr & names, vectoru & newIndex) const;
 
 	/// CPPONLY return the GenoStructure

@@ -841,13 +841,56 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 }
 
 
-void population::addIndFrom(const population & pop)
+void population::addChromFromPop(const population & pop)
+{
+	UINT numLoci1 = totNumLoci();
+	UINT numLoci2 = pop.totNumLoci();
+
+	// obtain new genotype structure and set it
+	setGenoStructure(gsAddChromFromStru(pop.genoStruIdx()));
+	//
+	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
+		"Can not add chromosomes from a population with different number of ancestral generations");
+	//
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
+		//
+		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
+			"Can not add chromosomes from a population with different subpopulation sizes");
+
+		vectora newGenotype(genoSize() * m_popSize);
+
+		// append pop2 chromosomes to the first one
+		GenoIterator ptr = newGenotype.begin();
+		UINT pEnd = ploidy();
+		for (ULONG i = 0; i < m_popSize; ++i) {
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			GenoIterator ptr1 = m_inds[i].genoPtr();
+			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+			m_inds[i].setGenoPtr(ptr);
+			for (UINT p = 0; p < pEnd; ++p) {
+				for (size_t j = 0; j < numLoci1; ++j)
+					*(ptr++) = *(ptr1++);
+				for (size_t j = 0; j < numLoci2; ++j)
+					*(ptr++) = *(ptr2++);
+			}
+		}
+		m_genotype.swap(newGenotype);
+	}
+	if (!indOrdered())
+		// sort information only
+		sortIndividuals(true);
+}
+
+
+void population::addIndFromPop(const population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
 		"Cannot add individual from a population with different genotypic structure.");
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Two populations should have the same number of ancestral generations.");
-	UINT topGen = ancestralGens();
 	// genotype pointers may be reset so this is needed.
 	sortIndividuals();
 	const_cast<population &>(pop).sortIndividuals();
@@ -885,113 +928,54 @@ void population::addIndFrom(const population & pop)
 }
 
 
-void population::mergePopulationByLoci(const population & pop,
-                                       const vectoru & newNumLoci, const vectorf & newLociPos, bool byChromosome)
+void population::addLociFromPop(const population & pop)
 {
-	DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
-		"Merged population should have the same number of individuals in each subpopulation");
-
-	UINT numloci1 = totNumLoci();
-	UINT numloci2 = pop.totNumLoci();
-
-	DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != numloci1 + numloci2,
-		ValueError, "Sum of newNumLoci should equal to " + toStr(numloci1 + numloci2));
-
-	DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != numloci1 + numloci2,
-		ValueError, "newLociPos should have the length of combined total number of loci");
-
-	// make copy of old genotype structure
-	GenoStructure * gs1 = new GenoStructure(genoStru());
-	GenoStructure * gs2 = new GenoStructure(pop.genoStru());
-
-	// obtain new genotype structure and set it
-	setGenoStructure(mergeGenoStru(pop.genoStruIdx(), byChromosome));
-	// if byChromosome, we have to figure out how to copy loci
-	vectoru source;
-	if (byChromosome) {
-		DBG_DO(DBG_POPULATION, cout << "New pos " << lociPos() << endl);
-
-		for (size_t ch = 0; ch < numChrom(); ++ch) {
-			size_t idx1 = 0;
-			size_t idx2 = 0;
-			for (size_t loc = 0; loc < numLoci(ch); ++loc) {
-				double pos = locusPos(absLocusIndex(ch, loc));
-				if (pos == gs1->locusPos(gs1->chromIndex(ch) + idx1)) {
-					source.push_back(0);
-					idx1++;
-				} else if (pos == gs2->locusPos(gs2->chromIndex(ch) + idx2)) {
-					source.push_back(1);
-					idx2++;
-				} else
-					throw SystemError("Unable to determine position. Something wrong");
-			}
-		}
-	}
-	// remove copied genostructure
-	delete gs1;
-	delete gs2;
-
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
-		"Merged populations should have the same number of ancestral generations");
+		"Can not add chromosomes from a population with different number of ancestral generations");
+
+	vectorstr lociNames1 = lociNames();
+	vectorstr lociNames2 = pop.lociNames();
+	// obtain new genotype structure and set it
+	setGenoStructure(gsAddLociFromStru(pop.genoStruIdx()));
+	vectoru indexes1 = lociByNames(lociNames1);
+	vectoru indexes2 = lociByNames(lociNames2);
+
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		const_cast<population &>(pop).useAncestralGen(depth);
 		//
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
+		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
+			"Can not add chromosomes from a population with different subpopulation sizes");
+		//
+		vectora newGenotype(genoSize() * m_popSize);
 
-		if (byChromosome) {
-			// merge chromosome by chromosome
-			// copy data over
-			GenoIterator ptr = newGenotype.begin();
-			UINT pEnd = ploidy();
-			for (ULONG i = 0; i < m_popSize; ++i) {
-				// set new geno structure
-				m_inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator ptr1 = m_inds[i].genoPtr();
-				GenoIterator ptr2 = pop.m_inds[i].genoPtr();
-				// new genotype
-				m_inds[i].setGenoPtr(ptr);
-				// copy each allele
-				for (UINT p = 0; p < pEnd; ++p) {
-					for (size_t j = 0; j < numloci1 + numloci2; ++j)
-						if (source[j] == 0)
-							*(ptr++) = *(ptr1++);
-						else
-							*(ptr++) = *(ptr2++);
-				}
-			}
-		} else {
-			// append pop2 chromosomes to the first one
-			// copy data over
-			GenoIterator ptr = newGenotype.begin();
-			UINT pEnd = ploidy();
-			for (ULONG i = 0; i < m_popSize; ++i) {
-				// set new geno structure
-				m_inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator ptr1 = m_inds[i].genoPtr();
-				GenoIterator ptr2 = pop.m_inds[i].genoPtr();
-				// new genotype
-				m_inds[i].setGenoPtr(ptr);
-				// copy each allele
-				for (UINT p = 0; p < pEnd; ++p) {
-					for (size_t j = 0; j < numloci1; ++j)
-						*(ptr++) = *(ptr1++);
-					for (size_t j = 0; j < numloci2; ++j)
-						*(ptr++) = *(ptr2++);
-				}
+		// merge chromosome by chromosome
+		GenoIterator ptr = newGenotype.begin();
+		UINT pEnd = ploidy();
+		UINT size1 = lociNames1.size();
+		UINT size2 = lociNames2.size();
+		UINT newSize = totNumLoci();
+		for (ULONG i = 0; i < m_popSize; ++i) {
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			GenoIterator ptr1 = m_inds[i].genoPtr();
+			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+			// new genotype
+			m_inds[i].setGenoPtr(ptr);
+			// copy each allele
+			for (UINT p = 0; p < pEnd; ++p) {
+				for (size_t i = 0; i < size1; ++i)
+					ptr[indexes1[i]] = *(ptr1++);
+				for (size_t i = 0; i < size2; ++i)
+					ptr[indexes2[i]] = *(ptr2++);
+				ptr += newSize;
 			}
 		}
 		m_genotype.swap(newGenotype);
 	}
 
-	// reset genoStructure again
-	if (!newNumLoci.empty() || !newLociPos.empty())
-		rearrangeLoci(newNumLoci, newLociPos);
-
-	if (!indOrdered())
-		// sort information only
-		sortIndividuals(true);
+	// sort information only
+	sortIndividuals(true);
 }
 
 
@@ -1003,7 +987,7 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 
 	size_t oldNumLoci = totNumLoci();
 	// obtain new genotype structure and set it
-	setGenoStructure(addChromToGenoStru(lociPos, lociNames, chromName, chromType));
+	setGenoStructure(gsAddChrom(lociPos, lociNames, chromName, chromType));
 
 	DBG_FAILIF(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
 		"Failed to add chromosome.");
@@ -1052,7 +1036,7 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	vectoru newIndex;
 	vectoru loci(totNumLoci());
 	// obtain new genotype structure and set it
-	setGenoStructure(addLociToGenoStru(chrom, pos, names, newIndex));
+	setGenoStructure(gsAddLoci(chrom, pos, names, newIndex));
 	// use loci to keep the position of old loci in the new structure
 	for (size_t i = 0, j = 0; j < totNumLoci(); ++j) {
 		// i is the index to loci before insertion.
@@ -1305,7 +1289,7 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 	// genotype
 	// allocate new genotype and inds
 	// new geno structure is in effective now!
-	setGenoStructure(removeLociFromGenoStru(vectoru(), loci));
+	setGenoStructure(gsRemoveLoci(vectoru(), loci));
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);

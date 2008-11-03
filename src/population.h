@@ -1013,33 +1013,25 @@ public:
 	 *  \e pop are kept.
 	 *  <group>7-manipulate</group>
 	 */
-	void addIndFrom(const population & pop);
+	void addIndFromPop(const population & pop);
 
-	/**
-	 * <group>7-manipulate</group>
-	   merge populations by loci
-	   Two populations should have the same number of individuals. This also holds for
-	   any ancestral generations. By default, chromosomes of \c pop are appended to the current
-	   population.	You can change this arrangement in two ways
-	   \li specify new chromosome structure using parameter \c newLoci and \c newLociPos. Loci from new and old
-	    populations are still in their original order, but chromosome number and positions
-	    can be changed in this way.
-	   \li specify \c byChromosome=true so that chromosomes will be merged one by one. In this
-	    case, loci position of two popualtions are important because loci will be arranged
-	    in the order of loci position; and identical loci position of two loci in two
-	   populations will lead to error.
-
-	   \param newNumLoci the new number of loci for the combined genotypic structure.
-	   \param newLociPos the new loci position if number of loci on each chromosomes are
-	   changed with \c newNumLoci. New loci positions should be in order on the new chromosomes.
-	   \param byChromosome merge chromosome by chromosome, loci are ordered by loci position
-	   Default to \c False.
-	   \note \li Information fields are not merged.
-	   \li All ancestral generations are merged because all individuals in a
-	   population have to have the same genotypic structure.
+	/** Add chromosomes in population \e pop to the current population.
+	 *  Population \e pop should have the same number of individuals as the
+	 *  current population in the current and all ancestral generations.
+	 *  This function merges genotypes on the
+	 *  new chromosomes from population \c pop individual by individual.
+	 *  <group>7-manipulate</group>
 	 */
-	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
-		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
+	void addChromFromPop(const population & pop);
+
+	/** Add loci from population \e pop, chromosome by chromosome. Added
+	 *  loci will be inserted according to their position. Their position
+	 *  and names should not overlap with any locus in the current population.
+	 *  Population \e pop should have the same number of individuals as the
+	 *  current population in the current and all ancestral generations.
+	 *  <group>7-manipulate</group>
+	 */
+	void addLociFromPop(const population & pop);
 
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.
