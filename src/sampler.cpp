@@ -117,7 +117,7 @@ namespace simuPOP {
 // 	UINT indexIdx = pop.infoIdx(indexField);
 // 
 // 	// for the top generation, no parents
-// 	pop.useAncestralPop(pop.ancestralDepth());
+// 	pop.useAncestralGen(pop.ancestralDepth());
 // 	for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 // 		// -1 means no parents.
 // 		// we do not use 0 since 0 is valid
@@ -127,10 +127,10 @@ namespace simuPOP {
 // 	// for other generations
 // 	for (size_t ans = 0; ans < pop.ancestralDepth(); ++ans) {
 // 		// parents... get their old index
-// 		pop.useAncestralPop(ans + 1);
+// 		pop.useAncestralGen(ans + 1);
 // 		vectorf oldindex = pop.indInfo(indexIdx);
 // 		// children
-// 		pop.useAncestralPop(ans);
+// 		pop.useAncestralGen(ans);
 // 		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 // 			// what is the idx of my parents now?
 // 			vectorf::iterator tmp = find(oldindex.begin(), oldindex.end(), it->info(fatherIdx));
@@ -146,7 +146,7 @@ namespace simuPOP {
 // 				it->setInfo(tmp - oldindex.begin(), motherIdx);
 // 		}
 // 	}
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // }
 // 
 // 
@@ -400,7 +400,7 @@ namespace simuPOP {
 // 	pop.locateRelatives(REL_Spouse, vectorstr(1, "spouse"));
 // 	//
 // 	// find sibpairs from the parental generation.
-// 	pop.useAncestralPop(1);
+// 	pop.useAncestralGen(1);
 // 	vectorlu off;
 // 	int pedIdx = 0;
 // 	// valid sibpairs for each subpopulation
@@ -437,7 +437,7 @@ namespace simuPOP {
 // 		DBG_DO(DBG_SELECTOR, cout << "Number of sibpairs in subpop " << sp << " is "
 // 			                      << m_validSibs[sp].size() << endl);
 // 	}                                                                                         // each subpop
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // 	m_validSibs.resize(pop.numSubPop());
 // 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp)
 // 		m_validSibs[sp].clear();
@@ -501,7 +501,7 @@ namespace simuPOP {
 // 	}
 // 	// now, we have acepted sibs, set subpopid in preparation for a new
 // 	// population
-// 	pop.useAncestralPop(1);
+// 	pop.useAncestralGen(1);
 // 
 // 	vectorlu offspring;
 // 	int pedIdx = 0;
@@ -529,7 +529,7 @@ namespace simuPOP {
 // 			pedIdx++;
 // 		}
 // 	}
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // 	for (size_t i = 0; i < off.size() / 2; ++i) {
 // 		pop.ind(off[2 * i]).setSubPopID(i);
 // 		pop.ind(off[2 * i + 1]).setSubPopID(i);
@@ -575,7 +575,7 @@ namespace simuPOP {
 // 	pop.locateRelatives(REL_Spouse, vectorstr(1, "spouse"));
 // 
 // 	//
-// 	pop.useAncestralPop(2);
+// 	pop.useAncestralGen(2);
 // 	m_validPedigrees.resize(pop.numSubPop());
 // 	size_t pedindex = 0;
 // 	DBG_DO(DBG_SELECTOR, cout << "Finding all three-generation pedigrees" << endl);
@@ -585,7 +585,7 @@ namespace simuPOP {
 // 		int g3end = pop.subPopEnd(sp);
 // 		//
 // 		for (int idx = g3start; idx < g3end; ++idx) {
-// 			pop.useAncestralPop(2);
+// 			pop.useAncestralGen(2);
 // 			unsigned pedSize = 2;
 // 			unsigned numAffected = 0;
 // 			//
@@ -612,7 +612,7 @@ namespace simuPOP {
 // 			if (parentsTmp.empty())
 // 				continue;
 // 			// go to parent generation
-// 			pop.useAncestralPop(1);
+// 			pop.useAncestralGen(1);
 // 			vectorlu spouseofparents;
 // 			vectorlu childrenTmp;
 // 			// verify parents
@@ -655,7 +655,7 @@ namespace simuPOP {
 // 			}
 // 			if (childrenTmp.empty())
 // 				continue;
-// 			pop.useAncestralPop(0);
+// 			pop.useAncestralGen(0);
 // 			// verify children
 // 			vectorlu children;
 // 			for (vectorlu::iterator child = childrenTmp.begin(); child != childrenTmp.end(); ++child) {
@@ -681,19 +681,19 @@ namespace simuPOP {
 // 			if (pedSize < m_minPedSize || (m_minAffected > 0 && numAffected < m_minAffected))
 // 				continue;
 // 			// everything seems to be fine, add them to the family
-// 			pop.useAncestralPop(2);
+// 			pop.useAncestralGen(2);
 // 			// grandparents
 // 			pop.ind(idx).setInfo(pedindex, pedindexIdx);
 // 			pop.ind(grandspouse).setInfo(pedindex, pedindexIdx);
 // 			// parents and their spouse
-// 			pop.useAncestralPop(1);
+// 			pop.useAncestralGen(1);
 // 			for (vectorlu::iterator it = parents.begin(); it != parents.end(); ++it)
 // 				pop.ind(*it).setInfo(pedindex, pedindexIdx);
 // 			// spouse of parents
 // 			for (vectorlu::iterator it = spouseofparents.begin(); it != spouseofparents.end(); ++it)
 // 				pop.ind(*it).setInfo(pedindex, pedindexIdx);
 // 			// now children
-// 			pop.useAncestralPop(0);
+// 			pop.useAncestralGen(0);
 // 			for (vectorlu::iterator it = children.begin(); it != children.end(); ++it)
 // 				pop.ind(*it).setInfo(pedindex, pedindexIdx);
 // 			// is this family qualified?
@@ -702,7 +702,7 @@ namespace simuPOP {
 // 		}
 // 		nPed += m_validPedigrees[sp].size();
 // 	}
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // 	pop.setIntVar("numPedigrees", nPed);
 // 
 // 	// do not do sampling if countOnly
@@ -769,7 +769,7 @@ namespace simuPOP {
 // 	vectori offspringIdx(m_maxOffspring);
 // 	for (size_t i = 0; i < m_maxOffspring; ++i)
 // 		offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
-// 	pop.useAncestralPop(2);
+// 	pop.useAncestralGen(2);
 // 	vectorf grandIdx = pop.indInfo(pedindexIdx);
 // 	int newPedID = 0;
 // 	for (pedArray::iterator ped = acceptedPeds.begin(); ped != acceptedPeds.end(); ++ped, ++newPedID) {
@@ -778,7 +778,7 @@ namespace simuPOP {
 // 		// real pedsize, for verification purpose
 // 		int ps = 0;
 // 		// find these offspring....
-// 		pop.useAncestralPop(2);
+// 		pop.useAncestralGen(2);
 // 		// find grandparent
 // 		vectorf::iterator tmp = find(grandIdx.begin(), grandIdx.end(), pedID);
 // 		DBG_FAILIF(tmp == grandIdx.end(), ValueError, "Can not find pedigree");
@@ -800,7 +800,7 @@ namespace simuPOP {
 // 				parents.push_back(off);
 // 		}
 // 		//
-// 		pop.useAncestralPop(1);
+// 		pop.useAncestralGen(1);
 // 		vectori children;
 // 		for (vectori::iterator it = parents.begin(); it != parents.end(); ++it) {
 // 			if (pop.ind(*it).info(pedindexIdx) != pedID)
@@ -820,7 +820,7 @@ namespace simuPOP {
 // 			}
 // 		}
 // 		// go to children
-// 		pop.useAncestralPop(0);
+// 		pop.useAncestralGen(0);
 // 		for (vectori::iterator it = children.begin(); it != children.end(); ++it) {
 // 			if (pop.ind(*it).info(pedindexIdx) == pedID) {
 // 				pop.ind(*it).setSubPopID(newPedID);
@@ -831,7 +831,7 @@ namespace simuPOP {
 // 			"Pedigree sizes do not match, estimated " + toStr(boost::get<1>(*ped)) + " real: " + toStr(ps));
 // 	}
 // 	// just to make sure
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // 	// saving samples in a new population,
 // 	population & newPop = pop.newPopByIndID(2);
 // 	//
@@ -870,7 +870,7 @@ namespace simuPOP {
 // 	size_t pedIdx = 0;
 // 	DBG_DO(DBG_SELECTOR, cout << "Finding all two-generation pedigrees" << endl);
 // 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-// 		pop.useAncestralPop(1);
+// 		pop.useAncestralGen(1);
 // 		vectori off;
 // 		for (IndIterator it = pop.indBegin(sp); it.valid(); ++it) {
 // 			// individual already belongs to another family
@@ -888,7 +888,7 @@ namespace simuPOP {
 // 			}
 // 		}
 // 		// go to offspring generation and verify
-// 		pop.useAncestralPop(0);
+// 		pop.useAncestralGen(0);
 // 		m_validPedigrees[sp].clear();
 // 		for (UINT i = 0; i < off.size() / m_maxOffspring; ++i) {
 // 			UINT pedSize = 2;
@@ -909,7 +909,7 @@ namespace simuPOP {
 // 		DBG_DO(DBG_SELECTOR, cout << "Number of valid pedigrees in subpop " + toStr(sp) + " is "
 // 			+ toStr(m_validPedigrees[sp].size()) << endl);
 // 	}
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // 	pop.setIntVar("numPedigrees", nPed);
 // 
 // 	// do not do sampling if countOnly
@@ -974,7 +974,7 @@ namespace simuPOP {
 // 	vectori offspringIdx(m_maxOffspring);
 // 	for (size_t i = 0; i < m_maxOffspring; ++i)
 // 		offspringIdx[i] = pop.infoIdx("offspring" + toStr(i));
-// 	pop.useAncestralPop(1);
+// 	pop.useAncestralGen(1);
 // 	vectori off;
 // 	int pedIdx = 0;
 // 
@@ -999,7 +999,7 @@ namespace simuPOP {
 // 			}
 // 		}
 // 	}
-// 	pop.useAncestralPop(0);
+// 	pop.useAncestralGen(0);
 // 	for (size_t i = 0; i < off.size(); ++i) {
 // 		if (off[i] != -1)
 // 			pop.ind(off[i]).setSubPopID(i / m_maxOffspring);

@@ -463,7 +463,7 @@ public:
 
 	/** Return a reference to individual \c idx in ancestral generation \c gen.
 	 *  The correct individual will be returned even if the current generation
-	 *  is not the present one (see \c useAncestralPop).
+	 *  is not the present one (see \c useAncestralGen).
 	 *  <group>6-ancestral</group>
 	 */
 	individual & ancestor(ULONG idx, UINT gen);
@@ -1149,11 +1149,11 @@ public:
 
 
 	/** CPPONLY because I do not see a Python level use case of this function.
-	 *  Current ancestral population activated by \c useAncestralPop(). There can be
+	 *  Current ancestral population activated by \c useAncestralGen(). There can be
 	 *  several ancestral generations in a population. \c 0 (current), \c 1 (parental)
-	 *  etc. When \c useAncestralPop(gen) is used, current generation is set to
+	 *  etc. When \c useAncestralGen(gen) is used, current generation is set to
 	 *  one of the parental generations, which is the information returned by this
-	 *  function. \c useAncestralPop(0) should always be used to set a population
+	 *  function. \c useAncestralGen(0) should always be used to set a population
 	 *  to its usual ancestral order after operations to the ancestral generation are done.
 	 *
 	 * <group>6-ancestral</group>
@@ -1341,12 +1341,12 @@ public:
 	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the
 	 *  current generation. This is an efficient way to access population
-	 *  properties of an ancestral generation. <tt>useAncestralPop(0)</tt>
+	 *  properties of an ancestral generation. <tt>useAncestralGen(0)</tt>
 	 *  should always be called to restore the correct order of ancestral
 	 *  generations.
 	 *  <group>6-ancestral</group>
 	 */
-	void useAncestralPop(UINT idx);
+	void useAncestralGen(UINT idx);
 
 	/// CPPONLY compare two populations
 	bool equalTo(const population & rhs)
@@ -1732,7 +1732,7 @@ private:
 		size_t sz = m_ancestralPops.size();
 		ar & sz;
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
-			const_cast<population *>(this)->useAncestralPop(i + 1);
+			const_cast<population *>(this)->useAncestralGen(i + 1);
 			// need to make sure ancestral pop also in order
 			const_cast<population *>(this)->sortIndividuals();
 			ar & m_subPopSize;
@@ -1770,7 +1770,7 @@ private:
 			ar & m_info;
 			ar & m_inds;
 		}
-		const_cast<population *>(this)->useAncestralPop(0);
+		const_cast<population *>(this)->useAncestralGen(0);
 
 		// save shared variables as string.
 		// note that many format are not supported.
