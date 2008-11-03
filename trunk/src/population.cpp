@@ -45,7 +45,6 @@ population::population(const vectorlu & size,
 	:
 	GenoStruTrait(),
 	m_popSize(0),
-	m_numSubPop(size.size()),
 	m_subPopSize(size),
 	m_subPopIndex(size.size() + 1),
 	m_vspSplitter(NULL),
@@ -105,7 +104,6 @@ population::~population()
 population::population(const population & rhs) :
 	GenoStruTrait(rhs),
 	m_popSize(rhs.m_popSize),
-	m_numSubPop(rhs.m_numSubPop),
 	m_subPopSize(rhs.m_subPopSize),
 	m_subPopIndex(rhs.m_subPopIndex),
 	m_vspSplitter(NULL),
@@ -550,18 +548,15 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru.");
 
-	if (newSubPopSizes.empty()) {
-		m_numSubPop = 1;
+	if (newSubPopSizes.empty())
 		m_subPopSize = vectorlu(1, 0);
-	} else {
-		m_numSubPop = newSubPopSizes.size();
+	else
 		m_subPopSize = newSubPopSizes;
-	}
-	m_subPopIndex.resize(m_numSubPop + 1);
+	m_subPopIndex.resize(numSubPop() + 1);
 
 	// build subPop index
 	UINT i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
 
@@ -629,14 +624,13 @@ void population::setSubPopByIndID(vectori id)
 	}
 
 	if (m_inds.empty()) {
-		m_numSubPop = 1;
 		m_subPopSize.resize(1, 0);
 		m_subPopIndex.resize(2);
 	} else {
 		// reset indexes etc.
-		m_numSubPop = static_cast<UINT>(m_inds.back().subPopID()) + 1;
-		m_subPopSize.resize(m_numSubPop);
-		m_subPopIndex.resize(m_numSubPop + 1);
+		UINT numSubPop = static_cast<UINT>(m_inds.back().subPopID()) + 1;
+		m_subPopSize.resize(numSubPop);
+		m_subPopIndex.resize(numSubPop + 1);
 
 		// check subpop size
 		fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
@@ -645,7 +639,7 @@ void population::setSubPopByIndID(vectori id)
 	}
 	// rebuild index
 	size_t i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
 
@@ -703,21 +697,20 @@ void population::splitSubPop(UINT subPop, vectorf sizes, bool keepOrder)
 void population::removeEmptySubPops()
 {
 	// if remove empty subpops
-	UINT newSPNum = m_numSubPop;
+	UINT newSPNum = numSubPop();
 	vectorlu newSPSize;
 
-	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
+	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		if (m_subPopSize[sp] == 0)
 			newSPNum--;
 		else
 			newSPSize.push_back(m_subPopSize[sp]);
 	}
-	m_numSubPop = newSPNum;
 	m_subPopSize.swap(newSPSize);
-	m_subPopIndex.resize(m_numSubPop + 1);
+	m_subPopIndex.resize(numSubPop() + 1);
 	// rebuild index
 	size_t i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
 
@@ -732,7 +725,7 @@ void population::removeSubPops(const vectoru & subPops)
 #endif
 	setIndSubPopIDWithID();
 
-	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
+	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
 			RawIndIterator ind = rawIndBegin(sp);
 			RawIndIterator ind_end = rawIndEnd(sp);
@@ -875,12 +868,10 @@ void population::addIndFromPop(const population & pop)
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 		}
-		// number of subpopulation.
-		m_numSubPop = m_subPopSize.size();
 		// rebuild index
-		m_subPopIndex.resize(m_numSubPop + 1);
+		m_subPopIndex.resize(numSubPop() + 1);
 		size_t j = 1;
-		for (m_subPopIndex[0] = 0; j <= m_numSubPop; ++j)
+		for (m_subPopIndex[0] = 0; j <= numSubPop(); ++j)
 			m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
 	}
 }
@@ -1083,7 +1074,7 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	m_subPopSize = newSubPopSizes;
 	// rebuild index
 	size_t idx = 1;
-	for (m_subPopIndex[0] = 0; idx <= m_numSubPop; ++idx)
+	for (m_subPopIndex[0] = 0; idx <= numSubPop(); ++idx)
 		m_subPopIndex[idx] = m_subPopIndex[idx - 1] + m_subPopSize[idx - 1];
 }
 
@@ -1100,8 +1091,8 @@ void population::reorderSubPops(const vectoru & order, const vectoru & rank,
 	if (removeEmptySubPops)
 		this->removeEmptySubPops();
 
-	if ( (!order.empty() && order.size() != m_numSubPop)
-	    || (!rank.empty() && rank.size() != m_numSubPop))
+	if ( (!order.empty() && order.size() != numSubPop())
+	    || (!rank.empty() && rank.size() != numSubPop()))
 		cout << "Warning: Given order or rank does not have the length of number of subpop." << endl;
 
 	if (!order.empty()) {
@@ -1296,7 +1287,6 @@ void population::pushAndDiscard(population & rhs, bool force)
 	// then swap out data
 	// can not use population::swap because it swaps too much data
 	m_popSize = rhs.m_popSize;
-	m_numSubPop = rhs.m_numSubPop;
 	m_subPopSize.swap(rhs.m_subPopSize);
 	m_subPopIndex.swap(rhs.m_subPopIndex);
 	std::swap(m_vspSplitter, rhs.m_vspSplitter);
