@@ -83,7 +83,7 @@ class GenoStructure
 
 public:
 	/// CPPONLY serialization library requires a default constructor
-	GenoStructure() : m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
+	GenoStructure() : m_ploidy(2), m_totNumLoci(0), 
 		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
@@ -175,7 +175,6 @@ private:
 	void save(Archive & ar, const UINT version) const
 	{
 		ar & m_ploidy;
-		ar & m_numChrom;
 		ar & m_numLoci;
 		ar & m_chromTypes;
 		ar & m_haplodiploid;
@@ -193,7 +192,6 @@ private:
 	{
 
 		ar & m_ploidy;
-		ar & m_numChrom;
 		ar & m_numLoci;
 
 		// after simuPOP 0.8.9, we handle
@@ -206,36 +204,21 @@ private:
 		// set m_chromX etc.
 		setChromTypes(m_chromTypes);
 		// haplodiploid flag is introduced in 0.8.5
-		if (version >= 4)
-			ar & m_haplodiploid;
-		else
-			m_haplodiploid = false;
+		ar & m_haplodiploid;
 		//
 		ar & m_lociPos;
-		if (version >= 3)
-			ar & m_chromNames;
-		else {
-			m_chromNames.resize(m_numChrom);
-			for (size_t i = 0; i < m_numChrom; ++i)
-				m_chromNames[i] = "chrom" + toStr(i + 1);
-		}
+		ar & m_chromNames;
 		ar & m_alleleNames;
 		ar & m_lociNames;
-		if (version < 5) {
-			size_t maxAllele;
-			ar & maxAllele;
-		}
-		if (version >= 2)
-			ar & m_infoFields;
+		ar & m_infoFields;
 
 		// build chromosome index
 		m_chromIndex.resize(m_numLoci.size() + 1);
 		ULONG i;
-		for (m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
+		for (m_chromIndex[0] = 0, i = 1; i <= m_numLoci.size(); ++i)
 			m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
 
-		m_totNumLoci = m_chromIndex[m_numChrom];
-		m_genoSize = m_totNumLoci * m_ploidy;
+		m_totNumLoci = m_chromIndex[m_numLoci.size()];
 		/// do not save load chromosome map
 	}
 
@@ -247,12 +230,6 @@ private:
 
 	/// total number of loci
 	UINT m_totNumLoci;
-
-	/// total number of loci times ploidy
-	UINT m_genoSize;
-
-	/// number of chrom
-	UINT m_numChrom;
 
 	/// number of loci
 	vectoru m_numLoci;
@@ -578,7 +555,7 @@ public:
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_genoSize;
+		return s_genoStruRepository[m_genoStruIdx].m_ploidy * s_genoStruRepository[m_genoStruIdx].m_totNumLoci;
 	}
 
 
@@ -644,7 +621,7 @@ public:
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_numChrom;
+		return s_genoStruRepository[m_genoStruIdx].m_numLoci.size();
 	}
 
 
@@ -712,9 +689,9 @@ public:
 	 */
 	string chromName(const UINT chrom) const
 	{
-		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numChrom, IndexError,
+		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
-			toStr(s_genoStruRepository[m_genoStruIdx].m_numChrom));
+			toStr(s_genoStruRepository[m_genoStruIdx].m_numLoci.size()));
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames[chrom];
 	}
@@ -735,9 +712,9 @@ public:
 	 */
 	int chromType(const UINT chrom) const
 	{
-		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numChrom, IndexError,
+		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
-			toStr(s_genoStruRepository[m_genoStruIdx].m_numChrom));
+			toStr(s_genoStruRepository[m_genoStruIdx].m_numLoci.size()));
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromTypes[chrom];
 	}
