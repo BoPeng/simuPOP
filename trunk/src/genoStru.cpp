@@ -27,7 +27,7 @@ namespace simuPOP {
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
 	const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 	const vectorstr & lociNames, const vectorstr & infoFields)
-	: m_ploidy(ploidy), m_numChrom(loci.size()), m_numLoci(loci), m_chromTypes(),
+	: m_ploidy(ploidy), m_numLoci(loci), m_chromTypes(),
 	m_haplodiploid(haplodiploid), m_lociPos(lociPos), m_chromIndex(loci.size() + 1),
 	m_chromNames(chromNames), m_alleleNames(alleleNames), m_lociNames(lociNames),
 	m_infoFields(infoFields)
@@ -38,7 +38,6 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	// default: one chromosome, one locus
 	// otherwise, Loci copies from loci
 	if (loci.empty()) {
-		m_numChrom = 1;
 		m_numLoci.resize(1);
 		m_numLoci[0] = 1;
 		m_chromIndex.resize(2);
@@ -49,16 +48,15 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 
 	// build chromosome index
 	ULONG i, j;
-	for (m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
+	for (m_chromIndex[0] = 0, i = 1; i <= m_numLoci.size(); ++i)
 		m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
 
-	m_totNumLoci = m_chromIndex[m_numChrom];
-	m_genoSize = m_totNumLoci * m_ploidy;
+	m_totNumLoci = m_chromIndex[m_numLoci.size()];
 
 	// if lociPos not specified, use 1,2,3.. 1,2,3. .. on each chromosome.
 	if (m_lociPos.empty() ) {
 		m_lociPos.resize(m_totNumLoci);
-		for (i = 0; i < m_numChrom; ++i)
+		for (i = 0; i < m_numLoci.size(); ++i)
 			for (j = 0; j < m_numLoci[i]; j++)
 				m_lociPos[m_chromIndex[i] + j] = j + 1;
 	}
@@ -68,26 +66,26 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		DBG_FAILIF(m_lociPos.size() != m_totNumLoci, ValueError,
 			"You should specify loci distance for every locus (" + toStr(m_totNumLoci) + ")");
 
-		for (i = 0; i < m_numChrom; ++i)
+		for (i = 0; i < m_numLoci.size(); ++i)
 			for (j = 0; j < m_numLoci[i]; ++j)
 				DBG_FAILIF(j > 0 && fcmp_le(m_lociPos[m_chromIndex[i] + j], m_lociPos[m_chromIndex[i] + j - 1]),
 					ValueError, "Loci position should be distinct, and in increasing order.");
 	}
 #endif
 
-	DBG_ASSERT(m_chromNames.empty() || m_chromNames.size() == m_numChrom, ValueError,
+	DBG_ASSERT(m_chromNames.empty() || m_chromNames.size() == m_numLoci.size(), ValueError,
 		"Chromosome names, if specified, should be given to every chromosomes");
 
 	if (m_chromNames.empty()) {
-		m_chromNames.resize(m_numChrom);
-		for (i = 0; i < m_numChrom; ++i)
+		m_chromNames.resize(m_numLoci.size());
+		for (i = 0; i < m_numLoci.size(); ++i)
 			m_chromNames[i] = "chrom" + toStr(i + 1);
 	}
 #ifndef OPTIMIZED
 	else {
 		map<string, int> nameMap;
 		// check uniqueness of the names
-		for (i = 0; i < m_numChrom; ++i) {
+		for (i = 0; i < m_numLoci.size(); ++i) {
 			if (nameMap.find(m_chromNames[i]) != nameMap.end())
 				throw ValueError("Given chromosome names should be unique");
 			else
@@ -100,7 +98,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		"Loci names, if specified, should be given to every loci");
 	if (m_lociNames.empty()) {
 		m_lociNames.resize(m_totNumLoci);
-		for (i = 0; i < m_numChrom; ++i)
+		for (i = 0; i < m_numLoci.size(); ++i)
 			for (j = 0; j < m_numLoci[i]; j++)
 				m_lociNames[m_chromIndex[i] + j] = "loc" + toStr(i + 1) + "-" + toStr(j + 1);
 	}
@@ -141,11 +139,11 @@ bool GenoStructure::operator==(const GenoStructure & rhs)
 
 void GenoStructure::setChromTypes(const vectoru & chromTypes)
 {
-	DBG_ASSERT(chromTypes.empty() || chromTypes.size() == m_numChrom,
+	DBG_ASSERT(chromTypes.empty() || chromTypes.size() == m_numLoci.size(),
 		ValueError, "If chromosome type is given, it should be given to all chromosomes");
 
 	if (chromTypes.empty())
-		m_chromTypes.resize(m_numChrom, Autosome);
+		m_chromTypes.resize(m_numLoci.size(), Autosome);
 	else
 		m_chromTypes = chromTypes;
 	// has only one chromX?
@@ -446,12 +444,12 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 	vectorstr newLociNames = gs.m_lociNames;
 	if (lociNames.empty()) {
 		for (size_t i = 0; i < lociPos.size(); ++i)
-			newLociNames.push_back("loc" + toStr(gs.m_numChrom + 1) + "-" + toStr(i + 1));
+			newLociNames.push_back("loc" + toStr(gs.m_numLoci.size() + 1) + "-" + toStr(i + 1));
 	} else
 		newLociNames.insert(newLociNames.end(), lociNames.begin(), lociNames.end());
 	//
 	vectorstr newChromNames = gs.m_chromNames;
-	newChromNames.push_back(chromName.empty() ? "chrom" + toStr(gs.m_numChrom + 1) : chromName);
+	newChromNames.push_back(chromName.empty() ? "chrom" + toStr(gs.m_numLoci.size() + 1) : chromName);
 	//
 	vectoru newChromTypes = gs.m_chromTypes;
 	newChromTypes.push_back(chromType);
