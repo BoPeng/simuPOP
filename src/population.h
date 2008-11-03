@@ -202,7 +202,6 @@ public:
 	{
 		GenoStruTrait::swap(rhs);
 		std::swap(m_popSize, rhs.m_popSize);
-		std::swap(m_numSubPop, rhs.m_numSubPop);
 		m_subPopSize.swap(rhs.m_subPopSize);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
 		m_genotype.swap(rhs.m_genotype);
@@ -310,7 +309,7 @@ public:
 	 */
 	UINT numSubPop() const
 	{
-		return m_numSubPop;
+		return m_subPopSize.size();
 	}
 
 
@@ -383,7 +382,7 @@ public:
 
 		pair<UINT, ULONG> loc;
 
-		for (UINT i = 1; i <= m_numSubPop; ++i) {
+		for (UINT i = 1; i <= m_subPopSize.size(); ++i) {
 			if (m_subPopIndex[i] > idx) {
 				loc.first = i - 1;
 				loc.second = idx - m_subPopIndex[i - 1];
@@ -1853,7 +1852,6 @@ private:
 		// we can not use setGenoStruIdx since stru may be new.
 		this->setGenoStructure(stru);
 
-		m_numSubPop = m_subPopSize.size();
 		m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
 
 		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
@@ -1866,9 +1864,9 @@ private:
 		}
 
 		DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);
-		m_subPopIndex.resize(m_numSubPop + 1);
+		m_subPopIndex.resize(m_subPopSize.size() + 1);
 		UINT i = 1;
-		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+		for (m_subPopIndex[0] = 0; i <= m_subPopSize.size(); ++i)
 			m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 
 		// assign genotype location and set structure information for individuals
@@ -2006,9 +2004,6 @@ private:
 private:
 	/// population size: number of individual
 	ULONG m_popSize;
-
-	/// number of subpopulations
-	UINT m_numSubPop;
 
 	/// size of each subpopulation
 	vectorlu m_subPopSize;
