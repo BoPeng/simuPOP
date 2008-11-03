@@ -42,7 +42,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 	if (relType == REL_None)
 		return;
 
-	UINT topGen = gen == -1 ? ancestralDepth() : std::min(ancestralDepth(), static_cast<UINT>(gen));
+	UINT topGen = gen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(gen));
 	vectorstr parentFields(fields.begin(), fields.end());
 	if (fields.empty()) {
 		parentFields.push_back("father_idx");
@@ -214,7 +214,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		for (unsigned ans = 0; ans <= topGen; ++ans) {
 			useAncestralGen(ans);
 			// if top generation, no information about sibling
-			if (ans == ancestralDepth()) {
+			if (ans == ancestralGens()) {
 				for (IndIterator it = indBegin(); it.valid(); ++it)
 					for (size_t i = 0; i < maxSibling; ++i)
 						it->setInfo(-1, siblingIdx[i]);
@@ -338,7 +338,7 @@ bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
 			UINT fromGen = pathGen[path];
 			UINT toGen = pathGen[path + 1];
 
-			if (fromGen > ancestralDepth() || toGen > ancestralDepth()) {
+			if (fromGen > ancestralGens() || toGen > ancestralGens()) {
 				DBG_WARNING(true, "Insufficient ancestral generations to trace relatives.");
 				return false;
 			}

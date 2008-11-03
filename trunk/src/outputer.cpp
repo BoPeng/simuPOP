@@ -56,7 +56,7 @@ bool dumper::apply(population & pop)
 		for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
 			out << pop.subPopSize(i) << " ";
 		out << endl;
-		out << "Number of ancestral populations:\t" << pop.ancestralDepth() << endl;
+		out << "Number of ancestral populations:\t" << pop.ancestralGens() << endl;
 	}
 
 	if (!m_infoOnly) {
@@ -108,12 +108,12 @@ done:
 		out << "End of individual info." << endl << endl;
 
 		if (!m_dispAncestry) {
-			if (pop.ancestralDepth() == 0)
+			if (pop.ancestralGens() == 0)
 				out << endl << "No ancenstral population recorded." << endl;
 			else
-				out << endl << "Ignoring " << pop.ancestralDepth() << " ancenstral population(s)." << endl;
+				out << endl << "Ignoring " << pop.ancestralGens() << " ancenstral population(s)." << endl;
 		} else {
-			for (size_t i = 0; i < pop.ancestralDepth(); ++i) {
+			for (size_t i = 0; i < pop.ancestralGens(); ++i) {
 				pop.useAncestralGen(i + 1);
 				out << endl << "Ancestry population " << i + 1 << endl;
 

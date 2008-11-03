@@ -154,7 +154,7 @@ public:
 	 *    Positions on the same chromosome should be ordered. A nested list
 	 *    that specifies positions of loci on each chromosome is also
 	 *    acceptable.
-	 *  \param ancestralDepth Number of the most recent ancestral generations
+	 *  \param ancestralGens Number of the most recent ancestral generations
 	 *    to keep during evolution. Default to \c 0, which means only the
 	 *    current generation will be kept. If it is set to \c -1, all ancestral
 	 *    generations will be kept in this population (and exhaust your computer
@@ -176,7 +176,7 @@ public:
 		const vectoru & loci = vectoru(),
 		const vectoru & chromTypes = vectoru(),
 		const vectorf & lociPos = vectorf(),
-		int ancestralDepth = 0,
+		int ancestralGens = 0,
 		const vectorstr & chromNames = vectorstr(),
 		const vectorstr & alleleNames = vectorstr(),
 		const vectorstr & lociNames = vectorstr(),
@@ -208,7 +208,7 @@ public:
 		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
 		m_inds.swap(rhs.m_inds);
-		std::swap(m_ancestralDepth, rhs.m_ancestralDepth);
+		std::swap(m_ancestralGens, rhs.m_ancestralGens);
 		m_vars.swap(rhs.m_vars);
 		m_ancestralPops.swap(rhs.m_ancestralPops);
 		std::swap(m_rep, rhs.m_rep);
@@ -997,7 +997,6 @@ public:
 	 */
 	void removeIndividuals(const vectoru & inds = vectoru(), int subPop = -1, bool removeEmptySubPops = false);
 
-	/// merge given subpopulations
 	/**
 	   Merge subpopulations, the first subpopulation ID (the first one in array
 	   \c subPops) will be used as the ID of the new subpopulation. That is to
@@ -1008,25 +1007,13 @@ public:
 	 */
 	void mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false);
 
-	/// merge populations by individuals
-	/**
-	   Merge individuals from \c pop to the current population.
-	   Two populations should have the same genotypic structures. By default, subpopulations
-	   of the merged populations are kept. I.e., if you merge two populations with one
-	   subpopulation, the resulting population will have two subpopulations. All ancestral
-	   generations are also merged by default.
-	   \param newSubPopSizes subpopulation sizes can be specified. The overall size should
-	   be the combined size of the two populations. Because this parameter will
-	   be used for all ancestral generations, it may fail if ancestral generations have
-	   different sizes. To avoid this problem, you can run \c mergePopulation without this parameter,
-	   and then adjust subpopulation sizes generation by generation.
-	   \param keepAncestralPops ancestral populations to merge, default to all (\c -1)
-	   \note Population variables are not copied to \c pop.
-
-	 * <group>7-manipulate</group>
+	/** Add all individuals, including ancestors, in \e pop to the current
+	 *  population. Two populations should have the same genotypic structures
+	 *  and number of ancestral generations. Subpopulations in population
+	 *  \e pop are kept.
+	 *  <group>7-manipulate</group>
 	 */
-	void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu(),
-		int keepAncestralPops = -1);
+	void addIndFrom(const population & pop);
 
 	/**
 	 * <group>7-manipulate</group>
@@ -1142,7 +1129,7 @@ public:
 	 *  \c setAncestralDepth().
 	 *  <group>6-ancestral</group>
 	 */
-	UINT ancestralDepth() const
+	UINT ancestralGens() const
 	{
 		return m_ancestralPops.size();
 	}
@@ -1385,8 +1372,6 @@ public:
 private:
 	population & newPopByIndIDPerGen(const vectori & id = vectori(),
 		bool removeEmptySubPops = false);
-
-	void mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes);
 
 public:
 	/// CPPONLY selection is on at any subpopulation?
@@ -1728,7 +1713,7 @@ private:
 		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
 		ar & m_inds;
 		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
-		ar & m_ancestralDepth;
+		ar & m_ancestralGens;
 		size_t sz = m_ancestralPops.size();
 		ar & sz;
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
@@ -1920,12 +1905,12 @@ private:
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 		}
-		m_ancestralDepth = 0;
+		m_ancestralGens = 0;
 		m_ancestralPops.clear();
 
 		// ancestry populations
 		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
-		ar & m_ancestralDepth;
+		ar & m_ancestralGens;
 		size_t na;
 		ar & na;
 		for (size_t ap = 0; ap < na; ++ap) {
@@ -2069,7 +2054,7 @@ private:
 	/// only in head node?
 	vector<individual> m_inds;
 
-	int m_ancestralDepth;
+	int m_ancestralGens;
 
 	/// shared variables for this population
 	SharedVariables m_vars;

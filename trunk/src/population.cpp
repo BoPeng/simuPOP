@@ -37,7 +37,7 @@ population::population(const vectorlu & size,
 	const vectoru & loci,
 	const vectoru & chromTypes,
 	const vectorf & lociPos,
-	int ancestralDepth,
+	int ancestralGens,
 	const vectorstr & chromNames,
 	const vectorstr & alleleNames,
 	const vectorstr & lociNames,
@@ -52,7 +52,7 @@ population::population(const vectorlu & size,
 	m_genotype(0),                                                                          // resize later
 	m_info(0),
 	m_inds(0),                                                                              // default constructor will be called.
-	m_ancestralDepth(ancestralDepth),
+	m_ancestralGens(ancestralGens),
 	m_vars(NULL, true),                                                                     // invalid shared variables initially
 	m_ancestralPops(0),                                                                     // no history first
 	m_rep(-1),
@@ -112,7 +112,7 @@ population::population(const population & rhs) :
 	m_genotype(0),
 	m_info(0),
 	m_inds(0),
-	m_ancestralDepth(rhs.m_ancestralDepth),
+	m_ancestralGens(rhs.m_ancestralGens),
 	m_vars(rhs.m_vars),                                                                     // variables will be copied
 	m_rep(-1),                                                                              // rep is set to -1 for new pop (until simulator really set them
 	m_gen(0),
@@ -179,7 +179,7 @@ population::population(const population & rhs) :
 		cout << "Unable to copy ancestral populations. "
 		     << "The popolation size may be too big." << endl
 		     << "The population will still be usable but without any ancestral population stored." << endl;
-		m_ancestralDepth = 0;
+		m_ancestralGens = 0;
 		m_ancestralPops.clear();
 	}
 
@@ -204,7 +204,7 @@ void population::popData::swap(population & pop)
 population * population::clone(int keepAncestralPops) const
 {
 	population * p = new population(*this);
-	int oldDepth = m_ancestralDepth;
+	int oldDepth = m_ancestralGens;
 
 	if (keepAncestralPops >= 0)
 		// try to remove excessive ancestra generations.
@@ -452,7 +452,7 @@ void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 	UINT oldGen = ancestralGen();
 	size_t sz = id.size();
 
-	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
+	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
 		useAncestralGen(anc);
@@ -467,7 +467,7 @@ void population::setIndSubPopIDWithID(bool ancestralPops)
 {
 	UINT oldGen = ancestralGen();
 
-	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
+	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
 		useAncestralGen(anc);
@@ -841,82 +841,47 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 }
 
 
-void population::mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes)
+void population::addIndFrom(const population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
-		"Merged population should have the same genotype structure");
-	// calculate new population size
-	vectorlu newSS;
-	newSS.insert(newSS.end(), m_subPopSize.begin(), m_subPopSize.end());
-	newSS.insert(newSS.end(), pop.m_subPopSize.begin(), pop.m_subPopSize.end());
-	// new population size
-	ULONG newPopSize = accumulate(newSS.begin(), newSS.end(), 0UL);
-	DBG_FAILIF(!newSubPopSizes.empty() && accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) != newPopSize,
-		ValueError, "newSubPopSizes should not change overall population size");
-
-	// prepare new population
-	vector<individual> newInds(newPopSize);
-	vectora newGenotype(genoSize() * newPopSize);
-	vectorinfo newInfo(newPopSize * infoSize());
-	// iterators ready
-	GenoIterator ptr = newGenotype.begin();
-	InfoIterator infoPtr = newInfo.begin();
-	UINT step = genoSize();
-	UINT infoStep = infoSize();
-	// set pointers
-	for (ULONG i = 0; i < newPopSize; ++i, ptr += step, infoPtr += infoStep) {
-		newInds[i].setGenoStruIdx(genoStruIdx());
-		newInds[i].setGenoPtr(ptr);
-		newInds[i].setInfoPtr(infoPtr);
-	}
-	// copy stuff over
-	for (ULONG i = 0; i < popSize(); ++i)
-		newInds[i].copyFrom(ind(i));
-	ULONG start = popSize();
-	for (ULONG i = 0; i < pop.popSize(); ++i)
-		newInds[i + start].copyFrom(pop.ind(i));
-	// now, switch!
-	m_genotype.swap(newGenotype);
-	m_info.swap(newInfo);
-	m_inds.swap(newInds);
-	m_popSize = newPopSize;
-	setIndOrdered(true);
-	if (newSubPopSizes.empty())
-		m_subPopSize = newSS;
-	else
-		m_subPopSize = newSubPopSizes;
-	m_numSubPop = m_subPopSize.size();
-	// rebuild index
-	m_subPopIndex.resize(m_numSubPop + 1);
-	size_t j = 1;
-	for (m_subPopIndex[0] = 0; j <= m_numSubPop; ++j)
-		m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
-}
-
-
-void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes,
-                                 int keepAncestralPops)
-{
-	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
-		"Merged populations should have the same number of ancestral generations");
-	UINT topGen;
-	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
-		topGen = ancestralDepth();
-	else
-		topGen = keepAncestralPops;
+		"Cannot add individual from a population with different genotypic structure.");
+	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
+		"Two populations should have the same number of ancestral generations.");
+	UINT topGen = ancestralGens();
+	// genotype pointers may be reset so this is needed.
+	sortIndividuals();
+	const_cast<population &>(pop).sortIndividuals();
 	// go to the oldest generation
-	useAncestralGen(topGen);
-	const_cast<population &>(pop).useAncestralGen(topGen);
-	mergePopulationPerGen(pop, newSubPopSizes);
-	if (topGen > 0) {
-		for (int depth = topGen - 1; depth >= 0; --depth) {
-			useAncestralGen(depth);
-			const_cast<population &>(pop).useAncestralGen(depth);
-			mergePopulationPerGen(pop, newSubPopSizes);
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
+		// calculate new population size
+		m_subPopSize.insert(m_subPopSize.end(), pop.m_subPopSize.begin(), pop.m_subPopSize.end());
+		// new population size
+		m_popSize += pop.m_popSize;
+		//
+		m_inds.insert(m_inds.end(), pop.m_inds.begin(), pop.m_inds.end());
+		m_genotype.insert(m_genotype.end(), pop.m_genotype.begin(), pop.m_genotype.end());
+		m_info.insert(m_info.end(), pop.m_info.begin(), pop.m_info.end());
+		// iterators ready
+		GenoIterator ptr = m_genotype.begin();
+		InfoIterator infoPtr = m_info.begin();
+		UINT step = genoSize();
+		UINT infoStep = infoSize();
+		// set pointers
+		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			m_inds[i].setGenoPtr(ptr);
+			m_inds[i].setInfoPtr(infoPtr);
 		}
+		// number of subpopulation.
+		m_numSubPop = m_subPopSize.size();
+		// rebuild index
+		m_subPopIndex.resize(m_numSubPop + 1);
+		size_t j = 1;
+		for (m_subPopIndex[0] = 0; j <= m_numSubPop; ++j)
+			m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
 	}
-	useAncestralGen(0);
-	const_cast<population &>(pop).useAncestralGen(0);
 }
 
 
@@ -966,9 +931,9 @@ void population::mergePopulationByLoci(const population & pop,
 	delete gs1;
 	delete gs2;
 
-	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
+	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Merged populations should have the same number of ancestral generations");
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		const_cast<population &>(pop).useAncestralGen(depth);
 		//
@@ -1043,7 +1008,7 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 	DBG_FAILIF(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
 		"Failed to add chromosome.");
 
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
@@ -1098,7 +1063,7 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 		}
 	}
 
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
@@ -1282,8 +1247,8 @@ population & population::newPopByIndID(int keepAncestralPops,
 {
 	UINT topGen;
 
-	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
-		topGen = ancestralDepth();
+	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralGens())
+		topGen = ancestralGens();
 	else
 		topGen = keepAncestralPops;
 	// go to the oldest generation
@@ -1342,7 +1307,7 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 	// new geno structure is in effective now!
 	setGenoStructure(removeLociFromGenoStru(vectoru(), loci));
 
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 
 		//
@@ -1396,7 +1361,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 		chromTypes(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
 		// chromosome names are discarded
 		vectorstr(), alleleNames(), lociNames(), infoFields());
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 
 		// now set geno structure
@@ -1421,12 +1386,12 @@ void population::pushAndDiscard(population & rhs, bool force)
 
 	// front -1 pop, -2 pop, .... end
 	//
-	if (!force && m_ancestralDepth > 0
-	    && ancestralDepth() == static_cast<size_t>(m_ancestralDepth) )
+	if (!force && m_ancestralGens > 0
+	    && ancestralGens() == static_cast<size_t>(m_ancestralGens) )
 		m_ancestralPops.pop_back();
 
 	// save current population
-	if (force || m_ancestralDepth != 0) {
+	if (force || m_ancestralGens != 0) {
 		// add a empty popData
 		m_ancestralPops.push_front(popData());
 		// get its reference
@@ -1598,7 +1563,7 @@ void population::setAncestralDepth(int depth)
 	DBG_ASSERT(depth < 0 || m_ancestralPops.size() <= static_cast<size_t>(depth), SystemError,
 		"Failed to change ancestral Depth");
 
-	m_ancestralDepth = depth;
+	m_ancestralGens = depth;
 }
 
 

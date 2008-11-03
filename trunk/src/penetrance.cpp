@@ -34,10 +34,10 @@ bool penetrance::apply(population & pop)
 	UINT ansGen = 0;
 
 	if (m_ancestralGen == -1)
-		ansGen = pop.ancestralDepth();
+		ansGen = pop.ancestralGens();
 	else if (m_ancestralGen > 0) {
-		if (static_cast<UINT>(m_ancestralGen) > pop.ancestralDepth())
-			ansGen = pop.ancestralDepth();
+		if (static_cast<UINT>(m_ancestralGen) > pop.ancestralGens())
+			ansGen = pop.ancestralGens();
 		else
 			ansGen = m_ancestralGen;
 	}
