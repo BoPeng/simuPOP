@@ -6956,7 +6956,7 @@ Details:
 
     Return a reference to individual idx in ancestral generation gen.
     The correct individual will be returned even if the current
-    generation is not the present one (see useAncestralPop).
+    generation is not the present one (see useAncestralGen).
 
 "; 
 
@@ -7659,18 +7659,18 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::useAncestralPop "
+%feature("docstring") simuPOP::population::useAncestralGen "
 
 Usage:
 
-    x.useAncestralPop(idx)
+    x.useAncestralGen(idx)
 
 Details:
 
     Making ancestral generation idx (0 for current generation, 1 for
     parental generation, 2 for grand-parental generation, etc) the
     current generation. This is an efficient way to access population
-    properties of an ancestral generation. useAncestralPop(0) should
+    properties of an ancestral generation. useAncestralGen(0) should
     always be called to restore the correct order of ancestral
     generations.
 

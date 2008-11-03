@@ -384,7 +384,7 @@ namespace simuPOP {
 //    Special preparation for the population is needed in order to use this operator.
 //    Obviously, to obtain affected sibling pairs, we need to know the parents and
 //    the affectedness status of each individual. Furthermore, to get parental genotypes,
-//    the population should have \c ancestralDepth at least \c 1. The most important problem,
+//    the population should have \c ancestralGens at least \c 1. The most important problem,
 //    however, comes from the mating scheme we are using. \n
 // 
 //  \c randomMating() is usually used for diploid populations. The <em>real random</em> mating

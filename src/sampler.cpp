@@ -117,7 +117,7 @@ namespace simuPOP {
 // 	UINT indexIdx = pop.infoIdx(indexField);
 // 
 // 	// for the top generation, no parents
-// 	pop.useAncestralGen(pop.ancestralDepth());
+// 	pop.useAncestralGen(pop.ancestralGens());
 // 	for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 // 		// -1 means no parents.
 // 		// we do not use 0 since 0 is valid
@@ -125,7 +125,7 @@ namespace simuPOP {
 // 		it->setInfo(-1, motherIdx);
 // 	}
 // 	// for other generations
-// 	for (size_t ans = 0; ans < pop.ancestralDepth(); ++ans) {
+// 	for (size_t ans = 0; ans < pop.ancestralGens(); ++ans) {
 // 		// parents... get their old index
 // 		pop.useAncestralGen(ans + 1);
 // 		vectorf oldindex = pop.indInfo(indexIdx);
@@ -548,7 +548,7 @@ namespace simuPOP {
 // 
 // bool largePedigreeSample::prepareSample(population & pop)
 // {
-// 	DBG_FAILIF(pop.ancestralDepth() < 2, ValueError,
+// 	DBG_FAILIF(pop.ancestralGens() < 2, ValueError,
 // 		"At least two ancestral populations are needed to draw large pedigrees");
 // 	//
 // 	m_validPedigrees.clear();
@@ -842,7 +842,7 @@ namespace simuPOP {
 // 
 // bool nuclearFamilySample::prepareSample(population & pop)
 // {
-// 	DBG_FAILIF(pop.ancestralDepth() < 1, ValueError,
+// 	DBG_FAILIF(pop.ancestralGens() < 1, ValueError,
 // 		"At least one ancestral populations are needed to draw large pedigrees");
 // 	//
 // 	m_validPedigrees.clear();
