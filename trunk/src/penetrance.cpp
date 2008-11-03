@@ -43,7 +43,7 @@ bool penetrance::apply(population & pop)
 	}
 
 	for (UINT i = 0; i <= ansGen; ++i) {
-		pop.useAncestralPop(i);
+		pop.useAncestralGen(i);
 		IndInfoIterator penIt;
 		if (savePene) {
 			UINT idx = pop.infoIdx(infoField(0));
@@ -60,7 +60,7 @@ bool penetrance::apply(population & pop)
 				*penIt++ = p;
 		}
 	}
-	pop.useAncestralPop(0);
+	pop.useAncestralGen(0);
 
 	return true;
 }

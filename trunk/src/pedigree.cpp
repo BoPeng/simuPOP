@@ -55,11 +55,11 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		UINT fieldIdx = infoIdx(relFields[0]);
 
 		for (size_t ans = 0; ans <= topGen; ++ans) {
-			useAncestralPop(ans);
+			useAncestralGen(ans);
 			for (size_t idx = 0; idx < popSize(); ++idx)
 				ind(idx).setInfo(idx, fieldIdx);
 		}
-		useAncestralPop(0);
+		useAncestralGen(0);
 	} else if (relType == REL_Spouse) {
 		DBG_ASSERT(parentFields.size() == 2, ValueError,
 			"This relative only exists when there are two parents for each indidivual");
@@ -83,11 +83,11 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		for (unsigned ans = 1; ans <= topGen; ++ans) {
 			vectoru numSpouse;
 			// go to offspring generation
-			useAncestralPop(ans - 1);
+			useAncestralGen(ans - 1);
 			vectorf father = indInfo(parentFields[0]);
 			vectorf mother = indInfo(parentFields[1]);
 			//
-			useAncestralPop(ans);
+			useAncestralGen(ans);
 			if (numSpouse.empty())
 				numSpouse.resize(popSize(), 0);
 			//
@@ -143,7 +143,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 					ind(idx).setInfo(-1, spouseIdx[ns]);
 			}
 		}
-		useAncestralPop(0);
+		useAncestralGen(0);
 	} else if (relType == REL_Offspring) {
 		DBG_ASSERT(relFields.size() >= 1, ValueError,
 			"Please provide at least one information field to store offspring");
@@ -166,11 +166,11 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 			// for each type of parental relationship
 			for (vectorstr::const_iterator field = parentFields.begin();
 			     field != parentFields.end(); ++field) {
-				useAncestralPop(ans - 1);
+				useAncestralGen(ans - 1);
 				vectorf parent = indInfo(*field);
 				DBG_DO(DBG_POPULATION, cout << "Parents " << parent << endl);
 				//
-				useAncestralPop(ans);
+				useAncestralGen(ans);
 				if (numOffspring.empty())
 					numOffspring.resize(popSize(), 0);
 				//
@@ -196,7 +196,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 					ind(idx).setInfo(-1, offspringIdx[no]);
 			}
 		}
-		useAncestralPop(0);
+		useAncestralGen(0);
 	} else if (relType == REL_Sibling || relType == REL_FullSibling) {
 		DBG_ASSERT(relFields.size() >= 1, ValueError,
 			"Please provide at least one information field to store offspring");
@@ -212,7 +212,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		DBG_WARNING(topGen == 0, "Sibling can not be located because there is no parental generation.");
 		// start from the parental generation
 		for (unsigned ans = 0; ans <= topGen; ++ans) {
-			useAncestralPop(ans);
+			useAncestralGen(ans);
 			// if top generation, no information about sibling
 			if (ans == ancestralDepth()) {
 				for (IndIterator it = indBegin(); it.valid(); ++it)
@@ -284,7 +284,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 					ind(idx).setInfo(-1, siblingIdx[no]);
 			}
 		}
-		useAncestralPop(0);
+		useAncestralGen(0);
 	}
 }
 
@@ -307,7 +307,7 @@ bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
 	for (size_t i = 0; i < resultIdx.size(); ++i)
 		resultIdx[i] = infoIdx(resultFields[i]);
 	// start generation, and at which result will be saved.
-	useAncestralPop(pathGen[0]);
+	useAncestralGen(pathGen[0]);
 	vectoru numResult(popSize(), 0);
 	UINT maxResult = resultIdx.size();
 	// clear values

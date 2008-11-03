@@ -114,7 +114,7 @@ done:
 				out << endl << "Ignoring " << pop.ancestralDepth() << " ancenstral population(s)." << endl;
 		} else {
 			for (size_t i = 0; i < pop.ancestralDepth(); ++i) {
-				pop.useAncestralPop(i + 1);
+				pop.useAncestralGen(i + 1);
 				out << endl << "Ancestry population " << i + 1 << endl;
 
 				out << "population size:\t" << pop.popSize() << endl;
@@ -170,7 +170,7 @@ doneAnces:
 				out << "End of individual info." << endl << endl;
 			}                                                                         // next ancestry
 			// IMPORTANT. Reset ancestral pop
-			pop.useAncestralPop(0);
+			pop.useAncestralGen(0);
 		}                                                                                 // dispAncestry
 	}
 	this->closeOstream();

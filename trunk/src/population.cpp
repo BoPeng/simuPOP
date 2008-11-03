@@ -455,11 +455,11 @@ void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
-		useAncestralPop(anc);
+		useAncestralGen(anc);
 		for (ULONG it = 0; it < m_popSize; ++it)
 			ind(it).setSubPopID(static_cast<SubPopID>(id[it % sz]));
 	}
-	useAncestralPop(oldGen);
+	useAncestralGen(oldGen);
 }
 
 
@@ -470,12 +470,12 @@ void population::setIndSubPopIDWithID(bool ancestralPops)
 	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
-		useAncestralPop(anc);
+		useAncestralGen(anc);
 		for (UINT i = 0, iEnd = numSubPop(); i < iEnd;  ++i)
 			for (IndIterator it = indBegin(i); it.valid();  ++it)
 				it->setSubPopID(i);
 	}
-	useAncestralPop(oldGen);
+	useAncestralGen(oldGen);
 }
 
 
@@ -905,18 +905,18 @@ void population::mergePopulation(const population & pop, const vectorlu & newSub
 	else
 		topGen = keepAncestralPops;
 	// go to the oldest generation
-	useAncestralPop(topGen);
-	const_cast<population &>(pop).useAncestralPop(topGen);
+	useAncestralGen(topGen);
+	const_cast<population &>(pop).useAncestralGen(topGen);
 	mergePopulationPerGen(pop, newSubPopSizes);
 	if (topGen > 0) {
 		for (int depth = topGen - 1; depth >= 0; --depth) {
-			useAncestralPop(depth);
-			const_cast<population &>(pop).useAncestralPop(depth);
+			useAncestralGen(depth);
+			const_cast<population &>(pop).useAncestralGen(depth);
 			mergePopulationPerGen(pop, newSubPopSizes);
 		}
 	}
-	useAncestralPop(0);
-	const_cast<population &>(pop).useAncestralPop(0);
+	useAncestralGen(0);
+	const_cast<population &>(pop).useAncestralGen(0);
 }
 
 
@@ -969,8 +969,8 @@ void population::mergePopulationByLoci(const population & pop,
 	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
 		"Merged populations should have the same number of ancestral generations");
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
-		const_cast<population &>(pop).useAncestralPop(depth);
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
 		vectora newGenotype(newPopGenoSize);
@@ -1044,7 +1044,7 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 		"Failed to add chromosome.");
 
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
+		useAncestralGen(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
 		vectora newGenotype(newPopGenoSize, 0);
@@ -1099,7 +1099,7 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	}
 
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
+		useAncestralGen(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
 		vectora newGenotype(newPopGenoSize, 0);
@@ -1287,13 +1287,13 @@ population & population::newPopByIndID(int keepAncestralPops,
 	else
 		topGen = keepAncestralPops;
 	// go to the oldest generation
-	useAncestralPop(topGen);
+	useAncestralGen(topGen);
 	population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
 	// prepare for push and discard
 	ret.setAncestralDepth(topGen);
 	if (topGen > 0) {
 		for (int depth = topGen - 1; depth >= 0; --depth) {
-			useAncestralPop(depth);
+			useAncestralGen(depth);
 			ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
 		}
 	}
@@ -1343,7 +1343,7 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 	setGenoStructure(removeLociFromGenoStru(vectoru(), loci));
 
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
+		useAncestralGen(depth);
 
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
@@ -1397,7 +1397,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 		// chromosome names are discarded
 		vectorstr(), alleleNames(), lociNames(), infoFields());
 	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
+		useAncestralGen(depth);
 
 		// now set geno structure
 		for (ULONG i = 0; i < m_popSize; ++i)
@@ -1476,11 +1476,11 @@ void population::addInfoField(const string field, double init)
 		// only needs to initialize
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralPop(anc);
+			useAncestralGen(anc);
 			for (IndIterator ind = indBegin(); ind.valid(); ++ind)
 				ind->setInfo(init, idx);
 		}
-		useAncestralPop(oldAncPop);
+		useAncestralGen(oldAncPop);
 		return;
 	} catch (IndexError &) {
 		newfields.push_back(field);
@@ -1492,7 +1492,7 @@ void population::addInfoField(const string field, double init)
 		UINT is = infoSize();
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralPop(anc);
+			useAncestralGen(anc);
 			vectorinfo newInfo(is * popSize());
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
@@ -1505,7 +1505,7 @@ void population::addInfoField(const string field, double init)
 			}
 			m_info.swap(newInfo);
 		}
-		useAncestralPop(oldAncPop);
+		useAncestralGen(oldAncPop);
 	}
 	return;
 }
@@ -1527,12 +1527,12 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			// only needs to initialize
 			int oldAncPop = m_curAncestralGen;
 			for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-				useAncestralPop(anc);
+				useAncestralGen(anc);
 
 				for (IndIterator ind = indBegin(); ind.valid(); ++ind)
 					ind->setInfo(init, idx);
 			}
-			useAncestralPop(oldAncPop);
+			useAncestralGen(oldAncPop);
 		} catch (IndexError &) {
 			newfields.push_back(*it);
 		}
@@ -1546,7 +1546,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 		UINT is = infoSize();
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralPop(anc);
+			useAncestralGen(anc);
 			vectorinfo newInfo(is * popSize(), 0.);
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
@@ -1559,7 +1559,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			}
 			m_info.swap(newInfo);
 		}
-		useAncestralPop(oldAncPop);
+		useAncestralGen(oldAncPop);
 	}
 }
 
@@ -1571,7 +1571,7 @@ void population::setInfoFields(const vectorstr & fields, double init)
 	int oldAncPop = m_curAncestralGen;
 	UINT is = infoSize();
 	for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-		useAncestralPop(anc);
+		useAncestralGen(anc);
 		vectorinfo newInfo(is * popSize(), init);
 		InfoIterator ptr = newInfo.begin();
 		for (IndIterator ind = indBegin(); ind.valid(); ++ind, ptr += is) {
@@ -1580,7 +1580,7 @@ void population::setInfoFields(const vectorstr & fields, double init)
 		}
 		m_info.swap(newInfo);
 	}
-	useAncestralPop(oldAncPop);
+	useAncestralGen(oldAncPop);
 }
 
 
@@ -1588,7 +1588,7 @@ void population::setInfoFields(const vectorstr & fields, double init)
 void population::setAncestralDepth(int depth)
 {
 	// just to make sure.
-	useAncestralPop(0);
+	useAncestralGen(0);
 	//
 	if (depth >= 0 && m_ancestralPops.size() > static_cast<size_t>(depth)) {
 		int numRemove = m_ancestralPops.size() - depth;
@@ -1602,7 +1602,7 @@ void population::setAncestralDepth(int depth)
 }
 
 
-void population::useAncestralPop(UINT idx)
+void population::useAncestralGen(UINT idx)
 {
 	if (m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
 		return;
