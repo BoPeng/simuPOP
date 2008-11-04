@@ -433,8 +433,8 @@ class Doxy2SWIG:
         for n in node.childNodes:
             txt = txt + n.data
         if txt.split('=')[-1].strip() == '0':
-            # remove =0 from function definition
-            txt = txt.rpartition('=')[0]
+             # remove =0 from function definition (WHY?)
+             txt = '='.join(txt.split('=')[:-1])
         self.content[-1]['cppArgs'] = txt
         # replace the trailing const
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
@@ -514,8 +514,9 @@ class Doxy2SWIG:
                 p = Doxy2SWIG(fname)
                 p.generate()
                 self.content.extend(p.content)
-            except:
+            except Exception, e:
                 print "This file can not be parsed, something wrong with file format"
+                print e
                 pass
 
 

@@ -5737,6 +5737,134 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::offspringGenerator "
+
+Applicability: all ploidy
+
+Details:
+
+    Offspring generators generate offspring from given parents.
+    Generators differ from each other by how and how many offspring is
+    generated at each mating event. Parameters mode, numOffspring,
+    maxNumOffspring and numOffspringFunc are used to specify how many
+    offspring will be produced at each mating event. mode can be one
+    of
+    *  MATE_NumOffspring: a fixed number of offspring will be produced
+    at all mating events .
+    *  MATE_PyNumOffspring: A python function, specified by parameter
+    numOffspringFunc, is called at each mating event to determine the
+    number of offspring to produce.
+    *  MATE_GeometricDistribution: a Geometric distribution with
+    parameter numOffspring is used to determine the number of
+    offspring of each family.
+    *  MATE_PoissonDistribution: a Poisson distribution with parameter
+    numOffspring is used to determine the number of offspring of each
+    family.
+    *  MATE_BinomialDistribution: a Binomial distribution with
+    parameter numOffspring is used to determine the number of
+    offspring of each family.
+    *  MATE_UniformDistribution: a Uniform  [a, b]  distribution with
+    parameter numOffspring (a) and maxNumOffspring (b) is used to
+    determine the number of offspring of each family. This is the base
+    class of all offspring generators, and should not be used
+    directly.
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::offspringGenerator "
+
+Usage:
+
+    offspringGenerator(numOffspring, numOffspringFunc,
+      maxNumOffspring, mode, sexParam, sexMode)
+
+Arguments:
+
+    numOffspring:   Depending on , this paramter can be the number of
+                    offspring to produce, or a paremter of a random
+                    distribution.
+    numOffspringFunc:a Python function that returns the number of
+                    offspring at each mating event. The setting of
+                    this parameter implies =MATE_PyNumOffspring.
+    maxNumOffspring:used when numOffspring is generated from a
+                    binomial or random distribution.
+    mode:           can be one of MATE_NumOffspring,
+                    MATE_PyNumOffspring, MATE_GeometricDistribution,
+                    MATE_PoissonDistribution,
+                    MATE_BinomialDistribution, or
+                    MATE_UniformDistribution.
+    sexParam:       parameter that controls the sex distribution among
+                    offspring. Its exact meaning is determined by
+                    parameter sexMode. Default to 0.5.
+    sexMode:        can be one of
+                    * MATE_RandomSex Set sex to Male or Female with
+                    probability 0.5. Parameter sexParam is ignored in
+                    this case. This is the default mode.
+                    * MATE_ProbOfMale Set an offspring to Male with
+                    probability sexParam (default to 0.5)
+                    * MATE_NumOfMale Set sexParam offspring to Male
+                    * MATE_NumOfFemale Set sexParam offspring to
+                    Female.
+
+Note:
+
+    : Parameter sexMode and sexParam are ignored if sex chromosome is
+    defined. Offspring sex is defined by genotype in this case.
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::~offspringGenerator "
+
+Usage:
+
+    x.~offspringGenerator()
+
+"; 
+
+%ignore simuPOP::offspringGenerator::offspringGenerator(const offspringGenerator &rhs);
+
+%feature("docstring") simuPOP::offspringGenerator::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
+
+%ignore simuPOP::offspringGenerator::fixedFamilySize() const ;
+
+%ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
+
+%feature("docstring") simuPOP::offspringGenerator::finalize "
+
+Usage:
+
+    x.finalize(pop)
+
+"; 
+
+%ignore simuPOP::offspringGenerator::numOffspring(int gen);
+
+%feature("docstring") simuPOP::offspringGenerator::getSex "
+
+Usage:
+
+    x.getSex(count)
+
+Arguments:
+
+    count:          the index of offspring
+
+"; 
+
+%ignore simuPOP::offspringGenerator::initialized() const ;
+
+%ignore simuPOP::offspringGenerator::setNumParents(int numParents);
+
+%ignore simuPOP::offspringGenerator::numParents() const ;
+
 %ignore simuPOP::OstreamManager;
 
 %ignore simuPOP::OstreamManager::OstreamManager();
@@ -12868,6 +12996,76 @@ Usage:
 Usage:
 
     x.isVirtual()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter "
+
+Details:
+
+    virtual subpopss split a subpopulation into virtual sub-
+    subpopulations. The virtual subpopulations do not have to add up
+    to the whole subpopulation, nor they have to be distinct. For
+    example, a virtual subpopulation may be all individuals in a
+    population that is over the age of 30. Or, two virtual populations
+    may overlap so some of the inviduals may belong to more than one
+    virtual subpopulations.
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::vspSplitter "
+
+Usage:
+
+    vspSplitter()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::vspSplitter::~vspSplitter "
+
+Usage:
+
+    x.~vspSplitter()
+
+"; 
+
+%ignore simuPOP::vspSplitter::activatedSubPop() const ;
+
+%ignore simuPOP::vspSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+
+%feature("docstring") simuPOP::vspSplitter::numVirtualSubPop "
+
+Description:
+
+    number of virtual subpops of subpopulation sp
+
+Usage:
+
+    x.numVirtualSubPop()
+
+"; 
+
+%ignore simuPOP::vspSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+
+%ignore simuPOP::vspSplitter::deactivate(population &pop, SubPopID subPop);
+
+%feature("docstring") simuPOP::vspSplitter::name "
+
+Description:
+
+    name of a virtual subpopulation
+
+Usage:
+
+    x.name(sp)
 
 "; 
 

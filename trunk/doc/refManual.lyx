@@ -422,7 +422,7 @@ Individual and Population
 
 \begin_layout Standard
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -443,6 +443,30 @@ individualRef
 
 \backslash
 populationRef
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Virtual subpopulation splitters
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+vspSplitterRef
 \end_layout
 
 \begin_layout Standard
