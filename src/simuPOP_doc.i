@@ -13355,3 +13355,32 @@ Usage:
 
 %ignore std::pow3(unsigned n);
 
+%feature("docstring") simuPOP::population::dvars "
+
+Usage:
+
+    x.dvars(subPop=-1)
+
+Details:
+
+    Return a wrapper of Python dictionary returned by vars(subPop) so
+    that dictionary keys can be accessed as attributes. For example
+    pop.dvars().alleleFreq is equivalent to pop.vars()[\"alleleFreq\"].
+
+"; 
+
+%feature("docstring") simuPOP::simulator::dvars "
+
+Usage:
+
+    x.dvars(rep, subPop=-1)
+
+Details:
+
+    Return a wrapper of Python dictionary returned by vars(rep,
+    subPop) so that dictionary keys can be accessed as attributes. For
+    example simu.dvars(1).alleleFreq is equivalent to
+    simu.vars(1)[\"alleleFreq\"].
+
+"; 
+

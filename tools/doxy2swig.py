@@ -522,6 +522,29 @@ class Doxy2SWIG:
     def post_process(self):
         # remove duplicate entry
         # They might be introduced if a function is list both under 'file' and under 'namespace'
+        # Add additional entries manually
+        self.content.extend([
+            {'Name': u'simuPOP::population::dvars',
+             'type': u'memberofclass_simuPOP::population',
+             'Description': '',
+             'Details': ur'<group>9-var</group>' \
+                'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
+                'so that dictionary keys can be accessed as attributes. For example ' \
+                '<tt>pop.dvars().alleleFreq</tt> is equivalent to <tt>pop.vars()["alleleFreq"]</tt>.',
+             'cppArgs': u'(int subPop=-1)',
+             'Usage': u'x.dvars(subPop=-1)',
+             },
+            {'Name': u'simuPOP::simulator::dvars',
+             'type': u'memberofclass_simuPOP::simulator',
+             'Description': '',
+             'Details': ur'<group>var</group>' \
+                'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
+                'so that dictionary keys can be accessed as attributes. For example ' \
+                '<tt>simu.dvars(1).alleleFreq</tt> is equivalent to <tt>simu.vars(1)["alleleFreq"]</tt>.',
+             'cppArgs': u'(int rep, int subPop=-1)',
+             'Usage': u'x.dvars(rep, subPop=-1)',
+             },
+        ])
         print "Number of entries: ", len(self.content)
         def myhash(entry):
             'encode an entry to a string for easy comparison'
