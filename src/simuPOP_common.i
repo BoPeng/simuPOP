@@ -1503,22 +1503,6 @@ del pyQuanTrait.__init__
 pyQuanTrait.__init__ = new_pyQuanTrait
 
 
-def new_rangeSplitter(self, range=[], ranges=[], *args, **kwargs):
-    if len(range) == 0:
-        rg = ranges
-    else:
-        rg = [range]
-    for r in rg:
-        if len(r) != 2:
-            raise exceptions.TypeError("Expecting a range: %s" % r)
-    cppModule.rangeSplitter_swiginit(self,
-        cppModule.new_rangeSplitter(ranges=rg, *args, **kwargs))
-
-new_rangeSplitter.__doc__ = rangeSplitter.__init__.__doc__
-del rangeSplitter.__init__
-rangeSplitter.__init__ = new_rangeSplitter
-
-
 def new_genotypeSplitter(self, locus=None, loci=[],
     alleles=[], *args, **kwargs):
     if locus is not None:

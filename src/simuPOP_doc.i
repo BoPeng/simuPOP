@@ -2,12 +2,17 @@
 
 Details:
 
-    split a subpopulation into unaffected and affected virtual
-    subpopulations.
+    This class defines two VSPs according individual affection status.
+    The first VSP consists of unaffected invidiauls and the second VSP
+    consists of affected ones.
 
 "; 
 
 %feature("docstring") simuPOP::affectionSplitter::affectionSplitter "
+
+Description:
+
+    Create a splitter that defined two VSPs by affection status.
 
 Usage:
 
@@ -15,13 +20,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::affectionSplitter::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::affectionSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::affectionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
@@ -29,7 +28,7 @@ Usage:
 
 Description:
 
-    number of virtual subpops of subpopulation sp
+    Return 2.
 
 Usage:
 
@@ -45,11 +44,11 @@ Usage:
 
 Description:
 
-    name of a virtual subpopulation
+    Return \"Unaffected\" if vsp=0 and \"Affected\" if vsp=1.
 
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
 
 "; 
 
@@ -910,11 +909,12 @@ Usage:
 
 Details:
 
-    This plitter takes several splitters, and stacks their virtual
-    subpopulations together. For example, if the first splitter has
-    three vsp, the second has two. The two vsp from the second
-    splitter will be the fouth (index 3) and fifth (index 4) of the
-    combined splitter.
+    This splitter takes several splitters and stacks their VSPs
+    together. For example, if the first splitter defines 3 VSPs and
+    the second splitter defines 2, the two VSPs from the second
+    splitter becomes the fourth (index 3) and the fifth (index 4) VSPs
+    of the combined splitter. This splitter is usually used to define
+    different types of VSPs to a population.
 
 "; 
 
@@ -923,6 +923,12 @@ Details:
 Usage:
 
     combinedSplitter(splitters=[])
+
+Details:
+
+    Create a combined splitter using a list of splitters. For example,
+    combinedSplitter([sexSplitter(), affectionSplitter()]) defines a
+    combined splitter with four VSPs.
 
 "; 
 
@@ -934,25 +940,20 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::combinedSplitter::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::combinedSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::combinedSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::combinedSplitter::numVirtualSubPop "
 
-Description:
-
-    number of virtual subpops of subpopulation sp
-
 Usage:
 
     x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter, which is the
+    sum of the number of VSPs of all combined splitters.
 
 "; 
 
@@ -962,13 +963,14 @@ Usage:
 
 %feature("docstring") simuPOP::combinedSplitter::name "
 
-Description:
-
-    name of a virtual subpopulation
-
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
+
+Details:
+
+    Return the name of a VSP vsp, which is the name a VSP defined by
+    one of the combined splitters.
 
 "; 
 
@@ -2041,7 +2043,8 @@ Details:
 
 Details:
 
-    split the population according to given genotype
+    This class defines a VSP splitter that defines VSPs according to
+    individual genotype at specified loci.
 
 "; 
 
@@ -2049,41 +2052,39 @@ Details:
 
 Usage:
 
-    genotypeSplitter(loci, alleles, phase=False)
+    genotypeSplitter(loci (or locus), alleles, phase=False)
 
 Details:
 
-    For example, Genotype Aa or aa at locus 1: locus = 1, alleles =
-    [0, 1] Genotype Aa at locus 1 (assuming A is 1): locus = 1,
-    alleles = [1, 0], phase = True Genotype AaBb at loci 1 and 2: loci
-    = [1, 2], alleles = [1, 0, 1, 0], phase = True Two virtual
-    subpopulations with Aa and aa locus = 1, alleles = [[1, 0], [0,
-    0]], phase = True A virtual subpopulation with Aa or aa locus = 1,
-    alleles = [1, 0, 0, 0] Two virtual subpopulation with genotype AA
-    and the rest locus = 1, alleles = [[1, 1], [1, 0, 0, 0]], phase =
-    False
-
-Arguments:
-
-    locus:          a shortcut to loci=[locus]
-    loci:           A list of locus at which alleles are used to
-                    classify individuals
-    alleles:        a list (for each virtual subpopulation), of a list
-                    of alleles at each locus. If phase if true, the
-                    order of alleles is significant. If more than one
-                    set of alleles are given, individuals having
-                    either of them is qualified.
-    phase:          whether or not phase is respected.
-
-"; 
-
-%feature("docstring") simuPOP::genotypeSplitter::clone "
-
-Usage:
-
-    x.clone()
+    Create a splitter that defined VSPs by individual genotype at loci
+    loci (or locus if only one locus is used). Each list in a list
+    allele defines a VSP, which is a list of allowed alleles at these
+    loci. If only one VSP is defined, the outer list of the nested
+    list can be ignored. If phase if true, the order of alleles in
+    each list is significant. If more than one set of alleles are
+    given, individuals having either of them is qualified.
+    For example, in a haploid population, locus=1, alleles=[0, 1]
+    defines a VSP with individuals having allele 0 or 1 at locus 1,
+    alleles=[[0, 1], [2]] defines two VSPs with indivdiuals in the
+    second VSP having allele 2 at locus 1. If multiple loci are
+    involved, alleles at each locus need to be defined. For example,
+    VSP defined by loci=[0, 1], alleles=[0, 1, 1, 1] consists of
+    individuals having alleles [0, 1] or [1, 1] at loci [0, 1].
+    In a haploid population, locus=1, alleles=[0, 1] defines a VSP
+    with individuals having genotype [0, 1] or [1, 0] at locus 1.
+    alleles[[0, 1], [2, 2]] defines two VSPs with indivdiuals in the
+    second VSP having genotype [2, 2] at locus 1. If phase is set to
+    True, the first VSP will only has individuals with genotype [0,
+    1]. In the multiple loci, alleles should be arranged by
+    haplotypes, for example, loci=[0, 1], alleles=[0, 0, 1, 1] defines
+    a VSP with individuals having genotype -0-0-, -1-1- or -1-1-,
+    -0-0- at loci 0 and 1. If haplotypes -0-1- should be allowed, it
+    should be added to explicitly, such as using alleles=[0, 0, 1, 1,
+    0, 1, 0, 1].
 
 "; 
+
+%feature("docstring") simuPOP::genotypeSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::genotypeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
@@ -2105,13 +2106,14 @@ Usage:
 
 %feature("docstring") simuPOP::genotypeSplitter::name "
 
-Description:
-
-    name of a virtual subpopulation
-
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
+
+Details:
+
+    Return name of VSP vsp, which is \"Genotype loc1,loc2:genotype\" as
+    defined by parameters loci and alleles.
 
 "; 
 
@@ -3314,11 +3316,9 @@ Usage:
 
 Details:
 
-    Split the population according to the value of an information
-    field. A list of distinct values, or a cutoff vector can be given
-    to determine how the virtual subpopulations are divided. Note that
-    in the first case, an individual does not have to belong to any
-    virtual subpopulation.
+    This splitter defines VSPs according to the value of an
+    information field of each indivdiual. A VSP is defined either by a
+    value or a range of values.
 
 "; 
 
@@ -3326,32 +3326,38 @@ Details:
 
 Usage:
 
-    infoSplitter(info, values=[]nfo, cutoff=[])
+    infoSplitter(field, values=[], cutoff=[])
 
-Arguments:
+Details:
 
-    info:           name of the information field
-    values:         a list of values, each defines a virtual
-                    subpopulation
-    cutoff:         a list of cutoff values. For example, cutoff=[1,
-                    2] defines three virtual subpopulations with v <
-                    1, 1 <= v < 2, and v >= 2.
+    Create an infomration splitter using information field field. If
+    parameter values is specified, each item in this list defines a
+    VSP in which all individuals have this value at information field
+    field. If a set of cutoff values are defined in parameter cutoff,
+    individuals are grouped by intervals defined by these cutoff
+    values. For example, cutoff=[1,2] defines three VSPs with v < 1, 1
+    <= v < 2 and v >=2 where v is the value of an individual at
+    information field field. Of course, only one of the parameters
+    values and cutoff should be defined, values in cutoff should be
+    distinct, and in an increasing order.
 
 "; 
 
-%ignore simuPOP::infoSplitter::clone() const ;
+%feature("docstring") simuPOP::infoSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::infoSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::infoSplitter::numVirtualSubPop "
 
-Description:
-
-    number of virtual subpops of subpopulation sp
-
 Usage:
 
     x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter, which is the
+    length parameter values or the length of cutoff plus one,
+    depending on which parameter is specified.
 
 "; 
 
@@ -3361,13 +3367,16 @@ Usage:
 
 %feature("docstring") simuPOP::infoSplitter::name "
 
-Description:
-
-    name of a virtual subpopulation
-
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
+
+Details:
+
+    Return the name of a VSP vsp, which is field = value if VSPs are
+    defined by values in parameter values, or field < value (the first
+    VSP), v1 <= field < v2 and field >= v (the last VSP) if VSPs are
+    defined by cutoff values.
 
 "; 
 
@@ -7775,7 +7784,8 @@ Details:
 
 Details:
 
-    Split the population according to a proportion
+    This splitter divides subpopulations into several VSPs by
+    proportion.
 
 "; 
 
@@ -7785,34 +7795,28 @@ Usage:
 
     proportionSplitter(proportions=[])
 
-Arguments:
+Details:
 
-    proportions:    A list of float numbers (between 0 and 1) that
-                    defines the proportion of individuals in each
-                    virtual subpopulation. These numbers should add up
-                    to one.
-
-"; 
-
-%feature("docstring") simuPOP::proportionSplitter::clone "
-
-Usage:
-
-    x.clone()
+    Create a splitter that divides subpopulations by proportions,
+    which should be a list of float numbers (between 0 and 1) that add
+    up to 1.
 
 "; 
+
+%feature("docstring") simuPOP::proportionSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::proportionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::proportionSplitter::numVirtualSubPop "
 
-Description:
-
-    number of virtual subpops of subpopulation sp
-
 Usage:
 
     x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter, which is the
+    length of parameter proportions.
 
 "; 
 
@@ -7822,13 +7826,14 @@ Usage:
 
 %feature("docstring") simuPOP::proportionSplitter::name "
 
-Description:
-
-    name of a virtual subpopulation
-
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
+
+Details:
+
+    Return the name of VSP vsp, which is \"Prop p\" where
+    p=propotions[vsp].
 
 "; 
 
@@ -9511,8 +9516,8 @@ Usage:
 
 Details:
 
-    split the population according to individual range. The ranges can
-    overlap and does not have to add up to the whole subpopulation.
+    This class defines a splitter that groups individuals in certain
+    ranges into VSPs.
 
 "; 
 
@@ -9522,32 +9527,31 @@ Usage:
 
     rangeSplitter(ranges)
 
-Arguments:
+Details:
 
-    range:          a shortcut for ranges=[range]
-    ranges:         a list of ranges
-
-"; 
-
-%feature("docstring") simuPOP::rangeSplitter::clone "
-
-Usage:
-
-    x.clone()
+    Create a splitter according to a number of individual ranges
+    defined in ranges. For example,  rangeSplitter(ranges=[[0, 20],
+    [40, 50]]) defines two VSPs. The first VSP consists of individuals
+    0, 1, ..., 19, and the sceond VSP consists of individuals 40, 41,
+    ..., 49. Note that a nested list has to be used even if only one
+    range is defined.
 
 "; 
+
+%feature("docstring") simuPOP::rangeSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::rangeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
 %feature("docstring") simuPOP::rangeSplitter::numVirtualSubPop "
 
-Description:
-
-    number of virtual subpops of subpopulation sp
-
 Usage:
 
     x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs, which is the number of ranges defined
+    in parameter ranges.
 
 "; 
 
@@ -9557,13 +9561,14 @@ Usage:
 
 %feature("docstring") simuPOP::rangeSplitter::name "
 
-Description:
-
-    name of a virtual subpopulation
-
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
+
+Details:
+
+    Return the name of VSP vsp, which is \"Range [a, b]\" where [a, b]
+    is range ranges[vsp].
 
 "; 
 
@@ -10597,11 +10602,17 @@ Usage:
 
 Details:
 
-    split the population into Male and Female virtual subpopulations
+    This splitter defines two VSPs by individual sex. The first VSP
+    consists of all male individuals and the second VSP consists of
+    all females in a subpopulation.
 
 "; 
 
 %feature("docstring") simuPOP::sexSplitter::sexSplitter "
+
+Description:
+
+    Create a sex splitter that defines male and female VSPs.
 
 Usage:
 
@@ -10609,13 +10620,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sexSplitter::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::sexSplitter::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::sexSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
 
@@ -10623,7 +10628,7 @@ Usage:
 
 Description:
 
-    number of virtual subpops of subpopulation sp
+    Return 2.
 
 Usage:
 
@@ -10639,11 +10644,11 @@ Usage:
 
 Description:
 
-    name of a virtual subpopulation
+    Return \"Male\" if vsp=0 and \"Female\" otherwise.
 
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
 
 "; 
 
@@ -13003,13 +13008,16 @@ Usage:
 
 Details:
 
-    virtual subpopss split a subpopulation into virtual sub-
-    subpopulations. The virtual subpopulations do not have to add up
-    to the whole subpopulation, nor they have to be distinct. For
-    example, a virtual subpopulation may be all individuals in a
-    population that is over the age of 30. Or, two virtual populations
-    may overlap so some of the inviduals may belong to more than one
-    virtual subpopulations.
+    This class is the base class of all virtual subpopulation (VSP)
+    splitters, which provide ways to define groups of individuals in a
+    subpopulation who share certain properties. A splitter defines a
+    fixed number of named VSPs. They do not have to add up to the
+    whole subpopulation, nor do they have to be distinct. After a
+    splitter is assigned to a population, many functions and operators
+    can be applied to individuals within specified VSPs. Only one VSP
+    splitter can be assigned to a population, which defined VSPs for
+    all its subpopulations. It different splitters are needed for
+    different subpopulations, a  combinedSplitter should be.
 
 "; 
 
@@ -13019,6 +13027,10 @@ Usage:
 
     vspSplitter()
 
+Details:
+
+    This is a virtual class that cannot be instantiated.
+
 "; 
 
 %feature("docstring") simuPOP::vspSplitter::clone "
@@ -13026,6 +13038,11 @@ Usage:
 Usage:
 
     x.clone()
+
+Details:
+
+    All VSP splitter defines a  clone() function to create an
+    identical copy of itself.
 
 "; 
 
@@ -13043,13 +13060,13 @@ Usage:
 
 %feature("docstring") simuPOP::vspSplitter::numVirtualSubPop "
 
-Description:
-
-    number of virtual subpops of subpopulation sp
-
 Usage:
 
     x.numVirtualSubPop()
+
+Details:
+
+    Return the number of VSPs defined by this splitter.
 
 "; 
 
@@ -13059,13 +13076,14 @@ Usage:
 
 %feature("docstring") simuPOP::vspSplitter::name "
 
-Description:
-
-    name of a virtual subpopulation
-
 Usage:
 
-    x.name(sp)
+    x.name(vsp)
+
+Details:
+
+    Return the name of VSP vsp (an index between 0 and
+    numVirtualSubPop()).
 
 "; 
 
