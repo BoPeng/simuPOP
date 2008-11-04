@@ -7031,19 +7031,19 @@ Details:
 
 %ignore simuPOP::population::setIndOrdered(bool s);
 
-%ignore simuPOP::population::indBegin();
+%ignore simuPOP::population::indBegin(vspSplitter::activateType type=vspSplitter::Visible);
 
-%ignore simuPOP::population::indEnd();
+%ignore simuPOP::population::indEnd(vspSplitter::activateType type=vspSplitter::Visible);
 
-%ignore simuPOP::population::indBegin(UINT subPop);
+%ignore simuPOP::population::indBegin(UINT subPop, vspSplitter::activateType type=vspSplitter::Visible);
 
-%ignore simuPOP::population::indEnd(UINT subPop);
+%ignore simuPOP::population::indEnd(UINT subPop, vspSplitter::activateType type=vspSplitter::Visible);
 
-%ignore simuPOP::population::indBegin() const ;
+%ignore simuPOP::population::indBegin(vspSplitter::activateType type=vspSplitter::Visible) const ;
 
-%ignore simuPOP::population::indEnd() const ;
+%ignore simuPOP::population::indEnd(vspSplitter::activateType type=vspSplitter::Visible) const ;
 
-%ignore simuPOP::population::indEnd(UINT subPop) const ;
+%ignore simuPOP::population::indEnd(UINT subPop, vspSplitter::activateType type=vspSplitter::Visible) const ;
 
 %ignore simuPOP::population::rawIndBegin();
 

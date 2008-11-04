@@ -547,88 +547,88 @@ public:
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indBegin()
+	IndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indEnd()
+	IndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		return IndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	IndIterator indBegin(UINT subPop)
+	IndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
 	/// CPPONLY individual iterator: with subPop info.
-	IndIterator indEnd(UINT subPop)
+	IndIterator indEnd(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
 	/** CPPONLY individual iterator: without subPop info
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indBegin() const
+	ConstIndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
 	/** CPPONLY individual iterator: without subPop info
 	 *  It is recommended to use it.valid(), instead of it != indEnd()
 	 */
-	ConstIndIterator indEnd() const
+	ConstIndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		return ConstIndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indBegin(UINT subPop) const
+	ConstIndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
 	 */
-	ConstIndIterator indEnd(UINT subPop) const
+	ConstIndIterator indEnd(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
@@ -1203,9 +1203,16 @@ public:
 		CHECKRANGESUBPOP(subPop);
 		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
+		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && vsp.isVirtual(),
+			ValueError, "Can not iterate through an activated subpopulation");
+
 		// has to adjust order because of parameter subPop
 		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indBegin(subPop));
+		else if (vsp.isVirtual()) {
+			activateVirtualSubPop(subPop, vsp.virtualSubPop(), vspSplitter::Iteratable);
+			return IndInfoIterator(idx, indBegin(subPop, vspSplitter::Iteratable));
+		}
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
@@ -1222,6 +1229,8 @@ public:
 		// has to adjust order because of parameter subPop
 		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indEnd(subPop));
+		else if (vsp.isVirtual())
+			return IndInfoIterator(idx, indEnd(subPop, vspSplitter::Iteratable));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}
