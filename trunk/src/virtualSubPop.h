@@ -68,13 +68,17 @@ private:
 	SubPopID m_virtualSubPop;
 };
 
-/** virtual subpopss split a subpopulation into virtual sub-subpopulations.
-   The virtual subpopulations do not have to add up to the whole
-   subpopulation, nor they have to be distinct. For example,
-   a virtual subpopulation may be all individuals in a population
-   that is over the age of 30. Or, two virtual populations may
-   overlap so some of the inviduals may belong to more than one virtual
-   subpopulations.
+
+/** This class is the base class of all virtual subpopulation (VSP) splitters,
+ *  which provide ways to define groups of individuals in a subpopulation who
+ *  share certain properties. A splitter defines a fixed number of named VSPs.
+ *  They do not have to add up to the whole subpopulation, nor do they have to
+ *  be distinct. After a splitter is assigned to a population, many functions
+ *  and operators can be applied to individuals within specified VSPs.
+ *
+ *  Only one VSP splitter can be assigned to a population, which defined VSPs
+ *  for all its subpopulations. It different splitters are needed for different
+ *  subpopulations, a \c combinedSplitter should be.
  */
 class vspSplitter
 {
@@ -95,19 +99,22 @@ public:
 	};
 
 public:
+	/** This is a virtual class that cannot be instantiated.
+	 */
 	vspSplitter() : m_activated(InvalidSubPopID)
 	{
 	}
 
-
+	/** All VSP splitter defines a \c clone() function to create an identical
+	 *  copy of itself.
+	 */
 	virtual vspSplitter * clone() const = 0;
 
 	virtual ~vspSplitter()
 	{
 	}
 
-
-	/// if the virtual subpopulation is activated.
+	/// Which subpopulation is activated.
 	/// CPPONLY
 	SubPopID activatedSubPop() const
 	{
@@ -119,7 +126,8 @@ public:
 	/// CPPONLY
 	virtual ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const = 0;
 
-	/// number of virtual subpops of subpopulation sp
+	/** Return the number of VSPs defined by this splitter.
+	 */
 	virtual UINT numVirtualSubPop() = 0;
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -131,8 +139,10 @@ public:
 	/// CPPONLY
 	virtual void deactivate(population & pop, SubPopID subPop) = 0;
 
-	/// name of a virtual subpopulation
-	virtual string name(SubPopID sp) = 0;
+	/** Return the name of VSP \e vsp (an index between \c 0 and
+	 *  <tt>numVirtualSubPop()</tt>).
+	 */
+	virtual string name(SubPopID vsp) = 0;
 
 protected:
 	ULONG countVisibleInds(const population & pop, SubPopID sp) const;
@@ -145,26 +155,34 @@ protected:
 
 typedef std::vector<vspSplitter *> vectorsplitter;
 
-/** This plitter takes several splitters, and stacks their virtual
-   subpopulations together. For example, if the first splitter has
-   three vsp, the second has two. The two vsp from the second splitter
-   will be the fouth (index 3) and fifth (index 4) of the combined
-   splitter.
+/** This splitter takes several splitters and stacks their VSPs together. For
+ *  example, if the first splitter defines \c 3 VSPs and the second splitter
+ *  defines \c 2, the two VSPs from the second splitter becomes the fourth
+ *  (index \c 3) and the fifth (index \c 4) VSPs of the combined splitter.
+ *  This splitter is usually used to define different types of VSPs to a 
+ *  population.
  */
 class combinedSplitter : public vspSplitter
 {
 public:
+    /** Create a combined splitter using a list of \e splitters. For example,
+	 *  <tt>combinedSplitter([sexSplitter(), affectionSplitter()])</tt> defines
+	 *  a combined splitter with four VSPs.
+	 */
 	combinedSplitter(const vectorsplitter & splitters = vectorsplitter());
 
 	~combinedSplitter();
 
+	/// HIDDEN
 	vspSplitter * clone() const;
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
-	/// number of virtual subpops of subpopulation sp
+	/** Return the number of VSPs defined by this splitter, which is the sum of
+	 *  the number of VSPs of all combined splitters.
+	 */
 	UINT numVirtualSubPop()
 	{
 		return m_numVSP;
@@ -180,8 +198,10 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp);
+	/** Return the name of a VSP \e vsp, which is the name a VSP defined by one
+	 *  of the combined splitters.
+	 */
+	string name(SubPopID vsp);
 
 private:
 	/// the splitters
@@ -198,27 +218,29 @@ private:
 };
 
 
-/** split the population into Male and Female virtual subpopulations
+/** This splitter defines two VSPs by individual sex. The first VSP consists of
+ *  all male individuals and the second VSP consists of all females in a
+ *  subpopulation.
  */
 class sexSplitter : public vspSplitter
 {
 public:
+	/// Create a sex splitter that defines male and female VSPs.
 	sexSplitter() : vspSplitter()
 	{
 	}
 
-
+	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new sexSplitter(*this);
 	}
 
-
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
-	/// number of virtual subpops of subpopulation sp
+	/// Return \c 2.
 	UINT numVirtualSubPop()
 	{
 		return 2;
@@ -234,26 +256,28 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp)
+	/// Return \c "Male" if \e vsp=0 and \c "Female" otherwise.
+	string name(SubPopID vsp)
 	{
-		return sp == 0 ? "Male" : "Female";
+		DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
+		return ssp == 0 ? "Male" : "Female";
 	}
-
-
 };
 
 
-/** split a subpopulation into unaffected and affected virtual subpopulations.
+/** This class defines two VSPs according individual affection status. The
+ *  first VSP consists of unaffected invidiauls and the second VSP consists
+ *  of affected ones.
  */
 class affectionSplitter : public vspSplitter
 {
 public:
+	/// Create a splitter that defined two VSPs by affection status.
 	affectionSplitter() : vspSplitter()
 	{
 	}
 
-
+	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new affectionSplitter(*this);
@@ -264,7 +288,7 @@ public:
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
-	/// number of virtual subpops of subpopulation sp
+	/// Return 2.
 	UINT numVirtualSubPop()
 	{
 		return 2;
@@ -280,36 +304,36 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp)
+	/// Return \c "Unaffected" if \e vsp=0 and \c "Affected" if \e vsp=1.
+	string name(SubPopID vsp)
 	{
-		return sp == 0 ? "Unaffected" : "Affected";
+		DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
+		return vsp == 0 ? "Unaffected" : "Affected";
 	}
-
-
 };
 
 
-/** Split the population according to the value of an information field.
-   A list of distinct values, or a cutoff vector can be given
-   to determine how the virtual subpopulations are divided.
-   Note that in the first case, an individual does not have to belong to
-   any virtual subpopulation.
+/** This splitter defines VSPs according to the value of an information field
+ *  of each indivdiual. A VSP is defined either by a value or a range of values.
  */
 class infoSplitter : public vspSplitter
 {
 public:
-	/**
-	 \param info name of the information field
-	 \param values a list of values, each defines a virtual subpopulation
-	 \param cutoff a list of cutoff values. For example, cutoff=[1, 2]
-	   	defines three virtual subpopulations with v < 1, 1 <= v < 2,
-	   	and v >= 2.
+	/** Create an infomration splitter using information field \e field. If
+	 *  parameter \e values is specified, each item in this list defines a VSP
+	 *  in which all individuals have this value at information field \e field.
+	 *  If a set of cutoff values are defined in parameter \e cutoff,
+	 *  individuals are grouped by intervals defined by these cutoff values.
+	 *  For example, <tt>cutoff=[1,2]</tt> defines three VSPs with
+	 *  <tt>v < 1</tt>, <tt>1 <= v < 2</tt> and <tt>v >=2</tt> where \c v is the
+	 *  value of an individual at information field \e field. Of course, only
+	 *  one of the parameters \e values and \e cutoff should be defined,
+	 *  values in \e cutoff should be distinct, and in an increasing order.
 	 */
-	infoSplitter(string info, vectorinfo const & values = vectorinfo(),
+	infoSplitter(string field, vectorinfo const & values = vectorinfo(),
 	             vectorf const & cutoff = vectorf());
 
-	/// CPPONLY
+	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new infoSplitter(*this);
@@ -320,7 +344,10 @@ public:
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
-	/// number of virtual subpops of subpopulation sp
+	/** Return the number of VSPs defined by this splitter, which is the length
+	 *  parameter \e values or the length of \e cutoff plus one, depending on
+	 *  which parameter is specified.
+	 */
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -332,8 +359,12 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp);
+	/** Return the name of a VSP \e vsp, which is <tt>field = value</tt> if VSPs
+	 *  are defined by values in parameter \e values, or <tt>field < value</tt>
+	 *  (the first VSP), <tt>v1 <= field < v2</tt> and <tt>field >= v</tt> (the
+	 *  last VSP) if VSPs are defined by cutoff values.
+	 */
+	string name(SubPopID vsp);
 
 private:
 	string m_info;
@@ -344,16 +375,18 @@ private:
 };
 
 
-/** Split the population according to a proportion */
+/** This splitter divides subpopulations into several VSPs by proportion.
+ */
 class proportionSplitter : public vspSplitter
 {
 public:
-	/** \param proportions A list of float numbers (between 0 and 1) that
-	   	defines the proportion of individuals in each virtual subpopulation.
-	   	These numbers should add up to one.
+	/** Create a splitter that divides subpopulations by \e proportions, which
+	 *  should be a list of float numbers (between \c 0 and \c 1) that add up
+	 *  to \c 1.
 	 */
 	proportionSplitter(vectorf const & proportions = vectorf());
 
+	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new proportionSplitter(*this);
@@ -364,7 +397,9 @@ public:
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
-	/// number of virtual subpops of subpopulation sp
+	/** Return the number of VSPs defined by this splitter, which is the length
+	 *  of parameter \e proportions.
+	 */
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -376,26 +411,32 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp);
+	/** Return the name of VSP \e vsp, which is <tt>"Prop p"</tt> where
+	 *  <tt>p=propotions[vsp]</tt>.
+	 */
+	string name(SubPopID vsp);
 
 private:
 	vectorf m_proportions;
 };
 
 
-/** split the population according to individual range. The ranges
-   can overlap and does not have to add up to the whole subpopulation.
+/** This class defines a splitter that groups individuals in certain ranges
+ *  into VSPs. 
  */
 class rangeSplitter : public vspSplitter
 {
 public:
-	/**
-	 \param range a shortcut for ranges=[range]
-	 \param ranges a list of ranges
+	/** Create a splitter according to a number of individual ranges defined
+	 *  in \e ranges. For example, 
+	 *  <tt>rangeSplitter(ranges=[[0, 20], [40, 50]])</tt> defines two VSPs.
+	 *  The first VSP consists of individuals \c 0, \c 1, ..., \c 19, and the
+	 *  sceond VSP consists of individuals \c 40, \c 41, ..., \c 49. Note that
+	 *  a nested list has to be used even if only one range is defined.
 	 */
 	rangeSplitter(const intMatrix & ranges);
 
+	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new rangeSplitter(*this);
@@ -406,7 +447,9 @@ public:
 	/// CPPONLY
 	ULONG size(const population & pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
-	/// number of virtual subpops of subpopulation sp
+	/** Return the number of VSPs, which is the number of ranges defined in
+	 *  parameter \e ranges.
+	 */
 	UINT numVirtualSubPop();
 
 	/// mark individuals in the given vsp as visible, and others invisible.
@@ -418,45 +461,56 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp);
+	/** Return the name of VSP \e vsp, which is <tt>"Range [a, b]"</tt> where
+	 *  <tt>[a, b]</tt> is range <tt>ranges[vsp]</tt>.
+	 */
+	string name(SubPopID vsp);
 
 private:
 	intMatrix m_ranges;
 };
 
 
-/** split the population according to given genotype
+/** This class defines a VSP splitter that defines VSPs according to individual
+ *  genotype at specified loci.
  */
 class genotypeSplitter : public vspSplitter
 {
 public:
-	/**
-	 \param locus a shortcut to loci=[locus]
-	 \param loci A list of locus at which alleles are used to classify individuals
-	 \param alleles a list (for each virtual subpopulation), of a list
-	   	of alleles at each locus. If phase if true, the order of alleles
-	   	is significant. If more than one set of alleles are given,
-	   	individuals having either of them is qualified.
-	 \param phase whether or not phase is respected.
-
-	   For example,
-	   Genotype Aa or aa at locus 1:
-	   	locus = 1, alleles = [0, 1]
-	   Genotype Aa at locus 1 (assuming A is 1):
-	   	locus = 1, alleles = [1, 0], phase = True
-	   Genotype AaBb at loci 1 and 2:
-	   	loci = [1, 2], alleles = [1, 0, 1, 0], phase = True
-	   Two virtual subpopulations with Aa and aa
-	   	locus = 1, alleles = [[1, 0], [0, 0]], phase = True
-	   A virtual subpopulation with Aa or aa
-	   	locus = 1, alleles = [1, 0, 0, 0]
-	   Two virtual subpopulation with genotype AA and the rest
-	   	locus = 1, alleles = [[1, 1], [1, 0, 0, 0]], phase = False
+	/** Create a splitter that defined VSPs by individual genotype at loci
+	 *  \e loci (or \e locus if only one locus is used). Each list in a list
+	 *  \e allele defines a VSP, which is a list of allowed alleles at these
+	 *  \e loci. If only one VSP is defined, the outer list of the nested list
+	 *  can be ignored. If phase if true, the order of alleles in each list is
+	 *  significant. If more than one set of alleles are given, individuals
+	 * 	having either of them is qualified.\n
+	 *
+	 *  For example, in a haploid population, <tt>locus=1, alleles=[0, 1]</tt>
+	 *  defines a VSP with individuals having allele \c 0 or \c 1 at locus \c 1,
+	 *  <tt>alleles=[[0, 1], [2]]</tt> defines two VSPs with indivdiuals in the
+	 *  second VSP having allele \c 2 at locus \c 1. If multiple loci are
+	 *  involved, alleles at each locus need to be defined. For example,
+	 *  VSP defined by <tt>loci=[0, 1], alleles=[0, 1, 1, 1]</tt> consists of
+	 *  individuals having alleles <tt>[0, 1]</tt> or <tt>[1, 1]</tt> at loci
+	 *  <tt>[0, 1]</tt>.\n
+	 *  
+	 *  In a haploid population, <tt>locus=1, alleles=[0, 1]</tt> defines a VSP
+	 *  with individuals having genotype <tt>[0, 1]</tt> or <tt>[1, 0]</tt> at
+	 *  locus \c 1. <tt>alleles[[0, 1], [2, 2]]</tt> defines two VSPs with
+	 *  indivdiuals in the second VSP having genotype <tt>[2, 2]</tt> at locus
+	 *  \c 1. If \e phase is set to \c True, the first VSP will only has
+	 *  individuals with genotype <tt>[0, 1]</tt>. In the multiple loci,
+	 *  alleles should be arranged by haplotypes, for example, 
+	 *  <tt>loci=[0, 1], alleles=[0, 0, 1, 1]</tt> defines a VSP with
+	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> or
+	 *  <tt>-1-1-, -0-0-</tt> at loci \c 0 and \c 1. If haplotypes <tt>-0-1-</tt>
+	 *  should be allowed, it should be added to explicitly, such as using
+	 *  <tt>alleles=[0, 0, 1, 1, 0, 1, 0, 1]</tt>.
 	 */
 	genotypeSplitter(const vectori & loci,
 	                 const intMatrix & alleles, bool phase = false);
 
+	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new genotypeSplitter(*this);
@@ -479,8 +533,10 @@ public:
 	/// CPPONLY
 	void deactivate(population & pop, SubPopID sp);
 
-	/// name of a virtual subpopulation
-	string name(SubPopID sp);
+	/** Return name of VSP \e vsp, which is <tt>"Genotype loc1,loc2:genotype"</tt>
+	 *  as defined by parameters \e loci and \e alleles.
+	 */
+	string name(SubPopID vsp);
 
 private:
 	bool match(const individual * ind, const vectori & alleles) const;

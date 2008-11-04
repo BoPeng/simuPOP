@@ -466,7 +466,7 @@ class Doxy2SWIG:
             if( len( piece ) == 2 ):
                 defVal = piece[1].split('(')[0].split(')')[0].split(')')[0]
                 # re function used to repalce the following sentances
-                vect = re.compile('vector(lu|u|l|i|f|a|op|str|vsp|info|splitter)')
+                vect = re.compile('vector(info|lu|u|l|i|f|a|op|splitter|str|vsp)')
                 defVal = vect.sub('[]', defVal)
                 #defVal = defVal.replace('vectorlu','[]')
                 #defVal = defVal.replace('vectorstr','[]')
@@ -546,6 +546,10 @@ class Doxy2SWIG:
              'Usage': u'x.dvars(rep, subPop=-1)',
              },
         ])
+        # change a few usages:
+        for entry in self.content:
+            if entry['Name'] == 'simuPOP::genotypeSplitter::genotypeSplitter':
+                entry['Usage'] = entry['Usage'].replace('loci', 'loci (or locus)')
         print "Number of entries: ", len(self.content)
         def myhash(entry):
             'encode an entry to a string for easy comparison'
