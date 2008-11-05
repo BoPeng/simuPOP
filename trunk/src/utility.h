@@ -230,16 +230,10 @@ bool PyObj_Is_DoubleNumArray(PyObject * obj);
 bool PyObj_Is_AlleleNumArray(PyObject * obj);
 
 /// CPPONLY
-PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
-
-/// CPPONLY
 PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
 /// CPPONLY
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
-
-/// CPPONLY
-PyObject * Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
 
 /// CPPONLY
 int NumArray_Size(PyObject * obj);
