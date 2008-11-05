@@ -35,7 +35,7 @@ bool dumper::apply(population & pop)
 		for (UINT i = 0; i < pop.numChrom(); ++i)
 			out << pop.numLoci(i) << " ";
 		out << endl;
-		out << "Maximum allele state:\t" << pop.maxAllele() << endl;
+		out << "Maximum allele state:\t" << MaxAllele() << endl;
 		out << "Loci positions: " << endl;
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
 			cout << "\t" << pop.chromName(ch) << "\t";
@@ -56,14 +56,12 @@ bool dumper::apply(population & pop)
 		for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
 			out << pop.subPopSize(i) << " ";
 		out << endl;
-		out << "Number of ancestral populations:\t" << pop.ancestralDepth() << endl;
+		out << "Number of ancestral populations:\t" << pop.ancestralGens() << endl;
 	}
 
 	if (!m_infoOnly) {
 		// dump all genotypic info
-		if (pop.maxAllele() >= 10 && pop.maxAllele() < 100)
-			m_width = 2;
-		else if (pop.maxAllele() >= 100)
+		if (MaxAllele() > 1)
 			m_width = 3;
 
 		// get individual ranges from subpop
@@ -110,13 +108,13 @@ done:
 		out << "End of individual info." << endl << endl;
 
 		if (!m_dispAncestry) {
-			if (pop.ancestralDepth() == 0)
+			if (pop.ancestralGens() == 0)
 				out << endl << "No ancenstral population recorded." << endl;
 			else
-				out << endl << "Ignoring " << pop.ancestralDepth() << " ancenstral population(s)." << endl;
+				out << endl << "Ignoring " << pop.ancestralGens() << " ancenstral population(s)." << endl;
 		} else {
-			for (size_t i = 0; i < pop.ancestralDepth(); ++i) {
-				pop.useAncestralPop(i + 1);
+			for (size_t i = 0; i < pop.ancestralGens(); ++i) {
+				pop.useAncestralGen(i + 1);
 				out << endl << "Ancestry population " << i + 1 << endl;
 
 				out << "population size:\t" << pop.popSize() << endl;
@@ -172,7 +170,7 @@ doneAnces:
 				out << "End of individual info." << endl << endl;
 			}                                                                         // next ancestry
 			// IMPORTANT. Reset ancestral pop
-			pop.useAncestralPop(0);
+			pop.useAncestralGen(0);
 		}                                                                                 // dispAncestry
 	}
 	this->closeOstream();
@@ -191,7 +189,7 @@ bool savePopulation::apply(population & pop)
 		filename = m_filenameParser.valueAsString();
 	}
 	DBG_DO(DBG_OUTPUTER, cout << "Save to file " << filename << endl);
-	pop.savePopulation(filename);
+	pop.save(filename);
 	return true;
 }
 

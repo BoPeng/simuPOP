@@ -25,8 +25,8 @@
 #define _GENOSTRU_H
 
 /**
- \file
- \brief class genoStru and genoTrait
+   \file
+   \brief class genoStru and genoTrait
  */
 
 #include "utility.h"
@@ -35,21 +35,19 @@
 //
 // the following is required by a vc7.1 bug.
 #if  defined (_WIN32) || defined (__WIN32__)
-#  include <boost/archive/binary_iarchive.hpp>
-#  include <boost/archive/binary_oarchive.hpp>
+#  include <boost/archive/text_iarchive.hpp>
+#  include <boost/archive/text_oarchive.hpp>
 #  include <fstream>
 using std::ofstream;
 using std::ifstream;
 #endif                                                                                    // win32
 
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/tracking.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
-using boost::serialization::make_nvp;
 
 #include <iterator>
 using std::ostream;
@@ -69,7 +67,7 @@ using std::pair;
 
 namespace simuPOP {
 /// CPPONLY
-/** \brief genetic structure. Shared by individuals of one population
+/** genetic structure. Shared by individuals of one population
 
    populations create a copy of GenoStrcture and assign its pointer to each individual.
    This strcuture will be destroyed when population is destroyed.
@@ -85,28 +83,28 @@ class GenoStructure
 
 public:
 	/// CPPONLY serialization library requires a default constructor
-	GenoStructure() : m_ploidy(2), m_totNumLoci(0), m_genoSize(0), m_numChrom(0),
-		m_numLoci(0), m_sexChrom(false), m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
-		m_chromNames(), m_alleleNames(), m_lociNames(), m_maxAllele(), m_infoFields(0)
+	GenoStructure() : m_ploidy(2), m_totNumLoci(0), 
+		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1),
+		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
+		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
 	{
 	}
 
 
 	/** CPPONLY \brief constructor. The ONLY way to construct this strucuture. There is not set... functions
 
-	 \param ploidy number of sets of chromosomes
-	 \param loci number of loci on each chromosome.
-	 \param lociPos loci distance on each chromosome. the default values
+	   \param ploidy number of sets of chromosomes
+	   \param loci number of loci on each chromosome.
+	   \param lociPos loci distance on each chromosome. the default values
 	   are 1,2,etc.
-	 \param chromNames chromosome names
-	 \param alleleNames allele names
-	 \param lociNames name of loci
-	 \param maxAllele maximum possible allele number for all alleles.
-	 \param length of info field
+	   \param chromNames chromosome names
+	   \param alleleNames allele names
+	   \param lociNames name of loci
+	   \param length of info field
 	 */
-	GenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
-	              const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-	              const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
+	GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
+		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
+		const vectorstr & lociNames, const vectorstr & infoFields);
 
 	bool operator==(const GenoStructure & rhs);
 
@@ -148,9 +146,9 @@ public:
 	void saveStru(string filename)
 	{
 		ofstream ofs(filename.c_str());
-		boost::archive::binary_oarchive oa(ofs);
+		boost::archive::text_oarchive oa(ofs);
 
-		oa << boost::serialization::make_nvp("geno_structure", *this);
+		oa << *this;
 	}
 
 
@@ -159,13 +157,16 @@ public:
 	{
 		ifstream ifs(filename.c_str());
 
-		boost::archive::binary_iarchive ia(ifs);
+		boost::archive::text_iarchive ia(ifs);
 
-		ia >> boost::serialization::make_nvp("geno_structure", *this);
+		ia >> *this;
 	}
 
 
 #endif                                                                    // win32
+
+	/// CPPONLY
+	void setChromTypes(const vectoru & chromTypes);
 
 private:
 	friend class boost::serialization::access;
@@ -173,17 +174,15 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const UINT version) const
 	{
-		ar & make_nvp("ploidy", m_ploidy);
-		ar & make_nvp("num_of_chrom", m_numChrom);
-		ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
-		ar & make_nvp("sex_chromosome", m_sexChrom);
-		ar & make_nvp("haplodiploid", m_haplodiploid);
-		ar & make_nvp("loci_distance_on_chrom", m_lociPos);
-		ar & make_nvp("chrom_name", m_chromNames);
-		ar & make_nvp("allele_name", m_alleleNames);
-		ar & make_nvp("loci_name", m_lociNames);
-		ar & make_nvp("max_allele", m_maxAllele);
-		ar & make_nvp("info_name", m_infoFields);
+		ar & m_ploidy;
+		ar & m_numLoci;
+		ar & m_chromTypes;
+		ar & m_haplodiploid;
+		ar & m_lociPos;
+		ar & m_chromNames;
+		ar & m_alleleNames;
+		ar & m_lociNames;
+		ar & m_infoFields;
 		/// do not save load chromosome map
 	}
 
@@ -192,44 +191,34 @@ private:
 	void load(Archive & ar, const UINT version)
 	{
 
-		ar & make_nvp("ploidy", m_ploidy);
-		ar & make_nvp("num_of_chrom", m_numChrom);
-		ar & make_nvp("num_of_loci_on_each_chrom", m_numLoci);
+		ar & m_ploidy;
+		ar & m_numLoci;
 
-		// after simuPOP 0.6.8, we have m_sexChrom
-		// before that, there is no sex chromosome
-		if (version >= 1)
-			ar & make_nvp("sex_chromosome", m_sexChrom);
-		else
-			m_sexChrom = false;
+		// after simuPOP 0.8.9, we handle
+		// sex chromosomes quite differently.
+		if (version < 6) {
+			bool sexChrom;
+			ar & sexChrom;
+		} else
+			ar & m_chromTypes;
+		// set m_chromX etc.
+		setChromTypes(m_chromTypes);
 		// haplodiploid flag is introduced in 0.8.5
-		if (version >= 4)
-			ar & make_nvp("haplodiploid", m_haplodiploid);
-		else
-			m_haplodiploid = false;
+		ar & m_haplodiploid;
 		//
-		ar & make_nvp("loci_distance_on_chrom", m_lociPos);
-		if (version >= 3)
-			ar & make_nvp("chrom_name", m_chromNames);
-		else {
-			m_chromNames.resize(m_numChrom);
-			for (size_t i = 0; i < m_numChrom; ++i)
-				m_chromNames[i] = "chrom" + toStr(i + 1);
-		}
-		ar & make_nvp("allele_name", m_alleleNames);
-		ar & make_nvp("loci_name", m_lociNames);
-		ar & make_nvp("max_allele", m_maxAllele);
-		if (version >= 2)
-			ar & make_nvp("info_name", m_infoFields);
+		ar & m_lociPos;
+		ar & m_chromNames;
+		ar & m_alleleNames;
+		ar & m_lociNames;
+		ar & m_infoFields;
 
 		// build chromosome index
 		m_chromIndex.resize(m_numLoci.size() + 1);
 		ULONG i;
-		for (m_chromIndex[0] = 0, i = 1; i <= m_numChrom; ++i)
+		for (m_chromIndex[0] = 0, i = 1; i <= m_numLoci.size(); ++i)
 			m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
 
-		m_totNumLoci = m_chromIndex[m_numChrom];
-		m_genoSize = m_totNumLoci * m_ploidy;
+		m_totNumLoci = m_chromIndex[m_numLoci.size()];
 		/// do not save load chromosome map
 	}
 
@@ -242,18 +231,22 @@ private:
 	/// total number of loci
 	UINT m_totNumLoci;
 
-	/// total number of loci times ploidy
-	UINT m_genoSize;
-
-	/// number of chrom
-	UINT m_numChrom;
-
 	/// number of loci
 	vectoru m_numLoci;
 
-	/// whether or not the last chromosome is sex chromosome
-	bool m_sexChrom;
+	/// Type of each chromosome.
+	vectoru m_chromTypes;
 
+	/// index of chromosome X, -1 if not exist
+	int m_chromX;
+
+	/// index of chromosome Y, -1 if not exist
+	int m_chromY;
+
+	/// index of mitochondrial chromosome, -1 if not exist.
+	int m_mitochondrial;
+
+	/// whether or not this population is haplodiploid.
 	bool m_haplodiploid;
 
 	/// position of loci on chromosome, recommended with unit cM
@@ -271,9 +264,6 @@ private:
 	/// loci names
 	vectorstr m_lociNames;
 
-	/// max allele
-	UINT m_maxAllele;
-
 	/// name of the information field
 	vectorstr m_infoFields;
 
@@ -289,18 +279,37 @@ private:
 // version 2: add info name
 // version 3: add chromName
 // version 4: add haplodiploid
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 4)
+// version 5: do not save maxAllele
+// version 6: replace sexchrom by chromtype
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 6)
 #endif
 
 namespace simuPOP {
-/// genotypic structure related functions, can be accessed from individuals, populations and simulator levels.
 /**
-   Genotypic structure refers to the number of chromosomes, the
-   number and position of loci on each chromosome, and allele and locus names etc. All individuals
-   in a population share the same genotypic structure. Because class \c GenoStruTrait
-   is inherited by class \c population, class \c individual, and class \c simulator,
-   functions provided in this class can be accessed at the individual, population and
-   simulator levels. This object can not be created directly. It is created by a population.
+ *  All individuals in a population share the same genotypic properties such as
+ *  number of chromosomes, number and position of loci, names of markers,
+ *  chromosomes, and information fields. These properties are stored in this
+ *  \c GenoStruTrait class and are accessible from \c individual,
+ *  \c population, and \c simulator classes. Currently, a genotypic structure
+ *  consists of
+ *
+ *  \li Ploidy, namely the number of homologous sets of chromosomes, of a
+ *      population. Haplodiploid population is also supported.
+ *  \li Number of chromosomes and number of loci on each chromosome.
+ *  \li Positions of loci, which determine the relative distance between loci
+ *      on the same chromosome. No unit is assumed so these positions can be
+ *      ordinal (\c 1, \c 2, \c 3, ..., the default), in physical distance
+ *      (\c bp, \c kb or \c mb), or in map distance (e.g. centiMorgan)
+ *      depending on applications.
+ *  \li Names of alleles. Although alleles at different loci usually have
+ *      different names, simuPOP uses the same names for alleles across loci
+ *      for simplicity.
+ *  \li Names of loci and chromosomes.
+ *  \li Names of information fields attached to each individual.
+ *
+ *  In addition to basic property access functions, this class also provides
+ *  some utility functions such as \c locusByName, which looks up a locus by
+ *  its name.
  */
 class GenoStruTrait
 {
@@ -309,9 +318,9 @@ private:
 #define TraitMaxIndex 0xFF
 
 public:
-	///
 	/**
-	 \test src_genoStruTrait.log Genotypic structure
+	 * A \c GenoStruTrait object is created with the creation of a \c population
+	 * so it cannot be initialized directly.
 	 */
 	GenoStruTrait() : m_genoStruIdx(TraitMaxIndex)
 	{
@@ -319,13 +328,13 @@ public:
 
 
 	/// CPPONLY set genotypic structure
-	void setGenoStructure(UINT ploidy, const vectoru & loci, bool sexChrom, bool haplodiploid,
+	void setGenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
 		const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
-		const vectorstr & lociNames, UINT maxAllele, const vectorstr & infoFields);
+		const vectorstr & lociNames, const vectorstr & infoFields);
 
 	/// CPPONLY set an existing geno structure
 	/**
-	 \note This is \em NOT efficient! However, this function has to be used when, for example,
+	   \note This is \em NOT efficient! However, this function has to be used when, for example,
 	   loading a structure from a file.
 	 */
 	void setGenoStructure(GenoStructure & rhs);
@@ -340,33 +349,65 @@ public:
 	}
 
 
-	/// distance between loci \c loc1 and \c loc2. These two loci should be
-	/// on the same chromosome. The distance will be negative if \c loc1 is after
-	/// \c loc2.
+	/** Return the distance between loci \e loc1 and \e loc2 on the same
+	 *  chromosome. A negative value will be returned if \e loc1 is after
+	 *  \e loc2.
+	 *  <group>3-locus</group>
+	 */
 	double lociDist(UINT loc1, UINT loc2) const;
 
-	/// return the number of loci left on that chromosome, including locus \c loc
+	/** HIDDEN
+	 * return the number of loci left on that chromosome, including locus \c loc
+	 *  <group>3-locus</group>
+	 */
 	UINT lociLeft(UINT loc) const;
 
-	/// distance left to the right of the loc, till the end of chromosome
+	/** HIDDEN
+	 *  Distance between locus \c loc and the last locus that is on the same
+	 *  chromsome as \c loc.
+	 *  <group>3-locus</group>
+	 */
 	double distLeft(UINT loc) const;
 
-	/// starting from \c loc, how many markers are covered by distance \c dist (>=0)
-	/// the result will be at least 1, even if dist = 0.
+	/** HIDDEN
+	 *  starting from \c loc, how many markers are covered by distance \c dist (>=0)
+	 *  the result will be at least 1, even if dist = 0.
+	 *  <group>3-locus</group>
+	 */
 	UINT lociCovered(UINT loc, double dist) const;
 
+	/** CPPONLY
+	 *  Add chromosomes from another genotypic structure and
+	 *  create a new structure.
+	 */
+	GenoStructure & gsAddChromFromStru(size_t idx) const;
 
-	/// CPPONLY merge two genotype structure
-	GenoStructure & mergeGenoStru(size_t idx, bool byChromosome) const;
+	/** CPPONLY
+	 *  Add loci (merge loci on the same chromsoomes) from another genotypic
+	 *  structure and create a new structure.
+	 */
+	GenoStructure & gsAddLociFromStru(size_t idx) const;
 
-	/// CPPONLY
-	GenoStructure & removeLociFromGenoStru(const vectoru & remove = vectoru(), const vectoru & keep = vectoru());
+	/** CPPONLY
+	 *  Remove a list of loci from the current genotypic structure
+	 *  and create a new structure. Use \e kept to return indexes
+	 *  of the remaining loci.
+	 */
+	GenoStructure & gsRemoveLoci(const vectoru & loci, vectoru & kept);
 
-	/// CPPONLY add some loci to genotype structure
-	GenoStructure & insertBeforeLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
+	/** CPPONLY
+	 *  add a new chromosome to genotype structure and create a new structure.
+	 */
+	GenoStructure & gsAddChrom(const vectorf & lociPos,
+		const vectorstr & lociNames, const string & chromName, UINT chromType) const;
 
-	/// CPPONLY append some loci to genotype structure
-	GenoStructure & insertAfterLociToGenoStru(const vectoru & idx, const vectorf & pos, const vectorstr & names) const;
+	/** CPPONLY
+	 *  add some loci to genotype structure, newIndex
+	 *  is used to return the indexes of these loci in the new
+	 *  structure
+	 */
+	GenoStructure & gsAddLoci(const vectoru & chrom, const vectorf & pos,
+		const vectorstr & names, vectoru & newIndex) const;
 
 	/// CPPONLY return the GenoStructure
 	GenoStructure & genoStru() const
@@ -382,7 +423,12 @@ public:
 	}
 
 
-	/// return ploidy, the number of homologous sets of chromosomes
+	/** return the number of homologous sets of chromosomes, specified by the
+	 *  \e ploidy parameter of the \c population function. Return 2 for a
+	 *  haplodiploid population because two sets of chromosomes are stored
+	 *  for both males and females in such a population.
+	 *  <group>1-ploidy</group>
+	 */
 	UINT ploidy() const
 	{
 
@@ -393,10 +439,17 @@ public:
 	}
 
 
-	/// return ploidy name, \c haploid, \c diploid, or \c triploid etc.
+	/** return the ploidy name of this population, can be one of \c haploid,
+	 *  \c diploid, \c haplodiploid, \c triploid, \c tetraploid or \c #-ploid
+	 *  where \c # is the ploidy number.
+	 *  <group>1-ploidy</group>
+	 */
 	string ploidyName() const;
 
-	/// return the number of loci on chromosome \c chrom, equivalent to <tt> numLoci()[chrom] </tt>
+	/** return the number of loci on chromosome \e chrom, equivalent to
+	 *  <tt>numLoci()[</tt><em>chrom</em></tt>]</tt>.
+	 *  <group>3-locus</group>
+	 */
 	UINT numLoci(UINT chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -407,30 +460,75 @@ public:
 	}
 
 
-	/// return the number of loci on all chromosomes
+	/** return the number of loci on all chromosomes.
+	 *  <group>3-locus</group>
+	 */
 	vectoru numLoci() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_numLoci;
 	}
 
 
-	/// determine whether or not the last chromosome is sex chromosome
-	bool sexChrom() const
+	/** CPPONLY
+	 *  Return the index of chromosome X, \c -1 if there is no X chromosome.
+	 *  <group>2-chromosome</group>
+	 */
+	int chromX() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_sexChrom;
+		return s_genoStruRepository[m_genoStruIdx].m_chromX;
 	}
 
 
-	bool haplodiploid() const
+	/** CPPONLY
+	 *  Return the index of chromosome Y, \c -1 if there is no Y chromosome.
+	 *  <group>2-chromosome</group>
+	 */
+	int chromY() const
+	{
+		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
+
+		return s_genoStruRepository[m_genoStruIdx].m_chromY;
+	}
+
+
+	/** CPPONLY
+	 *  Return the index of the mitochondrial chromosome, \c -1 if there is no
+	 *  mitochondrial hromosome.
+	 *  <group>2-chromosome</group>
+	 */
+	int mitochondrial() const
+	{
+		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
+
+		return s_genoStruRepository[m_genoStruIdx].m_mitochondrial;
+	}
+
+
+	/// HIDDEN
+	bool sexChrom() const
+	{
+		return chromX() != -1;
+	}
+
+
+	/** HIDDEN becuase it can be replaced by ploidyName() == 'haplodiploid'
+	 *  Return \c True if this population is haplodiploid.
+	 *  <group>1-ploidy</group>
+	 */
+	bool isHaplodiploid() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_haplodiploid;
 	}
 
 
-	/// return the total number of loci on all chromosomes
+	/** return the total number of loci on all chromosomes.
+	 *  <group>3-locus</group>
+	 */
 	UINT totNumLoci() const
 	{
 
@@ -441,66 +539,55 @@ public:
 	}
 
 
-	/// return the total number of loci times ploidy
+	/** HIDDEN
+	 *  return the total number of loci on all homologous chromosomes, which
+	 *  is <tt>totNumLoci()*ploidy()</tt>.
+	 */
 	UINT genoSize() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_genoSize;
+		return s_genoStruRepository[m_genoStruIdx].m_ploidy * s_genoStruRepository[m_genoStruIdx].m_totNumLoci;
 	}
 
 
-	/// return the position of a locus
-	double locusPos(UINT locus) const
+	/** return the position of locus \e loc specified by the \e lociPos
+	 *  parameter of the \c population function. An \c IndexError will be
+	 *  raised if the absolute index \e loc is greater than or equal to
+	 *  the total number of loci.
+	 *  <group>3-locus</group>
+	 */
+	double locusPos(UINT loc) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		CHECKRANGEABSLOCUS(locus);
-		return s_genoStruRepository[m_genoStruIdx].m_lociPos[locus];
+		CHECKRANGEABSLOCUS(loc);
+		return s_genoStruRepository[m_genoStruIdx].m_lociPos[loc];
 	}
 
 
-	/// return loci positions
+	/** return the positions of all loci, specified by the \e lociPos prameter
+	 *  of the \c population function. The default positions are 1, 2, 3, 4, ...
+	 *  on each chromosome.
+	 *  <group>3-locus</group>
+	 */
 	vectorf lociPos() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_lociPos;
 	}
 
 
-	/// HIDDEN return a \c carray of loci positions of all loci
-	/**
-	 \note Modifying loci position directly using this function is strongly discouraged.
+	/** return the number of chromosomes.
+	 *  <group>2-chromosome</group>
 	 */
-	PyObject * arrLociPos()
-	{
-		return Double_Vec_As_NumArray(s_genoStruRepository[m_genoStruIdx].m_lociPos.begin(),
-			s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
-	}
-
-
-	/// HIDDEN return a \c carray of loci positions on a given chromosome
-	/**
-	 \note Modifying loci position directly using this function is strongly discouraged.
-	 */
-	PyObject * arrLociPos(UINT chrom)
-	{
-		CHECKRANGECHROM(chrom);
-
-		return Double_Vec_As_NumArray(
-			s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromBegin(chrom),
-			s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromEnd(chrom) );
-	}
-
-
-	/// return the number of chromosomes
 	UINT numChrom() const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
 			"numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_numChrom;
+		return s_genoStruRepository[m_genoStruIdx].m_numLoci.size();
 	}
 
 
@@ -511,7 +598,9 @@ public:
 	}
 
 
-	/// return the index of the first locus on a chromosome
+	/** return the index of the first locus on chromosome \e chrom.
+	 *  <group>2-chromosome</group>
+	 */
 	UINT chromBegin(UINT chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -523,7 +612,9 @@ public:
 	}
 
 
-	/// return the index of the last locus on a chromosome plus 1
+	/** return the index of the last locus on chromosome \e chrom plus 1.
+	 *  <group>2-chromosome</group>
+	 */
 	UINT chromEnd(UINT chrom) const
 	{
 		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
@@ -535,7 +626,11 @@ public:
 	}
 
 
-	/// return the absolute index of a locus on a chromosome. c.f. \c chromLocusPair
+	/** return the absolute index of locus \e locus on chromosome \e chrom.
+	 *  An \c IndexError will be raised if \e chrom or \e locus is out of
+	 *  range. c.f. \c chromLocusPair.
+	 *  <group>3-locus</group>
+	 */
 	UINT absLocusIndex(UINT chrom, UINT locus)
 	{
 		CHECKRANGECHROM(chrom);
@@ -545,28 +640,65 @@ public:
 	}
 
 
-	/// return a <tt>(chrom, locus)</tt> pair of an absolute locus index, c.f. \c absLocusIndex
+	/**
+	 * return the chromosome and relative index of a locus using its absolute
+	 * index \e locus. c.f. \c absLocusIndex.
+	 *  <group>3-locus</group>
+	 */
 	std::pair<UINT, UINT> chromLocusPair(UINT locus) const;
 
-	/// return the name of an chrom
+
+	/**
+	 * return the name of a chromosome \e chrom. Default to \c chrom# where #
+	 * is the 1-based index of the chromosome.
+	 *  <group>2-chromosome</group>
+	 */
 	string chromName(const UINT chrom) const
 	{
-		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numChrom, IndexError,
+		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
 			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
-			toStr(s_genoStruRepository[m_genoStruIdx].m_numChrom));
+			toStr(s_genoStruRepository[m_genoStruIdx].m_numLoci.size()));
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames[chrom];
 	}
 
 
-	/// return an array of chrom names
+	/** return a list of the names of all chromosomes.
+	 *  <group>2-chromosome</group>
+	 */
 	vectorstr chromNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_chromNames;
 	}
 
 
-	/// return the index of a chromosome by its name
+	/** return the type of a chromosome \e chrom (\c 1 for \c Autosome, \c 2 for
+	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
+	 *  <group>2-chromosome</group>
+	 */
+	int chromType(const UINT chrom) const
+	{
+		DBG_FAILIF(chrom >= s_genoStruRepository[m_genoStruIdx].m_numLoci.size(), IndexError,
+			"Chromosome index " + toStr(chrom) + " out of range of 0 ~ " +
+			toStr(s_genoStruRepository[m_genoStruIdx].m_numLoci.size()));
+
+		return s_genoStruRepository[m_genoStruIdx].m_chromTypes[chrom];
+	}
+
+
+	/** return the type of all chromosomes (\c 1 for \c Autosome, \c 2 for
+	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
+	 *  <group>2-chromosome</group>
+	 */
+	vectoru chromTypes() const
+	{
+		return s_genoStruRepository[m_genoStruIdx].m_chromTypes;
+	}
+
+
+	/** return the index of a chromosome by its \e name.
+	 *  <group>2-chromosome</group>
+	 */
 	UINT chromByName(const string name) const
 	{
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_chromNames;
@@ -578,17 +710,30 @@ public:
 	}
 
 
-	/// return the name of an allele (if previously specified). Default to allele index.
+	/** return the name of allele \e allele specified by the \e alleleNames parameter of
+	 *  the \c population function. If the name of an allele is not specified, its
+	 *  index (\c '0', \c '1', \c '2', etc) is returned.
+	 *  <group>4-allele</group>
+	 */
 	string alleleName(const UINT allele) const;
 
-	/// return an array of allele names
+	/** return a list of allele names given by the \e alleleNames parameter of the
+	 *  \c population function. This list does not have to cover all possible allele
+	 *  states of a population so <tt>alleleNames()[</tt><em>allele</em><tt>]</tt>
+	 *  might fail (use <tt>alleleNames(</tt><em>allele</em><tt>)</tt> instead).
+	 *  <group>4-allele</group>
+	 */
 	vectorstr alleleNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_alleleNames;
 	}
 
 
-	/// return the name of a locus
+	/** return the name of locus \e loc specified by the \e lociNames parameter of
+	 *  the \c population function. Default to \c locX-Y where \c X and \c Y
+	 *  are 1-based chromosome and locus indexes (\c loc1-1, \c loc1-2, ... etc)
+	 *  <group>3-locus</group>
+	 */
 	string locusName(const UINT loc) const
 	{
 		DBG_FAILIF(loc >= s_genoStruRepository[m_genoStruIdx].m_totNumLoci, IndexError,
@@ -599,14 +744,20 @@ public:
 	}
 
 
-	/// return names of all loci
+	/** return the names of all loci specified by the \e lociNames parameter of
+	 *  the \c population function.
+	 *  <group>3-locus</group>
+	 */
 	vectorstr lociNames() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_lociNames;
 	}
 
 
-	/// return the index of a locus by its locus name
+	/** return the index of a locus with name \e name. Raise a \c ValueError
+	 *  if no locus is found.
+	 *  <group>3-locus</group>
+	 */
 	UINT locusByName(const string name) const
 	{
 		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
@@ -618,7 +769,10 @@ public:
 	}
 
 
-	/// return an array of locus indexes by locus names
+	/** return the indexes of loci with names \e names. Raise a \c ValueError
+	 *  if any of the loci cannot be found.
+	 *  <group>3-locus</group>
+	 */
 	vectoru lociByNames(const vectorstr & names) const
 	{
 		vectoru indexes;
@@ -629,32 +783,9 @@ public:
 	}
 
 
-	/// return the maximum allele value for all loci. Default to maximum allowed allele state.
-	/**
-	   Maximum allele value has to be \c 1 for binary modules. \c maxAllele is
-	   the maximum possible allele value, which allows <tt>maxAllele+1</tt> alleles
-	   <tt>0, 1, ..., maxAllele</tt>.
-	 \sa setMaxAllele
+	/** HIDDEN
+	    Return \c True if \c name is one of the information fields of this population.
 	 */
-	UINT maxAllele() const
-	{
-		return s_genoStruRepository[m_genoStruIdx].m_maxAllele;
-	}
-
-
-	/// CPPONLY set the maximum allele value for all loci
-	void setMaxAllele(UINT maxAllele)
-	{
-#ifdef BINARYALLELE
-		DBG_ASSERT(maxAllele == 1,  ValueError,
-			"max allele must be 1 for binary modules");
-#else
-		s_genoStruRepository[m_genoStruIdx].m_maxAllele = maxAllele;
-#endif
-	}
-
-
-	/// determine if an information field exists
 	bool hasInfoField(const string & name) const
 	{
 		vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_infoFields;
@@ -663,21 +794,25 @@ public:
 	}
 
 
-	/// obtain the number of information fields
+	/// HIDDEN obtain the number of information fields
 	UINT infoSize() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields.size();
 	}
 
 
-	/// return an array of all information fields
+	/** return a list of the names of all information fields of the population.
+	 *  <group>5-info</group>
+	 */
 	vectorstr infoFields() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_infoFields;
 	}
 
 
-	/// obtain the name of information field \c idx
+	/** return the name of information field \e idx.
+	 *  <group>5-info</group>
+	 */
 	string infoField(UINT idx) const
 	{
 		CHECKRANGEINFO(idx);
@@ -685,12 +820,15 @@ public:
 	}
 
 
-	/// return the index of the field \c name, return \c -1 if not found
+	/** return the index of information field \e name. Raise an \c IndexError
+	 * if \e name is not one of the information fields.
+	 *  <group>5-info</group>
+	 */
 	UINT infoIdx(const string & name) const;
 
 	/// CPPONLY add a new information field
 	/**
-	 \note Should only be called by population::requestInfoField.
+	   \note Should only be called by population::requestInfoField.
 	   Right now, do not allow dynamic addition of these fields.
 	 */
 	GenoStructure & struAddInfoFields(const vectorstr & fields);

@@ -47,7 +47,7 @@ using std::random_shuffle;
 
 namespace simuPOP {
 
-typedef std::vector<vsp> vectorvsp;
+typedef std::vector<vspID> vectorvsp;
 
 /// migrate individuals from (virtual) subpopulations to other subpopulations
 /**
@@ -309,20 +309,18 @@ public:
 	 \param sizes new subpopulation sizes. The sizes should be added up to the original
 	   	subpopulation (subpopulation \c which) size.
 	 \param proportions proportions of new subpopulations. Should be added up to \c 1.
-	 \param subPopID new subpopulation IDs. Otherwise, the operator will automatically
-	   	set new subpopulation IDs to new subpopulations.
 	 \param randomize Whether or not randomize individuals before population split. Default
 		to True.
 	 \test src_splitSubPop.log Operator \c splitSubPop
 	 */
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
-	            vectoru subPopID = vectoru(),
+	            bool keepOrder = true,
 	            bool randomize = true,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
-		m_subPopID(subPopID), m_randomize(randomize)
+		m_keepOrder(keepOrder), m_randomize(randomize)
 	{
 		DBG_FAILIF(sizes.empty() && proportions.empty(), ValueError,
 			"Please specify one of subPop and proportions.");
@@ -364,8 +362,7 @@ private:
 	/// new subpopulation proportions.
 	vectorf m_proportions;
 
-	/// subpopulation id, optional
-	vectoru m_subPopID;
+	bool m_keepOrder;
 
 	/// random split
 	/// randomize population before split.
@@ -414,7 +411,9 @@ public:
 	/// apply a \c mergeSubPops operator
 	virtual bool apply(population & pop)
 	{
-		pop.mergeSubPops(m_subPops, m_removeEmptySubPops);
+		pop.mergeSubPops(m_subPops);
+		if (m_removeEmptySubPops)
+			pop.removeEmptySubPops();
 		return true;
 	}
 

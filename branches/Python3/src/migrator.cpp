@@ -35,7 +35,7 @@ void migrator::setRates(const matrix & rate, int mode)
 
 	if (m_from.empty() )
 		for (UINT i = 0; i < szFrom; ++i)
-			m_from.push_back(vsp(i));
+			m_from.push_back(vspID(i));
 
 	if (m_to.empty() )
 		for (UINT i = 0; i < szTo; ++i)
@@ -108,7 +108,9 @@ bool migrator::apply(population & pop)
 		if (m_from[from].isVirtual()) {
 			pop.activateVirtualSubPop(spFrom, m_from[from].virtualSubPop());
 		}
-		ULONG spSize = pop.virtualSubPopSize(spFrom);
+		// if subpopulation spFrom is activated, subPopSize can
+		// get the correct size.
+		ULONG spSize = pop.subPopSize(spFrom);
 
 		if (m_mode == MigrByProbability) {
 			Weightedsampler ws(rng(), m_rate[from]);
@@ -255,10 +257,13 @@ bool splitSubPop::apply(population & pop)
 		// this is to remind myself this step is important.
 		pop.setIndOrdered(false);
 	}
-	if (!m_subPopSizes.empty())
-		pop.splitSubPop(m_which, m_subPopSizes, m_subPopID);
-	else
-		pop.splitSubPopByProportion(m_which, m_proportions, m_subPopID);
+	if (!m_subPopSizes.empty()) {
+        vectorf sizes;
+        for (size_t i = 0; i < m_subPopSizes.size(); ++i)
+            sizes.push_back(m_subPopSizes[i]);
+		pop.splitSubPop(m_which, sizes, m_keepOrder);
+    } else
+		pop.splitSubPop(m_which, m_proportions, m_keepOrder);
 	return true;
 }
 

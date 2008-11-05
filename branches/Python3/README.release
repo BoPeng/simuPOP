@@ -3,7 +3,7 @@ This file describes how to release simuPOP.
 1. Update ChangeLog, marking release revision and date.
 
 2. Run the following commands to build simuPOP
-  > doxygen Doxy_doc
+  > doxygen   # process Doxyfile by default
   > cd tools; doxy2swig.py; cd ..
   > scons install
 
@@ -24,7 +24,7 @@ This file describes how to release simuPOP.
   > build.py --release=x.x.x doc  # has been done manually, but run it anyway.
   > build.py --release=x.x.x src  # build a source package
 
-7. Upload source packages (under the download directory)  to a windows system.
+7. Upload source packages (under the download directory) to a windows system.
   * unzip source package
   * c:/python24/python setup.py bdist_wininst  # Using MSVC++ 2003.net
   * c:/python25/python setup.py bdist_wininst  # USing MSVC++ 2003.net
@@ -47,13 +47,12 @@ This file describes how to release simuPOP.
   > cd uploads
   > put simuPOP-x.x.x-src.zip
   > put simuPOP-x.x.x-src.tar.gz
+  and other files
   > exit
 
-11. From the file release webpage, refresh, add the uploaded files,
-	set their file type.
-
-12. Update source documentation by running
+11. Update source documentation by running
   > doxygen Doxy_web
   > scp -r doxygen_doc/html USER,simupop@web.sourceforge.net:htdocs/src_doc
 
-13. Send release announcement to the simuPOP mailinglist.
+12. From the file release webpage, refresh, add the uploaded files,
+	set their file type. Send release announcement to the simuPOP mailinglist.

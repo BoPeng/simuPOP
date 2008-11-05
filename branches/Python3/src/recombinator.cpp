@@ -496,7 +496,7 @@ bool recombinator::applyDuringMating(population & pop,
 	else
 		recombine(dad, offspring, 0, m_bt, m_recBeforeLoci, false);
 
-	if (pop.haplodiploid()) {
+	if (pop.isHaplodiploid()) {
 		DBG_FAILIF(dad == NULL, ValueError,
 			"Invalid male in haplodiploid mode");
 		copyParentalGenotype(dad, offspring, 1);

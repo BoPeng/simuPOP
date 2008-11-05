@@ -35,15 +35,12 @@ class TestPopulation(unittest.TestCase):
         if AlleleType() == 'binary':
             population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=1, alleleNames=['_','A','C','T','G'])
+                alleleNames=['_','A','C','T','G'])
         else:
             population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=4, alleleNames=['_','A','C','T','G'])
+                alleleNames=['_','A','C','T','G'])
         # raise exception when max allele is wrong
-        # MaxAllele may be too big.
-        self.assertRaises( (exceptions.TypeError, exceptions.ValueError, exceptions.OverflowError),
-            population, size=10, maxAllele=MaxAllele()+1)
         # raise exception when ploidy value is wrong
         self.assertRaises(exceptions.ValueError,
             population, size=[20,20], ploidy=0)
@@ -77,7 +74,7 @@ class TestPopulation(unittest.TestCase):
             population, loci=[2], lociNames=['1', '2' , '3'])
         # allele names, should only gives warning
         population(10, alleleNames=['_'])
-        population(10, maxAllele=1, alleleNames=['A', 'B'])
+        population(10, alleleNames=['A', 'B'])
         # sex chrom, 2 does not trigger type error
         p = population(loci=[2], sexChrom=2)
         self.assertEqual( p.sexChrom(), True)
@@ -91,16 +88,13 @@ class TestPopulation(unittest.TestCase):
         # ancestral depth
         p = population(ancestralDepth=-1)
         p = population(ancestralDepth=5)
-        # max allele can not be zero
-        self.assertRaises(exceptions.ValueError,
-            population, maxAllele=0)
 
     def testGenoStructure(self):
         'Testing geno structure related functions'
         if AlleleType() != 'binary':
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=3, chromNames=["ch1", "ch2"],
+                chromNames=["ch1", "ch2"],
                 alleleNames=['A','C','T','G'])
         else:
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
@@ -182,7 +176,7 @@ class TestPopulation(unittest.TestCase):
         if AlleleType() != 'binary':
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=4, alleleNames=['_','A','C','T','G'])
+                alleleNames=['_','A','C','T','G'])
         else:
             pop = population(size=[20,80], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
@@ -839,7 +833,7 @@ class TestPopulation(unittest.TestCase):
         if AlleleType() != 'binary':
             pop = population(size=[2,8], ploidy=2, loci=[5, 7],
                 lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-                maxAllele=4, alleleNames=['_','A','C','T','G'],
+                alleleNames=['_','A','C','T','G'],
                 infoFields=['age', 'fitness'])
             InitByFreq(pop, [.2, .3, .5])
             pop.setIndInfo(range(10), 'age')

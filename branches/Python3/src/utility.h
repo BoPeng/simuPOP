@@ -230,16 +230,10 @@ bool PyObj_Is_DoubleNumArray(PyObject * obj);
 bool PyObj_Is_AlleleNumArray(PyObject * obj);
 
 /// CPPONLY
-PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
-
-/// CPPONLY
 PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
 /// CPPONLY
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
-
-/// CPPONLY
-PyObject * Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
 
 /// CPPONLY
 int NumArray_Size(PyObject * obj);
@@ -1363,7 +1357,11 @@ void Limits();
 /// return the allele type of the current module. Can be \c binary, \c short, or \c long.
 string AlleleType();
 
-/// return \f$ 1 \f$, \f$ 2^8-1 \f$, \f$ 2^{16}-1 \f$ for binary, short, or long allele modules, respectively
+/** return the maximum allowed allele state of the current simuPOP module,
+ *  which is \c 1 for binary modules, \c 255 for short modules and \c 65535
+ *  for long modules.
+ *  <group>allele</group>
+ */
 ULONG MaxAllele();
 
 /// CPPONLY get a null stream that discard everything

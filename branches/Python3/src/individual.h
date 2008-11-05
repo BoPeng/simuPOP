@@ -33,24 +33,12 @@
 #include "simuPOP_cfg.h"
 #include "genoStru.h"
 
-//
-// the following is required by a vc7.1 bug.
-#if  defined (_WIN32) || defined (__WIN32__)
-#  include <boost/archive/binary_iarchive.hpp>
-#  include <boost/archive/binary_oarchive.hpp>
-#  include <fstream>
-using std::ofstream;
-using std::ifstream;
-#endif                                                                                    // win32
-
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/tracking.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
-using boost::serialization::make_nvp;
 
 #include <iterator>
 using std::ostream;
@@ -69,35 +57,27 @@ using std::dec;
 using std::pair;
 
 namespace simuPOP {
-/// individuals with genotype, affection status, sex etc.
 /**
-   Individuals are the building blocks of populations, each having
-   the following individual information:
- \li shared genotypic structure information
- \li genotype
- \li sex, affection status, subpopulation ID
- \li optional information fields
-
-   Individual genotypes are arranged by locus, chromosome, ploidy, in that order,
-   and can be accessed from a single index. For example, for a diploid individual with
-   two loci on the first chromosome, one locus on the second, its genotype is arranged
-   as <tt> 1-1-1 1-1-2 1-2-1 2-1-1 2-1-2 2-2-1 </tt> where \c x-y-z represents ploidy \c x
-   chromosome \c y and locus \c z. An allele \c 2-1-2 can be accessed by
- \c allele(4) (by absolute index), \c allele(1, 1) (by index and ploidy) or \c allele(1, 1, 0)
-   (by index, ploidy and chromosome). Individuals are created by populations automatically.
-   Do not call the constructor function directly.
- */
-/*
-   Usage information: (for population class developers)
- \li for individuals created, you are responsible for setting their genotypic
-   pointer and genotypic information by using
-   <tt>setGenoStructure(GenoStructure gs)</tt>.
- \li \c setSubPopID() and \c subPopID() can be used for any \em temporary purpose.
-
- \note
- \li \c individual does \em not manage memory. Instead, it use a pointer passed
-   from \c population class. This may cause a \em lot of troubles.
- \li Output of \c individual can be adjusted by \c setOutputDelimeter.
+ *  A \c population consists of individuals with the same genotypic structure.
+ *  An \c individual object cannot be created independently, but refences to
+ *  inidividuals can be retrieved using member functions of a \c population
+ *  object. In addition to structural information shared by all individuals in
+ *  a population (provided by class \c genoStruTrait), an \c individual class
+ *  provides member functions to get and set \e genotype, \e sex, <em>affection
+ *  status</em> and <em>information fields</em> of an individual.
+ * 
+ *  \par
+ *  Genotypes of an individual are stored sequentially and can be accessed
+ *  locus by locus, or in batch. The alleles are arranged by position,
+ *  chromosome and ploidy. That is to say, the first allele on the first
+ *  chromosome of the first homologous set is followed by alleles at other loci
+ *  on the same chromsome, then markers on the second and later chromosomes,
+ *  followed by alleles on the second homologous set of the chromosomes for
+ *  a diploid individual. A consequence of this memory layout is that alleles
+ *  at the same locus of a non-haploid individual are separated by
+ *  <tt>individual::totNumLoci()</tt> loci. It is worth noting that access to
+ *  invalid chromosomes, such as the Y chromosomes of female individuals, are
+ *  not restricted.
  */
 class individual : public GenoStruTrait
 {
@@ -128,7 +108,9 @@ public:
 	//@{
 	///
 	/**
-	 \test src_individual.log Individual member functions
+	 * An \c individual object cannot be created directly. It has to be accessed
+	 * from a \c population object using functions such as
+	 * <tt>population::individual(</tt><em>idx</em><tt>)</tt>.
 	 */
 	individual() : m_flags(m_flagVisible), m_subPopID(0)
 	{
@@ -193,139 +175,120 @@ public:
 	/// @name allele, info get/set functions
 	//@{
 
-	/// HIDDEN return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
-	/**
-	   This function returns the whole genotype. Although this function is
-	   not as easy to use as other functions that access alleles,
-	   it is the fastest one since you can read/write genotype directly.
+	/** return the current allele at a locus, using its absolute index \e idx.
+	 *
+	 * <group>1-allele</group>
 	 */
-	PyObject * arrGenotype();
-
-	/// HIDDEN return a carray with the genotypes of the \c p-th copy of the chromosomes
-	PyObject * arrGenotype(UINT p);
-
-	/// HIDDEN return a carray with the genotypes of the \c ch-th chromosome in the \c p-th chromosome set
-	PyObject * arrGenotype(UINT p, UINT ch);
-
-	/// HIDDEN return a carray of all information fields (of size \c infoSize()) of this individual
-	PyObject * arrInfo();
-
-	/// return the allele at locus \c index
-	/**
-	 \param index absolute index from the beginning of the genotype, ranging from \c 0
-	   	to <tt> totNumLoci()*ploidy() </tt>
-	 */
-	UINT allele(UINT index) const
+	UINT allele(UINT idx) const
 	{
-		CHECKRANGEGENOSIZE(index);
-		return static_cast<UINT>(*(m_genoPtr + index));
+		CHECKRANGEGENOSIZE(idx);
+		return static_cast<UINT>(*(m_genoPtr + idx));
 	}
 
 
-	/// return the allele at locus \c index of the \c p-th copy of the chromosomes
-	/**
-	 \param index index from the begining of the \c p-th set of the chromosomes, ranging from
-	 \c 0 to <tt> totNumLoci() </tt>
-	 \param p index of the ploidy
+	/** return the current allele at locus \e idx on the <em>p</em>-th set of
+	 *  homologous chromosomes.
+	 * <group>1-allele</group>
 	 */
-	UINT allele(UINT index, UINT p) const
+	UINT allele(UINT idx, UINT p) const
 	{
-		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(p);
-		return static_cast<UINT>(*(m_genoPtr + index + p * totNumLoci() ));
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() ));
 	}
 
 
-	/// return the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
-	/**
-	 \param index index from the begining of chromosome \c ch of ploidy \c p,
-	   	ranging from \c 0 to <tt> numLoci(ch) </tt>
-	 \param p index of the polidy
-	 \param ch index of the chromosome in the \c p-th chromosome set
+	/** return the current allele at locus \e idx on chromosome \e chrom of
+	 *  the <em>p</em>-th set of homologous chromosomes.
+	 * <group>1-allele</group>
 	 */
-	UINT allele(UINT index, UINT p, UINT ch) const
+	UINT allele(UINT idx, UINT p, UINT chrom) const
 	{
-		CHECKRANGELOCUS(ch, index);
+		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(ch);
-		return static_cast<UINT>(*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch)));
+		CHECKRANGECHROM(chrom);
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
 	}
 
 
-	/// return the name of \c allele(index)
-	string alleleChar(UINT index) const
+	/** return the name of \c allele(idx)
+	 *  HIDDEN
+	 * <group>1-allele</group>
+	 */
+	string alleleChar(UINT idx) const
 	{
-		CHECKRANGEGENOSIZE(index);
+		CHECKRANGEGENOSIZE(idx);
 
-		return this->alleleName(allele(index));
+		return this->alleleName(allele(idx));
 	}
 
 
-	/// return the name of <tt>allele(index, p)</tt>
-	string alleleChar(UINT index, UINT p) const
+	/** HIDDEN
+	 * return the name of <tt>allele(idx, p)</tt>
+	 * <group>1-allele</group>
+	 */
+	string alleleChar(UINT idx, UINT p) const
 	{
-		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(p);
 
-		return this->alleleName(allele(index, p));
+		return this->alleleName(allele(idx, p));
 	}
 
 
-	/// return the name of <tt>allele(idx, p, ch)</tt>
-	string alleleChar(UINT index, UINT p, UINT ch) const
+	/** HIDDEN
+	 * return the name of <tt>allele(idx, p, ch)</tt>
+	 * <group>1-allele</group>
+	 */
+	string alleleChar(UINT idx, UINT p, UINT ch) const
 	{
-		CHECKRANGELOCUS(ch, index);
+		CHECKRANGELOCUS(ch, idx);
 		CHECKRANGEPLOIDY(p);
 		CHECKRANGECHROM(ch);
 
-		return this->alleleName(allele(index, p, ch));
+		return this->alleleName(allele(idx, p, ch));
 	}
 
 
-	/// set the allele at locus \c index
-	/**
-	 \param allele allele to be set
-	 \param index index from the begining of genotype, ranging from \c 0
-	   	to <tt> totNumLoci()*ploidy() </tt>
+	/** set allele \e allele to a locus, using its absolute index \e idx.
+	 * <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, UINT index)
+	void setAllele(Allele allele, UINT idx)
 	{
-		CHECKRANGEGENOSIZE(index);
-		*(m_genoPtr + index) = allele;
+		CHECKRANGEGENOSIZE(idx);
+		*(m_genoPtr + idx) = allele;
 	}
 
 
-	/// set the allele at locus \c index of the \c p-th copy of the chromosomes
-	/**
-	 \param allele allele to be set
-	 \param index index from the begining of the ploidy \c p, ranging from \c 0 to <tt> totNumLoci(p) </tt>
-	 \param p index of the ploidy
+	/** set allele \e allele to locus \e idx on the <em>p</em>-th homologous
+	 *  set of chromosomes.
+	 * <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, UINT index, UINT p)
+	void setAllele(Allele allele, UINT idx, UINT p)
 	{
-		CHECKRANGEABSLOCUS(index);
+		CHECKRANGEABSLOCUS(idx);
 		CHECKRANGEPLOIDY(p);
-		*(m_genoPtr + index + p * totNumLoci()) = allele;
+		*(m_genoPtr + idx + p * totNumLoci()) = allele;
 	}
 
 
-	/// set the allele at locus \c index of the \c ch-th chromosome in the \c p-th chromosome set
-	/**
-	 \param allele allele to be set
-	 \param index index from the begining of the chromosome, ranging from \c 0 to \c numLoci(ch)
-	 \param p index of the ploidy
-	 \param ch index of the chromosome in ploidy \c p
+	/** set allele \e allele to locus \e idx on chromosome \e chrom of the
+	 *  <em>p</em>-th homologous set of chromosomes.
+	 *  <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, UINT index, UINT p, UINT ch)
+	void setAllele(Allele allele, UINT idx, UINT p, UINT chrom)
 	{
-		CHECKRANGELOCUS(ch, index);
+		CHECKRANGELOCUS(chrom, idx);
 		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(ch);
-		*(m_genoPtr + index + p * totNumLoci() + chromBegin(ch) ) = allele;
+		CHECKRANGECHROM(chrom);
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom) ) = allele;
 	}
 
 
-	/// return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual.
+	/** return an editable array (a \c carray of length <tt>totNumLoci()*ploidy()</tt>)
+	 *  that represents all alleles of an individual.
+	 * <group>2-genotype</group>
+	 */
 	PyObject * genotype()
 	{
 		// The following implementation has comparable performance as
@@ -346,9 +309,10 @@ public:
 	}
 
 
-	/// return an editable array of alleles of the \c p-th copy of the chromosomes
-    /**
-	 \param p index of the ploidy
+    /** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
+	 *  that represents all alleles on the <em>p</em>-th homologous set of
+	 *  chromosomes.
+	 * <group>2-genotype</group>
 	 */
 	PyObject * genotype(UINT p)
 	{
@@ -358,23 +322,25 @@ public:
 	}
 
 
-	/// return an editable array of alleles of the \c ch-th chromosome in the \c p-th chromosome set
-    /**
-	 \param p index of the ploidy
-	  \param ch index of the chromosome in ploidy \c p
+	/** return an editable array (a \c carrary of legnth 
+	 *  <tt>numLoci(</tt><em>chrom</em><tt>)</tt>) that represents all alleles
+	 *  on chromosome \e chrom of the <em>p</em>-th homologous set of
+	 *  chromosomes.
+	 *  <group>2-genotype</group>
 	 */
-	PyObject * genotype(UINT p, UINT ch)
+	PyObject * genotype(UINT p, UINT chrom)
 	{
 		CHECKRANGEPLOIDY(p);
-		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
-			m_genoPtr + p * totNumLoci() + chromEnd(ch));
+		CHECKRANGECHROM(chrom);
+		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(chrom),
+			m_genoPtr + p * totNumLoci() + chromEnd(chrom));
 	}
 
 
-	/// set the genotype of an individual
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the genotype length of the individual.
+	/** Fill the genotype of an individual using a list of alleles \e geno.
+	 *  \c geno will be reused if its length is less than 
+	 *  <tt>totNumLoci()*ploidy()</tt>.
+	 *  <group>2-genotype</group>
 	 */
 	void setGenotype(vectora geno) 
 	{
@@ -384,11 +350,10 @@ public:
 	}
 
 
-	/// set the genotype of the \c p-th copy of the chromosomes
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the total number of loci.
-	 \param p index of the ploidy
+	/** Fill the genotype of the <em>p</em>-th homologous set of chromosomes
+	 *  using a list of alleles \e geno. \c geno will be reused if its length
+	 *  is less than <tt>totNumLoci()</tt>.
+	 *  <group>2-genotype</group>
 	 */
 	void setGenotype(vectora geno, UINT p) 
 	{
@@ -400,25 +365,26 @@ public:
 	}
 
 
-	/// set the genotype of the \c ch-th chromosome in the \c p-th chromosome set
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the number of loci on chromosome \c ch.
-	 \param p index of the ploidy
-	 \param ch index of the chromosome in ploidy \c p
+	/** Fill the genotype of chromosome \e chrom on the <em>p</em>-th
+	 *  homologous set of chromosomes using a list of alleles \e geno.
+	 *  \c geno will be reused if its length is less than 
+	 *  <tt>mumLoci(</tt><em>chrom</em><tt>)</tt>.
+	 * <group>2-genotype</group>
 	 */
-	void setGenotype(vectora geno, UINT p, UINT ch) 
+	void setGenotype(vectora geno, UINT p, UINT chrom) 
 	{
 		CHECKRANGEPLOIDY(p);
-	    CHECKRANGECHROM(ch);
-		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(ch);
+	    CHECKRANGECHROM(chrom);
+		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(chrom);
 		UINT sz = geno.size();
-		for(UINT i =0; i < numLoci(ch); i++)
+		for(UINT i =0; i < numLoci(chrom); i++)
 			*(ptr+i) = geno[i % sz];
 	}
 
 
-	/// return the sex of an individual, \c 1 for males and \c 2 for females.
+	/** return the sex of an individual, \c 1 for male and \c 2 for female.
+	 * <group>3-sex</group>
+	 */
 	Sex sex() const
 	{
 		if (ISSETFLAG(m_flags, m_flagFemale) )
@@ -428,14 +394,18 @@ public:
 	}
 
 
-	/// return the sex of an individual, \c M or \c F
+	/** return the sex of an individual, \c M for male or \c F for \c female.
+	 * <group>3-sex</group>
+	 */
 	char sexChar() const
 	{
 		return sex() == Female ? 'F' : 'M';
 	}
 
 
-	/// set sex. \c sex can be \c Male of \c Female.
+	/** set individual sex to \c Male or \c Female.
+	 * <group>3-sex</group>
+	 */
 	void setSex(Sex sex)
 	{
 		CHECKRANGESEX(sex);
@@ -447,28 +417,35 @@ public:
 	}
 
 
-	/// whether or not an individual is affected
+	/** Return \c True if this individual is affected.
+	 * <group>4-affection</group>
+	 */
 	bool affected() const
 	{
 		return ISSETFLAG(m_flags, m_flagAffected);
 	}
 
 
-	/// equals to <tt>not affected()</tt>
+	/** HIDDEN
+	 */
 	bool unaffected() const
 	{
 		return !affected();
 	}
 
 
-	/// return \c A (affected) or \c U (unaffected) for affection status
+	/** Return \c A if this individual is affected, or \c U otherwise.
+	 * <group>4-affection</group>
+	 */
 	char affectedChar() const
 	{
 		return affected() ? 'A' : 'U';
 	}
 
 
-	/// set affection status
+	/** set affection status to \e affected (\c True or \c False).
+	 * <group>4-affection</group>
+	 */
 	void setAffected(bool affected)
 	{
 		if (affected)
@@ -513,7 +490,7 @@ public:
 
 
 	/// return the ID of the subpopulation to which this individual blongs
-	/**
+	/** HIDDEN
 	 \note \c subPopID is not set by default. It only corresponds to the subpopulation
 	   	in which this individual resides after \c pop::setIndSubPopID is called.
 	 */
@@ -523,16 +500,17 @@ public:
 	}
 
 
-	/// set new subpopulation ID, \c pop.rearrangeByIndID will move this individual to that population
+	/** HIDDEN
+	 *set new subpopulation ID, \c pop.rearrangeByIndID will move this individual to that population
+	 */
 	void setSubPopID(SubPopID id)
 	{
 		m_subPopID = id;
 	}
 
 
-	/// get information field \c idx
-	/**
-	 \param idx index of the information field
+	/** Return the value of an information field \e idx (an index).
+	 * <group>5-info</group>
 	 */
 	InfoType info(UINT idx) const
 	{
@@ -542,9 +520,8 @@ public:
 	}
 
 
-	/// get information field \c idx as an integer. This is the same as <tt>int(info(idx)) </tt>
-	/**
-	 \param idx index of the information field
+	/** Return the value of an information field \e idx (an index) as an integer number.
+	 * <group>5-info</group>
 	 */
 	int intInfo(UINT idx) const
 	{
@@ -553,10 +530,8 @@ public:
 	}
 
 
-	/// get information field \c name
-	/**
-	   Equivalent to <tt>info(infoIdx(name))</tt>.
-	 \param name name of the information field
+	/** Return the value of an information field \e name.
+	 *  <group>5-info</group>
 	 */
 	InfoType info(const string & name) const
 	{
@@ -568,10 +543,8 @@ public:
 	}
 
 
-	/// get information field \c name as an integer
-	/**
-	   Equivalent to <tt>int(info(name))</tt>.
-	 \param name name of the information field
+	/** Return the value of an information field \e name as an integer number.
+	 * <group>5-info</group>
 	 */
 	int intInfo(const string & name) const
 	{
@@ -583,7 +556,9 @@ public:
 	}
 
 
-	/// set information field by \c idx
+	/** set the value of an information field \e idx (an index) to \e value.
+	 *  <group>5-info</group>
+	 */
 	void setInfo(InfoType value, UINT idx)
 	{
 		CHECKRANGEINFO(idx);
@@ -591,7 +566,9 @@ public:
 	}
 
 
-	/// set information field by \c name
+	/** set the value of an information field \e name to \e value.
+	 *  <group>5-info</group>
+	 */
 	void setInfo(InfoType value, const string & name)
 	{
 		int idx = infoIdx(name);
@@ -711,9 +688,6 @@ public:
 	   will lead to better performance for swapping but
 	   may affected performance of allele counting.
 
-	 \param ind individual to be swapped in
-	 \param swapContent swapContent or only the pointers.
-
 	   The guideline is that if we swap individuals across
 	   subpopulation, we should swap content. Otherwise,
 	   swap pointers. (There is no order right now within
@@ -736,15 +710,14 @@ private:
 	template<class Archive>
 	void save(Archive & ar, const UINT version) const
 	{
-		// ar & boost::serialization::make_nvp("base ptr",
 		//  boost::serialization::base_object<GenoStruTrait>(*this));
 		bool b;
 
 		b = ISSETFLAG(m_flags, m_flagFemale);
-		ar & boost::serialization::make_nvp("sex", b);
+		ar & b;
 
 		b = ISSETFLAG(m_flags, m_flagAffected);
-		ar & boost::serialization::make_nvp("affected", b);
+		ar & b;
 	}
 
 
@@ -754,17 +727,17 @@ private:
 		bool b;
 
 		m_flags = 0;
-		ar & boost::serialization::make_nvp("sex", b);
+		ar & b;
 		if (b) SETFLAG(m_flags, m_flagFemale);
-		ar & boost::serialization::make_nvp("affected", b);
+		ar & b;
 		if (b) SETFLAG(m_flags, m_flagAffected);
 		SETFLAG(m_flags, m_flagVisible);
 		SETFLAG(m_flags, m_flagIteratable);
 
 		if (version < 1) {
 			std::pair<int, int> tag;
-			ar & make_nvp("tag", tag);
-			ar & make_nvp("info", m_subPopID);
+			ar & tag;
+			ar & m_subPopID;
 		}
 	}
 
@@ -832,7 +805,7 @@ private:
 	// current (initial individual)
 	vector<individual>::iterator m_index;
 
-	// ending index
+	// ending idx
 	vector<individual>::iterator m_end;
 
 	//
@@ -859,18 +832,22 @@ public:
 	typedef typename T::reference reference;
 	typedef typename T::pointer pointer;
 
-	IndividualIterator() : m_it(), m_end(), m_allInds(true)
+	IndividualIterator() : m_it(), m_end(), m_allInds(true), m_useVisible(true)
 	{
 	}
 
 
-	IndividualIterator(T it, T end, bool allInds = true)
-		: m_it(it), m_end(end), m_allInds(allInds)
+	IndividualIterator(T it, T end, bool allInds, bool useVisible)
+		: m_it(it), m_end(end), m_allInds(allInds), m_useVisible(useVisible)
 	{
 		// m_it need to point to the first valid
 		// individual. otherwise *it will fail.
-		while (m_it < m_end && !m_it->visible())
-			++m_it;
+		if (m_useVisible)
+			while (m_it < m_end && !m_it->visible())
+				++m_it;
+		else
+			while (m_it < m_end && !m_it->iteratable())
+				++m_it;
 	}
 
 
@@ -905,14 +882,19 @@ public:
 			"Can not advance invalid iterator");
 
 		if (m_allInds)
-			return IndividualIterator(m_it++, m_end, m_allInds);
+			return IndividualIterator(m_it++, m_end, m_allInds, m_useVisible);
 
 		// save current state
 		IndividualIterator tmp(*this);
 		// move forward
-		while (m_it < m_end)
-			if ((++m_it)->visible())
-				break;
+		if (m_useVisible)
+			while (m_it < m_end)
+				if ((++m_it)->visible())
+					break;
+		else
+			while (m_it < m_end)
+				if ((++m_it)->iteratable())
+					break;
 		// return the original one
 		return tmp;
 	}
@@ -927,9 +909,14 @@ public:
 			return *this;
 		}
 
-		while (m_it < m_end)
-			if ((++m_it)->visible())
-				return *this;
+		if (m_useVisible)
+			while (m_it < m_end)
+				if ((++m_it)->visible())
+					return *this;
+		else
+			while (m_it < m_end)
+				if ((++m_it)->iteratable())
+					return *this;
 		DBG_ASSERT(m_it == m_end, IndexError,
 			"Something wrong with operator++ here");
 		return *this;
@@ -943,14 +930,19 @@ public:
 	IndividualIterator operator+(difference_type diff)
 	{
 		if (m_allInds)
-			return IndividualIterator(m_it + diff, m_end, m_allInds);
+			return IndividualIterator(m_it + diff, m_end, m_allInds, m_useVisible);
 		IndividualIterator tmp(*this);
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		while (i < diff && tmp.m_it < tmp.m_end)
-			if ((++tmp.m_it)->visible())
-				++i;
+		if (m_useVisible)
+			while (i < diff && tmp.m_it < tmp.m_end)
+				if ((++tmp.m_it)->visible())
+					++i;
+		else
+			while (i < diff && tmp.m_it < tmp.m_end)
+				if ((++tmp.m_it)->iteratable())
+					++i;
 		DBG_FAILIF(i != diff, ValueError,
 			"Can not add to IndIterator");
 		return tmp;
@@ -966,9 +958,14 @@ public:
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		while (i < diff && m_it < m_end)
-			if ((++m_it)->visible())
-				++i;
+		if (m_useVisible)
+			while (i < diff && m_it < m_end)
+				if ((++m_it)->visible())
+					++i;
+		else
+			while (i < diff && m_it < m_end)
+				if ((++m_it)->iteratable())
+					++i;
 		DBG_FAILIF(i != diff, ValueError, "Can not add to IndIterator");
 		return *this;
 	}
@@ -977,12 +974,16 @@ public:
 	IndividualIterator operator-(difference_type diff)
 	{
 		if (m_allInds)
-			return IndividualIterator(m_it - diff, m_end, m_allInds);
+			return IndividualIterator(m_it - diff, m_end, m_allInds, m_useVisible);
 		else {
 			IndividualIterator tmp(*this);
 			// can not check. Possible problem
-			for (difference_type i = 0; i < diff; ++i)
-				while (!(--tmp.m_it)->visible()) ;
+			if (m_useVisible)
+				for (difference_type i = 0; i < diff; ++i)
+					while (!(--tmp.m_it)->visible()) ;
+			else
+				for (difference_type i = 0; i < diff; ++i)
+					while (!(--tmp.m_it)->iteratable()) ;
 			return tmp;
 		}
 	}
@@ -994,9 +995,14 @@ public:
 			return m_it - rhs.m_it;
 		else {
 			difference_type i = 0;
-			for (T it = rhs.m_it; it != m_it; ++it)
-				if (it->visible())
-					++i;
+			if (m_useVisible)
+				for (T it = rhs.m_it; it != m_it; ++it)
+					if (it->visible())
+						++i;
+			else
+				for (T it = rhs.m_it; it != m_it; ++it)
+					if (it->iteratable())
+						++i;
 			return i;
 		}
 	}
@@ -1005,9 +1011,12 @@ public:
 	IndividualIterator operator--(int)
 	{
 		if (m_allInds)
-			return IndividualIterator(m_it--, m_end, m_allInds);
+			return IndividualIterator(m_it--, m_end, m_allInds, m_useVisible);
 		IndividualIterator tmp(*this);
-		while (!(--m_it)->visible()) ;
+		if (m_useVisible)
+			while (!(--tmp.m_it)->visible()) ;
+		else
+			while (!(--tmp.m_it)->iteratable()) ;
 		return tmp;
 	}
 
@@ -1018,7 +1027,10 @@ public:
 			--m_it;
 			return *this;
 		}
-		while (!(--m_it)->visible()) ;
+		if (m_useVisible)
+			while (!(--m_it)->visible()) ;
+		else
+			while (!(--m_it)->iteratable()) ;
 		return *this;
 	}
 
@@ -1057,6 +1069,9 @@ private:
 
 	// a shortcut. If m_allInds is set, using a simpler algorithm.
 	bool m_allInds;
+
+	//
+	bool m_useVisible;
 };
 
 //
@@ -1150,7 +1165,7 @@ public:
 
 
 private:
-	// index of the information field
+	// idx of the information field
 	UINT m_info;
 	///
 	bool m_useGappedIterator;
@@ -1196,9 +1211,9 @@ public:
 	}
 
 
-	CombinedAlleleIterator(UINT index, IndividualIterator<T> it,
+	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it,
 	                       UINT ploidy, UINT size)
-		: m_index(index), m_useGappedIterator(false),
+		: m_index(idx), m_useGappedIterator(false),
 		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy), m_size(size)
 	{
 	}

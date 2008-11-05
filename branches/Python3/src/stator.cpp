@@ -262,7 +262,7 @@ bool statPopSize::apply(population & pop)
 		else {
 			vspSize.clear();
 			for (size_t vsp = 0; vsp < numVSP; ++vsp)
-				vspSize.push_back(pop.virtualSubPopSize(sp, vsp));
+				vspSize.push_back(pop.subPopSize(vspID(sp, vsp)));
 			pop.setIntVectorVar(virtualPopSize_String + string("[") + toStr(sp) + "]", vspSize);
 		}
 	}

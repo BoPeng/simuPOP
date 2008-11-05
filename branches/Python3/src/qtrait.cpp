@@ -31,23 +31,23 @@ bool quanTrait::apply(population & pop)
 	UINT ansGen = 0;
 
 	if (m_ancestralGen == -1)
-		ansGen = pop.ancestralDepth();
+		ansGen = pop.ancestralGens();
 	else if (m_ancestralGen > 0) {
-		if (static_cast<UINT>(m_ancestralGen) > pop.ancestralDepth())
-			ansGen = pop.ancestralDepth();
+		if (static_cast<UINT>(m_ancestralGen) > pop.ancestralGens())
+			ansGen = pop.ancestralGens();
 		else
 			ansGen = m_ancestralGen;
 	}
 
 	for (UINT i = 0; i <= ansGen; ++i) {
-		pop.useAncestralPop(i);
+		pop.useAncestralGen(i);
 
 		// we need info to be in order
 		IndInfoIterator traitIt = pop.infoBegin(idx);
 		for (IndIterator it = pop.indBegin(); it.valid(); ++it)
 			*traitIt++ = qtrait(& * it) ;
 	}
-	pop.useAncestralPop(0);
+	pop.useAncestralGen(0);
 
 	return true;
 }

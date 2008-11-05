@@ -33,27 +33,25 @@
 namespace simuPOP {
 
 population::population(const vectorlu & size,
-                       float ploidy,
-                       const vectoru & loci,
-                       bool sexChrom,
-                       const vectorf & lociPos,
-                       int ancestralDepth,
-                       const vectorstr & chromNames,
-                       const vectorstr & alleleNames,
-                       const vectorstr & lociNames,
-                       UINT maxAllele,
-                       const vectorstr & infoFields)
+	float ploidy,
+	const vectoru & loci,
+	const vectoru & chromTypes,
+	const vectorf & lociPos,
+	int ancestralGens,
+	const vectorstr & chromNames,
+	const vectorstr & alleleNames,
+	const vectorstr & lociNames,
+	const vectorstr & infoFields)
 	:
 	GenoStruTrait(),
 	m_popSize(0),
-	m_numSubPop(size.size()),
 	m_subPopSize(size),
 	m_subPopIndex(size.size() + 1),
 	m_vspSplitter(NULL),
 	m_genotype(0),                                                                          // resize later
 	m_info(0),
 	m_inds(0),                                                                              // default constructor will be called.
-	m_ancestralDepth(ancestralDepth),
+	m_ancestralGens(ancestralGens),
 	m_vars(NULL, true),                                                                     // invalid shared variables initially
 	m_ancestralPops(0),                                                                     // no history first
 	m_rep(-1),
@@ -62,13 +60,6 @@ population::population(const vectorlu & size,
 	m_indOrdered(true),
 	m_selectionFlags()
 {
-	DBG_FAILIF(maxAllele > ModuleMaxAllele, ValueError,
-		"maxAllele is bigger than maximum allowed allele state of this library (" + toStr(ModuleMaxAllele) +
-		")\nPlease use simuOpt.setOptions(alleleType='long') to use the long allele version of simuPOP.");
-
-	DBG_FAILIF(maxAllele == 0, ValueError,
-		"maxAllele should be at least 1 (0,1 two states). ");
-
 	DBG_DO(DBG_POPULATION, cout << "Constructor of population is called\n");
 
 	DBG_FAILIF(m_subPopSize.size() > MaxSubPopID, ValueError,
@@ -80,8 +71,8 @@ population::population(const vectorlu & size,
 		ValueError, "Only integer ploidy number or Haplodiploid can be specified");
 
 	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
-		loci, sexChrom, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
-		lociNames, maxAllele, infoFields);
+		loci, chromTypes, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
+		lociNames, infoFields);
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 		                   << sizeof(Allele) << '*' << genoSize() << endl
@@ -113,14 +104,13 @@ population::~population()
 population::population(const population & rhs) :
 	GenoStruTrait(rhs),
 	m_popSize(rhs.m_popSize),
-	m_numSubPop(rhs.m_numSubPop),
 	m_subPopSize(rhs.m_subPopSize),
 	m_subPopIndex(rhs.m_subPopIndex),
 	m_vspSplitter(NULL),
 	m_genotype(0),
 	m_info(0),
 	m_inds(0),
-	m_ancestralDepth(rhs.m_ancestralDepth),
+	m_ancestralGens(rhs.m_ancestralGens),
 	m_vars(rhs.m_vars),                                                                     // variables will be copied
 	m_rep(-1),                                                                              // rep is set to -1 for new pop (until simulator really set them
 	m_gen(0),
@@ -187,7 +177,7 @@ population::population(const population & rhs) :
 		cout << "Unable to copy ancestral populations. "
 		     << "The popolation size may be too big." << endl
 		     << "The population will still be usable but without any ancestral population stored." << endl;
-		m_ancestralDepth = 0;
+		m_ancestralGens = 0;
 		m_ancestralPops.clear();
 	}
 
@@ -212,7 +202,7 @@ void population::popData::swap(population & pop)
 population * population::clone(int keepAncestralPops) const
 {
 	population * p = new population(*this);
-	int oldDepth = m_ancestralDepth;
+	int oldDepth = m_ancestralGens;
 
 	if (keepAncestralPops >= 0)
 		// try to remove excessive ancestra generations.
@@ -222,24 +212,16 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
-ULONG population::virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop) const
+string population::virtualSubPopName(vspID subPop) const
 {
-	CHECKRANGESUBPOP(subPop);
-	// if there is no virtual subpopulation,
-	if (hasActivatedVirtualSubPop() || virtualSubPop != InvalidSubPopID)
-		return m_vspSplitter->size(*this, subPop, virtualSubPop);
-	return subPopSize(subPop);
-}
-
-
-string population::virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop) const
-{
-	CHECKRANGESUBPOP(subPop);
-	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError,
-		"Subpopulation id is not virtual");
 	DBG_ASSERT(hasVirtualSubPop(), ValueError,
-		"There is no virtual subpopulation in subpop " + toStr(subPop));
-	return m_vspSplitter->name(virtualSubPop);
+		"No virtual subpopulation is defined for this population.");
+	// if a single number is given, it will be passed as (sp, None),
+	// but we will treat sp as vsp here.
+	if (!subPop.isVirtual())
+		return m_vspSplitter->name(subPop.subPop());
+	else
+		return m_vspSplitter->name(subPop.virtualSubPop());
 }
 
 
@@ -323,29 +305,29 @@ int population::__cmp__(const population & rhs) const
 }
 
 
-individual & population::ancestor(ULONG ind, UINT gen)
+individual & population::ancestor(ULONG idx, UINT gen)
 {
 	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(gen) + " does not exist");
 	if (gen == m_curAncestralGen)
-		return this->ind(ind);
-	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(ind > m_ancestralPops[idx].m_inds.size(),
+		return this->ind(idx);
+	UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
 		IndexError, "Individual index out of range");
-	return m_ancestralPops[idx].m_inds[ind];
+	return m_ancestralPops[genIdx].m_inds[idx];
 }
 
 
-const individual & population::ancestor(ULONG ind, UINT gen) const
+const individual & population::ancestor(ULONG idx, UINT gen) const
 {
 	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(gen) + " does not exist");
 	if (gen == m_curAncestralGen)
-		return this->ind(ind);
-	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(ind > m_ancestralPops[idx].m_inds.size(),
+		return this->ind(idx);
+	UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+	DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
 		IndexError, "Individual index out of range");
-	return m_ancestralPops[idx].m_inds[ind];
+	return m_ancestralPops[genIdx].m_inds[idx];
 }
 
 
@@ -397,6 +379,7 @@ PyObject * population::arrGenotype(bool order)
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
 }
 
+
 // get the whole genotype.
 // individuals will be in order before exposing
 // their genotypes.
@@ -413,14 +396,20 @@ PyObject * population::arrGenotype(UINT subPop, bool order)
 
 PyObject * population::genotype()
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
 	sortIndividuals();
 	// directly expose values. Do not copy data over.
 	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
 }
 
 
-PyObject * population::genotype(UINT subPop)
+PyObject * population::genotype(SubPopID subPop)
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
 	CHECKRANGESUBPOP(subPop);
 	sortIndividuals();
 	// directly expose values. Do not copy data over.
@@ -430,52 +419,61 @@ PyObject * population::genotype(UINT subPop)
 
 void population::setGenotype(vectora geno)
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	sortIndividuals();
 	GenoIterator ptr = m_genotype.begin();
 	ULONG sz = geno.size();
-	for (ULONG i = 0; i < popSize()*genoSize(); ++i)
+	for (ULONG i = 0; i < popSize() * genoSize(); ++i)
 		*(ptr++) = geno[i % sz];
 }
 
 
-void population::setGenotype(vectora geno, UINT subPop)
+void population::setGenotype(vectora geno, SubPopID subPop)
 {
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
+
 	CHECKRANGESUBPOP(subPop);
+	sortIndividuals();
+
 	GenoIterator ptr = genoBegin(subPop, true);
 	ULONG sz = geno.size();
-	for (ULONG i = 0; i < subPopSize(subPop)*genoSize(); ++i)
+	for (ULONG i = 0; i < subPopSize(subPop) * genoSize(); ++i)
 		*(ptr++) = geno[i % sz];
 }
 
 
 void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 {
-	UINT oldGen = ancestralGen();
+	UINT oldGen = curAncestralGen();
 	size_t sz = id.size();
 
-	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
+	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
-		useAncestralPop(anc);
+		useAncestralGen(anc);
 		for (ULONG it = 0; it < m_popSize; ++it)
 			ind(it).setSubPopID(static_cast<SubPopID>(id[it % sz]));
 	}
-	useAncestralPop(oldGen);
+	useAncestralGen(oldGen);
 }
 
 
 void population::setIndSubPopIDWithID(bool ancestralPops)
 {
-	UINT oldGen = ancestralGen();
+	UINT oldGen = curAncestralGen();
 
-	for (UINT anc = 0; anc <= ancestralDepth(); ++anc) {
+	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
 			continue;
-		useAncestralPop(anc);
+		useAncestralGen(anc);
 		for (UINT i = 0, iEnd = numSubPop(); i < iEnd;  ++i)
 			for (IndIterator it = indBegin(i); it.valid();  ++it)
 				it->setSubPopID(i);
 	}
-	useAncestralPop(oldGen);
+	useAncestralGen(oldGen);
 }
 
 
@@ -550,18 +548,15 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru.");
 
-	if (newSubPopSizes.empty()) {
-		m_numSubPop = 1;
+	if (newSubPopSizes.empty())
 		m_subPopSize = vectorlu(1, 0);
-	} else {
-		m_numSubPop = newSubPopSizes.size();
+	else
 		m_subPopSize = newSubPopSizes;
-	}
-	m_subPopIndex.resize(m_numSubPop + 1);
+	m_subPopIndex.resize(numSubPop() + 1);
 
 	// build subPop index
 	UINT i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
 
@@ -629,14 +624,13 @@ void population::setSubPopByIndID(vectori id)
 	}
 
 	if (m_inds.empty()) {
-		m_numSubPop = 1;
 		m_subPopSize.resize(1, 0);
 		m_subPopIndex.resize(2);
 	} else {
 		// reset indexes etc.
-		m_numSubPop = static_cast<UINT>(m_inds.back().subPopID()) + 1;
-		m_subPopSize.resize(m_numSubPop);
-		m_subPopIndex.resize(m_numSubPop + 1);
+		UINT numSubPop = static_cast<UINT>(m_inds.back().subPopID()) + 1;
+		m_subPopSize.resize(numSubPop);
+		m_subPopIndex.resize(numSubPop + 1);
 
 		// check subpop size
 		fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
@@ -645,168 +639,130 @@ void population::setSubPopByIndID(vectori id)
 	}
 	// rebuild index
 	size_t i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
 
 
-void population::splitSubPop(UINT which, vectorlu sizes, vectoru subPopID)
+void population::splitSubPop(UINT subPop, vectorf sizes, bool keepOrder)
 {
-	DBG_ASSERT(accumulate(sizes.begin(), sizes.end(), 0UL) == subPopSize(which),
-		ValueError,
-		"Sum of subpopulation sizes does not equal to the size of subpopulation to be splitted.");
-
-	DBG_FAILIF(!subPopID.empty() && subPopID.size() != sizes.size(), ValueError,
-		"If subPopID is given, it should have the same length as subPOP");
-
-	if (sizes.size() == 1)
+	if (sizes.size() <= 1)
 		return;
+
+	double all = accumulate(sizes.begin(), sizes.end(), 0.);
+	DBG_ASSERT(static_cast<ULONG>(all) == subPopSize(subPop) || fcmp_eq(all, 1.),
+		ValueError,
+		"Sum of parameter sizes should be 1 (proportions) or the size of subpopulation subPop.");
+
+
+	ULONG spSize = subPopSize(subPop);
+	vectorlu newSizes(sizes.size());
+	for (size_t i = 0; i < sizes.size() - 1; ++i) {
+		if (fcmp_eq(all, 1.))
+			newSizes[i] = static_cast<ULONG>(floor(spSize * sizes[i]));
+		else
+			newSizes[i] = static_cast<ULONG>(sizes[i]);
+	}
+	// to avoid round off problem, calculate the last subpopulation
+	newSizes[sizes.size() - 1] = spSize - accumulate(newSizes.begin(), newSizes.end() - 1, 0L);
+
+	if (keepOrder) {
+		vectorlu subPopSizes;
+		for (size_t sp = 0; sp < numSubPop(); ++sp)
+			if (sp != subPop)
+				subPopSizes.push_back(subPopSize(sp));
+			else
+				subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
+		setSubPopStru(subPopSizes);
+		return;
+	}
 
 	// set initial info
 	setIndSubPopIDWithID();
 
 	UINT spID;
-	if (subPopID.empty())  // starting sp number
-		spID = which;
-	else {
-		spID = subPopID[0];
-		DBG_WARNING(spID != which && spID < numSubPop(),
-			"new subpop ID is already used. You are effectively merging two subpopulations")
-	}
-	ULONG sz = 0;                                                                     // idx within subpop
-	size_t newSPIdx = 0;
-	for (IndIterator ind = indBegin(which); ind.valid(); ++ind) {
-		if (sz == sizes[newSPIdx]) {
-			sz = 0;
-			newSPIdx++;
-			if (subPopID.empty())
-				spID = numSubPop() + newSPIdx - 1;
-			else {
-				DBG_WARNING(subPopID[newSPIdx] != which && subPopID[newSPIdx] < numSubPop(),
-					"new subpop ID is already used. You are effectively merging two subpopulations")
-				spID = subPopID[newSPIdx];
-			}
-		}
-		ind->setSubPopID(spID);
-		sz++;
+	for (size_t sp = 0, idx = 0; sp < newSizes.size(); ++sp) {
+		if (sp == 0)
+			spID = subPop;
+		else
+			spID = numSubPop() + sp - 1;
+		//
+		for (size_t i = 0; i < newSizes[sp]; ++i)
+			ind(idx++, subPop).setSubPopID(spID);
 	}
 	setSubPopByIndID();
-}
-
-
-void population::splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID)
-{
-	DBG_ASSERT(fcmp_eq(accumulate(proportions.begin(), proportions.end(), 0.), 1.), ValueError,
-		"Proportions do not add up to one.");
-
-	if (proportions.size() == 1)
-		return;
-
-	ULONG spSize = subPopSize(which);
-	vectorlu subPop(proportions.size());
-	for (size_t i = 0; i < proportions.size() - 1; ++i)
-		subPop[i] = static_cast<ULONG>(floor(spSize * proportions[i]));
-	// to avoid round off problem, calculate the last subpopulation
-	subPop[ subPop.size() - 1] = spSize - accumulate(subPop.begin(), subPop.end() - 1, 0L);
-	splitSubPop(which, subPop, subPopID);
 }
 
 
 void population::removeEmptySubPops()
 {
 	// if remove empty subpops
-	UINT newSPNum = m_numSubPop;
+	UINT newSPNum = numSubPop();
 	vectorlu newSPSize;
 
-	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
+	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		if (m_subPopSize[sp] == 0)
 			newSPNum--;
 		else
 			newSPSize.push_back(m_subPopSize[sp]);
 	}
-	m_numSubPop = newSPNum;
 	m_subPopSize.swap(newSPSize);
-	m_subPopIndex.resize(m_numSubPop + 1);
+	m_subPopIndex.resize(numSubPop() + 1);
 	// rebuild index
 	size_t i = 1;
-	for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 }
 
 
-void population::removeSubPops(const vectoru & subPops, bool shiftSubPopID, bool removeEmptySubPops)
+void population::removeSubPops(const vectoru & subPops)
 {
 #ifndef OPTIMIZED
 	// check if subPops are valid
 	for (vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
-		DBG_WARNING(*sp >= m_numSubPop, "Subpopulation " + toStr(*sp) + " does not exist.");
+		DBG_WARNING(*sp >= numSubPop(), "Subpopulation " + toStr(*sp) + " does not exist.");
 	}
 #endif
 	setIndSubPopIDWithID();
 
-	int shift = 0;
-	for (size_t sp = 0; sp < m_numSubPop; ++sp) {
+	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
-			shift++;
 			RawIndIterator ind = rawIndBegin(sp);
 			RawIndIterator ind_end = rawIndEnd(sp);
 			for (; ind != ind_end; ++ind)
 				ind->setSubPopID(-1); // remove
-		} else {
-			// other subpop shift left
-			if (shiftSubPopID) {
-				RawIndIterator ind = rawIndBegin(sp);
-				RawIndIterator ind_end = rawIndEnd(sp);
-				for (; ind != ind_end; ++ind)
-					ind->setSubPopID(sp - shift); // shift left
-			}
 		}
 	}
 
-	UINT pendingEmptySubPops = 0;
-	for (UINT i = m_numSubPop - 1; i >= 0 && (subPopSize(i) == 0
-	                                          || find(subPops.begin(), subPops.end(), i) != subPops.end()); --i, ++pendingEmptySubPops) ;
+	UINT oldNumSP = numSubPop();
 	setSubPopByIndID();
-	// what to do with pending empty subpops?
-	if (pendingEmptySubPops != 0 && !removeEmptySubPops) {
+	// try to keep these subpopulation IDs.
+	if (oldNumSP != numSubPop()) {
 		vectorlu spSizes = subPopSizes();
-		for (UINT i = 0; i < pendingEmptySubPops; ++i)
-			spSizes.push_back(0);
+		spSizes.resize(oldNumSP, 0);
 		setSubPopStru(spSizes);
 	}
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
 }
 
 
-void population::removeIndividuals(const vectoru & inds, int subPop, bool removeEmptySubPops)
+void population::removeIndividuals(const vectoru & inds)
 {
 	setIndSubPopIDWithID();
-	if (subPop == -1) {
-		for (size_t i = 0; i < inds.size(); ++i)
-			ind(inds[i]).setSubPopID(-1); // remove
-	} else {
-		for (size_t i = 0; i < inds.size(); ++i)
-			// remove
-			ind(inds[i], subPop).setSubPopID(-1);
-	}
+	for (size_t i = 0; i < inds.size(); ++i)
+		ind(inds[i]).setSubPopID(-1);
 
-	int oldNumSP = numSubPop();
+	UINT oldNumSP = numSubPop();
 	setSubPopByIndID();
-	int pendingEmptySubPops = oldNumSP - numSubPop();
-	// what to do with pending empty subpops?
-	if (pendingEmptySubPops != 0 && !removeEmptySubPops) {
+	// try to keep these subpopulation IDs.
+	if (oldNumSP != numSubPop()) {
 		vectorlu spSizes = subPopSizes();
-		for (int i = 0; i < pendingEmptySubPops; ++i)
-			spSizes.push_back(0);
+		spSizes.resize(oldNumSP, 0);
 		setSubPopStru(spSizes);
 	}
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
 }
 
 
-void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
+void population::mergeSubPops(vectoru subPops)
 {
 	// set initial info
 	setIndSubPopIDWithID();
@@ -825,249 +781,226 @@ void population::mergeSubPops(vectoru subPops, bool removeEmptySubPops)
 			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
 				ind->setSubPopID(id);
 	}
-	int oldNumSP = numSubPop();
+	UINT oldNumSP = numSubPop();
 	setSubPopByIndID();
-	int pendingEmptySubPops = oldNumSP - numSubPop();
-	// what to do with pending empty subpops?
-	if (pendingEmptySubPops != 0 && !removeEmptySubPops) {
+	// try to keep these subpopulation IDs.
+	if (oldNumSP != numSubPop()) {
 		vectorlu spSizes = subPopSizes();
-		for (int i = 0; i < pendingEmptySubPops; ++i)
-			spSizes.push_back(0);
+		spSizes.resize(oldNumSP, 0);
 		setSubPopStru(spSizes);
 	}
-
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
 }
 
 
-void population::mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes)
+void population::addChromFromPop(const population & pop)
 {
-	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
-		"Merged population should have the same genotype structure");
-	// calculate new population size
-	vectorlu newSS;
-	newSS.insert(newSS.end(), m_subPopSize.begin(), m_subPopSize.end());
-	newSS.insert(newSS.end(), pop.m_subPopSize.begin(), pop.m_subPopSize.end());
-	// new population size
-	ULONG newPopSize = accumulate(newSS.begin(), newSS.end(), 0UL);
-	DBG_FAILIF(!newSubPopSizes.empty() && accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) != newPopSize,
-		ValueError, "newSubPopSizes should not change overall population size");
-
-	// prepare new population
-	vector<individual> newInds(newPopSize);
-	vectora newGenotype(genoSize() * newPopSize);
-	vectorinfo newInfo(newPopSize * infoSize());
-	// iterators ready
-	GenoIterator ptr = newGenotype.begin();
-	InfoIterator infoPtr = newInfo.begin();
-	UINT step = genoSize();
-	UINT infoStep = infoSize();
-	// set pointers
-	for (ULONG i = 0; i < newPopSize; ++i, ptr += step, infoPtr += infoStep) {
-		newInds[i].setGenoStruIdx(genoStruIdx());
-		newInds[i].setGenoPtr(ptr);
-		newInds[i].setInfoPtr(infoPtr);
-	}
-	// copy stuff over
-	for (ULONG i = 0; i < popSize(); ++i)
-		newInds[i].copyFrom(ind(i));
-	ULONG start = popSize();
-	for (ULONG i = 0; i < pop.popSize(); ++i)
-		newInds[i + start].copyFrom(pop.ind(i));
-	// now, switch!
-	m_genotype.swap(newGenotype);
-	m_info.swap(newInfo);
-	m_inds.swap(newInds);
-	m_popSize = newPopSize;
-	setIndOrdered(true);
-	if (newSubPopSizes.empty())
-		m_subPopSize = newSS;
-	else
-		m_subPopSize = newSubPopSizes;
-	m_numSubPop = m_subPopSize.size();
-	// rebuild index
-	m_subPopIndex.resize(m_numSubPop + 1);
-	size_t j = 1;
-	for (m_subPopIndex[0] = 0; j <= m_numSubPop; ++j)
-		m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
-}
-
-
-void population::mergePopulation(const population & pop, const vectorlu & newSubPopSizes,
-                                 int keepAncestralPops)
-{
-	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
-		"Merged populations should have the same number of ancestral generations");
-	UINT topGen;
-	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
-		topGen = ancestralDepth();
-	else
-		topGen = keepAncestralPops;
-	// go to the oldest generation
-	useAncestralPop(topGen);
-	const_cast<population &>(pop).useAncestralPop(topGen);
-	mergePopulationPerGen(pop, newSubPopSizes);
-	if (topGen > 0) {
-		for (int depth = topGen - 1; depth >= 0; --depth) {
-			useAncestralPop(depth);
-			const_cast<population &>(pop).useAncestralPop(depth);
-			mergePopulationPerGen(pop, newSubPopSizes);
-		}
-	}
-	useAncestralPop(0);
-	const_cast<population &>(pop).useAncestralPop(0);
-}
-
-
-void population::mergePopulationByLoci(const population & pop,
-                                       const vectoru & newNumLoci, const vectorf & newLociPos, bool byChromosome)
-{
-	DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
-		"Merged population should have the same number of individuals in each subpopulation");
-
-	UINT numloci1 = totNumLoci();
-	UINT numloci2 = pop.totNumLoci();
-
-	DBG_FAILIF(!newNumLoci.empty() && accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != numloci1 + numloci2,
-		ValueError, "Sum of newNumLoci should equal to " + toStr(numloci1 + numloci2));
-
-	DBG_FAILIF(!newLociPos.empty() && newLociPos.size() != numloci1 + numloci2,
-		ValueError, "newLociPos should have the length of combined total number of loci");
-
-	// make copy of old genotype structure
-	GenoStructure * gs1 = new GenoStructure(genoStru());
-	GenoStructure * gs2 = new GenoStructure(pop.genoStru());
+	UINT numLoci1 = totNumLoci();
+	UINT numLoci2 = pop.totNumLoci();
 
 	// obtain new genotype structure and set it
-	setGenoStructure(mergeGenoStru(pop.genoStruIdx(), byChromosome));
-	// if byChromosome, we have to figure out how to copy loci
-	vectoru source;
-	if (byChromosome) {
-		DBG_DO(DBG_POPULATION, cout << "New pos " << lociPos() << endl);
-
-		for (size_t ch = 0; ch < numChrom(); ++ch) {
-			size_t idx1 = 0;
-			size_t idx2 = 0;
-			for (size_t loc = 0; loc < numLoci(ch); ++loc) {
-				double pos = locusPos(absLocusIndex(ch, loc));
-				if (pos == gs1->locusPos(gs1->chromIndex(ch) + idx1)) {
-					source.push_back(0);
-					idx1++;
-				} else if (pos == gs2->locusPos(gs2->chromIndex(ch) + idx2)) {
-					source.push_back(1);
-					idx2++;
-				} else
-					throw SystemError("Unable to determine position. Something wrong");
-			}
-		}
-	}
-	// remove copied genostructure
-	delete gs1;
-	delete gs2;
-
-	DBG_FAILIF(ancestralDepth() != pop.ancestralDepth(), ValueError,
-		"Merged populations should have the same number of ancestral generations");
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
-		const_cast<population &>(pop).useAncestralPop(depth);
+	setGenoStructure(gsAddChromFromStru(pop.genoStruIdx()));
+	//
+	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
+		"Can not add chromosomes from a population with different number of ancestral generations");
+	//
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
 		//
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
+		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
+			"Can not add chromosomes from a population with different subpopulation sizes");
 
-		if (byChromosome) {
-			// merge chromosome by chromosome
-			// copy data over
-			GenoIterator ptr = newGenotype.begin();
-			UINT pEnd = ploidy();
-			for (ULONG i = 0; i < m_popSize; ++i) {
-				// set new geno structure
-				m_inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator ptr1 = m_inds[i].genoPtr();
-				GenoIterator ptr2 = pop.m_inds[i].genoPtr();
-				// new genotype
-				m_inds[i].setGenoPtr(ptr);
-				// copy each allele
-				for (UINT p = 0; p < pEnd; ++p) {
-					for (size_t j = 0; j < numloci1 + numloci2; ++j)
-						if (source[j] == 0)
-							*(ptr++) = *(ptr1++);
-						else
-							*(ptr++) = *(ptr2++);
-				}
-			}
-		} else {
-			// append pop2 chromosomes to the first one
-			// copy data over
-			GenoIterator ptr = newGenotype.begin();
-			UINT pEnd = ploidy();
-			for (ULONG i = 0; i < m_popSize; ++i) {
-				// set new geno structure
-				m_inds[i].setGenoStruIdx(genoStruIdx());
-				GenoIterator ptr1 = m_inds[i].genoPtr();
-				GenoIterator ptr2 = pop.m_inds[i].genoPtr();
-				// new genotype
-				m_inds[i].setGenoPtr(ptr);
-				// copy each allele
-				for (UINT p = 0; p < pEnd; ++p) {
-					for (size_t j = 0; j < numloci1; ++j)
-						*(ptr++) = *(ptr1++);
-					for (size_t j = 0; j < numloci2; ++j)
-						*(ptr++) = *(ptr2++);
-				}
+		vectora newGenotype(genoSize() * m_popSize);
+
+		// append pop2 chromosomes to the first one
+		GenoIterator ptr = newGenotype.begin();
+		UINT pEnd = ploidy();
+		for (ULONG i = 0; i < m_popSize; ++i) {
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			GenoIterator ptr1 = m_inds[i].genoPtr();
+			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+			m_inds[i].setGenoPtr(ptr);
+			for (UINT p = 0; p < pEnd; ++p) {
+				for (size_t j = 0; j < numLoci1; ++j)
+					*(ptr++) = *(ptr1++);
+				for (size_t j = 0; j < numLoci2; ++j)
+					*(ptr++) = *(ptr2++);
 			}
 		}
 		m_genotype.swap(newGenotype);
 	}
-
-	// reset genoStructure again
-	if (!newNumLoci.empty() || !newLociPos.empty())
-		rearrangeLoci(newNumLoci, newLociPos);
-
 	if (!indOrdered())
 		// sort information only
 		sortIndividuals(true);
 }
 
 
-void population::insertBeforeLocus(UINT idx, double pos, const string & name)
+void population::addIndFromPop(const population & pop)
 {
-	vectoru v_idx(1, idx);
-	vectorf v_pos(1, pos);
-
-	if (name == string())
-		return insertBeforeLoci(v_idx, v_pos, vectorstr());
-	else
-		return insertBeforeLoci(v_idx, v_pos, vectorstr(1, name));
+	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
+		"Cannot add individual from a population with different genotypic structure.");
+	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
+		"Two populations should have the same number of ancestral generations.");
+	// genotype pointers may be reset so this is needed.
+	sortIndividuals();
+	const_cast<population &>(pop).sortIndividuals();
+	// go to the oldest generation
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
+		// calculate new population size
+		m_subPopSize.insert(m_subPopSize.end(), pop.m_subPopSize.begin(), pop.m_subPopSize.end());
+		// new population size
+		m_popSize += pop.m_popSize;
+		//
+		m_inds.insert(m_inds.end(), pop.m_inds.begin(), pop.m_inds.end());
+		m_genotype.insert(m_genotype.end(), pop.m_genotype.begin(), pop.m_genotype.end());
+		m_info.insert(m_info.end(), pop.m_info.begin(), pop.m_info.end());
+		// iterators ready
+		GenoIterator ptr = m_genotype.begin();
+		InfoIterator infoPtr = m_info.begin();
+		UINT step = genoSize();
+		UINT infoStep = infoSize();
+		// set pointers
+		for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			m_inds[i].setGenoPtr(ptr);
+			m_inds[i].setInfoPtr(infoPtr);
+		}
+		// rebuild index
+		m_subPopIndex.resize(numSubPop() + 1);
+		size_t j = 1;
+		for (m_subPopIndex[0] = 0; j <= numSubPop(); ++j)
+			m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
+	}
 }
 
 
-void population::insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
+void population::addLociFromPop(const population & pop)
 {
-	// use loci to keep the position of old loci in the new structure
-	vectoru loci(totNumLoci());
+	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
+		"Can not add chromosomes from a population with different number of ancestral generations");
 
-	// 0, 1, 2, 3, 4, 5, 6, ...
-	for (size_t i = 0; i < totNumLoci(); ++i)
-		loci[i] = i;
-	// can insert multiple loci at the same location
-	for (size_t i = 0; i < idx.size(); ++i) {
-		CHECKRANGEABSLOCUS(idx[i]);
-		// 0, 1, 2, 3, 4, 5, 6, ...
-		// if idx[i] = 3 (before index 3)
-		// 0, 1, 2, 4, 5, 6, 7, ...
-		for (size_t j = idx[i]; j < totNumLoci(); ++j)
-			loci[j]++;
+	vectorstr lociNames1 = lociNames();
+	vectorstr lociNames2 = pop.lociNames();
+	// obtain new genotype structure and set it
+	setGenoStructure(gsAddLociFromStru(pop.genoStruIdx()));
+	vectoru indexes1 = lociByNames(lociNames1);
+	vectoru indexes2 = lociByNames(lociNames2);
+
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
+		//
+		DBG_FAILIF(m_subPopSize != pop.m_subPopSize, ValueError,
+			"Can not add chromosomes from a population with different subpopulation sizes");
+		//
+		vectora newGenotype(genoSize() * m_popSize);
+
+		// merge chromosome by chromosome
+		GenoIterator ptr = newGenotype.begin();
+		UINT pEnd = ploidy();
+		UINT size1 = lociNames1.size();
+		UINT size2 = lociNames2.size();
+		UINT newSize = totNumLoci();
+		for (ULONG i = 0; i < m_popSize; ++i) {
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			GenoIterator ptr1 = m_inds[i].genoPtr();
+			GenoIterator ptr2 = pop.m_inds[i].genoPtr();
+			// new genotype
+			m_inds[i].setGenoPtr(ptr);
+			// copy each allele
+			for (UINT p = 0; p < pEnd; ++p) {
+				for (size_t i = 0; i < size1; ++i)
+					ptr[indexes1[i]] = *(ptr1++);
+				for (size_t i = 0; i < size2; ++i)
+					ptr[indexes2[i]] = *(ptr2++);
+				ptr += newSize;
+			}
+		}
+		m_genotype.swap(newGenotype);
 	}
 
-	// obtain new genotype structure and set it
-	setGenoStructure(insertBeforeLociToGenoStru(idx, pos, names));
+	// sort information only
+	sortIndividuals(true);
+}
 
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
+
+void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
+                          const string & chromName, UINT chromType)
+{
+	DBG_ASSERT(lociNames.empty() || lociPos.size() == lociNames.size(), ValueError,
+		"Please specifiy locus name for all inserted loci.");
+
+	size_t oldNumLoci = totNumLoci();
+	// obtain new genotype structure and set it
+	setGenoStructure(gsAddChrom(lociPos, lociNames, chromName, chromType));
+
+	DBG_FAILIF(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
+		"Failed to add chromosome.");
+
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
 		//
 		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
+		vectora newGenotype(newPopGenoSize, 0);
+
+		// copy data over
+		GenoIterator newPtr = newGenotype.begin();
+		UINT pEnd = ploidy();
+		UINT gap = totNumLoci() - oldNumLoci;
+		for (ULONG i = 0; i < m_popSize; ++i) {
+			// set new geno structure
+			m_inds[i].setGenoStruIdx(genoStruIdx());
+			GenoIterator oldPtr = m_inds[i].genoPtr();
+			// new genotype
+			m_inds[i].setGenoPtr(newPtr);
+			// copy each chromosome
+			for (UINT p = 0; p < pEnd; ++p) {
+				for (size_t i = 0; i < oldNumLoci; ++i)
+					*(newPtr++) = *(oldPtr++);
+				newPtr += gap;
+			}
+		}
+		m_genotype.swap(newGenotype);
+	}
+	// if indOrdered is false:
+	//   individual genotype is now sorted. If we do not do
+	//   anything, genotype may be resorted. Sort info to
+	//   so that the order is set to True.
+	sortIndividuals(true);
+}
+
+
+vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
+                            const vectorstr & names)
+{
+	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
+		"Chromosome and position lists should have the same length");
+	DBG_ASSERT(names.empty() || pos.size() == names.size(), ValueError,
+		"Please specifiy locus name for all inserted loci.");
+
+	vectoru newIndex;
+	vectoru loci(totNumLoci());
+	// obtain new genotype structure and set it
+	setGenoStructure(gsAddLoci(chrom, pos, names, newIndex));
+	// use loci to keep the position of old loci in the new structure
+	for (size_t i = 0, j = 0; j < totNumLoci(); ++j) {
+		// i is the index to loci before insertion.
+		// j is the index to loci after insertion.
+		if (find(newIndex.begin(), newIndex.end(), i) == newIndex.end()) {
+			loci[i] = j;
+			++i;
+		}
+	}
+
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		//
+		ULONG newPopGenoSize = genoSize() * m_popSize;
+		vectora newGenotype(newPopGenoSize, 0);
 
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
@@ -1080,82 +1013,20 @@ void population::insertBeforeLoci(const vectoru & idx, const vectorf & pos, cons
 			m_inds[i].setGenoPtr(newPtr);
 			// copy each chromosome
 			for (UINT p = 0; p < pEnd; ++p) {
-				for (vectoru::iterator loc = loci.begin();
-				     loc != loci.end(); ++loc) {
+				vectoru::iterator loc = loci.begin();
+				for (; loc != loci.end(); ++loc)
 					newPtr[*loc] = *(oldPtr++);
-				}
-				newPtr += totNumLoci();                   // next ploidy
+				newPtr += totNumLoci();
 			}
 		}
 		m_genotype.swap(newGenotype);
 	}
-	if (!indOrdered())
-		sortIndividuals(true);
-}
-
-
-void population::insertAfterLocus(UINT idx, double pos, const string & name)
-{
-	vectoru v_idx(1, idx);
-	vectorf v_pos(1, pos);
-
-	if (name == string())
-		return insertAfterLoci(v_idx, v_pos, vectorstr());
-	else
-		return insertAfterLoci(v_idx, v_pos, vectorstr(1, name));
-}
-
-
-void population::insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names)
-{
-	// use loci to keep the position of old loci in the new structure
-	vectoru loci(totNumLoci());
-
-	// 0, 1, 2, 3, 4, 5, 6, ...
-	for (size_t i = 0; i < totNumLoci(); ++i)
-		loci[i] = i;
-	// can insert multiple loci at the same location
-	for (size_t i = 0; i < idx.size(); ++i) {
-		CHECKRANGEABSLOCUS(idx[i]);
-		// 0, 1, 2, 3, 4, 5, 6, ...
-		// if idx[i] = 3 (before index 3)
-		// 0, 1, 2, 3, 5, 6, 7, ...
-		if (idx[i] != totNumLoci() - 1)
-			for (size_t j = idx[i] + 1; j < totNumLoci(); ++j)
-				loci[j]++;
-	}
-
-	// obtain new genotype structure and set it
-	setGenoStructure(insertAfterLociToGenoStru(idx, pos, names));
-
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
-		//
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
-
-		// copy data over
-		GenoIterator newPtr = newGenotype.begin();
-		UINT pEnd = ploidy();
-		for (ULONG i = 0; i < m_popSize; ++i) {
-			// set new geno structure
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-			GenoIterator oldPtr = m_inds[i].genoPtr();
-			// new genotype
-			m_inds[i].setGenoPtr(newPtr);
-			// copy each chromosome
-			for (UINT p = 0; p < pEnd; ++p) {
-				for (vectoru::iterator loc = loci.begin();
-				     loc != loci.end(); ++loc) {
-					newPtr[*loc] = *(oldPtr++);
-				}
-				newPtr += totNumLoci();                   // next ploidy
-			}
-		}
-		m_genotype.swap(newGenotype);
-	}
-	if (!indOrdered())
-		sortIndividuals(true);
+	// if indOrdered is false:
+	//   individual genotype is now sorted. If we do not do
+	//   anything, genotype may be resorted. Sort info to
+	//   so that the order is set to True.
+	sortIndividuals(true);
+	return newIndex;
 }
 
 
@@ -1203,7 +1074,7 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	m_subPopSize = newSubPopSizes;
 	// rebuild index
 	size_t idx = 1;
-	for (m_subPopIndex[0] = 0; idx <= m_numSubPop; ++idx)
+	for (m_subPopIndex[0] = 0; idx <= numSubPop(); ++idx)
 		m_subPopIndex[idx] = m_subPopIndex[idx - 1] + m_subPopSize[idx - 1];
 }
 
@@ -1220,8 +1091,8 @@ void population::reorderSubPops(const vectoru & order, const vectoru & rank,
 	if (removeEmptySubPops)
 		this->removeEmptySubPops();
 
-	if ( (!order.empty() && order.size() != m_numSubPop)
-	    || (!rank.empty() && rank.size() != m_numSubPop))
+	if ( (!order.empty() && order.size() != numSubPop())
+	    || (!rank.empty() && rank.size() != numSubPop()))
 		cout << "Warning: Given order or rank does not have the length of number of subpop." << endl;
 
 	if (!order.empty()) {
@@ -1274,8 +1145,8 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 	DBG_DO(DBG_POPULATION, cout << "newPopByIndIDPerGen: New population size: " << sz << endl);
 
 	// create a population with this size
-	population * pop = new population(sz, ploidy(), numLoci(), sexChrom(), lociPos(), 0,
-		chromNames(), alleleNames(), lociNames(), maxAllele(), infoFields());
+	population * pop = new population(sz, ploidy(), numLoci(), chromTypes(), lociPos(), 0,
+		chromNames(), alleleNames(), lociNames(), infoFields());
 	// copy individuals over
 	IndIterator from = indBegin();
 	vector<IndIterator> to;
@@ -1309,18 +1180,18 @@ population & population::newPopByIndID(int keepAncestralPops,
 {
 	UINT topGen;
 
-	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralDepth())
-		topGen = ancestralDepth();
+	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralGens())
+		topGen = ancestralGens();
 	else
 		topGen = keepAncestralPops;
 	// go to the oldest generation
-	useAncestralPop(topGen);
+	useAncestralGen(topGen);
 	population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
 	// prepare for push and discard
 	ret.setAncestralDepth(topGen);
 	if (topGen > 0) {
 		for (int depth = topGen - 1; depth >= 0; --depth) {
-			useAncestralPop(depth);
+			useAncestralGen(depth);
 			ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
 		}
 	}
@@ -1328,55 +1199,20 @@ population & population::newPopByIndID(int keepAncestralPops,
 }
 
 
-void population::removeLoci(const vectoru & remove, const vectoru & keep)
+void population::removeLoci(const vectoru & loci)
 {
-	DBG_FAILIF(!keep.empty() && !remove.empty(), ValueError,
-		"Please specify one and only one of keep or remove.");
-
-	if (keep.empty() && remove.empty() )
+	if (loci.empty())
 		return;
 
-	vectoru loci;
-	if (!keep.empty())
-		loci = keep;
-	else {
-		for (size_t loc = 0; loc < this->totNumLoci(); ++loc)
-			// if not removed
-			if (find(remove.begin(), remove.end(), loc) == remove.end())
-				loci.push_back(loc);
-	}
-
-#ifndef OPTIMIZED
-	for (size_t i = 0; i < loci.size(); ++i) {
-		DBG_FAILIF(loci[i] >= this->totNumLoci(), ValueError,
-			"Given loci " + toStr(loci[i]) + " exceed max number of loci.");
-		DBG_FAILIF(i > 0 && loci[i] <= loci[i - 1], ValueError,
-			"Given loci should be in order.");
-	}
-#endif
-	// adjust order before doing anything
+	vectoru kept;
 	UINT oldTotNumLoci = totNumLoci();
-
-	// prepare data
-	//
-	// keep m_popSize;
-	// keep m_numSubPop;
-	// keep m_subPopSize;
-	// keep m_subPopIndex;
-
-	// genotype
-	// allocate new genotype and inds
 	// new geno structure is in effective now!
-	setGenoStructure(removeLociFromGenoStru(vectoru(), loci));
+	setGenoStructure(gsRemoveLoci(loci, kept));
 
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
-
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
 		//
-		ULONG newPopGenoSize = genoSize() * m_popSize;
-		vectora newGenotype(newPopGenoSize);
-		// keep newInds();
-
+		vectora newGenotype(genoSize() * m_popSize);
 		// copy data over
 		GenoIterator newPtr = newGenotype.begin();
 		UINT pEnd = ploidy();
@@ -1386,31 +1222,16 @@ void population::removeLoci(const vectoru & remove, const vectoru & keep)
 			GenoIterator oldPtr = m_inds[i].genoPtr();
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
-			// copy each chromosome
 			for (UINT p = 0; p < pEnd; ++p) {
-				for (vectoru::iterator loc = loci.begin();
-				     loc != loci.end(); ++loc) {
+				vectoru::iterator loc = kept.begin();
+				for (; loc != kept.end(); ++loc)
 					*(newPtr++) = oldPtr[*loc];
-				}
-				oldPtr += oldTotNumLoci;                  // next ploidy
+				oldPtr += oldTotNumLoci;
 			}
 		}
 		m_genotype.swap(newGenotype);
 	}
 	setIndOrdered(true);
-}
-
-
-/** get a new population with selected loci */
-population & population::newPopWithPartialLoci(
-                                               const vectoru & remove,
-                                               const vectoru & keep)
-{
-	// copy the population over (info is also copied)
-	population * pop = new population(*this);
-
-	pop->removeLoci(remove, keep);
-	return *pop;
 }
 
 
@@ -1420,11 +1241,11 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 		"Re-arrange loci must keep the same total number of loci");
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
-		sexChrom(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
+		chromTypes(), isHaplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
 		// chromosome names are discarded
-		vectorstr(), alleleNames(), lociNames(), maxAllele(), infoFields());
-	for (int depth = ancestralDepth(); depth >= 0; --depth) {
-		useAncestralPop(depth);
+		vectorstr(), alleleNames(), lociNames(), infoFields());
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
 
 		// now set geno structure
 		for (ULONG i = 0; i < m_popSize; ++i)
@@ -1448,12 +1269,12 @@ void population::pushAndDiscard(population & rhs, bool force)
 
 	// front -1 pop, -2 pop, .... end
 	//
-	if (!force && m_ancestralDepth > 0
-	    && ancestralDepth() == static_cast<size_t>(m_ancestralDepth) )
+	if (!force && m_ancestralGens > 0
+	    && ancestralGens() == static_cast<size_t>(m_ancestralGens) )
 		m_ancestralPops.pop_back();
 
 	// save current population
-	if (force || m_ancestralDepth != 0) {
+	if (force || m_ancestralGens != 0) {
 		// add a empty popData
 		m_ancestralPops.push_front(popData());
 		// get its reference
@@ -1466,7 +1287,6 @@ void population::pushAndDiscard(population & rhs, bool force)
 	// then swap out data
 	// can not use population::swap because it swaps too much data
 	m_popSize = rhs.m_popSize;
-	m_numSubPop = rhs.m_numSubPop;
 	m_subPopSize.swap(rhs.m_subPopSize);
 	m_subPopIndex.swap(rhs.m_subPopIndex);
 	std::swap(m_vspSplitter, rhs.m_vspSplitter);
@@ -1503,11 +1323,11 @@ void population::addInfoField(const string field, double init)
 		// only needs to initialize
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralPop(anc);
+			useAncestralGen(anc);
 			for (IndIterator ind = indBegin(); ind.valid(); ++ind)
 				ind->setInfo(init, idx);
 		}
-		useAncestralPop(oldAncPop);
+		useAncestralGen(oldAncPop);
 		return;
 	} catch (IndexError &) {
 		newfields.push_back(field);
@@ -1519,7 +1339,7 @@ void population::addInfoField(const string field, double init)
 		UINT is = infoSize();
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralPop(anc);
+			useAncestralGen(anc);
 			vectorinfo newInfo(is * popSize());
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
@@ -1532,7 +1352,7 @@ void population::addInfoField(const string field, double init)
 			}
 			m_info.swap(newInfo);
 		}
-		useAncestralPop(oldAncPop);
+		useAncestralGen(oldAncPop);
 	}
 	return;
 }
@@ -1554,12 +1374,12 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			// only needs to initialize
 			int oldAncPop = m_curAncestralGen;
 			for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-				useAncestralPop(anc);
+				useAncestralGen(anc);
 
 				for (IndIterator ind = indBegin(); ind.valid(); ++ind)
 					ind->setInfo(init, idx);
 			}
-			useAncestralPop(oldAncPop);
+			useAncestralGen(oldAncPop);
 		} catch (IndexError &) {
 			newfields.push_back(*it);
 		}
@@ -1573,7 +1393,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 		UINT is = infoSize();
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralPop(anc);
+			useAncestralGen(anc);
 			vectorinfo newInfo(is * popSize(), 0.);
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
@@ -1586,7 +1406,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			}
 			m_info.swap(newInfo);
 		}
-		useAncestralPop(oldAncPop);
+		useAncestralGen(oldAncPop);
 	}
 }
 
@@ -1598,7 +1418,7 @@ void population::setInfoFields(const vectorstr & fields, double init)
 	int oldAncPop = m_curAncestralGen;
 	UINT is = infoSize();
 	for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-		useAncestralPop(anc);
+		useAncestralGen(anc);
 		vectorinfo newInfo(is * popSize(), init);
 		InfoIterator ptr = newInfo.begin();
 		for (IndIterator ind = indBegin(); ind.valid(); ++ind, ptr += is) {
@@ -1607,349 +1427,33 @@ void population::setInfoFields(const vectorstr & fields, double init)
 		}
 		m_info.swap(newInfo);
 	}
-	useAncestralPop(oldAncPop);
+	useAncestralGen(oldAncPop);
 }
 
 
-bool population::locateRelatives(RelativeType relType, const vectorstr & relFields,
-                                 int gen, SexChoice relSex, const vectorstr & fields)
+void population::setIndInfo(const vectorinfo & values, UINT idx)
 {
-	if (relType == REL_None)
-		return true;
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
 
-	UINT topGen = gen == -1 ? ancestralDepth() : std::min(ancestralDepth(), static_cast<UINT>(gen));
-	vectorstr parentFields(fields.begin(), fields.end());
-	if (fields.empty()) {
-		parentFields.push_back("father_idx");
-		parentFields.push_back("mother_idx");
-	}
-
-	if (relType == REL_Self) {
-		DBG_ASSERT(relFields.size() == 1, ValueError,
-			"Please provide one information field to store REL_Self individuals");
-		UINT fieldIdx = infoIdx(relFields[0]);
-
-		for (size_t ans = 0; ans <= topGen; ++ans) {
-			useAncestralPop(ans);
-			for (size_t idx = 0; idx < popSize(); ++idx)
-				ind(idx).setInfo(idx, fieldIdx);
-		}
-		useAncestralPop(0);
-	} else if (relType == REL_Spouse) {
-		DBG_ASSERT(parentFields.size() == 2, ValueError,
-			"This relative only exists when there are two parents for each indidivual");
-
-		DBG_ASSERT(relFields.size() >= 1, ValueError,
-			"Please provide at least one information field to store REL_Self individuals");
-
-		UINT maxSpouse = relFields.size();
-
-		vectori spouseIdx(maxSpouse);
-		for (size_t i = 0; i < maxSpouse; ++i) {
-			spouseIdx[i] = infoIdx(relFields[i]);
-			// clear these fields for the last generation
-			for (IndInfoIterator ptr = infoBegin(spouseIdx[i]);
-			     ptr != infoEnd(spouseIdx[i]); ++ptr)
-				*ptr = static_cast<InfoType>(-1);
-		}
-
-		DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
-		// start from the parental generation
-		for (unsigned ans = 1; ans <= topGen; ++ans) {
-			vectoru numSpouse;
-			// go to offspring generation
-			useAncestralPop(ans - 1);
-			vectorf father = indInfo(parentFields[0]);
-			vectorf mother = indInfo(parentFields[1]);
-			//
-			useAncestralPop(ans);
-			if (numSpouse.empty())
-				numSpouse.resize(popSize(), 0);
-			//
-			for (size_t idx = 0; idx < father.size(); ++idx) {
-				DBG_FAILIF(fcmp_eq(father[idx], -1) || fcmp_eq(mother[idx], -1), ValueError,
-					"Invalid parental index (-1)");
-				ULONG p = static_cast<ULONG>(father[idx]);
-				ULONG m = static_cast<ULONG>(mother[idx]);
-				DBG_ASSERT(p < popSize() && m < popSize(), IndexError,
-					"Parental index out of range of 0 ~ " + toStr(popSize() - 1));
-				if (numSpouse[p] < maxSpouse) {
-					bool valid = true;
-					// if sex is not interested
-					if ((ind(m).sex() == Male && relSex == FemaleOnly) ||
-					    (ind(m).sex() == Female && relSex == MaleOnly))
-						valid = false;
-					// duplicate spouse
-					if (valid) {
-						for (size_t s = 0; s < numSpouse[p]; ++s)
-							if (ind(p).info(spouseIdx[s]) == m) {
-								valid = false;
-								break;
-							}
-					}
-					if (valid) {
-						ind(p).setInfo(m, spouseIdx[numSpouse[p]]);
-						++numSpouse[p];
-					}
-				}
-				if (numSpouse[m] < maxSpouse) {
-					bool valid = true;
-					// if sex is not interested
-					if ((ind(p).sex() == Male && relSex == FemaleOnly) ||
-					    (ind(p).sex() == Female && relSex == MaleOnly))
-						valid = false;
-					// duplicate spouse
-					if (valid) {
-						for (size_t s = 0; s < numSpouse[m]; ++s)
-							if (ind(m).info(spouseIdx[s]) == p) {
-								valid = false;
-								break;
-							}
-					}
-					if (valid) {
-						ind(m).setInfo(p, spouseIdx[numSpouse[m]]);
-						++numSpouse[m];
-					}
-				}                                                                                           // idx
-			}                                                                                               // ancestal generations
-			// set the rest of the field to -1
-			for (size_t idx = 0; idx < popSize(); ++idx) {
-				for (size_t ns = numSpouse[idx]; ns < maxSpouse; ++ns)
-					ind(idx).setInfo(-1, spouseIdx[ns]);
-			}
-		}
-		useAncestralPop(0);
-	} else if (relType == REL_Offspring) {
-		DBG_ASSERT(relFields.size() >= 1, ValueError,
-			"Please provide at least one information field to store offspring");
-
-		UINT maxOffspring = relFields.size();
-
-		vectori offspringIdx(maxOffspring);
-		for (size_t i = 0; i < maxOffspring; ++i) {
-			offspringIdx[i] = infoIdx(relFields[i]);
-			// clear these fields for the last generation
-			for (IndInfoIterator ptr = infoBegin(offspringIdx[i]);
-			     ptr != infoEnd(offspringIdx[i]); ++ptr)
-				*ptr = static_cast<InfoType>(-1);
-		}
-
-		DBG_WARNING(topGen == 0, "Offspring can not be located because there is no parental generation.");
-		// start from the parental generation
-		for (unsigned ans = 1; ans <= topGen; ++ans) {
-			vectoru numOffspring;
-			// for each type of parental relationship
-			for (vectorstr::const_iterator field = parentFields.begin();
-			     field != parentFields.end(); ++field) {
-				useAncestralPop(ans - 1);
-				vectorf parent = indInfo(*field);
-				DBG_DO(DBG_POPULATION, cout << "Parents " << parent << endl);
-				//
-				useAncestralPop(ans);
-				if (numOffspring.empty())
-					numOffspring.resize(popSize(), 0);
-				//
-				for (size_t idx = 0; idx < parent.size(); ++idx) {
-					DBG_ASSERT(fcmp_ne(parent[idx], -1), ValueError, "Invalid parental index (-1)");
-					ULONG p = static_cast<ULONG>(parent[idx]);
-					DBG_ASSERT(p < popSize(), IndexError, "Parental index out of range of 0 ~ " + toStr(popSize() - 1));
-					if (numOffspring[p] < maxOffspring) {
-						Sex offSex = relSex == AnySex ? Male : ancestor(idx, ans - 1).sex();
-						if ((relSex == MaleOnly && offSex != Male) ||
-						    (relSex == FemaleOnly && offSex != Female) ||
-						    (relSex == OppositeSex && offSex == ind(p).sex()))
-							continue;
-						ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
-						++numOffspring[p];
-					}
-				}                                                                                           // idx
-			}                                                                                               // ancestal generations
-			// only the last gen is cleared in advance.
-			// other generations should be done...
-			for (size_t idx = 0; idx < popSize(); ++idx) {
-				for (size_t no = numOffspring[idx]; no < maxOffspring; ++no)
-					ind(idx).setInfo(-1, offspringIdx[no]);
-			}
-		}
-		useAncestralPop(0);
-	} else if (relType == REL_Sibling || relType == REL_FullSibling) {
-		DBG_ASSERT(relFields.size() >= 1, ValueError,
-			"Please provide at least one information field to store offspring");
-
-		DBG_FAILIF(relType == REL_FullSibling && parentFields.size() != 2, ValueError,
-			"Please provide two parental information fields");
-		UINT maxSibling = relFields.size();
-
-		vectori siblingIdx(maxSibling);
-		for (size_t i = 0; i < maxSibling; ++i)
-			siblingIdx[i] = infoIdx(relFields[i]);
-
-		DBG_WARNING(topGen == 0, "Sibling can not be located because there is no parental generation.");
-		// start from the parental generation
-		for (unsigned ans = 0; ans <= topGen; ++ans) {
-			useAncestralPop(ans);
-			// if top generation, no information about sibling
-			if (ans == ancestralDepth()) {
-				for (IndIterator it = indBegin(); it.valid(); ++it)
-					for (size_t i = 0; i < maxSibling; ++i)
-						it->setInfo(-1, siblingIdx[i]);
-				continue;
-			}
-			// when parents information are available.
-			vectoru numSibling(popSize(), 0);
-			// for each type of parental relationship
-			map<pair<ULONG, ULONG>, vector<ULONG> > par_map;
-
-			if (relType == REL_Sibling) { // one or two parents
-				for (vectorstr::const_iterator field = parentFields.begin();
-				     field != parentFields.end(); ++field) {
-					vectorf parent = indInfo(*field);
-					for (size_t idx = 0; idx != parent.size(); ++idx) {
-						pair<ULONG, ULONG> parents(static_cast<ULONG>(parent[idx]), 0);
-						map<pair<ULONG, ULONG>, vector<ULONG> >::iterator item = par_map.find(parents);
-						if (item == par_map.end())
-							par_map[parents] = vector<ULONG>(1, idx);
-						else
-							item->second.push_back(idx);
-					}
-				}
-			} else {
-				vectorf father = indInfo(parentFields[0]);
-				vectorf mother = indInfo(parentFields[1]);
-				for (size_t idx = 0; idx != father.size(); ++idx) {
-					pair<ULONG, ULONG> parents(static_cast<ULONG>(father[idx]),
-					                           static_cast<ULONG>(mother[idx]));
-					map<pair<ULONG, ULONG>, vector<ULONG> >::iterator item = par_map.find(parents);
-					if (item == par_map.end())
-						par_map[parents] = vector<ULONG>(1, idx);
-					else
-						item->second.push_back(idx);
-				}
-			}
-			// now, each par_map has offsprings as siblings
-			map<pair<ULONG, ULONG>, vector<ULONG> >::const_iterator it = par_map.begin();
-			map<pair<ULONG, ULONG>, vector<ULONG> >::const_iterator end = par_map.end();
-			for (; it != end; ++it) {
-				const vector<ULONG> & sibs = it->second;
-				if (sibs.size() <= 1)
-					continue;
-				//
-				vector<Sex> sexes(sibs.size());
-				for (size_t i = 0; i < sibs.size(); ++i)
-					sexes[i] = ind(sibs[i]).sex();
-				//
-				for (size_t i = 0; i < sibs.size(); ++i) {
-					for (size_t j = 0; j < sibs.size(); ++j) {
-						if (i == j)
-							continue;
-						if ((relSex == MaleOnly && sexes[j] == Female) ||
-						    (relSex == FemaleOnly && sexes[j] == Male) ||
-						    (relSex == OppositeSex && sexes[i] == sexes[j]))
-							continue;
-						if (numSibling[sibs[i]] < maxSibling) {
-							ind(sibs[i]).setInfo(sibs[j], siblingIdx[numSibling[sibs[i]]]);
-							++numSibling[sibs[i]];
-						}
-					}
-				}                                                                                           // idx
-			}
-			// set the rest of the field to -1
-			for (size_t idx = 0; idx < popSize(); ++idx) {
-				for (size_t no = numSibling[idx]; no < maxSibling; ++no)
-					ind(idx).setInfo(-1, siblingIdx[no]);
-			}
-		}
-		useAncestralPop(0);
-	}
-	return true;
+	CHECKRANGEINFO(idx);
+	size_t valueSize = values.size();
+	IndInfoIterator ptr = infoBegin(idx);
+	for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
+		*ptr = static_cast<InfoType>(values[i % valueSize]);
 }
 
 
-bool population::setIndexesOfRelatives(const vectoru & pathGen,
-                                       const stringMatrix & pathFields,
-                                       const vectori & pathSex,
-                                       const vectorstr & resultFields)
+void population::setIndInfo(const vectorinfo & values, UINT idx, vspID subPop)
 {
-	if (pathGen.empty())
-		return true;
+	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+		"This operation is not allowed when there is an activated virtual subpopulation");
 
-	DBG_ASSERT(pathGen.size() == pathFields.size() + 1, ValueError,
-		"Parameter pathGen should be one element longer than pathFields");
-	DBG_FAILIF(!pathSex.empty() && pathSex.size() != pathFields.size(),
-		ValueError,
-		"Parameter pathSex, if given, should have the same length of pathFields");
-
-	vectori resultIdx(resultFields.size());
-	for (size_t i = 0; i < resultIdx.size(); ++i)
-		resultIdx[i] = infoIdx(resultFields[i]);
-	// start generation, and at which result will be saved.
-	useAncestralPop(pathGen[0]);
-	vectoru numResult(popSize(), 0);
-	UINT maxResult = resultIdx.size();
-	// clear values
-	for (IndIterator ind = indBegin(); ind.valid(); ++ind)
-		for (size_t i = 0; i < maxResult; ++i)
-			ind->setInfo(-1, resultIdx[i]);
-	// convert pathFields to pathIdx
-	intMatrix pathIdx(pathFields.size());
-	for (size_t i = 0; i < pathFields.size(); ++i) {
-		pathIdx[i] = vectori(pathFields[i].size());
-		for (size_t j = 0; j < pathFields[i].size(); ++j)
-			pathIdx[i][j] = infoIdx(pathFields[i][j]);
-	}
-	// convert pathSex to type SexChoices
-	vector<SexChoice> sexes(pathIdx.size(), AnySex);
-	for (size_t i = 0; i < pathSex.size(); ++i)
-		sexes[i] = static_cast<SexChoice>(pathSex[i]);
-
-	ULONG idx = 0;
-	for (IndIterator ind = indBegin(); ind.valid(); ++ind, ++idx) {
-		// start from one individual from pathGen[0]
-		Sex mySex = ind->sex();
-		vectorlu inds = vectorlu(1, idx);
-		// go through the path
-		for (size_t path = 0; path < pathFields.size(); ++path) {
-			DBG_DO(DBG_POPULATION, cout << "Start of path " << path
-				                        << " : " << inds << endl);
-			UINT fromGen = pathGen[path];
-			UINT toGen = pathGen[path + 1];
-
-			if (fromGen > ancestralDepth() || toGen > ancestralDepth()) {
-				DBG_WARNING(true, "Insufficient ancestral generations to trace relatives.");
-				return false;
-			}
-
-			const vectori & fields = pathIdx[path];
-			SexChoice sex = sexes[path];
-
-			vectorlu newInds;
-			// for all individuals
-			for (size_t i = 0; i < inds.size(); ++i) {
-				// for all fields
-				for (size_t s = 0; s < fields.size(); ++s) {
-					InfoType sIdx = ancestor(inds[i], fromGen).info(fields[s]);
-					if (sIdx < 0)
-						continue;
-					Sex indSex = ancestor(static_cast<ULONG>(sIdx), toGen).sex();
-					if ((sex == MaleOnly && indSex == Female) ||
-					    (sex == FemaleOnly && indSex == Male) ||
-					    (sex == OppositeSex && indSex == mySex))
-						continue;
-					newInds.push_back(static_cast<ULONG>(sIdx));
-				}
-			}
-			inds.swap(newInds);
-			if (inds.empty())
-				break;
-		}
-		DBG_DO(DBG_POPULATION, cout << "Ind " << idx << " has relatives " << inds << endl);
-		// ind has the results
-		for (size_t i = 0; i < maxResult; ++i)
-			if (i < inds.size())
-				ind->setInfo(inds[i], resultIdx[i]);
-
-	}
-	return true;
+	CHECKRANGEINFO(idx);
+	size_t valueSize = values.size();
+	IndInfoIterator ptr = infoBegin(idx, subPop);
+	for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)
+		*ptr = static_cast<InfoType>(values[i % valueSize]);
 }
 
 
@@ -1957,7 +1461,7 @@ bool population::setIndexesOfRelatives(const vectoru & pathGen,
 void population::setAncestralDepth(int depth)
 {
 	// just to make sure.
-	useAncestralPop(0);
+	useAncestralGen(0);
 	//
 	if (depth >= 0 && m_ancestralPops.size() > static_cast<size_t>(depth)) {
 		int numRemove = m_ancestralPops.size() - depth;
@@ -1967,11 +1471,11 @@ void population::setAncestralDepth(int depth)
 	DBG_ASSERT(depth < 0 || m_ancestralPops.size() <= static_cast<size_t>(depth), SystemError,
 		"Failed to change ancestral Depth");
 
-	m_ancestralDepth = depth;
+	m_ancestralGens = depth;
 }
 
 
-void population::useAncestralPop(UINT idx)
+void population::useAncestralGen(UINT idx)
 {
 	if (m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
 		return;
@@ -2005,10 +1509,8 @@ void population::useAncestralPop(UINT idx)
 }
 
 
-void population::savePopulation(const string & filename, const string & format, bool compress) const
+void population::save(const string & filename) const
 {
-	DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
-
 	boost::iostreams::filtering_ostream ofs;
 
 	ofs.push(boost::iostreams::gzip_compressor());
@@ -2022,10 +1524,9 @@ void population::savePopulation(const string & filename, const string & format, 
 }
 
 
-void population::loadPopulation(const string & filename, const string & format)
+void population::load(const string & filename)
 {
 	boost::iostreams::filtering_istream ifs;
-	bool gzipped = isGzipped(filename);
 
 	ifs.push(boost::iostreams::gzip_decompressor());
 	ifs.push(boost::iostreams::file_source(filename, std::ios::binary));
@@ -2037,33 +1538,8 @@ void population::loadPopulation(const string & filename, const string & format)
 	try {
 		boost::archive::text_iarchive ia(ifs);
 		ia >> *this;
-	} catch (...) {                                                                         // if any error happens, or can not determine format, try different methods
-		// first close the file handle.
-		DBG_DO(DBG_POPULATION,
-			cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
-		// open a fresh ifstream
-		boost::iostreams::filtering_istream ifbin;
-		if (gzipped)
-			ifbin.push(boost::iostreams::gzip_decompressor());
-		ifbin.push(boost::iostreams::file_source(filename));
-
-		// try to load the file using different iarchives.
-		try                                                                               // binary?
-		{
-			boost::archive::binary_iarchive ia(ifbin);
-			ia >> *this;
-		} catch (...) {
-			boost::iostreams::filtering_istream ifxml;
-			if (gzipped)
-				ifxml.push(boost::iostreams::gzip_decompressor());
-			ifxml.push(boost::iostreams::file_source(filename));
-			try {
-				boost::archive::xml_iarchive ia(ifxml);
-				ia >> boost::serialization::make_nvp("population", *this);
-			} catch (...) {
-				throw ValueError("Failed to load population " + filename + ".\n");
-			}
-		}                                                                                           // try text
+	} catch (...) {
+		throw ValueError("Failed to load population " + filename + ".\n");
 	}                                                                                               // try bin
 }
 
@@ -2125,6 +1601,10 @@ void population::sortIndividuals(bool infoOnly)
 	if (infoOnly) {
 		DBG_DO(DBG_POPULATION, cout << "Adjust info position " << endl);
 		UINT is = infoSize();
+		if (is == 0) {
+			setIndOrdered(true);
+			return;
+		}
 		vectorinfo tmpInfo(m_popSize * is);
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
@@ -2165,16 +1645,12 @@ void population::sortIndividuals(bool infoOnly)
 }
 
 
-population & LoadPopulation(const string & file, const string & format)
+population & LoadPopulation(const string & file)
 {
-#ifndef _NO_SERIALIZATION_
 	population * p = new population();
-	p->loadPopulation(file, format);
+
+	p->load(file);
 	return *p;
-#else
-	cout << "This feature is not supported in this platform" << endl;
-	return *new population(1);
-#endif
 }
 
 

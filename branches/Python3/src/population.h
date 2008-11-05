@@ -24,8 +24,8 @@
 #define _POPULATION_H
 
 /**
- \file
- \brief head file of class population
+   \file
+   \brief head file of class population
  */
 
 #include "utility.h"
@@ -50,177 +50,149 @@ using std::deque;
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/version.hpp>
-using boost::serialization::make_nvp;
 
 #include "individual.h"
 #include "virtualSubPop.h"
 
-enum RelativeType {
-	REL_None,           // do nothing
-	REL_Self,           // individual himself or herself.
-	REL_Offspring,      // All offspring with all spouses (if there are more than one spouse)
-	REL_Spouse,         // All spouses (with at least one offspring)
-	REL_FullSibling,    // Siblings who share two parents
-	REL_Sibling,        // Siblings who share at least one parent
-};
-
-enum SexChoice {
-	AnySex = 0,
-	MaleOnly = 1,
-	FemaleOnly = 2,
-	OppositeSex = 3
-};
 
 namespace simuPOP {
 
-class population;
-
-//************Documentation Format*****************
-//   /// brief description
-//   /**
-//   details
-//   \param
-//   \note
-//   \return
-//   \sa
-//   etc..
-//   */
-//
-
-/// A collection of individuals with the same genotypic structure.
 /**
-   A simuPOP population consists of individuals of the same genotypic structure,
-   which refers to the number of chromosomes, numbers and positions of loci on each
-   chromosome etc. The most important components of a population are:
-
- \li subpopulations. A population is divided into subpopulations (unstructured
-   population has a single subpopulation, which is the whole population itself).
-   Subpopulation structure limits the usually random exchange of genotypes between
-   individuals by disallowing mating between individuals from different subpopulations.
-   In the presence of subpopualtion structure, exchange of genetic information
-   across subpopulations can only be done through migration. Note that simuPOP uses
-   one-level population structure, which means there is no sub-subpopulation or
-   family in subpopulations.
-
- \li variables. Every population has its own variable space, or <em>local
-   namespace</em> in simuPOP term. This namespace is a Python dictionary that is
-   attached to each population and can be exposed to the users through \c vars()
-   or \c dvars() function. Many functions and operators work and store their results
-   in this namespace. For example, function \c Stat sets variables
-   such as <tt>alleleFreq[loc]</tt>, and you can access it via
-   <tt>pop.dvars().alleleFreq[loc][allele]</tt>.
-
- \li ancestral generations. A population can save arbitrary number of ancestral
-   generations. During evolution, the latest several (or all) ancestral generations
-   are saved. Functions to switch between ancestral generations are
-   provided so that one can examine and modify ancestral generations.
+ *  A simuPOP population consists of individuals of the same genotypic
+ *  structure, organized by generations, subpopulations and virtual
+ *  subpopulations. It also contains a Python dictionary that is used to
+ *  store arbitrary population variables.
+ *
+ *  In addition to genotypic structured related functions provided by the
+ *  \c genoStruTrait class, the population class provides a large number
+ *  of member functions that can be used to
+ *  \li Create, copy and compare populations.
+ *  \li Manipulate subpopulations. A population can be divided into several
+ *    subpopulations. Because individuals only mate with individuals within
+ *    the same subpopulation, exchange of genetic information across
+ *    subpopulations can only be done through migration. A number of functions
+ *    are provided to access subpopulation structure information, and to merge
+ *    and split subpopulations.
+ *  \li Define and access virtual subpopulations. A <em>virtual subpopulation
+ *    splitter</em> can be assigned to a population, which defines groups of
+ *    individuals called <em>virtual subpopulations</em> (VSP) within each
+ *    subpopulation.
+ *  \li Access individuals individually, or through iterators that iterate
+ *    through individuals in (virtual) subpopulations.
+ *  \li Access genotype and information fields of individuals at the population
+ *    level. From a population point of view, all genotypes are arranged
+ *    sequentially individual by individual. Please refer to class \c individual
+ *    for an introduction to genotype arragement of each individual.
+ *  \li Store and access <em>ancestral generations</em>. A population can save
+ *    arbitrary number of ancestral generations. It is possible to directly
+ *    access an ancestor, or make an ancestral generation the current generation
+ *    for more efficient access.
+ *  \li Insert or remove loci, resize (shrink or expand) a population, sample
+ *    from a population, or merge with other populations.
+ *  \li Manipulate population variables and evaluate expressions in this
+ *    <em>local namespace</em>.
+ *  \li Save and load a population.
  */
 class population : public GenoStruTrait
 {
 public:
 #define Haplodiploid 2.5
+
 	/** @name  constructors and destructor */
 	//@{
 
-	///Create a population object with given size and genotypic structure.
-	/**
-	 \param size An array of subpopulation sizes. If a single number is given,
-	   	it will be the size of a single subpopulation of the whole population.
-	 \param ploidy number of sets of homologous copies of chromosomes. Default to \c 2 (diploid).
-	   	Please use \c Haplodiploid to specify a haplodiploid population. Note that
-	   	the ploidy number returned for such a population will be 2 and male
-	   	individuals will store two copies of chromosomes. Operators such
-	   	as a recombinator will recognize this population as haplodiploid
-	   	and act accordingly.
-	 \param loci an array of numbers of loci on each chromosome. The length
-	   	of parameter \c loci determines the number of chromosomes. Default
-	   	to <tt>[1]</tt>, meaning one chromosome with a single locus. \n
-	   	The last chromosome can be sex chromosome. In this case, the maximum
-	   	number of loci on X and Y should be provided. I.e., if there are 3
-	   loci on Y chromosme and 5 on X chromosome, use \c 5.
-	 \param sexChrom Diploid population only. If this parameter is \c True,
-	   the last homologous chromosome will be treated as sex chromosome.
-	   (XY for male and XX for female.) If X and Y have different numbers of loci,
-	   the number of loci of the longer one of the last (sex) chromosome should be
-	   specified in \c loci.
-	 \param lociPos a 1-d or 2-d array specifying positions of loci on each
-	   chromosome. You can use a nested array to specify loci position for
-	   each chromosome. For example, you can use <tt>lociPos=[1,2,3]</tt>
-	   when <tt>loci=[3]</tt> or <tt>lociPos=[[1,2],[1.5,3,5]]</tt> for
-	   <tt>loci=[2,3]</tt>. simuPOP does not assume a unit for these
-	   positions, although they are usually intepreted as centiMorgans.
-	   The default values are \c 1, \c 2, etc. on each chromosome.
-	 \param subPop obsolete parameter
-	 \param ancestralDepth number of most recent ancestral generations to keep
-	   during evolution. Default to \c 0, which means only the current generation
-	   will be available. You can set it to a positive number \c m to
-	   keep the latest m generations in the population, or \c -1 to keep all ancestral
-	   populations. Note that keeping track of all ancestral generations may quickly
-	   exhaust your computer RAM. If you really need to do that, using \c savePopulation
-	   operator to save each generation to a file is a much better choice.
-	 \param chromNames an array of chromosome names.
-	 \param alleleNames an array of allele names. For example, for a locus with alleles
-	   A, C, T, G, you can specify \c alleleNames as <tt>('A','C','T','G')</tt>.
-	 \param lociNames an array or a matrix (separated by chromosomes) of names for
-	   each locus. Default to \c "locX-Y" where \c X is the chromosome index and \c Y
-	   is the locus number, both starting from 1.
-	 \param maxAllele maximum allele number. Default to the maximum allowed allele state
-	   of the current library. This will set a cap for all loci. For individual locus, you can
-	   specify \c maxAllele in mutation models, which can be smaller than the global \c maxAllele
-	   but not larger. Note that this number is the number of allele states minus 1 since
-	   allele number starts from 0.
-	 \param infoFields names of information fields that will be attached to each
-	   individual. For example, if you need to record the parents of each individual
-	   using operator
-	   <tt>parentTagger()</tt>, you will need two fields \c father_idx and \c mother_idx.
-	 \return no return value. Exception will be thrown when wrong parameters are given.
-	 \sa simulator, baseOperator, mating schemes
-	 \test src_population.log Population initialization and member functions
+	/** The following parameters are used to create a population object:
+	 *
+	 *  \param size A list of subpopulation sizes. The length of this list
+	 *    determines the number of subpopulations of this population. If
+	 *    there is no subpopulation, <em>size</em><tt>=[popSize]</tt> can be
+	 *    written as <em>size</em><tt>=popSize</tt>.
+	 *  \param ploidy Number of homologous sets of chromosomes. Default to
+	 *    \c 2 (diploid). For efficiency considerations, all chromosomes have
+	 *    the same number of homologous sets, even if some chromosomes (e.g.
+	 *    mitochondrial) or some individuals (e.g. males in a haplodiploid
+	 *    population) have different numbers of homologous sets. The first
+	 *    case is handled by setting \e chromTypes of each chromosome. Only
+	 *    the haplodiploid populations are handled for the second case, for
+	 *    which <tt>ploidy=Haplodiploid</tt> should be used.
+	 *  \param loci A list of numbers of loci on each chromosome. The length of
+	 *    this parameter determines the number of chromosomes. Default to
+	 *    <tt>[1]</tt>, meaning one chromosome with a single locus.
+	 *  \param chromTypes A list that specifies the type of each chromosome,
+	 *    which can be \c Autosome, \c ChromosomeX, \c ChromosomeY, or
+	 *    \c Mitochondrial. All chromosomes are assumed to be autosomes if
+	 *    this parameter is ignored. Sex chromosome can only be specified in a
+	 *    diploid population where the sex of an individual is determined by
+	 *    the existence of these chromosomes using the \c XX (\c Female) and
+	 *    \c XY (\c Male) convention. Both sex chromosomes have to be available
+	 *    and be specified only once. Because chromosomes \c X and \c Y are
+	 *    treated as two chromosomes, recombination on the pseudo-autosomal
+	 *    regions of the sex chromsomes is not supported. A \c Mitochondrial
+	 *    chromosome only exists in females and is inherited maternally.
+	 *  \param lociPos Positions of all loci on all chromosome, as a list of
+	 *    float numbers. Default to \c 1, \c 2, ... etc on each chromosome.
+	 *    Positions on the same chromosome should be ordered. A nested list
+	 *    that specifies positions of loci on each chromosome is also
+	 *    acceptable.
+	 *  \param ancestralGens Number of the most recent ancestral generations
+	 *    to keep during evolution. Default to \c 0, which means only the
+	 *    current generation will be kept. If it is set to \c -1, all ancestral
+	 *    generations will be kept in this population (and exhaust your computer
+	 *    RAM quickly).
+	 *  \param chromNames A list of chromosome names. Default to \c chrom1,
+	 *    \c chrom2, ... etc.
+	 *  \param alleleNames A list of allele names for all markers. For example,
+	 *    <em>alleleNames</em><tt>=('A','C','T','G')</tt> names allele \c 0 --
+	 *    \c 3 \c 'A', \c 'C', \c 'T', and \c 'G' respectively. Note that
+	 *    simuPOP does not yet support locus-specific allele names.
+	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
+	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
+	 *    chromosome and locus indexes, respectively.
+	 *  \param infoFields Names of information fields (named float number) that
+	 *    will be attached to each individual.
 	 */
 	population(const vectorlu & size = vectorlu(),
-	           float ploidy = 2,
-	           const vectoru & loci = vectoru(),
-	           bool sexChrom = false,
-	           const vectorf & lociPos = vectorf(),
-	           int ancestralDepth = 0,
-	           const vectorstr & chromNames = vectorstr(),
-	           const vectorstr & alleleNames = vectorstr(),
-	           const vectorstr & lociNames = vectorstr(),
-	           UINT maxAllele = ModuleMaxAllele,
-	           const vectorstr & infoFields = vectorstr());
+		float ploidy = 2,
+		const vectoru & loci = vectoru(),
+		const vectoru & chromTypes = vectoru(),
+		const vectorf & lociPos = vectorf(),
+		int ancestralGens = 0,
+		const vectorstr & chromNames = vectorstr(),
+		const vectorstr & alleleNames = vectorstr(),
+		const vectorstr & lociNames = vectorstr(),
+		const vectorstr & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor
 	population(const population & rhs);
 
-	/// deep copy of a population. (In python, <tt>pop1 = pop</tt> will only create a reference to \c pop.)
-	/**
-	   This function by default copies all ancestral generations, but you can copy only one (current,
-	   <tt>keepAncestralPops=0</tt>), or specified number of ancestral generations.
+	/** Copy a population, with the option to keep all (default), no, or a
+	 *  given number of ancestral generations (\e keepAncestralPops = \c -1,
+	 *  \c 0, or a positive number, respectively). Note that Python statement
+	 *  <tt>pop1 = pop</tt> only creates a reference to an existing population
+	 *  \c pop.
+	 *  <group>1-pop</group>
 	 */
 	population * clone(int keepAncestralPops = -1) const;
 
-	/// swap the content of two populations
+	/** HIDDEN (do not see a need to expose this function yet.)
+	 *  swap the content of two populations
+	 *  <group>1-pop</group>
+	 */
 	void swap(population & rhs)
 	{
 		GenoStruTrait::swap(rhs);
 		std::swap(m_popSize, rhs.m_popSize);
-		std::swap(m_numSubPop, rhs.m_numSubPop);
 		m_subPopSize.swap(rhs.m_subPopSize);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
 		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
 		m_inds.swap(rhs.m_inds);
-		std::swap(m_ancestralDepth, rhs.m_ancestralDepth);
+		std::swap(m_ancestralGens, rhs.m_ancestralGens);
 		m_vars.swap(rhs.m_vars);
 		m_ancestralPops.swap(rhs.m_ancestralPops);
 		std::swap(m_rep, rhs.m_rep);
@@ -242,52 +214,64 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// Validate if a population is in good shape. This is mostly used
-	/// to detect if scratch population is prepared properly during
-	/// evolution
+	/** CPPONLY
+	 * Validate if a population is in good shape. This is mostly used
+	 * to detect if scratch population is prepared properly during
+	 * evolution
+	 */
 	void validate(const string & msg) const;
 
-	/// CPPONLY
-	/// Fix a population, resize it if necessary. The content
-	/// of the population will be cleared.
+	/** CPPONLY
+	 * Fix a population, resize it if necessary. The content
+	 * of the population will be cleared.
+	 */
 	void fitSubPopStru(const vectorlu & newSubPopSizes);
 
-	/// if a population has any activated virtual subpopulations
-	/// CPPONLY
+	/** if a population has any activated virtual subpopulations
+	 *  CPPONLY
+	 */
 	bool hasActivatedVirtualSubPop() const;
 
-	/// if a subpopulation has any activated virtual subpopulation
-	/// CPPONLY
+	/** if a subpopulation has any activated virtual subpopulation
+	 *  CPPONLY
+	 */
 	bool hasActivatedVirtualSubPop(SubPopID subPop) const;
 
-	/// if a population has any virtual subpopulation
+	/** CPPONLY because this is simply numVirtualSubPop() != 0.
+	 *  Return True if virtual subpopulations are defined for this population.
+	 *  <group>3-VSP</group>
+	 */
 	bool hasVirtualSubPop() const;
 
 	/// CPPONLY
 	vspSplitter * virtualSplitter() const { return m_vspSplitter; }
 
-	/// set a virtual splitter to the population. If multiple splitter is needed
-	/// for different subpopulations, use a combined splitter.
-	/// \param vsp a virtual subpop splitter
+	/** Set a VSP splitter to the population, which defines the same VSPs for
+	 *  all subpopulations. If different VSPs are needed for different
+	 *  subpopulations, a \c combinedSplitter can be used to make these VSPs
+	 *  available to all subpopulations.
+	 *  <group>3-VSP</group>
+	 */
 	void setVirtualSplitter(vspSplitter * vsp);
 
-	/// number of virtual subpopulations.
+	/** Return the number of virtual subpopulations (VSP) defined by a VSP
+	 *  splitter. Return \c 0 if no VSP is defined.
+	 *  <group>3-VSP</group>
+	 */
 	UINT numVirtualSubPop() const;
 
-	/// activate a virtual subpopulation.
+	/// HIDDEN activate a virtual subpopulation.
 	/**
-	 \param id subpopulation id
-	 \param vid virtual subpopulation id
-	 \note this function is currently not recommended to be used.
+	   \param id subpopulation id
+	   \param vid virtual subpopulation id
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
 		vspSplitter::activateType type = vspSplitter::Visible);
 
-	/** deactivate virtual subpopulations in a given
-	   subpopulation. In another word, all individuals
-	   will become visible.
-	 \note this function is currently not recommended to be used.
+	/** HIDDEN
+	 *  deactivate virtual subpopulations in a given
+	 *  subpopulation. In another word, all individuals
+	 *  will become visible.
 	 */
 	void deactivateVirtualSubPop(SubPopID subPop);
 
@@ -296,63 +280,49 @@ public:
 	/// a python function used to compare the population objects
 	int __cmp__(const population & rhs) const;
 
-	/// set population/subpopulation structure given subpopulation sizes
-	/**
-	 \param newSubPopSizes an array of new subpopulation sizes. The overall
-	   population size should not changed.
-	 \return none
-	 \sa mating
+	/** HIDDEN
+	 *  set population/subpopulation structure given subpopulation sizes
+	 *  \param newSubPopSizes an array of new subpopulation sizes. The overall
+	 *    population size should not changed.
+	 *  <group>2-subpop</group>
 	 */
 	void setSubPopStru(const vectorlu & newSubPopSizes);
 
-	///  number of subpopulations in a population.
-	/**
-	 \return number of subpopulations (>=1)
+	/** Return the number of subpopulations in a population. Return 1 if there
+	 *  is no subpopulation structure.
+	 *  <group>2-subpop</group>
 	 */
 	UINT numSubPop() const
 	{
-		return m_numSubPop;
+		return m_subPopSize.size();
 	}
 
 
-	/// return size of a subpopulation \c subPop.
-	/**
-	 \param subPop index of subpopulation (start from 0)
-
-	 \return size of subpopulation \c subPop
+	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
+	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>).
+	 *  <group>2-subpop</group>
 	 */
-	ULONG subPopSize(SubPopID subPop) const
+	ULONG subPopSize(vspID subPop) const
 	{
-		CHECKRANGESUBPOP(subPop);
-		return m_subPopSize[subPop];
+		CHECKRANGESUBPOP(subPop.subPop());
+		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+		if (hasActivatedVirtualSubPop() || subPop.isVirtual())
+			return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
+		else
+			return m_subPopSize[subPop.subPop()];
 	}
 
 
-	/**
-	   return the size of virtual subpopulation subPop.
-	   if subPop is activated, and subPop does not specify
-	   which virtual subpopulation to count, the currently
-	   activated virtual subpop is returned. Therefore,
-	   When it is not certain if a subpopulation has activated
-	   virtual subpopulation, this function can be used.
-
-	 \param id subpopulation id
-	 \param vid virtual subpopulation id. If not given,
-	   current subpopulation, or current actived subpopulation size
-	   will be returned.
+	/** Return the name of a virtual subpopulation \e subPop (specified by a
+	 *  <tt>(sp, vsp)</tt> pair). Because VSP names are the same across all
+	 *  subpopulations, a single VSP index is also acceptable.
+	 *  <group>3-VSP</group>
 	 */
-	ULONG virtualSubPopSize(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID) const;
+	string virtualSubPopName(vspID subPop) const;
 
-	/// name of the given virtual subpopulation.
-	/**
-	 \param id subpopulation id
-	 \param vid virtual subpopulation id
-	 */
-	string virtualSubPopName(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID) const;
-
-	/// return an array of all subpopulation sizes.
-	/**
-	 \return an array of size of subpopulations
+	/** Return the sizes of all subpopulations in a list. Virtual
+	 *  subpopulations are not considered.
+	 *  <group>2-subpop</group>
 	 */
 	vectorlu subPopSizes() const
 	{
@@ -366,9 +336,8 @@ public:
 	 */
 	//@{
 
-	/// total population size
-	/**
-	 \return total number of individuals in this population
+	/** Return the total number of individuals in all subpopulations.
+	 *  <group>2-subpop</group>
 	 */
 	ULONG popSize() const
 	{
@@ -376,38 +345,32 @@ public:
 	}
 
 
-	///  return the absolute index of an individual in a subpopulation.
-	/**
-	 \param index index of an individual in a subpopulation \c subPop
-	 \param subPop subpopulation index (start from \c 0)
-	 \return the absolute index of an individual in a subpopulation
-	 \sa subPopIndPair
+	/** return the absolute index of an individual \e idx in subpopulation \e subPop.
+	 *  <group>2-subpop</group>
 	 */
-	ULONG absIndIndex(ULONG ind, UINT subPop) const
+	ULONG absIndIndex(ULONG idx, UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
-		CHECKRANGESUBPOPMEMBER(ind, subPop);
+		CHECKRANGESUBPOPMEMBER(idx, subPop);
 
-		return m_subPopIndex[subPop] + ind;
+		return m_subPopIndex[subPop] + idx;
 	}
 
 
-	/// return the subpopulation ID and relative index of an individual with absolute index \c ind
-	/*
-	 \param absInd absolute index of an individual
-	 \return a pair of values (subPop, index)
-	 \sa absIndIndex
+	/** Return the subpopulation ID and relative index of an individual, given
+	 *  its absolute index \c idx.
+	 *  <group>2-subpop</group>
 	 */
-	std::pair<UINT, ULONG> subPopIndPair(ULONG ind)
+	std::pair<UINT, ULONG> subPopIndPair(ULONG idx)
 	{
-		CHECKRANGEIND(ind);
+		CHECKRANGEIND(idx);
 
 		pair<UINT, ULONG> loc;
 
-		for (UINT i = 1; i <= m_numSubPop; ++i) {
-			if (m_subPopIndex[i] > ind) {
+		for (UINT i = 1; i <= m_subPopSize.size(); ++i) {
+			if (m_subPopIndex[i] > idx) {
 				loc.first = i - 1;
-				loc.second = ind - m_subPopIndex[i - 1];
+				loc.second = idx - m_subPopIndex[i - 1];
 				break;
 			}
 		}
@@ -415,10 +378,9 @@ public:
 	}
 
 
-	/// index of the first individual of a subpopulation \c subPop
-	/**
-	 \result beginning index of this subpopulation
-	 \sa absIndIndex
+	/** Return the index of the first individual in subpopulation \e subPop. An
+	 *  \c IndexError will be raised if \e subPop is out of range.
+	 *  <group>2-subpop</group>
 	 */
 	ULONG subPopBegin(UINT subPop) const
 	{
@@ -428,10 +390,11 @@ public:
 	}
 
 
-	/// return the value of the index of the last individual of a subpopulation \c subPop plus 1
-	/**
-	 \return ending index of this subpopulation (not in this subpop)
-	 \sa absIndIndex
+	/** Return the index of the last individual in subpopulation \e subPop plus
+	 *  \c 1, so that <tt>range(subPopBegin(subPop)</tt>,
+	 *  <tt>subPopEnd(subPop)</tt> can iterate through the index of all
+	 *  individuals in subpopulation \e subPop.
+	 *  <group>2-subpop</group>
 	 */
 	ULONG subPopEnd(UINT subPop) const
 	{
@@ -446,85 +409,64 @@ public:
 	 */
 	//@{
 
-	/// refernce to individual \c ind in subpopulation \c subPop
-	/**
-	   This function is named \c individual in the Python interface.
-	 \param ind individual index within \c subPop
-	 \param subPop subpopulation index
-	 \return reference to an individual
+	/** Return a refernce to individual \e ind in subpopulation \e subPop.
+	 *  <group>4-ind</group>
 	 */
-	individual & ind(ULONG ind, UINT subPop = 0)
+	individual & ind(ULONG idx, UINT subPop = 0)
 	{
 #ifndef OPTIMIZED
 		if (subPop > 0) {
-			CHECKRANGESUBPOPMEMBER(ind, subPop);
+			CHECKRANGESUBPOPMEMBER(idx, subPop);
 		} else {
-			CHECKRANGEIND(ind);
+			CHECKRANGEIND(idx);
 		}
 #endif
 
-		return m_inds[ subPopBegin(subPop) + ind];
+		return m_inds[subPopBegin(subPop) + idx];
 	}
 
 
 	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
-	/**
-	   Return individual \ind from subpopulation \subPop. This function
-	   is named \c individual in the Python interface.
+	/** CPPONLY
+	 *  Return a reference to individual \e ind from subpopulation \subPop.
+	 *  <group>4-ind</group>
 	 */
-	const individual & ind(ULONG ind, UINT subPop = 0) const
+	const individual & ind(ULONG idx, UINT subPop = 0) const
 	{
 #ifndef OPTIMIZED
 		if (subPop > 0) {
-			CHECKRANGESUBPOPMEMBER(ind, subPop);
+			CHECKRANGESUBPOPMEMBER(idx, subPop);
 		} else {
-			CHECKRANGEIND(ind);
+			CHECKRANGEIND(idx);
 		}
 #endif
 
-		return m_inds[ subPopBegin(subPop) + ind];
+		return m_inds[subPopBegin(subPop) + idx];
 	}
 
 
-	/// refrence to an individual \c ind in an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
+	/** Return a reference to individual \c idx in ancestral generation \c gen.
+	 *  The correct individual will be returned even if the current generation
+	 *  is not the present one (see \c useAncestralGen).
+	 *  <group>6-ancestral</group>
 	 */
-	individual & ancestor(ULONG ind, UINT gen);
+	individual & ancestor(ULONG idx, UINT gen);
 
 	/// refrence to an individual \c ind in an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
-	 */
 	const individual & ancestor(ULONG ind, UINT gen) const;
 
-	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
+	/** Return a reference to individual \c idx of subpopulation \e subPop in
+	 *   ancestral generation \c gen.
+	 *  <group>6-ancestral</group>
 	 */
 	individual & ancestor(ULONG ind, UINT subPop, UINT gen);
 
 	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
-	/**
-	   This function gives access to individuals in an ancestral generation.
-	   It will refer to the correct generation even if the current
-	   generation is not the latest one. That is to say, ancestor(ind, 0) is not
-	   always individual(ind).
-	 */
 	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const;
 
-	/// return an iterator that can be used to iterate through all individuals
-	/**
-	   Typical usage is \n <tt>for ind in pop.individuals():</tt>
+	/** Return a Python iterator that can be used to iterate through all
+	 *  individuals in a population.
+	 *  <group>4-ind</group>
 	 */
 	pyIndIterator individuals()
 	{
@@ -537,51 +479,41 @@ public:
 	}
 
 
-	/// return an iterator that can be used to iterate through all individuals in subpopulation \c subPop
-	pyIndIterator individuals(SubPopID subPop)
+	/** Return an iterator that can be used to iterate through all individuals
+	 *  in a subpopulation (<tt>subPop=spID</tt>) or a virtual subpopulation
+	 *  (<tt>subPop=[spID, vspID]</tt>).
+	 *  <group>4-ind</group>
+	 */
+	pyIndIterator individuals(vspID subPop)
 	{
+		SubPopID spID = subPop.subPop();
+		SubPopID vspID = subPop.virtualSubPop();
+
 #ifndef OPTIMIZED
-		CHECKRANGESUBPOP(subPop);
-#endif
-		// if a virtual subpopulation is activated, this will
-		// iterate through virtual subpopulation. However,
-		// users are not supposed to manually activate subpopulation
-		// so this feature is CPPONLY
-		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-			m_inds.begin() + subPopEnd(subPop),
-			// if there is no activated virtual subpopualtions
-			// iterate through all individuals.
-			!hasActivatedVirtualSubPop(subPop),
-			// otherwise, iterate through all visible individuals.
-			true);
-	}
-
-
-	pyIndIterator individuals(SubPopID subPop, SubPopID virtualSubPop)
-	{
-#ifndef OPTIMIZED
-		CHECKRANGESUBPOP(subPop);
-#endif
-		DBG_FAILIF(virtualSubPop == InvalidSubPopID, ValueError,
-			"Invalid virtual subpoulation");
-
-		DBG_FAILIF(hasActivatedVirtualSubPop(subPop), ValueError,
+		CHECKRANGESUBPOP(spID);
+		CHECKRANGEVIRTUALSUBPOP(vspID);
+		DBG_FAILIF(hasActivatedVirtualSubPop(spID), ValueError,
 			"This operation is not allowed for an activated subpopulation");
-
-		DBG_ASSERT(static_cast<UINT>(virtualSubPop) < numVirtualSubPop(), IndexError,
-			"Population does not have any virtual subpopulation");
-
-		// this does not need to be deactivated...
-		activateVirtualSubPop(subPop, virtualSubPop, vspSplitter::Iteratable);
-
-		// if there is no virtual subpop
-		return pyIndIterator(m_inds.begin() + subPopBegin(subPop),
-			m_inds.begin() + subPopEnd(subPop),
-			// allInds will not work at all, because there will be
-			// virtual subpopulation
-			false,
-			// and we count visible, and iteratable individuals.
-			false);
+#endif
+		if (subPop.isVirtual()) {
+			// this does not need to be deactivated...
+			activateVirtualSubPop(spID, vspID, vspSplitter::Iteratable);
+			// if there is no virtual subpop
+			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
+				m_inds.begin() + subPopEnd(spID),
+				// allInds will not work at all, because there will be
+				// virtual subpopulation
+				false,
+				// and we count visible, and iteratable individuals.
+				false);
+		} else
+			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
+				m_inds.begin() + subPopEnd(spID),
+				// if there is no activated virtual subpopualtions
+				// iterate through all individuals.
+				!hasActivatedVirtualSubPop(spID),
+				// otherwise, iterate through all visible individuals.
+				true);
 	}
 
 
@@ -600,102 +532,110 @@ public:
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indBegin()
+	IndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indEnd()
+	IndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		return IndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// The iterator will skip invisible individuals
-	IndIterator indBegin(UINT subPop)
+	/** CPPONLY individual iterator: with subPop info.
+	 *  The iterator will skip invisible individuals
+	 */
+	IndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
 	/// CPPONLY individual iterator: with subPop info.
-	IndIterator indEnd(UINT subPop)
+	IndIterator indEnd(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
-	/// The iterator will skip invisible individuals
-	ConstIndIterator indBegin() const
+	/** CPPONLY individual iterator: without subPop info
+	 *  The iterator will skip invisible individuals
+	 */
+	ConstIndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
-	/// It is recommended to use it.valid(), instead of it != indEnd()
-	ConstIndIterator indEnd() const
+	/** CPPONLY individual iterator: without subPop info
+	 *  It is recommended to use it.valid(), instead of it != indEnd()
+	 */
+	ConstIndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		return ConstIndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop());
+			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// The iterator will skip invisible individuals
-	ConstIndIterator indBegin(UINT subPop) const
+	/** CPPONLY individual iterator: with subPop info.
+	 *  The iterator will skip invisible individuals
+	 */
+	ConstIndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// It is recommended to use it.valid(), instead of it != indEnd(sp)
-	ConstIndIterator indEnd(UINT subPop) const
+	/** CPPONLY individual iterator: with subPop info.
+	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
+	 */
+	ConstIndIterator indEnd(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop));
+			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
+	/** CPPONLY individual iterator: without subPop info
+	 */
 	RawIndIterator rawIndBegin()
 	{
 		return m_inds.begin();
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
+	/** CPPONLY individual iterator: without subPop info
+	 */
 	RawIndIterator rawIndEnd()
 	{
 		return m_inds.end();
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// The iterator will skip invisible individuals
+	/** CPPONLY individual iterator: with subPop info.
+	 * The iterator will skip invisible individuals
+	 */
 	RawIndIterator rawIndBegin(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -704,7 +644,8 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
+	/** CPPONLY individual iterator: with subPop info.
+	 */
 	RawIndIterator rawIndEnd(UINT subPop)
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -713,24 +654,27 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
-	/// The iterator will skip invisible individuals
+	/** CPPONLY individual iterator: without subPop info
+	 * The iterator will skip invisible individuals
+	 */
 	ConstRawIndIterator rawIndBegin() const
 	{
 		return m_inds.begin();
 	}
 
 
-	/// CPPONLY individual iterator: without subPop info
-	/// It is recommended to use it.valid(), instead of it != indEnd()
+	/** CPPONLY individual iterator: without subPop info
+	 *  It is recommended to use it.valid(), instead of it != indEnd()
+	 */
 	ConstRawIndIterator rawIndEnd() const
 	{
 		return m_inds.end();
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// The iterator will skip invisible individuals
+	/** CPPONLY individual iterator: with subPop info.
+	 * The iterator will skip invisible individuals
+	 */
 	ConstRawIndIterator rawIndBegin(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -739,8 +683,9 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	/// It is recommended to use it.valid(), instead of it != indEnd(sp)
+	/** CPPONLY individual iterator: with subPop info.
+	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
+	 */
 	ConstRawIndIterator rawIndEnd(UINT subPop) const
 	{
 		CHECKRANGESUBPOP(subPop);
@@ -751,13 +696,13 @@ public:
 
 	/// CPPONLY allele iterator that access a locus across all copies of chromosomes and individual
 	/**
-	 \param locus allele access, given locus, return the first allele. ptr++ go the next one.
+	   \param locus allele access, given locus, return the first allele. ptr++ go the next one.
 	   Default return the beginning of the first subpopulation, also the first of the whole population
 
-	 \param order order = True: indiviudls in order
-	   	   order = false: do not even respect subpops
+	   \param order order = True: indiviudls in order
+	       order = false: do not even respect subpops
 
-	 \note The order of alleles DOES NOT HAVE TO match the order of individuals. Only the boundary of
+	   \note The order of alleles DOES NOT HAVE TO match the order of individuals. Only the boundary of
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
@@ -918,49 +863,44 @@ public:
 	   Return an editable array of all genotypes of the population. You need to
 	   know how these genotypes are organized to safely read/write genotype
 	   directly.
-	 \param order if order is \c true, individuals will be ordered such that
-	   	<tt>pop.individual(x).arrGenotype() == pop.arrGenotype()[x*pop.genoSize():(x+1)*pop.genoSize()]</tt>.
+	   \param order if order is \c true, individuals will be ordered such that
+	    <tt>pop.individual(x).arrGenotype() == pop.arrGenotype()[x*pop.genoSize():(x+1)*pop.genoSize()]</tt>.
 	 */
 	PyObject * arrGenotype(bool order);
 
 	/// HIDDEN get the whole genotypes of individuals in a subpopulation
 	/**
 	   Return an editable array of all genotype in a subpopulation.
-	 \param subPop index of subpopulation (start from 0)
-	 \param order if order is \c true, individuals will be ordered.
+	   \param subPop index of subpopulation (start from 0)
+	   \param order if order is \c true, individuals will be ordered.
 	 */
 	PyObject * arrGenotype(UINT subPop, bool order);
 
-	/// Get an editable array of the genotype of all individuals in a population
-	/**
-	   Return an editable array of all genotypes of the population. You need to
-	   know how these genotypes are organized to safely read/write genotype
-	   directly.
+	/** Return an editable array of the genotype of all individuals in this
+	 *  population.
+	 *  <group>5-genotype</group>
 	 */
 	PyObject * genotype();
 
-	/// Get an editable array of the genotype of all individuals in a subpopulation
-	/**
-	 \param subPop index of subpopulation (start from 0)
+	/** Return an editable array of the genotype of all individuals in
+	 *  subpopulation \e subPop.
+	 *  <group>5-genotype</group>
 	 */
-	PyObject * genotype(UINT subPop);
+	PyObject * genotype(SubPopID subPop);
 
-	/// Set genotype to all individuals of a population
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the genotype length of the population, which is
-		popSize()*ploidy()*totNumLoci().
-	*/
+	/** Fill the genotype of all individuals of a population using a list of
+	 *  alleles \e geno. \e geno will be reused if its length is less than
+	 *  <tt>popSize()*totNumLoci()*ploidy()</tt>.
+	 *  <group>5-genotype</group>
+	 */
 	void setGenotype(vectora geno);
 
-	/// Set genotype to all individuals in a subpopulation
-	/**
-	 \param geno genotype to be set. It will be reused if its length
-		is less than the genotype length of the population, which is
-		subPopSize(subPop)*ploidy()*totNumLoci().
-	\param subPop index of subpopulation (start from 0)
-	*/
-	void setGenotype(vectora geno, UINT subPop);
+	/** Fill the genotype of all individuals of in subpopulation \e subPop
+	 *  using a list of alleles \e geno. \e geno will be reused if its length
+	 *  is less than <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
+	 *  <group>5-genotype</group>
+	 */
+	void setGenotype(vectora geno, SubPopID subPop);
 
 	//@}
 
@@ -968,204 +908,176 @@ public:
 	 */
 	//@{
 
-	/// set subpopulation ID with given ID
+	/// HIDDEN set subpopulation ID with given ID
 	/**
 	   Set subpopulation ID of each individual with given ID. Individuals
 	   can be rearranged afterwards using \c setSubPopByIndID.
 
-	 \param id an array of the same length of population size, resprenting
+	   \param id an array of the same length of population size, resprenting
 	   subpopulation ID of each individual. If the length of \id is less
 	   than population size, it is repeated to fill the whole population.
-	 \param ancestralPops If true (default to False), set subpop id for ancestral
+	   \param ancestralPops If true (default to False), set subpop id for ancestral
 	   generations as well.
-	 \sa individual::setSubPopID, individual::subPopID
+	   \sa individual::setSubPopID, individual::subPopID
 	 */
 	void setIndSubPopID(const vectori & id, bool ancestralPops = false);
 
-	/// set subpopulation ID of each individual with their current subpopulation ID
+	/// HIDDEN set subpopulation ID of each individual with their current subpopulation ID
 	/**
-	 \param ancestralPops If true (default to False), set subpop id for ancestral
+	   \param ancestralPops If true (default to False), set subpop id for ancestral
 	   generations as well.
 	 */
 	void setIndSubPopIDWithID(bool ancestralPops = false);
 
-	/// move individuals to subpopulations according to individual subpopulation IDs
+	/// HIDDEN move individuals to subpopulations according to individual subpopulation IDs
 	/**
 	   Rearrange individuals to their new subpopulations according to their
 	   subpopulation ID (or the new given \c ID). Order within each subpopulation is not respected.
 
-	 \param id new subpopulation ID, if given, current individual subpopulation ID
+	   \param id new subpopulation ID, if given, current individual subpopulation ID
 	   will be ignored.
-	 \note Individual with negative info will be removed!
-	 \sa setIndSubPopID
+	   \note Individual with negative info will be removed!
+	   \sa setIndSubPopID
 	 */
 	void setSubPopByIndID(vectori id = vectori());
 
-	/// split a subpopulation into subpopulations of given sizes
-	/**
-	   The sum of given sizes should be equal to the size of the split subpopulation. Subpopulation
-	   IDs can be specified. The subpopulation IDs of non-split subpopulations will be kept. For example, if
-	   subpopulation 1 of 0 1 2 3 is split into three parts, the new subpop id will be
-	   0 (1 4 5) 2 3.
-	 \note \c subpop with negative ID will be removed. So, you can shrink one \c subpop by splitting and
-	   setting one of the new \c subpop with negative ID.
+	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
+	 *  which should add up to the size of subpopulation \e subPop.
+	 *  Alternatively, \e sizes can be a list of proportions (add up to \c 1)
+	 *  from which the sizes of new subpopulations are determined. By default,
+	 *  subpopulation indexes will be adjusted so that individuals can keep
+	 *  their original order. That is to say, if subpopulation \c 1 of a population
+	 *  having four subpopulations is split into three subpopulation, the new
+	 *  subpopulation ID would be \c 0, \c 1.1->1, \c 1.2->2, \c 1.3->3,
+	 *  \c 2->4, \c 3->5. If \e keepOrder is set to \c False, the subpopulation
+	 *  IDs of existing subpopulations will not be changed so the new subpopulation
+	 *  IDs of the previous example would be \c 0, \c 1.1->1, \c 2, \c 3,
+	 *  \c 1.2->4, \c 1.3->5.
+	 *  <group>7-manipulate</group>
 	 */
-	void splitSubPop(UINT which, vectorlu sizes, vectoru subPopID = vectoru());
+	void splitSubPop(UINT subPop, vectorf sizes, bool keepOrder = true);
 
-	/// split a subpopulation into subpopulations of given proportions
-	/**
-	   The sum of given proportions should add up to one. Subpopulation IDs can be specified.
-	 \note \c subpop with negative ID will be removed. So, you can shrink one \c subpop by splitting and
-	   setting one of the new \c subpop with negative ID.
+	/** remove empty subpopulations by adjusting subpopulation IDs.
+	 *  <group>7-manipulate</group>
 	 */
-	void splitSubPopByProportion(UINT which, vectorf proportions, vectoru subPopID = vectoru());
-
-	/// remove empty subpopulations by adjusting subpopulation IDs
 	void removeEmptySubPops();
 
-	/// remove subpopulations and adjust subpopulation IDs so that there will be no \em 'empty' subpopulation left
-	/**
-	   Remove specified subpopulations (and all individuals within). If \c shiftSubPopID is false, \c subPopID
-	   will be kept intactly.
+	/** Remove all individuals from subpopulations \e subPops. The removed
+	 *  subpopulations will have size zero, and can be removed by function
+	 *  <tt>removeEmptySubPops</tt>.
+	 *  <group>7-manipulate</group>
 	 */
-	void removeSubPops(const vectoru & subPops = vectoru(), bool shiftSubPopID = true, bool removeEmptySubPops = false);
+	void removeSubPops(const vectoru & subPops);
 
-	/// remove individuals. If a valid \c subPop is given, remove individuals from this subpopulation. Indexes in \c inds will be treated as relative indexes.
-	void removeIndividuals(const vectoru & inds = vectoru(), int subPop = -1, bool removeEmptySubPops = false);
-
-	/// merge given subpopulations
-	/**
-	   Merge subpopulations, the first subpopulation ID (the first one in array
-	 \c subPops) will be used as the ID of the new subpopulation. That is to
-	   say, all merged subpopulations will take the ID of the first one. The
-	   subpopulation ID of the empty subpopulations will be kept (so that other
-	   subpopulations are unaffected, unless they are removed by <tt>removeEmptySubPops = True</tt>).
+	/** remove individuals \e inds (absolute indexes) from the current
+	 *  population. A subpopulation will be kept even if all individuals from
+	 *  it are removed.
+	 *  <group>7-manipulate</group>
 	 */
-	void mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false);
+	void removeIndividuals(const vectoru & inds);
 
-	/// merge populations by individuals
-	/**
-	   Merge individuals from \c pop to the current population.
-	   Two populations should have the same genotypic structures. By default, subpopulations
-	   of the merged populations are kept. I.e., if you merge two populations with one
-	   subpopulation, the resulting population will have two subpopulations. All ancestral
-	   generations are also merged by default.
-	 \param newSubPopSizes subpopulation sizes can be specified. The overall size should
-	   be the combined size of the two populations. Because this parameter will
-	   be used for all ancestral generations, it may fail if ancestral generations have
-	   different sizes. To avoid this problem, you can run \c mergePopulation without this parameter,
-	   and then adjust subpopulation sizes generation by generation.
-	 \param keepAncestralPops ancestral populations to merge, default to all (\c -1)
-	 \note Population variables are not copied to \c pop.
+	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
+	 *  subpopulations will be merged. Subpopulations \e subPops do not have to
+	 *  be adjacent to each other. The ID of the first subpopulation in
+	 *  parameter \e subPops will become the ID of the new large subpopulation.
+	 *  Other subpopulations will keep their IDs although their sizes become
+	 *  zero. Function <tt>removeEmptySubPops</tt> can be used to remove these
+	 *  empty subpopulation.
+	 *  <group>7-manipulate</group>
 	 */
-	void mergePopulation(const population & pop, const vectorlu & newSubPopSizes = vectorlu(),
-		int keepAncestralPops = -1);
+	void mergeSubPops(vectoru subPops = vectoru());
 
-	/// merge populations by loci
-	/**
-	   Two populations should have the same number of individuals. This also holds for
-	   any ancestral generations. By default, chromosomes of \c pop are appended to the current
-	   population.	You can change this arrangement in two ways
-	 \li specify new chromosome structure using parameter \c newLoci and \c newLociPos. Loci from new and old
-	   	populations are still in their original order, but chromosome number and positions
-	   	can be changed in this way.
-	 \li specify \c byChromosome=true so that chromosomes will be merged one by one. In this
-	   	case, loci position of two popualtions are important because loci will be arranged
-	   	in the order of loci position; and identical loci position of two loci in two
-	   populations will lead to error.
-
-	 \param newNumLoci the new number of loci for the combined genotypic structure.
-	 \param newLociPos the new loci position if number of loci on each chromosomes are
-	   changed with \c newNumLoci. New loci positions should be in order on the new chromosomes.
-	 \param byChromosome merge chromosome by chromosome, loci are ordered by loci position
-	   Default to \c False.
-	 \note \li Information fields are not merged.
-	 \li All ancestral generations are merged because all individuals in a
-	   population have to have the same genotypic structure.
+	/** Add all individuals, including ancestors, in \e pop to the current
+	 *  population. Two populations should have the same genotypic structures
+	 *  and number of ancestral generations. Subpopulations in population
+	 *  \e pop are kept.
+	 *  <group>7-manipulate</group>
 	 */
-	void mergePopulationByLoci(const population & pop, const vectoru & newNumLoci = vectoru(),
-		const vectorf & newLociPos = vectorf(), bool byChromosome = false);
+	void addIndFromPop(const population & pop);
 
-	/// insert loci before given positions
-	/** Insert loci at some given locations. Alleles at inserted loci are initialized with zero allele.
-	 \param idx an array of locus index. The loci will be inserted \em before each index.
-	   If you need to append to the last locus, use \c insertAfterLoci instead. If your index is the first
-	   locus of a chromosome, the inserted locus will become the first locus of that chromosome.
-	   If you need to insert multiple loci before a locus, repeat that locus number.
-	 \param pos an array of locus positions. The positions of the appended loci have to be between adjacent markers.
-	 \param names an array of locus names. If this parameter is not given, some unique names such as
-	   "insX_Y" will be given.
+	/** Add chromosomes in population \e pop to the current population.
+	 *  Population \e pop should have the same number of individuals as the
+	 *  current population in the current and all ancestral generations.
+	 *  This function merges genotypes on the
+	 *  new chromosomes from population \c pop individual by individual.
+	 *  <group>7-manipulate</group>
 	 */
-	void insertBeforeLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names = vectorstr());
+	void addChromFromPop(const population & pop);
 
-	/// insert an locus before a given position
-	/**
-	   <tt>insertBeforeLocus(idx, pos, name)</tt> is a shortcut to <tt>insertBeforeLoci([idx], [pos], [name])</tt>
+	/** Add loci from population \e pop, chromosome by chromosome. Added
+	 *  loci will be inserted according to their position. Their position
+	 *  and names should not overlap with any locus in the current population.
+	 *  Population \e pop should have the same number of individuals as the
+	 *  current population in the current and all ancestral generations.
+	 *  <group>7-manipulate</group>
 	 */
-	void insertBeforeLocus(UINT idx, double pos, const string & name = string());
+	void addLociFromPop(const population & pop);
 
-	/// append loci after given positions
-	/**
-	   Append loci at some given locations. Alleles at inserted loci are initialized with zero allele.
-	 \param idx an array of locus index. The loci will be added \em after each index.
-	   If you need to append to the first locus of a chromosome, use \c insertBeforeLoci instead.
-	   If your index is the last locus of a chromosome, the appended locus will become the last locus
-	   of that chromosome. If you need to append multiple loci after a locus, repeat that locus number.
-	 \param pos an array of locus positions. The positions of the appended loci have to be between adjacent markers.
-	 \param names an array of locus names. If this parameter is not given, some unique names such as
-	   "insX_Y" will be given.
+	/** Add chromosome \e chromName with given type \e chromType to a
+	 *  population, with loci \e lociNames inserted at position \e lociPos.
+	 *  \e lociPos should be ordered. \e lociNames and \e chromName should not
+	 *  exist in the current population. If they are not specified, simuPOP
+	 *  will try to assign default names, and raise a \c ValueError if the
+	 *  default names have been used.
+	 *  <group>7-manipulate</group>
 	 */
-	void insertAfterLoci(const vectoru & idx, const vectorf & pos, const vectorstr & names = vectorstr());
+	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
+		const string & chromName = "", UINT chromType = Autosome);
 
-	/// append an locus after a given position
-	/**
-	   <tt>insertAfterLocus(idx, pos, name)</tt> is a shortcut to <tt>insertAfterLoci([idx], [pos], [name])</tt>.
+	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
+	 *  These parameters should be lists of the same length, although
+	 *  \e names may be ignored, in which case random names will be given.
+	 *  Alleles at inserted loci are initialized with zero alleles. Note that
+	 *  loci have to be added to existing chromosomes. If loci on a new
+	 *  chromosome need to be added, function <tt>addChrom</tt> should be
+	 *  used. This function returns indexes of the inserted loci.
+	 *  <group>7-manipulate</group>
 	 */
-	void insertAfterLocus(UINT idx, double pos, const string & name = string());
+	vectoru addLoci(const vectoru & chrom, const vectorf & pos,
+		const vectorstr & names = vectorstr());
 
-	/// resize current population
-	/**
-	   Resize population by giving new subpopulation sizes.
-	 \param newSubPopSizes an array of new subpopulation sizes. If there
-	   is only one subpopulation, use <tt>[newPopSize]</tt>.
-	 \param propagate if \c propagate is \c true, copy individuals to new comers.
-	   I.e., 1, 2, 3 ==> 1, 2, 3, 1, 2, 3, 1
-	 \note This function only resizes the current generation.
+	/** Resize population by giving new subpopulation sizes \e newSubPopSizes.
+	 *  Individuals at the end of some subpopulations will be removed if the
+	 *  new subpopulation size is smaller than the old one. New individuals
+	 *  will be appended to a subpopulation if the new size is larger. Their
+	 *  genotypes will be set to zero (default), or be copied from existing
+	 *  individuals if \e propagate is set to \c True. More specifically,
+	 *  if a subpopulation with \c 3 individuals is expanded to \c 7, the
+	 *  added individuals will copy genotypes from individual \c 1, \c 2,
+	 *  \c 3, and \c 1 respectively. Note that this function only resizes
+	 *  the current generation.
+	 *  <group>7-manipulate</group>
 	 */
 	void resize(const vectorlu & newSubPopSizes, bool propagate = false);
 
-	/// reorder subpopulations by \c order or by \c rank
-	/**
-	 \param order new order of the subpopulations. For examples, 3 2 0 1
-	   means \c subpop3, \c subpop2, \c subpop0, \c subpop1 will be the new layout.
-	 \param rank you may also specify a new rank for each subpopulation. For example, 3,2,0,1
-	   means the original subpopulations will have new IDs 3,2,0,1, respectively. To achive order 3,2,0,1,
-	   the rank should be 1 0 2 3.
+	/** CPPONLY
+	 * reorder subpopulations by \c order or by \c rank
+	 *  \param order new order of the subpopulations. For examples, 3 2 0 1
+	 *  means \c subpop3, \c subpop2, \c subpop0, \c subpop1 will be the new layout.
+	 *  \param rank you may also specify a new rank for each subpopulation. For example, 3,2,0,1
+	 *  means the original subpopulations will have new IDs 3,2,0,1, respectively. To achive order 3,2,0,1,
+	 *  the rank should be 1 0 2 3.
+	 *  <group>7-manipulate</group>
 	 */
 	void reorderSubPops(const vectoru & order = vectoru(), const vectoru & rank = vectoru(),
 		bool removeEmptySubPops = false);
 
-	/**
+	/** CPPONLY
 	   Form a new population according to individual subpopulation ID. Individuals with negative subpopulation
 	   ID will be removed.
+	 * <group>7-manipulate</group>
 	 */
 	population & newPopByIndID(int keepAncestralPops = -1,
 		const vectori & id = vectori(),
 		bool removeEmptySubPops = false);
 
-	/// remove some loci from the current population. Only one of the two parameters can be specified.
-	void removeLoci(const vectoru & remove = vectoru(), const vectoru & keep = vectoru());
-
-	/// obtain a new population with selected loci
-	/**
-	   Copy current population to a new one with selected loci \c keep or remove specified loci \c remove
-	   (no change on the current population), equivalent to \n <tt>y=x.clone</tt> \n <tt>y.removeLoci(remove, keep)</tt>
+	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
+	 *  current population.
+	 *  <group>7-manipulate</group>
 	 */
-	population & newPopWithPartialLoci(
-		const vectoru & remove = vectoru(),
-		const vectoru & keep = vectoru());
+	void removeLoci(const vectoru & loci);
 
-	/// absorb \c rhs population as the current generation of a population
+	/// HIDDEN absorb \c rhs population as the current generation of a population
 	/**
 	   This function is used by a simulator to push offspring generation \c rhs
 	   to the current population, while the current population is pushed
@@ -1174,61 +1086,68 @@ public:
 	 */
 	void pushAndDiscard(population & rhs, bool force = false);
 
-	/// ancestral depth of the current population
-	/** \note The return value is the number of ancestral generations
-	   	exist in the population, not necessarily equals to the number set by
-	 \c setAncestralDepth().
+	/** Return the actual number of ancestral generations stored in a
+	 *  population, which does not necessarily equal to the number set by
+	 *  \c setAncestralDepth().
+	 *  <group>6-ancestral</group>
 	 */
-	UINT ancestralDepth() const
+	UINT ancestralGens() const
 	{
 		return m_ancestralPops.size();
 	}
 
 
-	/// currently used ancestral population (\c 0 for the latest generation)
-	/**
-	   Current ancestral population activated by \c useAncestralPop(). There can be
-	   several ancestral generations in a population. \c 0 (current), \c 1 (parental)
-	   etc. When \c useAncestralPop(gen) is used, current generation is set to
-	   one of the parental generations, which is the information returned by this
-	   function. \c useAncestralPop(0) should always be used to set a population
-	   to its usual ancestral order after operations to the ancestral generation are done.
+	/** CPPONLY because I do not see a Python level use case of this function.
+	 *  Current ancestral population activated by \c useAncestralGen(). There can be
+	 *  several ancestral generations in a population. \c 0 (current), \c 1 (parental)
+	 *  etc. When \c useAncestralGen(gen) is used, current generation is set to
+	 *  one of the parental generations, which is the information returned by this
+	 *  function. \c useAncestralGen(0) should always be used to set a population
+	 *  to its usual ancestral order after operations to the ancestral generation are done.
+	 *
+	 * <group>6-ancestral</group>
 	 */
-	UINT ancestralGen() const
+	UINT curAncestralGen() const
 	{
 		return m_curAncestralGen;
 	}
 
 
-	/// set individual information for the given information field \c idx
-	/**
-	 \param values an array that has the same length as population size.
-	 \param idx index to the information field.
+	/** Set information field \c idx (an index) of the current population to
+	 *  \e values. \e values will be reused if its length is smaller than
+	 *  <tt>popSize()</tt>.
+	 *  <group>8-info</group>
 	 */
-	template<typename T, typename T1>
-	void setIndInfo(const T & values, T1 idx)
+	void setIndInfo(const vectorinfo & values, UINT idx);
+
+	/** Set information field \c name of the current population to \e values.
+	 *  \e values will be reused if its length is smaller than
+	 *  <tt>popSize()</tt>.
+	 *  <group>8-info</group>
+	 */
+	void setIndInfo(const vectorinfo & values, const string & name)
 	{
-		CHECKRANGEINFO(idx);
-		DBG_ASSERT(values.size() == popSize(), IndexError,
-			"Size of values should be the same as population size");
-		typename T::const_iterator infoIter = values.begin();
-		for (IndInfoIterator ptr = infoBegin(idx); ptr != infoEnd(idx); ++ptr)
-			*ptr = static_cast<InfoType>(*infoIter++);
+		setIndInfo(values, infoIdx(name));
 	}
 
 
-	/// set individual information for the given information field \c name
-	/**
-	   <tt>x.setIndInfo(values, name)</tt> is
-	   equivalent to the \c idx version <tt>x.setIndInfo(values, x.infoIdx(name))</tt>.
+	/** Set information field \c idx (an index) of a subpopulation
+	 *  (<tt>subPop=sp</tt>) or a virtual subpopulation
+	 *  (<tt>subPop=[sp, vsp]</tt>) to \e values. \e values will be reused if
+	 *  its length is smaller than <tt>subPopSize(subPop)</tt>.
+	 *  <group>8-info</group>
 	 */
-	template<class T>
-	void setIndInfo(const T & values, const string & name)
-	{
-		// for mpi version , use gloal idx
-		int idx = infoIdx(name);
+	void setIndInfo(const vectorinfo & values, UINT idx, vspID subPop);
 
-		setIndInfo<T, UINT>(values, idx);
+	/** Set information field \c name of a subpopulation (<tt>subPop=sp</tt>) or
+	 *  a virtual subpopulation (<tt>subPop=[sp, vsp]</tt>) to \e values.
+	 *  \e values will be reused if its length is smaller than
+	 *  <tt>subPopSize(subPop)</tt>.
+	 *  <group>8-info</group>
+	 */
+	void setIndInfo(const vectorinfo & values, const string & name, vspID subPop)
+	{
+		setIndInfo(values, infoIdx(name), subPop);
 	}
 
 
@@ -1261,48 +1180,62 @@ public:
 
 
 	/// CPPONLY info iterator
-	IndInfoIterator infoBegin(UINT idx, UINT subPop)
+	IndInfoIterator infoBegin(UINT idx, vspID vsp)
 	{
+		SubPopID subPop = vsp.subPop();
+
 		CHECKRANGEINFO(idx);
 		CHECKRANGESUBPOP(subPop);
+		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
+
+		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && vsp.isVirtual(),
+			ValueError, "Can not iterate through an activated subpopulation");
 
 		// has to adjust order because of parameter subPop
 		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indBegin(subPop));
+		else if (vsp.isVirtual()) {
+			activateVirtualSubPop(subPop, vsp.virtualSubPop(), vspSplitter::Iteratable);
+			return IndInfoIterator(idx, indBegin(subPop, vspSplitter::Iteratable));
+		}
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
 
 
 	/// CPPONLY
-	IndInfoIterator infoEnd(UINT idx, UINT subPop)
+	IndInfoIterator infoEnd(UINT idx, vspID vsp)
 	{
-		CHECKRANGEINFO(idx);
+		SubPopID subPop = vsp.subPop();
+
 		CHECKRANGESUBPOP(subPop);
+		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
 		// has to adjust order because of parameter subPop
 		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indEnd(subPop));
+		else if (vsp.isVirtual())
+			return IndInfoIterator(idx, indEnd(subPop, vspSplitter::Iteratable));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}
 
 
-	/// get information field \c idx of all individuals
-	/**
-	 \param idx index of the information field
-	 \return a vector with value of the information field
+	/** Return the information field \c idx (an index) of all individuals as a
+	 *  list.
+	 *  <group>8-info</group>
 	 */
 	vectorinfo indInfo(UINT idx)
 	{
+		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+			"This operation is not allowed when there is an activated virtual subpopulation");
+
 		return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 
 
-	/// get information field \c name of all individuals
-	/**
-	 \param name name of the information field
-	 \return a vector with value of the information field
+	/** Return the information field \c name of all individuals as a list.
+	 *  <group>8-info</group>
 	 */
 	vectorinfo indInfo(const string & name)
 	{
@@ -1312,26 +1245,21 @@ public:
 	}
 
 
-	/// get information field \c idx of all individuals in a subpopulation \c subPop
-	/**
-	 \param idx index of the information field
-	 \param subPop subpopulation index
-	 \return a vector with value of the information field
+	/** Return the information field \c idx (an index) of all individuals in
+	 *  (virtual) subpopulation \e subPop as a list.
+	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(UINT idx, UINT subPop)
+	vectorinfo indInfo(UINT idx, vspID subPop)
 	{
-		return vectorinfo(infoBegin(idx, subPop),
-			infoEnd(idx, subPop));
+		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
 
-	/// get information field \c name of all individuals in a subpopulation \c subPop
-	/**
-	 \param name name of the information field
-	 \param subPop subpopulation index
-	 \return a vector with value of the information field
+	/** Return the information field \c name of all individuals in
+	 *  (virtual) subpopulation \e subPop as a list.
+	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(const string & name, UINT subPop)
+	vectorinfo indInfo(const string & name, vspID subPop)
 	{
 		UINT idx = infoIdx(name);
 
@@ -1339,120 +1267,50 @@ public:
 	}
 
 
-	///	add an information field to a population
-	/**
-	 \param field new information field. If it already exists, it will
-	   be re-initialized.
-	 \param init initial value for the new field.
+	/**	Add an information field \e field to a population and initialize its
+	 *  values to \e init.
+	 *  <group>8-info</group>
 	 */
 	void addInfoField(const string field, double init = 0);
 
-	/// add one or more information fields to a population
-	/**
-	 \param fields an array of new information fields. If one or more of the fields
-	   alreay exist, they will be re-initialized.
-	 \param init initial value for the new fields.
+	/** Add information fields \e fields to a population and initialize their
+	 *  values to \e init. If an information field alreay exists, it will be
+	 *  re-initialized.
+	 * <group>8-info</group>
 	 */
 	void addInfoFields(const vectorstr & fields, double init = 0);
 
-	/// set information fields for an existing population. The existing fields will be removed.
-	/**
-	 \param fields an array of fields
-	 \param init initial value for the new fields.
+	/** Set information fields \e fields to a population and initialize them
+	 *  with value \e init. All existing information fields will be removed.
+	 * <group>8-info</group>
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);
 
-
-	/// Find relatives of each individual and fill the given information fields with their indexes.
-	/** This function locates relatives of each individual and store their indexes
-	 * in given information fields.
-	 * \param relType Relative type, can be
-	 \li REL_Self index of individual themselfs
-	 \li REL_Spouse index of spouse in the current generation. Spouse is defined as two individuals
-	   			having an offspring with shared \c parentFields. If more than one \c infoFields is given,
-	   			multiple spouses can be identified.
-	 \li REL_Offspring index of offspring in the offspring generation. If only one
-	   			parent is given, only paternal or maternal relationship is considered. For example,
-	   			<tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
-	 \li REL_FullSibling all siblings with the same parents
-	 \li REL_Sibling all sibs with at least one shared parent
-	 * \param relFields information fields to hold relatives. The number of these fields
-	 *		limits the number of relatives to locate.
-	 * \param gen Find relatives for individuals for how many generations. Default to -1,
-	 *      meaning for all generations. If a non-negative number is given, up till generation
-	 *      gen will be processed.
-	 * \param relSex Whether or not only locate relative or certain sex. It can be
-	 *		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate
-	 *      relatives of opposite sex.
-	 * \param parentFields information fields that stores parental indexes. Default to
-	 *		['father_idx', 'mother_idx']
-	 * \return if relatives are successfully located. Possible problems are
-	 *      father and mother indexes are not available, or insufficient parental generations.
-	 */
-	bool locateRelatives(RelativeType relType, const vectorstr & relFields,
-		int gen = -1, SexChoice relSex = AnySex,
-		const vectorstr & parentFields = vectorstr());
-
-	/// Trace a relative path in a population and record the result in the given information fields.
-	/**
-	 \param pathGen A list of generations that form a relative path. This array is one element longer
-	   	than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
-	   	of information fields path_i.
-	 \param pathFields A list of list of information fields forming a path to trace a certain
-	   	type of relative.
-	 \param resultFields Where to store located relatives. Note that the result will be saved
-	   	in the starting generation specified in \c pathGen[0], which is usually 0.
-	 \param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
-	   	that is used to choose individuals at each step. Default to AnySex.
-
-	   For example,
-	   <tt>
-	   	setInfoWithRelatives(pathGen = [0, 1, 1, 0],
-	   		pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
-	   			['off1', 'off2']],
-	   		pathSex = [AnySex, MaleOnly, FemaleOnly],
-	   		resultFields = ['cousin1', 'cousin2'])
-	   </tt>
-	   This function will
-	   1. locate father_idx and mother_idx for each individual at generation 0 (\c pathGen[0])
-	   2. find AnySex individuals referred by father_idx and mother_idx at generation 1 (\c pathGen[1])
-	   3. find informaton fields \c sib1 and \c sib2 from these parents
-	   4. locate MaleOnly individuals referred by \c sib1 and \c sib2 from generation 1 (\c pathGen[2])
-	   5. find information fields \c off1 and \c off2 from these individuals, and
-	   6. locate FemaleOnly indiviudals referred by \c off1 and \of2 from geneartion 0 (\c pathGen[3])
-	   7. Save index of these individuals to information fields \c cousin1 and \c cousin2 at
-	   	genearation \c pathGen[0].
-
-	   In short, this function locates father or mother's brother's daughters.
-	 */
-	bool setIndexesOfRelatives(const vectoru & pathGen,
-		const stringMatrix & pathFields,
-		const vectori & pathSex = vectori(),
-		const vectorstr & resultFields = vectorstr());
-
-	/// set ancestral depth
-	/**
-	 \param depth \c 0 for none, \c -1 for unlimited, a positive number sets
-	   the number of ancestral generations to save.
+	/** set the intended ancestral depth of a population to \e depth, which can
+	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
+	 *  ancestral generations), and a positive number (store \e depth ancestral
+	 *  generations.
+	 *  <group>6-ancestral</group>
 	 */
 	void setAncestralDepth(int depth);
 
-	// idx = 0 (current), 1 (parents), 2 (grandparents...)
-	/// use an ancestral generation. \c 0 for the latest generation.
-	/**
-	 \param idx Index of the ancestral generation. \c 0 for current,
-	 \c 1 for parental, etc. idx can not exceed ancestral depth
-	   (see setAncestralDepth).
+	/** Making ancestral generation \e idx (\c 0 for current generation, \c 1
+	 *  for parental generation, \c 2 for grand-parental generation, etc) the
+	 *  current generation. This is an efficient way to access population
+	 *  properties of an ancestral generation. <tt>useAncestralGen(0)</tt>
+	 *  should always be called to restore the correct order of ancestral
+	 *  generations.
+	 *  <group>6-ancestral</group>
 	 */
-	void useAncestralPop(UINT idx);
+	void useAncestralGen(UINT idx);
 
 	/// CPPONLY compare two populations
 	bool equalTo(const population & rhs)
 	{
 		return
-		       genoStru() == rhs.genoStru() &&
-		       m_subPopSize == rhs.m_subPopSize &&
-		       m_inds == rhs.m_inds ;
+		    genoStru() == rhs.genoStru() &&
+		    m_subPopSize == rhs.m_subPopSize &&
+		    m_inds == rhs.m_inds ;
 	}
 
 
@@ -1466,32 +1324,26 @@ public:
 	 */
 	void sortIndividuals(bool infoOnly = false);
 
-	/// save population to a file
-	/**
-	 \param filename save to filename
-	 \param format obsolete parameter
-	 \param compress obsolete parameter
-	 \sa global function loadPopulation
+	/** Save population to a file \e filename. The population can be restored
+	 *  from this file, using a global function <tt>LoadPopulation(filename)</tt>.
+	 *  <group>1-pop</group>
 	 */
-	void savePopulation(const string & filename, const string & format = "", bool compress = true) const;
+	void save(const string & filename) const;
 
 	/// CPPONLY load population from a file
 	/**
-	 \param filename load from filename
-	 \param format obsolete parameter
-	 \sa savePopulation
+	   filename load from filename
+
+	   <group>1-pop</group>
 	 */
-	void loadPopulation(const string & filename, const string & format = "");
+	void load(const string & filename);
 
 private:
 	population & newPopByIndIDPerGen(const vectori & id = vectori(),
 		bool removeEmptySubPops = false);
 
-	void mergePopulationPerGen(const population & pop, const vectorlu & newSubPopSizes);
-
 public:
-	/// CPPONLY
-	/// selection is on at any subpopulation?
+	/// CPPONLY selection is on at any subpopulation?
 	bool selectionOn() const
 	{
 		return !m_selectionFlags.empty();
@@ -1507,8 +1359,8 @@ public:
 	}
 
 
-	/// turn off selection for all subpopulations
-	/**
+	/** HIDDEN
+	    Turn off selection for all subpopulations
 	   This is only used when you would like to apply two selectors. Maybe using two
 	   different information fields.
 	 */
@@ -1537,8 +1389,7 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// Turn on selection for all subpopulations
+	/// CPPONLY Turn on selection for all subpopulations
 	void turnOnSelection()
 	{
 		if (m_selectionFlags.empty()) {
@@ -1559,7 +1410,10 @@ public:
 
 
 public:
-	/// current replicate in a simulator which is not meaningful for a stand-alone population
+	/** CPPONLY
+	 *  current replicate in a simulator which is not meaningful for a stand-alone population
+	 *	<group>evolve</group>
+	 */
 	int rep()
 	{
 		return m_rep;
@@ -1574,7 +1428,11 @@ public:
 			m_vars.setIntVar("rep", rep);
 	}
 
-	/// current generation during evolution
+
+	/** CPPONLY
+	    current generation during evolution
+	    <group>evolve</group>
+	 */
 	ULONG gen()
 	{
 		return m_gen;
@@ -1590,7 +1448,9 @@ public:
 	}
 
 
-	/// return variables of a population. If \c subPop is given, return a dictionary for specified subpopulation.
+	/** return variables of a population. If \c subPop is given, return a dictionary for specified subpopulation.
+	    <group>9-var</group>
+	 */
 	PyObject * vars(int subPop = -1);
 
 	/// CPPONLY The same as vars(), but without increasing reference count.
@@ -1744,10 +1604,11 @@ public:
 	}
 
 
-	/// evaluate a Python statment/expression in the population's local namespace
-	/**
-	   This function evaluates a Python statment( \c stmts )/expression( \c expr )
-	   and return its result as a string. Optionally run statement( \c stmts ) first.
+	/** HIDDEN
+	 *  evaluate a Python statment/expression in the population's local namespace
+	 *  This function evaluates a Python statment( \c stmts )/expression( \c expr )
+	 *  and return its result as a string. Optionally run statement( \c stmts ) first.
+	 *  <group>8-var</group>
 	 */
 	PyObject * evaluate(const string & expr = "", const string & stmts = "")
 	{
@@ -1755,7 +1616,9 @@ public:
 	}
 
 
-	/// execute a statement (can be a multi-line string) in the population's local namespace
+	/** HIDDEN
+	 *  execute a statement (can be a multi-line string) in the population's local namespace
+	 */
 	void execute(const string & stmts = "")
 	{
 		Expression("", stmts, m_vars.dict() ).evaluate();
@@ -1777,16 +1640,17 @@ private:
 		// deep adjustment: everyone in order
 		const_cast<population *>(this)->sortIndividuals();
 
-		ar & make_nvp("libraryMaxAllele", ModuleMaxAllele);
+		ar & ModuleMaxAllele;
 
 		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 		// GenoStructure genoStru = this->genoStru();
-		ar & make_nvp("geno_structure", genoStru());
-		ar & make_nvp("subPop_sizes", m_subPopSize);
+		ar & genoStru();
+
+		ar & m_subPopSize;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 #ifdef BINARYALLELE
 		size_t size = m_genotype.size();
-		ar & make_nvp("size", size);
+		ar & size;
 		WORDTYPE * ptr = BITPTR(m_genotype.begin());
 		size_t blks = size / WORDBIT;
 		size_t rest = size - blks * WORDBIT;
@@ -1798,7 +1662,7 @@ private:
 			for (size_t j = 0; j < WORDBIT / 32; ++j) {
 				tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
-				ar & make_nvp("blocks", tmp1);
+				ar & tmp1;
 			}
 		}
 		// last block
@@ -1807,28 +1671,28 @@ private:
 			for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
 				tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
-				ar & make_nvp("blocks", tmp1);
+				ar & tmp1;
 			}
 		}
 #else
-		ar & make_nvp("genotype", m_genotype);
+		ar & m_genotype;
 #endif
 		DBG_DO(DBG_POPULATION, cout << "Handling information" << endl);
-		ar & make_nvp("info", m_info);
+		ar & m_info;
 		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
-		ar & make_nvp("individuals", m_inds);
+		ar & m_inds;
 		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
-		ar & make_nvp("ancestry", m_ancestralDepth);
+		ar & m_ancestralGens;
 		size_t sz = m_ancestralPops.size();
-		ar & make_nvp("numOfAncestralPops", sz);
+		ar & sz;
 		for (size_t i = 0; i < m_ancestralPops.size(); ++i) {
-			const_cast<population *>(this)->useAncestralPop(i + 1);
+			const_cast<population *>(this)->useAncestralGen(i + 1);
 			// need to make sure ancestral pop also in order
 			const_cast<population *>(this)->sortIndividuals();
-			ar & make_nvp("subPop_sizes", m_subPopSize);
+			ar & m_subPopSize;
 #ifdef BINARYALLELE
 			size_t size = m_genotype.size();
-			ar & make_nvp("size", size);
+			ar & size;
 			WORDTYPE * ptr = BITPTR(m_genotype.begin());
 			size_t blks = size / WORDBIT;
 			size_t rest = size - blks * WORDBIT;
@@ -1840,7 +1704,7 @@ private:
 				for (size_t j = 0; j < WORDBIT / 32; ++j) {
 					tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
-					ar & make_nvp("blocks", tmp1);
+					ar & tmp1;
 				}
 			}
 			// last block
@@ -1851,23 +1715,23 @@ private:
 				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
 					tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
-					ar & make_nvp("blocks", tmp1);
+					ar & tmp1;
 				}
 			}
 #else
-			ar & make_nvp("genotype", m_genotype);
+			ar & m_genotype;
 #endif
-			ar & make_nvp("info", m_info);
-			ar & make_nvp("individuals", m_inds);
+			ar & m_info;
+			ar & m_inds;
 		}
-		const_cast<population *>(this)->useAncestralPop(0);
+		const_cast<population *>(this)->useAncestralGen(0);
 
 		// save shared variables as string.
 		// note that many format are not supported.
 		try {
 			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
 			string vars = varsAsString();
-			ar & make_nvp("vars", vars);
+			ar & vars;
 		} catch (...) {
 			cout << "Warning: shared variable is not saved correctly.\npopulation should still be usable." << endl;
 		}
@@ -1878,7 +1742,7 @@ private:
 	void load(Archive & ar, const UINT version)
 	{
 		ULONG ma;
-		ar & make_nvp("libraryMaxAllele", ma);
+		ar & ma;
 
 		if (ma > ModuleMaxAllele)
 			cout << "Warning: The population is saved in library with more allele states. \n"
@@ -1887,12 +1751,12 @@ private:
 
 		GenoStructure stru;
 		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
-		ar & make_nvp("geno_structure", stru);
-		ar & make_nvp("subPop_sizes", m_subPopSize);
+		ar & stru;
+		ar & m_subPopSize;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 
 		if (version <= 1) {
-			ar & make_nvp("genotype", m_genotype);
+			ar & m_genotype;
 		}
 		// the new version
 		// the binary genotypes are saved in an efficient way
@@ -1901,7 +1765,7 @@ private:
 			// binary from binary
 			if (ma == 1) {
 				size_t size;
-				ar & make_nvp("size", size);
+				ar & size;
 				size_t blks = size / WORDBIT;
 				size_t rest = size - blks * WORDBIT;
 
@@ -1911,7 +1775,7 @@ private:
 				for (size_t i = 0; i < blks; ++i) {
 					tmp = 0;
 					for (size_t j = 0; j < WORDBIT / 32; ++j) {
-						ar & make_nvp("blocks", tmp1);
+						ar & tmp1;
 						tmp |= tmp1 << (j * 32);
 					}
 					*ptr++ = tmp;
@@ -1920,7 +1784,7 @@ private:
 				if (rest > 0) {
 					tmp = 0;
 					for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-						ar & make_nvp("blocks", tmp1);
+						ar & tmp1;
 						tmp |= tmp1 << (j * 32);
 					}
 					*ptr = tmp;
@@ -1930,7 +1794,7 @@ private:
 			else {
 				DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
 				vector<unsigned char> tmpgeno;
-				ar & make_nvp("genotype", tmpgeno);
+				ar & tmpgeno;
 				m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
 			}
 #else
@@ -1938,7 +1802,7 @@ private:
 			if (ma == 1) {
 				// for version 2 and higher, archive in 32bit blocks.
 				size_t size;
-				ar & make_nvp("size", size);
+				ar & size;
 				m_genotype.resize(size);
 				size_t blks = size / 32;
 				size_t rest = size - blks * 32;
@@ -1948,7 +1812,7 @@ private:
 				GenoIterator ptr = m_genotype.begin();
 				WORDTYPE tmp;
 				for (size_t i = 0; i < blks; ++i) {
-					ar & make_nvp("blocks", tmp);
+					ar & tmp;
 					for (size_t j = 0; j < 32; ++j) {
 						*ptr++ = (tmp & 1UL) != 0;
 						tmp = tmp >> 1;
@@ -1956,7 +1820,7 @@ private:
 				}
 				// last block
 				if (rest > 0) {
-					ar & make_nvp("blocks", tmp);
+					ar & tmp;
 					for (size_t j = 0; j < rest; ++j) {
 						*ptr++ = (tmp & 1UL) != 0;
 						tmp = tmp >> 1;
@@ -1966,23 +1830,22 @@ private:
 			else {                                                                          // for non-binary types, ...
 				DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
 				// long from long
-				ar & make_nvp("genotype", m_genotype);
+				ar & m_genotype;
 			}
 #endif
 		}                                                                                 // verion >= 2
 
 		if (version > 0) {
 			DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
-			ar & make_nvp("info", m_info);
+			ar & m_info;
 		}
 		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
-		ar & make_nvp("individuals", m_inds);
+		ar & m_inds;
 
 		// set genostructure, check duplication
 		// we can not use setGenoStruIdx since stru may be new.
 		this->setGenoStructure(stru);
 
-		m_numSubPop = m_subPopSize.size();
 		m_popSize = accumulate(m_subPopSize.begin(), m_subPopSize.end(), 0L);
 
 		DBG_FAILIF(m_info.size() != m_popSize * infoSize(), ValueError, "Wgong size of info vector");
@@ -1995,9 +1858,9 @@ private:
 		}
 
 		DBG_DO(DBG_POPULATION, cout << "Reconstruct individual genotype" << endl);
-		m_subPopIndex.resize(m_numSubPop + 1);
+		m_subPopIndex.resize(m_subPopSize.size() + 1);
 		UINT i = 1;
-		for (m_subPopIndex[0] = 0; i <= m_numSubPop; ++i)
+		for (m_subPopIndex[0] = 0; i <= m_subPopSize.size(); ++i)
 			m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
 
 		// assign genotype location and set structure information for individuals
@@ -2010,27 +1873,27 @@ private:
 			m_inds[i].setGenoPtr(ptr);
 			m_inds[i].setInfoPtr(infoPtr);
 		}
-		m_ancestralDepth = 0;
+		m_ancestralGens = 0;
 		m_ancestralPops.clear();
 
 		// ancestry populations
 		DBG_DO(DBG_POPULATION, cout << "Handling ancestral populations" << endl);
-		ar & make_nvp("ancestry", m_ancestralDepth);
+		ar & m_ancestralGens;
 		size_t na;
-		ar & make_nvp("numOfAncestralPops", na);
+		ar & na;
 		for (size_t ap = 0; ap < na; ++ap) {
 			popData pd;
-			ar & make_nvp("subPop_sizes", pd.m_subPopSize);
+			ar & pd.m_subPopSize;
 			// version <= 1, direct handling
 			if (version <= 1) {
-				ar & make_nvp("genotype", pd.m_genotype);
+				ar & pd.m_genotype;
 			} else {
 #ifdef BINARYALLELE
 				// binary from binary
 				if (ma == 1) {
 					DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
 					size_t size;
-					ar & make_nvp("size", size);
+					ar & size;
 					size_t blks = size / WORDBIT;
 					size_t rest = size - blks * WORDBIT;
 
@@ -2040,7 +1903,7 @@ private:
 					for (size_t i = 0; i < blks; ++i) {
 						tmp = 0;
 						for (size_t j = 0; j < WORDBIT / 32; ++j) {
-							ar & make_nvp("blocks", tmp1);
+							ar & tmp1;
 							tmp |= tmp1 << (j * 32);
 						}
 						*ptr++ = tmp;
@@ -2049,7 +1912,7 @@ private:
 					if (rest > 0) {
 						tmp = 0;
 						for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-							ar & make_nvp("blocks", tmp1);
+							ar & tmp1;
 							tmp |= tmp1 << (j * 32);
 						}
 						*ptr = tmp;
@@ -2058,14 +1921,14 @@ private:
 					DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
 					// binary from long types
 					vector<unsigned char> tmpgeno;
-					ar & make_nvp("genotype", tmpgeno);
+					ar & tmpgeno;
 					pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
 				}
 #else
 				if (ma == 1) {
 					// long type from binary
 					size_t size;
-					ar & make_nvp("size", size);
+					ar & size;
 					pd.m_genotype.resize(size);
 					size_t blks = size / 32;
 					size_t rest = size - blks * 32;
@@ -2074,7 +1937,7 @@ private:
 					ptr = pd.m_genotype.begin();
 					WORDTYPE tmp;
 					for (size_t i = 0; i < blks; ++i) {
-						ar & make_nvp("blocks", tmp);
+						ar & tmp;
 						for (size_t j = 0; j < 32; ++j) {
 							*ptr++ = (tmp & 1UL) != 0;
 							tmp = tmp >> 1;
@@ -2082,7 +1945,7 @@ private:
 					}
 					// last block
 					if (rest > 0) {
-						ar & make_nvp("blocks", tmp);
+						ar & tmp;
 						for (size_t i = 0; i < rest; ++i) {
 							*ptr++ = (tmp & 1UL) != 0;
 							tmp = tmp >> 1;
@@ -2091,13 +1954,13 @@ private:
 				} else {
 					DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
 					// long type from long type.
-					ar & make_nvp("genotype", pd.m_genotype);
+					ar & pd.m_genotype;
 				}
 #endif
 			}
 			if (version > 0)
-				ar & make_nvp("info", pd.m_info);
-			ar & make_nvp("individuals", pd.m_inds);
+				ar & pd.m_info;
+			ar & pd.m_inds;
 			// set pointer after copy this thing again (push_back)
 			m_ancestralPops.push_back(pd);
 			// now set pointers
@@ -2120,7 +1983,7 @@ private:
 		try {
 			DBG_DO(DBG_POPULATION, cout << "Handling shared variables" << endl);
 			string vars;
-			ar & make_nvp("vars", vars);
+			ar & vars;
 			varsFromString(vars);
 		} catch (...) {
 			cout << "Warning: shared variable is not loaded correctly.\npopulation should still be usable." << endl;
@@ -2135,9 +1998,6 @@ private:
 private:
 	/// population size: number of individual
 	ULONG m_popSize;
-
-	/// number of subpopulations
-	UINT m_numSubPop;
 
 	/// size of each subpopulation
 	vectorlu m_subPopSize;
@@ -2159,7 +2019,7 @@ private:
 	/// only in head node?
 	vector<individual> m_inds;
 
-	int m_ancestralDepth;
+	int m_ancestralGens;
 
 	/// shared variables for this population
 	SharedVariables m_vars;
@@ -2176,6 +2036,7 @@ private:
 
 		// swap between a popData and existing data.
 		void swap(population & pop);
+
 	};
 
 	std::deque<popData> m_ancestralPops;
@@ -2199,8 +2060,9 @@ private:
 
 };
 
-/// load a population from a file. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml.
-population & LoadPopulation(const string & file, const string & format = "auto");
+/** load a population from a file.
+ */
+population & LoadPopulation(const string & file);
 
 /// get info through ind.info()
 vectorf testGetinfoFromInd(population & pop);

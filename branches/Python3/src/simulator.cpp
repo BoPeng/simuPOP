@@ -544,33 +544,8 @@ void simulator::loadSimulator(string filename, string format)
 		boost::archive::text_iarchive ia(ifs);
 		ia >> *this;
 	} catch (...) {
-		// first close the file handle.
-		DBG_DO(DBG_POPULATION,
-			cout << "Can not determine file type, or file type is wrong. Trying different ways." << endl);
-
-		// open a fresh ifstream
-		boost::iostreams::filtering_istream ifbin;
-		if (isGzipped(filename))
-			ifbin.push(boost::iostreams::gzip_decompressor());
-		ifbin.push(boost::iostreams::file_source(filename));
-		// try to load the file using different iarchives.
-		try                                                                               // binary?
-		{
-			boost::archive::binary_iarchive ia(ifbin);
-			ia >> *this;
-		} catch (...) {                                                             // not binary, text?
-			boost::iostreams::filtering_istream ifxml;
-			if (isGzipped(filename))
-				ifxml.push(boost::iostreams::gzip_decompressor());
-			ifxml.push(boost::iostreams::file_source(filename));
-			try {
-				boost::archive::xml_iarchive ia(ifxml);
-				ia >> boost::serialization::make_nvp("simulator", *this);
-			} catch (...) {
-				throw ValueError("Failed to load simulator. Your file may be corrupted, "
+		throw ValueError("Failed to load simulator. Your file may be corrupted, "
 								 "or being a copy of non-transferrable file (.bin)");
-			}
-		}                                                                                       // try xml
 	}                                                                                               // try bin
 }
 

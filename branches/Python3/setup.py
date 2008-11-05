@@ -326,8 +326,6 @@ if included_boost:
         'basic_serializer_map.cpp',
         'basic_text_iprimitive.cpp',
         'basic_text_oprimitive.cpp',
-        'binary_iarchive.cpp',
-        'binary_oarchive.cpp',
         'extended_type_info.cpp',
         'extended_type_info_no_rtti.cpp',
         'extended_type_info_typeid.cpp',
@@ -341,10 +339,6 @@ if included_boost:
         'basic_iserializer.cpp',
         'basic_oserializer.cpp',
         'basic_pointer_oserializer.cpp',
-        'basic_xml_archive.cpp',
-        'xml_grammar.cpp',
-        'xml_iarchive.cpp',
-        'xml_oarchive.cpp'
         ]
     ])
 
