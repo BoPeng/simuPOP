@@ -447,7 +447,7 @@ void population::setGenotype(vectora geno, SubPopID subPop)
 
 void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 {
-	UINT oldGen = ancestralGen();
+	UINT oldGen = curAncestralGen();
 	size_t sz = id.size();
 
 	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
@@ -463,7 +463,7 @@ void population::setIndSubPopID(const vectori & id, bool ancestralPops)
 
 void population::setIndSubPopIDWithID(bool ancestralPops)
 {
-	UINT oldGen = ancestralGen();
+	UINT oldGen = curAncestralGen();
 
 	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
 		if (!ancestralPops && anc != oldGen)
