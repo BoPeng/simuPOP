@@ -526,13 +526,6 @@ public:
 	}
 
 
-	/// HIDDEN
-	bool haplodiploid() const
-	{
-		return isHaplodiploid();
-	}
-
-
 	/** return the total number of loci on all chromosomes.
 	 *  <group>3-locus</group>
 	 */
@@ -583,33 +576,6 @@ public:
 	vectorf lociPos() const
 	{
 		return s_genoStruRepository[m_genoStruIdx].m_lociPos;
-	}
-
-
-	/// HIDDEN return a \c carray of loci positions of all loci
-	/**
-	   \note Modifying loci position directly using this function is strongly discouraged.
-	 *  <group>3-locus</group>
-	 */
-	PyObject * arrLociPos()
-	{
-		return Double_Vec_As_NumArray(s_genoStruRepository[m_genoStruIdx].m_lociPos.begin(),
-			s_genoStruRepository[m_genoStruIdx].m_lociPos.end() );
-	}
-
-
-	/// HIDDEN return a \c carray of loci positions on a given chromosome
-	/**
-	   \note Modifying loci position directly using this function is strongly discouraged.
-	 *  <group>3-locus</group>
-	 */
-	PyObject * arrLociPos(UINT chrom)
-	{
-		CHECKRANGECHROM(chrom);
-
-		return Double_Vec_As_NumArray(
-			s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromBegin(chrom),
-			s_genoStruRepository[m_genoStruIdx].m_lociPos.begin() + chromEnd(chrom) );
 	}
 
 
