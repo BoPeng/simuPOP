@@ -246,13 +246,13 @@ public:
 	/// CPPONLY
 	vspSplitter * virtualSplitter() const { return m_vspSplitter; }
 
-	/** Set a VSP splitter to the population, which defines the same VSPs for
-	 *  all subpopulations. If different VSPs are needed for different
+	/** Set a VSP \e splitter to the population, which defines the same VSPs
+	 *  for all subpopulations. If different VSPs are needed for different
 	 *  subpopulations, a \c combinedSplitter can be used to make these VSPs
 	 *  available to all subpopulations.
 	 *  <group>3-VSP</group>
 	 */
-	void setVirtualSplitter(vspSplitter * vsp);
+	void setVirtualSplitter(vspSplitter * splitter);
 
 	/** Return the number of virtual subpopulations (VSP) defined by a VSP
 	 *  splitter. Return \c 0 if no VSP is defined.
