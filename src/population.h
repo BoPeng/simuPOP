@@ -535,7 +535,7 @@ public:
 	IndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
 	}
 
 
@@ -543,7 +543,7 @@ public:
 	IndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		return IndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
 	}
 
 
@@ -556,7 +556,7 @@ public:
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -567,7 +567,7 @@ public:
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -577,7 +577,7 @@ public:
 	ConstIndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
 	}
 
 
@@ -587,7 +587,7 @@ public:
 	ConstIndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible) const
 	{
 		return ConstIndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
 	}
 
 
@@ -600,7 +600,7 @@ public:
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -613,7 +613,7 @@ public:
 
 		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type==vspSplitter::Visible);
+			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -1197,8 +1197,7 @@ public:
 		else if (vsp.isVirtual()) {
 			activateVirtualSubPop(subPop, vsp.virtualSubPop(), vspSplitter::Iteratable);
 			return IndInfoIterator(idx, indBegin(subPop, vspSplitter::Iteratable));
-		}
-		else
+		} else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
 
@@ -1625,11 +1624,13 @@ public:
 	}
 
 
-	/// CPPONLY rearrange loci on chromosomes, e.g. combine two chromosomes into one
-	/**
-	   This is used by \c mergeByLoci.
+	/** HIDDEN
+	 *  This function changes individual genotype pointer and information
+	 *  pointer so that the population appear to be after a massive migration.
+	 *  It is used to test population functions and see if they behave the
+	 *  same under this situation.
 	 */
-	void rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos);
+	void scramble();
 
 private:
 	friend class boost::serialization::access;
@@ -2063,12 +2064,6 @@ private:
 /** load a population from a file.
  */
 population & LoadPopulation(const string & file);
-
-/// get info through ind.info()
-vectorf testGetinfoFromInd(population & pop);
-
-/// get info through IndInfoIterator
-vectorf testGetinfoFromPop(population & pop, bool order);
 
 }
 
