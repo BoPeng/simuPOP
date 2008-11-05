@@ -29,6 +29,22 @@
  */
 #include "population.h"
 
+enum RelativeType {
+	REL_None,           // do nothing
+	REL_Self,           // individual himself or herself.
+	REL_Offspring,      // All offspring with all spouses (if there are more than one spouse)
+	REL_Spouse,         // All spouses (with at least one offspring)
+	REL_FullSibling,    // Siblings who share two parents
+	REL_Sibling,        // Siblings who share at least one parent
+};
+
+enum SexChoice {
+	AnySex = 0,
+	MaleOnly = 1,
+	FemaleOnly = 2,
+	OppositeSex = 3
+};
+
 namespace simuPOP {
 
 class pedigree : public population

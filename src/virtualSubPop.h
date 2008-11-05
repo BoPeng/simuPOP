@@ -24,8 +24,8 @@
 #ifndef _VIRTUALSUBPOP_H
 #define _VIRTUALSUBPOP_H
 /**
- \file
- \brief head file of class mating and its subclasses
+   \file
+   \brief head file of class mating and its subclasses
  */
 #include "utility.h"
 #include "simuPOP_cfg.h"
@@ -52,6 +52,7 @@ public:
 		m_subPop = subPop[0];
 		m_virtualSubPop = subPop[1];
 	}
+
 
 	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID)
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
@@ -105,6 +106,7 @@ public:
 	{
 	}
 
+
 	/** All VSP splitter defines a \c clone() function to create an identical
 	 *  copy of itself.
 	 */
@@ -113,6 +115,7 @@ public:
 	virtual ~vspSplitter()
 	{
 	}
+
 
 	/// Which subpopulation is activated.
 	/// CPPONLY
@@ -159,13 +162,13 @@ typedef std::vector<vspSplitter *> vectorsplitter;
  *  example, if the first splitter defines \c 3 VSPs and the second splitter
  *  defines \c 2, the two VSPs from the second splitter becomes the fourth
  *  (index \c 3) and the fifth (index \c 4) VSPs of the combined splitter.
- *  This splitter is usually used to define different types of VSPs to a 
+ *  This splitter is usually used to define different types of VSPs to a
  *  population.
  */
 class combinedSplitter : public vspSplitter
 {
 public:
-    /** Create a combined splitter using a list of \e splitters. For example,
+	/** Create a combined splitter using a list of \e splitters. For example,
 	 *  <tt>combinedSplitter([sexSplitter(), affectionSplitter()])</tt> defines
 	 *  a combined splitter with four VSPs.
 	 */
@@ -230,11 +233,13 @@ public:
 	{
 	}
 
+
 	/// HIDDEN
 	vspSplitter * clone() const
 	{
 		return new sexSplitter(*this);
 	}
+
 
 	/// the size of a given virtual subpopulation.
 	/// CPPONLY
@@ -262,6 +267,8 @@ public:
 		DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
 		return vsp == 0 ? "Male" : "Female";
 	}
+
+
 };
 
 
@@ -276,6 +283,7 @@ public:
 	affectionSplitter() : vspSplitter()
 	{
 	}
+
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -310,6 +318,8 @@ public:
 		DBG_FAILIF(vsp > 1, IndexError, "VSP index out of range");
 		return vsp == 0 ? "Unaffected" : "Affected";
 	}
+
+
 };
 
 
@@ -331,7 +341,7 @@ public:
 	 *  values in \e cutoff should be distinct, and in an increasing order.
 	 */
 	infoSplitter(string field, vectorinfo const & values = vectorinfo(),
-	             vectorf const & cutoff = vectorf());
+		vectorf const & cutoff = vectorf());
 
 	/// HIDDEN
 	vspSplitter * clone() const
@@ -422,13 +432,13 @@ private:
 
 
 /** This class defines a splitter that groups individuals in certain ranges
- *  into VSPs. 
+ *  into VSPs.
  */
 class rangeSplitter : public vspSplitter
 {
 public:
 	/** Create a splitter according to a number of individual ranges defined
-	 *  in \e ranges. For example, 
+	 *  in \e ranges. For example,
 	 *  <tt>rangeSplitter(ranges=[[0, 20], [40, 50]])</tt> defines two VSPs.
 	 *  The first VSP consists of individuals \c 0, \c 1, ..., \c 19, and the
 	 *  sceond VSP consists of individuals \c 40, \c 41, ..., \c 49. Note that
@@ -483,7 +493,7 @@ public:
 	 *  \e loci. If only one VSP is defined, the outer list of the nested list
 	 *  can be ignored. If phase if true, the order of alleles in each list is
 	 *  significant. If more than one set of alleles are given, individuals
-	 * 	having either of them is qualified.\n
+	 *  having either of them is qualified.\n
 	 *
 	 *  For example, in a haploid population, <tt>locus=1, alleles=[0, 1]</tt>
 	 *  defines a VSP with individuals having allele \c 0 or \c 1 at locus \c 1,
@@ -493,14 +503,14 @@ public:
 	 *  VSP defined by <tt>loci=[0, 1], alleles=[0, 1, 1, 1]</tt> consists of
 	 *  individuals having alleles <tt>[0, 1]</tt> or <tt>[1, 1]</tt> at loci
 	 *  <tt>[0, 1]</tt>.\n
-	 *  
+	 *
 	 *  In a haploid population, <tt>locus=1, alleles=[0, 1]</tt> defines a VSP
 	 *  with individuals having genotype <tt>[0, 1]</tt> or <tt>[1, 0]</tt> at
 	 *  locus \c 1. <tt>alleles[[0, 1], [2, 2]]</tt> defines two VSPs with
 	 *  indivdiuals in the second VSP having genotype <tt>[2, 2]</tt> at locus
 	 *  \c 1. If \e phase is set to \c True, the first VSP will only has
 	 *  individuals with genotype <tt>[0, 1]</tt>. In the multiple loci,
-	 *  alleles should be arranged by haplotypes, for example, 
+	 *  alleles should be arranged by haplotypes, for example,
 	 *  <tt>loci=[0, 1], alleles=[0, 0, 1, 1]</tt> defines a VSP with
 	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> or
 	 *  <tt>-1-1-, -0-0-</tt> at loci \c 0 and \c 1. If haplotypes <tt>-0-1-</tt>
@@ -508,7 +518,7 @@ public:
 	 *  <tt>alleles=[0, 0, 1, 1, 0, 1, 0, 1]</tt>.
 	 */
 	genotypeSplitter(const vectori & loci,
-	                 const intMatrix & alleles, bool phase = false);
+		const intMatrix & alleles, bool phase = false);
 
 	/// HIDDEN
 	vspSplitter * clone() const

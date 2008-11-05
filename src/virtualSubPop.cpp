@@ -105,7 +105,7 @@ void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 void combinedSplitter::deactivate(population & pop, SubPopID sp)
 {
 	m_splitters[m_curSplitter]->deactivate(pop, sp);
-    m_activated = InvalidSubPopID;
+	m_activated = InvalidSubPopID;
 }
 
 
@@ -198,7 +198,7 @@ void affectionSplitter::deactivate(population & pop, SubPopID subPop)
 
 
 infoSplitter::infoSplitter(string info, vectorinfo const & values,
-                           vectorf const & cutoff)
+	vectorf const & cutoff)
 	: vspSplitter(),
 	m_info(info), m_values(values), m_cutoff(cutoff)
 {
@@ -515,8 +515,8 @@ string rangeSplitter::name(SubPopID subPop)
 
 
 genotypeSplitter::genotypeSplitter(const vectori & loci,
-                                   const intMatrix & alleles,
-                                   bool phase)
+	const intMatrix & alleles,
+	bool phase)
 	: vspSplitter(), m_loci(loci), m_alleles(alleles),
 	m_phase(phase)
 {
