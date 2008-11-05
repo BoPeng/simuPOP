@@ -982,8 +982,7 @@ public:
 	mating(vectorlu newSubPopSize = vectorlu(),
 	       string newSubPopSizeExpr = "",
 	       PyObject * newSubPopSizeFunc = NULL,
-	       SubPopID subPop = InvalidSubPopID,
-	       SubPopID virtualSubPop = InvalidSubPopID,
+	       vspID subPop = vspID(),
 	       double weight = 0);
 
 	/// CPPONLY
@@ -1000,14 +999,14 @@ public:
 	/// CPPONLY
 	SubPopID subPop() const
 	{
-		return m_subPop;
+		return m_subPop.subPop();
 	}
 
 
 	/// CPPONLY
 	SubPopID virtualSubPop() const
 	{
-		return m_virtualSubPop;
+		return m_subPop.virtualSubPop();
 	}
 
 
@@ -1077,10 +1076,7 @@ protected:
 	PyObject * m_subPopSizeFunc;
 
 	///
-	SubPopID m_subPop;
-
-	///
-	SubPopID m_virtualSubPop;
+	vspID m_subPop;
 
 	///
 	double m_weight;
@@ -1122,11 +1118,10 @@ public:
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL,
-	         SubPopID subPop = InvalidSubPopID,
-	         SubPopID virtualSubPop = InvalidSubPopID,
+	         vspID subPop = vspID(),
 	         double weight = 0)
 	{
-		DBG_FAILIF(virtualSubPop != InvalidSubPopID, ValueError,
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
 			"noMating can not be used in virtual subpopulations");
 	}
 
@@ -1197,10 +1192,9 @@ public:
 	            vectorlu newSubPopSize = vectorlu(),
 	            string newSubPopSizeExpr = "",
 	            PyObject * newSubPopSizeFunc = NULL,
-	            SubPopID subPop = InvalidSubPopID,
-	            SubPopID virtualSubPop = InvalidSubPopID,
+	            vspID subPop = vspID(),
 	            double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		               mode, sexParam, sexMode)
 	{
@@ -1273,10 +1267,9 @@ public:
 	                  vectorlu newSubPopSize = vectorlu(),
 	                  string newSubPopSizeExpr = "",
 	                  PyObject * newSubPopSizeFunc = NULL,
-	                  SubPopID subPop = InvalidSubPopID,
-	                  SubPopID virtualSubPop = InvalidSubPopID,
+					  vspID subPop = vspID(),
 	                  double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		               mode, sexParam, sexMode)
 	{
@@ -1375,10 +1368,9 @@ public:
 	                 string newSubPopSizeExpr = "",
 	                 PyObject * newSubPopSizeFunc = NULL,
 	                 bool contWhenUniSex = true,
-	                 SubPopID subPop = InvalidSubPopID,
-	                 SubPopID virtualSubPop = InvalidSubPopID,
+					 vspID subPop = vspID(),
 	                 double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode),
 		m_replacement(replacement), m_replenish(replenish),
@@ -1478,13 +1470,12 @@ public:
 	             PyObject * newSubPopSizeFunc = NULL,
 	             string newSubPopSizeExpr = "",
 	             bool contWhenUniSex = true,
-	             SubPopID subPop = InvalidSubPopID,
-	             SubPopID virtualSubPop = InvalidSubPopID,
+				 vspID subPop = vspID(),
 	             double weight = 0)
 		:  baseRandomMating(true, false, Male, 1, Male, 0, string(),
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
-		                    newSubPopSizeFunc, contWhenUniSex, subPop, virtualSubPop, weight)
+		                    newSubPopSizeFunc, contWhenUniSex, subPop, weight)
 	{
 	}
 
@@ -1534,13 +1525,12 @@ public:
 	                 PyObject * newSubPopSizeFunc = NULL,
 	                 string newSubPopSizeExpr = "",
 	                 bool contWhenUniSex = true,
-	                 SubPopID subPop = InvalidSubPopID,
-	                 SubPopID virtualSubPop = InvalidSubPopID,
+					 vspID subPop = vspID(),
 	                 double weight = 0)
 		:  baseRandomMating(false, replenish, Male, 1, Male, 0, string(),
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
-		                    newSubPopSizeFunc, contWhenUniSex, subPop, virtualSubPop, weight)
+		                    newSubPopSizeFunc, contWhenUniSex, subPop, weight)
 	{
 	}
 
@@ -1597,13 +1587,12 @@ public:
 	                 PyObject * newSubPopSizeFunc = NULL,
 	                 string newSubPopSizeExpr = "",
 	                 bool contWhenUniSex = true,
-	                 SubPopID subPop = InvalidSubPopID,
-	                 SubPopID virtualSubPop = InvalidSubPopID,
+					 vspID subPop = vspID(),
 	                 double weight = 0)
 		:  baseRandomMating(replacement, replenish, polySex, polyNum, Male, 0, string(),
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
-		                    newSubPopSizeFunc, contWhenUniSex, subPop, virtualSubPop, weight)
+		                    newSubPopSizeFunc, contWhenUniSex, subPop, weight)
 	{
 	}
 
@@ -1667,13 +1656,12 @@ public:
 	            vectorlu newSubPopSize = vectorlu(),
 	            PyObject * newSubPopSizeFunc = NULL,
 	            string newSubPopSizeExpr = "",
-	            SubPopID subPop = InvalidSubPopID,
-	            SubPopID virtualSubPop = InvalidSubPopID,
+				vspID subPop = vspID(),
 	            double weight = 0)
 		:  baseRandomMating(true, false, Male, 1, alphaSex, alphaNum, alphaField,
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
-		                    newSubPopSizeFunc, false, subPop, virtualSubPop, weight)
+		                    newSubPopSizeFunc, false, subPop, weight)
 	{
 	}
 
@@ -1729,10 +1717,9 @@ public:
 	                   vectorlu newSubPopSize = vectorlu(),
 	                   PyObject * newSubPopSizeFunc = NULL,
 	                   string newSubPopSizeExpr = "",
-	                   SubPopID subPop = InvalidSubPopID,
-	                   SubPopID virtualSubPop = InvalidSubPopID,
+					   vspID subPop = vspID(),
 	                   double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode),
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField)
@@ -1815,8 +1802,7 @@ protected:
 // 	               vectorlu newSubPopSize = vectorlu(),
 // 	               PyObject * newSubPopSizeFunc = NULL,
 // 	               string newSubPopSizeExpr = "",
-// 	               SubPopID subPop = InvalidSubPopID,
-// 	               SubPopID virtualSubPop = InvalidSubPopID,
+//					vspID subPop = vspID(),
 // 	               double weight = 0);
 // 
 // 	/// destructor
@@ -1888,10 +1874,9 @@ public:
 	           PyObject * newSubPopSizeFunc = NULL,
 	           string newSubPopSizeExpr = "",
 	           bool contWhenUniSex = true,
-	           SubPopID subPop = InvalidSubPopID,
-	           SubPopID virtualSubPop = InvalidSubPopID,
+	           vspID subPop = vspID(),
 	           double weight = 0)
-		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode)
 	{
@@ -1985,8 +1970,7 @@ public:
 	                     PyObject * newSubPopSizeFunc = NULL,
 	                     string newSubPopSizeExpr = "",
 	                     bool contWhenUniSex = true,
-	                     SubPopID subPop = InvalidSubPopID,
-	                     SubPopID virtualSubPop = InvalidSubPopID,
+						 vspID subPop = vspID(),
 	                     double weight = 0);
 
 	/// destructor
@@ -2225,8 +2209,7 @@ public:
 	                       PyObject * newSubPopSizeFunc = NULL,
 	                       string newSubPopSizeExpr = "",
 	                       bool contWhenUniSex = true,
-	                       SubPopID subPop = InvalidSubPopID,
-	                       SubPopID virtualSubPop = InvalidSubPopID,
+						   vspID subPop = vspID(),
 	                       double weight = 0)
 		: randomMating(numOffspring,
 		               numOffspringFunc, maxNumOffspring, mode,
@@ -2235,7 +2218,7 @@ public:
 		               newSubPopSizeFunc,
 		               newSubPopSizeExpr,
 		               contWhenUniSex,
-		               subPop, virtualSubPop, weight),
+		               subPop, weight),
 		m_loci(loci),
 		m_alleles(alleles),
 		m_freqFunc(freqFunc),
@@ -2345,8 +2328,7 @@ public:
 	         vectorlu newSubPopSize = vectorlu(),
 	         string newSubPopSizeExpr = "",
 	         PyObject * newSubPopSizeFunc = NULL,
-	         SubPopID subPop = InvalidSubPopID,
-	         SubPopID virtualSubPop = InvalidSubPopID,
+	         vspID subPop = vspID(),
 	         double weight = 0);
 
 	/// destructor
@@ -2418,8 +2400,7 @@ public:
 	             string newSubPopSizeExpr = "",
 	             PyObject * newSubPopSizeFunc = NULL,
 	             bool shuffleOffspring = true,
-	             SubPopID subPop = InvalidSubPopID,
-	             SubPopID virtualSubPop = InvalidSubPopID,
+	             vspID subPop = vspID(),
 	             double weight = 0);
 
 	/// destructor
