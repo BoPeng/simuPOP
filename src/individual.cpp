@@ -27,38 +27,6 @@ using std::ostringstream;
 
 namespace simuPOP {
 
-PyObject * individual::arrGenotype()
-{
-	// this &* is to avoid any possible type mismatch thing.
-	return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
-}
-
-
-// return genotype as python Numeric.array object
-// This is the p'th copy of chromosomes
-PyObject * individual::arrGenotype(UINT p)
-{
-	CHECKRANGEPLOIDY(p);
-	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
-		m_genoPtr + (p + 1) * totNumLoci() );
-}
-
-
-// return genotype as python Numeric.array object
-// This is the ch chromosome of the pth copy of chromosome
-PyObject * individual::arrGenotype(UINT p, UINT ch)
-{
-	CHECKRANGEPLOIDY(p);
-	return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(ch),
-		m_genoPtr + p * totNumLoci() + chromEnd(ch));
-}
-
-
-PyObject * individual::arrInfo()
-{
-	return Info_Vec_As_NumArray(m_infoPtr, m_infoPtr + infoSize() );
-}
-
 
 individual & individual::operator=(const individual & rhs)
 {

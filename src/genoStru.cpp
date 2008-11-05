@@ -416,7 +416,7 @@ GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
 		lociPos.push_back(locusPos(*loc));
 		lociNames.push_back(locusName(*loc));
 	}
-	return *new GenoStructure(ploidy(), numLoci, chromTypes(), haplodiploid(),
+	return *new GenoStructure(ploidy(), numLoci, chromTypes(), isHaplodiploid(),
 		lociPos, chromNames(), alleleNames(), lociNames, infoFields());
 }
 

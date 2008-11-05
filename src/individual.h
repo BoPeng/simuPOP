@@ -175,23 +175,6 @@ public:
 	/// @name allele, info get/set functions
 	//@{
 
-	/// HIDDEN return an editable array (a carray of length <tt>totNumLoci()*ploidy()</tt>) of genotypes of an individual
-	/**
-	   This function returns the whole genotype. Although this function is
-	   not as easy to use as other functions that access alleles,
-	   it is the fastest one since you can read/write genotype directly.
-	 */
-	PyObject * arrGenotype();
-
-	/// HIDDEN return a carray with the genotypes of the \c p-th copy of the chromosomes
-	PyObject * arrGenotype(UINT p);
-
-	/// HIDDEN return a carray with the genotypes of the \c ch-th chromosome in the \c p-th chromosome set
-	PyObject * arrGenotype(UINT p, UINT ch);
-
-	/// HIDDEN return a carray of all information fields (of size \c infoSize()) of this individual
-	PyObject * arrInfo();
-
 	/** return the current allele at a locus, using its absolute index \e idx.
 	 *
 	 * <group>1-allele</group>
