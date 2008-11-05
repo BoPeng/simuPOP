@@ -562,15 +562,6 @@ bool PyObj_Is_AlleleNumArray(PyObject * obj)
 }
 
 
-PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
-{
-	PyObject * res = newcarrayobject(reinterpret_cast<char *>(& * begin), 'i', end - begin);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to int num array");
-	return res;
-}
-
-
 PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end)
 {
 	PyObject * res = newcarrayobject(reinterpret_cast<char *>(& * begin), 'd', end - begin);
@@ -585,15 +576,6 @@ PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 	PyObject * res = newcarrayiterobject(begin, end);
 
 	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to Allele num array");
-	return res;
-}
-
-
-PyObject * Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end)
-{
-	PyObject * res = newcarrayobject(reinterpret_cast<char *>(& * begin), 'd', end - begin);
-
-	DBG_FAILIF(res == NULL, ValueError, "Can not convert buf to info num array");
 	return res;
 }
 

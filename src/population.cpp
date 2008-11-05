@@ -1241,7 +1241,7 @@ void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLo
 	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
 		"Re-arrange loci must keep the same total number of loci");
 	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
-		chromTypes(), haplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
+		chromTypes(), isHaplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
 		// chromosome names are discarded
 		vectorstr(), alleleNames(), lociNames(), infoFields());
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
