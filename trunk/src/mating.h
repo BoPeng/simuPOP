@@ -24,8 +24,8 @@
 #ifndef _MATING_H
 #define _MATING_H
 /**
- \file
- \brief head file of class mating and its subclasses
+   \file
+   \brief head file of class mating and its subclasses
  */
 #include "utility.h"
 // for trajectory simulation functions
@@ -53,20 +53,20 @@ namespace simuPOP {
 
    Parameters \c mode, \c numOffspring, \c maxNumOffspring and \c numOffspringFunc
    are used to specify how many offspring will be produced at each mating event.
- \c mode can be one of
- \li \c MATE_NumOffspring: a fixed number of offspring will be produced
-   	at all mating events .
- \li \c MATE_PyNumOffspring: A python function, specified by parameter
- \c numOffspringFunc, is called at each mating event to determine the number
-   	of offspring to produce.
- \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
-   	   is used to determine the number of offspring of each family.
- \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
-   	   is used to determine the number of offspring of each family.
- \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
-   	   is used to determine the number of offspring of each family.
- \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
- \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
+   \c mode can be one of
+   \li \c MATE_NumOffspring: a fixed number of offspring will be produced
+    at all mating events .
+   \li \c MATE_PyNumOffspring: A python function, specified by parameter
+   \c numOffspringFunc, is called at each mating event to determine the number
+    of offspring to produce.
+   \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
+       is used to determine the number of offspring of each family.
+   \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
+       is used to determine the number of offspring of each family.
+   \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
+       is used to determine the number of offspring of each family.
+   \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
+   \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
 
    This is the base class of all offspring generators, and should not
    be used directly.
@@ -96,29 +96,29 @@ public:
 
 public:
 	/**
-	 \param numOffspring Depending on \mode, this paramter can be the number of offspring to
-	   	produce, or a paremter of a random distribution.
-	 \param numOffspringFunc a Python function that returns the number of offspring at each
-	   	mating event. The setting of this parameter implies \mode=MATE_PyNumOffspring.
-	 \param maxNumOffspring used when \c numOffspring is generated from a binomial or random
-	   	distribution.
-	 \param mode can be one of <tt>MATE_NumOffspring, MATE_PyNumOffspring,
-	   	MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
-	   	or <tt>MATE_UniformDistribution</tt>.
-	 \param sexParam parameter that controls the sex distribution among offspring. Its exact
-	   	meaning is determined by parameter sexMode. Default to 0.5.
-	 \param sexMode can be one of
-	 \li MATE_RandomSex  Set sex to Male or Female with probability 0.5. Parameter
-	 \c sexParam is ignored in this case. This is the default mode.
-	 \li MATE_ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
-	 \li MATE_NumOfMale Set \c sexParam offspring to Male
-	 \li MATE_NumOfFemale Set \c sexParam offspring to Female.
-	 \note: Parameter \c sexMode and \c sexParam are ignored if sex chromosome is defined.
-	   	Offspring sex is defined by genotype in this case.
+	   \param numOffspring Depending on \mode, this paramter can be the number of offspring to
+	    produce, or a paremter of a random distribution.
+	   \param numOffspringFunc a Python function that returns the number of offspring at each
+	    mating event. The setting of this parameter implies \mode=MATE_PyNumOffspring.
+	   \param maxNumOffspring used when \c numOffspring is generated from a binomial or random
+	    distribution.
+	   \param mode can be one of <tt>MATE_NumOffspring, MATE_PyNumOffspring,
+	    MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
+	    or <tt>MATE_UniformDistribution</tt>.
+	   \param sexParam parameter that controls the sex distribution among offspring. Its exact
+	    meaning is determined by parameter sexMode. Default to 0.5.
+	   \param sexMode can be one of
+	   \li MATE_RandomSex  Set sex to Male or Female with probability 0.5. Parameter
+	   \c sexParam is ignored in this case. This is the default mode.
+	   \li MATE_ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
+	   \li MATE_NumOfMale Set \c sexParam offspring to Male
+	   \li MATE_NumOfFemale Set \c sexParam offspring to Female.
+	   \note: Parameter \c sexMode and \c sexParam are ignored if sex chromosome is defined.
+	    Offspring sex is defined by genotype in this case.
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
-	                   UINT maxNumOffspring, UINT mode,
-	                   double sexParam, UINT sexMode);
+		UINT maxNumOffspring, UINT mode,
+		double sexParam, UINT sexMode);
 
 
 	virtual ~offspringGenerator()
@@ -233,7 +233,7 @@ private:
 /** clone offspring generator copies parental geneotype to a number
    of offspring. Only one parent is accepted. The number of offspring
    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
- \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
+   \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
    ignored.
    <applicability>all ploidy</applicability>
  */
@@ -241,16 +241,16 @@ class cloneOffspringGenerator : public offspringGenerator
 {
 public:
 	/**
-	 \param sexParam ignored because sex is copied from the parent.
-	 \param sexMode ignored because sex is copied from the parent.
+	   \param sexParam ignored because sex is copied from the parent.
+	   \param sexMode ignored because sex is copied from the parent.
 	 */
 	cloneOffspringGenerator(double numOffspring = 1,
-	                        PyObject * numOffspringFunc = NULL,
-	                        UINT maxNumOffspring = 1,
-	                        UINT mode = MATE_NumOffspring,
-	                        double sexParam = 0.5,
-	                        UINT sexMode = MATE_RandomSex
-	                        ) :
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 1,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex
+	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		                   mode, sexParam, sexMode)
 	{
@@ -278,7 +278,7 @@ public:
    copy of the offspring, and one of the maternal chromosome is chosen
    randomly to form the maternal copy of the offspring. The number of offspring
    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
- \c maxNumOffspring and \c mode. Recombination will not happen unless
+   \c maxNumOffspring and \c mode. Recombination will not happen unless
    a during-mating operator recombinator is used.
 
    <applicability>diploid only</applicability>
@@ -287,12 +287,12 @@ class mendelianOffspringGenerator : public offspringGenerator
 {
 public:
 	mendelianOffspringGenerator(double numOffspring = 1,
-	                            PyObject * numOffspringFunc = NULL,
-	                            UINT maxNumOffspring = 1,
-	                            UINT mode = MATE_NumOffspring,
-	                            double sexParam = 0.5,
-	                            UINT sexMode = MATE_RandomSex
-	                            ) :
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 1,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex
+	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		                   mode, sexParam, sexMode),
 		m_bt(rng())
@@ -349,12 +349,12 @@ class selfingOffspringGenerator : public mendelianOffspringGenerator
 {
 public:
 	selfingOffspringGenerator(double numOffspring = 1,
-	                          PyObject * numOffspringFunc = NULL,
-	                          UINT maxNumOffspring = 1,
-	                          UINT mode = MATE_NumOffspring,
-	                          double sexParam = 0.5,
-	                          UINT sexMode = MATE_RandomSex
-	                          )
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 1,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex
+	    )
 		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		                              mode, sexParam, sexMode)
 	{
@@ -392,12 +392,12 @@ class haplodiploidOffspringGenerator : public mendelianOffspringGenerator
 {
 public:
 	haplodiploidOffspringGenerator(double numOffspring = 1,
-	                               PyObject * numOffspringFunc = NULL,
-	                               UINT maxNumOffspring = 1,
-	                               UINT mode = MATE_NumOffspring,
-	                               double sexParam = 0.5,
-	                               UINT sexMode = MATE_RandomSex
-	                               )
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 1,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex
+	    )
 		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		                              mode, sexParam, sexMode)
 	{
@@ -580,43 +580,43 @@ private:
 
 
 /** This parents chooser chooses one or two parents from
-   	a given pedigree. It works even when only one parent
-   	is needed.
+    a given pedigree. It works even when only one parent
+    is needed.
    <applicability>all ploidy</applicability>
  */
 // class pedigreeParentsChooser : public parentChooser
 // {
 // public:
-// 	pedigreeParentsChooser(const pedigree & ped) :
-// 		parentChooser(0), m_pedigree(ped), m_index(0)
-// 	{
-// 	}
-// 
-// 
-// 	parentChooser * clone() const
-// 	{
-// 		return new pedigreeParentsChooser(*this);
-// 	}
-// 
-// 
-// 	vectorlu subPopSizes(ULONG gen)
-// 	{
-// 		return m_pedigree.subPopSizes(gen);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	void initialize(population & pop, SubPopID sp);
-// 
-// 	/// CPPONLY
-// 	individualPair chooseParents(RawIndIterator basePtr);
-// 
+//  pedigreeParentsChooser(const pedigree & ped) :
+//      parentChooser(0), m_pedigree(ped), m_index(0)
+//  {
+//  }
+//
+//
+//  parentChooser * clone() const
+//  {
+//      return new pedigreeParentsChooser(*this);
+//  }
+//
+//
+//  vectorlu subPopSizes(ULONG gen)
+//  {
+//      return m_pedigree.subPopSizes(gen);
+//  }
+//
+//
+//  /// CPPONLY
+//  void initialize(population & pop, SubPopID sp);
+//
+//  /// CPPONLY
+//  individualPair chooseParents(RawIndIterator basePtr);
+//
 // private:
-// 	pedigree m_pedigree;
-// 	UINT m_gen;
-// 	SubPopID m_subPop;
-// 	RawIndIterator m_begin;
-// 	ULONG m_index;
+//  pedigree m_pedigree;
+//  UINT m_gen;
+//  SubPopID m_subPop;
+//  RawIndIterator m_begin;
+//  ULONG m_index;
 // };
 
 /** This parent chooser chooses a parent randomly from the
@@ -635,10 +635,10 @@ class randomParentChooser : public parentChooser
 {
 public:
 	/**
-	 \param replacement if replacement is false, a parent can not
-	   		be chosen more than once.
-	 \param replenish if all parent has been chosen, choose from
-	   		the whole parental population again.
+	   \param replacement if replacement is false, a parent can not
+	        be chosen more than once.
+	   \param replenish if all parent has been chosen, choose from
+	        the whole parental population again.
 	 */
 	randomParentChooser(bool replacement = true, bool replenish = false) :
 		parentChooser(1),
@@ -695,33 +695,33 @@ class randomParentsChooser : public parentChooser
 {
 public:
 	/**
-	 \param replacement choose with (\c True, default) or without (\c False)
-	   		replacement. When choosing without replacement, parents
-	   		will be paired and can only mate once.
-	 \param replenish if set to true, one or both sex groups will
-	   		be replenished if they are exhausted.
-	 \param polySex Male (polygyny) or Female (polyandry) parent that
-	   		will have \c polyNum sex partners.
-	 \param polyNum Number of sex partners.
-	 \param alphaSex the sex of the alpha individual, i.e. alpha male
-	   	or alpha female who be the only mating individuals in their
-	   	sex group.
-	 \param alphaNum Number of alpha individuals. If \c infoField is
-	   	not given, \c alphaNum random individuals with \c alphaSex
-	   	will be chosen. If selection is enabled, individuals with higher
-	   	fitness values have higher probability to be selected. There is
-	   	by default no alpha individual (\c alphaNum = 0).
-	 \param alphaField if an information field is given, individuals
-	   	with non-zero values at this information field are alpha individuals.
-	   	Note that these individuals must have \c alphaSex.
+	   \param replacement choose with (\c True, default) or without (\c False)
+	        replacement. When choosing without replacement, parents
+	        will be paired and can only mate once.
+	   \param replenish if set to true, one or both sex groups will
+	        be replenished if they are exhausted.
+	   \param polySex Male (polygyny) or Female (polyandry) parent that
+	        will have \c polyNum sex partners.
+	   \param polyNum Number of sex partners.
+	   \param alphaSex the sex of the alpha individual, i.e. alpha male
+	    or alpha female who be the only mating individuals in their
+	    sex group.
+	   \param alphaNum Number of alpha individuals. If \c infoField is
+	    not given, \c alphaNum random individuals with \c alphaSex
+	    will be chosen. If selection is enabled, individuals with higher
+	    fitness values have higher probability to be selected. There is
+	    by default no alpha individual (\c alphaNum = 0).
+	   \param alphaField if an information field is given, individuals
+	    with non-zero values at this information field are alpha individuals.
+	    Note that these individuals must have \c alphaSex.
 
 	   Note: If selection is enabled, it works regularly on on-alpha sex, but
-	   	works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
-	   	are chosen selectively, and selected again during mating.
+	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	    are chosen selectively, and selected again during mating.
 	 */
 	randomParentsChooser(bool replacement = true, bool replenish = false,
-	                     Sex polySex = Male, UINT polyNum = 1,
-	                     Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
+		Sex polySex = Male, UINT polyNum = 1,
+		Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
 		parentChooser(2),
 		m_replacement(replacement), m_replenish(replenish),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
@@ -790,39 +790,39 @@ private:
 
 
 /** This parents chooser choose an individual randomly, but choose
-   	his/her spouse from a given set of information fields, which stores
-   	indexes of individuals in the same generation. A field will be ignored
-   	if its value is negative, or if sex is compatible.
+    his/her spouse from a given set of information fields, which stores
+    indexes of individuals in the same generation. A field will be ignored
+    if its value is negative, or if sex is compatible.
 
-   	Depending on what indexes are stored in these information fields,
-   	this parent chooser can be used to implement consanguineous mating
-   	where close relatives are located for each individual, or certain
-   	non-random mating schemes where each individual can only mate with a small
-   	number of pre-determinable individuals.
+    Depending on what indexes are stored in these information fields,
+    this parent chooser can be used to implement consanguineous mating
+    where close relatives are located for each individual, or certain
+    non-random mating schemes where each individual can only mate with a small
+    number of pre-determinable individuals.
 
-   	This parent chooser (currently) uses \c randomParentChooser to choose
-   	one parent and randomly choose another one from the information fields.
-   	Because of potentially non-even distribution of valid information
-   	fields, the overall process may not be as random as expected, especially
-   	when selection is applied.
+    This parent chooser (currently) uses \c randomParentChooser to choose
+    one parent and randomly choose another one from the information fields.
+    Because of potentially non-even distribution of valid information
+    fields, the overall process may not be as random as expected, especially
+    when selection is applied.
 
-   	Note: if there is no valid individual, this parents chooser works like
-   	a double parentChooser.
+    Note: if there is no valid individual, this parents chooser works like
+    a double parentChooser.
    <applicability>all ploidy</applicability>
  */
 class infoParentsChooser : public randomParentChooser
 {
 public:
 	/**
-	 \param infoFields information fields that store index of matable
-	   		individuals.
-	 \param replacement if replacement is false, a parent can not
-	   		be chosen more than once.
-	 \param replenish if all parent has been chosen, choose from
-	   		the whole parental population again.
+	   \param infoFields information fields that store index of matable
+	        individuals.
+	   \param replacement if replacement is false, a parent can not
+	        be chosen more than once.
+	   \param replenish if all parent has been chosen, choose from
+	        the whole parental population again.
 	 */
 	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
-	                   bool replacement = true, bool replenish = false) :
+		bool replacement = true, bool replenish = false) :
 		randomParentChooser(replacement, replenish),
 		m_infoFields(infoFields), m_degenerate(false)
 	{
@@ -863,7 +863,7 @@ class pyParentsChooser : public parentChooser
 {
 public:
 	/**
-	 \param parentsGenerator A Python generator function
+	   \param parentsGenerator A Python generator function
 	 */
 	pyParentsChooser(PyObject * parentsGenerator);
 
@@ -928,10 +928,10 @@ private:
 /**
    Mating schemes specify how to generate offspring from the current population.
    It must be provided when a simulator is created. Mating can perform the following tasks:
- \li change population/subpopulation sizes;
- \li randomly select parent(s) to generate offspring to populate the offspring generation;
- \li apply \em during-mating operators;
- \li apply selection if applicable.
+   \li change population/subpopulation sizes;
+   \li randomly select parent(s) to generate offspring to populate the offspring generation;
+   \li apply \em during-mating operators;
+   \li apply selection if applicable.
  */
 class mating
 {
@@ -940,8 +940,8 @@ public:
 	/// CPPONLY check if the mating type is compatible with the population structure
 	/**
 	   possible things to check:
-	 \li need certain types of individuals (age, sex etc)
-	 \li need resizeable population...
+	   \li need certain types of individuals (age, sex etc)
+	   \li need resizeable population...
 	 */
 	virtual bool isCompatible(const population & pop) const
 	{
@@ -956,34 +956,34 @@ public:
 	   parameters. \c newSubPopSize, \c newSubPopSizeExpr and \c newSubPopSizeFunc
 	   can be used to specify subpopulation sizes of the offspring generation.
 
-	 \param newSubPopSize an array of subpopulations sizes, should have the same
-	   	number of subpopulations as the current population
-	 \param newSubPopSizeExpr an expression that will be evaluated as an array of new subpopulation sizes
-	 \param newSubPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize
+	   \param newSubPopSize an array of subpopulations sizes, should have the same
+	    number of subpopulations as the current population
+	   \param newSubPopSizeExpr an expression that will be evaluated as an array of new subpopulation sizes
+	   \param newSubPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize
 	   (an array of current population size) and return an array of subpopulation sizes of the next generation.
 	   This is usually easier to use than its expression version of this parameter.
-	 \param subPop if this parameter is given, the mating scheme
-	   	will be applied only to the given (virtual) subpopulation.
-	   	This is only used in heteroMating where mating schemes
-	   	are passed to.
-	 \param weight When subPop is virtual, this is used to detemine
-	   	the number of offspring for this mating scheme. Weight can be
-	 \li 0 (default) the weight will be proportional to the
-	   		current (virtual) subpopulation size. If other virutal
-	   		subpopulation has non-zero weight, this virtual subpopulation
-	   		will produce no offspring (weight 0).
-	 \li any negative number -n: the size will be n*m where m is the size
-	   	of the (virtual) subpopulation of the parental generation.
-	 \li any positive number n: the size will be determined by
-	   		weights from all (virtual) subpopulations.
+	   \param subPop if this parameter is given, the mating scheme
+	    will be applied only to the given (virtual) subpopulation.
+	    This is only used in heteroMating where mating schemes
+	    are passed to.
+	   \param weight When subPop is virtual, this is used to detemine
+	    the number of offspring for this mating scheme. Weight can be
+	   \li 0 (default) the weight will be proportional to the
+	        current (virtual) subpopulation size. If other virutal
+	        subpopulation has non-zero weight, this virtual subpopulation
+	        will produce no offspring (weight 0).
+	   \li any negative number -n: the size will be n*m where m is the size
+	    of the (virtual) subpopulation of the parental generation.
+	   \li any positive number n: the size will be determined by
+	        weights from all (virtual) subpopulations.
 
-	 \test src_mating.log Demographic models and control of number of offspring per mating event
+	   \test src_mating.log Demographic models and control of number of offspring per mating event
 	 */
 	mating(vectorlu newSubPopSize = vectorlu(),
-	       string newSubPopSizeExpr = "",
-	       PyObject * newSubPopSizeFunc = NULL,
-	       vspID subPop = vspID(),
-	       double weight = 0);
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		vspID subPop = vspID(),
+		double weight = 0);
 
 	/// CPPONLY
 	mating(const mating & rhs);
@@ -1049,10 +1049,10 @@ public:
 
 	/// CPPONLY this is not supposed to be called for a base mating class
 	/**
-	 \param pop population
-	 \param scratch scratch population
-	 \param ops during-mating operators
-	 \return return false when mating fail
+	   \param pop population
+	   \param scratch scratch population
+	   \param ops during-mating operators
+	   \return return false when mating fail
 	 */
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
 
@@ -1092,10 +1092,10 @@ public:
 /// a mating scheme that does nothing
 /**
    In this scheme, there is
- \li no mating. Parent generation will be considered as offspring generation.
- \li no subpopulation change. \em During-mating operators will be applied, but
-   	the return values are not checked. I.e., subpopulation size parameters will be ignored
-   	although some during-mating operators might be applied.
+   \li no mating. Parent generation will be considered as offspring generation.
+   \li no subpopulation change. \em During-mating operators will be applied, but
+    the return values are not checked. I.e., subpopulation size parameters will be ignored
+    although some during-mating operators might be applied.
 
    Note that because the offspring population is the same as parental population,
    this mating scheme can not be used with other mating schemes in a heterogeneous
@@ -1107,19 +1107,19 @@ class noMating : public mating
 public:
 	/// creat a scheme with no mating
 	/**
-	 \note All parameters are ignored!
+	   \note All parameters are ignored!
 	 */
 	noMating(double numOffspring = 1.0,
-	         PyObject * numOffspringFunc = NULL,
-	         UINT maxNumOffspring = 0,
-	         UINT mode = MATE_NumOffspring,
-	         double sexParam = 0.5,
-	         UINT sexMode = MATE_RandomSex,
-	         vectorlu newSubPopSize = vectorlu(),
-	         string newSubPopSizeExpr = "",
-	         PyObject * newSubPopSizeFunc = NULL,
-	         vspID subPop = vspID(),
-	         double weight = 0)
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		vspID subPop = vspID(),
+		double weight = 0)
 	{
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
 			"noMating can not be used in virtual subpopulations");
@@ -1134,7 +1134,7 @@ public:
 
 	/// deep copy of a scheme with no mating
 	/**
-	 \sa mating::clone() const
+	   \sa mating::clone() const
 	 */
 	virtual mating * clone() const
 	{
@@ -1167,13 +1167,13 @@ public:
 /// a clone mating that copy everyone from parental to offspring generation.
 /**
    Note that
- \li selection is not considered (fitness is ignored)
- \li sequentialParentMating is used. If offspring (virtual) subpopulation size
+   \li selection is not considered (fitness is ignored)
+   \li sequentialParentMating is used. If offspring (virtual) subpopulation size
    is smaller than parental subpopulation size, not all parents will be cloned.
    If offspring (virtual) subpopulation size is larger, some parents will be
    cloned more than once.
- \li numOffspring interface is respected.
- \li during mating operators are applied.
+   \li numOffspring interface is respected.
+   \li during mating operators are applied.
    <applicability>all ploidy</applicability>
  */
 class cloneMating : public mating
@@ -1184,16 +1184,16 @@ public:
 	   Please refer to class \c mating for parameter descriptions.
 	 */
 	cloneMating(double numOffspring = 1.,
-	            PyObject * numOffspringFunc = NULL,
-	            UINT maxNumOffspring = 0,
-	            UINT mode = MATE_NumOffspring,
-	            double sexParam = 0.5,
-	            UINT sexMode = MATE_RandomSex,
-	            vectorlu newSubPopSize = vectorlu(),
-	            string newSubPopSizeExpr = "",
-	            PyObject * newSubPopSizeFunc = NULL,
-	            vspID subPop = vspID(),
-	            double weight = 0)
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		vspID subPop = vspID(),
+		double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		               mode, sexParam, sexMode)
@@ -1209,7 +1209,7 @@ public:
 
 	/// deep copy of a binomial selection mating scheme
 	/**
-	 \sa mating::clone() const
+	   \sa mating::clone() const
 	 */
 	virtual mating * clone() const
 	{
@@ -1226,10 +1226,10 @@ public:
 
 	/// CPPONLY perform sexless random mating
 	/**
-	 \param pop population
-	 \param scratch scratch population
-	 \param ops during-mating operators
-	 \return return false when mating fails
+	   \param pop population
+	   \param scratch scratch population
+	   \param ops during-mating operators
+	   \return return false when mating fails
 	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd,
@@ -1245,10 +1245,10 @@ protected:
    No sex information is involved (binomial random selection). Offspring is chosen from parental generation
    by random or according to the fitness values.
    In this mating scheme,
- \li \c numOffspring protocol is honored;
- \li population size changes are allowed;
- \li selection is possible;
- \li haploid population is allowed.
+   \li \c numOffspring protocol is honored;
+   \li population size changes are allowed;
+   \li selection is possible;
+   \li haploid population is allowed.
    <applicability>all ploidy</applicability>
  */
 class binomialSelection : public mating
@@ -1259,16 +1259,16 @@ public:
 	   Please refer to class \c mating for parameter descriptions.
 	 */
 	binomialSelection(double numOffspring = 1.,
-	                  PyObject * numOffspringFunc = NULL,
-	                  UINT maxNumOffspring = 0,
-	                  UINT mode = MATE_NumOffspring,
-	                  double sexParam = 0.5,
-	                  UINT sexMode = MATE_RandomSex,
-	                  vectorlu newSubPopSize = vectorlu(),
-	                  string newSubPopSizeExpr = "",
-	                  PyObject * newSubPopSizeFunc = NULL,
-					  vspID subPop = vspID(),
-	                  double weight = 0)
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		vspID subPop = vspID(),
+		double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		               mode, sexParam, sexMode)
@@ -1284,7 +1284,7 @@ public:
 
 	/// deep copy of a binomial selection mating scheme
 	/**
-	 \sa mating::clone() const
+	   \sa mating::clone() const
 	 */
 	virtual mating * clone() const
 	{
@@ -1301,10 +1301,10 @@ public:
 
 	/// CPPONLY perform sexless random mating
 	/**
-	 \param pop population
-	 \param scratch scratch population
-	 \param ops during-mating operators
-	 \return return false when mating fails
+	   \param pop population
+	   \param scratch scratch population
+	   \param ops during-mating operators
+	   \return return false when mating fails
 	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 		RawIndIterator offBegin, RawIndIterator offEnd,
@@ -1324,8 +1324,8 @@ protected:
    several alpha individuals.
 
    Direct use of this mating scheme is not recommended.
- \c randomMating, \c monogemousMating, \c polygemousMating,
- \c alphaMating are all special cases of this mating scheme.
+   \c randomMating, \c monogemousMating, \c polygemousMating,
+   \c alphaMating are all special cases of this mating scheme.
    They should be used whenever possible.
    <applicability>diploid only</applicability>
  */
@@ -1333,43 +1333,43 @@ class baseRandomMating : public mating
 {
 public:
 	/**
-	 \param replacement If set to \c True, a parent can be chosen to mate again.
-	   		Default to False.
-	 \param replenish In case that \c replacement=True, whether or not replenish
-	   		 a sex group when it is exhausted.
-	 \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
-	 \param polyNum Number of sex partners.
-	 \param alphaSex the sex of the alpha individual, i.e. alpha male
-	   		   or alpha female who be the only mating individuals in their
-	   		   sex group.
-	 \param alphaNum Number of alpha individuals. If \c infoField is
-	   		   not given, \c alphaNum random individuals with \c alphaSex
-	   		   will be chosen. If selection is enabled, individuals with higher+               fitness values have higher probability to be selected. There is
-	   		   by default no alpha individual (\c alphaNum = 0).
-	 \param alphaField if an information field is given, individuals
-	   		   with non-zero values at this information field are alpha individuals.
-	   		   Note that these individuals must have \c alphaSex.
+	   \param replacement If set to \c True, a parent can be chosen to mate again.
+	        Default to False.
+	   \param replenish In case that \c replacement=True, whether or not replenish
+	         a sex group when it is exhausted.
+	   \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
+	   \param polyNum Number of sex partners.
+	   \param alphaSex the sex of the alpha individual, i.e. alpha male
+	           or alpha female who be the only mating individuals in their
+	           sex group.
+	   \param alphaNum Number of alpha individuals. If \c infoField is
+	           not given, \c alphaNum random individuals with \c alphaSex
+	           will be chosen. If selection is enabled, individuals with higher+               fitness values have higher probability to be selected. There is
+	           by default no alpha individual (\c alphaNum = 0).
+	   \param alphaField if an information field is given, individuals
+	           with non-zero values at this information field are alpha individuals.
+	           Note that these individuals must have \c alphaSex.
 
 	 */
 	baseRandomMating(bool replacement = true,
-	                 bool replenish = false,
-	                 Sex polySex = Male,
-	                 UINT polyNum = 1,
-	                 Sex alphaSex = Male,
-	                 UINT alphaNum = 0,
-	                 string alphaField = string(),
-	                 double numOffspring = 1.,
-	                 PyObject * numOffspringFunc = NULL,
-	                 UINT maxNumOffspring = 0,
-	                 UINT mode = MATE_NumOffspring,
-	                 double sexParam = 0.5,
-	                 UINT sexMode = MATE_RandomSex,
-	                 vectorlu newSubPopSize = vectorlu(),
-	                 string newSubPopSizeExpr = "",
-	                 PyObject * newSubPopSizeFunc = NULL,
-	                 bool contWhenUniSex = true,
-					 vspID subPop = vspID(),
-	                 double weight = 0)
+		bool replenish = false,
+		Sex polySex = Male,
+		UINT polyNum = 1,
+		Sex alphaSex = Male,
+		UINT alphaNum = 0,
+		string alphaField = string(),
+		double numOffspring = 1.,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode),
@@ -1455,23 +1455,23 @@ class randomMating : public baseRandomMating
 {
 public:
 	/**
-	 \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
-	 \n
+	   \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
+	   \n
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	randomMating(double numOffspring = 1.,
-	             PyObject * numOffspringFunc = NULL,
-	             UINT maxNumOffspring = 0,
-	             UINT mode = MATE_NumOffspring,
-	             double sexParam = 0.5,
-	             UINT sexMode = MATE_RandomSex,
-	             vectorlu newSubPopSize = vectorlu(),
-	             PyObject * newSubPopSizeFunc = NULL,
-	             string newSubPopSizeExpr = "",
-	             bool contWhenUniSex = true,
-				 vspID subPop = vspID(),
-	             double weight = 0)
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0)
 		:  baseRandomMating(true, false, Male, 1, Male, 0, string(),
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
@@ -1510,23 +1510,23 @@ class monogamousMating : public baseRandomMating
 {
 public:
 	/**
-	 \c replenish This parameter allows replenishment of one or both
-	   	parental sex groups in case that they are are exhausted. Default to False.
+	   \c replenish This parameter allows replenishment of one or both
+	    parental sex groups in case that they are are exhausted. Default to False.
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	monogamousMating(bool replenish = false,
-	                 double numOffspring = 1.,
-	                 PyObject * numOffspringFunc = NULL,
-	                 UINT maxNumOffspring = 0,
-	                 UINT mode = MATE_NumOffspring,
-	                 double sexParam = 0.5,
-	                 UINT sexMode = MATE_RandomSex,
-	                 vectorlu newSubPopSize = vectorlu(),
-	                 PyObject * newSubPopSizeFunc = NULL,
-	                 string newSubPopSizeExpr = "",
-	                 bool contWhenUniSex = true,
-					 vspID subPop = vspID(),
-	                 double weight = 0)
+		double numOffspring = 1.,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0)
 		:  baseRandomMating(false, replenish, Male, 1, Male, 0, string(),
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
@@ -1565,30 +1565,30 @@ class polygamousMating : public baseRandomMating
 {
 public:
 	/**
-	 \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
-	 \param polyNum Number of sex partners.
-	 \param replacement If set to \c True, a parent can be chosen to mate again.
-	   		Default to False.
-	 \param replenish In case that \c replacement=True, whether or not replenish
-	   		 a sex group when it is exhausted.
+	   \param polySex sex of polygamous mating. Male for polygyny, Female for polyandry.
+	   \param polyNum Number of sex partners.
+	   \param replacement If set to \c True, a parent can be chosen to mate again.
+	        Default to False.
+	   \param replenish In case that \c replacement=True, whether or not replenish
+	         a sex group when it is exhausted.
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	polygamousMating(Sex polySex = Male,
-	                 UINT polyNum = 1,
-	                 bool replacement = false,
-	                 bool replenish = false,
-	                 double numOffspring = 1.,
-	                 PyObject * numOffspringFunc = NULL,
-	                 UINT maxNumOffspring = 0,
-	                 UINT mode = MATE_NumOffspring,
-	                 double sexParam = 0.5,
-	                 UINT sexMode = MATE_RandomSex,
-	                 vectorlu newSubPopSize = vectorlu(),
-	                 PyObject * newSubPopSizeFunc = NULL,
-	                 string newSubPopSizeExpr = "",
-	                 bool contWhenUniSex = true,
-					 vspID subPop = vspID(),
-	                 double weight = 0)
+		UINT polyNum = 1,
+		bool replacement = false,
+		bool replenish = false,
+		double numOffspring = 1.,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0)
 		:  baseRandomMating(replacement, replenish, polySex, polyNum, Male, 0, string(),
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
@@ -1627,37 +1627,37 @@ class alphaMating : public baseRandomMating
 {
 public:
 	/**
-	 \param alphaSex the sex of the alpha individual, i.e. alpha male
-	   		   or alpha female who be the only mating individuals in their
-	   		   sex group.
-	 \param alphaNum Number of alpha individuals. If \c infoField is
-	   		   not given, \c alphaNum random individuals with \c alphaSex
-	   		   will be chosen. If selection is enabled, individuals with higher+               fitness values have higher probability to be selected. There is
-	   		   by default no alpha individual (\c alphaNum = 0).
-	 \param alphaField if an information field is given, individuals
-	   		   with non-zero values at this information field are alpha individuals.
-	   		   Note that these individuals must have \c alphaSex.
+	   \param alphaSex the sex of the alpha individual, i.e. alpha male
+	           or alpha female who be the only mating individuals in their
+	           sex group.
+	   \param alphaNum Number of alpha individuals. If \c infoField is
+	           not given, \c alphaNum random individuals with \c alphaSex
+	           will be chosen. If selection is enabled, individuals with higher+               fitness values have higher probability to be selected. There is
+	           by default no alpha individual (\c alphaNum = 0).
+	   \param alphaField if an information field is given, individuals
+	           with non-zero values at this information field are alpha individuals.
+	           Note that these individuals must have \c alphaSex.
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	   Note: If selection is enabled, it works regularly on on-alpha sex, but
-	   		   works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
-	   		   are chosen selectively, and selected again during mating.
+	           works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	           are chosen selectively, and selected again during mating.
 
 	 */
 	alphaMating(Sex alphaSex = Male,
-	            UINT alphaNum = 0,
-	            string alphaField = string(),
-	            double numOffspring = 1.,
-	            PyObject * numOffspringFunc = NULL,
-	            UINT maxNumOffspring = 0,
-	            UINT mode = MATE_NumOffspring,
-	            double sexParam = 0.5,
-	            UINT sexMode = MATE_RandomSex,
-	            vectorlu newSubPopSize = vectorlu(),
-	            PyObject * newSubPopSizeFunc = NULL,
-	            string newSubPopSizeExpr = "",
-				vspID subPop = vspID(),
-	            double weight = 0)
+		UINT alphaNum = 0,
+		string alphaField = string(),
+		double numOffspring = 1.,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		vspID subPop = vspID(),
+		double weight = 0)
 		:  baseRandomMating(true, false, Male, 1, alphaSex, alphaNum, alphaField,
 		                    numOffspring, numOffspringFunc, maxNumOffspring, mode,
 		                    sexParam, sexMode, newSubPopSize, newSubPopSizeExpr,
@@ -1698,27 +1698,27 @@ class haplodiploidMating : public mating
 {
 public:
 	/**
-	 \param alphaSex sex of the alpha individual. Default to Female.
-	 \param alphaNum Number of alpha individual. Default to one.
-	 \param alphaField information field that identifies the queen of the colony.
-	   	By default, a random female will be chosen.
+	   \param alphaSex sex of the alpha individual. Default to Female.
+	   \param alphaNum Number of alpha individual. Default to one.
+	   \param alphaField information field that identifies the queen of the colony.
+	    By default, a random female will be chosen.
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	haplodiploidMating(Sex alphaSex = Female,
-	                   UINT alphaNum = 1,
-	                   string alphaField = string(),
-	                   double numOffspring = 1.,
-	                   PyObject * numOffspringFunc = NULL,
-	                   UINT maxNumOffspring = 0,
-	                   UINT mode = MATE_NumOffspring,
-	                   double sexParam = 0.5,
-	                   UINT sexMode = MATE_RandomSex,
-	                   vectorlu newSubPopSize = vectorlu(),
-	                   PyObject * newSubPopSizeFunc = NULL,
-	                   string newSubPopSizeExpr = "",
-					   vspID subPop = vspID(),
-	                   double weight = 0)
+		UINT alphaNum = 1,
+		string alphaField = string(),
+		double numOffspring = 1.,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		vspID subPop = vspID(),
+		double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode),
@@ -1778,13 +1778,13 @@ protected:
 //    choose parents and produce offspring strictly following the pedigree.
 //    Parameters setting number of offspring per mating event, and
 //    size of the offspring generations are ignored.
-// 
+//
 //    To implement this mating scheme in pyMating,
 //    1.) a newSubPopSizeFunc should be given to return the exact subpopulation
-//    	size, returned from pedigree.subPopSizes(gen).
+//      size, returned from pedigree.subPopSizes(gen).
 //    2.) use pedigreeChooser to choose parents
 //    3.) use a suitable offspring generator to generate offspring.
-// 
+//
 //    This pedigreeMating helps you do 1 and 2, and use a mendelianOffspringGenerator
 //    as the default offspring generator. You can use another offspring generator
 //    by setting the generator parameter. Note that the offspring generator can
@@ -1794,55 +1794,55 @@ protected:
 // class pedigreeMating : public mating
 // {
 // public:
-// 	/**
-// 	   Please refer to class \c mating for descriptions of other parameters.
-// 	 */
-// 	pedigreeMating(pedigree & ped,
+//  /**
+//     Please refer to class \c mating for descriptions of other parameters.
+//   */
+//  pedigreeMating(pedigree & ped,
 //                    offspringGenerator & generator,
-// 	               vectorlu newSubPopSize = vectorlu(),
-// 	               PyObject * newSubPopSizeFunc = NULL,
-// 	               string newSubPopSizeExpr = "",
+//                 vectorlu newSubPopSize = vectorlu(),
+//                 PyObject * newSubPopSizeFunc = NULL,
+//                 string newSubPopSizeExpr = "",
 //					vspID subPop = vspID(),
-// 	               double weight = 0);
-// 
-// 	/// destructor
-// 	~pedigreeMating()
-// 	{
-// 	}
-// 
-// 
-// 	/// deep copy of a random mating scheme
-// 	virtual mating * clone() const
-// 	{
-// 		return new pedigreeMating(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	virtual bool isCompatible(const population & pop) const
-// 	{
-// 		return true;
-// 	}
-// 
-// 
-// 	/// used by Python print function to print out the general information of the random mating scheme
-// 	virtual string __repr__()
-// 	{
-// 		return "<simuPOP::pedigree-following mating>";
-// 	}
-// 
-// 
-// 	/// CPPONLY perform random mating
-// 	bool mateSubPop(population & pop, SubPopID subPop,
-// 		RawIndIterator offBegin, RawIndIterator offEnd,
-// 		vector<baseOperator * > & ops);
-// 
-// 	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
-// 
+//                 double weight = 0);
+//
+//  /// destructor
+//  ~pedigreeMating()
+//  {
+//  }
+//
+//
+//  /// deep copy of a random mating scheme
+//  virtual mating * clone() const
+//  {
+//      return new pedigreeMating(*this);
+//  }
+//
+//
+//  /// CPPONLY
+//  virtual bool isCompatible(const population & pop) const
+//  {
+//      return true;
+//  }
+//
+//
+//  /// used by Python print function to print out the general information of the random mating scheme
+//  virtual string __repr__()
+//  {
+//      return "<simuPOP::pedigree-following mating>";
+//  }
+//
+//
+//  /// CPPONLY perform random mating
+//  bool mateSubPop(population & pop, SubPopID subPop,
+//      RawIndIterator offBegin, RawIndIterator offEnd,
+//      vector<baseOperator * > & ops);
+//
+//  bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+//
 // protected:
-// 	pedigree * m_pedigree;
-// 	offspringGenerator * m_offspringGenerator;
-// 	pedigreeParentsChooser m_pedParentsChooser;
+//  pedigree * m_pedigree;
+//  offspringGenerator * m_offspringGenerator;
+//  pedigreeParentsChooser m_pedParentsChooser;
 // };
 
 /// a mating scheme of selfing
@@ -1859,23 +1859,23 @@ class selfMating : public mating
 public:
 	/// create a self mating scheme
 	/**
-	 \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
-	 \n
+	   \param contWhenUniSex continue when there is only one sex in the population. Default to \c True.
+	   \n
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	selfMating(double numOffspring = 1.,
-	           PyObject * numOffspringFunc = NULL,
-	           UINT maxNumOffspring = 0,
-	           UINT mode = MATE_NumOffspring,
-	           double sexParam = 0.5,
-	           UINT sexMode = MATE_RandomSex,
-	           vectorlu newSubPopSize = vectorlu(),
-	           PyObject * newSubPopSizeFunc = NULL,
-	           string newSubPopSizeExpr = "",
-	           bool contWhenUniSex = true,
-	           vspID subPop = vspID(),
-	           double weight = 0)
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0)
 		: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 		m_offspringGenerator(numOffspring, numOffspringFunc,
 		                     maxNumOffspring, mode, sexParam, sexMode)
@@ -1938,40 +1938,40 @@ public:
 	   This mating scheme randomly choose a parent and then choose his/her spouse from indexes
 	   stored in \c infoFields.
 
-	 \param relativeFields The information fields that stores indexes to other individuals
-	   	in a population. If more than one valid (positive value) indexes exist, a random
-	   	index will be chosen. (c.f. \c infoParentsChooser ) If there is no individual
-	   	having any valid index, the second parent will be chosen randomly from the
-	   	whole population.
+	   \param relativeFields The information fields that stores indexes to other individuals
+	    in a population. If more than one valid (positive value) indexes exist, a random
+	    index will be chosen. (c.f. \c infoParentsChooser ) If there is no individual
+	    having any valid index, the second parent will be chosen randomly from the
+	    whole population.
 
-	 \param func A python function that can be used to prepare the indexes of these
-	   	information fields. For example, functions population::locateRelatives and/or
-	   	population::setIndexesOfRelatives can be used to locate certain types of relatives
-	   	of each individual.
+	   \param func A python function that can be used to prepare the indexes of these
+	    information fields. For example, functions population::locateRelatives and/or
+	    population::setIndexesOfRelatives can be used to locate certain types of relatives
+	    of each individual.
 
-	 \param param An optional parameter that can be passed to \c func.
+	   \param param An optional parameter that can be passed to \c func.
 
 	   Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
 	   other parameters.
 	 */
 	consanguineousMating(
-	                     const vectorstr & relativeFields = vectorstr(),
-	                     PyObject * func = NULL,
-	                     PyObject * param = NULL,
-	                     bool replacement = false,
-	                     bool replenish = true,
-	                     double numOffspring = 1.,
-	                     PyObject * numOffspringFunc = NULL,
-	                     UINT maxNumOffspring = 0,
-	                     UINT mode = MATE_NumOffspring,
-	                     double sexParam = 0.5,
-	                     UINT sexMode = MATE_RandomSex,
-	                     vectorlu newSubPopSize = vectorlu(),
-	                     PyObject * newSubPopSizeFunc = NULL,
-	                     string newSubPopSizeExpr = "",
-	                     bool contWhenUniSex = true,
-						 vspID subPop = vspID(),
-	                     double weight = 0);
+		const vectorstr & relativeFields = vectorstr(),
+		PyObject * func = NULL,
+		PyObject * param = NULL,
+		bool replacement = false,
+		bool replenish = true,
+		double numOffspring = 1.,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0);
 
 	/// destructor
 	~consanguineousMating()
@@ -2061,22 +2061,22 @@ class controlledMating : public mating
 public:
 	/// control allele frequencies at a locus
 	/**
-	 \param matingScheme a mating scheme
-	 \param loci loci at which allele frequency is controlled. Note that controlling
-	   	the allele frequencies at several loci may take a long time.
-	 \param alleles alleles to control at each locus. Should have the same length as \c loci.
-	 \param freqFunc frequency boundaries. If the length of the returned value equals the size
-	   	of \c loci, the range for loci will be <tt>[value0, value0+range]</tt>,
-	   	<tt>[value1, value1+range]</tt> etc. If the length of the returned value is 2 times
-	   	the size of \c loci, it will be interpreted as <tt>[low1, high1, low2, high2, ...]</tt>.
+	   \param matingScheme a mating scheme
+	   \param loci loci at which allele frequency is controlled. Note that controlling
+	    the allele frequencies at several loci may take a long time.
+	   \param alleles alleles to control at each locus. Should have the same length as \c loci.
+	   \param freqFunc frequency boundaries. If the length of the returned value equals the size
+	    of \c loci, the range for loci will be <tt>[value0, value0+range]</tt>,
+	    <tt>[value1, value1+range]</tt> etc. If the length of the returned value is 2 times
+	    the size of \c loci, it will be interpreted as <tt>[low1, high1, low2, high2, ...]</tt>.
 	 */
 	controlledMating(
-	                 mating & matingScheme,
-	                 vectori loci,
-	                 vectori alleles,
-	                 PyObject * freqFunc,
-	                 double range = 0.01
-	                 )
+		mating & matingScheme,
+		vectori loci,
+		vectori alleles,
+		PyObject * freqFunc,
+		double range = 0.01
+	    )
 		: m_loci(loci), m_alleles(alleles),
 		m_freqFunc(freqFunc),
 		m_range(range)
@@ -2173,7 +2173,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
    <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc
    is passed to this mating scheme and set the allele frequencies of given
    alleles at given loci at the offspring generation.
- \n
+   \n
    The offspring generation is conceptually populated in two steps.
    At the first step, only families with disease alleles are accepted
    until the expected number of disease alleles are met. At the second
@@ -2186,31 +2186,31 @@ class controlledRandomMating : public randomMating
 public:
 	/// create a controlled random mating scheme
 	/**
-	 \param loci loci at which allele frequencies are monitored (controlled)
-	 \param alleles alleles at given loci. It should have the same length as \c loci
-	 \param freqFunc a Python function that accepts a generation number and returns
-	   	expected allele frequencies at given loci
-	 \param acceptScheme internal use only
+	   \param loci loci at which allele frequencies are monitored (controlled)
+	   \param alleles alleles at given loci. It should have the same length as \c loci
+	   \param freqFunc a Python function that accepts a generation number and returns
+	    expected allele frequencies at given loci
+	   \param acceptScheme internal use only
 
 	   Please refer to class \c mating for descriptions of other parameters.
 	 */
 	controlledRandomMating(
-	                       vectori loci,
-	                       vectori alleles,
-	                       PyObject * freqFunc,
-	                       int acceptScheme = 0,
-	                       double numOffspring = 1.,
-	                       double sexParam = 0.5,
-	                       UINT sexMode = MATE_RandomSex,
-	                       PyObject * numOffspringFunc = NULL,
-	                       UINT maxNumOffspring = 0,
-	                       UINT mode = MATE_NumOffspring,
-	                       vectorlu newSubPopSize = vectorlu(),
-	                       PyObject * newSubPopSizeFunc = NULL,
-	                       string newSubPopSizeExpr = "",
-	                       bool contWhenUniSex = true,
-						   vspID subPop = vspID(),
-	                       double weight = 0)
+		vectori loci,
+		vectori alleles,
+		PyObject * freqFunc,
+		int acceptScheme = 0,
+		double numOffspring = 1.,
+		double sexParam = 0.5,
+		UINT sexMode = MATE_RandomSex,
+		PyObject * numOffspringFunc = NULL,
+		UINT maxNumOffspring = 0,
+		UINT mode = MATE_NumOffspring,
+		vectorlu newSubPopSize = vectorlu(),
+		PyObject * newSubPopSizeFunc = NULL,
+		string newSubPopSizeExpr = "",
+		bool contWhenUniSex = true,
+		vspID subPop = vspID(),
+		double weight = 0)
 		: randomMating(numOffspring,
 		               numOffspringFunc, maxNumOffspring, mode,
 		               sexParam, sexMode,
@@ -2306,10 +2306,10 @@ private:
 
 /// a Python mating scheme
 /**
-   	This hybrid mating scheme does not have to involve a python function.
-   	It requires a parent chooser, and an offspring generator. The parent
-   	chooser chooses parent(s) and pass them to the offspring generator to
-   	produce offspring.
+    This hybrid mating scheme does not have to involve a python function.
+    It requires a parent chooser, and an offspring generator. The parent
+    chooser chooses parent(s) and pass them to the offspring generator to
+    produce offspring.
    <applicability>all ploidy</applicability>
  */
 class pyMating : public mating
@@ -2317,19 +2317,19 @@ class pyMating : public mating
 public:
 	/// create a Python mating scheme
 	/**
-	 \param chooser a parent chooser that chooses parent(s) from the parental
-	   	generation.
-	 \param generator an offspring generator that produce offspring of given
-	   	parents.
+	   \param chooser a parent chooser that chooses parent(s) from the parental
+	    generation.
+	   \param generator an offspring generator that produce offspring of given
+	    parents.
 
 	 */
 	pyMating(parentChooser & chooser,
-	         offspringGenerator & generator,
-	         vectorlu newSubPopSize = vectorlu(),
-	         string newSubPopSizeExpr = "",
-	         PyObject * newSubPopSizeFunc = NULL,
-	         vspID subPop = vspID(),
-	         double weight = 0);
+		offspringGenerator & generator,
+		vectorlu newSubPopSize = vectorlu(),
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		vspID subPop = vspID(),
+		double weight = 0);
 
 	/// destructor
 	~pyMating()
@@ -2388,20 +2388,20 @@ class heteroMating : public mating
 public:
 	/// create a heterogeneous Python mating scheme
 	/**
-	 \param matingSchemes A list of mating schemes. If parameter \c subPop of an
-	   	mating scheme is specified, it will be applied to specific subpopulation.
-	   	If \c virtualSubPop if specified, it will be applied to specifc virtual
-	   	subpopulations.
+	   \param matingSchemes A list of mating schemes. If parameter \c subPop of an
+	    mating scheme is specified, it will be applied to specific subpopulation.
+	    If \c virtualSubPop if specified, it will be applied to specifc virtual
+	    subpopulations.
 
 	   Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
 	 */
 	heteroMating(const vectormating & matingSchemes,
-	             vectorlu newSubPopSize = vectorlu(),
-	             string newSubPopSizeExpr = "",
-	             PyObject * newSubPopSizeFunc = NULL,
-	             bool shuffleOffspring = true,
-	             vspID subPop = vspID(),
-	             double weight = 0);
+		vectorlu newSubPopSize = vectorlu(),
+		string newSubPopSizeExpr = "",
+		PyObject * newSubPopSizeFunc = NULL,
+		bool shuffleOffspring = true,
+		vspID subPop = vspID(),
+		double weight = 0);
 
 	/// destructor
 	~heteroMating();
