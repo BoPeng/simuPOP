@@ -30,6 +30,7 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Adjust interface to population::removeLoci.
   - CHG: Adjust interface to population::removeSubPops.
   - NEW: Allow indInfo, setInfo etc to access virtual subpopulation.
+  - CHG: Merge parameter virtualSubPop with subPop in mating schemes.
 
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008

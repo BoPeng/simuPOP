@@ -1041,10 +1041,10 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 
 
 mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc,
-               SubPopID subPop, SubPopID virtualSubPop, double weight)
+               vspID subPop, double weight)
 	: m_subPopSize(newSubPopSize),
 	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL),
-	m_subPop(subPop), m_virtualSubPop(virtualSubPop), m_weight(weight)
+	m_subPop(subPop), m_weight(weight)
 {
 	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
 		ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
@@ -1065,7 +1065,6 @@ mating::mating(const mating & rhs)
 	m_subPopSizeExpr(rhs.m_subPopSizeExpr),
 	m_subPopSizeFunc(rhs.m_subPopSizeFunc),
 	m_subPop(rhs.m_subPop),
-	m_virtualSubPop(rhs.m_virtualSubPop),
 	m_weight(rhs.m_weight)
 {
 	if (m_subPopSizeFunc != NULL)
@@ -1309,10 +1308,9 @@ bool haplodiploidMating::mateSubPop(population & pop, SubPopID subPop,
 //                                vectorlu newSubPopSize,
 //                                PyObject * newSubPopSizeFunc,
 //                                string newSubPopSizeExpr,
-//                                SubPopID subPop,
-//                                SubPopID virtualSubPop,
+//                                vspID subPop,
 //                                double weight)
-// 	: mating(vectorlu(), "", NULL, subPop, virtualSubPop, weight),
+// 	: mating(vectorlu(), "", NULL, subPop, weight),
 // 	m_pedParentsChooser(ped)
 // {
 // 	m_offspringGenerator = generator.clone();
@@ -1445,10 +1443,9 @@ consanguineousMating::consanguineousMating(
                                            PyObject * newSubPopSizeFunc,
                                            string newSubPopSizeExpr,
                                            bool contWhenUniSex,
-                                           SubPopID subPop,
-                                           SubPopID virtualSubPop,
+                                           vspID subPop,
                                            double weight)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 	m_offspringGenerator(numOffspring, numOffspringFunc,
 	                     maxNumOffspring, mode, sexParam, sexMode),
 	m_relativeFields(relativeFields),
@@ -2028,10 +2025,9 @@ pyMating::pyMating(parentChooser & chooser,
                    vectorlu newSubPopSize,
                    string newSubPopSizeExpr,
                    PyObject * newSubPopSizeFunc,
-                   SubPopID subPop,
-                   SubPopID virtualSubPop,
+                   vspID subPop,
                    double weight)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight)
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight)
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
@@ -2086,13 +2082,12 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
                            string newSubPopSizeExpr,
                            PyObject * newSubPopSizeFunc,
                            bool shuffleOffspring,
-                           SubPopID subPop,
-                           SubPopID virtualSubPop,
+                           vspID subPop,
                            double weight)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, virtualSubPop, weight),
+	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
 	m_shuffleOffspring(shuffleOffspring)
 {
-	DBG_WARNING(subPop != InvalidSubPopID || virtualSubPop != InvalidSubPopID,
+	DBG_WARNING(subPop.subPop() != InvalidSubPopID || subPop.virtualSubPop() != InvalidSubPopID,
 		"Parameter subPop or virtualSubPop is specified, but is ignored.");
 
 	vectormating::const_iterator it = matingSchemes.begin();

@@ -53,15 +53,15 @@ public:
 		m_virtualSubPop = subPop[1];
 	}
 
-	vspID(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID)
+	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID)
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
 	{
 	}
 
 
-	SubPopID subPop() { return m_subPop; }
-	SubPopID virtualSubPop() { return m_virtualSubPop; }
-	bool isVirtual() { return m_virtualSubPop != InvalidSubPopID; }
+	SubPopID subPop() const { return m_subPop; }
+	SubPopID virtualSubPop() const { return m_virtualSubPop; }
+	bool isVirtual() const { return m_virtualSubPop != InvalidSubPopID; }
 
 private:
 	SubPopID m_subPop;
