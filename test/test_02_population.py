@@ -17,6 +17,45 @@ from simuPOP import *
 import unittest, os, sys, exceptions, random
 
 class TestPopulation(unittest.TestCase):
+    def setUp(self):
+        'Set up a few typical populations for testing purposes'
+        self.pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+            lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+            alleleNames=['_','A','C','T','G'],
+            infoFields=['a', 'b'])
+        InitSex(self.pop)
+        # with unordered genotype and info
+        self.scrambled = self.pop.clone()
+        self.scrambled.scramble()
+        # with sex virtual subpopulation
+        self.popSex = self.pop.clone()
+        self.popSex.setVirtualSplitter(sexSplitter())
+    
+
+    def TestIndInfo(self, pop):
+        for ind in self.pop.individuals():
+            ind.setInfo(ind.sex(), 'a')
+        for ind in self.pop.individuals():
+            if ind.sex() == Male:
+                self.assertEqual(ind.info('a'), Male)
+            else:
+                self.assertEqual(ind.info('a'), Female)
+        
+
+    def testIndInfo(self):
+        'Testing function population::indInfo'
+        self.TestIndInfo(self.pop)
+        self.TestIndInfo(self.scrambled)
+        self.TestIndInfo(self.popSex)
+        self.assertEqual(self.popSex.indInfo('a', [0, 1]), [Male]*self.popSex.subPopSize([0, 0]))
+
+    def testIndividuals(self):
+        'Testing function population::individuals'
+        for ind in self.popSex.individuals([0, 0]):
+            self.assertEqual(ind.sex(), Male)
+        for ind in self.popSex.individuals([0, 1]):
+            self.assertEqual(ind.sex(), Female)
+
 
     def assertGenotype(self, pop, subPop, genotype):
         'Assert if the genotype of subPop of pop is genotype '
