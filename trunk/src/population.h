@@ -317,23 +317,23 @@ public:
 	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>).
 	 *  <group>2-subpop</group>
 	 */
-	ULONG subPopSize(vspID vsp) const
+	ULONG subPopSize(vspID subPop) const
 	{
-		CHECKRANGESUBPOP(vsp.subPop());
-		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
-		if (hasActivatedVirtualSubPop() || vsp.isVirtual())
-			return m_vspSplitter->size(*this, vsp.subPop(), vsp.virtualSubPop());
+		CHECKRANGESUBPOP(subPop.subPop());
+		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
+		if (hasActivatedVirtualSubPop() || subPop.isVirtual())
+			return m_vspSplitter->size(*this, subPop.subPop(), subPop.virtualSubPop());
 		else
-			return m_subPopSize[vsp.subPop()];
+			return m_subPopSize[subPop.subPop()];
 	}
 
 
-	/** Return the name of a virtual subpopulation \e vsp (specified by a
+	/** Return the name of a virtual subpopulation \e subPop (specified by a
 	 *  <tt>(sp, vsp)</tt> pair). Because VSP names are the same across all
-	 *  subpopulations, a single <tt>vsp</tt> index is also acceptable.
+	 *  subpopulations, a single VSP index is also acceptable.
 	 *  <group>3-VSP</group>
 	 */
-	string virtualSubPopName(vspID vsp) const;
+	string virtualSubPopName(vspID subPop) const;
 
 	/** Return the sizes of all subpopulations in a list. Virtual
 	 *  subpopulations are not considered.
@@ -495,14 +495,14 @@ public:
 
 
 	/** Return an iterator that can be used to iterate through all individuals
-	 *  in a subpopulation (<tt>vsp=spID</tt>) or a virtual subpopulation
-	 *  (<tt>vsp=[spID, vspID]</tt>).
+	 *  in a subpopulation (<tt>subPop=spID</tt>) or a virtual subpopulation
+	 *  (<tt>subPop=[spID, vspID]</tt>).
 	 *  <group>4-ind</group>
 	 */
-	pyIndIterator individuals(vspID vsp)
+	pyIndIterator individuals(vspID subPop)
 	{
-		SubPopID spID = vsp.subPop();
-		SubPopID vspID = vsp.virtualSubPop();
+		SubPopID spID = subPop.subPop();
+		SubPopID vspID = subPop.virtualSubPop();
 
 #ifndef OPTIMIZED
 		CHECKRANGESUBPOP(spID);
@@ -510,7 +510,7 @@ public:
 		DBG_FAILIF(hasActivatedVirtualSubPop(spID), ValueError,
 			"This operation is not allowed for an activated subpopulation");
 #endif
-		if (vsp.isVirtual()) {
+		if (subPop.isVirtual()) {
 			// this does not need to be deactivated...
 			activateVirtualSubPop(spID, vspID, vspSplitter::Iteratable);
 			// if there is no virtual subpop
@@ -1147,22 +1147,22 @@ public:
 
 
 	/** Set information field \c idx (an index) of a subpopulation
-	 *  (<tt>vsp=sp</tt>) or a virtual subpopulation (<tt>vsp=[sp, vsp]</tt>)
-	 *  to \e values. \e values will be reused if its length is smaller
-	 *  than <tt>subPopSize(vsp)</tt>.
+	 *  (<tt>subPop=sp</tt>) or a virtual subpopulation
+	 *  (<tt>subPop=[sp, vsp]</tt>) to \e values. \e values will be reused if
+	 *  its length is smaller than <tt>subPopSize(subPop)</tt>.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const vectorinfo & values, UINT idx, vspID vsp);
+	void setIndInfo(const vectorinfo & values, UINT idx, vspID subPop);
 
-	/** Set information field \c name of a subpopulation (<tt>vsp=sp</tt>) or
-	 *  a virtual subpopulation (<tt>vsp=[sp, vsp]</tt>) to \e values.
+	/** Set information field \c name of a subpopulation (<tt>subPop=sp</tt>) or
+	 *  a virtual subpopulation (<tt>subPop=[sp, vsp]</tt>) to \e values.
 	 *  \e values will be reused if its length is smaller than
-	 *  <tt>subPopSize(vsp)</tt>.
+	 *  <tt>subPopSize(subPop)</tt>.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const vectorinfo & values, const string & name, vspID vsp)
+	void setIndInfo(const vectorinfo & values, const string & name, vspID subPop)
 	{
-		setIndInfo(values, infoIdx(name), vsp);
+		setIndInfo(values, infoIdx(name), subPop);
 	}
 
 
@@ -1261,24 +1261,24 @@ public:
 
 
 	/** Return the information field \c idx (an index) of all individuals in
-	 *  (virtual) subpopulation \e vsp as a list.
+	 *  (virtual) subpopulation \e subPop as a list.
 	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(UINT idx, vspID vsp)
+	vectorinfo indInfo(UINT idx, vspID subPop)
 	{
-		return vectorinfo(infoBegin(idx, vsp), infoEnd(idx, vsp));
+		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
 
 	/** Return the information field \c name of all individuals in
-	 *  (virtual) subpopulation \e vsp as a list.
+	 *  (virtual) subpopulation \e subPop as a list.
 	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(const string & name, vspID vsp)
+	vectorinfo indInfo(const string & name, vspID subPop)
 	{
 		UINT idx = infoIdx(name);
 
-		return vectorinfo(infoBegin(idx, vsp), infoEnd(idx, vsp));
+		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
 	}
 
 
