@@ -1235,26 +1235,6 @@ void population::removeLoci(const vectoru & loci)
 }
 
 
-void population::rearrangeLoci(const vectoru & newNumLoci, const vectorf & newLociPos)
-{
-	// total number of loci can not change
-	DBG_FAILIF(std::accumulate(newNumLoci.begin(), newNumLoci.end(), 0U) != totNumLoci(), ValueError,
-		"Re-arrange loci must keep the same total number of loci");
-	setGenoStructure(ploidy(), newNumLoci.empty() ? numLoci() : newNumLoci,
-		chromTypes(), isHaplodiploid(), newLociPos.empty() ? lociPos() : newLociPos,
-		// chromosome names are discarded
-		vectorstr(), alleleNames(), lociNames(), infoFields());
-	for (int depth = ancestralGens(); depth >= 0; --depth) {
-		useAncestralGen(depth);
-
-		// now set geno structure
-		for (ULONG i = 0; i < m_popSize; ++i)
-			// set new geno structure
-			m_inds[i].setGenoStruIdx(genoStruIdx());
-	}
-}
-
-
 void population::pushAndDiscard(population & rhs, bool force)
 {
 	// time consuming!
@@ -1645,37 +1625,47 @@ void population::sortIndividuals(bool infoOnly)
 }
 
 
+void population::scramble()
+{
+	UINT step = genoSize();
+	UINT infoStep = infoSize();
+
+	vectorlu pointers(m_popSize);
+
+	for (ULONG i = 0; i < m_popSize; ++i)
+		pointers[i] = i;
+	random_shuffle(pointers.begin(), pointers.end());
+
+	vectora newGenotype(m_popSize * genoSize());
+	vectorinfo newInfo(m_popSize * infoSize());
+	vectora::iterator newGenoPtr = newGenotype.begin();
+	vectorinfo::iterator newInfoPtr = newInfo.begin();
+
+	GenoIterator ptr = m_genotype.begin();
+	InfoIterator infoPtr = m_info.begin();
+	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+#ifdef BINARYALLELE
+		copyGenotype(m_inds[i].genoBegin(), newGenoPtr + pointers[i] * step, step);
+#else
+		copy(m_inds[i].genoBegin(), m_inds[i].genoEnd(), newGenoPtr + pointers[i] * step);
+#endif
+		m_inds[i].setGenoPtr(newGenoPtr + pointers[i] * step);
+
+		copy(m_inds[i].infoBegin(), m_inds[i].infoEnd(), newInfoPtr + pointers[i] * infoStep);
+		m_inds[i].setInfoPtr(newInfoPtr + pointers[i] * infoStep);
+	}
+	m_genotype.swap(newGenotype);
+	m_info.swap(newInfo);
+	setIndOrdered(false);
+}
+
+
 population & LoadPopulation(const string & file)
 {
 	population * p = new population();
 
 	p->load(file);
 	return *p;
-}
-
-
-vectorf testGetinfoFromInd(population & pop)
-{
-	vectorf a(pop.popSize());
-	size_t i = 0;
-
-	for (IndIterator ind = pop.indBegin(); ind.valid(); ++ind)
-		a[i++] = ind->info(0);
-	return a;
-}
-
-
-vectorf testGetinfoFromPop(population & pop, bool order)
-{
-	vectorf a(pop.popSize());
-	size_t i = 0;
-
-	IndInfoIterator it = pop.infoBegin(0);
-	IndInfoIterator it_end = pop.infoEnd(0);
-
-	for (; it != it_end; ++it)
-		a[i++] = *it;
-	return a;
 }
 
 
