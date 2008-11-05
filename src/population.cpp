@@ -212,16 +212,16 @@ population * population::clone(int keepAncestralPops) const
 }
 
 
-string population::virtualSubPopName(vspID vsp) const
+string population::virtualSubPopName(vspID subPop) const
 {
 	DBG_ASSERT(hasVirtualSubPop(), ValueError,
 		"No virtual subpopulation is defined for this population.");
 	// if a single number is given, it will be passed as (sp, None),
 	// but we will treat sp as vsp here.
-	if (!vsp.isVirtual())
-		return m_vspSplitter->name(vsp.subPop());
+	if (!subPop.isVirtual())
+		return m_vspSplitter->name(subPop.subPop());
 	else
-		return m_vspSplitter->name(vsp.virtualSubPop());
+		return m_vspSplitter->name(subPop.virtualSubPop());
 }
 
 
@@ -1444,15 +1444,15 @@ void population::setIndInfo(const vectorinfo & values, UINT idx)
 }
 
 
-void population::setIndInfo(const vectorinfo & values, UINT idx, vspID vsp)
+void population::setIndInfo(const vectorinfo & values, UINT idx, vspID subPop)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	CHECKRANGEINFO(idx);
 	size_t valueSize = values.size();
-	IndInfoIterator ptr = infoBegin(idx, vsp);
-	for (size_t i = 0; ptr != infoEnd(idx, vsp); ++ptr, ++i)
+	IndInfoIterator ptr = infoBegin(idx, subPop);
+	for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)
 		*ptr = static_cast<InfoType>(values[i % valueSize]);
 }
 
