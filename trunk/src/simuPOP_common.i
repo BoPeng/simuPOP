@@ -246,7 +246,7 @@ namespace std
 %include "genoStru.h"
 %include "individual.h"
 
-%implicitconv vsp;
+%implicitconv vspID;
 
 namespace std
 {
