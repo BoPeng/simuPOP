@@ -120,7 +120,7 @@ Usage:
       numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
       newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      subPop=[], weight=0)
 
 Details:
 
@@ -463,8 +463,8 @@ Usage:
       alphaField=string, numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, contWhenUniSex=True,
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeFunc=None, contWhenUniSex=True, subPop=[],
+      weight=0)
 
 Arguments:
 
@@ -708,8 +708,7 @@ Usage:
     binomialSelection(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeFunc=None, subPop=[], weight=0)
 
 Details:
 
@@ -790,8 +789,7 @@ Usage:
     cloneMating(numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeFunc=None, subPop=[], weight=0)
 
 Details:
 
@@ -1003,8 +1001,7 @@ Usage:
       numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
       newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      contWhenUniSex=True, subPop=[], weight=0)
 
 Details:
 
@@ -1275,8 +1272,7 @@ Usage:
       numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      contWhenUniSex=True, subPop=[], weight=0)
 
 Details:
 
@@ -1732,8 +1728,6 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::isHaplodiploid "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::GenoStruTrait::haplodiploid "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::GenoStruTrait::totNumLoci "
 
 Usage:
@@ -1776,10 +1770,6 @@ Details:
     2, 3, 4, ... on each chromosome.
 
 "; 
-
-%feature("docstring") simuPOP::GenoStruTrait::arrLociPos "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::GenoStruTrait::arrLociPos "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::GenoStruTrait::numChrom "
 
@@ -2250,8 +2240,8 @@ Usage:
       alphaField=string, numOffspring=1., numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\", subPop=[],
+      weight=0)
 
 Details:
 
@@ -2375,8 +2365,7 @@ Usage:
 
     heteroMating(matingSchemes, newSubPopSize=[],
       newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      shuffleOffspring=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      shuffleOffspring=True, subPop=[], weight=0)
 
 Details:
 
@@ -2618,14 +2607,6 @@ Usage:
 %ignore simuPOP::individual::genoPtr() const ;
 
 %ignore simuPOP::individual::infoPtr() const ;
-
-%feature("docstring") simuPOP::individual::arrGenotype "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::individual::arrGenotype "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::individual::arrGenotype "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::individual::arrInfo "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::individual::allele "
 
@@ -4633,8 +4614,7 @@ Description:
 Usage:
 
     mating(newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeFunc=None, subPop=[], weight=0)
 
 Details:
 
@@ -5365,8 +5345,7 @@ Usage:
       numOffspringFunc=None, maxNumOffspring=0,
       mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
       newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      contWhenUniSex=True, subPop=[], weight=0)
 
 Details:
 
@@ -5614,8 +5593,7 @@ Usage:
     noMating(numOffspring=1.0, numOffspringFunc=None,
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeFunc=None, subPop=[], weight=0)
 
 Note:
 
@@ -6691,8 +6669,7 @@ Usage:
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      contWhenUniSex=True, subPop=[], weight=0)
 
 Arguments:
 
@@ -6969,7 +6946,7 @@ Details:
 
 Usage:
 
-    x.subPopSize(vsp)
+    x.subPopSize(subPop)
 
 Details:
 
@@ -6982,13 +6959,13 @@ Details:
 
 Usage:
 
-    x.virtualSubPopName(vsp)
+    x.virtualSubPopName(subPop)
 
 Details:
 
-    Return the name of a virtual subpopulation vsp (specified by a
+    Return the name of a virtual subpopulation subPop (specified by a
     (sp, vsp) pair). Because VSP names are the same across all
-    subpopulations, a single vsp index is also acceptable.
+    subpopulations, a single VSP index is also acceptable.
 
 "; 
 
@@ -7154,13 +7131,13 @@ Details:
 
 Usage:
 
-    x.individuals(vsp)
+    x.individuals(subPop)
 
 Details:
 
     Return an iterator that can be used to iterate through all
-    individuals in a subpopulation (vsp=spID) or a virtual
-    subpopulation (vsp=[spID,  vspID]).
+    individuals in a subpopulation (subPop=spID) or a virtual
+    subpopulation (subPop=[spID,  vspID]).
 
 "; 
 
@@ -7496,7 +7473,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::ancestralGen() const ;
+%ignore simuPOP::population::curAncestralGen() const ;
 
 %feature("docstring") simuPOP::population::setIndInfo "
 
@@ -7529,13 +7506,14 @@ Details:
 
 Usage:
 
-    x.setIndInfo(values, idx, vsp)
+    x.setIndInfo(values, idx, subPop)
 
 Details:
 
-    Set information field idx (an index) of a subpopulation (vsp=sp)
-    or a virtual subpopulation (vsp=[sp, vsp]) to values. values will
-    be reused if its length is smaller than subPopSize(vsp).
+    Set information field idx (an index) of a subpopulation
+    (subPop=sp) or a virtual subpopulation (subPop=[sp, vsp]) to
+    values. values will be reused if its length is smaller than
+    subPopSize(subPop).
 
 "; 
 
@@ -7543,13 +7521,13 @@ Details:
 
 Usage:
 
-    x.setIndInfo(values, name, vsp)
+    x.setIndInfo(values, name, subPop)
 
 Details:
 
-    Set information field name of a subpopulation (vsp=sp) or a
-    virtual subpopulation (vsp=[sp, vsp]) to values. values will be
-    reused if its length is smaller than subPopSize(vsp).
+    Set information field name of a subpopulation (subPop=sp) or a
+    virtual subpopulation (subPop=[sp, vsp]) to values. values will be
+    reused if its length is smaller than subPopSize(subPop).
 
 "; 
 
@@ -7586,12 +7564,12 @@ Details:
 
 Usage:
 
-    x.indInfo(idx, vsp)
+    x.indInfo(idx, subPop)
 
 Details:
 
     Return the information field idx (an index) of all individuals in
-    (virtual) subpopulation vsp as a list.
+    (virtual) subpopulation subPop as a list.
 
 "; 
 
@@ -7599,12 +7577,12 @@ Details:
 
 Usage:
 
-    x.indInfo(name, vsp)
+    x.indInfo(name, subPop)
 
 Details:
 
     Return the information field name of all individuals in (virtual)
-    subpopulation vsp as a list.
+    subpopulation subPop as a list.
 
 "; 
 
@@ -8303,8 +8281,8 @@ Description:
 Usage:
 
     pyMating(chooser, generator, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
-      subPop=InvalidSubPopID, virtualSubPop=InvalidSubPopID, weight=0)
+      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None, subPop=[],
+      weight=0)
 
 Arguments:
 
@@ -9348,8 +9326,7 @@ Usage:
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      contWhenUniSex=True, subPop=[], weight=0)
 
 Details:
 
@@ -10397,8 +10374,7 @@ Usage:
       maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
       sexMode=MATE_RandomSex, newSubPopSize=[],
       newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=InvalidSubPopID,
-      virtualSubPop=InvalidSubPopID, weight=0)
+      contWhenUniSex=True, subPop=[], weight=0)
 
 Details:
 
@@ -13331,13 +13307,9 @@ Usage:
 
 %ignore simuPOP::PyObj_Is_AlleleNumArray(PyObject *obj);
 
-%ignore simuPOP::Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
-
 %ignore simuPOP::Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
 %ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
-
-%ignore simuPOP::Info_Vec_As_NumArray(InfoIterator begin, InfoIterator end);
 
 %ignore simuPOP::NumArray_Size(PyObject *obj);
 
