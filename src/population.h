@@ -1122,7 +1122,7 @@ public:
 	 *
 	 * <group>6-ancestral</group>
 	 */
-	UINT ancestralGen() const
+	UINT curAncestralGen() const
 	{
 		return m_curAncestralGen;
 	}

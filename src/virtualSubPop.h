@@ -260,7 +260,7 @@ public:
 	string name(SubPopID vsp)
 	{
 		DBG_FAILIF(vsp > 1, IndexError, "Virtual subpopulation index out of range");
-		return ssp == 0 ? "Male" : "Female";
+		return vsp == 0 ? "Male" : "Female";
 	}
 };
 
