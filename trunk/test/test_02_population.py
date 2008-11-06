@@ -18,24 +18,17 @@ import unittest, os, sys, exceptions, random
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
-    def getPop(self):
+    def getPop(self, scramble=False, VSP=False):
         pop = population(size=[20,80], ploidy=2, loci=[5, 7],
             lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
             alleleNames=['_','A','C','T','G'],
             infoFields=['a', 'b'])
         InitSex(pop)
+        if VSP:
+            pop.setVirtualSplitter(sexSplitter())
+        if scramble:
+            pop.scramble()
         return pop
-
-    def getScrambledPop(self):
-        pop = self.getPop()
-        pop.scramble()
-        return pop
-
-    def getPopWithVSP(self):
-        pop = self.getPop()
-        InitSex(pop)            
-        pop.setVirtualSplitter(sexSplitter())
-        return pop    
         
     def testIndInfo(self):
         'Testing function population::indInfo'
@@ -58,8 +51,9 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.indInfo('a', 1), tuple([3, 4]*(pop.subPopSize(1)/2)))
         #
         testSetAndRead(self.getPop())
-        testSetAndRead(self.getScrambledPop())
-        testSetAndRead(self.getPopWithVSP())
+        testSetAndRead(self.getPop(True))
+        testSetAndRead(self.getPop(True, True))
+        testSetAndRead(self.getPop(False, True))
         # test for virtual subpopulation
         def testVSPSetAndRead(pop):
             pop.setIndInfo([1,2], 'a', [1, 0])
@@ -77,15 +71,31 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.indInfo('a', [1, 0]), tuple(([1,2]*pop.subPopSize(1))[:pop.subPopSize([1, 0])]))
             self.assertEqual(pop.indInfo('a', [1, 1]), tuple([3]*pop.subPopSize([1, 1])))
         #
-        testVSPSetAndRead(self.getPopWithVSP())
+        self.assertRaises(exceptions.IndexError, testVSPSetAndRead, self.getPop())
+        self.assertRaises(exceptions.IndexError, testVSPSetAndRead, self.getPop(True))
+        testVSPSetAndRead(self.getPop(False, True))
+        testVSPSetAndRead(self.getPop(True, True))
 
     def testIndividuals(self):
         'Testing function population::individuals'
-        for ind in self.popSex.individuals([0, 0]):
-            self.assertEqual(ind.sex(), Male)
-        for ind in self.popSex.individuals([0, 1]):
-            self.assertEqual(ind.sex(), Female)
-
+        def testAllInd(pop):
+            self.assertEqual(len(list(pop.individuals())), pop.popSize())
+            self.assertEqual(len(list(pop.individuals(0))), pop.subPopSize(0))
+            self.assertEqual(len(list(pop.individuals(1))), pop.subPopSize(1))
+        testAllInd(self.getPop())
+        testAllInd(self.getPop(True))
+        testAllInd(self.getPop(False, True))
+        testAllInd(self.getPop(True, True))
+        #
+        def testSexVSP(pop):
+            for ind in pop.individuals([0, 0]):
+                self.assertEqual(ind.sex(), Male)
+            for ind in pop.individuals([0, 1]):
+                self.assertEqual(ind.sex(), Female)
+        testSexVSP(self.getPop(VSP=True))
+        testSexVSP(self.getPop(scramble=True, VSP=True))
+        self.assertRaises(exceptions.IndexError, testSexVSP, self.getPop(VSP=False))
+        self.assertRaises(exceptions.IndexError, testSexVSP, self.getPop(scramble=True, VSP=False))
 
     def assertGenotype(self, pop, subPop, genotype):
         'Assert if the genotype of subPop of pop is genotype '
