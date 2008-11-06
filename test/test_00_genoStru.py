@@ -2,7 +2,7 @@
 #
 # Purpose:
 #
-# This is a unittest file for population object
+# This is a unittest file for carray datatype, and class genoStruTrait.
 #
 # Bo Peng (bpeng@rice.edu)
 #
@@ -17,69 +17,12 @@ from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestCarray(unittest.TestCase):
-
-    def testFloatCarray(self):
-        'Testing float carray type returned by arrLociPos'
-        pop = population(loci=[3,4], lociPos=[1,2,3,4,5,6,7])
-        arr = pop.arrLociPos()
-        # can print
-        # print arr, ignore
-        # expression
-        self.assertEqual(str(arr), "[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]")
-        # count
-        self.assertEqual(arr.count(2), 1)
-        arr[1] = 1
-        self.assertEqual(arr.count(1.0), 2)
-        self.assertEqual(arr.count(2), 0)
-        # index
-        self.assertRaises(exceptions.ValueError,
-            arr.index, 2)
-        self.assertEqual(arr.index(1), 0)
-        self.assertEqual(arr.index(6), 5)
-        # can read write
-        arr[0] = 0.5
-        arr[3] = 3.5
-        self.assertEqual(arr[0], 0.5)
-        self.assertEqual(arr[3], 3.5)
-        # convert to list
-        self.assertEqual( arr.tolist(), [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
-        # direct comparison
-        self.assertEqual( arr == [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0], True)
-        # convert to list
-        self.assertEqual( list(arr), [0.5, 1.0, 3.0, 3.5, 5.0, 6.0, 7.0])
-        # slice
-        arr[:] = [1,2,3,4,5,6,7]
-        arr1 = arr[:3]
-        self.assertEqual( arr1, [1, 2, 3])
-        arr1 = arr[3:5]
-        self.assertEqual( arr1, [4, 5])
-        # assign slice
-        arr1[:] = 10
-        self.assertEqual( arr1, [10, 10] )
-        # IMPORTANT NOTE that arr will also be affected
-        self.assertEqual( arr, [1,2,3,10,10,6,7])
-        # assign vector
-        arr1[:] = [30,40]
-        self.assertEqual( arr1, [30, 40] )
-        self.assertEqual( arr, [1,2,3,30,40,6,7])
-        # assign vector of different length
-        try:
-            arr1[:] = [50, 60, 70]
-        except exceptions.ValueError:
-            pass
-        try:
-            arr1[:] = arr[1:2]
-        except exceptions.ValueError:
-            pass
-        # assign from another part
-        arr[1:3] = arr[3:5]
-        self.assertEqual( arr, [1, 30,40, 30,40,6,7])
-
+    
     def testGenotypeCarray(self):
-        'Testing allele carray type returned by arrGenotype'
+        'Testing allele carray type returned by genotype'
         pop = population(size=2, loci=[2,1])
         InitByValue(pop, [1,2,3])
-        arr = pop.arrGenotype(True)
+        arr = pop.genotype(True)
         arr[:] = [0,1,2]*4
         # can print
         # expression
@@ -165,6 +108,10 @@ class TestCarray(unittest.TestCase):
             self.assertEqual( arr, [0,1,2,0,1,2,0,1,2,0,1,2])
         else:
             self.assertEqual( arr, [0,1,1,0,1,1,0,1,1,0,1,1])
+
+    def testBlah():
+        ''
+        pass
 
 if __name__ == '__main__':
     unittest.main()
