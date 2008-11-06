@@ -17,37 +17,67 @@ from simuPOP import *
 import unittest, os, sys, exceptions, random
 
 class TestPopulation(unittest.TestCase):
-    def setUp(self):
-        'Set up a few typical populations for testing purposes'
-        self.pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+    # define a few functions to create basic populations
+    def getPop(self):
+        pop = population(size=[20,80], ploidy=2, loci=[5, 7],
             lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
             alleleNames=['_','A','C','T','G'],
             infoFields=['a', 'b'])
-        InitSex(self.pop)
-        # with unordered genotype and info
-        self.scrambled = self.pop.clone()
-        self.scrambled.scramble()
-        # with sex virtual subpopulation
-        self.popSex = self.pop.clone()
-        self.popSex.setVirtualSplitter(sexSplitter())
-    
+        InitSex(pop)
+        return pop
 
-    def TestIndInfo(self, pop):
-        for ind in self.pop.individuals():
-            ind.setInfo(ind.sex(), 'a')
-        for ind in self.pop.individuals():
-            if ind.sex() == Male:
-                self.assertEqual(ind.info('a'), Male)
-            else:
-                self.assertEqual(ind.info('a'), Female)
+    def getScrambledPop(self):
+        pop = self.getPop()
+        pop.scramble()
+        return pop
+
+    def getPopWithVSP(self):
+        pop = self.getPop()
+        InitSex(pop)            
+        pop.setVirtualSplitter(sexSplitter())
+        return pop    
         
-
     def testIndInfo(self):
         'Testing function population::indInfo'
-        self.TestIndInfo(self.pop)
-        self.TestIndInfo(self.scrambled)
-        self.TestIndInfo(self.popSex)
-        self.assertEqual(self.popSex.indInfo('a', [0, 1]), [Male]*self.popSex.subPopSize([0, 0]))
+        # no VSP, set and read info
+        def testSetAndRead(pop):
+            pop.setIndInfo([3], 'b')
+            for idx,ind in enumerate(pop.individuals()):
+                self.assertEqual(ind.info('b'), 3)
+            self.assertEqual(pop.indInfo('b'), tuple([3]*pop.popSize()))
+            self.assertEqual(pop.indInfo('b', 0), tuple([3]*pop.subPopSize(0)))
+            #
+            pop.setIndInfo([1,2], 'a', 0)
+            pop.setIndInfo([3,4], 'a', 1)
+            for idx,ind in enumerate(pop.individuals(0)):
+                if idx % 2 == 0:
+                    self.assertEqual(ind.info('a'), 1)
+                else:
+                    self.assertEqual(ind.info('a'), 2)
+            self.assertEqual(pop.indInfo('a', 0), tuple([1, 2]*(pop.subPopSize(0)/2)))
+            self.assertEqual(pop.indInfo('a', 1), tuple([3, 4]*(pop.subPopSize(1)/2)))
+        #
+        testSetAndRead(self.getPop())
+        testSetAndRead(self.getScrambledPop())
+        testSetAndRead(self.getPopWithVSP())
+        # test for virtual subpopulation
+        def testVSPSetAndRead(pop):
+            pop.setIndInfo([1,2], 'a', [1, 0])
+            pop.setIndInfo([3], 'a', [1, 1])
+            for idx,ind in enumerate(pop.individuals([1, 0])):
+                self.assertEqual(ind.sex(), Male)
+                if idx % 2 == 0:
+                    self.assertEqual(ind.info('a'), 1)
+                else:
+                    self.assertEqual(ind.info('a'), 2)
+            for idx,ind in enumerate(pop.individuals([1, 1])):
+                self.assertEqual(ind.sex(), Female)
+                self.assertEqual(ind.info('a'), 3)
+
+            self.assertEqual(pop.indInfo('a', [1, 0]), tuple(([1,2]*pop.subPopSize(1))[:pop.subPopSize([1, 0])]))
+            self.assertEqual(pop.indInfo('a', [1, 1]), tuple([3]*pop.subPopSize([1, 1])))
+        #
+        testVSPSetAndRead(self.getPopWithVSP())
 
     def testIndividuals(self):
         'Testing function population::individuals'

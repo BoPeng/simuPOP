@@ -553,10 +553,17 @@ public:
 	IndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
 	{
 		CHECKRANGESUBPOP(subPop);
+		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == vspSplitter::Visible,
+			ValueError, "Can not iterate through an VSP with iteratable iterator");
 
-		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+		if (type == vspSplitter::Iteratable)
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				false, false);
+		else
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -565,9 +572,14 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+		if (type == vspSplitter::Iteratable)
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				false, false);
+		else
+			return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -598,9 +610,14 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+		if (type == vspSplitter::Iteratable)
+			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				false, false);
+		else
+			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -611,9 +628,14 @@ public:
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+		if (type == vspSplitter::Iteratable)
+			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				false, false);
+		else
+			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
+				m_inds.begin() + m_subPopIndex[subPop + 1],
+				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
 	}
 
 
@@ -1192,12 +1214,12 @@ public:
 			ValueError, "Can not iterate through an activated subpopulation");
 
 		// has to adjust order because of parameter subPop
-		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
-			return IndInfoIterator(idx, indBegin(subPop));
-		else if (vsp.isVirtual()) {
+		if (vsp.isVirtual()) {
 			activateVirtualSubPop(subPop, vsp.virtualSubPop(), vspSplitter::Iteratable);
 			return IndInfoIterator(idx, indBegin(subPop, vspSplitter::Iteratable));
-		} else
+		} else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
+			return IndInfoIterator(idx, indBegin(subPop));
+		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
 
@@ -1211,10 +1233,10 @@ public:
 		CHECKRANGEVIRTUALSUBPOP(vsp.virtualSubPop());
 
 		// has to adjust order because of parameter subPop
-		if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
-			return IndInfoIterator(idx, indEnd(subPop));
-		else if (vsp.isVirtual())
+		if (vsp.isVirtual())
 			return IndInfoIterator(idx, indEnd(subPop, vspSplitter::Iteratable));
+		else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
+			return IndInfoIterator(idx, indEnd(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}

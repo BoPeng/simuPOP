@@ -887,14 +887,15 @@ public:
 		// save current state
 		IndividualIterator tmp(*this);
 		// move forward
-		if (m_useVisible)
+		if (m_useVisible) {
 			while (m_it < m_end)
 				if ((++m_it)->visible())
 					break;
-		else
+		} else {
 			while (m_it < m_end)
 				if ((++m_it)->iteratable())
 					break;
+		}
 		// return the original one
 		return tmp;
 	}
@@ -909,14 +910,15 @@ public:
 			return *this;
 		}
 
-		if (m_useVisible)
+		if (m_useVisible) {
 			while (m_it < m_end)
 				if ((++m_it)->visible())
 					return *this;
-		else
+		} else {
 			while (m_it < m_end)
 				if ((++m_it)->iteratable())
 					return *this;
+		}
 		DBG_ASSERT(m_it == m_end, IndexError,
 			"Something wrong with operator++ here");
 		return *this;
@@ -935,14 +937,15 @@ public:
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		if (m_useVisible)
+		if (m_useVisible) {
 			while (i < diff && tmp.m_it < tmp.m_end)
 				if ((++tmp.m_it)->visible())
 					++i;
-		else
+		} else {
 			while (i < diff && tmp.m_it < tmp.m_end)
 				if ((++tmp.m_it)->iteratable())
 					++i;
+		}
 		DBG_FAILIF(i != diff, ValueError,
 			"Can not add to IndIterator");
 		return tmp;
@@ -958,14 +961,15 @@ public:
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		if (m_useVisible)
+		if (m_useVisible) {
 			while (i < diff && m_it < m_end)
 				if ((++m_it)->visible())
 					++i;
-		else
+		} else {
 			while (i < diff && m_it < m_end)
 				if ((++m_it)->iteratable())
 					++i;
+		}
 		DBG_FAILIF(i != diff, ValueError, "Can not add to IndIterator");
 		return *this;
 	}
@@ -978,12 +982,13 @@ public:
 		else {
 			IndividualIterator tmp(*this);
 			// can not check. Possible problem
-			if (m_useVisible)
+			if (m_useVisible) {
 				for (difference_type i = 0; i < diff; ++i)
 					while (!(--tmp.m_it)->visible()) ;
-			else
+			} else {
 				for (difference_type i = 0; i < diff; ++i)
 					while (!(--tmp.m_it)->iteratable()) ;
+			}
 			return tmp;
 		}
 	}
@@ -995,14 +1000,15 @@ public:
 			return m_it - rhs.m_it;
 		else {
 			difference_type i = 0;
-			if (m_useVisible)
+			if (m_useVisible) {
 				for (T it = rhs.m_it; it != m_it; ++it)
 					if (it->visible())
 						++i;
-			else
+			} else {
 				for (T it = rhs.m_it; it != m_it; ++it)
 					if (it->iteratable())
 						++i;
+			}
 			return i;
 		}
 	}
