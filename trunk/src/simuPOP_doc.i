@@ -36,7 +36,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::affectionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::affectionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::affectionSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -955,7 +955,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::combinedSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::combinedSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::combinedSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -2090,7 +2090,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::genotypeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::genotypeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::genotypeSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -3342,7 +3342,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::infoSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::infoSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::infoSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -6887,7 +6887,7 @@ Usage:
 
 Usage:
 
-    x.setVirtualSplitter(vsp)
+    x.setVirtualSplitter(splitter)
 
 Details:
 
@@ -7145,19 +7145,19 @@ Details:
 
 %ignore simuPOP::population::setIndOrdered(bool s);
 
-%ignore simuPOP::population::indBegin(vspSplitter::activateType type=vspSplitter::Visible);
+%ignore simuPOP::population::indBegin(IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indEnd(vspSplitter::activateType type=vspSplitter::Visible);
+%ignore simuPOP::population::indEnd(IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indBegin(UINT subPop, vspSplitter::activateType type=vspSplitter::Visible);
+%ignore simuPOP::population::indBegin(UINT subPop, IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indEnd(UINT subPop, vspSplitter::activateType type=vspSplitter::Visible);
+%ignore simuPOP::population::indEnd(UINT subPop, IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indBegin(vspSplitter::activateType type=vspSplitter::Visible) const ;
+%ignore simuPOP::population::indBegin(IterationType type=VisibleInds) const ;
 
-%ignore simuPOP::population::indEnd(vspSplitter::activateType type=vspSplitter::Visible) const ;
+%ignore simuPOP::population::indEnd(IterationType type=VisibleInds) const ;
 
-%ignore simuPOP::population::indEnd(UINT subPop, vspSplitter::activateType type=vspSplitter::Visible) const ;
+%ignore simuPOP::population::indEnd(UINT subPop, IterationType type) const ;
 
 %ignore simuPOP::population::rawIndBegin();
 
@@ -7756,7 +7756,7 @@ Details:
 
 %feature("docstring") simuPOP::population::execute "Obsolete or undocumented function."
 
-%ignore simuPOP::population::rearrangeLoci(const vectoru &newNumLoci, const vectorf &newLociPos);
+%feature("docstring") simuPOP::population::scramble "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::proportionSplitter "
 
@@ -7798,7 +7798,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::proportionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::proportionSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::proportionSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -9532,7 +9532,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::rangeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::rangeSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::rangeSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -10612,7 +10612,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::sexSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::sexSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::sexSplitter::deactivate(population &pop, SubPopID sp);
 
@@ -13046,7 +13046,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::vspSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, activateType type);
+%ignore simuPOP::vspSplitter::activate(population &pop, SubPopID subPop, SubPopID virtualSubPop, IterationType type);
 
 %ignore simuPOP::vspSplitter::deactivate(population &pop, SubPopID subPop);
 
@@ -13186,30 +13186,6 @@ Usage:
 Details:
 
     load a population from a file.
-
-"; 
-
-%feature("docstring") simuPOP::testGetinfoFromInd "
-
-Description:
-
-    get info through ind.info()
-
-Usage:
-
-    testGetinfoFromInd(pop)
-
-"; 
-
-%feature("docstring") simuPOP::testGetinfoFromPop "
-
-Description:
-
-    get info through IndInfoIterator
-
-Usage:
-
-    testGetinfoFromPop(pop, order)
 
 "; 
 
