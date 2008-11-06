@@ -142,6 +142,23 @@ enum ChromType {
     Mitochondrial = 4
 };
 
+
+// iteratable and visible are two different concepts.
+// When a population is activated by setting the visible flag
+// All operations that work on this subpopulation will be limited
+// to visible individuals. To be exact, IndIterator would skip
+// invisible individuals.
+//
+// When a population is activated by setting the iteratable flag,
+// only operations that respect this flag would check it and
+// respond to it.
+//
+enum IterationType {
+	AllInds = 1,
+	IteratableInds = 2,
+	VisibleInds = 3
+};
+
 // info is usually used for subpopulation index.
 // signed short should be enough.
 // if this is changed Info_Var_As_Numarray in utility.cpp also needs to be changed.

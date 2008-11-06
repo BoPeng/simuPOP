@@ -832,20 +832,20 @@ public:
 	typedef typename T::reference reference;
 	typedef typename T::pointer pointer;
 
-	IndividualIterator() : m_it(), m_end(), m_allInds(true), m_useVisible(true)
+	IndividualIterator() : m_it(), m_end(), m_iterType(AllInds)
 	{
 	}
 
 
-	IndividualIterator(T it, T end, bool allInds, bool useVisible)
-		: m_it(it), m_end(end), m_allInds(allInds), m_useVisible(useVisible)
+	IndividualIterator(T it, T end, IterationType iterType)
+		: m_it(it), m_end(end), m_iterType(iterType)
 	{
 		// m_it need to point to the first valid
 		// individual. otherwise *it will fail.
-		if (m_useVisible)
+		if (m_iterType == VisibleInds)
 			while (m_it < m_end && !m_it->visible())
 				++m_it;
-		else
+		else if (m_iterType == IteratableInds)
 			while (m_it < m_end && !m_it->iteratable())
 				++m_it;
 	}
@@ -881,13 +881,13 @@ public:
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 
-		if (m_allInds)
-			return IndividualIterator(m_it++, m_end, m_allInds, m_useVisible);
+		if (m_iterType == AllInds)
+			return IndividualIterator(m_it++, m_end, m_iterType);
 
 		// save current state
 		IndividualIterator tmp(*this);
 		// move forward
-		if (m_useVisible) {
+		if (m_iterType == VisibleInds) {
 			while (m_it < m_end)
 				if ((++m_it)->visible())
 					break;
@@ -905,12 +905,12 @@ public:
 	{
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
-		if (m_allInds) {
+		if (m_iterType == AllInds) {
 			++m_it;
 			return *this;
 		}
 
-		if (m_useVisible) {
+		if (m_iterType == VisibleInds) {
 			while (m_it < m_end)
 				if ((++m_it)->visible())
 					return *this;
@@ -931,13 +931,13 @@ public:
 	//
 	IndividualIterator operator+(difference_type diff)
 	{
-		if (m_allInds)
-			return IndividualIterator(m_it + diff, m_end, m_allInds, m_useVisible);
+		if (m_iterType == AllInds)
+			return IndividualIterator(m_it + diff, m_end, m_iterType);
 		IndividualIterator tmp(*this);
 		DBG_ASSERT(tmp.m_it < tmp.m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		if (m_useVisible) {
+		if (m_iterType == VisibleInds) {
 			while (i < diff && tmp.m_it < tmp.m_end)
 				if ((++tmp.m_it)->visible())
 					++i;
@@ -954,14 +954,14 @@ public:
 
 	IndividualIterator operator+=(difference_type diff)
 	{
-		if (m_allInds) {
+		if (m_iterType == AllInds) {
 			m_it += diff;
 			return *this;
 		}
 		DBG_ASSERT(m_it < m_end, ValueError,
 			"Can not advance invalid iterator");
 		difference_type i = 0;
-		if (m_useVisible) {
+		if (m_iterType == VisibleInds) {
 			while (i < diff && m_it < m_end)
 				if ((++m_it)->visible())
 					++i;
@@ -977,12 +977,12 @@ public:
 
 	IndividualIterator operator-(difference_type diff)
 	{
-		if (m_allInds)
-			return IndividualIterator(m_it - diff, m_end, m_allInds, m_useVisible);
+		if (m_iterType == AllInds)
+			return IndividualIterator(m_it - diff, m_end, m_iterType);
 		else {
 			IndividualIterator tmp(*this);
 			// can not check. Possible problem
-			if (m_useVisible) {
+			if (m_iterType == VisibleInds) {
 				for (difference_type i = 0; i < diff; ++i)
 					while (!(--tmp.m_it)->visible()) ;
 			} else {
@@ -996,11 +996,11 @@ public:
 
 	difference_type operator-(IndividualIterator rhs)
 	{
-		if (m_allInds)
+		if (m_iterType == AllInds)
 			return m_it - rhs.m_it;
 		else {
 			difference_type i = 0;
-			if (m_useVisible) {
+			if (m_iterType == VisibleInds) {
 				for (T it = rhs.m_it; it != m_it; ++it)
 					if (it->visible())
 						++i;
@@ -1016,10 +1016,10 @@ public:
 
 	IndividualIterator operator--(int)
 	{
-		if (m_allInds)
-			return IndividualIterator(m_it--, m_end, m_allInds, m_useVisible);
+		if (m_iterType == AllInds)
+			return IndividualIterator(m_it--, m_end, m_iterType);
 		IndividualIterator tmp(*this);
-		if (m_useVisible)
+		if (m_iterType == VisibleInds)
 			while (!(--tmp.m_it)->visible()) ;
 		else
 			while (!(--tmp.m_it)->iteratable()) ;
@@ -1029,11 +1029,9 @@ public:
 
 	IndividualIterator operator--()
 	{
-		if (m_allInds) {
+		if (m_iterType == AllInds)
 			--m_it;
-			return *this;
-		}
-		if (m_useVisible)
+		else if (m_iterType == VisibleInds)
 			while (!(--m_it)->visible()) ;
 		else
 			while (!(--m_it)->iteratable()) ;
@@ -1073,11 +1071,8 @@ private:
 	/// go past m_end beceause m_it->visible() will be invalid otherwise.
 	T m_end;
 
-	// a shortcut. If m_allInds is set, using a simpler algorithm.
-	bool m_allInds;
-
 	//
-	bool m_useVisible;
+	IterationType m_iterType;
 };
 
 //
