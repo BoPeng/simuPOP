@@ -266,7 +266,7 @@ public:
 	   \param vid virtual subpopulation id
 	 */
 	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
-		vspSplitter::activateType type = vspSplitter::Visible);
+		IterationType type = VisibleInds);
 
 	/** HIDDEN
 	 *  deactivate virtual subpopulations in a given
@@ -497,7 +497,7 @@ public:
 #endif
 		if (subPop.isVirtual()) {
 			// this does not need to be deactivated...
-			activateVirtualSubPop(spID, vspID, vspSplitter::Iteratable);
+			activateVirtualSubPop(spID, vspID, IteratableInds);
 			// if there is no virtual subpop
 			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
 				m_inds.begin() + subPopEnd(spID),
@@ -532,110 +532,90 @@ public:
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible)
+	IndIterator indBegin(IterationType type = VisibleInds)
 	{
-		return IndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
+		return IndIterator(m_inds.begin(), m_inds.end(), 
+			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible)
+	IndIterator indEnd(IterationType type = VisibleInds)
 	{
 		return IndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
+			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	IndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
+	IndIterator indBegin(UINT subPop, IterationType type = VisibleInds)
 	{
 		CHECKRANGESUBPOP(subPop);
-		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == vspSplitter::Visible,
+		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == VisibleInds,
 			ValueError, "Can not iterate through an VSP with iteratable iterator");
 
-		if (type == vspSplitter::Iteratable)
-			return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
+		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
 				m_inds.begin() + m_subPopIndex[subPop + 1],
-				false, false);
-		else
-			return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+				(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
 	}
 
 
 	/// CPPONLY individual iterator: with subPop info.
-	IndIterator indEnd(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible)
+	IndIterator indEnd(UINT subPop, IterationType type = VisibleInds)
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		if (type == vspSplitter::Iteratable)
-			return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
+		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
 				m_inds.begin() + m_subPopIndex[subPop + 1],
-				false, false);
-		else
-			return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+				(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
 	}
 
 
 	/** CPPONLY individual iterator: without subPop info
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indBegin(vspSplitter::activateType type = vspSplitter::Visible) const
+	ConstIndIterator indBegin(IterationType type = VisibleInds) const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
+			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
 
 	/** CPPONLY individual iterator: without subPop info
 	 *  It is recommended to use it.valid(), instead of it != indEnd()
 	 */
-	ConstIndIterator indEnd(vspSplitter::activateType type = vspSplitter::Visible) const
+	ConstIndIterator indEnd(IterationType type = VisibleInds) const
 	{
 		return ConstIndIterator(m_inds.end(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), type == vspSplitter::Visible);
+			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indBegin(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible) const
+	ConstIndIterator indBegin(UINT subPop, IterationType type) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		if (type == vspSplitter::Iteratable)
-			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				false, false);
-		else
-			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
 	}
 
 
 	/** CPPONLY individual iterator: with subPop info.
 	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
 	 */
-	ConstIndIterator indEnd(UINT subPop, vspSplitter::activateType type = vspSplitter::Visible) const
+	ConstIndIterator indEnd(UINT subPop, IterationType type) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
-		if (type == vspSplitter::Iteratable)
-			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				false, false);
-		else
-			return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				!hasActivatedVirtualSubPop(subPop), type == vspSplitter::Visible);
+		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
 	}
 
 
@@ -1215,8 +1195,8 @@ public:
 
 		// has to adjust order because of parameter subPop
 		if (vsp.isVirtual()) {
-			activateVirtualSubPop(subPop, vsp.virtualSubPop(), vspSplitter::Iteratable);
-			return IndInfoIterator(idx, indBegin(subPop, vspSplitter::Iteratable));
+			activateVirtualSubPop(subPop, vsp.virtualSubPop(), IteratableInds);
+			return IndInfoIterator(idx, indBegin(subPop, IteratableInds));
 		} else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indBegin(subPop));
 		else
@@ -1234,7 +1214,7 @@ public:
 
 		// has to adjust order because of parameter subPop
 		if (vsp.isVirtual())
-			return IndInfoIterator(idx, indEnd(subPop, vspSplitter::Iteratable));
+			return IndInfoIterator(idx, indEnd(subPop, IteratableInds));
 		else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indEnd(subPop));
 		else

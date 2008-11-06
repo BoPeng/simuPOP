@@ -92,12 +92,12 @@ ULONG combinedSplitter::size(const population & pop, SubPopID subPop, SubPopID v
 
 
 void combinedSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                                activateType type)
+                                IterationType type)
 {
 	m_curSplitter = m_splitter[virtualSubPop];
 	m_splitters[m_curSplitter]->activate(pop, subPop,
 		m_vsp[virtualSubPop], type);
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
@@ -133,7 +133,7 @@ ULONG sexSplitter::size(const population & pop, SubPopID subPop, SubPopID virtua
 
 
 void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                           activateType type)
+                           IterationType type)
 {
 	Sex s = virtualSubPop == 0 ? Male : Female;
 
@@ -141,11 +141,11 @@ void sexSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSu
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	for (; it != it_end; ++it)
-		if (type == Visible)
+		if (type == VisibleInds)
 			it->setVisible(it->sex() == s);
 		else
 			it->setIteratable(it->sex() == s);
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
@@ -174,7 +174,7 @@ ULONG affectionSplitter::size(const population & pop, SubPopID subPop, SubPopID 
 
 
 void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                                 activateType type)
+                                 IterationType type)
 {
 	bool aff = virtualSubPop == 0 ? false : true;
 
@@ -182,11 +182,11 @@ void affectionSplitter::activate(population & pop, SubPopID subPop, SubPopID vir
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 
 	for (; it != it_end; ++it)
-		if (type == Visible)
+		if (type == VisibleInds)
 			it->setVisible(it->affected() == aff);
 		else
 			it->setIteratable(it->affected() == aff);
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
@@ -279,7 +279,7 @@ UINT infoSplitter::numVirtualSubPop()
 
 
 void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                            activateType type)
+                            IterationType type)
 {
 	UINT idx = pop.infoIdx(m_info);
 
@@ -294,14 +294,14 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 		// using cutoff, below
 		if (virtualSubPop == 0) {
 			for (; it != it_end; ++it)
-				if (type == Visible)
+				if (type == VisibleInds)
 					it->setVisible(it->info(idx) < m_cutoff[0]);
 				else
 					it->setIteratable(it->info(idx) < m_cutoff[0]);
 		} else if (static_cast<UINT>(virtualSubPop) == m_cutoff.size()) {
 			double v = m_cutoff.back();
 			for (; it != it_end; ++it)
-				if (type == Visible)
+				if (type == VisibleInds)
 					it->setVisible(it->info(idx) >= v);
 				else
 					it->setIteratable(it->info(idx) >= v);
@@ -310,7 +310,7 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 			double v2 = m_cutoff[virtualSubPop];
 			for (; it != it_end; ++it) {
 				double v = it->info(idx);
-				if (type == Visible)
+				if (type == VisibleInds)
 					it->setVisible(v >= v1 && v < v2);
 				else
 					it->setIteratable(v >= v1 && v < v2);
@@ -322,12 +322,12 @@ void infoSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualS
 			+ toStr(m_values.size() - 1));
 		double v = m_values[virtualSubPop];
 		for (; it != it_end; ++it)
-			if (type == Visible)
+			if (type == VisibleInds)
 				it->setVisible(fcmp_eq(it->info(idx), v));
 			else
 				it->setIteratable(fcmp_eq(it->info(idx), v));
 	}
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
@@ -395,7 +395,7 @@ UINT proportionSplitter::numVirtualSubPop()
 
 
 void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                                  activateType type)
+                                  IterationType type)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_proportions.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -420,12 +420,12 @@ void proportionSplitter::activate(population & pop, SubPopID subPop, SubPopID vi
 				spSize = size;
 			spCount = 0;
 		}
-		if (type == Visible)
+		if (type == VisibleInds)
 			it->setVisible(sp == visibleSP);
 		else
 			it->setIteratable(sp == visibleSP);
 	}
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
@@ -478,7 +478,7 @@ UINT rangeSplitter::numVirtualSubPop()
 
 
 void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                             activateType type)
+                             IterationType type)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_ranges.size(), IndexError,
 		"Virtual subpopulation index out of range");
@@ -490,11 +490,11 @@ void rangeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtual
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it, ++idx)
-		if (type == Visible)
+		if (type == VisibleInds)
 			it->setVisible(idx >= low && idx < high);
 		else
 			it->setIteratable(idx >= low && idx < high);
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
@@ -547,7 +547,7 @@ UINT genotypeSplitter::numVirtualSubPop()
 
 
 void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virtualSubPop,
-                                activateType type)
+                                IterationType type)
 {
 	DBG_FAILIF(static_cast<UINT>(virtualSubPop) >= m_alleles.size(), IndexError,
 		"Virtual subpopulation index out of genotype");
@@ -556,11 +556,11 @@ void genotypeSplitter::activate(population & pop, SubPopID subPop, SubPopID virt
 	RawIndIterator it = pop.rawIndBegin(subPop);
 	RawIndIterator it_end = pop.rawIndEnd(subPop);
 	for (; it != it_end; ++it)
-		if (type == Visible)
+		if (type == VisibleInds)
 			it->setVisible(match(& * it, alleles));
 		else
 			it->setIteratable(match(& * it, alleles));
-	if (type == Visible)
+	if (type == VisibleInds)
 		m_activated = subPop;
 }
 
