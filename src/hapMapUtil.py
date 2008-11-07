@@ -131,7 +131,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
                 pass
         if len(markers) > 0:
             markers.sort()
-            pop.removeLoci(keep=markers)
+            pop.removeLoci([x for x in range(pop.totNumLoci()) if x not in markers])
             genDist.update(pop.dvars().genDist)
             pop.vars().clear()
             pops.append(pop)
