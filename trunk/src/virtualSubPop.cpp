@@ -595,17 +595,17 @@ string genotypeSplitter::name(SubPopID subPop)
 
 bool genotypeSplitter::match(const individual * it, const vectori & alleles) const
 {
-	unsigned types = alleles.size() / it->ploidy() / m_loci.size();
+	int ploidy = it->ploidy();
+	int numLoci = m_loci.size();
 
-	DBG_FAILIF(alleles.size() != types * it->ploidy() * m_loci.size(),
+	unsigned choices = alleles.size() / ploidy / numLoci;
+
+	DBG_FAILIF(alleles.size() != choices * ploidy * numLoci,
 		ValueError, "Given genotype does not match population ploidy.");
 
-	int ploidy = it->ploidy();
-	if (types == 1)
-		return matchSingle(it, alleles);
-	for (unsigned t = 0; t < types; ++t) {
-		vectori partial(alleles.begin() + t * ploidy * m_loci.size(),
-		                alleles.begin() + (t + 1) * ploidy * m_loci.size());
+	for (unsigned t = 0; t < choices; ++t) {
+		vectori partial(alleles.begin() + t * ploidy * numLoci,
+		                alleles.begin() + (t + 1) * ploidy * numLoci);
 		if (matchSingle(it, partial))
 			return true;
 	}
@@ -618,6 +618,7 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 	int ploidy = it->ploidy();
 
 	if (m_phase || ploidy == 1) {
+		// if phase=True, has to match exactly.
 		UINT idx = 0;
 		vectori::const_iterator loc = m_loci.begin();
 		vectori::const_iterator loc_end = m_loci.end();
@@ -630,18 +631,36 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 		UINT idx = 0;
 		vectori::const_iterator loc = m_loci.begin();
 		vectori::const_iterator loc_end = m_loci.end();
-		for (; loc != loc_end; ++loc) {
+		UINT numLoci = m_loci.size();
+		for (; loc != loc_end; ++loc, ++idx) {
 			int a1 = it->allele(*loc, 0);
 			int a2 = it->allele(*loc, 1);
-			if ((a1 == alleles[idx] && a2 == alleles[idx + 1]) ||
-			    (a1 == alleles[idx + 1] && a2 == alleles[idx]))
-				idx += 2;
-			else
+			int a3 = alleles[idx];
+			int a4 = alleles[idx + numLoci];
+			if (!((a1 == a3 && a2 == a4) || (a1 == a4 && a2 == a3)))
 				return false;
 		}
 		return true;
-	} else
-		DBG_FAILIF(true, SystemError, "Ploidy>=3 is not implemented");
+	} else {
+		UINT idx = 0;
+		vectori::const_iterator loc = m_loci.begin();
+		vectori::const_iterator loc_end = m_loci.end();
+		UINT numLoci = m_loci.size();
+		vectori v1(ploidy);
+		vectori v2(ploidy);
+		for (; loc != loc_end; ++loc, ++idx) {
+			for (int p = 0; p < ploidy; ++p) {
+				v1[p] = it->allele(*loc, p);
+				v2[p] = alleles[idx + p * numLoci];
+			}
+			std::sort(v1.begin(), v1.end());
+			std::sort(v2.begin(), v2.end());
+			for (int p = 0; p < ploidy; ++p)
+				if (v1[p] != v2[p])
+					return false;
+		}
+		return true;
+	}
 	return false;
 }
 
