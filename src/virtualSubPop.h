@@ -494,13 +494,12 @@ public:
 	 *  locus \c 1. <tt>alleles[[0, 1], [2, 2]]</tt> defines two VSPs with
 	 *  indivdiuals in the second VSP having genotype <tt>[2, 2]</tt> at locus
 	 *  \c 1. If \e phase is set to \c True, the first VSP will only has
-	 *  individuals with genotype <tt>[0, 1]</tt>. In the multiple loci,
+	 *  individuals with genotype <tt>[0, 1]</tt>. In the multiple loci case,
 	 *  alleles should be arranged by haplotypes, for example,
-	 *  <tt>loci=[0, 1], alleles=[0, 0, 1, 1]</tt> defines a VSP with
-	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> or
-	 *  <tt>-1-1-, -0-0-</tt> at loci \c 0 and \c 1. If haplotypes <tt>-0-1-</tt>
-	 *  should be allowed, it should be added to explicitly, such as using
-	 *  <tt>alleles=[0, 0, 1, 1, 0, 1, 0, 1]</tt>.
+	 *  <tt>loci=[0, 1], alleles=[0, 0, 1, 1], phase=True</tt> defines a VSP with
+	 *  individuals having genotype <tt>-0-0-, -1-1-</tt> at loci \c 0 and \c 1.
+	 *  If <tt>phase=False</tt> (default), genotypes <tt>-1-1-, -0-0-</tt>,
+	 *  <tt>-0-1-</tt> and <tt>-1-0-</tt> are all allowed.
 	 */
 	genotypeSplitter(const vectori & loci,
 		const intMatrix & alleles, bool phase = false);
