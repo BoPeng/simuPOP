@@ -83,7 +83,7 @@ class GenoStructure
 
 public:
 	/// CPPONLY serialization library requires a default constructor
-	GenoStructure() : m_ploidy(2), m_totNumLoci(0), 
+	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
 		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
@@ -712,7 +712,9 @@ public:
 
 	/** return the name of allele \e allele specified by the \e alleleNames parameter of
 	 *  the \c population function. If the name of an allele is not specified, its
-	 *  index (\c '0', \c '1', \c '2', etc) is returned.
+	 *  index (\c '0', \c '1', \c '2', etc) is returned. An \c IndexError will be
+	 *  raised if \e allele is larger than the maximum allowed allele state of this
+	 *  module (<tt>MaxAllele()</tt>).
 	 *  <group>4-allele</group>
 	 */
 	string alleleName(const UINT allele) const;
