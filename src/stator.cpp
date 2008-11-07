@@ -1192,7 +1192,7 @@ void statLD::outputLD(population & pop, const vectori & hapLoci, const string & 
 		ldp_name = AvgLDPRIME_String;
 		r2_name = AvgR2_String;
 		d2_name = AvgDELTA2_String;
-		key_name = "[" + toStr(hapLoci[0]) + "][" + toStr(hapLoci[1]) + ']';
+		key_name = "{" + toStr(hapLoci[0]) + "}{" + toStr(hapLoci[1]) + '}';
 		ld_cond = m_output_LD;
 		ldp_cond = m_output_LD_prime;
 		r2_cond = m_output_R2;
