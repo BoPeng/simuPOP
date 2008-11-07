@@ -45,6 +45,7 @@ NOTE:
 from simuOpt import setOptions
 setOptions(optimized=True, alleleType='binary')
 from simuPOP import *
+from simuUtil import simuProgress
 
 import os, sys, urllib, gzip, exceptions
 
@@ -159,15 +160,15 @@ def load_population(pop, ch, type, dest):
     subPop = {'CEU':0, 'YRI':1, 'JPT+CHB':2}[type]
     file = genotype_file % (ch, type, rev)
     downloadIfNeeded(Genotype_URL, dest, file)
-    print 'from %s...' % file
+    print 'from %s ' % file,
+    progress = simuProgress(pop.subPopSize(subPop))
     for line_no,line in enumerate(gzip.open(os.path.join(dest, file)).readlines()):
         genotype = [int(x) for x in line.split()]
         ind = line_no / 2
         ploidy = line_no % 2
-        ind = pop.individual(ind, subPop)
-        for i,g in enumerate(genotype):
-            # always chromosome 0, because each population has only one chromosome
-            ind.setAllele(g, i, ploidy)
+        # always chromosome 0, because each population has only one chromosome
+        pop.individual(ind, subPop).setGenotype(genotype, ploidy)
+        progress.update(ind + 1)
 
 
 def set_map_dist(pop, ch, dest):
@@ -183,52 +184,59 @@ def set_map_dist(pop, ch, dest):
             dist[pos] = float(fields[2])
         except:
             pass
+    print ' map distance of %d markers are found' % len(dist)
+    totNumLoci = pop.totNumLoci()
     # now, try to set genetic map
-    map = {}
-    for loc in range(pop.totNumLoci()):
+    map_dist = [-1]*totNumLoci;
+    for loc in range(totNumLoci):
         pos = int(1000000*pop.locusPos(loc))
-        name = pop.locusName(loc)
         try:
-            map[name] = dist[pos]
+            map_dist[loc] = dist[pos]
         except:
             pass
-    print ' map distance of %d markers are found' % len(map)
     prev = -1     # name of the previous marker with map distance
     next = -1     # name of the next marker with map distance
-    cnt = 0
-    for loc in range(pop.totNumLoci()):
-        pos = pop.locusPos(loc)
-        name = pop.locusName(loc)
-        if map.has_key(name):
+    loc = 0
+    progress = simuProgress(totNumLoci)
+    while (loc < totNumLoci):
+        # already has value
+        if map_dist[loc] != -1:
             prev = next = loc
-        else:
-            cnt += 1
-            # if it is before the first one, map distance is 0. 
-            if prev == -1:
-                map[name] = 0.
-                continue
-            # if it is after the last one, map distance is the last one
-            elif next == -1:
-                map[name] = map[pop.locusName(prev)]
-                continue
-            # neither prev of next is ''
-            if prev == next: # find the next!!
-                next = -1
-                for n in range(loc+1, pop.totNumLoci()):
-                    if map.has_key(pop.locusName(n)):
-                        next = n
-                        prev_pos = pop.locusPos(prev)
-                        next_pos = pop.locusPos(next)
-                        prev_dis = map[pop.locusName(prev)]
-                        next_dis = map[pop.locusName(next)]
-                        break
-            # if not found
+            loc += 1
+            continue
+        # before the first one?
+        if prev == -1:
+            map_dist[loc] = 0
+            loc += 1
+            continue
+        # in the middle
+        if prev == next:
+            next = -1
+            for n in range(loc+1, totNumLoci):
+                 if map_dist[n] != -1:
+                     next = n
+                     prev_pos = pop.locusPos(prev)
+                     next_pos = pop.locusPos(next)
+                     prev_dis = map_dist[prev]
+                     next_dis = map_dist[next]
+                     break
+            # if not found, this is at the end of a chromosome
             if next == -1:
-                map[name] = map[pop.locusName(prev)]
-                continue
+                for n in range(loc, totNumLoci):
+                    map_dist[n] = map_dist[prev]
+                break
             else:
-                map[name] = map[pop.locusName(prev)] + (pos - prev_pos) / (next_pos - prev_pos) * (next_dis - prev_dis)
-    print 'Map distance of %d markers (%.2f%% of %d) are estimated' % (cnt, cnt*100.0/pop.totNumLoci(), pop.totNumLoci())
+                for n in range(loc, next):
+                    map_dist[n] = map_dist[prev] + (pop.locusPos(n) - prev_pos) / (next_pos - prev_pos) * (next_dis - prev_dis)
+                prev = next
+                loc = next + 1
+        progress.update(loc)
+    progress.done()
+    cnt = totNumLoci - len(dist)
+    print 'Map distance of %d markers (%.2f%% of %d) are estimated' % (cnt, cnt*100.0/totNumLoci, totNumLoci)
+    map = {}
+    for loc in range(totNumLoci):
+        map[pop.locusName(loc)] = map_dist[loc]
     pop.dvars().genDist = map
 
     
@@ -265,7 +273,7 @@ def loadHapMap(chroms, dest='.'):
         print 'Calculating allele frequency ...'
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         print "Saving population to %s..." % popFile
-        SavePopulation(pop, popFile)
+        pop.save(popFile)
         
 
 if __name__ == '__main__':
