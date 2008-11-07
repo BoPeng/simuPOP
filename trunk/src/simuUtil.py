@@ -2097,7 +2097,65 @@ def LargePeds_VC_merlin(pop, sampleSize,  qtrait=None, infoField='qtrait', merli
         shutil.rmtree(dir)
     return pvalues
 
+class simuProgress:
+    '''
+    This class defines a very simple text based progress bar. It will display a
+    character (default to '.') for each change of progress (default to 2%),
+    and a number (1, 2, ..., 9) for each 10% of progress, and print a message
+    (default to 'Done.\n') when the job is finished.
 
+    This progress is used as follows:
+
+        progress = simuProgress(500)
+        for i in range(500):
+            progress.update(i+1)
+        # if you would like to make sure the done message is displayed.
+        progress.done()
+    '''
+    def __init__(self, totalCount, progressChar='.', block=2, done=' Done.\n'):
+        '''
+        totalCount
+            Total expected steps.
+
+        progressChar
+            Character to be displayed for each progress.
+
+        block
+            display progress at which interval (in terms of percentage)?
+
+        done
+            Message displayed when the job is finished.
+        '''
+        self.totalCount = totalCount
+        self.percent = 0
+        self.progressChar = progressChar
+        self.block = block
+        self.doneMsg = done
+        self.completed = False
+
+    def update(self, count):
+        #
+        count = min(count, self.totalCount)
+        #
+        completed = int(round(100*count/self.totalCount))
+        if completed <= self.percent:
+            return
+        for p in range(self.percent + 1, completed + 1):
+            if p == 100:
+                self.done()
+            elif p % 10 == 0:
+                sys.stdout.write(str(p/10))
+            elif p % self.block == 0:
+                sys.stdout.write(self.progressChar)
+        self.percent = completed
+        sys.stdout.flush()
+
+    def done(self):
+        if self.completed:
+            return
+        sys.stdout.write(self.doneMsg)
+        sys.stdout.flush()
+        self.completed = True
 
 if __name__ == "__main__":
     pass
