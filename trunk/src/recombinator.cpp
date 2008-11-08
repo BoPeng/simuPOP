@@ -142,10 +142,10 @@ void recombinator::prepareRecRates(population & pop,
 						}
 					} else {
 						// ignore zero rate
-						if (rate[pos - afterLoci.begin()] > 0) {
-							vecP.push_back(rate[pos - afterLoci.begin()]);
-							recBeforeLoci.push_back(index + 1);
-						}
+						DBG_WARNING(rate[pos - afterLoci.begin()] == 0,
+							"Zero recombination rate at locus " + toStr(loc));
+						vecP.push_back(rate[pos - afterLoci.begin()]);
+						recBeforeLoci.push_back(index + 1);
 					}
 
 					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
