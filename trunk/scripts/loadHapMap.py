@@ -204,32 +204,32 @@ def set_map_dist(pop, ch, dest):
             prev = next = loc
             loc += 1
             continue
-        # before the first one?
-        if prev == -1:
-            map_dist[loc] = 0
-            loc += 1
-            continue
-        # in the middle
+        # find the ext one
         if prev == next:
             next = -1
             for n in range(loc+1, totNumLoci):
                  if map_dist[n] != -1:
                      next = n
-                     prev_pos = pop.locusPos(prev)
                      next_pos = pop.locusPos(next)
-                     prev_dis = map_dist[prev]
                      next_dis = map_dist[next]
                      break
             # if not found, this is at the end of a chromosome
             if next == -1:
                 for n in range(loc, totNumLoci):
-                    map_dist[n] = map_dist[prev]
+                    map_dist[n] = map_dist[prev] + (pop.locusPos(n) - pop.locusPos(prev)) * 0.01
                 break
+            # if found, but no previous, this is the first one
+            elif prev == -1:
+                for n in range(next):
+                    # rough estimation: distance (in cM) proportional to 0.01 recombination rate
+                    map_dist[n] = map_dist[next] - (pop.locusPos(next) - pop.locusPos(n)) * 0.01
             else:
+                prev_pos = pop.locusPos(prev)
+                prev_dis = map_dist[prev]
                 for n in range(loc, next):
                     map_dist[n] = map_dist[prev] + (pop.locusPos(n) - prev_pos) / (next_pos - prev_pos) * (next_dis - prev_dis)
-                prev = next
-                loc = next + 1
+            prev = next
+            loc = next + 1
         progress.update(loc)
     progress.done()
     cnt = totNumLoci - len(dist)
