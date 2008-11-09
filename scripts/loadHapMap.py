@@ -160,8 +160,7 @@ def load_population(pop, ch, type, dest):
     subPop = {'CEU':0, 'YRI':1, 'JPT+CHB':2}[type]
     file = genotype_file % (ch, type, rev)
     downloadIfNeeded(Genotype_URL, dest, file)
-    print 'from %s ' % file,
-    progress = simuProgress(pop.subPopSize(subPop))
+    progress = simuProgress('from %s ' % file, pop.subPopSize(subPop))
     for line_no,line in enumerate(gzip.open(os.path.join(dest, file)).readlines()):
         genotype = [int(x) for x in line.split()]
         ind = line_no / 2
@@ -197,7 +196,7 @@ def set_map_dist(pop, ch, dest):
     prev = -1     # name of the previous marker with map distance
     next = -1     # name of the next marker with map distance
     loc = 0
-    progress = simuProgress(totNumLoci)
+    progress = simuProgress('Estimating map distance of unspecified loci', totNumLoci)
     while (loc < totNumLoci):
         # already has value
         if map_dist[loc] != -1:
