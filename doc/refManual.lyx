@@ -94,126 +94,7 @@ status open
 
 
 \backslash
-hspace{1cm}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{5in}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-{
-\backslash
-large
-\backslash
-textsf Acknowledgements: }
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{.2cm}
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} Dr.
- Marek Kimmel
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} Dr.
- Fran
-\backslash
-c cois Balloux
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} Dr.
- William Amos
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} SWIG user community
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} Python user community 
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} Keck Center for Computational and Structural Biology
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hspace{.3cm} U.T.
- M.D.
- Anderson Cancer Center
+vspace{7.5in} 
 \end_layout
 
 \end_inset
@@ -223,23 +104,7 @@ hspace{.3cm} U.T.
 
 \begin_layout Plain Layout
 \begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-
-\backslash
-vspace{.7in} 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -252,7 +117,7 @@ copyright{}
 
  2004-2008 Bo Peng 
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 

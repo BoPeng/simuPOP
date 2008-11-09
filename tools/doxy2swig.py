@@ -967,7 +967,7 @@ class Doxy2SWIG:
             else:
                 print >> out, r'\begin{classdesc}{%s}{}' % entry['Name']
             if cons['Doc'] != '':
-                print >> out, '%s\\par\n' % self.latex_text(cons['Doc'])
+                print >> out, '\n\\vspace{3pt} \\MakeUppercase %s\\par\n' % self.latex_text(cons['Doc'])
             else:
                 print >> out, '\\hspace{0pt}\\par\n'
             if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
