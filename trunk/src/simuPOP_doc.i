@@ -1909,7 +1909,9 @@ Details:
 
     return the name of allele allele specified by the alleleNames
     parameter of the population function. If the name of an allele is
-    not specified, its index ('0', '1', '2', etc) is returned.
+    not specified, its index ('0', '1', '2', etc) is returned. An
+    IndexError will be raised if allele is larger than the maximum
+    allowed allele state of this module ( MaxAllele()).
 
 "; 
 
@@ -2065,12 +2067,11 @@ Details:
     alleles[[0, 1], [2, 2]] defines two VSPs with indivdiuals in the
     second VSP having genotype [2, 2] at locus 1. If phase is set to
     True, the first VSP will only has individuals with genotype [0,
-    1]. In the multiple loci, alleles should be arranged by
-    haplotypes, for example, loci=[0, 1], alleles=[0, 0, 1, 1] defines
-    a VSP with individuals having genotype -0-0-, -1-1- or -1-1-,
-    -0-0- at loci 0 and 1. If haplotypes -0-1- should be allowed, it
-    should be added to explicitly, such as using alleles=[0, 0, 1, 1,
-    0, 1, 0, 1].
+    1]. In the multiple loci case, alleles should be arranged by
+    haplotypes, for example, loci=[0, 1], alleles=[0, 0, 1, 1],
+    phase=True defines a VSP with individuals having genotype -0-0-,
+    -1-1- at loci 0 and 1. If phase=False (default), genotypes -1-1-,
+    -0-0-, -0-1- and -1-0- are all allowed.
 
 "; 
 
