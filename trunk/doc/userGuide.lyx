@@ -545,255 +545,6 @@ allow different ways to specify offspring sex.
 \end_layout
 
 \begin_layout Section
-Debug-related operators/functions
-\end_layout
-
-\begin_layout Standard
-Standard 
-\family typewriter
-simuPOP
-\family default
- module can print out lots of debug information upon request.
- These are mostly used for internal debugging purposes but you can also
- use them when error happens.
- For example, the following code will crash simuPOP:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> population(1).individual(0).arrAllele()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is not clear why this simple line will cause us trouble, instead of outputtin
-g the genotype of the only individual of this population.
- However, the reason is clear if you turn on debug information:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Turn on/off debug information
-\end_layout
-
-\end_inset
-
->>> TurnOnDebug(DBG_ALL)
-\end_layout
-
-\begin_layout Plain Layout
-
-Debug code DBG_ALL is turned on.
- cf.
- listDebugCode(), turnOffDebug() 
-\end_layout
-
-\begin_layout Plain Layout
-
->>> population(1).individual(0).arrAlleles()
-\end_layout
-
-\begin_layout Plain Layout
-
-Constructor of Population is called
-\end_layout
-
-\begin_layout Plain Layout
-
-Population size 1
-\end_layout
-
-\begin_layout Plain Layout
-
-Destructor of Population is called 
-\end_layout
-
-\begin_layout Plain Layout
-
-Segmentation fault (core dumped) 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-population(1)
-\family default
- creates a temporary object that is destroyed right after the execution
- of the input.
- When Python tries to display the genotype, it will refer to an invalid
- location.
- The right way to do this is to create a persistent population object: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> pop = population(1)
-\end_layout
-
-\begin_layout Plain Layout
-
->>> pop.individual(0).arrAllele()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If the output is overwhelming after you turn on all debug information, you
- can turn on certain part of the information by using the following functions:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ListDebugCode
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-listDebugCode
-\end_layout
-
-\end_inset
-
-()
-\family default
- list all debug code.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-turnOnDebug()
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!turnOnDebug
-\end_layout
-
-\end_inset
-
-, TurnOnDebug
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-Function!TurnOnDebug
-\end_layout
-
-\end_inset
-
-(code)
-\family default
- turn on debug codes.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-turnOffDebug()
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!turnOffDebug
-\end_layout
-
-\end_inset
-
-, TurnOffDebug
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-Function!turnOffDebug
-\end_layout
-
-\end_inset
-
-(code)
-\family default
- turn off debug codes.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-turnOnDebug()
-\family default
- and 
-\family typewriter
-turnOffDebug()
-\family default
- are operators and accept all operator parameters 
-\family typewriter
-begin, step
-\family default
- etc.
- Usually, you can use 
-\family typewriter
-turnOnDebug
-\family default
- to output more information about a potential bug before simuPOP starts
- to misbehave.
- 
-\end_layout
-
-\begin_layout Standard
-Another useful debug code is 
-\family typewriter
-DBG_PROFILE.
-
-\family default
- When turned on, it will display running time of each operator.
- This will give you a good sense of which operator runs slowly (or simply
- the order of operator execution if you are not sure).
- If most of the execution time is spent on a pure-Python operator, you may
- want to rewrite it in C++.
- Note that 
-\family typewriter
-DBG_PROFILE
-\family default
- is suitable for measuring individual operator performance.
- If you would like to measure the execution time of all operators in several
- generations, 
-\family typewriter
-ticToc
-\family default
- operator is better.
-\end_layout
-
-\begin_layout Section
 Availability
 \end_layout
 
@@ -2167,6 +1918,255 @@ lstparams "caption={Conversion between absolute and relative indexes},label={abs
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Debug-related operators/functions
+\end_layout
+
+\begin_layout Standard
+Standard 
+\family typewriter
+simuPOP
+\family default
+ module can print out lots of debug information upon request.
+ These are mostly used for internal debugging purposes but you can also
+ use them when error happens.
+ For example, the following code will crash simuPOP:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> population(1, loci=[100]).individual(0).arrAllele()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is not clear why this simple line will cause us trouble, instead of outputtin
+g the genotype of the only individual of this population.
+ However, the reason is clear if you turn on debug information:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Turn on/off debug information
+\end_layout
+
+\end_inset
+
+>>> TurnOnDebug(DBG_ALL)
+\end_layout
+
+\begin_layout Plain Layout
+
+Debug code DBG_ALL is turned on.
+ cf.
+ listDebugCode(), turnOffDebug() 
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> population(1).individual(0).arrAlleles()
+\end_layout
+
+\begin_layout Plain Layout
+
+Constructor of Population is called
+\end_layout
+
+\begin_layout Plain Layout
+
+Population size 1
+\end_layout
+
+\begin_layout Plain Layout
+
+Destructor of Population is called 
+\end_layout
+
+\begin_layout Plain Layout
+
+Segmentation fault (core dumped) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+population(1)
+\family default
+ creates a temporary object that is destroyed right after the execution
+ of the input.
+ When Python tries to display the genotype, it will refer to an invalid
+ location.
+ The right way to do this is to create a persistent population object: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> pop = population(1)
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pop.individual(0).arrAllele()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the output is overwhelming after you turn on all debug information, you
+ can turn on certain part of the information by using the following functions:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ListDebugCode
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+listDebugCode
+\end_layout
+
+\end_inset
+
+()
+\family default
+ list all debug code.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+turnOnDebug()
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+operator!turnOnDebug
+\end_layout
+
+\end_inset
+
+, TurnOnDebug
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Function!TurnOnDebug
+\end_layout
+
+\end_inset
+
+(code)
+\family default
+ turn on debug codes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+turnOffDebug()
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+operator!turnOffDebug
+\end_layout
+
+\end_inset
+
+, TurnOffDebug
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Function!turnOffDebug
+\end_layout
+
+\end_inset
+
+(code)
+\family default
+ turn off debug codes.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+turnOnDebug()
+\family default
+ and 
+\family typewriter
+turnOffDebug()
+\family default
+ are operators and accept all operator parameters 
+\family typewriter
+begin, step
+\family default
+ etc.
+ Usually, you can use 
+\family typewriter
+turnOnDebug
+\family default
+ to output more information about a potential bug before simuPOP starts
+ to misbehave.
+ 
+\end_layout
+
+\begin_layout Standard
+Another useful debug code is 
+\family typewriter
+DBG_PROFILE.
+
+\family default
+ When turned on, it will display running time of each operator.
+ This will give you a good sense of which operator runs slowly (or simply
+ the order of operator execution if you are not sure).
+ If most of the execution time is spent on a pure-Python operator, you may
+ want to rewrite it in C++.
+ Note that 
+\family typewriter
+DBG_PROFILE
+\family default
+ is suitable for measuring individual operator performance.
+ If you would like to measure the execution time of all operators in several
+ generations, 
+\family typewriter
+ticToc
+\family default
+ operator is better.
 \end_layout
 
 \begin_layout Section
