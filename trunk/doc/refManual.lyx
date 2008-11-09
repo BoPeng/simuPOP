@@ -1,5 +1,5 @@
-#LyX 1.5.7svn created this file. For more info see http://www.lyx.org/
-\lyxformat 276
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+\lyxformat 345
 \begin_document
 \begin_header
 \textclass manual
@@ -28,6 +28,7 @@ Last modified \\
 
 \sloppy
 \end_preamble
+\use_default_options false
 \language english
 \inputencoding auto
 \font_roman default
@@ -38,10 +39,12 @@ Last modified \\
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
 \float_placement h
 \paperfontsize default
 \spacing single
+\use_hyperref false
 \papersize default
 \use_geometry false
 \use_amsmath 1
@@ -83,33 +86,33 @@ height "1pt"
 height_special "totalheight"
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 hspace{1cm}
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 vspace{5in}
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 {
 \backslash
@@ -118,22 +121,22 @@ large
 textsf Acknowledgements: }
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 vspace{.2cm}
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -141,11 +144,11 @@ hspace{.3cm} Dr.
  Marek Kimmel
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -155,11 +158,11 @@ hspace{.3cm} Dr.
 c cois Balloux
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -167,44 +170,44 @@ hspace{.3cm} Dr.
  William Amos
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 hspace{.3cm} SWIG user community
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 hspace{.3cm} Python user community 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 hspace{.3cm} Keck Center for Computational and Structural Biology
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -218,11 +221,11 @@ hspace{.3cm} U.T.
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -234,11 +237,11 @@ vspace{.7in}
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
  
 \backslash
@@ -251,7 +254,7 @@ copyright{}
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -297,48 +300,29 @@ simuPOP is a forward-time population genetics simulation environment.
 \end_layout
 
 \begin_layout Abstract
-The core of simuPOP is a scripting language (Python) that provides a large
- number of building blocks (populations, mating schemes, various genetic
- forces in the form of operators, simulators and gene mapping methods) to
- construct a simulation.
+simuPOP is written in C++ and is provided as Python modules.
+ It provides a large number of building blocks (populations, mating schemes,
+ various genetic forces in the form of operators, simulators and gene mapping
+ methods) to construct a simulation.
  This provides a R/Splus or Matlab-like environment where users can interactivel
 y create, manipulate and evolve populations, monitor and visualize population
  statistics and apply gene mapping methods.
- The full power of simuPOP and Python (even R) can be utilized to simulate
- arbitrarily complex evolutionary scenarios.
-\end_layout
-
-\begin_layout Abstract
-simuPOP is written in C++ and is provided as Python modules.
- Besides a front-end providing an interactive shell and a scripting language,
- Python is used extensively to pass dynamic parameters, calculate complex
- statistics and write operators.
- Because of the openness of simuPOP and Python, users can make use of external
- programs, such as R, to perform statistical analysis, gene mapping and
- visualization.
- Depending on machine configuration, simuPOP can simulate large (think of
- millions) populations at reasonable speed.
-\end_layout
-
-\begin_layout Abstract
-This reference manual assumes that you are reasonably familiar with the
- Python programming language.
- If you are new to Python, you may want to go through a few online tutorials
- and courses before you continue.
- Because this is a reference manual to all the features of simuPOP, it is
- recommended that you learn the basic concepts of simuPOP from the 
+ Please refer to the 
 \emph on
-simuPOP User's Guide
+simuPOP user's guide
 \emph default
- before getting lost in the details.
+ for a detailed introduction to simuPOP concepts, and a number of examples
+ on how to use simuPOP to perform various simulations.
 \end_layout
 
 \begin_layout Abstract
-This is a reference manual to all variables, functions, and objects of simuPOP.
- To learn different components of simuPOP and how to write simuPOP scripts,
- please refer to the 
-\emph on
-simuPOP User's Guide.
+This reference manual lists all variables, functions, classes and utility
+ modules of simuPOP.
+ Please report any error to the simuPOP mailing list 
+\family typewriter
+simupop-list@lists.sourceforge.net
+\family default
+.
 \end_layout
 
 \begin_layout Abstract
@@ -359,7 +343,25 @@ bioinformatics
 \series bold
 21
 \series default
-(18): 3686-3687
+ (18): 3686-3687.
+\end_layout
+
+\begin_layout Quote
+Bo Peng and Christopher Amos (2008) Forward-time simulations of nonrandom
+ mating populations using simuPOP.
+ 
+\emph on
+bioinformatics
+\emph default
+, 
+\series bold
+24
+\series default
+ (11)
+\begin_inset Quotes erd
+\end_inset
+
+ 1408-1409.
 \end_layout
 
 \end_deeper
@@ -367,31 +369,15 @@ bioinformatics
 \begin_inset Note Note
 status open
 
-\begin_layout Standard
-This reference manual uses examples generated by 'runSampleCode.py userGuide.py',
- and simuPOP_ref.tex generated by 'doxygen; cd tools; doxy2swig.py'..
+\begin_layout Plain Layout
+This reference manual simuPOP_ref.tex generated by 'doxygen; tools/doxy2swig.py'.
 \end_layout
 
 \end_inset
 
 
-\begin_inset LatexCommand tableofcontents
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-lstlistoflistings
-\end_layout
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
 
 \end_inset
 
@@ -399,8 +385,9 @@ lstlistoflistings
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \include{simuPOP_ref.tex}
-preview false
+\begin_inset CommandInset include
+LatexCommand include
+filename "simuPOP_ref.tex"
 
 \end_inset
 
@@ -412,7 +399,9 @@ preview false
 \end_layout
 
 \begin_layout Chapter
-\InsetSpace \thinspace{}
+\begin_inset space \thinspace{}
+\end_inset
+
 simuPOP Components
 \end_layout
 
@@ -424,28 +413,28 @@ Individual and Population
 \begin_inset ERT
 status collapsed
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 GenoStruTraitRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 individualRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 populationRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -462,56 +451,56 @@ Virtual subpopulation splitters
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 vspSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 sexSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 affectionSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 infoSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 proportionSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 rangeSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 genotypeSplitterRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -525,8 +514,12 @@ combinedSplitterRef
 
 \begin_layout Section
 Mating Scheme
-\begin_inset LatexCommand index
-name "mating scheme"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+mating scheme
+\end_layout
 
 \end_inset
 
@@ -537,182 +530,182 @@ name "mating scheme"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 matingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 noMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 cloneMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 binomialSelectionRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 baseRandomMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 randomMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 selfMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 monogamousMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 polygamousMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 consanguineousMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 alphaMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 haplodiploidMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 pedigreeMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 heteroMatingRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 sequentialParentChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 sequentialParentsChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 randomParentChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 randomParentsChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 infoParentsChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 pedigreeParentsChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyParentsChooserRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 cloneOffspringGeneratorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 selfingOffspringGeneratorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 haplodiploidOffspringGeneratorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -726,8 +719,12 @@ mendelianOffspringGeneratorRef
 
 \begin_layout Section
 Simulator
-\begin_inset LatexCommand index
-name "Simulator"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Simulator
+\end_layout
 
 \end_inset
 
@@ -738,7 +735,7 @@ name "Simulator"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -758,7 +755,7 @@ Pedigree
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -781,7 +778,8 @@ This chapter will list all functions, types and operators by category.
 class baseOperator 
 \family default
 is in section 
-\begin_inset LatexCommand ref
+\begin_inset CommandInset ref
+LatexCommand ref
 reference "sec:Operators"
 
 \end_inset
@@ -797,7 +795,7 @@ The common interface of operators
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -811,8 +809,12 @@ baseOperatorRef
 
 \begin_layout Section
 Initialization
-\begin_inset LatexCommand index
-name "initializer"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+initializer
+\end_layout
 
 \end_inset
 
@@ -823,42 +825,42 @@ name "initializer"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 initializerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 initSexRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 initByFreqRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 initByValueRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 spreadRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -872,8 +874,12 @@ pyInitRef
 
 \begin_layout Section
 Migration
-\begin_inset LatexCommand index
-name "migrator"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+migrator
+\end_layout
 
 \end_inset
 
@@ -884,35 +890,35 @@ name "migrator"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 migratorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyMigratorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 splitSubPopRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mergeSubPopsRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -926,8 +932,12 @@ resizeSubPopsRef
 
 \begin_layout Section
 Mutation
-\begin_inset LatexCommand index
-name "Mutation"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Mutation
+\end_layout
 
 \end_inset
 
@@ -938,42 +948,42 @@ name "Mutation"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mutatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 kamMutatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 smmMutatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 gsmMutatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyMutatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -987,14 +997,22 @@ pointMutatorRef
 
 \begin_layout Section
 Recombination 
-\begin_inset LatexCommand index
-name "recombination"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+recombination
+\end_layout
 
 \end_inset
 
  and gene conversion 
-\begin_inset LatexCommand index
-name "conversion"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+conversion
+\end_layout
 
 \end_inset
 
@@ -1005,7 +1023,7 @@ name "conversion"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1019,8 +1037,12 @@ recombinatorRef
 
 \begin_layout Section
 Selection
-\begin_inset LatexCommand index
-name "selection"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+selection
+\end_layout
 
 \end_inset
 
@@ -1031,35 +1053,35 @@ name "selection"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 selectorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mapSelectorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 maSelectorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mlSelectorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1073,8 +1095,12 @@ pySelectorRef
 
 \begin_layout Section
 Penetrance
-\begin_inset LatexCommand index
-name "penetrance"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+penetrance
+\end_layout
 
 \end_inset
 
@@ -1085,35 +1111,35 @@ name "penetrance"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 penetranceRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mapPenetranceRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 maPenetranceRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mlPenetranceRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1127,8 +1153,12 @@ pyPenetranceRef
 
 \begin_layout Section
 Quantitative Trait
-\begin_inset LatexCommand index
-name "quantitative trait"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+quantitative trait
+\end_layout
 
 \end_inset
 
@@ -1139,35 +1169,35 @@ name "quantitative trait"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 quanTraitRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mapQuanTraitRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 maQuanTraitRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 mlQuanTraitRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1180,14 +1210,19 @@ pyQuanTraitRef
 \end_layout
 
 \begin_layout Section
-\begin_inset LatexCommand label
+\begin_inset CommandInset label
+LatexCommand label
 name "sec:Ascertainment"
 
 \end_inset
 
 Ascertainment
-\begin_inset LatexCommand index
-name "ascertainment"
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+ascertainment
+\end_layout
 
 \end_inset
 
@@ -1198,56 +1233,56 @@ name "ascertainment"
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 sampleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 pySubsetRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 pySampleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 randomSampleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 caseControlSampleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 affectedSibpairSampleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
 largePedigreeSampleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 %
 \backslash
@@ -1267,14 +1302,14 @@ Statistics Calculation
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 statorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1298,49 +1333,49 @@ Expression and Statements
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 dumperRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 savePopulationRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyOutputRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyEvalRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyExecRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 infoEvalRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1360,56 +1395,56 @@ Tagging (used for pedigree tracking)
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 taggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 inheritTaggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 parentTaggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 parentsTaggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 sexTaggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 affectionTaggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 infoTaggerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1429,21 +1464,21 @@ Terminator
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 terminatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 terminateIfRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1463,14 +1498,14 @@ Python operators
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pyOperatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1490,49 +1525,49 @@ Miscellaneous
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ifElseRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 turnOnDebugRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 turnOffDebugRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 noneOpRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 pauseRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ticTocRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1556,140 +1591,140 @@ Global functions
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 AlleleTypeRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 LimitsRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ListAllRNGRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ListDebugCodeRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 LoadPopulationRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 LoadSimulatorRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 MaxAlleleRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 MergePopulationsRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 MergePopulationsByLociRef 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ModuleCompilerRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ModuleDateRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ModulePlatFormRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 ModulePyVersionRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 OptimizedRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 SetRNGRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 TurnOffDebugRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 TurnOnDebugRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 rngRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 simuRevRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1709,7 +1744,7 @@ Utility Classes
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1741,28 +1776,28 @@ Compared to simuPOP kernel functions, these utility functions are less tested,
 \begin_inset ERT
 status open
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 simuOptRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 simuUtilRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
 simuRPyRef
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 
 \backslash
@@ -1775,7 +1810,8 @@ hapMapUtilRef
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand printindex
+\begin_inset CommandInset index_print
+LatexCommand printindex
 
 \end_inset
 
