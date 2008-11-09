@@ -2112,7 +2112,7 @@ class simuProgress:
         # if you would like to make sure the done message is displayed.
         progress.done()
     '''
-    def __init__(self, totalCount, progressChar='.', block=2, done=' Done.\n'):
+    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n'):
         '''
         totalCount
             Total expected steps.
@@ -2132,6 +2132,8 @@ class simuProgress:
         self.block = block
         self.doneMsg = done
         self.completed = False
+        sys.stdout.write(message)
+        sys.stdout.flush()
 
     def update(self, count):
         #
