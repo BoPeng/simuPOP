@@ -7449,12 +7449,13 @@ Details:
 
 Usage:
 
-    x.removeLoci(loci)
+    x.removeLoci(loci=[], keep=[])
 
 Details:
 
     Remove loci (absolute indexes) and genotypes at these loci from
-    the current population.
+    the current population. Alternatively, a parameter keep can be
+    used to specify loci that will not be removed.
 
 "; 
 

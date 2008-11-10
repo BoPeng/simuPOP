@@ -1199,12 +1199,15 @@ population & population::newPopByIndID(int keepAncestralPops,
 }
 
 
-void population::removeLoci(const vectoru & loci)
+void population::removeLoci(const vectoru & loci, const vectoru & keep)
 {
-	if (loci.empty())
+	DBG_FAILIF(!loci.empty() && !keep.empty(), ValueError,
+		"Please specify only one of parameters loci and keep");
+
+	if (loci.empty() && keep.empty())
 		return;
 
-	vectoru kept;
+	vectoru kept = keep;
 	UINT oldTotNumLoci = totNumLoci();
 	// new geno structure is in effective now!
 	setGenoStructure(gsRemoveLoci(loci, kept));

@@ -1074,10 +1074,11 @@ public:
 		bool removeEmptySubPops = false);
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
-	 *  current population.
+	 *  current population. Alternatively, a parameter \e keep can be used to
+	 *  specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const vectoru & loci);
+	void removeLoci(const vectoru & loci = vectoru(), const vectoru & keep = vectoru());
 
 	/// HIDDEN absorb \c rhs population as the current generation of a population
 	/**

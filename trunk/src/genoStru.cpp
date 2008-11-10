@@ -399,10 +399,11 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx) const
 GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
                                             vectoru & kept)
 {
-	kept.clear();
-	for (size_t loc = 0; loc < totNumLoci(); ++loc) {
-		if (find(loci.begin(), loci.end(), loc) == loci.end())
-			kept.push_back(loc);
+	if (kept.empty()) {
+		for (size_t loc = 0; loc < totNumLoci(); ++loc) {
+			if (find(loci.begin(), loci.end(), loc) == loci.end())
+				kept.push_back(loc);
+		}
 	}
 
 	// loci are now remainining loci
