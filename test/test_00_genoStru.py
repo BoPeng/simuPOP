@@ -17,12 +17,20 @@ from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestCarray(unittest.TestCase):
-    
+    # define a function to create basic populations
+    def getPop(self):
+        pop = population(size=[20,80], ploidy=2, loci=[5, 7],
+            lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
+            alleleNames=['_','A','C','T','G'],
+            infoFields=['a', 'b'])
+        InitSex(pop)
+        return pop
+
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
         pop = population(size=2, loci=[2,1])
         InitByValue(pop, [1,2,3])
-        arr = pop.genotype(True)
+        arr = pop.genotype()
         arr[:] = [0,1,2]*4
         # can print
         # expression
@@ -109,9 +117,143 @@ class TestCarray(unittest.TestCase):
         else:
             self.assertEqual( arr, [0,1,1,0,1,1,0,1,1,0,1,1])
 
-    def testBlah():
-        ''
-        pass
+    def testPloidy(self):
+        'Testing genoStruTrait::Ploidy(), PloidyName()'
+        pop = self.getPop()
+        self.assertEqual(pop.ploidy(), 2)
+        self.assertEqual(pop.ploidyName(), 'diploid')
+        pop = population(size=100, ploidy=Haplodiploid, loci=[5, 7])
+        self.assertEqual(pop.ploidyName(), 'haplodiploid')
+        pop = population(size=100, ploidy=1, loci=[5, 7])
+        self.assertEqual(pop.ploidyName(), 'haploid')
+        pop = population(size=100, ploidy=3, loci=[5, 7])
+        self.assertEqual(pop.ploidyName(), 'triploid')
+        pop = population(size=100, ploidy=4, loci=[5, 7])
+        self.assertEqual(pop.ploidyName(), 'tetraploid')
+        pop = population(size=100, ploidy=5, loci=[5, 7])
+        self.assertEqual(pop.ploidyName(), '5-ploid')
+        self.assertRaises(exceptions.ValueError,population, size=[20,20], ploidy=0)
+
+    def testChromBeginEnd(self):
+        'Testing genoStruTrait::ChromBegin(chrom), chromEnd(chrom)'
+        pop = self.getPop()
+        self.assertEqual(pop.chromBegin(0), 0)
+        self.assertEqual(pop.chromBegin(1), 5)
+        self.assertEqual(pop.chromEnd(0), 5)
+        self.assertEqual(pop.chromEnd(1), 12)
+        self.assertEqual(pop.numChrom(), 2)
+        self.assertRaises(exceptions.IndexError, pop.chromBegin, 2 )
+        self.assertRaises(exceptions.IndexError, pop.chromEnd, 2 )
+
+    def testChromName(self):
+        'Testing genoStruTrait::chromByName(name), chromName(chrom), chromNames()'
+        pop = population(size=100, ploidy=2, loci=[5, 7])
+        self.assertEqual(pop.chromName(0), 'chrom1')
+        self.assertEqual(pop.chromName(1), 'chrom2')
+        pop = population(size=100, ploidy=2, loci=[5, 7], chromNames=["c1", "c2"])
+        self.assertEqual(pop.chromName(0), 'c1')
+        self.assertEqual(pop.chromName(1), 'c2')
+        self.assertEqual(pop.chromNames(), ('c1', 'c2'))
+        self.assertEqual(pop.chromByName("c2"), 1)
+        self.assertRaises(exceptions.ValueError, pop.chromByName, 'c3')
+        self.assertRaises(exceptions.IndexError, pop.chromName, 2)
+
+    def testChromType(self):
+        'Testing genoStruTrait::chromType(chron), chromTypes()'
+        pop = population(size=100, ploidy=4, loci=[2,3,2,4],
+        chromTypes=[Autosome, ChromosomeX, ChromosomeY, Mitochondrial])
+        self.assertEqual(pop.chromType(0),1)
+        self.assertEqual(pop.chromType(1),2)
+        self.assertEqual(pop.chromType(2),3)
+        self.assertEqual(pop.chromType(3),4)
+        self.assertEqual(pop.chromType(0),Autosome)
+        self.assertEqual(pop.chromType(1),ChromosomeX)
+        self.assertEqual(pop.chromType(2),ChromosomeY)
+        self.assertEqual(pop.chromType(3),Mitochondrial)
+
+    def testNumChrom(self):
+        'Testing genoStruTrait::numChrom()'
+        pop = self.getPop()
+        self.assertEqual(pop.numChrom(), 2)
+
+    def testAbsoluteLocusIndex(self):
+        'Testing genoStruTrait::absLocusIndex(chrom,locus)'
+        pop = self.getPop()
+        self.assertEqual(pop.absLocusIndex(1,5), 10)
+        self.assertEqual(pop.locusPos(pop.absLocusIndex(1,2) ), 6)
+        self.assertRaises(exceptions.IndexError, pop.absLocusIndex, 2, 5 )
+
+    def testChromLocusPair(self):
+        'Testing genoStruTrait::chromLocusPair(locus)'
+        pop = self.getPop()
+        self.assertEqual(pop.chromLocusPair(10), (1,5) )
+        self.assertRaises(exceptions.IndexError, pop.chromLocusPair, 50 )
+
+    def testLociName(self):
+        'Testing genoStruTrait::lociByNames(names),lociNames(),locusByName(name), locusName(loc)'
+        pop = self.getPop()
+        self.assertEqual(pop.locusName(0), 'loc1-1')
+        self.assertEqual(pop.locusName(1), 'loc1-2')
+        self.assertEqual(pop.locusName(2), 'loc1-3')
+        pop = population(loci=[1,2], lociNames=['la','lb','lc'])
+        self.assertEqual(pop.locusName(0), 'la')
+        self.assertEqual(pop.locusName(1), 'lb')
+        self.assertEqual(pop.locusName(2), 'lc')
+        self.assertEqual(pop.locusByName("la"), 0)
+        self.assertEqual(pop.locusByName("lb"), 1)
+        self.assertEqual(pop.locusByName("lc"), 2)
+        self.assertRaises(exceptions.IndexError, pop.locusName, 5)
+        self.assertRaises(exceptions.ValueError, pop.locusByName, 'somename')
+        self.assertRaises(exceptions.ValueError, pop.lociByNames, ['somename', 'other'])
+        self.assertEqual(pop.lociByNames(['lb', 'lc']), (1, 2))
+        self.assertEqual(pop.lociByNames(['lb', 'la']), (1, 0))
+
+    def testLociDist(self):
+        'Testing genoStruTrait::LociDist(loc1, loc2)'
+        pop = self.getPop()
+        self.assertEqual(pop.lociDist(0, 3), 3)
+        self.assertEqual(pop.lociDist(2, 4), 2)
+        self.assertRaises(exceptions.ValueError, pop.lociDist, 2, 8)
+
+    def testLocusPos(self):
+        'Testing genoStruTrait::lociPos(), locusPos(loc)'
+        pop = self.getPop()
+        self.assertEqual(pop.locusPos(10), 12)
+        self.assertRaises(exceptions.IndexError, pop.locusPos, 20 )
+
+    def testNumLoci(self):
+        'Testing genoStruTrait::numLoci(chrom), numLoci(), totNumLoci()'
+        pop = self.getPop()
+        self.assertEqual(pop.numLoci(0), 5)
+        self.assertEqual(pop.numLoci(1), 7)
+        self.assertEqual(pop.totNumLoci(), 12)
+        self.assertEqual(pop.numLoci(), (5,7))
+        self.assertRaises(exceptions.IndexError, pop.numLoci, 2 )
+
+    def testAlleleName(self):
+        'Testing genoStruTrait::AlleleName(allele), alleleNames()'
+        pop = population(size=[20,80], ploidy=2, loci=[5, 7])
+        self.assertEqual(pop.alleleName(0), '0')
+        self.assertEqual(pop.alleleName(1), '1')
+        pop = self.getPop()
+        self.assertEqual(pop.alleleName(0), '_')
+        self.assertEqual(pop.alleleName(1), 'A')
+        self.assertEqual(pop.alleleName(2), 'C')
+        self.assertEqual(pop.alleleName(3), 'T')
+        self.assertEqual(pop.alleleName(4), 'G')
+        self.assertEqual(pop.alleleNames(), ('_','A','C','T','G'))
+        self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
+
+    def testInfoField(self):
+        'Testing genoStruTrait::infoField(idx), infoFields(), infoIdx(name)'
+        pop = population(10, infoFields=['age', 'fitness', 'trait1'])
+        self.assertEqual(pop.infoField(0), 'age')
+        self.assertEqual(pop.infoField(2), 'trait1')
+        self.assertEqual(pop.infoIdx('age'), 0)
+        self.assertEqual(pop.infoIdx('fitness'), 1)
+        self.assertRaises(exceptions.IndexError, pop.infoField, 3)
+        self.assertEqual(pop.infoFields(), ('age', 'fitness', 'trait1'))
+
 
 if __name__ == '__main__':
     unittest.main()
