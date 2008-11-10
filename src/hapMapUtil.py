@@ -131,7 +131,7 @@ def getMarkersFromName(HapMap_dir, names, chroms=[], hapmap_pops=[], minDiffAF=0
                 pass
         if len(markers) > 0:
             markers.sort()
-            pop.removeLoci([x for x in range(pop.totNumLoci()) if x not in markers])
+            pop.removeLoci(keep=markers)
             genDist.update(pop.dvars().genDist)
             pop.vars().clear()
             pops.append(pop)
@@ -230,7 +230,7 @@ def getMarkersFromRange(HapMap_dir, hapmap_pops, chrom, startPos, endPos, maxNum
             break
         lastPos = pos
     print '%d markers located' % len(markers)
-    pop.removeLoci([x for x in range(pop.totNumLoci()) if x not in markers])
+    pop.removeLoci(keep=markers)
     # this would save some RAM because variables take a lot of them
     genDist = pop.dvars().genDist
     pop.vars().clear()
