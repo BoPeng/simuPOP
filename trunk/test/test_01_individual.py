@@ -179,10 +179,10 @@ class TestIndividual(unittest.TestCase):
         pop = self.getPop()
         ind = pop.individual(0)
         self.assertEqual(ind.affected(), False)
-        self.assertEqual(ind.unaffected(), True)
+        self.assertEqual(ind.affectedChar(), 'U')
         ind.setAffected(True)
         self.assertEqual(ind.affected(), True)
-        self.assertEqual(ind.unaffected(), False)
+        self.assertEqual(ind.affectedChar(), 'A')
 
     def testInfo(self):
         'Testing  individual::info(idx), info(name), intInfo(idx), intinfo(name), '
