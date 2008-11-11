@@ -573,7 +573,7 @@ string GenoStruTrait::ploidyName() const
 	else if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 4)
 		return "tetraploid";
 	else
-		return toStr(s_genoStruRepository[m_genoStruIdx].m_ploidy) + "-polid";
+		return toStr(s_genoStruRepository[m_genoStruIdx].m_ploidy) + "-ploid";
 }
 
 
