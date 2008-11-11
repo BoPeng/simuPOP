@@ -426,14 +426,6 @@ public:
 	}
 
 
-	/** HIDDEN
-	 */
-	bool unaffected() const
-	{
-		return !affected();
-	}
-
-
 	/** Return \c A if this individual is affected, or \c U otherwise.
 	 * <group>4-affection</group>
 	 */
