@@ -342,7 +342,7 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx) const
 			loci[ch] = gs1.m_numLoci[ch] + gs2.m_numLoci[ch];
 			chromNames.push_back(gs1.m_chromNames[ch]);
 			chromTypes.push_back(gs1.m_chromTypes[ch]);
-		} else if (ch < gs1.m_numLoci.size() && ch >= hs2.m_numLoci.size()) { // gs1 > gs2
+		} else if (ch < gs1.m_numLoci.size() && ch >= gs2.m_numLoci.size()) { // gs1 > gs2
 			loci[ch] = gs1.m_numLoci[ch];
 			chromNames.push_back(gs1.m_chromNames[ch]);
 			chromTypes.push_back(gs1.m_chromTypes[ch]);
