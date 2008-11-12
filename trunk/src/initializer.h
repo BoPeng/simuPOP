@@ -410,8 +410,8 @@ public:
 		if (m_subPop.empty())
 			m_subPop.resize(1, p.first);
 
-		GenoIterator srcBegin = pop.indGenoBegin(m_ind),
-		             srcEnd = pop.indGenoEnd(m_ind);
+		GenoIterator srcBegin = pop.indGenoBegin(m_ind);
+		GenoIterator srcEnd = pop.indGenoEnd(m_ind);
 
 		for (vectoru::iterator sp = m_subPop.begin(); sp != m_subPop.end(); ++sp) {
 			for (ULONG i = pop.subPopBegin(*sp); i < pop.subPopEnd(*sp); ++i)
