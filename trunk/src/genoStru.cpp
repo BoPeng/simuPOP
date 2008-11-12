@@ -331,27 +331,26 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx) const
 	vectoru loci(std::max(gs1.m_numLoci.size(), gs2.m_numLoci.size()));
 	vectorstr chromNames;
 	vectoru chromTypes;
-	for (size_t ch = 0; ch < loci.size(); ++ch) {
-		DBG_FAILIF(ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size()
-			&& gs1.m_chromTypes[ch] != gs2.m_chromTypes[ch],
-			ValueError, "Chromosomes of different types can not be merged.");
-		if (ch < gs1.m_numLoci.size()) {
-			loci[ch] += gs1.m_numLoci[ch];
-			chromNames.push_back(gs1.m_chromNames[ch]);
-			chromTypes.push_back(gs1.m_chromTypes[ch]);
-		}
-		if (ch < gs2.m_numLoci.size()) {
-			loci[ch] += gs2.m_numLoci[ch];
-			chromNames.push_back(gs2.m_chromNames[ch]);
-			chromTypes.push_back(gs2.m_chromTypes[ch]);
-		}
-	}
-
-	// loci pos and loci name
 	vectorf lociPos;
 	vectorstr lociNames;
 
 	for (size_t ch = 0; ch < loci.size(); ++ch) {
+		DBG_FAILIF(ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size()
+			&& gs1.m_chromTypes[ch] != gs2.m_chromTypes[ch],
+			ValueError, "Chromosomes of different types can not be merged.");
+		if (ch < gs1.m_numLoci.size() && ch < gs2.m_numLoci.size()) {
+			loci[ch] = gs1.m_numLoci[ch] + gs2.m_numLoci[ch];
+			chromNames.push_back(gs1.m_chromNames[ch]);
+			chromTypes.push_back(gs1.m_chromTypes[ch]);
+		} else if (ch < gs1.m_numLoci.size() && ch >= hs2.m_numLoci.size()) { // gs1 > gs2
+			loci[ch] = gs1.m_numLoci[ch];
+			chromNames.push_back(gs1.m_chromNames[ch]);
+			chromTypes.push_back(gs1.m_chromTypes[ch]);
+		} else { // gs2 > gs1
+			loci[ch] = gs2.m_numLoci[ch];
+			chromNames.push_back(gs2.m_chromNames[ch]);
+			chromTypes.push_back(gs2.m_chromTypes[ch]);
+		}
 		size_t idx1 = 0;
 		size_t idx2 = 0;
 		for (size_t loc = 0; loc < loci[ch]; ++loc) {
