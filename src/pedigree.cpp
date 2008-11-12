@@ -651,9 +651,9 @@ bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
 // 		// check if things are all right
 // 		// determine number of parents...
 // 		ULONG popSize = accumulate(sizes.begin(), sizes.end(), 0UL);
-// 		DBG_FAILIF(popSize != 0 && values.size() == 0,
+// 		DBG_FAILIF(popSize != 0 && values.empty(),
 // 			ValueError, "No parent is read");
-// 		if (popSize == 0 && values.size() == 0)
+// 		if (popSize == 0 && values.empty())
 // 			continue;
 // 		if (m_numParents == 0)
 // 			m_numParents = values.size() / popSize;
