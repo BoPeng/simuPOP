@@ -19,25 +19,25 @@ import unittest, os, sys, exceptions
 class TestCarray(unittest.TestCase):
     # define a function to create basic populations
     def getPop(self):
-        pop = population(size=[20,80], ploidy=2, loci=[5, 7],
-            lociPos=[ [2,3,4,5,6],[2,4,6,8,10,12,14]],
-            alleleNames=['_','A','C','T','G'],
+        pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
+            lociPos=[ [2, 3, 4, 5, 6], [2, 4, 6, 8, 10, 12, 14]],
+            alleleNames=['_', 'A', 'C', 'T', 'G'],
             infoFields=['a', 'b'])
         InitSex(pop)
         return pop
 
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
-        pop = population(size=2, loci=[2,1])
-        InitByValue(pop, [1,2,3])
+        pop = population(size=2, loci=[2, 1])
+        InitByValue(pop, [1, 2, 3])
         arr = pop.genotype()
-        arr[:] = [0,1,2]*4
+        arr[:] = [0, 1, 2]*4
         # can print
         # expression
         if AlleleType() != 'binary':
-            self.assertEqual( str(arr), "[0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]")
+            self.assertEqual(str(arr), "[0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]")
         else:
-            self.assertEqual( str(arr), "[0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]")
+            self.assertEqual(str(arr), "[0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1]")
         # count
         if AlleleType() != 'binary':
             self.assertEqual(arr[5], 2)
@@ -62,60 +62,51 @@ class TestCarray(unittest.TestCase):
         else:
             self.assertEqual(arr[3], 1)
         # convert to list
-        arr[:] = [0,1,2]*4
+        arr[:] = [0, 1, 2]*4
         if AlleleType() != 'binary':
-            self.assertEqual( arr.tolist(), [0,1,2]*4)
+            self.assertEqual(arr.tolist(), [0, 1, 2]*4)
         else:
-            self.assertEqual( arr.tolist(), [0,1,1]*4)
-            self.assertNotEqual( arr.tolist(), [0,1,2]*4)
+            self.assertEqual(arr.tolist(), [0, 1, 1]*4)
+            self.assertNotEqual(arr.tolist(), [0, 1, 2]*4)
         # convert to list
         if AlleleType() != 'binary':
-            self.assertEqual( arr, [0,1,2]*4)
+            self.assertEqual(arr, [0, 1, 2]*4)
         else:
-            self.assertEqual( arr, [0,1,1]*4)
+            self.assertEqual(arr, [0, 1, 1]*4)
         # slice
-        arr[:] = [0,1,2]*4
+        arr[:] = [0, 1, 2]*4
         arr1 = arr[:3]
         if AlleleType() != 'binary':
-            self.assertEqual( arr1, [0, 1, 2])
+            self.assertEqual(arr1, [0, 1, 2])
         else:
-            self.assertEqual( arr1, [0, 1, 1])
+            self.assertEqual(arr1, [0, 1, 1])
         arr1 = arr[3:5]
         if AlleleType() != 'binary':
-            self.assertEqual( arr1, [0, 1])
+            self.assertEqual(arr1, [0, 1])
         else:
-            self.assertEqual( arr1, [0, 1])
+            self.assertEqual(arr1, [0, 1])
         # assign slice
         arr1[:] = 5
         # IMPORTANT NOTE that arr will also be affected
         if AlleleType() != 'binary':
-            self.assertEqual( arr1, [5, 5] )
-            self.assertEqual( arr, [0,1,2,5,5,2,0,1,2,0,1,2])
+            self.assertEqual(arr1, [5, 5] )
+            self.assertEqual(arr, [0, 1, 2, 5, 5, 2, 0, 1, 2, 0, 1, 2])
         else:
-            self.assertEqual( arr1, [1, 1] )
-            self.assertEqual( arr, [0,1,1,1,1,1,0,1,1,0,1,1])
+            self.assertEqual(arr1, [1, 1] )
+            self.assertEqual(arr, [0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1])
         # assign vector
-        arr1[:] = [0,0]
-        self.assertEqual( arr1, [0, 0] )
+        arr1[:] = [0, 0]
+        self.assertEqual(arr1, [0, 0] )
         if AlleleType() != 'binary':
-            self.assertEqual( arr, [0,1,2,0,0,2,0,1,2,0,1,2])
+            self.assertEqual(arr, [0, 1, 2, 0, 0, 2, 0, 1, 2, 0, 1, 2])
         else:
-            self.assertEqual( arr, [0,1,1,0,0,1,0,1,1,0,1,1])
-        # assign vector of different length
-        try:
-            arr1[:] = [50, 60, 70]
-        except exceptions.ValueError:
-            pass
-        try:
-            arr1[:] = arr[1:2]
-        except exceptions.ValueError:
-            pass
+            self.assertEqual(arr, [0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1])
         # assign from another part
         arr[:6] = arr[6:12]
         if AlleleType() != 'binary':
-            self.assertEqual( arr, [0,1,2,0,1,2,0,1,2,0,1,2])
+            self.assertEqual(arr, [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2])
         else:
-            self.assertEqual( arr, [0,1,1,0,1,1,0,1,1,0,1,1])
+            self.assertEqual(arr, [0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1])
 
     def testPloidy(self):
         'Testing genoStruTrait::Ploidy(), PloidyName()'
@@ -132,7 +123,7 @@ class TestCarray(unittest.TestCase):
         self.assertEqual(pop.ploidyName(), 'tetraploid')
         pop = population(size=100, ploidy=5, loci=[5, 7])
         self.assertEqual(pop.ploidyName(), '5-ploid')
-        self.assertRaises(exceptions.ValueError,population, size=[20,20], ploidy=0)
+        self.assertRaises(exceptions.ValueError, population, size=[20, 20], ploidy=0)
 
     def testChromBeginEnd(self):
         'Testing genoStruTrait::ChromBegin(chrom), chromEnd(chrom)'
@@ -160,16 +151,16 @@ class TestCarray(unittest.TestCase):
 
     def testChromType(self):
         'Testing genoStruTrait::chromType(chron), chromTypes()'
-        pop = population(size=100, ploidy=4, loci=[2,3,2,4],
+        pop = population(size=100, ploidy=4, loci=[2, 3, 2, 4],
         chromTypes=[Autosome, ChromosomeX, ChromosomeY, Mitochondrial])
-        self.assertEqual(pop.chromType(0),1)
-        self.assertEqual(pop.chromType(1),2)
-        self.assertEqual(pop.chromType(2),3)
-        self.assertEqual(pop.chromType(3),4)
-        self.assertEqual(pop.chromType(0),Autosome)
-        self.assertEqual(pop.chromType(1),ChromosomeX)
-        self.assertEqual(pop.chromType(2),ChromosomeY)
-        self.assertEqual(pop.chromType(3),Mitochondrial)
+        self.assertEqual(pop.chromType(0), 1)
+        self.assertEqual(pop.chromType(1), 2)
+        self.assertEqual(pop.chromType(2), 3)
+        self.assertEqual(pop.chromType(3), 4)
+        self.assertEqual(pop.chromType(0), Autosome)
+        self.assertEqual(pop.chromType(1), ChromosomeX)
+        self.assertEqual(pop.chromType(2), ChromosomeY)
+        self.assertEqual(pop.chromType(3), Mitochondrial)
 
     def testNumChrom(self):
         'Testing genoStruTrait::numChrom()'
@@ -177,25 +168,25 @@ class TestCarray(unittest.TestCase):
         self.assertEqual(pop.numChrom(), 2)
 
     def testAbsoluteLocusIndex(self):
-        'Testing genoStruTrait::absLocusIndex(chrom,locus)'
+        'Testing genoStruTrait::absLocusIndex(chrom, locus)'
         pop = self.getPop()
-        self.assertEqual(pop.absLocusIndex(1,5), 10)
-        self.assertEqual(pop.locusPos(pop.absLocusIndex(1,2) ), 6)
+        self.assertEqual(pop.absLocusIndex(1, 5), 10)
+        self.assertEqual(pop.locusPos(pop.absLocusIndex(1, 2) ), 6)
         self.assertRaises(exceptions.IndexError, pop.absLocusIndex, 2, 5 )
 
     def testChromLocusPair(self):
         'Testing genoStruTrait::chromLocusPair(locus)'
         pop = self.getPop()
-        self.assertEqual(pop.chromLocusPair(10), (1,5) )
+        self.assertEqual(pop.chromLocusPair(10), (1, 5) )
         self.assertRaises(exceptions.IndexError, pop.chromLocusPair, 50 )
 
     def testLociName(self):
-        'Testing genoStruTrait::lociByNames(names),lociNames(),locusByName(name), locusName(loc)'
+        'Testing genoStruTrait::lociByNames(names), lociNames(), locusByName(name), locusName(loc)'
         pop = self.getPop()
         self.assertEqual(pop.locusName(0), 'loc1-1')
         self.assertEqual(pop.locusName(1), 'loc1-2')
         self.assertEqual(pop.locusName(2), 'loc1-3')
-        pop = population(loci=[1,2], lociNames=['la','lb','lc'])
+        pop = population(loci=[1, 2], lociNames=['la', 'lb', 'lc'])
         self.assertEqual(pop.locusName(0), 'la')
         self.assertEqual(pop.locusName(1), 'lb')
         self.assertEqual(pop.locusName(2), 'lc')
@@ -227,12 +218,12 @@ class TestCarray(unittest.TestCase):
         self.assertEqual(pop.numLoci(0), 5)
         self.assertEqual(pop.numLoci(1), 7)
         self.assertEqual(pop.totNumLoci(), 12)
-        self.assertEqual(pop.numLoci(), (5,7))
+        self.assertEqual(pop.numLoci(), (5, 7))
         self.assertRaises(exceptions.IndexError, pop.numLoci, 2 )
 
     def testAlleleName(self):
         'Testing genoStruTrait::AlleleName(allele), alleleNames()'
-        pop = population(size=[20,80], ploidy=2, loci=[5, 7])
+        pop = population(size=[20, 80], ploidy=2, loci=[5, 7])
         self.assertEqual(pop.alleleName(0), '0')
         self.assertEqual(pop.alleleName(1), '1')
         pop = self.getPop()
@@ -241,7 +232,7 @@ class TestCarray(unittest.TestCase):
         self.assertEqual(pop.alleleName(2), 'C')
         self.assertEqual(pop.alleleName(3), 'T')
         self.assertEqual(pop.alleleName(4), 'G')
-        self.assertEqual(pop.alleleNames(), ('_','A','C','T','G'))
+        self.assertEqual(pop.alleleNames(), ('_', 'A', 'C', 'T', 'G'))
         self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
 
     def testInfoField(self):
@@ -257,3 +248,4 @@ class TestCarray(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
