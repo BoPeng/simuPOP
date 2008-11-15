@@ -113,8 +113,9 @@ public:
 	   \li MATE_ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
 	   \li MATE_NumOfMale Set \c sexParam offspring to Male
 	   \li MATE_NumOfFemale Set \c sexParam offspring to Female.
-	   \note: Parameter \c sexMode and \c sexParam are ignored if sex chromosome is defined.
-	    Offspring sex is defined by genotype in this case.
+	   If there are sex chromosomes, sex is determined by sex chromosomes when \c sexMode
+		id \c MATE_RandomSex. Otherwise, some offspring will be rejected so that offspring
+		sex match what is specified in other modes.
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
 		UINT maxNumOffspring, UINT mode,
@@ -169,6 +170,9 @@ public:
 	/// return sex according to m_sexParam and m_sexMode
 	/// \param count the index of offspring
 	Sex getSex(int count);
+
+	/// If a sex-chromosome defined sex comptible with \c sexMode
+	bool isSexOK(Sex sex, int count);
 
 	/// CPPONLY
 	bool initialized() const

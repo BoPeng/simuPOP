@@ -133,6 +133,14 @@ Sex offspringGenerator::getSex(int count)
 }
 
 
+bool offspringGenerator::isSexOK(Sex sex, int count)
+{
+	if (m_sexMode == MATE_RandomSex)
+		return true;
+	return sex == getSex(count);
+}
+
+
 void offspringGenerator::initialize(const population & pop, vector<baseOperator *> const & ops)
 {
 #ifndef OPTIMIZED
@@ -331,6 +339,10 @@ UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual
 				// of setting offspring sex
 				if (!m_hasSexChrom)
 					it->setSex(getSex(count));
+				else if(!isSexOK(it->sex(), count)) {
+					accept = false;
+					break;
+				}
 			} catch (...) {
 				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
 				throw;
@@ -390,6 +402,10 @@ UINT selfingOffspringGenerator::generateOffspring(population & pop, individual *
 				// of setting offspring sex
 				if (!m_hasSexChrom)
 					it->setSex(getSex(count));
+				else if(!isSexOK(it->sex(), count)) {
+					accept = false;
+					break;
+				}
 			} catch (...) {
 				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
 				throw;
@@ -472,6 +488,10 @@ UINT haplodiploidOffspringGenerator::generateOffspring(population & pop, individ
 				// of setting offspring sex
 				if (!m_hasSexChrom)
 					it->setSex(getSex(count));
+				else if(!isSexOK(it->sex(), count)) {
+					accept = false;
+					break;
+				}
 			} catch (...) {
 				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
 				throw;
