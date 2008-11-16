@@ -243,11 +243,11 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const ve
                                      const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
                                      const vectorstr & lociNames, const vectorstr & infoFields)
 {
-	// only allow for TraitMaxIndex-1 different genotype structures
+	// only allow for MaxTraitIndex-1 different genotype structures
 	// As a matter of fact, most simuPOP scripts have only one
 	// population type.
-	if (s_genoStruRepository.size() == TraitMaxIndex - 1) {
-		throw SystemError("This simuPOP library only allows " + toStr(TraitMaxIndex - 1)
+	if (s_genoStruRepository.size() == MaxTraitIndex - 1) {
+		throw SystemError("This simuPOP library only allows " + toStr(MaxTraitIndex - 1)
 			+ " different genotype structures. \n" +
 			+ "If you do need more structures, modify individual.h/TraitMaxType and " +
 			+ "recompile simuPOP.");
@@ -557,7 +557,7 @@ void GenoStruTrait::setGenoStructure(GenoStructure & rhs)
 
 string GenoStruTrait::ploidyName() const
 {
-	DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+	DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 		"PloidyName: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 	if (s_genoStruRepository[m_genoStruIdx].m_ploidy == 1)

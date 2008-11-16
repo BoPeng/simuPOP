@@ -313,16 +313,12 @@ namespace simuPOP {
  */
 class GenoStruTrait
 {
-private:
-#define TraitIndexType unsigned char
-#define TraitMaxIndex 0xFF
-
 public:
 	/**
 	 * A \c GenoStruTrait object is created with the creation of a \c population
 	 * so it cannot be initialized directly.
 	 */
-	GenoStruTrait() : m_genoStruIdx(TraitMaxIndex)
+	GenoStruTrait() : m_genoStruIdx(MaxTraitIndex)
 	{
 	}
 
@@ -433,7 +429,7 @@ public:
 	UINT ploidy() const
 	{
 
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"Ploidy: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_ploidy;
@@ -453,7 +449,7 @@ public:
 	 */
 	UINT numLoci(UINT chrom) const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"numLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		CHECKRANGECHROM(chrom);
@@ -476,7 +472,7 @@ public:
 	 */
 	int chromX() const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromX;
@@ -489,7 +485,7 @@ public:
 	 */
 	int chromY() const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_chromY;
@@ -503,7 +499,7 @@ public:
 	 */
 	int mitochondrial() const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_mitochondrial;
@@ -533,7 +529,7 @@ public:
 	UINT totNumLoci() const
 	{
 
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_totNumLoci;
@@ -546,7 +542,7 @@ public:
 	 */
 	UINT genoSize() const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_ploidy * s_genoStruRepository[m_genoStruIdx].m_totNumLoci;
@@ -561,7 +557,7 @@ public:
 	 */
 	double locusPos(UINT loc) const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"locusPos: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		CHECKRANGEABSLOCUS(loc);
@@ -585,7 +581,7 @@ public:
 	 */
 	UINT numChrom() const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"numChrom: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		return s_genoStruRepository[m_genoStruIdx].m_numLoci.size();
@@ -604,7 +600,7 @@ public:
 	 */
 	UINT chromBegin(UINT chrom) const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"chromBegin: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		CHECKRANGECHROM(chrom);
@@ -618,7 +614,7 @@ public:
 	 */
 	UINT chromEnd(UINT chrom) const
 	{
-		DBG_FAILIF(m_genoStruIdx == TraitMaxIndex, SystemError,
+		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"chromEnd: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
 		CHECKRANGECHROM(chrom);

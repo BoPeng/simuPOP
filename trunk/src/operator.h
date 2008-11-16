@@ -165,7 +165,8 @@ public:
 	             int rep, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
 		m_flags(0), m_rep(rep),
-		m_ostream(output, outputExpr), m_infoFields(infoFields)
+		m_ostream(output, outputExpr), m_infoFields(infoFields),
+		m_lastPop(MaxTraitIndex)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
 
@@ -358,18 +359,12 @@ public:
 
 
 	/// apply to one population. It does not check if the operator is activated.
-	virtual bool apply(population & pop)
-	{
-		throw SystemError("This function Operator::apply() is not supposed to be called.");
-	}
+	virtual bool apply(population & pop);
 
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad = NULL, individual * mom = NULL)
-	{
-		throw SystemError("ApplyDuringMating: This function is not supposed to be called.");
-	}
+	                               individual * dad = NULL, individual * mom = NULL);
 
 
 	//@}
@@ -444,6 +439,7 @@ public:
 		return m_ostream.noOutput();
 	}
 
+	virtual void initialize(const population & pop) {}
 
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc
@@ -489,6 +485,12 @@ private:
 
 	/// information fields that will be used by this operator
 	vectorstr m_infoFields;
+
+	/// last population to which this operator is applied.
+	/// If the population is changed, the operator needs to be
+	/// re-initialized.
+	size_t m_lastPop;
+	
 };
 
 typedef std::vector< baseOperator * > vectorop;
