@@ -34,6 +34,7 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add simuProgress class to simuUtl.
   - CHG: Remove simulator::applyOpToStoppedReps and simulator::stopIfOneRepStops
   - NEW: Add StopEvolution exception and add simulator::stopIfOneRepStops to terminators.
+  - CHG: Remove operator continueIf.
 
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
