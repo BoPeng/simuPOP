@@ -132,8 +132,32 @@ void baseOperator::setFlags()
 }
 
 
+bool baseOperator::apply(population & pop)
+{
+	if (m_lastPop != pop.genoStruIdx()) {
+		initialize(pop);
+		m_lastPop = pop.genoStruIdx();
+	}
+	return true;
+}
+
+
+bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
+	                               individual * dad, individual * mom)
+{
+	if (m_lastPop != pop.genoStruIdx()) {
+		initialize(pop);
+		m_lastPop = pop.genoStruIdx();
+	}
+	return true;
+}
+
+
 bool pause::apply(population & pop)
 {
+	// call initialize if needed.
+	baseOperator::apply(pop);
+
 	char a;
 
 	if (m_stopOnKeyStroke) {

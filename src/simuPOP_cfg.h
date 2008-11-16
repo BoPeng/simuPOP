@@ -142,6 +142,9 @@ enum ChromType {
     Mitochondrial = 4
 };
 
+typedef unsigned char TraitIndexType;
+const unsigned long MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+
 
 // iteratable and visible are two different concepts.
 // When a population is activated by setting the visible flag
