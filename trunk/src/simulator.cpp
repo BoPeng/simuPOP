@@ -33,12 +33,8 @@ namespace simuPOP {
 
 simulator::simulator(const population & pop,
                      mating & matingScheme,
-                     bool stopIfOneRepStops,
-                     bool applyOpToStoppedReps,
                      int rep)
-	: m_gen(0), m_curRep(0), m_numRep(rep),
-	m_stopIfOneRepStops(stopIfOneRepStops),
-	m_applyOpToStoppedReps(applyOpToStoppedReps)
+	: m_gen(0), m_curRep(0), m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
 		"Number of replicates should be greater than or equal one.");
@@ -111,9 +107,7 @@ simulator::simulator(const simulator & rhs) :
 	m_matingScheme(NULL),
 	m_numRep(rhs.m_numRep),
 	m_ptrRep(NULL),
-	m_scratchPop(NULL),
-	m_stopIfOneRepStops(rhs.m_stopIfOneRepStops),
-	m_applyOpToStoppedReps(rhs.m_applyOpToStoppedReps)
+	m_scratchPop(NULL)
 {
 	m_matingScheme = rhs.m_matingScheme->clone();
 	m_scratchPop = rhs.m_scratchPop->clone();
@@ -200,40 +194,12 @@ void simulator::setMatingScheme(const mating & matingScheme)
 	m_matingScheme = matingScheme.clone();
 }
 
-bool simulator::evolve(const vectorop & ops,
+
+vectoru simulator::evolve(const vectorop & ops,
                        const vectorop & preOps,
                        const vectorop & postOps,
-                       int steps, bool dryrun)
+                       int gens, bool dryrun)
 {
-	// it is possible that a user changes the internal population's
-	// genotype strucutre. It is therefore necessary to check if
-	// all populations have the same structure.
-#ifndef OPTIMIZED
-	for (size_t i = 0; i < m_numRep; ++i) {
-		DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
-			ValueError, "Genotypic structure of one of the \n"
-			            "replicates does not agree with the simulator. It is likely that you\n"
-			            "have changed the genotypic structure of a population obtained from \n"
-			            "simu::population(rep). This is not allowed.\n");
-	}
-	DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
-		ValueError, "Genotypic structure of one of the \n"
-		            "replicates does not agree with the simulator. It is likely that you\n"
-		            "have changed the genotypic structure of a population obtained from \n"
-		            "simu::population(rep). This is not allowed.\n");
-#endif
-
-	// does not evolve.
-	if (steps == 0)
-		return true;
-
-	int end = -1;
-	if (steps > 0)
-		end = gen() + steps - 1;
-
-	DBG_FAILIF(end < 0 && ops.empty(), ValueError,
-		"Evolve with unspecified ending generation should have at least one terminator (operator)");
-
 	vectorop preMatingOps, durmatingOps, postMatingOps, activeDurmatingOps;
 
 	for (size_t i = 0; i < ops.size(); ++i) {
@@ -257,33 +223,89 @@ bool simulator::evolve(const vectorop & ops,
 			"Operator " + ops[i]->__repr__() + " is not compatible.");
 	}
 
-	InitClock();
-
-	if (dryrun)
+	if (dryrun) {
 		cout << "Dryrun mode: display calling sequence" << endl;
+		if (!preOps.empty() ) {
+			cout << "Apply pre-evolution operators" << endl;
+			apply(preOps, true);
+		}
+		cout << "Start evolution" << endl;
+
+		for (m_curRep = 0; m_curRep < m_numRep; m_curRep++) {
+			cout << "  Replicate " << m_curRep << endl;
+			// apply pre-mating ops to current gen()
+			if (!preMatingOps.empty()) {
+				cout << "    Pre-mating operators" << endl;
+				for (size_t it = 0; it < preMatingOps.size(); ++it)
+					if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0,true) )
+						cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
+			}
+			cout << "    Start mating" << endl;
+			for (vectorop::iterator op = durmatingOps.begin(), opEnd = durmatingOps.end();
+			     op != opEnd; ++op)
+				cout << "      - " << (*op)->__repr__() << (*op)->atRepr() << endl;
+			// apply post-mating ops to next gen()
+			if (!postMatingOps.empty()) {
+				cout << "    Apply post-mating operators" << endl;
+				for (size_t it = 0; it < postMatingOps.size(); ++it)
+					if (postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, true) )
+						cout << "      - " << postMatingOps[it]->__repr__() << postMatingOps[it]->atRepr() << endl;
+			}
+		}
+		if (!postOps.empty() ) {
+			cout << "Apply post-evolution operators: " << endl;
+			apply(postOps, true);
+		}
+		return vectoru(0, m_numRep);
+	}
+
+	// it is possible that a user changes the internal population's
+	// genotype strucutre. It is therefore necessary to check if
+	// all populations have the same structure.
+#ifndef OPTIMIZED
+	for (size_t i = 0; i < m_numRep; ++i) {
+		DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
+			ValueError, "Genotypic structure of one of the \n"
+			            "replicates does not agree with the simulator. It is likely that you\n"
+			            "have changed the genotypic structure of a population obtained from \n"
+			            "simu::population(rep). This is not allowed.\n");
+	}
+	DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
+		ValueError, "Genotypic structure of one of the \n"
+		            "replicates does not agree with the simulator. It is likely that you\n"
+		            "have changed the genotypic structure of a population obtained from \n"
+		            "simu::population(rep). This is not allowed.\n");
+#endif
+	// evolved generations, which will be returned.
+    vectoru evolvedGens(m_numRep, 0U);
+
+	// does not evolve.
+	if (gens == 0)
+		return evolvedGens;
+
+	int end = -1;
+	if (gens > 0)
+		end = gen() + gens - 1;
+
+	DBG_FAILIF(end < 0 && ops.empty(), ValueError,
+		"Evolve with unspecified ending generation should have at least one terminator (operator)");
+
+	InitClock();
 
 	// appy pre-op, most likely initializer. Do not check if they are active
 	// or if they are successful
-	if (!preOps.empty() ) {
-		if (dryrun)
-			cout << "Apply pre-evolution operators" << endl;
-		apply(preOps, dryrun);
-	}
+	if (!preOps.empty())
+		apply(preOps, false);
 
 	ElapsedTime("PreopDone");
 
-	vector < bool > stop(m_numRep);
-	fill(stop.begin(), stop.end(), false);
+	vector<bool> stopped(m_numRep);
+	fill(stopped.begin(), stopped.end(), false);
 	UINT numStopped = 0;
-
-	// start the evolution loop
-	if (dryrun)
-		cout << "Start evolution" << endl;
 
 	while (1) {
 		// starting a new gen
-		if (!dryrun)
-			setGen(m_gen);
+		setGen(m_gen);
 
 		// save refcount at the beginning
 #ifdef Py_REF_DEBUG
@@ -294,14 +316,8 @@ bool simulator::evolve(const vectorop & ops,
 			DBG_ASSERT(static_cast<int>(m_curRep) == curpopulation().rep(), SystemError,
 				"Replicate number does not match");
 
-			if (dryrun)
-				cout << "  Replicate " << m_curRep << endl;
-
-			if (stop[m_curRep]) {
-				// if apply to stopped reps, do it.
-				if (!m_applyOpToStoppedReps)
-					continue;
-			}
+			if (stopped[m_curRep])
+				continue;
 
 			// set selection off so that all selector has to be preMating
 			// that is to say, if some one set selection=True in a post mating opertor
@@ -315,16 +331,7 @@ bool simulator::evolve(const vectorop & ops,
 
 			// apply pre-mating ops to current gen()
 			if (!preMatingOps.empty()) {
-				if (dryrun)
-					cout << "    Pre-mating operators" << endl;
-
 				for (it = 0; it < preMatingOps.size(); ++it) {
-					if (dryrun) {
-						if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0,true) )
-							cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
-						continue;
-					}
-
 					if (!preMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end))
 						continue;
 
@@ -333,11 +340,17 @@ bool simulator::evolve(const vectorop & ops,
 							DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep()) << endl);
 
-							if (!stop[m_curRep]) {
+							if (!stopped[m_curRep]) {
 								numStopped++;
-								stop[m_curRep] = true;
+								stopped[m_curRep] = true;
 							}
 						}
+                    } catch (StopEvolution e) {
+                        DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
+							<< "Pre-mating Operator " + preMatingOps[it]->__repr__() +
+								" stops at replicate " + toStr(curRep()) << endl);
+                        fill(stopped.begin(), stopped.end(), true);
+                        numStopped = stopped.size();
 					} catch (...) {
 						cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
@@ -348,15 +361,9 @@ bool simulator::evolve(const vectorop & ops,
 
 			// start mating:
 			// find out active during-mating operators
-			if (dryrun)
-				cout << "    Start mating" << endl;
-
 			activeDurmatingOps.clear();
 			for (vectorop::iterator op = durmatingOps.begin(), opEnd = durmatingOps.end();
 			     op != opEnd; ++op) {
-				if (dryrun)
-					cout << "      - " << (*op)->__repr__() << (*op)->atRepr() << endl;
-
 				if ( (*op)->isActive(m_curRep, m_numRep, m_gen, end))
 					activeDurmatingOps.push_back(*op);
 			}
@@ -366,11 +373,14 @@ bool simulator::evolve(const vectorop & ops,
 					DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
 						+ toStr(curRep()) << endl);
 
-					if (!stop[m_curRep]) {
-						numStopped++;
-						stop[m_curRep] = true;
-					}
+					numStopped++;
+					stopped[m_curRep] = true;
 				}
+            } catch (StopEvolution e) {
+                DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
+				<< "During-mating Operator at replicate " + toStr(curRep()) << endl);
+                    fill(stopped.begin(), stopped.end(), true);
+                     numStopped = stopped.size();
 			} catch (...) {
 				cout << "mating or one of the during mating operator throws an exception." << endl << endl;
 				throw;
@@ -380,17 +390,7 @@ bool simulator::evolve(const vectorop & ops,
 
 			// apply post-mating ops to next gen()
 			if (!postMatingOps.empty()) {
-				if (dryrun)
-					cout << "    Apply post-mating operators" << endl;
-
 				for (it = 0; it < postMatingOps.size(); ++it) {
-
-					if (dryrun) {
-						if (postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, true) )
-							cout << "      - " << postMatingOps[it]->__repr__() << postMatingOps[it]->atRepr() << endl;
-						continue;
-					}
-
 					if (!postMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end))
 						continue;
 
@@ -398,12 +398,15 @@ bool simulator::evolve(const vectorop & ops,
 						if (!postMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PostMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep()) << endl);
-
-							if (!stop[m_curRep]) {
-								numStopped++;
-								stop[m_curRep] = true;;
-							}
+							numStopped++;
+							stopped[m_curRep] = true;;
 						}
+                    } catch (StopEvolution e) {
+                        DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
+							<< "Post-mating Operator " + postMatingOps[it]->__repr__() +
+								" stops at replicate " + toStr(curRep()) << endl);
+                        fill(stopped.begin(), stopped.end(), true);
+                        numStopped = stopped.size();
 					} catch (...) {
 						cout << "PostMating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
@@ -413,46 +416,31 @@ bool simulator::evolve(const vectorop & ops,
 			}                                                                                   // post mating ops
 		}                                                                                       // each replicates
 
-		if (dryrun)
-			break;
-
-		// if one replicate stop and stopIfOneRepStops is set,
-		// or if all replicates stop, or reach ending gen, stop iteration.
-		// count the number of stopped replicates
-		DBG_DO(DBG_SIMULATOR, cout << endl << "Number of stopped replicates: " << numStopped << endl);
-
 #ifdef Py_REF_DEBUG
 		checkRefCount();
 #endif
 
-		m_gen++;                                                                  // increase generation!
-		// only if m_gen > end will simulation stop
-		// that is to say, the ending generating will be executed
+		++m_gen;                                                                  // increase generation!
+		++evolvedGens[m_curRep];
+		--gens;
 		//
-		//   start 0, end = 1
+		//   start 0, gen = 2
 		//   0 -> 1 -> 2 stop (two generations)
 		//
 		//   step:
 		//    cur, end = cur +1
 		//    will go two generations.
 		//  therefore, step should:
-		if ( (numStopped >= 1 && m_stopIfOneRepStops)
-		    || numStopped >= m_numRep || (end >= 0
-		                                  && gen() > static_cast<UINT>(end)))
+		if (numStopped == m_numRep || gens == 0)
 			break;
 	}                                                                                         // the big loop
 
-	if (!postOps.empty() ) {
-		if (dryrun)
-			cout << "Apply post-evolution operators: " << endl;
-
-		// finishing up, apply post-op
-		apply(postOps, dryrun);
-	}
+	if (!postOps.empty())
+		apply(postOps, false);
 
 	// close every opened file (including append-cross-evolution ones)
 	ostreamManager().closeAll();
-	return true;
+	return evolvedGens;
 }
 
 

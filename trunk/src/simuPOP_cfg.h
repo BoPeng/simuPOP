@@ -280,6 +280,16 @@ public:
 	};
 };
 
+/// exception, throw if an operator would like to stop
+/// all replicates.
+class StopEvolution : public Exception
+{
+public:
+	StopEvolution(string msg) : Exception(msg)
+	{
+	};
+};
+
 /// exception, thrown if system error occurs
 class SystemError : public Exception
 {
