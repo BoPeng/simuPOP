@@ -203,7 +203,7 @@ void simulator::setMatingScheme(const mating & matingScheme)
 bool simulator::evolve(const vectorop & ops,
                        const vectorop & preOps,
                        const vectorop & postOps,
-                       int end, int steps, bool dryrun)
+                       int steps, bool dryrun)
 {
 	// it is possible that a user changes the internal population's
 	// genotype strucutre. It is therefore necessary to check if
@@ -223,24 +223,13 @@ bool simulator::evolve(const vectorop & ops,
 		            "simu::population(rep). This is not allowed.\n");
 #endif
 
-	DBG_DO(DBG_SIMULATOR, cout << "Starting generation: " << gen()
-		                       << " with ending generation " << end << endl);
-
-	DBG_FAILIF(end >= 0 && steps >= 0, ValueError,
-		"Please specify only one of parameters end or gen");
-
-	DBG_DO(DBG_GENERAL, cout << ((steps == -1 && end != -1) ?
-		"Parameter end is obsolete in simulator::evolve(), please use gen instead.\n" : ""));
-
 	// does not evolve.
 	if (steps == 0)
 		return true;
 
+	int end = -1;
 	if (steps > 0)
 		end = gen() + steps - 1;
-
-	DBG_FAILIF(end > 0 && gen() > static_cast<UINT>(end), ValueError,
-		"population gen is already greater than ending generation.");
 
 	DBG_FAILIF(end < 0 && ops.empty(), ValueError,
 		"Evolve with unspecified ending generation should have at least one terminator (operator)");

@@ -264,23 +264,6 @@ public:
 	}
 
 
-	/// evolve \c steps generation
-	/**
-	 \sa simulator::evolve()
-	 */
-	bool step(const vectorop & ops = vectorop(),
-	          const vectorop & preOps = vectorop(),
-	          const vectorop & postOps = vectorop(), UINT steps = 1,
-	          bool dryrun = false)
-	{
-		// since end gen itself will be executed
-		// cur = 5,
-		// end = 6
-		// will go two steps.
-		return evolve(ops, preOps, postOps, -1, steps, dryrun);
-	}
-
-
 	/// evolve all replicates of the population, subject to operators
 	/**
 	   Evolve to the \c end generation unless \c end=-1. An operator (terminator)
@@ -316,7 +299,7 @@ public:
 	bool evolve(const vectorop & ops,
 		const vectorop & preOps = vectorop(),
 		const vectorop & postOps = vectorop(),
-		int end = -1, int gen = -1, bool dryrun = false);
+		int gen = -1, bool dryrun = false);
 
 	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
 	/**
