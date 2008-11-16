@@ -44,29 +44,19 @@ from simuPOP import *
 
 #file log/simpleExample.log
 from simuPOP import *
-from simuRPy import *
-simu = simulator(
-    population(size=1000, ploidy=2, loci=[2]),
-    randomMating(),
-    rep = 3)
+pop = population(size=1000, loci=[2])
+simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
     preOps = [initByValue([1,2,2,1])],  
     ops = [
-        recombinator(rate=0.1),
+        recombinator(rate=0.01),
         stat(LD=[0,1]),
-        varPlotter('LD[0][1]', numRep=3,
-                   ylim=[0,.25], xlab='generation',
-                   ylab='D', title='LD Decay'),
-        pyEval(r"'%3d   ' % gen", rep=0, step=25),
-        pyEval(r"'%f    ' % LD[0][1]", step=25),
-        pyEval(r"'\n'", rep=REP_LAST, step=25)
+        pyEval(r"'%.2f\t' % LD[0][1]", step=10),
+        pyOutput('\n', rep=REP_LAST, step=10)
     ],
     gen=100
 )
-r.dev_print(file='log/LDdecay.eps')
 #end
-#PS epstopdf log/LDdecay.eps
-r.dev_off()
 
 
 #file log/genoStru.log

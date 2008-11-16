@@ -289,97 +289,200 @@ What is simuPOP?
 \end_layout
 
 \begin_layout Standard
+simuPOP is an individual-based forward-time population genetics simulation
+ environment based on Python, a dynamic object-oriented programming language
+ that has been widely used in biological studies.
+ simuPOP provides a large number of Python objects and functions, and a
+ mechanism to evolve populations forward in time.
+ It is the users’ responsibility to write a Python script to form a simulation.
+ At a more user-friendly level, simuPOP provides an increasing number of
+ built-in scripts so that users who are unfamiliar with Python and simuPOP
+ can perform some pre-specified simulation processes.
+ These scripts range from implementation of basic population genetics models
+ to generating datasets under complex evolutionary scenarios.
+ In addition, simuPOP modules and functions are provided to load and manipulate
+ HapMap samples and to perform a number of popular gene-mapping methods.
+\end_layout
 
-\family typewriter
-simuPOP
-\family default
- is a forward-time population genetics simulation environment.
- Unlike coalescent-based simulation programs, simuPOP evolves population(s)
- forward in time, subject to arbitrary number of genetic and environmental
- forces (mutation, recombination, migration, population size change etc.).
- simuPOP allows users to control every aspects of the evolutionary process
- and observe the details at each generation.
- For example, users can start with a population of identical individuals,
- manually introduce a mutant and observe the spread of this mutant in the
- population from generation to generation.
- Population substructure, recombination, migration, selection etc can be
- added to the simulation as needed.
+\begin_layout Standard
+Unlike other population genetics simulation applications that aim at specific
+ evolutionary scenarios, simuPOP aims at providing a general purpose simulation
+ program that can be used to write and study arbitrarily complex evolutionary
+ scenarios.
+ This makes simuPOP an ideal tool in a wide variety of applications ranging
+ from demonstrating simple population genetics models to studying the evolution
+ of complex human genetic diseases.
+\end_layout
+
+\begin_layout Section
+An overview of simuPOP concepts
+\end_layout
+
+\begin_layout Standard
+A simuPOP 
+\emph on
+population
+\emph default
+ consists of individuals of the same 
+\emph on
+genotype structure
+\emph default
+, which include properties such as number of homologous sets of chromosomes
+ (ploidy), number of chromosomes, and names and locations of markers on
+ each chromosome.
+ Individuals can be divided into 
+\emph on
+subpopulations
+\emph default
+ that can be further divided into
+\emph on
+ virtual subpopulations
+\emph default
+ according to individual properties such as sex, affection status, or arbitrary
+ auxiliary information such as age.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Operators
+\emph default
+ are Python objects that act on a population.
+ They can be applied to a population before or after mating during a life
+ cycle of an evolutionary process (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:life-cycle"
+
+\end_inset
+
+), or to one or two parents during the production of each offspring.
+ Arbitrary numbers of operators can be applied to an evolving population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:life-cycle"
+
+\end_inset
+
+A life cycle of an evolutionary process
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename evolve.png
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A simuPOP 
+\emph on
+mating scheme
+\emph default
+ is responsible for choosing parent or parents from a parental (virtual)
+ subpopulation and for populating an offspring subpopulation.
+ simuPOP provides a number of pre-defined mating schemes, such as random,
+ consanguineous, monogamous, or polygamous mating, selfing, and haplodiploid
+ mating in hymenoptera.
+ More complicated nonrandom mating schemes such as mating in age-structured
+ populations can be constructed using 
+\emph on
+heterogeneous mating schemes
+\emph default
+.
  
 \end_layout
 
 \begin_layout Standard
-simuPOP consists of a number of Python objects and functions, including
- populations that store and provide access to individual genotypes; mating
- schemes that determine how populations evolve to the next generation; operators
- that manipulate populations and calculate population statistics; simulators
- that coordinate the evolution process and functions that perform tasks
- ranging from saving/loading populations to doing gene mapping.
- It is user's responsibility to write a Python script to glue these pieces
- together and form a simulation.
- Since these modules are mostly independent to each other, it is easy to
- add additional operators to an existing simulation.
- There is no limit on the number of operators, and thus no limit on the
- complexity of a simulation.
+simuPOP evolves a population generation by generation, following the evolutionar
+y cycle depicted in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:life-cycle"
+
+\end_inset
+
+.
+ Briefly speaking, a number of 
+\emph on
+pre-mating operators
+\emph default
+ such as a 
+\emph on
+mutator
+\emph default
+ are applied to a population before a mating scheme repeatedly chooses a
+ parent or parents to produce offspring.
+ During-mating operators such as 
+\emph on
+recombinator
+\emph default
+ can be used to adjust how offspring genotypes are formed from parental
+ genotypes.
+ After an offspring population is populated, post-mating operators can be
+ applied, for example, to calculate population statistics.
+ The offspring population will then become the parental population of the
+ next evolutionary cycle.
 \end_layout
 
 \begin_layout Standard
-simuPOP does not aim at any specific result or outcome.
- It is more like a workshop, where users use various components and tools
- to assemble a simulation and study its properties, or manipulated populations
- without evolving them.
- Just like any such programming environments such as R/Splus and Matlab,
- users will have to learn how to use the environment (various Python IDE)
- and how to program in this language (Python and the simuPOP module).
- A graphic user interface of simuPOP is planned but its usefulness is in
- doubt (just like the R/GUI) and will not be available any time soon.
+
+\end_layout
+
+\begin_layout Standard
+These concepts are demonstrated in Example 1, where a standard diploid Wright-Fi
+sher model with recombination is simulated.
+ The first line imports the standard simuPOP module.
+ The second line creates a diploid population with 1000 individuals, each
+ having one chromosome with two loci.
+ The third line creates a simulator with three replicates of this population.
+ Random mating will be used to generate offspring.
+ The last statement uses the evolve() function to evolve the populations
+ for 100 generations, subject to five operators.
  
 \end_layout
 
 \begin_layout Standard
-On the other hand, simuPOP also has an increasing number of built-in scripts.
- These script are written in simuPOP/Python language and can be used without
- knowing their underlying mechanism.
- It is strongly recommended that users of simuPOP submit their own scripts
- to his collection and so other users can learn and adapt their own simulations
- from these scripts.
-\end_layout
-
-\begin_layout Standard
-As a summary, simuPOP is suitable for the following applications:
-\end_layout
-
-\begin_layout Itemize
-Teaching tool for population genetics courses.
- Compared to other existing programs, the biggest advantage of simuPOP is
- its flexibility.
- There is no limit on the complexity of the simulation and students can
- change the script and try new things (such as viewing another statistics
- or adding another genetic force) at will.
-\end_layout
-
-\begin_layout Itemize
-Observe dynamics of population evolution.
- This is where the power of simuPOP lies and is where coalescent-based simulatio
-ns frown.
- Coalescent, by its nature, focus only on samples, and ignore genealogy
- information that are irrelevant to the present generation.
- It is therefore impractical to trace the population properties of ancestral
- populations.
- Forward-based simulation does not have this problem, at a cost of performance.
-\end_layout
-
-\begin_layout Itemize
-Generating samples that can be analyzed by other programs.
- This area is dominated by coalescent-based methods, but the facts that
- coalescent-based methods can not simulate complex (non-additive) selection
- or penetrance models and supports, at least till now, only one disease
- susceptibility locus, make it unsuitable to simulate the evolution of complex
- human diseases.
- A simuPOP script 
-\family typewriter
-simuComplexDisease.py
-\family default
- provides a powerful alternative.
+The first operator initByValue is applied to all populations before evolution.
+ This operator initializes all individuals with the same genotype 12/21.
+ The other operators can be applied at every generation.
+ recombinator is a during-mating operator that recombines parental chromosomes
+ with the given recombination rate 0.01 during the generation of offspring;
+ stat calculates linkage disequilibrium between the first and second loci.
+ The result of this operator will be stored in a local variable space of
+ each population.
+ The last two operators pyEval and pyOutput are applied every 10 generations.
+ pyEval is applied to all replicates to output calculated linkage disequilibrium
+ values with a trailing tab, and the last operator outputs a newline after
+ the last replicate.
+ The result is a table of three columns, representing the decay of linkage
+ disequilibrium of each replicate at 10 generation intervals.
 \end_layout
 
 \begin_layout Section
@@ -387,224 +490,215 @@ Features
 \end_layout
 
 \begin_layout Standard
-Currently, simuPOP provides the following features:
-\end_layout
-
-\begin_layout Itemize
-Populations with arbitrary subpopulation structure.
- Sex chromosome is modeled.
-\end_layout
-
-\begin_layout Itemize
-Arbitrary information, such as age, fitness, parents, can be attached to
- each individual.
-\end_layout
-
-\begin_layout Itemize
-There is no limit on ploidy, number of chromosomes, number of loci and populatio
-n size.
- For single-CPU versions of simuPOP, the size of population is limited by
- available RAM.
- The MPI version of simuPOP can spread populations to a cluster of machines
- and allows simulations of huge populations.
-\end_layout
-
-\begin_layout Itemize
-Allele can be short (<255 allelic states), long ( 
-\begin_inset Formula $2^{16}$
-\end_inset
-
- allelic states) or binary (0 or 1).
- Binary alleles are stored as bits so a large number of SNP markers can
- be simulated.
-\end_layout
-
-\begin_layout Itemize
-A population can hold arbitrary number of ancestral generations (default
- to none) for easy pedigree analyses.
- 
-\end_layout
-
-\begin_layout Itemize
-Population/subpopulation sizes can be changed during mating.
- Subpopulations can be created/changed as a result of migration.
- 
-\end_layout
-
-\begin_layout Itemize
-Several replicates of populations can be evolved simultaneously.
- 
-\end_layout
-
-\begin_layout Itemize
-Mating schemes include random mating, binomial selection etc.
- Number of offspring per mating can be constant, or follow a random distribution.
-\end_layout
-
-\begin_layout Itemize
-Populations can be saved and loaded in text, binary, XML, Fstat, GC formats.
- Methods to deal with other formats are provided.
- 
-\end_layout
-
-\begin_layout Itemize
-Simulation can be paused, saved and resumed easily.
-\end_layout
-
-\begin_layout Itemize
-Easy developing/debugging using Python interactive shell, or run in batch
- as python scripts.
-\end_layout
-
-\begin_layout Itemize
-A wide variety of operators are provided.
- They can act on the populations at selected generations, at different stages
- of a life-cycle, on different replicate.
- 
-\end_layout
-
-\begin_layout Itemize
-Built-in operators for arbitrary migration model.
-\end_layout
-
-\begin_layout Itemize
-Operators for 
-\begin_inset Formula $k$
-\end_inset
-
--allele, stepwise and generalized stepwise mutation models.
- Hybrid operators can be used for more complicated mutation models.
-\end_layout
-
-\begin_layout Itemize
-Support uniform or non-uniform (differ-by-loci) recombinations.
- Male/female individuals can have different recombination rates/intensities.
- 
-\end_layout
-
-\begin_layout Itemize
-Support many single-locus selection model and multiplicative/additive multi-loci
- selection models.
- Hybrid operator is provided for arbitrary selection model.
-\end_layout
-
-\begin_layout Itemize
-Built-in support for allele, genotype, heterozygote, haplotype number/frequency
- calculation.
- As well as some more complicated statistics like 
-\begin_inset Formula $F_{st}$
-\end_inset
-
-.
- Other statistics can be calculated from these basic statistics.
-\end_layout
-
-\begin_layout Itemize
-Has support for plotting through RPy (use R through Python).
- Other methods are supported.
-\end_layout
-
-\begin_layout Itemize
-Operators to calculate quantitative trait, penetrance and draw samples from
- current population.
-\end_layout
-
-\begin_layout Itemize
-Built-in ascertainment methods including case/control, affected sibpair,
- random sample.
-\end_layout
-
-\begin_layout Itemize
-Maybe most importantly: 
-\emph on
-a complete and detailed reference manual!
-\end_layout
-
-\begin_layout Itemize
-selfing is introduced as a way to produce offspring from a parent
-\end_layout
-
-\begin_layout Itemize
-pyMating can work with different, including a hybrid, parent choosers and
- different offspring generator including selfing.
-\end_layout
-
-\begin_layout Itemize
-recombinator and gene conversion.
-\end_layout
-
-\begin_layout Itemize
-allow different ways to specify offspring sex.
-\end_layout
-
-\begin_layout Section
-Naming Conventions
+simuPOP offers a long list of features, many of which are unique among all
+ forward-time population genetics simulation programs.
+ The most distinguished features include:
 \end_layout
 
 \begin_layout Standard
-
-\family typewriter
-simuPOP
-\family default
- follows the following naming conventions.
+1.
+ simuPOP provides three types of modules that use 1, 8 or 16 bits to store
+ an allele.
+ The binary module (1 bit) is suitable for simulating a large number of
+ SNP markers and the long module (16 bits) is suitable for simulating some
+ population genetics models such as the infinite allele mutation model.
 \end_layout
 
-\begin_layout Itemize
-Classes (objects), member functions and parameter names start with small
- character and use capital character for the first character of each word
- afterward.
- For example
+\begin_layout Standard
+2.
+ An arbitrary number of float numbers, called information fields, can be
+ attached to individuals of a population.
+ For example, information field father_idx and mother_idx are used to track
+ an individual’s parents, and pack_year can be used to simulate an environmental
+ factor associated with smoking.
 \end_layout
 
-\begin_layout LyX-Code
-population, population::subPopSize(), individual::setInfo()
+\begin_layout Standard
+3.
+ simuPOP does not impose any limit on number of homologous sets of chromosomes,
+ the size of the genome, or the number of individuals in a population.
+ During an evolutionary process, a population can hold more than one most-recent
+ generations.
+ Pedigrees can be sampled from such multi-generation populations.
 \end_layout
 
-\begin_layout Itemize
-Standalone functions start with capital character.
- This is how you can differ an operator from its function version.
- For example, 
-\family typewriter
-initByFreq(vars)
-\family default
- is an operator and 
-\family typewriter
-InitByFreq(pop, vars)
-\family default
- is its function version (equivalent to 
-\family typewriter
-initByFreq(vars).apply(pop)
-\family default
-).
+\begin_layout Standard
+4.
+ An operator can be native (implemented in C++) or hybrid (Python assisted).
+ A hybrid operator calls a user-provided Python function to implement arbitrary
+ genetic effects.
+ For example, a hybrid mutator passes to-be-mutated alleles to a user-provided
+ function and mutates these alleles according to the returned values.
 \end_layout
 
-\begin_layout Itemize
-Constants start with Capital characters.
- For example
+\begin_layout Standard
+5.
+ simuPOP provides more than 70 operators that cover all important aspects
+ of genetic studies.
+ These include mutation (k-allele, stepwise, generalized stepwise and hybrid),
+ migration (arbitrary, can create new subpopulation), recombination and
+ gene conversion (uniform or nonuniform, sex-specific), quantitative trait
+ (single, multilocus or hybrid), selection (single-locus, additive, multiplicati
+ve or hybrid multi-locus models), penetrance (single, multi-locus or hybrid),
+ ascertainment (case–control, affected sibpairs, random, nuclear and large
+ pedigree), statistics calculation (including but not limited to allele,
+ genotype, haplotype, heterozygote number and frequency; expected heterozygosity
+; bi-allelic and multi-allelic , and linkage disequilibrium measures; and
+ [78]), pedigree tracing, visualization (using R or other Python modules)
+ and load/save in simuPOP’s native format and many external formats such
+ as Linkage.
 \end_layout
 
-\begin_layout LyX-Code
-MigrByProportion, StatNumOfFemale
+\begin_layout Standard
+6.
+ Mating schemes can work on virtual subpopulations of a subpopulation.
+ For example, positive assortative mating can be implemented by mating individua
+ls with similar properties such as ancestry.
+ The number of offspring per mating event can be fixed, or can follow a
+ statistical distribution.
 \end_layout
 
-\begin_layout Itemize
-The following words in function names are abbreviated:
+\begin_layout Standard
+Comparison to other forward-time simulation programs.
+ A number of forward-time simulation programs are available.
+ If we exclude early forward-time simulation applications developed primarily
+ for teaching purposes, notable forward-time simulation programs include
+ the following:
 \end_layout
 
-\begin_layout LyX-Code
-pos (position),  info (information), migr (migration), subPop (subpopulation),
+\begin_layout Standard
+1.
+ easyPOP [12] simulates a large number of markers in haploid, diploid or
+ haplodiploid populations.
+ It supports a number of nonrandom mating schemes but does not support selection.
+ It also lacks important features such as variable recombination rate and
+ population size.
+\end_layout
+
+\begin_layout Standard
+2.
+ FPG [85] simulates a broad range of conditions including natural selection,
+ recombination and migration.
+ However, this program is limited by the genome size it can manage because
+ it allows for a total genome length of up to 1000 segments, each limited
+ to 32 polymorphic sites.
+\end_layout
+
+\begin_layout Standard
+3.
+ Nemo [14] provides a C++ framework to simulate the evolution of traits
+ (microsatellite markers, deleterious mutations, etc) subject to a variety
+ of life-cycle events (mating, dispersal, etc).
+ quantiNemo [86] is built on nemo with emphasis on simulating the evolution
+ of quantitative traits.
+ Users can use a configuration file to select stocked models, or extend
+ Nemo at the C++ level.
+ The concepts and methods used in these programs primarily target ecology
+ applications.
+\end_layout
+
+\begin_layout Standard
+4.
+ genomeSIM [15] uses a forward-time population simulation algorithm to simulate
+ large-scale genomic data in population based case-control samples.
+ It allows users to specify many evolutionary parameters and control evolutionar
+y processes.
+ genomeSIMLA [87] extends this program to simulate populations with natural
+ LD features, which is the result of random mating, genetic drift, recombination
+, and population growth.
  
-\begin_inset Newline newline
-\end_inset
-
-(rep) replicate, gen (generation), ops (operators), 
-\begin_inset Newline newline
-\end_inset
-
-expr (expression), stmts (statements) 
 \end_layout
 
-\begin_layout Section
+\begin_layout Standard
+5.
+ FreGene [16] simulates a population of monoecious, diploid, individuals
+ whose genomes consist of a single, linear chromosome.
+ FreGene supports a number of mutation, recombination, selection (directional
+ and balancing), and demographic (constant or exponential growth) models.
+ FreGene uses a rescaling technique to scale the number of generations,
+ population size, and the rate parameters to speed up a standard Wright-Fisher
+ evolutionary process.
+\end_layout
+
+\begin_layout Standard
+6.
+ GenomePop [18] uses the same scaling technique to simulate large populations
+ and genomic regions through many generations.
+ It supports a comprehensive set of mutation and selection models, flexible
+ demographic models, and variable recombination rates.
+ It only supports random mating.
+\end_layout
+
+\begin_layout Standard
+7.
+ ForwSim [17] employees a look-ahead algorithm to look several generations
+ further into a standard Wright-Fisher process, and only simulate chromosomes
+ that will contribute material to the future generation.
+ It supports only one evolutionary scenario with a fixed mutation model,
+ even recombination and constant population size.
+\end_layout
+
+\begin_layout Standard
+8.
+ ForSim [19] simulates a general evolutionary process, allowing users to
+ specify genetic contributions and interactions, environmental effects,
+ multigenic traits and simple networks of genetic contributions, quantitative
+ effects of genes and environments, and flexible phenotype-based selection
+ models.
+ It also supports simple nonrandom mating schemes such as assortative mating.
+\end_layout
+
+\begin_layout Standard
+These programs are designed with specific applications and specific evolutionary
+ scenarios in mind, and excel in what they are designed for.
+ For some applications, these programs may be easier to use than simuPOP.
+ For example, ForwSim is among the fastest programs to simulate a standard
+ Wright-Fisher process, and should be used if such a simulation is needed.
+ However, these programs are not flexible enough to be applied to problems
+ outside of their designed application area.
+ For example, none of these programs can be used to study the evolution
+ of a disease predisposing mutant, a process that is of great importance
+ in statistical genetics and genetic epidemiology.
+ Compared to such programs, simuPOP has the following advantages:
+\end_layout
+
+\begin_layout Standard
+1.
+ The scripting interface gives simuPOP the flexibility to create arbitrarily
+ complex evolutionary scenarios.
+ For example, it is easy to use simuPOP to explicitly introduce a disease
+ predisposing mutant to an evolving population, trace the allele frequency
+ of them, and restart the simulation if they got lost due to genetic drift.
+\end_layout
+
+\begin_layout Standard
+2.
+ The Python interface allows users to define customized genetic effects
+ in Python.
+ In contrast, other programs either do not allow customized effects or force
+ users to modify code at a lower (e.g.
+ C++) level.
+\end_layout
+
+\begin_layout Standard
+3.
+ simuPOP is the only application that embodies the concept of virtual subpopulat
+ion that allows evolutions at a finer scale.
+ This is required for realistic simulations of complex evolutionary scenarios.
+\end_layout
+
+\begin_layout Standard
+4.
+ simuPOP allows users to examine an evolutionary process very closely because
+ all simuPOP objects are Python objects that can be assessed using their
+ member functions.
+ For example, users can keep track of genotype at particular loci during
+ evolution.
+ In contrast, other programs work more or less like a black box where only
+ limited types of statistics can be outputted.
+\end_layout
+
+\begin_layout Chapter
 Installing simuPOP
 \end_layout
 
@@ -2362,6 +2456,94 @@ ticToc
  operator is better.
 \end_layout
 
+\begin_layout Section
+Naming Conventions
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuPOP
+\family default
+ follows the following naming conventions.
+\end_layout
+
+\begin_layout Itemize
+Classes (objects), member functions and parameter names start with small
+ character and use capital character for the first character of each word
+ afterward.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+population, population::subPopSize(), individual::setInfo()
+\end_layout
+
+\begin_layout Itemize
+Standalone functions start with capital character.
+ This is how you can differ an operator from its function version.
+ For example, 
+\family typewriter
+initByFreq(vars)
+\family default
+ is an operator and 
+\family typewriter
+InitByFreq(pop, vars)
+\family default
+ is its function version (equivalent to 
+\family typewriter
+initByFreq(vars).apply(pop)
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Constants start with Capital characters.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+MigrByProportion, StatNumOfFemale
+\end_layout
+
+\begin_layout Itemize
+The following words in function names are abbreviated:
+\end_layout
+
+\begin_layout LyX-Code
+pos (position),  info (information), migr (migration), subPop (subpopulation),
+ 
+\begin_inset Newline newline
+\end_inset
+
+(rep) replicate, gen (generation), ops (operators), 
+\begin_inset Newline newline
+\end_inset
+
+expr (expression), stmts (statements) 
+\end_layout
+
+\begin_layout Subsection
+Availability
+\end_layout
+
+\begin_layout Standard
+simuPOP is available on any platform where Python is available.
+ It is current tested under both 32 and 64 bits of Windows (Windows 2000
+ and later), Linux (Redhat), MacOS X and Sun Solaris systems.
+ Different C++ compilers such as Microsoft Visual C++, gcc and Intel icc
+ are supported under different operating systems.
+\end_layout
+
+\begin_layout Standard
+simuPOP is distributed under a GPL license and is hosted on sourceforge.net,
+ the world's largest development and download repository of Open Source
+ code and applications.
+ Source code and binary packages for Windows, Linux, MacOS X, and Sun Solaris
+ systems are released roughly monthly (with about 30 releases in the past
+ 3 years).
+\end_layout
+
 \begin_layout Chapter
 simuPOP components
 \end_layout
@@ -2383,352 +2565,6 @@ In this chapter, I will start from an simple example and them explain several
 simuPOP reference manual
 \emph default
 .
-\end_layout
-
-\begin_layout Section
-The simuPOP evolutionary process
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:A-Simple-Example"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-The evolutionary process
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename evolve.png
-	width 80text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "alg:A-simple-example"
-
-\end_inset
-
- is a log file of an interactive Python session.
- User input text after the 
-\family typewriter
->>>
-\family default
- prompt and Python will interpret and run your command interactively.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/simpleExample.log"
-lstparams "caption={A simple example},label={alg:A-simple-example}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This example demonstrates the dynamics of linkage disequilibrium when recombinat
-ion is in effect.
-\end_layout
-
-\begin_layout Itemize
-The 
-\family typewriter
-import
-\family default
- line import simuPOP module (output suppressed).
- 
-\family typewriter
-simuRPy
-\family default
- defines a pure-python operator 
-\family typewriter
-varPlotter
-\family default
- that plot given variable using R.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simulator
-\family default
- creates a simulator from a population created by the 
-\family typewriter
-population
-\family default
- function.
- The population is diploid (
-\family typewriter
-ploidy=2
-\family default
-), has 1000 individuals (
-\family typewriter
-size=1000
-\family default
-) each has two loci on the first chromosome (
-\family typewriter
-loci=[2]
-\family default
-).
- The simulator has three copies of this population (
-\family typewriter
-rep=3
-\family default
-) and will evolve through random mating (
-\family typewriter
-randomMating()
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simu.evolve
-\family default
- evolves these populations 100 generations subject to some operators.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-preOps=[initByValue]
-\family default
-: operators in parameter 
-\family typewriter
-preOps
-\family default
- (accept a list of operators) will be applied to the populations at the
- beginning of evolution.
- 
-\family typewriter
-initByValue
-\family default
- is an 
-\family typewriter
-initializer
-\family default
- that set the same genotype to all individuals.
- In this case, everyone will have genotype 
-\family typewriter
-12/21
-\family default
- (
-\family typewriter
-1 2
-\family default
- on the first chromosome and 
-\family typewriter
-2 1
-\family default
- on the second copy of the chromosome) so linkage disequilibrium is 0.25
- (maximum possible value).
-\end_layout
-
-\begin_layout Itemize
-operators in 
-\family typewriter
-ops
-\family default
- parameter will be applied to all populations at each generation.
- (Not exactly, operators can be inactive at certain generations.)
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-recombinator
-\family default
- is a 
-\emph on
-during-mating operator
-\emph default
- that recombine parental chromosomes with probability 0.1 during mating.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-stat
-\family default
- is a 
-\emph on
-post-mating
-\emph default
- operator.
- Parameter 
-\family typewriter
-LD=[0,1]
-\family default
- tells the operator to calculate the linkage disequilibrium between locus
- 0 and 1 (note the 0 index of loci).
- When this operator is applied to a population, it will calculate the LD
- for the population and store the result in the population's local variable
- namespace.
- For this case, variables 
-\family typewriter
-LD
-\family default
-, 
-\family typewriter
-LD_prime
-\family default
- and 
-\family typewriter
-R2
-\family default
- will be set.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-varPlotter
-\family default
- is a pure python operator that plot variable 
-\family typewriter
-LD[0][1]
-\family default
- for each replicate of the populations.
- Title, labels on the 
-\begin_inset Formula $x$
-\end_inset
-
-, 
-\begin_inset Formula $y$
-\end_inset
-
- axis, and a wealth of other options can be set.
- This operator evaluate the expression in each population's local namespace
- to get the LD value of each population.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pyEval
-\family default
- accepts any python expression, evaluate it in each replicates' local namespace
- and return the result.
- In this example, 
-\family typewriter
-pyEval
-\family default
- get the value of 
-\family typewriter
-gen
-\family default
- (generation number), 
-\family typewriter
-LD[0][1]
-\family default
- and print them.
- Note the we use 
-\family typewriter
-rep
-\family default
- parameter to let operators apply to first (
-\family typewriter
-rep=0
-\family default
-), last (
-\family typewriter
-rep=REP_LAST
-\family default
-) or all (no 
-\family typewriter
-rep
-\family default
-) replicates and result in a table.
- We also use step=25 to apply these operators at 25 generations interval.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-end=100:
-\family default
- evolve 100 generations (To be exact: 0 - 100, 101 generations).
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-r.dev_print
-\family default
-: is a direct call to the rpy module.
- This line saves the figure to a file 
-\family typewriter
-ld/LDdecay.eps
-\family default
-.
- Note that 
-\family typewriter
-'.'
-\family default
- in R function names need to be replaced by 
-\family typewriter
-'_'
-\family default
-.
- (Refer to rpy manual).
-\end_layout
-
-\begin_layout Standard
-The output is a table of LD values of each replicate at 0, 25, 50, 57 and
- 100 generations, as well as a figure at generation 100.
-\end_layout
-
-\begin_layout Standard
-Most simuPOP scripts have similar steps.
- You can add more operators to the 
-\family typewriter
-ops
-\family default
- list to build more complicated simulations.
- Obvious choices are 
-\family typewriter
-mutator
-\family default
-, 
-\family typewriter
-migrator
-\family default
-, or some proper visualizer to plot the dynamics of variables.
 \end_layout
 
 \begin_layout Section
