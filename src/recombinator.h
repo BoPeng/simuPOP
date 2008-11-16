@@ -218,6 +218,27 @@ public:
 #endif
 	}
 
+	void setupParam(const population & pop);
+
+	/** Recombine parental chromosomes of \e parent	and pass them to offspring
+	 *  \e off. The homologous chromosomes ofe parent will be recombined
+	 *  twice and form both homologous sets of the offspring, as if \e parent
+	 *  mates with itself (a selfing inheritance model). If sex chromosomes
+	 *  are present, offspring sex will be determined by which sex chromosomes
+	 *  are inherited by \e off. Random sex is assigned to \e off otherwise.
+	 */
+	void produceOffspring(const individual & parent, individual & off);
+
+	/** Recombine parental chromosomes and pass them to offspring \e off. A
+	 *  Mendelian inheritance model will be used, which recombine homologous
+	 *  sets of chromosomes of \e mom and \e dad and pass them as the first and
+	 *  second sets of homologous chromosomes to offspring \e off, respectively.
+	 *  If sex chromosomes are present, offspring sex is determined by which
+	 *  sex chromosomes are inherited by \e off. Random sex is assigned to
+	 *  \e off otherwise.
+	 */
+	void produceOffspring(const individual & mom, const individual & dad,
+		individual & off);
 
 	/// apply the recombinator during mating
 	/// CPPONLY
@@ -226,25 +247,27 @@ public:
 		individual * dad = NULL,
 		individual * mom = NULL);
 
+	
+
 private:
 	// this function implement how to recombine
 	// parental chromosomes and set one copy of offspring chromosome
 	// bt contains the bernulli trailer
 	void recombine(
-		individual * parent,                                                        // one of the parent
-		RawIndIterator & offspring,                                                 // offspring
+		const individual & parent,                                                        // one of the parent
+		individual & offspring,                                                 // offspring
 		int offPloidy,                                                              // which offspring ploidy to fill
 		BernulliTrials & bt,
 		const vectoru & recBeforeLoci,
 		bool setSex = false);
 
 	/// determine number of markers to convert
-	int markersConverted(size_t index, individual * ind);
+	int markersConverted(size_t index, const individual & ind);
 
 	/// this function takes intensity, rate, afterLoci, ...
 	/// inputs and return a bernulli trailer and a recBeforeLoci
 	/// vector.
-	void prepareRecRates(population & pop,
+	void prepareRecRates(const population & pop,
 		double intensity,
 		vectorf rate,
 		vectoru afterLoci,                                                  //
@@ -252,8 +275,8 @@ private:
 		vectoru & recBeforeLoci,                                            // return before loci vector
 		vectorf & vecP);                                                    // return recombination rate
 
-	void copyParentalGenotype(individual * parent,
-		RawIndIterator & it, int ploidy);
+	void copyParentalGenotype(const individual & parent,
+		individual & it, int ploidy);
 
 private:
 	/// intensity
