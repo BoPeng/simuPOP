@@ -170,22 +170,27 @@ simuPOP is a forward-time population genetics simulation environment.
 \end_layout
 
 \begin_layout Abstract
-The core of simuPOP is a scripting language (Python) that provides a large
- number of classes and functions and a mechanism to evolve populations forward
- in time.
- including populations, mating schemes, and various demographic and genetic
- forces.
- This provides a R/S-Plus or Matlab-like environment where users can manipulate
- and evolve populations either interactively or through Python scripts.
- 
+simuPOP is provided as a number of Python modules, which provide of a large
+ number of Python objects and functions, including population, mating schemes,
+ operators (objects that manipulate populations) and simulators to coordinate
+ the evolutionary processes.
+ It is the users’ responsibility to write a Python script to glue these
+ pieces together and form a simulation.
+ At a more user-friendly level, simuPOP provides an increasing number of
+ bundled scripts that perform simulations ranging from implementation of
+ basic population genetics models to generating datasets under complex evolution
+ary scenarios.
+ No knowledge about Python or simuPOP would be needed to run these simulations,
+ if they happen to fit your need.
 \end_layout
 
 \begin_layout Abstract
-This user's guide covers the basic usage of simuPOP, including installation,
- basic usage, brief introduction to built-in scripts, and how to write simuPOP
- scripts.
- Detailed information about simuPOP components, functions and operators
- is available in the 
+This user's guide shows you how to install and use simuPOP using a large
+ number of examples.
+ It describes all important concepts and features of simuPOP and shows you
+ how to use them in a simuPOP script.
+ For a complete and detailed desciprion about all simuPOP functions and
+ classes, please refer to the 
 \emph on
 simuPOP Reference Manual.
 
@@ -533,11 +538,87 @@ allow different ways to specify offspring sex.
 \end_layout
 
 \begin_layout Section
+Naming Conventions
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuPOP
+\family default
+ follows the following naming conventions.
+\end_layout
+
+\begin_layout Itemize
+Classes (objects), member functions and parameter names start with small
+ character and use capital character for the first character of each word
+ afterward.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+population, population::subPopSize(), individual::setInfo()
+\end_layout
+
+\begin_layout Itemize
+Standalone functions start with capital character.
+ This is how you can differ an operator from its function version.
+ For example, 
+\family typewriter
+initByFreq(vars)
+\family default
+ is an operator and 
+\family typewriter
+InitByFreq(pop, vars)
+\family default
+ is its function version (equivalent to 
+\family typewriter
+initByFreq(vars).apply(pop)
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+Constants start with Capital characters.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+MigrByProportion, StatNumOfFemale
+\end_layout
+
+\begin_layout Itemize
+The following words in function names are abbreviated:
+\end_layout
+
+\begin_layout LyX-Code
+pos (position),  info (information), migr (migration), subPop (subpopulation),
+ 
+\begin_inset Newline newline
+\end_inset
+
+(rep) replicate, gen (generation), ops (operators), 
+\begin_inset Newline newline
+\end_inset
+
+expr (expression), stmts (statements) 
+\end_layout
+
+\begin_layout Section
 Installing simuPOP
 \end_layout
 
 \begin_layout Standard
-Compiled libraries for Linux (RHEL4 and Mandriva) and windows XP.
+Binary libraries of 
+\family typewriter
+simuPOP
+\family default
+ are provided for linux, windows, solaris and mac systems.
+ Source code and development documentations are also available for easy
+ porting to other platforms.
+ Both source code and binaries can be distributed free-of-charge under GPL
+ license.
+ Compiled libraries for Linux (RHEL4 and Mandriva) and windows XP.
  Solaris and MacOSX binaries are currently not provided due to machine availabil
 ity.
  In most cases, you will only need to download simuPOP and follow the usual
@@ -572,7 +653,9 @@ python setup.py install
 \end_layout
 
 \begin_layout Standard
-Python has a large number of modules.
+All resources, including a pdf version of this manual and a mailing list
+ can be found at the simuPOP homepage.
+ Python has a large number of modules.
  For simple tasks like dataset generation, simuPOP modules alone are enough.
  However, it is highly recommended that you install 
 \end_layout
@@ -597,20 +680,6 @@ ListVars()
 \family default
  function.
  
-\end_layout
-
-\begin_layout Standard
-Binary libraries of 
-\family typewriter
-simuPOP
-\family default
- are provided for linux, windows, solaris and mac systems.
- Source code and development documentations are also available for easy
- porting to other platforms.
- Both source code and binaries can be distributed free-of-charge under GPL
- license.
- All resources, including a pdf version of this manual and a mailing list
- can be found at the simuPOP homepage.
 \end_layout
 
 \begin_layout Standard
@@ -742,119 +811,6 @@ lstparams "caption={Import locally installed simuPOP module},label={Import-simuP
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Naming Conventions
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-simuPOP
-\family default
- follows the following naming conventions.
-\end_layout
-
-\begin_layout Itemize
-Classes (objects), member functions and parameter names start with small
- character and use capital character for the first character of each word
- afterward.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-population, population::subPopSize(), individual::setInfo()
-\end_layout
-
-\begin_layout Itemize
-Standalone functions start with capital character.
- This is how you can differ an operator from its function version.
- For example, 
-\family typewriter
-initByFreq(vars)
-\family default
- is an operator and 
-\family typewriter
-InitByFreq(pop, vars)
-\family default
- is its function version (equivalent to 
-\family typewriter
-initByFreq(vars).apply(pop)
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-Constants start with Capital characters.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-MigrByProportion, StatNumOfFemale
-\end_layout
-
-\begin_layout Itemize
-The following words in function names are abbreviated:
-\end_layout
-
-\begin_layout LyX-Code
-pos (position),  info (information), migr (migration), subPop (subpopulation),
- 
-\begin_inset Newline newline
-\end_inset
-
-(rep) replicate, gen (generation), ops (operators), 
-\begin_inset Newline newline
-\end_inset
-
-expr (expression), stmts (statements) 
-\end_layout
-
-\begin_layout Section
-How to read this manual
-\end_layout
-
-\begin_layout Standard
-There are a lot of functions/operators in simuPOP and there is no reason
- you should memorize all of them.
- (I admit that I can not.) If you are a first time simuPOP user, my suggestion
- is that you read through this manual quickly only to get the big picture
- of how simuPOP works and what simuPOP can do.
- Then, if you decide to write some simulations, you should
-\end_layout
-
-\begin_layout Itemize
-Read some examples under 
-\family typewriter
-scripts
-\family default
- directory.
- From easy to difficult, you can read 
-\family typewriter
-simuLDDecay.py, simuCDCV.py
-\family default
- and 
-\family typewriter
-simuComplexDisease.py.
-
-\family default
- Scripts from the 
-\family typewriter
-examples
-\family default
- directory can also be studied.
-\end_layout
-
-\begin_layout Itemize
-Copy one of the scripts as a template and modify it.
- For whatever function/operator you need, read the relevant sections in
- detail.
- 
-\end_layout
-
-\begin_layout Chapter
-Installing simuPOP
 \end_layout
 
 \begin_layout Section
@@ -1490,10 +1446,6 @@ short, long
 and 
 \family typewriter
 binary.
-\end_layout
-
-\begin_layout Subsection
-Random Number Generator
 \end_layout
 
 \begin_layout Standard
@@ -9851,8 +9803,8 @@ re
 -values are obtained and returned.
 \end_layout
 
-\begin_layout Section
-Writing simuPOP scripts
+\begin_layout Chapter
+A real example
 \end_layout
 
 \begin_layout Standard
