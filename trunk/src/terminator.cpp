@@ -22,6 +22,8 @@
 ***************************************************************************/
 
 #include "terminator.h"
+#include <iostream>
+#include <iomanip>
 
 namespace simuPOP {
 
@@ -30,51 +32,17 @@ bool terminateIf::apply(population & pop)
     // experssion return true
     m_expr.setLocalDict(pop.dict());
 
-    if (m_expr.valueAsBool() == true) {
-        // store the generations this replicate stops
-        int gen = pop.gen();                              // mainVars().getVarAsInt("gen");
-
-        pop.setIntVar(m_var, gen);
-        if (!this->noOutput() ) {
-            ostream & out = this->getOstream(pop.dict());
-            out << gen << endl;
-            this->closeOstream();
+    if (m_expr.valueAsBool()) {
+        if (!noOutput()) {
+            ostream & out = getOstream(pop.dict());
+            out << m_message << pop.gen() << endl;
+            closeOstream();
         }
-        if (!m_message.empty())
-            cout << m_message << endl;
         if (m_stopAll)
             throw StopEvolution(m_message);
         return false;                                             // return false, this replicate will be stopped
     } else
         return true;
 }
-
-
-bool continueIf::apply(population & pop)
-{
-    // experssion return true
-    m_expr.setLocalDict(pop.dict());
-
-    if (m_expr.valueAsBool() == false) {
-        // store the generations this replicate stops
-        int gen = pop.gen();                              // mainVars().getVarAsInt("gen");
-
-        pop.setIntVar(m_var, gen);
-        if (!this->noOutput() ) {
-            ostream & out = this->getOstream(pop.dict());
-            out << gen << endl;
-            this->closeOstream();
-        }
-        if (!m_message.empty())
-            cout << m_message << endl;
-        if (m_stopAll)
-            throw StopEvolution(m_message);
-        return false;                                             // return false, this replicate will be stopped
-    } else
-        return true;
-}
-
-
-
 
 }
