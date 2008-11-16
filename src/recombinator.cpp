@@ -519,7 +519,8 @@ bool recombinator::applyDuringMating(population & pop,
 {
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError, "Neither dad or mom is invalid.");
 
-	setupParam(pop);
+	if (m_recBeforeLoci.empty())
+		setupParam(pop);
 
 	if (mom == NULL)
 		produceOffspring(*dad, *offspring);
