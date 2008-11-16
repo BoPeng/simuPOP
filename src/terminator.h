@@ -47,11 +47,13 @@ public:
 	/// create a terminator
 	/**
 	 \param message a message that will be displayed when the evolution is terminated.
+     \param stopAll stop all replicates if this replicate is stopped.
 	 */
-	terminator(string message = "", string output = ">", string outputExpr = "",
+	terminator(string message = "", bool stopAll=false,
+                string output = ">", string outputExpr = "",
 	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
-		m_message(message)
+		m_message(message), m_stopAll(stopAll)
 	{
 	};
 
@@ -67,17 +69,12 @@ public:
 	}
 
 
-	/// return the message to print when terminated
-	/// CPPONLY
-	string message()
-	{
-		return m_message;
-	}
-
-
-private:
+protected:
 	/// message to print when terminated
 	string m_message;
+
+    /// 
+    bool m_stopAll;
 };
 
 /// terminate according to a condition
@@ -96,11 +93,11 @@ class terminateIf : public terminator
 
 public:
 	/// create a \c terminateIf terminator
-	terminateIf(string condition = "", string message = "", string var = "terminate",
+	terminateIf(string condition = "", bool stopAll=false, string message = "", string var = "terminate",
 	            string output = "", string outputExpr = "",
 	            int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
-		terminator(message, output, outputExpr, stage, begin, end, step, at,
+		terminator(message, stopAll, output, outputExpr, stage, begin, end, step, at,
 		           rep), m_expr(condition), m_var(var)
 	{
 	}
@@ -122,28 +119,7 @@ public:
 
 	// check all alleles in vector allele if they are fixed.
 	/// apply the \c terminateIf terminator
-	virtual bool apply(population & pop)
-	{
-		// experssion return true
-		m_expr.setLocalDict(pop.dict());
-
-		if (m_expr.valueAsBool() == true) {
-			// store the generations this replicate stops
-			int gen = pop.gen();                              // mainVars().getVarAsInt("gen");
-
-			pop.setIntVar(m_var, gen);
-			if (!this->noOutput() ) {
-				ostream & out = this->getOstream(pop.dict());
-				out << gen << endl;
-				this->closeOstream();
-			}
-			if (this->message() != "")
-				cout << this->message() << endl;
-			return false;                                             // return false, this replicate will be stopped
-		} else
-			return true;
-	}
-
+	virtual bool apply(population & pop);
 
 	virtual ~terminateIf()
 	{
@@ -166,11 +142,11 @@ class continueIf : public terminator
 
 public:
 	/// create a \c continueIf terminator
-	continueIf(string condition = "", string message = "", string var = "terminate",
+	continueIf(string condition = "", bool stopAll=false, string message = "", string var = "terminate",
 	           string output = "", string outputExpr = "",
 	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           int rep = REP_ALL,const vectorstr & infoFields = vectorstr()) :
-		terminator(message, output, outputExpr, stage, begin, end, step, at,
+		terminator(message, stopAll, output, outputExpr, stage, begin, end, step, at,
 		           rep), m_expr(condition), m_var(var)
 	{
 	}
@@ -190,29 +166,7 @@ public:
 	}
 
 
-	/// apply this operator
-	virtual bool apply(population & pop)
-	{
-		// experssion return true
-		m_expr.setLocalDict(pop.dict());
-
-		if (m_expr.valueAsBool() == false) {
-			// store the generations this replicate stops
-			int gen = pop.gen();                              // mainVars().getVarAsInt("gen");
-
-			pop.setIntVar(m_var, gen);
-			if (!this->noOutput() ) {
-				ostream & out = this->getOstream(pop.dict());
-				out << gen << endl;
-				this->closeOstream();
-			}
-			if (this->message() != "")
-				cout << this->message() << endl;
-			return false;                                             // return false, this replicate will be stopped
-		} else
-			return true;
-	}
-
+	virtual bool apply(population & pop);
 
 	virtual ~continueIf()
 	{

@@ -117,16 +117,10 @@ public:
 	   Its content will not be changed.
 	 \param matingScheme a mating scheme
 	 \param rep number of replicates. Default to \c 1.
-	 \param applyOpToStoppedReps 	If set, the simulator will continue to apply operators
-	   to all stopped replicates until all replicates are marked
-	   'stopped'.
-	 \param stopIfOneRepStops If set, the simulator will stop evolution if one replicate stops.
 	 \return a simulator
 	 \sa population, mating
 	 */
 	simulator(const population & pop, mating & matingScheme,
-	          bool stopIfOneRepStops = false,
-	          bool applyOpToStoppedReps = false,
 	          int rep = 1);
 
 	/// destroy a simulator along with all its populations
@@ -275,8 +269,7 @@ public:
 	   birth of each offspring
 	 \li all post-mating operators
 	   If any pre- or post-mating operator fails to apply, that
-	   replicate will be stopped. The behavior of the simulator
-	   will be determined by flags \c applyOpToStoppedReps and \c stopIfOneRepStopss.
+	   replicate will be stopped. 
 
 	 \param ops operators that will be applied at each generation,
 	   if they are active at that generation. (Determined by
@@ -290,13 +283,13 @@ public:
 	   terminator. Note that simu.gen() refers to the begining of a
 	   generation, and starts at 0.
 	 \param dryrun dryrun mode. Default to \c False.
-	 \result True if evolution performed successfully.
+	 \result Return the number of generations evolved for each replicate.
 	 \sa simulator::step()
 	 \note When <tt>gen = -1</tt>, you can not specify negative generation
 	   parameters to operators. How would an operator know which
 	   genertion is the -1 genertion if no ending genertion is given?
 	 */
-	bool evolve(const vectorop & ops,
+	vectoru evolve(const vectorop & ops,
 		const vectorop & preOps = vectorop(),
 		const vectorop & postOps = vectorop(),
 		int gen = -1, bool dryrun = false);
@@ -310,45 +303,6 @@ public:
 	   No during-mating operators are allowed.
 	 */
 	bool apply(const vectorop ops, bool dryrun = false);
-
-	/// CPPONLY set 'stop' or not if one replicate stops
-	/**
-	   If set, the simulator will stop evolution if one replicate stops.
-	 \param on turn on or off \c stopIfOneRepStops
-	 */
-	bool setStopIfOneRepStops(bool on = true)
-	{
-		m_stopIfOneRepStops = on;
-		return on;
-	}
-
-
-	/// CPPONLY get the status of \c setStopIfOneRepStops
-	bool stopIfOneRepStops()
-	{
-		return m_stopIfOneRepStops;
-	}
-
-
-	/// CPPONLY apply operators even if \c rep stops
-	/**
-	   If set, the simulator will continue to apply operators
-	   to all stopped replicates until all replicates are marked
-	   'stopped'.
-	 \param on turn on or off \c applyOpToStoppedReps flag
-	 */
-	bool setApplyOpToStoppedReps(bool on = true)
-	{
-		m_applyOpToStoppedReps = on;
-		return on;
-	}
-
-
-	/// CPPONLY get the status of \c setApplyOpToStoppedReps
-	bool applyOpToStoppedReps()
-	{
-		return m_applyOpToStoppedReps;
-	}
 
 
 	/// Return the local namespace of population \c rep, equivalent to <tt>x.population(rep).vars(subPop)</tt>
@@ -426,9 +380,6 @@ private:
 			ar & groups;
 		}
 
-		m_stopIfOneRepStops = false;
-		m_applyOpToStoppedReps = false;
-
 		// only after all replicates are ready do we set gen
 		setGen(l_gen);
 	}
@@ -469,14 +420,6 @@ private:
 
 	/// the scratch pop
 	population * m_scratchPop;
-
-	/// determine various behaviors of simulator
-	/// for example: if stop after one replicate stops
-	///   or stop after all stop
-	///   or if apply operators if stopped.
-	bool m_stopIfOneRepStops;
-
-	bool m_applyOpToStoppedReps;
 
 #ifndef OPTIMIZED
 	clock_t m_clock;
