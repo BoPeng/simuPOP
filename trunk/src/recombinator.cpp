@@ -24,7 +24,7 @@
 #include "recombinator.h"
 
 namespace simuPOP {
-void recombinator::prepareRecRates(population & pop,
+void recombinator::prepareRecRates(const population & pop,
                                    double intensity,
                                    vectorf rate,
                                    vectoru afterLoci,                   //
@@ -192,7 +192,7 @@ void recombinator::prepareRecRates(population & pop,
 }
 
 
-int recombinator::markersConverted(size_t index, individual * ind)
+int recombinator::markersConverted(size_t index, const individual & ind)
 {
 	// IMPORTANT: if conversion length reaches end of chromosome
 	// this is an recombination! Otherwise, conversion will
@@ -205,7 +205,7 @@ int recombinator::markersConverted(size_t index, individual * ind)
 			num = rng().randGeometric(m_convParam);
 
 		// if conversion reaches end of chromosome, it is an recombination event
-		if (num == 0 || num >= ind->lociLeft(index))
+		if (num == 0 || num >= ind.lociLeft(index))
 			return 0;
 		else
 			return num;
@@ -219,11 +219,11 @@ int recombinator::markersConverted(size_t index, individual * ind)
 		// recombination starts 'before' index so we assume that it happens
 		// randomly (uniformly) between this and previous marker
 		if (index > 0)
-			len -= rng().randUniform01() * ind->lociDist(index - 1, index);
-		if (len <= 0. || len >= ind->distLeft(index))
+			len -= rng().randUniform01() * ind.lociDist(index - 1, index);
+		if (len <= 0. || len >= ind.distLeft(index))
 			return 0;
 		else
-			return ind->lociCovered(index, len);
+			return ind.lociCovered(index, len);
 	}
 }
 
@@ -232,8 +232,8 @@ int recombinator::markersConverted(size_t index, individual * ind)
 // parental chromosomes and set one copy of offspring chromosome
 // bt contains the bernulli trailer
 void recombinator::recombine(
-                             individual * parent,                               // one of the parent
-                             RawIndIterator & offspring,                        // offspring
+                             const individual & parent,                               // one of the parent
+                             individual & offspring,                        // offspring
                              int offPloidy,                                     // which offspring ploidy to fill
                              BernulliTrials & bt,
                              const vectoru & recBeforeLoci,
@@ -242,9 +242,9 @@ void recombinator::recombine(
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
 
-	cp[0] = parent->genoBegin(0);
-	cp[1] = parent->genoBegin(1);
-	off = offspring->genoBegin(offPloidy);
+	cp[0] = parent.genoBegin(0);
+	cp[1] = parent.genoBegin(1);
+	off = offspring.genoBegin(offPloidy);
 
 	// get a new set of values.
 	// const BoolResults& bs = bt.trial();
@@ -282,7 +282,7 @@ void recombinator::recombine(
 					DBG_DO_(m_recCount[bl]++);
 					// if conversion happens
 					if (withConversion &&
-					    parent->lociLeft(gt) != 1 && // can not be at the end of a chromosome
+					    parent.lociLeft(gt) != 1 && // can not be at the end of a chromosome
 					    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 						// convCount will be decreased, until reconversion completes
 						// or another recombination happens
@@ -310,7 +310,7 @@ void recombinator::recombine(
 			curCp = (curCp + 1) % 2;
 			//
 			if (withConversion &&
-			    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+			    parent.lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
 			    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 				convCount = markersConverted(gt, parent);
 				DBG_DO_(m_convSize[convCount]++);
@@ -338,7 +338,7 @@ void recombinator::recombine(
 				//
 				// conversion event for this recombination event
 				if (withConversion &&
-				    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+				    parent.lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
 				    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
@@ -373,7 +373,7 @@ void recombinator::recombine(
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
 			if (withConversion &&
-			    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+			    parent.lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
 			    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 				convCount = markersConverted(gt, parent);
 				DBG_DO_(m_convSize[convCount]++);
@@ -398,7 +398,7 @@ void recombinator::recombine(
 				curCp = (curCp + 1) % 2;
 				// conversion event for this recombination event
 				if (withConversion &&
-				    parent->lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
+				    parent.lociLeft(gt - 1) != 1 && // can not be at the end of a chromosome
 				    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
@@ -424,26 +424,91 @@ void recombinator::recombine(
 		// sex chrom determination
 		// if curCp (last chromosome) is X, Female, otherwise Male.
 		// Note that for daddy, the last one is arranged XY
-		offspring->setSex(curCp == 0 ? Female : Male);
+		offspring.setSex(curCp == 0 ? Female : Male);
 }
 
 
 // copy the first copy of chromosome from parent to offspring
-void recombinator::copyParentalGenotype(individual * parent,
-                                        RawIndIterator & it,
+void recombinator::copyParentalGenotype(const individual & parent,
+                                        individual & it,
                                         int ploidy)
 {
-	GenoIterator par = parent->genoBegin(0);
-	GenoIterator off = it->genoBegin(ploidy);
+	GenoIterator par = parent.genoBegin(0);
+	GenoIterator off = it.genoBegin(ploidy);
 
 #ifndef BINARYALLELE
 	size_t gt = 0;
-	size_t gt_end = parent->totNumLoci();
+	size_t gt_end = parent.totNumLoci();
 	for (; gt < gt_end; ++gt)
 		off[gt] = par[gt];
 #else
-	copyGenotype(par, off, parent->totNumLoci());
+	copyGenotype(par, off, parent.totNumLoci());
 #endif
+}
+
+
+void recombinator::setupParam(const population & pop)
+{
+	// prepare m_bt
+	// female
+	vectorf vecP;
+	// female does not determine sex
+	prepareRecRates(pop, m_intensity, m_rate, m_afterLoci,
+		false, m_recBeforeLoci, vecP);
+
+	m_bt.setParameter(vecP, pop.popSize());
+
+	vecP.clear();
+	// male case is most complicated.
+	m_hasSexChrom = pop.sexChrom() ? true : false;
+	double maleIntensity = (m_maleIntensity != -1 || !m_maleRate.empty() )
+						   ? m_maleIntensity : m_intensity;
+	vectorf & maleRate = (m_maleIntensity != -1 || !m_maleRate.empty() )
+						 ? m_maleRate : m_rate;
+	vectoru & maleAfterLoci = m_maleAfterLoci.empty() ?
+							  m_afterLoci : m_maleAfterLoci;
+	// prepare male recombination
+	prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
+		m_hasSexChrom, m_maleRecBeforeLoci, vecP);
+	m_maleBt.setParameter(vecP, pop.popSize());
+	// choose an algorithm
+	// if recombinations are dense. use the first algorithm
+	// For example 10 chromoes, regular 0.5*10=5
+	// if there are high recombination on chromosomes, ....
+	if (std::accumulate(vecP.begin(), vecP.end(), 0.) > pop.numChrom())
+		m_algorithm = 0;
+	else
+		m_algorithm = 1;
+	DBG_DO(DBG_RECOMBINATOR, cout << "Algorithm " << m_algorithm << " is being used " << endl);
+}
+
+
+void recombinator::produceOffspring(const individual & parent,
+	individual & off)
+{
+	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
+		"Please use setupParam(pop) to set up recombination parameter first.");
+
+	recombine(parent, off, 0, m_bt, m_recBeforeLoci, false);
+	recombine(parent, off, 1, m_bt, m_recBeforeLoci, true);
+}
+
+
+void recombinator::produceOffspring(const individual & mom,
+	const individual & dad, individual & off)
+{
+	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
+		"Please use setupParam(pop) to set up recombination parameter first.");
+	
+	// allows selfing. I.e., if mom or dad is NULL, the other parent will
+	// produce both copies of the offspring chromosomes.
+	recombine(mom, off, 0, m_bt, m_recBeforeLoci, false);
+
+	if (mom.isHaplodiploid())
+		copyParentalGenotype(dad, off, 1);
+	else
+		// only set sex once for offspring
+		recombine(dad, off, 1, m_maleBt, m_maleRecBeforeLoci, true);
 }
 
 
@@ -454,60 +519,15 @@ bool recombinator::applyDuringMating(population & pop,
 {
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError, "Neither dad or mom is invalid.");
 
-	// first time setup
-	if (m_recBeforeLoci.empty()) {
-		// prepare m_bt
-		// female
-		vectorf vecP;
-		// female does not determine sex
-		prepareRecRates(pop, m_intensity, m_rate, m_afterLoci,
-			false, m_recBeforeLoci, vecP);
+	setupParam(pop);
 
-		m_bt.setParameter(vecP, pop.popSize());
-
-		vecP.clear();
-		// male case is most complicated.
-		m_hasSexChrom = pop.sexChrom() ? true : false;
-		double maleIntensity = (m_maleIntensity != -1 || !m_maleRate.empty() )
-		                       ? m_maleIntensity : m_intensity;
-		vectorf & maleRate = (m_maleIntensity != -1 || !m_maleRate.empty() )
-		                     ? m_maleRate : m_rate;
-		vectoru & maleAfterLoci = m_maleAfterLoci.empty() ?
-		                          m_afterLoci : m_maleAfterLoci;
-		// prepare male recombination
-		prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
-			m_hasSexChrom, m_maleRecBeforeLoci, vecP);
-		m_maleBt.setParameter(vecP, pop.popSize());
-		// choose an algorithm
-		// if recombinations are dense. use the first algorithm
-		// For example 10 chromoes, regular 0.5*10=5
-		// if there are high recombination on chromosomes, ....
-		if (std::accumulate(vecP.begin(), vecP.end(), 0.) > pop.numChrom())
-			m_algorithm = 0;
-		else
-			m_algorithm = 1;
-		DBG_DO(DBG_RECOMBINATOR, cout << "Algorithm " << m_algorithm << " is being used " << endl);
-	}
-
-	// allows selfing. I.e., if mom or dad is NULL, the other parent will
-	// produce both copies of the offspring chromosomes.
-	if (mom != NULL)
-		recombine(mom, offspring, 0, m_bt, m_recBeforeLoci, false);
+	if (mom == NULL)
+		produceOffspring(*dad, *offspring);
+	else if (dad == NULL)
+		produceOffspring(*mom, *offspring);
 	else
-		recombine(dad, offspring, 0, m_bt, m_recBeforeLoci, false);
+		produceOffspring(*mom, *dad, *offspring);
 
-	if (pop.isHaplodiploid()) {
-		DBG_FAILIF(dad == NULL, ValueError,
-			"Invalid male in haplodiploid mode");
-		copyParentalGenotype(dad, offspring, 1);
-		return true;
-	}
-
-	if (dad != NULL)
-		// only set sex once for offspring
-		recombine(dad, offspring, 1, m_maleBt, m_maleRecBeforeLoci, true);
-	else
-		recombine(mom, offspring, 1, m_maleBt, m_maleRecBeforeLoci, true);
 	return true;
 }
 
