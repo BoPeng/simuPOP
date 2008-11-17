@@ -32,8 +32,8 @@
 namespace simuPOP {
 
 simulator::simulator(const population & pop,
-                     mating & matingScheme,
-                     int rep)
+	mating & matingScheme,
+	int rep)
 	: m_gen(0), m_curRep(0), m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
@@ -46,7 +46,7 @@ simulator::simulator(const population & pop,
 
 	if (!m_matingScheme->isCompatible(pop))
 		throw TypeError
-		("mating type is not compatible with current population settings.");
+			    ("mating type is not compatible with current population settings.");
 
 	// create replicates of given population
 	m_ptrRep = new population *[m_numRep];
@@ -196,9 +196,9 @@ void simulator::setMatingScheme(const mating & matingScheme)
 
 
 vectoru simulator::evolve(const vectorop & ops,
-                       const vectorop & preOps,
-                       const vectorop & postOps,
-                       int gens, bool dryrun)
+                          const vectorop & preOps,
+                          const vectorop & postOps,
+                          int gens, bool dryrun)
 {
 	vectorop preMatingOps, durmatingOps, postMatingOps, activeDurmatingOps;
 
@@ -237,7 +237,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			if (!preMatingOps.empty()) {
 				cout << "    Pre-mating operators" << endl;
 				for (size_t it = 0; it < preMatingOps.size(); ++it)
-					if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0,true) )
+					if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, true) )
 						cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
 			}
 			cout << "    Start mating" << endl;
@@ -277,7 +277,7 @@ vectoru simulator::evolve(const vectorop & ops,
 		            "simu::population(rep). This is not allowed.\n");
 #endif
 	// evolved generations, which will be returned.
-    vectoru evolvedGens(m_numRep, 0U);
+	vectoru evolvedGens(m_numRep, 0U);
 
 	// does not evolve.
 	if (gens == 0)
@@ -345,12 +345,12 @@ vectoru simulator::evolve(const vectorop & ops,
 								stopped[m_curRep] = true;
 							}
 						}
-                    } catch (StopEvolution e) {
-                        DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
-							<< "Pre-mating Operator " + preMatingOps[it]->__repr__() +
-								" stops at replicate " + toStr(curRep()) << endl);
-                        fill(stopped.begin(), stopped.end(), true);
-                        numStopped = stopped.size();
+					} catch (StopEvolution e) {
+						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
+							                       << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
+							" stops at replicate " + toStr(curRep()) << endl);
+						fill(stopped.begin(), stopped.end(), true);
+						numStopped = stopped.size();
 					} catch (...) {
 						cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
@@ -376,11 +376,11 @@ vectoru simulator::evolve(const vectorop & ops,
 					numStopped++;
 					stopped[m_curRep] = true;
 				}
-            } catch (StopEvolution e) {
-                DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
-				<< "During-mating Operator at replicate " + toStr(curRep()) << endl);
-                    fill(stopped.begin(), stopped.end(), true);
-                     numStopped = stopped.size();
+			} catch (StopEvolution e) {
+				DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
+					                       << "During-mating Operator at replicate " + toStr(curRep()) << endl);
+				fill(stopped.begin(), stopped.end(), true);
+				numStopped = stopped.size();
 			} catch (...) {
 				cout << "mating or one of the during mating operator throws an exception." << endl << endl;
 				throw;
@@ -401,12 +401,12 @@ vectoru simulator::evolve(const vectorop & ops,
 							numStopped++;
 							stopped[m_curRep] = true;;
 						}
-                    } catch (StopEvolution e) {
-                        DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
-							<< "Post-mating Operator " + postMatingOps[it]->__repr__() +
-								" stops at replicate " + toStr(curRep()) << endl);
-                        fill(stopped.begin(), stopped.end(), true);
-                        numStopped = stopped.size();
+					} catch (StopEvolution e) {
+						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
+							                       << "Post-mating Operator " + postMatingOps[it]->__repr__() +
+							" stops at replicate " + toStr(curRep()) << endl);
+						fill(stopped.begin(), stopped.end(), true);
+						numStopped = stopped.size();
 					} catch (...) {
 						cout << "PostMating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
@@ -522,7 +522,7 @@ void simulator::loadSimulator(string filename, string format)
 		ia >> *this;
 	} catch (...) {
 		throw ValueError("Failed to load simulator. Your file may be corrupted, "
-								 "or being a copy of non-transferrable file (.bin)");
+			             "or being a copy of non-transferrable file (.bin)");
 	}                                                                                               // try bin
 }
 

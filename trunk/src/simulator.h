@@ -25,8 +25,8 @@
 #define _SIMULATOR_H
 
 /**
- \file
- \brief head file of class simulator and some other utility functions
+   \file
+   \brief head file of class simulator and some other utility functions
  */
 
 #include "utility.h"
@@ -86,7 +86,7 @@ namespace simuPOP {
    whereas	\c ops will be applied at every generation. \n
 
    A simulator separates operators into \em pre-, \em during-, and
- \em post-mating operators. During evolution, a simulator first
+   \em post-mating operators. During evolution, a simulator first
    apply all pre-mating operators and then call the \c mate()
    function of the given mating scheme, which will call
    during-mating operators during the birth of each offspring.
@@ -94,7 +94,7 @@ namespace simuPOP {
    applied to the offspring in the order at which they appear in the operator list. \n
 
    Simulators can evolve a given number of generations (the
- \c end parameter of \c evolve), or evolve indefinitely until
+   \c end parameter of \c evolve), or evolve indefinitely until
    a certain type of operators called terminator terminates it. In this
    case, one or more terminators will check the status of
    evolution and determine if the simulation should be stopped.
@@ -112,20 +112,20 @@ public:
 	// glocal shared variables. }
 	/// create a simulator
 	/**
-	 \param population a population created by \c population()
+	   \param population a population created by \c population()
 	   function. This population will be copied \c rep times to the simulator.
 	   Its content will not be changed.
-	 \param matingScheme a mating scheme
-	 \param rep number of replicates. Default to \c 1.
-	 \return a simulator
-	 \sa population, mating
+	   \param matingScheme a mating scheme
+	   \param rep number of replicates. Default to \c 1.
+	   \return a simulator
+	   \sa population, mating
 	 */
 	simulator(const population & pop, mating & matingScheme,
-	          int rep = 1);
+		int rep = 1);
 
 	/// destroy a simulator along with all its populations
 	/**
-	 \note <tt>pop = simulator::population()</tt>
+	   \note <tt>pop = simulator::population()</tt>
 	   returns temporary reference to an internal population.
 	   After a simulator evolves another genertion or
 	   after the simulator is destroyed, this referenced
@@ -146,7 +146,7 @@ public:
 	   must have the same genotypic information as the simulator.
 	   Adding an information field to one or more of the replicates
 	   will compromise the integrity of the simulator.
-	 \param field information field to be added
+	   \param field information field to be added
 	 */
 	void addInfoField(const string & field, double init = 0);
 
@@ -163,9 +163,9 @@ public:
 	/// Return a reference to the \c rep replicate of this simulator
 	/**
 
-	 \param rep the index number of replicate which will be accessed
-	 \return reference to population \c rep.
-	 \note  The returned reference is temporary in the sense that
+	   \param rep the index number of replicate which will be accessed
+	   \return reference to population \c rep.
+	   \note  The returned reference is temporary in the sense that
 	   the refered population will be invalid after another round
 	   of evolution. If you would like to get a persistent population, please use \c getPopulation(rep).
 	 */
@@ -184,11 +184,11 @@ public:
 	   <tt>destructive==True</tt>, the population is extracted from the simulator,
 	   leaving a defunct simulator.
 
-	 \param rep the index number of the replicate which will be obtained
-	 \param destructive if true, destroy the copy of population within this simulator.
-	   	Default to false. <tt>getPopulation(rep, true)</tt> is a more efficient way
-	   	to get hold of a population when the simulator will no longer be used.
-	 \return reference to a population
+	   \param rep the index number of the replicate which will be obtained
+	   \param destructive if true, destroy the copy of population within this simulator.
+	    Default to false. <tt>getPopulation(rep, true)</tt> is a more efficient way
+	    to get hold of a population when the simulator will no longer be used.
+	   \return reference to a population
 	 */
 	population & getPopulation(UINT rep, bool destructive = false)
 	{
@@ -245,9 +245,10 @@ public:
 		return m_gen;
 	}
 
+
 	/// set the current generation. Usually used to reset a simulator.
 	/**
-	 \param gen new generation index number
+	   \param gen new generation index number
 	 */
 	void setGen(ULONG gen)
 	{
@@ -262,30 +263,30 @@ public:
 	/**
 	   Evolve to the \c end generation unless \c end=-1. An operator (terminator)
 	   may stop the evolution earlier.
-	 \n
-	 \c ops will be applied to each replicate of the population in the order of:
-	 \li all pre-mating opertors
-	 \li during-mating operators called by the mating scheme at the
+	   \n
+	   \c ops will be applied to each replicate of the population in the order of:
+	   \li all pre-mating opertors
+	   \li during-mating operators called by the mating scheme at the
 	   birth of each offspring
-	 \li all post-mating operators
+	   \li all post-mating operators
 	   If any pre- or post-mating operator fails to apply, that
-	   replicate will be stopped. 
+	   replicate will be stopped.
 
-	 \param ops operators that will be applied at each generation,
+	   \param ops operators that will be applied at each generation,
 	   if they are active at that generation. (Determined by
 	   the \c begin, \c end, \c step and \c at parameters of the operator.)
-	 \param preOps operators that will be applied before evolution.
-	 \c evolve() function will \em not check if they are active.
-	 \param postOps operators that will be applied after evolution.
-	 \c evolve() function will \em not check if they are active.
-	 \param gen generations to evolve. Default to \c -1. In this case, there
+	   \param preOps operators that will be applied before evolution.
+	   \c evolve() function will \em not check if they are active.
+	   \param postOps operators that will be applied after evolution.
+	   \c evolve() function will \em not check if they are active.
+	   \param gen generations to evolve. Default to \c -1. In this case, there
 	   is no ending generation and a simulator will only be ended by a
 	   terminator. Note that simu.gen() refers to the begining of a
 	   generation, and starts at 0.
-	 \param dryrun dryrun mode. Default to \c False.
-	 \result Return the number of generations evolved for each replicate.
-	 \sa simulator::step()
-	 \note When <tt>gen = -1</tt>, you can not specify negative generation
+	   \param dryrun dryrun mode. Default to \c False.
+	   \result Return the number of generations evolved for each replicate.
+	   \sa simulator::step()
+	   \note When <tt>gen = -1</tt>, you can not specify negative generation
 	   parameters to operators. How would an operator know which
 	   genertion is the -1 genertion if no ending genertion is given?
 	 */
@@ -296,10 +297,10 @@ public:
 
 	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
 	/**
-	 \param ops operators that will be applied at all generations.
+	   \param ops operators that will be applied at all generations.
 	   Of course they might not be active at all generations.
-	 \result True if evolution finishs successfully.
-	 \note Pre-mating oeprators are applied before post-mating operators.
+	   \result True if evolution finishs successfully.
+	   \note Pre-mating oeprators are applied before post-mating operators.
 	   No during-mating operators are allowed.
 	 */
 	bool apply(const vectorop ops, bool dryrun = false);
@@ -317,17 +318,17 @@ public:
 
 	/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
 	/**
-	 \param filename filename to save the simulator. Default to \c simu.
-	 \param format obsolete parameter
-	 \param compress obsolete parameter
+	   \param filename filename to save the simulator. Default to \c simu.
+	   \param format obsolete parameter
+	   \param compress obsolete parameter
 	 */
 	void saveSimulator(string filename, string format = "", bool compress = true) const;
 
 	/// CPPONLY load simulator from a file
 	/**
-	 \param filename load from filename
-	 \param format obsolete parameter
-	 \sa saveSimulator
+	   \param filename load from filename
+	   \param format obsolete parameter
+	   \sa saveSimulator
 	 */
 	void loadSimulator(string filename, string format = "");
 
@@ -373,12 +374,6 @@ private:
 		}
 		m_scratchPop = new population(*m_ptrRep[0]);
 		setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
-
-		// a previous version saves groups, which is not supported now
-		if (version < 1) {
-			vectori groups;
-			ar & groups;
-		}
 
 		// only after all replicates are ready do we set gen
 		setGen(l_gen);
@@ -436,9 +431,8 @@ simulator & LoadSimulator(const string & file,
 
 #ifndef SWIG
 #  ifndef _NO_SERIALIZATION_
-// version 0: base
-// version 1: do not save groups
-BOOST_CLASS_VERSION(simuPOP::simulator, 1)
+// version 0: base (reset for version 1.0)
+BOOST_CLASS_VERSION(simuPOP::simulator, 0)
 #  endif
 #endif
 
