@@ -25,8 +25,8 @@
 #define _INDIVIDUAL_H
 
 /**
- \file
- \brief class individual, individualWithAge etc.
+   \file
+   \brief class individual, individualWithAge etc.
  */
 
 #include "utility.h"
@@ -65,7 +65,7 @@ namespace simuPOP {
  *  a population (provided by class \c genoStruTrait), an \c individual class
  *  provides member functions to get and set \e genotype, \e sex, <em>affection
  *  status</em> and <em>information fields</em> of an individual.
- * 
+ *
  *  \par
  *  Genotypes of an individual are stored sequentially and can be accessed
  *  locus by locus, or in batch. The alleles are arranged by position,
@@ -292,24 +292,24 @@ public:
 	PyObject * genotype()
 	{
 		// The following implementation has comparable performance as
-		// the direct memory access implementation, but it has two 
+		// the direct memory access implementation, but it has two
 		// problems:
 		// 1. genotype has to be copied out, which requires additional
 		//    allocation of memory.
 		// 2. the return value is a tuple which lacks some functions of
 		//    a list, mostly notably the count() function.
 		/*
-		UINT num = ploidy() * totNumLoci();
-		vectora geno(num);	
-		for(UINT i =0; i < num; i++)
-			geno[i] = *(m_genoPtr + i);
-		return geno;
-		*/
+		   UINT num = ploidy() * totNumLoci();
+		   vectora geno(num);
+		   for(UINT i =0; i < num; i++)
+		    geno[i] = *(m_genoPtr + i);
+		   return geno;
+		 */
 		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
 	}
 
 
-    /** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
+	/** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
 	 *  that represents all alleles on the <em>p</em>-th homologous set of
 	 *  chromosomes.
 	 * <group>2-genotype</group>
@@ -317,12 +317,12 @@ public:
 	PyObject * genotype(UINT p)
 	{
 		CHECKRANGEPLOIDY(p);
-	    return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
+		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
 			m_genoPtr + (p + 1) * totNumLoci() );
 	}
 
 
-	/** return an editable array (a \c carrary of legnth 
+	/** return an editable array (a \c carrary of legnth
 	 *  <tt>numLoci(</tt><em>chrom</em><tt>)</tt>) that represents all alleles
 	 *  on chromosome \e chrom of the <em>p</em>-th homologous set of
 	 *  chromosomes.
@@ -338,14 +338,15 @@ public:
 
 
 	/** Fill the genotype of an individual using a list of alleles \e geno.
-	 *  \c geno will be reused if its length is less than 
+	 *  \c geno will be reused if its length is less than
 	 *  <tt>totNumLoci()*ploidy()</tt>.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(vectora geno) 
+	void setGenotype(vectora geno)
 	{
 		UINT sz = geno.size();
-		for(UINT i =0; i < totNumLoci()*ploidy(); i++)
+
+		for (UINT i = 0; i < totNumLoci() * ploidy(); i++)
 			*(m_genoPtr + i) = geno[i % sz];
 	}
 
@@ -355,30 +356,32 @@ public:
 	 *  is less than <tt>totNumLoci()</tt>.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(vectora geno, UINT p) 
+	void setGenotype(vectora geno, UINT p)
 	{
 		CHECKRANGEPLOIDY(p);
-		GenoIterator ptr = m_genoPtr + p*totNumLoci();
+		GenoIterator ptr = m_genoPtr + p * totNumLoci();
+
 		UINT sz = geno.size();
-		for(UINT i =0; i < totNumLoci(); i++)
+		for (UINT i = 0; i < totNumLoci(); i++)
 			*(ptr + i) = geno[i % sz];
 	}
 
 
 	/** Fill the genotype of chromosome \e chrom on the <em>p</em>-th
 	 *  homologous set of chromosomes using a list of alleles \e geno.
-	 *  \c geno will be reused if its length is less than 
+	 *  \c geno will be reused if its length is less than
 	 *  <tt>mumLoci(</tt><em>chrom</em><tt>)</tt>.
 	 * <group>2-genotype</group>
 	 */
-	void setGenotype(vectora geno, UINT p, UINT chrom) 
+	void setGenotype(vectora geno, UINT p, UINT chrom)
 	{
 		CHECKRANGEPLOIDY(p);
-	    CHECKRANGECHROM(chrom);
-		GenoIterator ptr = m_genoPtr + p*totNumLoci()+chromBegin(chrom);
+		CHECKRANGECHROM(chrom);
+		GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
 		UINT sz = geno.size();
-		for(UINT i =0; i < numLoci(chrom); i++)
-			*(ptr+i) = geno[i % sz];
+		for (UINT i = 0; i < numLoci(chrom); i++)
+			*(ptr + i) = geno[i % sz];
 	}
 
 
@@ -483,8 +486,8 @@ public:
 
 	/// return the ID of the subpopulation to which this individual blongs
 	/** HIDDEN
-	 \note \c subPopID is not set by default. It only corresponds to the subpopulation
-	   	in which this individual resides after \c pop::setIndSubPopID is called.
+	   \note \c subPopID is not set by default. It only corresponds to the subpopulation
+	    in which this individual resides after \c pop::setIndSubPopID is called.
 	 */
 	SubPopID subPopID() const
 	{
@@ -641,7 +644,7 @@ public:
 	//@{
 	/// compare if two individuals are the same used in case of serialization etc.
 	/**
-	 \note We do not compare info because \c m_subPopID is considered temporary.
+	   \note We do not compare info because \c m_subPopID is considered temporary.
 	 */
 	bool operator==(const individual & rhs) const;
 
@@ -725,12 +728,6 @@ private:
 		if (b) SETFLAG(m_flags, m_flagAffected);
 		SETFLAG(m_flags, m_flagVisible);
 		SETFLAG(m_flags, m_flagIteratable);
-
-		if (version < 1) {
-			std::pair<int, int> tag;
-			ar & tag;
-			ar & m_subPopID;
-		}
 	}
 
 
@@ -753,22 +750,22 @@ protected:
 
 
 /**
-   	this class implements a Python itertor class that can be used to iterate
-   	through individuals in a (sub)population. If allInds are true,
-   	visiblility of individuals will not be checked. Note that
-   	individualIterator *will* iterate through only visible individuals, and
-   	allInds is only provided when we know in advance that all individuals are
-   	visible. This is a way to obtain better performance in simple cases.
+    this class implements a Python itertor class that can be used to iterate
+    through individuals in a (sub)population. If allInds are true,
+    visiblility of individuals will not be checked. Note that
+    individualIterator *will* iterate through only visible individuals, and
+    allInds is only provided when we know in advance that all individuals are
+    visible. This is a way to obtain better performance in simple cases.
 
-   	An instance of this class is returned by
-   	population::individuals() and population::individuals(subPop)
+    An instance of this class is returned by
+    population::individuals() and population::individuals(subPop)
  */
 class pyIndIterator
 {
 public:
 	pyIndIterator(vector<individual>::iterator const begin,
-	              vector<individual>::iterator const end,
-	              bool allInds, bool allVisibles) :
+		vector<individual>::iterator const end,
+		bool allInds, bool allVisibles) :
 		m_index(begin),
 		m_end(end),
 		m_allInds(allInds),
@@ -807,12 +804,12 @@ private:
 };
 
 /**
-   	this class implements a C++ iterator class that iterate through
-   	individuals in a (sub)population. If allInds are true, the
-   	visiblility of individuals will not be checked. Note that
-   	individualIterator *will* iterate through only visible individuals, and
-   	allInds is only provided when we know in advance that all individuals are
-   	visible. This is a way to obtain better performance in simple cases.
+    this class implements a C++ iterator class that iterate through
+    individuals in a (sub)population. If allInds are true, the
+    visiblility of individuals will not be checked. Note that
+    individualIterator *will* iterate through only visible individuals, and
+    allInds is only provided when we know in advance that all individuals are
+    visible. This is a way to obtain better performance in simple cases.
  */
 template <typename T>
 class IndividualIterator
@@ -1075,12 +1072,12 @@ typedef IndividualIterator<RawIndIterator> IndIterator;
 typedef IndividualIterator<ConstRawIndIterator> ConstIndIterator;
 
 /**
-   	this class implements a C++ iterator class that iterate through
-   	infomation fields in a (sub)population using
-   	1. an IndIterator that	will skip invisible individuals, or
-   	2. a gapped iterator that will run faster.
-   	Note that 1, 2 should yield identical result, and 2 should be used
-   	when there is no virtual subpopulation.q
+    this class implements a C++ iterator class that iterate through
+    infomation fields in a (sub)population using
+    1. an IndIterator that	will skip invisible individuals, or
+    2. a gapped iterator that will run faster.
+    Note that 1, 2 should yield identical result, and 2 should be used
+    when there is no virtual subpopulation.q
  */
 template <typename T>
 class InformationIterator
@@ -1175,12 +1172,12 @@ typedef InformationIterator<RawIndIterator> IndInfoIterator;
 typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 
 /**
-   	this class implements a C++ iterator class that iterate through
-   	infomation fields in a (sub)population using
-   	1. an IndIterator that	will skip invisible individuals, or
-   	2. a gapped iterator that will run faster.
-   	Note that 1, 2 should yield identical result, and 2 should be used
-   	when there is no virtual subpopulation.q
+    this class implements a C++ iterator class that iterate through
+    infomation fields in a (sub)population using
+    1. an IndIterator that	will skip invisible individuals, or
+    2. a gapped iterator that will run faster.
+    Note that 1, 2 should yield identical result, and 2 should be used
+    when there is no virtual subpopulation.q
  */
 template <typename T>
 class CombinedAlleleIterator
@@ -1205,7 +1202,7 @@ public:
 
 
 	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it,
-	                       UINT ploidy, UINT size)
+		UINT ploidy, UINT size)
 		: m_index(idx), m_useGappedIterator(false),
 		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy), m_size(size)
 	{
@@ -1331,9 +1328,8 @@ typedef CombinedAlleleIterator<ConstRawIndIterator> ConstIndAlleleIterator;
 
 #ifndef SWIG
 // set version for individual class
-// version 0: base
-// version 1: add sexChrom indicator
-BOOST_CLASS_VERSION(simuPOP::individual, 1)
+// version 0: base (reset for version 1.0)
+BOOST_CLASS_VERSION(simuPOP::individual, 0)
 #endif
 
 #endif

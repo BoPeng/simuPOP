@@ -194,13 +194,8 @@ private:
 		ar & m_ploidy;
 		ar & m_numLoci;
 
-		// after simuPOP 0.8.9, we handle
-		// sex chromosomes quite differently.
-		if (version < 6) {
-			bool sexChrom;
-			ar & sexChrom;
-		} else
-			ar & m_chromTypes;
+		ar & m_chromTypes;
+
 		// set m_chromX etc.
 		setChromTypes(m_chromTypes);
 		// haplodiploid flag is introduced in 0.8.5
@@ -274,14 +269,8 @@ private:
 
 #ifndef SWIG
 // set version for GenoStructure class
-// version 0: base
-// version 1: add sexChrom indicator
-// version 2: add info name
-// version 3: add chromName
-// version 4: add haplodiploid
-// version 5: do not save maxAllele
-// version 6: replace sexchrom by chromtype
-BOOST_CLASS_VERSION(simuPOP::GenoStructure, 6)
+// version 0: base (reset for 1.0)
+BOOST_CLASS_VERSION(simuPOP::GenoStructure, 0)
 #endif
 
 namespace simuPOP {

@@ -68,11 +68,6 @@ bool individual::operator==(const individual & rhs) const
 		return false;
 	}
 
-	/*
-	   for( UINT i=0, iEnd = infoSize(); i < iEnd;  ++i)
-	   	if( info(i) != rhs.info(i) )
-	   		return false;
-	 */
 	for (UINT i = 0, iEnd = genoSize(); i < iEnd;  ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i) )
 			return false;

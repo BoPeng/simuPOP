@@ -534,7 +534,7 @@ public:
 	/// CPPONLY individual iterator: without subPop info
 	IndIterator indBegin(IterationType type = VisibleInds)
 	{
-		return IndIterator(m_inds.begin(), m_inds.end(), 
+		return IndIterator(m_inds.begin(), m_inds.end(),
 			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
@@ -557,8 +557,8 @@ public:
 			ValueError, "Can not iterate through an VSP with iteratable iterator");
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
 	}
 
 
@@ -568,8 +568,8 @@ public:
 		CHECKRANGESUBPOP(subPop);
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-				m_inds.begin() + m_subPopIndex[subPop + 1],
-				(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
+			m_inds.begin() + m_subPopIndex[subPop + 1],
+			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
 	}
 
 
@@ -1759,90 +1759,82 @@ private:
 		ar & m_subPopSize;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 
-		if (version <= 1) {
+#ifdef BINARYALLELE
+		// binary from binary
+		if (ma == 1) {
+			size_t size;
+			ar & size;
+			size_t blks = size / WORDBIT;
+			size_t rest = size - blks * WORDBIT;
+
+			m_genotype.resize(size);
+			WORDTYPE tmp, tmp1;
+			WORDTYPE * ptr = BITPTR(m_genotype.begin());
+			for (size_t i = 0; i < blks; ++i) {
+				tmp = 0;
+				for (size_t j = 0; j < WORDBIT / 32; ++j) {
+					ar & tmp1;
+					tmp |= tmp1 << (j * 32);
+				}
+				*ptr++ = tmp;
+			}
+			// last block
+			if (rest > 0) {
+				tmp = 0;
+				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
+					ar & tmp1;
+					tmp |= tmp1 << (j * 32);
+				}
+				*ptr = tmp;
+			}
+		}
+		// binary from others (long types)
+		else {
+			DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
+			vector<unsigned char> tmpgeno;
+			ar & tmpgeno;
+			m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+		}
+#else
+		// long from binary
+		if (ma == 1) {
+			// for version 2 and higher, archive in 32bit blocks.
+			size_t size;
+			ar & size;
+			m_genotype.resize(size);
+			size_t blks = size / 32;
+			size_t rest = size - blks * 32;
+			DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
+			DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
+
+			GenoIterator ptr = m_genotype.begin();
+			WORDTYPE tmp;
+			for (size_t i = 0; i < blks; ++i) {
+				ar & tmp;
+				for (size_t j = 0; j < 32; ++j) {
+					*ptr++ = (tmp & 1UL) != 0;
+					tmp = tmp >> 1;
+				}
+			}
+			// last block
+			if (rest > 0) {
+				ar & tmp;
+				for (size_t j = 0; j < rest; ++j) {
+					*ptr++ = (tmp & 1UL) != 0;
+					tmp = tmp >> 1;
+				}
+			}
+		}                                                                               // if ma == 1
+		else {                                                                          // for non-binary types, ...
+			DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
+			// long from long
 			ar & m_genotype;
 		}
-		// the new version
-		// the binary genotypes are saved in an efficient way
-		else {
-#ifdef BINARYALLELE
-			// binary from binary
-			if (ma == 1) {
-				size_t size;
-				ar & size;
-				size_t blks = size / WORDBIT;
-				size_t rest = size - blks * WORDBIT;
-
-				m_genotype.resize(size);
-				WORDTYPE tmp, tmp1;
-				WORDTYPE * ptr = BITPTR(m_genotype.begin());
-				for (size_t i = 0; i < blks; ++i) {
-					tmp = 0;
-					for (size_t j = 0; j < WORDBIT / 32; ++j) {
-						ar & tmp1;
-						tmp |= tmp1 << (j * 32);
-					}
-					*ptr++ = tmp;
-				}
-				// last block
-				if (rest > 0) {
-					tmp = 0;
-					for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-						ar & tmp1;
-						tmp |= tmp1 << (j * 32);
-					}
-					*ptr = tmp;
-				}
-			}
-			// binary from others (long types)
-			else {
-				DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
-				vector<unsigned char> tmpgeno;
-				ar & tmpgeno;
-				m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
-			}
-#else
-			// long from binary
-			if (ma == 1) {
-				// for version 2 and higher, archive in 32bit blocks.
-				size_t size;
-				ar & size;
-				m_genotype.resize(size);
-				size_t blks = size / 32;
-				size_t rest = size - blks * 32;
-				DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
-				DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
-
-				GenoIterator ptr = m_genotype.begin();
-				WORDTYPE tmp;
-				for (size_t i = 0; i < blks; ++i) {
-					ar & tmp;
-					for (size_t j = 0; j < 32; ++j) {
-						*ptr++ = (tmp & 1UL) != 0;
-						tmp = tmp >> 1;
-					}
-				}
-				// last block
-				if (rest > 0) {
-					ar & tmp;
-					for (size_t j = 0; j < rest; ++j) {
-						*ptr++ = (tmp & 1UL) != 0;
-						tmp = tmp >> 1;
-					}
-				}
-			}                                                                               // if ma == 1
-			else {                                                                          // for non-binary types, ...
-				DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
-				// long from long
-				ar & m_genotype;
-			}
 #endif
-		}                                                                                 // verion >= 2
 
-		if (version > 0) {
-			DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
-			ar & m_info;
-		}
+		DBG_DO(DBG_POPULATION, cout << "Handling info" << endl);
+		ar & m_info;
+
 		DBG_DO(DBG_POPULATION, cout << "Handling individuals" << endl);
 		ar & m_inds;
 
@@ -1888,82 +1880,76 @@ private:
 		for (size_t ap = 0; ap < na; ++ap) {
 			popData pd;
 			ar & pd.m_subPopSize;
-			// version <= 1, direct handling
-			if (version <= 1) {
-				ar & pd.m_genotype;
-			} else {
 #ifdef BINARYALLELE
-				// binary from binary
-				if (ma == 1) {
-					DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
-					size_t size;
-					ar & size;
-					size_t blks = size / WORDBIT;
-					size_t rest = size - blks * WORDBIT;
+			// binary from binary
+			if (ma == 1) {
+				DBG_DO(DBG_POPULATION, cout << "Load bin from bin. " << endl);
+				size_t size;
+				ar & size;
+				size_t blks = size / WORDBIT;
+				size_t rest = size - blks * WORDBIT;
 
-					pd.m_genotype.resize(size);
-					WORDTYPE * ptr = BITPTR(pd.m_genotype.begin());
-					WORDTYPE tmp, tmp1;
-					for (size_t i = 0; i < blks; ++i) {
-						tmp = 0;
-						for (size_t j = 0; j < WORDBIT / 32; ++j) {
-							ar & tmp1;
-							tmp |= tmp1 << (j * 32);
-						}
-						*ptr++ = tmp;
+				pd.m_genotype.resize(size);
+				WORDTYPE * ptr = BITPTR(pd.m_genotype.begin());
+				WORDTYPE tmp, tmp1;
+				for (size_t i = 0; i < blks; ++i) {
+					tmp = 0;
+					for (size_t j = 0; j < WORDBIT / 32; ++j) {
+						ar & tmp1;
+						tmp |= tmp1 << (j * 32);
 					}
-					// last block
-					if (rest > 0) {
-						tmp = 0;
-						for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-							ar & tmp1;
-							tmp |= tmp1 << (j * 32);
-						}
-						*ptr = tmp;
-					}
-				} else {
-					DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
-					// binary from long types
-					vector<unsigned char> tmpgeno;
-					ar & tmpgeno;
-					pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
+					*ptr++ = tmp;
 				}
-#else
-				if (ma == 1) {
-					// long type from binary
-					size_t size;
-					ar & size;
-					pd.m_genotype.resize(size);
-					size_t blks = size / 32;
-					size_t rest = size - blks * 32;
-					DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
-
-					ptr = pd.m_genotype.begin();
-					WORDTYPE tmp;
-					for (size_t i = 0; i < blks; ++i) {
-						ar & tmp;
-						for (size_t j = 0; j < 32; ++j) {
-							*ptr++ = (tmp & 1UL) != 0;
-							tmp = tmp >> 1;
-						}
+				// last block
+				if (rest > 0) {
+					tmp = 0;
+					for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
+						ar & tmp1;
+						tmp |= tmp1 << (j * 32);
 					}
-					// last block
-					if (rest > 0) {
-						ar & tmp;
-						for (size_t i = 0; i < rest; ++i) {
-							*ptr++ = (tmp & 1UL) != 0;
-							tmp = tmp >> 1;
-						}
-					}
-				} else {
-					DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
-					// long type from long type.
-					ar & pd.m_genotype;
+					*ptr = tmp;
 				}
-#endif
+			} else {
+				DBG_DO(DBG_POPULATION, cout << "Load bin from long. " << endl);
+				// binary from long types
+				vector<unsigned char> tmpgeno;
+				ar & tmpgeno;
+				pd.m_genotype = vectora(tmpgeno.begin(), tmpgeno.end());
 			}
-			if (version > 0)
-				ar & pd.m_info;
+#else
+			if (ma == 1) {
+				// long type from binary
+				size_t size;
+				ar & size;
+				pd.m_genotype.resize(size);
+				size_t blks = size / 32;
+				size_t rest = size - blks * 32;
+				DBG_DO(DBG_POPULATION, cout << "Load long from bin. " << size << " rest " << rest << endl);
+
+				ptr = pd.m_genotype.begin();
+				WORDTYPE tmp;
+				for (size_t i = 0; i < blks; ++i) {
+					ar & tmp;
+					for (size_t j = 0; j < 32; ++j) {
+						*ptr++ = (tmp & 1UL) != 0;
+						tmp = tmp >> 1;
+					}
+				}
+				// last block
+				if (rest > 0) {
+					ar & tmp;
+					for (size_t i = 0; i < rest; ++i) {
+						*ptr++ = (tmp & 1UL) != 0;
+						tmp = tmp >> 1;
+					}
+				}
+			} else {
+				DBG_DO(DBG_POPULATION, cout << "Load long from long. " << endl);
+				// long type from long type.
+				ar & pd.m_genotype;
+			}
+#endif
+			ar & pd.m_info;
 			ar & pd.m_inds;
 			// set pointer after copy this thing again (push_back)
 			m_ancestralPops.push_back(pd);
@@ -2073,10 +2059,8 @@ population & LoadPopulation(const string & file);
 
 #ifndef SWIG
 #  ifndef _NO_SERIALIZATION_
-// version 0: base
-// version 1: save info
-// version 2: reduce binary file size
-BOOST_CLASS_VERSION(simuPOP::population, 2)
+// version 0: base (reset for version 1.0)
+BOOST_CLASS_VERSION(simuPOP::population, 0)
 #  endif
 #endif
 #endif
