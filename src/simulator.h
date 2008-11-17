@@ -108,8 +108,6 @@ namespace simuPOP {
 class simulator : public GenoStruTrait
 {
 public:
-	// DEVONLY{ m_curRep, gen  are reference to
-	// glocal shared variables. }
 	/// create a simulator
 	/**
 	   \param population a population created by \c population()
@@ -222,13 +220,6 @@ public:
 			m_scratchPop = new population(pop);
 		}
 		m_ptrRep[rep]->setRep(rep);
-	}
-
-
-	/// CPPONLY
-	UINT curRep() const
-	{
-		return m_curRep;
 	}
 
 
@@ -359,7 +350,6 @@ private:
 	template<class Archive>
 	void load(Archive & ar, const UINT version)
 	{
-		m_curRep = 1;
 		ULONG l_gen;
 		ar & l_gen;
 
@@ -383,12 +373,6 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 private:
-	/// access current population
-	population & curpopulation()
-	{
-		return *m_ptrRep[m_curRep];
-	}
-
 
 	/// access scratch population
 	population & scratchpopulation()
@@ -400,9 +384,6 @@ private:
 private:
 	/// current generation
 	ULONG m_gen;
-
-	/// index to current population
-	UINT m_curRep;
 
 	/// mating functor that will do the mating.
 	mating * m_matingScheme;

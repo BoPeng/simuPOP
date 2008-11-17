@@ -34,7 +34,7 @@ namespace simuPOP {
 simulator::simulator(const population & pop,
 	mating & matingScheme,
 	int rep)
-	: m_gen(0), m_curRep(0), m_numRep(rep)
+	: m_gen(0), m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
 		"Number of replicates should be greater than or equal one.");
@@ -73,8 +73,6 @@ simulator::simulator(const population & pop,
 	// use pop's geno structure
 	this->setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
 
-	m_curRep = 0;
-
 	// set generation number for all replicates
 	setGen(0);
 
@@ -103,7 +101,6 @@ simulator::~simulator()
 simulator::simulator(const simulator & rhs) :
 	GenoStruTrait(rhs),
 	m_gen(rhs.m_gen),
-	m_curRep(rhs.m_curRep),
 	m_matingScheme(NULL),
 	m_numRep(rhs.m_numRep),
 	m_ptrRep(NULL),
@@ -219,7 +216,7 @@ vectoru simulator::evolve(const vectorop & ops,
 
 	// check compatibility of operators
 	for (size_t i = 0; i < ops.size(); ++i) {
-		DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
+		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
 			"Operator " + ops[i]->__repr__() + " is not compatible.");
 	}
 
@@ -231,13 +228,13 @@ vectoru simulator::evolve(const vectorop & ops,
 		}
 		cout << "Start evolution" << endl;
 
-		for (m_curRep = 0; m_curRep < m_numRep; m_curRep++) {
-			cout << "  Replicate " << m_curRep << endl;
+		for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+			cout << "  Replicate " << curRep << endl;
 			// apply pre-mating ops to current gen()
 			if (!preMatingOps.empty()) {
 				cout << "    Pre-mating operators" << endl;
 				for (size_t it = 0; it < preMatingOps.size(); ++it)
-					if (preMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, true) )
+					if (preMatingOps[it]->isActive(curRep, m_numRep, 0, 0, true) )
 						cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
 			}
 			cout << "    Start mating" << endl;
@@ -248,7 +245,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			if (!postMatingOps.empty()) {
 				cout << "    Apply post-mating operators" << endl;
 				for (size_t it = 0; it < postMatingOps.size(); ++it)
-					if (postMatingOps[it]->isActive(m_curRep, m_numRep, 0, 0, true) )
+					if (postMatingOps[it]->isActive(curRep, m_numRep, 0, 0, true) )
 						cout << "      - " << postMatingOps[it]->__repr__() << postMatingOps[it]->atRepr() << endl;
 			}
 		}
@@ -312,43 +309,45 @@ vectoru simulator::evolve(const vectorop & ops,
 		saveRefCount();
 #endif
 
-		for (m_curRep = 0; m_curRep < m_numRep; m_curRep++) {
-			DBG_ASSERT(static_cast<int>(m_curRep) == curpopulation().rep(), SystemError,
+		for (UINT curRep = 0; curRep < m_numRep; curRep++) {
+			population & curPop = *m_ptrRep[curRep];
+
+			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
 				"Replicate number does not match");
 
-			if (stopped[m_curRep])
+			if (stopped[curRep])
 				continue;
 
 			// set selection off so that all selector has to be preMating
 			// that is to say, if some one set selection=True in a post mating opertor
 			// it will have no effect
-			DBG_FAILIF(curpopulation().hasVar("selection") && curpopulation().getVarAsBool("selection"),
+			DBG_FAILIF(curPop.hasVar("selection") && curPop.getVarAsBool("selection"),
 				ValueError, "Selection is on from previous generation. Did you use PostMating selector?");
 
-			curpopulation().setBoolVar("selection", false);
+			curPop.setBoolVar("selection", false);
 
 			size_t it = 0;                                            // asign a value to reduce compiler warning
 
 			// apply pre-mating ops to current gen()
 			if (!preMatingOps.empty()) {
 				for (it = 0; it < preMatingOps.size(); ++it) {
-					if (!preMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end))
+					if (!preMatingOps[it]->isActive(curRep, m_numRep, m_gen, end))
 						continue;
 
 					try {
-						if (!preMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PreMating)) {
+						if (!preMatingOps[it]->applyWithScratch(curPop, scratchpopulation(), PreMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
-								" stops at replicate " + toStr(curRep()) << endl);
+								" stops at replicate " + toStr(curRep) << endl);
 
-							if (!stopped[m_curRep]) {
+							if (!stopped[curRep]) {
 								numStopped++;
-								stopped[m_curRep] = true;
+								stopped[curRep] = true;
 							}
 						}
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
-							" stops at replicate " + toStr(curRep()) << endl);
+							" stops at replicate " + toStr(curRep) << endl);
 						fill(stopped.begin(), stopped.end(), true);
 						numStopped = stopped.size();
 					} catch (...) {
@@ -364,21 +363,21 @@ vectoru simulator::evolve(const vectorop & ops,
 			activeDurmatingOps.clear();
 			for (vectorop::iterator op = durmatingOps.begin(), opEnd = durmatingOps.end();
 			     op != opEnd; ++op) {
-				if ( (*op)->isActive(m_curRep, m_numRep, m_gen, end))
+				if ( (*op)->isActive(curRep, m_numRep, m_gen, end))
 					activeDurmatingOps.push_back(*op);
 			}
 
 			try {
-				if (!dryrun && !m_matingScheme->mate(curpopulation(), scratchpopulation(), activeDurmatingOps, true)) {
+				if (!dryrun && !m_matingScheme->mate(curPop, scratchpopulation(), activeDurmatingOps, true)) {
 					DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
-						+ toStr(curRep()) << endl);
+						+ toStr(curRep) << endl);
 
 					numStopped++;
-					stopped[m_curRep] = true;
+					stopped[curRep] = true;
 				}
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
-					                       << "During-mating Operator at replicate " + toStr(curRep()) << endl);
+					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
 				fill(stopped.begin(), stopped.end(), true);
 				numStopped = stopped.size();
 			} catch (...) {
@@ -391,20 +390,20 @@ vectoru simulator::evolve(const vectorop & ops,
 			// apply post-mating ops to next gen()
 			if (!postMatingOps.empty()) {
 				for (it = 0; it < postMatingOps.size(); ++it) {
-					if (!postMatingOps[it]->isActive(m_curRep, m_numRep, m_gen, end))
+					if (!postMatingOps[it]->isActive(curRep, m_numRep, m_gen, end))
 						continue;
 
 					try {
-						if (!postMatingOps[it]->applyWithScratch(curpopulation(), scratchpopulation(), PostMating)) {
+						if (!postMatingOps[it]->applyWithScratch(curPop, scratchpopulation(), PostMating)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
-								" stops at replicate " + toStr(curRep()) << endl);
+								" stops at replicate " + toStr(curRep) << endl);
 							numStopped++;
-							stopped[m_curRep] = true;;
+							stopped[curRep] = true;;
 						}
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postMatingOps[it]->__repr__() +
-							" stops at replicate " + toStr(curRep()) << endl);
+							" stops at replicate " + toStr(curRep) << endl);
 						fill(stopped.begin(), stopped.end(), true);
 						numStopped = stopped.size();
 					} catch (...) {
@@ -414,7 +413,7 @@ vectoru simulator::evolve(const vectorop & ops,
 					ElapsedTime("PostMatingOp: " + postMatingOps[it]->__repr__());
 				}
 			}                                                                                   // post mating ops
-			++evolvedGens[m_curRep];
+			++evolvedGens[curRep];
 		}                                                                                       // each replicates
 
 #ifdef Py_REF_DEBUG
@@ -450,15 +449,16 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 		if (ops[i]->canApplyDuringMating())
 			throw TypeError("During-mating operator has to be called by a simulator.");
 		// check compatibility of operators
-		DBG_ASSERT(ops[i]->isCompatible(curpopulation()), ValueError,
+		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
 			"Operator " + ops[i]->__repr__() + " is not compatible.");
 	}
 
 	// really apply
-	for (m_curRep = 0; m_curRep < m_numRep; m_curRep++) {
+	for (UINT curRep = 0; curRep < m_numRep; curRep++) {
 		if (dryrun)
-			cout << "  Replicate " << m_curRep << endl;
+			cout << "  Replicate " << curRep << endl;
 
+		population & curPop = *m_ptrRep[curRep];
 		size_t it;
 
 		// apply pre-mating ops to current gen
@@ -469,11 +469,10 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 				continue;
 			}
 
-			if (!ops[it]->isActive(m_curRep, m_numRep, 0, 0, true))
+			if (!ops[it]->isActive(curRep, m_numRep, 0, 0, true))
 				continue;
 
-			ops[it]->applyWithScratch(curpopulation(),
-				scratchpopulation(), PreMating);
+			ops[it]->applyWithScratch(curPop, scratchpopulation(), PreMating);
 
 			ElapsedTime("PrePost-preMatingop" + toStr(it));
 		}
