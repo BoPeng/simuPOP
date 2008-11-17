@@ -256,7 +256,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			cout << "Apply post-evolution operators: " << endl;
 			apply(postOps, true);
 		}
-		return vectoru(0, m_numRep);
+		return vectoru(m_numRep, 0);
 	}
 
 	// it is possible that a user changes the internal population's
@@ -414,6 +414,7 @@ vectoru simulator::evolve(const vectorop & ops,
 					ElapsedTime("PostMatingOp: " + postMatingOps[it]->__repr__());
 				}
 			}                                                                                   // post mating ops
+			++evolvedGens[m_curRep];
 		}                                                                                       // each replicates
 
 #ifdef Py_REF_DEBUG
@@ -421,7 +422,6 @@ vectoru simulator::evolve(const vectorop & ops,
 #endif
 
 		++m_gen;                                                                  // increase generation!
-		++evolvedGens[m_curRep];
 		--gens;
 		//
 		//   start 0, gen = 2
