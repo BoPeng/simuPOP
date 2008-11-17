@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -452,37 +452,90 @@ recombinator
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simpleExample.log"
+lstparams "caption={A simple example},label={simple-example}"
+
+\end_inset
+
 
 \end_layout
 
 \begin_layout Standard
-These concepts are demonstrated in Example 1, where a standard diploid Wright-Fi
-sher model with recombination is simulated.
+These concepts are demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simple-example"
+
+\end_inset
+
+, where a standard diploid Wright-Fisher model with recombination is simulated.
  The first line imports the standard simuPOP module.
  The second line creates a diploid population with 1000 individuals, each
  having one chromosome with two loci.
  The third line creates a simulator with three replicates of this population.
  Random mating will be used to generate offspring.
- The last statement uses the evolve() function to evolve the populations
- for 100 generations, subject to five operators.
- 
+ The last statement uses the 
+\family typewriter
+evolve()
+\family default
+ function to evolve the populations for 100 generations, subject to five
+ operators.
 \end_layout
 
 \begin_layout Standard
-The first operator initByValue is applied to all populations before evolution.
- This operator initializes all individuals with the same genotype 12/21.
+The first operator 
+\family typewriter
+initByValue
+\family default
+ is applied to all populations before evolution.
+ This operator initializes all individuals with the same genotype 
+\family typewriter
+12/21
+\family default
+.
  The other operators can be applied at every generation.
- recombinator is a during-mating operator that recombines parental chromosomes
- with the given recombination rate 0.01 during the generation of offspring;
- stat calculates linkage disequilibrium between the first and second loci.
- The result of this operator will be stored in a local variable space of
- each population.
- The last two operators pyEval and pyOutput are applied every 10 generations.
- pyEval is applied to all replicates to output calculated linkage disequilibrium
+ 
+\family typewriter
+recombinator
+\family default
+ is a during-mating operator that recombines parental chromosomes with the
+ given recombination rate 
+\family typewriter
+0.01
+\family default
+ during the generation of offspring; 
+\family typewriter
+stat
+\family default
+ calculates linkage disequilibrium between the first and second loci.
+ The results of this operator are stored in a local variable space of each
+ population.
+ The last two operators 
+\family typewriter
+pyEval
+\family default
+ and 
+\family typewriter
+pyOutput
+\family default
+ are applied at the end of every 10 generations.
+ 
+\family typewriter
+pyEval
+\family default
+ is applied to all replicates to output calculated linkage disequilibrium
  values with a trailing tab, and the last operator outputs a newline after
  the last replicate.
  The result is a table of three columns, representing the decay of linkage
  disequilibrium of each replicate at 10 generation intervals.
+ The return value of the 
+\family typewriter
+evolve
+\family default
+ function, which is the number of evolved generations for each replicate,
+ is also printed.
 \end_layout
 
 \begin_layout Section
@@ -495,45 +548,40 @@ simuPOP offers a long list of features, many of which are unique among all
  The most distinguished features include:
 \end_layout
 
-\begin_layout Standard
-1.
- simuPOP provides three types of modules that use 1, 8 or 16 bits to store
+\begin_layout Enumerate
+simuPOP provides three types of modules that use 1, 8 or 16 bits to store
  an allele.
  The binary module (1 bit) is suitable for simulating a large number of
  SNP markers and the long module (16 bits) is suitable for simulating some
  population genetics models such as the infinite allele mutation model.
 \end_layout
 
-\begin_layout Standard
-2.
- An arbitrary number of float numbers, called information fields, can be
+\begin_layout Enumerate
+An arbitrary number of float numbers, called information fields, can be
  attached to individuals of a population.
  For example, information field father_idx and mother_idx are used to track
  an individual’s parents, and pack_year can be used to simulate an environmental
  factor associated with smoking.
 \end_layout
 
-\begin_layout Standard
-3.
- simuPOP does not impose any limit on number of homologous sets of chromosomes,
+\begin_layout Enumerate
+simuPOP does not impose any limit on number of homologous sets of chromosomes,
  the size of the genome, or the number of individuals in a population.
  During an evolutionary process, a population can hold more than one most-recent
  generations.
  Pedigrees can be sampled from such multi-generation populations.
 \end_layout
 
-\begin_layout Standard
-4.
- An operator can be native (implemented in C++) or hybrid (Python assisted).
+\begin_layout Enumerate
+An operator can be native (implemented in C++) or hybrid (Python assisted).
  A hybrid operator calls a user-provided Python function to implement arbitrary
  genetic effects.
  For example, a hybrid mutator passes to-be-mutated alleles to a user-provided
  function and mutates these alleles according to the returned values.
 \end_layout
 
-\begin_layout Standard
-5.
- simuPOP provides more than 70 operators that cover all important aspects
+\begin_layout Enumerate
+simuPOP provides more than 70 operators that cover all important aspects
  of genetic studies.
  These include mutation (k-allele, stepwise, generalized stepwise and hybrid),
  migration (arbitrary, can create new subpopulation), recombination and
@@ -549,9 +597,8 @@ ve or hybrid multi-locus models), penetrance (single, multi-locus or hybrid),
  as Linkage.
 \end_layout
 
-\begin_layout Standard
-6.
- Mating schemes can work on virtual subpopulations of a subpopulation.
+\begin_layout Enumerate
+Mating schemes can work on virtual subpopulations of a subpopulation.
  For example, positive assortative mating can be implemented by mating individua
 ls with similar properties such as ancestry.
  The number of offspring per mating event can be fixed, or can follow a
@@ -889,7 +936,7 @@ In case that you do not have administrative privilege, you may not be able
  in example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "Import-simuPOP-module-add-path"
+reference "simple-example"
 
 \end_inset
 
