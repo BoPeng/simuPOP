@@ -751,8 +751,8 @@ class _VarPlotter_His_Plot(_VarPlotter_His):
     """
 
     def plot(self, pop, expr):
-        gen = pop.gen()
-        rep = pop.rep()
+        gen = pop.dvars().gen
+        rep = pop.dvars().rep
         data = pop.evaluate(expr)
         _data = data
         # now start!
