@@ -320,51 +320,36 @@ An overview of simuPOP concepts
 
 \begin_layout Standard
 A simuPOP 
-\emph on
+\series bold
 population
-\emph default
+\series default
  consists of individuals of the same 
-\emph on
+\series bold
 genotype structure
-\emph default
+\series default
 , which include properties such as number of homologous sets of chromosomes
  (ploidy), number of chromosomes, and names and locations of markers on
  each chromosome.
  Individuals can be divided into 
-\emph on
+\series bold
 subpopulations
-\emph default
+\series default
  that can be further divided into
 \emph on
- virtual subpopulations
+ 
+\series bold
 \emph default
+virtual subpopulations
+\series default
  according to individual properties such as sex, affection status, or arbitrary
  auxiliary information such as age.
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-Operators
-\emph default
- are Python objects that act on a population.
- They can be applied to a population before or after mating during a life
- cycle of an evolutionary process (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:life-cycle"
-
-\end_inset
-
-), or to one or two parents during the production of each offspring.
- Arbitrary numbers of operators can be applied to an evolving population.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -401,10 +386,28 @@ A life cycle of an evolutionary process
 \end_layout
 
 \begin_layout Standard
+
+\series bold
+Operators
+\series default
+ are Python objects that act on a population.
+ They can be applied to a population before or after mating during a life
+ cycle of an evolutionary process (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:life-cycle"
+
+\end_inset
+
+), or to one or two parents during the production of each offspring.
+ Arbitrary numbers of operators can be applied to an evolving population.
+\end_layout
+
+\begin_layout Standard
 A simuPOP 
-\emph on
+\series bold
 mating scheme
-\emph default
+\series default
  is responsible for choosing parent or parents from a parental (virtual)
  subpopulation and for populating an offspring subpopulation.
  simuPOP provides a number of pre-defined mating schemes, such as random,
@@ -412,9 +415,9 @@ mating scheme
  mating in hymenoptera.
  More complicated nonrandom mating schemes such as mating in age-structured
  populations can be constructed using 
-\emph on
+\series bold
 heterogeneous mating schemes
-\emph default
+\series default
 .
  
 \end_layout
@@ -430,23 +433,30 @@ reference "fig:life-cycle"
 
 .
  Briefly speaking, a number of 
-\emph on
+\series bold
 pre-mating operators
-\emph default
+\series default
  such as a 
 \emph on
 mutator
 \emph default
  are applied to a population before a mating scheme repeatedly chooses a
  parent or parents to produce offspring.
- During-mating operators such as 
+ 
+\series bold
+During-mating operators
+\series default
+ such as 
 \emph on
 recombinator
 \emph default
  can be used to adjust how offspring genotypes are formed from parental
  genotypes.
- After an offspring population is populated, post-mating operators can be
- applied, for example, to calculate population statistics.
+ After an offspring population is populated, 
+\series bold
+post-mating operators
+\series default
+ can be applied, for example, to calculate population statistics.
  The offspring population will then become the parental population of the
  next evolutionary cycle.
 \end_layout
@@ -554,6 +564,8 @@ simuPOP provides three types of modules that use 1, 8 or 16 bits to store
  The binary module (1 bit) is suitable for simulating a large number of
  SNP markers and the long module (16 bits) is suitable for simulating some
  population genetics models such as the infinite allele mutation model.
+ simuPOP supports different types of chromosomes such as autosome, sex chromosom
+es and mitochondrial, with arbitrary number of markers.
 \end_layout
 
 \begin_layout Enumerate
@@ -583,22 +595,26 @@ An operator can be native (implemented in C++) or hybrid (Python assisted).
 \begin_layout Enumerate
 simuPOP provides more than 70 operators that cover all important aspects
  of genetic studies.
- These include mutation (k-allele, stepwise, generalized stepwise and hybrid),
- migration (arbitrary, can create new subpopulation), recombination and
- gene conversion (uniform or nonuniform, sex-specific), quantitative trait
- (single, multilocus or hybrid), selection (single-locus, additive, multiplicati
-ve or hybrid multi-locus models), penetrance (single, multi-locus or hybrid),
- ascertainment (case–control, affected sibpairs, random, nuclear and large
- pedigree), statistics calculation (including but not limited to allele,
- genotype, haplotype, heterozygote number and frequency; expected heterozygosity
-; bi-allelic and multi-allelic , and linkage disequilibrium measures; and
- [78]), pedigree tracing, visualization (using R or other Python modules)
- and load/save in simuPOP’s native format and many external formats such
- as Linkage.
+ These include mutation (
+\emph on
+k
+\emph default
+-allele, stepwise, generalized stepwise and hybrid), migration (arbitrary,
+ can create new subpopulation), recombination and gene conversion (uniform
+ or nonuniform, sex-specific), quantitative trait (single, multilocus or
+ hybrid), selection (single-locus, additive, multiplicative or hybrid multi-locu
+s models), penetrance (single, multi-locus or hybrid), ascertainment (case–contr
+ol, affected sibpairs, random, nuclear and large pedigree), statistics calculati
+on (including but not limited to allele, genotype, haplotype, heterozygote
+ number and frequency; expected heterozygosity; bi-allelic and multi-allelic
+ , and linkage disequilibrium measures), pedigree tracing, visualization
+ (using R or other Python modules) and load/save in simuPOP’s native format
+ and many external formats such as Linkage.
 \end_layout
 
 \begin_layout Enumerate
-Mating schemes can work on virtual subpopulations of a subpopulation.
+Mating schemes and many operators can work on virtual subpopulations of
+ a subpopulation.
  For example, positive assortative mating can be implemented by mating individua
 ls with similar properties such as ancestry.
  The number of offspring per mating event can be fixed, or can follow a
@@ -606,101 +622,59 @@ ls with similar properties such as ancestry.
 \end_layout
 
 \begin_layout Standard
-Comparison to other forward-time simulation programs.
- A number of forward-time simulation programs are available.
+A number of forward-time simulation programs are available.
  If we exclude early forward-time simulation applications developed primarily
  for teaching purposes, notable forward-time simulation programs include
- the following:
-\end_layout
-
-\begin_layout Standard
-1.
- easyPOP [12] simulates a large number of markers in haploid, diploid or
- haplodiploid populations.
- It supports a number of nonrandom mating schemes but does not support selection.
- It also lacks important features such as variable recombination rate and
- population size.
-\end_layout
-
-\begin_layout Standard
-2.
- FPG [85] simulates a broad range of conditions including natural selection,
- recombination and migration.
- However, this program is limited by the genome size it can manage because
- it allows for a total genome length of up to 1000 segments, each limited
- to 32 polymorphic sites.
-\end_layout
-
-\begin_layout Standard
-3.
- Nemo [14] provides a C++ framework to simulate the evolution of traits
- (microsatellite markers, deleterious mutations, etc) subject to a variety
- of life-cycle events (mating, dispersal, etc).
- quantiNemo [86] is built on nemo with emphasis on simulating the evolution
- of quantitative traits.
- Users can use a configuration file to select stocked models, or extend
- Nemo at the C++ level.
- The concepts and methods used in these programs primarily target ecology
- applications.
-\end_layout
-
-\begin_layout Standard
-4.
- genomeSIM [15] uses a forward-time population simulation algorithm to simulate
- large-scale genomic data in population based case-control samples.
- It allows users to specify many evolutionary parameters and control evolutionar
-y processes.
- genomeSIMLA [87] extends this program to simulate populations with natural
- LD features, which is the result of random mating, genetic drift, recombination
-, and population growth.
  
-\end_layout
-
-\begin_layout Standard
-5.
- FreGene [16] simulates a population of monoecious, diploid, individuals
- whose genomes consist of a single, linear chromosome.
- FreGene supports a number of mutation, recombination, selection (directional
- and balancing), and demographic (constant or exponential growth) models.
- FreGene uses a rescaling technique to scale the number of generations,
- population size, and the rate parameters to speed up a standard Wright-Fisher
- evolutionary process.
-\end_layout
-
-\begin_layout Standard
-6.
- GenomePop [18] uses the same scaling technique to simulate large populations
- and genomic regions through many generations.
- It supports a comprehensive set of mutation and selection models, flexible
- demographic models, and variable recombination rates.
- It only supports random mating.
-\end_layout
-
-\begin_layout Standard
-7.
- ForwSim [17] employees a look-ahead algorithm to look several generations
- further into a standard Wright-Fisher process, and only simulate chromosomes
- that will contribute material to the future generation.
- It supports only one evolutionary scenario with a fixed mutation model,
- even recombination and constant population size.
-\end_layout
-
-\begin_layout Standard
-8.
- ForSim [19] simulates a general evolutionary process, allowing users to
- specify genetic contributions and interactions, environmental effects,
- multigenic traits and simple networks of genetic contributions, quantitative
- effects of genes and environments, and flexible phenotype-based selection
- models.
- It also supports simple nonrandom mating schemes such as assortative mating.
-\end_layout
-
-\begin_layout Standard
-These programs are designed with specific applications and specific evolutionary
- scenarios in mind, and excel in what they are designed for.
+\emph on
+easyPOP
+\emph default
+, 
+\emph on
+FPG
+\emph default
+, 
+\emph on
+Nemo
+\emph default
+ and 
+\emph on
+quantiNemo
+\emph default
+, 
+\emph on
+genoSIM
+\emph default
+ and 
+\emph on
+genomeSIMLA
+\emph default
+, 
+\emph on
+FreGene
+\emph default
+, 
+\emph on
+GenomePop
+\emph default
+, 
+\emph on
+ForwSim
+\emph default
+, and 
+\emph on
+ForSim
+\emph default
+.
+ These programs are designed with specific applications and specific evolutionar
+y scenarios in mind, and excel in what they are designed for.
  For some applications, these programs may be easier to use than simuPOP.
- For example, ForwSim is among the fastest programs to simulate a standard
- Wright-Fisher process, and should be used if such a simulation is needed.
+ For example, using a special look-ahead algorithm, 
+\emph on
+ForwSim
+\emph default
+ is among the fastest programs to simulate a standard Wright-Fisher process,
+ and should be used if such a simulation is needed.
  However, these programs are not flexible enough to be applied to problems
  outside of their designed application area.
  For example, none of these programs can be used to study the evolution
@@ -709,34 +683,30 @@ These programs are designed with specific applications and specific evolutionary
  Compared to such programs, simuPOP has the following advantages:
 \end_layout
 
-\begin_layout Standard
-1.
- The scripting interface gives simuPOP the flexibility to create arbitrarily
+\begin_layout Itemize
+The scripting interface gives simuPOP the flexibility to create arbitrarily
  complex evolutionary scenarios.
  For example, it is easy to use simuPOP to explicitly introduce a disease
  predisposing mutant to an evolving population, trace the allele frequency
  of them, and restart the simulation if they got lost due to genetic drift.
 \end_layout
 
-\begin_layout Standard
-2.
- The Python interface allows users to define customized genetic effects
- in Python.
+\begin_layout Itemize
+The Python interface allows users to define customized genetic effects in
+ Python.
  In contrast, other programs either do not allow customized effects or force
  users to modify code at a lower (e.g.
  C++) level.
 \end_layout
 
-\begin_layout Standard
-3.
- simuPOP is the only application that embodies the concept of virtual subpopulat
-ion that allows evolutions at a finer scale.
+\begin_layout Itemize
+simuPOP is the only application that embodies the concept of virtual subpopulati
+on that allows evolutions at a finer scale.
  This is required for realistic simulations of complex evolutionary scenarios.
 \end_layout
 
-\begin_layout Standard
-4.
- simuPOP allows users to examine an evolutionary process very closely because
+\begin_layout Itemize
+simuPOP allows users to examine an evolutionary process very closely because
  all simuPOP objects are Python objects that can be assessed using their
  member functions.
  For example, users can keep track of genotype at particular loci during
@@ -745,75 +715,77 @@ ion that allows evolutions at a finer scale.
  limited types of statistics can be outputted.
 \end_layout
 
-\begin_layout Chapter
-Installing simuPOP
+\begin_layout Section
+Installation
 \end_layout
 
 \begin_layout Standard
-Binary libraries of 
+simuPOP is distributed under a GPL license and is hosted on
 \family typewriter
-simuPOP
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://simupop.sourceforge.net"
+
+\end_inset
+
+
 \family default
- are provided for linux, windows, solaris and mac systems.
- Source code and development documentations are also available for easy
- porting to other platforms.
- Both source code and binaries can be distributed free-of-charge under GPL
- license.
- Compiled libraries for Linux (RHEL4 and Mandriva) and windows XP.
- Solaris and MacOSX binaries are currently not provided due to machine availabil
-ity.
- In most cases, you will only need to download simuPOP and follow the usual
- installation process of your platform.
- For example, if you use a windows system and have Python 2.3.3 installed,
- you should download 
-\family typewriter
-simupop-x.x.x-py23-win32.exe
-\family default
-.
- Double click the 
-\family typewriter
-.exe
-\family default
- file to install.
+, the world's largest development and download repository of Open Source
+ code and applications.
+ simuPOP is available on any platform where Python is available.
+ Source code and binary packages for Windows, Linux, MacOS X, and Sun Solaris
+ systems are released regularly.
+\end_layout
+
+\begin_layout Standard
+simuPOP is currently tested under both 32 and 64 bits of Windows (Windows
+ 2000 and later), Linux (Redhat), MacOS X and Sun Solaris systems.
+ Different C++ compilers such as Microsoft Visual C++, gcc and Intel icc
+ are supported under different operating systems.
+ Standard installation packages are provided for these platforms.
  
 \end_layout
 
 \begin_layout Standard
-Things can get complicated when you have an earlier/later versions of OS,
- compiler or Python and have to compile simuPOP from source.
- The 
+If a binary distribution is unavailable for a specific platform, it is usually
+ easy to compile simuPOP from source, following the standard 
 \family typewriter
-installation
-\family default
- section of simuPOP homepage has detailed instructions.
- A single command 
-\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
 python setup.py install
+\begin_inset Quotes erd
+\end_inset
+
+
 \family default
- will usually suffice.
+ procedure.
+ Instructions in the 
+\family typewriter
+INSTALL
+\family default
+ file and the simuPOP mailing list can provide additional information.
 \end_layout
 
 \begin_layout Standard
-All resources, including a pdf version of this manual and a mailing list
- can be found at the simuPOP homepage.
- Python has a large number of modules.
- For simple tasks like dataset generation, simuPOP modules alone are enough.
- However, it is highly recommended that you install 
+Due to the glue language nature of Python, it is easy to make use of other
+ Python modules and applications in a simuPOP script.
+ It is highly recommended that you install 
 \end_layout
 
 \begin_layout Itemize
-R and a python module rpy: although other piloting modules/methods can be
- used, simuPOP mainly uses R for this purpose.
- The advantage of this method is that R is not only an excellent plotting
- tool, but also a widely used statistical analysis package.
- It also has some genetic packages that can be used to analyze simuPOP generated
- datasets.
+R and a python module rpy that links Python and R.
+ simuPOP uses R for statistical analyses and graphics.
+ It is also possible to make use of some R libraries to analyze genetic
+ data.
 \end_layout
 
 \begin_layout Itemize
-wxPython: By default, simuPOP uses Tkinter to get parameters (the parameter
- dialog).
- It will use wxPython automatically if wxPython is available.
+wxPython: simuPOP uses TkInter for some GUI related tasks, such as getting
+ parameters from a parameter dialog.
+ simuPOP can use wxPython automatically if wxPython is available.
  This will enable a bunch of other GUI improvements including a nicer version
  of 
 \family typewriter
@@ -821,6 +793,115 @@ ListVars()
 \family default
  function.
  
+\end_layout
+
+\begin_layout Section
+Naming Conventions
+\end_layout
+
+\begin_layout Standard
+Before we dive into the details of simuPOP, it is helpful to know a few
+ name conventions that simuPOP tries to follow.
+ Generally speaking, 
+\end_layout
+
+\begin_layout Itemize
+All classes (objects, e.g.
+ 
+\family typewriter
+population
+\family default
+()), member functions (e.g.
+ 
+\family typewriter
+population::vars()
+\family default
+) and parameter names start with small character and use capital character
+ for the first character of each word afterward (e.g.
+ 
+\family typewriter
+population::subPopSize(), individual::setInfo
+\family default
+()).
+\end_layout
+
+\begin_layout Itemize
+Standalone functions start with capital character.
+ This is how you can differ an operator from its function version.
+ For example, 
+\family typewriter
+TurnOnDebug(DBG_POPULATION)
+\family default
+ is the function to turn on debug mode for population related functions
+ and 
+\family typewriter
+turnOnDebug(DBG_POPULATION) 
+\family default
+will do nothing apparently, because it creates an operator.
+ 
+\end_layout
+
+\begin_layout Itemize
+Constants start with Capital characters as well.
+ They are usually prefixed with a category name.
+ For example, 
+\family typewriter
+MigrByProportion
+\family default
+ specifies a migration mode.
+\end_layout
+
+\begin_layout Standard
+Finally, simuPOP uses the abbreviated forms of the following words in function
+ and parameter names:
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+pos 
+\family default
+(position)
+\family typewriter
+,  info 
+\family default
+(information)
+\family typewriter
+, migr 
+\family default
+(migration)
+\family typewriter
+, subPop 
+\family default
+(subpopulation and virtual subpopulation)
+\family typewriter
+, rep 
+\family default
+(replicate)
+\family typewriter
+, gen 
+\family default
+(generation)
+\family typewriter
+, ops 
+\family default
+(operators)
+\family typewriter
+, expr 
+\family default
+(expression),
+\family typewriter
+ stmts 
+\family default
+(statements).
+\end_layout
+
+\begin_layout Chapter
+simuPOP components
+\end_layout
+
+\begin_layout Section
+simuPOP modules
 \end_layout
 
 \begin_layout Standard
@@ -2086,175 +2167,6 @@ th population from the simulator instead of copying it, and bypassing a
 \end_layout
 
 \begin_layout Section
-Zero-based indexes, ranges, absolute and relative indexes
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-All arrays in simuPOP start at index 0
-\series default
-.
- This conforms to Python and C++ indexes.
- To avoid confusion, I will refer the first locus as locus zero, the second
- locus as locus one; the first individual in a population as individual
- zero, and so on.
-\end_layout
-
-\begin_layout Standard
-Ranges in simuPOP also conforms to Python ranges.
- That is to say, a range has the form of 
-\family typewriter
-[a,b) 
-\family default
-where 
-\family typewriter
-a 
-\family default
-belongs to the range, and 
-\family typewriter
-b 
-\family default
-does not.
- For example, 
-\family typewriter
-pop.chromBegin(1) 
-\family default
-refers to the index of the first locus on chromosome 1 (actually exists),
- and 
-\family typewriter
-pop.chromEnd(1) 
-\family default
-is the index of the last locus on chromosome 1
-\series bold
- plus 1
-\series default
-, which might or might not be a valid index.
- In this way
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-for locus in range(pop.chromBegin(1), pop.chromEnd(1)):
-\end_layout
-
-\begin_layout Plain Layout
-
-    print locus
-\end_layout
-
-\end_inset
-
-will iterate through all locus on chromosome 1.
- 
-\end_layout
-
-\begin_layout Standard
-Another two important concepts are the
-\emph on
- absolute index
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!absolute
-\end_layout
-
-\end_inset
-
-
-\emph default
- and
-\emph on
- 
-\emph default
-the
-\emph on
- relative index
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!relative
-\end_layout
-
-\end_inset
-
- 
-\emph default
-of a locus.
- The former index ignores chromosome structure.
-
-\emph on
- 
-\emph default
-For example, if there are 5 and 7 loci on the first two chromosomes, the
- absolute indexes of the two chromosomes are (0, 1, 2, 3, 4), (5, 6, 7,
- 8, 9, 10, 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3,
- 4, 5, 6).
- Absolute indexes are more frequently used because they avoid the trouble
- of having to use two numbers (chrom, index) to refer to a locus.
- Two functions 
-\family typewriter
-chromLocusPair(absIndex)
-\family default
- and 
-\family typewriter
-absLocusIndex(chrom,index)
-\family default
- are provided to convert between these two kinds of indexes.
- An individual can also be referred by its 
-\emph on
-absolute index
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!absolute
-\end_layout
-
-\end_inset
-
-
-\emph default
- and
-\emph on
- relative index
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-index!relative
-\end_layout
-
-\end_inset
-
- 
-\emph default
-where 
-\emph on
-relative index 
-\emph default
-is the index in its subpopulation.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/absIndex.log"
-lstparams "caption={Conversion between absolute and relative indexes},label={absIndex}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Debug-related operators/functions
 \end_layout
 
@@ -2503,94 +2415,6 @@ ticToc
  operator is better.
 \end_layout
 
-\begin_layout Section
-Naming Conventions
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-simuPOP
-\family default
- follows the following naming conventions.
-\end_layout
-
-\begin_layout Itemize
-Classes (objects), member functions and parameter names start with small
- character and use capital character for the first character of each word
- afterward.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-population, population::subPopSize(), individual::setInfo()
-\end_layout
-
-\begin_layout Itemize
-Standalone functions start with capital character.
- This is how you can differ an operator from its function version.
- For example, 
-\family typewriter
-initByFreq(vars)
-\family default
- is an operator and 
-\family typewriter
-InitByFreq(pop, vars)
-\family default
- is its function version (equivalent to 
-\family typewriter
-initByFreq(vars).apply(pop)
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-Constants start with Capital characters.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-MigrByProportion, StatNumOfFemale
-\end_layout
-
-\begin_layout Itemize
-The following words in function names are abbreviated:
-\end_layout
-
-\begin_layout LyX-Code
-pos (position),  info (information), migr (migration), subPop (subpopulation),
- 
-\begin_inset Newline newline
-\end_inset
-
-(rep) replicate, gen (generation), ops (operators), 
-\begin_inset Newline newline
-\end_inset
-
-expr (expression), stmts (statements) 
-\end_layout
-
-\begin_layout Subsection
-Availability
-\end_layout
-
-\begin_layout Standard
-simuPOP is available on any platform where Python is available.
- It is current tested under both 32 and 64 bits of Windows (Windows 2000
- and later), Linux (Redhat), MacOS X and Sun Solaris systems.
- Different C++ compilers such as Microsoft Visual C++, gcc and Intel icc
- are supported under different operating systems.
-\end_layout
-
-\begin_layout Standard
-simuPOP is distributed under a GPL license and is hosted on sourceforge.net,
- the world's largest development and download repository of Open Source
- code and applications.
- Source code and binary packages for Windows, Linux, MacOS X, and Sun Solaris
- systems are released roughly monthly (with about 30 releases in the past
- 3 years).
-\end_layout
-
 \begin_layout Chapter
 simuPOP components
 \end_layout
@@ -2612,6 +2436,175 @@ In this chapter, I will start from an simple example and them explain several
 simuPOP reference manual
 \emph default
 .
+\end_layout
+
+\begin_layout Section
+Zero-based indexes, ranges, absolute and relative indexes
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+All arrays in simuPOP start at index 0
+\series default
+.
+ This conforms to Python and C++ indexes.
+ To avoid confusion, I will refer the first locus as locus zero, the second
+ locus as locus one; the first individual in a population as individual
+ zero, and so on.
+\end_layout
+
+\begin_layout Standard
+Ranges in simuPOP also conforms to Python ranges.
+ That is to say, a range has the form of 
+\family typewriter
+[a,b) 
+\family default
+where 
+\family typewriter
+a 
+\family default
+belongs to the range, and 
+\family typewriter
+b 
+\family default
+does not.
+ For example, 
+\family typewriter
+pop.chromBegin(1) 
+\family default
+refers to the index of the first locus on chromosome 1 (actually exists),
+ and 
+\family typewriter
+pop.chromEnd(1) 
+\family default
+is the index of the last locus on chromosome 1
+\series bold
+ plus 1
+\series default
+, which might or might not be a valid index.
+ In this way
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+for locus in range(pop.chromBegin(1), pop.chromEnd(1)):
+\end_layout
+
+\begin_layout Plain Layout
+
+    print locus
+\end_layout
+
+\end_inset
+
+will iterate through all locus on chromosome 1.
+ 
+\end_layout
+
+\begin_layout Standard
+Another two important concepts are the
+\emph on
+ absolute index
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!absolute
+\end_layout
+
+\end_inset
+
+
+\emph default
+ and
+\emph on
+ 
+\emph default
+the
+\emph on
+ relative index
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!relative
+\end_layout
+
+\end_inset
+
+ 
+\emph default
+of a locus.
+ The former index ignores chromosome structure.
+
+\emph on
+ 
+\emph default
+For example, if there are 5 and 7 loci on the first two chromosomes, the
+ absolute indexes of the two chromosomes are (0, 1, 2, 3, 4), (5, 6, 7,
+ 8, 9, 10, 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3,
+ 4, 5, 6).
+ Absolute indexes are more frequently used because they avoid the trouble
+ of having to use two numbers (chrom, index) to refer to a locus.
+ Two functions 
+\family typewriter
+chromLocusPair(absIndex)
+\family default
+ and 
+\family typewriter
+absLocusIndex(chrom,index)
+\family default
+ are provided to convert between these two kinds of indexes.
+ An individual can also be referred by its 
+\emph on
+absolute index
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!absolute
+\end_layout
+
+\end_inset
+
+
+\emph default
+ and
+\emph on
+ relative index
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+index!relative
+\end_layout
+
+\end_inset
+
+ 
+\emph default
+where 
+\emph on
+relative index 
+\emph default
+is the index in its subpopulation.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/absIndex.log"
+lstparams "caption={Conversion between absolute and relative indexes},label={absIndex}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
