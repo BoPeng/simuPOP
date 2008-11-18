@@ -57,7 +57,7 @@ namespace simuPOP {
 // 	 */
 // 	pySubset(const vectori & keep = vectori(),
 // 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+// 	         repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 // 		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 // 		m_keep(keep)
 // 	{
@@ -156,7 +156,7 @@ namespace simuPOP {
 // 	sample(const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 // 	       const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 // 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+// 	       repList rep = repList(), const vectorstr & infoFields = vectorstr())
 // 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 // 		m_name(name), m_nameExpr(nameExpr, ""), m_times(times), m_saveAs(saveAs),
 // 		m_saveAsExpr(saveAsExpr), m_format(format)
@@ -262,7 +262,7 @@ namespace simuPOP {
 // 	             const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 // 	             const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 // 	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	             int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+// 	             repList rep = repList(), const vectorstr & infoFields = vectorstr())
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, infoFields),
 // 		m_size(size)
@@ -334,7 +334,7 @@ namespace simuPOP {
 // 	                  bool spSample = false, const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 // 	                  const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 // 	                  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	                  int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+// 	                  repList rep = repList(), const vectorstr & infoFields = vectorstr())
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep,infoFields),
 // 		m_numCases(cases), m_numControls(controls), m_spSample(spSample),
@@ -423,7 +423,7 @@ namespace simuPOP {
 // 	                      const string & format = "auto",
 // 	                      int stage = PostMating, int begin = 0, int end = -1,
 // 	                      int step = 1, vectorl at = vectorl(),
-// 	                      int rep = REP_ALL,
+// 	                      repList rep = repList(),
 // 	                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, infoFields),
@@ -502,7 +502,7 @@ namespace simuPOP {
 // 	                    const string & format = "auto",
 // 	                    int stage = PostMating, int begin = 0, int end = -1,
 // 	                    int step = 1, vectorl at = vectorl(),
-// 	                    int rep = REP_ALL,
+// 	                    repList rep = repList(),
 // 	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, infoFields),
@@ -584,7 +584,7 @@ namespace simuPOP {
 // 	                    const string & format = "auto",
 // 	                    int stage = PostMating, int begin = 0, int end = -1,
 // 	                    int step = 1, vectorl at = vectorl(),
-// 	                    int rep = REP_ALL,
+// 	                    repList rep = repList(),
 // 	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, infoFields),
@@ -671,7 +671,7 @@ namespace simuPOP {
 // 	         const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 // 	         const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 // 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	         int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+// 	         repList rep = repList(), const vectorstr & infoFields = vectorstr())
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, infoFields),
 // 		m_keepAncestralPops(keepAncestralPops)

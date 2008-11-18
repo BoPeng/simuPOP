@@ -47,7 +47,7 @@ public:
 	/// create a \c tagger, default to be always active but no output
 	tagger(string output = "", string outputExpr = "",
 	       int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL,
+	       repList rep = repList(),
 	       const vectorstr & infoFields = vectorstr());
 
 	/// destructor
@@ -91,7 +91,7 @@ public:
 	 \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
-	              vectorl at = vectorl(), int rep = REP_ALL,
+	              vectorl at = vectorl(), repList rep = repList(),
 	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
 		tagger(output, outputExpr, begin, end, step, at, rep, infoFields), m_mode(mode)
@@ -150,7 +150,7 @@ public:
 	/// create a \c parentTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL,
+	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	             string output = "", string outputExpr = "",
 	             const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
 		tagger(output, outputExpr, begin, end, step, at, rep, infoFields),
@@ -216,7 +216,7 @@ public:
 	/// create a \c parentsTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL,
+	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
 		tagger(output, outputExpr, begin, end, step, at, rep, infoFields),
@@ -267,7 +267,7 @@ class infoTagger : public tagger
 {
 public:
 	infoTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL,
+	           repList rep = repList(),
 	           int stage = PostMating, string output = ">", string outputExpr = "",
 	           const vectorstr & infoFields = vectorstr()) :
 		tagger(output, outputExpr, begin, end, step, at, rep, infoFields)
@@ -291,7 +291,7 @@ public:
 	 \param code  code for Male and Female, default to 1 and 2, respectively.
 	   This is used by Linkage format.
 	 */
-	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL,
+	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	          int stage = PostMating, string output = ">", string outputExpr = "",
 	          const vectorstr & infoFields = vectorstr());
 
@@ -312,7 +312,7 @@ public:
 	 \param code  code for Male and Female, default to 1 and 2, respectively.
 	   This is used by Linkage format.
 	 */
-	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), int rep = REP_ALL,
+	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	                int stage = PostMating, string output = ">", string outputExpr = "",
 	                const vectorstr & infoFields = vectorstr());
 
@@ -343,7 +343,7 @@ public:
 	   	offspring. The return value has to be a list even if only one field is given.
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
-	         int step = 1, vectorl at = vectorl(), int rep = REP_ALL,
+	         int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	         string output = "", string outputExpr = "",
 	         const vectorstr & infoFields = vectorstr()) :
 		tagger(output, outputExpr, begin, end, step, at, rep, infoFields)

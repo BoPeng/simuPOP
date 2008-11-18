@@ -37,7 +37,9 @@ version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Remove operator terminator and continueIf.
   - CHG: Reset file format number. No longer support previous file formats.
   - NEW: Proper handling of mitochondrial DNA in recombinator.
-
+  - NEW: add simulator::populations().
+  - NEW: Allow the use of multiple replicates for an operator. Remove REP_ALL (now []),
+		and REP_LAST (now -1).
 
 version 0.8.8 - (Rev 1787) Oct 24, 2008
   - CHG: Remove the replicate group feature.

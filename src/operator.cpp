@@ -28,8 +28,7 @@ namespace simuPOP {
 bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly)
 {
 	// rep does not match
-	if ( (m_rep >= 0 && static_cast<UINT>(m_rep) != rep) ||
-	    (m_rep == REP_LAST && rep != numRep - 1) )
+	if (!m_rep.match(rep, numRep))
 		return false;
 
 	// only check for rep value.

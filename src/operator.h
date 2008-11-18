@@ -49,6 +49,39 @@ using std::string;
 
 namespace simuPOP {
 
+/** A class to specify replicate list. The reason why I cannot simple
+ *  use vectori() is that users have got used to use a single number
+ *  to specify a single replicate.
+ */
+class repList {
+public:
+	repList(const vectori & reps = vectori()) : m_reps(reps)
+	{
+	}
+
+	repList(int rep) : m_reps(1, rep)
+	{
+	}
+
+	bool match(int rep, UINT numRep)
+	{
+		if (m_reps.empty())
+			return true;
+		vectori::iterator it = m_reps.begin();
+		vectori::iterator it_end = m_reps.end();
+		for (; it != it_end; ++it)
+			// when rep number is negative.
+			// numRep = 5 replicates
+			// *it = -1: last replicate, 5 - 1 = 4
+			// *it = -2: replicate 3.
+			if ((*it >= 0 && *it == rep) || (*it < 0 && *it + static_cast<int>(numRep) == rep)) 
+				return true;
+		return false;
+	}
+private:
+	vectori m_reps;
+};
+
 /// base class of all classes that manipulate populations
 /**
    Operators are objects that act on populations. They can be
@@ -140,8 +173,8 @@ public:
 	 \param step the number of generations between active generations. Default to \c 1.
 	 \param at an array of active generations. If given, \c stage, \c begin, \c end,
 	   and \c step will be ignored.
-	 \param rep applicable replicates. It can be a valid replicate number, \c REP_ALL
-	   (all replicates, default), or \c REP_LAST (only the last replicate). \c REP_LAST
+	 \param rep applicable replicates. It can be a valid replicate number, \c vectori()
+	   (all replicates, default), or \c -1 (only the last replicate). \c -1
 	   is useful in adding newlines to a table output.
 	 \param output a string of the output filename. Different operators will have
 	   different default \c output (most commonly \c '>' or \c '').
@@ -154,15 +187,15 @@ public:
 	 \li Negative generation numbers are allowed for parameters \c begin, \c end and \c at. They are
 	   interpreted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
 	   <tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
-	 \li <tt>REP_ALL, REP_LAST</tt> are special constant that can only be used in the
-	   constructor of an operator. That is to say, explicit test of <tt>rep() == REP_LAST</tt>
+	 \li <tt>vectori(), -1</tt> are special constant that can only be used in the
+	   constructor of an operator. That is to say, explicit test of <tt>rep() == -1</tt>
 	   will not work.
 
 	 \test src_operator.log Common features of all operators
 	 */
 	baseOperator(string output, string outputExpr, int stage,
 	             int begin, int end, int step, vectorl at,
-	             int rep, const vectorstr & infoFields) :
+	             repList rep, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
 		m_flags(0), m_rep(rep),
 		m_ostream(output, outputExpr), m_infoFields(infoFields),
@@ -204,7 +237,7 @@ public:
 
 	/// return applicable replicate
 	/// CPPONLY
-	int applicableReplicate()
+	repList applicableReplicate()
 	{
 		return m_rep;
 	}
@@ -212,7 +245,7 @@ public:
 
 	/// set applicable replicate
 	/// CPPONLY
-	void setApplicableReplicate(int rep)
+	void setApplicableReplicate(repList rep)
 	{
 		m_rep = rep;
 	}
@@ -478,7 +511,7 @@ private:
 	unsigned char m_flags;
 
 	/// apply to all (-1) or one of the replicates.
-	int m_rep;
+	repList m_rep;
 
 	/// the output stream
 	StreamProvider m_ostream;
@@ -529,7 +562,7 @@ public:
 	      bool exposePop = true, string popName = "pop",
 	      string output = ">", string outputExpr = "",
 	      int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	      int rep = REP_LAST, const vectorstr & infoFields = vectorstr()) :
+	      repList rep = -1, const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 		m_exposePop(exposePop), m_popName(popName)
@@ -586,7 +619,7 @@ public:
 	 */
 	noneOp(string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = 0, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	       repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", "", stage, begin, end, step, at, rep, infoFields)
 	{
 	}
@@ -665,7 +698,7 @@ public:
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	       repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
 	{
@@ -742,7 +775,7 @@ public:
 	/// create a timer
 	ticToc(string output = ">", string outputExpr = "",
 	       int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	       repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields)
 	{
 		time(&m_startTime);
@@ -789,7 +822,7 @@ public:
 	/// create a \c setAncestralDepth operator
 	setAncestralDepth(int depth, string output = ">", string outputExpr = "",
 	                  int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	                  int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	                  repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_depth(depth)
 	{
@@ -845,7 +878,7 @@ public:
 	/// create a \c turnOnDebug operator
 	turnOnDebug(DBG_CODE code,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	            repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_code(code)
 	{
@@ -894,7 +927,7 @@ public:
 	/// create a \c turnOffDebug operator
 	turnOffDebug(DBG_CODE code,
 	             int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	             repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_code(code)
 	{
@@ -977,7 +1010,7 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 	           int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
 	           int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	           repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 	{
@@ -1077,7 +1110,7 @@ public:
 	pyIndOperator(PyObject * func, const vectoru & loci = vectoru(), PyObject * param = NULL,
 	              int stage = PostMating, bool formOffGenotype = false,
 	              int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	              int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	              repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
 		m_func(func), m_loci(loci), m_param(param)
 	{
