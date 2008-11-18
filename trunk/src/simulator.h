@@ -355,17 +355,14 @@ public:
 	/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
 	/**
 	   \param filename filename to save the simulator. Default to \c simu.
-	   \param format obsolete parameter
-	   \param compress obsolete parameter
 	 */
-	void save(string filename, string format = "", bool compress = true) const;
+	void save(string filename) const;
 
 	/// CPPONLY load simulator from a file
 	/**
 	   \param filename load from filename
-	   \param format obsolete parameter
 	 */
-	void load(string filename, string format = "");
+	void load(string filename);
 
 	// allow str(population) to get something better looking
 	/// used by Python print function to print out the general information of the simulator
@@ -449,8 +446,7 @@ private:
 
 /// load a simulator from a file with the specified mating scheme. The file format is by default determined by file extension (<tt>format="auto"</tt>). Otherwise, \c format can be one of \c txt, \c bin, or \c xml.
 simulator & LoadSimulator(const string & file,
-	mating & mate,
-	string format = "auto");
+	mating & matingScheme);
 
 }
 
