@@ -33,10 +33,10 @@ namespace simuPOP {
 
 population & pyPopIterator::next()
 {
-    if (m_index == m_end)
-        throw StopIteration("");
-    else
-        return **(m_index++);
+	if (m_index == m_end)
+		throw StopIteration("");
+	else
+		return **(m_index++);
 }
 
 
@@ -347,14 +347,18 @@ vectoru simulator::evolve(const vectorop & ops,
 							if (!stopped[curRep]) {
 								numStopped++;
 								stopped[curRep] = true;
+								break;
 							}
 						}
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
+						if (!e.message().empty())
+							cout << e.message() << endl;
 						fill(stopped.begin(), stopped.end(), true);
 						numStopped = stopped.size();
+						break;
 					} catch (...) {
 						cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
@@ -363,6 +367,8 @@ vectoru simulator::evolve(const vectorop & ops,
 				}
 			}
 
+			if (stopped[curRep])
+				continue;
 			// start mating:
 			// find out active during-mating operators
 			activeDurmatingOps.clear();
@@ -379,12 +385,18 @@ vectoru simulator::evolve(const vectorop & ops,
 
 					numStopped++;
 					stopped[curRep] = true;
+					// does not execute post-mating operator
+					continue;
 				}
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
+				if (!e.message().empty())
+					cout << e.message() << endl;
 				fill(stopped.begin(), stopped.end(), true);
 				numStopped = stopped.size();
+				// does not execute post mating operator
+				continue;
 			} catch (...) {
 				cout << "mating or one of the during mating operator throws an exception." << endl << endl;
 				throw;
@@ -403,14 +415,20 @@ vectoru simulator::evolve(const vectorop & ops,
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep) << endl);
 							numStopped++;
-							stopped[curRep] = true;;
+							stopped[curRep] = true;
+							// does not run the rest of the post-mating operators.
+							break;
 						}
 					} catch (StopEvolution e) {
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
+						if (!e.message().empty())
+							cout << e.message() << endl;
 						fill(stopped.begin(), stopped.end(), true);
 						numStopped = stopped.size();
+						// does not run the rest of the post-mating operators.
+						break;
 					} catch (...) {
 						cout << "PostMating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
 						throw;
@@ -418,6 +436,7 @@ vectoru simulator::evolve(const vectorop & ops,
 					ElapsedTime("PostMatingOp: " + postMatingOps[it]->__repr__());
 				}
 			}                                                                                   // post mating ops
+			// if a replicate stops at a post mating operator, consider one evolved generation.
 			++evolvedGens[curRep];
 		}                                                                                       // each replicates
 
@@ -526,7 +545,7 @@ void simulator::load(string filename)
 simulator & LoadSimulator(const string & file, mating & matingScheme)
 {
 	population p;
-	simulator * a = new simulator( p, matingScheme);
+	simulator * a = new simulator(p, matingScheme);
 
 #ifndef _NO_SERIALIZATION_
 	a->load(file);

@@ -11060,50 +11060,42 @@ Arguments:
 
 %feature("docstring") simuPOP::simulator::evolve "
 
-Description:
-
-    evolve all replicates of the population, subject to operators
-
 Usage:
 
     x.evolve(ops, preOps=[], postOps=[], gen=-1, dryrun=False)
 
 Details:
 
-    Evolve to the end generation unless end=-1. An operator
-    (terminator) may stop the evolution earlier.
-    ops will be applied to each replicate of the population in the
-    order of:
-    *  all pre-mating opertors
-    *  during-mating operators called by the mating scheme at the
-    birth of each offspring
-    *  all post-mating operators If any pre- or post-mating operator
-    fails to apply, that replicate will be stopped.
-
-Arguments:
-
-    ops:            operators that will be applied at each generation,
-                    if they are active at that generation. (Determined
-                    by the begin, end, step and at parameters of the
-                    operator.)
-    preOps:         operators that will be applied before evolution.
-                    evolve() function will not check if they are
-                    active.
-    postOps:        operators that will be applied after evolution.
-                    evolve() function will not check if they are
-                    active.
-    gen:            generations to evolve. Default to -1. In this
-                    case, there is no ending generation and a
-                    simulator will only be ended by a terminator. Note
-                    that simu.gen() refers to the begining of a
-                    generation, and starts at 0.
-    dryrun:         dryrun mode. Default to False.
-
-Note:
-
-    When gen = -1, you can not specify negative generation parameters
-    to operators. How would an operator know which genertion is the -1
-    genertion if no ending genertion is given?
+    Evolve all populations gen generations, subject to operators
+    opspreOps and postOps. Operators preOps are applied to all
+    populations (subject to applicability restrictions of the
+    operators, imposed by the rep parameter of these operators) before
+    evolution. They are usually used to initialize populations.
+    Operators postOps are applied to all populations after the
+    evolution.
+    Operators ops are applied during the life cycle of each
+    generation. Depending on the stage of these operators, they can be
+    applied before-, during-, and/or post-mating. These operators can
+    be applied at all or some of the generations, depending the begin,
+    end, step, and at parameters of these operators. Populations in a
+    simulator are evolved one by one. At each generation, the
+    applicability of these operators are determined. Pre-mating
+    operators are applied to a population first. A mating scheme is
+    then used to populate an offspring generation, using applicable
+    during-mating operators. After an offspring generation is
+    successfully generated and becomes the current generation,
+    applicable post-mating operators are applied to it. Because the
+    order at which operators are applied can be important, and the
+    stage(s) at which operators are applied are not always clear, a
+    parameter dryRun can be used. If set to True, this function will
+    print out the order at which all operators are applied, without
+    actually evolving the populations.
+    Parameter gen can be set to a positive number, which is the number
+    of generations to evolve. If gen is negative (default), the
+    evolution will continue indefinitely, until all replicates are
+    stopped by a special kind of operators called terminators. At the
+    end of the evolution, the generations that each replicates have
+    evolved are returned.
 
 "; 
 
@@ -12575,7 +12567,12 @@ Details:
 
     This operator evaluates an expression in a population's local
     namespace and terminate the evolution of this population, or the
-    whole simulator if the return value of this expression is True.
+    whole simulator, if the return value of this expression is True.
+    Termination caused by an operator will stop the execution of all
+    operators after it. Because a life-cycle is considered to be
+    complete if mating is complete, the evolved generations (return
+    value from  simulator::evolve) of a terminated replicate is
+    determined by when the last evolution cycle is terminated.
 
 "; 
 

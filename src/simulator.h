@@ -78,7 +78,7 @@ class pyPopIterator
 {
 public:
 	pyPopIterator(vector<population *>::iterator const begin,
-		vector<population *>::iterator const end) : 
+		vector<population *>::iterator const end) :
 		m_index(begin),
 		m_end(end)
 	{
@@ -157,7 +157,7 @@ public:
 	 */
 	simulator(const population & pop, mating & matingScheme,
 		int rep = 1);
-	
+
 	// destroy a simulator along with all its populations
 	/**
 	   \note <tt>pop = simulator::population()</tt>
@@ -287,36 +287,36 @@ public:
 	}
 
 
-	/// evolve all replicates of the population, subject to operators
-	/**
-	   Evolve to the \c end generation unless \c end=-1. An operator (terminator)
-	   may stop the evolution earlier.
-	   \n
-	   \c ops will be applied to each replicate of the population in the order of:
-	   \li all pre-mating opertors
-	   \li during-mating operators called by the mating scheme at the
-	   birth of each offspring
-	   \li all post-mating operators
-	   If any pre- or post-mating operator fails to apply, that
-	   replicate will be stopped.
-
-	   \param ops operators that will be applied at each generation,
-	   if they are active at that generation. (Determined by
-	   the \c begin, \c end, \c step and \c at parameters of the operator.)
-	   \param preOps operators that will be applied before evolution.
-	   \c evolve() function will \em not check if they are active.
-	   \param postOps operators that will be applied after evolution.
-	   \c evolve() function will \em not check if they are active.
-	   \param gen generations to evolve. Default to \c -1. In this case, there
-	   is no ending generation and a simulator will only be ended by a
-	   terminator. Note that simu.gen() refers to the begining of a
-	   generation, and starts at 0.
-	   \param dryrun dryrun mode. Default to \c False.
-	   \result Return the number of generations evolved for each replicate.
-	   \sa simulator::step()
-	   \note When <tt>gen = -1</tt>, you can not specify negative generation
-	   parameters to operators. How would an operator know which
-	   genertion is the -1 genertion if no ending genertion is given?
+	/** Evolve all populations \e gen generations, subject to operators \e ops
+	 *  \e preOps and \e postOps. Operators \e preOps are applied to all
+	 *  populations (subject to applicability restrictions of the operators,
+	 *  imposed by the \e rep parameter of these operators) before evolution.
+	 *  They are usually used to initialize populations. Operators \e postOps
+	 *  are applied to all populations after the evolution.\n
+	 *
+	 *  Operators \e ops are applied during the life cycle of each generation.
+	 *  Depending on the stage of these operators, they can be applied before-,
+	 *  during-, and/or post-mating. These operators can be applied at all or
+	 *  some of the generations, depending the \e begin, \e end, \e step, and
+	 *  \e at parameters of these operators. Populations in a simulator are
+	 *  evolved one by one. At each generation, the applicability of these
+	 *  operators are determined. Pre-mating operators are applied to a
+	 *  population first. A mating scheme is then used to populate an offspring
+	 *  generation, using applicable during-mating operators. After an
+	 *  offspring generation is successfully generated and becomes the current
+	 *  generation, applicable post-mating operators are applied to it. Because
+	 *  the order at which operators are applied can be important, and
+	 *  the stage(s) at which operators are applied are not always clear,
+	 *  a parameter \e dryRun can be used. If set to \c True, this function
+	 *  will print out the order at which all operators are applied, without
+	 *  actually evolving the populations.\n
+	 *
+	 *  Parameter \e gen can be set to a positive number, which is the number
+	 *  of generations to evolve. If \e gen is negative (default), the evolution
+	 *  will continue indefinitely, until all replicates are stopped by a
+	 *  special kind of operators called \e terminators. At the end of the
+	 *  evolution, the generations that each replicates have evolved are
+	 *  returned.
 	 */
 	vectoru evolve(const vectorop & ops,
 		const vectorop & preOps = vectorop(),
@@ -343,13 +343,14 @@ public:
 		return m_ptrRep[rep]->vars(subPop);
 	}
 
-    /** Return a iterator that can be used to iterate through all populations
-     *  in a simulator.
-     */
-    pyPopIterator populations()
-    {
-        return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
-    }
+
+	/** Return a iterator that can be used to iterate through all populations
+	 *  in a simulator.
+	 */
+	pyPopIterator populations()
+	{
+		return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
+	}
 
 
 	/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
@@ -414,7 +415,6 @@ private:
 	BOOST_SERIALIZATION_SPLIT_MEMBER();
 
 private:
-
 	/// access scratch population
 	population & scratchpopulation()
 	{
