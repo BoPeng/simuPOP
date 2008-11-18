@@ -481,7 +481,7 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 }
 
 
-void simulator::saveSimulator(string filename, string format, bool compress) const
+void simulator::save(string filename, string format, bool compress) const
 {
 	DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
 
@@ -500,7 +500,7 @@ void simulator::saveSimulator(string filename, string format, bool compress) con
 }
 
 
-void simulator::loadSimulator(string filename, string format)
+void simulator::load(string filename, string format)
 {
 	boost::iostreams::filtering_istream ifs;
 
@@ -534,7 +534,7 @@ simulator & LoadSimulator(const string & file,
 		p, mate);
 
 #ifndef _NO_SERIALIZATION_
-	a->loadSimulator(file, format);
+	a->load(file, format);
 	return *a;
 #else
 	cout << "This feature is not supported in this platform" << endl;
