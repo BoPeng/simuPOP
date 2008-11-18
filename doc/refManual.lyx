@@ -276,7 +276,7 @@ Individual and Population
 
 \begin_layout Standard
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -297,10 +297,6 @@ individualRef
 
 \backslash
 populationRef
-\end_layout
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \end_inset
@@ -370,6 +366,36 @@ genotypeSplitterRef
 
 \backslash
 combinedSplitterRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Simulator
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Simulator
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simulatorRef
 \end_layout
 
 \end_inset
@@ -575,36 +601,6 @@ haplodiploidOffspringGeneratorRef
 
 \backslash
 mendelianOffspringGeneratorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Simulator
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-Simulator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simulatorRef
 \end_layout
 
 \end_inset

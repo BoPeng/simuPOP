@@ -1239,7 +1239,7 @@ def freeExpand(pop, par):
             progress=True, savePop=True, selection=True,
             mutation=True, migration=True, recombination=True),
         gen = par.initGen + par.expandGen)
-    return simu.getPopulation(0, True)
+    return simu.extract(0)
 
 
 def forCtrlExpand(pop, par):
@@ -1299,7 +1299,7 @@ def forCtrlExpand(pop, par):
             mutation=True, migration=True, recombination=True),
         gen = par.initGen + par.expandGen
     )
-    pop = simu.getPopulation(0, True)
+    pop = simu.extract(0)
     Stat(pop, alleleFreq=par.ctrlLociIdx)
     for i,loc in enumerate(par.ctrlLociIdx):
         print "Locus %s: designed freq: (%.3f, %.3f), simulated freq: %.3f" % \
@@ -1378,7 +1378,7 @@ def backCtrlExpand(pop, par):
             + introOps,
         gen = par.initGen + par.expandGen
     )
-    pop = simu.getPopulation(0, True)
+    pop = simu.extract(0)
     Stat(pop, alleleFreq = par.backCtrlLociIdx)
     for i,loc in enumerate(par.backCtrlLociIdx):
         print "Locus %s: designed freq: %.3f, freq: %.3f" % \
@@ -1435,7 +1435,7 @@ def mixExpandedPopulation(pop, par):
             + [migr, ancOps],
         gen = par.admixGen
     )
-    pop = simu.getPopulation(0, True)
+    pop = simu.extract(0)
     # save this population
     print "Calculating allele frequency..."
     pop.vars().clear()

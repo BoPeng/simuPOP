@@ -540,7 +540,7 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::simulator::dvars',
              'type': u'memberofclass_simuPOP::simulator',
              'Description': '',
-             'Details': ur'<group>var</group>' \
+             'Details': ur'<group>9-var</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes. For example ' \
                 '<tt>simu.dvars(1).alleleFreq</tt> is equivalent to <tt>simu.vars(1)["alleleFreq"]</tt>.',
