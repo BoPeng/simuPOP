@@ -77,9 +77,6 @@ void recombinator::prepareRecRates(const population & pop,
 					             "distance is too high.)");
 				vecP.push_back(min(0.5, r));
 			}
-			// after each chromosome ...
-			recBeforeLoci.push_back(chEnd);
-			vecP.push_back(0.5);
 		} else {                                                                          // afterLoci not empty
 			DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(), SystemError,
 				"If an array is given, rates and afterLoci should have the same length");
@@ -104,30 +101,22 @@ void recombinator::prepareRecRates(const population & pop,
 						"Recombination rate should be in [0,1]. (Maybe your loci distance is too high.)");
 				}
 			}
-			// after each chromosome ...
-			recBeforeLoci.push_back(chEnd);
-			vecP.push_back(0.5);
 		}
-
-		// for debug purpose, check the original list:
-		for (size_t i = 0; i < afterLoci.size(); ++i) {
-			DBG_FAILIF(find(recBeforeLoci.begin(), recBeforeLoci.end(), afterLoci[i] + 1) == recBeforeLoci.end(),
-				ValueError, "Specified locus " + toStr(afterLoci[i]) +
-				" is not used in recombinator. Is it valid?");
-		}
-
-		DBG_ASSERT(vecP.size() == recBeforeLoci.size(), SystemError,
-			"Rate and before loci should have the same length.");
-
-		DBG_ASSERT(recBeforeLoci.back() == pop.totNumLoci(),
-			SystemError, "The last beforeLoci elem should be total number of loci.");
-
-		DBG_ASSERT(vecP.back() == .5, SystemError,
-			"The last elem of rate should be half.");
-
-		DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With rates "
-			                          << vecP << " before " << recBeforeLoci << endl);
+		// after each chromosome ...
+		recBeforeLoci.push_back(chEnd);
+		vecP.push_back(0.5);
 	}
+	DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With rates "
+								  << vecP << " before " << recBeforeLoci << endl);
+
+	DBG_ASSERT(vecP.size() == recBeforeLoci.size(), SystemError,
+		"Rate and before loci should have the same length.");
+
+	DBG_ASSERT(recBeforeLoci.back() == pop.totNumLoci(),
+		SystemError, "The last beforeLoci elem should be total number of loci.");
+
+	DBG_ASSERT(vecP.back() == .5, SystemError,
+		"The last elem of rate should be half.");
 
 	// initialize recombination counter,
 	// This will count recombination events after
