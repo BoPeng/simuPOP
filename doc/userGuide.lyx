@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -733,18 +733,13 @@ target "http://simupop.sourceforge.net"
 \family default
 , the world's largest development and download repository of Open Source
  code and applications.
- simuPOP is available on any platform where Python is available.
- Source code and binary packages for Windows, Linux, MacOS X, and Sun Solaris
- systems are released regularly.
-\end_layout
-
-\begin_layout Standard
-simuPOP is currently tested under both 32 and 64 bits of Windows (Windows
+ simuPOP is available on any platform where Python is available, and is
+ currently tested under both 32 and 64 bit versions of Windows (Windows
  2000 and later), Linux (Redhat), MacOS X and Sun Solaris systems.
  Different C++ compilers such as Microsoft Visual C++, gcc and Intel icc
  are supported under different operating systems.
- Standard installation packages are provided for these platforms.
- 
+ Standard installation packages are provided for Windows, Linux, MacOS X,
+ and Sun Solaris systems.
 \end_layout
 
 \begin_layout Standard
@@ -762,37 +757,40 @@ python setup.py install
 
 \family default
  procedure.
- Instructions in the 
+ Besides a C++ compiler, several supporting tools and libraries are needed.
+ Please refer to the 
 \family typewriter
 INSTALL
 \family default
- file and the simuPOP mailing list can provide additional information.
+ file for further information.
 \end_layout
 
 \begin_layout Standard
-Due to the glue language nature of Python, it is easy to make use of other
- Python modules and applications in a simuPOP script.
- It is highly recommended that you install 
-\end_layout
-
-\begin_layout Itemize
-R and a python module rpy that links Python and R.
- simuPOP uses R for statistical analyses and graphics.
- It is also possible to make use of some R libraries to analyze genetic
- data.
-\end_layout
-
-\begin_layout Itemize
-wxPython: simuPOP uses TkInter for some GUI related tasks, such as getting
- parameters from a parameter dialog.
- simuPOP can use wxPython automatically if wxPython is available.
- This will enable a bunch of other GUI improvements including a nicer version
- of 
+Thanks to the ‘glue language’ nature of Python, it is easy to interoperate
+ Python with other applications within a simuPOP script.
+ For example, users can call any R function from Python/simuPOP for the
+ purposes of visualization and statistical analysis, using 
+\series bold
+R
+\series default
+ and a Python module 
+\series bold
+RPy
+\series default
+.
+ This technique is widely used in simuPOP so it is highly recommended that
+ you install R and rpy is your are familiar with R.
+ In addition, although simuPOP uses the standard tkInter GUI toolkit when
+ a graphical user interface is needed, it can make use of a 
+\series bold
+wxPython
+\series default
+ toolkit if it is available.
+ Several functions, such as the graphical version of the 
 \family typewriter
 ListVars()
 \family default
- function.
- 
+ function, are only available for wxPython.
 \end_layout
 
 \begin_layout Section
@@ -905,27 +903,44 @@ simuPOP modules
 \end_layout
 
 \begin_layout Standard
-After installation, you will have the following files and directories (use
- windows as an example)
+simuPOP consists of a number of Python modules, documents, tests and examples.
+ Using windows as an example, simuPOP installs the following files to your
+ operating system:
 \end_layout
 
 \begin_layout Itemize
-Many 
+
+\family typewriter
+_simuPOP_XXX.pyd 
+\family default
+(
+\family typewriter
+.so 
+\family default
+if under a unix-like environment), 
 \family typewriter
 simuXXX.py
 \family default
- files under 
+ and their compiled versions under 
 \family typewriter
 c:
 \backslash
-python23
+python2X
 \backslash
 Lib
 \backslash
 site-packages
 \family default
 .
- These are simuPOP modules.
+ These include core simuPOP modules (
+\family typewriter
+simuPOP_XXX.py
+\family default
+) and a number of utility modules (
+\family typewriter
+simuUtil.py, simuOpt.py
+\family default
+ etc).
 \end_layout
 
 \begin_layout Itemize
@@ -933,7 +948,7 @@ site-packages
 \family typewriter
 c:
 \backslash
-python23
+python2X
 \backslash
 share
 \backslash
@@ -941,7 +956,11 @@ simuPOP
 \backslash
 doc
 \family default
-: documentations in pdf format.
+: This directory contains the pdf version of this user's guide and the 
+\emph on
+simuPOP reference manual
+\emph default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -949,7 +968,7 @@ doc
 \family typewriter
 c:
 \backslash
-python23
+python2X
 \backslash
 share
 \backslash
@@ -957,8 +976,10 @@ simuPOP
 \backslash
 test:
 \family default
- all unit test cases.
- You can run run_tests.py to test if your simuPOP installation is correct.
+ This directory contains all unit test cases.
+ It is recommended that you test your simuPOP installation using these scripts
+ if you compile simuPOP from source.
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -966,7 +987,7 @@ test:
 \family typewriter
 c:
 \backslash
-python23
+python2X
 \backslash
 share
 \backslash
@@ -979,282 +1000,45 @@ scripts
 \family default
 \series default
 \emph default
- This directory has all the built-in scripts.
+ This directory contains all the bundled scripts.
+ It is worth noting that although these scripts are distributed with simuPOP,
+ they are not tested as rigorously and as frequently as the simuPOP core.
+ Please send an email to the simuPOP mailinglist if you notice any problem
+ with them.
 \end_layout
 
 \begin_layout Standard
-You should be able to load simuPOP library by running command 
-\family typewriter
-import simuPOP
-\family default
- (example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "Import-simuPOP-module"
-
-\end_inset
-
-) from python interactive shell.
- From the initial output, you can see the version (and revision number)
- of simuPOP, type of module, random number generator, etc.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/importSimuPOP.log"
-lstparams "caption={Import simuPOP module},label={Import-simuPOP-module}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In case that you do not have administrative privilege, you may not be able
- to install simuPOP to the system python directory.
- In this case, you can install simuPOP locally and load simuPOP as shown
- in example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "simple-example"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/addSysPath.log"
-lstparams "caption={Import locally installed simuPOP module},label={Import-simuPOP-module-add-path}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-simuPOP Modules
-\end_layout
-
-\begin_layout Standard
-simuPOP is composed of twelve libraries: standard short, long and binary
- alleles (3), each of them have standard and optimized (
-\begin_inset Formula $\times2$
-\end_inset
-
-), and single-CPU and Message Passing Interface (MPI) versions (
-\begin_inset Formula $\times2$
-\end_inset
-
-).
- The short libraries use 1 byte to store each allele which limits the possible
- allele states to 256.
+There are six flavors of the core simuPOP module: short, long and binary
+ allele modules, and their optimized versions.
+ The short allele modules use 8 bits to store each allele which limits the
+ possible allele states to 256.
  This is enough most of the times but not so if you need to simulate models
- like the infinite allele model.
+ such as the infinite allele model.
  In those cases, you should use the long allele version of the modules,
- which use 2 bytes for each allele and can have 
+ which use 16 bits for each allele and can have 
 \begin_inset Formula $2^{16}$
 \end_inset
 
  possible allele states.
  On the other hand, if you would like to simulate a large number of binary
- (SNP) markers, binary libraries can save you a lot of RAM.
- Depending on applications, binary alleles can be faster or slower than
- regular modules.
+ (SNP) markers, binary libraries can save you a lot of RAM because they
+ use 1 bit for each allele.
+ Despite of differences in internal memory layout, all these modules have
+ the same interface.
 \end_layout
 
 \begin_layout Standard
 Standard libraries have detailed debug and run-time validation mechanism
- to make sure the simulations run correctly.
+ to make sure a simulation executes correctly.
  Whenever something unusual is detected, simuPOP would terminate with detailed
  error messages.
- The cost of such run-time checking varies from simulation to simulation
- but can be high under some extreme circumstances.
- Because of this, optimized versions for all libraries are provided.
- They bypass all parameter checking and run-time validations and will simply
- crash if things go wrong.
- It is recommended that you use standard libraries whenever possible and
- only use the optimized version when performance is needed and you are confidenc
-e that your simulation is running as expected.
-\end_layout
-
-\begin_layout Standard
-The MPI modules are not provided in the binary distributions since many
- MPI implementations are available for different platforms.
- Also, as of version 0.7.9, the MPI modules are not yet fully implemented
- (and most likely unusable for your simulations).
- You will have to compile simuPOP by yourself to make use of them.Due to
- the overhead of inter-CPU communication, the MPI versions are not necessarily
- much faster than single-CPU modules.
- However, since the MPI version of the modules spread the populations across
- nodes, they can handle much larger populations then single-CPU modules,
- and can save you some time when you have multiple CPU/Core workstations.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/importSimuPOPOpt.log"
-lstparams "caption={set options through simuOpt}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You can control the choice of modules in the following ways:
-\end_layout
-
-\begin_layout Itemize
-Set environment variable 
-\family typewriter
-SIMUALLELETYPE
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-SIMUALLELETYPE
-\end_layout
-
-\end_inset
-
- to be 'short', 'long' or 'binary', 
-\family typewriter
-SIMUOPTIMIZED
-\family default
- to use the optimized modules, and 
-\family typewriter
-SIMUMPI
-\family default
- to use MPI modules.
- The default module is the standard short module.
-\end_layout
-
-\begin_layout Itemize
-Before you load simuPOP, set options using 
-\family typewriter
-simuOpt
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-simuOpt
-\end_layout
-
-\end_inset
-
-.setOptions(optimized, mpi, alleleType, quiet, debug)
-\family default
-.
- 
-\family typewriter
-alleleType
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-alleleType
-\end_layout
-
-\end_inset
-
- can be 
-\family typewriter
-short, long
-\family default
- or 
-\family typewriter
-binary.
-
-\family default
- 
-\family typewriter
-mpi
-\family default
- can be 
-\family typewriter
-True
-\family default
- or 
-\family typewriter
-False
-\family default
-.
- 
-\family typewriter
-quiet
-\family default
- means suppress initial output, and 
-\family typewriter
-debug
-\family default
- should be a comma-separated list of debug options specified by 
-\family typewriter
-listDebugCode
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-listDebugCode
-\end_layout
-
-\end_inset
-
-().
-\end_layout
-
-\begin_layout Itemize
-If you are running a simuPOP script that conforms to simuPOP convention,
- you should be able to use optimized library using command line option 
-\family typewriter
---optimized
-\family default
-, and the MPI version using 
-\family typewriter
---mpi.
-\end_layout
-
-\begin_layout Standard
-simuPOP is composed of six modules: three standard modules with short, long
- or binary alleles, respectively, and their optimized counterparts.
- The short modules use 1 byte to store each allele which limits the possible
- allele states to 256.
- This is enough most of the times but not so if you need to simulate models
- such as the infinite allele model.
- In those cases, you can use the long allele version of the modules, which
- use 2 bytes for each allele and can have 
-\begin_inset Formula $2^{16}$
-\end_inset
-
- possible allele states.
- On the other hand, if you would like to simulate a large number of binary
- (SNP) markers, binary modules can save you a lot of RAM.
- Depending on applications, binary modules can be faster or slower than
- other modules.
-\end_layout
-
-\begin_layout Standard
-Standard modules have detailed debug and run-time validation mechanism to
- make sure the simulations run correctly.
- Whenever something unusual is detected, simuPOP would terminate with a
- detailed error message.
- The cost of such run-time checking varies from application to application
- but can be very high under some extreme circumstances.
+ The cost of such run-time validation varies from case to case but can be
+ high under some extreme circumstances.
  Because of this, optimized versions for all modules are provided.
  They bypass all parameter checking and run-time validations and will simply
  crash if things go wrong.
- It is recommended that you use standard modules whenever possible and only
- use the optimized version when performance is needed and you are confident
+ It is recommended that you use standard libraries whenever possible and
+ only use the optimized version when performance is needed and you are confident
  that your simulation is running as expected.
 \end_layout
 
@@ -1293,7 +1077,7 @@ lstparams "caption={Use of standard simuPOP modules},label={lst:Use-of-standard-
 \begin_layout Standard
 \begin_inset listings
 inline false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -1408,16 +1192,28 @@ SIMUALLELETYPE
 
 \end_inset
 
- to 'short', 'long' or 'binary', and 
+ to 
+\family typewriter
+short
+\family default
+, 
+\family typewriter
+long
+\family default
+ or 
+\family typewriter
+binary
+\family default
+ to use the short, long or binary modules, and variable 
 \family typewriter
 SIMUOPTIMIZED
 \family default
- to use the optimized version.
+ to use the optimized modules.
  The default module is the standard short module.
 \end_layout
 
 \begin_layout Itemize
-Before you load simuPOP, set options using 
+Before you load simuPOP, import module 
 \family typewriter
 simuOpt
 \begin_inset Index
@@ -1429,10 +1225,22 @@ simuOpt
 
 \end_inset
 
-.setOptions(optimized, alleleType, quiet, debug)
+
 \family default
-.
- 
+ and set options using 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+simuOpt.setOptions(optimized, alleleType, quiet, debug)
+\end_layout
+
+\end_inset
+
+
 \family typewriter
 alleleType
 \family default
@@ -1457,35 +1265,46 @@ binary.
 \family default
  
 \family typewriter
-quiet=True
+quiet
 \family default
- suppresses banner information when simuPOP is loaded, and 
+ means suppress initial output, and 
 \family typewriter
 debug
 \family default
- is a comma-separated list of debug options specified by 
+ should be a comma-separated list of debug options specified by 
 \family typewriter
-ListDebugCode
+listDebugCode
 \family default
 
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-ListDebugCode
+listDebugCode
 \end_layout
 
 \end_inset
 
 ().
- Debug information is only available for standard modules.
 \end_layout
 
 \begin_layout Itemize
-If you are running a simuPOP script that conforms to simuPOP convention,
- you should be able to use optimized module using command line option 
+If you are running a simuPOP script that uses simuOpt to handle command
+ line parameters, you should be able to use optimized libraries using command
+ line option 
 \family typewriter
 --optimized.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/importSimuPOPOpt.log"
+lstparams "caption={set options through simuOpt}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1569,105 +1388,6 @@ simuRev()
 simuRev()
 \family default
  against the revision when the feature you need becomes available.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-Limits()
-\family default
-: print the limits of this module on this platform, such as the maximum
- number of loci in a population.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/importSimuPOPOpt.log"
-lstparams "caption={Use \\texttt{simuOpt} to control which simuPOP module to load}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-After simuPOP is installed.
- It is recommended that you run the test scripts under the 
-\family typewriter
-tests 
-\family default
-directory.
- This will make sure that your system is working correctly.
- To run all tests, run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-sh run_tests.sh
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Or, if you do not install RPy and R, run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-sh run_tests.sh norpy
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Windows users have to run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-set SIMUALLELETYPE=short
-\end_layout
-
-\begin_layout Plain Layout
-
-python run_tests.py
-\end_layout
-
-\end_inset
-
-repeatedly, with 
-\family typewriter
-SIMUALLELETYPE 
-\family default
-set to 
-\family typewriter
-short, long 
-\family default
-and 
-\family typewriter
-binary.
 \end_layout
 
 \begin_layout Standard
