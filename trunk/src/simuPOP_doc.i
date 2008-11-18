@@ -69,9 +69,8 @@ Details:
 
 Usage:
 
-    affectionTagger(code=[], begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, stage=PostMating, output=\">\", outputExpr=\"\",
-      infoFields=[])
+    affectionTagger(code=[], begin=0, end=-1, step=1, at=[], rep=[],
+      stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
 
 Arguments:
 
@@ -266,9 +265,9 @@ Arguments:
     at:             an array of active generations. If given, stage,
                     begin, end, and step will be ignored.
     rep:            applicable replicates. It can be a valid replicate
-                    number, REP_ALL (all replicates, default), or
-                    REP_LAST (only the last replicate). REP_LAST is
-                    useful in adding newlines to a table output.
+                    number,  vectori() (all replicates, default), or
+                    -1 (only the last replicate). -1 is useful in
+                    adding newlines to a table output.
     output:         a string of the output filename. Different
                     operators will have different default output (most
                     commonly '>' or '').
@@ -284,9 +283,9 @@ Note:
     * Negative generation numbers are allowed for parameters begin,
     end and at. They are interpreted as endGen + gen + 1. For example,
     begin = -2 in simu.evolve(..., end=20) starts at generation 19.
-    * REP_ALL, REP_LAST are special constant that can only be used in
-    the constructor of an operator. That is to say, explicit test of
-    rep() == REP_LAST will not work.
+    *  vectori(), -1 are special constant that can only be used in the
+    constructor of an operator. That is to say, explicit test of rep()
+    == -1 will not work.
 
 Example:
 
@@ -322,7 +321,7 @@ Usage:
 
 %ignore simuPOP::baseOperator::applicableReplicate();
 
-%ignore simuPOP::baseOperator::setApplicableReplicate(int rep);
+%ignore simuPOP::baseOperator::setApplicableReplicate(repList rep);
 
 %ignore simuPOP::baseOperator::setActiveGenerations(int begin=0, int end=-1, int step=1, vectorl at=vectorl());
 
@@ -435,6 +434,14 @@ Usage:
 "; 
 
 %ignore simuPOP::baseOperator::noOutput();
+
+%feature("docstring") simuPOP::baseOperator::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %feature("docstring") simuPOP::baseRandomMating "
 
@@ -1074,77 +1081,6 @@ Usage:
 
 %ignore simuPOP::consanguineousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
-%feature("docstring") simuPOP::continueIf "
-
-Description:
-
-    terminate according to a condition failure
-
-Details:
-
-    The same as  terminateIf but continue if the condition is True.
-
-"; 
-
-%feature("docstring") simuPOP::continueIf::continueIf "
-
-Description:
-
-    create a  continueIf terminator
-
-Usage:
-
-    continueIf(condition=\"\", message=\"\", var=\"terminate\", output=\"\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::continueIf::clone "
-
-Description:
-
-    deep copy of a  continueIf terminator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::continueIf::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the  continueIf terminator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::continueIf::apply "
-
-Description:
-
-    apply this operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::continueIf::~continueIf "
-
-Usage:
-
-    x.~continueIf()
-
-"; 
-
 %feature("docstring") simuPOP::controlledMating "
 
 Applicability: diploid only
@@ -1355,7 +1291,7 @@ Usage:
     dumper(alleleOnly=False, infoOnly=False, ancestralPops=False,
       dispWidth=1, max=100, chrom=[], loci=[], subPop=[], indRange=[],
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[])
+      step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -2146,7 +2082,7 @@ Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
       func=None, output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=[], infoFields=[])
 
 Details:
 
@@ -2457,7 +2393,7 @@ Description:
 Usage:
 
     ifElse(cond, ifOp=None, elseOp=None, output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -2823,8 +2759,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::individual::unaffected "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::individual::affectedChar "
 
 Usage:
@@ -3044,7 +2978,7 @@ Usage:
 
     infoEval(expr=\"\", stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Details:
@@ -3177,7 +3111,7 @@ Usage:
 
     infoExec(stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Details:
@@ -3379,7 +3313,7 @@ Details:
 
 Usage:
 
-    infoTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+    infoTagger(begin=0, end=-1, step=1, at=[], rep=[],
       stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
 
 "; 
@@ -3424,8 +3358,8 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, output=\"\", outputExpr=\"\",
-      infoFields=[\"paternal_tag\", \"maternal_tag\"])
+      rep=[], output=\"\", outputExpr=\"\", infoFields=[\"paternal_tag\",
+      \"maternal_tag\"])
 
 Arguments:
 
@@ -3512,7 +3446,7 @@ Usage:
 
     initByFreq(alleleFreq=[], identicalInds=False, subPop=[],
       indRange=[], loci=[], atPloidy=-1, maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -3619,7 +3553,7 @@ Usage:
 
     initByValue(value=[], loci=[], atPloidy=-1, subPop=[],
       indRange=[], proportions=[], maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -3719,7 +3653,7 @@ Description:
 Usage:
 
     initializer(subPop=[], indRange=[], loci=[], atPloidy=-1,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -3805,7 +3739,7 @@ Usage:
 
     initSex(maleFreq=0.5, sex=[], subPop=[], indRange=[], loci=[],
       atPloidy=-1, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Arguments:
 
@@ -3922,7 +3856,7 @@ Usage:
 
     kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Details:
 
@@ -4020,7 +3954,7 @@ Description:
 Usage:
 
     maPenetrance(loci, penet, wildtype, ancestralGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -4116,7 +4050,7 @@ Description:
 Usage:
 
     mapPenetrance(loci, penet, phase=False, ancestralGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -4202,7 +4136,7 @@ Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, infoFields=[\"qtrait\"])
+      at=[], rep=[], infoFields=[\"qtrait\"])
 
 Arguments:
 
@@ -4299,7 +4233,7 @@ Description:
 Usage:
 
     mapSelector(loci, fitness, phase=False, subPops=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[\"fitness\"])
 
 Arguments:
@@ -4401,7 +4335,7 @@ Description:
 Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancestralGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[\"qtrait\"])
 
 Details:
@@ -4507,8 +4441,7 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype, subPops=[], stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      infoFields=[\"fitness\"])
+      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[\"fitness\"])
 
 Details:
 
@@ -4811,7 +4744,7 @@ Description:
 Usage:
 
     mergeSubPops(subPops=[], removeEmptySubPops=False,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -4906,7 +4839,7 @@ Usage:
 
     migrator(rate, mode=MigrByProbability, fromSubPop=[],
       toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Arguments:
 
@@ -5064,7 +4997,7 @@ Description:
 Usage:
 
     mlPenetrance(peneOps, mode=PEN_Multiplicative, ancestralGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -5163,7 +5096,7 @@ Usage:
 
     mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, infoFields=[\"qtrait\"])
+      at=[], rep=[], infoFields=[\"qtrait\"])
 
 Details:
 
@@ -5257,7 +5190,7 @@ Description:
 Usage:
 
     mlSelector(selectors, mode=SEL_Multiplicative, subPops=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[\"fitness\"])
 
 Details:
@@ -5415,7 +5348,7 @@ Usage:
 
     mutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Details:
 
@@ -5664,7 +5597,7 @@ Description:
 Usage:
 
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=0, step=1, at=[], rep=REP_ALL, infoFields=[])
+      end=0, step=1, at=[], rep=[], infoFields=[])
 
 Example:
 
@@ -5792,12 +5725,11 @@ Arguments:
                     probability sexParam (default to 0.5)
                     * MATE_NumOfMale Set sexParam offspring to Male
                     * MATE_NumOfFemale Set sexParam offspring to
-                    Female.
-
-Note:
-
-    : Parameter sexMode and sexParam are ignored if sex chromosome is
-    defined. Offspring sex is defined by genotype in this case.
+                    Female. If there are sex chromosomes, sex is
+                    determined by sex chromosomes when sexMode id
+                    MATE_RandomSex. Otherwise, some offspring will be
+                    rejected so that offspring sex match what is
+                    specified in other modes.
 
 "; 
 
@@ -5844,6 +5776,18 @@ Usage:
 Arguments:
 
     count:          the index of offspring
+
+"; 
+
+%feature("docstring") simuPOP::offspringGenerator::isSexOK "
+
+Description:
+
+    If a sex-chromosome defined sex comptible with sexMode.
+
+Usage:
+
+    x.isSexOK(sex, count)
 
 "; 
 
@@ -5931,7 +5875,7 @@ Description:
 Usage:
 
     outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=[], infoFields=[])
 
 "; 
 
@@ -6046,9 +5990,8 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      output=\"\", outputExpr=\"\", infoFields=[\"father_idx\",
-      \"mother_idx\"])
+    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[], output=\"\",
+      outputExpr=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
 
 "; 
 
@@ -6134,8 +6077,8 @@ Description:
 
 Usage:
 
-    parentTagger(begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      output=\"\", outputExpr=\"\", infoFields=[\"parent_idx\"])
+    parentTagger(begin=0, end=-1, step=1, at=[], rep=[], output=\"\",
+      outputExpr=\"\", infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -6234,7 +6177,7 @@ Usage:
 
     pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
       popName=\"pop\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_LAST, infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=-1, infoFields=[])
 
 Arguments:
 
@@ -6446,7 +6389,7 @@ Description:
 Usage:
 
     penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[])
+      step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -6556,7 +6499,7 @@ Usage:
 
     pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Details:
 
@@ -7850,7 +7793,7 @@ Usage:
 
     pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -7962,7 +7905,7 @@ Usage:
 
     pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
       name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=[], infoFields=[])
 
 Details:
 
@@ -8082,8 +8025,8 @@ Description:
 Usage:
 
     pyIndOperator(func, loci=[], param=None, stage=PostMating,
-      formOffGenotype=False, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      formOffGenotype=False, begin=0, end=-1, step=1, at=[], rep=[],
+      infoFields=[])
 
 Arguments:
 
@@ -8186,7 +8129,7 @@ Usage:
 
     pyInit(func, subPop=[], loci=[], atPloidy=-1, indRange=[],
       maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=REP_ALL, infoFields=[])
+      at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -8367,7 +8310,7 @@ Usage:
 
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
       fromSubPop=[], toSubPop=[], loci=[], param=None,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -8466,7 +8409,7 @@ Usage:
 
     pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Example:
 
@@ -8569,7 +8512,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[])
+      step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -8680,7 +8623,7 @@ Description:
 Usage:
 
     pyOutput(str=\"\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -8838,7 +8781,7 @@ Description:
 Usage:
 
     pyPenetrance(loci, func, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -8915,6 +8858,47 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pyPopIterator "
+
+Details:
+
+    this class implements a Python itertor class that can be used to
+    iterate through populations in a population.
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::pyPopIterator "
+
+Usage:
+
+    pyPopIterator(begin, end)
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::~pyPopIterator "
+
+Usage:
+
+    x.~pyPopIterator()
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::__iter__ "
+
+Usage:
+
+    x.__iter__()
+
+"; 
+
+%feature("docstring") simuPOP::pyPopIterator::next "
+
+Usage:
+
+    x.next()
+
+"; 
+
 %feature("docstring") simuPOP::pyQuanTrait "
 
 Function form:
@@ -8941,8 +8925,7 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancestralGen=-1, stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      infoFields=[\"qtrait\"])
+      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[\"qtrait\"])
 
 Details:
 
@@ -9043,7 +9026,7 @@ Description:
 Usage:
 
     pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[\"fitness\"])
+      end=-1, step=1, at=[], rep=[], infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -9141,7 +9124,7 @@ Description:
 
 Usage:
 
-    pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+    pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
       output=\"\", outputExpr=\"\", infoFields=[])
 
 Arguments:
@@ -9236,7 +9219,7 @@ Description:
 Usage:
 
     quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[\"qtrait\"])
+      step=1, at=[], rep=[], infoFields=[\"qtrait\"])
 
 "; 
 
@@ -9553,10 +9536,6 @@ Details:
 
 %feature("docstring") simuPOP::recombinator "
 
-Description:
-
-    recombination and conversion
-
 Details:
 
     In  simuPOP, only one recombinator is provided. Recombination
@@ -9593,7 +9572,7 @@ Usage:
     recombinator(intensity=-1, rate=[], afterLoci=[],
       maleIntensity=-1, maleRate=[], maleAfterLoci=[], convProb=0,
       convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[])
+      step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -9768,7 +9747,77 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::recombinator::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
+
+%feature("docstring") simuPOP::recombinator::produceOffspring "
+
+Usage:
+
+    x.produceOffspring(parent, off)
+
+Details:
+
+    Recombine parental chromosomes of parent and pass them to
+    offspring off. The homologous chromosomes ofe parent will be
+    recombined twice and form both homologous sets of the offspring,
+    as if parent mates with itself (a selfing inheritance model). If
+    sex chromosomes are present, offspring sex will be determined by
+    which sex chromosomes are inherited by off. Random sex is assigned
+    to off otherwise.
+
+"; 
+
+%feature("docstring") simuPOP::recombinator::produceOffspring "
+
+Usage:
+
+    x.produceOffspring(mom, dad, off)
+
+Details:
+
+    Recombine parental chromosomes and pass them to offspring off. A
+    Mendelian inheritance model will be used, which recombine
+    homologous sets of chromosomes of mom and dad and pass them as the
+    first and second sets of homologous chromosomes to offspring off,
+    respectively. If sex chromosomes are present, offspring sex is
+    determined by which sex chromosomes are inherited by off. Random
+    sex is assigned to off otherwise.
+
+"; 
+
 %ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::repList "
+
+Details:
+
+    A class to specify replicate list. The reason why I cannot simple
+    use  vectori() is that users have got used to use a single number
+    to specify a single replicate.
+
+"; 
+
+%feature("docstring") simuPOP::repList::repList "
+
+Usage:
+
+    repList(reps=[])
+
+"; 
+
+%feature("docstring") simuPOP::repList::match "
+
+Usage:
+
+    x.match(rep, numRep)
+
+"; 
 
 %feature("docstring") simuPOP::resizeSubPops "
 
@@ -9799,7 +9848,7 @@ Description:
 Usage:
 
     resizeSubPops(newSizes=[], subPops=[], propagate=True,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -10136,7 +10185,7 @@ Usage:
 
     savePopulation(output=\"\", outputExpr=\"\", format=\"\",
       compress=True, stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Arguments:
 
@@ -10249,7 +10298,7 @@ Description:
 Usage:
 
     selector(subPops=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, infoFields=[\"fitness\"])
+      at=[], rep=[], infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -10522,7 +10571,7 @@ Description:
 Usage:
 
     setAncestralDepth(depth, output=\">\", outputExpr=\"\",
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 "; 
@@ -10647,7 +10696,7 @@ Details:
 
 Usage:
 
-    sexTagger(code=[], begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+    sexTagger(code=[], begin=0, end=-1, step=1, at=[], rep=[],
       stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
 
 Arguments:
@@ -10809,8 +10858,7 @@ Description:
 
 Usage:
 
-    simulator(pop, matingScheme, stopIfOneRepStops=False,
-      applyOpToStoppedReps=False, rep=1)
+    simulator(pop, matingScheme, rep=1)
 
 Arguments:
 
@@ -10819,19 +10867,10 @@ Arguments:
                     simulator. Its content will not be changed.
     matingScheme:   a mating scheme
     rep:            number of replicates. Default to 1.
-    applyOpToStoppedReps:If set, the simulator will continue to apply
-                    operators to all stopped replicates until all
-                    replicates are marked 'stopped'.
-    stopIfOneRepStops:If set, the simulator will stop evolution if one
-                    replicate stops.
 
 "; 
 
 %feature("docstring") simuPOP::simulator::~simulator "
-
-Description:
-
-    destroy a simulator along with all its populations
 
 Usage:
 
@@ -10979,8 +11018,6 @@ Usage:
 
 %ignore simuPOP::simulator::setPopulation(population &pop, UINT rep);
 
-%ignore simuPOP::simulator::curRep() const ;
-
 %feature("docstring") simuPOP::simulator::numRep "
 
 Description:
@@ -11021,18 +11058,6 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::step "
-
-Description:
-
-    evolve steps generation
-
-Usage:
-
-    x.step(ops=[], preOps=[], postOps=[], steps=1, dryrun=False)
-
-"; 
-
 %feature("docstring") simuPOP::simulator::evolve "
 
 Description:
@@ -11041,8 +11066,7 @@ Description:
 
 Usage:
 
-    x.evolve(ops, preOps=[], postOps=[], end=-1, gen=-1,
-      dryrun=False)
+    x.evolve(ops, preOps=[], postOps=[], gen=-1, dryrun=False)
 
 Details:
 
@@ -11054,9 +11078,7 @@ Details:
     *  during-mating operators called by the mating scheme at the
     birth of each offspring
     *  all post-mating operators If any pre- or post-mating operator
-    fails to apply, that replicate will be stopped. The behavior of
-    the simulator will be determined by flags applyOpToStoppedReps and
-    stopIfOneRepStopss.
+    fails to apply, that replicate will be stopped.
 
 Arguments:
 
@@ -11087,14 +11109,6 @@ Note:
 
 %ignore simuPOP::simulator::apply(const vectorop ops, bool dryrun=false);
 
-%ignore simuPOP::simulator::setStopIfOneRepStops(bool on=true);
-
-%ignore simuPOP::simulator::stopIfOneRepStops();
-
-%ignore simuPOP::simulator::setApplyOpToStoppedReps(bool on=true);
-
-%ignore simuPOP::simulator::applyOpToStoppedReps();
-
 %feature("docstring") simuPOP::simulator::vars "
 
 Description:
@@ -11108,7 +11122,20 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::simulator::saveSimulator "
+%feature("docstring") simuPOP::simulator::populations "
+
+Usage:
+
+    x.populations()
+
+Details:
+
+    Return a iterator that can be used to iterate through all
+    populations in a simulator.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::save "
 
 Description:
 
@@ -11116,17 +11143,15 @@ Description:
 
 Usage:
 
-    x.saveSimulator(filename, format=\"\", compress=True)
+    x.save(filename)
 
 Arguments:
 
     filename:       filename to save the simulator. Default to simu.
-    format:         obsolete parameter
-    compress:       obsolete parameter
 
 "; 
 
-%ignore simuPOP::simulator::loadSimulator(string filename, string format="");
+%ignore simuPOP::simulator::load(string filename);
 
 %feature("docstring") simuPOP::simulator::__repr__ "
 
@@ -11171,7 +11196,7 @@ Usage:
 
     smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[])
+      step=1, at=[], rep=[], infoFields=[])
 
 Details:
 
@@ -11251,7 +11276,7 @@ Usage:
 
     splitSubPop(which=0, sizes=[], proportions=[], keepOrder=True,
       randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 Details:
 
@@ -11356,7 +11381,7 @@ Description:
 Usage:
 
     spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=REP_ALL, infoFields=[])
+      at=[], rep=[], infoFields=[])
 
 Example:
 
@@ -11448,7 +11473,7 @@ Usage:
       Fst_param={}, relGroups=[], relLoci=[], rel_param={},
       relBySubPop=False, relMethod=[], relMinScored=10,
       hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       infoFields=[])
 
 Arguments:
@@ -12217,7 +12242,7 @@ Description:
 Usage:
 
     stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=[], infoFields=[])
 
 "; 
 
@@ -12357,6 +12382,22 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::StopEvolution "
+
+Description:
+
+    all replicates.
+
+"; 
+
+%feature("docstring") simuPOP::StopEvolution::StopEvolution "
+
+Usage:
+
+    StopEvolution(msg)
+
+"; 
+
 %feature("docstring") simuPOP::StopIteration "
 
 Description:
@@ -12488,7 +12529,7 @@ Description:
 Usage:
 
     tagger(output=\"\", outputExpr=\"\", begin=0, end=-1, step=1, at=[],
-      rep=REP_ALL, infoFields=[])
+      rep=[], infoFields=[])
 
 "; 
 
@@ -12530,34 +12571,32 @@ Usage:
 
 %feature("docstring") simuPOP::terminateIf "
 
-Description:
-
-    terminate according to a condition
-
 Details:
 
-    This operator terminates the evolution under certain conditions.
-    For example,  terminateIf(condition='alleleFreq[0][1]<0.05',
-    begin=100) terminates the evolution if the allele frequency of
-    allele 1 at locus 0 is less than 0.05. Of course, to make this
-    opertor work, you will need to use a stat operator before it so
-    that variable alleleFreq exists in the local namespace.
-    When the value of condition is True, a shared variable
-    var=\"terminate\" will be set to the current generation.
+    This operator evaluates an expression in a population's local
+    namespace and terminate the evolution of this population, or the
+    whole simulator if the return value of this expression is True.
 
 "; 
 
 %feature("docstring") simuPOP::terminateIf::terminateIf "
 
-Description:
-
-    create a  terminateIf terminator
-
 Usage:
 
-    terminateIf(condition=\"\", message=\"\", var=\"terminate\",
-      output=\"\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=REP_ALL, infoFields=[])
+    terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
+      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], infoFields=[])
+
+Details:
+
+    Create a terminator with an expression condition, which will be
+    evalulated in a population's local namespace when the operator is
+    applied to this population. If the return value of condition is
+    True, the evolution of the population will be terminated. If
+    stopAll is set to True, the evolution of all replicates of the
+    simulator will be terminated. If this operator is allowed to write
+    to an output or outputExpr (both default to \"\"), the generation
+    number, preceeded with an optional message will be written to it.
 
 "; 
 
@@ -12590,7 +12629,8 @@ Usage:
 
 Description:
 
-    apply the  terminateIf terminator
+    apply to one population. It does not check if the operator is
+    activated.
 
 Usage:
 
@@ -12605,64 +12645,6 @@ Usage:
     x.~terminateIf()
 
 "; 
-
-%feature("docstring") simuPOP::terminator "
-
-Description:
-
-    Base class of all terminators.
-
-Details:
-
-    Teminators are used to see if an evolution is running as expected,
-    and terminate the evolution if a certain condition fails.
-
-"; 
-
-%feature("docstring") simuPOP::terminator::terminator "
-
-Description:
-
-    create a terminator
-
-Usage:
-
-    terminator(message=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=REP_ALL,
-      infoFields=[])
-
-Arguments:
-
-    message:        a message that will be displayed when the
-                    evolution is terminated.
-
-"; 
-
-%feature("docstring") simuPOP::terminator::~terminator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~terminator()
-
-"; 
-
-%feature("docstring") simuPOP::terminator::clone "
-
-Description:
-
-    deep copy of a terminator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::terminator::message();
 
 %feature("docstring") simuPOP::ticToc "
 
@@ -12694,7 +12676,7 @@ Description:
 Usage:
 
     ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=REP_ALL, infoFields=[])
+      end=-1, step=1, at=[], rep=[], infoFields=[])
 
 "; 
 
@@ -12772,7 +12754,7 @@ Description:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, infoFields=[])
+      at=[], rep=[], infoFields=[])
 
 "; 
 
@@ -12856,7 +12838,7 @@ Description:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=REP_ALL, infoFields=[])
+      at=[], rep=[], infoFields=[])
 
 "; 
 
@@ -13201,7 +13183,7 @@ Description:
 
 Usage:
 
-    LoadSimulator(file, mate, format=\"auto\")
+    LoadSimulator(file, matingScheme)
 
 "; 
 

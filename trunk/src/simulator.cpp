@@ -40,9 +40,7 @@ population & pyPopIterator::next()
 }
 
 
-simulator::simulator(const population & pop,
-	mating & matingScheme,
-	int rep)
+simulator::simulator(const population & pop, mating & matingScheme, int rep)
 	: m_gen(0), m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,

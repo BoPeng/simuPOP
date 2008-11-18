@@ -331,9 +331,6 @@ enum DBG_CODE {
 // in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
 // etc will be function well.
 
-#define REP_ALL             -2
-#define REP_CUR             -2
-#define REP_LAST            -1
 #define PreMating            1
 #define DuringMating         2
 #define PostMating           4

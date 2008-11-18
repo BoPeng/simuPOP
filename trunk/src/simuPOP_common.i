@@ -247,6 +247,7 @@ namespace std
 %include "individual.h"
 
 %implicitconv vspID;
+%implicitconv repList;
 
 namespace std
 {

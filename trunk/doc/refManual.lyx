@@ -1333,21 +1333,7 @@ status open
 
 
 \backslash
-terminatorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 terminateIfRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-continueIfRef
 \end_layout
 
 \end_inset

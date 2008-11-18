@@ -53,7 +53,7 @@ public:
 	terminateIf(string condition = "", bool stopAll = false, string message = "",
 	            string output = "", string outputExpr = "",
 	            int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr()) :
+	            repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
 			m_expr(condition), m_stopAll(stopAll), m_message(message)
 	{

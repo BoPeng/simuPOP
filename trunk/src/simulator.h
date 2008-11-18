@@ -157,8 +157,8 @@ public:
 	 */
 	simulator(const population & pop, mating & matingScheme,
 		int rep = 1);
-
-	/// destroy a simulator along with all its populations
+	
+	// destroy a simulator along with all its populations
 	/**
 	   \note <tt>pop = simulator::population()</tt>
 	   returns temporary reference to an internal population.

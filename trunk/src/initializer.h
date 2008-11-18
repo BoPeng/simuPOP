@@ -64,7 +64,7 @@ public:
 	            const vectoru & loci = vectoru(),
 	            int atPloidy = -1,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), int rep = REP_ALL,
+	            vectorl at = vectorl(), repList rep = repList(),
 	            const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_subPop(subPop), m_indRange(indRange),
@@ -144,7 +144,7 @@ public:
 	        const vectoru & loci = vectoru(),
 	        int atPloidy = -1,
 	        int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	        vectorl at = vectorl(), int rep = REP_ALL,
+	        vectorl at = vectorl(), repList rep = repList(),
 	        const vectorstr & infoFields = vectorstr())
 		: initializer(subPop, indRange, loci, atPloidy, stage, begin, end,
 		              step, at, rep, infoFields),
@@ -223,7 +223,7 @@ public:
 	           const vectoru & loci = vectoru(), int atPloidy = -1,
 	           double maleFreq = 0.5, const vectori & sex = vectori(),
 	           int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	           int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+	           repList rep = repList(), const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
 		          stage, begin, end, step, at, rep, infoFields),
 		m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
@@ -310,7 +310,7 @@ public:
 	            const vectorf & proportions = vectorf(),
 	            double maleFreq = 0.5, const vectori & sex = vectori(),
 	            int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	            int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+	            repList rep = repList(), const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
 		          stage, begin, end, step, at, rep, infoFields),
 		m_value(value), m_proportion(proportions)
@@ -376,7 +376,7 @@ public:
 	 */
 	spread(ULONG ind, vectoru subPop = vectoru(),
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+	       repList rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_ind(ind), m_subPop(subPop)
 	{
@@ -463,7 +463,7 @@ public:
 	       intMatrix indRange = intMatrix(),
 	       double maleFreq = 0.5, const vectori & sex = vectori(),
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	       int rep = REP_ALL, const vectorstr & infoFields = vectorstr())
+	       repList rep = repList(), const vectorstr & infoFields = vectorstr())
 		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
 		          stage, begin, end, step, at, rep, infoFields)
 	{
