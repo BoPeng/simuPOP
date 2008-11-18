@@ -31,6 +31,15 @@
 
 namespace simuPOP {
 
+population & pyPopIterator::next()
+{
+    if (m_index == m_end)
+        throw StopIteration("");
+    else
+        return **(m_index++);
+}
+
+
 simulator::simulator(const population & pop,
 	mating & matingScheme,
 	int rep)
@@ -49,7 +58,7 @@ simulator::simulator(const population & pop,
 			    ("mating type is not compatible with current population settings.");
 
 	// create replicates of given population
-	m_ptrRep = new population *[m_numRep];
+	m_ptrRep = vector<population *>(m_numRep);
 	m_scratchPop = new population(pop);
 
 	DBG_FAILIF(m_scratchPop == NULL,
@@ -88,8 +97,6 @@ simulator::~simulator()
 	for (UINT i = 0; i < m_numRep; ++i)
 		delete m_ptrRep[i];
 
-	delete[] m_ptrRep;
-
 	delete m_matingScheme;
 
 	DBG_DO(DBG_SIMULATOR, cout << "populations have been erased. " << endl
@@ -103,12 +110,12 @@ simulator::simulator(const simulator & rhs) :
 	m_gen(rhs.m_gen),
 	m_matingScheme(NULL),
 	m_numRep(rhs.m_numRep),
-	m_ptrRep(NULL),
+	m_ptrRep(0),
 	m_scratchPop(NULL)
 {
 	m_matingScheme = rhs.m_matingScheme->clone();
 	m_scratchPop = rhs.m_scratchPop->clone();
-	m_ptrRep = new population *[m_numRep];
+	m_ptrRep = vector<population *>(m_numRep);
 	for (size_t i = 0; i < m_numRep; ++i) {
 		m_ptrRep[i] = rhs.m_ptrRep[i]->clone();
 		m_ptrRep[i]->setRep(i);

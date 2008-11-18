@@ -70,6 +70,43 @@ using std::swap;
  */
 namespace simuPOP {
 
+/**
+    this class implements a Python itertor class that can be used to iterate
+    through populations in a population.
+ */
+class pyPopIterator
+{
+public:
+	pyPopIterator(vector<population *>::iterator const begin,
+		vector<population *>::iterator const end) : 
+		m_index(begin),
+		m_end(end)
+	{
+	}
+
+
+	~pyPopIterator()
+	{
+	}
+
+
+	pyPopIterator __iter__()
+	{
+		return *this;
+	}
+
+
+	population & next();
+
+private:
+	// current (initial population)
+	vector<population *>::iterator m_index;
+
+	// ending idx
+	vector<population *>::iterator m_end;
+};
+
+
 /// simulator manages several replicates of a population, evolve them using given mating scheme and operators
 /**
    Simulators combine three important components of simuPOP:
@@ -306,6 +343,14 @@ public:
 		return m_ptrRep[rep]->vars(subPop);
 	}
 
+    /** Return a iterator that can be used to iterate through all populations
+     *  in a simulator.
+     */
+    pyPopIterator populations()
+    {
+        return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
+    }
+
 
 	/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
 	/**
@@ -354,7 +399,7 @@ private:
 
 		ar & m_numRep;
 
-		m_ptrRep = new population *[m_numRep];
+		m_ptrRep = vector<population *>(m_numRep);
 
 		for (UINT i = 0; i < m_numRep; ++i) {
 			m_ptrRep[i] = new population();
@@ -391,7 +436,7 @@ private:
 	UINT m_numRep;
 
 	/// replicate pointers
-	population ** m_ptrRep;
+	vector<population *> m_ptrRep;
 
 	/// the scratch pop
 	population * m_scratchPop;
