@@ -8858,14 +8858,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyPopIterator "
-
-Details:
-
-    this class implements a Python itertor class that can be used to
-    iterate through populations in a population.
-
-"; 
+%ignore simuPOP::pyPopIterator;
 
 %feature("docstring") simuPOP::pyPopIterator::pyPopIterator "
 
@@ -10814,59 +10807,39 @@ Usage:
 
 %feature("docstring") simuPOP::simulator "
 
-Description:
-
-    simulator manages several replicates of a population, evolve them
-    using given mating scheme and operators
-
 Details:
 
-    Simulators combine three important components of  simuPOP:
-    population, mating scheme and operator together. A simulator is
-    created with an instance of population, a replicate number rep and
-    a mating scheme. It makes rep number of replicates of this
-    population and control the evolutionary process of them.
-    The most important function of a simulator is  evolve(). It
-    accepts an array of operators as its parameters, among which,
-    preOps and postOps will be applied to the populations at the
-    beginning and the end of evolution, respectively, whereas ops will
-    be applied at every generation.
-    A simulator separates operators into pre-, during-, and post-
-    mating operators. During evolution, a simulator first apply all
-    pre-mating operators and then call the mate() function of the
-    given mating scheme, which will call during-mating operators
-    during the birth of each offspring. After mating is completed,
-    post-mating operators are applied to the offspring in the order at
-    which they appear in the operator list.
-    Simulators can evolve a given number of generations (the end
-    parameter of evolve), or evolve indefinitely until a certain type
-    of operators called terminator terminates it. In this case, one or
-    more terminators will check the status of evolution and determine
-    if the simulation should be stopped. An obvious example of such a
-    terminator is a fixation-checker.
-    A simulator can be saved to a file in the format of 'txt', 'bin',
-    or 'xml'. This allows you to stop a simulator and resume it at
-    another time or on another machine.
+    A  simuPOP simulator is responsible for evolving one or more
+    replicates of a population forward in time, subject to various
+    operators. Populations in a simulator are created as identical
+    copies of a population and will become different after evolution.
+    A mating scheme needs to be specified, which will be used to
+    generate offspring generations during evolution. A number of
+    functions are provided to access simulator properties, access
+    populations and their variables, copy, save and load a simulator.
+    The most important member function of a simulator is evolve, which
+    evolves populations forward in time, subject to various operators.
+    Because populations in a simulator have to keep the same genotypic
+    structure, several functions are provided to change ancestral
+    depth and information fields of all populations. These functions
+    cannot be replaced by similar calls to all populations in a
+    simulator because the genotypic structure of the simulator itself
+    needs to be updated.
 
 "; 
 
 %feature("docstring") simuPOP::simulator::simulator "
 
-Description:
-
-    create a simulator
-
 Usage:
 
     simulator(pop, matingScheme, rep=1)
 
-Arguments:
+Details:
 
-    population:     a population created by population() function.
-                    This population will be copied rep times to the
-                    simulator. Its content will not be changed.
-    matingScheme:   a mating scheme
-    rep:            number of replicates. Default to 1.
+    Create a simulator with rep replicates of population pop.
+    Population pop will be copied rep times (default to 1), while
+    keeping the passed population intact. A mating scheme matingScheme
+    will be used to evolve these populations.
 
 "; 
 
@@ -10876,187 +10849,107 @@ Usage:
 
     x.~simulator()
 
-Note:
-
-    pop = simulator::population() returns temporary reference to an
-    internal population. After a simulator evolves another genertion
-    or after the simulator is destroyed, this referenced population
-    should not be used.
-
 "; 
 
 %ignore simuPOP::simulator::simulator(const simulator &rhs);
 
 %feature("docstring") simuPOP::simulator::clone "
 
-Description:
-
-    deep copy of a simulator
-
 Usage:
 
     x.clone()
 
-"; 
-
-%feature("docstring") simuPOP::simulator::addInfoField "
-
-Description:
-
-    add an information field to all replicates
-
-Usage:
-
-    x.addInfoField(field, init=0)
-
 Details:
 
-    Add an information field to all replicate, and to the simulator
-    itself. This is important because all populations must have the
-    same genotypic information as the simulator. Adding an information
-    field to one or more of the replicates will compromise the
-    integrity of the simulator.
-
-Arguments:
-
-    field:          information field to be added
-
-"; 
-
-%feature("docstring") simuPOP::simulator::addInfoFields "
-
-Description:
-
-    add information fields to all replicates
-
-Usage:
-
-    x.addInfoFields(fields, init=0)
-
-Details:
-
-    Add given information fields to all replicate, and to the
-    simulator itself.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setAncestralDepth "
-
-Description:
-
-    set ancestral depth of all replicates
-
-Usage:
-
-    x.setAncestralDepth(depth)
-
-"; 
-
-%feature("docstring") simuPOP::simulator::pop "
-
-Description:
-
-    Return a reference to the rep replicate of this simulator.
-
-Usage:
-
-    x.pop(rep)
-
-Arguments:
-
-    rep:            the index number of replicate which will be
-                    accessed
-
-Note:
-
-    The returned reference is temporary in the sense that the refered
-    population will be invalid after another round of evolution. If
-    you would like to get a persistent population, please use
-    getPopulation(rep).
-
-"; 
-
-%feature("docstring") simuPOP::simulator::getPopulation "
-
-Description:
-
-    return a copy of population rep
-
-Usage:
-
-    x.getPopulation(rep, destructive=False)
-
-Details:
-
-    By default return a cloned copy of population rep of the
-    simulator. If destructive==True, the population is extracted from
-    the simulator, leaving a defunct simulator.
-
-Arguments:
-
-    rep:            the index number of the replicate which will be
-                    obtained
-    destructive:    if true, destroy the copy of population within
-                    this simulator. Default to false.
-                    getPopulation(rep, true) is a more efficient way
-                    to get hold of a population when the simulator
-                    will no longer be used.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setMatingScheme "
-
-Description:
-
-    set a new mating scheme
-
-Usage:
-
-    x.setMatingScheme(matingScheme)
-
-"; 
-
-%ignore simuPOP::simulator::setPopulation(population &pop, UINT rep);
-
-%feature("docstring") simuPOP::simulator::numRep "
-
-Description:
-
-    return the number of replicates
-
-Usage:
-
-    x.numRep()
+    Clone a simulator, along with all its populations. Note that
+    Python assign statement simu1 = simu only creates a symbolic link
+    to an existing simulator.
 
 "; 
 
 %feature("docstring") simuPOP::simulator::gen "
 
-Description:
-
-    return the current generation number
-
 Usage:
 
     x.gen()
+
+Details:
+
+    Return the current generation number. <group>1-gen<group>
 
 "; 
 
 %feature("docstring") simuPOP::simulator::setGen "
 
-Description:
-
-    set the current generation. Usually used to reset a simulator.
-
 Usage:
 
     x.setGen(gen)
 
-Arguments:
+Details:
 
-    gen:            new generation index number
+    Set the current generation number of a simulator to gen.
+    <group>1-gen<group>
 
 "; 
+
+%feature("docstring") simuPOP::simulator::numRep "
+
+Usage:
+
+    x.numRep()
+
+Details:
+
+    Return the number of replicates.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::pop "
+
+Usage:
+
+    x.pop(rep, byRef=True)
+
+Details:
+
+    Return the rep-th population of a simulator, in the form of a
+    reference (byRef=True (default)), or a cloned copy. In the first
+    case, a temporary reference is returned, which will become invalid
+    once the simulator starts evolving or becomes invalid (removed).
+    Modifying the returned object is discouraged because it will
+    change the population within the simulator. In the second case, an
+    independent, cloned copy of the internal population is returned.
+    Modifying the returned population will not change the simulator.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::extract "
+
+Usage:
+
+    x.extract(rep)
+
+Details:
+
+    Extract the rep-th population from a simulator. This will reduce
+    the number of populations in this simulator by one.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::populations "
+
+Usage:
+
+    x.populations()
+
+Details:
+
+    Return a Python iterator that can be used to iterate through all
+    populations in a simulator.
+
+"; 
+
+%ignore simuPOP::simulator::setPopulation(population &pop, UINT rep);
 
 %feature("docstring") simuPOP::simulator::evolve "
 
@@ -11101,45 +10994,80 @@ Details:
 
 %ignore simuPOP::simulator::apply(const vectorop ops, bool dryrun=false);
 
+%feature("docstring") simuPOP::simulator::addInfoField "
+
+Usage:
+
+    x.addInfoField(field, init=0)
+
+Details:
+
+    Add an information field field to all populations in a simulator,
+    and update the genotypic structure of the simulator itself. The
+    information field will be initialized by value init.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::addInfoFields "
+
+Usage:
+
+    x.addInfoFields(fields, init=0)
+
+Details:
+
+    Add information fields fields to all populations in a simulator,
+    and update the genotypic structure of the simulator itself. The
+    information field will be initialized by value init.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::setAncestralDepth "
+
+Usage:
+
+    x.setAncestralDepth(depth)
+
+Details:
+
+    Set ancestral depth of all populations in a simulator.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::setMatingScheme "
+
+Usage:
+
+    x.setMatingScheme(matingScheme)
+
+Details:
+
+    Set a new mating scheme matingScheme to a simulator.
+
+"; 
+
 %feature("docstring") simuPOP::simulator::vars "
-
-Description:
-
-    Return the local namespace of population rep, equivalent to
-    x.population(rep).vars(subPop).
 
 Usage:
 
     x.vars(rep, subPop=-1)
 
-"; 
-
-%feature("docstring") simuPOP::simulator::populations "
-
-Usage:
-
-    x.populations()
-
 Details:
 
-    Return a iterator that can be used to iterate through all
-    populations in a simulator.
+    Return the local namespace of the rep-th population, equivalent to
+    x.population(rep).vars(subPop).
 
 "; 
 
 %feature("docstring") simuPOP::simulator::save "
 
-Description:
-
-    save simulator in 'txt', 'bin' or 'xml' format
-
 Usage:
 
     x.save(filename)
 
-Arguments:
+Details:
 
-    filename:       filename to save the simulator. Default to simu.
+    Save a simulator to file filename.
 
 "; 
 
@@ -11149,7 +11077,6 @@ Arguments:
 
 Description:
 
-    used by Python print function to print out the general information
     of the simulator
 
 Usage:

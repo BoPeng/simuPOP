@@ -38,7 +38,7 @@ class TestAscertainment(unittest.TestCase):
             ],
             gen=4
         )
-        self.pop = simu.getPopulation(0)
+        self.pop = simu.population(0, false)
         # more complicated one
         simu1 = simulator(
             population(size=[5000,20000], ploidy=2, loci=[5,10],
@@ -58,7 +58,7 @@ class TestAscertainment(unittest.TestCase):
             ],
             gen=10
         )
-        self.largepop = simu1.getPopulation(0)
+        self.largepop = simu1.extract(0)
 
     def testRandomSample(self):
         'Testing random sampling (imcomplete)'

@@ -70,7 +70,7 @@ using std::swap;
  */
 namespace simuPOP {
 
-/**
+/** CPPONLY
     this class implements a Python itertor class that can be used to iterate
     through populations in a population.
  */
@@ -107,185 +107,101 @@ private:
 };
 
 
-/// simulator manages several replicates of a population, evolve them using given mating scheme and operators
-/**
-   Simulators combine three important components of simuPOP:
-   population, mating scheme and operator together. A
-   simulator is created with an instance of \c population, a
-   replicate number \c rep and a mating scheme. It makes \c rep
-   number of replicates of this population and control the
-   evolutionary process of them. \n
-
-   The most important function of a simulator is \c evolve().
-   It accepts an array of operators as its parameters,
-   among which, \c preOps and \c postOps will be applied to the
-   populations at the beginning and the end of evolution, respectively,
-   whereas	\c ops will be applied at every generation. \n
-
-   A simulator separates operators into \em pre-, \em during-, and
-   \em post-mating operators. During evolution, a simulator first
-   apply all pre-mating operators and then call the \c mate()
-   function of the given mating scheme, which will call
-   during-mating operators during the birth of each offspring.
-   After mating is completed, post-mating operators are
-   applied to the offspring in the order at which they appear in the operator list. \n
-
-   Simulators can evolve a given number of generations (the
-   \c end parameter of \c evolve), or evolve indefinitely until
-   a certain type of operators called terminator terminates it. In this
-   case, one or more terminators will check the status of
-   evolution and determine if the simulation should be stopped.
-   An obvious example of such a terminator is a fixation-checker. \n
-
-   A simulator can be saved to a file in the format
-   of \c 'txt', \c 'bin', or \c 'xml'. This allows you to stop a
-   simulator and resume it at another time or on another
-   machine.
+/** A simuPOP simulator is responsible for evolving one or more replicates
+ *  of a \e population forward in time, subject to various \e operators.
+ *  Populations in a simulator are created as identical copies of a population
+ *  and will become different after evolution. A <em>mating scheme</em> needs
+ *  to be specified, which will be used to generate offspring generations during
+ *  evolution. A number of functions are provided to access simulator
+ *  properties, access populations and their variables, copy, save and load a
+ *  simulator.\n
+ *
+ *  The most important member function of a simulator is \c evolve, which
+ *  evolves populations forward in time, subject to various \e operators.
+ *  Because populations in a simulator have to keep the same genotypic
+ *  structure, several functions are provided to change ancestral depth and
+ *  information fields of all populations. These functions cannot be replaced
+ *  by similar calls to all populations in a simulator because the genotypic
+ *  structure of the simulator itself needs to be updated.
  */
 class simulator : public GenoStruTrait
 {
 public:
-	/// create a simulator
-	/**
-	   \param population a population created by \c population()
-	   function. This population will be copied \c rep times to the simulator.
-	   Its content will not be changed.
-	   \param matingScheme a mating scheme
-	   \param rep number of replicates. Default to \c 1.
-	   \return a simulator
-	   \sa population, mating
+	/** Create a simulator with \e rep replicates of population \e pop.
+	 *  Population \e pop will be copied \e rep times (default to \c 1), while
+	 *  keeping the passed population intact. A mating scheme \e matingScheme
+	 *  will be used to evolve these populations.
 	 */
-	simulator(const population & pop, mating & matingScheme,
-		int rep = 1);
+	simulator(const population & pop, mating & matingScheme, UINT rep = 1);
 
 	// destroy a simulator along with all its populations
-	/**
-	   \note <tt>pop = simulator::population()</tt>
-	   returns temporary reference to an internal population.
-	   After a simulator evolves another genertion or
-	   after the simulator is destroyed, this referenced
-	   population should \em not be used.
-	 */
 	~simulator();
 
-	/// CPPONLY
+	/// CPPONLY Copy constructor
 	simulator(const simulator & rhs);
 
-	/// deep copy of a simulator
+	/** Clone a simulator, along with all its populations. Note that Python
+	 *  assign statement <tt>simu1 = simu</tt> only creates a symbolic link to
+	 *  an existing simulator.
+	 *  <group>0-stru</group>
+	 */
 	simulator * clone() const;
 
-	/// add an information field to all replicates
-	/**
-	   Add an information field to all replicate, and to the
-	   simulator itself. This is important because all populations
-	   must have the same genotypic information as the simulator.
-	   Adding an information field to one or more of the replicates
-	   will compromise the integrity of the simulator.
-	   \param field information field to be added
+
+	/** Return the current generation number.
+	 *  <group>1-gen<group>
 	 */
-	void addInfoField(const string & field, double init = 0);
-
-	/// add information fields to all replicates
-	/**
-	   Add given information fields to all replicate, and to the
-	   simulator itself.
-	 */
-	void addInfoFields(const vectorstr & fields, double init = 0);
-
-	/// set ancestral depth of all replicates
-	void setAncestralDepth(UINT depth);
-
-	/// Return a reference to the \c rep replicate of this simulator
-	/**
-
-	   \param rep the index number of replicate which will be accessed
-	   \return reference to population \c rep.
-	   \note  The returned reference is temporary in the sense that
-	   the refered population will be invalid after another round
-	   of evolution. If you would like to get a persistent population, please use \c getPopulation(rep).
-	 */
-	population & pop(UINT rep) const
-	{
-		DBG_FAILIF(rep >= m_numRep, IndexError,
-			"replicate index out of range. From 0 to numRep()-1 ");
-
-		return *m_ptrRep[rep];
-	}
-
-
-	/// return a copy of population \c rep
-	/**
-	   By default return a cloned copy of population \c rep of the simulator. If
-	   <tt>destructive==True</tt>, the population is extracted from the simulator,
-	   leaving a defunct simulator.
-
-	   \param rep the index number of the replicate which will be obtained
-	   \param destructive if true, destroy the copy of population within this simulator.
-	    Default to false. <tt>getPopulation(rep, true)</tt> is a more efficient way
-	    to get hold of a population when the simulator will no longer be used.
-	   \return reference to a population
-	 */
-	population & getPopulation(UINT rep, bool destructive = false)
-	{
-		if (destructive) {
-			population * pop = new population();
-			pop->swap(*m_ptrRep[rep]);
-			return *pop;
-		} else
-			return *new population(*m_ptrRep[rep]);
-	}
-
-
-	/// set a new mating scheme
-	void setMatingScheme(const mating & matingScheme);
-
-	/// CPPONLY set population... unsafe!
-	void setPopulation(population & pop, UINT rep)
-	{
-		DBG_FAILIF(rep >= m_numRep, IndexError,
-			"replicate index out of range. From 0 to numRep()-1 ");
-		// get a copy of population
-		delete m_ptrRep[rep];
-		m_ptrRep[rep] = new population(pop);
-
-		if (pop.genoStru() != this->genoStru() ) {
-			DBG_DO(DBG_SIMULATOR,  cout << "Warning: added population has different genotypic structure." << endl);
-			setGenoStruIdx(pop.genoStruIdx());
-		}
-		if (pop.genoStru() != m_scratchPop->genoStru() ) {
-			delete m_scratchPop;
-			m_scratchPop = new population(pop);
-		}
-		m_ptrRep[rep]->setRep(rep);
-	}
-
-
-	/// return the number of replicates
-	UINT numRep() const
-	{
-		return m_numRep;
-	}
-
-
-	/// return the current generation number
 	ULONG gen() const
 	{
 		return m_gen;
 	}
 
 
-	/// set the current generation. Usually used to reset a simulator.
-	/**
-	   \param gen new generation index number
+	/** Set the current generation number of a simulator to \e gen.
+	 *  <group>1-gen<group>
 	 */
-	void setGen(ULONG gen)
+	void setGen(ULONG gen);
+
+
+	/** Return the number of replicates.
+	 *  <group>3-pop</group>
+	 */
+	UINT numRep() const
 	{
-		m_gen = gen;
-		// set gen for all replicates
-		for (UINT i = 0; i < m_numRep; ++i)
-			m_ptrRep[i]->setGen(gen, true);
+		return m_numRep;
 	}
 
+
+	/** Return the \e rep-th population of a simulator, in the form of a
+	 *  reference (<tt>byRef=True</tt> (default)), or a cloned copy. In the
+	 *  first case, a temporary reference is returned, which will become
+	 *  invalid once the simulator starts evolving or becomes invalid (removed).
+	 *  Modifying the returned object is discouraged because it will change
+	 *  the population within the simulator. In the second case, an independent,
+	 *  cloned copy of the internal population is returned. Modifying the
+	 *  returned population will not change the simulator.
+	 *  <group>3-pop</group>
+	 */
+	population & pop(UINT rep, bool byRef = true);
+
+	/** Extract the \e rep-th population from a simulator. This will reduce
+	 *  the number of populations in this simulator by one.
+	 *  <group>3-pop</group>
+	 */
+	population & extract(UINT rep);
+
+	/** Return a Python iterator that can be used to iterate through all
+	 *  populations in a simulator.
+	 *  <group>3-pop</group>
+	 */
+	pyPopIterator populations()
+	{
+		return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
+	}
+
+
+	/// CPPONLY set population... unsafe!
+	void setPopulation(population & pop, UINT rep);
 
 	/** Evolve all populations \e gen generations, subject to operators \e ops
 	 *  \e preOps and \e postOps. Operators \e preOps are applied to all
@@ -317,24 +233,46 @@ public:
 	 *  special kind of operators called \e terminators. At the end of the
 	 *  evolution, the generations that each replicates have evolved are
 	 *  returned.
+	 *  <group>2-evolve</group>
 	 */
 	vectoru evolve(const vectorop & ops,
 		const vectorop & preOps = vectorop(),
 		const vectorop & postOps = vectorop(),
 		int gen = -1, bool dryrun = false);
 
-	///  CPPONLY apply a list of operators to all populations, \c geneartion of the population does not change
-	/**
-	   \param ops operators that will be applied at all generations.
-	   Of course they might not be active at all generations.
-	   \result True if evolution finishs successfully.
-	   \note Pre-mating oeprators are applied before post-mating operators.
-	   No during-mating operators are allowed.
-	 */
+	/// CPPONLY apply a list of operators to all populations
 	bool apply(const vectorop ops, bool dryrun = false);
 
 
-	/// Return the local namespace of population \c rep, equivalent to <tt>x.population(rep).vars(subPop)</tt>
+	/** Add an information field \e field to all populations in a simulator,
+	 *  and update the genotypic structure of the simulator itself. The
+	 *  information field will be initialized by value \e init.
+	 *  <group>7-change</group>
+	 */
+	void addInfoField(const string & field, double init = 0);
+
+	/** Add information fields \e fields to all populations in a simulator,
+	 *  and update the genotypic structure of the simulator itself. The
+	 *  information field will be initialized by value \e init.
+	 *  <group>7-change</group>
+	 */
+	void addInfoFields(const vectorstr & fields, double init = 0);
+
+	/** Set ancestral depth of all populations in a simulator.
+	 *  <group>7-change</group>
+	 */
+	void setAncestralDepth(UINT depth);
+
+
+	/** Set a new mating scheme \e matingScheme to a simulator.
+	 *  <group>7-change</group>
+	 */
+	void setMatingScheme(const mating & matingScheme);
+
+	/** Return the local namespace of the \e rep-th population, equivalent to
+	 *  <tt>x.population(rep).vars(subPop)</tt>.
+	 *  <group>9-var</group>
+	 */
 	PyObject * vars(UINT rep, int subPop = -1)
 	{
 		if (static_cast<UINT>(rep) >= m_numRep)
@@ -344,29 +282,16 @@ public:
 	}
 
 
-	/** Return a iterator that can be used to iterate through all populations
-	 *  in a simulator.
-	 */
-	pyPopIterator populations()
-	{
-		return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
-	}
-
-
-	/// save simulator in \c 'txt', \c 'bin' or \c 'xml' format
-	/**
-	   \param filename filename to save the simulator. Default to \c simu.
+	/** Save a simulator to file \c filename.
+	 *  <group>0-stru</group>
 	 */
 	void save(string filename) const;
 
 	/// CPPONLY load simulator from a file
-	/**
-	   \param filename load from filename
-	 */
 	void load(string filename);
 
-	// allow str(population) to get something better looking
-	/// used by Python print function to print out the general information of the simulator
+	/// used by Python print function to print out the general information
+	/// of the simulator
 	string __repr__()
 	{
 		return "<simulator with " + toStr(numRep()) + " replicates>";

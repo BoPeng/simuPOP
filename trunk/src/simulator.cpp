@@ -40,7 +40,7 @@ population & pyPopIterator::next()
 }
 
 
-simulator::simulator(const population & pop, mating & matingScheme, int rep)
+simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
 	: m_gen(0), m_numRep(rep)
 {
 	DBG_ASSERT(m_numRep >= 1, ValueError,
@@ -96,10 +96,6 @@ simulator::~simulator()
 		delete m_ptrRep[i];
 
 	delete m_matingScheme;
-
-	DBG_DO(DBG_SIMULATOR, cout << "populations have been erased. " << endl
-		                       << "If you have ever used population() function to access some of the replicates, " << endl
-		                       << "these referenced population will not be working now." << endl);
 }
 
 
@@ -190,10 +186,63 @@ void simulator::setAncestralDepth(UINT depth)
 }
 
 
+population & simulator::pop(UINT rep, bool byRef)
+{
+	DBG_FAILIF(rep >= m_numRep, IndexError,
+		"replicate index out of range. From 0 to numRep()-1 ");
+
+	if (byRef)
+		return *m_ptrRep[rep];
+	else
+		return *new population(*m_ptrRep[rep]);
+}
+
+
+population & simulator::extract(UINT rep)
+{
+	DBG_FAILIF(rep >= m_numRep, IndexError,
+		"replicate index out of range. From 0 to numRep()-1 ");
+
+	population * pop = m_ptrRep[rep];
+	m_ptrRep.erase(m_ptrRep.begin() + rep);
+	--m_numRep;
+	return *pop;
+}
+
+
 void simulator::setMatingScheme(const mating & matingScheme)
 {
 	delete m_matingScheme;
 	m_matingScheme = matingScheme.clone();
+}
+
+
+void simulator::setPopulation(population & pop, UINT rep)
+{
+	DBG_FAILIF(rep >= m_numRep, IndexError,
+		"replicate index out of range. From 0 to numRep()-1 ");
+	// get a copy of population
+	delete m_ptrRep[rep];
+	m_ptrRep[rep] = new population(pop);
+
+	if (pop.genoStru() != this->genoStru() ) {
+		DBG_DO(DBG_SIMULATOR,  cout << "Warning: added population has different genotypic structure." << endl);
+		setGenoStruIdx(pop.genoStruIdx());
+	}
+	if (pop.genoStru() != m_scratchPop->genoStru() ) {
+		delete m_scratchPop;
+		m_scratchPop = new population(pop);
+	}
+	m_ptrRep[rep]->setRep(rep);
+}
+
+
+void simulator::setGen(ULONG gen)
+{
+	m_gen = gen;
+	// set gen for all replicates
+	for (UINT i = 0; i < m_numRep; ++i)
+		m_ptrRep[i]->setGen(gen, true);
 }
 
 
@@ -354,7 +403,7 @@ vectoru simulator::evolve(const vectorop & ops,
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
-						if (!e.message().empty())
+						if (e.message())
 							cout << e.message() << endl;
 						fill(stopped.begin(), stopped.end(), true);
 						numStopped = stopped.size();
@@ -391,7 +440,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
-				if (!e.message().empty())
+				if (e.message())
 					cout << e.message() << endl;
 				fill(stopped.begin(), stopped.end(), true);
 				numStopped = stopped.size();
@@ -423,7 +472,7 @@ vectoru simulator::evolve(const vectorop & ops,
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
-						if (!e.message().empty())
+						if (e.message())
 							cout << e.message() << endl;
 						fill(stopped.begin(), stopped.end(), true);
 						numStopped = stopped.size();
