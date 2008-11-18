@@ -488,15 +488,11 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 }
 
 
-void simulator::save(string filename, string format, bool compress) const
+void simulator::save(string filename) const
 {
-	DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
-
 	boost::iostreams::filtering_ostream ofs;
 
-#ifndef DISABLE_COMPRESSION
 	ofs.push(boost::iostreams::gzip_compressor());
-#endif
 	ofs.push(boost::iostreams::file_sink(filename));
 
 	if (!ofs)
@@ -507,16 +503,12 @@ void simulator::save(string filename, string format, bool compress) const
 }
 
 
-void simulator::load(string filename, string format)
+void simulator::load(string filename)
 {
 	boost::iostreams::filtering_istream ifs;
 
 	if (isGzipped(filename))
-#ifdef DISABLE_COMPRESSION
-		throw ValueError("This version of simuPOP can not handle compressed file");
-#else
 		ifs.push(boost::iostreams::gzip_decompressor());
-#endif
 	ifs.push(boost::iostreams::file_source(filename));
 
 	// do not need to test again
@@ -533,15 +525,13 @@ void simulator::load(string filename, string format)
 }
 
 
-simulator & LoadSimulator(const string & file,
-                          mating & mate, string format)
+simulator & LoadSimulator(const string & file, mating & matingScheme)
 {
 	population p;
-	simulator * a = new simulator(
-		p, mate);
+	simulator * a = new simulator( p, matingScheme);
 
 #ifndef _NO_SERIALIZATION_
-	a->load(file, format);
+	a->load(file);
 	return *a;
 #else
 	cout << "This feature is not supported in this platform" << endl;
