@@ -171,13 +171,13 @@ public:
 	population(const population & rhs);
 
 	/** Copy a population, with the option to keep all (default), no, or a
-	 *  given number of ancestral generations (\e keepAncestralPops = \c -1,
+	 *  given number of ancestral generations (\e ancGen = \c -1,
 	 *  \c 0, or a positive number, respectively). Note that Python statement
 	 *  <tt>pop1 = pop</tt> only creates a reference to an existing population
 	 *  \c pop.
 	 *  <group>1-pop</group>
 	 */
-	population * clone(int keepAncestralPops = -1) const;
+	population * clone(int ancGen = -1) const;
 
 	/** HIDDEN (do not see a need to expose this function yet.)
 	 *  swap the content of two populations
@@ -1069,7 +1069,7 @@ public:
 	   ID will be removed.
 	 * <group>7-manipulate</group>
 	 */
-	population & newPopByIndID(int keepAncestralPops = -1,
+	population & newPopByIndID(int ancGen = -1,
 		const vectori & id = vectori(),
 		bool removeEmptySubPops = false);
 
