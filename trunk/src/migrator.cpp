@@ -261,9 +261,9 @@ bool splitSubPop::apply(population & pop)
         vectorf sizes;
         for (size_t i = 0; i < m_subPopSizes.size(); ++i)
             sizes.push_back(m_subPopSizes[i]);
-		pop.splitSubPop(m_which, sizes, m_keepOrder);
+		pop.splitSubPop(m_which, sizes);
     } else
-		pop.splitSubPop(m_which, m_proportions, m_keepOrder);
+		pop.splitSubPop(m_which, m_proportions);
 	return true;
 }
 

@@ -314,13 +314,12 @@ public:
 	 \test src_splitSubPop.log Operator \c splitSubPop
 	 */
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
-	            bool keepOrder = true,
 	            bool randomize = true,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	            repList rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
-		m_keepOrder(keepOrder), m_randomize(randomize)
+		m_randomize(randomize)
 	{
 		DBG_FAILIF(sizes.empty() && proportions.empty(), ValueError,
 			"Please specify one of subPop and proportions.");
@@ -361,8 +360,6 @@ private:
 
 	/// new subpopulation proportions.
 	vectorf m_proportions;
-
-	bool m_keepOrder;
 
 	/// random split
 	/// randomize population before split.
