@@ -706,24 +706,48 @@ void population::removeSubPops(const vectoru & subPops)
 		DBG_WARNING(*sp >= numSubPop(), "Subpopulation " + toStr(*sp) + " does not exist.");
 	}
 #endif
-	setIndSubPopIDWithID();
+	sortIndividuals();
+	vectorlu new_size = m_subPopSize;
+
+	UINT step = genoSize();
+	UINT infoStep = infoSize();
+	vector<individual>::iterator oldInd = m_inds.begin();
+	vector<individual>::iterator newInd = m_inds.begin();
+	GenoIterator oldPtr = m_genotype.begin();
+	InfoIterator oldInfoPtr = m_info.begin();
+	GenoIterator newPtr = m_genotype.begin();
+	InfoIterator newInfoPtr = m_info.begin();
 
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
-		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
-			RawIndIterator ind = rawIndBegin(sp);
-			RawIndIterator ind_end = rawIndEnd(sp);
-			for (; ind != ind_end; ++ind)
-				ind->setSubPopID(-1); // remove
-		}
+		ULONG spSize = subPopSize(sp);
+		if (find(subPops.begin(), subPops.end(), sp) == subPops.end()) {
+			// do not remove.
+			if (oldPtr != newPtr) {
+				copy(oldInd, oldInd + spSize, newInd);
+				copy(oldPtr, oldPtr + step * spSize, newPtr);
+				copy(oldInfoPtr, oldInfoPtr + infoStep * spSize, newInfoPtr);
+			}
+			newInd += spSize;
+			newPtr += step * spSize;
+			newPtr += infoStep * spSize;
+		} else
+			new_size[sp] = 0;
+		oldInd += spSize;
+		oldPtr += step * spSize;
+		oldInfoPtr += infoStep * spSize;
 	}
-
-	UINT oldNumSP = numSubPop();
-	setSubPopByIndID();
-	// try to keep these subpopulation IDs.
-	if (oldNumSP != numSubPop()) {
-		vectorlu spSizes = subPopSizes();
-		spSizes.resize(oldNumSP, 0);
-		setSubPopStru(spSizes);
+	//
+	m_inds.erase(newInd, m_inds.end());
+	m_genotype.erase(newPtr, m_genotype.end());
+	m_info.erase(newInfoPtr, m_info.end());
+	m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	setSubPopStru(new_size);
+	//
+	GenoIterator ptr = m_genotype.begin();
+	InfoIterator infoPtr = m_info.begin();
+	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(ptr);
+		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
 
