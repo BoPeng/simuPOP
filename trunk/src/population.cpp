@@ -1126,42 +1126,6 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 }
 
 
-void population::reorderSubPops(const vectoru & order, const vectoru & rank,
-                                bool removeEmptySubPops)
-{
-	DBG_FAILIF(order.empty() && rank.empty(), ValueError,
-		"Please specify one of order or rank.");
-
-	DBG_FAILIF(!order.empty() && !rank.empty(), ValueError,
-		"You can specify only one of order or rank.");
-
-	if (removeEmptySubPops)
-		this->removeEmptySubPops();
-
-	if ( (!order.empty() && order.size() != numSubPop())
-	    || (!rank.empty() && rank.size() != numSubPop()))
-		cout << "Warning: Given order or rank does not have the length of number of subpop." << endl;
-
-	if (!order.empty()) {
-		// alow order[i] > numSubPop(). In a special case, I have last empty subpop...
-		for (size_t i = 0; i < order.size(); ++i) {
-			if (order[i] >= numSubPop())
-				continue;
-			for (IndIterator ind = indBegin(order[i]); ind.valid(); ++ind)
-				ind->setSubPopID(i);
-		}
-	} else {
-		for (size_t i = 0; i < rank.size(); ++i) {
-			if (i >= numSubPop())
-				continue;
-			for (IndIterator ind = indBegin(i); ind.valid(); ++ind)
-				ind->setSubPopID(rank[i]);
-		}
-	}
-	// reset ...
-	setSubPopByIndID();
-}
-
 
 population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmptySubPops)
 {
