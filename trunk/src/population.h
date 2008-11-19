@@ -946,18 +946,14 @@ public:
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
 	 *  which should add up to the size of subpopulation \e subPop.
 	 *  Alternatively, \e sizes can be a list of proportions (add up to \c 1)
-	 *  from which the sizes of new subpopulations are determined. By default,
-	 *  subpopulation indexes will be adjusted so that individuals can keep
-	 *  their original order. That is to say, if subpopulation \c 1 of a population
-	 *  having four subpopulations is split into three subpopulation, the new
-	 *  subpopulation ID would be \c 0, \c 1.1->1, \c 1.2->2, \c 1.3->3,
-	 *  \c 2->4, \c 3->5. If \e keepOrder is set to \c False, the subpopulation
-	 *  IDs of existing subpopulations will not be changed so the new subpopulation
-	 *  IDs of the previous example would be \c 0, \c 1.1->1, \c 2, \c 3,
-	 *  \c 1.2->4, \c 1.3->5.
+	 *  from which the sizes of new subpopulations are determined. If \e subPop
+	 *  is not the last subpopulation, subpopulation indexes will be changed.
+	 *  For example, if you split the second subpopulation into two, a
+	 *  population with three subpopulations will have four subpopulations:
+	 *  \c 0 (untouched), \c 1.1->1, \c 1.2->2, \c 2->3 (changed).
 	 *  <group>7-manipulate</group>
 	 */
-	void splitSubPop(UINT subPop, vectorf sizes, bool keepOrder = true);
+	void splitSubPop(UINT subPop, vectorf sizes);
 
 	/** remove empty subpopulations by adjusting subpopulation IDs.
 	 *  <group>7-manipulate</group>
