@@ -754,17 +754,57 @@ void population::removeSubPops(const vectoru & subPops)
 
 void population::removeIndividuals(const vectoru & inds)
 {
-	setIndSubPopIDWithID();
-	for (size_t i = 0; i < inds.size(); ++i)
-		ind(inds[i]).setSubPopID(-1);
+	sortIndividuals();
+	vectorlu new_size = m_subPopSize;
 
-	UINT oldNumSP = numSubPop();
-	setSubPopByIndID();
-	// try to keep these subpopulation IDs.
-	if (oldNumSP != numSubPop()) {
-		vectorlu spSizes = subPopSizes();
-		spSizes.resize(oldNumSP, 0);
-		setSubPopStru(spSizes);
+	UINT step = genoSize();
+	UINT infoStep = infoSize();
+	vector<individual>::iterator oldInd = m_inds.begin();
+	vector<individual>::iterator newInd = m_inds.begin();
+	GenoIterator oldPtr = m_genotype.begin();
+	InfoIterator oldInfoPtr = m_info.begin();
+	GenoIterator newPtr = m_genotype.begin();
+	InfoIterator newInfoPtr = m_info.begin();
+
+	// which ones are removed?
+	vector<bool> removed(popSize(), false);
+	vectoru::const_iterator it = inds.begin();
+	vectoru::const_iterator it_end = inds.end();
+	for (; it != it_end; ++it)
+		removed[*it] = true;
+	//
+	for (size_t sp = 0; sp < numSubPop(); ++sp) {
+		for (size_t ind = subPopBegin(sp); ind != subPopEnd(sp); ++ind) {
+			if (removed[ind])
+				--new_size[sp];
+			else {
+				// do not remove.
+				if (oldPtr != newPtr) {
+					copy(oldInd, oldInd + 1, newInd);
+					copy(oldPtr, oldPtr + step, newPtr);
+					copy(oldInfoPtr, oldInfoPtr + infoStep, newInfoPtr);
+				}
+				++newInd;
+				newPtr += step;
+				newPtr += infoStep;
+			}
+			++oldInd;
+			oldPtr += step;
+			oldInfoPtr += infoStep;
+		}
+	}
+	//
+	m_inds.erase(newInd, m_inds.end());
+	m_genotype.erase(newPtr, m_genotype.end());
+	m_info.erase(newInfoPtr, m_info.end());
+	m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
+	setSubPopStru(new_size);
+	//
+	GenoIterator ptr = m_genotype.begin();
+	InfoIterator infoPtr = m_info.begin();
+	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(ptr);
+		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
 
