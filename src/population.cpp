@@ -199,14 +199,14 @@ void population::popData::swap(population & pop)
 }
 
 
-population * population::clone(int keepAncestralPops) const
+population * population::clone(int ancGen) const
 {
 	population * p = new population(*this);
 	int oldDepth = m_ancestralGens;
 
-	if (keepAncestralPops >= 0)
+	if (ancGen >= 0)
 		// try to remove excessive ancestra generations.
-		p->setAncestralDepth(keepAncestralPops);
+		p->setAncestralDepth(ancGen);
 	p->setAncestralDepth(oldDepth);
 	return p;
 }
@@ -1175,15 +1175,15 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 
 
 /** form a new population according to info, info can be given directly */
-population & population::newPopByIndID(int keepAncestralPops,
+population & population::newPopByIndID(int ancGen,
                                        const vectori & id, bool removeEmptySubPops)
 {
 	UINT topGen;
 
-	if (keepAncestralPops < 0 || static_cast<UINT>(keepAncestralPops) >= ancestralGens())
+	if (ancGen < 0 || static_cast<UINT>(ancGen) >= ancestralGens())
 		topGen = ancestralGens();
 	else
-		topGen = keepAncestralPops;
+		topGen = ancGen;
 	// go to the oldest generation
 	useAncestralGen(topGen);
 	population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
