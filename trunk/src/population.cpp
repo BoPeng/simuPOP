@@ -644,7 +644,7 @@ void population::setSubPopByIndID(vectori id)
 }
 
 
-void population::splitSubPop(UINT subPop, vectorf sizes, bool keepOrder)
+void population::splitSubPop(UINT subPop, vectorf sizes)
 {
 	if (sizes.size() <= 1)
 		return;
@@ -666,31 +666,14 @@ void population::splitSubPop(UINT subPop, vectorf sizes, bool keepOrder)
 	// to avoid round off problem, calculate the last subpopulation
 	newSizes[sizes.size() - 1] = spSize - accumulate(newSizes.begin(), newSizes.end() - 1, 0L);
 
-	if (keepOrder) {
-		vectorlu subPopSizes;
-		for (size_t sp = 0; sp < numSubPop(); ++sp)
-			if (sp != subPop)
-				subPopSizes.push_back(subPopSize(sp));
-			else
-				subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
-		setSubPopStru(subPopSizes);
-		return;
-	}
-
-	// set initial info
-	setIndSubPopIDWithID();
-
-	UINT spID;
-	for (size_t sp = 0, idx = 0; sp < newSizes.size(); ++sp) {
-		if (sp == 0)
-			spID = subPop;
+	vectorlu subPopSizes;
+	for (size_t sp = 0; sp < numSubPop(); ++sp)
+		if (sp != subPop)
+			subPopSizes.push_back(subPopSize(sp));
 		else
-			spID = numSubPop() + sp - 1;
-		//
-		for (size_t i = 0; i < newSizes[sp]; ++i)
-			ind(idx++, subPop).setSubPopID(spID);
-	}
-	setSubPopByIndID();
+			subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
+	setSubPopStru(subPopSizes);
+	return;
 }
 
 
