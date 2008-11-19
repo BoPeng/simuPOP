@@ -4,7 +4,9 @@ BUGS:
   - Multi-locus version of controlled random mating in test_05_matings.py 
 	does not seem to work.
 
-version 0.8.9 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.8.9 - tagged, but not publically released (rev 1948).
   - DOC: Adjust reference output for simuPOP classes.
   - CHG: Rename genoStruTrait::haplodiploid to isHaplodiploid.
   - CHG: Rename genoStruTrait::sexChrom to hasSexChrom.
