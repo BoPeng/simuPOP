@@ -68,12 +68,12 @@ include src/virtualSubPop.cpp
 
 # source generated files
 include swigpyrun.h 
-#include src/simuPOP_std_wrap.cpp
-#include src/simuPOP_op_wrap.cpp 
-#include src/simuPOP_la_wrap.cpp
-#include src/simuPOP_laop_wrap.cpp 
-#include src/simuPOP_ba_wrap.cpp
-#include src/simuPOP_baop_wrap.cpp
+include src/simuPOP_std_wrap.cpp
+include src/simuPOP_op_wrap.cpp 
+include src/simuPOP_la_wrap.cpp
+include src/simuPOP_laop_wrap.cpp 
+include src/simuPOP_ba_wrap.cpp
+include src/simuPOP_baop_wrap.cpp
 
 # source wrap files
 include src/simuPOP_common.i
