@@ -552,6 +552,8 @@ class Doxy2SWIG:
         for entry in self.content:
             if entry['Name'] == 'simuPOP::genotypeSplitter::genotypeSplitter':
                 entry['Usage'] = entry['Usage'].replace('loci', 'loci (or locus)')
+            if entry['Name'] == 'simuPOP::population::extract':
+                entry['Usage'] = '(field=None, loci=None, infoFields=None)'
         print "Number of entries: ", len(self.content)
         def myhash(entry):
             'encode an entry to a string for easy comparison'

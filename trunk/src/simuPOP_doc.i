@@ -2465,6 +2465,16 @@ Usage:
 
 "; 
 
+%ignore simuPOP::indCompare;
+
+%feature("docstring") simuPOP::indCompare::indCompare "
+
+Usage:
+
+    indCompare(idx)
+
+"; 
+
 %feature("docstring") simuPOP::IndexError "
 
 Description:
@@ -2790,10 +2800,6 @@ Details:
 %ignore simuPOP::individual::visible() const ;
 
 %ignore simuPOP::individual::setVisible(bool visible);
-
-%feature("docstring") simuPOP::individual::subPopID "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::individual::setSubPopID "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::individual::info "
 
@@ -4839,7 +4845,7 @@ Usage:
 
     migrator(rate, mode=MigrByProbability, fromSubPop=[],
       toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -6777,14 +6783,14 @@ Arguments:
 
 Usage:
 
-    x.clone(keepAncestralPops=-1)
+    x.clone(ancGen=-1)
 
 Details:
 
     Copy a population, with the option to keep all (default), no, or a
-    given number of ancestral generations (keepAncestralPops = -1, 0,
-    or a positive number, respectively). Note that Python statement
-    pop1 = pop only creates a reference to an existing population pop.
+    given number of ancestral generations (ancGen = -1, 0, or a
+    positive number, respectively). Note that Python statement pop1 =
+    pop only creates a reference to an existing population pop.
 
 "; 
 
@@ -7193,32 +7199,37 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::setIndSubPopID "Obsolete or undocumented function."
+%feature("docstring") simuPOP::population::setSubPopByIndInfo "
 
-%feature("docstring") simuPOP::population::setIndSubPopIDWithID "Obsolete or undocumented function."
+Usage:
 
-%feature("docstring") simuPOP::population::setSubPopByIndID "Obsolete or undocumented function."
+    x.setSubPopByIndInfo(field)
+
+Details:
+
+    Rearrange individuals to their new subpopulations according to
+    their integer values at information field field (value returned by
+    individual::infInfo(field)). If the information value of an
+    individual is negative, this individual will be removed.
+
+"; 
 
 %feature("docstring") simuPOP::population::splitSubPop "
 
 Usage:
 
-    x.splitSubPop(subPop, sizes, keepOrder=True)
+    x.splitSubPop(subPop, sizes)
 
 Details:
 
     Split subpopulation subPop into subpopulations of given sizes,
     which should add up to the size of subpopulation subPop.
     Alternatively, sizes can be a list of proportions (add up to 1)
-    from which the sizes of new subpopulations are determined. By
-    default, subpopulation indexes will be adjusted so that
-    individuals can keep their original order. That is to say, if
-    subpopulation 1 of a population having four subpopulations is
-    split into three subpopulation, the new subpopulation ID would be
-    0, 1.1->1, 1.2->2, 1.3->3, 2->4, 3->5. If keepOrder is set to
-    False, the subpopulation IDs of existing subpopulations will not
-    be changed so the new subpopulation IDs of the previous example
-    would be 0, 1.1->1, 2, 3, 1.2->4, 1.3->5.
+    from which the sizes of new subpopulations are determined. If
+    subPop is not the last subpopulation, subpopulation indexes will
+    be changed. For example, if you split the second subpopulation
+    into two, a population with three subpopulations will have four
+    subpopulations: 0 (untouched), 1.1->1, 1.2->2, 2->3 (changed).
 
 "; 
 
@@ -7242,9 +7253,8 @@ Usage:
 
 Details:
 
-    Remove all individuals from subpopulations subPops. The removed
-    subpopulations will have size zero, and can be removed by function
-    removeEmptySubPops.
+    Remove subpopulations subPop and all their individuals. Indexes of
+    subpopulations after removed subpopulations will be shifted.
 
 "; 
 
@@ -7258,7 +7268,8 @@ Details:
 
     remove individuals inds (absolute indexes) from the current
     population. A subpopulation will be kept even if all individuals
-    from it are removed.
+    from it are removed. This function only affects the current
+    generation.
 
 "; 
 
@@ -7270,13 +7281,11 @@ Usage:
 
 Details:
 
-    Merge subpopulations subPops. If subPops is empty (default), all
+    Merge subpopulations subPops. If subPops es empty (default), all
     subpopulations will be merged. Subpopulations subPops do not have
-    to be adjacent to each other. The ID of the first subpopulation in
-    parameter subPops will become the ID of the new large
-    subpopulation. Other subpopulations will keep their IDs although
-    their sizes become zero. Function removeEmptySubPops can be used
-    to remove these empty subpopulation.
+    to be adjacent to each other. They will all be merged to the
+    subpopulation with the smallest subpopulation ID. Indexes of the
+    rest of the subpopulation may be changed.
 
 "; 
 
@@ -7380,13 +7389,29 @@ Details:
     True. More specifically, if a subpopulation with 3 individuals is
     expanded to 7, the added individuals will copy genotypes from
     individual 1, 2, 3, and 1 respectively. Note that this function
-    only resizes the current generation.
+    only resizes the current generation. This function affects only
+    the current generation.
 
 "; 
 
-%ignore simuPOP::population::reorderSubPops(const vectoru &order=vectoru(), const vectoru &rank=vectoru(), bool removeEmptySubPops=false);
+%feature("docstring") simuPOP::population::extract "
 
-%ignore simuPOP::population::newPopByIndID(int keepAncestralPops=-1, const vectori &id=vectori(), bool removeEmptySubPops=false);
+Usage:
+
+    (field=None, loci=None, infoFields=None)
+
+Details:
+
+    Extract subsets of individuals, loci and/or information fields
+    from the current population and create a new one. If information
+    field field is not None (default), individuals with negative
+    values at this information field will be removed, and others are
+    put into subpopulations specified by this field. If loci is not
+    None, a subset of loci will be extracted. If infoFields is not
+    None, a subset of information fields will be extracted. This
+    function will affect all generations in the population.
+
+"; 
 
 %feature("docstring") simuPOP::population::removeLoci "
 
@@ -11193,9 +11218,9 @@ Description:
 
 Usage:
 
-    splitSubPop(which=0, sizes=[], proportions=[], keepOrder=True,
-      randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+    splitSubPop(which=0, sizes=[], proportions=[], randomize=True,
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
+      infoFields=[])
 
 Details:
 
