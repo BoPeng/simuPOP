@@ -910,27 +910,6 @@ public:
 	 */
 	//@{
 
-	/// HIDDEN set subpopulation ID with given ID
-	/**
-	   Set subpopulation ID of each individual with given ID. Individuals
-	   can be rearranged afterwards using \c setSubPopByIndID.
-
-	   \param id an array of the same length of population size, resprenting
-	   subpopulation ID of each individual. If the length of \id is less
-	   than population size, it is repeated to fill the whole population.
-	   \param ancestralPops If true (default to False), set subpop id for ancestral
-	   generations as well.
-	   \sa individual::setSubPopID, individual::subPopID
-	 */
-	void setIndSubPopID(const vectori & id, bool ancestralPops = false);
-
-	/// HIDDEN set subpopulation ID of each individual with their current subpopulation ID
-	/**
-	   \param ancestralPops If true (default to False), set subpop id for ancestral
-	   generations as well.
-	 */
-	void setIndSubPopIDWithID(bool ancestralPops = false);
-
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
 	 *  <tt>individual::infInfo(field)</tt>). If the information value of an
@@ -1046,8 +1025,7 @@ public:
 	   ID will be removed.
 	 * <group>7-manipulate</group>
 	 */
-	population & newPopByIndID(int ancGen = -1,
-		const vectori & id = vectori(),
+	population & newPopByIndInfo( const string & field, int ancGen = -1,
 		bool removeEmptySubPops = false);
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
@@ -1318,7 +1296,7 @@ public:
 	void load(const string & filename);
 
 private:
-	population & newPopByIndIDPerGen(const vectori & id = vectori(),
+	population & newPopByIndInfoPerGen(const string & field,
 		bool removeEmptySubPops = false);
 
 public:

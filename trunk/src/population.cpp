@@ -445,38 +445,6 @@ void population::setGenotype(vectora geno, SubPopID subPop)
 }
 
 
-void population::setIndSubPopID(const vectori & id, bool ancestralPops)
-{
-	UINT oldGen = curAncestralGen();
-	size_t sz = id.size();
-
-	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
-		if (!ancestralPops && anc != oldGen)
-			continue;
-		useAncestralGen(anc);
-		for (ULONG it = 0; it < m_popSize; ++it)
-			ind(it).setSubPopID(static_cast<SubPopID>(id[it % sz]));
-	}
-	useAncestralGen(oldGen);
-}
-
-
-void population::setIndSubPopIDWithID(bool ancestralPops)
-{
-	UINT oldGen = curAncestralGen();
-
-	for (UINT anc = 0; anc <= ancestralGens(); ++anc) {
-		if (!ancestralPops && anc != oldGen)
-			continue;
-		useAncestralGen(anc);
-		for (UINT i = 0, iEnd = numSubPop(); i < iEnd;  ++i)
-			for (IndIterator it = indBegin(i); it.valid();  ++it)
-				it->setSubPopID(i);
-	}
-	useAncestralGen(oldGen);
-}
-
-
 void population::validate(const string & msg) const
 {
 #ifndef OPTIMIZED
@@ -1183,33 +1151,23 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 }
 
 
-population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmptySubPops)
+population & population::newPopByIndInfoPerGen(const string & field, bool removeEmptySubPops)
 {
 	// determine the size of needed individuals
 	vectorlu sz;
+	UINT info = infoIdx(field);
 
-	if (!id.empty()) {
-		DBG_ASSERT(id.size() == popSize(), ValueError, "Please assign id for each individual");
-		for (ULONG i = 0; i != id.size(); ++i) {
-			if (id[i] < 0)
+	for (UINT sp = 0; sp < numSubPop(); ++sp) {
+		for (IndIterator it = indBegin(sp); it.valid(); ++it) {
+			int indID = it->intInfo(info);
+			if (indID < 0)
 				continue;
-			if (static_cast<UINT>(id[i]) >= sz.size())
-				sz.resize(id[i] + 1);
-			sz[id[i]]++;
-		}
-	} else {
-		for (UINT sp = 0; sp < numSubPop(); ++sp) {
-			for (IndIterator it = indBegin(sp); it.valid(); ++it) {
-				int indID = it->subPopID();
-				if (indID < 0)
-					continue;
-				if (static_cast<UINT>(indID) >= sz.size())
-					sz.resize(indID + 1);
-				sz[indID]++;
-			}
+			if (static_cast<UINT>(indID) >= sz.size())
+				sz.resize(indID + 1);
+			sz[indID]++;
 		}
 	}
-	DBG_DO(DBG_POPULATION, cout << "newPopByIndIDPerGen: New population size: " << sz << endl);
+	DBG_DO(DBG_POPULATION, cout << "newPopByIndInfoPerGen: New population size: " << sz << endl);
 
 	// create a population with this size
 	population * pop = new population(sz, ploidy(), numLoci(), chromTypes(), lociPos(), 0,
@@ -1219,20 +1177,11 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 	vector<IndIterator> to;
 	for (UINT sp = 0; sp < sz.size(); ++sp)
 		to.push_back(pop->indBegin(sp));
-	if (!id.empty()) {
-		for (ULONG i = 0; i != id.size(); ++i) {
-			if (id[i] >= 0) {
-				to[id[i]]->copyFrom(ind(i));
-				++to[id[i]];
-			}
-		}
-	} else {
-		for (; from.valid(); ++from) {
-			int indID = from->subPopID();
-			if (indID >= 0) {
-				to[indID]->copyFrom(*from);
-				++to[indID];
-			}
+	for (; from.valid(); ++from) {
+		int indID = from->intInfo(info);
+		if (indID >= 0) {
+			to[indID]->copyFrom(*from);
+			++to[indID];
 		}
 	}
 	if (removeEmptySubPops)
@@ -1242,8 +1191,8 @@ population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmpt
 
 
 /** form a new population according to info, info can be given directly */
-population & population::newPopByIndID(int ancGen,
-                                       const vectori & id, bool removeEmptySubPops)
+population & population::newPopByIndInfo(const string & field, int ancGen,
+                                       bool removeEmptySubPops)
 {
 	UINT topGen;
 
@@ -1253,13 +1202,13 @@ population & population::newPopByIndID(int ancGen,
 		topGen = ancGen;
 	// go to the oldest generation
 	useAncestralGen(topGen);
-	population & ret = newPopByIndIDPerGen(id, removeEmptySubPops);
+	population & ret = newPopByIndInfoPerGen(field, removeEmptySubPops);
 	// prepare for push and discard
 	ret.setAncestralDepth(topGen);
 	if (topGen > 0) {
 		for (int depth = topGen - 1; depth >= 0; --depth) {
 			useAncestralGen(depth);
-			ret.pushAndDiscard(newPopByIndIDPerGen(id, removeEmptySubPops));
+			ret.pushAndDiscard(newPopByIndInfoPerGen(field, removeEmptySubPops));
 		}
 	}
 	return ret;

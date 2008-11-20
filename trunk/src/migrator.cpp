@@ -260,7 +260,7 @@ bool splitSubPop::apply(population & pop)
 		// random shuffle individuals
 		for (ULONG it = 0; it < pop.subPopSize(m_which); ++it)
 			pop.ind(it, m_which).setInfo(static_cast<SubPopID>(rng().randInt(MaxSubPopID)), info);
-		std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
+		std::sort(pop.indBegin(m_which), pop.indEnd(m_which), indCompare(info));
 		// not actully required since spliSubPop will do this.
 		// this is to remind myself this step is important.
 		pop.setIndOrdered(false);
