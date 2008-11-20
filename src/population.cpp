@@ -707,7 +707,7 @@ void population::removeSubPops(const vectoru & subPops)
 	}
 #endif
 	sortIndividuals();
-	vectorlu new_size = m_subPopSize;
+	vectorlu new_size;
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
@@ -721,6 +721,7 @@ void population::removeSubPops(const vectoru & subPops)
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		ULONG spSize = subPopSize(sp);
 		if (find(subPops.begin(), subPops.end(), sp) == subPops.end()) {
+			new_size.push_back(spSize);
 			// do not remove.
 			if (oldPtr != newPtr) {
 				copy(oldInd, oldInd + spSize, newInd);
@@ -730,8 +731,7 @@ void population::removeSubPops(const vectoru & subPops)
 			newInd += spSize;
 			newPtr += step * spSize;
 			newPtr += infoStep * spSize;
-		} else
-			new_size[sp] = 0;
+		}
 		oldInd += spSize;
 		oldPtr += step * spSize;
 		oldInfoPtr += infoStep * spSize;
@@ -809,11 +809,8 @@ void population::removeIndividuals(const vectoru & inds)
 }
 
 
-void population::mergeSubPops(vectoru subPops)
+void population::mergeSubPops(const vectoru & subPops)
 {
-	// set initial info
-	setIndSubPopIDWithID();
-
 	// merge all subpopulations
 	if (subPops.empty()) {
 		// [ popSize() ]
@@ -821,20 +818,84 @@ void population::mergeSubPops(vectoru subPops)
 		setSubPopStru(sz);
 		return;
 	}
+	if (subPops.size() == 1)
+		return;
 
-	UINT id = subPops[0];
+	// are they in order?
+	bool consecutive = true;
+	vectoru sps = subPops;
+	sort(sps.begin(), sps.end());
+	for (size_t i = 1; i < sps.size(); ++i)
+		if (subPops[i] != subPops[i - 1] + 1) {
+			consecutive = false;
+			break;
+		}
+	// new subpopulation sizes
+	vectorlu new_size;
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
-		if (find(subPops.begin(), subPops.end(), sp) != subPops.end())
-			for (IndIterator ind = indBegin(sp); ind.valid(); ++ind)
-				ind->setSubPopID(id);
+		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
+			if (new_size.size() <= sps[0])
+				new_size.push_back(subPopSize(sp));
+			else
+				new_size[sps[0]] += subPopSize(sp);
+		} else
+			new_size.push_back(subPopSize(sp));
 	}
-	UINT oldNumSP = numSubPop();
-	setSubPopByIndID();
-	// try to keep these subpopulation IDs.
-	if (oldNumSP != numSubPop()) {
-		vectorlu spSizes = subPopSizes();
-		spSizes.resize(oldNumSP, 0);
-		setSubPopStru(spSizes);
+	// if consecutive, no need to move anyone
+	if (consecutive) {
+		setSubPopStru(new_size);
+		return;
+	}
+	// difficult case.
+	sortIndividuals();
+	// find the new subpop order
+	vectoru sp_order;
+	for (size_t sp = 0; sp < sps[0]; ++sp)
+		sp_order.push_back(sp);
+	sp_order.insert(sp_order.end(), sps.begin(), sps.end());
+	for (size_t sp = sps[0]; sp < numSubPop(); ++sp)
+		if (find(subPops.begin(), subPops.end(), sp) == subPops.end())
+			sp_order.push_back(sp);
+	//
+	DBG_ASSERT(sp_order.size() == numSubPop(), ValueError,
+		"Incorrect resulting subpopulation number, maybe caused by duplicate entries in parameter subPops.");
+
+	UINT step = genoSize();
+	UINT infoStep = infoSize();
+	vector<individual> new_inds;
+	vectora new_genotype;
+	vectorinfo new_info;
+	new_inds.reserve(popSize());
+	new_genotype.reserve(step * popSize());
+	new_info.reserve(infoStep * popSize());
+
+	for (size_t sp = 0; sp < numSubPop(); ++sp) {
+		size_t src = sp_order[sp];
+		if (subPopSize(src) == 0)
+			continue;
+		// do not remove.
+		new_inds.insert(new_inds.end(), rawIndBegin(src), rawIndEnd(src));
+		new_genotype.insert(new_genotype.end(), genoBegin(src, true), genoEnd(src, true));
+		if (infoStep > 0)
+			new_info.insert(new_info.end(),
+				m_info.begin() + subPopBegin(src) * infoStep,
+				m_info.begin() + (subPopEnd(src) - 1) * infoStep + 1);
+	}
+	//
+	DBG_ASSERT(new_inds.size() == popSize() && new_genotype.size() == popSize() * step
+		&& new_info.size() == popSize() * infoStep, SystemError,
+		"Incorrect individual manipulation");
+	//
+	m_inds.swap(new_inds);
+	m_genotype.swap(new_genotype);
+	m_info.swap(new_info);
+	setSubPopStru(new_size);
+	//
+	GenoIterator ptr = m_genotype.begin();
+	InfoIterator infoPtr = m_info.begin();
+	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
+		m_inds[i].setGenoPtr(ptr);
+		m_inds[i].setInfoPtr(infoPtr);
 	}
 }
 
@@ -1124,7 +1185,6 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 	for (m_subPopIndex[0] = 0; idx <= numSubPop(); ++idx)
 		m_subPopIndex[idx] = m_subPopIndex[idx - 1] + m_subPopSize[idx - 1];
 }
-
 
 
 population & population::newPopByIndIDPerGen(const vectori & id, bool removeEmptySubPops)

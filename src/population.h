@@ -960,9 +960,8 @@ public:
 	 */
 	void removeEmptySubPops();
 
-	/** Remove all individuals from subpopulations \e subPops. The removed
-	 *  subpopulations will have size zero, and can be removed by function
-	 *  <tt>removeEmptySubPops</tt>.
+	/** Remove subpopulations \e subPop and all their individuals. Indexes of
+	 *  subpopulations after removed subpopulations will be shifted.
 	 *  <group>7-manipulate</group>
 	 */
 	void removeSubPops(const vectoru & subPops);
@@ -974,16 +973,14 @@ public:
 	 */
 	void removeIndividuals(const vectoru & inds);
 
-	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
+	/** Merge subpopulations \e subPops. If \e subPops es empty (default), all
 	 *  subpopulations will be merged. Subpopulations \e subPops do not have to
-	 *  be adjacent to each other. The ID of the first subpopulation in
-	 *  parameter \e subPops will become the ID of the new large subpopulation.
-	 *  Other subpopulations will keep their IDs although their sizes become
-	 *  zero. Function <tt>removeEmptySubPops</tt> can be used to remove these
-	 *  empty subpopulation.
+	 *  be adjacent to each other. They will all be merged to the subpopulation
+	 *  with the smallest subpopulation ID. Indexes of the rest of the
+	 *  subpopulation may be changed.
 	 *  <group>7-manipulate</group>
 	 */
-	void mergeSubPops(vectoru subPops = vectoru());
+	void mergeSubPops(const vectoru & subPops = vectoru());
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures
@@ -1047,18 +1044,6 @@ public:
 	 *  <group>7-manipulate</group>
 	 */
 	void resize(const vectorlu & newSubPopSizes, bool propagate = false);
-
-	/** CPPONLY
-	 * reorder subpopulations by \c order or by \c rank
-	 *  \param order new order of the subpopulations. For examples, 3 2 0 1
-	 *  means \c subpop3, \c subpop2, \c subpop0, \c subpop1 will be the new layout.
-	 *  \param rank you may also specify a new rank for each subpopulation. For example, 3,2,0,1
-	 *  means the original subpopulations will have new IDs 3,2,0,1, respectively. To achive order 3,2,0,1,
-	 *  the rank should be 1 0 2 3.
-	 *  <group>7-manipulate</group>
-	 */
-	void reorderSubPops(const vectoru & order = vectoru(), const vectoru & rank = vectoru(),
-		bool removeEmptySubPops = false);
 
 	/** CPPONLY
 	   Form a new population according to individual subpopulation ID. Individuals with negative subpopulation
