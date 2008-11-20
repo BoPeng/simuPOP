@@ -529,14 +529,13 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 }
 
 
-
 void population::setSubPopByIndInfo(const string & field)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	UINT info = infoIdx(field);
-	
+
 	DBG_DO(DBG_POPULATION, cout << "Sorting individuals." << endl);
 	// sort individuals first
 	std::sort(indBegin(), indEnd(), indCompare(info));
@@ -1152,10 +1151,10 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 
 
 population & population::extract(bool removeInd, const string & field,
-		bool removeLoci, const vectoru & loci,
-		bool removeInfo, const vectorstr & infoFields)
+                                 bool removeLoci, const vectoru & loci,
+                                 bool removeInfo, const vectorstr & infoFields)
 {
-	return * new population();
+	return *new population();
 }
 
 
