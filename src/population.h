@@ -943,7 +943,7 @@ public:
 
 	/** remove individuals \e inds (absolute indexes) from the current
 	 *  population. A subpopulation will be kept even if all individuals from
-	 *  it are removed.
+	 *  it are removed. This function only affects the current generation.
 	 *  <group>7-manipulate</group>
 	 */
 	void removeIndividuals(const vectoru & inds);
@@ -1015,18 +1015,25 @@ public:
 	 *  if a subpopulation with \c 3 individuals is expanded to \c 7, the
 	 *  added individuals will copy genotypes from individual \c 1, \c 2,
 	 *  \c 3, and \c 1 respectively. Note that this function only resizes
-	 *  the current generation.
+	 *  the current generation. This function affects only the current
+	 *  generation.
 	 *  <group>7-manipulate</group>
 	 */
 	void resize(const vectorlu & newSubPopSizes, bool propagate = false);
 
-	/** CPPONLY
-	   Form a new population according to individual subpopulation ID. Individuals with negative subpopulation
-	   ID will be removed.
-	 * <group>7-manipulate</group>
+	/** Extract subsets of individuals, loci and/or information fields from the
+	 *  current population and create a new one. If information field \e field
+	 *  is not \c None (default), individuals with negative values at this
+	 *  information field will be removed, and others are put into subpopulations
+	 *  specified by this field. If \e loci is not \c None, a subset of loci
+	 *  will be extracted. If \e infoFields is not \c None, a subset of
+	 *  information fields will be extracted. This function will affect all
+	 *  generations in the population.
+	 *  <group>7-manipulate</group>
 	 */
-	population & newPopByIndInfo( const string & field, int ancGen = -1,
-		bool removeEmptySubPops = false);
+	population & extract(bool removeInd, const string & field,
+		bool removeLoci, const vectoru & loci,
+		bool removeInfo, const vectorstr & infoFields);
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
@@ -1228,7 +1235,7 @@ public:
 	 *  values to \e init.
 	 *  <group>8-info</group>
 	 */
-	void addInfoField(const string field, double init = 0);
+	void addInfoField(const string & field, double init = 0);
 
 	/** Add information fields \e fields to a population and initialize their
 	 *  values to \e init. If an information field alreay exists, it will be
@@ -1294,10 +1301,6 @@ public:
 	   <group>1-pop</group>
 	 */
 	void load(const string & filename);
-
-private:
-	population & newPopByIndInfoPerGen(const string & field,
-		bool removeEmptySubPops = false);
 
 public:
 	/// CPPONLY selection is on at any subpopulation?

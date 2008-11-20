@@ -1151,67 +1151,11 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 }
 
 
-population & population::newPopByIndInfoPerGen(const string & field, bool removeEmptySubPops)
+population & population::extract(bool removeInd, const string & field,
+		bool removeLoci, const vectoru & loci,
+		bool removeInfo, const vectorstr & infoFields)
 {
-	// determine the size of needed individuals
-	vectorlu sz;
-	UINT info = infoIdx(field);
-
-	for (UINT sp = 0; sp < numSubPop(); ++sp) {
-		for (IndIterator it = indBegin(sp); it.valid(); ++it) {
-			int indID = it->intInfo(info);
-			if (indID < 0)
-				continue;
-			if (static_cast<UINT>(indID) >= sz.size())
-				sz.resize(indID + 1);
-			sz[indID]++;
-		}
-	}
-	DBG_DO(DBG_POPULATION, cout << "newPopByIndInfoPerGen: New population size: " << sz << endl);
-
-	// create a population with this size
-	population * pop = new population(sz, ploidy(), numLoci(), chromTypes(), lociPos(), 0,
-		chromNames(), alleleNames(), lociNames(), infoFields());
-	// copy individuals over
-	IndIterator from = indBegin();
-	vector<IndIterator> to;
-	for (UINT sp = 0; sp < sz.size(); ++sp)
-		to.push_back(pop->indBegin(sp));
-	for (; from.valid(); ++from) {
-		int indID = from->intInfo(info);
-		if (indID >= 0) {
-			to[indID]->copyFrom(*from);
-			++to[indID];
-		}
-	}
-	if (removeEmptySubPops)
-		pop->removeEmptySubPops();
-	return *pop;
-}
-
-
-/** form a new population according to info, info can be given directly */
-population & population::newPopByIndInfo(const string & field, int ancGen,
-                                       bool removeEmptySubPops)
-{
-	UINT topGen;
-
-	if (ancGen < 0 || static_cast<UINT>(ancGen) >= ancestralGens())
-		topGen = ancestralGens();
-	else
-		topGen = ancGen;
-	// go to the oldest generation
-	useAncestralGen(topGen);
-	population & ret = newPopByIndInfoPerGen(field, removeEmptySubPops);
-	// prepare for push and discard
-	ret.setAncestralDepth(topGen);
-	if (topGen > 0) {
-		for (int depth = topGen - 1; depth >= 0; --depth) {
-			useAncestralGen(depth);
-			ret.pushAndDiscard(newPopByIndInfoPerGen(field, removeEmptySubPops));
-		}
-	}
-	return ret;
+	return * new population();
 }
 
 
@@ -1308,7 +1252,7 @@ void population::pushAndDiscard(population & rhs, bool force)
 
 
 // add field
-void population::addInfoField(const string field, double init)
+void population::addInfoField(const string & field, double init)
 {
 	DBG_ASSERT(m_info.size() == infoSize() * popSize(), SystemError,
 		"Info size is wrong");

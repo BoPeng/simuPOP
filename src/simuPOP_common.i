@@ -735,6 +735,23 @@ del population.__init__
 population.__init__ = new_population
 
 
+def new_extract(self, field=None, loci=None, infoFields=None):
+    removeInd = field is not None
+    if field is None:
+        field = []
+    removeLoci = loci is not None
+    if loci is None:
+        loci = []
+    removeInfo = infoFields is not None
+    if infoFields is None:
+        infoFields = []
+    cppModule.extract(removeInd, field, removeLoci, loci, removeInfo, infoFields)
+
+if population.extract.__doc__ is not None:
+    new_extract.__doc__ = population.extract.__doc__
+population.extract = new_extract
+
+
 def new_dumper(self, chrom=[], subPop=[], indRange=[], *args, **kwargs):
     # param chrom
     if type(chrom) == types.IntType:
