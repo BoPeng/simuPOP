@@ -6783,14 +6783,12 @@ Arguments:
 
 Usage:
 
-    x.clone(ancGen=-1)
+    x.clone()
 
 Details:
 
-    Copy a population, with the option to keep all (default), no, or a
-    given number of ancestral generations (ancGen = -1, 0, or a
-    positive number, respectively). Note that Python statement pop1 =
-    pop only creates a reference to an existing population pop.
+    Create a cloned copy of a population. Note that Python statement
+    pop1 = pop only creates a reference to an existing population pop.
 
 "; 
 
@@ -7398,7 +7396,7 @@ Details:
 
 Usage:
 
-    x.extract(field=None, loci=None, infoFields=None)
+    x.extract(field=None, loci=None, infoFields=None, ancGen=-1)
 
 Details:
 
@@ -7408,8 +7406,9 @@ Details:
     information field will be removed, and others are put into
     subpopulations specified by this field. If loci is not None, only
     genotypes at loci are extracted. If infoFields is not None, only
-    these information fields will be extracted. This function will
-    affect all generations in the population.
+    these information fields will be extracted. If ancGen is not -1
+    (default, meaing all ancestral generations), only ancGen ancestral
+    generations will be kept.
 
 "; 
 

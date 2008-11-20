@@ -199,16 +199,9 @@ void population::popData::swap(population & pop)
 }
 
 
-population * population::clone(int ancGen) const
+population * population::clone() const
 {
-	population * p = new population(*this);
-	int oldDepth = m_ancestralGens;
-
-	if (ancGen >= 0)
-		// try to remove excessive ancestra generations.
-		p->setAncestralDepth(ancGen);
-	p->setAncestralDepth(oldDepth);
-	return p;
+	return new population(*this);
 }
 
 
@@ -1152,7 +1145,8 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 
 population & population::extract(bool removeInd, const string & field,
                                  bool removeLoci, const vectoru & loci,
-                                 bool removeInfo, const vectorstr & infoFields)
+                                 bool removeInfo, const vectorstr & infoFields,
+								 int ancGen)
 {
 	return *new population();
 }

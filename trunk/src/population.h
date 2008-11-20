@@ -170,14 +170,12 @@ public:
 	/// CPPONLY copy constructor
 	population(const population & rhs);
 
-	/** Copy a population, with the option to keep all (default), no, or a
-	 *  given number of ancestral generations (\e ancGen = \c -1,
-	 *  \c 0, or a positive number, respectively). Note that Python statement
+	/** Create a cloned copy of a population. Note that Python statement
 	 *  <tt>pop1 = pop</tt> only creates a reference to an existing population
 	 *  \c pop.
 	 *  <group>1-pop</group>
 	 */
-	population * clone(int ancGen = -1) const;
+	population * clone() const;
 
 	/** HIDDEN (do not see a need to expose this function yet.)
 	 *  swap the content of two populations
@@ -1027,13 +1025,14 @@ public:
 	 *  field will be removed, and others are put into subpopulations specified
 	 *  by this field. If \e loci is not \c None, only genotypes at \e loci
 	 *  are extracted. If \e infoFields is not \c None, only these information
-	 *  fields will be extracted. This function will affect all generations in
-	 *  the population.
+	 *  fields will be extracted. If \e ancGen is not \c -1 (default, meaing
+	 *  all ancestral generations), only \e ancGen ancestral generations will
+	 *  be kept.
 	 *  <group>7-manipulate</group>
 	 */
 	population & extract(bool removeInd, const string & field,
 		bool removeLoci, const vectoru & loci,
-		bool removeInfo, const vectorstr & infoFields);
+		bool removeInfo, const vectorstr & infoFields, int ancGen=-1);
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
