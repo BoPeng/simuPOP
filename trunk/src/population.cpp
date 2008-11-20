@@ -29,7 +29,6 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/device/file.hpp>
 
-
 namespace simuPOP {
 
 population::population(const vectorlu & size,
@@ -1146,9 +1145,199 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 population & population::extract(bool removeInd, const string & field,
                                  bool removeLoci, const vectoru & loci,
                                  bool removeInfo, const vectorstr & infoFields,
-								 int ancGen)
+                                 int ancGen)
 {
-	return *new population();
+	population & pop = *new population();
+	// will keep a sorted version of loci
+	vectoru new_loci = loci;
+
+	// population strcture.
+	if (!removeLoci && !removeInfo)
+		pop.setGenoStruIdx(genoStruIdx());
+	else if (!removeLoci) {
+		pop.setGenoStructure(ploidy(), numLoci(), chromTypes(), isHaplodiploid(),
+			lociPos(), chromNames(), alleleNames(), lociNames(), infoFields);
+	} else {
+		// figure out number of loci.
+		vectoru new_numLoci;
+		vectorf new_lociPos;
+		vectorstr new_lociNames;
+		vectoru new_chromTypes;
+		vectorstr new_chromNames;
+		vectorstr new_infoFields = removeInfo ? infoFields : this->infoFields();
+		if (removeLoci && !loci.empty()) {
+			sort(new_loci.begin(), new_loci.end());
+			vectoru::const_iterator it = new_loci.begin();
+			vectoru::const_iterator it_end = new_loci.end();
+			UINT last_ch = chromLocusPair(*it).first;
+			// create the first chromosome
+			new_numLoci.push_back(0);
+			new_chromTypes.push_back(chromType(last_ch));
+			new_chromNames.push_back(chromName(last_ch));
+			for (; it != it_end; ++it) {
+				DBG_FAILIF(*it >= totNumLoci(), IndexError,
+					"Locus index " + toStr(*it) + " out of range.");
+				// if new chromosome
+				UINT ch = chromLocusPair(*it).first;
+				if (ch != last_ch) {
+					new_numLoci.push_back(0);
+					new_chromTypes.push_back(chromType(ch));
+					new_chromNames.push_back(chromName(ch));
+					last_ch = ch;
+				}
+				// add a locus
+				++new_numLoci.back();
+				new_lociPos.push_back(locusPos(*it));
+				new_lociNames.push_back(locusName(*it));
+			}
+		}
+		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << new_numLoci
+			                        << "\nchromType: " << new_chromTypes
+			                        << "\nlociPos: " << new_lociPos
+			                        << "\nchromNames: " << new_chromNames
+			                        << "\nlociNames: " << new_lociNames
+			                        << "\ninfoFields: " << new_infoFields
+			                        << endl);
+		pop.setGenoStructure(ploidy(), new_numLoci, new_chromTypes, isHaplodiploid(),
+			new_lociPos, new_chromNames, alleleNames(), new_lociNames, new_infoFields);
+	}
+	UINT step = pop.genoSize();
+	UINT infoStep = pop.infoSize();
+	UINT pStep = pop.totNumLoci();
+	UINT pEnd = pop.ploidy() * pop.totNumLoci();
+	vectoru::iterator lociPtr = new_loci.begin();
+	vectoru::iterator lociEnd = new_loci.end();
+	//
+	UINT info = removeInfo ? infoIdx(field) : 0;
+	vectoru infoList;
+	vectorstr::const_iterator iit = infoFields.begin();
+	vectorstr::const_iterator iit_end = infoFields.end();
+	for (; iit != iit_end; ++iit)
+		infoList.push_back(infoIdx(*iit));
+	vectoru::iterator infoPtr = infoList.begin();
+	vectoru::iterator infoEnd = infoList.end();
+	//
+	// copy individuals, from ancestor to current.
+	int depth = ancestralGens();
+	if (ancGen > 0 && ancGen < depth)
+		depth = ancGen;
+	for (; depth >= 0; --depth) {
+		useAncestralGen(depth);
+		sortIndividuals();
+		// determine the number of individuals
+		vectorlu spSizes;
+		vector<vectoru> indIdx;
+		ULONG size;
+		if (!removeInd) {
+			spSizes = subPopSizes();
+			size = popSize();
+		} else {
+			for (ULONG i = 0; i < popSize(); ++i) {
+				UINT sp = ind(i).intInfo(info);
+				if (sp < 0)
+					continue;
+				if (spSizes.size() <= sp) {
+					spSizes.resize(sp + 1);
+					indIdx.resize(sp + 1);
+				}
+				++spSizes.back();
+				indIdx.back().push_back(i);
+			}
+			size = accumulate(spSizes.begin(), spSizes.end(), 0UL);
+		}
+
+		vector<individual> new_inds;
+		vectora new_genotype;
+		vectorinfo new_info;
+
+		new_inds.reserve(size);
+		new_genotype.reserve(size * step);
+		new_info.reserve(size * infoStep);
+		// copy genotype and info...
+		if (!removeInd) {
+			new_inds.insert(new_inds.end(), m_inds.begin(), m_inds.end());
+			pop.setSubPopStru(subPopSizes());
+			if (!removeLoci)
+				new_genotype.insert(new_genotype.end(), genoBegin(true), genoEnd(true));
+			else {
+				RawIndIterator it = rawIndBegin();
+				RawIndIterator it_end = rawIndEnd();
+				for (; it != it_end; ++it) {
+					GenoIterator ptr = it->genoBegin();
+					for (UINT p = 0; p < pEnd; p += pStep) {
+						for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
+							m_genotype.push_back(*(ptr + *lociPtr + p));
+					}
+				}
+			}
+			if (!removeInfo)
+				new_info.insert(new_info.end(), m_info.begin(), m_info.end());
+			else {
+				RawIndIterator it = rawIndBegin();
+				RawIndIterator it_end = rawIndEnd();
+				for (; it != it_end; ++it) {
+					InfoIterator iPtr = it->infoBegin();
+					for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
+						m_info.push_back(*(iPtr + *infoPtr));
+				}
+			}
+		} else {
+			pop.setSubPopStru(spSizes);
+			for (size_t sp = 0; sp < indIdx.size(); ++sp) {
+				vectoru & idx = indIdx[sp];
+				vectoru::iterator it = idx.begin();
+				vectoru::iterator it_end = idx.end();
+				new_inds.push_back(m_inds[*it]);
+				for (; it != it_end; ++it) {
+					if (!removeLoci)
+						new_genotype.insert(new_genotype.end(),
+							indGenoBegin(*it), indGenoEnd(*it));
+					else {
+						GenoIterator ptr = indGenoBegin(*it);
+						for (UINT p = 0; p < pEnd; p += pStep) {
+							for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
+								m_genotype.push_back(*(ptr + *lociPtr + p));
+						}
+					}
+				}
+				if (!removeInfo)
+					new_info.insert(new_info.end(), m_inds[*it].infoBegin(),
+						m_inds[*it].infoEnd());
+				else {
+					InfoIterator iPtr = m_inds[*it].infoBegin();
+					for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
+						m_info.push_back(*(iPtr + *infoPtr));
+				}
+			}
+		}
+		// set pointer
+		vectora::iterator ptr = new_genotype.begin();
+		vectorinfo::iterator infoPtr = new_info.begin();
+		for (size_t i = 0; i < size; ++i, ptr += step, infoPtr += infoStep) {
+			new_inds[i].setGenoStruIdx(pop.genoStruIdx());
+			new_inds[i].setGenoPtr(ptr);
+			new_inds[i].setInfoPtr(infoPtr);
+		}
+		// the arrays are ready, are they?
+		DBG_ASSERT(new_inds.size() == size && new_genotype.size() == size * step
+			&& new_info.size() == size * infoStep, SystemError,
+			"Failed to copy genotype");
+		// now put them to use
+		if (depth == 0) { // current generation
+			pop.m_inds.swap(new_inds);
+			pop.m_genotype.swap(new_genotype);
+			pop.m_info.swap(new_info);
+		} else {
+			pop.m_ancestralPops.push_front(popData());
+			popData & pd = m_ancestralPops.front();
+			pd.m_subPopSize.swap(pop.m_subPopSize);
+			pd.m_genotype.swap(new_genotype);
+			pd.m_info.swap(new_info);
+			pd.m_inds.swap(new_inds);
+		}
+	}
+	//
+	return pop;
 }
 
 
