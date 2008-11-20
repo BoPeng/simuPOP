@@ -7398,18 +7398,18 @@ Details:
 
 Usage:
 
-    (field=None, loci=None, infoFields=None)
+    x.extract(field=None, loci=None, infoFields=None)
 
 Details:
 
     Extract subsets of individuals, loci and/or information fields
     from the current population and create a new one. If information
-    field field is not None (default), individuals with negative
-    values at this information field will be removed, and others are
-    put into subpopulations specified by this field. If loci is not
-    None, a subset of loci will be extracted. If infoFields is not
-    None, a subset of information fields will be extracted. This
-    function will affect all generations in the population.
+    field field is not None, individuals with negative values at this
+    information field will be removed, and others are put into
+    subpopulations specified by this field. If loci is not None, only
+    genotypes at loci are extracted. If infoFields is not None, only
+    these information fields will be extracted. This function will
+    affect all generations in the population.
 
 "; 
 
