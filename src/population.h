@@ -1032,7 +1032,7 @@ public:
 	 */
 	population & extract(bool removeInd, const string & field,
 		bool removeLoci, const vectoru & loci,
-		bool removeInfo, const vectorstr & infoFields, int ancGen=-1);
+		bool removeInfo, const vectorstr & infoFields, int ancGen = -1);
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
