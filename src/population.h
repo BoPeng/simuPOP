@@ -931,17 +931,13 @@ public:
 	 */
 	void setIndSubPopIDWithID(bool ancestralPops = false);
 
-	/// HIDDEN move individuals to subpopulations according to individual subpopulation IDs
-	/**
-	   Rearrange individuals to their new subpopulations according to their
-	   subpopulation ID (or the new given \c ID). Order within each subpopulation is not respected.
-
-	   \param id new subpopulation ID, if given, current individual subpopulation ID
-	   will be ignored.
-	   \note Individual with negative info will be removed!
-	   \sa setIndSubPopID
+	/** Rearrange individuals to their new subpopulations according to their
+	 *  integer values at information field \e field (value returned by
+	 *  <tt>individual::infInfo(field)</tt>). If the information value of an
+	 *  individual is negative, this individual will be removed.
+	 *  <group>7-manipulate</group>
 	 */
-	void setSubPopByIndID(vectori id = vectori());
+	void setSubPopByIndInfo(const string & field);
 
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
 	 *  which should add up to the size of subpopulation \e subPop.

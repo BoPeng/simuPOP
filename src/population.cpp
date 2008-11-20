@@ -561,36 +561,32 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 }
 
 
-void population::setSubPopByIndID(vectori id)
+
+void population::setSubPopByIndInfo(const string & field)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
-	if (!id.empty()) {
-		DBG_ASSERT(id.size() == m_popSize, ValueError,
-			"Info should have the same length as pop size");
-		for (ULONG it = 0; it < m_popSize; ++it)
-			ind(it).setSubPopID(id[it]);
-	}
-
+	UINT info = infoIdx(field);
+	
 	DBG_DO(DBG_POPULATION, cout << "Sorting individuals." << endl);
 	// sort individuals first
-	std::sort(indBegin(), indEnd());
+	std::sort(indBegin(), indEnd(), indCompare(info));
 	setIndOrdered(false);
 
 	// sort individuals first
 	// remove individuals with negative index.
-	if (indBegin()->subPopID() < 0) {
+	if (indBegin()->info(info) < 0) {
 		// popsize etc will be changed.
 		ULONG newPopSize = m_popSize;
 		IndIterator it = indBegin();
 		for (; it.valid();  ++it) {
-			if (it->subPopID() < 0)
+			if (it->info(info) < 0)
 				newPopSize-- ;
 			else
 				break;
 		}
-		// 'it' now point to the one with positive subPopID()
+		// 'it' now point to the one with positive info(info)
 
 		DBG_DO(DBG_POPULATION, cout << "New pop size" << newPopSize << endl);
 
@@ -628,14 +624,14 @@ void population::setSubPopByIndID(vectori id)
 		m_subPopIndex.resize(2);
 	} else {
 		// reset indexes etc.
-		UINT numSubPop = static_cast<UINT>(m_inds.back().subPopID()) + 1;
+		UINT numSubPop = static_cast<UINT>(m_inds.back().info(info)) + 1;
 		m_subPopSize.resize(numSubPop);
 		m_subPopIndex.resize(numSubPop + 1);
 
 		// check subpop size
 		fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
 		for (IndIterator it = indBegin(); it.valid();  ++it)
-			m_subPopSize[ static_cast<UINT>(it->subPopID()) ]++;
+			m_subPopSize[ static_cast<UINT>(it->info(info)) ]++;
 	}
 	// rebuild index
 	size_t i = 1;

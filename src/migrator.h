@@ -106,7 +106,7 @@ public:
 	migrator(const matrix & rate, int mode = MigrByProbability,
 	         const vectorvsp & fromSubPop = vectorvsp(), vectoru toSubPop = vectoru(),
 	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	         repList rep = repList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
 		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 	{

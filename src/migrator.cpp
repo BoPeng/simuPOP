@@ -90,7 +90,13 @@ void migrator::setRates(const matrix & rate, int mode)
 bool migrator::apply(population & pop)
 {
 	// set info of individual
-	pop.setIndSubPopIDWithID();
+	UINT info = pop.infoIdx(infoField(0));
+	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
+		RawIndIterator it = pop.rawIndBegin(sp);
+		RawIndIterator it_end = pop.rawIndEnd(sp);
+		for (; it != it_end; ++it)
+			it->setInfo(sp, info);
+	}
 
 	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), ValueError,
 		"Migration can not be applied to virtual subpopulations");
@@ -128,7 +134,7 @@ bool migrator::apply(population & pop)
 				// rateSize = toSize + 1, ignore i->1 (last one)
 				//  toIndex < toSize
 				if (toIndex < toSize && m_to[toIndex] != spFrom)
-					ind->setSubPopID(m_to[toIndex]);
+					ind->setInfo(m_to[toIndex], info);
 			}
 		} else {
 			// 2nd, or 3rd method
@@ -158,7 +164,7 @@ bool migrator::apply(population & pop)
 			// set info
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
 				// SubPopID is signed short, to save a few bits
-				ind->setSubPopID(static_cast<SubPopID>(toIndices[i]));
+				ind->setInfo(static_cast<SubPopID>(toIndices[i]), info);
 		}
 		if (m_from[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
@@ -166,7 +172,7 @@ bool migrator::apply(population & pop)
 
 	// do migration.
 	// true: rearrange individuals
-	pop.setSubPopByIndID();
+	pop.setSubPopByIndInfo(infoField(0));
 
 	return true;
 }
@@ -174,6 +180,7 @@ bool migrator::apply(population & pop)
 
 bool pyMigrator::apply(population & pop)
 {
+	UINT info = pop.infoIdx(infoField(0));
 	if (m_rateFunc != NULL) {
 		// get rate,
 		matrix rate;
@@ -235,23 +242,24 @@ bool pyMigrator::apply(population & pop)
 				PyCallFunc3(m_indFunc, "(OOO)", indObj, numArray, m_param, resID, PyObj_As_Int);
 			}
 		}
-		it->setSubPopID(resID);
+		it->setInfo(resID, info);
 		Py_DECREF(indObj);
 	}
 	// do migration.
 	// true: rearrange individuals
-	pop.setSubPopByIndID();
+	pop.setSubPopByIndInfo(infoField(0));
 	return true;
 }
 
 
 bool splitSubPop::apply(population & pop)
 {
+	UINT info = pop.infoIdx(infoField(0));
 	// randomize indiviudlas
 	if (m_randomize) {
 		// random shuffle individuals
 		for (ULONG it = 0; it < pop.subPopSize(m_which); ++it)
-			pop.ind(it, m_which).setSubPopID(static_cast<SubPopID>(rng().randInt(MaxSubPopID)));
+			pop.ind(it, m_which).setInfo(static_cast<SubPopID>(rng().randInt(MaxSubPopID)), info);
 		std::sort(pop.indBegin(m_which), pop.indEnd(m_which));
 		// not actully required since spliSubPop will do this.
 		// this is to remind myself this step is important.
