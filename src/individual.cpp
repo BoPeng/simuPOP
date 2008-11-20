@@ -31,7 +31,6 @@ namespace simuPOP {
 individual & individual::operator=(const individual & rhs)
 {
 	m_flags = rhs.m_flags;
-	setSubPopID(rhs.subPopID());
 	setGenoPtr(rhs.genoPtr());
 	setInfoPtr(rhs.infoPtr());
 	// also copy genoStru pointer...
@@ -43,7 +42,6 @@ individual & individual::operator=(const individual & rhs)
 individual & individual::copyFrom(const individual & rhs)
 {
 	m_flags = rhs.m_flags;
-	setSubPopID(rhs.subPopID());
 	copy(rhs.genoBegin(), rhs.genoEnd(), genoBegin());
 	copy(rhs.infoBegin(), rhs.infoEnd(), infoBegin());
 	// also copy genoStru pointer...
@@ -86,7 +84,6 @@ void individual::swap(individual & ind, bool swapContent)
 	if (genoStruIdx() != ind.genoStruIdx() )
 		throw SystemError("Can only swap individuals with different geno structure.");
 
-	std::swap(m_subPopID, ind.m_subPopID);
 	std::swap(m_infoPtr, ind.m_infoPtr);
 
 	if (swapContent) {
@@ -123,9 +120,6 @@ string individual::__repr__()
 void individual::display(ostream & out, int width, const vectori & chrom, const vectori & loci)
 {
 	out << sexChar() << affectedChar() << " ";
-	DBG_DO(DBG_POPULATION,
-		out << subPopID() << "," << genoStruIdx() << " "
-	    );
 	for (UINT p = 0, pEnd = ploidy(); p < pEnd;  ++p) {
 		// copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
 		// std::ostream_iterator<string>(out, outputSeparator()) );

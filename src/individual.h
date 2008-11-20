@@ -112,7 +112,7 @@ public:
 	 * from a \c population object using functions such as
 	 * <tt>population::individual(</tt><em>idx</em><tt>)</tt>.
 	 */
-	individual() : m_flags(m_flagVisible), m_subPopID(0)
+	individual() : m_flags(m_flagVisible)
 	{
 	}
 
@@ -120,7 +120,6 @@ public:
 	/// CPPONLY
 	individual(const individual & ind) :
 		GenoStruTrait(ind), m_flags(ind.m_flags),
-		m_subPopID(ind.m_subPopID),
 		m_genoPtr(ind.m_genoPtr),
 		m_infoPtr(ind.m_infoPtr)
 	{
@@ -484,26 +483,6 @@ public:
 	}
 
 
-	/// return the ID of the subpopulation to which this individual blongs
-	/** HIDDEN
-	   \note \c subPopID is not set by default. It only corresponds to the subpopulation
-	    in which this individual resides after \c pop::setIndSubPopID is called.
-	 */
-	SubPopID subPopID() const
-	{
-		return m_subPopID;
-	}
-
-
-	/** HIDDEN
-	 *set new subpopulation ID, \c pop.rearrangeByIndID will move this individual to that population
-	 */
-	void setSubPopID(SubPopID id)
-	{
-		m_subPopID = id;
-	}
-
-
 	/** Return the value of an information field \e idx (an index).
 	 * <group>5-info</group>
 	 */
@@ -643,9 +622,6 @@ public:
 	/// @name copy, comparison, swap operations to objects.
 	//@{
 	/// compare if two individuals are the same used in case of serialization etc.
-	/**
-	   \note We do not compare info because \c m_subPopID is considered temporary.
-	 */
 	bool operator==(const individual & rhs) const;
 
 	/// compare if two individuals are not the same used in case of serialization etc.
@@ -659,16 +635,6 @@ public:
 	// only equal or unequal, no greater or less than
 	/// a python function used to compare the individual objects
 	int __cmp__(const individual & rhs) const;
-
-	/**
-	   There is usally no '>', '<' comparisons for individuals.
-	   If order is required, it is a comparison of \c info.
-	   This behavior is used in migration.
-	 */
-	bool operator<(const individual & rhs) const
-	{
-		return subPopID() < rhs.subPopID();
-	}
 
 
 	// allow str(population) to get something better looking
@@ -738,14 +704,29 @@ protected:
 	// bitset<3> was previously used but that will take 4 bytes.
 	unsigned char m_flags;
 
-	/// temporary information
-	SubPopID m_subPopID;
-
 	/// pointer to genotype.
 	GenoIterator m_genoPtr;
 
 	/// pointer to info
 	InfoIterator m_infoPtr;
+};
+
+
+/** CPPONLY
+ *  A class used to compare two individuals by an information field.
+ */
+class indCompare
+{
+public:
+	// accept the index to an information field
+	indCompare(UINT idx) : m_field(idx) {}
+
+	bool operator()(const individual & lhs, const individual & rhs)
+	{
+		return lhs.info(m_field) < rhs.info(m_field);
+	}
+private:
+	UINT m_field;
 };
 
 
