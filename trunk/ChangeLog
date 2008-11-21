@@ -9,6 +9,7 @@ version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: migrator now uses an information field "migrate_to".
   - CHG: Add function population::extract.
   - CHG: Remove parameter ancGen from population::clone().
+  - NEW: Dump() also display information fields.
 
 version 0.8.9 - tagged, but not publically released (rev 1948).
   - DOC: Adjust reference output for simuPOP classes.

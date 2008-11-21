@@ -24,6 +24,7 @@
 #include "individual.h"
 #include <sstream>
 using std::ostringstream;
+using std::setprecision;
 
 namespace simuPOP {
 
@@ -145,6 +146,9 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 		if (p != pEnd - 1)
 			out << "| ";
 	}
+    out << "| ";
+    for (vectorinfo::const_iterator info = infoBegin(); info != infoEnd(); ++info)
+        out << " " << setprecision(2) << *info;
 }
 
 
