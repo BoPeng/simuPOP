@@ -226,10 +226,9 @@ namespace std
 %newobject LoadPopulation;
 %newobject LoadSimulator;
 
-%newobject simuPOP::population::newPopByIndID;
-%newobject simuPOP::population::newPopWithPartialLoci;
+%newobject simuPOP::population::extract;
 %newobject simuPOP::population::clone;
-%newobject simuPOP::simulator::getPopulation;
+%newobject simuPOP::simulator::extract;
 %newobject simuPOP::simulator::clone;
 %newobject simuPOP::baseOperator::clone;
 %newobject simuPOP::mating::clone;
@@ -735,17 +734,18 @@ del population.__init__
 population.__init__ = new_population
 
 
-def new_extract(self, field=None, loci=None, infoFields=None):
+def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1):
     removeInd = field is not None
     if field is None:
-        field = []
+        field = ''
     removeLoci = loci is not None
     if loci is None:
         loci = []
     removeInfo = infoFields is not None
     if infoFields is None:
         infoFields = []
-    cppModule.extract(removeInd, field, removeLoci, loci, removeInfo, infoFields)
+    return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
+        infoFields, ancGen)
 
 if population.extract.__doc__ is not None:
     new_extract.__doc__ = population.extract.__doc__
