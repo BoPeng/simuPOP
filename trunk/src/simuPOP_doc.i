@@ -7426,7 +7426,26 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::pushAndDiscard "Obsolete or undocumented function."
+%feature("docstring") simuPOP::population::push "
+
+Usage:
+
+    x.push(pop)
+
+Details:
+
+    Push population pop into the current population. The current
+    population is discarded if ancestralDepth (maximum number of
+    ancestral generations to hold) is zero so no ancestral generation
+    can be kept. Otherise, the current population will become the
+    parental generation of pop, advancing the greatness level of
+    existing ancestral generations by one. If ancestralDepth is
+    positive and there are already so many ancestral generations
+    (returned by  ancestralGens()), the greatest ancestral generation
+    will be discarded. In any case, population pop becomes invalid as
+    all its individuals are absorbed by the current population.
+
+"; 
 
 %feature("docstring") simuPOP::population::ancestralGens "
 

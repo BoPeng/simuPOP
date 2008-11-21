@@ -1169,7 +1169,7 @@ void mating::submitScratch(population & pop, population & scratch)
 {
 	pop.turnOffSelection();
 	// use scratch population,
-	pop.pushAndDiscard(scratch);
+	pop.push(scratch);
 	scratch.validate("after push and discard");
 	DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 }

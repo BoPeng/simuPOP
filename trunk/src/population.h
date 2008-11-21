@@ -1041,14 +1041,19 @@ public:
 	 */
 	void removeLoci(const vectoru & loci = vectoru(), const vectoru & keep = vectoru());
 
-	/// HIDDEN absorb \c rhs population as the current generation of a population
-	/**
-	   This function is used by a simulator to push offspring generation \c rhs
-	   to the current population, while the current population is pushed
-	   back as an ancestral population (if <tt>ancestralDepath() != 0</tt>). Because \c rhs
-	   population is swapped in, \c rhs will be empty after this operation.
+	/** Push population \e pop into the current population. The current
+	 *  population is discarded if \e ancestralDepth (maximum number of
+	 *  ancestral generations to hold) is zero so no ancestral generation can
+	 *  be kept. Otherise, the current population will become the parental
+	 *  generation of \e pop, advancing the greatness level of existing
+	 *  ancestral generations by one. If \e ancestralDepth is positive and
+	 *  there are already so many ancestral generations (returned by
+	 *  <tt>ancestralGens()</tt>), the greatest ancestral generation will be
+	 *  discarded. In any case, population \e pop becomes invalid as all its
+	 *  individuals are absorbed by the current population.
+	 *  <group>6-ancestral</group>
 	 */
-	void pushAndDiscard(population & rhs, bool force = false);
+	void push(population & pop);
 
 	/** Return the actual number of ancestral generations stored in a
 	 *  population, which does not necessarily equal to the number set by
@@ -1059,23 +1064,6 @@ public:
 	{
 		return m_ancestralPops.size();
 	}
-
-
-	/** CPPONLY because I do not see a Python level use case of this function.
-	 *  Current ancestral population activated by \c useAncestralGen(). There can be
-	 *  several ancestral generations in a population. \c 0 (current), \c 1 (parental)
-	 *  etc. When \c useAncestralGen(gen) is used, current generation is set to
-	 *  one of the parental generations, which is the information returned by this
-	 *  function. \c useAncestralGen(0) should always be used to set a population
-	 *  to its usual ancestral order after operations to the ancestral generation are done.
-	 *
-	 * <group>6-ancestral</group>
-	 */
-	UINT curAncestralGen() const
-	{
-		return m_curAncestralGen;
-	}
-
 
 	/** Set information field \c idx (an index) of the current population to
 	 *  \e values. \e values will be reused if its length is smaller than
@@ -1261,8 +1249,8 @@ public:
 	 *  for parental generation, \c 2 for grand-parental generation, etc) the
 	 *  current generation. This is an efficient way to access population
 	 *  properties of an ancestral generation. <tt>useAncestralGen(0)</tt>
-	 *  should always be called to restore the correct order of ancestral
-	 *  generations.
+	 *  should always be called afterward to restore the correct order of
+	 *  ancestral generations.
 	 *  <group>6-ancestral</group>
 	 */
 	void useAncestralGen(UINT idx);

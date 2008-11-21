@@ -1388,9 +1388,8 @@ void population::removeLoci(const vectoru & loci, const vectoru & keep)
 }
 
 
-void population::pushAndDiscard(population & rhs, bool force)
+void population::push(population & rhs)
 {
-	// time consuming!
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
 		"Evolution can not continue because the new generation has different \n"
 		"genotypic structure. Note that genetypic structure of a population \n"
@@ -1402,12 +1401,12 @@ void population::pushAndDiscard(population & rhs, bool force)
 
 	// front -1 pop, -2 pop, .... end
 	//
-	if (!force && m_ancestralGens > 0
-	    && ancestralGens() == static_cast<size_t>(m_ancestralGens) )
+	if (m_ancestralGens > 0
+	    && ancestralGens() == static_cast<size_t>(m_ancestralGens))
 		m_ancestralPops.pop_back();
 
 	// save current population
-	if (force || m_ancestralGens != 0) {
+	if (m_ancestralGens != 0) {
 		// add a empty popData
 		m_ancestralPops.push_front(popData());
 		// get its reference
