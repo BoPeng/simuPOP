@@ -531,21 +531,39 @@ class Doxy2SWIG:
              'type': u'memberofclass_simuPOP::population',
              'Description': '',
              'Details': ur'<group>9-var</group>' \
-                'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
+                'Return a wrapper of Python dictionary returned by <tt>vars()</tt> ' \
                 'so that dictionary keys can be accessed as attributes. For example ' \
                 '<tt>pop.dvars().alleleFreq</tt> is equivalent to <tt>pop.vars()["alleleFreq"]</tt>.',
-             'cppArgs': u'(int subPop=-1)',
-             'Usage': u'x.dvars(subPop=-1)',
+             'cppArgs': u'()',
+             'Usage': u'x.dvars()',
+             },
+            {'Name': u'simuPOP::simulator::dvars',
+             'type': u'memberofclass_simuPOP::simulator',
+             'Description': '',
+             'Details': ur'<group>9-var</group>' \
+                'Return a wrapper of Python dictionary returned by <tt>vars(rep)</tt> ' \
+                'so that dictionary keys can be accessed as attributes. For example ' \
+                '<tt>simu.dvars(1).alleleFreq</tt> is equivalent to <tt>simu.vars(1)["alleleFreq"]</tt>.',
+             'cppArgs': u'(int rep)',
+             'Usage': u'x.dvars(rep)',
+             },
+            {'Name': u'simuPOP::population::dvars',
+             'type': u'memberofclass_simuPOP::population',
+             'Description': '',
+             'Details': ur'<group>9-var</group>' \
+                'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
+                'so that dictionary keys can be accessed as attributes.',
+             'cppArgs': u'(vspID subPop)',
+             'Usage': u'x.dvars(subPop)',
              },
             {'Name': u'simuPOP::simulator::dvars',
              'type': u'memberofclass_simuPOP::simulator',
              'Description': '',
              'Details': ur'<group>9-var</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
-                'so that dictionary keys can be accessed as attributes. For example ' \
-                '<tt>simu.dvars(1).alleleFreq</tt> is equivalent to <tt>simu.vars(1)["alleleFreq"]</tt>.',
-             'cppArgs': u'(int rep, int subPop=-1)',
-             'Usage': u'x.dvars(rep, subPop=-1)',
+                'so that dictionary keys can be accessed as attributes.',
+             'cppArgs': u'(int rep, vspID subPop)',
+             'Usage': u'x.dvars(rep, subPop)',
              },
         ])
         # change a few usages:

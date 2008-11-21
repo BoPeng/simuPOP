@@ -148,8 +148,10 @@ public:
 	simulator * clone() const;
 
 
-	/** Return the current generation number.
-	 *  <group>1-gen<group>
+	/** Return the current generation number, which is the initial generation
+     *  number (\c 0, or some value set by \c setGen(gen)) plus the total
+     *  number of generations evolved.
+	 *  <group>1-gen</group>
 	 */
 	ULONG gen() const
 	{
@@ -158,7 +160,7 @@ public:
 
 
 	/** Set the current generation number of a simulator to \e gen.
-	 *  <group>1-gen<group>
+	 *  <group>1-gen</group>
 	 */
 	void setGen(ULONG gen);
 
@@ -270,17 +272,29 @@ public:
 	void setMatingScheme(const mating & matingScheme);
 
 	/** Return the local namespace of the \e rep-th population, equivalent to
-	 *  <tt>x.population(rep).vars(subPop)</tt>.
+	 *  <tt>x.population(rep).vars()</tt>.
 	 *  <group>9-var</group>
 	 */
-	PyObject * vars(UINT rep, int subPop = -1)
+	PyObject * vars(UINT rep)
+	{
+		if (static_cast<UINT>(rep) >= m_numRep)
+			throw ValueError("Replicate index out of range.");
+
+		return m_ptrRep[rep]->vars();
+	}
+
+	/** Return a dictionary of subpopulation variables in a local namespace of
+     *  the \e rep-th population, equivalent to
+     *  <tt>x.population(rep).vars(subPop)</tt>.
+	 *  <group>9-var</group>
+	 */
+	PyObject * vars(UINT rep, vspID subPop)
 	{
 		if (static_cast<UINT>(rep) >= m_numRep)
 			throw ValueError("Replicate index out of range.");
 
 		return m_ptrRep[rep]->vars(subPop);
 	}
-
 
 	/** Save a simulator to file \c filename.
 	 *  <group>0-stru</group>

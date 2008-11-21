@@ -1676,31 +1676,36 @@ void population::load(const string & filename)
 }
 
 
-PyObject * population::vars(int subPop)
+PyObject * population::vars()
 {
-	if (subPop < 0) {
-		Py_INCREF(m_vars.dict());
-		return m_vars.dict();
-	} else {
-		DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
-			IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
-
-		DBG_ASSERT(hasVar("subPop"), ValueError,
-			"subPop statistics does not exist yet.");
-
-		PyObject * spObj = getVar("subPop");
-		spObj = PyList_GetItem(spObj, subPop);
-
-		DBG_ASSERT(spObj != NULL, SystemError,
-			"Something is wrong about the length of subPop list. ");
-
-		Py_INCREF(spObj);
-		return spObj;
-	}
+	Py_INCREF(m_vars.dict());
+	return m_vars.dict();
 }
 
 
-// CPPONLY
+PyObject * population::vars(vspID vsp)
+{
+	SubPopID subPop = vsp.subPop();
+	DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
+		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
+
+	DBG_ASSERT(hasVar("subPop"), ValueError,
+		"subPop statistics does not exist yet.");
+	
+	DBG_ASSERT(vsp.isVirtual(), SystemError,
+		"Access to virtual subpopulation dictionary is not yet supported");
+
+	PyObject * spObj = getVar("subPop");
+	spObj = PyList_GetItem(spObj, subPop);
+
+	DBG_ASSERT(spObj != NULL, SystemError,
+		"Something is wrong about the length of subPop list. ");
+
+	Py_INCREF(spObj);
+	return spObj;
+}
+
+
 // The same as vars(), but without increasing
 // reference count.
 PyObject * population::dict(int subPop)
