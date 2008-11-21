@@ -1282,8 +1282,6 @@ population & population::extract(bool removeInd, const string & field,
 						new_info.push_back(*(iPtr + *infoPtr));
 				}
 			}
-			pop.m_popSize = size;
-			pop.setSubPopStru(subPopSizes());
 		} else {
 			for (size_t sp = 0; sp < indIdx.size(); ++sp) {
 				vectoru & idx = indIdx[sp];
@@ -1313,9 +1311,9 @@ population & population::extract(bool removeInd, const string & field,
 					}
 				}
 			}
-			pop.m_popSize = size;
-			pop.setSubPopStru(spSizes);
 		}
+		pop.m_popSize = size;
+		pop.setSubPopStru(spSizes);
 		// set pointer
 		vectora::iterator ptr = new_genotype.begin();
 		vectorinfo::iterator infoPtr = new_info.begin();
@@ -1328,9 +1326,9 @@ population & population::extract(bool removeInd, const string & field,
 		DBG_ASSERT(new_inds.size() == size && (new_genotype.size() == size * step)
 			&& (new_info.size() == size * infoStep), SystemError,
 			"Failed to copy genotype:"
-				"\ninds: " + toStr(new_inds.size()) + ", " + toStr(size) +
-				"\ngenotype: " + toStr(new_genotype.size()) + ", " + toStr(size * step) + 
-				"\ninfo: " + toStr(new_info.size()) + ", " + toStr(size * infoStep));
+			"\ninds: " + toStr(new_inds.size()) + ", " + toStr(size) +
+			"\ngenotype: " + toStr(new_genotype.size()) + ", " + toStr(size * step) +
+			"\ninfo: " + toStr(new_info.size()) + ", " + toStr(size * infoStep));
 		// now put them to use
 		if (depth == 0) { // current generation
 			pop.m_inds.swap(new_inds);
@@ -1338,13 +1336,14 @@ population & population::extract(bool removeInd, const string & field,
 			pop.m_info.swap(new_info);
 		} else {
 			pop.m_ancestralPops.push_front(popData());
-			popData & pd = m_ancestralPops.front();
-			pd.m_subPopSize.swap(pop.m_subPopSize);
+			popData & pd = pop.m_ancestralPops.front();
+			pd.m_subPopSize.swap(spSizes);
 			pd.m_genotype.swap(new_genotype);
 			pd.m_info.swap(new_info);
 			pd.m_inds.swap(new_inds);
 		}
 	}
+	pop.m_curAncestralGen = 0;
 	//
 	return pop;
 }
