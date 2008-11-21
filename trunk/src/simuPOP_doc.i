@@ -7000,7 +7000,19 @@ Details:
 
 Usage:
 
-    x.ind(idx, subPop=0)
+    x.ind(idx)
+
+Details:
+
+    Return a refernce to individual ind in the population.
+
+"; 
+
+%feature("docstring") simuPOP::population::ind "
+
+Usage:
+
+    x.ind(idx, subPop)
 
 Details:
 
@@ -7020,7 +7032,7 @@ Details:
 
     Return a reference to individual idx in ancestral generation gen.
     The correct individual will be returned even if the current
-    generation is not the present one (see useAncestralGen).
+    generation is not the present one (see also useAncestralGen).
 
 "; 
 
@@ -7207,8 +7219,8 @@ Details:
 
     Rearrange individuals to their new subpopulations according to
     their integer values at information field field (value returned by
-    individual::infInfo(field)). If the information value of an
-    individual is negative, this individual will be removed.
+    individual::indInfo(field)). Individuals with negative values at
+    this field will be removed.
 
 "; 
 
@@ -7279,11 +7291,11 @@ Usage:
 
 Details:
 
-    Merge subpopulations subPops. If subPops es empty (default), all
-    subpopulations will be merged. Subpopulations subPops do not have
-    to be adjacent to each other. They will all be merged to the
-    subpopulation with the smallest subpopulation ID. Indexes of the
-    rest of the subpopulation may be changed.
+    Merge subpopulations subPops. If subPops is empty (default), all
+    subpopulations will be merged. subPops do not have to be adjacent
+    to each other. They will all be merged to the subpopulation with
+    the smallest subpopulation ID. Indexes of the rest of the
+    subpopulation may be changed.
 
 "; 
 
@@ -7434,16 +7446,17 @@ Usage:
 
 Details:
 
-    Push population pop into the current population. The current
-    population is discarded if ancestralDepth (maximum number of
-    ancestral generations to hold) is zero so no ancestral generation
-    can be kept. Otherise, the current population will become the
-    parental generation of pop, advancing the greatness level of
-    existing ancestral generations by one. If ancestralDepth is
-    positive and there are already so many ancestral generations
-    (returned by  ancestralGens()), the greatest ancestral generation
-    will be discarded. In any case, population pop becomes invalid as
-    all its individuals are absorbed by the current population.
+    Push population pop into the current population. Both populations
+    should have the same genotypic structure. The current population
+    is discarded if ancestralDepth (maximum number of ancestral
+    generations to hold) is zero so no ancestral generation can be
+    kept. Otherise, the current population will become the parental
+    generation of pop, advancing the greatness level of all existing
+    ancestral generations by one. If ancestralDepth is positive and
+    there are already ancestralDepth ancestral generations (see also:
+    ancestralGens()), the greatest ancestral generation will be
+    discarded. In any case, population pop becomes invalid as all its
+    individuals are absorbed by the current population.
 
 "; 
 
@@ -7460,8 +7473,6 @@ Details:
     setAncestralDepth().
 
 "; 
-
-%ignore simuPOP::population::curAncestralGen() const ;
 
 %feature("docstring") simuPOP::population::setIndInfo "
 
@@ -7595,9 +7606,9 @@ Usage:
 
 Details:
 
-    Add information fields fields to a population and initialize their
-    values to init. If an information field alreay exists, it will be
-    re-initialized.
+    Add a list of information fields fields to a population and
+    initialize their values to init. If an information field alreay
+    exists, it will be re-initialized.
 
 "; 
 
@@ -7641,8 +7652,8 @@ Details:
     parental generation, 2 for grand-parental generation, etc) the
     current generation. This is an efficient way to access population
     properties of an ancestral generation. useAncestralGen(0) should
-    always be called to restore the correct order of ancestral
-    generations.
+    always be called afterward to restore the correct order of
+    ancestral generations.
 
 "; 
 
@@ -7687,12 +7698,27 @@ Details:
 
 Usage:
 
-    x.vars(subPop=-1)
+    x.vars()
 
 Details:
 
-    return variables of a population. If subPop is given, return a
-    dictionary for specified subpopulation.
+    return variables of a population as a Python dictionary.
+
+"; 
+
+%feature("docstring") simuPOP::population::vars "
+
+Usage:
+
+    x.vars(subPop)
+
+Details:
+
+    return a dictionary  vars()[\"subPop\"][subPop]. subPop can be a
+    number (subPop=spID), or a pair of numbers (subPop=(spID,
+    vspID)). A  ValueError will be raised if key 'subPop' does not
+    exist in  vars(), or if key subPop does not exist in
+    vars()[\"subPop\"].
 
 "; 
 
@@ -10918,7 +10944,9 @@ Usage:
 
 Details:
 
-    Return the current generation number. <group>1-gen<group>
+    Return the current generation number, which is the initial
+    generation number (0, or some value set by setGen(gen)) plus the
+    total number of generations evolved.
 
 "; 
 
@@ -10931,7 +10959,6 @@ Usage:
 Details:
 
     Set the current generation number of a simulator to gen.
-    <group>1-gen<group>
 
 "; 
 
@@ -11093,11 +11120,25 @@ Details:
 
 Usage:
 
-    x.vars(rep, subPop=-1)
+    x.vars(rep)
 
 Details:
 
     Return the local namespace of the rep-th population, equivalent to
+    x.population(rep). vars().
+
+"; 
+
+%feature("docstring") simuPOP::simulator::vars "
+
+Usage:
+
+    x.vars(rep, subPop)
+
+Details:
+
+    Return a dictionary of subpopulation variables in a local
+    namespace of the rep-th population, equivalent to
     x.population(rep).vars(subPop).
 
 "; 
@@ -13474,12 +13515,12 @@ Usage:
 
 Usage:
 
-    x.dvars(subPop=-1)
+    x.dvars()
 
 Details:
 
-    Return a wrapper of Python dictionary returned by vars(subPop) so
-    that dictionary keys can be accessed as attributes. For example
+    Return a wrapper of Python dictionary returned by vars() so that
+    dictionary keys can be accessed as attributes. For example
     pop.dvars().alleleFreq is equivalent to pop.vars()[\"alleleFreq\"].
 
 "; 
@@ -13488,14 +13529,40 @@ Details:
 
 Usage:
 
-    x.dvars(rep, subPop=-1)
+    x.dvars(rep)
+
+Details:
+
+    Return a wrapper of Python dictionary returned by vars(rep) so
+    that dictionary keys can be accessed as attributes. For example
+    simu.dvars(1).alleleFreq is equivalent to
+    simu.vars(1)[\"alleleFreq\"].
+
+"; 
+
+%feature("docstring") simuPOP::population::dvars "
+
+Usage:
+
+    x.dvars(subPop)
+
+Details:
+
+    Return a wrapper of Python dictionary returned by vars(subPop) so
+    that dictionary keys can be accessed as attributes.
+
+"; 
+
+%feature("docstring") simuPOP::simulator::dvars "
+
+Usage:
+
+    x.dvars(rep, subPop)
 
 Details:
 
     Return a wrapper of Python dictionary returned by vars(rep,
-    subPop) so that dictionary keys can be accessed as attributes. For
-    example simu.dvars(1).alleleFreq is equivalent to
-    simu.vars(1)[\"alleleFreq\"].
+    subPop) so that dictionary keys can be accessed as attributes.
 
 "; 
 

@@ -407,22 +407,26 @@ public:
 	 */
 	//@{
 
+	/** Return a refernce to individual \e ind in the population.
+	 *  <group>4-ind</group>
+	 */
+	individual & ind(ULONG idx)
+	{
+		CHECKRANGEIND(idx);
+
+		return m_inds[idx];
+	}
+
+
 	/** Return a refernce to individual \e ind in subpopulation \e subPop.
 	 *  <group>4-ind</group>
 	 */
-	individual & ind(ULONG idx, UINT subPop = 0)
+	individual & ind(ULONG idx, UINT subPop)
 	{
-#ifndef OPTIMIZED
-		if (subPop > 0) {
-			CHECKRANGESUBPOPMEMBER(idx, subPop);
-		} else {
-			CHECKRANGEIND(idx);
-		}
-#endif
+		CHECKRANGESUBPOPMEMBER(idx, subPop);
 
 		return m_inds[subPopBegin(subPop) + idx];
 	}
-
 
 	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
 	/** CPPONLY
@@ -445,7 +449,7 @@ public:
 
 	/** Return a reference to individual \c idx in ancestral generation \c gen.
 	 *  The correct individual will be returned even if the current generation
-	 *  is not the present one (see \c useAncestralGen).
+	 *  is not the present one (see also \c useAncestralGen).
 	 *  <group>6-ancestral</group>
 	 */
 	individual & ancestor(ULONG idx, UINT gen);
@@ -910,8 +914,8 @@ public:
 
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
-	 *  <tt>individual::infInfo(field)</tt>). If the information value of an
-	 *  individual is negative, this individual will be removed.
+	 *  <tt>individual::indInfo(field)</tt>). Individuals with negative values
+	 *  at this \e field will be removed.
 	 *  <group>7-manipulate</group>
 	 */
 	void setSubPopByIndInfo(const string & field);
@@ -946,11 +950,11 @@ public:
 	 */
 	void removeIndividuals(const vectoru & inds);
 
-	/** Merge subpopulations \e subPops. If \e subPops es empty (default), all
-	 *  subpopulations will be merged. Subpopulations \e subPops do not have to
-	 *  be adjacent to each other. They will all be merged to the subpopulation
-	 *  with the smallest subpopulation ID. Indexes of the rest of the
-	 *  subpopulation may be changed.
+	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
+	 *  subpopulations will be merged. \e subPops do not have to be adjacent to
+	 *  each other. They will all be merged to the subpopulation with the
+	 *  smallest subpopulation ID. Indexes of the rest of the subpopulation may
+	 *  be changed.
 	 *  <group>7-manipulate</group>
 	 */
 	void mergeSubPops(const vectoru & subPops = vectoru());
@@ -1041,13 +1045,14 @@ public:
 	 */
 	void removeLoci(const vectoru & loci = vectoru(), const vectoru & keep = vectoru());
 
-	/** Push population \e pop into the current population. The current
-	 *  population is discarded if \e ancestralDepth (maximum number of
-	 *  ancestral generations to hold) is zero so no ancestral generation can
-	 *  be kept. Otherise, the current population will become the parental
-	 *  generation of \e pop, advancing the greatness level of existing
-	 *  ancestral generations by one. If \e ancestralDepth is positive and
-	 *  there are already so many ancestral generations (returned by
+	/** Push population \e pop into the current population. Both populations
+	 *  should have the same genotypic structure. The current population is
+	 *  discarded if \e ancestralDepth (maximum number of ancestral generations
+	 *  to hold) is zero so no ancestral generation can be kept. Otherise, the
+	 *  current population will become the parental generation of \e pop,
+	 *  advancing the greatness level of all existing ancestral generations by
+	 *  one. If \e ancestralDepth is positive and there are already
+	 *  \e ancestralDepth ancestral generations (see also:
 	 *  <tt>ancestralGens()</tt>), the greatest ancestral generation will be
 	 *  discarded. In any case, population \e pop becomes invalid as all its
 	 *  individuals are absorbed by the current population.
@@ -1224,9 +1229,9 @@ public:
 	 */
 	void addInfoField(const string & field, double init = 0);
 
-	/** Add information fields \e fields to a population and initialize their
-	 *  values to \e init. If an information field alreay exists, it will be
-	 *  re-initialized.
+	/** Add a list of information fields \e fields to a population and
+	 *  initialize their values to \e init. If an information field alreay
+	 *  exists, it will be re-initialized.
 	 * <group>8-info</group>
 	 */
 	void addInfoFields(const vectorstr & fields, double init = 0);
@@ -1395,10 +1400,20 @@ public:
 	}
 
 
-	/** return variables of a population. If \c subPop is given, return a dictionary for specified subpopulation.
-	    <group>9-var</group>
+	/** return variables of a population as a Python dictionary.
+	 *  <group>9-var</group>
 	 */
-	PyObject * vars(int subPop = -1);
+	PyObject * vars();
+
+	/** return a dictionary <tt>vars()["subPop"][subPop]</tt>. \e subPop can be
+	 *  a number (<tt>subPop=spID</tt>), or a pair of numbers 
+	 *  (<tt>subPop=(spID, vspID)</tt>). A \c ValueError will be raised if key
+	 *  \c 'subPop' does not exist in \c vars(), or if key \e subPop does not
+	 *  exist in <tt>vars()["subPop"]</tt>.
+	 *  <group>9-var</group>
+	 */
+	PyObject * vars(vspID subPop);
+
 
 	/// CPPONLY The same as vars(), but without increasing reference count.
 	PyObject * dict(int subPop = -1);
