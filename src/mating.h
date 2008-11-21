@@ -2286,7 +2286,7 @@ public:
 	{
 		pop.turnOffSelection();
 		// use scratch population,
-		pop.pushAndDiscard(scratch);
+		pop.push(scratch);
 		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
 	}
 
