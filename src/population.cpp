@@ -1001,7 +1001,7 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 	// obtain new genotype structure and set it
 	setGenoStructure(gsAddChrom(lociPos, lociNames, chromName, chromType));
 
-	DBG_FAILIF(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
+	DBG_ASSERT(totNumLoci() - oldNumLoci == lociPos.size(), SystemError,
 		"Failed to add chromosome.");
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
