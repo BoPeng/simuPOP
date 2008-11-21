@@ -1203,12 +1203,13 @@ population & population::extract(bool removeInd, const string & field,
 	}
 	UINT step = pop.genoSize();
 	UINT infoStep = pop.infoSize();
-	UINT pStep = pop.totNumLoci();
-	UINT pEnd = pop.ploidy() * pop.totNumLoci();
+	// will be used to copy from *this
+	UINT pStep = totNumLoci();
+	UINT pEnd = ploidy() * totNumLoci();
 	vectoru::iterator lociPtr = new_loci.begin();
 	vectoru::iterator lociEnd = new_loci.end();
 	//
-	UINT info = removeInfo ? infoIdx(field) : 0;
+	UINT info = removeInd ? infoIdx(field) : 0;
 	vectoru infoList;
 	vectorstr::const_iterator iit = infoFields.begin();
 	vectorstr::const_iterator iit_end = infoFields.end();
@@ -1233,17 +1234,18 @@ population & population::extract(bool removeInd, const string & field,
 			size = popSize();
 		} else {
 			for (ULONG i = 0; i < popSize(); ++i) {
-				UINT sp = ind(i).intInfo(info);
+				int sp = m_inds[i].intInfo(info);
 				if (sp < 0)
 					continue;
-				if (spSizes.size() <= sp) {
+				if (spSizes.size() <= static_cast<UINT>(sp)) {
 					spSizes.resize(sp + 1);
 					indIdx.resize(sp + 1);
 				}
-				++spSizes.back();
-				indIdx.back().push_back(i);
+				++spSizes[sp];
+				indIdx[sp].push_back(i);
 			}
 			size = accumulate(spSizes.begin(), spSizes.end(), 0UL);
+			DBG_DO(DBG_POPULATION, cout << "New subpopulation size " << spSizes << endl);
 		}
 
 		vector<individual> new_inds;
@@ -1256,7 +1258,6 @@ population & population::extract(bool removeInd, const string & field,
 		// copy genotype and info...
 		if (!removeInd) {
 			new_inds.insert(new_inds.end(), m_inds.begin(), m_inds.end());
-			pop.setSubPopStru(subPopSizes());
 			if (!removeLoci)
 				new_genotype.insert(new_genotype.end(), genoBegin(true), genoEnd(true));
 			else {
@@ -1266,7 +1267,7 @@ population & population::extract(bool removeInd, const string & field,
 					GenoIterator ptr = it->genoBegin();
 					for (UINT p = 0; p < pEnd; p += pStep) {
 						for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
-							m_genotype.push_back(*(ptr + *lociPtr + p));
+							new_genotype.push_back(*(ptr + *lociPtr + p));
 					}
 				}
 			}
@@ -1278,17 +1279,20 @@ population & population::extract(bool removeInd, const string & field,
 				for (; it != it_end; ++it) {
 					InfoIterator iPtr = it->infoBegin();
 					for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
-						m_info.push_back(*(iPtr + *infoPtr));
+						new_info.push_back(*(iPtr + *infoPtr));
 				}
 			}
+			pop.m_popSize = size;
+			pop.setSubPopStru(subPopSizes());
 		} else {
-			pop.setSubPopStru(spSizes);
 			for (size_t sp = 0; sp < indIdx.size(); ++sp) {
 				vectoru & idx = indIdx[sp];
+				if (idx.empty())
+					continue;
 				vectoru::iterator it = idx.begin();
 				vectoru::iterator it_end = idx.end();
-				new_inds.push_back(m_inds[*it]);
 				for (; it != it_end; ++it) {
+					new_inds.push_back(m_inds[*it]);
 					if (!removeLoci)
 						new_genotype.insert(new_genotype.end(),
 							indGenoBegin(*it), indGenoEnd(*it));
@@ -1296,19 +1300,21 @@ population & population::extract(bool removeInd, const string & field,
 						GenoIterator ptr = indGenoBegin(*it);
 						for (UINT p = 0; p < pEnd; p += pStep) {
 							for (lociPtr = new_loci.begin(); lociPtr != lociEnd; ++lociPtr)
-								m_genotype.push_back(*(ptr + *lociPtr + p));
+								new_genotype.push_back(*(ptr + *lociPtr + p));
 						}
 					}
-				}
-				if (!removeInfo)
-					new_info.insert(new_info.end(), m_inds[*it].infoBegin(),
-						m_inds[*it].infoEnd());
-				else {
-					InfoIterator iPtr = m_inds[*it].infoBegin();
-					for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
-						m_info.push_back(*(iPtr + *infoPtr));
+					if (!removeInfo)
+						new_info.insert(new_info.end(), m_inds[*it].infoBegin(),
+							m_inds[*it].infoEnd());
+					else {
+						InfoIterator iPtr = m_inds[*it].infoBegin();
+						for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
+							new_info.push_back(*(iPtr + *infoPtr));
+					}
 				}
 			}
+			pop.m_popSize = size;
+			pop.setSubPopStru(spSizes);
 		}
 		// set pointer
 		vectora::iterator ptr = new_genotype.begin();
@@ -1319,9 +1325,12 @@ population & population::extract(bool removeInd, const string & field,
 			new_inds[i].setInfoPtr(infoPtr);
 		}
 		// the arrays are ready, are they?
-		DBG_ASSERT(new_inds.size() == size && new_genotype.size() == size * step
-			&& new_info.size() == size * infoStep, SystemError,
-			"Failed to copy genotype");
+		DBG_ASSERT(new_inds.size() == size && (new_genotype.size() == size * step)
+			&& (new_info.size() == size * infoStep), SystemError,
+			"Failed to copy genotype:"
+				"\ninds: " + toStr(new_inds.size()) + ", " + toStr(size) +
+				"\ngenotype: " + toStr(new_genotype.size()) + ", " + toStr(size * step) + 
+				"\ninfo: " + toStr(new_info.size()) + ", " + toStr(size * infoStep));
 		// now put them to use
 		if (depth == 0) { // current generation
 			pop.m_inds.swap(new_inds);
