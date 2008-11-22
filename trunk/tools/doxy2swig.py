@@ -530,7 +530,7 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::population::dvars',
              'type': u'memberofclass_simuPOP::population',
              'Description': '',
-             'Details': ur'<group>9-var</group>' \
+             'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars()</tt> ' \
                 'so that dictionary keys can be accessed as attributes. For example ' \
                 '<tt>pop.dvars().alleleFreq</tt> is equivalent to <tt>pop.vars()["alleleFreq"]</tt>.',
@@ -540,7 +540,7 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::simulator::dvars',
              'type': u'memberofclass_simuPOP::simulator',
              'Description': '',
-             'Details': ur'<group>9-var</group>' \
+             'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep)</tt> ' \
                 'so that dictionary keys can be accessed as attributes. For example ' \
                 '<tt>simu.dvars(1).alleleFreq</tt> is equivalent to <tt>simu.vars(1)["alleleFreq"]</tt>.',
@@ -550,7 +550,7 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::population::dvars',
              'type': u'memberofclass_simuPOP::population',
              'Description': '',
-             'Details': ur'<group>9-var</group>' \
+             'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
              'cppArgs': u'(vspID subPop)',
@@ -559,7 +559,7 @@ class Doxy2SWIG:
             {'Name': u'simuPOP::simulator::dvars',
              'type': u'memberofclass_simuPOP::simulator',
              'Description': '',
-             'Details': ur'<group>9-var</group>' \
+             'Details': ur'<group>9-var1</group>' \
                 'Return a wrapper of Python dictionary returned by <tt>vars(rep, subPop)</tt> ' \
                 'so that dictionary keys can be accessed as attributes.',
              'cppArgs': u'(int rep, vspID subPop)',
@@ -954,15 +954,15 @@ class Doxy2SWIG:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
             print >> out, '\n\\subsection{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
-            if entry.has_key('funcForm') or entry.has_key('Applicability'):
+            if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
                 annotation = '  ('
                 if entry.has_key('funcForm'):
-                    annotation += 'Function form: %s\index{function!%s}' % (
+                    annotation += 'Function %s\index{function!%s}' % (
                         self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
                 if entry.has_key('Applicability'):
                     if entry.has_key('funcForm'):
                         annotation += ', '
-                    annotation += 'Applicable to %s' % self.latex_text(entry['Applicability'])
+                    # annotation += 'Applicable to %s' % self.latex_text(entry['Applicability'])
                 print >> out, annotation + ')'
             print >> out, '}\n'
             print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Doc'])
