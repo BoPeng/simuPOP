@@ -45,7 +45,7 @@ class tagger : public baseOperator
 
 public:
 	/// create a \c tagger, default to be always active but no output
-	tagger(string output = "", string outputExpr = "",
+	tagger(string output = "", string outputExpr = "", int stage = DuringMating,
 	       int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	       repList rep = repList(),
 	       const vectorstr & infoFields = vectorstr());
@@ -94,7 +94,7 @@ public:
 	              vectorl at = vectorl(), repList rep = repList(),
 	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
-		tagger(output, outputExpr, begin, end, step, at, rep, infoFields), m_mode(mode)
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() > 0, ValueError,
 			"At least one information field is needed.");
@@ -153,7 +153,7 @@ public:
 	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	             string output = "", string outputExpr = "",
 	             const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
-		tagger(output, outputExpr, begin, end, step, at, rep, infoFields),
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -219,7 +219,7 @@ public:
 	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	              string output = "", string outputExpr = "",
 	              const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
-		tagger(output, outputExpr, begin, end, step, at, rep, infoFields),
+		tagger(output, outputExpr, begin, DuringMating, end, step, at, rep, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -270,7 +270,7 @@ public:
 	           repList rep = repList(),
 	           int stage = PostMating, string output = ">", string outputExpr = "",
 	           const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, begin, end, step, at, rep, infoFields)
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields)
 	{
 		setApplicableStage(stage);
 	}
@@ -346,7 +346,7 @@ public:
 	         int step = 1, vectorl at = vectorl(), repList rep = repList(),
 	         string output = "", string outputExpr = "",
 	         const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, begin, end, step, at, rep, infoFields)
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,
 			"infoFields can not be empty.");
