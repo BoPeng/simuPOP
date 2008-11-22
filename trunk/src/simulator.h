@@ -296,7 +296,8 @@ public:
 		return m_ptrRep[rep]->vars(subPop);
 	}
 
-	/** Save a simulator to file \c filename.
+	/** Save a simulator to file \c filename, which can be loaded by a global
+	 *  function \c LoadSimulator.
 	 *  <group>0-stru</group>
 	 */
 	void save(string filename) const;
