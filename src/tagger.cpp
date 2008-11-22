@@ -25,11 +25,11 @@
 
 namespace simuPOP {
 // create a \c tagger, default to be always active but no output
-tagger::tagger(string output, string outputExpr,
+tagger::tagger(string output, string outputExpr, int stage,
                int begin, int end, int step, vectorl at, repList rep,
                const vectorstr & infoFields) :
 	// stage is automatically determined.
-	baseOperator(output, outputExpr, DuringMating, begin, end, step, at, rep,infoFields)
+	baseOperator(output, outputExpr, stage, begin, end, step, at, rep,infoFields)
 {
 	if (!noOutput())
 		setApplicableStage(DuringPostMating);
@@ -209,7 +209,7 @@ sexTagger::sexTagger(const vectori & code,
                      int begin, int end, int step, vectorl at, repList rep,
                      int stage, string output, string outputExpr,
                      const vectorstr & infoFields) :
-	tagger(output, outputExpr, begin, end, step, at, rep, infoFields),
+	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields),
 	m_code(code)
 {
 	setApplicableStage(stage);
@@ -241,7 +241,7 @@ affectionTagger::affectionTagger(const vectori & code,
                                  int begin, int end, int step, vectorl at, repList rep,
                                  int stage, string output, string outputExpr,
                                  const vectorstr & infoFields) :
-	tagger(output, outputExpr, begin, end, step, at, rep, infoFields),
+	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields),
 	m_code(code)
 {
 	setApplicableStage(stage);

@@ -214,7 +214,9 @@ public:
 	}
 
 
-	/// deep copy of an operator
+	/** Return a cloned copy of an operator. This function is available to all
+	 *  operators.
+	 */
 	virtual baseOperator * clone() const
 	{
 		return new baseOperator(*this);
@@ -234,37 +236,6 @@ public:
 	 \note This function will be called by simulators before applying.
 	 */
 	bool isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly = false);
-
-	/// return applicable replicate
-	/// CPPONLY
-	repList applicableReplicate()
-	{
-		return m_rep;
-	}
-
-
-	/// set applicable replicate
-	/// CPPONLY
-	void setApplicableReplicate(repList rep)
-	{
-		m_rep = rep;
-	}
-
-
-	/// set applicable generation parameters: \c begin, \c end, \c step and \c at
-	/// CPPONLY
-	void setActiveGenerations(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl())
-	{
-		m_beginGen = begin;
-		m_endGen = end;
-		m_stepGen = step;
-		m_atGen = at;
-
-		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
-
-		// set certain m_flags to speed up using this machanism
-		setFlags();
-	}
 
 
 	//@}
@@ -302,14 +273,6 @@ public:
 	bool canApplyPostMating()
 	{
 		return ISSETFLAG(m_flags, m_flagPostMating);
-	}
-
-
-	/// set of this operator can be applied \em pre- or \em post-mating
-	/// CPPONLY
-	bool canApplyPreOrPostMating()
-	{
-		return ISSETFLAG(m_flags, m_flagPreMating) || ISSETFLAG(m_flags, m_flagPostMating);
 	}
 
 
@@ -404,13 +367,6 @@ public:
 	/** @name dealing with output separator, persistant files, $gen etc substitution.
 	 */
 	//@{
-
-	/// set ouput stream, if was not set during construction
-	/// CPPONLY
-	void setOutput(string output = "", string outputExpr = "")
-	{
-		m_ostream.setOutput(output, outputExpr);
-	}
 
 
 	/// CPPONLY get output stream. This function is not exposed to user.
@@ -576,7 +532,7 @@ public:
 	}
 
 
-	/// deep copy of a \c pause operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new pause(*this);
@@ -631,7 +587,7 @@ public:
 	}
 
 
-	/// deep copy of a \c noneOp operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new noneOp(*this);
@@ -728,7 +684,7 @@ public:
 	}
 
 
-	/// deep copy of an \c ifElse operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new ifElse(*this);
@@ -787,14 +743,14 @@ public:
 	{
 	};
 
-	/// deep copy of a \c ticToc operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new ticToc(*this);
 	}
 
 
-	/// apply the \c ticToc operator to one population
+	/// HIDDEN
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c ticToc operator
@@ -833,7 +789,7 @@ public:
 	{
 	};
 
-	/// deep copy of a \c setAncestralDepth operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new setAncestralDepth(*this);
@@ -889,14 +845,14 @@ public:
 	{
 	};
 
-	/// deep copy of a \c turnOnDebug operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new turnOnDebug(*this);
 	}
 
 
-	/// apply the \c turnOnDebug operator to one population
+	/// HIDDEN
 	virtual bool apply(population & pop)
 	{
 		TurnOnDebug(m_code);
@@ -938,7 +894,7 @@ public:
 	{
 	};
 
-	/// deep copy of a \c turnOffDebug operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new turnOffDebug(*this);
@@ -1048,7 +1004,7 @@ public:
 	}
 
 
-	/// deep copy of a \c pyOperator operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new pyOperator(*this);
@@ -1150,7 +1106,7 @@ public:
 	}
 
 
-	/// deep copy of a \c pyIndOperator operator
+	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
 		return new pyIndOperator(*this);
