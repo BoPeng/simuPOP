@@ -7669,8 +7669,8 @@ Usage:
 
 Details:
 
-    Save population to a file filename. The population can be restored
-    from this file, using a global function LoadPopulation(filename).
+    Save population to a file filename, which can be loaded by a
+    global function LoadPopulation(filename).
 
 "; 
 
@@ -11151,7 +11151,8 @@ Usage:
 
 Details:
 
-    Save a simulator to file filename.
+    Save a simulator to file filename, which can be loaded by a global
+    function LoadSimulator.
 
 "; 
 
