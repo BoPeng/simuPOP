@@ -1280,8 +1280,8 @@ public:
 	 */
 	void sortIndividuals(bool infoOnly = false);
 
-	/** Save population to a file \e filename. The population can be restored
-	 *  from this file, using a global function <tt>LoadPopulation(filename)</tt>.
+	/** Save population to a file \e filename, which can be loaded by a global
+	 *  function <tt>LoadPopulation(filename)</tt>.
 	 *  <group>1-pop</group>
 	 */
 	void save(const string & filename) const;
