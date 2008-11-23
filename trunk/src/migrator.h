@@ -47,7 +47,6 @@ using std::random_shuffle;
 
 namespace simuPOP {
 
-typedef std::vector<vspID> vectorvsp;
 
 /// migrate individuals from (virtual) subpopulations to other subpopulations
 /**
@@ -104,7 +103,7 @@ public:
 	   which migrate from subpopulation \c a to \c b with given rate \c r.
 	 */
 	migrator(const matrix & rate, int mode = MigrByProbability,
-	         const vectorvsp & fromSubPop = vectorvsp(), vectoru toSubPop = vectoru(),
+	         const subPopList & fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
 	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	         repList rep = repList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
@@ -169,7 +168,7 @@ protected:
 
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
-	vectorvsp m_from;
+	subPopList m_from;
 	vectoru m_to;
 };
 
@@ -204,7 +203,7 @@ public:
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc = NULL,
 	           int mode = MigrByProbability,
-	           vectorvsp fromSubPop = vectorvsp(), vectoru toSubPop = vectoru(),
+	           subPopList fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 	           repList rep = repList(), const vectorstr & infoFields = vectorstr())
