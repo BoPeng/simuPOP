@@ -82,61 +82,49 @@ private:
 	vectori m_reps;
 };
 
-/// base class of all classes that manipulate populations
-/**
-   Operators are objects that act on populations. They can be
-   applied	to populations directly using their function forms,
-   but they are usually managed and applied by a simulator. \n
 
-   There are three kinds of operators: \n
+/** Operators are objects that act on populations. They can be applied to 
+ *  populations directly using their function forms, but they are usually
+ *  managed and applied by a simulator. In the latter case, operators are
+ *  passed to the \c evolve function of a simulator, and are applied repeatedly
+ *  during the evolution of the simulator.\n
+ *
+ *  The \e baseOperator class is the base class for all operators. It defines
+ *  a common user interface that specifies at which generations, at which stage
+ *  of a life cycle, to which populations and subpopulation an operator will be
+ *  applied. These are achieved by a common set of parameters such as \c begin,
+ *  \c end, \c step, \c at, \c stage for all operators. Note that a specific
+ *  operator does not have to honor all these parameters. For example, a
+ *  recombinator can only be applied during mating so it ignores the \c stage
+ *  parameter.\n
+ */
+class baseOperator
+{
+public:
+	/** @name constructor and destructor */
+	//@{
 
- \li built-in: written in C++, the fastest. They do not
-   interact with Python shell except that some of them set
-   variables that are accessible from Python.
-
- \li hybrid: written in C++ but calls a Python function during
-   execution. Less efficient. For example, a hybrid mutator \c pyMutator
-   will go through a population and mutate alleles with given mutation
-   rate. How exactly the allele will be mutated is determined by a
-   user-provided Python function. More specifically, this operator will
-   pass the current allele to a user-provided Python function and take
-   its return value as the mutant allele.
-
- \li pure Python: written in Python. The same speed as Python.
-   For example, a \c varPlotter can plot Python variables that are
-   set by other operators. Usually, an individual or a population
-   object is passed to a user-provided Python function. Because
-   arbitrary operations can be performed on the passed object,
-   this operator is very flexible.
-
-   Operators can be applied at different stages of the life cycle of
-   a generation. It is possible for an operator to apply multiple
-   times in a life cycle. For example, a \c savePopulation operator
-   might be applied before and after mating to trace parental information.
-   More specifically, operators can be applied at \em pre-,
- \em during-, \em post-mating, or a combination of these stages. Applicable stages
-   are usually set by default but you can change it by setting
-   <tt>stage=(PreMating|PostMating|DuringMating|PrePostMating|PreDuringMating|DuringPostMating)</tt> parameter.
-   Some operators ignore \c stage parameter because they only
-   work at one stage. \n
-
-   Operators do not have to be applied at all generations. You can specify
-   starting and/or ending generations (parameters \c start, \c end), gaps
-   between applicable generations (parameter \c step),
-   or specific generations (parameter \c at). For example, you might want to
-   start applying migrations after certain burn-in generations, or
-   calculate certain statistics only sparsely. Generation numbers can be counted
-   from the last generation, using negative generation numbers. \n
-
-   Most operators are applied to every replicate of a simulator during
-   evolution. 
-
-   Operators can have outputs, which can be standard (terminal) or a file.
-   Output can vary with replicates and/or generations, and outputs from different
-   operators can be accumulated to the same file to form
-   table-like outputs. \n
-
-   Filenames can have the following format:
+	/** All simuPOP operators accept the following parameters which defines how
+	 *  they interact with a simulator. 
+	 *
+	 *  \param begin The starting generation at which an operator will be
+	 *    applied. Default to \c 0. A negative number is interpreted as a
+	 *    generation counted from the end of an evolution.
+	 *  \param end The last generation at which an operator will be applied.
+	 *    Default to \c -1, namely the last generation.
+	 *  \param step The number of generations between applicable generations.
+	 *    Default to \c 1.
+	 *  \param at A list of applicable generations. Parameters \c begin,
+	 *    \c end, and \c step will be ignored if this parameter is specified.
+	 \param rep applicable replicates. It can be a valid replicate number, \c vectori()
+	   (all replicates, default), or \c -1 (only the last replicate). \c -1
+	   is useful in adding newlines to a table output.
+	 \param output a string of the output filename. Different operators will have
+	   different default \c output (most commonly \c '>' or \c '').
+	 \param outputExpr an expression that determines the output filename dynamically. This
+	   expression will be evaluated against a population's local namespace each time when
+	   an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
+	   will output to <tt> >>>out1_1.xml</tt> for replicate \c 1 at generation \c 1.
 
  \li \c 'filename' this file will be overwritten each time. If two operators
    output to the same file, only the last one will succeed;
@@ -153,36 +141,6 @@ private:
  \li \c '>' standard output (terminal);
 
  \li \c '' suppress output.
-
-   The output filename does not have to be fixed. If parameter \c outputExpr
-   is used (parameter \c output will be ignored), it will be evaluated when
-   a filename is needed. This is useful when you need to write different
-   files for different replicates/generations.
- */
-class baseOperator
-{
-public:
-	/** @name constructor and destructor */
-	//@{
-
-	/// common interface for all operators (this base operator does nothing by itself.)
-	/**
-
-	 \param begin the starting generation. Default to \c 0. A negative number is allowed.
-	 \param end stop applying after this generation. A negative numbers is allowed.
-	 \param step the number of generations between active generations. Default to \c 1.
-	 \param at an array of active generations. If given, \c stage, \c begin, \c end,
-	   and \c step will be ignored.
-	 \param rep applicable replicates. It can be a valid replicate number, \c vectori()
-	   (all replicates, default), or \c -1 (only the last replicate). \c -1
-	   is useful in adding newlines to a table output.
-	 \param output a string of the output filename. Different operators will have
-	   different default \c output (most commonly \c '>' or \c '').
-	 \param outputExpr an expression that determines the output filename dynamically. This
-	   expression will be evaluated against a population's local namespace each time when
-	   an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
-	   will output to <tt> >>>out1_1.xml</tt> for replicate \c 1 at generation \c 1.
-
 	 \note
 	 \li Negative generation numbers are allowed for parameters \c begin, \c end and \c at. They are
 	   interpreted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
