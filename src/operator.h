@@ -209,9 +209,9 @@ public:
 	 */
 	baseOperator(string output, string outputExpr, int stage,
 		int begin, int end, int step, vectorl at,
-		repList rep, const vectorstr & infoFields) :
+		repList rep, subPopList subPop, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
-		m_flags(0), m_rep(rep),
+		m_flags(0), m_rep(rep), m_subPop(subPop),
 		m_ostream(output, outputExpr), m_infoFields(infoFields),
 		m_lastPop(MaxTraitIndex)
 	{
@@ -484,6 +484,9 @@ private:
 	/// apply to all (-1) or one of the replicates.
 	repList m_rep;
 
+	/// apply to some of the (virtual) subpops.
+	subPopList m_subPop;
+
 	/// the output stream
 	StreamProvider m_ostream;
 
@@ -533,8 +536,8 @@ public:
 		bool exposePop = true, string popName = "pop",
 		string output = ">", string outputExpr = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = -1, const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = -1, subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 		m_exposePop(exposePop), m_popName(popName)
 	{
@@ -590,8 +593,8 @@ public:
 	 */
 	noneOp(string output = ">", string outputExpr = "",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, infoFields)
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
 
@@ -669,8 +672,8 @@ public:
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 		string output = ">", string outputExpr = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
 	{
 		if (ifOp != NULL)
@@ -746,8 +749,8 @@ public:
 	/// create a timer
 	ticToc(string output = ">", string outputExpr = "",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields)
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 		time(&m_startTime);
 		m_lastTime = m_startTime;
@@ -793,8 +796,8 @@ public:
 	/// create a \c setAncestralDepth operator
 	setAncestralDepth(int depth, string output = ">", string outputExpr = "",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_depth(depth)
 	{
 	};
@@ -849,8 +852,8 @@ public:
 	/// create a \c turnOnDebug operator
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_code(code)
 	{
 	};
@@ -898,8 +901,8 @@ public:
 	/// create a \c turnOffDebug operator
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_code(code)
 	{
 	};
@@ -981,8 +984,8 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 	{
 		if (!PyCallable_Check(func))
@@ -1081,8 +1084,8 @@ public:
 	pyIndOperator(PyObject * func, const vectoru & loci = vectoru(), PyObject * param = NULL,
 		int stage = PostMating, bool formOffGenotype = false,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, infoFields),
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_func(func), m_loci(loci), m_param(param)
 	{
 		if (!PyCallable_Check(func))

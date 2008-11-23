@@ -24,8 +24,8 @@
 #ifndef _TAGGER_H
 #define _TAGGER_H
 /**
- \file
- \brief head file of class tagger: public baseOperator
+   \file
+   \brief head file of class tagger: public baseOperator
  */
 #include "operator.h"
 
@@ -37,8 +37,8 @@ namespace simuPOP {
 /**
    This is a during-mating operator that tags individuals with various information.
    Potential usages are:
- \li recording the parental information to track pedigree;
- \li tagging an individual/allele and monitoring its spread in the population etc.
+   \li recording the parental information to track pedigree;
+   \li tagging an individual/allele and monitoring its spread in the population etc.
  */
 class tagger : public baseOperator
 {
@@ -46,9 +46,9 @@ class tagger : public baseOperator
 public:
 	/// create a \c tagger, default to be always active but no output
 	tagger(string output = "", string outputExpr = "", int stage = DuringMating,
-	       int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       repList rep = repList(),
-	       const vectorstr & infoFields = vectorstr());
+		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		repList rep = repList(), subPopList subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr());
 
 	/// destructor
 	virtual ~tagger()
@@ -88,13 +88,13 @@ public:
 public:
 	/// create an \c inheritTagger that inherits a tag from one or both parents
 	/**
-	 \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
+	   \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
-	              vectorl at = vectorl(), repList rep = repList(),
-	              string output = "", string outputExpr = "",
-	              const vectorstr & infoFields = vectorstr (TAG_InheritFields, TAG_InheritFields + 2)) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields), m_mode(mode)
+		vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+		string output = "", string outputExpr = "",
+		const vectorstr & infoFields = vectorstr(TAG_InheritFields, TAG_InheritFields + 2)) :
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() > 0, ValueError,
 			"At least one information field is needed.");
@@ -150,10 +150,10 @@ public:
 	/// create a \c parentTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
-	             string output = "", string outputExpr = "",
-	             const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields),
+	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+		string output = "", string outputExpr = "",
+		const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -203,11 +203,11 @@ private:
    mating, these index will not be affected by post-mating operators.
 
    This tagger record parental index to one or both
- \li one or two information fields. Default to father_idx and mother_idx.
+   \li one or two information fields. Default to father_idx and mother_idx.
    If only one parent is passed in a mating scheme (such as selfing), only the first
    information field is used. If two parents are passed, the first information
    field records paternal index, and the second records maternal index.
- \li a file. Indexes will be written to this file. This tagger will also
+   \li a file. Indexes will be written to this file. This tagger will also
    act as a post-mating operator to add a new-line to this file.
  */
 class parentsTagger : public tagger
@@ -216,10 +216,10 @@ public:
 	/// create a \c parentsTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
-	              string output = "", string outputExpr = "",
-	              const vectorstr & infoFields = vectorstr (TAG_ParentsFields, TAG_ParentsFields + 2)) :
-		tagger(output, outputExpr, begin, DuringMating, end, step, at, rep, infoFields),
+	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+		string output = "", string outputExpr = "",
+		const vectorstr & infoFields = vectorstr(TAG_ParentsFields, TAG_ParentsFields + 2)) :
+		tagger(output, outputExpr, begin, DuringMating, end, step, at, rep, subPop, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -267,10 +267,10 @@ class infoTagger : public tagger
 {
 public:
 	infoTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           repList rep = repList(),
-	           int stage = PostMating, string output = ">", string outputExpr = "",
-	           const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields)
+		repList rep = repList(), subPopList subPop = subPopList(),
+		int stage = PostMating, string output = ">", string outputExpr = "",
+		const vectorstr & infoFields = vectorstr()) :
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields)
 	{
 		setApplicableStage(stage);
 	}
@@ -282,18 +282,19 @@ public:
 
 /// Tagging sex status
 /** This is a simple post-mating tagger that write sex
-   	status to a file. By default, 1 for Male, 2 for Female.
+    status to a file. By default, 1 for Male, 2 for Female.
  */
 class sexTagger : public tagger
 {
 public:
 	/**
-	 \param code  code for Male and Female, default to 1 and 2, respectively.
+	   \param code  code for Male and Female, default to 1 and 2, respectively.
 	   This is used by Linkage format.
 	 */
-	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
-	          int stage = PostMating, string output = ">", string outputExpr = "",
-	          const vectorstr & infoFields = vectorstr());
+	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		string output = ">", string outputExpr = "", int stage = PostMating,
+		repList rep = repList(), subPopList subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr());
 
 	bool apply(population & pop);
 
@@ -303,18 +304,19 @@ private:
 
 /// Tagging affection status
 /** This is a simple post-mating tagger that write affection status
-   	to a file. By default, 1 for unaffected, 2 for affected.
+    to a file. By default, 1 for unaffected, 2 for affected.
  */
 class affectionTagger : public tagger
 {
 public:
 	/**
-	 \param code  code for Male and Female, default to 1 and 2, respectively.
+	   \param code  code for Male and Female, default to 1 and 2, respectively.
 	   This is used by Linkage format.
 	 */
-	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(),
-	                int stage = PostMating, string output = ">", string outputExpr = "",
-	                const vectorstr & infoFields = vectorstr());
+	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		repList rep = repList(), subPopList subPop = subPopList(),
+		int stage = PostMating, string output = ">", string outputExpr = "",
+		const vectorstr & infoFields = vectorstr());
 
 	bool apply(population & pop);
 
@@ -334,19 +336,19 @@ class pyTagger : public tagger
 public:
 	/// creates a \c pyTagger that works on specified information fields
 	/**
-	 \param infoFields information fields. The user should gurantee the existence
-	   	of these fields.
-	 \param func a Pyton function that returns a list to assign the information fields.
-	   	e.g., if <tt>fields=['A', 'B']</tt>, the function will pass values of fields
-	 \c 'A' and \c 'B' of father, followed by mother if there is one, to this
-	   	function. The return value is assigned to fields \c 'A' and \c 'B' of the
-	   	offspring. The return value has to be a list even if only one field is given.
+	   \param infoFields information fields. The user should gurantee the existence
+	    of these fields.
+	   \param func a Pyton function that returns a list to assign the information fields.
+	    e.g., if <tt>fields=['A', 'B']</tt>, the function will pass values of fields
+	   \c 'A' and \c 'B' of father, followed by mother if there is one, to this
+	    function. The return value is assigned to fields \c 'A' and \c 'B' of the
+	    offspring. The return value has to be a list even if only one field is given.
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
-	         int step = 1, vectorl at = vectorl(), repList rep = repList(),
-	         string output = "", string outputExpr = "",
-	         const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields)
+		int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+		string output = "", string outputExpr = "",
+		const vectorstr & infoFields = vectorstr()) :
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,
 			"infoFields can not be empty.");

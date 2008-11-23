@@ -68,8 +68,8 @@ public:
 	        UINT maxAllele = 0,
 	        string output = ">", string outputExpr = "",
 	        int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	        repList rep = repList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+	        repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
 		m_bt(rng()), m_initialized(false), m_mutCount(0)
 	{
@@ -219,9 +219,9 @@ public:
 	           UINT maxAllele = 0,
 	           string output = ">", string outputExpr = "",
 	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	           repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, outputExpr, stage, begin, end, step, at, rep, infoFields)
+		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
 
@@ -279,9 +279,9 @@ public:
 	           UINT maxAllele = 0, double incProb = 0.5,
 	           string output = ">", string outputExpr = "",
 	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	           repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_incProb(incProb)
 	{
 #ifdef BINARYALLELE
@@ -368,9 +368,9 @@ public:
 	           UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
 	           string output = ">", string outputExpr = "",
 	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	           repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_incProb(incProb), m_p(p), m_func(func)
 	{
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
@@ -445,9 +445,9 @@ public:
 	          PyObject * func = NULL,
 	          string output = ">", string outputExpr = "",
 	          int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	          repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	          repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, outputExpr, stage, begin, end, step, at, rep, infoFields), m_func(NULL)
+		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields), m_func(NULL)
 	{
 		DBG_ASSERT(PyCallable_Check(func), ValueError,
 			"Passed variable is not a callable python function.");
@@ -522,8 +522,8 @@ public:
 	             vectorlu inds = vectorlu(),
 	             string output = ">", string outputExpr = "",
 	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             repList rep = repList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+	             repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_toAllele(toAllele),
 		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
 	{
