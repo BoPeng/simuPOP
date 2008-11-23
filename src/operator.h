@@ -153,6 +153,30 @@ private:
  *  operator does not have to honor all these parameters. For example, a
  *  recombinator can only be applied during mating so it ignores the \c stage
  *  parameter.\n
+ *
+ *  An operator can be applied to all or part of the generations during the
+ *  evolution of a simulator. At the beginning of an evolution, a simulator
+ *  is usually at the beginning of generation \c 0. If it evolves \c 10
+ *  generations, it evolves generations \c 0, \c 1, ,,,., and \c 9 (\c 10
+ *  generations) and stops at the begging of generation \c 10. A negative
+ *  generation number \c a has generation number <tt>10 + a</tt>, with -1
+ *  referring to the last evolved generation \c 9. Note that the starting
+ *  generation number of a simulator can be changed by its \c setGen()
+ *  member function.\n
+ *
+ *  Output from an operator is usually directed to the standard output
+ *  (\c sys.stdout). This can be configured using a output specification
+ *  string, which can be <tt>''</tt> for no output, <tt>'>'</tt> standard
+ *  terminal output (default), or a filename prefixed by one or more
+ *  <tt>'>'</tt> characters. In the case of \c '>filename' (or equivalently
+ *  \c 'filename'), the output from an operator is written to this file.
+ *  However, if two operators write to the same file \c filename, or if an
+ *  operator write to this file more than once, only the last write operation
+ *  will succeed. In the case of <tt>'>>filename'</tt>, file \c filename
+ *  will be opened at the beginning of the evolution and closed at the end.
+ *  Outputs from multiple operators are appended. <tt>>>>filename</tt> works
+ *  similar to <tt>>>filename</tt> but \c filename, if it already exists at the
+ *  beginning of an evolutionary process, will not be cleared.
  */
 class baseOperator
 {
@@ -160,52 +184,51 @@ public:
 	/** @name constructor and destructor */
 	//@{
 
-	/** All simuPOP operators accept the following parameters which defines how
-	 *  they interact with a simulator.
+	/** The following parameters can be specified by all operators. However,
+	 *  an operator can ignore some parameters and the exact meaning of a
+	 *  parameter can vary.
 	 *
+	 *  \param output A string that specifies how output from an operator is
+	 *    written, which can be \c '' (no output), \c '>' (standard output),
+	 *    or \c 'filename' prefixed by one or more '>'.
+	 *  \param outputExpr An expression that determines the output parameter
+	 *    dynamically. This expression will be evaluated against a population's
+	 *    local namespace each time when an output filename is required. For
+	 *    example, <tt>"'>>out%s_%s.xml' % (gen, rep)"</tt> will output to
+	 *    <tt>>>out10_1.xml</tt> for replicate \c 1 at generation \c 10.
+	 *  \param stage Stage(s) of a life cycle at which an operator will be
+	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating and
+	 *    any of their combined stages \c PrePostMating, \c PreDuringMating
+	 *    \c DuringPostMating and \c PreDuringPostMating. Note that all
+	 *    operators have their default stage parameter and some of them ignores
+	 *    this parameter because they can only be applied at certain stage(s)
+	 *    of a life cycle.
 	 *  \param begin The starting generation at which an operator will be
 	 *    applied. Default to \c 0. A negative number is interpreted as a
-	 *    generation counted from the end of an evolution.
+	 *    generation counted from the end of an evolution (-1 being the last
+	 *    evolved generation).
 	 *  \param end The last generation at which an operator will be applied.
 	 *    Default to \c -1, namely the last generation.
 	 *  \param step The number of generations between applicable generations.
 	 *    Default to \c 1.
 	 *  \param at A list of applicable generations. Parameters \c begin,
 	 *    \c end, and \c step will be ignored if this parameter is specified.
-	   \param rep applicable replicates. It can be a valid replicate number, \c vectori()
-	   (all replicates, default), or \c -1 (only the last replicate). \c -1
-	   is useful in adding newlines to a table output.
-	   \param output a string of the output filename. Different operators will have
-	   different default \c output (most commonly \c '>' or \c '').
-	   \param outputExpr an expression that determines the output filename dynamically. This
-	   expression will be evaluated against a population's local namespace each time when
-	   an output filename is required. For example, <tt> "'>>out%s_%s.xml' % (gen, rep)" </tt>
-	   will output to <tt> >>>out1_1.xml</tt> for replicate \c 1 at generation \c 1.
-
-	   \li \c 'filename' this file will be overwritten each time. If two operators
-	   output to the same file, only the last one will succeed;
-
-	   \li \c '>filename' the same as \c 'filename';
-
-	   \li <tt>'>>filename'</tt> the file will be created at the beginning of evolution
-	   (\c simulator::evolve) and closed at the end. Outputs from several operators
-	   are appended;
-
-	   \li <tt>'>>>filename'</tt> the same as <tt>'>>filename'</tt> except that the file will not
-	   be cleared at the beginning of evolution if it is not empty;
-
-	   \li \c '>' standard output (terminal);
-
-	   \li \c '' suppress output.
-	   \note
-	   \li Negative generation numbers are allowed for parameters \c begin, \c end and \c at. They are
-	   interpreted as <tt>endGen + gen + 1</tt>. For example, <tt>begin = -2</tt> in
-	   <tt>simu.evolve(..., end=20)</tt> starts at generation \c 19.
-	   \li <tt>vectori(), -1</tt> are special constant that can only be used in the
-	   constructor of an operator. That is to say, explicit test of <tt>rep() == -1</tt>
-	   will not work.
-
-	   \test src_operator.log Common features of all operators
+	 *  \param rep A list of applicable replicates. An empty list (default) is
+	 *    interpreted as all replicates in a simulator. Negative indexes such
+	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
+	 *    as a shortcut for <tt>rep=[idx]</tt>.
+	 *  \param subPop A list of applicable (virtual) subpopulations, such as
+	 *    <tt>subPop=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (default) is
+	 *    interpreted as all subpopulations. <tt>subPop=[sp1]</tt> can be
+	 *    simplied as <tt>subPop=sp1</tt>. Negative indexes are not supported.
+	 *    Suport for this parameter vary from operator to operator. Some
+	 *    operators do not support virtual subpopulations and some operators
+	 *    do not support this parameter at all. Please refer to the reference
+	 *    manual of individual operators for their support for this parameter.
+	 *  \param infoFields A list of information fields that will be used by an
+	 *    operator. You usually do not need to specify this parameter because
+	 *    operators that use information fields usually have default values for
+	 *    this parameter.
 	 */
 	baseOperator(string output, string outputExpr, int stage,
 		int begin, int end, int step, vectorl at,
@@ -298,6 +321,7 @@ public:
 
 
 	/// determine if the operator can be applied only for haploid population
+	/// CPPONLY
 	bool haploidOnly()
 	{
 		return ISSETFLAG(m_flags, m_flagHaploid);
@@ -305,6 +329,7 @@ public:
 
 
 	/// determine if the operator can be applied only for diploid population
+	/// CPPONLY
 	bool diploidOnly()
 	{
 		return ISSETFLAG(m_flags, m_flagDiploid);
@@ -326,6 +351,7 @@ public:
 
 
 	/// get the length of information fields for this operator
+	/// CPPONLY
 	UINT infoSize()
 	{
 		return m_infoFields.size();
@@ -333,6 +359,7 @@ public:
 
 
 	/// get the information field specified by user (or by default)
+	/// CPPONLY
 	string infoField(UINT idx)
 	{
 		DBG_ASSERT(idx < m_infoFields.size(), IndexError, "Given info index " + toStr(idx) +
@@ -368,7 +395,9 @@ public:
 	}
 
 
-	/// apply to one population. It does not check if the operator is activated.
+	/** Apply an operator to population \e pop directly, without checking its
+	 *  applicability.
+	 */
 	virtual bool apply(population & pop);
 
 
@@ -443,6 +472,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	virtual void initialize(const population & pop) {}
 
 protected:

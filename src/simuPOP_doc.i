@@ -190,6 +190,28 @@ Details:
     for all operators. Note that a specific operator does not have to
     honor all these parameters. For example, a recombinator can only
     be applied during mating so it ignores the stage parameter.
+    An operator can be applied to all or part of the generations
+    during the evolution of a simulator. At the beginning of an
+    evolution, a simulator is usually at the beginning of generation
+    0. If it evolves 10 generations, it evolves generations 0, 1,
+    ,,,., and 9 (10 generations) and stops at the begging of
+    generation 10. A negative generation number a has generation
+    number 10 + a, with -1 referring to the last evolved generation 9.
+    Note that the starting generation number of a simulator can be
+    changed by its setGen() member function.
+    Output from an operator is usually directed to the standard output
+    (sys.stdout). This can be configured using a output specification
+    string, which can be '' for no output, '>' standard terminal
+    output (default), or a filename prefixed by one or more '>'
+    characters. In the case of '>filename' (or equivalently
+    'filename'), the output from an operator is written to this file.
+    However, if two operators write to the same file filename, or if
+    an operator write to this file more than once, only the last write
+    operation will succeed. In the case of '>>filename', file filename
+    will be opened at the beginning of the evolution and closed at the
+    end. Outputs from multiple operators are appended. >>>filename
+    works similar to >>filename but filename, if it already exists at
+    the beginning of an evolutionary process, will not be cleared.
 
 "; 
 
@@ -202,32 +224,35 @@ Usage:
 
 Details:
 
-    All  simuPOP operators accept the following parameters which
-    defines how they interact with a simulator.
-    *  'filename' this file will be overwritten each time. If two
-    operators output to the same file, only the last one will succeed;
-    *  '>filename' the same as 'filename';
-    *  '>>filename' the file will be created at the beginning of
-    evolution ( simulator::evolve) and closed at the end. Outputs from
-    several operators are appended;
-    *  '>>>filename' the same as '>>filename' except that the file
-    will not be cleared at the beginning of evolution if it is not
-    empty;
-    *  '>' standard output (terminal);
-    *  '' suppress output.
-    *  Negative generation numbers are allowed for parameters begin,
-    end and at. They are interpreted as endGen + gen + 1. For example,
-    begin = -2 in simu.evolve(..., end=20) starts at generation 19.
-    *   vectori(), -1 are special constant that can only be used in
-    the constructor of an operator. That is to say, explicit test of
-    rep() == -1 will not work.
+    The following parameters can be specified by all operators.
+    However, an operator can ignore some parameters and the exact
+    meaning of a parameter can vary.
 
 Arguments:
 
+    output:         A string that specifies how output from an
+                    operator is written, which can be '' (no output),
+                    '>' (standard output), or 'filename' prefixed by
+                    one or more '>'.
+    outputExpr:     An expression that determines the output parameter
+                    dynamically. This expression will be evaluated
+                    against a population's local namespace each time
+                    when an output filename is required. For example,
+                    \"'>>out%s_%s.xml' % (gen, rep)\" will output to
+                    >>out10_1.xml for replicate 1 at generation 10.
+    stage:          Stage(s) of a life cycle at which an operator will
+                    be applied. It can be PreMating, DuringMating,
+                    PostMating and any of their combined stages
+                    PrePostMating, PreDuringMatingDuringPostMating and
+                    PreDuringPostMating. Note that all operators have
+                    their default stage parameter and some of them
+                    ignores this parameter because they can only be
+                    applied at certain stage(s) of a life cycle.
     begin:          The starting generation at which an operator will
                     be applied. Default to 0. A negative number is
                     interpreted as a generation counted from the end
-                    of an evolution.
+                    of an evolution (-1 being the last evolved
+                    generation).
     end:            The last generation at which an operator will be
                     applied. Default to -1, namely the last
                     generation.
@@ -236,23 +261,27 @@ Arguments:
     at:             A list of applicable generations. Parameters
                     begin, end, and step will be ignored if this
                     parameter is specified.
-    rep:            applicable replicates. It can be a valid replicate
-                    number,  vectori() (all replicates, default), or
-                    -1 (only the last replicate). -1 is useful in
-                    adding newlines to a table output.
-    output:         a string of the output filename. Different
-                    operators will have different default output (most
-                    commonly '>' or '').
-    outputExpr:     an expression that determines the output filename
-                    dynamically. This expression will be evaluated
-                    against a population's local namespace each time
-                    when an output filename is required. For example,
-                    \"'>>out%s_%s.xml' % (gen, rep)\"  will output to
-                    >>>out1_1.xml for replicate 1 at generation 1.
-
-Example:
-
-Testsrc_operator.log Common features of all operators 
+    rep:            A list of applicable replicates. An empty list
+                    (default) is interpreted as all replicates in a
+                    simulator. Negative indexes such as -1 (last
+                    replicate) is acceptable. rep=idx can be used as a
+                    shortcut for rep=[idx].
+    subPop:         A list of applicable (virtual) subpopulations,
+                    such as subPop=[sp1, sp2, (sp2, vsp1)]. An empty
+                    list (default) is interpreted as all
+                    subpopulations. subPop=[sp1] can be simplied as
+                    subPop=sp1. Negative indexes are not supported.
+                    Suport for this parameter vary from operator to
+                    operator. Some operators do not support virtual
+                    subpopulations and some operators do not support
+                    this parameter at all. Please refer to the
+                    reference manual of individual operators for their
+                    support for this parameter.
+    infoFields:     A list of information fields that will be used by
+                    an operator. You usually do not need to specify
+                    this parameter because operators that use
+                    information fields usually have default values for
+                    this parameter.
 
 "; 
 
@@ -293,59 +322,17 @@ Details:
 
 %ignore simuPOP::baseOperator::isCompatible(const population &pop);
 
-%feature("docstring") simuPOP::baseOperator::haploidOnly "
+%ignore simuPOP::baseOperator::haploidOnly();
 
-Description:
-
-    determine if the operator can be applied only for haploid
-    population
-
-Usage:
-
-    x.haploidOnly()
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::diploidOnly "
-
-Description:
-
-    determine if the operator can be applied only for diploid
-    population
-
-Usage:
-
-    x.diploidOnly()
-
-"; 
+%ignore simuPOP::baseOperator::diploidOnly();
 
 %ignore simuPOP::baseOperator::setHaploidOnly();
 
 %ignore simuPOP::baseOperator::setDiploidOnly();
 
-%feature("docstring") simuPOP::baseOperator::infoSize "
+%ignore simuPOP::baseOperator::infoSize();
 
-Description:
-
-    get the length of information fields for this operator
-
-Usage:
-
-    x.infoSize()
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::infoField "
-
-Description:
-
-    get the information field specified by user (or by default)
-
-Usage:
-
-    x.infoField(idx)
-
-"; 
+%ignore simuPOP::baseOperator::infoField(UINT idx);
 
 %ignore simuPOP::baseOperator::formOffGenotype();
 
@@ -355,14 +342,14 @@ Usage:
 
 %feature("docstring") simuPOP::baseOperator::apply "
 
-Description:
-
-    apply to one population. It does not check if the operator is
-    activated.
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
 
 "; 
 
@@ -389,13 +376,7 @@ Usage:
 
 %ignore simuPOP::baseOperator::noOutput();
 
-%feature("docstring") simuPOP::baseOperator::initialize "
-
-Usage:
-
-    x.initialize(pop)
-
-"; 
+%ignore simuPOP::baseOperator::initialize(const population &pop);
 
 %feature("docstring") simuPOP::baseRandomMating "
 
@@ -1323,14 +1304,14 @@ Usage:
 
 %feature("docstring") simuPOP::dumper::apply "
 
-Description:
-
-    apply to one population. It does not check if the operator is
-    activated.
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
 
 "; 
 
@@ -9725,13 +9706,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::initialize "
-
-Usage:
-
-    x.initialize(pop)
-
-"; 
+%ignore simuPOP::recombinator::initialize(const population &pop);
 
 %feature("docstring") simuPOP::recombinator::produceOffspring "
 
@@ -10199,14 +10174,14 @@ Details:
 
 %feature("docstring") simuPOP::savePopulation::apply "
 
-Description:
-
-    apply to one population. It does not check if the operator is
-    activated.
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
 
 "; 
 
@@ -12586,14 +12561,14 @@ Usage:
 
 %feature("docstring") simuPOP::terminateIf::apply "
 
-Description:
-
-    apply to one population. It does not check if the operator is
-    activated.
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    Apply an operator to population pop directly, without checking its
+    applicability.
 
 "; 
 
