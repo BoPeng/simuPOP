@@ -244,8 +244,11 @@ class Doxy2SWIG:
 
 
     def do_emphasis(self, node):
-        if node.firstChild is not None:
-            self.add_text(r'<em>%s</em>' % node.firstChild.data)
+        #if node.firstChild is not None:
+        #    self.add_text(r'<em>%s</em>' % node.firstChild.data)
+        self.add_text('<em>')
+        self.parse_childnodes(node)
+        self.add_text('</em>')
 
 
     def do_computeroutput(self, node):
@@ -512,14 +515,14 @@ class Doxy2SWIG:
             if not os.path.exists(fname):
                 fname = os.path.join(self.my_dir, fname)
             print "parsing file: %s" % fname
-            try:
-                p = Doxy2SWIG(fname)
-                p.generate()
-                self.content.extend(p.content)
-            except Exception, e:
-                print "This file can not be parsed, something wrong with file format"
-                print e
-                pass
+            #try:
+            p = Doxy2SWIG(fname)
+            p.generate()
+            self.content.extend(p.content)
+            #except Exception, e:
+            #    print "This file can not be parsed, something wrong with file format"
+            #    print e
+            #    pass
 
 
     def post_process(self):

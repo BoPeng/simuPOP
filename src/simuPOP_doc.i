@@ -70,7 +70,8 @@ Details:
 Usage:
 
     affectionTagger(code=[], begin=0, end=-1, step=1, at=[], rep=[],
-      stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
+      subPop=subPopList, stage=PostMating, output=\">\", outputExpr=\"\",
+      infoFields=[])
 
 Arguments:
 
@@ -174,56 +175,35 @@ Usage:
 
 %feature("docstring") simuPOP::baseOperator "
 
-Description:
-
-    base class of all classes that manipulate populations
-
 Details:
 
     Operators are objects that act on populations. They can be applied
     to populations directly using their function forms, but they are
-    usually managed and applied by a simulator.
-    There are three kinds of operators:
-    *  built-in: written in C++, the fastest. They do not interact
-    with Python shell except that some of them set variables that are
-    accessible from Python.
-    *  hybrid: written in C++ but calls a Python function during
-    execution. Less efficient. For example, a hybrid mutator
-    pyMutator will go through a population and mutate alleles with
-    given mutation rate. How exactly the allele will be mutated is
-    determined by a user-provided Python function. More specifically,
-    this operator will pass the current allele to a user-provided
-    Python function and take its return value as the mutant allele.
-    *  pure Python: written in Python. The same speed as Python. For
-    example, a varPlotter can plot Python variables that are set by
-    other operators. Usually, an individual or a population object is
-    passed to a user-provided Python function. Because arbitrary
-    operations can be performed on the passed object, this operator is
-    very flexible. Operators can be applied at different stages of the
-    life cycle of a generation. It is possible for an operator to
-    apply multiple times in a life cycle. For example, a
-    savePopulation operator might be applied before and after mating
-    to trace parental information. More specifically, operators can be
-    applied at pre-, during-, post-mating, or a combination of these
-    stages. Applicable stages are usually set by default but you can
-    change it by setting stage=(PreMating|PostMating|DuringMating|PreP
-    ostMating|PreDuringMating|DuringPostMating) parameter. Some
-    operators ignore stage parameter because they only work at one
-    stage.
-    Operators do not have to be applied at all generations. You can
-    specify starting and/or ending generations (parameters start,
-    end), gaps between applicable generations (parameter step), or
-    specific generations (parameter at). For example, you might want
-    to start applying migrations after certain burn-in generations, or
-    calculate certain statistics only sparsely. Generation numbers can
-    be counted from the last generation, using negative generation
-    numbers.
-    Most operators are applied to every replicate of a simulator
-    during evolution. Operators can have outputs, which can be
-    standard (terminal) or a file. Output can vary with replicates
-    and/or generations, and outputs from different operators can be
-    accumulated to the same file to form table-like outputs.
-    Filenames can have the following format:
+    usually managed and applied by a simulator. In the latter case,
+    operators are passed to the evolve function of a simulator, and
+    are applied repeatedly during the evolution of the simulator.
+    The  baseOperator class is the base class for all operators. It
+    defines a common user interface that specifies at which
+    generations, at which stage of a life cycle, to which populations
+    and subpopulation an operator will be applied. These are achieved
+    by a common set of parameters such as begin, end, step, at, stage
+    for all operators. Note that a specific operator does not have to
+    honor all these parameters. For example, a recombinator can only
+    be applied during mating so it ignores the stage parameter.
+
+"; 
+
+%feature("docstring") simuPOP::baseOperator::baseOperator "
+
+Usage:
+
+    baseOperator(output, outputExpr, stage, begin, end, step, at,
+      rep, subPop, infoFields)
+
+Details:
+
+    All  simuPOP operators accept the following parameters which
+    defines how they interact with a simulator.
     *  'filename' this file will be overwritten each time. If two
     operators output to the same file, only the last one will succeed;
     *  '>filename' the same as 'filename';
@@ -234,36 +214,28 @@ Details:
     will not be cleared at the beginning of evolution if it is not
     empty;
     *  '>' standard output (terminal);
-    *  '' suppress output. The output filename does not have to be
-    fixed. If parameter outputExpr is used (parameter output will be
-    ignored), it will be evaluated when a filename is needed. This is
-    useful when you need to write different files for different
-    replicates/generations.
-
-"; 
-
-%feature("docstring") simuPOP::baseOperator::baseOperator "
-
-Description:
-
-    common interface for all operators (this base operator does
-    nothing by itself.)
-
-Usage:
-
-    baseOperator(output, outputExpr, stage, begin, end, step, at,
-      rep, infoFields)
+    *  '' suppress output.
+    *  Negative generation numbers are allowed for parameters begin,
+    end and at. They are interpreted as endGen + gen + 1. For example,
+    begin = -2 in simu.evolve(..., end=20) starts at generation 19.
+    *   vectori(), -1 are special constant that can only be used in
+    the constructor of an operator. That is to say, explicit test of
+    rep() == -1 will not work.
 
 Arguments:
 
-    begin:          the starting generation. Default to 0. A negative
-                    number is allowed.
-    end:            stop applying after this generation. A negative
-                    numbers is allowed.
-    step:           the number of generations between active
+    begin:          The starting generation at which an operator will
+                    be applied. Default to 0. A negative number is
+                    interpreted as a generation counted from the end
+                    of an evolution.
+    end:            The last generation at which an operator will be
+                    applied. Default to -1, namely the last
+                    generation.
+    step:           The number of generations between applicable
                     generations. Default to 1.
-    at:             an array of active generations. If given, stage,
-                    begin, end, and step will be ignored.
+    at:             A list of applicable generations. Parameters
+                    begin, end, and step will be ignored if this
+                    parameter is specified.
     rep:            applicable replicates. It can be a valid replicate
                     number,  vectori() (all replicates, default), or
                     -1 (only the last replicate). -1 is useful in
@@ -277,15 +249,6 @@ Arguments:
                     when an output filename is required. For example,
                     \"'>>out%s_%s.xml' % (gen, rep)\"  will output to
                     >>>out1_1.xml for replicate 1 at generation 1.
-
-Note:
-
-    * Negative generation numbers are allowed for parameters begin,
-    end and at. They are interpreted as endGen + gen + 1. For example,
-    begin = -2 in simu.evolve(..., end=20) starts at generation 19.
-    *  vectori(), -1 are special constant that can only be used in the
-    constructor of an operator. That is to say, explicit test of rep()
-    == -1 will not work.
 
 Example:
 
@@ -307,23 +270,18 @@ Usage:
 
 %feature("docstring") simuPOP::baseOperator::clone "
 
-Description:
-
-    deep copy of an operator
-
 Usage:
 
     x.clone()
 
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
 "; 
 
 %ignore simuPOP::baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly=false);
-
-%ignore simuPOP::baseOperator::applicableReplicate();
-
-%ignore simuPOP::baseOperator::setApplicableReplicate(repList rep);
-
-%ignore simuPOP::baseOperator::setActiveGenerations(int begin=0, int end=-1, int step=1, vectorl at=vectorl());
 
 %ignore simuPOP::baseOperator::setApplicableStage(int stage);
 
@@ -332,8 +290,6 @@ Usage:
 %ignore simuPOP::baseOperator::canApplyDuringMating();
 
 %ignore simuPOP::baseOperator::canApplyPostMating();
-
-%ignore simuPOP::baseOperator::canApplyPreOrPostMating();
 
 %ignore simuPOP::baseOperator::isCompatible(const population &pop);
 
@@ -411,8 +367,6 @@ Usage:
 "; 
 
 %ignore simuPOP::baseOperator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%ignore simuPOP::baseOperator::setOutput(string output="", string outputExpr="");
 
 %ignore simuPOP::baseOperator::getOstream(PyObject *dict=NULL, bool readable=false);
 
@@ -1316,13 +1270,14 @@ Arguments:
 
 %feature("docstring") simuPOP::dumper::clone "
 
-Description:
-
-    deep copy of an operator
-
 Usage:
 
     x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
 
 "; 
 
@@ -2082,7 +2037,7 @@ Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
       func=None, output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -2394,7 +2349,7 @@ Usage:
 
     ifElse(cond, ifOp=None, elseOp=None, output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -2424,17 +2379,7 @@ Usage:
 
 %ignore simuPOP::ifElse::ifElse(const ifElse &rhs);
 
-%feature("docstring") simuPOP::ifElse::clone "
-
-Description:
-
-    deep copy of an  ifElse operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::ifElse::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::ifElse::applyWithScratch(population &pop, population &scratch, int stage);
 
@@ -2985,7 +2930,7 @@ Usage:
     infoEval(expr=\"\", stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -3118,7 +3063,7 @@ Usage:
     infoExec(stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -3320,7 +3265,8 @@ Details:
 Usage:
 
     infoTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
+      subPop=subPopList, stage=PostMating, output=\">\", outputExpr=\"\",
+      infoFields=[])
 
 "; 
 
@@ -3364,8 +3310,8 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], output=\"\", outputExpr=\"\", infoFields=[\"paternal_tag\",
-      \"maternal_tag\"])
+      rep=[], subPop=subPopList, output=\"\", outputExpr=\"\",
+      infoFields=[\"paternal_tag\", \"maternal_tag\"])
 
 Arguments:
 
@@ -3862,7 +3808,7 @@ Usage:
 
     kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -3961,7 +3907,7 @@ Usage:
 
     maPenetrance(loci, penet, wildtype, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -4057,7 +4003,7 @@ Usage:
 
     mapPenetrance(loci, penet, phase=False, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -4142,7 +4088,7 @@ Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], infoFields=[\"qtrait\"])
+      at=[], rep=[], subPop=subPopList, infoFields=[\"qtrait\"])
 
 Arguments:
 
@@ -4240,7 +4186,7 @@ Usage:
 
     mapSelector(loci, fitness, phase=False, subPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[\"fitness\"])
+      subPop=subPopList, infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -4342,7 +4288,7 @@ Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancestralGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[\"qtrait\"])
+      subPop=subPopList, infoFields=[\"qtrait\"])
 
 Details:
 
@@ -4447,7 +4393,8 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype, subPops=[], stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[\"fitness\"])
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      infoFields=[\"fitness\"])
 
 Details:
 
@@ -4751,7 +4698,7 @@ Usage:
 
     mergeSubPops(subPops=[], removeEmptySubPops=False,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -4843,9 +4790,9 @@ Description:
 
 Usage:
 
-    migrator(rate, mode=MigrByProbability, fromSubPop=[],
+    migrator(rate, mode=MigrByProbability, fromSubPop=subPopList,
       toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[\"migrate_to\"])
+      rep=[], subPop=subPopList, infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -5004,7 +4951,7 @@ Usage:
 
     mlPenetrance(peneOps, mode=PEN_Multiplicative, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -5102,7 +5049,7 @@ Usage:
 
     mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], infoFields=[\"qtrait\"])
+      at=[], rep=[], subPop=subPopList, infoFields=[\"qtrait\"])
 
 Details:
 
@@ -5197,7 +5144,7 @@ Usage:
 
     mlSelector(selectors, mode=SEL_Multiplicative, subPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[\"fitness\"])
+      subPop=subPopList, infoFields=[\"fitness\"])
 
 Details:
 
@@ -5354,7 +5301,7 @@ Usage:
 
     mutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -5603,7 +5550,7 @@ Description:
 Usage:
 
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=0, step=1, at=[], rep=[], infoFields=[])
+      end=0, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Example:
 
@@ -5623,17 +5570,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::noneOp::clone "
-
-Description:
-
-    deep copy of a  noneOp operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::noneOp::clone "Obsolete or undocumented function."
 
 %ignore simuPOP::noneOp::applyWithScratch(population &pop, population &scratch, int stage);
 
@@ -5881,7 +5818,7 @@ Description:
 Usage:
 
     outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -5899,13 +5836,14 @@ Usage:
 
 %feature("docstring") simuPOP::outputer::clone "
 
-Description:
-
-    deep copy of an operator
-
 Usage:
 
     x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
 
 "; 
 
@@ -5996,8 +5934,9 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[], output=\"\",
-      outputExpr=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
+    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=subPopList, output=\"\", outputExpr=\"\",
+      infoFields=[\"father_idx\", \"mother_idx\"])
 
 "; 
 
@@ -6083,8 +6022,9 @@ Description:
 
 Usage:
 
-    parentTagger(begin=0, end=-1, step=1, at=[], rep=[], output=\"\",
-      outputExpr=\"\", infoFields=[\"parent_idx\"])
+    parentTagger(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=subPopList, output=\"\", outputExpr=\"\",
+      infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -6183,7 +6123,8 @@ Usage:
 
     pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
       popName=\"pop\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=-1, infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=-1, subPop=subPopList,
+      infoFields=[])
 
 Arguments:
 
@@ -6209,17 +6150,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pause::clone "
-
-Description:
-
-    deep copy of a pause operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::pause::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pause::apply "
 
@@ -6395,7 +6326,7 @@ Description:
 Usage:
 
     penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[])
+      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -6505,7 +6436,7 @@ Usage:
 
     pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -7863,7 +7794,7 @@ Usage:
     pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -7974,7 +7905,7 @@ Usage:
 
     pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
       name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -8095,7 +8026,7 @@ Usage:
 
     pyIndOperator(func, loci=[], param=None, stage=PostMating,
       formOffGenotype=False, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -8128,17 +8059,7 @@ Usage:
 
 %ignore simuPOP::pyIndOperator::pyIndOperator(const pyIndOperator &rhs);
 
-%feature("docstring") simuPOP::pyIndOperator::clone "
-
-Description:
-
-    deep copy of a  pyIndOperator operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::pyIndOperator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyIndOperator::apply "
 
@@ -8378,9 +8299,9 @@ Description:
 Usage:
 
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
-      fromSubPop=[], toSubPop=[], loci=[], param=None,
+      fromSubPop=subPopList, toSubPop=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -8478,7 +8399,7 @@ Usage:
 
     pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], subPop=subPopList, infoFields=[])
 
 Example:
 
@@ -8581,7 +8502,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[])
+      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -8632,17 +8553,7 @@ Usage:
 
 %ignore simuPOP::pyOperator::pyOperator(const pyOperator &rhs);
 
-%feature("docstring") simuPOP::pyOperator::clone "
-
-Description:
-
-    deep copy of a  pyOperator operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::pyOperator::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::pyOperator::apply "
 
@@ -8692,7 +8603,8 @@ Description:
 Usage:
 
     pyOutput(str=\"\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      infoFields=[])
 
 Arguments:
 
@@ -8722,13 +8634,14 @@ Usage:
 
 %feature("docstring") simuPOP::pyOutput::clone "
 
-Description:
-
-    deep copy of an operator
-
 Usage:
 
     x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
 
 "; 
 
@@ -8850,7 +8763,8 @@ Description:
 Usage:
 
     pyPenetrance(loci, func, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[])
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      infoFields=[])
 
 Arguments:
 
@@ -8987,7 +8901,8 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancestralGen=-1, stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], infoFields=[\"qtrait\"])
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      infoFields=[\"qtrait\"])
 
 Details:
 
@@ -9088,7 +9003,8 @@ Description:
 Usage:
 
     pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[\"fitness\"])
+      end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -9187,7 +9103,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      output=\"\", outputExpr=\"\", infoFields=[])
+      subPop=subPopList, output=\"\", outputExpr=\"\", infoFields=[])
 
 Arguments:
 
@@ -9281,7 +9197,7 @@ Description:
 Usage:
 
     quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[\"qtrait\"])
+      step=1, at=[], rep=[], subPop=subPopList, infoFields=[\"qtrait\"])
 
 "; 
 
@@ -9634,7 +9550,7 @@ Usage:
     recombinator(intensity=-1, rate=[], afterLoci=[],
       maleIntensity=-1, maleRate=[], maleAfterLoci=[], convProb=0,
       convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[])
+      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -9911,7 +9827,7 @@ Usage:
 
     resizeSubPops(newSizes=[], subPops=[], propagate=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -10247,7 +10163,7 @@ Usage:
 
     savePopulation(output=\"\", outputExpr=\"\", format=\"\",
       compress=True, stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -10270,13 +10186,14 @@ Usage:
 
 %feature("docstring") simuPOP::savePopulation::clone "
 
-Description:
-
-    deep copy of an operator
-
 Usage:
 
     x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
 
 "; 
 
@@ -10360,7 +10277,7 @@ Description:
 Usage:
 
     selector(subPops=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], infoFields=[\"fitness\"])
+      at=[], rep=[], subPop=subPopList, infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -10634,7 +10551,7 @@ Usage:
 
     setAncestralDepth(depth, output=\">\", outputExpr=\"\",
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -10650,17 +10567,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::setAncestralDepth::clone "
-
-Description:
-
-    deep copy of a  setAncestralDepth operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::setAncestralDepth::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::setAncestralDepth::apply "
 
@@ -10758,8 +10665,9 @@ Details:
 
 Usage:
 
-    sexTagger(code=[], begin=0, end=-1, step=1, at=[], rep=[],
-      stage=PostMating, output=\">\", outputExpr=\"\", infoFields=[])
+    sexTagger(code=[], begin=0, end=-1, step=1, at=[], output=\">\",
+      outputExpr=\"\", stage=PostMating, rep=[], subPop=subPopList,
+      infoFields=[])
 
 Arguments:
 
@@ -11200,7 +11108,7 @@ Usage:
 
     smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[])
+      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -11280,7 +11188,7 @@ Usage:
 
     splitSubPop(which=0, sizes=[], proportions=[], randomize=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -11478,7 +11386,7 @@ Usage:
       relBySubPop=False, relMethod=[], relMinScored=10,
       hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -12246,7 +12154,7 @@ Description:
 Usage:
 
     stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -12492,6 +12400,48 @@ Usage:
 
 %ignore simuPOP::StreamProvider::closeOstream();
 
+%feature("docstring") simuPOP::subPopList "
+
+Details:
+
+    A class to specify (virtual) subpopulation list. Using a dedicated
+    class allows users to specify a single subpopulation, or a list of
+    (virutal) subpoulations easily.
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::subPopList "
+
+Usage:
+
+    subPopList(subPops=[])
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::push_back "
+
+Usage:
+
+    x.push_back(subPop)
+
+"; 
+
 %feature("docstring") simuPOP::SystemError "
 
 Description:
@@ -12532,8 +12482,8 @@ Description:
 
 Usage:
 
-    tagger(output=\"\", outputExpr=\"\", begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+    tagger(output=\"\", outputExpr=\"\", stage=DuringMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -12594,7 +12544,7 @@ Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      rep=[], subPop=subPopList, infoFields=[])
 
 Details:
 
@@ -12685,7 +12635,7 @@ Description:
 Usage:
 
     ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -12701,29 +12651,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ticToc::clone "
+%feature("docstring") simuPOP::ticToc::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a  ticToc operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::ticToc::apply "
-
-Description:
-
-    apply the  ticToc operator to one population
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::ticToc::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::ticToc::__repr__ "
 
@@ -12763,7 +12693,7 @@ Description:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], infoFields=[])
+      at=[], rep=[], subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -12779,17 +12709,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOffDebug::clone "
-
-Description:
-
-    deep copy of a  turnOffDebug operator
-
-Usage:
-
-    x.clone()
-
-"; 
+%feature("docstring") simuPOP::turnOffDebug::clone "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOffDebug::apply "
 
@@ -12847,7 +12767,7 @@ Description:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], infoFields=[])
+      at=[], rep=[], subPop=subPopList, infoFields=[])
 
 "; 
 
@@ -12863,29 +12783,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::turnOnDebug::clone "
+%feature("docstring") simuPOP::turnOnDebug::clone "Obsolete or undocumented function."
 
-Description:
-
-    deep copy of a  turnOnDebug operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::turnOnDebug::apply "
-
-Description:
-
-    apply the  turnOnDebug operator to one population
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::turnOnDebug::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOnDebug::__repr__ "
 
