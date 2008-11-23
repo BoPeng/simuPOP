@@ -142,7 +142,7 @@ bool baseOperator::apply(population & pop)
 
 
 bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
-	                               individual * dad, individual * mom)
+                                     individual * dad, individual * mom)
 {
 	if (m_lastPop != pop.genoStruIdx()) {
 		initialize(pop);
@@ -259,12 +259,12 @@ bool ticToc::apply(population & pop)
 		ostream & out = this->getOstream(pop.dict());
 		// since last time
 		double timeDiff = difftime(time(&tmpTime), m_lastTime);
-		out << "Elapsed Time: " << int (timeDiff * 100) / 100. ;
+		out << "Elapsed Time: " << int(timeDiff * 100) / 100. ;
 		// since beginning
 		timeDiff = difftime(time(&tmpTime), m_startTime);
-		int h = int (timeDiff / 3600);
-		int m = int ((timeDiff - h * 3600) / 60);
-		int s = int (timeDiff - h * 3600 - m * 60);
+		int h = int(timeDiff / 3600);
+		int m = int((timeDiff - h * 3600) / 60);
+		int s = int(timeDiff - h * 3600 - m * 60);
 		out << "s  Overall Time: " << std::setw(2) << std::setfill('0') << h
 		    << ":" << std::setw(2) << std::setfill('0') << m << ":" << std::setw(2)
 		    << std::setfill('0') << s << endl;
