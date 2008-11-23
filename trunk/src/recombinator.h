@@ -130,9 +130,9 @@ public:
 		UINT convMode = CONVERT_NumMarkers,
 		double convParam = 1.,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), const vectorstr & infoFields = vectorstr())
+		repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		:
-		baseOperator("", "", DuringMating, begin, end, step, at, rep, infoFields)
+		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
 		, m_intensity(intensity), m_maleIntensity(maleIntensity),
 		m_rate(rate), m_maleRate(maleRate),
 		m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),

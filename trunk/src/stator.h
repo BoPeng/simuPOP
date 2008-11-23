@@ -59,8 +59,8 @@ public:
 	/// create a stator
 	stator(string output = "", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields)
+	       repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	};
 
@@ -106,8 +106,8 @@ public:
 	       const string & postStmts = "", bool exposePop = false, const string & name = "",
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       repList rep = repList(), const vectorstr & infoFields = vectorstr())
-		: stator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+	       repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		: stator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
 	{
 		if (preStmts != "")
@@ -176,9 +176,9 @@ public:
 	       bool exposePop = false, const string & name = "",
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	       repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", "",
-		         stage, begin, end, step, at, rep, infoFields)
+		         stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
 
@@ -249,8 +249,8 @@ public:
 	         bool usePopVars = false,  bool exposePop = false, const string & name = "",
 	         string output = ">", string outputExpr = "",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         repList rep = repList(), const vectorstr & infoFields = vectorstr())
-		: stator(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		: stator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
 		m_name(name), m_dict(NULL)
 	{
@@ -334,9 +334,9 @@ public:
 	         bool exposePop = false, const string & name = "",
 	         string output = ">", string outputExpr = "",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         repList rep = repList(), const vectorstr & infoFields = vectorstr())
+	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output, outputExpr,
-		           stage, begin, end, step, at, rep, infoFields)
+		           stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
 
@@ -1732,7 +1732,7 @@ public:
 	     // regular parameters
 	     string output = "", string outputExpr = "",
 	     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	     repList rep = repList(),
+	     repList rep = repList(), subPopList subPop = subPopList(),
 	     const vectorstr & infoFields = vectorstr());
 
 	~stat()

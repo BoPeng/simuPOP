@@ -51,8 +51,8 @@ public:
 	/// constructor.
 	outputer(string output = ">", string outputExpr = "",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, infoFields)
+	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	};
 
@@ -83,9 +83,9 @@ public:
 	 */
 	pyOutput(string str = "", string output = ">", string outputExpr = "",
 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
+	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer(output, outputExpr, stage, begin, end,
-		         step, at, rep, infoFields), m_string(str)
+		         step, at, rep, subPop, infoFields), m_string(str)
 	{
 	}
 
@@ -163,8 +163,9 @@ public:
 	       const vectorlu & indRange = vectorlu(),
 	       string output = ">", string outputExpr = "",
 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		outputer(output, outputExpr, stage, begin, end, step, at, rep, infoFields),
+	       repList rep = repList(), // subPopList subPop = subPopList(),
+		   const vectorstr & infoFields = vectorstr()) :
+		outputer(output, outputExpr, stage, begin, end, step, at, rep, subPopList(), infoFields),
 		m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
 		m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
 	{
@@ -261,8 +262,8 @@ public:
 	*/
 	savePopulation(string output = "", string outputExpr = "",
 	               string format = "", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
-	               int step = 1, vectorl at = vectorl(), repList rep = repList(), const vectorstr & infoFields = vectorstr()) :
-		outputer("", "", stage, begin, end, step, at, rep, infoFields),
+	               int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		outputer("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_filename(output), m_filenameParser(outputExpr)
 	{
 		DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");

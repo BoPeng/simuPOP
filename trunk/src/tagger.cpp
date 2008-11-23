@@ -26,10 +26,10 @@
 namespace simuPOP {
 // create a \c tagger, default to be always active but no output
 tagger::tagger(string output, string outputExpr, int stage,
-               int begin, int end, int step, vectorl at, repList rep,
-               const vectorstr & infoFields) :
+	int begin, int end, int step, vectorl at, repList rep, subPopList subPop,
+	const vectorstr & infoFields) :
 	// stage is automatically determined.
-	baseOperator(output, outputExpr, stage, begin, end, step, at, rep,infoFields)
+	baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 {
 	if (!noOutput())
 		setApplicableStage(DuringPostMating);
@@ -206,10 +206,11 @@ bool infoTagger::apply(population & pop)
 
 
 sexTagger::sexTagger(const vectori & code,
-                     int begin, int end, int step, vectorl at, repList rep,
-                     int stage, string output, string outputExpr,
-                     const vectorstr & infoFields) :
-	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields),
+	int begin, int end, int step, vectorl at,
+	string output, string outputExpr, int stage,
+	repList rep, subPopList subPop,
+	const vectorstr & infoFields) :
+	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 	m_code(code)
 {
 	setApplicableStage(stage);
@@ -238,10 +239,11 @@ bool sexTagger::apply(population & pop)
 
 
 affectionTagger::affectionTagger(const vectori & code,
-                                 int begin, int end, int step, vectorl at, repList rep,
-                                 int stage, string output, string outputExpr,
-                                 const vectorstr & infoFields) :
-	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, infoFields),
+	int begin, int end, int step, vectorl at,
+	repList rep, subPopList subPop,
+	int stage, string output, string outputExpr,
+	const vectorstr & infoFields) :
+	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 	m_code(code)
 {
 	setApplicableStage(stage);
