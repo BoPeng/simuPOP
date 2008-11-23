@@ -114,7 +114,7 @@ public:
 	}
 
 
-	bool size()
+	size_t size()
 	{
 		return m_subPops.size();
 	}

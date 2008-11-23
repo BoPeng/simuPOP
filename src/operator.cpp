@@ -408,7 +408,7 @@ bool pyIndOperator::apply(population & pop)
 		if (!m_loci.empty()) {
 			for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)
 				for (UINT p = 0; p < pld; ++p)
-					alleles[j++] = it->allele(m_loci[i], p);
+					alleles[j++] = static_cast<Allele>(it->allele(m_loci[i], p));
 		}
 		// parammeter list, ref count increased
 		bool resBool;

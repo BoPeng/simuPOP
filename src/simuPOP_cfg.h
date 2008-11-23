@@ -143,7 +143,7 @@ enum ChromType {
 };
 
 typedef unsigned char TraitIndexType;
-const unsigned long MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 
 
 // iteratable and visible are two different concepts.
