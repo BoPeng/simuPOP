@@ -626,24 +626,8 @@ mendelianOffspringGeneratorRef
 Operator References
 \end_layout
 
-\begin_layout Standard
-This chapter will list all functions, types and operators by category.
- The reference for 
-\family typewriter
-class baseOperator 
-\family default
-is in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Operators"
-
-\end_inset
-
-.
-\end_layout
-
 \begin_layout Section
-The common interface of operators
+Common interface of all operators
 \end_layout
 
 \begin_layout Standard
