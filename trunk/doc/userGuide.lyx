@@ -1621,7 +1621,7 @@ member function
 \end_layout
 
 \begin_layout Standard
-Assignment in Python only creates a new refernce to the exsting object.
+Assignment in Python only creates a new refernce to an exsting object.
  For example,
 \end_layout
 
@@ -1660,79 +1660,43 @@ pop1
 pop
 \family default
  as well.
- If you would like to have an independent copy, use
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pop1 = pop.clone()
-\end_layout
+ For example, a reference to the first population in a simulator is returned
+ from function 
+\family typewriter
+func()
+\family default
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Reference-to-population"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-All simuPOP classes (objects) have a clone function that can be used to
- create an independent copy of the object.
- Because cloning a large population can be costly, a few methods are provided
- to access populations inside a simulator.
- Assuming that 
+.
+ The subsequent use of this 
+\family typewriter
+pop
+\family default
+ object may crash simuPOP because the simulator 
 \family typewriter
 simu
 \family default
- is a simulator with several populations,
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
-simu.population(rep)
-\end_layout
-
-\end_inset
-
- returns a reference to the 
+ is destroyed after 
 \family typewriter
-rep'
+func()
 \family default
-th population.
- You can, although not recommended, modify simulator through this 
+ is finished, along with all its internal populations, leaving 
 \family typewriter
 pop
 \family default
- reference.
- Be cautious though, that the following seemingly innocent usage of this
- function will crash simuPOP, because the simulator 
-\family typewriter
-simu 
-\family default
-will be destroyed after the call to 
-\family typewriter
-func() 
-\family default
-is ended, leaving 
-\family typewriter
-pop
-\family default
- as a referece to an invalid population object.
+ referring to an invalid object.
+ 
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset listings
 inline false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
@@ -1745,7 +1709,7 @@ name "lst:Reference-to-population"
 
 \end_inset
 
-Reference to a population of a simulator
+Reference to a population in a simulator
 \end_layout
 
 \end_inset
@@ -1797,67 +1761,77 @@ pop.popSize()
 
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
-To get an independent copy of a population, you can use 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
-pop = simu.getPopulation(rep)
-\end_layout
-
-\end_inset
-
-, which returns an independent copy of population 
+\begin_layout Standard
+If you would like to have an independent copy of a population, you can use
+ the 
 \family typewriter
-rep
+clone()
 \family default
- of 
+ member function.
+ For example, simuPOP would behave properly is the 
 \family typewriter
-simu
+return
 \family default
-.
- 
-\family typewriter
-simu
-\family default
- is untouched.
-\end_layout
-
-\begin_layout Enumerate
-If the simulator will be destroyed as in Example 
+ statement in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "lst:Reference-to-population"
 
 \end_inset
 
-, 
+ is replaced by
+\end_layout
+
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
 
 \begin_layout Plain Layout
 
-pop = simu.getPopulation(rep, destructive=True)
+return simu.population(0).clone()
 \end_layout
 
 \end_inset
 
- can be used.
- This function will 
-\emph on
-extract
-\emph default
- the 
+although in this specific case, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+return simu.extract(0)
+\end_layout
+
+\end_inset
+
+would be more efficient because we do not need to copy the first population
+ from 
 \family typewriter
-rep
+simu
 \family default
-th population from the simulator instead of copying it, and bypassing a
- potentially very costly process.
+ if it will be destroyed soon.
+ Note that the 
+\family typewriter
+clone()
+\family default
+ function exists for all simuPOP classes (objects) such as 
+\emph on
+simulator
+\emph default
+, 
+\emph on
+mating schemes
+\emph default
+ and 
+\emph on
+operators
+\emph default
+.
 \end_layout
 
 \begin_layout Subsection
