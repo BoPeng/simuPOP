@@ -788,6 +788,349 @@ ListVars()
 \end_layout
 
 \begin_layout Section
+Getting help
+\end_layout
+
+\begin_layout Subsection
+Online help system
+\end_layout
+
+\begin_layout Standard
+Most of the help information contained in this document and 
+\emph on
+the simuPOP reference manual
+\emph default
+ is available from command line.
+ For example, after you install and import the simuPOP module, you can use
+ 
+\family typewriter
+help(population.addInfoField) 
+\family default
+to view the help information of member function 
+\family typewriter
+addInfoField
+\family default
+ of class 
+\family typewriter
+population
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/help.log"
+lstparams "caption={Getting help using the \\texttt{help()} function}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is important that you understand that
+\end_layout
+
+\begin_layout Itemize
+The constructor of a class is named 
+\family typewriter
+__init__
+\family default
+ in Python.
+ That is to say, you should use the following command to display the help
+ information of the constructor of class 
+\family typewriter
+population
+\family default
+: 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> help(population.__init__)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Some classes are derived from other classes and have access to member functions
+ of their base classes.
+ For example, class 
+\family typewriter
+population
+\family default
+, 
+\family typewriter
+individual
+\family default
+ and 
+\family typewriter
+simulator
+\family default
+ are all derived from class 
+\family typewriter
+GenoStruTrait
+\family default
+.
+ Therefore, you can use all 
+\family typewriter
+GenoStruTrait
+\family default
+ member functions from these classes.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+In addition, the constructor of a derived class also calls the constructor
+ of its base class so you may have to refer to the base class for some parameter
+ definitions.
+ For example, parameters 
+\family typewriter
+begin, end, step, at 
+\family default
+etc are shared by all operators, and are explained in details only in class
+ 
+\family typewriter
+baseOperator.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Debug-related operators/functions
+\end_layout
+
+\begin_layout Standard
+If your simuPOP session or script does not behave as expected, it might
+ be helpful to let simuPOP print out some debug information.
+ For example, the following code will crash simuPOP:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> population(1, loci=[100]).individual(0).genotype()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is unclear why this simple command causes us trouble, instead of outputting
+ the genotype of the only individual of this population.
+ However, the reason is clear if you turn on debug information:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Turn on/off debug information
+\end_layout
+
+\end_inset
+
+>>> TurnOnDebug(DBG_POPULATION)
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> population(1, loci=[100]).individual(0).genotype()
+\end_layout
+
+\begin_layout Plain Layout
+
+Constructor of population is called
+\end_layout
+
+\begin_layout Plain Layout
+
+Destructor of population is called 
+\end_layout
+
+\begin_layout Plain Layout
+
+Segmentation fault (core dumped)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+population(1, loci=[100])
+\family default
+ creates a temporary object that is destroyed right after the execution
+ of the command.
+ When Python tries to display the genotype, it will refer to an invalid
+ location.
+ The right way to do this is to create a persistent population object: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+>>> pop = population(1, loci=[100])
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> pop.individual(0).genotype()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can use 
+\family typewriter
+TurnOnDebug(code) 
+\family default
+and 
+\family typewriter
+TurnOffDebug(code) 
+\family default
+to turn on and off debug information where 
+\family typewriter
+code 
+\family default
+can be any debug code listed in 
+\family typewriter
+ListDebugCode
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+listDebugCode
+\end_layout
+
+\end_inset
+
+()
+\family default
+.
+ If you would like to turn on debugging during an evolutionary process,
+ you can use operators 
+\family typewriter
+turnOnDebug 
+\family default
+and 
+\family typewriter
+turnOffDebug
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Other help sources
+\end_layout
+
+\begin_layout Standard
+If you are new to Python, it is recommended that you borrow a Python book,
+ or at least go through the following online Python tutorials:
+\end_layout
+
+\begin_layout Enumerate
+The Python tutorial (
+\family typewriter
+http://docs.python.org/tut/tut.html
+\family default
+)
+\end_layout
+
+\begin_layout Enumerate
+Other online tutorials listed at 
+\family typewriter
+http://www.python.org/doc/
+\end_layout
+
+\begin_layout Standard
+If you are new to simuPOP, please read this guide before you dive into 
+\emph on
+the simuPOP reference manual
+\emph default
+, which describes all the details of simuPOP but does not show you how to
+ use it.
+ The PDF versions of both documents are distributed with simuPOP.
+ You can also get the latest version of the documents online, from the simuPOP
+ subversion repository ( 
+\family typewriter
+http://simupop.sourceforge.net
+\family default
+, click
+\family sans
+ SF.net summary > Code > SVN Browse > trunk > doc
+\family default
+).
+ However, because simuPOP is under active development, there may be discrepancie
+s between your local simuPOP installation and these latest documents.
+\end_layout
+
+\begin_layout Standard
+A number of bundled scripts are distributed with simuPOP.
+ They range from simple demonstration of population genetics models to observing
+ the evolution of complex human genetic diseases.
+ These scripts can be a good source to learn how to write a simuPOP script.
+ Of course, if any of these scripts happens to fit your need, you may be
+ able to use them directly, with writting a line of code.
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+simuPOP cookbook
+\emph default
+ is under development.
+ The goal of this book is to provide recipes of commonly used simulation
+ scenarios.
+ A number of recipes are currently available under the 
+\family typewriter
+doc/cookbook
+\family default
+ directory of a simuPOP distribution.
+ This book might be made available online so that users can submit their
+ own recipes.
+\end_layout
+
+\begin_layout Standard
+If you cannot find the answer you need, or if you believe that you have
+ located a bug, or if you would like to request a feature, please subscribe
+ to the simuPOP mailinglist and send your questions there.
+\end_layout
+
+\begin_layout Section
 Naming Conventions
 \end_layout
 
@@ -1266,178 +1609,10 @@ rng().seed()
 \end_layout
 
 \begin_layout Section
-Getting help
+Pythonic issues
 \end_layout
 
-\begin_layout Standard
-Most of the help information contained in this document is also available
- from command line.
- For example, after you install and import the simuPOP module, you can use
- 
-\family typewriter
-help(population.addInfoField) 
-\family default
-to view the help information of member function 
-\family typewriter
-addInfoField
-\family default
- of class 
-\family typewriter
-population
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/help.log"
-lstparams "caption={Getting help using the \\texttt{help()} function}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is important that you understand that
-\end_layout
-
-\begin_layout Itemize
-The constructor of a class is named 
-\family typewriter
-__init__
-\family default
- in Python.
- That is to say, you should use the following command to display the help
- information of the constructor of class 
-\family typewriter
-population
-\family default
-: 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> help(population.__init__)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Some classes are derived from other classes and have access to member functions
- of their base classes.
- For example, class 
-\family typewriter
-population
-\family default
-, 
-\family typewriter
-individual
-\family default
- and 
-\family typewriter
-simulator
-\family default
- are all derived from class 
-\family typewriter
-GenoStruTrait
-\family default
-.
- Therefore, you can use all 
-\family typewriter
-GenoStruTrait
-\family default
- member functions from these classes.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-The constructor of a derived class also calls the constructor of its base
- class so you may have to refer to the base class for some parameter definitions.
- For example, parameters 
-\family typewriter
-begin, end, step, at 
-\family default
-etc are shared by all operators, and are explained in details only in class
- 
-\family typewriter
-baseOperator.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-There are several excellent Python books and tutorials.
- If you are new to Python, you can start with
-\end_layout
-
-\begin_layout Enumerate
-The Python tutorial (
-\family typewriter
-http://docs.python.org/tut/tut.html
-\family default
-)
-\end_layout
-
-\begin_layout Enumerate
-Other online tutorials listed at http://www.python.org/doc/
-\end_layout
-
-\begin_layout Standard
-The PDF version of this reference manual is distributed with simuPOP.
- You can also get the latest version of this file from the simuPOP subversion
- repository.
- To access it, go to 
-\family typewriter
-http://simupop.sourceforge.net
-\family default
-, click
-\family sans
- SF.net summary > Code > SVN Browse > trunk > doc > refManual.pdf
-\family default
- and download the HEAD version.
- You can also find some tutorials that are not distributed with simuPOP
- from the subversion repository, such as
-\end_layout
-
-\begin_layout Enumerate
-Forward-time simulations using simuPOP, a tutorial: a tutorial that was
- given in a simuPOP workshop held at University of Alabama at Birmingham.
-\end_layout
-
-\begin_layout Enumerate
-Forward-time simulations using simuPOP, an in-depth course: a in-depth course
- about simuPOP components, with a lot of examples.
-\end_layout
-
-\begin_layout Standard
-The filenames are 
-\family typewriter
-tutorial.pdf 
-\family default
-and 
-\family typewriter
-course.pdf
-\family default
-, respectively.
- Note that these presentations will not be updated so their content can
- become out of date.
- This reference manual should be considered as the authoritative resource
- of simuPOP.
-\end_layout
-
-\begin_layout Section
+\begin_layout Subsection
 References and the 
 \family typewriter
 clone() 
@@ -1685,279 +1860,7 @@ th population from the simulator instead of copying it, and bypassing a
  potentially very costly process.
 \end_layout
 
-\begin_layout Section
-Debug-related operators/functions
-\end_layout
-
-\begin_layout Standard
-Standard 
-\family typewriter
-simuPOP
-\family default
- module can print out lots of debug information upon request.
- These are mostly used for internal debugging purposes but you can also
- use them when error happens.
- For example, the following code will crash simuPOP:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> population(1, loci=[100]).individual(0).arrAllele()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is not clear why this simple line will cause us trouble, instead of outputtin
-g the genotype of the only individual of this population.
- However, the reason is clear if you turn on debug information:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Turn on/off debug information
-\end_layout
-
-\end_inset
-
->>> TurnOnDebug(DBG_ALL)
-\end_layout
-
-\begin_layout Plain Layout
-
-Debug code DBG_ALL is turned on.
- cf.
- listDebugCode(), turnOffDebug() 
-\end_layout
-
-\begin_layout Plain Layout
-
->>> population(1).individual(0).arrAlleles()
-\end_layout
-
-\begin_layout Plain Layout
-
-Constructor of Population is called
-\end_layout
-
-\begin_layout Plain Layout
-
-Population size 1
-\end_layout
-
-\begin_layout Plain Layout
-
-Destructor of Population is called 
-\end_layout
-
-\begin_layout Plain Layout
-
-Segmentation fault (core dumped) 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-population(1)
-\family default
- creates a temporary object that is destroyed right after the execution
- of the input.
- When Python tries to display the genotype, it will refer to an invalid
- location.
- The right way to do this is to create a persistent population object: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
->>> pop = population(1)
-\end_layout
-
-\begin_layout Plain Layout
-
->>> pop.individual(0).arrAllele()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If the output is overwhelming after you turn on all debug information, you
- can turn on certain part of the information by using the following functions:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ListDebugCode
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-listDebugCode
-\end_layout
-
-\end_inset
-
-()
-\family default
- list all debug code.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-turnOnDebug()
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!turnOnDebug
-\end_layout
-
-\end_inset
-
-, TurnOnDebug
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-Function!TurnOnDebug
-\end_layout
-
-\end_inset
-
-(code)
-\family default
- turn on debug codes.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-turnOffDebug()
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!turnOffDebug
-\end_layout
-
-\end_inset
-
-, TurnOffDebug
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-Function!turnOffDebug
-\end_layout
-
-\end_inset
-
-(code)
-\family default
- turn off debug codes.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-turnOnDebug()
-\family default
- and 
-\family typewriter
-turnOffDebug()
-\family default
- are operators and accept all operator parameters 
-\family typewriter
-begin, step
-\family default
- etc.
- Usually, you can use 
-\family typewriter
-turnOnDebug
-\family default
- to output more information about a potential bug before simuPOP starts
- to misbehave.
- 
-\end_layout
-
-\begin_layout Standard
-Another useful debug code is 
-\family typewriter
-DBG_PROFILE.
-
-\family default
- When turned on, it will display running time of each operator.
- This will give you a good sense of which operator runs slowly (or simply
- the order of operator execution if you are not sure).
- If most of the execution time is spent on a pure-Python operator, you may
- want to rewrite it in C++.
- Note that 
-\family typewriter
-DBG_PROFILE
-\family default
- is suitable for measuring individual operator performance.
- If you would like to measure the execution time of all operators in several
- generations, 
-\family typewriter
-ticToc
-\family default
- operator is better.
-\end_layout
-
-\begin_layout Chapter
-simuPOP components
-\end_layout
-
-\begin_layout Standard
-The core of simuPOP is a scripting language based on the Python programming
- language.
- Like any other python module, you can start a python session, import simuPOP
- module, create and evolve populations interactively.
- Or, you can create a python script and run it as a batch file.
- 
-\end_layout
-
-\begin_layout Standard
-In this chapter, I will start from an simple example and them explain several
- import simuPOP components.
- Detailed info about each components is given in the 
-\emph on
-simuPOP reference manual
-\emph default
-.
-\end_layout
-
-\begin_layout Section
+\begin_layout Subsection
 Zero-based indexes, ranges, absolute and relative indexes
 \end_layout
 
@@ -2124,6 +2027,10 @@ lstparams "caption={Conversion between absolute and relative indexes},label={abs
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Iterators and Ranges
 \end_layout
 
 \begin_layout Section
