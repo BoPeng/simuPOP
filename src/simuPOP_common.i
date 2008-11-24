@@ -220,8 +220,9 @@ namespace std
 // individual and population are type names, and can not be used
 // as function name. ind and pop are used instead.
 // at the python level, individual and population are better.
+%rename(individual) ind(ULONG);
 %rename(individual) ind(ULONG, UINT);
-%rename(population) pop(UINT) const;
+%rename(population) pop(UINT, bool) const;
 
 %newobject LoadPopulation;
 %newobject LoadSimulator;
