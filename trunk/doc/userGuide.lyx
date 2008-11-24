@@ -4,16 +4,6 @@
 \begin_header
 \textclass manual
 \begin_preamble
-\usepackage{graphicx}
-\usepackage{epsfig}
-%\usepackage{hyperref}
-%\hypersetup{
-%pdfauthor={Bo Peng},
-%pdftitle={simuPOP User's Guide},
-%pdfcreator={lyx+pdflatex},
-%pdfproducer={pdflatex},
-%}
-
 \renewcommand{\py@ptsize}{12pt}
 
 \setreleaseinfo{Release 0.8.8 (\mbox{$$Rev$$})}
@@ -50,6 +40,17 @@ Last modified \\
 \paperfontsize default
 \spacing single
 \use_hyperref false
+\pdf_title "simuPOP User's Guide"
+\pdf_author "Bo Peng"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref page
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry false
 \use_amsmath 1
@@ -722,14 +723,7 @@ Installation
 \begin_layout Standard
 simuPOP is distributed under a GPL license and is hosted on
 \family typewriter
- 
-\begin_inset CommandInset href
-LatexCommand href
-target "http://simupop.sourceforge.net"
-
-\end_inset
-
-
+ http://simupop.sourceforge.net
 \family default
 , the world's largest development and download repository of Open Source
  code and applications.
@@ -909,19 +903,19 @@ simuPOP consists of a number of Python modules, documents, tests and examples.
 \end_layout
 
 \begin_layout Itemize
-
+Core simuPOP modules (
 \family typewriter
-_simuPOP_XXX.pyd 
+simuPOP_XXX.py
 \family default
-(
+, 
 \family typewriter
-.so 
+_simuPOP_XXX.pyd
 \family default
-if under a unix-like environment), 
+) and a number of utility modules (
 \family typewriter
-simuXXX.py
+simuUtil.py, simuOpt.py
 \family default
- and their compiled versions under 
+ etc) under 
 \family typewriter
 c:
 \backslash
@@ -932,15 +926,7 @@ Lib
 site-packages
 \family default
 .
- These include core simuPOP modules (
-\family typewriter
-simuPOP_XXX.py
-\family default
-) and a number of utility modules (
-\family typewriter
-simuUtil.py, simuOpt.py
-\family default
- etc).
+ 
 \end_layout
 
 \begin_layout Itemize
@@ -1095,7 +1081,7 @@ Use of optimized simuPOP modules
 
 \end_inset
 
-% setenv SIMUOPTIMIZED
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -1105,42 +1091,17 @@ Use of optimized simuPOP modules
 
 \begin_layout Plain Layout
 
+>>> from simuOpt import setOptions
+\end_layout
+
+\begin_layout Plain Layout
+
+>>> setOptions(optimized=True, alleleType='long', quiet=True)
+\end_layout
+
+\begin_layout Plain Layout
+
 >>> from simuPOP import *
-\end_layout
-
-\begin_layout Plain Layout
-
-simuPOP : Copyright (c) 2004-2006 Bo Peng
-\end_layout
-
-\begin_layout Plain Layout
-
-Developmental Version (May 21 2007) for Python 2.3.4
-\end_layout
-
-\begin_layout Plain Layout
-
-[GCC 3.4.6 20060404 (Red Hat 3.4.6-3)]
-\end_layout
-
-\begin_layout Plain Layout
-
-Random Number Generator is set to mt19937 with random seed 0x2f04b9dc5ca0fc00
-\end_layout
-
-\begin_layout Plain Layout
-
-This is the optimied short allele version with 256 maximum allelic states.
-\end_layout
-
-\begin_layout Plain Layout
-
-For more information, please visit http://simupop.sourceforge.net,
-\end_layout
-
-\begin_layout Plain Layout
-
-or email simupop-list@lists.sourceforge.net (subscription required).
 \end_layout
 
 \begin_layout Plain Layout
@@ -1174,11 +1135,53 @@ Segmentation fault
 \end_layout
 
 \begin_layout Standard
-You can control the choice of modules in the following ways:
-\end_layout
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
 
-\begin_layout Itemize
-Set environment variable 
+\end_inset
+
+ also demonstrates how to use the 
+\family typewriter
+setOptions
+\family default
+ function in the 
+\family typewriter
+simuOpt
+\family default
+ module to control the choice of one of the six simuPOP modules.
+ By specifying one of 
+\family typewriter
+short, long
+\family default
+ or 
+\family typewriter
+binary 
+\family default
+for option 
+\family typewriter
+alleleType
+\family default
+, and setting
+\family typewriter
+ optimized
+\family default
+ to 
+\family typewriter
+True
+\family default
+ or 
+\family typewriter
+False
+\family default
+, the right flavor of module will be chosen when simuPOP is loaded.
+ In addition, option 
+\family typewriter
+quiet
+\family default
+ can be used supress initial output.
+ An alternative method is to set environmental variable 
 \family typewriter
 SIMUALLELETYPE
 \family default
@@ -1204,202 +1207,11 @@ long
 \family typewriter
 binary
 \family default
- to use the short, long or binary modules, and variable 
+ to use the standard short, long or binary module, and variable 
 \family typewriter
 SIMUOPTIMIZED
 \family default
  to use the optimized modules.
- The default module is the standard short module.
-\end_layout
-
-\begin_layout Itemize
-Before you load simuPOP, import module 
-\family typewriter
-simuOpt
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-simuOpt
-\end_layout
-
-\end_inset
-
-
-\family default
- and set options using 
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\family typewriter
-simuOpt.setOptions(optimized, alleleType, quiet, debug)
-\end_layout
-
-\end_inset
-
-
-\family typewriter
-alleleType
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-alleleType
-\end_layout
-
-\end_inset
-
- can be 
-\family typewriter
-short, long
-\family default
- or 
-\family typewriter
-binary.
-
-\family default
- 
-\family typewriter
-quiet
-\family default
- means suppress initial output, and 
-\family typewriter
-debug
-\family default
- should be a comma-separated list of debug options specified by 
-\family typewriter
-listDebugCode
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-listDebugCode
-\end_layout
-
-\end_inset
-
-().
-\end_layout
-
-\begin_layout Itemize
-If you are running a simuPOP script that uses simuOpt to handle command
- line parameters, you should be able to use optimized libraries using command
- line option 
-\family typewriter
---optimized.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/importSimuPOPOpt.log"
-lstparams "caption={set options through simuOpt}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-After a simuPOP module is loaded, you can use the following functions to
- determine some module and platform dependent information.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-AlleleType()
-\family default
-: return 
-\family typewriter
-'binary'
-\family default
-, 
-\family typewriter
-'short'
-\family default
-, or 
-\family typewriter
-'long'
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-Optimized()
-\family default
-: return 
-\family typewriter
-True
-\family default
- or 
-\family typewriter
-False
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MaxAllele
-\family default
-(): return 
-\family typewriter
-1
-\family default
- for binary modules, usually 
-\family typewriter
-255
-\family default
- for short modules and 
-\begin_inset Formula $2^{16}-1$
-\end_inset
-
- for long modules.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simuVer()
-\family default
-: return the version string
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simuRev()
-\family default
-: simuPOP revision number.
- If your script needs a recent version of simuPOP, it is a good idea to
- test 
-\family typewriter
-simuRev()
-\family default
- against the revision when the feature you need becomes available.
-\end_layout
-
-\begin_layout Standard
-There are many random number generators (RNG) with different properties.
- Using a bad RNG can serious compromise the validity of simulation results.
- Although the default RNG 
-\family typewriter
-mt19937
-\family default
- has good performance, simuPOP allows you to choose from a number of RNGs,
- all from GNU Scientific Library (GSL).
- Please refer to the documentation of GSL for more details about these RNGs.
 \end_layout
 
 \begin_layout Standard
@@ -1408,62 +1220,49 @@ When simuPOP is loaded, it creates a default random number generator of
 \family typewriter
 mt19937
 \family default
-.
- This RNG gets its seed from a system random number generator that gurantees
+ using a random seed from a system random number generator that gurantees
  different random seeds for all instances of simuPOP even if they are initialize
 d at the same time.
  After simuPOP is loaded, you can reset this system RNG with a different
- RNG or re-initialize it with a different seed.
- Random seed of the current session can be retrieved through function 
+ random number generator (c.f.
+ 
 \family typewriter
-rng().seed()
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-If you need to use a RNG in your simuPOP script, you can either use Python
- random module (
-\family typewriter
-import random
-\family default
-) , use 
-\family typewriter
-rng
+ListRNG
 \begin_inset Index
-status collapsed
+status open
 
 \begin_layout Plain Layout
-function!rng
+
+\family typewriter
+ListRNG
 \end_layout
 
 \end_inset
 
 ()
 \family default
- function to get the RNG of simuPOP, or create a separate RNG using the
- 
+, 
 \family typewriter
-RNG(name, seed)
-\family default
- function.
- Using a single source of random number generator through the 
-\family typewriter
-rng()
-\family default
-function allows the whole simulation to be repeated if its original random
- seed is reused.
-\end_layout
+SetRNG
+\begin_inset Index
+status open
 
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/rng.log"
-lstparams "caption={Random number generator},label={rng}"
+\begin_layout Plain Layout
+
+\family typewriter
+SetRNG
+\end_layout
 
 \end_inset
 
-
+(name, seed)
+\family default
+).
+ Random seed of the current session can be retrieved through function 
+\family typewriter
+rng().seed()
+\family default
+ so that this session can be replayed later.
 \end_layout
 
 \begin_layout Section

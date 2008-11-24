@@ -1303,14 +1303,8 @@ RNG & rng();
 /// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
 void SetRNG(const string rng = "", unsigned long seed = 0);
 
-/// for backward compatibilit, will remove later
-void setRNG(const string rng = "", unsigned long seed = 0);
-
 /// list the names of all available random number generators
-vectorstr ListAllRNG();
-
-/// CPPONLY for backward compatibility, will remove later
-vectorstr listAllRNG();
+vectorstr ListRNG();
 
 // ////////////////////////////////////////////////////////////
 // /  Global debug and initialization related functions
