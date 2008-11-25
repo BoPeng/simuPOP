@@ -80,25 +80,20 @@ for ind in pop.individuals():
 #end
 
 #file log/carray.log
-# obtain an object using a genotype function
-pop = population(size=2, loci=[1,2])
-InitByValue(pop, [1,2,3])
-arr = pop.genotype()
-# print and expression (just like list)
+pop = population(size=2, loci=[3, 4])
+InitByFreq(pop, [0.3, 0.5, 0.2])
+ind = pop.individual(0)
+arr = ind.genotype()    # a carray to the underlying genotype
+geno = list(arr)        # a list of alleles
 print arr
-str(arr)
-# count
-arr.count(2)
-# index 
-arr.index(2)
-# can read write
-arr[0] = 0
-# the underlying locus position is also changed
-print pop.genotype()
-# convert to list
-arr.tolist()
-# or simply
-list(arr)
+print geno
+arr.count(1)           # count
+arr.index(2)           # index 
+ind.setAllele(5, 3)    # change underlying genotype using setAllele
+print arr              # arr is change
+print geno             # but not geno
+arr[2:5] = 4           # can use regular Python slice operation
+print ind.genotype()
 #end
 
 #file log/genoStru.log
