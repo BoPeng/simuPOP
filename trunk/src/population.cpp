@@ -1692,7 +1692,7 @@ PyObject * population::vars(vspID vsp)
 	DBG_ASSERT(hasVar("subPop"), ValueError,
 		"subPop statistics does not exist yet.");
 	
-	DBG_ASSERT(vsp.isVirtual(), SystemError,
+	DBG_FAILIF(vsp.isVirtual(), SystemError,
 		"Access to virtual subpopulation dictionary is not yet supported");
 
 	PyObject * spObj = getVar("subPop");
