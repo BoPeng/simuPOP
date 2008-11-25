@@ -202,7 +202,7 @@ stat::stat(
            // regular parameters
            string output, string outputExpr,
            int stage, int begin, int end, int step, vectorl at,
-           repList rep, subPopList subPop, const vectorstr & infoFields)
+           const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
 	: stator("", outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
