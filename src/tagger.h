@@ -47,7 +47,7 @@ public:
 	/// create a \c tagger, default to be always active but no output
 	tagger(string output = "", string outputExpr = "", int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), subPopList subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 
 	/// destructor
@@ -91,7 +91,7 @@ public:
 	   \param mode can be one of \c TAG_Paternal, \c TAG_Maternal, and \c TAG_Both
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
-		vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr(TAG_InheritFields, TAG_InheritFields + 2)) :
 		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields), m_mode(mode)
@@ -150,7 +150,7 @@ public:
 	/// create a \c parentTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
 		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
@@ -216,7 +216,7 @@ public:
 	/// create a \c parentsTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr(TAG_ParentsFields, TAG_ParentsFields + 2)) :
 		tagger(output, outputExpr, begin, DuringMating, end, step, at, rep, subPop, infoFields),
@@ -267,7 +267,7 @@ class infoTagger : public tagger
 {
 public:
 	infoTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), subPopList subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		int stage = PostMating, string output = ">", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr()) :
 		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields)
@@ -293,7 +293,7 @@ public:
 	 */
 	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		string output = ">", string outputExpr = "", int stage = PostMating,
-		repList rep = repList(), subPopList subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 
 	bool apply(population & pop);
@@ -314,7 +314,7 @@ public:
 	   This is used by Linkage format.
 	 */
 	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		repList rep = repList(), subPopList subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		int stage = PostMating, string output = ">", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr());
 
@@ -345,7 +345,7 @@ public:
 	    offspring. The return value has to be a list even if only one field is given.
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
-		int step = 1, vectorl at = vectorl(), repList rep = repList(), subPopList subPop = subPopList(),
+		int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr()) :
 		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields)

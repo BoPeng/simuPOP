@@ -105,7 +105,7 @@ public:
 	migrator(const matrix & rate, int mode = MigrByProbability,
 	         const subPopList & fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
 	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
+	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 	{
@@ -206,7 +206,7 @@ public:
 	           subPopList fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
 	           const vectoru & loci = vectoru(), PyObject * param = NULL,
 	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+	           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
@@ -315,7 +315,7 @@ public:
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
 	            bool randomize = true,
 	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+	            const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
 		m_randomize(randomize)
@@ -384,7 +384,7 @@ public:
 	 */
 	mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false,
 	             int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+	             const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
 	{
@@ -452,7 +452,7 @@ public:
 	 */
 	resizeSubPops(vectorlu newSizes = vectorlu(), vectoru subPops = vectoru(), bool propagate = true,
 	              int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	              repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+	              const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_newSizes(newSizes), m_subPops(subPops), m_propagate(propagate)
 	{

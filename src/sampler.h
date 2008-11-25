@@ -37,269 +37,7 @@ using std::min;
 const string ASC_AS_Fields[2] = { "father_idx", "mother_idx" };
 
 namespace simuPOP {
-// // ///////////////////// SUBSET ///////////////////////////////////////////
-// // // ascertainment ........................................
-// 
-// /// shrink population
-// /**
-//    This operator shrinks a population according to a given array or the
-//  \c subPopID() value of each individual. Individuals with negative
-//    subpopulation IDs will be removed.
-//    <funcForm>PySubset</funcForm>
-//  */
-// class pySubset : public baseOperator
-// {
-// 
-// public:
-// 	/// create a \c pySubset operator
-// 	/**
-// 	 \param keep an array of individual subpopulation IDs
-// 	 */
-// 	pySubset(const vectori & keep = vectori(),
-// 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-// 		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
-// 		m_keep(keep)
-// 	{
-// 	}
-// 
-// 
-// 	/// destructor
-// 	virtual ~pySubset()
-// 	{
-// 	}
-// 
-// 
-// 	/// deep copy of a \c pySubset operator
-// 	virtual baseOperator * clone() const
-// 	{
-// 		return new pySubset(*this);
-// 	}
-// 
-// 
-// 	/// apply the \c pySubset operator
-// 	virtual bool apply(population & pop)
-// 	{
-// 		DBG_ASSERT(m_keep.size() >= pop.popSize(),
-// 			ValueError, "Given subpopid array has a length of "
-// 			+ toStr(m_keep.size()) + " which is less than population size "
-// 			+ toStr(pop.popSize()));
-// 
-// 		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i) {
-// 			DBG_FAILIF(m_keep[i] > 0 && static_cast<size_t>(m_keep[i]) > MaxSubPopID, ValueError,
-// 				"Subpop id exceeding maximum allowed subpopulations");
-// 			// subpop id is short
-// 			pop.ind(i).setSubPopID(static_cast<SubPopID>(m_keep[i]));
-// 		}
-// 
-// 		pop.setSubPopByIndID();
-// 		return true;
-// 	}
-// 
-// 
-// 	/// used by Python print function to print out the general information of the \c pySubset operator
-// 	virtual string __repr__()
-// 	{
-// 		return "<simuPOP::pySubset>" ;
-// 	}
-// 
-// 
-// private:
-// 	vectori m_keep;
-// };
-// 
-// /// base class of other sample operator
-// /**
-//    Ascertainment/sampling refers to the ways of selecting individuals from a population.
-//    In simuPOP, ascerntainment operators create sample populations that can be accessed
-//    from the population's local namespace. All the ascertainment operators work like this except for \c pySubset
-//    which shrink the population itself. \n
-// 
-//    Individuals in sampled populations may or may not keep their original order but
-//    their indexes in the whole population are stored in an information field \c oldindex.
-//    This is to say, you can use <tt>ind.info('oldindex')</tt> to check the original
-//    position of an individual. \n
-// 
-//    Two forms of sample size specification are supported: with or without subpopulation
-//    structure. For example, the \c size parameter of \c randomSample can be a number
-//    or an array (which has the length of the number of subpopulations). If a number
-//    is given, a sample will be drawn from the whole population, regardless of the
-//    population structure. If an array is given, individuals will be drawn from each
-//    subpopulation \c sp according to <tt>size[sp]</tt>. \n
-// 
-//    An important special case of sample size specification occurs when <tt>size=[]</tt>
-//    (default). In this case, usually all qualified individuals will be returned. \n
-// 
-//    The function forms of these operators are a little different from others.
-//    They do return a value: an array of samples.
-//  */
-// class sample : public baseOperator
-// {
-// 
-// public:
-// 	/// draw a sample
-// 	/**
-// 	 \param name name of the sample in the local namespace. This variable is an array of
-// 	   	populations of size \c times. Default to \c sample.
-// 	 \param nameExpr expression version of parameter \c name. If both \c name and \c nameExpr
-// 	   	are empty, sample populations will not be saved in the population's local namespace.
-// 	   This expression will be evaluated dynamically in population's local namespace.
-// 	 \param times how many times to sample from the population. This is usually \c 1,
-// 	   	but we may want to take several random samples.
-// 	 \param saveAs filename to save the samples
-// 	 \param saveAsExpr expression version of parameter \c saveAs. It will be evaluated
-// 	   dynamically in population's local namespace.
-// 	 \param format format to save the samples
-// 
-// 	   Please refer to <tt>baseOperator::__init__</tt> for other parameter descriptions.
-// 	 */
-// 	sample(const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-// 	       const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
-// 	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	       repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-// 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
-// 		m_name(name), m_nameExpr(nameExpr, ""), m_times(times), m_saveAs(saveAs),
-// 		m_saveAsExpr(saveAsExpr), m_format(format)
-// 	{
-// 		if (name == "" && nameExpr == "" && saveAs == "" && saveAsExpr == "")
-// 			throw ValueError("Please specify name (or nameExpr) or saveAs (or saveAsExpr) to save sample.");
-// 	}
-// 
-// 
-// 	/// destructor
-// 	virtual ~sample()
-// 	{
-// 	};
-// 
-// 	/// deep copy of a \c sample operator
-// 	virtual baseOperator * clone() const
-// 	{
-// 		return new sample(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY prepare the population for sampling. E.g., find out all affected individuals.
-// 	virtual bool prepareSample(population &)
-// 	{
-// 		return true;
-// 	}
-// 
-// 
-// 	/// CPPONLY draw a sample
-// 	virtual population & drawsample(population & pop)
-// 	{
-// 		// keep pop untouched.
-// 		// use ind.info() directly
-// 		throw SystemError("This function is not supposed to be called directly");
-// 		return pop;
-// 	}
-// 
-// 
-// 	/// return the samples
-// 	PyObject * samples(population & pop);
-// 
-// 	/// apply the \c sample operator
-// 	virtual bool apply(population & pop);
-// 
-// 	/// used by Python print function to print out the general information of the \c sample operator
-// 	virtual string __repr__()
-// 	{
-// 		return "<simuPOP::sample>" ;
-// 	}
-// 
-// 
-// protected:
-// 	/// reset \c father_idx and \c mother_idx
-// 	void resetParentalIndex(population & pop, const string & fatherField = "father_idx",
-// 		const string & motherField = "mother_idx", const string & indexField = "oldindex");
-// 
-// private:
-// 	/// name to save sample, default to 'sample'
-// 	string m_name;
-// 
-// 	/// pop name
-// 	Expression m_nameExpr;
-// 
-// 	/// sample times
-// 	UINT m_times;
-// 
-// 	/// filename to save sample
-// 	string m_saveAs;
-// 
-// 	/// saveas expression
-// 	Expression m_saveAsExpr;
-// 
-// 	/// format to save samples
-// 	string m_format;
-// };
-// 
-// /// randomly draw a sample from a population
-// /**
-//    This operator will randomly choose \c size individuals (or <tt> size[i] </tt> individuals
-//    from subpopulation \c i)
-//    and return a new population. The function form of this operator returns the samples
-//    directly. This operator keeps samples in an array \c name in the local namespace. You
-//    may access them through \c dvars() or \c vars() functions. \n
-// 
-//    The original subpopulation structure or boundary is kept in the samples.
-//    <funcForm>RandomSample</funcForm>
-//  */
-// class randomSample : public sample
-// {
-// 
-// public:
-// 	/// draw a random sample, regardless of the affectedness status
-// 	/**
-// 	 \param size size of the sample. It can be either a number which represents the
-// 	   	overall sample size, regardless of the population structure; or an array
-// 	   	which represents the number of individuals drawn from each subpopulation.
-// 
-// 	   Please refer to class \c sample for other parameter descriptions.
-// 
-// 	 \note Ancestral populations will not be copied to the samples.
-// 	 */
-// 	randomSample(vectorlu size = vectorlu(),
-// 	             const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-// 	             const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
-// 	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	             repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-// 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-// 		         stage, begin, end, step, at, rep, subPop, infoFields),
-// 		m_size(size)
-// 	{
-// 	}
-// 
-// 
-// 	/// destructor
-// 	virtual ~randomSample()
-// 	{
-// 	};
-// 
-// 	/// deep copy of a \c randomSample operator
-// 	virtual baseOperator * clone() const
-// 	{
-// 		return new randomSample(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	virtual bool prepareSample(population & pop);
-// 
-// 	/// CPPONLY
-// 	virtual population & drawsample(population & pop);
-// 
-// 	/// used by Python print function to print out the general information of the \c randomSample operator
-// 	virtual string __repr__()
-// 	{
-// 		return "<simuPOP::random sample>" ;
-// 	}
-// 
-// 
-// private:
-// 	/// sample size
-// 	vectorlu m_size;
-// };
-// 
+
 // /// draw a case-control sample from a population
 // /**
 //    This operator will randomly choose \c cases affected individuals and \c controls
@@ -334,7 +72,7 @@ namespace simuPOP {
 // 	                  bool spSample = false, const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 // 	                  const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 // 	                  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	                  repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+// 	                  const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep,infoFields),
 // 		m_numCases(cases), m_numControls(controls), m_spSample(spSample),
@@ -423,7 +161,7 @@ namespace simuPOP {
 // 	                      const string & format = "auto",
 // 	                      int stage = PostMating, int begin = 0, int end = -1,
 // 	                      int step = 1, vectorl at = vectorl(),
-// 	                      repList rep = repList(), subPopList subPop = subPopList(),
+// 	                      const repList & rep = repList(), const subPopList & subPop = subPopList(),
 // 	                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, subPop, infoFields),
@@ -502,7 +240,7 @@ namespace simuPOP {
 // 	                    const string & format = "auto",
 // 	                    int stage = PostMating, int begin = 0, int end = -1,
 // 	                    int step = 1, vectorl at = vectorl(),
-// 	                    repList rep = repList(), subPopList subPop = subPopList(),
+// 	                    const repList & rep = repList(), const subPopList & subPop = subPopList(),
 // 	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, subPop, infoFields),
@@ -584,7 +322,7 @@ namespace simuPOP {
 // 	                    const string & format = "auto",
 // 	                    int stage = PostMating, int begin = 0, int end = -1,
 // 	                    int step = 1, vectorl at = vectorl(),
-// 	                    repList rep = repList(), subPopList subPop = subPopList(),
+// 	                    const repList & rep = repList(), const subPopList & subPop = subPopList(),
 // 	                    const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, subPop, infoFields),
@@ -671,7 +409,7 @@ namespace simuPOP {
 // 	         const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 // 	         const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 // 	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-// 	         repList rep = repList(), subPopList subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+// 	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 // 		: sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 // 		         stage, begin, end, step, at, rep, subPop, infoFields),
 // 		m_keepAncestralPops(keepAncestralPops)
