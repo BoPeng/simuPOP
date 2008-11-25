@@ -22,6 +22,7 @@
 ***************************************************************************/
 
 #include "population.h"
+#include "pedigree.h"
 #include "virtualSubPop.h"
 
 // for file compression
@@ -1145,7 +1146,7 @@ void population::resize(const vectorlu & newSubPopSizes, bool propagate)
 population & population::extract(bool removeInd, const string & field,
                                  bool removeLoci, const vectoru & loci,
                                  bool removeInfo, const vectorstr & infoFields,
-                                 int ancGen)
+                                 int ancGen, pedigree * ped) const
 {
 	population & pop = *new population();
 	// will keep a sorted version of loci
@@ -1209,7 +1210,7 @@ population & population::extract(bool removeInd, const string & field,
 	vectoru::iterator lociPtr = new_loci.begin();
 	vectoru::iterator lociEnd = new_loci.end();
 	//
-	UINT info = removeInd ? infoIdx(field) : 0;
+	UINT info = removeInd ? (ped ? ped->infoIdx(field) : infoIdx(field)) : 0;
 	vectoru infoList;
 	vectorstr::const_iterator iit = infoFields.begin();
 	vectorstr::const_iterator iit_end = infoFields.end();
@@ -1223,8 +1224,12 @@ population & population::extract(bool removeInd, const string & field,
 	if (ancGen > 0 && ancGen < depth)
 		depth = ancGen;
 	for (; depth >= 0; --depth) {
-		useAncestralGen(depth);
+		const_cast<population*>(this)->useAncestralGen(depth);
 		sortIndividuals();
+		if (ped) {
+			ped->useAncestralGen(depth);
+			ped->sortIndividuals();
+		}
 		// determine the number of individuals
 		vectorlu spSizes;
 		vector<vectoru> indIdx;
@@ -1234,7 +1239,7 @@ population & population::extract(bool removeInd, const string & field,
 			size = popSize();
 		} else {
 			for (ULONG i = 0; i < popSize(); ++i) {
-				int sp = m_inds[i].intInfo(info);
+				int sp = ped ? ped->ind(i).intInfo(info) : m_inds[i].intInfo(info);
 				if (sp < 0)
 					continue;
 				if (spSizes.size() <= static_cast<UINT>(sp)) {
@@ -1259,10 +1264,12 @@ population & population::extract(bool removeInd, const string & field,
 		if (!removeInd) {
 			new_inds.insert(new_inds.end(), m_inds.begin(), m_inds.end());
 			if (!removeLoci)
-				new_genotype.insert(new_genotype.end(), genoBegin(true), genoEnd(true));
+				new_genotype.insert(new_genotype.end(),
+					const_cast<population*>(this)->genoBegin(true), 
+					const_cast<population*>(this)->genoEnd(true));
 			else {
-				RawIndIterator it = rawIndBegin();
-				RawIndIterator it_end = rawIndEnd();
+				ConstRawIndIterator it = rawIndBegin();
+				ConstRawIndIterator it_end = rawIndEnd();
 				for (; it != it_end; ++it) {
 					GenoIterator ptr = it->genoBegin();
 					for (UINT p = 0; p < pEnd; p += pStep) {
@@ -1274,8 +1281,8 @@ population & population::extract(bool removeInd, const string & field,
 			if (!removeInfo)
 				new_info.insert(new_info.end(), m_info.begin(), m_info.end());
 			else {
-				RawIndIterator it = rawIndBegin();
-				RawIndIterator it_end = rawIndEnd();
+				ConstRawIndIterator it = rawIndBegin();
+				ConstRawIndIterator it_end = rawIndEnd();
 				for (; it != it_end; ++it) {
 					InfoIterator iPtr = it->infoBegin();
 					for (infoPtr = infoList.begin(); infoPtr != infoEnd; ++infoPtr)
@@ -1730,7 +1737,7 @@ PyObject * population::dict(int subPop)
 }
 
 
-void population::sortIndividuals(bool infoOnly)
+void population::sortIndividuals(bool infoOnly) const
 {
 	if (indOrdered())
 		return;
@@ -1745,12 +1752,13 @@ void population::sortIndividuals(bool infoOnly)
 		vectorinfo tmpInfo(m_popSize * is);
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
+		IndIterator ind = const_cast<population*>(this)->indBegin();
+		for (; ind.valid(); ++ind) {
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
 			infoPtr += is;
 		}
-		m_info.swap(tmpInfo);
+		const_cast<population*>(this)->m_info.swap(tmpInfo);
 	} else {
 		DBG_DO(DBG_POPULATION, cout << "Adjust geno and info position " << endl);
 
@@ -1761,7 +1769,8 @@ void population::sortIndividuals(bool infoOnly)
 		vectora::iterator it = tmpGenotype.begin();
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
+		IndIterator ind = const_cast<population*>(this)->indBegin();
+		for (; ind.valid(); ++ind) {
 #ifdef BINARYALLELE
 			copyGenotype(ind->genoBegin(), it, sz);
 #else
@@ -1775,8 +1784,8 @@ void population::sortIndividuals(bool infoOnly)
 			infoPtr += is;
 		}
 		// discard original genotype
-		m_genotype.swap(tmpGenotype);
-		m_info.swap(tmpInfo);
+		const_cast<population*>(this)->m_genotype.swap(tmpGenotype);
+		const_cast<population*>(this)->m_info.swap(tmpInfo);
 	}
 	setIndOrdered(true);
 }

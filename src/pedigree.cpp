@@ -35,6 +35,13 @@
 
 namespace simuPOP {
 
+pedigree::pedigree(const population & pop, const vectoru & loci,
+		const vectorstr & infoFields)
+{
+	*this = pop.extract(false, string(), loci.size() != pop.totNumLoci(),
+		loci, infoFields.size() != pop.infoSize(), infoFields, -1, NULL);
+}
+
 
 void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields,
                                  int gen, SexChoice relSex, const vectorstr & fields)

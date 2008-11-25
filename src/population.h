@@ -62,6 +62,8 @@ using std::deque;
 
 namespace simuPOP {
 
+class pedigree;
+
 /**
  *  A simuPOP population consists of individuals of the same genotypic
  *  structure, organized by generations, subpopulations and virtual
@@ -520,14 +522,14 @@ public:
 
 
 	/// CPPONLY
-	bool indOrdered()
+	bool indOrdered() const
 	{
 		return m_indOrdered;
 	}
 
 
 	/// CPPONLY
-	void setIndOrdered(bool s)
+	void setIndOrdered(bool s) const
 	{
 		m_indOrdered = s;
 	}
@@ -1031,12 +1033,16 @@ public:
 	 *  are extracted. If \e infoFields is not \c None, only these information
 	 *  fields will be extracted. If \e ancGen is not \c -1 (default, meaing
 	 *  all ancestral generations), only \e ancGen ancestral generations will
-	 *  be kept.
+	 *  be kept. As an advanced feature, \e field can be information field
+	 *  of a pedigree object \e ped. This allows extraction of individuals
+	 *  according to pedigrees identified in a pedigree object. This pedigree
+	 *  should have the same number of individuals in all generations.
 	 *  <group>7-manipulate</group>
 	 */
 	population & extract(bool removeInd, const string & field,
 		bool removeLoci, const vectoru & loci,
-		bool removeInfo, const vectorstr & infoFields, int ancGen = -1);
+		bool removeInfo, const vectorstr & infoFields, int ancGen = -1,
+		pedigree * ped = NULL) const;
 
 	/** Remove \e loci (absolute indexes) and genotypes at these loci from the
 	 *  current population. Alternatively, a parameter \e keep can be used to
@@ -1277,8 +1283,10 @@ public:
 	   some iterators requires that genotype information is within
 	   each subpopulation. We need to adjust genotypic info to
 	   obey this.
+	   This function is const because the population is 'not changed'
+	   conceptually.
 	 */
-	void sortIndividuals(bool infoOnly = false);
+	void sortIndividuals(bool infoOnly = false) const;
 
 	/** Save population to a file \e filename, which can be loaded by a global
 	 *  function <tt>LoadPopulation(filename)</tt>.
@@ -2002,7 +2010,7 @@ private:
 
 	/// whether or not individual genotype and information are in order
 	/// within a population.
-	bool m_indOrdered;
+	mutable bool m_indOrdered;
 
 	/// selection flags for each subpopulation.
 	/// empty means no selection
