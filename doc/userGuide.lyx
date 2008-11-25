@@ -1773,7 +1773,14 @@ If you would like to have an independent copy of a population, you can use
 clone()
 \family default
  member function.
- For example, simuPOP would behave properly if the 
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Reference-to-population"
+
+\end_inset
+
+ would behave properly if the 
 \family typewriter
 return
 \family default
@@ -2005,6 +2012,30 @@ is the index of the last locus on chromosome 1
 \end_layout
 
 \begin_layout Standard
+A number of simuPOP functions return Python iterators that can be used to
+ iterate through an internal array of objects.
+ For example, 
+\family typewriter
+population::individuals([subPop])
+\family default
+ returns an iterator that can be used to iterate through all individuals,
+ or all individuals in a (virtual) subpoulation.
+ 
+\family typewriter
+simulator::populations()
+\family default
+ can be used to iterate through all populations in a simulator.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "iterator.log"
+
+\end_inset
+
+ demonstrates the use of ranges and iterators in simuPOP.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/iterator.log"
@@ -2015,8 +2046,47 @@ lstparams "caption={Ranges and iterators},label={iterator.log}"
 
 \end_layout
 
+\begin_layout Subsection
+
+\family typewriter
+\series medium
+\size normal
+carray
+\family default
+\series default
+\size default
+ datatype
+\end_layout
+
 \begin_layout Standard
-will iterate through all locus on chromosome 1.
+simuPOP uses mostly standard Python types such as tuples, lists and dictionaries.
+ However, for efficiency considerations, simuPOP defines and uses a new
+ 
+\family typewriter
+carray 
+\family default
+datatype to refer to an internal array of genotypes.
+ Such an object can only be returned from 
+\family typewriter
+individual::genotype
+\family default
+ and 
+\family typewriter
+population::genotype
+\family default
+ functions.
+ It behaves like a Python list when you print it, sum it, or count the number
+ of certain allele.
+ However, because this object reflects the underlying genotype, modifying
+ elements of this array will change alleles.
+ In addition, elements in this array will be changed if the underlying genotype
+ is changed using other methods.
+ If an independent list of alleles is needed, you can convert this object
+ to a regular Python list using the 
+\family typewriter
+list()
+\family default
+ built-in function.
  
 \end_layout
 

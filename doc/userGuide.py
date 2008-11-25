@@ -79,6 +79,28 @@ for ind in pop.individuals():
 
 #end
 
+#file log/carray.log
+# obtain an object using a genotype function
+pop = population(size=2, loci=[1,2])
+InitByValue(pop, [1,2,3])
+arr = pop.genotype()
+# print and expression (just like list)
+print arr
+str(arr)
+# count
+arr.count(2)
+# index 
+arr.index(2)
+# can read write
+arr[0] = 0
+# the underlying locus position is also changed
+print pop.genotype()
+# convert to list
+arr.tolist()
+# or simply
+list(arr)
+#end
+
 #file log/genoStru.log
 # create a population, most parameters have default values
 pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
@@ -1044,35 +1066,6 @@ InitByFreq(pop, [.2, .3, .4, .1])
 #end
 
 
-#file log/carray.log
-# obtain an object using a genotype function
-pop = population(size=2, loci=[1,2])
-InitByValue(pop, [1,2,3])
-arr = pop.genotype()
-# print and expression (just like list)
-print arr
-str(arr)
-# count
-arr.count(2)
-# index 
-arr.index(2)
-# can read write
-arr[0] = 0
-# the underlying locus position is also changed
-print pop.genotype()
-# convert to list
-arr.tolist()
-# or simply
-list(arr)
-# compare to list directly
-arr == [0, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
-# you can also convert and compare
-list(arr) == [0, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]
-# slice
-arr[:] = [3,2,1]*4
-# assign from another part
-arr[1:3] = arr[3:5]
-#end
 
 #file log/genotype.log
 pop = population(size=[3, 2], loci=[2])
