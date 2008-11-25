@@ -23,9 +23,6 @@ if not os.path.isdir('log'):
     sys.exit(1)
 
 #
-# make sure each run generates the same output to avoid unnecessary
-# documentation changes.
-rng().setSeed(12345)
 
 #file log/standard.log
 from simuPOP import *
@@ -33,6 +30,10 @@ pop = population(10, loci=[2])
 pop.locusPos(10)
 pop.individual(20).setAllele(1, 0)
 #end
+
+# make sure each run generates the same output to avoid unnecessary
+# documentation changes.
+rng().setSeed(12345)
 
 #file log/importSimuPOP.log
 import simuOpt
@@ -61,15 +62,28 @@ help(population.addInfoField)
 #end
 
 #file log/absIndex.log
+pop = population(size=[10, 20], loci=[5, 7])
 print pop.chromLocusPair(7)
-print pop.absLocusIndex(1,1)
+print pop.absLocusIndex(1, 1)
+print pop.absIndIndex(2, 1)
+print pop.subPopIndPair(25)
+#end
+
+#file log/iterator.log
+pop = population(size=2, loci=[5, 6])
+InitByFreq(pop, [0.2, 0.3, 0.5])
+for ind in pop.individuals():
+    for loc in range(pop.chromBegin(1), pop.chromEnd(1)):
+        print ind.allele(loc),
+    print 
+
 #end
 
 #file log/genoStru.log
 # create a population, most parameters have default values
-pop = population(size=[2,3], ploidy=2, loci=[5,10],
-    lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'], maxAllele=3)
+pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
+    lociPos=[range(0, 5),range(0, 20, 2)],
+    alleleNames=['A', 'C', 'T', 'G'], maxAllele=3)
 print pop.popSize()
 print pop.ploidy()
 print pop.ploidyName()

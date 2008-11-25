@@ -1632,7 +1632,7 @@ status open
 
 \begin_layout Plain Layout
 
-pop = population(...)
+pop = population()
 \end_layout
 
 \begin_layout Plain Layout
@@ -1753,6 +1753,11 @@ pop = func()
 
 \begin_layout Plain Layout
 
+# simuPOP will crash because pop refers to an invalid population.
+\end_layout
+
+\begin_layout Plain Layout
+
 pop.popSize()
 \end_layout
 
@@ -1768,7 +1773,7 @@ If you would like to have an independent copy of a population, you can use
 clone()
 \family default
  member function.
- For example, simuPOP would behave properly is the 
+ For example, simuPOP would behave properly if the 
 \family typewriter
 return
 \family default
@@ -1794,7 +1799,12 @@ return simu.population(0).clone()
 
 \end_inset
 
-although in this specific case, 
+although in this specific case, extracting the first population from the
+ simulator using the 
+\family typewriter
+extract
+\family default
+ function
 \end_layout
 
 \begin_layout Standard
@@ -1835,7 +1845,7 @@ operators
 \end_layout
 
 \begin_layout Subsection
-Zero-based indexes, ranges, absolute and relative indexes
+Zero-based indexes, absolute and relative indexes
 \end_layout
 
 \begin_layout Standard
@@ -1848,59 +1858,6 @@ All arrays in simuPOP start at index 0
  To avoid confusion, I will refer the first locus as locus zero, the second
  locus as locus one; the first individual in a population as individual
  zero, and so on.
-\end_layout
-
-\begin_layout Standard
-Ranges in simuPOP also conforms to Python ranges.
- That is to say, a range has the form of 
-\family typewriter
-[a,b) 
-\family default
-where 
-\family typewriter
-a 
-\family default
-belongs to the range, and 
-\family typewriter
-b 
-\family default
-does not.
- For example, 
-\family typewriter
-pop.chromBegin(1) 
-\family default
-refers to the index of the first locus on chromosome 1 (actually exists),
- and 
-\family typewriter
-pop.chromEnd(1) 
-\family default
-is the index of the last locus on chromosome 1
-\series bold
- plus 1
-\series default
-, which might or might not be a valid index.
- In this way
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-for locus in range(pop.chromBegin(1), pop.chromEnd(1)):
-\end_layout
-
-\begin_layout Plain Layout
-
-    print locus
-\end_layout
-
-\end_inset
-
-will iterate through all locus on chromosome 1.
- 
 \end_layout
 
 \begin_layout Standard
@@ -1950,7 +1907,7 @@ For example, if there are 5 and 7 loci on the first two chromosomes, the
  of having to use two numbers (chrom, index) to refer to a locus.
  Two functions 
 \family typewriter
-chromLocusPair(absIndex)
+chromLocusPair(idx)
 \family default
  and 
 \family typewriter
@@ -1990,6 +1947,15 @@ where
 relative index 
 \emph default
 is the index in its subpopulation.
+ Related member functions are 
+\family typewriter
+subPopIndPair(idx)
+\family default
+ and 
+\family typewriter
+absIndIndex(idx, subPop)
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -2004,7 +1970,54 @@ lstparams "caption={Conversion between absolute and relative indexes},label={abs
 \end_layout
 
 \begin_layout Subsection
-Iterators and Ranges
+Ranges and iterators
+\end_layout
+
+\begin_layout Standard
+Ranges in simuPOP also conforms to Python ranges.
+ That is to say, a range has the form of 
+\family typewriter
+[a,b) 
+\family default
+where 
+\family typewriter
+a 
+\family default
+belongs to the range, and 
+\family typewriter
+b 
+\family default
+does not.
+ For example, 
+\family typewriter
+pop.chromBegin(1) 
+\family default
+refers to the index of the first locus on chromosome 1 (actually exists),
+ and 
+\family typewriter
+pop.chromEnd(1) 
+\family default
+is the index of the last locus on chromosome 1
+\series bold
+ plus 1
+\series default
+, which might or might not be a valid index.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/iterator.log"
+lstparams "caption={Ranges and iterators},label={iterator.log}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+will iterate through all locus on chromosome 1.
+ 
 \end_layout
 
 \begin_layout Section
