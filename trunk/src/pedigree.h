@@ -50,6 +50,11 @@ namespace simuPOP {
 class pedigree : public population
 {
 public:
+	/** Create a pedigree object from a population, using a subset of loci and
+	 *  a subset of information fields.
+	 */
+	pedigree(const population & pop, const vectoru & loci = vectoru(),
+		const vectorstr & infoFields = vectorstr());
 
 	/** This function locates relatives (of type \e relType, and sex \e relSex) 
 	 *  of each individual and store their indexes in specified information

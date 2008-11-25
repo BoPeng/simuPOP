@@ -33,6 +33,7 @@
 #include "genoStru.h"
 #include "individual.h"
 #include "population.h"
+#include "pedigree.h"
 #include "virtualSubPop.h"
 #include "operator.h"
 #include "simulator.h"
@@ -242,7 +243,6 @@ namespace std
 
 %include "utility.h"
 %include "misc.h"
-%include "pedigree.h"
 %include "genoStru.h"
 %include "individual.h"
 
@@ -283,6 +283,7 @@ namespace std
 %include "qtrait.h"
 %include "penetrance.h"
 %include "sampler.h"
+%include "pedigree.h"
 
 ////////////////////////// Provide a iterator as pop.individuals() ////////////////
 // This part is now implemented at the C++ level (see population.h)
@@ -735,7 +736,7 @@ del population.__init__
 population.__init__ = new_population
 
 
-def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1):
+def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=None):
     removeInd = field is not None
     if field is None:
         field = ''
@@ -745,8 +746,12 @@ def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1):
     removeInfo = infoFields is not None
     if infoFields is None:
         infoFields = []
-    return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
-        infoFields, ancGen)
+    if ped is None:
+        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
+            infoFields, ancGen)
+    else:
+        return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
+            infoFields, ancGen, ped)
 
 if population.extract.__doc__ is not None:
     new_extract.__doc__ = population.extract.__doc__
