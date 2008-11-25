@@ -2028,7 +2028,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "iterator.log"
+reference "carraydatatype"
 
 \end_inset
 
@@ -2075,19 +2075,59 @@ individual::genotype
 population::genotype
 \family default
  functions.
- It behaves like a Python list when you print it, sum it, or count the number
- of certain allele.
- However, because this object reflects the underlying genotype, modifying
- elements of this array will change alleles.
+ Instead of copying all genotypes to a Python tuple or list, these functions
+ return a 
+\family typewriter
+carray 
+\family default
+object that directly reflect the underlying genotype.
+ This object behaves like a regular Python list except that the underlying
+ genotype will be changed if elements of this object are changed.
  In addition, elements in this array will be changed if the underlying genotype
- is changed using other methods.
- If an independent list of alleles is needed, you can convert this object
- to a regular Python list using the 
+ is changed using another method.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "carraydatatype"
+
+\end_inset
+
+ demonstrates the use of this datatype.
+ It also shows how to get an independent list of alleles using the 
 \family typewriter
 list()
 \family default
  built-in function.
- 
+ Compare to 
+\family typewriter
+allele()
+\family default
+, 
+\family typewriter
+setAllele()
+\family default
+ and 
+\family typewriter
+setGenotype()
+\family default
+ functions, it is usually more efficient and more convenient to read and
+ write genotypes using carray objects, although this usage is usually less
+ readable.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/carray.log"
+lstparams "caption={The carray datatype},label={carraydatatype}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2105,13 +2145,9 @@ genotypic structure
 \end_layout
 
 \begin_layout Standard
-Genotypic structure refers to the number of copies of basic number of chromosome
-s
-\family typewriter
-,
-\family default
- number of chromosomes, existence of sex chromosome, number of loci on each
- chromosome, locus location on chromosome and allele names.
+Genotypic structure refers to the number of homologous sets of chromosomes,
+ number of chromosomes, number of loci on each chromosome, locus location
+ on chromosome and allele names.
  It presents the common genetic configuration for all the individuals in
  a population.
 \end_layout
@@ -3257,17 +3293,6 @@ carray
 list()
 \family default
  function.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/carray.log"
-lstparams "caption={Usage of the \\texttt{carray} type},label={carray}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
