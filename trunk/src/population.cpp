@@ -1152,6 +1152,10 @@ population & population::extract(bool removeInd, const string & field,
 	// will keep a sorted version of loci
 	vectoru new_loci = loci;
 
+	DBG_DO(DBG_POPULATION, cout << "Remove ind: " << removeInd
+		<< "\nRemove loci: " << removeLoci
+		<< "\nRemove info: " << removeInfo << endl);
+
 	// population strcture.
 	if (!removeLoci && !removeInfo)
 		pop.setGenoStruIdx(genoStruIdx());
@@ -1192,15 +1196,15 @@ population & population::extract(bool removeInd, const string & field,
 				new_lociNames.push_back(locusName(*it));
 			}
 		}
-		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << new_numLoci
-			                        << "\nchromType: " << new_chromTypes
-			                        << "\nlociPos: " << new_lociPos
-			                        << "\nchromNames: " << new_chromNames
-			                        << "\nlociNames: " << new_lociNames
-			                        << "\ninfoFields: " << new_infoFields
-			                        << endl);
 		pop.setGenoStructure(ploidy(), new_numLoci, new_chromTypes, isHaplodiploid(),
 			new_lociPos, new_chromNames, alleleNames(), new_lociNames, new_infoFields);
+		DBG_DO(DBG_POPULATION, cout << "Extract population with \nnumLoci:" << pop.numLoci()
+			                        << "\nchromType: " << pop.chromTypes()
+			                        << "\nlociPos: " << pop.lociPos()
+			                        << "\nchromNames: " << pop.chromNames()
+			                        << "\nlociNames: " << pop.lociNames()
+			                        << "\ninfoFields: " << pop.infoFields()
+			                        << endl);
 	}
 	UINT step = pop.genoSize();
 	UINT infoStep = pop.infoSize();
@@ -1264,9 +1268,7 @@ population & population::extract(bool removeInd, const string & field,
 		if (!removeInd) {
 			new_inds.insert(new_inds.end(), m_inds.begin(), m_inds.end());
 			if (!removeLoci)
-				new_genotype.insert(new_genotype.end(),
-					const_cast<population*>(this)->genoBegin(true), 
-					const_cast<population*>(this)->genoEnd(true));
+				new_genotype.insert(new_genotype.end(), m_genotype.begin(), m_genotype.end());
 			else {
 				ConstRawIndIterator it = rawIndBegin();
 				ConstRawIndIterator it_end = rawIndEnd();

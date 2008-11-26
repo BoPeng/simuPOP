@@ -11,9 +11,10 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=False, debug="DBG_POPULATION")
 
 from simuPOP import *
+from simuUtil import *
 import unittest, os, sys, exceptions
 
 class TestAscertainment(unittest.TestCase):
@@ -22,7 +23,7 @@ class TestAscertainment(unittest.TestCase):
         simu = simulator(
             population(size=[1000,2000], ploidy=2, loci=[5,10],
                 ancestralDepth=2,
-                infoFields=['fitness', 'father_idx', 'mother_idx']),
+                infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to']),
             randomMating(numOffspring=2))
         simu.evolve(
             [
@@ -38,11 +39,11 @@ class TestAscertainment(unittest.TestCase):
             ],
             gen=4
         )
-        self.pop = simu.population(0, false)
+        self.pop = simu.extract(0)
         # more complicated one
         simu1 = simulator(
             population(size=[5000,20000], ploidy=2, loci=[5,10],
-                ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx']),
+                ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to']),
             randomMating(numOffspring=2, maxNumOffspring=5, mode=MATE_UniformDistribution))
         simu1.evolve(
             [
@@ -65,13 +66,9 @@ class TestAscertainment(unittest.TestCase):
         (s,) = RandomSample(self.pop, 10)
         self.assertEqual(s.popSize(), 10)
         #
-        (s,) = RandomSample(self.pop,[2,8])
+        (s,) = RandomSample(self.pop, [2, 8])
         self.assertEqual(s.subPopSize(0), 2)
         self.assertEqual(s.subPopSize(1), 8)
-        for ind in s.individuals():
-            #old index?
-            inpop = self.pop.individual(ind.intInfo('oldindex'))
-            self.assertEqual(ind, inpop)
 
     def testCaseControlSample(self):
         'Testing case control sampling (imcomplete)'

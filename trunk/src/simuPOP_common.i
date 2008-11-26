@@ -900,24 +900,13 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
             raise exceptions.ValueError('Migration rate can not be empty')
         elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
             r = [rate]
-    # parameter fromSubPop
-    if type(fromSubPop) not in [types.TupleType, types.ListType]:
-        fs = [fromSubPop]
-    else:
-        fs = fromSubPop
-    fsp = []
-    for f in fs:
-        if isinstance(f, vsp):
-            fsp.append(f)
-        else:
-            fsp.append(vsp(f))
     # parameter toSubPop
     if type(toSubPop) in [types.IntType, types.LongType]:
         ts = [toSubPop]
     else:
         ts = toSubPop
     cppModule.migrator_swiginit(self,
-        cppModule.new_migrator(rate=r, fromSubPop=fsp, toSubPop=ts, *args, **kwargs))
+        cppModule.new_migrator(rate=r, fromSubPop=fromSubPop, toSubPop=ts, *args, **kwargs))
 
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__

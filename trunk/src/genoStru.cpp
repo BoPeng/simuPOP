@@ -39,7 +39,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	// otherwise, Loci copies from loci
 	if (loci.empty()) {
 		m_numLoci.resize(1);
-		m_numLoci[0] = 1;
+		m_numLoci[0] = 0;
 		m_chromIndex.resize(2);
 	}
 

@@ -33,6 +33,7 @@ and format conversion utilities.
 """
 
 import exceptions, operator, types, os, sys, getopt, re, math, tempfile, shutil
+import copy, random
 
 from simuPOP import *
 
@@ -2159,5 +2160,323 @@ class simuProgress:
         sys.stdout.flush()
         self.completed = True
 
+
+class pySubset(pyOperator):
+    '''
+    This operator rearranges and removes individuals according to their values at
+    an information field. Individuals with positive values at this information
+    field are moved to the subpopulation specified by the integer value of this
+    value. Individuals with negative values are removed. There is no function
+    form of this operator because this operator is essentially a wrapper around
+    function ``population::setSubPopByIndInfo(field)''.
+    '''
+    def __init__(self, field, *args, **kwargs):
+        '''
+        Create a pySubset operator that rearranges and removes individuals
+        according to their values at an information field *field*.
+        '''
+        self.field = field
+        pyOperator.__init__(self, func=self.apply,
+            param=self.field, *args, **kwargs)
+
+    def apply(self, pop, field):
+        pop.setSubPopByIndInfo(field)
+        return True
+
+    def __repr_():
+        return "<simuPOP::pySubset>"
+
+    def clone():
+        return pySubset(self.field)
+
+class sample(pyOperator):
+    '''
+   Ascertainment/sampling refers to the ways of selecting individuals from a population.
+   In simuPOP, ascerntainment operators create sample populations that can be accessed
+   from the population's local namespace. All the ascertainment operators work like this except for \c pySubset
+   which shrink the population itself. \n
+
+   Individuals in sampled populations may or may not keep their original order but
+   their indexes in the whole population are stored in an information field \c oldindex.
+   This is to say, you can use <tt>ind.info('oldindex')</tt> to check the original
+   position of an individual. \n
+
+   Two forms of sample size specification are supported: with or without subpopulation
+   structure. For example, the \c size parameter of \c randomSample can be a number
+   or an array (which has the length of the number of subpopulations). If a number
+   is given, a sample will be drawn from the whole population, regardless of the
+   population structure. If an array is given, individuals will be drawn from each
+   subpopulation \c sp according to <tt>size[sp]</tt>. \n
+
+   An important special case of sample size specification occurs when <tt>size=[]</tt>
+   (default). In this case, usually all qualified individuals will be returned. \n
+
+   The function forms of these operators are a little different from others.
+   They do return a value: an array of samples.
+    '''
+    def __init__(self, times = 1, name = '', nameExpr = '',
+	       saveAs = '', saveAsExpr = '', *args, **kwargs):
+        '''
+           \param name name of the sample in the local namespace. This variable is an array of
+                populations of size \c times. Default to \c sample.
+             \param nameExpr expression version of parameter \c name. If both \c name and \c nameExpr
+                are empty, sample populations will not be saved in the population's local namespace.
+               This expression will be evaluated dynamically in population's local namespace.
+             \param times how many times to sample from the population. This is usually \c 1,
+                but we may want to take several random samples.
+             \param saveAs filename to save the samples
+             \param saveAsExpr expression version of parameter \c saveAs. It will be evaluated
+               dynamically in population's local namespace.
+             \param format format to save the samples
+
+               Please refer to <tt>baseOperator::__init__</tt> for other parameter descriptions.
+        '''
+        self.times = times
+        self.name = name
+        self.nameExpr = nameExpr
+        self.saveAs = saveAs
+        self.saveAsExpr = saveAsExpr
+        self.samples = []
+        self.pedigree = None
+        pyOperator.__init__(self, func=self.drawSamples, *args, **kwargs)
+
+    def prepareSample(self, pop):
+        '''
+        This function is usually used to prepare a pedigree object so that
+        samples can be drawn.
+        '''
+        raise SystemError('Please re-implement this prepareSample function in the derived class.')
+        return True
+
+    def drawSample(self, pop):
+        '''
+        Draw and return a sample, using population *pop*, and *self.pedigree*
+        prepared in prepareSample.
+        '''
+        raise SystemError('Please re-implement this drawSample function in the derived class.')
+        return True
+
+    def drawSamples(self, pop):
+        if not self.prepareSample(pop) or self.times <= 0:
+            return True
+
+        self.samples = []
+        for t in range(self.times):
+            sample = self.drawSample(pop)
+            self.samples.append(sample)
+            # svae sample to local namespace
+            if self.nameExpr != '':
+                name = eval(self.nameExpr, globals(), pop.vars())
+            elif self.name != '':
+                name = self.name
+            else:
+                name = None
+            if name is not None:
+                if not pop.vars().has_key(name):
+                    pop.dvars().name = []
+                elif type(pop.vars()[name]) != type([]):
+                    raise ValueError("Variable %s already exsits in population's local namespace." % name)
+                pop.vars()[name].append(sample)
+            # save to a file
+            if self.saveAsExpr != '':
+                saveAs = eval(self.saveExpr, globals(), pop.vars())
+            elif self.saveAs != '':
+                saveAs = self.saveAs
+            else:
+                saveAs = None
+            if saveAs is not None:
+                sample.save(saveAs)
+        return True
+
+    def __repr__(self):
+        return "<simuPOP::sample>"
+
+    def clone(self):
+        raise ValueError("Can not clone a base sample class")
+
+
+class randomSample(sample):
+    '''
+    This operator chooses random individuals from a population and form a 
+    number of random samples (populations). These samples can be put in the
+    population's local namespace, or save to disk files. The function form
+    of this operator returns a list of samples directly.
+    '''
+    def __init__(self, size, *args, **kwargs):
+        '''
+        Draw *size* random samples from a population *times* times. *size* can
+        be a number or a list of numbers. In the former case, individuals are
+        drawn from the whole population and the samples has only one
+        subpopulation. In the latter case, a given number of individuals are
+        drawn from each subpopulation and the result sample has the same number
+        of subpopulation as the population from which samples are drawn. The
+        samples are saved in the population's local namespace if *name* or
+        *nameExpr* is given, and are saved as diskfiles if *saveAs* or
+        *saveAsExpr* is given.
+        '''
+        sample.__init__(self, *args, **kwargs)
+        self.size = size
+
+    def prepareSample(self, pop):
+        self.pedigree = pedigree(pop)
+        self.pedigree.addInfoField('sample', -1)
+        return True
+
+    def drawSample(self, pop):
+        if type(self.size) not in [type(()), type([])]:
+            size = self.size
+            if size > pop.popSize():
+                print 'Warning: sample size %d is greater than population size %d.' % (size, pop.popSize())
+                size = pop.popSize()
+            # randomly choose self.size individuals
+            values = [0] * size + [-1] * (pop.popSize() - size)
+            random.shuffle(values)
+            self.pedigree.setIndInfo(values, 'sample')
+        else:
+            for sp in range(pop.numSubPop()):
+                size = self.size[sp]
+                if size > pop.subPopSize(sp):
+                    print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
+                        % (size, sp, pop.subPopSize(sp))
+                values = [sp] * size + [-1] * (pop.subPopSize(sp) - size)
+                random.shuffle(values)
+                self.pedigree.setIndInfo(values, 'sample', sp)
+        print 'here'
+        return pop.extract(field='sample', ped=self.pedigree)
+
+    def clone(self):
+        # this is wrong because other fields are not copied
+        return copy.copy(self)
+
+
+def RandomSample(pop, *args, **kwargs):
+     s = randomSample(*args, **kwargs)
+     s.apply(pop)
+     return s.samples
+ 
+RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
+
+
+# def Sample(pop, *args, **kwargs):
+#     s = sample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.sample(pop)
+# 
+# if sample.__init__.__doc__ is not None:
+#     Sample.__doc__ = "Function version of operator sample whose __init__function is \n" + sample.__init__.__doc__
+# 
+# 
+# 
+# def new_caseControlSample(self, cases=[], controls=[], *args, **kwargs):
+#     if type(cases) in [types.IntType, types.LongType]:
+#         ca = [cases]
+#         spSample = False
+#     else:
+#         ca = cases
+#         spSample = True
+#     if type(controls) in [types.IntType, types.LongType]:
+#         ct = [controls]
+#         spSample = False
+#     else:
+#         ct = controls
+#         spSample = True
+#     cppModule.caseControlSample_swiginit(self,
+#         cppModule.new_caseControlSample(cases=ca, controls=ct,
+#             spSample=spSample, *args, **kwargs))
+# 
+# new_caseControlSample.__doc__ = caseControlSample.__init__.__doc__
+# del caseControlSample.__init__
+# caseControlSample.__init__ = new_caseControlSample
+# 
+# 
+# def new_affectedSibpairSample(self,size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz=[size]
+#     else:
+#         sz = size
+#     cppModule.affectedSibpairSample_swiginit(self,
+#         cppModule.new_affectedSibpairSample(size=sz, *args, **kwargs))
+# 
+# new_affectedSibpairSample.__doc__ = affectedSibpairSample.__init__.__doc__
+# del affectedSibpairSample.__init__
+# affectedSibpairSample.__init__ = new_affectedSibpairSample
+# 
+# 
+# def new_largePedigreeSample(self, size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz= [size]
+#     else:
+#         sz = size
+#     cppModule.largePedigreeSample_swiginit(self,
+#         cppModule.new_largePedigreeSample(size=sz, *args, **kwargs))
+# 
+# new_largePedigreeSample.__doc__ = largePedigreeSample.__init__.__doc__
+# del largePedigreeSample.__init__
+# largePedigreeSample.__init__ = new_largePedigreeSample
+# 
+# 
+# def new_nuclearFamilySample(self, size=[], *args, **kwargs):
+#     if type(size) in [types.IntType, types.LongType]:
+#         sz= [size]
+#     else:
+#         sz = size
+#     cppModule.nuclearFamilySample_swiginit(self,
+#         cppModule.new_nuclearFamilySample(size=sz, *args, **kwargs))
+# 
+# new_nuclearFamilySample.__doc__ = nuclearFamilySample.__init__.__doc__
+# del nuclearFamilySample.__init__
+# nuclearFamilySample.__init__ = new_nuclearFamilySample
+# 
+
+
+ 
+# def CaseControlSample(pop, *args, **kwargs):
+#     s = caseControlSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if caseControlSample.__init__.__doc__ is not None:
+#     CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
+# 
+# def PySample(pop, *args, **kwargs):
+#     s = pySample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if pySample.__init__.__doc__ is not None:
+#     PySample.__doc__ = "Function version of operator pySample whose __init__function is \n" + pySample.__init__.__doc__
+# 
+# def AffectedSibpairSample(pop, *args, **kwargs):
+#     s = affectedSibpairSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if affectedSibpairSample.__init__.__doc__ is not None:
+#     AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
+# 
+# def LargePedigreeSample(pop, *args, **kwargs):
+#     s = largePedigreeSample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if largePedigreeSample.__init__.__doc__ is not None:
+#     LargePedigreeSample.__doc__ = "Function version of operator largePedigreeSample whose __init__function is \n" + largePedigreeSample.__init__.__doc__
+# 
+# def NuclearFamilySample(pop, *args, **kwargs):
+#     s = nuclearFamilySample(*args, **kwargs)
+#     s.apply(pop)
+#     return s.samples(pop)
+# 
+# if nuclearFamilySample.__init__.__doc__ is not None:
+#     NuclearFamilySample.__doc__ = "Function version of operator nuclearFamilySample whose __init__function is \n" + nuclearFamilySample.__init__.__doc__
+# 
+# def PySubset(pop, *args, **kwargs):
+#     s = pySubset(*args, **kwargs)
+#     s.apply(pop)
+# 
+# if pySubset.__init__.__doc__ is not None:
+#     PySubset.__doc__ = "Function version of operator pySubset whose __init__function is \n" + pySubset.__init__.__doc__
+# 
+  
 if __name__ == "__main__":
     pass
