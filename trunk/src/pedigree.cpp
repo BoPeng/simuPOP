@@ -36,10 +36,10 @@
 namespace simuPOP {
 
 pedigree::pedigree(const population & pop, const vectoru & loci,
-		const vectorstr & infoFields)
+		const vectorstr & infoFields, int ancGen)
 {
 	population & ped = pop.extract(false, string(), loci.size() != pop.totNumLoci(),
-		loci, infoFields.size() != pop.infoSize(), infoFields, -1, NULL);
+		loci, infoFields.size() != pop.infoSize(), infoFields, ancGen, NULL);
     swap(ped);
 }
 

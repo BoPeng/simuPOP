@@ -2429,6 +2429,164 @@ def CaseControlSample(pop, *args, **kwargs):
 CaseControlSample.__doc__ = "Function version of operator caseControlSample whose __init__function is \n" + caseControlSample.__init__.__doc__
 
 
+class affectedSibpairSample(_sample):
+    '''
+    This operator chooses affected sibpairs and their parents from a population
+    repeatedly. These samples can be put in the population's local namespace,
+    or save to disk files. The function form of this operator returns a list
+    of samples directly.\n
+    
+    The population to be sampled needs to have at least one ancestral
+    generation. In addition, parents of each offspring is needed so information
+    fields, most likely *father_idx* and *mother_idx* should be used to track
+    parents in the parental generation. An during mating operator
+    *parentsTagger* is designed for such a purpose. In addition, because it is
+    very unlikely for two random offspring to share parents, affected sibpairs
+    can only be ascertained from populations that are generated using a mating
+    scheme that produes more than one offspring at each mating event.
+    '''
+    def __init__(self, size, infoFields=['father_idx', 'mother_idx'], *args, **kwargs):
+        '''
+        Draw *size* families, including two affected siblings and their parents
+        from a population repeatedly. The population to be sampled must have
+        at least one ancestral generation. It should also have two information
+        fields specified by parameter *infoFields* (Default to ``['father_idx',
+        'mother_idx']''. Parameter *size* can be a number or a list of numbers.
+        In the former case, affected sibpairs are drawn from the whole
+        population. In the latter case, a given number of affected sibpairs are
+        drawn from each subpopulation. In both cases, affected sibpairs in the
+        resulting sample form their own subpopulations (of size two). The
+        samples are saved in the population's local namespace if *name* or
+        *nameExpr* is given, and are saved as diskfiles if *saveAs* or
+        *saveAsExpr* is given.
+        '''
+        _sample.__init__(self, *args, **kwargs)
+        self.size = size
+        self.fields = infoFields
+        if len(self.fields) != 2:
+            raise ValueError('Two information fields that indicate indexes of parents in the parental generation is needed')
+        self.repr = '<simuPOP::affectedSibpairSample>'
+
+    def prepareSample(self, pop):
+        if pop.ancestralGens() < 1:
+            raise ValueError('No ancestral generation if found.')
+        for field in self.fields:
+            if field not in pop.infoFields():
+                raise ValueError('Information field %s not found in population' % field)
+        #
+        self.pedigree = pedigree(pop, infoFields=self.fields, ancGen=1)
+        self.pedigree.addInfoFields(['sample', 'pedindex', 'offspring0', 'offspring1', 'spouse'], -1)
+        # locate all affected siblings
+        self.pedigree.locateRelatives(REL_Offspring, ['offspring0', 'offspring1'])
+        self.pedigree.locateRelatives(REL_Spouse, ['spouse'])
+        # look for affected siblings from the parental generation
+        self.pedigree.useAncestralGen(1)
+        parent0 = self.pedigree.infoIdx(self.fields[0])
+        parent1 = self.pedigree.infoIdx(self.fields[1])
+        pedindex = self.pedigree.infoIdx('pedindex')
+        offspring0 = self.pedigree.infoIdx('offspring0')
+        offspring1 = self.pedigree.infoIdx('offspring1')
+        spouse = self.pedigree.infoIdx('spouse')
+        #
+        pedCount = 0
+        self.validPeds = [[] for x in range(self.pedigree.numSubPop())]
+        for selfIdx, ind in enumerate(self.pedigree.individuals()):
+            # if this individual is used
+            # or if no valid spouse
+            # or if no valid first offspring
+            # or if no valid second offspring
+            if ind.intInfo(pedindex) != -1 \
+                or ind.intInfo(spouse) == -1 \
+                or ind.intInfo(offspring0) == -1 \
+                or ind.intInfo(offspring1) == -1:
+                continue
+            # if spouse has been used
+            spouseIdx = ind.intInfo(spouse)
+            spouseInd = self.pedigree.individual(spouseIdx)
+            if spouseInd.intInfo(pedindex) != -1:
+                continue
+            # if the first offspring has been used, or if parents do not match, or if
+            # not affected.
+            offspring0Ind = self.pedigree.ancestor(ind.intInfo(offspring0), 0)
+            if not offspring0Ind.affected() \
+                or offspring0Ind.intInfo(pedindex) != -1 \
+                or offspring0Ind.intInfo(parent0) not in [selfIdx, spouseIdx] \
+                or offspring0Ind.intInfo(parent1) not in [selfIdx, spouseIdx]:
+                continue
+            # if the second offspring has been used, or if parents do not match, or
+            # if not affected
+            offspring1Ind = self.pedigree.ancestor(ind.intInfo(offspring1), 0)
+            if not offspring1Ind.affected() \
+                or offspring1Ind.intInfo(pedindex) != -1 \
+                or offspring1Ind.intInfo(parent1) not in [selfIdx, spouseIdx] \
+                or offspring1Ind.intInfo(parent1) not in [selfIdx, spouseIdx]:
+                continue
+            # good pedigree
+            ind.setInfo(pedCount, pedindex)
+            spouseInd.setInfo(pedCount, pedindex)
+            offspring0Ind.setInfo(pedCount, pedindex)
+            offspring1Ind.setInfo(pedCount, pedindex)
+            # count the number of pedigrees
+            self.validPeds[self.pedigree.subPopIndPair(selfIdx)[0]].append(pedCount)
+            pedCount += 1
+        return True
+
+    def drawSample(self, pop):
+        #
+        pedindex = self.pedigree.infoIdx('pedindex')
+        sample = self.pedigree.infoIdx('sample')
+        #
+        # clear information sample in case this operator is applied twice
+        pop.setIndInfo([0], sample)
+        #
+        pedCount = sum([len(x) for x in self.validPeds])
+        chosenPeds = [False] * pedCount
+        #
+        if type(self.size) not in [type(()), type([])]:
+            size = self.size
+            if size > allPeds:
+                print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
+                    % (size, allPeds)
+                size = allPeds
+            #
+            values = range(allPeds)
+            random.shuffle(values)
+            for v in values[:size]:
+                chosenPeds[v] = True
+        else:
+            if len(self.size) != pop.numSubPop():
+                raise ValueError('If an list of sizes is given, it should be specified for all subpopulations')
+            for sp in range(pop.numSubPop()):
+                allPeds = len(self.validPeds[sp])
+                #
+                size = self.size[sp]
+                if size > allPeds:
+                    print 'Warning: number of requested sibpairs %d is greater than what exists (%d) in subpopulation %d.' \
+                        % (size, allPeds, sp)
+                    size = allPeds
+                #
+                random.shuffle(self.validPeds[sp])
+                for v in self.validPeds[sp][:size]:
+                    chosenPeds[v] = True
+        # assign genotype
+        for gen in range(1, -1, -1):
+            self.pedigree.useAncestralGen(gen)
+            for ind in self.pedigree.individuals(sp):
+                ped = ind.intInfo(pedindex)
+                if ped != -1 and chosenPeds[ped]:
+                    ind.setInfo(ped, sample)
+        sample = pop.extract(field='sample', ancGen=1, ped=self.pedigree)
+        sample.removeEmptySubPops()
+        return sample
+
+
+def AffectedSibpairSample(pop, size, *args, **kwargs):
+     s = affectedSibpairSample(size, *args, **kwargs)
+     s.apply(pop)
+     return s.samples
+ 
+AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSample whose __init__function is \n" + affectedSibpairSample.__init__.__doc__
+
 
 
 # 

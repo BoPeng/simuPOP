@@ -11,7 +11,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=False, debug="DBG_POPULATION")
+simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
 from simuUtil import *
@@ -26,14 +26,14 @@ class TestAscertainment(unittest.TestCase):
                 infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to']),
             randomMating(numOffspring=2))
         simu.evolve(
-            [
+            ops = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 migrator(rate=[[0.1,0.1],[0.1,0.1]]),
                 mapPenetrance(locus=0,
                     penetrance={'0-0':0,'0-1':.7,'1-1':1}),
                 parentsTagger(),
             ],
-            preOps=[
+            preOps = [
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
             ],
