@@ -2291,7 +2291,7 @@ class randomSample(_sample):
         *nameExpr* is given, and are saved as diskfiles if *saveAs* or
         *saveAsExpr* is given.
         '''
-        sample.__init__(self, *args, **kwargs)
+        _sample.__init__(self, *args, **kwargs)
         self.size = size
         self.repr = '<simuPOP::randomSample>'
 
@@ -2349,7 +2349,7 @@ class caseControlSample(_sample):
         if *name* or *nameExpr* is given, and are saved as diskfiles if
         *saveAs* or *saveAsExpr* is given.
         '''
-        sample.__init__(self, *args, **kwargs)
+        _sample.__init__(self, *args, **kwargs)
         self.cases = cases
         self.controls = controls
         self.repr = '<simuPOP::caseControlSample>'
@@ -2357,7 +2357,7 @@ class caseControlSample(_sample):
     def prepareSample(self, pop):
         self.pedigree = pedigree(pop)
         self.pedigree.addInfoField('sample', -1)
-        self.pedigree.setVirtualSplitter(affectedSplitter())
+        self.pedigree.setVirtualSplitter(affectionSplitter())
         return True
 
     def drawSample(self, pop):
@@ -2378,18 +2378,46 @@ class caseControlSample(_sample):
                     % (controls, allControls)
                 controls = allControls
             # caseControlly choose self.size individuals
-            values = [0] * size + [-1] * (pop.popSize() - size)
-            caseControl.shuffle(values)
-            self.pedigree.setIndInfo(values, 'sample')
-        else:
+            value_cases = [0] * cases + [-1] * (allCases - cases)
+            value_controls = [1] * controls + [-1] * (allControls - controls)
+            random.shuffle(value_cases)
+            random.shuffle(value_controls)
+            # assign information fields
+            idx_cases = 0
+            idx_controls = 0
             for sp in range(pop.numSubPop()):
-                size = self.size[sp]
-                if size > pop.subPopSize(sp):
-                    print 'Warning: sample size (%d) at subpopulation %d is greater than subpopulation size %d ' \
-                        % (size, sp, pop.subPopSize(sp))
-                values = [sp] * size + [-1] * (pop.subPopSize(sp) - size)
-                caseControl.shuffle(values)
-                self.pedigree.setIndInfo(values, 'sample', sp)
+                self.pedigree.setIndInfo(value_cases[idx_cases:], 'sample', (sp, 1))
+                self.pedigree.setIndInfo(value_controls[idx_controls:], 'sample', (sp, 0))
+                idx_cases += self.pedigree.subPopSize((sp, 1))
+                idx_controls += self.pedigree.subPopSize((sp, 0))
+        else:
+            if len(self.cases) != pop.numSubPop():
+                raise ValueError('If an list of cases is given, it should be specified for all subpopulations')
+            if len(self.controls) != pop.numSubPop():
+                raise ValueError('If an list of controls is given, it should be specified for all subpopulations')
+            for sp in range(pop.numSubPop()):
+                allCases = self.pedigree.subPopSize((sp, 1))
+                allControls = self.pedigree.subPopSize((sp, 0))
+                #
+                cases = self.cases[sp]
+                if cases > allCases:
+                    print 'Warning: number of cases %d is greater than number of affected individuals %d in subpopulation %d.' \
+                        % (cases, allCases, sp)
+                    cases = allCases
+                #
+                controls = self.controls[sp]
+                if controls > allControls:
+                    print 'Warning: number of controls %d is greater than number of affected individuals %d in subpopulation %d.' \
+                        % (controls, allControls, sp)
+                    controls = allControls
+                # 
+                value_cases = [0] * cases + [-1] * (allCases - cases)
+                value_controls = [1] * controls + [-1] * (allControls - controls)
+                random.shuffle(value_cases)
+                random.shuffle(value_controls)
+                # assign information fields
+                self.pedigree.setIndInfo(value_cases, 'sample', (sp, 1))
+                self.pedigree.setIndInfo(value_controls, 'sample', (sp, 0))
         return pop.extract(field='sample', ped=self.pedigree)
 
 
