@@ -30,7 +30,6 @@ include src/migrator.h
 include src/outputer.h
 include src/selector.h
 include src/penetrance.h
-include src/sampler.h
 include src/qtrait.h
 include src/stator.h
 include src/terminator.h
@@ -55,7 +54,6 @@ include src/migrator.cpp
 include src/outputer.cpp
 include src/selector.cpp
 include src/penetrance.cpp
-include src/sampler.cpp
 include src/qtrait.cpp
 include src/stator.cpp
 include src/terminator.cpp

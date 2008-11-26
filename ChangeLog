@@ -12,8 +12,9 @@ version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Dump() also display information fields.
   - NEW: Expose population::pushAndDiscard(pop) as population::push().
   - NEW: Add parameter subPop to all operators.
-  - CHG: Move operators pySubset() and randomSample(), and caseControlSample()
-		from simuPOP core to simuUtil.py.
+  - CHG: Move operators pySubset(), randomSample(), caseControlSample()
+		and affectedSibpairSample from simuPOP core to simuUtil.py.
+		Remove src/sampler.*.
 
 version 0.8.9 - tagged, but not publically released (rev 1948).
   - DOC: Adjust reference output for simuPOP classes.
