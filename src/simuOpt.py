@@ -1344,7 +1344,7 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
 
     quiet: If True, supress banner information when simuPOP is loaded.
 
-    debug: a list of debug code (or string). If not set, environmental variable
+    debug: a list of debug code (as string). If not set, environmental variable
         SIMUDEBUG will be used if available.
 
     '''
@@ -1355,7 +1355,10 @@ def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=Non
     if quiet in [True, False]:
         simuOptions['Quiet'] = quiet
     if len(debug) > 0:
-        simuOptions['Debug'].extend(debug)
+        if type(debug) == type(''):
+            simuOptions['Debug'].append(debug)
+        else:
+            simuOptions['Debug'].extend(debug)
 
 # short = standard
 if simuOptions['AlleleType'] == 'standard':

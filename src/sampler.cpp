@@ -24,90 +24,8 @@
 #include "sampler.h"
 
 namespace simuPOP {
-// PyObject * sample::samples(population & pop)
-// {
-// 	DBG_FAILIF(m_name.empty() && m_nameExpr.empty(), ValueError,
-// 		"No sample or sample is not saved. (with empty name and nameExpr)");
-// 
-// 	// save sample to local namespace?
-// 	string sampleName = "", saveAsName = "";
-// 	if (!m_nameExpr.empty()) {
-// 		m_nameExpr.setLocalDict(pop.dict());
-// 		sampleName = m_nameExpr.valueAsString();
-// 	} else if (!m_name.empty())
-// 		sampleName = m_name;
-// 
-// 	try {
-// 		PyObject * s = pop.getVar(sampleName);
-// 		Py_INCREF(s);
-// 
-// 		return s;
-// 	} catch (...) {                                                                     // if there is no sample
-// 		Py_INCREF(Py_None);
-// 		return Py_None;
-// 	}
-// }
-// 
-// 
-// bool sample::apply(population & pop)
-// {
-// 	// get info from pop
-// 	// if fail, do nothing.
-// 	if (!prepareSample(pop) )
-// 		return true;
-// 
-// 	for (UINT t = 0; t < m_times; ++t) {
-// 		// info of individuals should be set
-// 		population & sample = drawsample(pop);
-// 
-// 		// save sample to local namespace?
-// 		string sampleName = "", saveAsName = "";
-// 		if (!m_nameExpr.empty() ) {
-// 			m_nameExpr.setLocalDict(pop.dict());
-// 			sampleName = m_nameExpr.valueAsString();
-// 		} else if (!m_name.empty() )
-// 			sampleName = m_name;
-// 
-// 		if (sampleName != "") {
-// 			sampleName += "[" + toStr(t) + "]";
-// 
-// 			PyObject * popObj = pyPopObj(static_cast<void *>(&sample));
-// 
-// 			if (popObj == NULL)
-// 				throw SystemError("Could not expose sample pointer.");
-// 
-// 			if (pop.hasVar(sampleName))
-// 				cout << "Warning: sample " << sampleName <<
-// 				" already exists and will be overwritten." << endl <<
-// 				"You may want to set name parameter to avoid conflict." << endl;
-// 
-// 			// store it.
-// 			// I am not quite sure if this is needed
-// 			Py_INCREF(popObj);
-// 			pop.setVar(sampleName, popObj);
-// 		}
-// 
-// 		// save it to a file
-// 		if (!m_saveAsExpr.empty()) {
-// 			m_saveAsExpr.setLocalDict(pop.dict());
-// 			saveAsName = m_saveAsExpr.valueAsString();
-// 		} else if (!m_saveAs.empty() )
-// 			saveAsName = m_saveAs;
-// 
-// 		if (saveAsName != "") {
-// 			if (m_times > 1)
-// 				saveAsName = saveAsName + toStr(t);
-// 
-// 			sample.savePopulation(saveAsName, m_format);
-// 		}
-// 
-// 		if (sampleName == "")
-// 			delete & sample;
-// 	}
-// 
-// 	return true;
-// }
-// 
+
+
 // 
 // void sample::resetParentalIndex(population & pop, const string & fatherField,
 //                                 const string & motherField, const string & indexField)
@@ -148,70 +66,8 @@ namespace simuPOP {
 // 	}
 // 	pop.useAncestralGen(0);
 // }
-// 
-// 
-// bool randomSample::prepareSample(population & pop)
-// {
-// 	DBG_WARNING(m_size.size() == 1 && m_size[0] > pop.popSize(),
-// 		"sample size > population size. Can not continue.");
-// 
-// 	DBG_FAILIF(m_size.empty(), ValueError,
-// 		"sample size can not be zero/empty for random sampling.");
-// 
-// 	DBG_FAILIF(m_size.size() > 1 && m_size.size() != pop.numSubPop(),
-// 		ValueError, "Length of size and number of subpops do not match.");
-// 
-// 	pop.addInfoField("oldindex", -1);
-// 	pop.locateRelatives(REL_Self, vectorstr(1, "oldindex"));
-// 	if (m_size.size() > 1) {
-// 		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-// 			DBG_WARNING(m_size[sp] > pop.subPopSize(sp),
-// 				"sample size exceed subpopulation size.");
-// 		}
-// 	}
-// 	return true;
-// }
-// 
-// 
-// population & randomSample::drawsample(population & pop)
-// {
-// 	pop.setIndSubPopIDWithID();
-// 
-// 	if (m_size.size() == 1) {
-// 		// randomly choice
-// 		vectori pick(pop.popSize());
-// 		for (size_t i = 0, iEnd = pop.popSize(); i < iEnd; ++i)
-// 			pick[i] = i;
-// 
-// 		// random shuffle the index array.
-// 		random_shuffle(pick.begin(), pick.end());
-// 
-// 		// The first m_size individuals will have its own subpopID
-// 
-// 		// remove others
-// 		for (size_t i = m_size[0], iEnd = pop.popSize(); i < iEnd; ++i)
-// 			pop.ind(pick[i]).setSubPopID(-1);
-// 	} else {
-// 		vectori pick;
-// 		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-// 			ULONG spSize = pop.subPopSize(sp);
-// 			pick.resize(spSize);
-// 			// randomly choice
-// 			for (size_t i = 0, iEnd = spSize; i < iEnd; ++i)
-// 				pick[i] = i;
-// 
-// 			// random shuffle the index array.
-// 			random_shuffle(pick.begin(), pick.end());
-// 
-// 			// remove others
-// 			for (size_t i = m_size[sp]; i < spSize; ++i)
-// 				pop.ind(pick[i], sp).setSubPopID(-1);
-// 		}                                                                                           // each subpop
-// 	}                                                                                               // else
-// 	return pop.newPopByIndID(-1);
-// }
-// 
-// 
+
+
 // bool caseControlSample::prepareSample(population & pop)
 // {
 // 	// record the index in the old population, for samples.
@@ -1010,5 +866,5 @@ namespace simuPOP {
 // 	return newPop;
 // }
 // 
-// 
+ 
 }
