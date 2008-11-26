@@ -2544,12 +2544,12 @@ class affectedSibpairSample(_sample):
         #
         if type(self.size) not in [type(()), type([])]:
             size = self.size
-            if size > allPeds:
+            if size > pedCount:
                 print 'Warning: number of requested sibpairs %d is greater than what exists (%d).' \
-                    % (size, allPeds)
-                size = allPeds
+                    % (size, pedCount)
+                size = pedCount
             #
-            values = range(allPeds)
+            values = range(pedCount)
             random.shuffle(values)
             for v in values[:size]:
                 chosenPeds[v] = True
@@ -2571,7 +2571,7 @@ class affectedSibpairSample(_sample):
         # assign genotype
         for gen in range(1, -1, -1):
             self.pedigree.useAncestralGen(gen)
-            for ind in self.pedigree.individuals(sp):
+            for ind in self.pedigree.individuals():
                 ped = ind.intInfo(pedindex)
                 if ped != -1 and chosenPeds[ped]:
                     ind.setInfo(ped, sample)
