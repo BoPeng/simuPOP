@@ -77,21 +77,10 @@ class TestAscertainment(unittest.TestCase):
         self.assertEqual(s.subPopSize(0), 10)
         self.assertEqual(s.subPopSize(1), 10)
         #
-        (s,) = CaseControlSample(self.pop, [1,2],[5,4])
+        (s,) = CaseControlSample(self.pop, cases=[1,2], controls=[5,4])
         self.assertEqual(s.subPopSize(0), 3)
         self.assertEqual(s.subPopSize(1), 9)
-        # old index
-        self.assertEqual(s.hasInfoField('oldindex'), True)
         #
-        for ind in s.individuals(0):
-            self.assertEqual(ind.affected(), True)
-            #old index?
-            inpop = self.pop.individual(ind.intInfo('oldindex'))
-            self.assertEqual(ind, inpop)
-        for ind in s.individuals(1):
-            self.assertEqual(ind.affected(), False)
-            #old index?
-            inpop = self.pop.individual(ind.intInfo('oldindex'))
 
     def testAffectedSibpairSample(self):
         'Testing affected sibpair sampling (imcomplete)'
