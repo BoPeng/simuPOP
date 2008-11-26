@@ -216,10 +216,11 @@ public:
 	/// create a \c parentsTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr(TAG_ParentsFields, TAG_ParentsFields + 2)) :
-		tagger(output, outputExpr, begin, DuringMating, end, step, at, rep, subPop, infoFields),
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
