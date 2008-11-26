@@ -186,7 +186,7 @@ void simulator::setAncestralDepth(UINT depth)
 }
 
 
-population & simulator::pop(UINT rep, bool byRef)
+population & simulator::pop(UINT rep, bool byRef) const
 {
 	DBG_FAILIF(rep >= m_numRep, IndexError,
 		"replicate index out of range. From 0 to numRep()-1 ");

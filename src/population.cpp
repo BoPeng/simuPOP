@@ -1621,8 +1621,8 @@ void population::useAncestralGen(UINT idx)
 	if (m_curAncestralGen >= 0 && idx == static_cast<UINT>(m_curAncestralGen))
 		return;
 
-	DBG_DO(DBG_POPULATION, cout << "Use ancestralPop: " << idx <<
-		"Curidx: " << m_curAncestralGen << endl);
+	DBG_DO(DBG_POPULATION, cout << "Use ancestral generation: " << idx <<
+		" Current ancestral index: " << m_curAncestralGen << endl);
 
 	if (idx == 0 || m_curAncestralGen != 0) {         // recover pop.
 		popData & pd = m_ancestralPops[ m_curAncestralGen - 1];
@@ -1637,7 +1637,7 @@ void population::useAncestralGen(UINT idx)
 
 	// now m_curAncestralGen is zero.
 	DBG_ASSERT(idx <= m_ancestralPops.size(),
-		ValueError, "Ancestry population " + toStr(idx) + " does not exist.");
+		ValueError, "Ancestry generation " + toStr(idx) + " does not exist.");
 
 	// now idx should be at least 1
 	m_curAncestralGen = idx;

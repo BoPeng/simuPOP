@@ -184,7 +184,7 @@ public:
 	 *  returned population will not change the simulator.
 	 *  <group>3-pop</group>
 	 */
-	population & pop(UINT rep, bool byRef = true);
+	population & pop(UINT rep, bool byRef = true) const;
 
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.
