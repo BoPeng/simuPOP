@@ -2168,7 +2168,7 @@ class pySubset(pyOperator):
     field are moved to the subpopulation specified by the integer value of this
     value. Individuals with negative values are removed. There is no function
     form of this operator because this operator is essentially a wrapper around
-    function ``population::setSubPopByIndInfo(field)''.
+    function ``population::setSubPopByIndInfo(field)``.
     '''
     def __init__(self, field, *args, **kwargs):
         '''
@@ -2451,7 +2451,7 @@ class affectedSibpairSample(_sample):
         from a population repeatedly. The population to be sampled must have
         at least one ancestral generation. It should also have two information
         fields specified by parameter *infoFields* (Default to ``['father_idx',
-        'mother_idx']''. Parameter *size* can be a number or a list of numbers.
+        'mother_idx']``. Parameter *size* can be a number or a list of numbers.
         In the former case, affected sibpairs are drawn from the whole
         population. In the latter case, a given number of affected sibpairs are
         drawn from each subpopulation. In both cases, affected sibpairs in the
