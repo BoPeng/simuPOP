@@ -773,14 +773,14 @@ class Doxy2SWIG:
             if (inspect.getmodule(value) or object) is object:
                 if not visiblename(key):
                     continue
-                self.content.append({'type': 'module', 'module': module})
+                self.content.append({'type': 'module_class', 'module': module})
                 self.content[-1]['Name'] = key
                 args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 des = getdoc(value)
-                des += getdoc(value.__init__)
                 self.content[-1]['Description'] = des
+                self.content[-1]['Init'] = getdoc(value.__init__)
                 self.content[-1]['ignore'] = 'CPPONLY' in des
                 self.content[-1]['hidden'] = 'HIDDEN' in des
                 # these is no details...
@@ -789,7 +789,7 @@ class Doxy2SWIG:
             if inspect.isbuiltin(value) or inspect.getmodule(value) is object:
                 if not visiblename(key) or not inspect.isfunction(value):
                     continue
-                self.content.append({'type': 'module', 'module': module})
+                self.content.append({'type': 'module_func', 'module': module})
                 self.content[-1]['Name'] = key
                 args, varargs, varkw, defaults = inspect.getargspec(value)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
@@ -925,19 +925,18 @@ class Doxy2SWIG:
             print >> out, '\\end{funcdesc}\n}\n'
         # then python modules
         modules = sets.Set(
-            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore'] and not x['hidden']])
+            [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
-            # class object
+            # module functions
             mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
-            print >> out, '\\newcommand{\\%sRef}{' % module
-            print >> out, '\n\\subsection{Module \\texttt{%s}\index{module!%s}' % (module, module)
+            print >> out, '\\newcommand{\\%sFuncRef}{' % module
+            print >> out, '\n\\subsection{\\texttt{%s} functions\\index{module!%s}' % (module, module)
             print >> out, '}\n\\par %s' % self.latex_formatted_text(mod['Doc'])
             # module functions
-            funcs = [x for x in self.content if x['type'] == 'module' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
             funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
             # print all functions
-            print >> out, '\\par\n\\strong{Module Functions}\n\\par'
             #print >> out, '\\begin{description}'
             for mem in funcs:
                 if mem.has_key('Usage') and mem['Usage'] != '':
@@ -952,21 +951,39 @@ class Doxy2SWIG:
                     print >> out, '\\par\n\\strong{Note: }%s\\par' % self.latex_text(mem['note'])
                 print >> out, '\\end{funcdesc}\n'
             print >> out, '}\n'
+            # module classes
+            classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            # sort it
+            classes.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            # print all functions
+            for cls in classes:
+                print >> out, '\\newcommand{\\%s%sRef}{' % (module, cls['Name'])
+                print >> out, '\n\\subsection{Class \\texttt{%s}\index{module!%s}' % (cls['Name'], cls['Name'])
+                if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
+                    print >> out, '  (Function %s\index{function!%s})' % (
+                            self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
+                print >> out, '}\n'
+                print >> out, r' %s' % self.latex_formatted_text(cls['Doc'])
+                if cls.has_key('Usage') and cls['Usage'] != '':
+                    func_name = cls['Usage'].split('(')[0]
+                    func_body = cls['Usage'][len(func_name):].lstrip('(').rstrip(')')
+                    print >> out, '\\begin{classdesc}{%s}{%s}\n' % (self.latex_text(func_name),
+                        self.latex_text(func_body))
+                else:
+                    print >> out, '\\begin{classdesc}{%s}{}\n' % cls['Name']
+                print >> out, r' %s' % self.latex_formatted_text(cls['Init'])
+                if cls.has_key('note') and cls['note'] != '':
+                    print >> out, '\\par\n\\strong{Note: }%s\\par' % self.latex_text(cls['note'])
+                print >> out, '\\end{classdesc}\n'
+                print >> out, '}\n'
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
             classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
-            print >> out, '\n\\subsection{Class \\texttt{%s}\index{class!%s}' % (classname, classname)
+            print >> out, '\n\\subsection{Class \\texttt{%s}\\index{class!%s}' % (classname, classname)
             if entry.has_key('funcForm'): # or entry.has_key('Applicability'):
-                annotation = '  ('
-                if entry.has_key('funcForm'):
-                    annotation += 'Function %s\index{function!%s}' % (
+                print >> out, '  (Function %s\index{function!%s})' % (
                         self.latex_text(entry['funcForm']), self.latex_text(entry['funcForm']))
-                if entry.has_key('Applicability'):
-                    if entry.has_key('funcForm'):
-                        annotation += ', '
-                    # annotation += 'Applicable to %s' % self.latex_text(entry['Applicability'])
-                print >> out, annotation + ')'
             print >> out, '}\n'
             print >> out, '\\par \\MakeUppercase %s' % self.latex_text(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
@@ -1028,7 +1045,7 @@ class Doxy2SWIG:
                 continue
             group = ''
             for mem in members:
-                print "MEMBER %s, GROUP '%s'" % (mem['Name'], mem['group'])
+                #print "MEMBER %s, GROUP '%s'" % (mem['Name'], mem['group'])
                 if group != mem['group']:
                     if group != '':
                         print >> out, '\\vspace{10pt}\n'
@@ -1099,10 +1116,15 @@ xleftmargin=15pt}
              print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         # modules
         modules = sets.Set(
-            [x['module'] for x in self.content if x['type'] == 'module' and not x['ignore'] and not x['hidden']])
+            [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
-             print >> out, r'\%sRef' % module
-             print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+            print >> out, r'\%sFuncRef' % module
+            print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+            classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            # print all functions
+            for cls in classes:
+                print >> out, r'\%s%sRef' % (module, cls['Name'])
+                print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
         for entry in [x for x in self.content if x['type'] in ['class'] and not x['ignore'] and not x['hidden']]:
              print >> out, r'\%sRef' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
              print >> out, r'\vspace{.1in}\par\rule[.3ex]{\linewidth}{1pt}\par\vspace{0.1in}'

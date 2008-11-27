@@ -2098,16 +2098,17 @@ def LargePeds_VC_merlin(pop, sampleSize,  qtrait=None, infoField='qtrait', merli
         shutil.rmtree(dir)
     return pvalues
 
+
 class simuProgress:
     '''
     This class defines a very simple text based progress bar. It will display a
-    character (default to '.') for each change of progress (default to 2%),
+    character (default to "``.``") for each change of progress (default to 2%),
     and a number (1, 2, ..., 9) for each 10% of progress, and print a message
-    (default to 'Done.\n') when the job is finished.
+    (default to "``Done.\\n``") when the job is finished.
 
-    This progress is used as follows:
+    This class is used as follows::
 
-        progress = simuProgress(500)
+        progress = simuProgress("Start simulation", 500)
         for i in range(500):
             progress.update(i+1)
         # if you would like to make sure the done message is displayed.
