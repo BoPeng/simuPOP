@@ -174,17 +174,15 @@ public:
 	}
 
 
-	/** Return the \e rep-th population of a simulator, in the form of a
-	 *  reference (<tt>byRef=True</tt> (default)), or a cloned copy. In the
-	 *  first case, a temporary reference is returned, which will become
-	 *  invalid once the simulator starts evolving or becomes invalid (removed).
-	 *  Modifying the returned object is discouraged because it will change
-	 *  the population within the simulator. In the second case, an independent,
-	 *  cloned copy of the internal population is returned. Modifying the
-	 *  returned population will not change the simulator.
+	/** Return a reference to the \e rep-th population of a simulator. The
+	 *  reference will become invalid once the simulator starts evolving or
+	 *  becomes invalid (removed). Modifying the returned object is discouraged
+	 *  because it will change the population within the simulator. If an
+	 *  independent copy of the population is needed, use
+	 *  <tt>simu.population(rep).clone()</tt>.
 	 *  <group>3-pop</group>
 	 */
-	population & pop(UINT rep, bool byRef = true) const;
+	population & pop(UINT rep) const;
 
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.
@@ -283,8 +281,8 @@ public:
 		return m_ptrRep[rep]->vars();
 	}
 
-	/** Return a dictionary of subpopulation variables in a local namespace of
-     *  the \e rep-th population, equivalent to
+	/** Return a dictionary of subpopulation variables in the local namespace
+     *  of the \e rep-th population, equivalent to
      *  <tt>x.population(rep).vars(subPop)</tt>.
 	 *  <group>9-var</group>
 	 */
