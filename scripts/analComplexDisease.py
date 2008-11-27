@@ -319,6 +319,773 @@ def popStat(pop):
     return result
 
 
+def TDT_gh(file, gh='gh'):
+    '''
+    Analyze data using genehunter/TDT. Note that this function may not work under
+    platforms other than linux, and may not work with your version of genehunter.
+    As a matter of fact, it is almost unrelated to simuPOP and is provided only
+    as an example how to use python to analyze data.
+
+    Parameters
+        file
+            file to analyze. This function will look for file.dat and file.pre
+            in linkage format.
+        loci
+            a list of loci at which p-value will be returned. If the list is empty,
+            all p-values are returned.
+        gh
+            name (or full path) of genehunter executable. Default to 'gh'
+
+    Return value
+        A list (for each chromosome) of list (for each locus) of p-values.
+
+    '''
+    if not os.path.isfile(file + '.dat') or not os.path.isfile(file + '.pre'):
+        print 'Data (%s.dat) or pedigree (%s.pre) file does not exist' % (file, file)
+        sys.exit(2)
+    # open the pipe for gh
+    fin, fout = os.popen2(gh)
+    cmds = '''load markers %s.dat
+tdt %s.pre
+q
+''' % (file, file)
+    print "Running GENEHUNTER with commands:"
+    print cmds
+    # write to fin
+    print >> fin, cmds
+    fin.close()
+    # read output
+    # get only loc number and p-value
+    scan = re.compile('loc(\d+)\s+- Allele \d+\s+\d+\s+\d+\s+[\d.]+\s+([\d.]+|nan)\s*.*')
+    head = re.compile('Marker loc(\d+).*')
+    minPvalue = {}
+    maxLoc = 0
+    for l in fout.readlines():
+        try:
+            (loc,) = head.match(l).groups()
+            maxLoc = max(int(loc), maxLoc)
+        except:
+            pass
+        try:
+            # get minimal p-value for all alleles at each locus
+            # this is meaningless for binary alleles, and other method should be used
+            # for multi-allele loci.
+            # GH output: (for 20 markers)
+            # marker loc1  <- locus 0
+            # ...
+            # marker loc19 <- locus 18
+            #
+            (loc, pvalue) = scan.match(l).groups()
+            idx = int(loc) - 1
+            if pvalue == 'nan':
+                pvalue = -1
+            else:
+                pvalue = float(pvalue)
+            if not minPvalue.has_key(idx):
+                minPvalue[idx] = pvalue
+            elif minPvalue[idx] > pvalue:
+                minPvalue[idx] = pvalue
+        except:
+            # does not match
+            continue
+    fout.close()
+    # sort by pos,...
+    return [minPvalue.setdefault(x, -1) for x in range(maxLoc)]
+
+
+def LOD_gh(file, gh='gh'):
+    '''
+    Analyze data using the linkage method of genehunter. Note that this function may not
+    work under platforms other than linux, and may not work with your version of
+    genehunter. As a matter of fact, it is almost unrelated to simuPOP and is provided
+    only as an example how to use python to analyze data.
+
+    Parameters
+        file
+            file to analyze. This function will look for file.dat and file.pre
+            in linkage format.
+        loci
+            a list of loci at which p-value will be returned. If the list is empty,
+            all p-values are returned.
+        gh
+            name (or full path) of genehunter executable. Default to 'gh'
+
+    Return value
+        A list (for each chromosome) of list (for each locus) of p-values.
+
+    '''
+    if not os.path.isfile(file + '.dat') or not os.path.isfile(file + '.pre'):
+        print 'Data (%s.dat) or pedigree (%s.pre) file does not exist' % (file, file)
+        sys.exit(2)
+    # open the pipe for gh
+    fin, fout = os.popen2(gh)
+    # write to fin
+    cmds = '''load markers %s.dat
+single point on
+scan pedigrees %s.pre
+photo tmp.txt
+total stat
+q
+''' % (file, file)
+    print "Running GENEHUNTER with commands:"
+    print cmds
+    print >> fin, cmds
+    fin.close()
+    # read output
+    # get only loc number and p-value
+    scan = re.compile('loc(\d+)\s+[^\s]+\s+[^\s]+\s+([^\s]+)\s*.*')
+    minPvalue = {}
+    start = 0
+    for l in fout.readlines():
+        if "Totalling pedigrees:" in l:
+            start = 1
+        if not start:
+            continue
+        try:
+            # get minimal p-value for all alleles at each locus
+            (loc, pvalue) = scan.match(l).groups()
+            #print loc, pvalue
+            minPvalue[int(loc)-1] = float(pvalue)
+        except:
+            # does not match
+            continue
+    fout.close()
+    # dict to list
+    return [minPvalue.setdefault(x, -1) for x in range(len(minPvalue))]
+
+
+
+def ChiSq_test(pop):
+    '''perform case control test
+
+    pop
+        loaded population, or population file in simuPOP format.
+        This function assumes that pop has two
+        subpopulations, cases and controls, and have 0 as wildtype and 1 as
+        disease allele. pop can also be an loaded population object.
+
+    Return value
+        A list of p-value at each locus.
+
+    Note: this function requires rpy module.
+
+'''
+    # I can not load rpy with simuUtil.py, so here it is
+    try:
+        import rpy
+    except:
+        print "RPy module can not be loaded, association test can not be performed"
+        sys.exit(1)
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    # at each locus
+    pvalues = []
+    Stat(pop, alleleFreq=range(pop.totNumLoci()))
+    for loc in range(pop.totNumLoci()):
+        # allele frequency
+        caseNum = pop.dvars(0).alleleNum[loc]
+        if len(caseNum) == 1:
+            caseNum.append(0)
+        elif len(caseNum) > 2:
+            raise 'ChiSq: non-SNP markers are not supported.'
+        contNum = pop.dvars(1).alleleNum[loc]
+        if len(contNum) == 1:
+            contNum.append(0)
+        elif len(contNum) > 2:
+            raise 'ChiSq: non-SNP markers are not supported.'
+        pvalues.append(rpy.r.chisq_test(rpy.with_mode(rpy.NO_CONVERSION,
+            rpy.r.matrix)( caseNum+contNum, ncol=2))['p.value'])
+    return pvalues
+
+
+def LOD_merlin(file, merlin='merlin'):
+    '''run multi-point non-parametric linkage analysis using merlin
+    '''
+    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map --npl' % (file, file, file)
+    resline = re.compile('\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+[\d.+-]+\s+([\d.+-]+)')
+    print "Running:"
+    print cmd
+    fout = os.popen(cmd)
+    pvalues = []
+    for line in fout.readlines():
+        try:
+            (pvalue,) = resline.match(line).groups()
+            try:
+                pvalues.append(float(pvalue))
+            except:
+                pvalues.append(-1)
+        except:
+            pass
+    fout.close()
+    return pvalues
+
+
+def VC_merlin(file, merlin='merlin'):
+    '''run variance component method
+
+    file
+        file.ped, file.dat, file.map and file,mdl are expected.
+        file can contain directory name.
+
+    '''
+    cmd = 'merlin -d %s.dat -p %s.ped -m %s.map  --vc' % (file, file, file)
+    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
+    print "Running"
+    print cmd
+    fout = os.popen(cmd)
+    pvalues = []
+    for line in fout.readlines():
+        try:
+            # currently we only record pvalue
+            (pos, h2, chisq, lod, pvalue) = resline.match(line).groups()
+            try:
+                pvalues.append(float(pvalue))
+            except:
+                # na?
+                pvalues.append(-1)
+        except AttributeError:
+            pass
+    fout.close()
+    return pvalues
+
+
+def Regression_merlin(file, merlin='merlin-regress'):
+    '''run merlin regression method'''
+    # get information
+    cmd = '%s -d %s.dat -p %s.ped -m %s.map' % (merlin, file, file, file)
+    print "Running"
+    print cmd
+    fout = os.popen(cmd)
+    #
+    pvalues = []
+    resline = re.compile('\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)\s+([\d.+-]+|na)%\s+([\d.+-]+|na)\s+([\d.+-]+|na)')
+    for line in fout.readlines():
+        try:
+            (pos, h2, stdev, info, lod, pvalue) = resline.match(line).groups()
+            try:
+                pvalues.append(float(pvalue))
+            except:
+                # na?
+                pvalues.append(-1)
+        except AttributeError:
+            pass
+    fout.close()
+    return pvalues
+
+
+def Sibpair_TDT_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh='gh', keep_temp=False):
+    '''
+    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+        
+    pene
+        penetrance function, if not given (None), existing affection
+        status will be used.
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    recRate
+        recombination rate, used in the Linkage file. If not given,
+        pop.dvars().recRate[0] will be used. If there is no such variable,
+        0.0001 is used.
+
+    daf
+        disease allele frequency. This is needed for the linkage format
+        but I am not sure if it is used by TDT.
+
+    gh
+        executable name of genehunter, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # apply penetrance
+    if penetrance is not None:
+        PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
+    # draw affected sibpair sample
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    dir = tempfile.mkdtemp()
+    try:
+        if recRate is not None:
+            r = recRate
+        else:
+            r = pop.dvars().recRate[0]
+    except:
+        r = 0.0005
+    if daf is not None:
+        d = daf
+    else:
+        d = 0.1
+    # save in Linkage format and apply TDT
+    pvalues = []
+    for ch in range(0, pop.numChrom() ):
+        SaveLinkage(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+            recombination=r, loci = range(sample.chromBegin(ch), sample.chromEnd(ch)),
+            daf=0.1)
+        # process by TDT
+        pvalues.extend(TDT_gh(os.path.join(dir, "Aff_%d" % (ch+1)), gh=gh))
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    # remove temporary directory
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+def Sibpair_LOD_gh(pop, sampleSize, penetrance=None, recRate=None, daf=None, gh='gh', keep_temp=False):
+    '''
+    Draw affected sibpair sample from pop, run Linkage analysis using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+
+    pene
+        penetrance function, if not given (None), existing affection
+        status will be used.
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    recRate
+        recombination rate, used in the Linkage file. If not given,
+        pop.dvars().recRate[0] will be used. If there is no such variable,
+        0.0001 is used.
+
+    daf
+        disease allele frequency. This is needed for the linkage format
+        but I am not sure if it is used by TDT.
+
+    gh
+        executable name of genehunter, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # apply penetrance
+    if penetrance is not None:
+        PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
+    # draw affected sibpair sample
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    dir = tempfile.mkdtemp()
+    try:
+        if recRate is not None:
+            r = recRate
+        else:
+            r = pop.dvars().recRate[0]
+    except:
+        r = 0.0005
+    if daf is not None:
+        d = daf
+    else:
+        d = 0.1
+    # save in Linkage format and apply linkage method
+    pvalues = []
+    for ch in range(0, pop.numChrom()):
+        SaveLinkage(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+            recombination=r, loci = range(sample.chromBegin(ch), sample.chromEnd(ch)),
+            daf=0.1)
+        pvalues.extend(LOD_gh(os.path.join(dir, "Aff_%d" % (ch+1)), gh=gh))
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    # remove temporary directory
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+def Sibpair_LOD_merlin(pop, sampleSize, penetrance=None, merlin='merlin', keep_temp=False):
+    '''
+    Draw affected sibpair sample from pop, run multi-point linkage
+    analysis using merlin
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+
+    pene
+        penetrance function, if not given (None), existing affection
+        status will be used.
+        
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    merlin
+        executable name of merlin, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # apply penetrance
+    if penetrance is not None:
+        PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
+    # draw affected sibpair sample
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    Stat(sample, numOfAffected=True)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # save in QTDT
+    dir = tempfile.mkdtemp()
+    pvalues = []
+    for ch in range(0, pop.numChrom() ):
+        SaveQTDT(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+                loci = range(sample.chromBegin(ch), sample.chromEnd(ch)),
+                fields=['affection'])
+        # process by merlin
+        pvalues.extend(LOD_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin))
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    # remove temporary directory
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+def CaseControl_ChiSq(pop, sampleSize, penetrance=None):
+    '''
+    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+        
+    pene
+        penetrance function, if not given (None), existing affection
+        status will be used.
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # apply penetrance
+    if penetrance is not None:
+        PyPenetrance(pop, loci=pop.dvars().DSL, func=penetrance)
+    # draw affected sibpair sample
+    print "Generating affected sibpair sample..."
+    (sample,) = CaseControlSample(pop, sampleSize/2, sampleSize/2, times=1)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    pvalues = ChiSq_test(sample)
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    return pvalues
+
+
+
+def QtraitSibs_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin-regress', keep_temp=False):
+    '''
+    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+
+    qtrait
+        a function to calculate quantitative trait
+
+    infoField
+        information field to store quantitative trait. Default to 'qtrait'
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    merlin
+        executable name of merlin, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # generate quantitative trait
+    if not pop.hasInfoField(infoField):
+        pop.addInfoField(infoField)
+    if qtrait is not None:
+        PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
+    # set everyone to be affected
+    MaPenetrance(pop, loci=[0], penetrance=[1,1,1])
+    # draw affected sibpair sample
+    print "Generating sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    dir = tempfile.mkdtemp()
+    # save in Linkage format
+    pvalues = []
+    for ch in range(0, pop.numChrom()):
+        SaveQTDT(pop=sample, output = os.path.join(dir, "QTDT_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
+        # process by TDT
+        pvalues.extend(Regression_merlin(os.path.join(dir, "QTDT_%d" % (ch+1)), merlin=merlin))
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    # remove temporary directory
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+def QtraitSibs_VC_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin', keep_temp=False):
+    '''
+    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+
+    qtrait
+        a function to calculate quantitative trait
+
+    infoField
+        information field to store quantitative trait. Default to 'qtrait'
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    merlin
+        executable name of merlin, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # generate quantitative trait
+    if not pop.hasInfoField(infoField):
+        pop.addInfoField(infoField)
+    if qtrait is not None:
+        PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
+    # set everyone to be affected
+    MaPenetrance(pop, loci=[0], penetrance=[1,1,1])
+    # draw affected sibpair sample
+    print "Generating affected sibpair sample..."
+    (sample,) = AffectedSibpairSample(pop, size=sampleSize/4, times=1)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    dir = tempfile.mkdtemp()
+    # save in Linkage format
+    pvalues = []
+    for ch in range(0, pop.numChrom()):
+        SaveQTDT(pop=sample, output = os.path.join(dir, "Aff_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
+        pvalues.extend(VC_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin))
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    # remove temporary directory
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+def LargePeds_Reg_merlin(pop, sampleSize, qtrait=None, infoField='qtrait', merlin='merlin-regress', keep_temp=False):
+    '''
+    Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+
+    qtrait
+        a function to calculate quantitative trait
+
+    infoField
+        information field to store quantitative trait. Default to 'qtrait'
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    merlin
+        executable name of merlin, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # generate quantitative trait
+    if not pop.hasInfoField(infoField):
+        pop.addInfoField(infoField)
+    if qtrait is not None:
+        PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
+    # draw affected sibpair sample
+    print "Generating large pedigress sample..."
+    (sample,) = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5,
+        minPedSize=8, minAffected=0)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    dir = tempfile.mkdtemp()
+    # save in Linkage format
+    pvalues = []
+    for ch in range(0, pop.numChrom()):
+        SaveQTDT(pop=sample, output = os.path.join(dir, "QTDT_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
+        pvalues.extend(Regression_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin))
+    # remove temporary directory
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+def LargePeds_VC_merlin(pop, sampleSize,  qtrait=None, infoField='qtrait', merlin='merlin', keep_temp=False):
+    '''Draw affected sibpair sample from pop, run TDT using GENEHUNTER
+
+    pop
+        simuPOP population. It can be a string if path to a file is given.
+        This population must
+
+            - have at least one ancestral generation (parental generation)
+            - have a variable DSL (pop.dvars().DSL) indicating
+              the Disease susceptibility loci. These DSL will be removed from
+              the samples.
+            - has only binary alleles
+
+    qtrait
+        a function to calculate quantitative trait
+
+    infoField
+        information field to store quantitative trait. Default to 'qtrait'
+
+    sampleSize
+        total sample size N. N/4 is the number of families to ascertain.
+
+    merlin
+        executable name of merlin, full path name can be given.
+
+    keep_temp
+        if True, do not remove sample data. Default to False.
+
+    '''
+    # load population
+    if type(pop) == type(''):
+        print "Loading population %s " % pop
+        pop = LoadPopulation(pop)
+    # generate quantitative trait
+    if not pop.hasInfoField(infoField):
+        pop.addInfoField(infoField)
+    if qtrait is not None:
+        PyQuanTrait(pop, loci=pop.dvars().DSL, func=qtrait, infoFields=[infoField])
+    # draw affected sibpair sample
+    print "Generating large pedigree sample..."
+    (sample,) = LargePedigreeSample(pop, minTotalSize=N, maxOffspring=5,
+        minPedSize=8, minAffected=0)
+    # remove DSL from the sample
+    sample.removeLoci(pop.dvars().DSL)
+    # parameters needed by SaveLinkage
+    dir = tempfile.mkdtemp()
+    pvalues = []
+    for ch in range(0, pop.numChrom()):
+        SaveQTDT(pop=sample, output = os.path.join("%s%d" % (dirPrefix, ns), "QTDT_%d" % (ch+1)),
+            loci = range(sample.chromBegin(ch), sample.chromEnd(ch)), fields=['qtrait'])
+        pvalues = VC_merlin(os.path.join(dir, "Aff_%d" % (ch+1)), merlin=merlin)
+    # remove temporary directory
+    if len(pvalues) != sample.totNumLoci():
+        print "Only obtain", len(pvalues), "pvalues. (should have", sample.totNumLoci(), ")"
+        sys.exit(0)
+    if not keep_temp:
+        shutil.rmtree(dir)
+    return pvalues
+
+
+
 if __name__ == '__main__':
     allParam = getOptions()
     # unpack options
