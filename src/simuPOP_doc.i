@@ -6162,6 +6162,19 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pedigree::pedigree "
+
+Usage:
+
+    pedigree(pop, loci=[], infoFields=[], ancGen=-1)
+
+Details:
+
+    Create a pedigree object from a population, using a subset of
+    loci, information fields and ancestral generations.
+
+"; 
+
 %feature("docstring") simuPOP::pedigree::locateRelatives "
 
 Usage:
@@ -7013,9 +7026,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::indOrdered();
+%ignore simuPOP::population::indOrdered() const ;
 
-%ignore simuPOP::population::setIndOrdered(bool s);
+%ignore simuPOP::population::setIndOrdered(bool s) const ;
 
 %ignore simuPOP::population::indBegin(IterationType type=VisibleInds);
 
@@ -7332,7 +7345,11 @@ Details:
     genotypes at loci are extracted. If infoFields is not None, only
     these information fields will be extracted. If ancGen is not -1
     (default, meaing all ancestral generations), only ancGen ancestral
-    generations will be kept.
+    generations will be kept. As an advanced feature, field can be
+    information field of a pedigree object ped. This allows extraction
+    of individuals according to pedigrees identified in a pedigree
+    object. This pedigree should have the same number of individuals
+    in all generations.
 
 "; 
 
@@ -7571,7 +7588,7 @@ Details:
 
 %ignore simuPOP::population::equalTo(const population &rhs);
 
-%ignore simuPOP::population::sortIndividuals(bool infoOnly=false);
+%ignore simuPOP::population::sortIndividuals(bool infoOnly=false) const ;
 
 %feature("docstring") simuPOP::population::save "
 
@@ -13215,19 +13232,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::setRNG "
-
-Description:
-
-    for backward compatibilit, will remove later
-
-Usage:
-
-    setRNG(rng=\"\", seed=0)
-
-"; 
-
-%feature("docstring") simuPOP::ListAllRNG "
+%feature("docstring") simuPOP::ListRNG "
 
 Description:
 
@@ -13235,11 +13240,9 @@ Description:
 
 Usage:
 
-    ListAllRNG()
+    ListRNG()
 
 "; 
-
-%ignore simuPOP::listAllRNG();
 
 %feature("docstring") simuPOP::simuRev "
 
