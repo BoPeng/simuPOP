@@ -2138,6 +2138,9 @@ class simuProgress:
         sys.stdout.flush()
 
     def update(self, count):
+        '''
+        Update the progreebar.
+        '''
         #
         count = min(count, self.totalCount)
         #
@@ -2155,6 +2158,9 @@ class simuProgress:
         sys.stdout.flush()
 
     def done(self):
+        '''
+        Finish progressbar, print 'done' message.
+        '''
         if self.completed:
             return
         sys.stdout.write(self.doneMsg)
