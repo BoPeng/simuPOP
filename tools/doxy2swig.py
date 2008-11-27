@@ -775,16 +775,30 @@ class Doxy2SWIG:
                     continue
                 self.content.append({'type': 'module_class', 'module': module})
                 self.content[-1]['Name'] = key
+                self.content[-1]['Doc'] = getdoc(value)
+                self.content[-1]['InitDoc'] = getdoc(value.__init__)
+                self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Doc']
+                self.content[-1]['hidden'] = 'HIDDEN' in self.content[-1]['Doc']
+                # these is no details...
                 args, varargs, varkw, defaults = inspect.getargspec(value.__init__)
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
-                des = getdoc(value)
-                self.content[-1]['Description'] = des
-                self.content[-1]['Init'] = getdoc(value.__init__)
-                self.content[-1]['ignore'] = 'CPPONLY' in des
-                self.content[-1]['hidden'] = 'HIDDEN' in des
-                # these is no details...
-                self.content[-1]['Doc'] = self.content[-1]['Description']
+                self.content[-1]['Usage'] = self.content[-1]['Usage'].replace('self, ', '').replace('self)', ')')
+                members = []
+                for key1, value1 in inspect.getmembers(value, inspect.isroutine):
+                    if not visiblename(key1) or key1.startswith('_'):
+                        continue
+                    try:
+                        args, varargs, varkw, defaults = inspect.getargspec(value1)
+                    except:
+                        continue
+                    member = {'Name': key1}
+                    member['Usage'] = key1 + inspect.formatargspec(
+                        args, varargs, varkw, defaults)
+                    member['Usage'] = member['Usage'].replace('self, ', '').replace('self)', ')')
+                    member['Doc'] = getdoc(value1)
+                    members.append(member)
+                self.content[-1]['Members'] = members
         for key, value in inspect.getmembers(object, inspect.isroutine):
             if inspect.isbuiltin(value) or inspect.getmodule(value) is object:
                 if not visiblename(key) or not inspect.isfunction(value):
@@ -971,11 +985,25 @@ class Doxy2SWIG:
                         self.latex_text(func_body))
                 else:
                     print >> out, '\\begin{classdesc}{%s}{}\n' % cls['Name']
-                print >> out, r' %s' % self.latex_formatted_text(cls['Init'])
-                if cls.has_key('note') and cls['note'] != '':
-                    print >> out, '\\par\n\\strong{Note: }%s\\par' % self.latex_text(cls['note'])
-                print >> out, '\\end{classdesc}\n'
-                print >> out, '}\n'
+                print >> out, self.latex_formatted_text(cls['InitDoc'])
+                if not cls.has_key('Members') or len(cls['Members']) == 0:
+                    print >> out, '\\end{classdesc}\n}\n'
+                    continue
+                else:
+                    print >> out, '\\par\n\\vspace{3pt}\\par\n'
+                for mem in cls['Members']:
+                    if mem['Doc'] == '':
+                        continue
+                    usage = self.latex_text(mem['Usage'])
+                    usageName = usage.split('(')[0]
+                    usageParam = usage[len(usageName):].lstrip('(').rstrip(')')
+                    print >> out, r'\begin{methoddesc}{%s}{%s}' % (usageName, usageParam)
+                    if mem['Doc'] != '':
+                        print >> out, '\n\\vspace{3pt} \\MakeUppercase %s\\par\n' % self.latex_formatted_text(mem['Doc'])
+                    else:
+                        print >> out, '\\hspace{0pt}\\par\n'
+                    print >> out, '\\end{methoddesc}\n'
+                print >> out, '\\end{classdesc}\n}\n'
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
             print >> out, '\\newcommand{\\%sRef}{' % self.latexName(entry['Name'].replace('simuPOP::', '', 1))
