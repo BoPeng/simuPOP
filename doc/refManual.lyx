@@ -1434,7 +1434,7 @@ LimitsRef
 
 
 \backslash
-ListAllRNGRef
+ListRNGRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1582,19 +1582,9 @@ RNGRef
 \end_layout
 
 \begin_layout Section
-Utility Modules
-\end_layout
-
-\begin_layout Standard
-Several utility modules are distributed with simuPOP.
- They provide important functions and extensions to simuPOP and serve as
- good examples on how simuPOP can be used.
-\end_layout
-
-\begin_layout Standard
-Compared to simuPOP kernel functions, these utility functions are less tested,
- and are subject to more frequent changes.
- Please report to simuPOP mailing list if any function stops working.
+Module 
+\family typewriter
+simuOpt
 \end_layout
 
 \begin_layout Standard
@@ -1605,28 +1595,86 @@ status open
 
 
 \backslash
-simuOptRef
+simuOptFuncRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuUtil
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilrandomSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuUtilRef
+simuUtilcaseControlSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-simuRPyRef
+simuUtilaffectedSibpairSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-hapMapUtilRef
+simuUtilpySubsetRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilsimuProgressRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilFuncRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuRPy
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyvarPlotterRef
 \end_layout
 
 \end_inset
