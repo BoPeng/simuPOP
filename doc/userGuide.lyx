@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1559,26 +1559,26 @@ SIMUOPTIMIZED
 \end_layout
 
 \begin_layout Standard
-When simuPOP is loaded, it creates a default random number generator of
- type 
+When simuPOP is loaded, it creates a default random number generator (RNG)
+ of type 
 \family typewriter
 mt19937
 \family default
  using a random seed from a system random number generator that gurantees
- different random seeds for all instances of simuPOP even if they are initialize
-d at the same time.
+ random seeds for all instances of simuPOP even if they are initialized
+ at the same time.
  After simuPOP is loaded, you can reset this system RNG with a different
  random number generator (c.f.
  
 \family typewriter
-ListRNG
+AvailableRNG
 \begin_inset Index
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
 \family typewriter
-ListRNG
+AvailableRNG
 \end_layout
 
 \end_inset
@@ -1602,11 +1602,12 @@ SetRNG
 (name, seed)
 \family default
 ).
- Random seed of the current session can be retrieved through function 
+ It is also possible to save the random seed of a simuPOP session (c.f.
+ 
 \family typewriter
 rng().seed()
 \family default
- so that this session can be replayed later.
+) and use it to replay the session later.
 \end_layout
 
 \begin_layout Section
@@ -1643,7 +1644,7 @@ pop1 = pop
 
 \end_inset
 
- will create a reference 
+will create a reference 
 \family typewriter
 pop1
 \family default
@@ -1660,7 +1661,15 @@ pop1
 \family typewriter
 pop
 \family default
- as well.
+ as well and the removal of 
+\family typewriter
+pop
+\family default
+ will invalidate 
+\family typewriter
+pop1
+\family default
+.
  For example, a reference to the first population in a simulator is returned
  from function 
 \family typewriter
@@ -1682,11 +1691,11 @@ pop
 \family typewriter
 simu
 \family default
- is destroyed after 
+ is destroyed, along with all its internal populations, after 
 \family typewriter
 func()
 \family default
- is finished, along with all its internal populations, leaving 
+ is finished, leaving 
 \family typewriter
 pop
 \family default
@@ -1720,22 +1729,12 @@ def func():
 
 \begin_layout Plain Layout
 
-    simu = simulator(
+    simu = simulator(population(10), randomMating(), rep=5)
 \end_layout
 
 \begin_layout Plain Layout
 
-        population(10), 
-\end_layout
-
-\begin_layout Plain Layout
-
-        randomMating())
-\end_layout
-
-\begin_layout Plain Layout
-
-    # evolve simu ..., then return population
+    # return a reference to the first population in the simulator
 \end_layout
 
 \begin_layout Plain Layout
@@ -1774,7 +1773,7 @@ If you would like to have an independent copy of a population, you can use
 clone()
 \family default
  member function.
- For example, Example 
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "lst:Reference-to-population"
@@ -1785,14 +1784,7 @@ reference "lst:Reference-to-population"
 \family typewriter
 return
 \family default
- statement in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "lst:Reference-to-population"
-
-\end_inset
-
- is replaced by
+ statement is replaced by
 \end_layout
 
 \begin_layout Standard
@@ -1833,7 +1825,11 @@ would be more efficient because we do not need to copy the first population
 simu
 \family default
  if it will be destroyed soon.
- Note that the 
+ 
+\end_layout
+
+\begin_layout Standard
+The 
 \family typewriter
 clone()
 \family default
@@ -1850,6 +1846,40 @@ mating schemes
 operators
 \emph default
 .
+ simuPOP also supports the standard Python shallow and deep copy operations
+ so you can also make a cloned copy of 
+\family typewriter
+pop
+\family default
+ using the
+\family typewriter
+ deepcopy
+\family default
+ function defined in the Python 
+\family typewriter
+copy 
+\family default
+module
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import copy
+\end_layout
+
+\begin_layout Plain Layout
+
+pop1 = copy.deepcopy(pop)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
