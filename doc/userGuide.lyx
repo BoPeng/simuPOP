@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2146,24 +2146,26 @@ genotypic structure
 \end_layout
 
 \begin_layout Standard
-Genotypic structure refers to the number of homologous sets of chromosomes,
- number of chromosomes, number of loci on each chromosome, locus location
- on chromosome and allele names.
- It presents the common genetic configuration for all the individuals in
- a population.
-\end_layout
-
-\begin_layout Standard
-Individuals in the same population share the same genotypic structure.
- Consequently, 
+Genotypic structure refers to stuctural information shared by all individuals
+ in a population, such as number of homologous copies of chromosomes, chromosome
+ types and names, position and name of each locus, and auxillary information
+ attached to each individual.
+ A genotypic structure can be retrieved from 
 \emph on
-genotypic information can be retrieved from individual, population and simulator
+individual, population 
 \emph default
- (consists of populations with the same genotypic structure) 
+and 
 \emph on
-level
+simulator
 \emph default
-.
+ objects.
+ Because a population consists of individuals of the same type, and a simulator
+ consists of populations of the same type, genotypic information
+\emph on
+ 
+\emph default
+can only be changed for all individuals at the population level, or for
+ all populations at the simulator level.
  
 \end_layout
 
@@ -2172,7 +2174,7 @@ Genotypic structure refers to
 \end_layout
 
 \begin_layout Itemize
-ploidy, the number of copies of basic number of chromosomes (c.f.
+Ploidy, the number of copies of homologous chromosomes (c.f.
  
 \family typewriter
 ploidy
@@ -2198,11 +2200,12 @@ GenoStruTrait!ploidyName
 ()
 \family default
  ).
- A haplodiploid population will return 2 as ploidy number.
+ For efficiency considerations A haplodiploid population can be specified
+ will return 2 as ploidy number.
 \end_layout
 
 \begin_layout Itemize
-the names and number of chromosomes (c.f.
+Names and number of chromosomes (c.f.
  
 \family typewriter
 numChrom
@@ -2221,25 +2224,6 @@ status collapsed
 
 \begin_layout Plain Layout
 GenoStruTrait!chromName
-\end_layout
-
-\end_inset
-
-()
-\family default
- )
-\end_layout
-
-\begin_layout Itemize
-the existence of sex chromosome (c.f.
- 
-\family typewriter
-sexChrom
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-GenoStruTrait!sexChrom
 \end_layout
 
 \end_inset
