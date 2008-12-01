@@ -1304,7 +1304,7 @@ RNG & rng();
 void SetRNG(const string rng = "", unsigned long seed = 0);
 
 /// list the names of all available random number generators
-vectorstr ListRNG();
+vectorstr AvailableRNGs();
 
 // ////////////////////////////////////////////////////////////
 // /  Global debug and initialization related functions
