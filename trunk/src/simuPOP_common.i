@@ -344,6 +344,14 @@ def dvars(self, *args, **kwargs):
 population.dvars = dvars
 simulator.dvars = dvars
 
+# expose the clone() method to Python copy module.
+def deepcopy(self, memo):
+    return self.clone()
+
+population.__deepcopy__ = deepcopy
+simulator.__deepcopy__ = deepcopy
+baseOperator.__deepcopy__ = deepcopy
+
 def MergePopulations(pops, newSubPopSizes=[], keepAncestralPops=-1):
     'merge several populations with the same genotypic structure and create a new population'
     if len(pops) == 0:
