@@ -14,7 +14,7 @@ import simuOpt
 #simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-import unittest, os, sys, exceptions, random
+import unittest, os, sys, exceptions, random, copy
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
@@ -133,6 +133,29 @@ class TestPopulation(unittest.TestCase):
         for idx, ind in enumerate(pop_c.individuals(0)):
             self.assertEqual(ind, pop.ancestor(idx, 0, 1))
 
+    def testDeepcopy(self):
+        'Testing deepcopy of population'
+        pop = population(10, loci=[2])
+        InitByFreq(pop, [0.2, 0.8])
+        # shallow copy
+        pop1 = pop
+        InitByFreq(pop1, [0.8, 0.2])
+        self.assertEqual(pop, pop1)
+        # deep copy
+        pop1 = pop.clone()
+        self.assertEqual(pop, pop1)
+        InitByFreq(pop1, [0.5, 0.5])
+        self.assertNotEqual(pop, pop1)
+        # using Python copy.copy
+        pop1 = copy.copy(pop)
+        self.assertEqual(pop, pop1)
+        InitByFreq(pop1, [0.5, 0.5])
+        self.assertEqual(pop, pop1)
+        # using Python copy.deepcopy
+        pop1 = copy.deepcopy(pop)
+        self.assertEqual(pop, pop1)
+        InitByFreq(pop1, [0.5, 0.5])
+        self.assertNotEqual(pop, pop1)
 
 if __name__ == '__main__':
     unittest.main()
