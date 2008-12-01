@@ -7,6 +7,7 @@
              [1998/01/11 LaTeX package (Python markup)]
 
 \RequirePackage{longtable}
+\RequirePackage{ifpdf}
 
 % Uncomment these two lines to ignore the paper size and make the page 
 % size more like a typical published manual.
@@ -30,91 +31,6 @@
 %
 \newif\ifpy@doing@page@targets
 \py@doing@page@targetsfalse
-
-\newif\ifpdf\pdffalse
-\ifx\pdfoutput\undefined\else\ifcase\pdfoutput
-\else
-  \pdftrue
-  \input{pdfcolor}
-  \let\py@LinkColor=\NavyBlue
-  \let\py@NormalColor=\Black
-  \pdfcompresslevel=9
-  \pdfpagewidth=\paperwidth    % page width of PDF output
-  \pdfpageheight=\paperheight  % page height of PDF output
-  %
-  % Pad the number with '0' to 3 digits wide so no page name is a prefix
-  % of any other.
-  %
-  \newcommand{\py@targetno}[1]{\ifnum#1<100 0\fi\ifnum#1<10 0\fi#1}
-  \newcommand{\py@pageno}{\py@targetno\thepage}
-  %
-  % This definition allows the entries in the page-view of the ToC to be
-  % active links.  Some work, some don't.
-  %
-  \let\py@OldContentsline=\contentsline
-  %
-  % Backward compatibility hack: pdfTeX 0.13 defined \pdfannotlink,
-  % but it changed to \pdfstartlink in 0.14.  This let's us use either
-  % version and still get useful behavior.
-  %
-  \@ifundefined{pdfstartlink}{
-    \let\pdfstartlink=\pdfannotlink
-  }{}
-  %
-  % The \py@parindent here is a hack -- we're forcing pdfTeX into
-  % horizontal mode since \pdfstartlink requires that.
-  \def\py@pdfstartlink{%
-    \ifvmode\py@parindent\fi%
-    \pdfstartlink%
-  }
-  %
-  % Macro that takes two args: the name to link to and the content of
-  % the link.  This takes care of the PDF magic, getting the colors
-  % the same for each link, and avoids having lots of garbage all over 
-  % this style file.
-  \newcommand{\py@linkToName}[2]{%
-    \py@pdfstartlink attr{/Border [0 0 0]} goto name{#1}%
-      \py@LinkColor#2\py@NormalColor%
-    \pdfendlink%
-  }
-  % Compute the padded page number separately since we end up with a pair of
-  % \relax tokens; this gets the right string computed and works.
-  \renewcommand{\contentsline}[3]{%
-    \def\my@pageno{\py@targetno{#3}}%
-    \py@OldContentsline{#1}{\py@linkToName{page\my@pageno}{#2}}{#3}%
-  }
-  \AtEndDocument{
-    \def\_{\string_}
-    \InputIfFileExists{\jobname.bkm}{\pdfcatalog{/PageMode /UseOutlines}}{}
-  }
-  \newcommand{\py@target}[1]{%
-    \ifpy@doing@page@targets%
-      {\pdfdest name{#1} xyz}%
-    \fi%
-  }
-  \let\py@OldLabel=\label
-  \renewcommand{\label}[1]{%
-    \py@OldLabel{#1}%
-    \py@target{label-#1}%
-  }
-  % This stuff adds a page# destination to every PDF page, where # is three
-  % digits wide, padded with leading zeros.  This doesn't really help with
-  % the frontmatter, but does fine with the body.
-  %
-  % This is *heavily* based on the hyperref package.
-  %
-  \def\@begindvi{%
-    \unvbox \@begindvibox
-    \@hyperfixhead
-  }
-  \def\@hyperfixhead{%
-   \let\H@old@thehead\@thehead
-       \global\def\@foo{\py@target{page\py@pageno}}%
-     \expandafter\ifx\expandafter\@empty\H@old@thehead
-       \def\H@old@thehead{\hfil}\fi
-    \def\@thehead{\@foo\relax\H@old@thehead}%
-  }
-\fi\fi
 
 % Increase printable page size (copied from fullpage.sty)
 \topmargin 0pt
