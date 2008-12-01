@@ -2116,7 +2116,7 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 
 		if (*t == 0)
 			throw SystemError("GSL_RNG_TYPE=" + toStr(rng_name)
-				+ " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. ListRNG()");
+				+ " not recognized or can not generate full range (0-2^32-1) of integers.\n c.f. AvailableRNGs()");
 	} else {
 		// free current RNG
 		if (m_RNG != NULL)
@@ -2553,7 +2553,7 @@ void SetRNG(const string r, unsigned long seed)
 
 
 // list all available RNG.
-vectorstr ListRNG()
+vectorstr AvailableRNGs()
 {
     vectorstr list;
 
