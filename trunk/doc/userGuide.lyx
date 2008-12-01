@@ -22,6 +22,21 @@ Last modified \\
 \ifhtml
 \chapter*{Front Matter\label{front}}
 \fi
+
+\renewcommand\lstlistlistingname{List of Examples}
+\renewcommand\lstlistingname{Example}
+
+\sloppy
+
+\definecolor{TitleColor}{rgb}{0.126,0.263,0.361}
+\definecolor{LinkColor}{rgb}{0.208,0.374,0.486}
+\definecolor{VerbatimColor}{rgb}{0,0,0}
+\definecolor{VerbatimBorderColor}{rgb}{0,0,0}
+
+\usepackage{sectsty}
+\sectionfont{\color{TitleColor}}
+\subsectionfont{\color{TitleColor}}
+\subsubsectionfont{\color{TitleColor}}
 \end_preamble
 \use_default_options false
 \language english
@@ -52,6 +67,7 @@ Last modified \\
 \pdf_colorlinks true
 \pdf_backref page
 \pdf_pdfusetitle true
+\pdf_quoted_options "linkcolor=TitleColor,urlcolor=LinkColor"
 \papersize default
 \use_geometry false
 \use_amsmath 1
@@ -67,7 +83,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle={\ttfamily},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
+\listings_params "basicstyle={\ttfamily\color{VerbatimColor}},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
 \author "" 
