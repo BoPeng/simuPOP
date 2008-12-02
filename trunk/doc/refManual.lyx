@@ -1450,14 +1450,14 @@ AlleleTypeRef
 
 
 \backslash
-LimitsRef
+AvailableRNGsRef
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-ListRNGRef
+LimitsRef
 \end_layout
 
 \begin_layout Plain Layout

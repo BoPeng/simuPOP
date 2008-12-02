@@ -13230,7 +13230,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::ListRNG "
+%feature("docstring") simuPOP::AvailableRNGs "
 
 Description:
 
@@ -13238,7 +13238,7 @@ Description:
 
 Usage:
 
-    ListRNG()
+    AvailableRNGs()
 
 "; 
 
