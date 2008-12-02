@@ -182,7 +182,17 @@ bool parentsTagger::apply(population & pop)
 }
 
 
-bool infoTagger::apply(population & pop)
+pedigreeTagger::pedigreeTagger(int begin, int end, int step, vectorl at,
+		const repList & rep, const subPopList & subPop,
+		int stage, string output, string outputExpr,
+		const vectorstr & pedigreeFields) :
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, pedigreeFields)
+{
+	setApplicableStage(stage);
+}
+
+
+bool pedigreeTagger::apply(population & pop)
 {
 	if (infoSize() == 0)
 		return true;
@@ -204,71 +214,6 @@ bool infoTagger::apply(population & pop)
 	return true;
 }
 
-
-sexTagger::sexTagger(const vectori & code,
-	int begin, int end, int step, vectorl at,
-	string output, string outputExpr, int stage,
-	const repList & rep, const subPopList & subPop,
-	const vectorstr & infoFields) :
-	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
-	m_code(code)
-{
-	setApplicableStage(stage);
-	if (m_code.empty()) {
-		m_code.push_back(1);
-		m_code.push_back(2);
-	}
-	DBG_FAILIF(m_code.size() != 2, ValueError,
-		"Please use an array of size 2 to set code for sex.");
-}
-
-
-bool sexTagger::apply(population & pop)
-{
-	ostream & out = this->getOstream(pop.dict());
-
-	IndIterator it = pop.indBegin();
-	IndIterator it_end = pop.indEnd();
-
-	for (; it != it_end; ++it)
-		out << m_code[it->sex() == Male ? 0 : 1] << '\t';
-	out << '\n';
-	closeOstream();
-	return true;
-}
-
-
-affectionTagger::affectionTagger(const vectori & code,
-	int begin, int end, int step, vectorl at,
-	const repList & rep, const subPopList & subPop,
-	int stage, string output, string outputExpr,
-	const vectorstr & infoFields) :
-	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
-	m_code(code)
-{
-	setApplicableStage(stage);
-	if (m_code.empty()) {
-		m_code.push_back(1);
-		m_code.push_back(2);
-	}
-	DBG_FAILIF(m_code.size() != 2, ValueError,
-		"Please use an array of size 2 to set code for affection status.");
-}
-
-
-bool affectionTagger::apply(population & pop)
-{
-	ostream & out = this->getOstream(pop.dict());
-
-	IndIterator it = pop.indBegin();
-	IndIterator it_end = pop.indEnd();
-
-	for (; it != it_end; ++it)
-		out << m_code[it->affected() ? 1 : 0] << '\t';
-	out << '\n';
-	closeOstream();
-	return true;
-}
 
 
 bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,

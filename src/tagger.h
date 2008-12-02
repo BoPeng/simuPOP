@@ -260,69 +260,23 @@ private:
 };
 
 
-/// Tagging information fields
-/** This is a simple post-mating tagger that write given
+/** Pedigree tagger is used to save a complete pedigree to a pedigree file
+ *  during an evolution process. 
+ *  Because 
+ *  is destroyedof record individuals involved in an evolutioary process.
+   This is a simple post-mating tagger that write given
    information fields to a file (or standard output).
  */
-class infoTagger : public tagger
+class pedigreeTagger : public tagger
 {
 public:
-	infoTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	pedigreeTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		int stage = PostMating, string output = ">", string outputExpr = "",
-		const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields)
-	{
-		setApplicableStage(stage);
-	}
-
+		const vectorstr & pedigreeFields = vectorstr());
 
 	bool apply(population & pop);
 
-};
-
-/// Tagging sex status
-/** This is a simple post-mating tagger that write sex
-    status to a file. By default, 1 for Male, 2 for Female.
- */
-class sexTagger : public tagger
-{
-public:
-	/**
-	   \param code  code for Male and Female, default to 1 and 2, respectively.
-	   This is used by Linkage format.
-	 */
-	sexTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		string output = ">", string outputExpr = "", int stage = PostMating,
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		const vectorstr & infoFields = vectorstr());
-
-	bool apply(population & pop);
-
-private:
-	vectori m_code;
-};
-
-/// Tagging affection status
-/** This is a simple post-mating tagger that write affection status
-    to a file. By default, 1 for unaffected, 2 for affected.
- */
-class affectionTagger : public tagger
-{
-public:
-	/**
-	   \param code  code for Male and Female, default to 1 and 2, respectively.
-	   This is used by Linkage format.
-	 */
-	affectionTagger(const vectori & code = vectori(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		int stage = PostMating, string output = ">", string outputExpr = "",
-		const vectorstr & infoFields = vectorstr());
-
-	bool apply(population & pop);
-
-private:
-	vectori m_code;
 };
 
 
