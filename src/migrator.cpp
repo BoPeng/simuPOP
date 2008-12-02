@@ -25,6 +25,31 @@
 #include "migrator.h"
 
 namespace simuPOP {
+
+migrator::migrator(const matrix & rate, int mode,
+	const subPopList & fromSubPop, vectoru toSubPop,
+	int stage, int begin, int end, int step, vectorl at,
+	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
+	: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+	m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
+{
+	// when migrator is constructed from a pyMigrator, initial
+	// rate is empty
+	if (!rate.empty()) {
+		DBG_FAILIF(!m_from.empty() && m_from.size() != rate.size(),
+			ValueError, "Length of param fromSubPop must match rows of rate matrix.");
+
+		DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
+			ValueError, "Length of param toSubPop must match columns of rate matrix.");
+
+		setRates(rate, mode);
+	}
+	for (size_t i = 0; i < m_from.size(); ++i) {
+		cout << i << "  From " << m_from[i].subPop() << " " << m_from[i].virtualSubPop() << endl;
+	}
+}
+
+
 void migrator::setRates(const matrix & rate, int mode)
 {
 	if (rate.empty() )
@@ -91,6 +116,7 @@ bool migrator::apply(population & pop)
 {
 	// set info of individual
 	UINT info = pop.infoIdx(infoField(0));
+
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 		RawIndIterator it = pop.rawIndBegin(sp);
 		RawIndIterator it_end = pop.rawIndEnd(sp);
@@ -168,7 +194,7 @@ bool migrator::apply(population & pop)
 		}
 		if (m_from[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
-	} // for all subPop.
+	}   // for all subPop.
 
 	// do migration.
 	// true: rearrange individuals
@@ -181,6 +207,7 @@ bool migrator::apply(population & pop)
 bool pyMigrator::apply(population & pop)
 {
 	UINT info = pop.infoIdx(infoField(0));
+
 	if (m_rateFunc != NULL) {
 		// get rate,
 		matrix rate;
@@ -255,6 +282,7 @@ bool pyMigrator::apply(population & pop)
 bool splitSubPop::apply(population & pop)
 {
 	UINT info = pop.infoIdx(infoField(0));
+
 	// randomize indiviudlas
 	if (m_randomize) {
 		// random shuffle individuals
@@ -266,11 +294,11 @@ bool splitSubPop::apply(population & pop)
 		pop.setIndOrdered(false);
 	}
 	if (!m_subPopSizes.empty()) {
-        vectorf sizes;
-        for (size_t i = 0; i < m_subPopSizes.size(); ++i)
-            sizes.push_back(m_subPopSizes[i]);
+		vectorf sizes;
+		for (size_t i = 0; i < m_subPopSizes.size(); ++i)
+			sizes.push_back(m_subPopSizes[i]);
 		pop.splitSubPop(m_which, sizes);
-    } else
+	} else
 		pop.splitSubPop(m_which, m_proportions);
 	return true;
 }
