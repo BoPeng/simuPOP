@@ -111,7 +111,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -121,7 +121,7 @@ status open
 
 
 \backslash
-vspace{9in} 
+vspace{7.5in} 
 \end_layout
 
 \end_inset

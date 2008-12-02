@@ -52,46 +52,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::affectionTagger "
-
-Description:
-
-    Tagging affection status.
-
-Details:
-
-    This is a simple post-mating tagger that write affection status to
-    a file. By default, 1 for unaffected, 2 for affected.
-
-"; 
-
-%feature("docstring") simuPOP::affectionTagger::affectionTagger "
-
-Usage:
-
-    affectionTagger(code=[], begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, stage=PostMating, output=\">\", outputExpr=\"\",
-      infoFields=[])
-
-Arguments:
-
-    code:           code for Male and Female, default to 1 and 2,
-                    respectively. This is used by Linkage format.
-
-"; 
-
-%feature("docstring") simuPOP::affectionTagger::apply "
-
-Description:
-
-    add a newline
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
 %feature("docstring") simuPOP::alphaMating "
 
 Applicability: diploid only
@@ -3228,41 +3188,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::infoTagger "
-
-Description:
-
-    Tagging information fields.
-
-Details:
-
-    This is a simple post-mating tagger that write given information
-    fields to a file (or standard output).
-
-"; 
-
-%feature("docstring") simuPOP::infoTagger::infoTagger "
-
-Usage:
-
-    infoTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, stage=PostMating, output=\">\", outputExpr=\"\",
-      infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::infoTagger::apply "
-
-Description:
-
-    add a newline
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
 %feature("docstring") simuPOP::inheritTagger "
 
 Description:
@@ -6273,6 +6198,40 @@ Arguments:
 
 "; 
 
+%feature("docstring") simuPOP::pedigreeTagger "
+
+Details:
+
+    Pedigree tagger is used to save a complete pedigree to a pedigree
+    file during an evolution process. Because is destroyedof record
+    individuals involved in an evolutioary process. This is a simple
+    post-mating tagger that write given information fields to a file
+    (or standard output).
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeTagger::pedigreeTagger "
+
+Usage:
+
+    pedigreeTagger(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=subPopList, stage=PostMating, output=\">\", outputExpr=\"\",
+      pedigreeFields=[])
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeTagger::apply "
+
+Description:
+
+    add a newline
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
 %feature("docstring") simuPOP::penetrance "
 
 Description:
@@ -8299,7 +8258,7 @@ Usage:
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
       fromSubPop=subPopList, toSubPop=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=subPopList, infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -10640,46 +10599,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::sexTagger "
-
-Description:
-
-    Tagging sex status.
-
-Details:
-
-    This is a simple post-mating tagger that write sex status to a
-    file. By default, 1 for Male, 2 for Female.
-
-"; 
-
-%feature("docstring") simuPOP::sexTagger::sexTagger "
-
-Usage:
-
-    sexTagger(code=[], begin=0, end=-1, step=1, at=[], output=\">\",
-      outputExpr=\"\", stage=PostMating, rep=[], subPop=subPopList,
-      infoFields=[])
-
-Arguments:
-
-    code:           code for Male and Female, default to 1 and 2,
-                    respectively. This is used by Linkage format.
-
-"; 
-
-%feature("docstring") simuPOP::sexTagger::apply "
-
-Description:
-
-    add a newline
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
 %ignore simuPOP::SharedVariables;
 
 %ignore simuPOP::SharedVariables::SharedVariables();
@@ -11178,7 +11097,7 @@ Usage:
 
     splitSubPop(which=0, sizes=[], proportions=[], randomize=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=subPopList, infoFields=[\"migrate_to\"])
 
 Details:
 

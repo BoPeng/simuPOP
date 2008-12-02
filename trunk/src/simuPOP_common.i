@@ -223,7 +223,7 @@ namespace std
 // at the python level, individual and population are better.
 %rename(individual) ind(ULONG);
 %rename(individual) ind(ULONG, UINT);
-%rename(population) pop(UINT, bool) const;
+%rename(population) pop(UINT) const;
 
 %newobject LoadPopulation;
 %newobject LoadSimulator;

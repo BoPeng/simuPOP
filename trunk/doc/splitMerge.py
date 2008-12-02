@@ -2,7 +2,7 @@ from simuOpt import *
 setOptions(quiet=True)
 #file splitAndMerge.out
 from simuPOP import *
-pop = population(1000, loci=[1])
+pop = population(1000, loci=[1], infoFields=['migrate_to'])
 simu = simulator(pop, binomialSelection())
 simu.evolve(
     ops=[
@@ -12,12 +12,12 @@ simu.evolve(
         stat(popSize=True),
         pyEval(r'"%s\n" % subPopSize'),
     ],
-    end = 10
+    gen = 10
 )
 #end
 #file splitMigration.out
 from simuPOP import *
-pop = population(1000, loci=[1])
+pop = population(1000, loci=[1], infoFields=['migrate_to'])
 simu = simulator(pop, binomialSelection())
 simu.evolve(
     ops=[
@@ -32,12 +32,12 @@ simu.evolve(
         stat(popSize=True),
         pyEval(r'"%s\n" % subPopSize'),
     ],
-    end = 10
+    gen = 10
 )
 #end
 #file splitMigration2.out
 from simuPOP import *
-pop = population(1000, loci=[1])
+pop = population(1000, loci=[1], infoFields=['migrate_to'])
 def popSize(gen, oldSize=[]):
     if gen < 3:
         return [1000]
@@ -63,12 +63,12 @@ simu.evolve(
         stat(popSize=True),
         pyEval(r'"to: %s\n" % subPopSize'),
     ],
-    end = 10
+    gen = 10
 )
 #end
 #file splitMigration3.out
 from simuPOP import *
-pop = population(1000, loci=[1])
+pop = population(1000, loci=[1], infoFields=['migrate_to'])
 def popSize(gen, oldSize=[]):
     return [x*2 for x in oldSize]
 
@@ -88,7 +88,7 @@ simu.evolve(
         pyEval(r'"From %s\t" % subPopSize', stage=PreMating),
         pyEval(r'"to: %s\n" % subPopSize'),
     ],
-    end = 10
+    gen = 10
 )
 #end
 

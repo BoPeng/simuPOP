@@ -46,10 +46,10 @@ from simuPOP import *
 pop = population(size=1000, loci=[2])
 simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
-    preOps = [initByValue([1,2,2,1])],  
+    preOps = [initByValue([1, 2, 2, 1])],  
     ops = [
         recombinator(rate=0.01),
-        stat(LD=[0,1]),
+        stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=10),
         pyOutput('\n', rep=-1, step=10)
     ],
@@ -99,7 +99,7 @@ print ind.genotype()
 #file log/genoStru.log
 # create a population, most parameters have default values
 pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
-    lociPos=[range(0, 5),range(0, 20, 2)],
+    lociPos=[range(0, 5), range(0, 20, 2)],
     alleleNames=['A', 'C', 'T', 'G'], maxAllele=3)
 print pop.popSize()
 print pop.ploidy()
@@ -132,11 +132,11 @@ WF = population(size=100, ploidy=1, loci=[1])
 # there are two chromosomes with 5 and 7 loci respectively
 pop = population(size=[2, 8], ploidy=2, loci=[5, 7])
 
-# a population with SNP markers (with names A,C,T,G
+# a population with SNP markers (with names A, C, T, G
 # range() are python functions
-pop = population(size=[2,3], ploidy=2, loci=[5,10],
-    lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'], maxAllele=3)
+pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
+    lociPos=[range(0, 5), range(0, 20, 2)],
+    alleleNames=['A', 'C', 'T', 'G'], maxAllele=3)
 #end
 
 #file log/popAndOperator.log
@@ -144,7 +144,7 @@ simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
   preOps = [ initByFreq([.8, .2])],
   ops = [
-    stat(alleleFreq=[0,1], Fst=[1], step=10),
+    stat(alleleFreq=[0, 1], Fst=[1], step=10),
     kamMutator(rate=0.001, rep=1),
     kamMutator(rate=0.0001, rep=2)
   ],
@@ -163,9 +163,9 @@ InitByFreq(pop, [.2, .3, .4, .1])
 
 
 #file log/dumpPop.log
-pop = population(size=[2,3], ploidy=2, loci=[5,10],
-    lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'], maxAllele=3)
+pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
+    lociPos=[range(0, 5), range(0, 20, 2)],
+    alleleNames=['A', 'C', 'T', 'G'], maxAllele=3)
 # .apply form
 initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
@@ -182,13 +182,13 @@ print pop.subPopSizes()
 print pop.subPopBegin(1)
 print pop.subPopEnd(1)
 print pop.subPopIndPair(3)
-print pop.absIndIndex(1,1)
+print pop.absIndIndex(1, 1)
 #end
 
 #file log/popStruManip.log
-pop.setIndSubPopID([1,2,2,3,1])
+pop.setIndSubPopID([1, 2, 2, 3, 1])
 pop.setSubPopByIndID()
-pop.removeLoci(keep=range(2,7))
+pop.removeLoci(keep=range(2, 7))
 Dump(pop)
 #end
 
@@ -205,11 +205,11 @@ print ind.numChrom()
 # ...
 # as well as genotype
 print ind.allele(1) 
-ind.setAllele(1,5)
+ind.setAllele(1, 5)
 print ind.allele(1)
 # you can also use an overloaded function
 # with a second parameter being the ploidy index
-print ind.allele(1,1) # second locus at the second copy of chromosome
+print ind.allele(1, 1) # second locus at the second copy of chromosome
 # other information
 print ind.affected()
 print ind.affectedChar()
@@ -251,17 +251,17 @@ simu.evolve(
     kamMutator(rate=0.01, atLoci=[0], maxAllele=1),
     kamMutator(rate=0.001, atLoci=[1], maxAllele=1)
   ],
-  end = 20
+  gen = 20
 )
 pop = simu.population(0)
 # start from current generation
 for i in range(pop.ancestralDepth()+1):
-  pop.useAncestralPop(i)
-  Stat(pop, alleleFreq=[0,1])
+  pop.useAncestralGen(i)
+  Stat(pop, alleleFreq=[0, 1])
   print '%d   %5f   %5f' % (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
 
 # restore to the current generation  
-pop.useAncestralPop(0)  
+pop.useAncestralGen(0)  
 #end
 
 
@@ -270,7 +270,7 @@ pop.useAncestralPop(0)
 #turnOnDebug(DBG_UTILITY)
 
 #file log/expr.log
-simu = simulator(population(10),noMating(), rep=2)
+simu = simulator(population(10), noMating(), rep=2)
 # evaluate an expression in different areas
 print simu.vars(0)
 print simu.population(0).evaluate("gen+1")
@@ -291,13 +291,10 @@ print simu.vars(0)
 #file log/popSaveLoad.log
 # save it in various formats, default format is "txt"
 pop = population(1000, loci=[2, 5, 10])
-pop.savePopulation("pop.txt")
-pop.savePopulation("pop.txt", compress=False)
-pop.savePopulation("pop.xml", format="xml")
-pop.savePopulation("pop.bin", format="bin")
+pop.save("sample.pop")
 
 # load it in another population
-pop1 = LoadPopulation("pop.xml", format="xml")
+pop1 = LoadPopulation("sample.pop")
 #end
 
 #file log/saveFstat.log
@@ -323,7 +320,7 @@ Dump( RandomSample(pop, 3)[0])
 
 #file log/calcStat.log
 Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
-  heteroFreq=range(0,pop.totNumLoci()), Fst=[0])
+  heteroFreq=range(0, pop.totNumLoci()), Fst=[0])
 #end
 
 
@@ -398,11 +395,11 @@ print d.canApplyPostMating()
 #end
 
 #file log/operatorgen.log
-simu = simulator(population(1),binomialSelection(), rep=3)
+simu = simulator(population(1), binomialSelection(), rep=3)
 op1 = output("a", begin=5, end=20, step=3)
 op2 = output("a", begin=-5, end=-1, step=2)
-op3 = output("a", at=[2,5,10])
-op4 = output("a", at=[-10,-5,-1])
+op3 = output("a", at=[2, 5, 10])
+op4 = output("a", at=[-10, -5, -1])
 simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
                gen=10)
 #end
@@ -456,12 +453,8 @@ print open("a1.txt").read()
 #end
 
 #file log/simulatorsaveload.log
-simu.saveSimulator("s.txt")
-simu.saveSimulator("s.xml", format="xml")
-simu.saveSimulator("s.bin", format="bin")
-simu1 = LoadSimulator("s.txt", randomMating())
-simu2 = LoadSimulator("s.xml", randomMating(), format="xml")
-simu3 = LoadSimulator("s.bin", randomMating(), format="bin")
+simu.save("sample.sim")
+simu1 = LoadSimulator("sample.sim", randomMating())
 #end
 
 # remove these files
@@ -495,23 +488,23 @@ simu = simulator(pop, randomMating())
 
 simu.evolve(
   preOps = [ 
-    initByFreq( [.6, .4], atLoci=[0,2,4]),
-    initByFreq( [.8, .2], atLoci=[1,3]) ],
+    initByFreq( [.6, .4], atLoci=[0, 2, 4]),
+    initByFreq( [.8, .2], atLoci=[1, 3]) ],
   ops = [ 
     pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
     stat(alleleFreq=range(5)),
-    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1],alleleFreq[1][1])', step=10)
+    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1], alleleFreq[1][1])', step=10)
     ],
-  end = 30
+  gen = 30
 )        
 #end
 
 
 #file log/initByFreq.log
-simu = simulator( population(size=[2,3], loci=[5,7]),
+simu = simulator( population(size=[2, 3], loci=[5, 7]),
     randomMating(), rep=1)
 simu.step([
-    initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
+    initByFreq(alleleFreq=[ [.2, .8], [.8, .2]]),
     dumper(alleleOnly=True)
   ])
 #end
@@ -533,44 +526,44 @@ simu.step([
 
 
 #file log/pyMigrator.log
-simu = simulator(population(size=[2,3], loci=[2,5]),
+simu = simulator(population(size=[2, 3], loci=[2, 5]),
     randomMating())
 # an Numeric array, force to Int type
-spID = [2,2,1,1,0]
+spID = [2, 2, 1, 1, 0]
 simu.step( [
-    initByFreq([.2,.4,.4]), 
+    initByFreq([.2, .4, .4]), 
     dumper(alleleOnly=True, stage=PrePostMating),
     pyMigrator(subPopID=spID)
     ])
 #end
 
 #file log/kamMutator.log
-simu = simulator(population(size=5, loci=[3,5]), noMating())
+simu = simulator(population(size=5, loci=[3, 5]), noMating())
 simu.step([
-    kamMutator( rate=[.2,.6,.5], atLoci=[0,2,6], maxAllele=9),
+    kamMutator( rate=[.2, .6, .5], atLoci=[0, 2, 6], maxAllele=9),
     dumper(alleleOnly=True)])
 #end
 
 #file log/smmMutator.log
-simu = simulator(population(size=3, loci=[3,5]), noMating())
+simu = simulator(population(size=3, loci=[3, 5]), noMating())
 simu.step([
-    initByFreq( [.2,.3,.5]),
+    initByFreq( [.2, .3, .5]),
     smmMutator(rate=1,  incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 #end
 
 #file log/gsmMutator.log
 simu.step([
-    initByFreq( [.2,.3,.5]),
+    initByFreq( [.2, .3, .5]),
     gsmMutator(rate=1, p=.8, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 
 import random
 def rndInt():
-  return random.randrange(3,6)
+  return random.randrange(3, 6)
 
 simu.step([
-    initByFreq( [.2,.3,.5]),
+    initByFreq( [.2, .3, .5]),
     gsmMutator(rate=1, func=rndInt, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 
@@ -581,24 +574,24 @@ def mut(x):
   return 8
 
 simu.step([
-  pyMutator(rate=.5, atLoci=[3,4,5], func=mut),
+  pyMutator(rate=.5, atLoci=[3, 4, 5], func=mut),
   dumper(alleleOnly=True)])
 #end
 
 
 #file log/recombinator.log
-simu = simulator(population(4, loci=[4,5,6], 
+simu = simulator(population(4, loci=[4, 5, 6], 
     infoFields=['father_idx', 'mother_idx']),
     randomMating())
 simu.step([
   parentsTagger(),
   ],
-  preOps = [initByFreq([.2,.2,.4,.2]), dumper(alleleOnly=True) ],
+  preOps = [initByFreq([.2, .2, .4, .2]), dumper(alleleOnly=True) ],
   postOps = [ dumper(alleleOnly=True)]
 )
 simu.step([
   parentsTagger(),
-  recombinator(rate=[1,1,1], afterLoci=[2,6,10])
+  recombinator(rate=[1, 1, 1], afterLoci=[2, 6, 10])
   ],
   postOps = [ dumper(alleleOnly=True)]
 )
@@ -616,7 +609,7 @@ simu.evolve([
     mapSelector(locus=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
-    preOps=[  initByFreq(alleleFreq=[.2,.8])],
+    preOps=[  initByFreq(alleleFreq=[.2, .8])],
     gen=300)
 #end
 
@@ -639,23 +632,23 @@ def sel(arr, gen=0):
     return 1 - s2
 
 # test func
-print sel([1,1])
+print sel([1, 1])
 
 simu.evolve([
     stat( alleleFreq=[0], genoFreq=[0]),
-    pySelector(loci=[0,1],func=sel),
+    pySelector(loci=[0, 1], func=sel),
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
     ],
-    preOps=[  initByFreq(alleleFreq=[.2,.8])],
+    preOps=[  initByFreq(alleleFreq=[.2, .8])],
     gen=100)
 #end
 
 #file log/pySubset.log
-simu = simulator(population(size=[2,3], loci=[3,4], infoFields=['fitness']),
+simu = simulator(population(size=[2, 3], loci=[3, 4], infoFields=['fitness']),
     randomMating())
 simu.step([
-    initByFreq([.3,.5,.2]),
-    pySubset( [1,-1,-1,1,-1] ),
+    initByFreq([.3, .5, .2]),
+    pySubset( [1, -1, -1, 1, -1] ),
     dumper(alleleOnly=True, stage=PrePostMating)
    ])
 #end
@@ -669,11 +662,11 @@ simu.step([
 from simuUtil import *
 from simuRPy import *
 
-simu = simulator( population(size=[50,50,100], ploidy=2, loci=[3,4]),
+simu = simulator( population(size=[50, 50, 100], ploidy=2, loci=[3, 4]),
     randomMating(), rep=4)
 
 # migrate
-migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
+migr = migrator([[0, .2, .1], [.25, 0, .1], [.1, .2, 0]],
   mode=MigrByProbability)
 # and count the size of subpopulations
 stat = stat(popSize=1, stage=PreMating)
@@ -702,7 +695,7 @@ print rng().name()
 #file log/rngrand.log
 r=rng()
 #help(RNG)
-for n in range(1,10):
+for n in range(1, 10):
   print r.randBinomial(10, .7),
 #end
 
@@ -710,7 +703,7 @@ for n in range(1,10):
 
 
 #file log/extgenostru.log
-pop = population(1, loci=[2,3,4])
+pop = population(1, loci=[2, 3, 4])
 print pop.numLoci(1)
 print pop.locusPos(2)
 dis = pop.arrLociPos()
@@ -721,17 +714,17 @@ print pop.arrLociPos()
 #end
 
 #file log/extgenotype.log
-InitByFreq(pop, [.2,.8])
+InitByFreq(pop, [.2, .8])
 Dump(pop, alleleOnly=1)
 ind = pop.individual(0)
-print ind.allele(1,1)
-ind.setAllele(3,1,1)
+print ind.allele(1, 1)
+ind.setAllele(3, 1, 1)
 Dump(pop, alleleOnly=1)
 a = ind.arrGenotype()
 print a
 a = ind.arrGenotype(1)
 print a
-a = ind.arrGenotype(1,2)
+a = ind.arrGenotype(1, 2)
 print a
 a[2]=4
 # the allele on the third chromosome has been changed
@@ -744,7 +737,7 @@ print ind.sexChar()
 ind.setSex(Female)
 ind.setAffected(True)
 print ind.tag()
-ind.setTag([1,2])
+ind.setTag([1, 2])
 Dump(pop)
 #end
 
@@ -752,7 +745,7 @@ Dump(pop)
 simu = simulator(pop, randomMating(), rep=3)
 pop1 = simu.population(1)
 ind1 = pop1.individual(0)
-ind1.setAllele(3,0)
+ind1.setAllele(3, 0)
 Dump(pop1)
 #end
 
@@ -764,7 +757,7 @@ simu.step([ pyEval(stmts="pop=simu.population(rep)")])
 #file log/tab.log
 def tab(**kwargs):
   parm = ''  
-  for (k,v) in kwargs.items():
+  for (k, v) in kwargs.items():
     parm += ' , ' + str(k) + '=' + str(v)
   cmd = r'output( """\t""" ' + parm + ')'
   # print cmd
@@ -840,7 +833,7 @@ def saveInFstatFormat(pop, output='', outputExpr='', maxAllele=0):
 def saveFstat(output='', outputExpr='', **kwargs):
   # deal with additional arguments
   parm = ''
-  for (k,v) in kwargs.items():
+  for (k, v) in kwargs.items():
     parm += str(k) + '=' + str(v) + ', '
   # pyEval( exposePop=1, param?, stmts="""
   # saveInFSTATFormat( pop, rep=rep?, output=output?, outputExpr=outputExpr?)
@@ -865,8 +858,8 @@ simu = simulator(
 
 # see the change of allele/genotype/heplotype numbers as
 # the result of genetic drift.
-init = initByValue([1,2,2,1])
-count = stat(LD=[0,1])
+init = initByValue([1, 2, 2, 1])
+count = stat(LD=[0, 1])
 recombine = recombinator( rate=0.1 )
 simu.evolve([
    recombine, count,
@@ -959,7 +952,7 @@ rates = []
 for i in range(nc):
     rates.append([0.]*nc)
 #
-for i in range(1,nc-1):
+for i in range(1, nc-1):
   rates[i][i+1]=0.05
   rates[i][i-1]=0.05
 
@@ -1033,7 +1026,7 @@ print Optimized()
 #file log/absIndex.log
 pop = population(size=[20, 30], loci=[5, 6])
 print pop.chromLocusPair(7)
-print pop.absLocusIndex(1,1)
+print pop.absLocusIndex(1, 1)
 print pop.absIndIndex(10, 1)
 print pop.subPopIndPair(40)
 #end
@@ -1044,7 +1037,7 @@ simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
     preOps = [ initByFreq([.8, .2])],
     ops = [
-        stat(alleleFreq=[0,1], Fst=[1], step=10),
+        stat(alleleFreq=[0, 1], Fst=[1], step=10),
         kamMutator(rate=0.001, rep=1),
         kamMutator(rate=0.0001, rep=2)
     ],
@@ -1088,9 +1081,9 @@ print pop.genotype(1)
 #end
 
 #file log/dumpPop.log
-pop = population(size=[2,3], ploidy=2, loci=[5,10],
-        lociPos=[range(0,5),range(0,20,2)],
-        alleleNames=['A','C','T','G'], maxAllele=3)
+pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
+        lociPos=[range(0, 5), range(0, 20, 2)],
+        alleleNames=['A', 'C', 'T', 'G'], maxAllele=3)
 # .apply form
 initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
@@ -1125,7 +1118,7 @@ ListVars(pop.vars(), level=1, useWxPython=False)
 # not available in the main namespace
 newPopSize
 #
-simu = simulator(population(10),noMating(), rep=2)
+simu = simulator(population(10), noMating(), rep=2)
 # evaluate an expression in different areas
 print simu.vars(1)
 # a statement (no return value)
@@ -1162,7 +1155,7 @@ print pop.indInfo(bIdx)
 
 #file log/info2.log
 pop = population(5, infoFields=['a', 'b'])
-InfoExec(pop, 'import random\na=random.randint(2,10)')
+InfoExec(pop, 'import random\na=random.randint(2, 10)')
 InfoExec(pop, 'b=a+a*2')
 InfoEval(pop, r"'(%.0f, %.0f) ' % (a, b)")
 
@@ -1182,13 +1175,13 @@ simu.evolve(
         kamMutator(rate=0.01, loci=[0], maxAllele=1),
         kamMutator(rate=0.001, loci=[1], maxAllele=1)
     ],
-    end = 20
+    gen = 20
 )
 pop = simu.population(0)
 # start from current generation
 for i in range(pop.ancestralDepth()+1):
     pop.useAncestralPop(i)
-    Stat(pop, alleleFreq=[0,1])
+    Stat(pop, alleleFreq=[0, 1])
     print '%d     %5f     %5f' % \
         (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
 
@@ -1210,20 +1203,20 @@ import random
 pop = population(1000, loci=[2, 3], infoFields=['age'])
 InitByFreq(pop, [0.2, 0.8])
 for ind in pop.individuals():
-    ind.setInfo(random.randint(0,5), 'age')
+    ind.setInfo(random.randint(0, 5), 'age')
 
 # split by age
-pop.setVirtualSplitter(infoSplitter('age', values=[2,4]))
-pop.virtualSubPopSize(0, 0)
-pop.virtualSubPopName(0, 1)
+pop.setVirtualSplitter(infoSplitter('age', values=[2, 4]))
+pop.subPopSize([0, 0])
+pop.virtualSubPopName(1)
 
 # split by genotype
 a = pop.setVirtualSplitter(
-    genotypeSplitter(locus=2, alleles=[[0,1], [1,1]], phase=True))
-pop.virtualSubPopSize(0, 0)
-pop.virtualSubPopSize(0, 1)
+    genotypeSplitter(locus=2, alleles=[[0, 1], [1, 1]], phase=True))
+pop.subPopSize([0, 0])
+pop.subPopSize([0, 1])
 
-for ind in pop.individuals(0, 0):
+for ind in pop.individuals([0, 0]):
     assert ind.allele(2, 0) == 0 and ind.allele(2, 1) == 1
 
 #end
@@ -1254,12 +1247,12 @@ Dump( RandomSample(pop, 3)[0])
 
 #file log/calcStat.log
 Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
-    heteroFreq=range(0,pop.totNumLoci()), Fst=[0])
+    heteroFreq=range(0, pop.totNumLoci()), Fst=[0])
 #end
 
 #file log/simulatorsaveload.log
-simu.saveSimulator("s.sim")
-simu1 = LoadSimulator("s.sim", randomMating())
+simu.save("sample.sim")
+simu1 = LoadSimulator("sample.sim", randomMating())
 #end
 
 # remove these files
@@ -1291,25 +1284,25 @@ simu = simulator(pop, randomMating())
 
 simu.evolve(
     preOps = [ 
-        initByFreq( [.6, .4], loci=[0,2,4]),
-        initByFreq( [.8, .2], loci=[1,3]) ],
+        initByFreq( [.6, .4], loci=[0, 2, 4]),
+        initByFreq( [.8, .2], loci=[1, 3]) ],
     ops = [ 
         pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
         stat(alleleFreq=range(5)),
-        pyEval(r'"%f\t%f\n"%(alleleFreq[0][1],alleleFreq[1][1])', step=10)
+        pyEval(r'"%f\t%f\n"%(alleleFreq[0][1], alleleFreq[1][1])', step=10)
         ],
-    end = 30
+    gen = 30
 )                
 #end
 
 
 
 #file log/pySubset.log
-simu = simulator(population(size=[2,3], loci=[3,4], infoFields=['fitness']),
+simu = simulator(population(size=[2, 3], loci=[3, 4], infoFields=['fitness']),
         randomMating())
 simu.step([
-        initByFreq([.3,.5,.2]),
-        pySubset( [1,-1,-1,1,-1] ),
+        initByFreq([.3, .5, .2]),
+        pySubset( [1, -1, -1, 1, -1] ),
         dumper(alleleOnly=True, stage=PrePostMating)
      ])
 #end
@@ -1354,11 +1347,11 @@ for i in range(5):
 from simuUtil import *
 from simuRPy import *
 
-simu = simulator( population(size=[50,50,100], ploidy=2, loci=[3,4]),
+simu = simulator( population(size=[50, 50, 100], ploidy=2, loci=[3, 4]),
     randomMating(), rep=4)
 
 # migrate
-migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
+migr = migrator([[0, .2, .1], [.25, 0, .1], [.1, .2, 0]],
     mode=MigrByProbability)
 # and count the size of subpopulations
 stat = stat(popSize=1, stage=PreMating)
@@ -1386,10 +1379,10 @@ endGen=50
 simu = simulator(population(size=popSize, loci=[1]),
     randomMating(), rep=numRep)
 simu.evolve(
-    preOps = [ initByValue([1,1])],
+    preOps = [ initByValue([1, 1])],
     ops = [
         # penetrance, additve penetrance
-        maPenetrance(locus=0, wildtype=[1], penetrance=[0,0.5,1]),
+        maPenetrance(locus=0, wildtype=[1], penetrance=[0, 0.5, 1]),
         # count number of affected
         stat(numOfAffected=True),
         # introduce disease if no one is affected
@@ -1398,7 +1391,7 @@ simu.evolve(
         # expose affected status
         pyExec('pop.exposeAffectedness()', exposePop=True),
         # plot affected status
-        varPlotter(expr='affected',plotType="image", byRep=1, update=endGen, 
+        varPlotter(expr='affected', plotType="image", byRep=1, update=endGen, 
             varDim=popSize, win=endGen, numRep=numRep,
             title='affected status', saveAs="ifElse")
     ],
@@ -1416,7 +1409,7 @@ SetRNG("taus2", seed=10)
 print rng().name()
 # create a seprate RNG instance
 r=RNG()
-for n in range(1,5):
+for n in range(1, 5):
     print r.randBinomial(10, .7),
 
 #end
@@ -1425,7 +1418,7 @@ for n in range(1,5):
 
 
 #file log/extgenostru.log
-pop = population(1, loci=[2,3,4])
+pop = population(1, loci=[2, 3, 4])
 print pop.numLoci(1)
 print pop.locusPos(2)
 dis = pop.arrLociPos()
@@ -1436,17 +1429,17 @@ print pop.arrLociPos()
 #end
 
 #file log/extgenotype.log
-InitByFreq(pop, [.2,.8])
+InitByFreq(pop, [.2, .8])
 Dump(pop, alleleOnly=1)
 ind = pop.individual(0)
-print ind.allele(1,1)
-ind.setAllele(3,1,1)
+print ind.allele(1, 1)
+ind.setAllele(3, 1, 1)
 Dump(pop, alleleOnly=1)
 a = ind.arrGenotype()
 print a
 a = ind.arrGenotype(1)
 print a
-a = ind.arrGenotype(1,2)
+a = ind.arrGenotype(1, 2)
 print a
 a[2]=4
 # the allele on the third chromosome has been changed
@@ -1465,7 +1458,7 @@ Dump(pop)
 simu = simulator(pop, randomMating(), rep=3)
 pop1 = simu.population(1)
 ind1 = pop1.individual(0)
-ind1.setAllele(3,0)
+ind1.setAllele(3, 0)
 Dump(pop1)
 #end
 
@@ -1477,7 +1470,7 @@ simu.step([ pyEval(stmts="pop=simu.population(rep)")])
 #file log/tab.log
 def tab(**kwargs):
     parm = ''    
-    for (k,v) in kwargs.items():
+    for (k, v) in kwargs.items():
         parm += ' , ' + str(k) + '=' + str(v)
     cmd = r'output( """\t""" ' + parm + ')'
     # print cmd
@@ -1553,7 +1546,7 @@ def saveInFstatFormat(pop, output='', outputExpr='', maxAllele=0):
 def saveFstat(output='', outputExpr='', **kwargs):
     # deal with additional arguments
     parm = ''
-    for (k,v) in kwargs.items():
+    for (k, v) in kwargs.items():
         parm += str(k) + '=' + str(v) + ', '
     # pyEval( exposePop=1, param?, stmts="""
     # saveInFSTATFormat( pop, rep=rep?, output=output?, outputExpr=outputExpr?)
@@ -1578,8 +1571,8 @@ simu = simulator(
 
 # see the change of allele/genotype/heplotype numbers as
 # the result of genetic drift.
-init = initByValue([1,2,2,1])
-count = stat(LD=[0,1])
+init = initByValue([1, 2, 2, 1])
+count = stat(LD=[0, 1])
 recombine = recombinator( rate=0.1 )
 simu.evolve([
     recombine, count,
@@ -1672,7 +1665,7 @@ rates = []
 for i in range(nc):
     rates.append([0.]*nc)
 #
-for i in range(1,nc-1):
+for i in range(1, nc-1):
     rates[i][i+1]=0.05
     rates[i][i-1]=0.05
 
@@ -1736,10 +1729,10 @@ from simuPOP import *
 
 #file log/src_genoStruTrait.log
 # create a population, most parameters have default values
-pop = population(size=5, ploidy=2, loci=[5,10],
-    lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'],
-    subPop=[2,3], maxAllele=3)
+pop = population(size=5, ploidy=2, loci=[5, 10],
+    lociPos=[range(0, 5), range(0, 20, 2)],
+    alleleNames=['A', 'C', 'T', 'G'],
+    subPop=[2, 3], maxAllele=3)
 print pop.popSize()
 print pop.ploidy()
 print pop.ploidyName()
@@ -1767,12 +1760,12 @@ WF = population(size=100, ploidy=1, loci=[1])
 # there are two chromosomes with 5 and 7 loci respectively
 pop = population(size=10, ploidy=2, loci=[5, 7], subPop=[2, 8])
 
-# a population with SNP markers (with names A,C,T,G)
+# a population with SNP markers (with names A, C, T, G)
 # range() are python functions
-pop = population(size=5, ploidy=2, loci=[5,10],
-    lociPos=[range(0,5),range(0,20,2)],
-    alleleNames=['A','C','T','G'],
-    subPop=[2,3], maxAllele=3)
+pop = population(size=5, ploidy=2, loci=[5, 10],
+    lociPos=[range(0, 5), range(0, 20, 2)],
+    alleleNames=['A', 'C', 'T', 'G'],
+    subPop=[2, 3], maxAllele=3)
 
 #
 # population structure functions
@@ -1783,26 +1776,23 @@ print pop.subPopSizes()
 print pop.subPopBegin(1)
 print pop.subPopEnd(1)
 print pop.subPopIndPair(3)
-print pop.absIndIndex(1,1)
+print pop.absIndIndex(1, 1)
 
 #
 # functions of setting population structure
-pop.setIndSubPopID([1,2,2,3,1])
+pop.setIndSubPopID([1, 2, 2, 3, 1])
 pop.setSubPopByIndID()
-pop.removeLoci(keep=range(2,7))
+pop.removeLoci(keep=range(2, 7))
 Dump(pop)
 
 #
 # save and load population
 # save it in various formats, default format is "txt"
 pop = population(1000, loci=[2, 5, 10])
-pop.savePopulation("pop.txt")
-pop.savePopulation("pop.txt", compress=False)
-pop.savePopulation("pop.xml", format="xml")
-pop.savePopulation("pop.bin", format="bin")
+pop.save("sample.pop")
 
 # load it in another population
-pop1 = LoadPopulation("pop.xml", format="xml")
+pop1 = LoadPopulation("sample.pop")
 #end
 
 
@@ -1818,11 +1808,11 @@ print ind.numChrom()
 # ...
 # as well as genotype
 print ind.allele(1) 
-ind.setAllele(1,5)
+ind.setAllele(1, 5)
 print ind.allele(1)
 # you can also use an overloaded function
 # with a second parameter being the ploidy index
-print ind.allele(1,1) # second locus at the second copy of chromosome
+print ind.allele(1, 1) # second locus at the second copy of chromosome
 # other information
 print ind.affected()
 print ind.affectedChar()
@@ -1833,19 +1823,19 @@ print ind.sexChar()
 
 
 #file log/src_operator.log
-simu = simulator(population(1),binomialSelection(), rep=2)
+simu = simulator(population(1), binomialSelection(), rep=2)
 op1 = pyOutput("a", begin=5, end=20, step=3)
 op2 = pyOutput("a", begin=-5, end=-1, step=2)
-op3 = pyOutput("a", at=[2,5,10])
-op4 = pyOutput("a", at=[-10,-5,-1])
+op3 = pyOutput("a", at=[2, 5, 10])
+op4 = pyOutput("a", at=[-10, -5, -1])
 simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
                              end=10)
 #
 #
 # operator group
 from simuUtil import *
-simu = simulator(population(1),binomialSelection(), rep=4,
-    grp=[1,2,1,2])
+simu = simulator(population(1), binomialSelection(), rep=4,
+    grp=[1, 2, 1, 2])
 simu.step(
     ops = [ 
         pyEval(r"grp+3", grp=1),
@@ -1905,17 +1895,17 @@ os.remove('a.txt')
 
 #file log/src_initByFreq.log
 simu = simulator( 
-    population(subPop=[2,3], loci=[5,7], maxAllele=1),
+    population(subPop=[2, 3], loci=[5, 7], maxAllele=1),
     randomMating(), rep=1)
 simu.step([
-    initByFreq(alleleFreq=[ [.2,.8],[.8,.2]]),
+    initByFreq(alleleFreq=[ [.2, .8], [.8, .2]]),
     dumper(alleleOnly=True)
   ])
 #end
 
 #file log/src_initByValue.log
 simu = simulator(
-    population(subPop=[2,3], loci=[5,7], maxAllele=9),
+    population(subPop=[2, 3], loci=[5, 7], maxAllele=9),
     randomMating(), rep=1)
 simu.step([
     initByValue([1]*5 + [2]*7 + [3]*5 +[4]*7),
@@ -1927,7 +1917,7 @@ def initAllele(ind, p, sp):
   return sp + ind + p
 
 simu = simulator( 
-    population(subPop=[2,3], loci=[5,7]),
+    population(subPop=[2, 3], loci=[5, 7]),
     randomMating(), rep=1)
 simu.step([
     pyInit(func=initAllele),
@@ -1936,33 +1926,33 @@ simu.step([
 
 
 #file log/src_kamMutator.log
-simu = simulator(population(size=5, loci=[3,5]), noMating())
+simu = simulator(population(size=5, loci=[3, 5]), noMating())
 simu.step([
-    kamMutator( rate=[.2,.6,.5], loci=[0,2,6], maxAllele=9),
+    kamMutator( rate=[.2, .6, .5], loci=[0, 2, 6], maxAllele=9),
     dumper(alleleOnly=True)])
 #end
 
 #file log/src_smmMutator.log
-simu = simulator(population(size=3, loci=[3,5]), noMating())
+simu = simulator(population(size=3, loci=[3, 5]), noMating())
 simu.step([
-    initByFreq( [.2,.3,.5]),
+    initByFreq( [.2, .3, .5]),
     smmMutator(rate=1,  incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 #end
 
 #file log/src_gsmMutator.log
-simu = simulator(population(size=3, loci=[3,5]), noMating())
+simu = simulator(population(size=3, loci=[3, 5]), noMating())
 simu.step([
-    initByFreq( [.2,.3,.5]),
+    initByFreq( [.2, .3, .5]),
     gsmMutator(rate=1, p=.8, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 
 import random
 def rndInt():
-  return random.randrange(3,6)
+  return random.randrange(3, 6)
 
 simu.step([
-    initByFreq( [.2,.3,.5]),
+    initByFreq( [.2, .3, .5]),
     gsmMutator(rate=1, func=rndInt, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)
     ]
@@ -1973,27 +1963,27 @@ simu.step([
 def mut(x):
   return 8
 
-simu = simulator(population(size=3, loci=[3,5]), noMating())
+simu = simulator(population(size=3, loci=[3, 5]), noMating())
 simu.step([
-  pyMutator(rate=.5, loci=[3,4,5], func=mut),
+  pyMutator(rate=.5, loci=[3, 4, 5], func=mut),
   dumper(alleleOnly=True)])
 #end
 
 
 #file log/src_recombinator.log
 simu = simulator(
-    population(4, loci=[4,5,6], maxAllele=9,
+    population(4, loci=[4, 5, 6], maxAllele=9,
     infoFields=['father_idx', 'mother_idx']),
     randomMating())
 simu.step([
   parentsTagger(),
   ],
-  preOps = [initByFreq([.2,.2,.4,.2]), dumper(alleleOnly=True) ],
+  preOps = [initByFreq([.2, .2, .4, .2]), dumper(alleleOnly=True) ],
   postOps = [ dumper(alleleOnly=True)]
 )
 simu.step([
   parentsTagger(),
-  recombinator(rate=[1,1,1], afterLoci=[2,6,10])
+  recombinator(rate=[1, 1, 1], afterLoci=[2, 6, 10])
   ],
   postOps = [ dumper(alleleOnly=True)]
 )
@@ -2022,14 +2012,14 @@ simu = simulator(pop, randomMating())
 
 simu.evolve(
   preOps = [ 
-    initByFreq( [.6, .4], loci=[0,2,4]),
-    initByFreq( [.8, .2], loci=[1,3]) ],
+    initByFreq( [.6, .4], loci=[0, 2, 4]),
+    initByFreq( [.8, .2], loci=[1, 3]) ],
   ops = [ 
     pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
     stat(alleleFreq=range(5)),
-    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1],alleleFreq[1][1])', step=10)
+    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1], alleleFreq[1][1])', step=10)
     ],
-  end = 30
+  gen = 30
 )        
 #end
 
@@ -2077,7 +2067,7 @@ simu.evolve([
     mapSelector(locus=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
-    preOps=[  initByFreq(alleleFreq=[.2,.8])],
+    preOps=[  initByFreq(alleleFreq=[.2, .8])],
     end=300)
 #end
 
@@ -2089,7 +2079,7 @@ simu = simulator(
 s1 = .1
 s2 = .2
 simu.evolve(
-    preOps=[initByFreq(alleleFreq=[.2,.8])],
+    preOps=[initByFreq(alleleFreq=[.2, .8])],
     ops = [
         stat( alleleFreq=[0], genoFreq=[0]),
         maSelector(locus=0, fitness=[1-s1, 1, 1-s2]),
@@ -2117,20 +2107,20 @@ def sel(arr, gen=0):
     return 1 - s2
 
 # test func
-print sel([1,1])
+print sel([1, 1])
 
 simu.evolve([
     stat( alleleFreq=[0], genoFreq=[0]),
-    pySelector(loci=[0,1],func=sel),
+    pySelector(loci=[0, 1], func=sel),
     pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=25)
     ],
-    preOps=[  initByFreq(alleleFreq=[.2,.8])],
+    preOps=[  initByFreq(alleleFreq=[.2, .8])],
     end=100)
 #end
 
 #file log/src_pySubset.log
 simu = simulator(
-    population(subPop=[2,3], loci=[3,4]),
+    population(subPop=[2, 3], loci=[3, 4]),
     randomMating())
 simu.step([
     initByFreq([.3, .5, .2]),
@@ -2177,7 +2167,7 @@ def peneFunc(table):
 
 # then, given a table, you can do
 PyPenetrance(pop, loci=(0, 1, 2),
-    func=peneFunc( ((0,0.5),(0.3,0.8)) ) )
+    func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
 #end
 
 
@@ -2190,10 +2180,10 @@ simu = simulator(
     population(size=1000, loci=[1]),
     randomMating(), rep=4)
 simu.evolve(
-  preOps = [ initByValue([1,1])],
+  preOps = [ initByValue([1, 1])],
   ops = [
     # penetrance, additve penetrance
-    maPenetrance(locus=0, wildtype=[1], penetrance=[0,0.5,1]),
+    maPenetrance(locus=0, wildtype=[1], penetrance=[0, 0.5, 1]),
     # count number of affected
     stat(numOfAffected=True),
     # introduce disease if no one is affected
@@ -2230,7 +2220,7 @@ print rng().name()
 #file log/src_rngrand.log
 r=rng()
 #help(RNG)
-for n in range(1,10):
+for n in range(1, 10):
     print r.randBinomial(10, .7),
 #end
 
@@ -2242,11 +2232,11 @@ def indFunc(ind, param):
     return True
 
 simu = simulator(
-    population(5, loci=[2,5], infoFields=['info1', 'info2']),
+    population(5, loci=[2, 5], infoFields=['info1', 'info2']),
     randomMating(), rep=1)
 simu.step(
     ops = [
-        pyIndOperator(func=indFunc, param=(3,2)), 
+        pyIndOperator(func=indFunc, param=(3, 2)), 
     ],
 )
 #end
@@ -2261,9 +2251,9 @@ Dump(pop)
 
 
 #file log/src_splitSubPop.log
-pop = population(size=10, loci=[2,6])
-InitByFreq(pop, [.2,.4,.4])
-SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
+pop = population(size=10, loci=[2, 6])
+InitByFreq(pop, [.2, .4, .4])
+SplitSubPop(pop, which=0, sizes=[2, 8], randomize=False)
 print pop.subPopSizes()
 #end
 
@@ -2275,12 +2265,12 @@ simu = simulator(
     randomMating())
 simu.evolve(
     [ mlSelector([
-         mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-         mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+         mapSelector(locus=0, fitness={'0-0':1, '0-1':1, '1-1':.8}),
+         mapSelector(locus=1, fitness={'0-0':1, '0-1':1, '1-1':.8}),
          ], mode=SEL_Additive),
     ],
     preOps = [
-        initByFreq(alleleFreq=[.2,.8])
+        initByFreq(alleleFreq=[.2, .8])
     ],
     end=2
 )

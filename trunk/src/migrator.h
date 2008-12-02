@@ -24,8 +24,8 @@
 #ifndef _MIGRATOR_H
 #define _MIGRATOR_H
 /**
- \file
- \brief head file of class migrator:public baseOperator
+   \file
+   \brief head file of class migrator:public baseOperator
  */
 #include "operator.h"
 #include <list>
@@ -53,15 +53,15 @@ namespace simuPOP {
    Migrator is the only way to mix genotypes of several subpopulations
    because mating is strictly within subpopulations in simuPOP. Migrators
    are quite flexible in simuPOP in the sense that
- \li migration can happen from and to a subset of subpopulations.
- \li migration can be done by probability, proportion or by counts. In
-   	the case of probability, if the migration rate from subpopulation
- \c a to \c b is \c r, then everyone in subpopulation \c a will have this
-   	probability to migrate to \c b. In the case of proportion, exactly
-   	<tt>r*size_of_subPop_a</tt> individuals (chosen by random) will migrate
-   	to subpopulation \c b. In the last case, a given number of individuals will
+   \li migration can happen from and to a subset of subpopulations.
+   \li migration can be done by probability, proportion or by counts. In
+    the case of probability, if the migration rate from subpopulation
+   \c a to \c b is \c r, then everyone in subpopulation \c a will have this
+    probability to migrate to \c b. In the case of proportion, exactly
+    <tt>r*size_of_subPop_a</tt> individuals (chosen by random) will migrate
+    to subpopulation \c b. In the last case, a given number of individuals will
    migrate.
- \li new subpopulation can be generated through migration. You simply
+   \li new subpopulation can be generated through migration. You simply
    need to migrate to a subpopulation with a new subpopulation number.
  */
 class migrator : public baseOperator
@@ -75,27 +75,27 @@ public:
 public:
 	/// create a migrator
 	/**
-	 \param rate migration rate, can be a proportion or counted number. Determined by
-	   	parameter \c mode. \c rate should be an m by n matrix. If a number is given,
-	   	the migration rate will be a \c m by \c n matrix of value \c r
-	 \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-	 \param fromSubPop an array of 'from' subpopulations (a number) or virtual subpopulations
-		(a pair of numbers). Default to all subpopulations. For example, if you define a
-		virtual subpopulation by sex, you can use <tt>fromSubpop=[(0,0), 1]</tt> to choose migrants 
-		from the first virtual subpopulation of subpopulation 0, and from subpopulation 1.
-		If a single number \c sp is given, it is intepretted as [sp]. Note that
-		<tt>fromSubPop=(0, 1)</tt> (two subpopulation) is different from <tt>fromSubPop=[(0,1)]</tt>
-		(a virtual subpopulation).
-	 \param toSubPop an array of 'to' subpopulations. Default to all
-	   	subpopulations. If a single subpopulation is specified,
-	   	<tt>[]</tt> can be ignored.
-	 \param stage default to \c PreMating
+	   \param rate migration rate, can be a proportion or counted number. Determined by
+	    parameter \c mode. \c rate should be an m by n matrix. If a number is given,
+	    the migration rate will be a \c m by \c n matrix of value \c r
+	   \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
+	   \param fromSubPop an array of 'from' subpopulations (a number) or virtual subpopulations
+	    (a pair of numbers). Default to all subpopulations. For example, if you define a
+	    virtual subpopulation by sex, you can use <tt>fromSubpop=[(0,0), 1]</tt> to choose migrants
+	    from the first virtual subpopulation of subpopulation 0, and from subpopulation 1.
+	    If a single number \c sp is given, it is intepretted as [sp]. Note that
+	    <tt>fromSubPop=(0, 1)</tt> (two subpopulation) is different from <tt>fromSubPop=[(0,1)]</tt>
+	    (a virtual subpopulation).
+	   \param toSubPop an array of 'to' subpopulations. Default to all
+	    subpopulations. If a single subpopulation is specified,
+	    <tt>[]</tt> can be ignored.
+	   \param stage default to \c PreMating
 
-	 \note
-	 \li The overall population size will not be changed. (Mating schemes can
+	   \note
+	   \li The overall population size will not be changed. (Mating schemes can
 	   do that). If you would like to keep the subpopulation sizes after migration, you
 	   can use the \c newSubPopSize or \c newSubPopSizeExpr parameter of a mating scheme.
-	 \li \c rate is a matrix with dimensions determined by \c fromSubPop and \c toSubPop.
+	   \li \c rate is a matrix with dimensions determined by \c fromSubPop and \c toSubPop.
 	   By default, \c rate is a matrix with element \c r(i,j), where \c r(i, j) is the
 	   migration rate, probability or count from subpopulation \c i to \c j. If \c fromSubPop
 	   and/or \c toSubPop are given, migration will only happen between these subpopulations.
@@ -103,24 +103,9 @@ public:
 	   which migrate from subpopulation \c a to \c b with given rate \c r.
 	 */
 	migrator(const matrix & rate, int mode = MigrByProbability,
-	         const subPopList & fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
-	         int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
-		m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
-	{
-		// when migrator is constructed from a pyMigrator, initial
-		// rate is empty
-		if (!rate.empty()) {
-			DBG_FAILIF(!m_from.empty() && m_from.size() != rate.size(),
-				ValueError, "Length of param fromSubPop must match rows of rate matrix.");
-
-			DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
-				ValueError, "Length of param toSubPop must match columns of rate matrix.");
-
-			setRates(rate, mode);
-		}
-	};
+		const subPopList & fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"));
 
 	/// destructor
 	virtual ~migrator()
@@ -175,15 +160,15 @@ protected:
 /// a more flexible Python migrator
 /**
    This migrator can be used in two ways
- \li define a function that accepts a generation number and returns a migration rate matrix.
-   	This can be used in various migration rate cases.
- \li define a function that accepts individuals etc, and returns the new subpopulation ID.
+   \li define a function that accepts a generation number and returns a migration rate matrix.
+    This can be used in various migration rate cases.
+   \li define a function that accepts individuals etc, and returns the new subpopulation ID.
 
    More specifically, \c func can be
- \li <tt>func(ind)</tt> when neither \c loci nor \c param is given.
- \li <tt>func(ind, genotype)</tt> when \c loci is given.
- \li <tt>func(ind, param)</tt> when \c param is given.
- \li <tt>func(ind, genotype, param)</tt> when both \c loci and \c param are given.
+   \li <tt>func(ind)</tt> when neither \c loci nor \c param is given.
+   \li <tt>func(ind, genotype)</tt> when \c loci is given.
+   \li <tt>func(ind, param)</tt> when \c param is given.
+   \li <tt>func(ind, genotype, param)</tt> when both \c loci and \c param are given.
 
  */
 class pyMigrator : public migrator
@@ -192,21 +177,21 @@ class pyMigrator : public migrator
 public:
 	/// create a hybrid migrator
 	/**
-	 \param rateFunc a Python function that accepts a generation number,
-	   	current subpopulation sizes, and returns a migration rate matrix.
-	   	The migrator then migrate like a usual migrator.
-	 \param indFunc a Python function that accepts an individual, optional
-	   	genotypes and parameters, then returns a subpopulation ID. This
-	   	method can be used to separate a population according to individual
-	   	genotype.
-	 \param stage default to \c PreMating
+	   \param rateFunc a Python function that accepts a generation number,
+	    current subpopulation sizes, and returns a migration rate matrix.
+	    The migrator then migrate like a usual migrator.
+	   \param indFunc a Python function that accepts an individual, optional
+	    genotypes and parameters, then returns a subpopulation ID. This
+	    method can be used to separate a population according to individual
+	    genotype.
+	   \param stage default to \c PreMating
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc = NULL,
-	           int mode = MigrByProbability,
-	           subPopList fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
-	           const vectoru & loci = vectoru(), PyObject * param = NULL,
-	           int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		int mode = MigrByProbability,
+		subPopList fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
+		const vectoru & loci = vectoru(), PyObject * param = NULL,
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
@@ -298,24 +283,24 @@ class splitSubPop : public baseOperator
 public:
 	/// split a subpopulation
 	/**
-	 Split a subpopulation by sizes or proportions. Individuals are randomly (by default)
-	 assigned to the resulting subpopulations. Because mating schemes may introduce
-	 certain order to individuals, randomization ensures that split subpopulations have
-	 roughly even distribution of genotypes.
+	   Split a subpopulation by sizes or proportions. Individuals are randomly (by default)
+	   assigned to the resulting subpopulations. Because mating schemes may introduce
+	   certain order to individuals, randomization ensures that split subpopulations have
+	   roughly even distribution of genotypes.
 
-	 \param which which subpopulation to split. If there is no subpopulation structure,
-	   	use \c 0 as the first (and only) subpopulation.
-	 \param sizes new subpopulation sizes. The sizes should be added up to the original
-	   	subpopulation (subpopulation \c which) size.
-	 \param proportions proportions of new subpopulations. Should be added up to \c 1.
-	 \param randomize Whether or not randomize individuals before population split. Default
-		to True.
-	 \test src_splitSubPop.log Operator \c splitSubPop
+	   \param which which subpopulation to split. If there is no subpopulation structure,
+	    use \c 0 as the first (and only) subpopulation.
+	   \param sizes new subpopulation sizes. The sizes should be added up to the original
+	    subpopulation (subpopulation \c which) size.
+	   \param proportions proportions of new subpopulations. Should be added up to \c 1.
+	   \param randomize Whether or not randomize individuals before population split. Default
+	    to True.
+	   \test src_splitSubPop.log Operator \c splitSubPop
 	 */
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
-	            bool randomize = true,
-	            int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		bool randomize = true,
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
 		m_randomize(randomize)
@@ -380,11 +365,11 @@ class mergeSubPops : public baseOperator
 public:
 	/// merge subpopulations
 	/**
-	 \param subPops subpopulations to be merged. Default to all.
+	   \param subPops subpopulations to be merged. Default to all.
 	 */
 	mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false,
-	             int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
 	{
@@ -445,14 +430,14 @@ class resizeSubPops : public baseOperator
 public:
 	/// resize subpopulations
 	/**
-	 \param newSizes of the specified (or all) subpopulations.
-	 \param subPops subpopulations to be resized. Default to all.
-	 \param propagate if true (default) and the new size if greater than
-	   	the original size, individuals will be copied over.
+	   \param newSizes of the specified (or all) subpopulations.
+	   \param subPops subpopulations to be resized. Default to all.
+	   \param propagate if true (default) and the new size if greater than
+	    the original size, individuals will be copied over.
 	 */
 	resizeSubPops(vectorlu newSizes = vectorlu(), vectoru subPops = vectoru(), bool propagate = true,
-	              int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	              const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_newSizes(newSizes), m_subPops(subPops), m_propagate(propagate)
 	{
