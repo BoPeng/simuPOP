@@ -33,6 +33,9 @@ Last modified \\
 \definecolor{VerbatimColor}{rgb}{0,0,0}
 \definecolor{VerbatimBackgroundColor}{rgb}{0.98,0.941,0.902}
 \definecolor{VerbatimBorderColor}{rgb}{0,0,0}
+\definecolor{VerbatimStringColor}{rgb}{0,0.5,0}
+\definecolor{VerbatimCommentColor}{rgb}{0.5,0.5,0.5}
+\definecolor{VerbatimPromptColor}{rgb}{0.904,0.686,0.584}
 
 \usepackage{sectsty}
 \sectionfont{\color{TitleColor}}
@@ -84,7 +87,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\ttfamily\color{VerbatimColor}},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
+\listings_params "alsoletter={>.},backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\ttfamily\color{VerbatimColor}},commentstyle={\color{VerbatimCommentColor}\slshape},emph={[2]>>>,...},emphstyle={[2]\color{VerbatimPromptColor}},language=Python,showspaces=false,showstringspaces=false,showtabs=false,stringstyle={\color{VerbatimStringColor}},upquote=true,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
 \author "" 
