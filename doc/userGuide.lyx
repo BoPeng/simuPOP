@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -31,6 +31,7 @@ Last modified \\
 \definecolor{TitleColor}{rgb}{0.126,0.263,0.361}
 \definecolor{LinkColor}{rgb}{0.208,0.374,0.486}
 \definecolor{VerbatimColor}{rgb}{0,0,0}
+\definecolor{VerbatimBackgroundColor}{rgb}{0.98,0.941,0.902}
 \definecolor{VerbatimBorderColor}{rgb}{0,0,0}
 
 \usepackage{sectsty}
@@ -83,7 +84,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "basicstyle={\ttfamily\color{VerbatimColor}},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
+\listings_params "backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\ttfamily\color{VerbatimColor}},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
 \tracking_changes false
 \output_changes false
 \author "" 
