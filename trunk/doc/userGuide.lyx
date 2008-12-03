@@ -111,7 +111,7 @@ width "100col%"
 special "none"
 height "1pt"
 height_special "totalheight"
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -842,7 +842,7 @@ population
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/help.log"
-lstparams "caption={Getting help using the \\texttt{help()} function}"
+lstparams "caption={Getting help using the \\texttt{help()} function},keywordstyle={\\ttfamily}"
 
 \end_inset
 
@@ -961,6 +961,7 @@ It is unclear why this simple command causes us trouble, instead of outputting
 
 \begin_layout Standard
 \begin_inset listings
+lstparams "keywordstyle={\ttfamily}"
 inline false
 status open
 
@@ -1417,7 +1418,7 @@ reference "lst:Use-of-optimized-module"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/standard.log"
-lstparams "caption={Use of standard simuPOP modules},label={lst:Use-of-standard-module}"
+lstparams "caption={Use of standard simuPOP modules},keywords={from,import},label={lst:Use-of-standard-module}"
 
 \end_inset
 
