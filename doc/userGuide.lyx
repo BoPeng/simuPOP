@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2033,7 +2033,7 @@ Ranges and iterators
 \end_layout
 
 \begin_layout Standard
-Ranges in simuPOP also conforms to Python ranges.
+Ranges in simuPOP also conform to Python ranges.
  That is to say, a range has the form of 
 \family typewriter
 [a,b) 
@@ -2056,7 +2056,7 @@ refers to the index of the first locus on chromosome 1 (actually exists),
 \family typewriter
 pop.chromEnd(1) 
 \family default
-is the index of the last locus on chromosome 1
+refers to the index of the last locus on chromosome 1
 \series bold
  plus 1
 \series default
@@ -2198,45 +2198,7 @@ genotypic structure
 
 \begin_layout Standard
 Genotypic structure refers to stuctural information shared by all individuals
- in a population, including number of homologous copies of chromosomes,
- chromosome types and names, position and name of each locus, and auxillary
- information attached to each individual.
- A genotypic structure can be retrieved from 
-\emph on
-individual, population 
-\emph default
-and 
-\emph on
-simulator
-\emph default
- objects.
- Because a population consists of individuals of the same type, and a simulator
- consists of populations of the same type, genotypic information
-\emph on
- 
-\emph default
-can only be changed for all individuals at the population level, or for
- all populations at the simulator level.
- 
-\end_layout
-
-\begin_layout Standard
-Genotypic structure refers to 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/genoStru.log"
-lstparams "caption={Genotypic structure},label={genostructure}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Ploidy, the number of copies of homologous chromosomes (c.f.
+ in a population, including number of homologous copies of chromosomes (c.f.
  
 \family typewriter
 ploidy
@@ -2261,13 +2223,7 @@ GenoStruTrait!ploidyName
 
 ()
 \family default
- ).
- For efficiency considerations A haplodiploid population can be specified
- will return 2 as ploidy number.
-\end_layout
-
-\begin_layout Itemize
-Names and number of chromosomes (c.f.
+), chromosome types and names (c.f.
  
 \family typewriter
 numChrom
@@ -2280,7 +2236,17 @@ GenoStruTrait!numChrom
 
 \end_inset
 
-(), chromName
+(), chromType()
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+GenoStruTrait!chromType
+\end_layout
+
+\end_inset
+
+, chromName
 \begin_inset Index
 status collapsed
 
@@ -2292,11 +2258,7 @@ GenoStruTrait!chromName
 
 ()
 \family default
- )
-\end_layout
-
-\begin_layout Itemize
-the number of loci on each chromosome (c.f.
+), position and name of each locus (c.f.
  
 \family typewriter
 numLoci
@@ -2309,23 +2271,8 @@ GenoStruTrait!numLoci
 
 \end_inset
 
-(ch), totNumLoci
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-GenoStruTrait!totNumLoci
-\end_layout
-
-\end_inset
-
-()
+(ch),
 \family default
- )
-\end_layout
-
-\begin_layout Itemize
-the locus position on its chromosome (c.f.
  
 \family typewriter
 locusPos
@@ -2338,65 +2285,13 @@ GenoStruTrait!locusPos
 
 \end_inset
 
-(loc), lociPos
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-GenoStruTrait!lociPos
-\end_layout
-
-\end_inset
-
-()
+(loc),
 \family default
- )
-\end_layout
-
-\begin_layout Itemize
-allele name(s), default to allele number (c.f.
  
 \family typewriter
-alleleName
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-GenoStruTrait!alleleName
-\end_layout
-
-\end_inset
-
-(allele)
+locusName(loc)
 \family default
- , 
-\family typewriter
-alleleNames()
-\family default
-)
-\end_layout
-
-\begin_layout Itemize
-the maximum allele state (c.f.
- 
-\family typewriter
-maxAllele
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-GenoStruTrait!maxAllele
-\end_layout
-
-\end_inset
-
-()
-\family default
- )
-\end_layout
-
-\begin_layout Itemize
-the names of the information fields (c.f.
+), and auxillary information attached to each individual (c.f.
  
 \family typewriter
 infoField
@@ -2421,7 +2316,62 @@ GenoStruTrait!infoFields
 
 ()
 \family default
- )
+).
+ In addition to property access functions, a number of utility functions
+ are provided to, for example, look up the index of a locus by its name
+ (c.f.
+ 
+\family typewriter
+locusByName()
+\family default
+, 
+\family typewriter
+chromBegin()
+\family default
+, 
+\family typewriter
+chromLocusPair()
+\family default
+).
+\end_layout
+
+\begin_layout Standard
+A genotypic structure can be retrieved from 
+\emph on
+individual, population 
+\emph default
+and 
+\emph on
+simulator
+\emph default
+ objects.
+ Because a population consists of individuals of the same type, and a simulator
+ consists of populations of the same type, genotypic information
+\emph on
+ 
+\emph default
+can only be changed for all individuals at the population level, or for
+ all populations at the simulator level.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "genostructure"
+
+\end_inset
+
+ demonstrates how to access genotypic structure functions at the population
+ and individual levels.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/genoStru.log"
+lstparams "caption={Genotypic structure functions},label={genostructure}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -2429,7 +2379,7 @@ Haploid, diploid and haplodiploid populations
 \end_layout
 
 \begin_layout Standard
-simuPOP 
+simuPOP supports 
 \end_layout
 
 \begin_layout Subsection
@@ -2541,6 +2491,10 @@ levels
 \emph default
 .
  
+\end_layout
+
+\begin_layout Subsection
+Information fields
 \end_layout
 
 \begin_layout Section
