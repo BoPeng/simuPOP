@@ -97,16 +97,20 @@ print ind.genotype()
 #end
 
 #file log/genoStru.log
-# create a population, most parameters have default values
 pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
     lociPos=[range(0, 5), range(0, 20, 2)],
-    alleleNames=['A', 'C', 'T', 'G'], maxAllele=3)
-print pop.popSize()
-print pop.ploidy()
-print pop.ploidyName()
-print pop.numChrom()
-print pop.locusPos(2)
-print pop.alleleName(1)
+    alleleNames=['A', 'C', 'T', 'G'])
+# access genotypic information from the population
+pop.ploidy()
+pop.ploidyName()
+pop.numChrom()
+pop.locusPos(2)
+pop.alleleName(1)
+# access from an individual
+ind = pop.individual(2)
+ind.numLoci(1)
+ind.chromName(0)
+ind.locusName(1)
 #end
 
 #file log/indGenoStru.log
