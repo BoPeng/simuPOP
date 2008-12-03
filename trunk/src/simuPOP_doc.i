@@ -22,7 +22,7 @@ Usage:
 
 %feature("docstring") simuPOP::affectionSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::affectionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::affectionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::affectionSplitter::numVirtualSubPop "
 
@@ -417,7 +417,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::baseRandomMating::isCompatible(const population &pop) const ;
+%ignore simuPOP::baseRandomMating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::baseRandomMating::__repr__ "
 
@@ -842,7 +842,7 @@ Usage:
 
 %feature("docstring") simuPOP::combinedSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::combinedSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::combinedSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::combinedSplitter::numVirtualSubPop "
 
@@ -957,7 +957,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::consanguineousMating::isCompatible(const population &pop) const ;
+%ignore simuPOP::consanguineousMating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::consanguineousMating::__repr__ "
 
@@ -1051,7 +1051,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::controlledMating::isCompatible(const population &pop) const ;
+%ignore simuPOP::controlledMating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::controlledMating::__repr__ "
 
@@ -1148,7 +1148,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::controlledRandomMating::isCompatible(const population &pop) const ;
+%ignore simuPOP::controlledRandomMating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::controlledRandomMating::__repr__ "
 
@@ -1408,9 +1408,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::GenoStructure::locusPos(UINT locus) const ;
+%ignore simuPOP::GenoStructure::locusPos(UINT locus) const;
 
-%ignore simuPOP::GenoStructure::chromIndex(UINT ch) const ;
+%ignore simuPOP::GenoStructure::chromIndex(UINT ch) const;
 
 %ignore simuPOP::GenoStructure::setChromTypes(const vectoru &chromTypes);
 
@@ -1482,19 +1482,19 @@ Details:
 
 %feature("docstring") simuPOP::GenoStruTrait::lociCovered "Obsolete or undocumented function."
 
-%ignore simuPOP::GenoStruTrait::gsAddChromFromStru(size_t idx) const ;
+%ignore simuPOP::GenoStruTrait::gsAddChromFromStru(size_t idx) const;
 
-%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx) const ;
+%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx) const;
 
 %ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &loci, vectoru &kept);
 
-%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const ;
+%ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const ;
+%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
 
-%ignore simuPOP::GenoStruTrait::genoStru() const ;
+%ignore simuPOP::GenoStruTrait::genoStru() const;
 
-%ignore simuPOP::GenoStruTrait::genoStruIdx() const ;
+%ignore simuPOP::GenoStruTrait::genoStruIdx() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::ploidy "
 
@@ -1550,11 +1550,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::chromX() const ;
+%ignore simuPOP::GenoStruTrait::chromX() const;
 
-%ignore simuPOP::GenoStruTrait::chromY() const ;
+%ignore simuPOP::GenoStruTrait::chromY() const;
 
-%ignore simuPOP::GenoStruTrait::mitochondrial() const ;
+%ignore simuPOP::GenoStruTrait::mitochondrial() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::sexChrom "Obsolete or undocumented function."
 
@@ -1615,7 +1615,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::GenoStruTrait::chromIndex() const ;
+%ignore simuPOP::GenoStruTrait::chromIndex() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::chromBegin "
 
@@ -1909,7 +1909,7 @@ Details:
 
 %feature("docstring") simuPOP::genotypeSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::genotypeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::genotypeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::genotypeSplitter::numVirtualSubPop "
 
@@ -1992,10 +1992,6 @@ Arguments:
                     0.5.
     func:           a function that returns the number of steps. This
                     function does not accept any parameter.
-
-Example:
-
-Testsrc_gsmMutator.log Operator <tt> gsmMutator</tt>
 
 "; 
 
@@ -2114,7 +2110,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::haplodiploidMating::isCompatible(const population &pop) const ;
+%ignore simuPOP::haplodiploidMating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::haplodiploidMating::__repr__ "
 
@@ -2300,10 +2296,6 @@ Arguments:
     elseOp:         an operator that will be applied when cond is
                     False
 
-Example:
-
-Testsrc_ifElse.log Operator <tt> ifElse</tt>
-
 "; 
 
 %feature("docstring") simuPOP::ifElse::~ifElse "
@@ -2437,9 +2429,9 @@ Usage:
 
 %ignore simuPOP::individual::copyFrom(const individual &rhs);
 
-%ignore simuPOP::individual::genoPtr() const ;
+%ignore simuPOP::individual::genoPtr() const;
 
-%ignore simuPOP::individual::infoPtr() const ;
+%ignore simuPOP::individual::infoPtr() const;
 
 %feature("docstring") simuPOP::individual::allele "
 
@@ -2679,11 +2671,11 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::iteratable() const ;
+%ignore simuPOP::individual::iteratable() const;
 
 %ignore simuPOP::individual::setIteratable(bool iteratable);
 
-%ignore simuPOP::individual::visible() const ;
+%ignore simuPOP::individual::visible() const;
 
 %ignore simuPOP::individual::setVisible(bool visible);
 
@@ -2761,19 +2753,19 @@ Details:
 
 "; 
 
-%ignore simuPOP::individual::genoBegin() const ;
+%ignore simuPOP::individual::genoBegin() const;
 
-%ignore simuPOP::individual::genoEnd() const ;
+%ignore simuPOP::individual::genoEnd() const;
 
-%ignore simuPOP::individual::genoBegin(UINT p) const ;
+%ignore simuPOP::individual::genoBegin(UINT p) const;
 
-%ignore simuPOP::individual::genoEnd(UINT p) const ;
+%ignore simuPOP::individual::genoEnd(UINT p) const;
 
-%ignore simuPOP::individual::genoBegin(UINT p, UINT chrom) const ;
+%ignore simuPOP::individual::genoBegin(UINT p, UINT chrom) const;
 
-%ignore simuPOP::individual::infoBegin() const ;
+%ignore simuPOP::individual::infoBegin() const;
 
-%ignore simuPOP::individual::infoEnd() const ;
+%ignore simuPOP::individual::infoEnd() const;
 
 %feature("docstring") simuPOP::individual::__cmp__ "
 
@@ -3153,7 +3145,7 @@ Details:
 
 %feature("docstring") simuPOP::infoSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::infoSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::infoSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::infoSplitter::numVirtualSubPop "
 
@@ -3325,10 +3317,6 @@ Arguments:
                     beginning.
     stage:          default to PreMating.
 
-Example:
-
-Testsrc_initByFreq.log Operator <tt> initByFreq</tt>
-
 "; 
 
 %feature("docstring") simuPOP::initByFreq::~initByFreq "
@@ -3434,10 +3422,6 @@ Arguments:
                     number of individuals, sex will be reused from the
                     beginning.
     stages:         default to PreMating.
-
-Example:
-
-Testsrc_initByValue.log Operator <tt> initByValue</tt>
 
 "; 
 
@@ -3729,10 +3713,6 @@ Arguments:
                     libraries, allelic states will be [0, maxAllele].
                     Otherwise, they are [1, maxAllele].
 
-Example:
-
-Testsrc_kamMutator.log Operator <tt> kamMutator</tt>
-
 "; 
 
 %feature("docstring") simuPOP::kamMutator::~kamMutator "
@@ -3831,10 +3811,6 @@ Arguments:
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
 
-Example:
-
-Testsrc_maPenetrance.log Operator <tt> maPenetrance</tt>
-
 "; 
 
 %feature("docstring") simuPOP::maPenetrance::~maPenetrance "
@@ -3922,10 +3898,6 @@ Arguments:
                     penetrance values. Default to False.
     output:         and other parameters please refer to
                     help(baseOperator.__init__)
-
-Example:
-
-Testsrc_mapPenetrance.log Operator <tt> mapPenetrance</tt>
 
 "; 
 
@@ -4109,10 +4081,6 @@ Arguments:
                     fitness values. Default to False.
     output:         and other parameters please refer to help
                     (baseOperator.__init__)
-
-Example:
-
-Testsrc_mapSelector.log Operator <tt> mapSelector</tt>
 
 "; 
 
@@ -4324,10 +4292,6 @@ Note:
     *  maSelector only works for diploid populations.
     * wildtype alleles at all loci are the same.
 
-Example:
-
-Testsrc_maSelector.log Operator <tt> maSelector</tt>
-
 "; 
 
 %feature("docstring") simuPOP::maSelector::~maSelector "
@@ -4395,7 +4359,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::mating::isCompatible(const population &pop) const ;
+%ignore simuPOP::mating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::mating::mating "
 
@@ -4449,10 +4413,6 @@ Arguments:
                     determined by weights from all (virtual)
                     subpopulations.
 
-Example:
-
-Testsrc_mating.log Demographic models and control of number of offspring per mating event 
-
 "; 
 
 %ignore simuPOP::mating::mating(const mating &rhs);
@@ -4469,11 +4429,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mating::subPop() const ;
+%ignore simuPOP::mating::subPop() const;
 
-%ignore simuPOP::mating::virtualSubPop() const ;
+%ignore simuPOP::mating::virtualSubPop() const;
 
-%ignore simuPOP::mating::weight() const ;
+%ignore simuPOP::mating::weight() const;
 
 %feature("docstring") simuPOP::mating::clone "
 
@@ -4567,10 +4527,6 @@ Description:
 Usage:
 
     x.formOffspringGenotype(parent, it, ploidy, count)
-
-Arguments:
-
-    count:          index of offspring, used to set offspring sex
 
 "; 
 
@@ -4865,10 +4821,6 @@ Arguments:
     mode:           can be one of PEN_Multiplicative, PEN_Additive,
                     and PEN_Heterogeneity
 
-Example:
-
-Testsrc_mlPenetrance.log Operator <tt> mlPenetrance</tt>
-
 "; 
 
 %feature("docstring") simuPOP::mlPenetrance::~mlPenetrance "
@@ -5059,10 +5011,6 @@ Details:
 Arguments:
 
     selectors:      a list of selectors
-
-Example:
-
-Testsrc_mlSelector.log Operator <tt> mlSelector</tt>
 
 "; 
 
@@ -5458,10 +5406,6 @@ Usage:
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
       end=0, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
-Example:
-
-Testsrc_noneOp.log Operator <tt> noneOp</tt>
-
 "; 
 
 %feature("docstring") simuPOP::noneOp::~noneOp "
@@ -5602,7 +5546,7 @@ Usage:
 
 %ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
-%ignore simuPOP::offspringGenerator::fixedFamilySize() const ;
+%ignore simuPOP::offspringGenerator::fixedFamilySize() const;
 
 %ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
@@ -5640,11 +5584,11 @@ Usage:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::initialized() const ;
+%ignore simuPOP::offspringGenerator::initialized() const;
 
 %ignore simuPOP::offspringGenerator::setNumParents(int numParents);
 
-%ignore simuPOP::offspringGenerator::numParents() const ;
+%ignore simuPOP::offspringGenerator::numParents() const;
 
 %ignore simuPOP::OstreamManager;
 
@@ -5791,7 +5735,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::parentChooser::initialized() const ;
+%ignore simuPOP::parentChooser::initialized() const;
 
 %ignore simuPOP::parentChooser::numParents();
 
@@ -6703,17 +6647,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::population::validate(const string &msg) const ;
+%ignore simuPOP::population::validate(const string &msg) const;
 
 %ignore simuPOP::population::fitSubPopStru(const vectorlu &newSubPopSizes);
 
-%ignore simuPOP::population::hasActivatedVirtualSubPop() const ;
+%ignore simuPOP::population::hasActivatedVirtualSubPop() const;
 
-%ignore simuPOP::population::hasActivatedVirtualSubPop(SubPopID subPop) const ;
+%ignore simuPOP::population::hasActivatedVirtualSubPop(SubPopID subPop) const;
 
-%ignore simuPOP::population::hasVirtualSubPop() const ;
+%ignore simuPOP::population::hasVirtualSubPop() const;
 
-%ignore simuPOP::population::virtualSplitter() const ;
+%ignore simuPOP::population::virtualSplitter() const;
 
 %feature("docstring") simuPOP::population::setVirtualSplitter "
 
@@ -6904,7 +6848,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::ind(ULONG idx, UINT subPop=0) const ;
+%ignore simuPOP::population::ind(ULONG idx, UINT subPop=0) const;
 
 %feature("docstring") simuPOP::population::ancestor "
 
@@ -6985,9 +6929,9 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::indOrdered() const ;
+%ignore simuPOP::population::indOrdered() const;
 
-%ignore simuPOP::population::setIndOrdered(bool s) const ;
+%ignore simuPOP::population::setIndOrdered(bool s) const;
 
 %ignore simuPOP::population::indBegin(IterationType type=VisibleInds);
 
@@ -6997,11 +6941,11 @@ Details:
 
 %ignore simuPOP::population::indEnd(UINT subPop, IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indBegin(IterationType type=VisibleInds) const ;
+%ignore simuPOP::population::indBegin(IterationType type=VisibleInds) const;
 
-%ignore simuPOP::population::indEnd(IterationType type=VisibleInds) const ;
+%ignore simuPOP::population::indEnd(IterationType type=VisibleInds) const;
 
-%ignore simuPOP::population::indEnd(UINT subPop, IterationType type) const ;
+%ignore simuPOP::population::indEnd(UINT subPop, IterationType type) const;
 
 %ignore simuPOP::population::rawIndBegin();
 
@@ -7011,11 +6955,11 @@ Details:
 
 %ignore simuPOP::population::rawIndEnd(UINT subPop);
 
-%ignore simuPOP::population::rawIndBegin() const ;
+%ignore simuPOP::population::rawIndBegin() const;
 
-%ignore simuPOP::population::rawIndEnd() const ;
+%ignore simuPOP::population::rawIndEnd() const;
 
-%ignore simuPOP::population::rawIndEnd(UINT subPop) const ;
+%ignore simuPOP::population::rawIndEnd(UINT subPop) const;
 
 %ignore simuPOP::population::alleleBegin(UINT locus);
 
@@ -7031,9 +6975,9 @@ Details:
 
 %ignore simuPOP::population::genoEnd(UINT subPop, bool order);
 
-%ignore simuPOP::population::indGenoBegin(ULONG ind) const ;
+%ignore simuPOP::population::indGenoBegin(ULONG ind) const;
 
-%ignore simuPOP::population::indGenoEnd(ULONG ind) const ;
+%ignore simuPOP::population::indGenoEnd(ULONG ind) const;
 
 %feature("docstring") simuPOP::population::arrGenotype "Obsolete or undocumented function."
 
@@ -7547,7 +7491,7 @@ Details:
 
 %ignore simuPOP::population::equalTo(const population &rhs);
 
-%ignore simuPOP::population::sortIndividuals(bool infoOnly=false) const ;
+%ignore simuPOP::population::sortIndividuals(bool infoOnly=false) const;
 
 %feature("docstring") simuPOP::population::save "
 
@@ -7564,9 +7508,9 @@ Details:
 
 %ignore simuPOP::population::load(const string &filename);
 
-%ignore simuPOP::population::selectionOn() const ;
+%ignore simuPOP::population::selectionOn() const;
 
-%ignore simuPOP::population::selectionOn(UINT sp) const ;
+%ignore simuPOP::population::selectionOn(UINT sp) const;
 
 %feature("docstring") simuPOP::population::turnOffSelection "Obsolete or undocumented function."
 
@@ -7650,7 +7594,7 @@ Details:
 
 %ignore simuPOP::population::getVarAsIntDict(const string &name, bool nameError=true);
 
-%ignore simuPOP::population::varsAsString() const ;
+%ignore simuPOP::population::varsAsString() const;
 
 %ignore simuPOP::population::varsFromString(const string &vars);
 
@@ -7685,7 +7629,7 @@ Details:
 
 %feature("docstring") simuPOP::proportionSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::proportionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::proportionSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::proportionSplitter::numVirtualSubPop "
 
@@ -7996,10 +7940,6 @@ Arguments:
                     the same length and fill these infoFields of an
                     individual.
 
-Example:
-
-Testsrc_pyIndOperator.log Applying a <tt> pyIndOperator</tt>
-
 "; 
 
 %feature("docstring") simuPOP::pyIndOperator::~pyIndOperator "
@@ -8093,10 +8033,6 @@ Arguments:
     atPloidy:       initialize which copy of chromosomes. Default to
                     all.
     stage:          default to PreMating.
-
-Example:
-
-Testsrc_pyInit.log Operator <tt> pyInit</tt>
 
 "; 
 
@@ -8358,10 +8294,6 @@ Usage:
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=[], subPop=subPopList, infoFields=[])
 
-Example:
-
-Testsrc_pyMutator.log Operator <tt> pyMutator</tt>
-
 "; 
 
 %feature("docstring") simuPOP::pyMutator::~pyMutator "
@@ -8441,10 +8373,6 @@ Details:
     its parents and an optional parameter are passed to the given
     function. Arbitrary operations can be applied to the population
     and offspring (if stage=DuringMating).
-
-Example:
-
-Testsrc_pyOperator.log Operator <tt> pyOperator</tt>
 
 "; 
 
@@ -8741,10 +8669,6 @@ Arguments:
     output:         and other parameters please refer to help
                     (baseOperator.__init__)
 
-Example:
-
-Testsrc_pyPenetrance.log Operator <tt> pyPenetrance</tt>
-
 "; 
 
 %feature("docstring") simuPOP::pyPenetrance::~pyPenetrance "
@@ -8978,10 +8902,6 @@ Arguments:
                     the rest of the information fields (if available)
                     will also be passed to the user defined penetrance
                     function.
-
-Example:
-
-Testsrc_pySelector.log Operator <tt> pySelector</tt>
 
 "; 
 
@@ -9437,7 +9357,7 @@ Details:
 
 %feature("docstring") simuPOP::rangeSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::rangeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::rangeSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::rangeSplitter::numVirtualSubPop "
 
@@ -9591,10 +9511,6 @@ Note:
     individuals if sexChrom()=True. This may change later if the
     exchanges of genes between pseudoautosomal regions of XY need to
     be modeled.
-
-Example:
-
-Testsrc_recombinator.log Operator <tt>recombinator</tt>
 
 "; 
 
@@ -10392,7 +10308,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::selfMating::isCompatible(const population &pop) const ;
+%ignore simuPOP::selfMating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::selfMating::__repr__ "
 
@@ -10569,7 +10485,7 @@ Usage:
 
 %feature("docstring") simuPOP::sexSplitter::clone "Obsolete or undocumented function."
 
-%ignore simuPOP::sexSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::sexSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::sexSplitter::numVirtualSubPop "
 
@@ -10683,7 +10599,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::SharedVariables::asString() const ;
+%ignore simuPOP::SharedVariables::asString() const;
 
 %feature("docstring") simuPOP::SharedVariables::fromString "
 
@@ -11030,10 +10946,6 @@ Arguments:
     incProb:        probability to increase allele state. Default to
                     0.5.
 
-Example:
-
-Testsrc_smmMutator.log Operator <tt> smmMutator</tt>
-
 "; 
 
 %feature("docstring") simuPOP::smmMutator::~smmMutator "
@@ -11120,10 +11032,6 @@ Arguments:
     randomize:      Whether or not randomize individuals before
                     population split. Default to True.
 
-Example:
-
-Testsrc_splitSubPop.log Operator <tt> splitSubPop</tt>
-
 "; 
 
 %feature("docstring") simuPOP::splitSubPop::~splitSubPop "
@@ -11203,10 +11111,6 @@ Usage:
 
     spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1,
       at=[], rep=[], infoFields=[])
-
-Example:
-
-Testsrc_spread.log Operator <tt>spread</tt>
 
 "; 
 
@@ -12245,10 +12149,6 @@ Usage:
 
 Arguments:
 
-    name:           filename
-    readable:       iostream or just ostream
-    realAppend:     whether or not keep old content when open an
-                    existing file
     useString:      use a stringstream rather than a file.
 
 "; 
@@ -12832,9 +12732,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::vspSplitter::activatedSubPop() const ;
+%ignore simuPOP::vspSplitter::activatedSubPop() const;
 
-%ignore simuPOP::vspSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const ;
+%ignore simuPOP::vspSplitter::size(const population &pop, SubPopID subPop, SubPopID virtualSubPop) const;
 
 %feature("docstring") simuPOP::vspSplitter::numVirtualSubPop "
 
