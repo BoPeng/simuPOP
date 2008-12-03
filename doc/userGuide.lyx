@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2080,7 +2080,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "carraydatatype"
+reference "genostructure"
 
 \end_inset
 
@@ -2144,7 +2144,7 @@ object that directly reflect the underlying genotype.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "carraydatatype"
+reference "genostructure"
 
 \end_inset
 
@@ -2198,9 +2198,9 @@ genotypic structure
 
 \begin_layout Standard
 Genotypic structure refers to stuctural information shared by all individuals
- in a population, such as number of homologous copies of chromosomes, chromosome
- types and names, position and name of each locus, and auxillary information
- attached to each individual.
+ in a population, including number of homologous copies of chromosomes,
+ chromosome types and names, position and name of each locus, and auxillary
+ information attached to each individual.
  A genotypic structure can be retrieved from 
 \emph on
 individual, population 
@@ -2221,7 +2221,18 @@ can only be changed for all individuals at the population level, or for
 \end_layout
 
 \begin_layout Standard
-Genotypic structure refers to
+Genotypic structure refers to 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/genoStru.log"
+lstparams "caption={Genotypic structure},label={genostructure}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
@@ -2327,12 +2338,12 @@ GenoStruTrait!locusPos
 
 \end_inset
 
-(loc), arrLociPos
+(loc), lociPos
 \begin_inset Index
 status collapsed
 
 \begin_layout Plain Layout
-GenoStruTrait!arrLociPos
+GenoStruTrait!lociPos
 \end_layout
 
 \end_inset
@@ -2413,36 +2424,12 @@ GenoStruTrait!infoFields
  )
 \end_layout
 
+\begin_layout Subsection
+Haploid, diploid and haplodiploid populations
+\end_layout
+
 \begin_layout Standard
-If 
-\family typewriter
-sexChrom()
-\family default
- is false, all chromosomes are assumed to be autosomes.
- You can also create populations with a sex chromosome.
- Currently, simuPOP only models the XY chromosomes in diploid population.
- This is to say,
-\end_layout
-
-\begin_layout Itemize
-sex chromosome is always the last chromosome.
- 
-\end_layout
-
-\begin_layout Itemize
-sex chromosome can only be specified for diploid population (
-\family typewriter
-ploidy()=2
-\family default
-).
-\end_layout
-
-\begin_layout Itemize
-sex chromosomes (XY) may differ in length.
- You should specify the length of the longer one as the chromosome length.
- If there are more loci on X than Y, the rest of the Y chromosome is unused.
- Mutation may still occur at this unused part of chromosome to simplify
- implementation and usage.
+simuPOP 
 \end_layout
 
 \begin_layout Subsection
