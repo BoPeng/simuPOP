@@ -12301,7 +12301,15 @@ Usage:
 
 %ignore simuPOP::StreamProvider::closeOstream();
 
-%ignore simuPOP::subPopList;
+%feature("docstring") simuPOP::subPopList "
+
+Details:
+
+    A class to specify (virtual) subpopulation list. Using a dedicated
+    class allows users to specify a single subpopulation, or a list of
+    (virutal) subpoulations easily.
+
+"; 
 
 %feature("docstring") simuPOP::subPopList::subPopList "
 

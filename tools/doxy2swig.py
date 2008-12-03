@@ -1212,10 +1212,17 @@ if __name__ == '__main__':
     # add some other functions
     p.scan_interface(os.path.join(src_path, 'src', 'simuPOP_common.i'))
     sys.path = [os.path.join(src_path, 'src')] + sys.path
-    p.scan_module('simuOpt')
-    p.scan_module('simuUtil')
-    p.scan_module('simuRPy')
-    p.scan_module('hapMapUtil')
+    try:
+        p.scan_module('simuOpt')
+        p.scan_module('simuUtil')
+        p.scan_module('simuRPy')
+        p.scan_module('hapMapUtil')
+    except Exception, e:
+        print "Failed to load one of the modules, you may need to "
+        print "compile simuPOP using the generated interface file"
+        print "and try again."
+        print
+        print e
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     # clear unique name

@@ -93,8 +93,6 @@ private:
 /** A class to specify (virtual) subpopulation list. Using a dedicated class
  *  allows users to specify a single subpopulation, or a list of (virutal)
  *  subpoulations easily.
- *
- *  CPPONLY
  */
 class subPopList
 {
