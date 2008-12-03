@@ -52,8 +52,6 @@ namespace simuPOP {
 /** A class to specify replicate list. The reason why I cannot simple
  *  use vectori() is that users have got used to use a single number
  *  to specify a single replicate.
- *
- *  CPPONLY
  */
 class repList
 {
