@@ -98,7 +98,7 @@ print ind.genotype()
 
 #file log/genoStru.log
 pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
-    lociPos=[range(0, 5), range(0, 20, 2)],
+    lociPos=[range(0, 5), range(0, 20, 2)], chromNames=['Chr1', 'Chr2'],
     alleleNames=['A', 'C', 'T', 'G'])
 # access genotypic information from the population
 pop.ploidy()
@@ -111,6 +111,9 @@ ind = pop.individual(2)
 ind.numLoci(1)
 ind.chromName(0)
 ind.locusName(1)
+# utility functions
+ind.chromBegin(1)
+ind.chromByName('Chr2')
 #end
 
 #file log/indGenoStru.log
