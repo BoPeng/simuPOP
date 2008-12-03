@@ -118,7 +118,6 @@ public:
 	   if <tt>sexChrom()=True</tt>. This may change later if the exchanges
 	   of genes between pseudoautosomal regions of \c XY need to be modeled.
 
-	   \test src_recombinator.log Operator \c recombinator
 	 */
 	recombinator(double intensity = -1,
 		vectorf rate = vectorf(),

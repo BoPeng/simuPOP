@@ -614,7 +614,6 @@ class noneOp : public baseOperator
 public:
 	/// create a none operator
 	/**
-	   \test src_noneOp.log Operator \c noneOp
 	 */
 	noneOp(string output = ">", string outputExpr = "",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, vectorl at = vectorl(),
@@ -692,7 +691,6 @@ public:
 	   \param ifOp an operator that will be applied when \c cond is \c True
 	   \param elseOp an operator that will be applied when \c cond is \c False
 
-	   \test src_ifElse.log Operator \c ifElse
 	 */
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 		string output = ">", string outputExpr = "",
@@ -978,7 +976,6 @@ private:
    are passed to the given function. Arbitrary operations can be applied to the population and
    offspring (if <tt>stage=DuringMating</tt>).
 
-   \test src_pyOperator.log Operator \c pyOperator
  */
 class pyOperator : public baseOperator
 {
@@ -1104,7 +1101,6 @@ public:
 	    Multiple parameters can be passed as a tuple.
 	   \param infoFields if given, \c func is expected to return an array of the same length
 	    and fill these \c infoFields of an individual.
-	   \test src_pyIndOperator.log Applying a \c pyIndOperator
 	 */
 	pyIndOperator(PyObject * func, const vectoru & loci = vectoru(), PyObject * param = NULL,
 		int stage = PostMating, bool formOffGenotype = false,
