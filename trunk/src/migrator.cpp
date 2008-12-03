@@ -44,9 +44,6 @@ migrator::migrator(const matrix & rate, int mode,
 
 		setRates(rate, mode);
 	}
-	for (size_t i = 0; i < m_from.size(); ++i) {
-		cout << i << "  From " << m_from[i].subPop() << " " << m_from[i].virtualSubPop() << endl;
-	}
 }
 
 
