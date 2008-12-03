@@ -1,8 +1,8 @@
 def simulate(incScenario):
-    simu = simulator(                                        # create a simulator
+    simu = simulator(                       # create a simulator
         population(subPop=incScenario(0), loci=[1,1],
-            infoFields=['fitness']),                         # inital population
-        randomMating(newSubPopSizeFunc=incScenario)           # random mating
+            infoFields=['fitness']),        # inital population
+        randomMating(newSubPopSizeFunc=incScenario)
     )
     simu.evolve(                            # start evolution
         preOps=[                            # operators that will be applied before evolution

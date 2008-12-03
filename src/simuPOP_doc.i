@@ -9722,15 +9722,7 @@ Details:
 
 %ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::repList "
-
-Details:
-
-    A class to specify replicate list. The reason why I cannot simple
-    use  vectori() is that users have got used to use a single number
-    to specify a single replicate.
-
-"; 
+%ignore simuPOP::repList;
 
 %feature("docstring") simuPOP::repList::repList "
 
@@ -12309,15 +12301,7 @@ Usage:
 
 %ignore simuPOP::StreamProvider::closeOstream();
 
-%feature("docstring") simuPOP::subPopList "
-
-Details:
-
-    A class to specify (virtual) subpopulation list. Using a dedicated
-    class allows users to specify a single subpopulation, or a list of
-    (virutal) subpoulations easily.
-
-"; 
+%ignore simuPOP::subPopList;
 
 %feature("docstring") simuPOP::subPopList::subPopList "
 

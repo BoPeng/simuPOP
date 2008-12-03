@@ -648,6 +648,30 @@ if infoExec.__init__.__doc__ is not None:
 
 
 #### /////////////////// SIMUPOP PYTHON REDEFINITION FUNCTIONS ////////////////////////
+
+# This wrapper function converts all the following inputs to
+# a list of vspID so that the real constructor can correctly
+# recognize them.
+#
+# subPops = 0
+# subPops = [1, 2, 3]
+# subPops = [(0, 1), (2, 1), 3]
+#
+def new_subPopList(self, subPops=[]):
+    sp = []
+    # in the case of subPops=0
+    if type(subPops) not in [type([]), type(())]:
+        sp = [vspID(subPops)]
+    else:
+        for s in subPops:
+            sp.append(vspID(s))
+    cppModule.subPopList_swiginit(self,
+        cppModule.new_subPopList(sp))
+
+new_subPopList.__doc__ = subPopList.__init__.__doc__
+del subPopList.__init__
+subPopList.__init__ = new_subPopList
+    
 def new_population(self, size=[], ploidy=2, loci=[], chromTypes=[],
     lociPos=[], subPop=[], ancestralDepth=0, chromNames=[], alleleNames=[], lociNames=[],
     infoFields=[]):

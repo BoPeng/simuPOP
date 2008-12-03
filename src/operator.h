@@ -52,6 +52,8 @@ namespace simuPOP {
 /** A class to specify replicate list. The reason why I cannot simple
  *  use vectori() is that users have got used to use a single number
  *  to specify a single replicate.
+ *
+ *  CPPONLY
  */
 class repList
 {
@@ -91,6 +93,8 @@ private:
 /** A class to specify (virtual) subpopulation list. Using a dedicated class
  *  allows users to specify a single subpopulation, or a list of (virutal)
  *  subpoulations easily.
+ *
+ *  CPPONLY
  */
 class subPopList
 {
@@ -103,19 +107,13 @@ public:
 	{
 	}
 
-
-	subPopList(int rep) : m_subPops(1, vspID(rep))
-	{
-	}
-
-
-	bool empty()
+	bool empty() const
 	{
 		return m_subPops.empty();
 	}
 
 
-	size_t size()
+	size_t size() const
 	{
 		return m_subPops.size();
 	}
