@@ -30,9 +30,6 @@
 #
 import os, sys
 
-# do not update version for this development version to avoid rebuild
-SIMUPOP_REV = '9990'
-SIMUPOP_VER = '9.9.9'
 all_modu = ['std', 'op', 'la', 'laop', 'ba', 'baop']
 
 if not os.path.isfile('SConstruct'):
@@ -49,6 +46,9 @@ if version[0] == 0 and version[1] <= 97:
 
 # load all the module information from setup.py
 from setup import *
+
+# do not update version for this development version to avoid rebuild
+SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
 
 # get information from python distutils
 import distutils.sysconfig, os
@@ -126,8 +126,8 @@ env.Command('$build_dir/swigpyrun.h', None, ['swig %s $TARGET' % SWIG_RUNTIME_FL
 extra_lib = env.StaticLibrary(
     target = '$build_dir/extra_libs',
     source = LIB_FILES,
-    CCFLAGS = ModuInfo('std')['extra_compile_args'] + comp.compile_options,
-    CPPPATH = ['.', ModuInfo('std')['include_dirs']],
+    CCFLAGS = ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['extra_compile_args'] + comp.compile_options,
+    CPPPATH = ['.', ModuInfo('std', SIMUPOP_VER, SIMUPOP_REV)['include_dirs']],
 	CPPFLAGS = ccshared + ' ' + opt,
 )
 
@@ -153,7 +153,7 @@ def convert_def(defines):
     return new_list
 
 for mod in targets:
-    info = ModuInfo(mod)
+    info = ModuInfo(mod, SIMUPOP_VER, SIMUPOP_REV)
     for file in SOURCE_FILES:
         env.Command(mod_src(file, mod), file, [Copy('$TARGET', '$SOURCE')])
 	module_source = [mod_src(x, mod) for x in SOURCE_FILES]

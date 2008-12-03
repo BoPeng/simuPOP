@@ -55,14 +55,6 @@ else:
 # if you need to use full path name for swig, change it here.
 SWIG = 'swig'
 
-# this file is not under version control, and will be generated
-# by build.py (a release) or here (a snapshot).
-if not os.path.isfile('simuPOP_version.py'):
-    ver = open('simuPOP_version.py', 'w')
-    print >> ver, "SIMUPOP_VER = 'snapshot'"
-    print >> ver, "SIMUPOP_REV = '9999'"
-    ver.close()
-
 ############################################################################
 #
 # THE FOLLOWING IS NOT SUPPOSED TO BE MODIFIED
@@ -82,6 +74,25 @@ def swig_version():
         print 'Can not obtain swig version, please install swig'
         sys.exit(1)
     return map(int, version)
+
+
+def simuPOP_version():
+    import simuPOP_version
+    SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
+    SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
+    rev = SIMUPOP_REV
+    try:
+        rev = os.popen('svnversion .').readline().strip()
+        if ':' in rev:
+            rev = rev.split(':')[1]
+        rev = rev.rstrip('M')
+    except:
+        pass
+    # if the revision has changed
+    if rev != SIMUPOP_REV:
+        SIMUPOP_VER += 'svn'
+        SIMUPOP_REV = rev
+    return SIMUPOP_VER, SIMUPOP_REV
 
 
 def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versions):
@@ -451,7 +462,7 @@ DATA_FILES = [
 ]
 
 
-def ModuInfo(modu, SIMUPOP_VER='snapshot', SIMUPOP_REV='9999'):
+def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     if included_boost:
         boost_inc_path = included_boost_include_dir
         boost_lib_names = []
@@ -525,9 +536,7 @@ else:
     shutil.copy('config_linux.h', 'config.h')
 
 if __name__ == '__main__':
-    import simuPOP_version
-    SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
-    SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
+    SIMUPOP_VER, SIMUPOP_REV = simuPOP_version()
     # create source file for each module
     MODULES = ['std', 'op', 'la', 'laop', 'ba', 'baop']
     SIMUPOP_FILES += ['simuPOP_%s' % x for x in MODULES]
