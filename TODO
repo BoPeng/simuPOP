@@ -4,7 +4,8 @@ Towards simuPOP 1.0
 
 simuPOP 1.0 should have a consistently defined and well documented interface.
 
-* Continue to polish user's guide.
+* Continue to polish user's guide. (Add bibtex reference to programs cited
+  on page 3).
 
 * For each operator,
   - Check applicability (haploid, diploid, etc), and implement it in
