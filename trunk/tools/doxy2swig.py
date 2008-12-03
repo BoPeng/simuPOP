@@ -671,9 +671,9 @@ class Doxy2SWIG:
         for entry in self.content:
             if entry['ignore']:
                 if entry.has_key('cppArgs'):
-                    print >> out, '%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'])
+                    print >> out, '%%ignore %s%s;\n' % (entry['Name'], entry['cppArgs'].strip())
                 else:
-                    print >> out, '%%ignore %s;\n' % entry['Name']
+                    print >> out, '%%ignore %s;\n' % entry['Name'].strip()
                 continue
             if entry['hidden']:
                 print >> out, '%%feature("docstring") %s "Obsolete or undocumented function."\n' % entry['Name']
@@ -1160,7 +1160,8 @@ xleftmargin=15pt}
 
 
     def write(self, output, type, ref_file=''):
-        fout = open(output, 'w')
+        # write in binary (b) mode so that \n is written as \n, not \r\n under windows.
+        fout = open(output, 'wb')
         if type == 'swig':
             self.write_swig(fout)
         elif type == 'latex_single':
@@ -1168,7 +1169,6 @@ xleftmargin=15pt}
         elif type == 'latex_all':
             self.write_latex_testfile(fout, ref_file)
         fout.close()
-
 
        
 if __name__ == '__main__':
