@@ -4518,17 +4518,7 @@ Usage:
 
 %ignore simuPOP::mendelianOffspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
-%feature("docstring") simuPOP::mendelianOffspringGenerator::formOffspringGenotype "
-
-Description:
-
-    does not set sex if count == -1.
-
-Usage:
-
-    x.formOffspringGenotype(parent, it, ploidy, count)
-
-"; 
+%ignore simuPOP::mendelianOffspringGenerator::formOffspringGenotype(individual *parent, RawIndIterator &it, int ploidy, int count);
 
 %ignore simuPOP::mendelianOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
@@ -12141,17 +12131,7 @@ Usage:
 
 %ignore simuPOP::StreamElem;
 
-%feature("docstring") simuPOP::StreamElem::StreamElem "
-
-Usage:
-
-    StreamElem(name, readable, realAppend, useString)
-
-Arguments:
-
-    useString:      use a stringstream rather than a file.
-
-"; 
+%ignore simuPOP::StreamElem::StreamElem(const string &name, bool readable, bool realAppend, bool useString);
 
 %ignore simuPOP::StreamElem::StreamElem(const StreamElem &rhs);
 

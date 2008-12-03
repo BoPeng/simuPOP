@@ -135,7 +135,6 @@ public:
 	virtual offspringGenerator * clone() const = 0;
 
 
-	/// generate \c numOff offspring
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
@@ -314,10 +313,10 @@ public:
 	/// CPPONLY
 	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
 
-	// the default method to produce offspring
-	/// CPPONLY
-	/// \param count index of offspring, used to set offspring sex
-	/// does not set sex if count == -1.
+	/** CPPONLY
+	 * \param count index of offspring, used to set offspring sex
+	 * does not set sex if count == -1.
+	 */
 	void formOffspringGenotype(individual * parent,
 		RawIndIterator & it, int ploidy, int count);
 
