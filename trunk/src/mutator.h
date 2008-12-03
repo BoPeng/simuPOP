@@ -212,7 +212,6 @@ public:
 	   allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 
 	   Please see class \c mutator for the descriptions of other parameters.
-	 \test src_kamMutator.log Operator \c kamMutator
 	 */
 	kamMutator(const vectorf & rate = vectorf(),
 	           const vectoru & loci = vectoru(),
@@ -272,7 +271,6 @@ public:
 
 	   Please see class \c mutator for the descriptions of other parameters.
 
-	 \test src_smmMutator.log Operator \c smmMutator
 	 */
 	smmMutator(const vectorf & rate = vectorf(),
 	           const vectoru & loci = vectoru(),
@@ -360,8 +358,6 @@ public:
 	   	does not accept any parameter.
 
 	   Please see class \c mutator for the descriptions of other parameters.
-
-	 \test src_gsmMutator.log Operator \c gsmMutator
 	 */
 	gsmMutator(const vectorf & rate = vectorf(),
 	           const vectoru & loci = vectoru(),
@@ -438,7 +434,6 @@ class pyMutator : public mutator
 public:
 	/// create a \c pyMutator
 	/**
-	 \test src_pyMutator.log Operator \c pyMutator
 	 */
 	pyMutator(const vectorf & rate = vectorf(),
 	          const vectoru & loci = vectoru(), UINT maxAllele = 0,

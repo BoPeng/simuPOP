@@ -295,7 +295,6 @@ public:
 	   \param proportions proportions of new subpopulations. Should be added up to \c 1.
 	   \param randomize Whether or not randomize individuals before population split. Default
 	    to True.
-	   \test src_splitSubPop.log Operator \c splitSubPop
 	 */
 	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
 		bool randomize = true,

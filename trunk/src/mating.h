@@ -981,7 +981,6 @@ public:
 	   \li any positive number n: the size will be determined by
 	        weights from all (virtual) subpopulations.
 
-	   \test src_mating.log Demographic models and control of number of offspring per mating event
 	 */
 	mating(vectorlu newSubPopSize = vectorlu(),
 		string newSubPopSizeExpr = "",

@@ -140,7 +140,6 @@ public:
 	 \param phase if \c True, genotypes \c a-b and \c b-a will have different fitness values. Default to \c False.
 	 \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
-	 \test src_mapSelector.log Operator \c mapSelector
 	 */
 	mapSelector(vectoru loci, const strDict & fitness, bool phase = false,
 	            const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
@@ -217,7 +216,6 @@ public:
 	 \note \li \c maSelector only works for diploid populations.
 	 \li \c wildtype alleles at all loci are the same.
 
-	 \test src_maSelector.log Operator \c maSelector
 	 */
 	maSelector(vectoru loci, const vectorf & fitness, const vectora & wildtype,
 	           const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
@@ -294,7 +292,6 @@ public:
 
 	   Please refer to \c mapSelector for other parameter descriptions.
 
-	 \test src_mlSelector.log Operator \c mlSelector
 	 */
 	mlSelector(const vectorop selectors, int mode = SEL_Multiplicative,
 	           const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
@@ -375,7 +372,6 @@ public:
 	   	field to save calculated fitness value (should be 'fitness' in most cases).
 	   	The values of the rest of the information fields (if available) will also
 	   	be passed to the user defined penetrance function.
-	 \test src_pySelector.log Operator \c pySelector
 	 */
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(vectoru loci, PyObject * func, const vectoru & subPops = vectoru(),

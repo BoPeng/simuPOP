@@ -215,7 +215,6 @@ public:
 	   be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
 	 \param stage default to \c PreMating.
 
-	 \test src_initByFreq.log Operator \c initByFreq
 	 */
 	initByFreq(const matrix & alleleFreq = matrix(),
 	           bool identicalInds = false,  const vectoru & subPop = vectoru(),
@@ -303,7 +302,6 @@ public:
 	   the number of individuals, sex will be reused from the beginning.
 	 \param stages default to \c PreMating.
 
-	 \test src_initByValue.log Operator \c initByValue
 	 */
 	initByValue(intMatrix value = intMatrix(),
 	            vectoru loci = vectoru(), int atPloidy = -1,
@@ -374,7 +372,6 @@ class spread : public baseOperator
 public:
 	/// copy genotypes of \c ind to all individuals in \c subPop
 	/**
-	 \test src_spread.log Operator \c spread
 	 */
 	spread(ULONG ind, vectoru subPop = vectoru(),
 	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
@@ -459,7 +456,6 @@ public:
 	 \param atPloidy initialize which copy of chromosomes. Default to all.
 	 \param stage default to \c PreMating.
 
-	 \test src_pyInit.log Operator \c pyInit
 	 */
 	pyInit(PyObject * func,  vectoru subPop = vectoru(),
 	       vectoru loci = vectoru(), int atPloidy = -1,
