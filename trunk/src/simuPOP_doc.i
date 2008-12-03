@@ -9722,7 +9722,15 @@ Details:
 
 %ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%ignore simuPOP::repList;
+%feature("docstring") simuPOP::repList "
+
+Details:
+
+    A class to specify replicate list. The reason why I cannot simple
+    use  vectori() is that users have got used to use a single number
+    to specify a single replicate.
+
+"; 
 
 %feature("docstring") simuPOP::repList::repList "
 
