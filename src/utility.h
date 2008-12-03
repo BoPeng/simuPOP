@@ -605,11 +605,12 @@ public:
 	/// 3. string stream for maximum performance.
 	enum streamType { OFSTREAM, FSTREAM, SSTREAM };
 
-	/// CPPONLY create a stream
-	/// \param name filename
-	/// \param readable iostream or just ostream
-	/// \param realAppend whether or not keep old content when open an existing file
-	/// \param useString use a stringstream rather than a file.
+	/** CPPONLY create a stream
+	 * \param name filename
+	 * \param readable iostream or just ostream
+	 * \param realAppend whether or not keep old content when open an existing file
+	 * \param useString use a stringstream rather than a file.
+	 */
 	StreamElem(const string & name, bool readable, bool realAppend, bool useString);
 
 	/// CPPONLY copy constructor, called by map generator
