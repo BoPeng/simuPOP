@@ -116,20 +116,12 @@ ind.chromBegin(1)
 ind.chromByName('Chr2')
 #end
 
-#file log/indGenoStru.log
-# get the fourth individual of the population
-ind = pop.individual(3)
-# access genotypic structure info
-print ind.ploidy()
-print ind.numChrom()
-print ind.numLoci(0)
-print ind.genoSize()
-# and from simulator level
-simu = simulator(pop, randomMating(), rep=3)
-print simu.numChrom()
+
+#file log/haplodiploid.log
+pop = population(size=[2,5], ploidy=Haplodiploid, loci=[3, 5])
+InitByFreq(pop, [0.3, 0.7])
+Dump(pop)
 #end
-
-
 
 #file log/popInit.log
 # a Wright-Fisher population
