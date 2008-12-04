@@ -430,8 +430,9 @@ private:
 /// get main dictionary (user namespace)
 SharedVariables & mainVars();
 
-/// CPPONLY
-/// get module dictionary (it is different than mainDict!
+/** CPPONLY
+ *  get module dictionary (it is different than mainDict!
+ */
 SharedVariables & moduleVars();
 
 /// CPPONLY
@@ -640,8 +641,9 @@ public:
 	}
 
 
-	/// CPPONLY output info (filename, type and file status)
-	/// mostly for debug purposes
+	/** CPPONLY output info (filename, type and file status)
+	 *  mostly for debug purposes
+	 */
 	string info();
 
 	/// CPPONLY if this file is in append mode
