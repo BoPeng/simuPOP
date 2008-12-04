@@ -2464,7 +2464,7 @@ reference "chromtypes"
 
  shows how to specify different chromosome types, and how genotypes of these
  special chromosomes are arranged.
- Note against that unused marker locations are markered by 
+ Note again that unused marker locations are markered by 
 \family typewriter
 '.'
 \family default
@@ -2474,7 +2474,7 @@ reference "chromtypes"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/chromTypes.log"
+filename "log/chromType.log"
 lstparams "caption={Different chromosome types},label={chromtypes}"
 
 \end_inset
