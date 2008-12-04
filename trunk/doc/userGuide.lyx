@@ -2392,9 +2392,9 @@ simuPOP is most widely used to study human (diploid) populations.
 \end_layout
 
 \begin_layout Standard
-simuPOP saves the same numbers of homologous sets of chromosomes even if
- some individuals have different numbers of homologous sets of chromosomes
- in a population.
+For efficiency considerations, simuPOP saves the same numbers of homologous
+ sets of chromosomes even if some individuals have different numbers of
+ homologous sets in a population.
  This is the case for haplodiploid populations where male individuals have
  only one set of chromosomes.
  It is (largely) users' responsibility to interpret and avoid access to
@@ -2421,86 +2421,71 @@ Autosomes, sex chromosomes, and mitochondria chromosome
 \end_layout
 
 \begin_layout Standard
-Currently, only 
-\family typewriter
-randomMating()
-\family default
- in diploid population supports sex chromosomes.
- When 
-\family typewriter
-sexChrom()
-\family default
- is 
-\family typewriter
-False
-\family default
-, the sex of an offspring is determined randomly with probability 
-\begin_inset Formula $1/2$
-\end_inset
-
+The default chromosome type is autosome, which is the 
+\emph on
+normal
+\emph default
+ chromosomes in diploid, and in haploid populations.
+ simuPOP supports three other types of chromosomes, namely 
+\emph on
+ChromosomeX
+\emph default
+, 
+\emph on
+ChromosomeY 
+\emph default
+and 
+\emph on
+Mitochondria
+\emph default
 .
- Otherwise, it is determined by the existence of Y chromosome, I.e., what
- kind of sex chromosome an offspring get from his father.
- 
+ They are only valid in haploid populations where chromosomes X and Y are
+ used to determine the sex of an offspring, and mitochondria chromosomes
+ are passed only maternally.
 \end_layout
 
 \begin_layout Standard
-Recombinations on sex chromosomes of females (
-\family typewriter
-XX
-\family default
-) are just like those on autosomes.
- However, this is not true in males.
- Currently, recombinations between male sex chromosomes (
-\family typewriter
-XY
-\family default
-) are 
-\emph on
-not
-\emph default
- allowed (a bug/feature of recombinators).
- This may change later if exchanges of genes between pseudoautosomal regions
- of 
-\family typewriter
-XY 
-\family default
-need to be modeled.
+The evolution of these special chromosomes follow the following rules
 \end_layout
 
 \begin_layout Itemize
-it is assumed that males have XY and females have XX chromosomes.
- The sex chromosomes of male individuals are in the order of XY.
- 
+There can be only one chromosome X and one chromosome Y.
+ It is not allowed to have only one kind of sex chromosome.
+\end_layout
+
+\begin_layout Itemize
+Chromosome Y of female individuals are ignored.
+ The second homologous copy of chromosome X and Y are ignored for male individua
+ls.
+\end_layout
+
+\begin_layout Itemize
+During mating, female parent pass one of her chromosome X to her offspring,
+ male parent pass chromosome X or Y to his offspring.
+ Recombination is allowed for chromosome X of females, but not allowed for
+ males.
+\end_layout
+
+\begin_layout Itemize
+The sex of offspring is determined by the types of sex chromosomes he/she
+ inherits, XX for female, and XY for male.
+\end_layout
+
+\begin_layout Itemize
+There can be multiple mitochondrial chromosomes, but they have to have the
+ same markers.
+ The second homologous copies of mitochondrial chromosomes are ignored.
+\end_layout
+
+\begin_layout Itemize
+Mitochondrial chromosomes are only passed from female parents to offspring.
+ No recombination is allowed.
+ If there are multiple mitochondrial chromosomes, they are drawn randomly.
 \end_layout
 
 \begin_layout Standard
-A population can be haplodiploid (Females with two sets of chromosomes,
- and males with one set of chromosomes) if you specify 
-\family typewriter
-ploidy=Haplodiploid
-\family default
- when a population is created.
- Such a population actually store two copies of chromosomes for both male
- and female individuals.
- The difference between a diploid and a haplodiploid population is that
- some operators, such as a recombinator, will recognize a haplodiploid populatio
-n and act acoordingly.
-\end_layout
-
-\begin_layout Standard
-Individuals in the same population share the same genotypic structure.
- Consequently, 
-\emph on
-the genotypic information can be accessed from individual, population and
- simulator
-\emph default
- 
-\emph on
-levels
-\emph default
-.
- 
+Figure depicts the possible chromosome structure of two diploid parents,
+ and how offspring chromosomes are formed.
 \end_layout
 
 \begin_layout Subsection
