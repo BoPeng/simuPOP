@@ -88,8 +88,8 @@ def simuPOP_version():
         rev = rev.rstrip('M')
     except:
         pass
-    # if the revision has changed
-    if rev != SIMUPOP_REV:
+    # if 'svnversion' exists and the revision has changed
+    if rev != '' and rev != SIMUPOP_REV:
         SIMUPOP_VER += 'svn'
         SIMUPOP_REV = rev
     return SIMUPOP_VER, SIMUPOP_REV
