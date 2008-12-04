@@ -29,7 +29,8 @@ bool dumper::apply(population & pop)
 
 	// dump population structure
 	if (!alleleOnly() ) {
-		out << "Ploidy:         \t" << pop.ploidy() << endl;
+		out << "Ploidy:         \t" << pop.ploidy() 
+			<< " (" << pop.ploidyName() << ")" << endl;
 		out << "Number of chrom:\t" << pop.numChrom() << endl;
 		out << "Number of loci: \t";
 		for (UINT i = 0; i < pop.numChrom(); ++i)
@@ -48,6 +49,12 @@ bool dumper::apply(population & pop)
 			out << "\t" << pop.chromName(ch) << "\t";
 			for (UINT i = 0; i < pop.numLoci(ch); ++i)
 				out << pop.locusName(pop.absLocusIndex(ch, i) ) << " ";
+			out << endl;
+		}
+		if (pop.infoSize() != 0) {
+			out << "Information fields: " << endl;
+			for (UINT i = 0; i < pop.infoSize(); ++i)
+				out << pop.infoField(i) << " ";
 			out << endl;
 		}
 		out << "population size:\t" << pop.popSize() << endl;
@@ -109,7 +116,7 @@ done:
 
 		if (!m_dispAncestry) {
 			if (pop.ancestralGens() == 0)
-				out << endl << "No ancenstral population recorded." << endl;
+				out << "No ancenstral population recorded." << endl;
 			else
 				out << endl << "Ignoring " << pop.ancestralGens() << " ancenstral population(s)." << endl;
 		} else {

@@ -122,6 +122,8 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 {
 	out << sexChar() << affectedChar() << " ";
 	for (UINT p = 0, pEnd = ploidy(); p < pEnd;  ++p) {
+		if (isHaplodiploid() && sex() == Male && p == 1)
+			break;
 		// copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
 		// std::ostream_iterator<string>(out, outputSeparator()) );
 		if (chrom.empty() && loci.empty()) {
@@ -146,9 +148,11 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 		if (p != pEnd - 1)
 			out << "| ";
 	}
-    out << "| ";
-    for (vectorinfo::const_iterator info = infoBegin(); info != infoEnd(); ++info)
-        out << " " << setprecision(2) << *info;
+	if (infoSize() != 0) {
+	    out << "| ";
+		for (vectorinfo::const_iterator info = infoBegin(); info != infoEnd(); ++info)
+			out << " " << setprecision(2) << *info;
+	}
 }
 
 
