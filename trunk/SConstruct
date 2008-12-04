@@ -94,6 +94,17 @@ if cxx != "":
 if ldshared != '':
     env['SHLINK'] = ldshared
 
+# Users can set a few options in a local file scons_cfg.py
+# Only prefix is supported now.
+if os.path.isfile('scons_cfg.py'):
+    import scons_cfg as cfg
+    try:
+        if not env.has_key('prefix'):
+            print 'Setting prefix to %s from scons_cfg.py' % cfg.prefix
+            env['prefix'] = cfg.prefix
+    except:
+        pass
+
 if env.has_key('prefix') and env['prefix'] is not None:
     dest_dir = distutils.sysconfig.get_python_lib(plat_specific=1, prefix=env['prefix'])
     prefix = env['prefix']
