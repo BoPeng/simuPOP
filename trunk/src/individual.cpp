@@ -103,9 +103,10 @@ bool individual::validIndex(UINT idx, UINT p, UINT ch) const
 	if (p == 1 && isHaplodiploid() && sex() == Male)
 		return false;
 	
-	if ((sex() == Female && chromType(ch) == ChromosomeY) || // female chromsome Y
-		(sex() == Male && chromType(ch) != Autosome) || // female second homologus copy
-		chromType(ch) == Mitochondrial)
+    Sex s = sex();
+    UINT t = chromType(ch);
+	if ((s == Female && t == ChromosomeY) || // female chromsome Y
+		(p == 1 && s == Male && (t == ChromosomeX || t == ChromosomeY))) // male second homologus copy
 		return false;
 
 	return true;

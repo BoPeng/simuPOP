@@ -123,6 +123,13 @@ InitByFreq(pop, [0.3, 0.7])
 Dump(pop)
 #end
 
+#file log/chromType.log
+pop = population(size=5, ploidy=2, loci=[2, 2, 4, 4, 4, 4],
+    chromTypes=[Autosome]*2 + [ChromosomeX, ChromosomeY] + [Mitochondrial]*2)
+InitByFreq(pop, [0.3, 0.7])
+Dump(pop, dispWidth=1)
+#end
+
 #file log/popInit.log
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])

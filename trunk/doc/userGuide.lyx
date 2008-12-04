@@ -2080,7 +2080,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "haplodiploid"
+reference "chromtypes"
 
 \end_inset
 
@@ -2144,7 +2144,7 @@ object that directly reflect the underlying genotype.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "haplodiploid"
+reference "chromtypes"
 
 \end_inset
 
@@ -2355,7 +2355,7 @@ can only be changed for all individuals at the population level, or for
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "haplodiploid"
+reference "chromtypes"
 
 \end_inset
 
@@ -2395,14 +2395,24 @@ simuPOP is most widely used to study human (diploid) populations.
 For efficiency considerations, simuPOP saves the same numbers of homologous
  sets of chromosomes even if some individuals have different numbers of
  homologous sets in a population.
- This is the case for haplodiploid populations where male individuals have
- only one set of chromosomes.
- It is (largely) users' responsibility to interpret and avoid access to
- those 
+ For example, in a haplodiploid population, because male individuals have
+ only one set of chromosomes, their second homologous set of chromosomes
+ are 
 \emph on
 unused
 \emph default
- genotypes.
+, which are labelled as 
+\family typewriter
+'.'
+\family default
+, as shown in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chromtypes"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -2417,7 +2427,7 @@ lstparams "caption={An example of haplodiploid population},label={haplodiploid}"
 \end_layout
 
 \begin_layout Subsection
-Autosomes, sex chromosomes, and mitochondria chromosome
+Autosomes, sex chromosomes, and mitochondrial chromosome
 \end_layout
 
 \begin_layout Standard
@@ -2436,12 +2446,40 @@ ChromosomeY
 \emph default
 and 
 \emph on
-Mitochondria
+Mitochondrial
 \emph default
 .
  They are only valid in haploid populations where chromosomes X and Y are
  used to determine the sex of an offspring, and mitochondria chromosomes
  are passed only maternally.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chromtypes"
+
+\end_inset
+
+ shows how to specify different chromosome types, and how genotypes of these
+ special chromosomes are arranged.
+ Note against that unused marker locations are markered by 
+\family typewriter
+'.'
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/chromTypes.log"
+lstparams "caption={Different chromosome types},label={chromtypes}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
