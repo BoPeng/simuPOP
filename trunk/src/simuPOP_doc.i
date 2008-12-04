@@ -6426,8 +6426,12 @@ Arguments:
                     specified only once. Because chromosomes X and Y
                     are treated as two chromosomes, recombination on
                     the pseudo-autosomal regions of the sex chromsomes
-                    is not supported. A Mitochondrial chromosome only
-                    exists in females and is inherited maternally.
+                    is not supported. Mitochondrial chromosomes are
+                    inherited maternally. If more than one
+                    mitochondrial chromosomes are available, they are
+                    selected randomly with replacement. No
+                    recombination is allowed for mitochondrial
+                    chromosomes.
     lociPos:        Positions of all loci on all chromosome, as a list
                     of float numbers. Default to 1, 2, ... etc on each
                     chromosome. Positions on the same chromosome
