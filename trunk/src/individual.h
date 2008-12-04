@@ -210,43 +210,26 @@ public:
 	}
 
 
-	/** return the name of \c allele(idx)
+	/** return the name of \c allele(idx). If idx is invalid (e.g. second homologus
+	 *  copy), '.' is returned.
 	 *  HIDDEN
 	 * <group>1-allele</group>
 	 */
-	string alleleChar(UINT idx) const
-	{
-		CHECKRANGEGENOSIZE(idx);
-
-		return this->alleleName(allele(idx));
-	}
+	string alleleChar(UINT idx) const;
 
 
 	/** HIDDEN
 	 * return the name of <tt>allele(idx, p)</tt>
 	 * <group>1-allele</group>
 	 */
-	string alleleChar(UINT idx, UINT p) const
-	{
-		CHECKRANGEABSLOCUS(idx);
-		CHECKRANGEPLOIDY(p);
-
-		return this->alleleName(allele(idx, p));
-	}
+	string alleleChar(UINT idx, UINT p) const;
 
 
 	/** HIDDEN
 	 * return the name of <tt>allele(idx, p, ch)</tt>
 	 * <group>1-allele</group>
 	 */
-	string alleleChar(UINT idx, UINT p, UINT ch) const
-	{
-		CHECKRANGELOCUS(ch, idx);
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(ch);
-
-		return this->alleleName(allele(idx, p, ch));
-	}
+	string alleleChar(UINT idx, UINT p, UINT ch) const;
 
 
 	/** set allele \e allele to a locus, using its absolute index \e idx.
@@ -666,6 +649,10 @@ public:
 	//@}
 
 private:
+	bool validIndex(UINT idx) const;
+	bool validIndex(UINT idx, UINT p) const;
+	bool validIndex(UINT idx, UINT p, UINT ch) const;	
+
 	friend class boost::serialization::access;
 
 	template<class Archive>

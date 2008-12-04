@@ -84,7 +84,7 @@ class GenoStructure
 public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
-		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(-1),
+		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
 	{
@@ -238,8 +238,8 @@ private:
 	/// index of chromosome Y, -1 if not exist
 	int m_chromY;
 
-	/// index of mitochondrial chromosome, -1 if not exist.
-	int m_mitochondrial;
+	/// indexes of mitochondrial chromosome
+	vectoru m_mitochondrial;
 
 	/// whether or not this population is haplodiploid.
 	bool m_haplodiploid;
@@ -454,7 +454,7 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_numLoci;
 	}
 
-
+	
 	/** CPPONLY
 	 *  Return the index of chromosome X, \c -1 if there is no X chromosome.
 	 *  <group>2-chromosome</group>
@@ -482,11 +482,10 @@ public:
 
 
 	/** CPPONLY
-	 *  Return the index of the mitochondrial chromosome, \c -1 if there is no
-	 *  mitochondrial hromosome.
+	 *  Return the indexes of the mitochondrial chromosomes.
 	 *  <group>2-chromosome</group>
 	 */
-	int mitochondrial() const
+	vectoru mitochondrial() const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
