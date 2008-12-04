@@ -241,8 +241,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// currently assuming diploid
+	/** CPPONLY
+	 * currently assuming diploid
+	 */
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the multi-allele penetrance operator
@@ -323,8 +324,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// currently assuming diploid
+	/** CPPONLY
+	 *  currently assuming diploid
+	 */
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the multiple-loci penetrance operator
