@@ -31,24 +31,32 @@ bool dumper::apply(population & pop)
 	if (!alleleOnly() ) {
 		out << "Ploidy:         \t" << pop.ploidy() 
 			<< " (" << pop.ploidyName() << ")" << endl;
-		out << "Number of chrom:\t" << pop.numChrom() << endl;
-		out << "Number of loci: \t";
-		for (UINT i = 0; i < pop.numChrom(); ++i)
-			out << pop.numLoci(i) << " ";
-		out << endl;
-		out << "Maximum allele state:\t" << MaxAllele() << endl;
-		out << "Loci positions: " << endl;
+		out << "Chromosomes:\n";
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-			cout << "\t" << pop.chromName(ch) << "\t";
-			for (UINT i = 0; i < pop.numLoci(ch); ++i)
-				out << pop.locusPos(pop.absLocusIndex(ch, i) ) << " ";
-			out << endl;
-		}
-		out << "Loci names: " << endl;
-		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-			out << "\t" << pop.chromName(ch) << "\t";
-			for (UINT i = 0; i < pop.numLoci(ch); ++i)
-				out << pop.locusName(pop.absLocusIndex(ch, i) ) << " ";
+			out << "\t" << pop.chromName(ch);
+            switch (pop.chromType(ch)) {
+            case Autosome:
+                out << " (Autosome, ";
+                break;
+            case ChromosomeX:
+                out << " (ChromosomeX, ";
+                break;
+            case ChromosomeY:
+                out << " (ChromosomeY, ";
+                break;
+            case Mitochondrial:
+                out << " (Mitochondrial, ";
+                break;
+            default:
+                throw ValueError("Wrong chromosome type");
+            }
+            out << pop.numLoci(ch) << " loci):";
+			for (UINT i = 0; i < pop.numLoci(ch); ++i) {
+                if (i != 0)
+                    out << ",";
+				out << " " << pop.locusName(pop.absLocusIndex(ch, i) ) << " ("
+				    << pop.locusPos(pop.absLocusIndex(ch, i)) << ")";
+            }
 			out << endl;
 		}
 		if (pop.infoSize() != 0) {
@@ -57,20 +65,19 @@ bool dumper::apply(population & pop)
 				out << pop.infoField(i) << " ";
 			out << endl;
 		}
-		out << "population size:\t" << pop.popSize() << endl;
-		out << "Number of subPop:\t" << pop.numSubPop() << endl;
-		out << "Subpop sizes:   \t";
-		for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
-			out << pop.subPopSize(i) << " ";
-		out << endl;
+		out << "population size:\t" << pop.popSize();
+        if (pop.numSubPop() > 1) {
+    		out << " (" << pop.numSubPop() << " subpopulations with ";
+		    for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
+			    out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
+            out << " individuals)";
+        } else
+            out << " (no subpopulation)";
+    	out << endl;
 		out << "Number of ancestral populations:\t" << pop.ancestralGens() << endl;
 	}
 
 	if (!m_infoOnly) {
-		// dump all genotypic info
-		if (MaxAllele() > 1)
-			m_width = 3;
-
 		// get individual ranges from subpop
 		vectorlu range = m_indRange;
 		if (m_indRange.empty()) {
@@ -90,11 +97,12 @@ bool dumper::apply(population & pop)
 				}
 			}
 		}
-		out << "individual info: " << endl;
+		out << "\nGenotype of individuals in the present generation:" << endl;
 		UINT count = 0;
 		for (size_t i = 0; i < range.size(); i += 2) {
 			UINT sp = pop.subPopIndPair(range[i]).first;
-			out << "sub population " << sp << ":" << endl;
+            if (pop.numSubPop() > 1)
+    			out << "sub population " << sp << ":" << endl;
 
 			for (IndIterator ind = pop.indBegin() + range[i];
 			     ind != pop.indBegin() + range[i + 1]; ++ind, ++count) {
@@ -116,8 +124,6 @@ done:
 
 		if (!m_dispAncestry) {
 			if (pop.ancestralGens() == 0)
-				out << "No ancenstral population recorded." << endl;
-			else
 				out << endl << "Ignoring " << pop.ancestralGens() << " ancenstral population(s)." << endl;
 		} else {
 			for (size_t i = 0; i < pop.ancestralGens(); ++i) {
