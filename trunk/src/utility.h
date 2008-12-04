@@ -524,8 +524,9 @@ public:
 	/// CPPONLY
 	Expression(const Expression & rhs);
 
-	/// CPPONLY
-	/// set local dictionary
+	/** CPPONLY
+	 * set local dictionary
+     */
 	void setLocalDict(PyObject * dict)
 	{
 		m_locals = dict;
@@ -680,12 +681,14 @@ public:
 
 	~OstreamManager();
 
-	/// CPPONLY get an ostream pointer from a name.
-	/// if the stream does not exist, create one and return.
+	/** CPPONLY get an ostream pointer from a name.
+	 * if the stream does not exist, create one and return.
+     */
 	ostream * getOstream(const string & name, bool readable,  bool realAppend, bool useString);
 
-	/// CPPONLY if persistant ostream exist for a filename
-	/// this is mostly for debug purposes
+	/** CPPONLY if persistant ostream exist for a filename
+	 * this is mostly for debug purposes
+     */
 	bool hasOstream(const string & filename);
 
 	/// CPPONLY list all registered ostreams
@@ -1157,43 +1160,43 @@ private:
 	// bool m_fast;
 };
 
-/// this class encapsulate behavior of a sequence of Bernulli trial.
-/// the main idea is that when doing a sequence of Bernulli trials
-/// of the same probability, we can use much quicker algorithms
-/// instead of doing n Bernulli trials
-///
-/// For example, when N=10000, p=0.001. The usual way to do N Bin(p)
-/// trials is to do N randUnif(0,1)<p comparison.
-///
-/// using the new method, we can use geometric distrubution to find
-/// the next true event.
-///
-/// Also, for the cases of p=0.5, random bits are generated.
-///
-/// This class maintain a two dimensional table:
-/// a vector of probabilities cross expected number of trials
-///
-///           p1 p2 p3 p4 p5
-/// trial 1
-/// trial 2
-/// ...
-/// trial N
-///
-/// We expect that N is big (usually populaiton size) and p_i are small
-///
-/// using fast BernulliTrial method for fix p,
-/// we can fill up this table very quickly column by column
-///
-/// This class will provide easy access to row (each trial) or column
-/// (called each prob) of this table.
-///
-/// if this table is accessed row by row (each trial), a internal index
-/// is used.
-///
-/// if index exceeds N, trials will be generated all again.
-/// if trial will be called, e.g., N+2 times all the time,
-/// this treatment might not be very efficient.
-///
+/** this class encapsulate behavior of a sequence of Bernulli trial.
+ *  the main idea is that when doing a sequence of Bernulli trials
+ *  of the same probability, we can use much quicker algorithms
+ *  instead of doing n Bernulli trials
+ *
+ *  For example, when N=10000, p=0.001. The usual way to do N Bin(p)
+ *  trials is to do N randUnif(0,1)<p comparison.
+ *
+ *  using the new method, we can use geometric distrubution to find
+ *  the next true event.
+ *
+ *  Also, for the cases of p=0.5, random bits are generated.
+ *
+ *  This class maintain a two dimensional table:
+ *  a vector of probabilities cross expected number of trials
+ *
+ *            p1 p2 p3 p4 p5
+ *  trial 1
+ *  trial 2
+ *  ...
+ *  trial N
+ *
+ *  We expect that N is big (usually populaiton size) and p_i are small
+ *
+ *  using fast BernulliTrial method for fix p,
+ *  we can fill up this table very quickly column by column
+ *
+ *  This class will provide easy access to row (each trial) or column
+ *  (called each prob) of this table.
+ *
+ *  if this table is accessed row by row (each trial), a internal index
+ *  is used.
+ *
+ *  if index exceeds N, trials will be generated all again.
+ *  if trial will be called, e.g., N+2 times all the time,
+ *  this treatment might not be very efficient.
+ */
 class BernulliTrials
 {
 public:
@@ -1206,8 +1209,9 @@ public:
 	///
 	~BernulliTrials();
 
-	/// CPPONLY
-	/// return size of trial
+	/** CPPONLY
+	 * return size of trial
+     */
 	ULONG trialSize() const
 	{
 		return m_N;

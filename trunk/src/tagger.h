@@ -62,8 +62,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// add a newline
+	/** CPPONLY
+	 * add a newline
+     */
 	bool apply(population & pop);
 
 };
@@ -114,8 +115,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// apply the \c inheritTagger
+	/** CPPONLY
+	 *  apply the \c inheritTagger
+     */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
@@ -177,13 +179,15 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// apply the \c parentTagger
+	/** CPPONLY
+	 * apply the \c parentTagger
+     */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// at the end of a generation, write population structure information to a file
-	/// with a newline.
+	/** at the end of a generation, write population structure information to a file
+	 * with a newline.
+     */
 	bool apply(population & pop);
 
 private:
@@ -244,13 +248,15 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// apply the \c parentsTagger
+	/** CPPONLY
+     * apply the \c parentsTagger
+     */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// at the end of a generation, write population structure information to a file
-	/// with a newline.
+	/** at the end of a generation, write population structure information to a file
+	 * with a newline.
+     */
 	bool apply(population & pop);
 
 private:

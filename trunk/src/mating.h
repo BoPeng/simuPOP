@@ -1036,8 +1036,9 @@ public:
 	/// CPPONLY
 	virtual void preparePopulation(population & pop) { }
 
-	/// CPPONLY
-	/// a common submit procedure is defined.
+	/** CPPONLY
+	 * a common submit procedure is defined.
+     */
 	virtual void submitScratch(population & pop, population & scratch);
 
 	/// CPPONLY
