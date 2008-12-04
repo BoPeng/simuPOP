@@ -423,8 +423,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// currently assuming diploid
+	/** CPPONLY
+	 *  currently assuming diploid
+	 */
 	virtual double penet(individual * ind);
 
 	/// used by Python print function to print out the general information of the Python penetrance operator

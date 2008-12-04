@@ -149,8 +149,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// currently assuming diploid
+	/** CPPONLY
+	 *  currently assuming diploid
+	 */
 	virtual double qtrait(individual * ind);
 
 	/// used by Python print function to print out the general information of the map quantitative trait operator

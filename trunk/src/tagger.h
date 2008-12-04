@@ -351,8 +351,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// apply the \c pyTagger
+	/** CPPONLY
+	 *  apply the \c pyTagger
+	 */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 

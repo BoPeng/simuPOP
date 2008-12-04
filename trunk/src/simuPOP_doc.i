@@ -3999,17 +3999,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mapQuanTrait::qtrait "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.qtrait(ind)
-
-"; 
+%ignore simuPOP::mapQuanTrait::qtrait(individual *ind);
 
 %feature("docstring") simuPOP::mapQuanTrait::__repr__ "
 
@@ -8597,17 +8587,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyPenetrance::penet "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.penet(ind)
-
-"; 
+%ignore simuPOP::pyPenetrance::penet(individual *ind);
 
 %feature("docstring") simuPOP::pyPenetrance::__repr__ "
 
@@ -8831,17 +8811,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pySelector::indFitness "
-
-Description:
-
-    calculate/return the fitness value, currently assuming diploid
-
-Usage:
-
-    x.indFitness(ind, gen)
-
-"; 
+%ignore simuPOP::pySelector::indFitness(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::pySelector::__repr__ "
 
@@ -8932,17 +8902,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyTagger::applyDuringMating "
-
-Description:
-
-    apply the pyTagger
-
-Usage:
-
-    x.applyDuringMating(pop, offspring, dad=None, mom=None)
-
-"; 
+%ignore simuPOP::pyTagger::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::quanTrait "
 
@@ -12054,17 +12014,7 @@ Usage:
 
 %ignore simuPOP::StreamElem::type();
 
-%feature("docstring") simuPOP::StreamElem::info "
-
-Description:
-
-    mostly for debug purposes
-
-Usage:
-
-    x.info()
-
-"; 
+%ignore simuPOP::StreamElem::info();
 
 %ignore simuPOP::StreamElem::append();
 
@@ -12874,17 +12824,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::moduleVars "
-
-Description:
-
-    get module dictionary (it is different than mainDict!
-
-Usage:
-
-    moduleVars()
-
-"; 
+%ignore simuPOP::moduleVars();
 
 %ignore simuPOP::pyPopObj(void *p);
 
