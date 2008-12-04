@@ -426,8 +426,9 @@ private:
 
 };
 
-/// CPPONLY
-/// get main dictionary (user namespace)
+/** CPPONLY
+ * get main dictionary (user namespace)
+ */
 SharedVariables & mainVars();
 
 /** CPPONLY

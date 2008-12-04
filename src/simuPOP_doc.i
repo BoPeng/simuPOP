@@ -3824,17 +3824,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::maPenetrance::penet "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.penet(ind)
-
-"; 
+%ignore simuPOP::maPenetrance::penet(individual *ind);
 
 %feature("docstring") simuPOP::maPenetrance::__repr__ "
 
@@ -4177,17 +4167,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::maQuanTrait::qtrait "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.qtrait(ind)
-
-"; 
+%ignore simuPOP::maQuanTrait::qtrait(individual *ind);
 
 %feature("docstring") simuPOP::maQuanTrait::__repr__ "
 
@@ -4792,17 +4772,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mlPenetrance::penet "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.penet(ind)
-
-"; 
+%ignore simuPOP::mlPenetrance::penet(individual *ind);
 
 %feature("docstring") simuPOP::mlPenetrance::__repr__ "
 
@@ -4983,17 +4953,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mlSelector::indFitness "
-
-Description:
-
-    calculate/return the fitness value, currently assuming diploid
-
-Usage:
-
-    x.indFitness(ind, gen)
-
-"; 
+%ignore simuPOP::mlSelector::indFitness(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::mlSelector::__repr__ "
 
@@ -8703,17 +8663,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyQuanTrait::qtrait "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.qtrait(ind)
-
-"; 
+%ignore simuPOP::pyQuanTrait::qtrait(individual *ind);
 
 %feature("docstring") simuPOP::pyQuanTrait::__repr__ "
 
@@ -12812,17 +12762,7 @@ Usage:
 
 %ignore simuPOP::NumArray_Data(PyObject *obj);
 
-%feature("docstring") simuPOP::mainVars "
-
-Description:
-
-    get main dictionary (user namespace)
-
-Usage:
-
-    mainVars()
-
-"; 
+%ignore simuPOP::mainVars();
 
 %ignore simuPOP::moduleVars();
 
