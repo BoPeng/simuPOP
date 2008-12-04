@@ -58,7 +58,7 @@ void recombinator::prepareRecRates(const population & pop,
 		UINT chBegin = pop.chromBegin(ch);
 		UINT chEnd = pop.chromEnd(ch);
 
-		if (static_cast<int>(ch) == m_mitochondrial ||  // mitochondrial does not recombine
+		if (std::find(m_mitochondrial.begin(), m_mitochondrial.end(), ch) != m_mitochondrial.end() ||  // mitochondrial does not recombine
 		    (sex == Male && (static_cast<int>(ch) == m_chromX || static_cast<int>(ch) == m_chromY)) ||
 		    (sex == Female && static_cast<int>(ch) == m_chromY)) {
 			continue;

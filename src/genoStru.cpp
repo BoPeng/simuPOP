@@ -158,6 +158,8 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 		if (m_chromTypes[i] == ChromosomeX) {
 			DBG_ASSERT(m_chromX == -1, ValueError,
 				"Only one chromosome X can be specified");
+			DBG_ASSERT(m_ploidy == 2, ValueError,
+				"Sex chromosome can only be specified in a diploid or haplodiploid population.");
 			m_chromX = i;
 		}
 	}
@@ -166,19 +168,20 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 		if (m_chromTypes[i] == ChromosomeY) {
 			DBG_ASSERT(m_chromY == -1, ValueError,
 				"Only one chromosome Y can be specified");
+			DBG_ASSERT(m_ploidy == 2, ValueError,
+				"Sex chromosome can only be specified in a diploid or haplodiploid population.");
 			m_chromY = i;
 		}
 	}
 	DBG_FAILIF(m_chromX * m_chromY < 0, ValueError,
 		"It is invalid to set only chromosome X or Y.");
 	//
-	m_mitochondrial = -1;
+	m_mitochondrial.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == Mitochondrial) {
-			DBG_ASSERT(m_mitochondrial == -1, ValueError,
-				"Only one mitochondria chromosome can be specified");
-			m_mitochondrial = i;
-		}
+		if (m_chromTypes[i] == Mitochondrial)
+			DBG_ASSERT(m_ploidy == 2, ValueError,
+				"Sex chromosome can only be specified in a diploid or haplodiploid population.");
+			m_mitochondrial.push_back(i);
 	}
 }
 

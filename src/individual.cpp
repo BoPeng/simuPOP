@@ -80,6 +80,65 @@ int individual::__cmp__(const individual & rhs) const
 }
 
 
+bool individual::validIndex(UINT idx) const
+{
+	UINT cnt = totNumLoci();
+	return validIndex(idx % cnt, idx / cnt);
+}
+
+
+bool individual::validIndex(UINT idx, UINT p) const
+{
+	std::pair<UINT, UINT> chIdx = chromLocusPair(idx);
+	return validIndex(chIdx.second, p, chIdx.first);
+}
+
+
+bool individual::validIndex(UINT idx, UINT p, UINT ch) const
+{
+	// well, this might change later.
+	if (ploidy() != 2)
+		return true;
+	
+	if (p == 1 && isHaplodiploid() && sex() == Male)
+		return false;
+	
+	if ((sex() == Female && chromType(ch) == ChromosomeY) || // female chromsome Y
+		(sex() == Male && chromType(ch) != Autosome) || // female second homologus copy
+		chromType(ch) == Mitochondrial)
+		return false;
+
+	return true;
+}
+
+
+string individual::alleleChar(UINT idx) const
+{
+	CHECKRANGEGENOSIZE(idx);
+
+	return validIndex(idx) ? alleleName(allele(idx)) : ".";
+}
+
+
+string individual::alleleChar(UINT idx, UINT p) const
+{
+	CHECKRANGEABSLOCUS(idx);
+	CHECKRANGEPLOIDY(p);
+
+	return validIndex(idx, p) ? alleleName(allele(idx, p)) : ".";
+}
+
+
+string individual::alleleChar(UINT idx, UINT p, UINT ch) const
+{
+	CHECKRANGELOCUS(ch, idx);
+	CHECKRANGEPLOIDY(p);
+	CHECKRANGECHROM(ch);
+
+	return validIndex(idx, p, ch) ? alleleName(allele(idx, p, ch)) : ".";
+}
+
+
 void individual::swap(individual & ind, bool swapContent)
 {
 	if (genoStruIdx() != ind.genoStruIdx() )
@@ -121,11 +180,8 @@ string individual::__repr__()
 void individual::display(ostream & out, int width, const vectori & chrom, const vectori & loci)
 {
 	out << sexChar() << affectedChar() << " ";
-	for (UINT p = 0, pEnd = ploidy(); p < pEnd;  ++p) {
-		if (isHaplodiploid() && sex() == Male && p == 1)
-			break;
-		// copy( genoBegin()+i, genoBegin()+i+totNumLoci(),
-		// std::ostream_iterator<string>(out, outputSeparator()) );
+	UINT pEnd = ploidy();
+	for (UINT p = 0; p < pEnd;  ++p) {
 		if (chrom.empty() && loci.empty()) {
 			for (UINT ch = 0, chEnd = numChrom(); ch < chEnd; ++ch) {
 				for (UINT j = 0, jEnd = numLoci(ch); j < jEnd;  ++j)

@@ -302,10 +302,10 @@ private:
 	//  vector<BernulliTrials*> m_bt;
 	BernulliTrials m_bt, m_maleBt;
 
-	// Which one is X chromosome
+	// locataion of special chromosomes
 	int m_chromX;
 	int m_chromY;
-	int m_mitochondrial;
+	vectoru m_mitochondrial;
 
 #ifndef OPTIMIZED
 	/// report the number of recombination events

@@ -134,8 +134,11 @@ public:
 	 *    \c XY (\c Male) convention. Both sex chromosomes have to be available
 	 *    and be specified only once. Because chromosomes \c X and \c Y are
 	 *    treated as two chromosomes, recombination on the pseudo-autosomal
-	 *    regions of the sex chromsomes is not supported. A \c Mitochondrial
-	 *    chromosome only exists in females and is inherited maternally.
+	 *    regions of the sex chromsomes is not supported. \c Mitochondrial
+	 *    chromosomes are inherited maternally. If more than one mitochondrial
+	 *    chromosomes are available, they are selected randomly with
+	 *    replacement. No recombination is allowed for mitochondrial
+	 *    chromosomes.
 	 *  \param lociPos Positions of all loci on all chromosome, as a list of
 	 *    float numbers. Default to \c 1, \c 2, ... etc on each chromosome.
 	 *    Positions on the same chromosome should be ordered. A nested list
