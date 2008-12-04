@@ -162,8 +162,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// calculate/return the fitness value, currently assuming diploid
+	/** CPPONLY
+	 * calculate/return the fitness value, currently assuming diploid
+     */
 	virtual double indFitness(individual * ind, ULONG gen);
 
 	/// used by Python print function to print out the general information of the map selector

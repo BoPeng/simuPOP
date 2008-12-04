@@ -100,8 +100,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// calculate/return penetrance etc.
+	/** CPPONLY
+	 *  calculate/return penetrance etc.
+     */
 	virtual double penet(individual *)
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");

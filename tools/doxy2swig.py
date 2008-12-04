@@ -898,6 +898,8 @@ class Doxy2SWIG:
         #displayed formulas in swig file
         text = text.replace('\[', r'</newline> $')
         text = text.replace('\]', '$')
+        for i in range(10):
+            text = text.replace('  ', ' ')
         #used in swig file output
         text = text.split(r'</newline>')
         strs = []

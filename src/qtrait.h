@@ -76,8 +76,9 @@ public:
 	}
 
 
-	/// CPPONLY
-	/// calculate/return quantitative trait etc.
+	/** CPPONLY
+     *  calculate/return quantitative trait etc.
+     */
 	virtual double qtrait(individual *)
 	{
 		///
