@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2080,7 +2080,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "genostructure"
+reference "haplodiploid"
 
 \end_inset
 
@@ -2144,7 +2144,7 @@ object that directly reflect the underlying genotype.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "genostructure"
+reference "haplodiploid"
 
 \end_inset
 
@@ -2355,7 +2355,7 @@ can only be changed for all individuals at the population level, or for
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "genostructure"
+reference "haplodiploid"
 
 \end_inset
 
@@ -2379,11 +2379,45 @@ Haploid, diploid and haplodiploid populations
 \end_layout
 
 \begin_layout Standard
-simuPOP supports 
+simuPOP is most widely used to study human (diploid) populations.
+ A large number of mating schemes, operators and population statistics are
+ designed around the evolution of such a population.
+ simuPOP also supports haploid and haplodiploid populations although there
+ are fewer choices of mating schemes and operators.
+ simuPOP can also support other types of populations such as triploid and
+ tetraploid populations, but these features are largely untested due to
+ their limited usage.
+ It is expected that supports for these population would be enhanced over
+ time.
+\end_layout
+
+\begin_layout Standard
+simuPOP saves the same numbers of homologous sets of chromosomes even if
+ some individuals have different numbers of homologous sets of chromosomes
+ in a population.
+ This is the case for haplodiploid populations where male individuals have
+ only one set of chromosomes.
+ It is (largely) users' responsibility to interpret and avoid access to
+ those 
+\emph on
+unused
+\emph default
+ genotypes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/haplodiploid.log"
+lstparams "caption={An example of haplodiploid population},label={haplodiploid}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
-Sex chromosomes
+Autosomes, sex chromosomes, and mitochondria chromosome
 \end_layout
 
 \begin_layout Standard
@@ -2434,30 +2468,6 @@ XY
 need to be modeled.
 \end_layout
 
-\begin_layout Standard
-
-\emph on
-Information fields
-\emph default
- refer to float numbers attached to each individual, such as fitness value,
- parent index, age.
- They are used to store auxiliary information of individuals, and are essential
- to the operations of some simuPOP components.
- For example, 
-\family typewriter
-'fitness'
-\family default
- field is required by all selectors.
- Details please refer to section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Information-fields"
-
-\end_inset
-
-.
-\end_layout
-
 \begin_layout Itemize
 it is assumed that males have XY and females have XX chromosomes.
  The sex chromosomes of male individuals are in the order of XY.
@@ -2495,6 +2505,30 @@ levels
 
 \begin_layout Subsection
 Information fields
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Information fields
+\emph default
+ refer to float numbers attached to each individual, such as fitness value,
+ parent index, age.
+ They are used to store auxiliary information of individuals, and are essential
+ to the operations of some simuPOP components.
+ For example, 
+\family typewriter
+'fitness'
+\family default
+ field is required by all selectors.
+ Details please refer to section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Information-fields"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
