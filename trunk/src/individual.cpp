@@ -117,7 +117,7 @@ string individual::alleleChar(UINT idx) const
 {
 	CHECKRANGEGENOSIZE(idx);
 
-	return validIndex(idx) ? alleleName(allele(idx)) : ".";
+	return validIndex(idx) ? alleleName(allele(idx)) : "_";
 }
 
 
@@ -126,7 +126,7 @@ string individual::alleleChar(UINT idx, UINT p) const
 	CHECKRANGEABSLOCUS(idx);
 	CHECKRANGEPLOIDY(p);
 
-	return validIndex(idx, p) ? alleleName(allele(idx, p)) : ".";
+	return validIndex(idx, p) ? alleleName(allele(idx, p)) : "_";
 }
 
 
@@ -136,7 +136,7 @@ string individual::alleleChar(UINT idx, UINT p, UINT ch) const
 	CHECKRANGEPLOIDY(p);
 	CHECKRANGECHROM(ch);
 
-	return validIndex(idx, p, ch) ? alleleName(allele(idx, p, ch)) : ".";
+	return validIndex(idx, p, ch) ? alleleName(allele(idx, p, ch)) : "_";
 }
 
 

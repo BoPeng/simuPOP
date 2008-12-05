@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -87,7 +87,7 @@ Last modified \\
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\listings_params "alsoletter={>.},backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\ttfamily\color{VerbatimColor}},commentstyle={\color{VerbatimCommentColor}\slshape},emph={[2]>>>,...},emphstyle={[2]\color{VerbatimPromptColor}\bf},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,stringstyle={\color{VerbatimStringColor}},xleftmargin=15pt"
+\listings_params "alsoletter={>.},backgroundcolor={\color{VerbatimBackgroundColor}},basicstyle={\small\ttfamily\color{VerbatimColor}},commentstyle={\color{VerbatimCommentColor}\slshape},emph={[2]>>>,...},emphstyle={[2]\color{VerbatimPromptColor}\bf},language=Python,otherkeywords={>>>,...},showspaces=false,showstringspaces=false,showtabs=false,stringstyle={\color{VerbatimStringColor}},xleftmargin=10pt"
 \tracking_changes false
 \output_changes false
 \author "" 
@@ -2403,7 +2403,7 @@ unused
 \emph default
 , which are labelled as 
 \family typewriter
-'.'
+'_'
 \family default
 , as shown in Example 
 \begin_inset CommandInset ref
@@ -2419,7 +2419,7 @@ reference "chromtypes"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/haplodiploid.log"
-lstparams "caption={An example of haplodiploid population},label={haplodiploid}"
+lstparams "caption={An example of haplodiploid population},keywordstyle={\\ttfamily},label={haplodiploid}"
 
 \end_inset
 
@@ -2466,7 +2466,7 @@ reference "chromtypes"
  special chromosomes are arranged.
  Note again that unused marker locations are markered by 
 \family typewriter
-'.'
+'_'
 \family default
 .
 \end_layout
@@ -2475,7 +2475,7 @@ reference "chromtypes"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/chromType.log"
-lstparams "caption={Different chromosome types},label={chromtypes}"
+lstparams "caption={Different chromosome types},keywordstyle={\\ttfamily},label={chromtypes}"
 
 \end_inset
 
@@ -2524,6 +2524,47 @@ Mitochondrial chromosomes are only passed from female parents to offspring.
 \begin_layout Standard
 Figure depicts the possible chromosome structure of two diploid parents,
  and how offspring chromosomes are formed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:chromTypes"
+
+\end_inset
+
+Evolution of different types of chromosomes in a diploid population
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename chromType.pdf
+	lyxscale 40
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

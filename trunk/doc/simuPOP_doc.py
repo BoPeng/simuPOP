@@ -66,5 +66,23 @@ def drawGenotype():
     r.text(-(ch+pad), -7.5, 'Batch write: setGenotype(), setGenotype(p), setGenotype(p, ch)', adj=0)
     r.dev_off()
 
+
+def drawChromType():
+    r.pdf('chromType.pdf', height=3, width=8)
+    r.par(mar=[0, 0, 0, 0])
+    r.plot(0, 0, axes=False, type='n', main='', xlab='', ylab='',
+        ylim=[-6, 6], xlim=[-40, 40])
+    for x,y in [(-30, 1), (-30, 3), (-30, -2), (-30, -4), (5, 2), (5, -3)]:
+        r.rect(x, y, x+3, y+1)
+        r.rect(x+3, y, x+6, y+1)
+        r.rect(x+6, y, x+12, y+1)
+        r.rect(x+12, y, x+16, y+1)
+        r.rect(x+16, y, x+20, y+1)
+        r.rect(x+20, y, x+24, y+1)
+    r.dev_off()
+
 if __name__ == '__main__':
-    drawGenotype()
+    if sys.argv[1] == 'genotype':
+        drawGenotype()
+    elif sys.argv[1] == 'chromType':
+        drawChromType()

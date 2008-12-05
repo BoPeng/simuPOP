@@ -1194,19 +1194,18 @@ Description:
 
 Usage:
 
-    dumper(alleleOnly=False, infoOnly=False, ancestralPops=False,
-      dispWidth=1, max=100, chrom=[], loci=[], subPop=[], indRange=[],
-      output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[])
+    dumper(genotype=True, structure=True, ancGen=0, width=1,
+      max=100, chrom=[], loci=[], subPop=[], indRange=[], output=\">\",
+      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], infoFields=[])
 
 Arguments:
 
-    alleleOnly:     only display allele
-    infoOnly:       only display genotypic information
-    dispWidth:      number of characters to display an allele. Default
+    genotype:       Whether or not display genotype
+    structure:      Whether or not display genotypic structure
+    width:          number of characters to display an allele. Default
                     to 1.
-    ancestralPops:  whether or not display ancestral populations.
-                    Default to False.
+    ancGen:         how many ancestral generations to display
     chrom:          chromosome(s) to display
     loci:           loci to display
     subPop:         only display subpopulation(s)
@@ -1230,46 +1229,6 @@ Details:
 
     Return a cloned copy of an operator. This function is available to
     all operators.
-
-"; 
-
-%feature("docstring") simuPOP::dumper::alleleOnly "
-
-Description:
-
-    only show alleles (not structure, gene information?
-
-Usage:
-
-    x.alleleOnly()
-
-"; 
-
-%feature("docstring") simuPOP::dumper::setAlleleOnly "
-
-Usage:
-
-    x.setAlleleOnly(alleleOnly)
-
-"; 
-
-%feature("docstring") simuPOP::dumper::infoOnly "
-
-Description:
-
-    only show info
-
-Usage:
-
-    x.infoOnly()
-
-"; 
-
-%feature("docstring") simuPOP::dumper::setInfoOnly "
-
-Usage:
-
-    x.setInfoOnly(infoOnly)
 
 "; 
 
