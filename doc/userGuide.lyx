@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2487,21 +2487,21 @@ The evolution of these special chromosomes follow the following rules
 \end_layout
 
 \begin_layout Itemize
-There can be only one chromosome X and one chromosome Y.
+There can be only one X chromosome and one Y chromosome.
  It is not allowed to have only one kind of sex chromosome.
 \end_layout
 
 \begin_layout Itemize
-Chromosome Y of female individuals are ignored.
- The second homologous copy of chromosome X and Y are ignored for male individua
-ls.
+The Y chromosome of female individuals are ignored.
+ The second homologous copy of the X chromosome and the first copy of the
+ Y chromosome are ignored for male individuals.
 \end_layout
 
 \begin_layout Itemize
-During mating, female parent pass one of her chromosome X to her offspring,
+During mating, female parent pass one of her X chromosome to her offspring,
  male parent pass chromosome X or Y to his offspring.
- Recombination is allowed for chromosome X of females, but not allowed for
- males.
+ Recombination is allowed for the X chromosomes of females, but not allowed
+ for males.
 \end_layout
 
 \begin_layout Itemize
@@ -2522,8 +2522,16 @@ Mitochondrial chromosomes are only passed from female parents to offspring.
 \end_layout
 
 \begin_layout Standard
-Figure depicts the possible chromosome structure of two diploid parents,
- and how offspring chromosomes are formed.
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:chromTypes"
+
+\end_inset
+
+ depicts the possible chromosome structure of two diploid parents, and how
+ offspring chromosomes are formed.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2542,7 +2550,7 @@ name "fig:chromTypes"
 
 \end_inset
 
-Evolution of different types of chromosomes in a diploid population
+Inheritance of different types of chromosomes in a diploid population
 \end_layout
 
 \end_inset
@@ -2555,11 +2563,25 @@ Evolution of different types of chromosomes in a diploid population
 \begin_inset Graphics
 	filename chromType.pdf
 	lyxscale 40
-	width 100text%
+	width 90text%
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+Individuals in this population have five chromosomes, one autosome (A),
+ one X chromosome (X), one Y chromosome (Y) and two mitochondrial chromosomes
+ (M).
+ Y chromosomes for the female parent, the second copy of chromosome X and
+ the first copy of chromosome Y for the male parent, and the second copy
+ of mitochondrial chromosomes are unused (gray chromosome regions).
+ A male offspring inherits one copy of autosome from his mother (with recombinat
+ion), one copy of autosome from his father (with recombination), an X chromosome
+ from his mother (with recombination), a Y chromosome from his father (without
+ recombination), and two copies of the first mitochondrial chromosome (randomly
+ chosen from the two mitochondrial chromosomes) from his mother.
 \end_layout
 
 \end_inset
@@ -2569,6 +2591,33 @@ Evolution of different types of chromosomes in a diploid population
 
 \begin_layout Subsection
 Information fields
+\end_layout
+
+\begin_layout Standard
+Different simulation scenarios require different types of individuals.
+ For simple simulations such as the simulation of the standard Wright-Fisher
+ model, only genotype is needed.
+ More complicated simulations, however, 
+\end_layout
+
+\begin_layout Standard
+Individuals in a simuPOP population have their own genotype, sex (
+\family typewriter
+Male
+\family default
+ or 
+\family typewriter
+Female
+\family default
+) and affection status.
+ Sex and affection status are 
+\emph on
+built-in
+\emph default
+ properties due to their simplicity and wide applications, but they can
+ be ignored if unused.
+ On the other hand, many applications require additional individual properties.
+ For example, 
 \end_layout
 
 \begin_layout Standard
@@ -2593,6 +2642,50 @@ reference "sec:Information-fields"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+An individuals have genotype, sex and affection status information, but
+ other information may be needed.
+ For example, one or more trait values may be needed to calculate quantitative
+ traits, and one may want to keep track of all offspring of a parent.
+ Because the need for information fields varies from simulation to simulation,
+ simuPOP does not fix the amount of information fields, and allow users
+ to specify these fields during the construction of populations, or add
+ them when you need them.
+\end_layout
+
+\begin_layout Standard
+Operators may require certain information fields to work properly.
+ For example, all selectors require field 
+\family typewriter
+fitness
+\family default
+ to store evaluated fitness values for each individual.
+ 
+\family typewriter
+parentTagger
+\family default
+ needs 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ to store indices of the parents of each individual in the parental generation.
+ These information fields can be added by the 
+\family typewriter
+infoFields
+\family default
+ parameter of the population constructor or be added later using relevant
+ function.
+ If a required information field is unavailable, an error message will appear
+ and tell you which field is needed.
+ Some operators allow you to specify which information field(s) to use.
+ For example, quantitative trait operator can work on specified fields so
+ an individual can have several quantitative traits.
 \end_layout
 
 \begin_layout Section

@@ -124,7 +124,7 @@ Dump(pop)
 #end
 
 #file log/chromType.log
-pop = population(size=8, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
+pop = population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
     chromTypes=[Autosome]*2 + [ChromosomeX, ChromosomeY] + [Mitochondrial]*2)
 InitByFreq(pop, [0.3, 0.7])
 Dump(pop, structure = False) # does not display genotypic structure information
