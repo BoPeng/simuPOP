@@ -72,13 +72,54 @@ def drawChromType():
     r.par(mar=[0, 0, 0, 0])
     r.plot(0, 0, axes=False, type='n', main='', xlab='', ylab='',
         ylim=[-6, 6], xlim=[-40, 40])
+    pad = 0.5
     for x,y in [(-30, 1), (-30, 3), (-30, -2), (-30, -4), (5, 2), (5, -3)]:
-        r.rect(x, y, x+3, y+1)
-        r.rect(x+3, y, x+6, y+1)
-        r.rect(x+6, y, x+12, y+1)
-        r.rect(x+12, y, x+16, y+1)
-        r.rect(x+16, y, x+20, y+1)
-        r.rect(x+20, y, x+24, y+1)
+        r.rect(x, y, x+6 - pad, y+0.5)
+        r.rect(x+6, y, x+12 - pad, y+0.5)
+        r.rect(x+12, y, x+16 - pad, y+0.5)
+        r.rect(x+16, y, x+20 - pad, y+0.5)
+        r.rect(x+20, y, x+24 - pad, y+0.5)
+        r.text(x+3-pad/2, y+1, 'A')
+        r.text(x+9-pad/2, y+1, 'X')
+        r.text(x+14-pad/2, y+1, 'Y')
+        r.text(x+18-pad/2, y+1, 'M')
+        r.text(x+22-pad/2, y+1, 'M')
+    r.text(-31, 2.5, 'Maternal\nchromosomes', adj=1)
+    r.text(-31, -2.5, 'Paternal\nchromosomes', adj=1)
+    r.text(5, 4, 'Maternally inherited chromosomes', adj=0)
+    r.text(5, -1, 'Paternally inherited chromosomes', adj=0)
+    # autosome
+    for x1,x2,y1,col in [
+        # maternal autosome
+        (-30, -28, 3, 'green'), (5, 7, 2, 'green'),
+        (-28, -24-pad, 1, 'red'), (7, 11-pad, 2, 'red'),
+        # paternal autosome
+        (-30, -25.5, -2, 'green'), (5, 9.5, -3, 'green'),
+        (-25.5, -24-pad, -4, 'red'), (9.5, 11-pad, -3, 'red'),
+        # maternal chromosome X
+        (-24, -20, 3, 'green'), (11, 15, 2, 'green'),
+        (-20, -18-pad, 1, 'red'), (15, 17-pad, 2, 'red'),
+        # paternal chromsome Y
+        (-18, -14-pad, -4, 'green'), (17, 21-pad, -3, 'green'),
+        # mitochondria 1, 2
+        (-14, -10-pad, 3, 'blue'), #(-10, -6-pad, 3, 'green'),
+        (21, 25-pad, 2, 'blue'), (25, 29-pad, 2, 'blue'),
+        # gray out
+        (-18, -14-pad, 3, 'gray'), (-18, -14-pad, 1, 'gray'),
+        (-24, -18-pad, -4, 'gray'), (-18, -14-pad, -2, 'gray'),
+        (-14, -10-pad, 1, 'gray'), (-10, -6-pad, 1, 'gray'),
+        (-14, -10-pad, -4, 'gray'), (-10, -6-pad, -4, 'gray'),
+        (21, 25-pad, -3, 'gray'), (25, 29-pad, -3, 'gray'),
+        (11, 17-pad, -3, 'gray'), (17, 21-pad, 2, 'gray'),
+        # legend
+        (-40, -38, -6, 'red'), (-38, -36, -6, 'blue'), (-36, -34, -6, 'green'),
+        (-5, -3, -6, 'white'),
+        (30, 32, -6, 'gray'), 
+        ]: 
+        r.rect(x1, y1, x2, y1+0.5, col=col)
+    r.text(-33, -5.75, 'Transmitted chromosomeregions', adj=0)
+    r.text(-2, -5.75, 'Untransmitted chromosome regions', adj=0)
+    r.text(33, -5.75, 'Unused', adj=0)
     r.dev_off()
 
 if __name__ == '__main__':
