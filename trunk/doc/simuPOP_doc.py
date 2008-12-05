@@ -117,7 +117,7 @@ def drawChromType():
         (30, 32, -6, 'gray'), 
         ]: 
         r.rect(x1, y1, x2, y1+0.5, col=col)
-    r.text(-33, -5.75, 'Transmitted chromosomeregions', adj=0)
+    r.text(-33, -5.75, 'Transmitted chromosome regions', adj=0)
     r.text(-2, -5.75, 'Untransmitted chromosome regions', adj=0)
     r.text(33, -5.75, 'Unused', adj=0)
     r.dev_off()
