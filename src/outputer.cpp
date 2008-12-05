@@ -28,12 +28,12 @@ bool dumper::apply(population & pop)
 	ostream & out = this->getOstream(pop.dict());
 
 	// dump population structure
-	if (!alleleOnly() ) {
-		out << "Ploidy:         \t" << pop.ploidy() 
+	if (m_showStructure) {
+		out << "Ploidy: " << pop.ploidy() 
 			<< " (" << pop.ploidyName() << ")" << endl;
 		out << "Chromosomes:\n";
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-			out << "\t" << pop.chromName(ch);
+			out << (ch + 1) << ": " << pop.chromName(ch);
             switch (pop.chromType(ch)) {
             case Autosome:
                 out << " (Autosome, ";
@@ -50,10 +50,12 @@ bool dumper::apply(population & pop)
             default:
                 throw ValueError("Wrong chromosome type");
             }
-            out << pop.numLoci(ch) << " loci):";
+            out << pop.numLoci(ch) << " loci)";
 			for (UINT i = 0; i < pop.numLoci(ch); ++i) {
                 if (i != 0)
                     out << ",";
+				if (i % 5 == 0)
+					out << "\n ";
 				out << " " << pop.locusName(pop.absLocusIndex(ch, i) ) << " ("
 				    << pop.locusPos(pop.absLocusIndex(ch, i)) << ")";
             }
@@ -65,7 +67,7 @@ bool dumper::apply(population & pop)
 				out << pop.infoField(i) << " ";
 			out << endl;
 		}
-		out << "population size:\t" << pop.popSize();
+		out << "population size: " << pop.popSize();
         if (pop.numSubPop() > 1) {
     		out << " (" << pop.numSubPop() << " subpopulations with ";
 		    for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
@@ -74,10 +76,10 @@ bool dumper::apply(population & pop)
         } else
             out << " (no subpopulation)";
     	out << endl;
-		out << "Number of ancestral populations:\t" << pop.ancestralGens() << endl;
+		out << "Number of ancestral populations: " << pop.ancestralGens() << endl << endl;
 	}
 
-	if (!m_infoOnly) {
+	if (m_showGenotype) {
 		// get individual ranges from subpop
 		vectorlu range = m_indRange;
 		if (m_indRange.empty()) {
@@ -97,12 +99,12 @@ bool dumper::apply(population & pop)
 				}
 			}
 		}
-		out << "\nGenotype of individuals in the present generation:" << endl;
+		out << "Genotype of individuals in the present generation:" << endl;
 		UINT count = 0;
 		for (size_t i = 0; i < range.size(); i += 2) {
 			UINT sp = pop.subPopIndPair(range[i]).first;
             if (pop.numSubPop() > 1)
-    			out << "sub population " << sp << ":" << endl;
+    			out << "Subpopulation " << sp << ":" << endl;
 
 			for (IndIterator ind = pop.indBegin() + range[i];
 			     ind != pop.indBegin() + range[i + 1]; ++ind, ++count) {
@@ -120,71 +122,68 @@ bool dumper::apply(population & pop)
 		}
 
 done:
-		out << "End of individual info." << endl << endl;
+		out << "End of individual genotype.\n" << endl;
 
-		if (!m_dispAncestry) {
-			if (pop.ancestralGens() == 0)
-				out << endl << "Ignoring " << pop.ancestralGens() << " ancenstral population(s)." << endl;
-		} else {
-			for (size_t i = 0; i < pop.ancestralGens(); ++i) {
-				pop.useAncestralGen(i + 1);
-				out << endl << "Ancestry population " << i + 1 << endl;
-
-				out << "population size:\t" << pop.popSize() << endl;
-				out << "Number of subPop:\t" << pop.numSubPop() << endl;
-				out << "Subpop sizes:   \t";
+		int ancGen = m_ancGen;
+		if (ancGen > pop.ancestralGens())
+			ancGen = pop.ancestralGens();
+		for (size_t gen = 1; gen <= ancGen; ++gen) {
+			pop.useAncestralGen(gen);
+			out << endl << "Ancestry population " << gen << endl;
+			out << "population size: " << pop.popSize() << endl;
+			if (pop.numSubPop() > 1) {
+				out << " (" << pop.numSubPop() << " subpopulations with ";
 				for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
-					out << pop.subPopSize(i) << " ";
-				out << endl;
+					out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
+				out << " individuals)\n";
+			} else
+				out << " (no subpopulation)\n";
 
-				out << "individual info: " << endl;
-
-				// get individual ranges from subpop
-				vectorlu range = m_indRange;
-				if (m_indRange.empty()) {
-					// all subpop
-					if (m_subPop.empty() ) {
-						for (UINT sp = 0; sp < pop.numSubPop();  sp++) {
-							if (pop.subPopSize(sp) == 0)
-								continue;
-							range.push_back(pop.subPopBegin(sp));
-							range.push_back(pop.subPopEnd(sp));
-						}
-					} else {
-						for (vectoru::iterator sp = m_subPop.begin();  sp != m_subPop.end();  sp++) {
-							if (pop.subPopSize(*sp) == 0)
-								continue;
-							range.push_back(pop.subPopBegin(*sp));
-							range.push_back(pop.subPopEnd(*sp));
-						}
+			// get individual ranges from subpop
+			vectorlu range = m_indRange;
+			if (m_indRange.empty()) {
+				// all subpop
+				if (m_subPop.empty() ) {
+					for (UINT sp = 0; sp < pop.numSubPop();  sp++) {
+						if (pop.subPopSize(sp) == 0)
+							continue;
+						range.push_back(pop.subPopBegin(sp));
+						range.push_back(pop.subPopEnd(sp));
+					}
+				} else {
+					for (vectoru::iterator sp = m_subPop.begin();  sp != m_subPop.end();  sp++) {
+						if (pop.subPopSize(*sp) == 0)
+							continue;
+						range.push_back(pop.subPopBegin(*sp));
+						range.push_back(pop.subPopEnd(*sp));
 					}
 				}
-				out << "individual info: " << endl;
-				UINT count = 0;
-				for (size_t j = 0; j < range.size(); j += 2) {
-					UINT sp = pop.subPopIndPair(range[j]).first;
-					out << "sub population " << sp << ":" << endl;
+			}
+			out << "Genotype info: " << endl;
+			UINT count = 0;
+			for (size_t j = 0; j < range.size(); j += 2) {
+				UINT sp = pop.subPopIndPair(range[j]).first;
+				out << "sub population " << sp << ":" << endl;
 
-					for (IndIterator ind = pop.indBegin() + range[j]; ind != pop.indBegin() + range[j + 1]; ++ind) {
-						out << setw(4) << count++ << ": " ;
-						ind->display(out, m_width, m_chrom, m_loci);
-						out << endl;
+				for (IndIterator ind = pop.indBegin() + range[j]; ind != pop.indBegin() + range[j + 1]; ++ind) {
+					out << setw(4) << count++ << ": " ;
+					ind->display(out, m_width, m_chrom, m_loci);
+					out << endl;
 
-						if (m_max > 0 && count > m_max && count < pop.popSize()) {
-							cout << "population size is " << pop.popSize() << " but dumper() only dump "
-							     << m_max << " individuals" << endl
-							     << "Use parameter max=-1 to output all individuals." << endl;
-							goto doneAnces;
-						}
+					if (m_max > 0 && count > m_max && count < pop.popSize()) {
+						cout << "population size is " << pop.popSize() << " but dumper() only dump "
+							 << m_max << " individuals" << endl
+							 << "Use parameter max=-1 to output all individuals." << endl;
+						goto doneAnces;
 					}
 				}
+			}
 
 doneAnces:
-				out << "End of individual info." << endl << endl;
-			}                                                                         // next ancestry
-			// IMPORTANT. Reset ancestral pop
-			pop.useAncestralGen(0);
-		}                                                                                 // dispAncestry
+			out << endl;
+		}                                                                         // next ancestry
+		// IMPORTANT. Reset ancestral pop
+		pop.useAncestralGen(0);
 	}
 	this->closeOstream();
 	return true;

@@ -144,10 +144,10 @@ class dumper : public outputer
 public:
 	/// dump a population
 	/**
-	 \param alleleOnly only display allele
-	 \param infoOnly only display genotypic information
-	 \param dispWidth number of characters to display an allele. Default to \c 1.
-	 \param ancestralPops whether or not display ancestral populations. Default to \c False.
+	 \param genotype Whether or not display genotype
+	 \param structure Whether or not display genotypic structure
+	 \param width number of characters to display an allele. Default to \c 1.
+	 \param ancGen how many ancestral generations to display
 	 \param chrom chromosome(s) to display
 	 \param loci loci to display
 	 \param subPop only display subpopulation(s)
@@ -158,7 +158,7 @@ public:
 	 \param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
 	 */
-	dumper(bool alleleOnly = false, bool infoOnly = false, bool ancestralPops = false, int dispWidth = 1, UINT max = 100,
+	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
 	       const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
 	       const vectorlu & indRange = vectorlu(),
 	       string output = ">", string outputExpr = "",
@@ -166,7 +166,7 @@ public:
 	       const repList & rep = repList(), // const subPopList & subPop = subPopList(),
 		   const vectorstr & infoFields = vectorstr()) :
 		outputer(output, outputExpr, stage, begin, end, step, at, rep, subPopList(), infoFields),
-		m_alleleOnly(alleleOnly), m_infoOnly(infoOnly), m_dispAncestry(ancestralPops), m_width(dispWidth),
+		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
 	{
 	}
@@ -176,35 +176,6 @@ public:
 	{
 		return new dumper(*this);
 	}
-
-
-	/// only show alleles (not structure, gene information?
-	bool alleleOnly()
-	{
-		return m_alleleOnly;
-	}
-
-
-	///
-	void setAlleleOnly(bool alleleOnly)
-	{
-		m_alleleOnly = alleleOnly;
-	}
-
-
-	/// only show info
-	bool infoOnly()
-	{
-		return m_infoOnly;
-	}
-
-
-	///
-	void setInfoOnly(bool infoOnly)
-	{
-		m_infoOnly = infoOnly;
-	}
-
 
 	virtual bool apply(population & pop);
 
@@ -219,14 +190,14 @@ public:
 
 
 private:
-	/// only output alleles, not structure info
-	bool m_alleleOnly;
+	///
+	bool m_showGenotype;
 
-	/// only display info
-	bool m_infoOnly;
+	///
+	bool m_showStructure;
 
-	/// whether or not display ancestral populations
-	bool m_dispAncestry;
+	/// 
+	int m_ancGen;
 
 	/// disp width when outputing alleles
 	int m_width;
