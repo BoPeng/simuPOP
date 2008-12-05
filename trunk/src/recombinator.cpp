@@ -61,6 +61,9 @@ void recombinator::prepareRecRates(const population & pop,
 		if (std::find(m_mitochondrial.begin(), m_mitochondrial.end(), ch) != m_mitochondrial.end() ||  // mitochondrial does not recombine
 		    (sex == Male && (static_cast<int>(ch) == m_chromX || static_cast<int>(ch) == m_chromY)) ||
 		    (sex == Female && static_cast<int>(ch) == m_chromY)) {
+			DBG_DO(DBG_RECOMBINATOR, cout << "Ignoring chromosome " << ch
+				<< " Mitochondrial: " << m_mitochondrial << " Chrom X: " << m_chromX
+				<< " Chrom Y: " << m_chromY << endl);
 			continue;
 		}
 

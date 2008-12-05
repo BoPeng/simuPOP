@@ -178,10 +178,11 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	//
 	m_mitochondrial.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == Mitochondrial)
+		if (m_chromTypes[i] == Mitochondrial) {
 			DBG_ASSERT(m_ploidy == 2, ValueError,
 				"Sex chromosome can only be specified in a diploid or haplodiploid population.");
 			m_mitochondrial.push_back(i);
+		}
 	}
 }
 
