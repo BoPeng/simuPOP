@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2633,17 +2633,13 @@ fitness
  to store evaluated fitness values for each individual.
  Operator 
 \family typewriter
-parentTagger
+migrator
 \family default
- uses information fields 
+ uses information field 
 \family typewriter
-father_idx
+migrate_to
 \family default
- and 
-\family typewriter
-mother_idx
-\family default
- to store indexes of the parents of each individual in the parental generation.
+ to store the ID of subpopulation an individual will migrate to.
  An error will be raised if these operators are applied to a population
  without needed information fields.
 \end_layout
@@ -2657,7 +2653,24 @@ reference "basicInfoFields"
 \end_inset
 
  demonstrates the basic usage of information fields.
- More examples will be given when information fields are applied in other
+ In this example, information fields 
+\family typewriter
+mother_idx
+\family default
+ and 
+\family typewriter
+father_idx
+\family default
+ are used by operator 
+\family typewriter
+parentsTagger
+\family default
+ to record indexes of parents of each offspring
+\family typewriter
+.
+ 
+\family default
+More examples will be given when information fields are applied in other
  applications.
 \end_layout
 

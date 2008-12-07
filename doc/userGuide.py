@@ -131,16 +131,16 @@ Dump(pop, structure = False) # does not display genotypic structure information
 #end
 
 #file log/infoField.log
-pop = population(10, loci=[20], ancestralDepth=2,
+pop = population(10, loci=[20], ancGen=1,
     infoFields=['father_idx', 'mother_idx'])
 simu = simulator(pop, randomMating(numOffspring=2))
 simu.evolve(
-    preOps = [initByFreq([0.2, 0.3, 0.5])],
+    preOps = [initByValue([0]*20+[1]*20)],
     ops = [
         parentsTagger(),
-        recombinator(rate=0.1)
+        recombinator(rate=0.01)
     ],
-    gen = 5
+    gen = 1
 )
 # father_idx and mother_idx now have indexes of parents
 pop = simu.extract(0)
