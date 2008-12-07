@@ -144,9 +144,9 @@ public:
 	 *    Positions on the same chromosome should be ordered. A nested list
 	 *    that specifies positions of loci on each chromosome is also
 	 *    acceptable.
-	 *  \param ancestralGens Number of the most recent ancestral generations
-	 *    to keep during evolution. Default to \c 0, which means only the
-	 *    current generation will be kept. If it is set to \c -1, all ancestral
+	 *  \param ancGen Number of the most recent ancestral generations to keep
+	 *    during evolution. Default to \c 0, which means only the current
+	 *    generation will be kept. If it is set to \c -1, all ancestral
 	 *    generations will be kept in this population (and exhaust your computer
 	 *    RAM quickly).
 	 *  \param chromNames A list of chromosome names. Default to \c chrom1,
@@ -166,7 +166,7 @@ public:
 		const vectoru & loci = vectoru(),
 		const vectoru & chromTypes = vectoru(),
 		const vectorf & lociPos = vectorf(),
-		int ancestralGens = 0,
+		int ancGen = 0,
 		const vectorstr & chromNames = vectorstr(),
 		const vectorstr & alleleNames = vectorstr(),
 		const vectorstr & lociNames = vectorstr(),
