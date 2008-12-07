@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2080,7 +2080,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "chromtypes"
+reference "basicInfoFields"
 
 \end_inset
 
@@ -2144,7 +2144,7 @@ object that directly reflect the underlying genotype.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "chromtypes"
+reference "basicInfoFields"
 
 \end_inset
 
@@ -2355,7 +2355,7 @@ can only be changed for all individuals at the population level, or for
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "chromtypes"
+reference "basicInfoFields"
 
 \end_inset
 
@@ -2408,7 +2408,7 @@ unused
 , as shown in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "chromtypes"
+reference "basicInfoFields"
 
 \end_inset
 
@@ -2458,7 +2458,7 @@ Mitochondrial
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "chromtypes"
+reference "basicInfoFields"
 
 \end_inset
 
@@ -2594,14 +2594,16 @@ Information fields
 \end_layout
 
 \begin_layout Standard
-Different simulation scenarios require different types of individuals.
- For simple simulations such as the simulation of the standard Wright-Fisher
- model, only genotype is needed.
- More complicated simulations, however, 
-\end_layout
-
-\begin_layout Standard
-Individuals in a simuPOP population have their own genotype, sex (
+Different kinds of simulations require different kinds of individuals.
+ Individuals with only genotype information are sufficient to simulate the
+ basic Wright-Fisher model.
+ Sex is needed to simulate such a model in diploid populations with sex.
+ Individual fitness may be needed if selection is induced, and age may be
+ needed if the population is age-structured.
+ In addition, different types of quantitative traits or affection status
+ may be needed to study the impact of genotype on individual phenotype.
+ Because it is infeasible to provide all such information to an individual,
+ simuPOP keeps genotype, sex (
 \family typewriter
 Male
 \family default
@@ -2609,64 +2611,31 @@ Male
 \family typewriter
 Female
 \family default
-) and affection status.
- Sex and affection status are 
+) and affection status as 
 \emph on
-built-in
+built-in properties
 \emph default
- properties due to their simplicity and wide applications, but they can
- be ignored if unused.
- On the other hand, many applications require additional individual properties.
- For example, 
-\end_layout
-
-\begin_layout Standard
-
+ of an individual, and all others as optional 
 \emph on
-Information fields
+information fields
 \emph default
- refer to float numbers attached to each individual, such as fitness value,
- parent index, age.
- They are used to store auxiliary information of individuals, and are essential
- to the operations of some simuPOP components.
- For example, 
-\family typewriter
-'fitness'
-\family default
- field is required by all selectors.
- Details please refer to section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Information-fields"
-
-\end_inset
-
-.
+ (float numbers) attached to each individual.
 \end_layout
 
 \begin_layout Standard
-An individuals have genotype, sex and affection status information, but
- other information may be needed.
- For example, one or more trait values may be needed to calculate quantitative
- traits, and one may want to keep track of all offspring of a parent.
- Because the need for information fields varies from simulation to simulation,
- simuPOP does not fix the amount of information fields, and allow users
- to specify these fields during the construction of populations, or add
- them when you need them.
-\end_layout
-
-\begin_layout Standard
-Operators may require certain information fields to work properly.
- For example, all selectors require field 
+Information fields can be specified when a population is created, or added
+ later using relevant function.
+ They are essential for the function of many simuPOP operators.
+ For example, all selection operators require information field 
 \family typewriter
 fitness
 \family default
  to store evaluated fitness values for each individual.
- 
+ Operator 
 \family typewriter
 parentTagger
 \family default
- needs 
+ uses information fields 
 \family typewriter
 father_idx
 \family default
@@ -2674,18 +2643,33 @@ father_idx
 \family typewriter
 mother_idx
 \family default
- to store indices of the parents of each individual in the parental generation.
- These information fields can be added by the 
-\family typewriter
-infoFields
-\family default
- parameter of the population constructor or be added later using relevant
- function.
- If a required information field is unavailable, an error message will appear
- and tell you which field is needed.
- Some operators allow you to specify which information field(s) to use.
- For example, quantitative trait operator can work on specified fields so
- an individual can have several quantitative traits.
+ to store indexes of the parents of each individual in the parental generation.
+ An error will be raised if these operators are applied to a population
+ without needed information fields.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "basicInfoFields"
+
+\end_inset
+
+ demonstrates the basic usage of information fields.
+ More examples will be given when information fields are applied in other
+ applications.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infoFields.log"
+lstparams "caption={Basic usage of information fields},label={basicInfoFields}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

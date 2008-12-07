@@ -130,6 +130,29 @@ InitByFreq(pop, [0.3, 0.7])
 Dump(pop, structure = False) # does not display genotypic structure information
 #end
 
+#file log/infoField.log
+pop = population(10, loci=[20], ancestralDepth=2,
+    infoFields=['father_idx', 'mother_idx'])
+simu = simulator(pop, randomMating(numOffspring=2))
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.3, 0.5])],
+    ops = [
+        parentsTagger(),
+        recombinator(rate=0.1)
+    ],
+    gen = 5
+)
+# father_idx and mother_idx now have indexes of parents
+pop = simu.extract(0)
+pop.indInfo('mother_idx')
+ind = pop.individual(0)
+mom = pop.ancestor(ind.intInfo('mother_idx'), 1)
+print ind.genotype(0)
+print mom.genotype(0)
+print mom.genotype(1)
+#end
+
+
 #file log/popInit.log
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])
