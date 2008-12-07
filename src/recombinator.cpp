@@ -58,11 +58,11 @@ void recombinator::prepareRecRates(const population & pop,
 		UINT chBegin = pop.chromBegin(ch);
 		UINT chEnd = pop.chromEnd(ch);
 
-		if (std::find(m_mitochondrial.begin(), m_mitochondrial.end(), ch) != m_mitochondrial.end() ||  // mitochondrial does not recombine
+		if (std::find(m_customized.begin(), m_customized.end(), ch) != m_customized.end() ||  // customized does not recombine
 		    (sex == Male && (static_cast<int>(ch) == m_chromX || static_cast<int>(ch) == m_chromY)) ||
 		    (sex == Female && static_cast<int>(ch) == m_chromY)) {
 			DBG_DO(DBG_RECOMBINATOR, cout << "Ignoring chromosome " << ch
-				<< " Mitochondrial: " << m_mitochondrial << " Chrom X: " << m_chromX
+				<< " Customized: " << m_customized << " Chrom X: " << m_chromX
 				<< " Chrom Y: " << m_chromY << endl);
 			continue;
 		}
@@ -388,7 +388,7 @@ void recombinator::initialize(const population & pop)
 {
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
-	m_mitochondrial = pop.mitochondrial();
+	m_customized = pop.customized();
 
 	// prepare m_bt
 	// female

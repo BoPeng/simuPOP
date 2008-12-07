@@ -26,7 +26,7 @@ version 0.8.9 - tagged, but not publically released (rev 1948).
   - CHG: Remove outputHelper operator, which has been replaced by pyOutput.
   - CHG: Remove read support for XML and Binary formats.
   - CHG: Completely change the way sex chromosomes are handled, and add
-		initial support for mitochondrial chromosome.
+		initial support for customized chromosome.
   - CHG: Rename class vsp to vspID.
   - CHG: Merge population::subPopSize and population::virtualSubPopSize.
   - CHG: Change parameter of population::virtualSubPopName().
@@ -50,7 +50,6 @@ version 0.8.9 - tagged, but not publically released (rev 1948).
   - NEW: Add StopEvolution exception and add simulator::stopIfOneRepStops to terminators.
   - CHG: Remove operator terminator and continueIf.
   - CHG: Reset file format number. No longer support previous file formats.
-  - NEW: Proper handling of mitochondrial DNA in recombinator.
   - NEW: add simulator::populations().
   - NEW: Allow the use of multiple replicates for an operator. Remove REP_ALL (now []),
 		and REP_LAST (now -1).

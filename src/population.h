@@ -116,8 +116,8 @@ public:
 	 *    written as <em>size</em><tt>=popSize</tt>.
 	 *  \param ploidy Number of homologous sets of chromosomes. Default to
 	 *    \c 2 (diploid). For efficiency considerations, all chromosomes have
-	 *    the same number of homologous sets, even if some chromosomes (e.g.
-	 *    mitochondrial) or some individuals (e.g. males in a haplodiploid
+	 *    the same number of homologous sets, even if some customized
+	 *    chromosomes or some individuals (e.g. males in a haplodiploid
 	 *    population) have different numbers of homologous sets. The first
 	 *    case is handled by setting \e chromTypes of each chromosome. Only
 	 *    the haplodiploid populations are handled for the second case, for
@@ -127,18 +127,17 @@ public:
 	 *    <tt>[1]</tt>, meaning one chromosome with a single locus.
 	 *  \param chromTypes A list that specifies the type of each chromosome,
 	 *    which can be \c Autosome, \c ChromosomeX, \c ChromosomeY, or
-	 *    \c Mitochondrial. All chromosomes are assumed to be autosomes if
+	 *    \c Customized. All chromosomes are assumed to be autosomes if
 	 *    this parameter is ignored. Sex chromosome can only be specified in a
 	 *    diploid population where the sex of an individual is determined by
 	 *    the existence of these chromosomes using the \c XX (\c Female) and
 	 *    \c XY (\c Male) convention. Both sex chromosomes have to be available
 	 *    and be specified only once. Because chromosomes \c X and \c Y are
 	 *    treated as two chromosomes, recombination on the pseudo-autosomal
-	 *    regions of the sex chromsomes is not supported. \c Mitochondrial
-	 *    chromosomes are inherited maternally. If more than one mitochondrial
-	 *    chromosomes are available, they are selected randomly with
-	 *    replacement. No recombination is allowed for mitochondrial
-	 *    chromosomes.
+	 *    regions of the sex chromsomes is not supported. \c Customized
+	 *    chromosomes are special chromosomes whose inheritance patterns are
+	 *    undefined. They rely on user-defined functions and operators to pass
+	 *    from parents to offspring.
 	 *  \param lociPos Positions of all loci on all chromosome, as a list of
 	 *    float numbers. Default to \c 1, \c 2, ... etc on each chromosome.
 	 *    Positions on the same chromosome should be ordered. A nested list

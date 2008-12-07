@@ -84,7 +84,7 @@ class GenoStructure
 public:
 	/// CPPONLY serialization library requires a default constructor
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
-		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_mitochondrial(),
+		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_customized(),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
 		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
 	{
@@ -238,8 +238,8 @@ private:
 	/// index of chromosome Y, -1 if not exist
 	int m_chromY;
 
-	/// indexes of mitochondrial chromosome
-	vectoru m_mitochondrial;
+	/// indexes of customized chromosomes
+	vectoru m_customized;
 
 	/// whether or not this population is haplodiploid.
 	bool m_haplodiploid;
@@ -482,15 +482,15 @@ public:
 
 
 	/** CPPONLY
-	 *  Return the indexes of the mitochondrial chromosomes.
+	 *  Return the indexes of the customized chromosomes.
 	 *  <group>2-chromosome</group>
 	 */
-	vectoru mitochondrial() const
+	vectoru customizedChroms() const
 	{
 		DBG_FAILIF(m_genoStruIdx == MaxTraitIndex, SystemError,
 			"totNumLoci: You have not set genoStructure. Please use setGenoStrucutre to set such info.");
 
-		return s_genoStruRepository[m_genoStruIdx].m_mitochondrial;
+		return s_genoStruRepository[m_genoStruIdx].m_customized;
 	}
 
 
@@ -657,8 +657,8 @@ public:
 	}
 
 
-	/** return the type of a chromosome \e chrom (\c 1 for \c Autosome, \c 2 for
-	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
+	/** return the type of a chromosome \e chrom (\c Customized, \c Autosome,
+	 *  \c ChromosomeX, or \c ChromosomeY).
 	 *  <group>2-chromosome</group>
 	 */
 	int chromType(const UINT chrom) const
@@ -671,8 +671,8 @@ public:
 	}
 
 
-	/** return the type of all chromosomes (\c 1 for \c Autosome, \c 2 for
-	 *  \c ChromosomeX, \c 3 for \c ChromosomeY, and \c 4 for \c Mitochondrial).
+	/** return the type of all chromosomes (\c Customized, \c Autosome,
+	 *  \c ChromosomeX or \c ChromosomeY).
 	 *  <group>2-chromosome</group>
 	 */
 	vectoru chromTypes() const

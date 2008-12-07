@@ -136,10 +136,10 @@ enum Sex {
 };
 
 enum ChromType {
+    Customized = 0,
     Autosome = 1,
     ChromosomeX = 2,
     ChromosomeY = 3,
-    Mitochondrial = 4
 };
 
 typedef unsigned char TraitIndexType;

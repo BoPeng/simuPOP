@@ -151,8 +151,8 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	// check if the type is valid.
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		UINT type = m_chromTypes[i];
-		DBG_ASSERT(type == Autosome || type == ChromosomeX || type == ChromosomeY || type == Mitochondrial,
-			ValueError, "Chromsome type can only be one of Autosome, ChromosomeX, ChromosomeY and Mitochondrial");
+		DBG_ASSERT(type == Autosome || type == ChromosomeX || type == ChromosomeY || type == Customized,
+			ValueError, "Chromsome type can only be one of Autosome, ChromosomeX, ChromosomeY and Customized");
 	}
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		if (m_chromTypes[i] == ChromosomeX) {
@@ -176,12 +176,12 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	DBG_FAILIF(m_chromX * m_chromY < 0, ValueError,
 		"It is invalid to set only chromosome X or Y.");
 	//
-	m_mitochondrial.clear();
+	m_customized.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == Mitochondrial) {
+		if (m_chromTypes[i] == Customized) {
 			DBG_ASSERT(m_ploidy == 2, ValueError,
 				"Sex chromosome can only be specified in a diploid or haplodiploid population.");
-			m_mitochondrial.push_back(i);
+			m_customized.push_back(i);
 		}
 	}
 }
