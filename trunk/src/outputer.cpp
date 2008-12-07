@@ -44,8 +44,8 @@ bool dumper::apply(population & pop)
             case ChromosomeY:
                 out << " (ChromosomeY, ";
                 break;
-            case Mitochondrial:
-                out << " (Mitochondrial, ";
+            case Customized:
+                out << " (Customized, ";
                 break;
             default:
                 throw ValueError("Wrong chromosome type");

@@ -305,7 +305,7 @@ private:
 	// locataion of special chromosomes
 	int m_chromX;
 	int m_chromY;
-	vectoru m_mitochondrial;
+	vectoru m_customized;
 
 #ifndef OPTIMIZED
 	/// report the number of recombination events

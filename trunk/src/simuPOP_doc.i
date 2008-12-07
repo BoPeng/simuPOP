@@ -1514,7 +1514,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::chromY() const;
 
-%ignore simuPOP::GenoStruTrait::mitochondrial() const;
+%ignore simuPOP::GenoStruTrait::customizedChroms() const;
 
 %feature("docstring") simuPOP::GenoStruTrait::sexChrom "Obsolete or undocumented function."
 
@@ -1661,8 +1661,8 @@ Usage:
 
 Details:
 
-    return the type of a chromosome chrom (1 for Autosome, 2 for
-    ChromosomeX, 3 for ChromosomeY, and 4 for Mitochondrial).
+    return the type of a chromosome chrom (Customized, Autosome,
+    ChromosomeX, or ChromosomeY).
 
 "; 
 
@@ -1674,8 +1674,8 @@ Usage:
 
 Details:
 
-    return the type of all chromosomes (1 for Autosome, 2 for
-    ChromosomeX, 3 for ChromosomeY, and 4 for Mitochondrial).
+    return the type of all chromosomes (Customized, Autosome,
+    ChromosomeX or ChromosomeY).
 
 "; 
 
@@ -6345,7 +6345,7 @@ Details:
 Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
-      lociPos=[], ancestralGens=0, chromNames=[], alleleNames=[],
+      lociPos=[], ancGen=0, chromNames=[], alleleNames=[],
       lociNames=[], infoFields=[])
 
 Details:
@@ -6361,11 +6361,11 @@ Arguments:
     ploidy:         Number of homologous sets of chromosomes. Default
                     to 2 (diploid). For efficiency considerations, all
                     chromosomes have the same number of homologous
-                    sets, even if some chromosomes (e.g.
-                    mitochondrial) or some individuals (e.g. males in
-                    a haplodiploid population) have different numbers
-                    of homologous sets. The first case is handled by
-                    setting chromTypes of each chromosome. Only the
+                    sets, even if some customized chromosomes or some
+                    individuals (e.g. males in a haplodiploid
+                    population) have different numbers of homologous
+                    sets. The first case is handled by setting
+                    chromTypes of each chromosome. Only the
                     haplodiploid populations are handled for the
                     second case, for which ploidy=Haplodiploid should
                     be used.
@@ -6375,8 +6375,8 @@ Arguments:
                     chromosome with a single locus.
     chromTypes:     A list that specifies the type of each chromosome,
                     which can be Autosome, ChromosomeX, ChromosomeY,
-                    or Mitochondrial. All chromosomes are assumed to
-                    be autosomes if this parameter is ignored. Sex
+                    or Customized. All chromosomes are assumed to be
+                    autosomes if this parameter is ignored. Sex
                     chromosome can only be specified in a diploid
                     population where the sex of an individual is
                     determined by the existence of these chromosomes
@@ -6385,19 +6385,17 @@ Arguments:
                     specified only once. Because chromosomes X and Y
                     are treated as two chromosomes, recombination on
                     the pseudo-autosomal regions of the sex chromsomes
-                    is not supported. Mitochondrial chromosomes are
-                    inherited maternally. If more than one
-                    mitochondrial chromosomes are available, they are
-                    selected randomly with replacement. No
-                    recombination is allowed for mitochondrial
-                    chromosomes.
+                    is not supported. Customized chromosomes are
+                    special chromosomes whose inheritance patterns are
+                    undefined. They rely on user-defined functions and
+                    operators to pass from parents to offspring.
     lociPos:        Positions of all loci on all chromosome, as a list
                     of float numbers. Default to 1, 2, ... etc on each
                     chromosome. Positions on the same chromosome
                     should be ordered. A nested list that specifies
                     positions of loci on each chromosome is also
                     acceptable.
-    ancestralGens:  Number of the most recent ancestral generations to
+    ancGen:         Number of the most recent ancestral generations to
                     keep during evolution. Default to 0, which means
                     only the current generation will be kept. If it is
                     set to -1, all ancestral generations will be kept
