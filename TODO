@@ -34,6 +34,14 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 * Implement a demography class that return a demographic function by adding
   'events' to a demographic model.
 
+* Move genotype producing code to another during mating operator.
+
+* Add ops option to mating schemes so that each mating scheme can use
+  its own during-mating operators.
+
+* Redefine selfing, making it randomMating + selfing operator.
+
+* Define an operator to handle customized operators.
 
 After 1.0,
 

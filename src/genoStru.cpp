@@ -178,11 +178,8 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	//
 	m_customized.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == Customized) {
-			DBG_ASSERT(m_ploidy == 2, ValueError,
-				"Sex chromosome can only be specified in a diploid or haplodiploid population.");
+		if (m_chromTypes[i] == Customized)
 			m_customized.push_back(i);
-		}
 	}
 }
 
