@@ -125,7 +125,7 @@ Dump(pop)
 
 #file log/chromType.log
 pop = population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
-    chromTypes=[Autosome]*2 + [ChromosomeX, ChromosomeY] + [Mitochondrial]*2)
+    chromTypes=[Autosome]*2 + [ChromosomeX, ChromosomeY] + [Customized]*2)
 InitByFreq(pop, [0.3, 0.7])
 Dump(pop, structure = False) # does not display genotypic structure information
 #end
@@ -133,7 +133,7 @@ Dump(pop, structure = False) # does not display genotypic structure information
 #file log/infoField.log
 pop = population(10, loci=[20], ancGen=1,
     infoFields=['father_idx', 'mother_idx'])
-simu = simulator(pop, randomMating(numOffspring=2))
+simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [initByValue([0]*20+[1]*20)],
     ops = [
@@ -142,9 +142,8 @@ simu.evolve(
     ],
     gen = 1
 )
-# father_idx and mother_idx now have indexes of parents
 pop = simu.extract(0)
-pop.indInfo('mother_idx')
+pop.indInfo('mother_idx')  # mother of all offspring
 ind = pop.individual(0)
 mom = pop.ancestor(ind.intInfo('mother_idx'), 1)
 print ind.genotype(0)

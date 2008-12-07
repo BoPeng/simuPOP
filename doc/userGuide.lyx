@@ -2427,7 +2427,7 @@ lstparams "caption={An example of haplodiploid population},keywordstyle={\\ttfam
 \end_layout
 
 \begin_layout Subsection
-Autosomes, sex chromosomes, and mitochondrial chromosome
+Autosomes, sex chromosomes, and other types of chromosomes
 \end_layout
 
 \begin_layout Standard
@@ -2446,12 +2446,13 @@ ChromosomeY
 \emph default
 and 
 \emph on
-Mitochondrial
+Customized
 \emph default
 .
- They are only valid in haploid populations where chromosomes X and Y are
- used to determine the sex of an offspring, and mitochondria chromosomes
- are passed only maternally.
+ Sex chromosomes are only valid in haploid populations where chromosomes
+ X and Y are used to determine the sex of an offspring.
+ Customized chromosomes rely on user defined functions and operators to
+ be passed from parents to offspring.
 \end_layout
 
 \begin_layout Standard
@@ -2464,11 +2465,6 @@ reference "basicInfoFields"
 
  shows how to specify different chromosome types, and how genotypes of these
  special chromosomes are arranged.
- Note again that unused marker locations are marked by 
-\family typewriter
-'_'
-\family default
-.
 \end_layout
 
 \begin_layout Standard
@@ -2483,7 +2479,7 @@ lstparams "caption={Different chromosome types},keywordstyle={\\ttfamily},label=
 \end_layout
 
 \begin_layout Standard
-The evolution of these special chromosomes follow the following rules
+The evolution of sex chromosomes follow the following rules
 \end_layout
 
 \begin_layout Itemize
@@ -2509,20 +2505,10 @@ The sex of offspring is determined by the types of sex chromosomes he/she
  inherits, XX for female, and XY for male.
 \end_layout
 
-\begin_layout Itemize
-There can be multiple mitochondrial chromosomes, but they have to have the
- same markers.
- The second homologous copies of mitochondrial chromosomes are ignored.
-\end_layout
-
-\begin_layout Itemize
-Mitochondrial chromosomes are only passed from female parents to offspring.
- No recombination is allowed.
- If there are multiple mitochondrial chromosomes, they are drawn randomly.
-\end_layout
-
 \begin_layout Standard
-Figure 
+As an advanced feature of simuPOP, chromosomes that do not follow the inheritanc
+e patterns of autosomes or sex chromosomes can be handled separately.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:chromTypes"
@@ -2531,7 +2517,10 @@ reference "fig:chromTypes"
 
  depicts the possible chromosome structure of two diploid parents, and how
  offspring chromosomes are formed.
- 
+ It uses two customized chromosomes to model multiple copies of mitochondrial
+ chromosomes that are passed randomly from mother to offspring.
+ The second homologous copy of customized chromosomes are unused in this
+ example.
 \end_layout
 
 \begin_layout Standard
@@ -2572,16 +2561,17 @@ Inheritance of different types of chromosomes in a diploid population
 
 \begin_layout Plain Layout
 Individuals in this population have five chromosomes, one autosome (A),
- one X chromosome (X), one Y chromosome (Y) and two mitochondrial chromosomes
- (M).
+ one X chromosome (X), one Y chromosome (Y) and two customized chromosomes
+ (C).
+ The customized chromosomes model multiple copies of mitochondrial chromosomes
+ that are passed randomly from mother to offspring.
  Y chromosomes for the female parent, the second copy of chromosome X and
  the first copy of chromosome Y for the male parent, and the second copy
- of mitochondrial chromosomes are unused (gray chromosome regions).
+ of customized chromosomes are unused (gray chromosome regions).
  A male offspring inherits one copy of autosome from his mother (with recombinat
 ion), one copy of autosome from his father (with recombination), an X chromosome
  from his mother (with recombination), a Y chromosome from his father (without
- recombination), and two copies of the first mitochondrial chromosome (randomly
- chosen from the two mitochondrial chromosomes) from his mother.
+ recombination), and two copies of the first customized chromosome.
 \end_layout
 
 \end_inset
@@ -2645,6 +2635,17 @@ migrate_to
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infoField.log"
+lstparams "caption={Basic usage of information fields},label={basicInfoFields}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2653,7 +2654,7 @@ reference "basicInfoFields"
 \end_inset
 
  demonstrates the basic usage of information fields.
- In this example, information fields 
+ In this example, a population with two information fields 
 \family typewriter
 mother_idx
 \family default
@@ -2661,28 +2662,52 @@ mother_idx
 \family typewriter
 father_idx
 \family default
- are used by operator 
+ are created.
+ It can hold one ancestral generations (
 \family typewriter
-parentsTagger
+ancGen=1
 \family default
- to record indexes of parents of each offspring
-\family typewriter
-.
- 
-\family default
-More examples will be given when information fields are applied in other
- applications.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/infoFields.log"
-lstparams "caption={Basic usage of information fields},label={basicInfoFields}"
+, see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Ancestral-populations"
 
 \end_inset
 
+ for details) so the most recent parental generations will be kept in a
+ population object.
+ After initializing each individual with two chromosomes with all zero and
+ all one alleles respectively, the population evolves one generation, suject
+ to recombination at rate 0.01.
+ Parents of each individual are recorded, by operator 
+\family typewriter
+parentsTagger
+\family default
+, to information fields 
+\family typewriter
+mother_idx
+\family default
+ and 
+\family typewriter
+father_idx
+\family default
+ of each offspring
+\family typewriter
+.
+\end_layout
 
+\begin_layout Standard
+After evolution, the population is extracted from the simulator, and the
+ values of information field 
+\family typewriter
+mother_idx
+\family default
+ of all individuals are printed.
+ The next several statements get the first individual from the population,
+ and his mother from the parental generation using the index stored in this
+ individual's information field.
+ Genotypes at the first homologous copy of this individual's chromosome
+ is printed, along with two parental chromosomes.
 \end_layout
 
 \begin_layout Section
