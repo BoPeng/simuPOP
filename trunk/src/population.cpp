@@ -37,7 +37,7 @@ population::population(const vectorlu & size,
 	const vectoru & loci,
 	const vectoru & chromTypes,
 	const vectorf & lociPos,
-	int ancestralGens,
+	int ancGen,
 	const vectorstr & chromNames,
 	const vectorstr & alleleNames,
 	const vectorstr & lociNames,
@@ -51,7 +51,7 @@ population::population(const vectorlu & size,
 	m_genotype(0),                                                                          // resize later
 	m_info(0),
 	m_inds(0),                                                                              // default constructor will be called.
-	m_ancestralGens(ancestralGens),
+	m_ancestralGens(ancGen),
 	m_vars(NULL, true),                                                                     // invalid shared variables initially
 	m_ancestralPops(0),                                                                     // no history first
 	m_rep(-1),
