@@ -70,6 +70,12 @@ bool individual::operator==(const individual & rhs) const
 	for (UINT i = 0, iEnd = genoSize(); i < iEnd;  ++i)
 		if (*(m_genoPtr + i) != *(rhs.m_genoPtr + i) )
 			return false;
+
+	for (UINT i = 0, iEnd = infoSize(); i < iEnd;  ++i)
+		if (*(m_infoPtr + i) != *(rhs.m_infoPtr + i) ) {
+			DBG_DO(DBG_POPULATION, cout << "Information field " << infoField(i) << " differ" << endl);
+			return false;
+		}
 	return true;
 }
 
