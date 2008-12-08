@@ -388,7 +388,7 @@ void recombinator::initialize(const population & pop)
 {
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
-	m_customized = pop.customized();
+	m_customized = pop.customizedChroms();
 
 	// prepare m_bt
 	// female
