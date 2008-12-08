@@ -673,13 +673,8 @@ del subPopList.__init__
 subPopList.__init__ = new_subPopList
     
 def new_population(self, size=[], ploidy=2, loci=[], chromTypes=[],
-    lociPos=[], subPop=[], ancGen=0, chromNames=[], alleleNames=[], lociNames=[],
-    infoFields=[]):
-    if subPop != []:
-        print 'Parameter subPop is obsolete. Please use size instead'
-        if size != 0:
-            print 'In addition, you can not specify both size and subPop'
-        size = subPop
+    lociPos=[], ancGen=0, chromNames=[], alleleNames=[], lociNames=[],
+    subPopNames=[], infoFields=[]):
     if type(size) in [type(0), type(0L)]:
         sp = [size]
     elif type(size) in [types.TupleType, types.ListType]:
@@ -700,7 +695,7 @@ def new_population(self, size=[], ploidy=2, loci=[], chromTypes=[],
             ln.extend(lociNames[i])
     cppModule.population_swiginit(self,
         cppModule.new_population(sp, ploidy, loci, chromTypes, ld,
-            ancGen, chromNames, alleleNames, ln, infoFields))
+            ancGen, chromNames, alleleNames, ln, subPopNames, infoFields))
 
 new_population.__doc__ = population.__init__.__doc__
 del population.__init__

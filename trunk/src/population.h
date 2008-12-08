@@ -157,6 +157,8 @@ public:
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
 	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
 	 *    chromosome and locus indexes, respectively.
+	 *  \param subPopNames A list of subpopulation names. All subpopulations
+	 *    will have name \c '' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
 	 */
@@ -169,6 +171,7 @@ public:
 		const vectorstr & chromNames = vectorstr(),
 		const vectorstr & alleleNames = vectorstr(),
 		const vectorstr & lociNames = vectorstr(),
+		const vectorstr & subPopNames = vectorstr(),
 		const vectorstr & infoFields = vectorstr());
 
 	/// CPPONLY copy constructor
@@ -190,6 +193,7 @@ public:
 		GenoStruTrait::swap(rhs);
 		std::swap(m_popSize, rhs.m_popSize);
 		m_subPopSize.swap(rhs.m_subPopSize);
+		m_subPopNames.swap(rhs.m_subPopNames);
 		m_subPopIndex.swap(rhs.m_subPopIndex);
 		m_genotype.swap(rhs.m_genotype);
 		m_info.swap(rhs.m_info);
@@ -314,13 +318,20 @@ public:
 			return m_subPopSize[subPop.subPop()];
 	}
 
-
-	/** Return the name of a virtual subpopulation \e subPop (specified by a
-	 *  <tt>(sp, vsp)</tt> pair). Because VSP names are the same across all
-	 *  subpopulations, a single VSP index is also acceptable.
-	 *  <group>3-VSP</group>
+	/** Return the index of the first subpopulation with name \e name. An
+	 *  \c IndexError will be raised if subpopulations are not named, or
+	 *  if no subpopulation with name \e name is found.
+	 *  <group>2-subpop</group>
 	 */
-	string virtualSubPopName(vspID subPop) const;
+	UINT subPopByName(const string & name) const;
+
+	/** Return the name of a subpopulation \e subPop. Unnamed subpopulations
+	 *  will have an empty subpopulation name. If \e subPop is a virtual
+	 *  subpopulation (specified by a <tt>(sp, vsp)</tt> pair), a combined name
+	 *  such as <tt>subPop1 - Male</tt> is returned.
+	 *  <group>2-subpop</group>
+	 */
+	string subPopName(vspID subPop) const;
 
 	/** Return the sizes of all subpopulations in a list. Virtual
 	 *  subpopulations are not considered.
@@ -1621,6 +1632,7 @@ private:
 		ar & genoStru();
 
 		ar & m_subPopSize;
+		ar & m_subPopNames;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 #ifdef BINARYALLELE
 		size_t size = m_genotype.size();
@@ -1664,6 +1676,7 @@ private:
 			// need to make sure ancestral pop also in order
 			const_cast<population *>(this)->sortIndividuals();
 			ar & m_subPopSize;
+			ar & m_subPopNames;
 #ifdef BINARYALLELE
 			size_t size = m_genotype.size();
 			ar & size;
@@ -1727,6 +1740,7 @@ private:
 		DBG_DO(DBG_POPULATION, cout << "Handling geno structure" << endl);
 		ar & stru;
 		ar & m_subPopSize;
+		ar & m_subPopNames;
 		DBG_DO(DBG_POPULATION, cout << "Handling genotype" << endl);
 
 #ifdef BINARYALLELE
@@ -1850,6 +1864,7 @@ private:
 		for (size_t ap = 0; ap < na; ++ap) {
 			popData pd;
 			ar & pd.m_subPopSize;
+			ar & pd.m_subPopNames;
 #ifdef BINARYALLELE
 			// binary from binary
 			if (ma == 1) {
@@ -1962,6 +1977,9 @@ private:
 	/// size of each subpopulation
 	vectorlu m_subPopSize;
 
+	/// names of each subpopulation
+	vectorstr m_subPopNames;
+
 	/// index to subPop \todo change to vectorl
 	vectorlu m_subPopIndex;
 
@@ -1989,6 +2007,7 @@ private:
 	struct popData
 	{
 		vectorlu m_subPopSize;
+		vectorstr m_subPopNames;
 		vectora m_genotype;
 		vectorinfo m_info;
 		vector<individual> m_inds;
