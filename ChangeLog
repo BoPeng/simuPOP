@@ -17,6 +17,7 @@ version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/s
 		Remove src/sampler.*.
   - CHG: Remove infoTagger, sexTagger and affectionTagger and will
 		replace them by pedigreeTagger.
+  - CHG: Add initial support for subpopulation names.
 
 version 0.8.9 - tagged, but not publically released (rev 1948).
   - DOC: Adjust reference output for simuPOP classes.

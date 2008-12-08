@@ -41,19 +41,21 @@ population::population(const vectorlu & size,
 	const vectorstr & chromNames,
 	const vectorstr & alleleNames,
 	const vectorstr & lociNames,
+	const vectorstr & subPopNames,
 	const vectorstr & infoFields)
 	:
 	GenoStruTrait(),
 	m_popSize(0),
 	m_subPopSize(size),
+	m_subPopNames(subPopNames),
 	m_subPopIndex(size.size() + 1),
 	m_vspSplitter(NULL),
-	m_genotype(0),                                                                          // resize later
+	m_genotype(0),
 	m_info(0),
-	m_inds(0),                                                                              // default constructor will be called.
+	m_inds(0),
 	m_ancestralGens(ancGen),
-	m_vars(NULL, true),                                                                     // invalid shared variables initially
-	m_ancestralPops(0),                                                                     // no history first
+	m_vars(NULL, true),
+	m_ancestralPops(0),
 	m_rep(-1),
 	m_gen(0),
 	m_curAncestralGen(0),
@@ -105,6 +107,7 @@ population::population(const population & rhs) :
 	GenoStruTrait(rhs),
 	m_popSize(rhs.m_popSize),
 	m_subPopSize(rhs.m_subPopSize),
+	m_subPopNames(rhs.m_subPopNames),
 	m_subPopIndex(rhs.m_subPopIndex),
 	m_vspSplitter(NULL),
 	m_genotype(0),
@@ -192,6 +195,7 @@ population::population(const population & rhs) :
 void population::popData::swap(population & pop)
 {
 	pop.m_subPopSize.swap(m_subPopSize);
+	pop.m_subPopNames.swap(m_subPopNames);
 	pop.m_genotype.swap(m_genotype);
 	pop.m_info.swap(m_info);
 	pop.m_inds.swap(m_inds);
@@ -205,16 +209,24 @@ population * population::clone() const
 }
 
 
-string population::virtualSubPopName(vspID subPop) const
+UINT population::subPopByName(const string & name) const
 {
-	DBG_ASSERT(hasVirtualSubPop(), ValueError,
-		"No virtual subpopulation is defined for this population.");
-	// if a single number is given, it will be passed as (sp, None),
-	// but we will treat sp as vsp here.
-	if (!subPop.isVirtual())
-		return m_vspSplitter->name(subPop.subPop());
+	vectorstr::const_iterator it = find(m_subPopNames.begin(), m_subPopNames.end(), name);
+	DBG_FAILIF(it == m_subPopNames.end(), IndexError,
+		"There is no subpopulation with name " + name);
+	return it - m_subPopNames.begin();
+}
+
+
+string population::subPopName(vspID subPop) const
+{
+	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
+		"subpopulation names can either be empty, or be specified for all subpopulations.");
+	string name = m_subPopNames.empty() ? "" : m_subPopNames[subPop.subPop()];;
+	if (subPop.isVirtual())
+		return name + " - " + m_vspSplitter->name(subPop.virtualSubPop());
 	else
-		return m_vspSplitter->name(subPop.virtualSubPop());
+		return name;
 }
 
 

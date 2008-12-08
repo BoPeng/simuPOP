@@ -6346,7 +6346,7 @@ Usage:
 
     population(size=[], ploidy=2, loci=[], chromTypes=[],
       lociPos=[], ancGen=0, chromNames=[], alleleNames=[],
-      lociNames=[], infoFields=[])
+      lociNames=[], subPopNames=[], infoFields=[])
 
 Details:
 
@@ -6388,7 +6388,7 @@ Arguments:
                     is not supported. Customized chromosomes are
                     special chromosomes whose inheritance patterns are
                     undefined. They rely on user-defined functions and
-                    operators to pass from parents to offspring.
+                    operators to be passed from parents to offspring.
     lociPos:        Positions of all loci on all chromosome, as a list
                     of float numbers. Default to 1, 2, ... etc on each
                     chromosome. Positions on the same chromosome
@@ -6412,6 +6412,9 @@ Arguments:
                     names for each locus. Default to \"locX-Y\" where X
                     and Y are 1-based chromosome and locus indexes,
                     respectively.
+    subPopNames:    A list of subpopulation names. All subpopulations
+                    will have name '' if this parameter is not
+                    specified.
     infoFields:     Names of information fields (named float number)
                     that will be attached to each individual.
 
@@ -6543,17 +6546,31 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::virtualSubPopName "
+%feature("docstring") simuPOP::population::subPopByName "
 
 Usage:
 
-    x.virtualSubPopName(subPop)
+    x.subPopByName(name)
 
 Details:
 
-    Return the name of a virtual subpopulation subPop (specified by a
-    (sp, vsp) pair). Because VSP names are the same across all
-    subpopulations, a single VSP index is also acceptable.
+    Return the index of the first subpopulation with name name. An
+    IndexError will be raised if subpopulations are not named, or if
+    no subpopulation with name name is found.
+
+"; 
+
+%feature("docstring") simuPOP::population::subPopName "
+
+Usage:
+
+    x.subPopName(subPop)
+
+Details:
+
+    Return the name of a subpopulation subPop. If subPop is a virtual
+    subpopulation (specified by a (sp, vsp) pair), a combined name
+    such as subPop1 - Male is returned.
 
 "; 
 
