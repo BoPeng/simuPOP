@@ -151,16 +151,14 @@ class TestCarray(unittest.TestCase):
 
     def testChromType(self):
         'Testing genoStruTrait::chromType(chron), chromTypes()'
-        pop = population(size=100, ploidy=4, loci=[2, 3, 2, 4],
-        chromTypes=[Autosome, ChromosomeX, ChromosomeY, Mitochondrial])
-        self.assertEqual(pop.chromType(0), 1)
-        self.assertEqual(pop.chromType(1), 2)
-        self.assertEqual(pop.chromType(2), 3)
-        self.assertEqual(pop.chromType(3), 4)
+        pop = population(size=100, ploidy=2, loci=[2, 3, 2, 4],
+        chromTypes=[Autosome, ChromosomeX, ChromosomeY, Customized])
         self.assertEqual(pop.chromType(0), Autosome)
         self.assertEqual(pop.chromType(1), ChromosomeX)
         self.assertEqual(pop.chromType(2), ChromosomeY)
-        self.assertEqual(pop.chromType(3), Mitochondrial)
+        self.assertEqual(pop.chromType(3), Customized)
+        self.assertRaises(exceptions.ValueError, population, ploidy=4,
+            chromTypes=[Autosome, ChromosomeX, ChromosomeY, Customized])
 
     def testNumChrom(self):
         'Testing genoStruTrait::numChrom()'
