@@ -29,36 +29,36 @@ bool dumper::apply(population & pop)
 
 	// dump population structure
 	if (m_showStructure) {
-		out << "Ploidy: " << pop.ploidy() 
-			<< " (" << pop.ploidyName() << ")" << endl;
+		out << "Ploidy: " << pop.ploidy()
+		    << " (" << pop.ploidyName() << ")" << endl;
 		out << "Chromosomes:\n";
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
 			out << (ch + 1) << ": " << pop.chromName(ch);
-            switch (pop.chromType(ch)) {
-            case Autosome:
-                out << " (Autosome, ";
-                break;
-            case ChromosomeX:
-                out << " (ChromosomeX, ";
-                break;
-            case ChromosomeY:
-                out << " (ChromosomeY, ";
-                break;
-            case Customized:
-                out << " (Customized, ";
-                break;
-            default:
-                throw ValueError("Wrong chromosome type");
-            }
-            out << pop.numLoci(ch) << " loci)";
+			switch (pop.chromType(ch)) {
+			case Autosome:
+				out << " (Autosome, ";
+				break;
+			case ChromosomeX:
+				out << " (ChromosomeX, ";
+				break;
+			case ChromosomeY:
+				out << " (ChromosomeY, ";
+				break;
+			case Customized:
+				out << " (Customized, ";
+				break;
+			default:
+				throw ValueError("Wrong chromosome type");
+			}
+			out << pop.numLoci(ch) << " loci)";
 			for (UINT i = 0; i < pop.numLoci(ch); ++i) {
-                if (i != 0)
-                    out << ",";
+				if (i != 0)
+					out << ",";
 				if (i % 5 == 0)
 					out << "\n ";
 				out << " " << pop.locusName(pop.absLocusIndex(ch, i) ) << " ("
 				    << pop.locusPos(pop.absLocusIndex(ch, i)) << ")";
-            }
+			}
 			out << endl;
 		}
 		if (pop.infoSize() != 0) {
@@ -68,14 +68,14 @@ bool dumper::apply(population & pop)
 			out << endl;
 		}
 		out << "population size: " << pop.popSize();
-        if (pop.numSubPop() > 1) {
-    		out << " (" << pop.numSubPop() << " subpopulations with ";
-		    for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
-			    out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
-            out << " individuals)";
-        } else
-            out << " (no subpopulation)";
-    	out << endl;
+		out << " (" << pop.numSubPop() << " subpopulations with ";
+		for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i) {
+			out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
+			if (pop.subPopName(i) != UnnamedSubPop)
+				out << " (" << pop.subPopName(i) << ")";
+		}
+		out << " individuals)";
+		out << endl;
 		out << "Number of ancestral populations: " << pop.ancestralGens() << endl << endl;
 	}
 
@@ -103,8 +103,7 @@ bool dumper::apply(population & pop)
 		UINT count = 0;
 		for (size_t i = 0; i < range.size(); i += 2) {
 			UINT sp = pop.subPopIndPair(range[i]).first;
-            if (pop.numSubPop() > 1)
-    			out << "Subpopulation " << sp << ":" << endl;
+			out << "Subpopulation " << sp << " (" << pop.subPopName(sp) << "):" << endl;
 
 			for (IndIterator ind = pop.indBegin() + range[i];
 			     ind != pop.indBegin() + range[i + 1]; ++ind, ++count) {
@@ -131,13 +130,13 @@ done:
 			pop.useAncestralGen(gen);
 			out << endl << "Ancestry population " << gen << endl;
 			out << "population size: " << pop.popSize() << endl;
-			if (pop.numSubPop() > 1) {
-				out << " (" << pop.numSubPop() << " subpopulations with ";
-				for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i)
-					out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
-				out << " individuals)\n";
-			} else
-				out << " (no subpopulation)\n";
+			out << " (" << pop.numSubPop() << " subpopulations with ";
+			for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i) {
+				out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
+				if (pop.subPopName(i) != UnnamedSubPop)
+					out << " (" << pop.subPopName(i) << ")";
+			}
+			out << " individuals)\n";
 
 			// get individual ranges from subpop
 			vectorlu range = m_indRange;
@@ -163,7 +162,7 @@ done:
 			UINT count = 0;
 			for (size_t j = 0; j < range.size(); j += 2) {
 				UINT sp = pop.subPopIndPair(range[j]).first;
-				out << "sub population " << sp << ":" << endl;
+				out << "sub population " << sp << " (" << pop.subPopName(sp) << "):" << endl;
 
 				for (IndIterator ind = pop.indBegin() + range[j]; ind != pop.indBegin() + range[j + 1]; ++ind) {
 					out << setw(4) << count++ << ": " ;
@@ -172,8 +171,8 @@ done:
 
 					if (m_max > 0 && count > m_max && count < pop.popSize()) {
 						cout << "population size is " << pop.popSize() << " but dumper() only dump "
-							 << m_max << " individuals" << endl
-							 << "Use parameter max=-1 to output all individuals." << endl;
+						     << m_max << " individuals" << endl
+						     << "Use parameter max=-1 to output all individuals." << endl;
 						goto doneAnces;
 					}
 				}
