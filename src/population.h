@@ -306,7 +306,7 @@ public:
 
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
 	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>).
-	 *  <group>2-subpop</group>
+	 *  <group>2-subpopsize</group>
 	 */
 	ULONG subPopSize(vspID subPop) const
 	{
@@ -318,24 +318,39 @@ public:
 			return m_subPopSize[subPop.subPop()];
 	}
 
+
 	/** Return the index of the first subpopulation with name \e name. An
 	 *  \c IndexError will be raised if subpopulations are not named, or
-	 *  if no subpopulation with name \e name is found.
-	 *  <group>2-subpop</group>
+	 *  if no subpopulation with name \e name is found. Virtual subpopulation
+	 *  name is not supported.
+	 *  <group>2-subpopname</group>
 	 */
 	UINT subPopByName(const string & name) const;
 
-	/** Return the name of a subpopulation \e subPop. Unnamed subpopulations
-	 *  will have an empty subpopulation name. If \e subPop is a virtual
-	 *  subpopulation (specified by a <tt>(sp, vsp)</tt> pair), a combined name
-	 *  such as <tt>subPop1 - Male</tt> is returned.
-	 *  <group>2-subpop</group>
+	/** Return the name of a subpopulation \e subPop, and \c 'unnamed' if no
+	 *  name is assigned to \e subPop. If \e subPop is a virtual subpopulation
+	 *  (specified by a <tt>(sp, vsp)</tt> pair), a combined name such as
+	 *  <tt>subPop1 - Male</tt> is returned.
+	 *  <group>2-subpopname</group>
 	 */
 	string subPopName(vspID subPop) const;
 
+	/** Return the names of all subpopulations (excluding virtual
+	 *  subpopulations). \c 'unnamed' will be returned for unnamed
+	 *  subpopulations.
+	 *  <group>2-subpopname</group>
+	 */
+	vectorstr subPopNames() const;
+
+	/** Assign a name \e name to subpopulation \e subPop. \e does not have to
+	 *  be unique.
+	 *  <group>2-subpopname</group>
+	 */
+	void setSubPopName(const string & name, SubPopID subPop);
+
 	/** Return the sizes of all subpopulations in a list. Virtual
 	 *  subpopulations are not considered.
-	 *  <group>2-subpop</group>
+	 *  <group>2-subpopsize</group>
 	 */
 	vectorlu subPopSizes() const
 	{
@@ -350,7 +365,7 @@ public:
 	//@{
 
 	/** Return the total number of individuals in all subpopulations.
-	 *  <group>2-subpop</group>
+	 *  <group>2-subpopsize</group>
 	 */
 	ULONG popSize() const
 	{
@@ -442,6 +457,7 @@ public:
 
 		return m_inds[subPopBegin(subPop) + idx];
 	}
+
 
 	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
 	/** CPPONLY
@@ -1032,8 +1048,7 @@ public:
 	 *  if a subpopulation with \c 3 individuals is expanded to \c 7, the
 	 *  added individuals will copy genotypes from individual \c 1, \c 2,
 	 *  \c 3, and \c 1 respectively. Note that this function only resizes
-	 *  the current generation. This function affects only the current
-	 *  generation.
+	 *  the current generation.
 	 *  <group>7-manipulate</group>
 	 */
 	void resize(const vectorlu & newSubPopSizes, bool propagate = false);
@@ -1088,6 +1103,7 @@ public:
 	{
 		return m_ancestralPops.size();
 	}
+
 
 	/** Set information field \c idx (an index) of the current population to
 	 *  \e values. \e values will be reused if its length is smaller than
@@ -1427,7 +1443,7 @@ public:
 	PyObject * vars();
 
 	/** return a dictionary <tt>vars()["subPop"][subPop]</tt>. \e subPop can be
-	 *  a number (<tt>subPop=spID</tt>), or a pair of numbers 
+	 *  a number (<tt>subPop=spID</tt>), or a pair of numbers
 	 *  (<tt>subPop=(spID, vspID)</tt>). A \c ValueError will be raised if key
 	 *  \c 'subPop' does not exist in \c vars(), or if key \e subPop does not
 	 *  exist in <tt>vars()["subPop"]</tt>.

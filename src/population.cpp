@@ -87,6 +87,9 @@ population::population(const vectorlu & size,
 	// m_popSize will be defined in fitSubPopStru
 	if (m_subPopSize.empty())
 		m_subPopSize.resize(1, 0);
+
+	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == m_subPopSize.size(), SystemError,
+		"subpopulation names can either be empty, or be specified for all subpopulations.");
 	fitSubPopStru(m_subPopSize);
 	// set local variable
 	setRep(-1);
@@ -212,6 +215,7 @@ population * population::clone() const
 UINT population::subPopByName(const string & name) const
 {
 	vectorstr::const_iterator it = find(m_subPopNames.begin(), m_subPopNames.end(), name);
+
 	DBG_FAILIF(it == m_subPopNames.end(), IndexError,
 		"There is no subpopulation with name " + name);
 	return it - m_subPopNames.begin();
@@ -222,11 +226,28 @@ string population::subPopName(vspID subPop) const
 {
 	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
-	string name = m_subPopNames.empty() ? "" : m_subPopNames[subPop.subPop()];;
+	string name = m_subPopNames.empty() ? UnnamedSubPop : m_subPopNames[subPop.subPop()];;
 	if (subPop.isVirtual())
 		return name + " - " + m_vspSplitter->name(subPop.virtualSubPop());
 	else
 		return name;
+}
+
+
+vectorstr population::subPopNames() const
+{
+	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
+		"subpopulation names can either be empty, or be specified for all subpopulations.");
+	return m_subPopNames.empty() ? vectorstr(numSubPop(), UnnamedSubPop) : m_subPopNames;
+}
+
+
+void population::setSubPopName(const string & name, SubPopID subPop)
+{
+	CHECKRANGESUBPOP(subPop);
+	if (m_subPopNames.empty())
+		m_subPopNames = vectorstr(numSubPop(), UnnamedSubPop);
+	m_subPopNames[subPop] = name;
 }
 
 
@@ -1165,8 +1186,8 @@ population & population::extract(bool removeInd, const string & field,
 	vectoru new_loci = loci;
 
 	DBG_DO(DBG_POPULATION, cout << "Remove ind: " << removeInd
-		<< "\nRemove loci: " << removeLoci
-		<< "\nRemove info: " << removeInfo << endl);
+		                        << "\nRemove loci: " << removeLoci
+		                        << "\nRemove info: " << removeInfo << endl);
 
 	// population strcture.
 	if (!removeLoci && !removeInfo)
@@ -1240,7 +1261,7 @@ population & population::extract(bool removeInd, const string & field,
 	if (ancGen > 0 && ancGen < depth)
 		depth = ancGen;
 	for (; depth >= 0; --depth) {
-		const_cast<population*>(this)->useAncestralGen(depth);
+		const_cast<population *>(this)->useAncestralGen(depth);
 		sortIndividuals();
 		if (ped) {
 			ped->useAncestralGen(depth);
@@ -1707,12 +1728,13 @@ PyObject * population::vars()
 PyObject * population::vars(vspID vsp)
 {
 	SubPopID subPop = vsp.subPop();
+
 	DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
 		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
 	DBG_ASSERT(hasVar("subPop"), ValueError,
 		"subPop statistics does not exist yet.");
-	
+
 	DBG_FAILIF(vsp.isVirtual(), SystemError,
 		"Access to virtual subpopulation dictionary is not yet supported");
 
@@ -1766,13 +1788,13 @@ void population::sortIndividuals(bool infoOnly) const
 		vectorinfo tmpInfo(m_popSize * is);
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		IndIterator ind = const_cast<population*>(this)->indBegin();
+		IndIterator ind = const_cast<population *>(this)->indBegin();
 		for (; ind.valid(); ++ind) {
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
 			infoPtr += is;
 		}
-		const_cast<population*>(this)->m_info.swap(tmpInfo);
+		const_cast<population *>(this)->m_info.swap(tmpInfo);
 	} else {
 		DBG_DO(DBG_POPULATION, cout << "Adjust geno and info position " << endl);
 
@@ -1783,7 +1805,7 @@ void population::sortIndividuals(bool infoOnly) const
 		vectora::iterator it = tmpGenotype.begin();
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		IndIterator ind = const_cast<population*>(this)->indBegin();
+		IndIterator ind = const_cast<population *>(this)->indBegin();
 		for (; ind.valid(); ++ind) {
 #ifdef BINARYALLELE
 			copyGenotype(ind->genoBegin(), it, sz);
@@ -1798,8 +1820,8 @@ void population::sortIndividuals(bool infoOnly) const
 			infoPtr += is;
 		}
 		// discard original genotype
-		const_cast<population*>(this)->m_genotype.swap(tmpGenotype);
-		const_cast<population*>(this)->m_info.swap(tmpInfo);
+		const_cast<population *>(this)->m_genotype.swap(tmpGenotype);
+		const_cast<population *>(this)->m_info.swap(tmpInfo);
 	}
 	setIndOrdered(true);
 }

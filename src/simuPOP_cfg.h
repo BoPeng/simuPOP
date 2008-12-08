@@ -340,6 +340,8 @@ enum DBG_CODE {
 #define DuringPostMating     (DuringMating + PostMating)
 #define PreDuringPostMating  (PreMating + DuringMating + PostMating)
 
+#define UnnamedSubPop        "unnamed"
+
 // used to set local variables
 #define subPopVar_String(sp, var) (string("subPop[") + toStr(sp) + "]{\'" + var + "\'}")
 

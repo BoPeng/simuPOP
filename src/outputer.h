@@ -24,8 +24,8 @@
 #ifndef _OUTPUTER_H
 #define _OUTPUTER_H
 /**
- \file
- \brief head file of class outputer: public baseOperator
+   \file
+   \brief head file of class outputer: public baseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -38,7 +38,7 @@ using std::dec;
 
 namespace simuPOP {
 /**
- \brief Base class of all operators that out information.
+   \brief Base class of all operators that out information.
    different format.
 
    @author Bo Peng
@@ -50,8 +50,8 @@ class outputer : public baseOperator
 public:
 	/// constructor.
 	outputer(string output = ">", string outputExpr = "",
-	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	};
@@ -79,11 +79,11 @@ class pyOutput : public outputer
 public:
 	/// Create a \c pyOutput operator that outputs a given string
 	/**
-	 \param str string to be outputted
+	   \param str string to be outputted
 	 */
 	pyOutput(string str = "", string output = ">", string outputExpr = "",
-	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer(output, outputExpr, stage, begin, end,
 		         step, at, rep, subPop, infoFields), m_string(str)
 	{
@@ -144,27 +144,27 @@ class dumper : public outputer
 public:
 	/// dump a population
 	/**
-	 \param genotype Whether or not display genotype
-	 \param structure Whether or not display genotypic structure
-	 \param width number of characters to display an allele. Default to \c 1.
-	 \param ancGen how many ancestral generations to display
-	 \param chrom chromosome(s) to display
-	 \param loci loci to display
-	 \param subPop only display subpopulation(s)
-	 \param indRange range(s) of individuals to display
-	 \param max the maximum number of individuals to display. Default to \c 100.
-	   		This is to avoid careless dump of huge populations.
-	 \param output output file. Default to the standard output.
-	 \param outputExpr and other parameters: refer to help(baseOperator.__init__)
+	   \param genotype Whether or not display genotype
+	   \param structure Whether or not display genotypic structure
+	   \param width number of characters to display an allele. Default to \c 1.
+	   \param ancGen how many ancestral generations to display
+	   \param chrom chromosome(s) to display
+	   \param loci loci to display
+	   \param subPop only display subpopulation(s)
+	   \param indRange range(s) of individuals to display
+	   \param max the maximum number of individuals to display. Default to \c 100.
+	        This is to avoid careless dump of huge populations.
+	   \param output output file. Default to the standard output.
+	   \param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
-	       const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
-	       const vectorlu & indRange = vectorlu(),
-	       string output = ">", string outputExpr = "",
-	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-		   const vectorstr & infoFields = vectorstr()) :
+		const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
+		const vectorlu & indRange = vectorlu(),
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(),    // const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
 		outputer(output, outputExpr, stage, begin, end, step, at, rep, subPopList(), infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
@@ -176,6 +176,7 @@ public:
 	{
 		return new dumper(*this);
 	}
+
 
 	virtual bool apply(population & pop);
 
@@ -196,7 +197,7 @@ private:
 	///
 	bool m_showStructure;
 
-	/// 
+	///
 	int m_ancGen;
 
 	/// disp width when outputing alleles
@@ -224,16 +225,16 @@ class savePopulation : public outputer
 public:
 	/// save population
 	/**
-		\param output output filename.
-		\param outputExpr An expression that will be evalulated dynamically to
-			determine file name. Parameter \c output will be ignored if this
-			parameter is given.
-		\param format obsolete parameter
-		\param compress obsolete parameter
-	*/
+	    \param output output filename.
+	    \param outputExpr An expression that will be evalulated dynamically to
+	        determine file name. Parameter \c output will be ignored if this
+	        parameter is given.
+	    \param format obsolete parameter
+	    \param compress obsolete parameter
+	 */
 	savePopulation(string output = "", string outputExpr = "",
-	               string format = "", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
-	               int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		string format = "", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
+		int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_filename(output), m_filenameParser(outputExpr)
 	{

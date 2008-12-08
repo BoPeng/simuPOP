@@ -6556,7 +6556,8 @@ Details:
 
     Return the index of the first subpopulation with name name. An
     IndexError will be raised if subpopulations are not named, or if
-    no subpopulation with name name is found.
+    no subpopulation with name name is found. Virtual subpopulation
+    name is not supported.
 
 "; 
 
@@ -6568,9 +6569,37 @@ Usage:
 
 Details:
 
-    Return the name of a subpopulation subPop. If subPop is a virtual
-    subpopulation (specified by a (sp, vsp) pair), a combined name
-    such as subPop1 - Male is returned.
+    Return the name of a subpopulation subPop, and 'unnamed' if no
+    name is assigned to subPop. If subPop is a virtual subpopulation
+    (specified by a (sp, vsp) pair), a combined name such as subPop1 -
+    Male is returned.
+
+"; 
+
+%feature("docstring") simuPOP::population::subPopNames "
+
+Usage:
+
+    x.subPopNames()
+
+Details:
+
+    Return the names of all subpopulations (excluding virtual
+    subpopulations). 'unnamed' will be returned for unnamed
+    subpopulations.
+
+"; 
+
+%feature("docstring") simuPOP::population::setSubPopName "
+
+Usage:
+
+    x.setSubPopName(name, subPop)
+
+Details:
+
+    Assign a name name to subpopulation subPop. does not have to be
+    unique.
 
 "; 
 
@@ -7056,8 +7085,7 @@ Details:
     True. More specifically, if a subpopulation with 3 individuals is
     expanded to 7, the added individuals will copy genotypes from
     individual 1, 2, 3, and 1 respectively. Note that this function
-    only resizes the current generation. This function affects only
-    the current generation.
+    only resizes the current generation.
 
 "; 
 
