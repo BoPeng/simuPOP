@@ -2080,7 +2080,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "basicInfoFields"
+reference "subPop"
 
 \end_inset
 
@@ -2144,7 +2144,7 @@ object that directly reflect the underlying genotype.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "basicInfoFields"
+reference "subPop"
 
 \end_inset
 
@@ -2355,7 +2355,7 @@ can only be changed for all individuals at the population level, or for
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "basicInfoFields"
+reference "subPop"
 
 \end_inset
 
@@ -2408,7 +2408,7 @@ unused
 , as shown in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "basicInfoFields"
+reference "subPop"
 
 \end_inset
 
@@ -2459,7 +2459,7 @@ Customized
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "basicInfoFields"
+reference "subPop"
 
 \end_inset
 
@@ -2649,7 +2649,7 @@ lstparams "caption={Basic usage of information fields},label={basicInfoFields}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "basicInfoFields"
+reference "subPop"
 
 \end_inset
 
@@ -2731,10 +2731,10 @@ population
 \family default
  object is the most important object of simuPOP.
  It consists of one or more generations of individuals, grouped by subpopulation
-s.
- It provides a large number of functions to access and modify individuals,
- their genotypes and information fields.
- The following sections will explain these features in detail.
+s, and a local Python dictionary to hold arbitrary population information.
+ This class provides a large number of functions to access and modify population
+ structure, individuals and their genotypes and information fields.
+ The following sections explain these features in detail.
 \end_layout
 
 \begin_layout Subsection
@@ -2745,7 +2745,43 @@ Subpopulations
 A simuPOP population consists of one or more subpopulations.
  Subpopulations serve as barriers of individuals in the sense that mating
  only happens between individuals in the same subpopulation.
- 
+ A number of functions are provided to merge, remove, resize subpopulations,
+ and move individuals between subpopulations (migration).
+ You will rarely get a chance to use them directly because such operations
+ are usually handled by operators.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/subPop.log"
+lstparams "caption={Manipulation of subpopulations},label={subPop}"
+
+\end_inset
+
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subPop"
+
+\end_inset
+
+ demonstrates how to use subpopulation related functions.
+ Of particular interest is the 
+\family typewriter
+setSubPopByIndInfo()
+\family default
+ function.
+ This function takes an information field as parameter and rearrange individuals
+ according to their values at this information field.
+ Individuals with invalid (nagative) values at this information field are
+ removed.
+ This is essentially how migration is implemented in simuPOP.
+\end_layout
+
+\begin_layout Standard
+simuPOP subpopulations are, by default, unnamed.
+  
 \end_layout
 
 \begin_layout Subsection
