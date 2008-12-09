@@ -18,14 +18,14 @@ import unittest, os, sys, exceptions, random, copy
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
-    def getPop(self, scramble=False, VSP=False, size=[20, 80], loci = [1,2],
+    def getPop(self, scramble=False, VSP=False, size=[20, 80], loci = [1, 2],
             ancGen=0, *arg, **kwargs):
         pop = population(size=size, ploidy=2, loci=loci, infoFields=['x'],
             ancGen=ancGen, *arg, **kwargs)
         pop.setGenotype([random.randint(1, 5) for x in range(pop.popSize()*pop.ploidy())])
         pop.setIndInfo([random.random() for x in range(pop.popSize())], 'x')
         for i in range(ancGen):
-            pop.push(self.getPop(size=size, loci=loci, ancGen=0, *arg, **kwargs))        
+            pop.push(self.getPop(size=size, loci=loci, ancGen=0, *arg, **kwargs))
         InitSex(pop)
         if VSP:
             pop.setVirtualSplitter(sexSplitter())
@@ -99,7 +99,7 @@ class TestPopulation(unittest.TestCase):
         testAllInd(self.getPop(True))
         testAllInd(self.getPop(False, True))
         testAllInd(self.getPop(True, True))
-        pop = population([20,80], loci = [5,7], infoFields=['x'])
+        pop = population([20, 80], loci = [5, 7], infoFields=['x'])
         pop.individual(0).setAllele(1, 0)
         self.assertEqual(pop.individual(0).allele(0), 1)
 
@@ -170,8 +170,8 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.genotype(), gt1)
         self.assertEqual(pop.indInfo('x'), inf1)
         # subPopSize, indInfo
-        self.assertEqual(pop.subPopSize(0),2)
-        self.assertEqual(pop.subPopSize(1),3)    
+        self.assertEqual(pop.subPopSize(0), 2)
+        self.assertEqual(pop.subPopSize(1), 3)
         pop.useAncestralGen(1)
         self.assertEqual(pop.genotype(), gt)
         self.assertEqual(pop.indInfo('x'), inf)
@@ -189,7 +189,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('x'), inf2)
         pop.useAncestralGen(1)
         self.assertEqual(pop.genotype(), gt1)
-        self.assertEqual(pop.indInfo('x'), inf1) 
+        self.assertEqual(pop.indInfo('x'), inf1)
         pop.useAncestralGen(2)
         self.assertEqual(pop.genotype(), gt)
         self.assertEqual(pop.indInfo('x'), inf)
@@ -222,7 +222,7 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(exceptions.ValueError,  pop.addChrom, [11, 12, 13], ['l4', 'l5', 'l6'], 'c3')
         # # given chromsome name is not unique.
         self.assertRaises(exceptions.ValueError,  pop.addChrom, [11, 12, 13], ['l4', 'l5', 'l6'], 'c4')
-     
+
     def testAddChromFromPop(self):
         'Testing population::addChromFromPop(pop)'
         pop = population(size=100, ploidy=2, loci=[1, 2], chromNames=["c1", "c2"], lociNames = ['l1', 'l2', 'l3'])
@@ -240,24 +240,24 @@ class TestPopulation(unittest.TestCase):
             for loc in range(3):
                 self.assertEqual(ind.allele(loc), ind1.allele(loc))
             for loc in range(5):
-                self.assertEqual(ind.allele(loc+3), ind2.allele(loc))    
+                self.assertEqual(ind.allele(loc+3), ind2.allele(loc))
         pop = population(size=100, ploidy=2, loci=[1, 2])
         pop1 = population(size=100, ploidy =2, loci=[1, 2])
         self.assertRaises(exceptions.ValueError, pop.addChromFromPop, pop1)
         pop2 = population(size=200, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
             lociNames = ['l4', 'l5', 'l6', 'l7', 'l8'])
         self.assertRaises(exceptions.ValueError, pop.addChromFromPop, pop2)
-   
+
     def testAddIndFromPop(self):
         'Testing population::addIndFromPop(pop)'
-        pop = self.getPop(ancGen=3) 
+        pop = self.getPop(ancGen=3)
         pop1 = self.getPop(ancGen=3)
         pop.setIndInfo([random.randint(4, 10) for x in range(pop.popSize())], 'x')
         pop.addIndFromPop(pop1)
         self.assertEqual(pop.numSubPop(), 4)
         self.assertEqual(pop.subPopSizes(), (20, 80, 20, 80))
         for i in range(100):
-            self.assertEqual(pop.individual(100+i), pop1.individual(i))  
+            self.assertEqual(pop.individual(100+i), pop1.individual(i))
         pop1 = self.getPop(ancGen=2)
         # different numbers of ancestral generations
         self.assertRaises(exceptions.ValueError, pop.addIndFromPop, pop1)
@@ -354,11 +354,11 @@ class TestPopulation(unittest.TestCase):
 
     def testMergeSubPops(self):
         'Testing population::mergeSubPops(subpops=[])'
-        pop = self.getPop(size=[100,20,30,80,50,60])
+        pop = self.getPop(size=[100, 20, 30, 80, 50, 60])
         pop1 = pop.clone()
-        pop.mergeSubPops([1,2,4])
+        pop.mergeSubPops([1, 2, 4])
         self.assertEqual(pop.subPopSize(1), pop1.subPopSize(1)+pop1.subPopSize(2)+pop1.subPopSize(4))
-        for (oldsp, newsp) in [(0,0), (3,2), (5,3)]:  # map of old and new id.
+        for (oldsp, newsp) in [(0, 0), (3, 2), (5, 3)]:  # map of old and new id.
             self.assertEqual(pop1.subPopSize(oldsp), pop.subPopSize(newsp))
             for idx in range(pop1.subPopSize(oldsp)):
                 self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
@@ -366,42 +366,42 @@ class TestPopulation(unittest.TestCase):
 
     def testRemoveSubPops(self):
         'Testing population::removeEmptySubPops(), removeSubPops()'
-        pop = self.getPop(size=[0,100,0,20,30,0,50])
+        pop = self.getPop(size=[0, 100, 0, 20, 30, 0, 50])
         pop1 = pop.clone()
         self.assertEqual( pop.numSubPop(), 7)
-        pop.removeEmptySubPops()
+        pop.removeSubPops([x for x in range(7) if pop.subPopSize(x) == 0])
         self.assertEqual( pop.numSubPop(), 4)
-        self.assertEqual( pop.subPopSizes(), (100,20,30,50))
-        for (oldsp, newsp) in [(1,0), (3,1), (4,2), (6,3)]:  # map of old and new id.
+        self.assertEqual( pop.subPopSizes(), (100, 20, 30, 50))
+        for (oldsp, newsp) in [(1, 0), (3, 1), (4, 2), (6, 3)]:  # map of old and new id.
             self.assertEqual(pop1.subPopSize(oldsp), pop.subPopSize(newsp))
             for idx in range(pop1.subPopSize(oldsp)):
-                self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))     
+                self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
         # remove subpop
         pop2 = pop.clone()
-        pop.removeSubPops([1,2])
-        self.assertEqual( pop.subPopSizes(), (100,50))
-        for (oldsp, newsp) in [(0,0), (3,1)]:  # map of old and new id.
+        pop.removeSubPops([1, 2])
+        self.assertEqual( pop.subPopSizes(), (100, 50))
+        for (oldsp, newsp) in [(0, 0), (3, 1)]:  # map of old and new id.
             self.assertEqual(pop2.subPopSize(oldsp), pop.subPopSize(newsp))
             for idx in range(pop2.subPopSize(oldsp)):
-                self.assertEqual(pop2.individual(idx, oldsp), pop.individual(idx, newsp))     
+                self.assertEqual(pop2.individual(idx, oldsp), pop.individual(idx, newsp))
         #pop.removeSubPops([8])
 
 
     def testRemoveIndividuals(self):
         'Testing population::removeIndividuals(inds)'
-        pop = self.getPop(size =[20,100,30])
+        pop = self.getPop(size =[20, 100, 30])
         pop1 = pop.clone()
         pop.removeIndividuals([15])
-        self.assertEqual(pop.subPopSizes(), (19,100,30))
+        self.assertEqual(pop.subPopSizes(), (19, 100, 30))
         for idx in range(15):
             self.assertEqual(pop1.individual(idx), pop.individual(idx))
-        for idx in range(15,pop.popSize()):
+        for idx in range(15, pop.popSize()):
             self.assertEqual(pop1.individual(idx+1), pop.individual(idx))
-    
+
 
     def testRemoveLoci(self):
         'Testing population::removeLoci(loci=[], keep=[])'
-        pop = self.getPop(size=[1,2], loci=[2,3,1], ancGen=5)
+        pop = self.getPop(size=[1, 2], loci=[2, 3, 1], ancGen=5)
         pop.removeLoci([2])
         pop1 = pop.clone()
         for gen in range(pop.ancestralGens(), -1, -1):
@@ -412,11 +412,11 @@ class TestPopulation(unittest.TestCase):
                 ind1 = pop1.individual(idx)
                 for loc in range(2):
                     self.assertEqual(ind.allele(loc), ind1.allele(loc))
-                for loc in range(2,5):
+                for loc in range(2, 5):
                     self.assertEqual(ind.allele(loc), ind1.allele(loc+1))
 
 
-                        
+
 if __name__ == '__main__':
     unittest.main()
 
