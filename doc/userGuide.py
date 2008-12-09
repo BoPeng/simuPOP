@@ -127,7 +127,7 @@ Dump(pop)
 pop = population(size=6, ploidy=2, loci=[3, 3, 6, 4, 4, 4],
     chromTypes=[Autosome]*2 + [ChromosomeX, ChromosomeY] + [Customized]*2)
 InitByFreq(pop, [0.3, 0.7])
-Dump(pop, structure = False) # does not display genotypic structure information
+Dump(pop, structure=False) # does not display genotypic structure information
 #end
 
 #file log/infoField.log
@@ -150,6 +150,27 @@ print ind.genotype(0)
 print mom.genotype(0)
 print mom.genotype(1)
 #end
+
+
+#file log/subPop.log
+pop = population(size=[3, 4, 5], ploidy=1, loci=[1], infoFields=['x'])
+# individual 0, 1, 2, ... will have an allele 0, 1, 2, ...
+pop.setGenotype(range(pop.popSize()))
+#
+pop.subPopSize(1)
+# merge subpopulations
+pop.mergeSubPops([1, 2])
+# split subpopulations
+pop.splitSubPop(1, [2, 7])
+print pop.subPopSizes()
+# set information field to each individual's new subpopulation ID
+pop.setIndInfo([0, 1, 2, -1, 0, 1, 2, -1, -1, 0, 1, 2], 'x')
+# this manually triggers an migration, individuals with negative values
+# at this information field are removed.
+pop.setSubPopByIndInfo('x')
+Dump(pop, width=2, structure=False)
+#end
+
 
 
 #file log/popInit.log
