@@ -247,7 +247,7 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const ve
 	// only allow for MaxTraitIndex-1 different genotype structures
 	// As a matter of fact, most simuPOP scripts have only one
 	// population type.
-	if (s_genoStruRepository.size() == MaxTraitIndex - 1) {
+	if (s_genoStruRepository.size() + 1 == MaxTraitIndex) {
 		throw SystemError("This simuPOP library only allows " + toStr(MaxTraitIndex - 1)
 			+ " different genotype structures. \n" +
 			+ "If you do need more structures, modify individual.h/TraitMaxType and " +
@@ -257,8 +257,7 @@ void GenoStruTrait::setGenoStructure(UINT ploidy, const vectoru & loci, const ve
 	GenoStructure tmp = GenoStructure(ploidy, loci, chromTypes, haplodiploid,
 		lociPos, chromNames, alleleNames, lociNames, infoFields);
 
-	for (TraitIndexType it = 0; it < s_genoStruRepository.size();
-	     ++it) {
+	for (TraitIndexType it = 0; it < s_genoStruRepository.size(); ++it) {
 		// object comparison
 		if (s_genoStruRepository[it] == tmp) {
 			m_genoStruIdx = it;
