@@ -547,12 +547,6 @@ def RemoveSubPops(pop, *args, **kwargs):
 if population.removeSubPops.__doc__ is not None:
     RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
-def RemoveEmptySubPops(pop, *args, **kwargs):
-    pop.removeEmptySubPops(*args, **kwargs)
-
-if population.removeEmptySubPops.__doc__ is not None:
-    RemoveEmptySubPops.__doc__ = "Function versionof member function population::removeEmptySubPops with help info:\n" + population.removeEmptySubPops.__doc__
-
 def MapSelect(pop, *args, **kwargs):
     mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
 

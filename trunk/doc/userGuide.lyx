@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2080,7 +2080,7 @@ simulator::populations()
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2144,7 +2144,7 @@ object that directly reflect the underlying genotype.
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2355,7 +2355,7 @@ can only be changed for all individuals at the population level, or for
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2408,7 +2408,7 @@ unused
 , as shown in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2459,7 +2459,7 @@ Customized
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2649,7 +2649,7 @@ lstparams "caption={Basic usage of information fields},label={basicInfoFields}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2752,17 +2752,10 @@ A simuPOP population consists of one or more subpopulations.
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/subPop.log"
-lstparams "caption={Manipulation of subpopulations},label={subPop}"
-
-\end_inset
-
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "subPop"
+reference "subPopName"
 
 \end_inset
 
@@ -2780,8 +2773,38 @@ setSubPopByIndInfo()
 \end_layout
 
 \begin_layout Standard
-simuPOP subpopulations are, by default, unnamed.
-  
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/subPop.log"
+lstparams "caption={Manipulation of subpopulations},label={subPop}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some population operators will change subpopulation IDs.
+ For example, if a population has three subpopulations 0, 1, and 2, and
+ subpopulation 1 is split into two subpouplations, subpopulation 2 will
+ become subpopulation 3.
+ Tracking the ID of a subpopulation can be problematic, especially when
+ conditional (or random) subpopulation operations are involved.
+ In this case, you can specify names to subpopulations.
+ These names will follow their respecitive subpopulations during population
+ operations so you can identify the ID of a subpopulation by its name.
+ Note that simuPOP allows duplicate subpopulation names.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/subPopName.log"
+lstparams "caption={Use of subpopulation names},label={subPopName}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

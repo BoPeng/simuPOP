@@ -1099,9 +1099,9 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 {
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
-		scratch.fitSubPopStru(pop.subPopSizes());
+		scratch.fitSubPopStru(pop.subPopSizes(), pop.subPopNames());
 	else if (!m_subPopSize.empty())  // set subPoplation size
-		scratch.fitSubPopStru(m_subPopSize);
+		scratch.fitSubPopStru(m_subPopSize, pop.subPopNames());
 	// evaluate from an expression
 	else if (!m_subPopSizeExpr.empty()) {
 		m_subPopSizeExpr.setLocalDict(pop.dict());
@@ -1111,7 +1111,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 		for (size_t i = 0, iEnd = sizef.size(); i < iEnd; i++)
 			sz[i] = static_cast<ULONG>(sizef[i]);
 
-		scratch.fitSubPopStru(sz);
+		scratch.fitSubPopStru(sz, pop.subPopNames());
 	} else {                                                                            // use m_subPopSizeFunc
 		// get generation number
 		int gen = pop.gen();
@@ -1133,7 +1133,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 			sz[i] = static_cast<ULONG>(res[i]);
 
 		// allow change of pop size of scratch
-		scratch.fitSubPopStru(sz);
+		scratch.fitSubPopStru(sz, pop.subPopNames());
 	}
 	// this is not absolutely necessary but will reduce confusions
 	scratch.setVirtualSplitter(pop.virtualSplitter());

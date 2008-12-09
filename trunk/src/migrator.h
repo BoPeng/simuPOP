@@ -366,11 +366,11 @@ public:
 	/**
 	   \param subPops subpopulations to be merged. Default to all.
 	 */
-	mergeSubPops(vectoru subPops = vectoru(), bool removeEmptySubPops = false,
+	mergeSubPops(vectoru subPops = vectoru(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
-		m_subPops(subPops), m_removeEmptySubPops(removeEmptySubPops)
+		m_subPops(subPops)
 	{
 	}
 
@@ -392,8 +392,6 @@ public:
 	virtual bool apply(population & pop)
 	{
 		pop.mergeSubPops(m_subPops);
-		if (m_removeEmptySubPops)
-			pop.removeEmptySubPops();
 		return true;
 	}
 
@@ -408,9 +406,6 @@ public:
 private:
 	///
 	vectoru m_subPops;
-
-	///
-	bool m_removeEmptySubPops;
 };
 
 
