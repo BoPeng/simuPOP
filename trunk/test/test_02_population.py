@@ -18,10 +18,12 @@ import unittest, os, sys, exceptions, random, copy
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
-    def getPop(self, scramble=False, VSP=False, size=[20, 80], loci = [1,2], ancGen=0, *arg, **kwargs):
-        pop = population(size = size, ploidy=2, loci=loci, infoFields=['x'], ancGen=10, *arg, **kwargs)
-        pop.setGenotype([random.randint(1, 5)])
-        pop.setIndInfo([random.random() for x in range(8)], 'x')
+    def getPop(self, scramble=False, VSP=False, size=[20, 80], loci = [1,2],
+            ancGen=0, *arg, **kwargs):
+        pop = population(size=size, ploidy=2, loci=loci, infoFields=['x'],
+            ancGen=ancGen, *arg, **kwargs)
+        pop.setGenotype([random.randint(1, 5) for x in range(pop.popSize()*pop.ploidy())])
+        pop.setIndInfo([random.random() for x in range(pop.popSize())], 'x')
         for i in range(ancGen):
             pop.push(self.getPop(size=size, loci=loci, ancGen=0, *arg, **kwargs))        
         InitSex(pop)
@@ -67,10 +69,25 @@ class TestPopulation(unittest.TestCase):
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
         self.assertEqual(pop.numVirtualSubPop(), 5)
-        infos = list(pop.indInfo('x'))
-        self.assertEqual(pop.subPopName(0), "x = 10")
-        self.assertEqual(pop.subPopName(1), "x = 11")
-        self.assertEqual(pop.subPopName(4), "x = 14")
+        self.assertEqual(pop.subPopName(0), "unnamed")
+        self.assertEqual(pop.subPopName([0, 0]), "unnamed - x = 10")
+        self.assertEqual(pop.subPopName([0, 1]), "unnamed - x = 11")
+        self.assertEqual(pop.subPopName([0, 4]), "unnamed - x = 14")
+        self.assertRaises(exceptions.IndexError, pop.subPopName, 1)
+        self.assertRaises(exceptions.IndexError, pop.subPopName, [0, 5])
+        # with given names
+        pop = population(size=[200, 500], infoFields=['x'], subPopNames=['A', 'B'])
+        for ind in pop.individuals():
+            ind.setInfo(random.randint(10, 20), 'x')
+        pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
+        self.assertEqual(pop.numVirtualSubPop(), 5)
+        self.assertEqual(pop.subPopName(0), "A")
+        self.assertEqual(pop.subPopName(1), "B")
+        self.assertRaises(exceptions.IndexError, pop.subPopName, 2)
+        self.assertEqual(pop.subPopName([0, 0]), "A - x = 10")
+        self.assertEqual(pop.subPopName([0, 1]), "A - x = 11")
+        self.assertEqual(pop.subPopName([1, 4]), "B - x = 14")
+        self.assertRaises(exceptions.IndexError, pop.subPopName, [0, 5])
 
     def testIndividuals(self):
         'Testing function population::individuals(), individuals(subPop), individual(idx, subPop=0)'
@@ -266,9 +283,16 @@ class TestPopulation(unittest.TestCase):
         for gen in range(pop.ancestralGens(), -1, -1):
             pop.useAncestralGen(gen)
             pop1.useAncestralGen(gen)
+            pop2.useAncestralGen(gen)
             for idx in range(pop.popSize()):
                 ind = pop.individual(idx)
-                ind1 = pop1.individual(idx)                 
+                inds = [pop1.individual(idx), pop2.individual(idx)]
+                # i: index in population
+                # src: the source population
+                # j: index in source population
+                for i, src, j in [(0, 0, 0), (1, 1, 0), (2, 0, 1), (3, 1, 1), (4, 0, 2), (5, 1, 2)]:
+                    for p in range(pop.ploidy()):
+                        self.assertEqual(ind.allele(i, p), inds[src].allele(j, p))
 
 
     def testAddLoci(self):
@@ -320,13 +344,13 @@ class TestPopulation(unittest.TestCase):
             n = random.randint(-1, 5)
             ind.setInfo(n, 'x')
             ind.setInfo(n + 10, 'y')
-            #ind.setGenotype([n])
+            ind.setGenotype([n+1])
         pop1 = pop.extract(field='x')
         for sp in range(5):
             for ind in pop1.individuals(sp):
                 self.assertEqual(ind.info('x'), sp)
                 self.assertEqual(ind.info('y'), sp + 10)
-                #self.assertEqual(ind.genotype(), sp*(pop.totNumLoci()*pop.ploidy))
+                self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))
 
     def testMergeSubPops(self):
         'Testing population::mergeSubPops(subpops=[])'
@@ -368,7 +392,7 @@ class TestPopulation(unittest.TestCase):
         pop = self.getPop(size =[20,100,30])
         pop1 = pop.clone()
         pop.removeIndividuals([15])
-        self.assertEqual( pop.subPopSizes(), (19,100,30))
+        self.assertEqual(pop.subPopSizes(), (19,100,30))
         for idx in range(15):
             self.assertEqual(pop1.individual(idx), pop.individual(idx))
         for idx in range(15,pop.popSize()):
