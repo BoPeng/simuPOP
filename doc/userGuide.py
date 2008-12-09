@@ -162,7 +162,7 @@ pop.subPopSize(1)
 pop.mergeSubPops([1, 2])
 # split subpopulations
 pop.splitSubPop(1, [2, 7])
-print pop.subPopSizes()
+pop.subPopSizes()
 # set information field to each individual's new subpopulation ID
 pop.setIndInfo([0, 1, 2, -1, 0, 1, 2, -1, -1, 0, 1, 2], 'x')
 # this manually triggers an migration, individuals with negative values
@@ -171,6 +171,18 @@ pop.setSubPopByIndInfo('x')
 Dump(pop, width=2, structure=False)
 #end
 
+
+#file log/subPopName.log
+pop = population(size=[3, 4, 5], subPopNames=['x', 'y', 'z'])
+pop.removeSubPops([1])
+pop.subPopNames()
+pop.subPopByName('z')
+pop.splitSubPop(1, [2, 3])
+pop.subPopNames()
+pop.setSubPopName('z-1', 1)
+pop.subPopNames()
+pop.subPopByName('z')
+#end
 
 
 #file log/popInit.log

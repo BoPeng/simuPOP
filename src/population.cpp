@@ -47,7 +47,7 @@ population::population(const vectorlu & size,
 	GenoStruTrait(),
 	m_popSize(0),
 	m_subPopSize(size),
-	m_subPopNames(subPopNames),
+	m_subPopNames(),
 	m_subPopIndex(size.size() + 1),
 	m_vspSplitter(NULL),
 	m_genotype(0),
@@ -88,9 +88,7 @@ population::population(const vectorlu & size,
 	if (m_subPopSize.empty())
 		m_subPopSize.resize(1, 0);
 
-	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == m_subPopSize.size(), SystemError,
-		"subpopulation names can either be empty, or be specified for all subpopulations.");
-	fitSubPopStru(m_subPopSize);
+	fitSubPopStru(m_subPopSize, subPopNames);
 	// set local variable
 	setRep(-1);
 }
@@ -217,7 +215,7 @@ UINT population::subPopByName(const string & name) const
 	vectorstr::const_iterator it = find(m_subPopNames.begin(), m_subPopNames.end(), name);
 
 	DBG_FAILIF(it == m_subPopNames.end(), IndexError,
-		"There is no subpopulation with name " + name);
+		"Subpopulation " + name + " not found.");
 	return it - m_subPopNames.begin();
 }
 
@@ -500,7 +498,8 @@ void population::validate(const string & msg) const
 }
 
 
-void population::fitSubPopStru(const vectorlu & newSubPopSizes)
+void population::fitSubPopStru(const vectorlu & newSubPopSizes,
+                               const vectorstr & newSubPopNames)
 {
 	ULONG newSize = accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL);
 
@@ -530,11 +529,18 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes)
 	// help clear confusing
 	std::fill(m_info.begin(), m_info.end(), 0.);
 
-	setSubPopStru(newSubPopSizes);
+	if (newSubPopNames.empty() || newSubPopNames.size() == newSubPopSizes.size())
+		setSubPopStru(newSubPopSizes, newSubPopNames);
+	else {
+		vectorstr spNames = newSubPopNames;
+		spNames.resize(newSubPopSizes.size(), UnnamedSubPop);
+		setSubPopStru(newSubPopSizes, spNames);
+	}
 }
 
 
-void population::setSubPopStru(const vectorlu & newSubPopSizes)
+void population::setSubPopStru(const vectorlu & newSubPopSizes,
+                               const vectorstr & newSubPopNames)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
@@ -542,11 +548,15 @@ void population::setSubPopStru(const vectorlu & newSubPopSizes)
 	DBG_ASSERT(accumulate(newSubPopSizes.begin(), newSubPopSizes.end(), 0UL) == m_popSize, ValueError,
 		"Overall population size should not be changed in setSubPopStru.");
 
+	DBG_ASSERT(newSubPopNames.empty() || newSubPopNames.size() == newSubPopSizes.size(), SystemError,
+		"subpopulation names can either be empty, or be specified for all subpopulations.");
+
 	if (newSubPopSizes.empty())
 		m_subPopSize = vectorlu(1, 0);
 	else
 		m_subPopSize = newSubPopSizes;
 	m_subPopIndex.resize(numSubPop() + 1);
+	m_subPopNames = newSubPopNames;
 
 	// build subPop index
 	UINT i = 1;
@@ -630,6 +640,9 @@ void population::setSubPopByIndInfo(const string & field)
 	size_t i = 1;
 	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
 		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	// subpopulation names
+	if (!m_subPopNames.empty())
+		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 }
 
 
@@ -643,7 +656,6 @@ void population::splitSubPop(UINT subPop, vectorf sizes)
 		ValueError,
 		"Sum of parameter sizes should be 1 (proportions) or the size of subpopulation subPop.");
 
-
 	ULONG spSize = subPopSize(subPop);
 	vectorlu newSizes(sizes.size());
 	for (size_t i = 0; i < sizes.size() - 1; ++i) {
@@ -656,34 +668,20 @@ void population::splitSubPop(UINT subPop, vectorf sizes)
 	newSizes[sizes.size() - 1] = spSize - accumulate(newSizes.begin(), newSizes.end() - 1, 0L);
 
 	vectorlu subPopSizes;
-	for (size_t sp = 0; sp < numSubPop(); ++sp)
-		if (sp != subPop)
-			subPopSizes.push_back(subPopSize(sp));
-		else
-			subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
-	setSubPopStru(subPopSizes);
-	return;
-}
-
-
-void population::removeEmptySubPops()
-{
-	// if remove empty subpops
-	UINT newSPNum = numSubPop();
-	vectorlu newSPSize;
-
+	vectorstr subPopNames;
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
-		if (m_subPopSize[sp] == 0)
-			newSPNum--;
-		else
-			newSPSize.push_back(m_subPopSize[sp]);
+		if (sp != subPop) {
+			subPopSizes.push_back(subPopSize(sp));
+			if (!m_subPopNames.empty())
+				subPopNames.push_back(m_subPopNames[sp]);
+		} else {
+			subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
+			if (!m_subPopNames.empty())
+				for (size_t i = 0; i < sizes.size(); ++i)
+					subPopNames.push_back(m_subPopNames[subPop]);
+		}
 	}
-	m_subPopSize.swap(newSPSize);
-	m_subPopIndex.resize(numSubPop() + 1);
-	// rebuild index
-	size_t i = 1;
-	for (m_subPopIndex[0] = 0; i <= numSubPop(); ++i)
-		m_subPopIndex[i] = m_subPopIndex[i - 1] + m_subPopSize[i - 1];
+	setSubPopStru(subPopSizes, subPopNames);
 }
 
 
@@ -697,6 +695,7 @@ void population::removeSubPops(const vectoru & subPops)
 #endif
 	sortIndividuals();
 	vectorlu new_size;
+	vectorstr new_spNames;
 
 	UINT step = genoSize();
 	UINT infoStep = infoSize();
@@ -711,6 +710,8 @@ void population::removeSubPops(const vectoru & subPops)
 		ULONG spSize = subPopSize(sp);
 		if (find(subPops.begin(), subPops.end(), sp) == subPops.end()) {
 			new_size.push_back(spSize);
+			if (!m_subPopNames.empty())
+				new_spNames.push_back(m_subPopNames[sp]);
 			// do not remove.
 			if (oldPtr != newPtr) {
 				copy(oldInd, oldInd + spSize, newInd);
@@ -730,7 +731,7 @@ void population::removeSubPops(const vectoru & subPops)
 	m_genotype.erase(newPtr, m_genotype.end());
 	m_info.erase(newInfoPtr, m_info.end());
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
-	setSubPopStru(new_size);
+	setSubPopStru(new_size, new_spNames);
 	//
 	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
@@ -787,7 +788,7 @@ void population::removeIndividuals(const vectoru & inds)
 	m_genotype.erase(newPtr, m_genotype.end());
 	m_info.erase(newInfoPtr, m_info.end());
 	m_popSize = std::accumulate(new_size.begin(), new_size.end(), 0UL);
-	setSubPopStru(new_size);
+	setSubPopStru(new_size, m_subPopNames);
 	//
 	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
@@ -804,7 +805,10 @@ void population::mergeSubPops(const vectoru & subPops)
 	if (subPops.empty()) {
 		// [ popSize() ]
 		vectorlu sz(1, popSize());
-		setSubPopStru(sz);
+		if (m_subPopNames.empty())
+			setSubPopStru(sz, m_subPopNames);
+		else
+			setSubPopStru(sz, vectorstr(1, m_subPopNames[0]));
 		return;
 	}
 	if (subPops.size() == 1)
@@ -819,20 +823,26 @@ void population::mergeSubPops(const vectoru & subPops)
 			consecutive = false;
 			break;
 		}
-	// new subpopulation sizes
+	// new subpopulation sizes and names
 	vectorlu new_size;
+	vectorstr new_names;
 	for (UINT sp = 0; sp < numSubPop(); ++sp) {
 		if (find(subPops.begin(), subPops.end(), sp) != subPops.end()) {
-			if (new_size.size() <= sps[0])
+			if (new_size.size() <= sps[0]) {
 				new_size.push_back(subPopSize(sp));
-			else
+				if (!m_subPopNames.empty())
+					new_names.push_back(m_subPopNames[sp]);
+			} else
 				new_size[sps[0]] += subPopSize(sp);
-		} else
+		} else {
 			new_size.push_back(subPopSize(sp));
+			if (!m_subPopNames.empty())
+				new_names.push_back(m_subPopNames[sp]);
+		}
 	}
 	// if consecutive, no need to move anyone
 	if (consecutive) {
-		setSubPopStru(new_size);
+		setSubPopStru(new_size, new_names);
 		return;
 	}
 	// difficult case.
@@ -878,7 +888,7 @@ void population::mergeSubPops(const vectoru & subPops)
 	m_inds.swap(new_inds);
 	m_genotype.swap(new_genotype);
 	m_info.swap(new_info);
-	setSubPopStru(new_size);
+	setSubPopStru(new_size, new_names);
 	//
 	GenoIterator ptr = m_genotype.begin();
 	InfoIterator infoPtr = m_info.begin();
@@ -1355,7 +1365,10 @@ population & population::extract(bool removeInd, const string & field,
 			}
 		}
 		pop.m_popSize = size;
-		pop.setSubPopStru(spSizes);
+		if (m_subPopNames.empty())
+			pop.setSubPopStru(spSizes, m_subPopNames);
+		else
+			pop.setSubPopStru(spSizes, vectorstr(m_subPopNames.begin(), m_subPopNames.begin() + spSizes.size()));
 		// set pointer
 		vectora::iterator ptr = new_genotype.begin();
 		vectorinfo::iterator infoPtr = new_info.begin();
@@ -1462,6 +1475,7 @@ void population::push(population & rhs)
 	// can not use population::swap because it swaps too much data
 	m_popSize = rhs.m_popSize;
 	m_subPopSize.swap(rhs.m_subPopSize);
+	m_subPopNames.swap(rhs.m_subPopNames);
 	m_subPopIndex.swap(rhs.m_subPopIndex);
 	std::swap(m_vspSplitter, rhs.m_vspSplitter);
 	m_genotype.swap(rhs.m_genotype);
@@ -1475,7 +1489,7 @@ void population::push(population & rhs)
 		// keep size if pop size is OK.
 		// remove all supopulation structure of rhs
 		rhs.m_popSize = rhs.m_inds.size();
-		rhs.setSubPopStru(rhs.m_subPopSize);
+		rhs.setSubPopStru(rhs.m_subPopSize, rhs.m_subPopNames);
 	}
 	validate("Current population after push and discard:");
 	rhs.validate("Outside population after push and discard:");
@@ -1663,7 +1677,7 @@ void population::useAncestralGen(UINT idx)
 		m_curAncestralGen = 0;
 		if (idx == 0) {                                               // restore key parameters from data
 			m_popSize = m_inds.size();
-			setSubPopStru(m_subPopSize);
+			setSubPopStru(m_subPopSize, m_subPopNames);
 			return;
 		}
 	}
@@ -1679,7 +1693,7 @@ void population::useAncestralGen(UINT idx)
 	popData & pd = m_ancestralPops[m_curAncestralGen - 1];
 	pd.swap(*this);
 	m_popSize = m_inds.size();
-	setSubPopStru(m_subPopSize);
+	setSubPopStru(m_subPopSize, m_subPopNames);
 }
 
 

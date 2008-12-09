@@ -4448,9 +4448,8 @@ Description:
 
 Usage:
 
-    mergeSubPops(subPops=[], removeEmptySubPops=False,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+    mergeSubPops(subPops=[], stage=PreMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
 
 Arguments:
 
@@ -6464,7 +6463,7 @@ Usage:
 
 %ignore simuPOP::population::validate(const string &msg) const;
 
-%ignore simuPOP::population::fitSubPopStru(const vectorlu &newSubPopSizes);
+%ignore simuPOP::population::fitSubPopStru(const vectorlu &newSubPopSizes, const vectorstr &newSubPopNames);
 
 %ignore simuPOP::population::hasActivatedVirtualSubPop() const;
 
@@ -6906,7 +6905,9 @@ Details:
     Rearrange individuals to their new subpopulations according to
     their integer values at information field field (value returned by
     individual::indInfo(field)). Individuals with negative values at
-    this field will be removed.
+    this field will be removed. Existing subpopulation names are
+    unchanged but new subpopulations will not assign a name
+    ('unnamed').
 
 "; 
 
@@ -6922,22 +6923,9 @@ Details:
     which should add up to the size of subpopulation subPop.
     Alternatively, sizes can be a list of proportions (add up to 1)
     from which the sizes of new subpopulations are determined. If
-    subPop is not the last subpopulation, subpopulation indexes will
-    be changed. For example, if you split the second subpopulation
-    into two, a population with three subpopulations will have four
-    subpopulations: 0 (untouched), 1.1->1, 1.2->2, 2->3 (changed).
-
-"; 
-
-%feature("docstring") simuPOP::population::removeEmptySubPops "
-
-Usage:
-
-    x.removeEmptySubPops()
-
-Details:
-
-    remove empty subpopulations by adjusting subpopulation IDs.
+    subPop is not the last subpopulation, indexes of subpopulations
+    after subPop are shifted. If subPop is named, the same name will
+    be given to all split subpopulations.
 
 "; 
 

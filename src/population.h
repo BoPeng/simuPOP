@@ -231,7 +231,8 @@ public:
 	 * Fix a population, resize it if necessary. The content
 	 * of the population will be cleared.
 	 */
-	void fitSubPopStru(const vectorlu & newSubPopSizes);
+	void fitSubPopStru(const vectorlu & newSubPopSizes,
+		const vectorstr & newSubPopNames);
 
 	/** if a population has any activated virtual subpopulations
 	 *  CPPONLY
@@ -292,7 +293,7 @@ public:
 	 *    population size should not changed.
 	 *  <group>2-subpop</group>
 	 */
-	void setSubPopStru(const vectorlu & newSubPopSizes);
+	void setSubPopStru(const vectorlu & newSubPopSizes, const vectorstr & newSubPopNames);
 
 	/** Return the number of subpopulations in a population. Return 1 if there
 	 *  is no subpopulation structure.
@@ -946,7 +947,8 @@ public:
 	/** Rearrange individuals to their new subpopulations according to their
 	 *  integer values at information field \e field (value returned by
 	 *  <tt>individual::indInfo(field)</tt>). Individuals with negative values
-	 *  at this \e field will be removed.
+	 *  at this \e field will be removed. Existing subpopulation names are
+	 *  unchanged but new subpopulations will not assign a name (\c 'unnamed').
 	 *  <group>7-manipulate</group>
 	 */
 	void setSubPopByIndInfo(const string & field);
@@ -955,18 +957,12 @@ public:
 	 *  which should add up to the size of subpopulation \e subPop.
 	 *  Alternatively, \e sizes can be a list of proportions (add up to \c 1)
 	 *  from which the sizes of new subpopulations are determined. If \e subPop
-	 *  is not the last subpopulation, subpopulation indexes will be changed.
-	 *  For example, if you split the second subpopulation into two, a
-	 *  population with three subpopulations will have four subpopulations:
-	 *  \c 0 (untouched), \c 1.1->1, \c 1.2->2, \c 2->3 (changed).
+	 *  is not the last subpopulation, indexes of subpopulations after
+	 *  \e subPop are shifted. If \e subPop is named, the same name will be
+	 *  given to all split subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
 	void splitSubPop(UINT subPop, vectorf sizes);
-
-	/** remove empty subpopulations by adjusting subpopulation IDs.
-	 *  <group>7-manipulate</group>
-	 */
-	void removeEmptySubPops();
 
 	/** Remove subpopulations \e subPop and all their individuals. Indexes of
 	 *  subpopulations after removed subpopulations will be shifted.
