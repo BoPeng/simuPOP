@@ -703,12 +703,13 @@ void population::removeSubPops(const vectoru & subPops)
 	vector<individual>::iterator oldInd = m_inds.begin();
 	vector<individual>::iterator newInd = m_inds.begin();
 	GenoIterator oldPtr = m_genotype.begin();
-	InfoIterator oldInfoPtr = m_info.begin();
 	GenoIterator newPtr = m_genotype.begin();
+	InfoIterator oldInfoPtr = m_info.begin();
 	InfoIterator newInfoPtr = m_info.begin();
 
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		ULONG spSize = subPopSize(sp);
+		// do not remove
 		if (find(subPops.begin(), subPops.end(), sp) == subPops.end()) {
 			new_size.push_back(spSize);
 			if (!m_subPopNames.empty())
@@ -721,7 +722,7 @@ void population::removeSubPops(const vectoru & subPops)
 			}
 			newInd += spSize;
 			newPtr += step * spSize;
-			newPtr += infoStep * spSize;
+			newInfoPtr += infoStep * spSize;
 		}
 		oldInd += spSize;
 		oldPtr += step * spSize;
@@ -777,7 +778,7 @@ void population::removeIndividuals(const vectoru & inds)
 				}
 				++newInd;
 				newPtr += step;
-				newPtr += infoStep;
+				newInfoPtr += infoStep;
 			}
 			++oldInd;
 			oldPtr += step;
