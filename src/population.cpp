@@ -224,6 +224,7 @@ string population::subPopName(vspID subPop) const
 {
 	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
+	CHECKRANGESUBPOP(subPop.subPop());
 	string name = m_subPopNames.empty() ? UnnamedSubPop : m_subPopNames[subPop.subPop()];;
 	if (subPop.isVirtual())
 		return name + " - " + m_vspSplitter->name(subPop.virtualSubPop());
@@ -690,7 +691,7 @@ void population::removeSubPops(const vectoru & subPops)
 #ifndef OPTIMIZED
 	// check if subPops are valid
 	for (vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
-		DBG_WARNING(*sp >= numSubPop(), "Subpopulation " + toStr(*sp) + " does not exist.");
+		DBG_FAILIF(*sp >= numSubPop(), IndexError, "Subpopulation " + toStr(*sp) + " does not exist.");
 	}
 #endif
 	sortIndividuals();
