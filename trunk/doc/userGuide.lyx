@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2715,7 +2715,7 @@ Population
 \end_layout
 
 \begin_layout Standard
-
+The 
 \family typewriter
 population
 \begin_inset Index
@@ -2729,164 +2729,23 @@ population
 
 
 \family default
- objects are essential to simuPOP.
- They are composed of subpopulations each with certain number of individuals,
- all have the same genotypic structure.
- A population can store arbitrary number of ancestral populations to facilitate
- pedigree analysis.
+ object is the most important object of simuPOP.
+ It consists of one or more generations of individuals, grouped by subpopulation
+s.
+ It provides a large number of functions to access and modify individuals,
+ their genotypes and information fields.
+ The following sections will explain these features in detail.
+\end_layout
+
+\begin_layout Subsection
+Subpopulations
 \end_layout
 
 \begin_layout Standard
-simuPOP uses one-level population structure, but aribitrary temprary subpopulati
-on structure can be defined.
- Such temporary subpopulations are called
-\emph on
- virtual subpopulations
-\emph default
-, where individuals can be grouped by sex, affection status, genotype, or
- values of information fields.
- Mating is within subpopulations only.
- Exchange of genetic information across subpopulations can only be done
- through migration.
- Population and subpopulation sizes can be changed, as a result of mating
- or migration.
-\end_layout
-
-\begin_layout Standard
-A very important feature of this population object is that you can store
- many generations of the population in a single population object.
- You can choose to store all or a limited number of generations during evolution.
- In the latter case, the oldest generation will be removed if a new generation
- is pushed in and the number of stored generations has exceeded the specified
- level.
-\end_layout
-
-\begin_layout Standard
-simuPOP provides a large number of population related functions, they are
- used to
-\end_layout
-
-\begin_layout Itemize
-access genotype structure
-\end_layout
-
-\begin_layout Itemize
-access individuals and their genotypes
-\end_layout
-
-\begin_layout Itemize
-manipulate subpopulations
-\end_layout
-
-\begin_layout Itemize
-access ancestral generations
-\end_layout
-
-\begin_layout Itemize
-manipulate genotype
-\end_layout
-
-\begin_layout Itemize
-sample (subset) from the population
-\end_layout
-
-\begin_layout Itemize
-access population variables
-\end_layout
-
-\begin_layout Itemize
-save/load populations in various formats
-\end_layout
-
-\begin_layout Itemize
-control virtual subpopulation structure.
-\end_layout
-
-\begin_layout Standard
-You usually do not need to use these functions explicitly unless you need
- to write pure python functions/operators that involves complicated manipulation
- of populations, or when you need to manipulate populations directly for
- gene mapping, import/export purposes.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-population
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-population
-\end_layout
-
-\end_inset
-
-
-\family default
- objects are essential to simuPOP.
- They are composed of subpopulations each with certain number of individuals
- having the same genotypic structure.
- Class 
-\family typewriter
-population
-\family default
- has a large number of member functions, ranging from reviewing simple propertie
-s to generating a new population from the current one.
- Fortunately, you do not have to know all the member functions to use a
- population unless you need to write pure Python functions/operators that
- involves complicated manipulation of populations.
-\end_layout
-
-\begin_layout Standard
-simuPOP supports subpopulations with boundary, and virtual subpopulations
- within subpopulations.
- Mating is within subpopulations only.
- Exchanges of genetic information across subpopulations can only be done
- through migration.
- Population and subpopulation sizes can be changed, as a result of mating
- or migration.
- More specifically,
-\end_layout
-
-\begin_layout Itemize
-migration can change subpopulation size; create or remove subpopulations.
- Since migration can not generate new individuals, the total population
- size will not be changed.
-\end_layout
-
-\begin_layout Itemize
-mating can fill any population/subpopulation structure with offspring.
- Both population and subpopulation sizes can be changed.
- Since mating is within subpopulations, you can not create a new subpopulation
- through mating.
-\end_layout
-
-\begin_layout Itemize
-a special operator 
-\family typewriter
-pySubset
-\family default
- can shrink the population size.
- It removes individuals according to their 
-\family typewriter
-subPopID()
-\family default
- status.
- (Will explain later.) This can be used to model a sudden population decrease
- due to some natural disaster.
+A simuPOP population consists of one or more subpopulations.
+ Subpopulations serve as barriers of individuals in the sense that mating
+ only happens between individuals in the same subpopulation.
  
-\end_layout
-
-\begin_layout Itemize
-subpopulations can be split or merged.
-\end_layout
-
-\begin_layout Standard
-Note that migration will most likely change the subpopulation sizes.
- To keep the subpopulation sizes constant, you can set the subpopulation
- sizes during mating so that the next generation will have desired subpopulation
- sizes.
 \end_layout
 
 \begin_layout Subsection
