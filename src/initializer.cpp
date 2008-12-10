@@ -187,6 +187,9 @@ bool initByValue::apply(population & pop)
 	DBG_FAILIF(!m_value.size() != 1 && m_value.size() != m_proportion.size()
 		&& m_value.size() != subPops.size(), ValueError,
 		"If mutliple values are given, its length should match proportion or (virtual) subpopulations");
+	
+	DBG_FAILIF(m_value[0].size() != loci.size() && m_value[0].size() != loci.size() * ploidy.size(),
+		ValueError, "Size of given value should be mutiples of number of loci.");
 
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
@@ -197,7 +200,6 @@ bool initByValue::apply(population & pop)
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
 		// will go through virtual subpopulation if sp is virtual
-		IndIterator left = pop.indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		IndIterator it = pop.indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		IndIterator right = pop.indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		for (; it != right; ++it) {
@@ -208,13 +210,14 @@ bool initByValue::apply(population & pop)
 					for (size_t i = 0; i < value.size(); ++i)
 						it->setAllele(value[i], loci[i], *p);
 				}
-			} else if (m_value[0].size() == loci.size() * ploidy.size()) {
+			} else { 
+				// (m_value[0].size() == loci.size() * ploidy.size())
 				vectori & value = m_proportion.empty() ? 
 					(m_value.size() == 1 ? m_value[0] : m_value[idx]) : m_value[ws.get()];
 				size_t i = 0;
 				for (vectoru::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-					for (size_t j = 0; j < value.size(); ++j, ++i)
-						it->setAllele(value[i], loci[j], *p);
+					for (vectoru::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++i)
+						it->setAllele(value[i], *loc, *p);
 			}
 		}
 	}
