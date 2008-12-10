@@ -214,7 +214,7 @@ UINT population::subPopByName(const string & name) const
 {
 	vectorstr::const_iterator it = find(m_subPopNames.begin(), m_subPopNames.end(), name);
 
-	DBG_FAILIF(it == m_subPopNames.end(), IndexError,
+	DBG_FAILIF(it == m_subPopNames.end(), ValueError,
 		"Subpopulation " + name + " not found.");
 	return it - m_subPopNames.begin();
 }
