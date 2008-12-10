@@ -135,7 +135,7 @@ bool migrator::apply(population & pop)
 			"Subpopulation index " + toStr(spFrom) + " out of range");
 
 		if (m_from[from].isVirtual()) {
-			pop.activateVirtualSubPop(spFrom, m_from[from].virtualSubPop());
+			pop.activateVirtualSubPop(m_from[from]);
 		}
 		// if subpopulation spFrom is activated, subPopSize can
 		// get the correct size.

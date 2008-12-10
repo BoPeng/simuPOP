@@ -691,13 +691,6 @@ status open
 
 
 \backslash
-initializerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 initSexRef
 \end_layout
 
@@ -713,20 +706,6 @@ initByFreqRef
 
 \backslash
 initByValueRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-spreadRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pyInitRef
 \end_layout
 
 \end_inset

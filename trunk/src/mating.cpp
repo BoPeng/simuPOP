@@ -2249,7 +2249,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			"Subpopulation " + toStr(sp) + " has activated virtual subpopulation.");
 		for (; it != it_end; ++it, ++itSize) {
 			if ((*it)->virtualSubPop() != InvalidSubPopID)
-				pop.activateVirtualSubPop(sp, (*it)->virtualSubPop());
+				pop.activateVirtualSubPop(vspID(sp, (*it)->virtualSubPop()));
 			// if previous mating scheme works on a virtual subpop,
 			// and the current one is not. deactivate it.
 			else if (pop.hasActivatedVirtualSubPop(sp))

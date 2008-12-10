@@ -478,6 +478,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('matrix','[]')
                 defVal = defVal.replace('vspID','[]')
                 defVal = defVal.replace('repList','[]')
+                defVal = defVal.replace('subPopList','[]')
                 defVal = defVal.replace('intMatrix','[]')
                 defVal = defVal.replace('true','True')
                 defVal = defVal.replace('false','False')

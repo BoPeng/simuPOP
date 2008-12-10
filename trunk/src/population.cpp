@@ -285,16 +285,16 @@ UINT population::numVirtualSubPop() const
 }
 
 
-void population::activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop,
+void population::activateVirtualSubPop(vspID subPop,
                                        IterationType type)
 {
-	CHECKRANGESUBPOP(subPop);
-	DBG_ASSERT(virtualSubPop != InvalidSubPopID, ValueError, "Given virtual subpopulation ID is wrong");
+	CHECKRANGESUBPOP(subPop.subPop());
+	DBG_ASSERT(subPop.isVirtual(), ValueError, "Given virtual subpopulation ID is wrong");
 	DBG_ASSERT(hasVirtualSubPop(), ValueError,
-		"Subpopulation " + toStr(subPop) + " has no virtual subpopulations");
-	m_vspSplitter->activate(*this, subPop, virtualSubPop, type);
+		"Population has no virtual subpopulations");
+	m_vspSplitter->activate(*this, subPop.subPop(), subPop.virtualSubPop(), type);
 	DBG_ASSERT(type != VisibleInds ||
-		m_vspSplitter->activatedSubPop() == subPop, SystemError,
+		m_vspSplitter->activatedSubPop() == subPop.subPop(), SystemError,
 		"Failed to activate virtual subpopulation");
 }
 
