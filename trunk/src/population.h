@@ -520,10 +520,10 @@ public:
 	pyIndIterator individuals(vspID subPop)
 	{
 		SubPopID spID = subPop.subPop();
-		SubPopID vspID = subPop.virtualSubPop();
 
 #ifndef OPTIMIZED
 		CHECKRANGESUBPOP(spID);
+		SubPopID vspID = subPop.virtualSubPop();
 		CHECKRANGEVIRTUALSUBPOP(vspID);
 		DBG_FAILIF(hasActivatedVirtualSubPop(spID), ValueError,
 			"This operation is not allowed for an activated subpopulation");
