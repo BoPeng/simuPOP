@@ -184,6 +184,28 @@ pop.subPopNames()
 pop.subPopByName('z')
 #end
 
+#file log/virtualSplitter.log
+import random
+pop = population(size=[200, 400], loci=[30], infoFields=['x'])
+# assign random information fields
+pop.setIndInfo([random.randint(0, 3) for x in range(pop.popSize())], 'x')
+# define a virtual splitter by information field 'x'
+pop.setVirtualSplitter(infoSplitter(field='x', values=[0, 1, 2, 3]))
+pop.numVirtualSubPop()    # Number of defined VSPs
+pop.subPopName([0, 0])    # Each VSP has a name
+pop.subPopSize([0, 0])    # Size of VSP 0 in subpopulation 0
+pop.subPopSize([1, 0])    # Size of VSP 0 in subpopulation 1
+# use a combined splitter that defines additional VSPs by sex
+InitSex(pop)
+pop.setVirtualSplitter(combinedSplitter([
+    infoSplitter(field='x', values=[0, 1, 2, 3]),
+    sexSplitter()])
+)
+pop.numVirtualSubPop()    # Number of defined VSPs
+pop.subPopName([0, 4])    # VSP 4 is the first VSP defined by the sex splitter
+pop.subPopSize([0, 4])    # Number of male individuals
+#end
+
 
 #file log/popInit.log
 # a Wright-Fisher population
