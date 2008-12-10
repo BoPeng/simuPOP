@@ -338,6 +338,8 @@ Usage:
 
 %ignore simuPOP::baseOperator::initialize(const population &pop);
 
+%ignore simuPOP::baseOperator::applicableSubPops() const;
+
 %feature("docstring") simuPOP::baseRandomMating "
 
 Applicability: diploid only
@@ -1938,7 +1940,7 @@ Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
       func=None, output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -2246,7 +2248,7 @@ Usage:
 
     ifElse(cond, ifOp=None, elseOp=None, output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -2823,7 +2825,7 @@ Usage:
     infoEval(expr=\"\", stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Details:
 
@@ -2956,7 +2958,7 @@ Usage:
     infoExec(stmts=\"\", subPops=[], usePopVars=False,
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Details:
 
@@ -3168,7 +3170,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, output=\"\", outputExpr=\"\",
+      rep=[], subPop=[], output=\"\", outputExpr=\"\",
       infoFields=[\"paternal_tag\", \"maternal_tag\"])
 
 Arguments:
@@ -3219,53 +3221,39 @@ Function form:
 
     InitByFreq
 
-Description:
-
-    initialize genotypes by given allele frequencies, and sex by male
-    frequency
-
 Details:
 
-    This operator assigns alleles at loci with given allele
-    frequencies. By default, all individuals will be assigned with
-    random alleles. If identicalInds=True, an individual is assigned
-    with random alleles and is then copied to all others. If subPop or
-    indRange is given, multiple arrays of alleleFreq can be given to
-    given different frequencies for different subpopulation or
-    individual ranges.
+    This operator assigns alleles at all or part of loci with given
+    allele frequencies. Alternatively, an individual can be
+    initialized and be copied to all individuals in the same (virtual)
+    subpopulations.
 
 "; 
 
 %feature("docstring") simuPOP::initByFreq::initByFreq "
 
-Description:
-
-    randomly assign alleles according to given allele frequencies
-
 Usage:
 
-    initByFreq(alleleFreq=[], identicalInds=False, subPop=[],
-      indRange=[], loci=[], atPloidy=-1, maleFreq=0.5, sex=[],
+    initByFreq(alleleFreq=[], loci=[], ploidy=[],
+      identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPop=[], infoFields=[])
 
-Arguments:
+Details:
 
-    alleleFreq:     an array of allele frequencies. The sum of all
-                    frequencies must be 1; or for a matrix of allele
-                    frequencies, each row corresponses to a
-                    subpopulation or range.
-    identicalInds:  whether or not make individual genotypes identical
-                    in all subpopulations. If True, this operator will
-                    randomly generate genotype for an individual and
-                    spread it to the whole subpopulation in the given
-                    range.
-    sex:            an array of sex [Male, Female, Male...] for
-                    individuals. The length of sex will not be
-                    checked. If it is shorter than the number of
-                    individuals, sex will be reused from the
-                    beginning.
-    stage:          default to PreMating.
+    This function creates an initializer that initialize individual
+    genotypes randomly. alleleFreq specified the allele frequencies of
+    allele 0, 1, ... respectively. These frequencies should add up to
+    1. If loci, ploidy and/or subPop are specified, only specified
+    loci, ploidy, and individuals in these (virtual) subpopulations
+    will be initialized. If identicalInds is True, the first
+    individual in each (virtual) subpopulation will be initialized
+    randomly, and be copied to all other individuals in this (virtual)
+    subpopulation. If a list of frequencies are given, they will be
+    used for each (virtual) subpopulation. If initSex is True
+    (default), initSex(maleFreq, sex) will be applied. This operator
+    initializes all chromosomes, including unused genotype locations
+    and customized chromosomes.
 
 "; 
 
@@ -3320,58 +3308,35 @@ Function form:
 
     InitByValue
 
-Description:
-
-    initialize genotype by value and then copy to all individuals
-
 Details:
 
-    Operator initByValue gets one copy of chromosomes or the whole
-    genotype (or of those corresponds to loci) of an individual and
-    copy them to all or a subset of individuals. This operator assigns
-    given alleles to specified individuals. Every individual will have
-    the same genotype. The parameter combinations should be
-    *  value - subPop/indRange: individual in subPop or in range(s)
-    will be assigned genotype value;
-    *  subPop/indRange: subPop or indRange should have the same length
-    as value. Each item of value will be assigned to each subPop or
-    indRange.
+    This operator initialize individuals by given values.
 
 "; 
 
 %feature("docstring") simuPOP::initByValue::initByValue "
 
-Description:
-
-    initialize a population by given alleles
-
 Usage:
 
-    initByValue(value=[], loci=[], atPloidy=-1, subPop=[],
-      indRange=[], proportions=[], maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], rep=[],
-      infoFields=[])
+    initByValue(value=[], loci=[], ploidy=[], proportions=[],
+      initSex=True, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
+      end=1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
-Arguments:
+Details:
 
-    value:          an array of genotypes of one individual, having
-                    the same length as the length of loci() or
-                    loci()*ploidy() or pop.genoSize() (whole genotype)
-                    or totNumLoci() (one copy of chromosomes). This
-                    parameter can also be an array of arrays of
-                    genotypes of one individual. If value is an array
-                    of values, it should have the length one, number
-                    of subpopulations, or the length of ranges of
-                    proportions.
-    proportions:    an array of percentages for each item in value. If
-                    given, assign given genotypes randomly.
-    maleFreq:       male frequency
-    sex:            an array of sex [Male, Female, Male...] for
-                    individuals. The length of sex will not be
-                    checked. If length of sex is shorter than the
-                    number of individuals, sex will be reused from the
-                    beginning.
-    stages:         default to PreMating.
+    This function creates an initializer that initialize individual
+    genotypes with given genotype value. If loci, ploidy and/or subPop
+    are specified, only specified loci, ploidy, and individuals in
+    these (virtual) subpopulations will be initialized. value can be
+    used to initialize given loci, all loci, and all homologous copies
+    of these loci. If proportions (a list of positive numbers that add
+    up to 1) is given, value should be a list of values that will be
+    assigned randomly according to their respective proportion. If a
+    list of values are given without proportions, they will be used
+    for each (virtual) subpopulations. If initSex is True (default),
+    initSex(maleFreq, sex) will be applied. This operator initializes
+    all chromosomes, including unused genotype locations and
+    customized chromosomes.
 
 "; 
 
@@ -3420,93 +3385,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::initializer "
-
-Description:
-
-    initialize alleles at the start of a generation
-
-Details:
-
-    Initializers are used to initialize populations before evolution.
-    They are set to be PreMating operators by default. simuPOP
-    provides three initializers. One assigns alleles by random, one
-    assigns a fixed set of genotypes, and the last one calls a user-
-    defined function.
-
-"; 
-
-%feature("docstring") simuPOP::initializer::initializer "
-
-Description:
-
-    create an initializer. Default to be always active.
-
-Usage:
-
-    initializer(subPop=[], indRange=[], loci=[], atPloidy=-1,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
-
-Arguments:
-
-    subPop:         an array specifies applicable subpopulations
-    indRange:       a [begin, end] pair of the range of absolute
-                    indexes of individuals, for example, ([1,2]); or
-                    an array of [begin, end] pairs, such as
-                    ([[1,4],[5,6]]). This is how you can initialize
-                    individuals differently within subpopulations.
-                    Note that ranges are in the form of [a,b). I.e.,
-                    range [4,6] will intialize individual 4, 5, but
-                    not 6. As a shortcut for [4,5], you can use [4] to
-                    specify one individual.
-    loci:           a vector of locus indexes at which initialization
-                    will be done. If empty, apply to all loci.
-    locus:          a shortcut to loci
-    atPloidy:       initialize which copy of chromosomes. Default to
-                    all.
-
-"; 
-
-%feature("docstring") simuPOP::initializer::~initializer "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~initializer()
-
-"; 
-
-%feature("docstring") simuPOP::initializer::clone "
-
-Description:
-
-    deep copy of an initializer
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::initializer::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the initializer
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::initializer::setRanges(population &pop);
-
 %feature("docstring") simuPOP::initSex "
 
 Function form:
@@ -3515,31 +3393,32 @@ Function form:
 
 Details:
 
-    An operator to initialize individual sex. For convenience, this
-    operator is included by other initializers such as initByFreq,
-    initByValue, or pyInit.
+    This operator initialize sex of individuals, either randomly or
+    use a list of sexes. For convenience, the function of this
+    operator is included in other initializers such as initByFreq and
+    initByValue so that you do not have to intiailize sexes separately
+    from genotype.
 
 "; 
 
 %feature("docstring") simuPOP::initSex::initSex "
 
-Description:
-
-    initialize individual sex.
-
 Usage:
 
-    initSex(maleFreq=0.5, sex=[], subPop=[], indRange=[], loci=[],
-      atPloidy=-1, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+    initSex(maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
-Arguments:
+Details:
 
-    maleFreq:       male frequency. Default to 0.5. Sex will be
-                    initialized with this parameter.
-    sex:            a list of sexes (Male or Female) and will be
-                    applied to individuals in in turn. If specified,
-                    parameter maleFreq is ignored.
+    Create an operator that initialize individual sex to Male or
+    Female. By default, it assign sex to individuals randomly, with
+    equal probability of having a male or a female. This probabability
+    can be adjusted through parameter maleFreq. Alternatively, a fixed
+    sequence of sexes can be assigned. For example, if sex=[Male,
+    Female], individuals will be assigned Male and Female
+    successively. Parameter maleFreq is ignored if sex is given. If a
+    list of (virtual) subpopulation is specified in parameter subPop,
+    only individuals in these subpopulations will be initialized.
 
 "; 
 
@@ -3648,7 +3527,7 @@ Usage:
 
     kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[])
+      rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -3743,7 +3622,7 @@ Usage:
 
     maPenetrance(loci, penet, wildtype, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -3825,7 +3704,7 @@ Usage:
 
     mapPenetrance(loci, penet, phase=False, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -3906,7 +3785,7 @@ Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=subPopList, infoFields=[\"qtrait\"])
+      at=[], rep=[], subPop=[], infoFields=[\"qtrait\"])
 
 Arguments:
 
@@ -3994,7 +3873,7 @@ Usage:
 
     mapSelector(loci, fitness, phase=False, subPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[\"fitness\"])
+      subPop=[], infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -4082,7 +3961,7 @@ Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancestralGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[\"qtrait\"])
+      subPop=[], infoFields=[\"qtrait\"])
 
 Details:
 
@@ -4177,7 +4056,7 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype, subPops=[], stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
       infoFields=[\"fitness\"])
 
 Details:
@@ -4449,7 +4328,7 @@ Description:
 Usage:
 
     mergeSubPops(subPops=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -4540,9 +4419,9 @@ Description:
 
 Usage:
 
-    migrator(rate, mode=MigrByProbability, fromSubPop=subPopList,
+    migrator(rate, mode=MigrByProbability, fromSubPop=[],
       toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[\"migrate_to\"])
+      rep=[], subPop=[], infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -4700,7 +4579,7 @@ Usage:
 
     mlPenetrance(peneOps, mode=PEN_Multiplicative, ancestralGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -4784,7 +4663,7 @@ Usage:
 
     mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0,
       ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=subPopList, infoFields=[\"qtrait\"])
+      at=[], rep=[], subPop=[], infoFields=[\"qtrait\"])
 
 Details:
 
@@ -4879,7 +4758,7 @@ Usage:
 
     mlSelector(selectors, mode=SEL_Multiplicative, subPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[\"fitness\"])
+      subPop=[], infoFields=[\"fitness\"])
 
 Details:
 
@@ -5022,7 +4901,7 @@ Usage:
 
     mutator(rate=[], loci=[], maxAllele=0, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[])
+      rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -5271,7 +5150,7 @@ Description:
 Usage:
 
     noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=0, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=0, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -5515,7 +5394,7 @@ Description:
 Usage:
 
     outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -5631,9 +5510,9 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, output=\"\", outputExpr=\"\",
-      infoFields=[\"father_idx\", \"mother_idx\"])
+    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+      output=\"\", outputExpr=\"\", infoFields=[\"father_idx\",
+      \"mother_idx\"])
 
 "; 
 
@@ -5710,9 +5589,8 @@ Description:
 
 Usage:
 
-    parentTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, output=\"\", outputExpr=\"\",
-      infoFields=[\"parent_idx\"])
+    parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+      output=\"\", outputExpr=\"\", infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -5802,7 +5680,7 @@ Usage:
 
     pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
       popName=\"pop\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=-1, subPop=subPopList,
+      begin=0, end=-1, step=1, at=[], rep=-1, subPop=[],
       infoFields=[])
 
 Arguments:
@@ -5988,7 +5866,7 @@ Details:
 Usage:
 
     pedigreeTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, stage=PostMating, output=\">\", outputExpr=\"\",
+      subPop=[], stage=PostMating, output=\">\", outputExpr=\"\",
       pedigreeFields=[])
 
 "; 
@@ -6042,7 +5920,7 @@ Description:
 Usage:
 
     penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -6142,7 +6020,7 @@ Usage:
 
     pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[])
+      rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -7539,7 +7417,7 @@ Usage:
     pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
       exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -7650,7 +7528,7 @@ Usage:
 
     pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
       name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -7771,7 +7649,7 @@ Usage:
 
     pyIndOperator(func, loci=[], param=None, stage=PostMating,
       formOffGenotype=False, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -7824,106 +7702,6 @@ Description:
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::pyInit "
-
-Function form:
-
-    PyInit
-
-Description:
-
-    A python operator that uses a user-defined function to initialize
-    individuals.
-
-Details:
-
-    This is a hybrid initializer. Users of this operator must supply a
-    Python function with parameters allele, ploidy and subpopulation
-    indexes (index, ploidy, subPop), and return an allele value. This
-    operator will loop through all individuals in each subpopulation
-    and call this function to initialize populations. The arrange of
-    parameters allows different initialization scheme for each
-    subpopulation.
-
-"; 
-
-%feature("docstring") simuPOP::pyInit::pyInit "
-
-Description:
-
-    initialize populations using given user function
-
-Usage:
-
-    pyInit(func, subPop=[], loci=[], atPloidy=-1, indRange=[],
-      maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=[], infoFields=[])
-
-Arguments:
-
-    func:           a Python function with parameter (index, ploidy,
-                    subPop), where
-                    * index is the allele index ranging from 0 to
-                    totNumLoci-1;
-                    * ploidy is the index of the copy of chromosomes;
-                    * subPop is the subpopulation index. The return
-                    value of this function should be an integer.
-    loci:           a vector of locus indexes. If empty, apply to all
-                    loci.
-    locus:          a shortcut to loci.
-    atPloidy:       initialize which copy of chromosomes. Default to
-                    all.
-    stage:          default to PreMating.
-
-"; 
-
-%feature("docstring") simuPOP::pyInit::~pyInit "
-
-Usage:
-
-    x.~pyInit()
-
-"; 
-
-%ignore simuPOP::pyInit::pyInit(const pyInit &rhs);
-
-%feature("docstring") simuPOP::pyInit::clone "
-
-Description:
-
-    deep copy of the operator pyInit
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::pyInit::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator pyInit
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::pyInit::apply "
-
-Description:
-
-    apply this operator to population pop
-
-Usage:
-
-    x.apply(pop)
 
 "; 
 
@@ -8036,9 +7814,9 @@ Description:
 Usage:
 
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
-      fromSubPop=subPopList, toSubPop=[], loci=[], param=None,
+      fromSubPop=[], toSubPop=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[\"migrate_to\"])
+      subPop=[], infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -8136,7 +7914,7 @@ Usage:
 
     pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[])
+      rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -8231,7 +8009,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -8332,7 +8110,7 @@ Description:
 Usage:
 
     pyOutput(str=\"\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
       infoFields=[])
 
 Arguments:
@@ -8492,7 +8270,7 @@ Description:
 Usage:
 
     pyPenetrance(loci, func, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
       infoFields=[])
 
 Arguments:
@@ -8616,7 +8394,7 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancestralGen=-1, stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
       infoFields=[\"qtrait\"])
 
 Details:
@@ -8708,7 +8486,7 @@ Description:
 Usage:
 
     pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList,
+      end=-1, step=1, at=[], rep=[], subPop=[],
       infoFields=[\"fitness\"])
 
 Arguments:
@@ -8794,7 +8572,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, output=\"\", outputExpr=\"\", infoFields=[])
+      subPop=[], output=\"\", outputExpr=\"\", infoFields=[])
 
 Arguments:
 
@@ -8878,7 +8656,7 @@ Description:
 Usage:
 
     quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=subPopList, infoFields=[\"qtrait\"])
+      step=1, at=[], rep=[], subPop=[], infoFields=[\"qtrait\"])
 
 "; 
 
@@ -9221,7 +8999,7 @@ Usage:
     recombinator(intensity=-1, rate=[], afterLoci=[],
       maleIntensity=-1, maleRate=[], maleAfterLoci=[], convProb=0,
       convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -9488,7 +9266,7 @@ Usage:
 
     resizeSubPops(newSizes=[], subPops=[], propagate=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -9824,7 +9602,7 @@ Usage:
 
     savePopulation(output=\"\", outputExpr=\"\", format=\"\",
       compress=True, stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[])
+      rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -9938,7 +9716,7 @@ Description:
 Usage:
 
     selector(subPops=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=subPopList, infoFields=[\"fitness\"])
+      at=[], rep=[], subPop=[], infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -10212,7 +9990,7 @@ Usage:
 
     setAncestralDepth(depth, output=\">\", outputExpr=\"\",
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 "; 
 
@@ -10727,7 +10505,7 @@ Usage:
 
     smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
       output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -10803,7 +10581,7 @@ Usage:
 
     splitSubPop(which=0, sizes=[], proportions=[], randomize=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[\"migrate_to\"])
+      subPop=[], infoFields=[\"migrate_to\"])
 
 Details:
 
@@ -10877,82 +10655,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::spread "
-
-Function form:
-
-    Spread
-
-Description:
-
-    copy the genotype of an individual to all individuals
-
-Details:
-
-    Function Spread(ind, subPop) spreads the genotypes of ind to all
-    individuals in an array of subpopulations. The default value of
-    subPop is the subpopulation where ind resides.
-
-"; 
-
-%feature("docstring") simuPOP::spread::spread "
-
-Description:
-
-    copy genotypes of ind to all individuals in subPop
-
-Usage:
-
-    spread(ind, subPop=[], stage=PreMating, begin=0, end=1, step=1,
-      at=[], rep=[], infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::spread::~spread "
-
-Usage:
-
-    x.~spread()
-
-"; 
-
-%feature("docstring") simuPOP::spread::clone "
-
-Description:
-
-    deep copy of the operator spread
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::spread::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator spread
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::spread::apply "
-
-Description:
-
-    apply this operator to population pop
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
 %feature("docstring") simuPOP::stat "
 
 Function form:
@@ -10993,7 +10695,7 @@ Usage:
       relBySubPop=False, relMethod=[], relMinScored=10,
       hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=subPopList, infoFields=[])
+      subPop=[], infoFields=[])
 
 Arguments:
 
@@ -11760,7 +11462,7 @@ Description:
 Usage:
 
     stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -12024,6 +11726,22 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::subPopList::begin "
+
+Usage:
+
+    x.begin()
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::end "
+
+Usage:
+
+    x.end()
+
+"; 
+
 %feature("docstring") simuPOP::SystemError "
 
 Description:
@@ -12065,7 +11783,7 @@ Description:
 Usage:
 
     tagger(output=\"\", outputExpr=\"\", stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -12116,7 +11834,7 @@ Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
       outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=subPopList, infoFields=[])
+      rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -12207,7 +11925,7 @@ Description:
 Usage:
 
     ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=subPopList, infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -12265,7 +11983,7 @@ Description:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=subPopList, infoFields=[])
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -12339,7 +12057,7 @@ Description:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=subPopList, infoFields=[])
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 

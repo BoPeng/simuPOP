@@ -19,6 +19,9 @@ version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/s
 		replace them by pedigreeTagger.
   - CHG: Remove population::removeEmptySubPops().
   - NEW: Add support for subpopulation names.
+  - CHG: Remove intializer, spread and pyInit operators.
+  - CHG: Add parameter initSex to initByFreq and initByValue.
+  - NEW: Initializers now support virtual subpopulations.
 
 version 0.8.9 - tagged, but not publically released (rev 1948).
   - DOC: Adjust reference output for simuPOP classes.

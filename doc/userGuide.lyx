@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2818,15 +2818,15 @@ simuPOP subpopulations can be further divided into virtual subpopulations
  with information field age > 20, all individuals with genotype 0, 0 at
  a given locus, can form VSPs.
  VPSs do not have to add up to the whole subpopulation, nor do they have
- to be distinct.
+ to be nonoverlapping.
  Unlike subpopulations that have strict boundaries, VSPs change easily with
  the changes of individual properties.
 \end_layout
 
 \begin_layout Standard
 VSPs are defined by virtual splitters.
- A splitter defines the same VSPs in all subpopulations, although sizes
- of these VSPs vary across subpopulations due to individual differences.
+ A splitter defines the same number of VSPs in all subpopulations, although
+ sizes of these VSPs vary across subpopulations due to subpopulation differences.
  For example, a 
 \family typewriter
 sexSplitter()
@@ -2872,7 +2872,7 @@ subPopName()
 subPopSize()
 \family default
 .
- For example, Example 
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "virtualSplitter"
@@ -2893,68 +2893,28 @@ lstparams "caption={Define virtual subpopulations in a population},label={virtua
 \end_layout
 
 \begin_layout Standard
-VSPs provides a irtual subpopulations allow easy handling of heterogeneous
- populations, and can facilitate some computations that are previously very
- difficult to do.
- For example, mating schemes can work on virtual subpopulations.
- This allows complicated mating schemes such as mating in aged population,
- and mixed mating schems.
- By limiting operators to virtual subpopulations, one can apply different
- genetic forces to different groups of individuals.
- A good example is to migrant only male from a subpopulation to other subpopulat
-ions.
- It is also easy to calculate statistics at a finer scale, such as allele
- frequency of all males.
-\end_layout
-
-\begin_layout Standard
-The population class provies several functions to assign a splitter to a
- given population, retrieve virtual subpopulation sizes and names.
- Note that one splitter is used for all subpopulations.
- If different splitters are needed for different subpopulations, a combined
- splitter can be used.
- More interestingly, the 
-\family typewriter
-individuals(subPop, virtualSubPop) 
-\family default
-member function allows you to iterate through all individuals of a virtual
- subpopulation.
- 
-\end_layout
-
-\begin_layout Standard
-Member functions 
-\family typewriter
-pop.numVirtualSubPop(sp), pop.virtualSubPopSize(sp, vsp)
-\family default
- can be used to determine the number of virtual subpopulation a subpopulation
- has, and the size of the virtual subpoulation.
- Operator 
-\family typewriter
-stat(popSize=True)
-\family default
- also calculates virtual subpoulation sizes, and save them in a variable
- 
-\family typewriter
-virtualPopSize
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Example 
+VSP provides an easy way to access groups of individuals in a subpopulation
+ and allows finer control of an evolutionary process.
+ For example, mating schemes can be applied to VSPs which makes it possible
+ to apply different mating schemes to, for example, individuals with different
+ ages.
+ By applying migration, mutation etc to VSPs, it is easy to implement advanced
+ features such as sex-biased migrations, different mutation rates for individual
+s at different stages of a disease.
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "virtualSplitter"
+reference "virtualSubPop"
 
 \end_inset
 
- demonstrates how to assign virtual splitter, and how to use them.
+ demonstrates how to initialize genotype and information fields to individuals
+ in male and female VSPs.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/virtualSubPop.log"
-lstparams "caption={Virtual subpopulation related functions},label={virtualSubPop}"
+lstparams "caption={Applications of virtual subpopulations},label={virtualSubPop}"
 
 \end_inset
 

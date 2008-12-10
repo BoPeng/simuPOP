@@ -98,6 +98,7 @@ public:
 	// for some unknown reason, std:: is required for this type to be recognized
 	// by swig.
 	typedef std::vector<vspID> vectorvsp;
+	typedef vectorvsp::const_iterator iterator;
 public:
 	subPopList(const vectorvsp & subPops = vectorvsp()) : m_subPops(subPops)
 	{
@@ -128,6 +129,15 @@ public:
 		m_subPops.push_back(subPop);
 	}
 
+	vectorvsp::const_iterator begin() const
+	{
+		return m_subPops.begin();
+	}
+
+	vectorvsp::const_iterator end() const
+	{
+		return m_subPops.end();
+	}
 
 private:
 	vectorvsp m_subPops;
@@ -470,6 +480,8 @@ public:
 	/// CPPONLY
 	virtual void initialize(const population & pop) {}
 
+	/// CPPONLY
+	subPopList applicableSubPops() const { return m_subPop; }
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc
 	void setFlags();

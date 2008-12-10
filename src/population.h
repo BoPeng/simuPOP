@@ -272,8 +272,7 @@ public:
 	   \param id subpopulation id
 	   \param vid virtual subpopulation id
 	 */
-	void activateVirtualSubPop(SubPopID subPop, SubPopID virtualSubPop = InvalidSubPopID,
-		IterationType type = VisibleInds);
+	void activateVirtualSubPop(vspID subPop, IterationType type = VisibleInds);
 
 	/** HIDDEN
 	 *  deactivate virtual subpopulations in a given
@@ -531,7 +530,7 @@ public:
 #endif
 		if (subPop.isVirtual()) {
 			// this does not need to be deactivated...
-			activateVirtualSubPop(spID, vspID, IteratableInds);
+			activateVirtualSubPop(subPop, IteratableInds);
 			// if there is no virtual subpop
 			return pyIndIterator(m_inds.begin() + subPopBegin(spID),
 				m_inds.begin() + subPopEnd(spID),
@@ -1181,7 +1180,7 @@ public:
 
 		// has to adjust order because of parameter subPop
 		if (vsp.isVirtual()) {
-			activateVirtualSubPop(subPop, vsp.virtualSubPop(), IteratableInds);
+			activateVirtualSubPop(vsp, IteratableInds);
 			return IndInfoIterator(idx, indBegin(subPop, IteratableInds));
 		} else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, indBegin(subPop));

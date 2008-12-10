@@ -24,8 +24,8 @@
 #ifndef _INITIALIZER_H
 #define _INITIALIZER_H
 /**
- \file
- \brief head file of class initializer:public baseOperator
+   \file
+   \brief head file of class initializer:public baseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -36,123 +36,35 @@ using std::accumulate;
 
 namespace simuPOP {
 
-/// initialize alleles at the start of a generation
-/**
-   Initializers are used to initialize populations before evolution.
-   They are set to be \c PreMating operators by default. simuPOP provides
-   three initializers. One assigns alleles by random, one assigns a fixed
-   set of genotypes, and the last one calls a user-defined function.
+/** This operator initialize sex of individuals, either randomly or use a list
+ *  of sexes. For convenience, the function of this operator is included in
+ *  other \e initializers such as \c initByFreq and \c initByValue so that you
+ *  do not have to intiailize sexes separately from genotype.
+ *  <funcForm>InitSex</funcForm>
  */
-class initializer : public baseOperator
+class initSex : public baseOperator
 {
 public:
-	/// create an initializer. Default to be always active.
-	/**
-	 \param subPop an array specifies applicable subpopulations
-	 \param indRange a <tt>[begin, end]</tt> pair of the range of absolute indexes
-	   	of individuals, for example, <tt>([1,2])</tt>; or an array of <tt>[begin, end]</tt>
-	   	pairs, such as <tt>([[1,4],[5,6]])</tt>. This is how you can initialize individuals
-	   	differently within subpopulations. Note that ranges are in the form of [a,b).
-	   	I.e., range [4,6] will intialize individual 4, 5, but not 6. As a shortcut for [4,5],
-	   	you can use [4] to specify one individual.
-	 \param loci a vector of locus indexes at which initialization will be done. If empty, apply to all loci.
-	 \param locus a shortcut to \c loci
-	 \param atPloidy initialize which copy of chromosomes. Default to all.
-	 */
-	initializer(const vectoru & subPop = vectoru(),
-	            intMatrix indRange = intMatrix(),
-	            const vectoru & loci = vectoru(),
-	            int atPloidy = -1,
-	            int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-	            const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPopList(), infoFields),
-		m_subPop(subPop), m_indRange(indRange),
-		m_atLoci(loci), m_atPloidy(atPloidy)
-	{
-		for (size_t i = 0; i < m_indRange.size(); ++i) {
-			// allow for singleton
-			if (m_indRange[i].size() == 1)
-				m_indRange[i].push_back(m_indRange[i][0] + 1);
-
-			if (m_indRange[i].size() != 2 || m_indRange[i][0] > m_indRange[i][1])
-				throw ValueError("Expecting a range.");
-		}
-		// no flags to set.
-	}
-
-
-	/// destructor
-	virtual ~initializer()
-	{
-	}
-
-
-	/// deep copy of an initializer
-	virtual baseOperator * clone() const
-	{
-		return new initializer(*this);
-	}
-
-
-	/// used by Python print function to print out the general information of the initializer
-	virtual string __repr__()
-	{
-		return "<simuPOP::initializer>";
-	}
-
-
-	/// CPPONLY
-	void setRanges(population & pop);
-
-protected:
-	/// applicable subpop
-	vectoru m_subPop;
-
-	/// ranges
-	intMatrix m_indRange;
-
-	/// init loci
-	vectoru m_atLoci;
-
-	/// at which ploidy, -1 means all
-	int m_atPloidy;
-
-	/// populaiton specific range
-	intMatrix m_ranges;
-};
-
-
-/** An operator to initialize individual sex. For convenience, this
-   operator is included by other initializers such as initByFreq, initByValue,
-   or pyInit.
-   <funcForm>InitSex</funcForm>
-
- */
-class initSex : public initializer
-{
-public:
-	/// initialize individual sex.
-	/**
-	 \param maleFreq male frequency. Default to \c 0.5. Sex will be initialized with this parameter.
-	 \param sex a list of sexes (Male or Female) and will be applied to individuals in in turn.
-	   	If specified, parameter \c maleFreq is ignored.
+	/** Create an operator that initialize individual sex to \c Male or \c Female.
+	 *  By default, it assign sex to individuals randomly, with equal probability
+	 *  of having a male or a female. This probabability can be adjusted through
+	 *  parameter \e maleFreq. Alternatively, a fixed sequence of sexes can be
+	 *  assigned. For example, if <tt>sex=[Male, Female]</tt>, individuals will
+	 *  be assigned \c Male and \c Female successively. Parameter \e maleFreq
+	 *  is ignored if \e sex is given. If a list of (virtual) subpopulation is
+	 *  specified in parameter \e subPop, only individuals in these
+	 *  subpopulations will be initialized.
 	 */
 	initSex(double maleFreq = 0.5, const vectori & sex = vectori(),
-	        const vectoru & subPop = vectoru(),
-	        intMatrix indRange = intMatrix(),
-	        const vectoru & loci = vectoru(),
-	        int atPloidy = -1,
-	        int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-	        vectorl at = vectorl(), const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-	        const vectorstr & infoFields = vectorstr())
-		: initializer(subPop, indRange, loci, atPloidy, stage, begin, end,
-		              step, at, rep, infoFields),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
+		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex)
 	{
 		if (!m_sex.empty()) {
 			for (vectori::iterator it = m_sex.begin(); it != m_sex.end(); ++it) {
-				DBG_ASSERT(*it == int (Male) || *it == int (Female),
+				DBG_ASSERT(*it == int(Male) || *it == int(Female),
 					ValueError, "Parameter sex must be an array of Male or Female. ");
 			}
 		}
@@ -191,51 +103,34 @@ protected:
 };
 
 
-/// initialize genotypes by given allele frequencies, and sex by male frequency
-/**
-   This operator assigns alleles at \c loci with given allele frequencies. By default,
-   all individuals will be assigned with random alleles. If \c identicalInds=True, an
-   individual is assigned with random alleles and is then copied to all others. If \c subPop
-   or \c indRange is given, multiple arrays of \c alleleFreq can be given to given different
-   frequencies for different subpopulation or individual ranges.
-   <funcForm>InitByFreq</funcForm>
+/** This operator assigns alleles at all or part of loci with given allele
+ *  frequencies. Alternatively, an individual can be initialized and be copied
+ *  to all individuals in the same (virtual) subpopulations.
+ *  <funcForm>InitByFreq</funcForm>
  */
 class initByFreq : public initSex
 {
 public:
-	/// randomly assign alleles according to given allele frequencies
-	/**
-	 \param alleleFreq an array of allele frequencies. The sum of all frequencies
-	   	must be 1; or for a matrix of allele frequencies, each row corresponses to
-	   	a subpopulation or range.
-	 \param identicalInds whether or not make individual genotypes identical
-	   in all subpopulations. If \c True, this operator will randomly generate genotype for
-	   an individual and spread it to the whole subpopulation in the given range.
-	 \param sex an array of sex <tt>[Male, Female, Male...]</tt> for individuals. The length of sex will not
-	   be checked. If it is shorter than the number of individuals, sex will be reused from the beginning.
-	 \param stage default to \c PreMating.
-
+	/** This function creates an initializer that initialize individual
+	 *  genotypes randomly. \e alleleFreq specified the allele frequencies of
+	 *  allele \c 0, \c 1, ... respectively. These frequencies should add up to
+	 *  \c 1. If \e loci, \e ploidy and/or \e subPop are specified, only
+	 *  specified loci, ploidy, and individuals in these (virtual)
+	 *  subpopulations will be initialized. If \e identicalInds is \c True, the
+	 *  first individual in each (virtual) subpopulation will be initialized
+	 *  randomly, and be copied to all other individuals in this (virtual)
+	 *  subpopulation. If a list of frequencies are given, they will be used
+	 *  for each (virtual) subpopulation. If \e initSex is \c True (default),
+	 *  <tt>initSex(maleFreq, sex)</tt> will be applied. This operator
+	 *  initializes all chromosomes, including unused genotype locations and
+	 *  customized chromosomes.
 	 */
-	initByFreq(const matrix & alleleFreq = matrix(),
-	           bool identicalInds = false,  const vectoru & subPop = vectoru(),
-	           intMatrix indRange = intMatrix(),
-	           const vectoru & loci = vectoru(), int atPloidy = -1,
-	           double maleFreq = 0.5, const vectori & sex = vectori(),
-	           int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	           const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-			   const vectorstr & infoFields = vectorstr())
-		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		          stage, begin, end, step, at, rep, infoFields),
-		m_alleleFreq(alleleFreq), m_identicalInds(identicalInds)
-	{
-
-		DBG_FAILIF(m_alleleFreq.empty(),
-			IndexError, "Should specify one of alleleFreq, alleleFreqs");
-
-		for (size_t i = 0; i < m_alleleFreq.size(); ++i)
-			if (fcmp_ne(accumulate(m_alleleFreq[i].begin(), m_alleleFreq[i].end(), 0.), 1.0))
-				throw ValueError("Allele frequencies should add up to one.");
-	}
+	initByFreq(const matrix & alleleFreq = matrix(), const vectoru & loci = vectoru(),
+		const vectoru & ploidy = vectoru(), bool identicalInds = false,
+		bool initSex = true, double maleFreq = 0.5, const vectori & sex = vectori(),
+		int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr());
 
 
 	~initByFreq()
@@ -266,68 +161,44 @@ private:
 
 	///
 	bool m_identicalInds;
+
+	//
+	vectoru m_loci;
+
+	//
+	vectoru m_ploidy;
+
+	//
+	bool m_initSex;
 };
 
-/// initialize genotype by value and then copy to all individuals
-/**
-   Operator \c initByValue gets one copy of chromosomes or the whole
-   genotype (or of those corresponds to \c loci) of an individual
-   and copy them to all or a subset of individuals.
-   This operator assigns given alleles to specified individuals. Every
-   individual will have the same genotype. The parameter combinations should be
- \li <tt>value - subPop/indRange</tt>: individual in
- \c subPop or in range(s) will be assigned genotype \c value;
- \li <tt>subPop/indRange</tt>: \c subPop or \c indRange should have
-   	the same length as \c value. Each item of \c value will be assigned to
-   	each \c subPop or \c indRange.
-
-   <funcForm>InitByValue</funcForm>
+/** This operator initialize individuals by given values.
+ *  <funcForm>InitByValue</funcForm>
  */
 class initByValue : public initSex
 {
 public:
-	/// initialize a population by given alleles
-	/**
-	 \param value an array of genotypes of one individual, having the same
-	   	length as the length of <tt>loci()</tt> or <tt>loci()*ploidy()</tt>
-	   	or <tt>pop.genoSize()</tt> (whole genotype) or <tt>totNumLoci()</tt>
-	   	(one copy of chromosomes). This parameter can also be an array of arrays
-	   	of genotypes of one individual. If \c value is an array of values, it should have
-	   	the length one, number of subpopulations, or the length of ranges of proportions.
-	 \param proportions an array of percentages for each item in \c value. If given,
-	   assign given genotypes randomly.
-	 \param maleFreq male frequency
-	 \param sex an array of sex <tt>[Male, Female, Male...]</tt> for individuals.
-	   The length of sex will not be checked. If length of sex is shorter than
-	   the number of individuals, sex will be reused from the beginning.
-	 \param stages default to \c PreMating.
-
+	/** This function creates an initializer that initialize individual
+	 *  genotypes with given genotype \e value. If \e loci, \e ploidy
+	 *  and/or \e subPop are specified, only specified loci, ploidy, and
+	 *  individuals in these (virtual) subpopulations will be initialized.
+	 *  \e value can be used to initialize given \e loci, all loci, and all
+	 *  homologous copies of these loci. If \e proportions (a list of positive
+	 *  numbers that add up to \c 1) is given, \e value should be a list of
+	 *  values that will be assigned randomly according to their respective
+	 *  proportion. If a list of values are given without \e proportions,
+	 *  they will be used for each (virtual) subpopulations. If \e initSex is
+	 *  \c True (default), <tt>initSex(maleFreq, sex)</tt> will be applied.
+	 *  This operator initializes all chromosomes, including unused genotype
+	 *  locations and customized chromosomes.
 	 */
 	initByValue(intMatrix value = intMatrix(),
-	            vectoru loci = vectoru(), int atPloidy = -1,
-	            vectoru subPop = vectoru(), intMatrix indRange = intMatrix(),
-	            const vectorf & proportions = vectorf(),
-	            double maleFreq = 0.5, const vectori & sex = vectori(),
-	            int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	            const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-				const vectorstr & infoFields = vectorstr())
-		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		          stage, begin, end, step, at, rep, infoFields),
-		m_value(value), m_proportion(proportions)
-	{
-		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-			IndexError, "male frequency in the population should be in the range of [0,1]");
-
-		DBG_FAILIF(m_value.empty(), ValueError,
-			"Please specify an array of alleles in the order of chrom_1...chrom_n for all copies of chromosomes");
-
-		DBG_FAILIF(!m_proportion.empty() && m_proportion.size() != m_value.size(), ValueError,
-			"If proportions are given, its length should match that of values.");
-
-		DBG_FAILIF(!m_proportion.empty() && fcmp_ne(accumulate(m_proportion.begin(), m_proportion.end(), 0.0), 1),
-			ValueError, "Proportion should add up to one.");
-	}
-
+		const vectoru & loci = vectoru(), const vectoru & ploidy = vectoru(),
+		const vectorf & proportions = vectorf(),
+		bool initSex = true, double maleFreq = 0.5, const vectori & sex = vectori(),
+		int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr());
 
 	~initByValue()
 	{
@@ -357,162 +228,15 @@ private:
 
 	/// if assign randomly
 	vectorf m_proportion;
-};
 
-/// copy the genotype of an individual to all individuals
-/**
-   Function <tt>Spread(ind, subPop)</tt> spreads the genotypes of \c ind to all
-   individuals in an array of subpopulations. The default value of \c subPop
-   is the subpopulation where \c ind resides.
+	//
+	vectoru m_loci;
 
-   <funcForm>Spread</funcForm>
- */
-class spread : public baseOperator
-{
-public:
-	/// copy genotypes of \c ind to all individuals in \c subPop
-	/**
-	 */
-	spread(ULONG ind, vectoru subPop = vectoru(),
-	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	       const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-		   const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPopList(), infoFields),
-		m_ind(ind), m_subPop(subPop)
-	{
-	}
+	//
+	vectoru m_ploidy;
 
-
-	~spread()
-	{
-	}
-
-
-	/// deep copy of the operator \c spread
-	virtual baseOperator * clone() const
-	{
-		return new spread(*this);
-	}
-
-
-	/// used by Python print function to print out the general information of the operator \c spread
-	virtual string __repr__()
-	{
-		return "<simuPOP::spread genotype>";
-	}
-
-
-	/// apply this operator to population \c pop
-	bool apply(population & pop)
-	{
-		std::pair<UINT, ULONG> p = pop.subPopIndPair(m_ind);
-
-		if (m_subPop.empty())
-			m_subPop.resize(1, p.first);
-
-		GenoIterator srcBegin = pop.indGenoBegin(m_ind);
-		GenoIterator srcEnd = pop.indGenoEnd(m_ind);
-
-		for (vectoru::iterator sp = m_subPop.begin(); sp != m_subPop.end(); ++sp) {
-			for (ULONG i = pop.subPopBegin(*sp); i < pop.subPopEnd(*sp); ++i)
-				if (i != m_ind)
-					copy(srcBegin, srcEnd, pop.indGenoBegin(i));
-		}
-
-		return true;
-	}
-
-
-private:
-	ULONG m_ind;
-	vectoru m_subPop;
-
-};
-
-/// A python operator that uses a user-defined function to initialize individuals
-/**
-   This is a hybrid initializer. Users of this operator must supply a Python function with parameters
-   allele, ploidy and subpopulation indexes <tt>(index, ploidy, subPop)</tt>, and return an allele value.
-   This operator will loop through all individuals in each subpopulation and call this function
-   to initialize populations. The arrange of parameters allows different initialization scheme for each subpopulation.
-
-   <funcForm>PyInit</funcForm>
- */
-class pyInit : public initSex
-{
-
-	/// initialize populations using given user function
-
-public:
-	/**
-	 \param func a Python function with parameter <tt>(index, ploidy, subPop)</tt>, where
-	 \li \c index is the allele index ranging from \c 0 to <tt>totNumLoci-1</tt>;
-	 \li \c ploidy is the index of the copy of chromosomes;
-	 \li \c subPop is the subpopulation index.
-
-	   	The return value of this function should be an integer.
-	 \param loci a vector of locus indexes. If empty, apply to all loci.
-	 \param locus a shortcut to \c loci.
-	 \param atPloidy initialize which copy of chromosomes. Default to all.
-	 \param stage default to \c PreMating.
-
-	 */
-	pyInit(PyObject * func,  vectoru subPop = vectoru(),
-	       vectoru loci = vectoru(), int atPloidy = -1,
-	       intMatrix indRange = intMatrix(),
-	       double maleFreq = 0.5, const vectori & sex = vectori(),
-	       int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
-	       const repList & rep = repList(), // const subPopList & subPop = subPopList(),
-		   const vectorstr & infoFields = vectorstr())
-		: initSex(maleFreq, sex, subPop, indRange, loci, atPloidy,
-		          stage, begin, end, step, at, rep, infoFields)
-	{
-		DBG_FAILIF(maleFreq < 0 || maleFreq > 1,
-			IndexError, "male frequency in the population should be in the range of [0,1]");
-		DBG_ASSERT(PyCallable_Check(func),
-			ValueError, "Func is not a Python function");
-
-		Py_XINCREF(func);
-		m_func = func;
-	}
-
-
-	~pyInit()
-	{
-		if (m_func != NULL)
-			Py_DECREF(m_func);
-	}
-
-
-	/// CPPONLY
-	pyInit(const pyInit & rhs) : initSex(rhs), m_func(rhs.m_func)
-	{
-		if (m_func != NULL)
-			Py_INCREF(m_func);
-	}
-
-
-	/// deep copy of the operator \c pyInit
-	virtual baseOperator * clone() const
-	{
-		return new pyInit(*this);
-	}
-
-
-	/// used by Python print function to print out the general information of the operator \c pyInit
-	virtual string __repr__()
-	{
-		return "<simuPOP::pyInit>";
-	}
-
-
-	///  apply this operator to population \c pop
-	bool apply(population & pop);
-
-private:
-	/// the python function with parameter (ind, ploidy, subpop)
-	PyObject * m_func;
-
+	//
+	bool m_initSex;
 };
 
 }

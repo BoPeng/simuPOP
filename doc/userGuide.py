@@ -197,6 +197,7 @@ pop.subPopSize([0, 0])    # Size of VSP 0 in subpopulation 0
 pop.subPopSize([1, 0])    # Size of VSP 0 in subpopulation 1
 # use a combined splitter that defines additional VSPs by sex
 InitSex(pop)
+pop.setSubPopName('subPop 1', 0)
 pop.setVirtualSplitter(combinedSplitter([
     infoSplitter(field='x', values=[0, 1, 2, 3]),
     sexSplitter()])
@@ -204,6 +205,22 @@ pop.setVirtualSplitter(combinedSplitter([
 pop.numVirtualSubPop()    # Number of defined VSPs
 pop.subPopName([0, 4])    # VSP 4 is the first VSP defined by the sex splitter
 pop.subPopSize([0, 4])    # Number of male individuals
+#end
+
+
+#file log/virtualSubPop.log
+import random
+pop = population(10, loci=[2, 3], infoFields=['Sex'])
+InitSex(pop)
+pop.setVirtualSplitter(sexSplitter())
+# initialize male and females with different genotypes. Set initSex
+# to False because this operator will by default also initialize sex.
+InitByValue(pop, [[0]*5, [1]*5], subPop=([0, 0], [0, 1]), initSex=False)
+# set Sex information field to 0 for all males, and 1 for all females
+pop.setIndInfo([1], 'Sex', [0, 0])
+pop.setIndInfo([2], 'Sex', [0, 1])
+# Print individual genotypes, followed by values at information field Sex
+Dump(pop, structure=False)
 #end
 
 
@@ -1280,29 +1297,6 @@ pop.useAncestralPop(0)
 
 # Note that I can not use pop now, since it is
 # obtained from simu.population(0) which is invalid now.
-
-#file log/virtualSubPop.log
-import random
-pop = population(1000, loci=[2, 3], infoFields=['age'])
-InitByFreq(pop, [0.2, 0.8])
-for ind in pop.individuals():
-    ind.setInfo(random.randint(0, 5), 'age')
-
-# split by age
-pop.setVirtualSplitter(infoSplitter('age', values=[2, 4]))
-pop.subPopSize([0, 0])
-pop.virtualSubPopName(1)
-
-# split by genotype
-a = pop.setVirtualSplitter(
-    genotypeSplitter(locus=2, alleles=[[0, 1], [1, 1]], phase=True))
-pop.subPopSize([0, 0])
-pop.subPopSize([0, 1])
-
-for ind in pop.individuals([0, 0]):
-    assert ind.allele(2, 0) == 0 and ind.allele(2, 1) == 1
-
-#end
 
 
 
