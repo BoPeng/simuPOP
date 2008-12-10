@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -80,7 +80,7 @@ Last modified \\
 \use_bibtopic false
 \paperorientation portrait
 \secnumdepth 2
-\tocdepth 2
+\tocdepth 3
 \paragraph_separation indent
 \defskip medskip
 \quotes_language english
@@ -2784,14 +2784,14 @@ lstparams "caption={Manipulation of subpopulations},label={subPop}"
 \end_layout
 
 \begin_layout Standard
-Some population operators will change subpopulation IDs.
+Some population operations change the IDs of subpopulations.
  For example, if a population has three subpopulations 0, 1, and 2, and
  subpopulation 1 is split into two subpouplations, subpopulation 2 will
  become subpopulation 3.
  Tracking the ID of a subpopulation can be problematic, especially when
- conditional (or random) subpopulation operations are involved.
+ conditional or random subpopulation operations are involved.
  In this case, you can specify names to subpopulations.
- These names will follow their respecitive subpopulations during population
+ These names will follow their associated subpopulations during population
  operations so you can identify the ID of a subpopulation by its name.
  Note that simuPOP allows duplicate subpopulation names.
 \end_layout
@@ -2812,26 +2812,90 @@ Virtual subpopulations
 \end_layout
 
 \begin_layout Standard
-simuPOP 0.8.2 introduces the concept 
-\emph on
-virtual subpopulations
-\emph default
-.
- Virtual subpopulations are groups of individuals in a subpoulation, defined
- by certain criteria.
+simuPOP subpopulations can be further divided into virtual subpopulations
+ (VSP), which are groups of individuals who share certain properties.
  For example, all male individuals, all unaffected individuals, all individuals
  with information field age > 20, all individuals with genotype 0, 0 at
- a given locus, can form virtual subpopulations.
- Virtual subpopulations do not have to add up to the whole subpopulation,
- nor do they have to be distinct.
- Because properties of individuals are variable, virtual subpopulations
- do not have fixed sizes as subpopulations do.
+ a given locus, can form VSPs.
+ VPSs do not have to add up to the whole subpopulation, nor do they have
+ to be distinct.
+ Unlike subpopulations that have strict boundaries, VSPs change easily with
+ the changes of individual properties.
 \end_layout
 
 \begin_layout Standard
-Virtual subpopulations allow easy handling of heterogeneous populations,
- and can facilitate some computations that are previously very difficult
- to do.
+VSPs are defined by virtual splitters.
+ A splitter defines the same VSPs in all subpopulations, although sizes
+ of these VSPs vary across subpopulations due to individual differences.
+ For example, a 
+\family typewriter
+sexSplitter()
+\family default
+ defines two VSPs, the first with all male individuals and the second with
+ all female individuals, and a 
+\family typewriter
+infoSplitter(field='x', values=[1, 2, 4])
+\family default
+ defines three VSPs whose members have values 
+\family typewriter
+1
+\family default
+, 
+\family typewriter
+2
+\family default
+ and 
+\family typewriter
+4
+\family default
+ at information field 
+\family typewriter
+x
+\family default
+, respectively.
+ If different types of VSPs are needed, a combined splitter can be used
+ to combine VSPs defined by several splitters.
+\end_layout
+
+\begin_layout Standard
+A VSP is represented by a 
+\family typewriter
+[spID, vspID]
+\family default
+ pair.
+ Its name and size can be obtained using functions 
+\family typewriter
+subPopName()
+\family default
+ and 
+\family typewriter
+subPopSize()
+\family default
+.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "virtualSplitter"
+
+\end_inset
+
+ demonstrates how to apply virtual splitters to a population, and how to
+ check VSP names and sizes.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/virtualSplitter.log"
+lstparams "caption={Define virtual subpopulations in a population},label={virtualSplitter}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+VSPs provides a irtual subpopulations allow easy handling of heterogeneous
+ populations, and can facilitate some computations that are previously very
+ difficult to do.
  For example, mating schemes can work on virtual subpopulations.
  This allows complicated mating schemes such as mating in aged population,
  and mixed mating schems.
@@ -2841,102 +2905,6 @@ Virtual subpopulations allow easy handling of heterogeneous populations,
 ions.
  It is also easy to calculate statistics at a finer scale, such as allele
  frequency of all males.
-\end_layout
-
-\begin_layout Standard
-Virtual subpopulations are defined by virtual splitters.
- A splitter splits a subpopulation into pre-determined number of virtual
- subpopulations.
- It also assign a name, such as 
-\family typewriter
-age=5
-\family default
- to each virtual subpopulation.
- For example
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-sexSplitter
-\family default
- splits the population into male and female virtual subpopulations.
- A 
-\family typewriter
-affectionSplitter
-\family default
- splits the population into unaffected and affected virtual subpopulations.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-infoSplitter
-\family default
- splits the population according to values of a given information field.
- It can split the population by given values, or by some cut-off values.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-proportionSplitter
-\family default
- splits the population with given proportions, and a 
-\family typewriter
-rangeSplitters 
-\family default
-choose individuals from given ranges.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-genotypeSplitter 
-\family default
-splits the population with genotype values at given loci.
- Multiple genetypes are allowed for a virtual subpopulation.
- For example, 
-\family typewriter
-genotypeSplitter(1, [0, 0, 0, 1])
-\family default
- defines a virtual subpopulation with individuals having genotype 
-\family typewriter
-0, 0
-\family default
- or 
-\family typewriter
-0, 1
-\family default
- at locus 
-\family typewriter
-1
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-combinedSplitter
-\family default
- allows the specification of multiple splitter at the same subpopulation.
- For example, the unaffected and affected virtual subpopulation of a subpopulati
-on split by 
-\family typewriter
-combinedSplitter([sexSplitter(), affectionSplitter()])
-\family default
- are 2 and 3, respectively.
- 
-\end_layout
-
-\begin_layout Standard
-There is currently no easy way to get the intersection or superset of two
- virtual subpopulations, such as a virtual subpopulation with male and/or
- affected individuals.
- It is possible, though, to define an information field that reflect these
- logics and define a virtual subpopulation according to this information
- field.
 \end_layout
 
 \begin_layout Standard
@@ -2977,7 +2945,7 @@ virtualPopSize
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "virtualSubPop"
+reference "virtualSplitter"
 
 \end_inset
 
