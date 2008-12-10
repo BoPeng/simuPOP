@@ -34,7 +34,7 @@ Last modified \\
 \definecolor{VerbatimBackgroundColor}{rgb}{0.98,0.941,0.902}
 \definecolor{VerbatimBorderColor}{rgb}{0,0,0}
 \definecolor{VerbatimStringColor}{rgb}{0,0.5,0}
-\definecolor{VerbatimCommentColor}{rgb}{0.5,0.5,0.5}
+\definecolor{VerbatimCommentColor}{rgb}{0.2,0.2,0.2}
 \definecolor{VerbatimPromptColor}{rgb}{0.588,0.098,0.054}
 
 \usepackage{sectsty}
