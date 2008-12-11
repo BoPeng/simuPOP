@@ -34,6 +34,7 @@
 #include "pedigree.h"
 #include "population.h"
 #include "operator.h"
+#include "recombinator.h"
 
 #include <string>
 #include <algorithm>
@@ -120,7 +121,7 @@ public:
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
 		UINT maxNumOffspring, UINT mode,
 		double sexParam, UINT sexMode,
-		baseOperator * transmitter);
+		const baseOperator & transmitter);
 
 
 	virtual ~offspringGenerator()
@@ -259,7 +260,8 @@ public:
 		UINT sexMode = MATE_RandomSex
 	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                   mode, sexParam, sexMode, NULL)
+		                   mode, sexParam, sexMode,
+						   cloneGenoTransmitter())
 	{
 		setNumParents(1);
 	}
@@ -269,9 +271,6 @@ public:
 	{
 		return new cloneOffspringGenerator(*this);
 	}
-
-
-
 };
 
 /** Mendelian offspring generator accepts two parents and pass their
@@ -296,7 +295,8 @@ public:
 		UINT sexMode = MATE_RandomSex
 	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                   mode, sexParam, sexMode, NULL),
+		                   mode, sexParam, sexMode,
+						   mendelianGenoTransmitter()),
 		m_bt(rng())
 	{
 		setNumParents(2);

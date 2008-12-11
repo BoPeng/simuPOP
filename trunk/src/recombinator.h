@@ -35,198 +35,187 @@ using std::ostream_iterator;
 
 namespace simuPOP {
 
-// 
-// /** clone offspring generator copies parental geneotype to a number
-//    of offspring. Only one parent is accepted. The number of offspring
-//    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
-//    \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
-//    ignored.
-//    <applicability>all ploidy</applicability>
-//  */
-// class cloneOffspringGenerator : public offspringGenerator
-// {
-// public:
-// 	/**
-// 	   \param sexParam ignored because sex is copied from the parent.
-// 	   \param sexMode ignored because sex is copied from the parent.
-// 	 */
-// 	cloneOffspringGenerator(double numOffspring = 1,
-// 		PyObject * numOffspringFunc = NULL,
-// 		UINT maxNumOffspring = 1,
-// 		UINT mode = MATE_NumOffspring,
-// 		double sexParam = 0.5,
-// 		UINT sexMode = MATE_RandomSex
-// 	    ) :
-// 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-// 		                   mode, sexParam, sexMode)
-// 	{
-// 		setNumParents(1);
-// 	}
-// 
-// 
-// 	offspringGenerator * clone() const
-// 	{
-// 		return new cloneOffspringGenerator(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-// 		RawIndIterator & offBegin,
-// 		RawIndIterator & offEnd,
-// 		vector<baseOperator *> & ops);
-// 
-// };
-// 
-// /** Mendelian offspring generator accepts two parents and pass their
-//    genotype to a number of offspring following Mendelian's law. Basically,
-//    one of the paternal chromosomes is chosen randomly to form the paternal
-//    copy of the offspring, and one of the maternal chromosome is chosen
-//    randomly to form the maternal copy of the offspring. The number of offspring
-//    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
-//    \c maxNumOffspring and \c mode. Recombination will not happen unless
-//    a during-mating operator recombinator is used.
-// 
-//    <applicability>diploid only</applicability>
-//  */
-// class mendelianOffspringGenerator : public offspringGenerator
-// {
-// public:
-// 	mendelianOffspringGenerator(double numOffspring = 1,
-// 		PyObject * numOffspringFunc = NULL,
-// 		UINT maxNumOffspring = 1,
-// 		UINT mode = MATE_NumOffspring,
-// 		double sexParam = 0.5,
-// 		UINT sexMode = MATE_RandomSex
-// 	    ) :
-// 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-// 		                   mode, sexParam, sexMode),
-// 		m_bt(rng())
-// 	{
-// 		setNumParents(2);
-// 	}
-// 
-// 
-// 	offspringGenerator * clone() const
-// 	{
-// 		return new mendelianOffspringGenerator(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
-// 
-// 	/** CPPONLY
-// 	 * \param count index of offspring, used to set offspring sex
-// 	 * does not set sex if count == -1.
-// 	 */
-// 	void formOffspringGenotype(individual * parent,
-// 		RawIndIterator & it, int ploidy, int count);
-// 
-// 	/// CPPONLY
-// 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-// 		RawIndIterator & offBegin,
-// 		RawIndIterator & offEnd,
-// 		vector<baseOperator *> & ops);
-// 
-// protected:
-// 	// use bernullitrisls with p=0.5 for free recombination
-// 	BernulliTrials m_bt;
-// 
-// 	/// sex chromosome handling
-// 	bool m_hasSexChrom;
-// 
-// 	// cache chromBegin, chromEnd for better performance.
-// 	vectoru m_chIdx;
-// 
-// };
-// 
-// 
-// /** selfing offspring generator works similarly as a mendelian offspring
-//    generator but a single parent produces both the paternal and maternal
-//    copy of the offspring chromosomes. This offspring generator accepts a
-//    dipload parent. A random copy of the parental chromosomes is chosen
-//    randomly to form the parental copy of the offspring chromosome, and
-//    is chosen randomly again to form the maternal copy of the offspring
-//    chromosome.
-//    <applicability>diploid only</applicability>
-//  */
-// class selfingOffspringGenerator : public mendelianOffspringGenerator
-// {
-// public:
-// 	selfingOffspringGenerator(double numOffspring = 1,
-// 		PyObject * numOffspringFunc = NULL,
-// 		UINT maxNumOffspring = 1,
-// 		UINT mode = MATE_NumOffspring,
-// 		double sexParam = 0.5,
-// 		UINT sexMode = MATE_RandomSex
-// 	    )
-// 		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-// 		                              mode, sexParam, sexMode)
-// 	{
-// 		setNumParents(1);
-// 	}
-// 
-// 
-// 	offspringGenerator * clone() const
-// 	{
-// 		return new selfingOffspringGenerator(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	UINT generateOffspring(population & pop, individual * parent, individual *,
-// 		RawIndIterator & offBegin,
-// 		RawIndIterator & offEnd,
-// 		vector<baseOperator *> & ops);
-// 
-// };
-// 
-// 
-// /** haplodiploid offspring generator mimics sex-determination in honey bees.
-//    Given a female (queen) parent and a male parent, the female is considered
-//    as diploid with two set of chromosomes, and the male is condiered as haploid.
-//    Actually, the first set of male chromosomes are used. During mating,
-//    female produce eggs, subject to potential recombination and gene conversion,
-//    while male sperm is identical to the parental chromosome.
-// 
-//    Female offspring has two sets of chromosomes, one from mother and one from
-//    father. Male offspring has one set of chromosomes from his mother.
-//    <applicability>haplodiploid only</applicability>
-//  */
-// class haplodiploidOffspringGenerator : public mendelianOffspringGenerator
-// {
-// public:
-// 	haplodiploidOffspringGenerator(double numOffspring = 1,
-// 		PyObject * numOffspringFunc = NULL,
-// 		UINT maxNumOffspring = 1,
-// 		UINT mode = MATE_NumOffspring,
-// 		double sexParam = 0.5,
-// 		UINT sexMode = MATE_RandomSex
-// 	    )
-// 		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-// 		                              mode, sexParam, sexMode)
-// 	{
-// 		setNumParents(2);
-// 	}
-// 
-// 
-// 	void copyParentalGenotype(individual * parent,
-// 		RawIndIterator & it, int ploidy, int count);
-// 
-// 	offspringGenerator * clone() const
-// 	{
-// 		return new haplodiploidOffspringGenerator(*this);
-// 	}
-// 
-// 
-// 	/// CPPONLY
-// 	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-// 		RawIndIterator & offBegin,
-// 		RawIndIterator & offEnd,
-// 		vector<baseOperator *> & ops);
-// 
-// };
+/** This is the base class of all during mating operators that transmit
+ *  genotype from parent(s) to offspring. It provides a number of functions
+ *  that can be used to copy genotypes around. This operator cannot be used
+ *  directly.
+ */
+class genoTransmitter : public baseOperator
+{
+public:
+	/** Define an empty during-mating operator operator without output.
+	 */
+	genoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
+		: baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
+	{
+	}
+
+
+	baseOperator * clone() const
+	{
+		return new genoTransmitter(*this);
+	}
+
+
+};
+
+
+/** clone offspring generator copies parental geneotype to a number
+   of offspring. Only one parent is accepted. The number of offspring
+   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
+   \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
+   ignored.
+   <applicability>all ploidy</applicability>
+ */
+class cloneGenoTransmitter : public genoTransmitter
+{
+public:
+	/**
+	   \param sexParam ignored because sex is copied from the parent.
+	   \param sexMode ignored because sex is copied from the parent.
+	 */
+	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
+		genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+	{
+	}
+
+
+	baseOperator * clone() const
+	{
+		return new cloneGenoTransmitter(*this);
+	}
+
+
+	///
+	virtual bool applyDuringMating(population & pop,
+	                               RawIndIterator offspring,
+	                               individual * dad = NULL,
+	                               individual * mom = NULL) { return true; }
+};
+
+
+/** Mendelian offspring generator accepts two parents and pass their
+   genotype to a number of offspring following Mendelian's law. Basically,
+   one of the paternal chromosomes is chosen randomly to form the paternal
+   copy of the offspring, and one of the maternal chromosome is chosen
+   randomly to form the maternal copy of the offspring. The number of offspring
+   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
+   \c maxNumOffspring and \c mode. Recombination will not happen unless
+   a during-mating operator recombinator is used.
+
+   <applicability>diploid only</applicability>
+ */
+class mendelianGenoTransmitter : public genoTransmitter
+{
+public:
+	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
+		genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+		m_bt(rng())
+	{
+	}
+
+
+	genoTransmitter * clone() const
+	{
+		return new mendelianGenoTransmitter(*this);
+	}
+
+
+	virtual bool applyDuringMating(population & pop,
+		RawIndIterator offspring,
+		individual * dad = NULL,
+		individual * mom = NULL);
+
+	/// CPPONLY
+	virtual void initialize(const population & pop, vector<baseOperator *> const & ops) {}
+
+	/** CPPONLY
+	 * \param count index of offspring, used to set offspring sex
+	 * does not set sex if count == -1.
+	 */
+	void formOffspringGenotype(individual * parent,
+	                           RawIndIterator & it, int ploidy, int count) {}
+
+protected:
+	// use bernullitrisls with p=0.5 for free recombination
+	BernulliTrials m_bt;
+
+	/// sex chromosome handling
+	bool m_hasSexChrom;
+
+	// cache chromBegin, chromEnd for better performance.
+	vectoru m_chIdx;
+
+};
+
+
+/** selfing offspring generator works similarly as a mendelian offspring
+   generator but a single parent produces both the paternal and maternal
+   copy of the offspring chromosomes. This offspring generator accepts a
+   dipload parent. A random copy of the parental chromosomes is chosen
+   randomly to form the parental copy of the offspring chromosome, and
+   is chosen randomly again to form the maternal copy of the offspring
+   chromosome.
+   <applicability>diploid only</applicability>
+ */
+class selfingGenoTransmitter : public mendelianGenoTransmitter
+{
+public:
+	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
+		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+	{
+	}
+
+
+	genoTransmitter * clone() const
+	{
+		return new selfingGenoTransmitter(*this);
+	}
+
+
+};
+
+
+/** haplodiploid offspring generator mimics sex-determination in honey bees.
+   Given a female (queen) parent and a male parent, the female is considered
+   as diploid with two set of chromosomes, and the male is condiered as haploid.
+   Actually, the first set of male chromosomes are used. During mating,
+   female produce eggs, subject to potential recombination and gene conversion,
+   while male sperm is identical to the parental chromosome.
+
+   Female offspring has two sets of chromosomes, one from mother and one from
+   father. Male offspring has one set of chromosomes from his mother.
+   <applicability>haplodiploid only</applicability>
+ */
+class haplodiploidGenoTransmitter : public mendelianGenoTransmitter
+{
+public:
+	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
+		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+	{
+	}
+
+
+	void copyParentalGenotype(individual * parent,
+	                          RawIndIterator & it, int ploidy, int count) {} ;
+
+	genoTransmitter * clone() const
+	{
+		return new haplodiploidGenoTransmitter(*this);
+	}
+
+
+};
 
 
 /**

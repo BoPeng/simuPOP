@@ -31,7 +31,7 @@ offspringGenerator::offspringGenerator(double numOffspring,
 	UINT mode,
 	double sexParam,
 	UINT sexMode,
-	baseOperator * transmitter) :
+	const baseOperator & transmitter) :
 	m_numOffspring(numOffspring),
 	m_numOffspringFunc(NULL),
 	m_maxNumOffspring(maxNumOffspring),
@@ -64,7 +64,7 @@ offspringGenerator::offspringGenerator(double numOffspring,
 		+ toStr(m_maxNumOffspring));
 	DBG_FAILIF(m_sexMode == MATE_ProbOfMale && (fcmp_lt(m_sexParam, 0) || fcmp_gt(m_sexParam, 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
-	m_transmitter = transmitter == NULL ? transmitter : transmitter->clone();
+	m_transmitter = transmitter.clone();
 }
 
 
