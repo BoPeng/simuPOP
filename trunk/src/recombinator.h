@@ -35,52 +35,22 @@ using std::ostream_iterator;
 
 namespace simuPOP {
 
-/** This is the base class of all during mating operators that transmit
- *  genotype from parent(s) to offspring. It provides a number of functions
- *  that can be used to copy genotypes around. This operator cannot be used
- *  directly.
+/** This during mating operator copies parental genotype directly to offspring.
+ *  This operator works for all mating schemes when one or two parents are
+ *  involved. If both parents are passed, maternal genotype are copied.
  */
-class genoTransmitter : public baseOperator
+class cloneGenoTransmitter : public baseOperator
 {
 public:
-	/** Define an empty during-mating operator operator without output.
-	 */
-	genoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
-	{
-	}
-
-
-	baseOperator * clone() const
-	{
-		return new genoTransmitter(*this);
-	}
-
-
-};
-
-
-/** clone offspring generator copies parental geneotype to a number
-   of offspring. Only one parent is accepted. The number of offspring
-   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
-   \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
-   ignored.
-   <applicability>all ploidy</applicability>
- */
-class cloneGenoTransmitter : public genoTransmitter
-{
-public:
-	/**
-	   \param sexParam ignored because sex is copied from the parent.
-	   \param sexMode ignored because sex is copied from the parent.
+	/** Create a cloneGenoTransmitter.
 	 */
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0)
 	{
+		setFormOffGenotype(true);
 	}
 
 
@@ -90,11 +60,20 @@ public:
 	}
 
 
+	void initialize(const population & pop);
+
 	///
-	virtual bool applyDuringMating(population & pop,
-	                               RawIndIterator offspring,
-	                               individual * dad = NULL,
-	                               individual * mom = NULL) { return true; }
+	bool applyDuringMating(population & pop,
+		RawIndIterator offspring,
+		individual * dad = NULL,
+		individual * mom = NULL);
+
+private:
+	// cache some genostructor information for
+	// faster performance
+	UINT m_ploidy;
+	bool m_hasCustomizedChroms;
+	vectoru m_lociToCopy;
 };
 
 
@@ -109,19 +88,19 @@ public:
 
    <applicability>diploid only</applicability>
  */
-class mendelianGenoTransmitter : public genoTransmitter
+class mendelianGenoTransmitter : public baseOperator
 {
 public:
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_bt(rng())
 	{
 	}
 
 
-	genoTransmitter * clone() const
+	baseOperator * clone() const
 	{
 		return new mendelianGenoTransmitter(*this);
 	}
@@ -133,21 +112,18 @@ public:
 		individual * mom = NULL);
 
 	/// CPPONLY
-	virtual void initialize(const population & pop, vector<baseOperator *> const & ops) {}
+	void initialize(const population & pop);
 
 	/** CPPONLY
 	 * \param count index of offspring, used to set offspring sex
 	 * does not set sex if count == -1.
 	 */
 	void formOffspringGenotype(individual * parent,
-	                           RawIndIterator & it, int ploidy, int count) {}
+		RawIndIterator & it, int ploidy);
 
 protected:
 	// use bernullitrisls with p=0.5 for free recombination
 	BernulliTrials m_bt;
-
-	/// sex chromosome handling
-	bool m_hasSexChrom;
 
 	// cache chromBegin, chromEnd for better performance.
 	vectoru m_chIdx;
@@ -175,11 +151,16 @@ public:
 	}
 
 
-	genoTransmitter * clone() const
+	baseOperator * clone() const
 	{
 		return new selfingGenoTransmitter(*this);
 	}
 
+
+	bool applyDuringMating(population & pop,
+		RawIndIterator offspring,
+		individual * dad = NULL,
+		individual * mom = NULL);
 
 };
 
@@ -206,14 +187,16 @@ public:
 	}
 
 
-	void copyParentalGenotype(individual * parent,
-	                          RawIndIterator & it, int ploidy, int count) {} ;
-
-	genoTransmitter * clone() const
+	baseOperator * clone() const
 	{
 		return new haplodiploidGenoTransmitter(*this);
 	}
 
+
+	virtual bool applyDuringMating(population & pop,
+		RawIndIterator offspring,
+		individual * dad = NULL,
+		individual * mom = NULL);
 
 };
 
@@ -330,7 +313,7 @@ public:
 		// tells mating schemes that this operator will form
 		// the genotype of offspring so they do not have to
 		// generate default genotype for offspring
-		this->setFormOffGenotype(true);
+		setFormOffGenotype(true);
 
 		DBG_FAILIF(fcmp_lt(m_convProb, 0) || fcmp_gt(m_convProb, 1),
 			ValueError, "Conversion probability should be between 0 and 1");

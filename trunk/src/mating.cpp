@@ -165,10 +165,11 @@ bool offspringGenerator::checkFormOffspringGenotype(vector<baseOperator *> const
 	return true;
 }
 
+
 UINT offspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
-		RawIndIterator & it,
-		RawIndIterator & itEnd,
-		vector<baseOperator *> & ops)
+                                           RawIndIterator & it,
+                                           RawIndIterator & itEnd,
+                                           vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
 		"Offspring generator is not initialized before used to generate offspring");
