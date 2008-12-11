@@ -1185,5 +1185,14 @@ private:
 	PyObject * m_param;
 };
 
+
+/** HIDDEN
+ *  This function is used to test during mating operators. It simply apply
+ *  operator \e op to \e dad, \e mom and \e off of population \e pop.
+ *  If index of dad or mom is negative, NULL will be passed.
+ */
+void ApplyDuringMatingOperator(const baseOperator & op,
+	population * pop, int dad, int mom, ULONG off);
+
 }
 #endif

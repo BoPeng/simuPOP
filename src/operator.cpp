@@ -458,4 +458,14 @@ bool pyIndOperator::apply(population & pop)
 }
 
 
+void ApplyDuringMatingOperator(const baseOperator & op,
+	population * pop, int dad, int mom, ULONG off)
+{
+	baseOperator * opPtr = op.clone();
+	opPtr->applyDuringMating(*pop, pop->rawIndBegin() + off,
+		dad < 0 ? NULL : &pop->ind(dad), 
+		mom < 0 ? NULL : &pop->ind(mom));
+}
+
+
 }
