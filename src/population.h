@@ -930,12 +930,13 @@ public:
 	 */
 	void setGenotype(vectora geno);
 
-	/** Fill the genotype of all individuals of in subpopulation \e subPop
-	 *  using a list of alleles \e geno. \e geno will be reused if its length
-	 *  is less than <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
+	/** Fill the genotype of all individuals of in (virtual) subpopulation
+     *  \e subPop using a list of alleles \e geno. \e geno will be reused if
+     *  its length is less than
+     *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
-	void setGenotype(vectora geno, SubPopID subPop);
+	void setGenotype(vectora geno, vspID subPop);
 
 	//@}
 
