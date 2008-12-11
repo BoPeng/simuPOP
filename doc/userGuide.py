@@ -152,6 +152,40 @@ print mom.genotype(1)
 #end
 
 
+#file log/individual.log
+pop = population([5, 4], loci=[2, 5], infoFields=['x'])
+# get an individual
+ind = pop.individual(3)
+ind.ploidy()            # access to genotypic structure
+ind.numChrom()
+ind.affected()
+ind.setAffected(True)   # access affection status,
+ind.sex()               # sex,
+ind.setInfo(4, 'x')     # and information fields
+ind.info('x')
+#end
+
+#file log/individual_genotype.log
+pop = population([2, 1], loci=[2, 5])
+for ind in pop.individuals(1):
+    for marker in range(pop.totNumLoci()):
+        ind.setAllele(marker % 2, marker, 0)
+        ind.setAllele(marker % 2, marker, 1)
+        print '%d %d ' % (ind.allele(marker, 0), ind.allele(marker, 1))
+
+ind = pop.individual(1)
+geno = ind.genotype(1)      # the second homologous copy
+geno
+geno[2] = 3
+ind.genotype(1)
+geno[2:4] = [3, 4]          # direct modification of the underlying genotype
+ind.genotype(1)
+# set genotype (genotype, ploidy, chrom)
+ind.setGenotype([2, 1], 1, 1)
+geno
+#end
+
+
 #file log/subPop.log
 pop = population(size=[3, 4, 5], ploidy=1, loci=[1], infoFields=['x'])
 # individual 0, 1, 2, ... will have an allele 0, 1, 2, ...
@@ -1872,31 +1906,6 @@ pop.save("sample.pop")
 pop1 = LoadPopulation("sample.pop")
 #end
 
-
-#file log/src_individual.log
-pop = population(500, loci=[2, 5, 10])
-# get an individual
-ind = pop.individual(9)
-# oops, wrong index
-ind = pop.individual(3)
-# you can access genotypic structure info
-print ind.ploidy()
-print ind.numChrom()
-# ...
-# as well as genotype
-print ind.allele(1) 
-ind.setAllele(1, 5)
-print ind.allele(1)
-# you can also use an overloaded function
-# with a second parameter being the ploidy index
-print ind.allele(1, 1) # second locus at the second copy of chromosome
-# other information
-print ind.affected()
-print ind.affectedChar()
-ind.setAffected(1)
-print ind.affectedChar()
-print ind.sexChar()
-#end
 
 
 #file log/src_operator.log
