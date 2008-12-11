@@ -30,13 +30,15 @@ offspringGenerator::offspringGenerator(double numOffspring,
 	UINT maxNumOffspring,
 	UINT mode,
 	double sexParam,
-	UINT sexMode) :
+	UINT sexMode,
+	baseOperator * transmitter) :
 	m_numOffspring(numOffspring),
 	m_numOffspringFunc(NULL),
 	m_maxNumOffspring(maxNumOffspring),
 	m_mode(mode),
 	m_sexParam(sexParam),
 	m_sexMode(sexMode),
+	m_transmitter(NULL),
 	m_initialized(false)
 {
 	DBG_FAILIF(mode == MATE_PyNumOffspring && numOffspringFunc == NULL, ValueError,
@@ -62,6 +64,7 @@ offspringGenerator::offspringGenerator(double numOffspring,
 		+ toStr(m_maxNumOffspring));
 	DBG_FAILIF(m_sexMode == MATE_ProbOfMale && (fcmp_lt(m_sexParam, 0) || fcmp_gt(m_sexParam, 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
+	m_transmitter = transmitter == NULL ? transmitter : transmitter->clone();
 }
 
 
@@ -162,11 +165,10 @@ bool offspringGenerator::checkFormOffspringGenotype(vector<baseOperator *> const
 	return true;
 }
 
-
-UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * parent, individual *,
-                                                RawIndIterator & it,
-                                                RawIndIterator & it_end,
-                                                vector<baseOperator *> & ops)
+UINT offspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
+		RawIndIterator & it,
+		RawIndIterator & itEnd,
+		vector<baseOperator *> & ops)
 {
 	DBG_ASSERT(initialized(), ValueError,
 		"Offspring generator is not initialized before used to generate offspring");
@@ -180,10 +182,9 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 	UINT count = 0;
 	bool accept = true;
 	UINT numOff = numOffspring(pop.gen());
-	while (count < numOff && it != it_end) {
+	while (count < numOff && it != itEnd) {
 		if (m_formOffGenotype)
-			// use deep copy!!!!!!!
-			it->copyFrom(*parent);
+			m_transmitter->applyDuringMating(pop, it, dad, mom);
 
 		accept = true;
 		// apply during mating operators
@@ -192,7 +193,7 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 		for (; iop != iopEnd;  ++iop) {
 			try {
 				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, parent, NULL)) {
+				if (!(*iop)->applyDuringMating(pop, it, dad, NULL)) {
 					accept = false;
 					break;
 				}
@@ -207,301 +208,6 @@ UINT cloneOffspringGenerator::generateOffspring(population & pop, individual * p
 			count++;
 		}
 	}
-	return count;
-}
-
-
-void mendelianOffspringGenerator::initialize(const population & pop,
-                                             vector<baseOperator *> const & ops)
-{
-	offspringGenerator::initialize(pop, ops);
-	m_hasSexChrom = pop.sexChrom();
-	if (m_formOffGenotype) {
-		vectorf prob(2 * pop.numChrom(), 0.5);
-		m_bt.setParameter(prob, pop.popSize());
-	}
-	m_chIdx = pop.chromIndex();
-}
-
-
-void mendelianOffspringGenerator::formOffspringGenotype(individual * parent,
-                                                        RawIndIterator & it, int ploidy,
-                                                        int count)
-{
-	// current parental ploidy (copy from which chromosome copy)
-	int parPloidy = 0;
-	// pointer to parental, and offspring chromosome copies
-	GenoIterator par[2];
-	GenoIterator off;
-
-	par[0] = parent->genoBegin(0);
-	par[1] = parent->genoBegin(1);
-	off = it->genoBegin(ploidy);
-
-	UINT chEnd = parent->numChrom();
-	int btShift = ploidy * chEnd;
-#ifndef BINARYALLELE
-	// the easy way to copy things.
-	for (UINT ch = 0; ch < chEnd; ++ch) {
-		parPloidy = m_bt.trialSucc(ch + btShift);
-		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt)
-			off[gt] = par[parPloidy][gt];
-	}
-#else
-	//
-	// 1. try to copy in blocks,
-	// 2. if two chromosomes can be copied together, copy together
-	// 3. if length is short, using the old method.
-	//
-	size_t parBegin = 0;
-	size_t parEnd = 0;
-	// first chromosome
-	parPloidy = m_bt.trialSucc(btShift);
-	//
-	int nextParPloidy = 0;
-	bool copyPar;
-	for (UINT ch = 0; ch < chEnd; ++ch) {
-		// if it is the last chromosome, copy anyway
-		if (ch == chEnd - 1)
-			copyPar = true;
-		else {                                                                    // is there a different chromosome?
-			nextParPloidy = m_bt.trialSucc(ch + 1 + btShift);
-			copyPar = parPloidy != nextParPloidy;
-		}
-		if (copyPar) {
-			// end of this chromosome, is the beginning of the next
-			parEnd = m_chIdx[ch + 1];
-			size_t length = parEnd - parBegin;
-			//
-			// the easiest case, try to get some speed up...
-			if (length == 1)
-				off[parBegin] = par[parPloidy][parBegin];
-			else
-				copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
-
-			if (ch != chEnd - 1)
-				parPloidy = nextParPloidy;
-			parBegin = parEnd;
-		}
-	}
-#endif
-
-	if (count != -1) {
-		// last chromosome (sex chromosomes) determine sex
-		if (m_hasSexChrom)
-			it->setSex(parPloidy == 1 ? Male : Female);
-		else
-			it->setSex(getSex(count));
-	}
-}
-
-
-UINT mendelianOffspringGenerator::generateOffspring(population & pop, individual * dad, individual * mom,
-                                                    RawIndIterator & it,
-                                                    RawIndIterator & it_end,
-                                                    vector<baseOperator *> & ops)
-{
-	DBG_ASSERT(initialized(), ValueError,
-		"Offspring is not initialized before used to generate offspring");
-
-	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-		"Offspring generator is used for two different types of populations");
-
-	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
-		"Mendelian offspring generator requires two valid parents");
-
-	// generate numOffspring offspring per mating
-	UINT count = 0;
-	bool accept = true;
-
-	UINT numOff = numOffspring(pop.gen());
-	while (count < numOff && it != it_end) {
-		if (m_formOffGenotype) {
-			// m_bt 's width is 2*numChrom() and can be used for
-			// the next two functions.
-			m_bt.trial();
-			formOffspringGenotype(mom, it, 0, -1);
-			formOffspringGenotype(dad, it, 1, count);
-		}
-
-		accept = true;
-		// apply all during mating operators
-		vector<baseOperator *>::iterator iop = ops.begin();
-		vector<baseOperator *>::iterator iopEnd = ops.end();
-		for (; iop != iopEnd; ++iop) {
-			try {
-				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
-					accept = false;
-					break;
-				}
-				// if there is no sex chromosome, mating scheme is responsible
-				// of setting offspring sex
-				if (!m_hasSexChrom)
-					it->setSex(getSex(count));
-				else if(!isSexOK(it->sex(), count)) {
-					accept = false;
-					break;
-				}
-			} catch (...) {
-				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-				throw;
-			}
-		}
-		if (accept) {
-			it++;
-			count++;
-		}
-	}                                                                                         // one offspring is successfully generated
-	return count;
-}
-
-
-UINT selfingOffspringGenerator::generateOffspring(population & pop, individual * parent,
-                                                  individual * mom,
-                                                  RawIndIterator & it,
-                                                  RawIndIterator & it_end,
-                                                  vector<baseOperator *> & ops)
-{
-	DBG_ASSERT(initialized(), ValueError,
-		"Offspring is not initialized before used to generate offspring");
-
-	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-		"Offspring generator is used for two different types of populations");
-
-	DBG_FAILIF(parent == NULL, ValueError, "selfing offspring generator: Parent is NULL");
-	DBG_FAILIF(mom != NULL, ValueError, "selfing offspring generator: the second parent should be NULL");
-
-	// generate numOffspring offspring per mating
-	UINT count = 0;
-	bool accept = true;
-
-	UINT numOff = numOffspring(pop.gen());
-	while (count < numOff && it != it_end) {
-		if (m_formOffGenotype) {
-			// m_bt 's width is 2*numChrom() and can be used for
-			// the next two functions.
-			m_bt.trial();
-			// use the same parent to produce two copies of chromosomes
-			formOffspringGenotype(parent, it, 0, -1);
-			formOffspringGenotype(parent, it, 1, count);
-		}
-
-		accept = true;
-		// apply all during mating operators
-		vector<baseOperator *>::iterator iop = ops.begin();
-		vector<baseOperator *>::iterator iopEnd = ops.end();
-		for (; iop != iopEnd; ++iop) {
-			try {
-				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, parent, NULL)) {
-					accept = false;
-					break;
-				}
-				// if there is no sex chromosome, mating scheme is responsible
-				// of setting offspring sex
-				if (!m_hasSexChrom)
-					it->setSex(getSex(count));
-				else if(!isSexOK(it->sex(), count)) {
-					accept = false;
-					break;
-				}
-			} catch (...) {
-				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-				throw;
-			}
-		}
-		if (accept) {
-			it++;
-			count++;
-		}
-	}                                                                                         // one offspring is successfully generated
-	return count;
-}
-
-
-// copy the first copy of chromosome from parent to offspring
-void haplodiploidOffspringGenerator::copyParentalGenotype(individual * parent,
-                                                          RawIndIterator & it, int ploidy,
-                                                          int count)
-{
-	GenoIterator par = parent->genoBegin(0);
-	GenoIterator off = it->genoBegin(ploidy);
-
-#ifndef BINARYALLELE
-	size_t gt = 0;
-	size_t gt_end = parent->totNumLoci();
-	for (; gt < gt_end; ++gt)
-		off[gt] = par[gt];
-#else
-	copyGenotype(par, off, parent->totNumLoci());
-#endif
-
-	// no sex-chromosome determination
-	if (count != -1)
-		it->setSex(getSex(count));
-}
-
-
-UINT haplodiploidOffspringGenerator::generateOffspring(population & pop, individual * dad,
-                                                       individual * mom,
-                                                       RawIndIterator & it,
-                                                       RawIndIterator & it_end,
-                                                       vector<baseOperator *> & ops)
-{
-	DBG_ASSERT(initialized(), ValueError,
-		"Offspring is not initialized before used to generate offspring");
-
-	DBG_FAILIF(m_genoStruIdx != pop.genoStruIdx(), ValueError,
-		"Offspring generator is used for two different types of populations");
-
-	DBG_FAILIF(dad == NULL || mom == NULL, ValueError,
-		"haplodiploid offspring generator: one of the parents is invalid.");
-
-	// generate numOffspring offspring per mating
-	UINT count = 0;
-	bool accept = true;
-
-	UINT numOff = numOffspring(pop.gen());
-	while (count < numOff && it != it_end) {
-		if (m_formOffGenotype) {
-			// m_bt 's width is 2*numChrom() and can be used for
-			// the next two functions.
-			m_bt.trial();
-			// sex-chromosome determination???
-			formOffspringGenotype(mom, it, 0, -1);
-			copyParentalGenotype(dad, it, 1, count);
-		}
-
-		accept = true;
-		// apply all during mating operators
-		vector<baseOperator *>::iterator iop = ops.begin();
-		vector<baseOperator *>::iterator iopEnd = ops.end();
-		for (; iop != iopEnd; ++iop) {
-			try {
-				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
-					accept = false;
-					break;
-				}
-				// if there is no sex chromosome, mating scheme is responsible
-				// of setting offspring sex
-				if (!m_hasSexChrom)
-					it->setSex(getSex(count));
-				else if(!isSexOK(it->sex(), count)) {
-					accept = false;
-					break;
-				}
-			} catch (...) {
-				cout << "DuringMating operator " << (*iop)->__repr__() << " throws an exception." << endl << endl;
-				throw;
-			}
-		}
-		if (accept) {
-			it++;
-			count++;
-		}
-	}                                                          // one offspring is successfully generated
 	return count;
 }
 

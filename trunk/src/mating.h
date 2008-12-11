@@ -119,7 +119,8 @@ public:
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
 		UINT maxNumOffspring, UINT mode,
-		double sexParam, UINT sexMode);
+		double sexParam, UINT sexMode,
+		baseOperator * transmitter);
 
 
 	virtual ~offspringGenerator()
@@ -139,7 +140,7 @@ public:
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
 		RawIndIterator & offBegin,
 		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops) = 0;
+		vector<baseOperator *> & ops);
 
 	/// CPPONLY
 	bool fixedFamilySize() const
@@ -213,6 +214,9 @@ public:
 	///
 	UINT m_sexMode;
 
+	/// default transmitter
+	baseOperator *  m_transmitter;
+
 protected:
 	/// check if any of the during mating operators will set genotype
 	/// Note that such an operator will also set individual sex
@@ -255,7 +259,7 @@ public:
 		UINT sexMode = MATE_RandomSex
 	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                   mode, sexParam, sexMode)
+		                   mode, sexParam, sexMode, NULL)
 	{
 		setNumParents(1);
 	}
@@ -267,11 +271,6 @@ public:
 	}
 
 
-	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-		RawIndIterator & offBegin,
-		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops);
 
 };
 
@@ -297,7 +296,7 @@ public:
 		UINT sexMode = MATE_RandomSex
 	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                   mode, sexParam, sexMode),
+		                   mode, sexParam, sexMode, NULL),
 		m_bt(rng())
 	{
 		setNumParents(2);
@@ -309,22 +308,6 @@ public:
 		return new mendelianOffspringGenerator(*this);
 	}
 
-
-	/// CPPONLY
-	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
-
-	/** CPPONLY
-	 * \param count index of offspring, used to set offspring sex
-	 * does not set sex if count == -1.
-	 */
-	void formOffspringGenotype(individual * parent,
-		RawIndIterator & it, int ploidy, int count);
-
-	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-		RawIndIterator & offBegin,
-		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops);
 
 protected:
 	// use bernullitrisls with p=0.5 for free recombination
@@ -370,13 +353,6 @@ public:
 		return new selfingOffspringGenerator(*this);
 	}
 
-
-	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * parent, individual *,
-		RawIndIterator & offBegin,
-		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops);
-
 };
 
 
@@ -408,20 +384,10 @@ public:
 	}
 
 
-	void copyParentalGenotype(individual * parent,
-		RawIndIterator & it, int ploidy, int count);
-
 	offspringGenerator * clone() const
 	{
 		return new haplodiploidOffspringGenerator(*this);
 	}
-
-
-	/// CPPONLY
-	UINT generateOffspring(population & pop, individual * dad, individual * mom,
-		RawIndIterator & offBegin,
-		RawIndIterator & offEnd,
-		vector<baseOperator *> & ops);
 
 };
 
