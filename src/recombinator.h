@@ -95,7 +95,7 @@ public:
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
-		m_bt(rng())
+		m_bt(rng()), m_lociToCopy(0), m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
 	}
 
@@ -126,8 +126,12 @@ protected:
 	BernulliTrials m_bt;
 
 	// cache chromBegin, chromEnd for better performance.
+	bool m_hasCustomizedChroms;
 	vectoru m_chIdx;
-
+	vectoru m_lociToCopy;
+	int m_chromX;
+	int m_chromY;
+	UINT m_numChrom;
 };
 
 
