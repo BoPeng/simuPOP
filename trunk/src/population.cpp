@@ -455,18 +455,29 @@ void population::setGenotype(vectora geno)
 }
 
 
-void population::setGenotype(vectora geno, SubPopID subPop)
+void population::setGenotype(vectora geno, vspID subPop)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
-	CHECKRANGESUBPOP(subPop);
+    SubPopID sp = subPop.subPop();
+	CHECKRANGESUBPOP(sp);
 	sortIndividuals();
 
-	GenoIterator ptr = genoBegin(subPop, true);
-	ULONG sz = geno.size();
-	for (ULONG i = 0; i < subPopSize(subPop) * genoSize(); ++i)
-		*(ptr++) = geno[i % sz];
+    ULONG sz = geno.size();
+    if (!subPop.isVirtual()) {
+    	GenoIterator ptr = genoBegin(sp, true);
+    	for (ULONG i = 0; i < subPopSize(sp) * genoSize(); ++i)
+	    	*(ptr++) = geno[i % sz];
+    } else {
+        activateVirtualSubPop(subPop, IteratableInds);
+        IndIterator it = indBegin(sp, IteratableInds);
+        IndIterator it_end = indEnd(sp, IteratableInds);
+        ULONG i = 0;
+        for (; it != it_end; ++it)
+            for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
+                *git = geno[i % sz];
+    }
 }
 
 
