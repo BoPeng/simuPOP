@@ -258,6 +258,34 @@ Dump(pop, structure=False)
 #end
 
 
+#file log/accessIndividual.log
+import random
+pop = population(size=[4, 10], loci=[2, 3], infoFields=['x'])
+InitByFreq(pop, [0.4, 0.6])
+ind = pop.individual(5)       # using absolute index
+ind1 = pop.individual(0, 1)   # using relative index
+# use an iterator
+for ind in pop.individuals(1):
+    ind.setInfo(random.randint(0, 10), 'x')
+
+# Access individuals in VSPs
+pop.setVirtualSplitter(infoSplitter(cutoff=[3, 7], field='x'))
+for ind in pop.individuals([1, 1]):
+    print ind
+
+#end
+
+#file log/popGenotype.log
+import random
+pop = population(size=[4, 6], loci=[2, 3], infoFields=['x'])
+pop.setIndInfo([random.randint(0, 10) for x in range(14)], 'x')
+pop.setGenotype([0, 1, 2, 3], 0)
+pop.setVirtualSplitter(infoSplitter(cutoff=[3, 7], field='x'))
+pop.setGenotype([5, 6, 7], [1, 1])
+Dump(pop, structure=False)
+#end
+
+
 #file log/popInit.log
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])
