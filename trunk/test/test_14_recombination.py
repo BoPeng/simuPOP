@@ -15,6 +15,23 @@ from simuPOP import *
 import unittest, os, sys, exceptions
 
 class TestRecombinator(unittest.TestCase):
+    def getPop(self, *args, **kwargs):
+        'Create a population for testing.'
+        pop = population(*args, **kwargs)
+        InitByFreq(pop, [0.4, 0.6])
+        return pop
+
+    def testCloneGenoTransmitter(self):
+        'Testing operator cloneGenoTransmitter()'
+        pop = self.getPop(size=100, loci=[10, 20])
+        ApplyDuringMatingOperator(cloneGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        # check if 1 is copied to 2.
+        self.assertEqual(pop.individual(1).genotype(),
+            pop.individual(2).genotype())
+        # and 0 is not copied to 2
+        self.assertNotEqual(pop.individual(0).genotype(),
+            pop.individual(2).genotype())
 
     def testRecRate(self):
         'Testing to see if we actually recombine at this rate '
