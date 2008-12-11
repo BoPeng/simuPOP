@@ -115,8 +115,8 @@ public:
 	   \li MATE_NumOfMale Set \c sexParam offspring to Male
 	   \li MATE_NumOfFemale Set \c sexParam offspring to Female.
 	   If there are sex chromosomes, sex is determined by sex chromosomes when \c sexMode
-		id \c MATE_RandomSex. Otherwise, some offspring will be rejected so that offspring
-		sex match what is specified in other modes.
+	    id \c MATE_RandomSex. Otherwise, some offspring will be rejected so that offspring
+	    sex match what is specified in other modes.
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
 		UINT maxNumOffspring, UINT mode,
@@ -216,7 +216,7 @@ public:
 	UINT m_sexMode;
 
 	/// default transmitter
-	baseOperator *  m_transmitter;
+	baseOperator * m_transmitter;
 
 protected:
 	/// check if any of the during mating operators will set genotype
@@ -261,7 +261,7 @@ public:
 	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		                   mode, sexParam, sexMode,
-						   cloneGenoTransmitter())
+		                   cloneGenoTransmitter())
 	{
 		setNumParents(1);
 	}
@@ -271,6 +271,8 @@ public:
 	{
 		return new cloneOffspringGenerator(*this);
 	}
+
+
 };
 
 /** Mendelian offspring generator accepts two parents and pass their
@@ -296,7 +298,7 @@ public:
 	    ) :
 		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
 		                   mode, sexParam, sexMode,
-						   mendelianGenoTransmitter()),
+		                   mendelianGenoTransmitter()),
 		m_bt(rng())
 	{
 		setNumParents(2);
@@ -353,6 +355,7 @@ public:
 		return new selfingOffspringGenerator(*this);
 	}
 
+
 };
 
 
@@ -388,6 +391,7 @@ public:
 	{
 		return new haplodiploidOffspringGenerator(*this);
 	}
+
 
 };
 
@@ -1004,7 +1008,7 @@ public:
 
 	/** CPPONLY
 	 * a common submit procedure is defined.
-     */
+	 */
 	virtual void submitScratch(population & pop, population & scratch);
 
 	/// CPPONLY
