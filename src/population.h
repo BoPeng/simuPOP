@@ -918,7 +918,7 @@ public:
 	PyObject * genotype();
 
 	/** Return an editable array of the genotype of all individuals in
-	 *  subpopulation \e subPop.
+	 *  subpopulation \e subPop. Virtual subpopulation is unsupported.
 	 *  <group>5-genotype</group>
 	 */
 	PyObject * genotype(SubPopID subPop);
