@@ -2108,6 +2108,13 @@ carray
 \series default
 \size default
  datatype
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:carray-datatype"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2527,7 +2534,7 @@ reference "fig:chromTypes"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -2708,6 +2715,164 @@ mother_idx
  individual's information field.
  Genotypes at the first homologous copy of this individual's chromosome
  is printed, along with two parental chromosomes.
+\end_layout
+
+\begin_layout Section
+Individual
+\end_layout
+
+\begin_layout Standard
+Individuals are building blocks of populations.
+ An individual object cannot be created independently, but refences to inidividu
+als can be retrieved using member functions of a population object.
+ In addition to structural information shared by all individuals in a population
+, the individual class provides member functions to get and set 
+\emph on
+genotype
+\emph default
+, 
+\emph on
+sex
+\emph default
+, 
+\emph on
+affection status
+\emph default
+ and 
+\emph on
+information fields
+\emph default
+ of an individual.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "individual_genotype"
+
+\end_inset
+
+ demonstrates how to access and modify individual sex, affection status
+ and information fields.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/individual.log"
+lstparams "caption={Access Individual properties},label={individuals}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Genotypes of an individual are stored sequentially and can be accessed locus
+ by locus, or in batch.
+ The alleles are arranged by position, chromosome and ploidy.
+ That is to say, the first allele on the first chromosome of the first homologou
+s set is followed by alleles at other loci on the same chromsome, then markers
+ on the second and later chromosomes, followed by alleles on the second
+ homologous set of the chromosomes for a diploid individual.
+ A consequence of this memory layout is that alleles at the same locus of
+ a non-haploid individual are separated by 
+\family typewriter
+individual::totNumLoci()
+\family default
+ loci.
+ The memory layout of a diploid individual with two chromosomes is illustrated
+ in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:genotype-layout"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:genotype-layout"
+
+\end_inset
+
+Memory layout of individual genotype
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename genotype.pdf
+	lyxscale 30
+	width 90text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+simuPOP provies several functions to read/write individual genotype.
+ It is worth noting that, instead of copying genotypes of an individual
+ to a Python tuple or list, the return value of function 
+\family typewriter
+genotype([p, [ch]])
+\family default
+ is a special python carray object that reflects the underlying genotypes.
+ Modifying elements of this array will change the genotype of an individual
+ directly.
+ Only 
+\family typewriter
+count
+\family default
+ and
+\family typewriter
+ index
+\family default
+ list functions can be used, but all comparison, assignment and slice operations
+ are allowed.
+ If you would like to copy the content of this 
+\family typewriter
+carray
+\family default
+ to a Python list, use the 
+\family typewriter
+list()
+\family default
+ function.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "individual_genotype"
+
+\end_inset
+
+ demonstrates the use of these functions.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/individual_genotype.log"
+lstparams "caption={Access individual genotype},label={individual_genotype}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2928,7 +3093,7 @@ name "sub:Individuals"
 
 \end_inset
 
-Access individuals from a population object
+Access individuals and individual properties
 \end_layout
 
 \begin_layout Standard
@@ -3203,54 +3368,6 @@ simuPOP provies several functions to read/write individual genotype.
  an individual as an array of alleles, ordered by marker, chromosome and
  ploidy.
  This is illustrated in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:genotype-layout"
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:genotype-layout"
-
-\end_inset
-
-Memory layout of individual genotype
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename genotype.pdf
-	lyxscale 30
-	width 90text%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -3263,18 +3380,6 @@ genotype([p, [ch]])
  Modifying elements of this array will change the genotype of an individual
  directly.
  This is demonstrated in the following example.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/genotype.log"
-lstparams "caption={Virtual subpopulation related functions},label={virtualSubPop}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
