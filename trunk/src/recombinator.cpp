@@ -45,8 +45,7 @@ void cloneGenoTransmitter::initialize(const population & pop)
 bool cloneGenoTransmitter::applyDuringMating(population & pop,
                                              RawIndIterator offspring,
                                              individual * dad,
-                                             individual * mom
-                                             )
+                                             individual * mom)
 {
 	DBG_FAILIF(dad == NULL && mom == NULL, ValueError,
 		"Both parents are invalid");
@@ -90,6 +89,17 @@ void mendelianGenoTransmitter::initialize(const population & pop)
 
 	m_bt.setParameter(prob, pop.popSize());
 	m_chIdx = pop.chromIndex();
+
+	m_hasCustomizedChroms = !pop.customizedChroms().empty();
+	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
+		if (pop.chromType(ch) == Customized)
+			m_lociToCopy.push_back(0);
+		else
+			m_lociToCopy.push_back(pop.numLoci(ch));
+	}
+	m_chromX = pop.chromX();
+	m_chromY = pop.chromY();
+	m_numChrom = pop.numChrom();
 }
 
 
@@ -107,50 +117,89 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 	par[1] = parent->genoBegin(1);
 	off = it->genoBegin(ploidy);
 	//
-	UINT chEnd = parent->numChrom();
-	int btShift = ploidy * chEnd;
+	int btShift = ploidy * m_numChrom;
 #ifndef BINARYALLELE
 	// the easy way to copy things.
-	for (UINT ch = 0; ch < chEnd; ++ch) {
-		parPloidy = m_bt.trialSucc(ch + btShift);
+	for (UINT ch = 0; ch < m_numChrom; ++ch) {
+		// customized chromosome?
+		if (m_lociToCopy[ch] == 0 ||
+		    (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
+			continue;
+		if (ploidy == 1 && ch == m_chromX) {
+			if (it->sex() == Male)
+				continue;
+			else
+				parPloidy = 0;
+		} else if (ploidy == 1 && ch == m_chromY) {
+			if (it->sex() == Male)
+				parPloidy = 1;          // copy chrom Y from second ploidy
+			else
+				continue;
+		} else
+			parPloidy = m_bt.trialSucc(ch + btShift);
+		//
 		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt)
 			off[gt] = par[parPloidy][gt];
 	}
 #else
-	//
-	// 1. try to copy in blocks,
-	// 2. if two chromosomes can be copied together, copy together
-	// 3. if length is short, using the old method.
-	//
-	size_t parBegin = 0;
-	size_t parEnd = 0;
-	// first chromosome
-	parPloidy = m_bt.trialSucc(btShift);
-	//
-	int nextParPloidy = 0;
-	bool copyPar;
-	for (UINT ch = 0; ch < chEnd; ++ch) {
-		// if it is the last chromosome, copy anyway
-		if (ch == chEnd - 1)
-			copyPar = true;
-		else {                                                                 // is there a different chromosome?
-			nextParPloidy = m_bt.trialSucc(ch + 1 + btShift);
-			copyPar = parPloidy != nextParPloidy;
+	// for the simple case, use faster algorithm
+	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms()) {
+		//
+		// 1. try to copy in blocks,
+		// 2. if two chromosomes can be copied together, copy together
+		// 3. if length is short, using the old method.
+		//
+		size_t parBegin = 0;
+		size_t parEnd = 0;
+		// first chromosome
+		parPloidy = m_bt.trialSucc(btShift);
+		//
+		int nextParPloidy = 0;
+		bool copyPar;
+		for (UINT ch = 0; ch < chEnd; ++ch) {
+			// if it is the last chromosome, copy anyway
+			if (ch == chEnd - 1)
+				copyPar = true;
+			else {                                                                 // is there a different chromosome?
+				nextParPloidy = m_bt.trialSucc(ch + 1 + btShift);
+				copyPar = parPloidy != nextParPloidy;
+			}
+			if (copyPar) {
+				// end of this chromosome, is the beginning of the next
+				parEnd = m_chIdx[ch + 1];
+				size_t length = parEnd - parBegin;
+				//
+				// the easiest case, try to get some speed up...
+				if (length == 1)
+					off[parBegin] = par[parPloidy][parBegin];
+				else
+					copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
+				//
+				if (ch != chEnd - 1)
+					parPloidy = nextParPloidy;
+				parBegin = parEnd;
+			}
 		}
-		if (copyPar) {
-			// end of this chromosome, is the beginning of the next
-			parEnd = m_chIdx[ch + 1];
-			size_t length = parEnd - parBegin;
+	} else {    // use the less efficient algorithm
+		for (UINT ch = 0; ch < m_numChrom; ++ch) {
+			// customized chromosome?
+			if (m_lociToCopy[ch] == 0 ||
+			    (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
+				continue;
+			if (ploidy == 1 && ch == m_chromX) {
+				if (it->sex() == Male)
+					continue;
+				else
+					parPloidy = 0;
+			} else if (ploidy == 1 && ch == m_chromY) {
+				if (it->sex() == Male)
+					parPloidy = 1;          // copy chrom Y from second ploidy
+				else
+					continue;
+			} else
+				parPloidy = m_bt.trialSucc(ch + btShift);
 			//
-			// the easiest case, try to get some speed up...
-			if (length == 1)
-				off[parBegin] = par[parPloidy][parBegin];
-			else
-				copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
-			//
-			if (ch != chEnd - 1)
-				parPloidy = nextParPloidy;
-			parBegin = parEnd;
+			copyGenotype(par[parPloidy] + gt, off + gt, m_lociToCopy[ch]);
 		}
 	}
 #endif
@@ -209,22 +258,25 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	// m_bt 's width is 2*numChrom() and can be used for
 	// the next two functions.
 	m_bt.trial();
-	// use the same parent to produce two copies of chromosomes
+	// mom generate the first...
 	formOffspringGenotype(mom, offspring, 0);
 
-	// paternal
-	GenoIterator par = dad->genoBegin(0);
-	GenoIterator off = offspring->genoBegin(1);
-
 	//
+	if (offspring->sex() == Female) {
+		// paternal
+		GenoIterator par = dad->genoBegin(0);
+		GenoIterator off = offspring->genoBegin(1);
+
+		//
 #ifndef BINARYALLELE
-	size_t gt = 0;
-	size_t gt_end = dad->totNumLoci();
-	for (; gt < gt_end; ++gt)
-		off[gt] = par[gt];
+		size_t gt = 0;
+		size_t gt_end = dad->totNumLoci();
+		for (; gt < gt_end; ++gt)
+			off[gt] = par[gt];
 #else
-	copyGenotype(par, off, dad->totNumLoci());
+		copyGenotype(par, off, dad->totNumLoci());
 #endif
+	}
 	return true;
 }
 

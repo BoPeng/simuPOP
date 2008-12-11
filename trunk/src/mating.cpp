@@ -64,6 +64,8 @@ offspringGenerator::offspringGenerator(double numOffspring,
 		+ toStr(m_maxNumOffspring));
 	DBG_FAILIF(m_sexMode == MATE_ProbOfMale && (fcmp_lt(m_sexParam, 0) || fcmp_gt(m_sexParam, 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
+	// the genotype transmitter that will be used when no during mating
+	// operator is used to transmit genotype from parents to offspring.
 	m_transmitter = transmitter.clone();
 }
 
@@ -75,6 +77,7 @@ offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	m_mode(rhs.m_mode),
 	m_sexParam(rhs.m_sexParam),
 	m_sexMode(rhs.m_sexMode),
+	m_transmitter(rhs.m_transmitter),
 	m_formOffGenotype(rhs.m_formOffGenotype),
 #ifndef OPTIMIZED
 	m_genoStruIdx(rhs.m_genoStruIdx),
@@ -84,6 +87,9 @@ offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 {
 	if (m_numOffspringFunc != NULL)
 		Py_INCREF(m_numOffspringFunc);
+	
+	if (rhs.m_transmitter != NULL)
+		m_transmitter = rhs.m_transmitter->clone();
 }
 
 
@@ -136,14 +142,6 @@ Sex offspringGenerator::getSex(int count)
 }
 
 
-bool offspringGenerator::isSexOK(Sex sex, int count)
-{
-	if (m_sexMode == MATE_RandomSex)
-		return true;
-	return sex == getSex(count);
-}
-
-
 void offspringGenerator::initialize(const population & pop, vector<baseOperator *> const & ops)
 {
 #ifndef OPTIMIZED
@@ -184,6 +182,10 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 	bool accept = true;
 	UINT numOff = numOffspring(pop.gen());
 	while (count < numOff && it != itEnd) {
+		// set sex, during mating operator will try to
+		// follow the offspring sex (e.g. pass X or Y chromosome)
+		it->setSex(getSex(count));
+		// use the default offspring genotype transmitter.
 		if (m_formOffGenotype)
 			m_transmitter->applyDuringMating(pop, it, dad, mom);
 
@@ -194,7 +196,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 		for (; iop != iopEnd;  ++iop) {
 			try {
 				// During mating operator might reject this offspring.
-				if (!(*iop)->applyDuringMating(pop, it, dad, NULL)) {
+				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
 					accept = false;
 					break;
 				}
@@ -1481,7 +1483,7 @@ bool controlledRandomMating::mate(population & pop, population & scratch, vector
 	// whether or not use stack.
 	if (!m_offspringGenerator.initialized())
 		m_offspringGenerator.initialize(pop, ops);
-	bool useStack = m_offspringGenerator.fixedFamilySize();
+	bool useStack = m_offspringGenerator.mode() == MATE_NumOffspring;
 	// use to go through offspring generation to count alleles
 	UINT totNumLoci = pop.totNumLoci();
 

@@ -117,6 +117,8 @@ public:
 	   If there are sex chromosomes, sex is determined by sex chromosomes when \c sexMode
 	    id \c MATE_RandomSex. Otherwise, some offspring will be rejected so that offspring
 	    sex match what is specified in other modes.
+		\param transmitter is an during mating operator, that will be used if
+			no during mating operator is used to produce offspring.
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
 		UINT maxNumOffspring, UINT mode,
@@ -134,7 +136,10 @@ public:
 	/// CPPONLY
 	offspringGenerator(const offspringGenerator & rhs);
 
-	virtual offspringGenerator * clone() const = 0;
+	virtual offspringGenerator * clone() const
+	{
+		return new offspringGenerator(*this);
+	}		
 
 
 	/// CPPONLY
@@ -144,9 +149,9 @@ public:
 		vector<baseOperator *> & ops);
 
 	/// CPPONLY
-	bool fixedFamilySize() const
+	int mode() const
 	{
-		return m_mode == MATE_NumOffspring;
+		return m_mode;
 	}
 
 
@@ -171,9 +176,6 @@ public:
 	/// return sex according to m_sexParam and m_sexMode
 	/// \param count the index of offspring
 	Sex getSex(int count);
-
-	/// If a sex-chromosome defined sex comptible with \c sexMode
-	bool isSexOK(Sex sex, int count);
 
 	/// CPPONLY
 	bool initialized() const
@@ -271,9 +273,8 @@ public:
 	{
 		return new cloneOffspringGenerator(*this);
 	}
-
-
 };
+
 
 /** Mendelian offspring generator accepts two parents and pass their
    genotype to a number of offspring following Mendelian's law. Basically,
@@ -333,7 +334,7 @@ protected:
    chromosome.
    <applicability>diploid only</applicability>
  */
-class selfingOffspringGenerator : public mendelianOffspringGenerator
+class selfingOffspringGenerator : public offspringGenerator
 {
 public:
 	selfingOffspringGenerator(double numOffspring = 1,
@@ -343,8 +344,8 @@ public:
 		double sexParam = 0.5,
 		UINT sexMode = MATE_RandomSex
 	    )
-		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                              mode, sexParam, sexMode)
+		: offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		                              mode, sexParam, sexMode, selfingGenoTransmitter())
 	{
 		setNumParents(1);
 	}
@@ -370,7 +371,7 @@ public:
    father. Male offspring has one set of chromosomes from his mother.
    <applicability>haplodiploid only</applicability>
  */
-class haplodiploidOffspringGenerator : public mendelianOffspringGenerator
+class haplodiploidOffspringGenerator : public offspringGenerator
 {
 public:
 	haplodiploidOffspringGenerator(double numOffspring = 1,
@@ -380,8 +381,8 @@ public:
 		double sexParam = 0.5,
 		UINT sexMode = MATE_RandomSex
 	    )
-		: mendelianOffspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                              mode, sexParam, sexMode)
+		: offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
+		                              mode, sexParam, sexMode, haplodiploidGenoTransmitter())
 	{
 		setNumParents(2);
 	}
