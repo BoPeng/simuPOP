@@ -920,6 +920,7 @@ public:
 		return gsl_rng_get(m_RNG);
 	}
 
+    bool randBit();
 
 	/// return a random number in the range of [0, 1, 2, ... n-1]
 	unsigned long int randInt(unsigned long int n)
