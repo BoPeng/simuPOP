@@ -32,6 +32,228 @@ class TestRecombinator(unittest.TestCase):
         # and 0 is not copied to 2
         self.assertNotEqual(pop.individual(0).genotype(),
             pop.individual(2).genotype())
+        #
+        # customized chromosomes are NOT copied
+        pop = self.getPop(size=100, loci=[10, 20, 30, 30],
+            chromTypes=[Autosome, Autosome, Customized, Customized])
+        ApplyDuringMatingOperator(cloneGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        # check if 1 is copied to 2.
+        for p in range(2):
+            for ch in range(2):
+                self.assertEqual(pop.individual(1).genotype(p, ch),
+                    pop.individual(2).genotype(p, ch))
+            for ch in range(2,4):
+                self.assertNotEqual(pop.individual(1).genotype(p, ch),
+                    pop.individual(2).genotype(p, ch))
+            for ch in range(4):
+                # and 0 is not copied to 2
+                self.assertNotEqual(pop.individual(0).genotype(p, ch),
+                    pop.individual(2).genotype(p, ch))
+
+
+    def testMendelianGenoTransmitter(self):
+        'Testing operator cloneGenoTransmitter()'
+        pop = self.getPop(size=100, loci=[20]*5)
+        ApplyDuringMatingOperator(mendelianGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        for ch in range(5):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(1).genotype(p, ch) for p in range(2)]
+            p2 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            self.assertEqual(g1 in p1, True)
+            self.assertEqual(g2 in p2, True)
+        #
+        # customized chromosomes are NOT copied
+        pop = self.getPop(size=100, loci=[20]*7,
+            chromTypes=[Autosome]*5 + [Customized]*2)
+        ApplyDuringMatingOperator(mendelianGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        for ch in range(7):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(1).genotype(p, ch) for p in range(2)]
+            p2 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 5:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p2, True)
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p2, True)
+        # Male...
+        pop = self.getPop(size=100, loci=[20]*9,
+            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
+        pop.individual(2).setSex(Male)
+        ApplyDuringMatingOperator(mendelianGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        for ch in range(9):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(1).genotype(p, ch) for p in range(2)]
+            p2 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 5:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p2, True)
+            elif ch == 5:
+                # get chrom X from mother
+                self.assertEqual(g1 in p1, True)
+            elif ch == 6:
+                # get chrom Y from father
+                self.assertEqual(g2, pop.individual(0).genotype(1, ch))
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p2, True)
+        # Female ...
+        pop = self.getPop(size=100, loci=[20]*9,
+            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
+        pop.individual(2).setSex(Female)
+        ApplyDuringMatingOperator(mendelianGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        for ch in range(9):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(1).genotype(p, ch) for p in range(2)]
+            p2 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 5:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p2, True)
+            elif ch == 5:
+                # get chrom X from mother
+                self.assertEqual(g1 in p1, True)
+                # get chrom X from father
+                self.assertEqual(g2, pop.individual(0).genotype(0, ch))
+            elif ch == 6:
+                # unused.
+                self.assertEqual(g1 in p1, False)
+                self.assertEqual(g2 in p2, False)
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p2, True)
+
+
+    def testSelfingGenoTransmitter(self):
+        'Testing operator cloneGenoTransmitter()'
+        pop = self.getPop(size=100, loci=[20]*5)
+        ApplyDuringMatingOperator(selfingGenoTransmitter(),
+            pop, dad = 0, mom = -1, off = 2)
+        for ch in range(5):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            self.assertEqual(g1 in p1, True)
+            self.assertEqual(g2 in p1, True)
+        #
+        # customized chromosomes are NOT copied
+        pop = self.getPop(size=100, loci=[20]*7,
+            chromTypes=[Autosome]*5 + [Customized]*2)
+        ApplyDuringMatingOperator(selfingGenoTransmitter(),
+            pop, dad = 0, mom = -1, off = 2)
+        for ch in range(7):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 5:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p1, True)
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p1, True)
+        # Male...
+        pop = self.getPop(size=100, loci=[20]*9,
+            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
+        pop.individual(2).setSex(Male)
+        ApplyDuringMatingOperator(selfingGenoTransmitter(),
+            pop, dad = 0, mom = -1, off = 2)
+        for ch in range(9):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 5:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p1, True)
+            elif ch == 5:
+                # get chrom X from mother
+                self.assertEqual(g1 in p1, True)
+            elif ch == 6:
+                # get chrom Y from father
+                self.assertEqual(g2, pop.individual(0).genotype(1, ch))
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p1, True)
+        # Female ...
+        pop = self.getPop(size=100, loci=[20]*9,
+            chromTypes=[Autosome]*5 + [ChromosomeX, ChromosomeY] + [Customized]*2)
+        pop.individual(2).setSex(Female)
+        ApplyDuringMatingOperator(selfingGenoTransmitter(),
+            pop, dad = 0, mom = -1, off = 2)
+        for ch in range(9):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 5:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p1, True)
+            elif ch == 5:
+                # get chrom X from mother
+                self.assertEqual(g1 in p1, True)
+                # get chrom X from father
+                self.assertEqual(g2, pop.individual(0).genotype(0, ch))
+            elif ch == 6:
+                # unused.
+                self.assertEqual(g1 in p1, False)
+                self.assertEqual(g2 in p1, False)
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p1, True)
+
+
+    def testHaplodiploidGenoTransmitter(self):
+        'Testing operator cloneGenoTransmitter()'
+        pop = self.getPop(size=100, loci=[20]*5)
+        # Male...
+        pop = self.getPop(size=100, loci=[20]*9,
+            chromTypes=[Autosome]*7 + [Customized]*2)
+        pop.individual(2).setSex(Male)
+        ApplyDuringMatingOperator(haplodiploidGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        for ch in range(9):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(1).genotype(p, ch) for p in range(2)]
+            if ch < 7:
+                self.assertEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p1, True)
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p1, True)
+        # Female ...
+        pop = self.getPop(size=100, loci=[20]*9,
+            chromTypes=[Autosome]*7  + [Customized]*2)
+        pop.individual(2).setSex(Female)
+        ApplyDuringMatingOperator(haplodiploidGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        for ch in range(9):
+            # check if 1 is copied to 2.
+            g1 = pop.individual(2).genotype(0, ch)
+            g2 = pop.individual(2).genotype(1, ch)
+            p1 = [pop.individual(1).genotype(p, ch) for p in range(2)]
+            p2 = [pop.individual(0).genotype(p, ch) for p in range(2)]
+            if ch < 7:
+                self.assertEqual(g1 in p1, True)
+                self.assertEqual(g2 in p2, True)
+            else:
+                self.assertNotEqual(g1 in p1, True)
+                self.assertNotEqual(g2 in p2, True)
 
     def testRecRate(self):
         'Testing to see if we actually recombine at this rate '

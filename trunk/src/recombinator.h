@@ -197,11 +197,13 @@ public:
 	}
 
 
+	/// CPPONLY
+	void initialize(const population & pop);
+    
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
-
 };
 
 

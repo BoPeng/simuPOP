@@ -122,8 +122,7 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 	// the easy way to copy things.
 	for (UINT ch = 0; ch < m_numChrom; ++ch) {
 		// customized chromosome?
-		if (m_lociToCopy[ch] == 0 ||
-		    (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
+		if (m_lociToCopy[ch] == 0 || (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
 			continue;
 		if (ploidy == 1 && ch == m_chromX) {
 			if (it->sex() == Male)
@@ -229,8 +228,8 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
                                                RawIndIterator offspring, individual * dad, individual * mom)
 {
 	//
-	DBG_FAILIF(mom == NULL || dad == NULL, ValueError,
-		"Mendelian offspring generator requires two valid parents");
+	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
+		"Selfing genotype transmitter requires at least one valid parents");
 
 	// call initialize if needed.
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
@@ -244,6 +243,14 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
 	formOffspringGenotype(parent, offspring, 0);
 	formOffspringGenotype(parent, offspring, 1);
 	return true;
+}
+
+
+void haplodiploidGenoTransmitter::initialize(const population & pop)
+{
+    DBG_FAILIF(pop.chromX() >= 0 || pop.chromY() >= 0, ValueError,
+        "Haplodiploid populations do not use sex chromosomes");
+    mendelianGenoTransmitter::initialize(pop);
 }
 
 
@@ -262,22 +269,8 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	// mom generate the first...
 	formOffspringGenotype(mom, offspring, 0);
 
-	//
-	if (offspring->sex() == Female) {
-		// paternal
-		GenoIterator par = dad->genoBegin(0);
-		GenoIterator off = offspring->genoBegin(1);
-
-		//
-#ifndef BINARYALLELE
-		size_t gt = 0;
-		size_t gt_end = dad->totNumLoci();
-		for (; gt < gt_end; ++gt)
-			off[gt] = par[gt];
-#else
-		copyGenotype(par, off, dad->totNumLoci());
-#endif
-	}
+	if (offspring->sex() == Female)
+	    formOffspringGenotype(dad, offspring, 1);
 	return true;
 }
 
