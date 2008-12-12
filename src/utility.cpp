@@ -1995,7 +1995,6 @@ RNG::~RNG()
 	gsl_rng_free(m_RNG);
 }
 
-
 #if  defined (_WIN32) || defined (__WIN32__)
 // the following code is adapted from python os.urandom
 //
@@ -2133,6 +2132,20 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 
 	// set seed
 	gsl_rng_set(m_RNG, m_seed);
+}
+
+
+bool RNG::randBit()
+{
+    static WORDTYPE randbyte = 0;
+    static UINT index = 0;
+    if (index == 16)
+        index = 0;
+
+    if (index == 0)
+        randbyte = randInt(0xFFFF);
+
+    return (randbyte & (1UL << index++)) != 0;
 }
 
 

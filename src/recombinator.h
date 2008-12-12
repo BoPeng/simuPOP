@@ -95,7 +95,7 @@ public:
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
-		m_bt(rng()), m_lociToCopy(0), m_chromX(-1), m_chromY(-1), m_numChrom(0)
+		m_lociToCopy(0), m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
 	}
 
@@ -114,17 +114,15 @@ public:
 	/// CPPONLY
 	void initialize(const population & pop);
 
-	/** CPPONLY
-	 * \param count index of offspring, used to set offspring sex
-	 * does not set sex if count == -1.
+	/** Pass genotype from parent to offspring, and fill the \e ploidy
+     *  homologous set of chromosomes. This function does not set genotypes of
+     *  customized chromosomes and handles sex chromosomes properly, according
+     *  to offspring sex and \c ploidy. 
 	 */
 	void formOffspringGenotype(individual * parent,
-		RawIndIterator & it, int ploidy);
+		individual * offspring, int ploidy);
 
 protected:
-	// use bernullitrisls with p=0.5 for free recombination
-	BernulliTrials m_bt;
-
 	// cache chromBegin, chromEnd for better performance.
 	bool m_hasCustomizedChroms;
 	vectoru m_chIdx;

@@ -85,9 +85,6 @@ bool cloneGenoTransmitter::applyDuringMating(population & pop,
 
 void mendelianGenoTransmitter::initialize(const population & pop)
 {
-	vectorf prob(2 * pop.numChrom(), 0.5);
-
-	m_bt.setParameter(prob, pop.popSize());
 	m_chIdx = pop.chromIndex();
 
 	m_hasCustomizedChroms = !pop.customizedChroms().empty();
@@ -104,7 +101,7 @@ void mendelianGenoTransmitter::initialize(const population & pop)
 
 
 void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
-                                                     RawIndIterator & it, int ploidy)
+                                                     individual * it, int ploidy)
 {
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
@@ -135,7 +132,7 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 			else
 				continue;
 		} else
-			parPloidy = m_bt.trialSucc(ch + btShift);
+			parPloidy = rng().randBit();
 		//
 		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt)
 			off[gt] = par[parPloidy][gt];
@@ -160,7 +157,7 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 			if (ch == m_numChrom - 1)
 				copyPar = true;
 			else {                                                                 // is there a different chromosome?
-				nextParPloidy = m_bt.trialSucc(ch + 1 + btShift);
+				nextParPloidy = rng().randBit();
 				copyPar = parPloidy != nextParPloidy;
 			}
 			if (copyPar) {
@@ -196,7 +193,7 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 				else
 					continue;
 			} else
-				parPloidy = m_bt.trialSucc(ch + btShift);
+				parPloidy = rng().randBit();
 			//
 			copyGenotype(par[parPloidy] + m_chIdx[ch],
                 off + m_chIdx[ch], m_lociToCopy[ch]);
@@ -215,11 +212,9 @@ bool mendelianGenoTransmitter::applyDuringMating(population & pop,
 	// call initialize if needed.
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
 
-	// m_bt 's width is 2*numChrom() and can be used for
 	// the next two functions.
-	m_bt.trial();
-	formOffspringGenotype(mom, offspring, 0);
-	formOffspringGenotype(dad, offspring, 1);
+	formOffspringGenotype(mom, &*offspring, 0);
+	formOffspringGenotype(dad, &*offspring, 1);
 	return true;
 }
 
@@ -236,12 +231,9 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
 
 	individual * parent = mom != NULL ? mom : dad;
 
-	// m_bt 's width is 2*numChrom() and can be used for
-	// the next two functions.
-	m_bt.trial();
 	// use the same parent to produce two copies of chromosomes
-	formOffspringGenotype(parent, offspring, 0);
-	formOffspringGenotype(parent, offspring, 1);
+	formOffspringGenotype(parent, &*offspring, 0);
+	formOffspringGenotype(parent, &*offspring, 1);
 	return true;
 }
 
@@ -263,14 +255,11 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	// call initialize if needed.
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
 
-	// m_bt 's width is 2*numChrom() and can be used for
-	// the next two functions.
-	m_bt.trial();
 	// mom generate the first...
-	formOffspringGenotype(mom, offspring, 0);
+	formOffspringGenotype(mom, &*offspring, 0);
 
 	if (offspring->sex() == Female)
-	    formOffspringGenotype(dad, offspring, 1);
+	    formOffspringGenotype(dad, &*offspring, 1);
 	return true;
 }
 
