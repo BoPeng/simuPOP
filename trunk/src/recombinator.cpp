@@ -143,7 +143,7 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 	}
 #else
 	// for the simple case, use faster algorithm
-	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms()) {
+	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms) {
 		//
 		// 1. try to copy in blocks,
 		// 2. if two chromosomes can be copied together, copy together
@@ -156,9 +156,9 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 		//
 		int nextParPloidy = 0;
 		bool copyPar;
-		for (UINT ch = 0; ch < chEnd; ++ch) {
+		for (UINT ch = 0; ch < m_numChrom; ++ch) {
 			// if it is the last chromosome, copy anyway
-			if (ch == chEnd - 1)
+			if (ch == m_numChrom - 1)
 				copyPar = true;
 			else {                                                                 // is there a different chromosome?
 				nextParPloidy = m_bt.trialSucc(ch + 1 + btShift);
@@ -175,7 +175,7 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 				else
 					copyGenotype(par[parPloidy] + parBegin, off + parBegin, length);
 				//
-				if (ch != chEnd - 1)
+				if (ch != m_numChrom - 1)
 					parPloidy = nextParPloidy;
 				parBegin = parEnd;
 			}
@@ -199,7 +199,8 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 			} else
 				parPloidy = m_bt.trialSucc(ch + btShift);
 			//
-			copyGenotype(par[parPloidy] + gt, off + gt, m_lociToCopy[ch]);
+			copyGenotype(par[parPloidy] + m_chIdx[ch],
+                off + m_chIdx[ch], m_lociToCopy[ch]);
 		}
 	}
 #endif
