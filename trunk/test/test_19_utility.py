@@ -64,6 +64,15 @@ class TestUtility(unittest.TestCase):
         for n in range(1,10):
             rg.randUniform01()
 
+    def testRandBit(self):
+        'Testing random bit function'
+        rg = rng()
+        sum = 0
+        for n in range(10000):
+            sum += rg.randBit()
+        self.assertEqual(sum < 5100, True)
+        self.assertEqual(sum > 4900, True)
+
     def testLogging(self):
         'Testing logging output to a file'
         setLogOutput("session.log")
