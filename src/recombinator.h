@@ -59,9 +59,10 @@ public:
 		return new cloneGenoTransmitter(*this);
 	}
 
+
 	virtual string __repr__()
 	{
-		return "<simuPOP::cloneTransmitter>" ;
+		return "<simuPOP::cloneGenoTransmitter>" ;
 	}
 
 
@@ -126,9 +127,9 @@ public:
 	void initialize(const population & pop);
 
 	/** Pass genotype from parent to offspring, and fill the \e ploidy
-     *  homologous set of chromosomes. This function does not set genotypes of
-     *  customized chromosomes and handles sex chromosomes properly, according
-     *  to offspring sex and \c ploidy. 
+	 *  homologous set of chromosomes. This function does not set genotypes of
+	 *  customized chromosomes and handles sex chromosomes properly, according
+	 *  to offspring sex and \c ploidy.
 	 */
 	void transmitGenotype(const individual & parent,
 		individual & offspring, int ploidy);
@@ -169,11 +170,11 @@ public:
 		return new selfingGenoTransmitter(*this);
 	}
 
+
 	virtual string __repr__()
 	{
 		return "<simuPOP::selfingGenoTransmitter>" ;
 	}
-
 
 
 	bool applyDuringMating(population & pop,
@@ -211,6 +212,7 @@ public:
 		return new haplodiploidGenoTransmitter(*this);
 	}
 
+
 	virtual string __repr__()
 	{
 		return "<simuPOP::haplodiploidGenoTransmitter>" ;
@@ -219,11 +221,12 @@ public:
 
 	/// CPPONLY
 	void initialize(const population & pop);
-    
+
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
+
 };
 
 
@@ -312,16 +315,16 @@ public:
 	   of genes between pseudoautosomal regions of \c XY need to be modeled.
 
 	 */
-	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru afterLoci = vectoru(),
+	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru loci = vectoru(),
 		double convProb = 0, UINT convMode = CONVERT_NumMarkers, double convParam = 1.,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		:
 		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
-		, m_intensity(intensity), m_rate(rate), m_afterLoci(afterLoci), m_recBeforeLoci(0),
+		, m_intensity(intensity), m_rate(rate), m_afterLoci(loci), m_recBeforeLoci(0),
 		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
-		m_bt(rng()),
+		m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 #ifndef OPTIMIZED
 		m_recCount(0), m_convSize(),
 #endif
@@ -389,12 +392,13 @@ public:
 
 
 	void initialize(const population & pop);
+
 	// this function implement how to recombine
 	// parental chromosomes and set one copy of offspring chromosome
 	// bt contains the bernulli trailer
 
-	void transmitGenotype( const individual & parent,
-		individual & offspring, int ploidy);      
+	void transmitGenotype(const individual & parent,
+		individual & offspring, int ploidy);
 
 	/// apply the recombinator during mating
 	/// CPPONLY
@@ -403,7 +407,6 @@ public:
 		individual * dad, individual * mom);
 
 private:
-
 	/// determine number of markers to convert
 	int markersConverted(size_t index, const individual & ind);
 
@@ -433,7 +436,8 @@ private:
 	// locataion of special chromosomes
 	int m_chromX;
 	int m_chromY;
-	vectoru m_customized;
+	int m_customizedBegin;
+	int m_customizedEnd;
 
 #ifndef OPTIMIZED
 	/// report the number of recombination events
