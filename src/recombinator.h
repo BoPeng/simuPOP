@@ -295,9 +295,6 @@ public:
 	recombinator(double intensity = -1,
 		vectorf rate = vectorf(),
 		vectoru afterLoci = vectoru(),
-		double maleIntensity = -1,
-		vectorf maleRate = vectorf(),
-		vectoru maleAfterLoci = vectoru(),
 		double convProb = 0,          // no conversion
 		UINT convMode = CONVERT_NumMarkers,
 		double convParam = 1.,
@@ -305,12 +302,12 @@ public:
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		:
 		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
-		, m_intensity(intensity), m_maleIntensity(maleIntensity),
-		m_rate(rate), m_maleRate(maleRate),
-		m_afterLoci(afterLoci), m_maleAfterLoci(maleAfterLoci),
-		m_recBeforeLoci(0), m_maleRecBeforeLoci(0),
+		, m_intensity(intensity),
+		m_rate(rate),
+		m_afterLoci(afterLoci),
+		m_recBeforeLoci(0),
 		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
-		m_bt(rng()), m_maleBt(rng()),
+		m_bt(rng()),
 #ifndef OPTIMIZED
 		m_recCount(0), m_convSize(),
 #endif
@@ -451,19 +448,15 @@ private:
 private:
 	/// intensity
 	double m_intensity;
-	double m_maleIntensity;
 
 	/// differnt rates
 	vectorf m_rate;
-	vectorf m_maleRate;
 
 	/// initial parameter
 	vectoru m_afterLoci;
-	vectoru m_maleAfterLoci;
 
 	/// position to recombine, changed to fit a special pop
 	vectoru m_recBeforeLoci;
-	vectoru m_maleRecBeforeLoci;
 
 	double m_convProb;
 
@@ -473,7 +466,7 @@ private:
 
 	/// bernulli trials
 	//  vector<BernulliTrials*> m_bt;
-	BernulliTrials m_bt, m_maleBt;
+	BernulliTrials m_bt;
 
 	// locataion of special chromosomes
 	int m_chromX;

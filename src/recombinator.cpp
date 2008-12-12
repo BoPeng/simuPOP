@@ -647,18 +647,6 @@ void recombinator::initialize(const population & pop)
 
 	m_bt.setParameter(vecP, pop.popSize());
 
-	vecP.clear();
-	// male case is most complicated.
-	double maleIntensity = (m_maleIntensity != -1 || !m_maleRate.empty() )
-	                       ? m_maleIntensity : m_intensity;
-	vectorf & maleRate = (m_maleIntensity != -1 || !m_maleRate.empty() )
-	                     ? m_maleRate : m_rate;
-	vectoru & maleAfterLoci = m_maleAfterLoci.empty() ?
-	                          m_afterLoci : m_maleAfterLoci;
-	// prepare male recombination
-	prepareRecRates(pop, maleIntensity, maleRate, maleAfterLoci,
-		m_maleRecBeforeLoci, vecP, Male);
-	m_maleBt.setParameter(vecP, pop.popSize());
 	// choose an algorithm
 	// if recombinations are dense. use the first algorithm
 	// For example 10 chromoes, regular 0.5*10=5
@@ -696,7 +684,7 @@ void recombinator::produceOffspring(const individual & mom,
 		copyParentalGenotype(dad, off, 1);
 	else
 		// only set sex once for offspring
-		recombine(dad, off, 1, m_maleBt, m_maleRecBeforeLoci, true);
+		recombine(dad, off, 1, m_bt, m_recBeforeLoci, true);
 }
 
 
