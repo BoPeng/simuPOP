@@ -947,47 +947,15 @@ del pyMigrator.__init__
 pyMigrator.__init__ = new_pyMigrator
 
 
-def new_recombinator(self, intensity=-1, rate=[],
-    locus=None, loci=[], afterLoci=[],
-    maleIntensity=-1, maleRate=[],
-    maleLocus=None, maleLoci=[], maleAfterLoci=[], *args, **kwargs):
-    # parameter loci
-    if len(afterLoci) != 0 and len(loci) == 0:
-        print 'Warning: parameter afterLoci of recombinator is renamed to loci'
-        loci = afterLoci
-    # parameter maleLoci
-    if len(maleAfterLoci) != 0 and len(maleLoci) == 0:
-        print 'Warning: parameter maleAfterLoci of recombinator is renamed to maleLoci'
-        maleLoci = maleAfterLoci
-    # paramter locus
-    if locus is not None and len(loci) == 0:
-        loci = [locus]
-    if maleLocus is not None and len(maleLoci) == 0:
-        maleLoci = [maleLocus]
+def new_recombinator(self, intensity=-1, rate=[], *args, **kwargs):
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
-        if len(afterLoci) > 0:
-            r = [rate]*len(afterLoci)
-        else:
-            r = [rate]
+        r = [rate]
     else:
         r = rate
-    # parameter maleRate
-    if type(maleRate) in [types.IntType, types.FloatType]:
-        if len(maleAfterLoci) > 0:
-            mr = [maleRate]*len(maleAfterLoci)
-        elif len(afterLoci) > 0:
-            mr = [maleRate]*len(afterLoci)
-        else:
-            mr = [maleRate]
-    else:
-        mr = maleRate
     cppModule.recombinator_swiginit(self,
         cppModule.new_recombinator(intensity=intensity,
-        rate=r, afterLoci=loci,
-        maleIntensity=maleIntensity,
-        maleRate=mr, maleAfterLoci=maleLoci,
-        *args, **kwargs))
+        rate=r, *args, **kwargs))
 
 new_recombinator.__doc__ = recombinator.__init__.__doc__
 del recombinator.__init__
