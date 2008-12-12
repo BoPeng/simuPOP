@@ -137,7 +137,8 @@ public:
 	 *    regions of the sex chromsomes is not supported. \c Customized
 	 *    chromosomes are special chromosomes whose inheritance patterns are
 	 *    undefined. They rely on user-defined functions and operators to be
-	 *    passed from parents to offspring.
+	 *    passed from parents to offspring. Multiple customized chromosomes
+	 *    have to be arranged consecutively.
 	 *  \param lociPos Positions of all loci on all chromosome, as a list of
 	 *    float numbers. Default to \c 1, \c 2, ... etc on each chromosome.
 	 *    Positions on the same chromosome should be ordered. A nested list

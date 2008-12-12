@@ -178,8 +178,12 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	//
 	m_customized.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
-		if (m_chromTypes[i] == Customized)
+		if (m_chromTypes[i] == Customized) {
+			DBG_FAILIF(!m_customized.empty() && m_customized.back() != i - 1,
+				ValueError,
+				"There can be several customized chromosmes, but they need to be adjacent to each other.");
 			m_customized.push_back(i);
+		}
 	}
 }
 
