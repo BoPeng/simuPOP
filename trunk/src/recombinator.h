@@ -59,6 +59,11 @@ public:
 		return new cloneGenoTransmitter(*this);
 	}
 
+	virtual string __repr__()
+	{
+		return "<simuPOP::cloneTransmitter>" ;
+	}
+
 
 	void initialize(const population & pop);
 
@@ -106,6 +111,12 @@ public:
 	}
 
 
+	virtual string __repr__()
+	{
+		return "<simuPOP::mendelianGenoTransmitter>" ;
+	}
+
+
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
@@ -119,8 +130,8 @@ public:
      *  customized chromosomes and handles sex chromosomes properly, according
      *  to offspring sex and \c ploidy. 
 	 */
-	void formOffspringGenotype(individual * parent,
-		individual * offspring, int ploidy);
+	void transmitGenotype(const individual & parent,
+		individual & offspring, int ploidy);
 
 protected:
 	// cache chromBegin, chromEnd for better performance.
@@ -158,6 +169,12 @@ public:
 		return new selfingGenoTransmitter(*this);
 	}
 
+	virtual string __repr__()
+	{
+		return "<simuPOP::selfingGenoTransmitter>" ;
+	}
+
+
 
 	bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
@@ -192,6 +209,11 @@ public:
 	baseOperator * clone() const
 	{
 		return new haplodiploidGenoTransmitter(*this);
+	}
+
+	virtual string __repr__()
+	{
+		return "<simuPOP::haplodiploidGenoTransmitter>" ;
 	}
 
 
@@ -290,20 +312,14 @@ public:
 	   of genes between pseudoautosomal regions of \c XY need to be modeled.
 
 	 */
-	recombinator(double intensity = -1,
-		vectorf rate = vectorf(),
-		vectoru afterLoci = vectoru(),
-		double convProb = 0,          // no conversion
-		UINT convMode = CONVERT_NumMarkers,
-		double convParam = 1.,
+	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru afterLoci = vectoru(),
+		double convProb = 0, UINT convMode = CONVERT_NumMarkers, double convParam = 1.,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
 		:
 		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
-		, m_intensity(intensity),
-		m_rate(rate),
-		m_afterLoci(afterLoci),
-		m_recBeforeLoci(0),
+		, m_intensity(intensity), m_rate(rate), m_afterLoci(afterLoci), m_recBeforeLoci(0),
 		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
 		m_bt(rng()),
 #ifndef OPTIMIZED
@@ -336,19 +352,6 @@ public:
 	virtual string __repr__()
 	{
 		return "<simuPOP::recombination>" ;
-	}
-
-
-	/// return recombination count at a locus (only valid in standard modules)
-	ULONG recCount(size_t locus)
-	{
-#ifndef OPTIMIZED
-		DBG_ASSERT(locus < m_recCount.size(), IndexError,
-			"locus index " + toStr(locus) + " is out of range");
-		return m_recCount[locus];
-#else
-		return 0;
-#endif
 	}
 
 
@@ -386,62 +389,23 @@ public:
 
 
 	void initialize(const population & pop);
+	// this function implement how to recombine
+	// parental chromosomes and set one copy of offspring chromosome
+	// bt contains the bernulli trailer
 
-	/** Recombine parental chromosomes of \e parent	and pass them to offspring
-	 *  \e off. The homologous chromosomes ofe parent will be recombined
-	 *  twice and form both homologous sets of the offspring, as if \e parent
-	 *  mates with itself (a selfing inheritance model). If sex chromosomes
-	 *  are present, offspring sex will be determined by which sex chromosomes
-	 *  are inherited by \e off. Random sex is assigned to \e off otherwise.
-	 */
-	void produceOffspring(const individual & parent, individual & off);
-
-	/** Recombine parental chromosomes and pass them to offspring \e off. A
-	 *  Mendelian inheritance model will be used, which recombine homologous
-	 *  sets of chromosomes of \e mom and \e dad and pass them as the first and
-	 *  second sets of homologous chromosomes to offspring \e off, respectively.
-	 *  If sex chromosomes are present, offspring sex is determined by which
-	 *  sex chromosomes are inherited by \e off. Random sex is assigned to
-	 *  \e off otherwise.
-	 */
-	void produceOffspring(const individual & mom, const individual & dad,
-		individual & off);
+	void transmitGenotype( const individual & parent,
+		individual & offspring, int ploidy);      
 
 	/// apply the recombinator during mating
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
-		individual * dad = NULL,
-		individual * mom = NULL);
+		individual * dad, individual * mom);
 
 private:
-	// this function implement how to recombine
-	// parental chromosomes and set one copy of offspring chromosome
-	// bt contains the bernulli trailer
-	void recombine(
-		const individual & parent,                                                          // one of the parent
-		individual & offspring,                                                             // offspring
-		int offPloidy,                                                                      // which offspring ploidy to fill
-		BernulliTrials & bt,
-		const vectoru & recBeforeLoci,
-		bool setSex = false);
 
 	/// determine number of markers to convert
 	int markersConverted(size_t index, const individual & ind);
-
-	/// this function takes intensity, rate, afterLoci, ...
-	/// inputs and return a bernulli trailer and a recBeforeLoci
-	/// vector.
-	void prepareRecRates(const population & pop,
-		double intensity,
-		vectorf rate,
-		vectoru afterLoci,                                                  //
-		vectoru & recBeforeLoci,                                            // return before loci vector
-		vectorf & vecP,
-		Sex sex);                                                           // return recombination rate
-
-	void copyParentalGenotype(const individual & parent,
-		individual & it, int ploidy);
 
 private:
 	/// intensity

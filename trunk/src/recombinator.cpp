@@ -100,8 +100,8 @@ void mendelianGenoTransmitter::initialize(const population & pop)
 }
 
 
-void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
-                                                     individual * it, int ploidy)
+void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
+                                                     individual & offspring, int ploidy)
 {
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
@@ -110,24 +110,23 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 	GenoIterator off;
 
 	//
-	par[0] = parent->genoBegin(0);
-	par[1] = parent->genoBegin(1);
-	off = it->genoBegin(ploidy);
+	par[0] = parent.genoBegin(0);
+	par[1] = parent.genoBegin(1);
+	off = offspring.genoBegin(ploidy);
 	//
-	int btShift = ploidy * m_numChrom;
 #ifndef BINARYALLELE
 	// the easy way to copy things.
-	for (UINT ch = 0; ch < m_numChrom; ++ch) {
+	for (int ch = 0; static_cast<UINT>(ch) < m_numChrom; ++ch) {
 		// customized chromosome?
 		if (m_lociToCopy[ch] == 0 || (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
 			continue;
 		if (ploidy == 1 && ch == m_chromX) {
-			if (it->sex() == Male)
+			if (offspring.sex() == Male)
 				continue;
 			else
 				parPloidy = 0;
 		} else if (ploidy == 1 && ch == m_chromY) {
-			if (it->sex() == Male)
+			if (offspring.sex() == Male)
 				parPloidy = 1;          // copy chrom Y from second ploidy
 			else
 				continue;
@@ -183,12 +182,12 @@ void mendelianGenoTransmitter::formOffspringGenotype(individual * parent,
 			    (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
 				continue;
 			if (ploidy == 1 && ch == m_chromX) {
-				if (it->sex() == Male)
+				if (offspring.sex() == Male)
 					continue;
 				else
 					parPloidy = 0;
 			} else if (ploidy == 1 && ch == m_chromY) {
-				if (it->sex() == Male)
+				if (offspring.sex() == Male)
 					parPloidy = 1;          // copy chrom Y from second ploidy
 				else
 					continue;
@@ -213,8 +212,8 @@ bool mendelianGenoTransmitter::applyDuringMating(population & pop,
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
 
 	// the next two functions.
-	formOffspringGenotype(mom, &*offspring, 0);
-	formOffspringGenotype(dad, &*offspring, 1);
+	transmitGenotype(*mom, *offspring, 0);
+	transmitGenotype(*dad, *offspring, 1);
 	return true;
 }
 
@@ -232,8 +231,8 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
 	individual * parent = mom != NULL ? mom : dad;
 
 	// use the same parent to produce two copies of chromosomes
-	formOffspringGenotype(parent, &*offspring, 0);
-	formOffspringGenotype(parent, &*offspring, 1);
+	transmitGenotype(*parent, *offspring, 0);
+	transmitGenotype(*parent, *offspring, 1);
 	return true;
 }
 
@@ -256,113 +255,11 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
 
 	// mom generate the first...
-	formOffspringGenotype(mom, &*offspring, 0);
+	transmitGenotype(*mom, *offspring, 0);
 
 	if (offspring->sex() == Female)
-	    formOffspringGenotype(dad, &*offspring, 1);
+	    transmitGenotype(*dad, *offspring, 1);
 	return true;
-}
-
-
-void recombinator::prepareRecRates(const population & pop,
-                                   double intensity,
-                                   vectorf rate,
-                                   vectoru afterLoci,                   //
-                                   vectoru & recBeforeLoci,             // return before loci vector
-                                   vectorf & vecP,                      // return recombination rate
-                                   Sex sex)
-{
-	if (!recBeforeLoci.empty() )
-		return;
-
-	DBG_FAILIF(intensity < 0 && rate.empty(), ValueError,
-		"You should specify intensity, or rate "
-		"(a number or a sequence of recombination rates.)");
-
-	DBG_FAILIF(rate.size() > 1 && afterLoci.empty(), ValueError,
-		"When more than one rates are given, afterLoci should be"
-		" explicitly specified.");
-
-	DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(),
-		ValueError, "If both rates and atLoci are specified, "
-		            "they should have the same length.");
-
-	bool useLociDist = rate.empty();
-
-	recBeforeLoci.clear();
-	vecP.clear();
-	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-		UINT chBegin = pop.chromBegin(ch);
-		UINT chEnd = pop.chromEnd(ch);
-
-		if (std::find(m_customized.begin(), m_customized.end(), ch) != m_customized.end() ||             // customized does not recombine
-		    (sex == Male && (static_cast<int>(ch) == m_chromX || static_cast<int>(ch) == m_chromY)) ||
-		    (sex == Female && static_cast<int>(ch) == m_chromY)) {
-			DBG_DO(DBG_RECOMBINATOR, cout << "Ignoring chromosome " << ch
-				                          << " Customized: " << m_customized << " Chrom X: " << m_chromX
-				                          << " Chrom Y: " << m_chromY << endl);
-			continue;
-		}
-
-		if (afterLoci.empty()) {
-			// get loci distance * rate and then recombinant points
-			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
-				recBeforeLoci.push_back(loc + 1);
-				double r = useLociDist ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * intensity) : rate[0];
-
-				DBG_WARNING(fcmp_gt(r, 0.5),
-					"Recombination rate after marker " + toStr(loc) + " is out of range ("
-					+ toStr(r) + " ) so it is set to 0.5. This may happen \n"
-					             "when you use recombination intensity instead of rate, and your loci \n"
-					             "distance is too high.)");
-				vecP.push_back(min(0.5, r));
-			}
-		} else {                                                                          // afterLoci not empty
-			DBG_FAILIF(rate.size() > 1 && rate.size() != afterLoci.size(), SystemError,
-				"If an array is given, rates and afterLoci should have the same length");
-
-			// get loci distance * rate and then recombinant points
-			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
-				// if this locus will be recombined.
-				vectoru::iterator pos = find(afterLoci.begin(), afterLoci.end(), loc);
-				if (pos != afterLoci.end()) {
-					double r = 0;
-					if (useLociDist)
-						r = intensity > 0 ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * intensity) : r;
-					else if (rate.size() == 1 && !useLociDist)
-						r = max(rate[0], 0.);
-					else
-						r = rate[pos - afterLoci.begin()];
-					recBeforeLoci.push_back(loc + 1);
-					vecP.push_back(r);
-
-					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
-						ValueError,
-						"Recombination rate should be in [0,1]. (Maybe your loci distance is too high.)");
-				}
-			}
-		}
-		// after each chromosome ...
-		recBeforeLoci.push_back(chEnd);
-		vecP.push_back(0.5);
-	}
-	DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With rates "
-		                          << vecP << " before " << recBeforeLoci << endl);
-
-	DBG_ASSERT(vecP.size() == recBeforeLoci.size(), SystemError,
-		"Rate and before loci should have the same length.");
-
-	DBG_ASSERT(recBeforeLoci.back() == pop.totNumLoci(),
-		SystemError, "The last beforeLoci elem should be total number of loci.");
-
-	DBG_ASSERT(vecP.back() == .5, SystemError,
-		"The last elem of rate should be half.");
-
-	// initialize recombination counter,
-	// This will count recombination events after
-	// each locus.
-	DBG_DO_(m_recCount.resize(pop.totNumLoci(), 0));
-	return;
 }
 
 
@@ -405,28 +302,23 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 // this function implement how to recombine
 // parental chromosomes and set one copy of offspring chromosome
 // bt contains the bernulli trailer
-void recombinator::recombine(
-                             const individual & parent,                                 // one of the parent
-                             individual & offspring,                                    // offspring
-                             int offPloidy,                                             // which offspring ploidy to fill
-                             BernulliTrials & bt,
-                             const vectoru & recBeforeLoci,
-                             bool setSex)
+void recombinator::transmitGenotype(const individual & parent,
+                             individual & offspring, int ploidy)
 {
 	// use which copy of chromosome
 	GenoIterator cp[2], off;
 
 	cp[0] = parent.genoBegin(0);
 	cp[1] = parent.genoBegin(1);
-	off = offspring.genoBegin(offPloidy);
+	off = offspring.genoBegin(ploidy);
 
 	// get a new set of values.
-	// const BoolResults& bs = bt.trial();
-	bt.trial();
-	int curCp = bt.trialSucc(recBeforeLoci.size() - 1) ? 0 : 1;
+	// const BoolResults& bs = m_bttrial();
+	m_bt.trial();
+	int curCp = m_bt.trialSucc(m_recBeforeLoci.size() - 1) ? 0 : 1;
 	// the last one does not count, because it determines
 	// the initial copy of paternal chromosome
-	bt.setTrialSucc(recBeforeLoci.size() - 1, false);
+	m_bt.setTrialSucc(m_recBeforeLoci.size() - 1, false);
 
 	// algorithm one:
 	//
@@ -439,7 +331,7 @@ void recombinator::recombine(
 	if (m_algorithm == 0) {
 		// negative means no conversion is pending.
 		int convCount = -1;
-		size_t gtEnd = recBeforeLoci.back();
+		size_t gtEnd = m_recBeforeLoci.back();
 		for (size_t gt = 0, bl = 0; gt < gtEnd; ++gt, --convCount) {
 			off[gt] = cp[curCp][gt];
 			//
@@ -449,9 +341,9 @@ void recombinator::recombine(
 				// no pending conversion
 				convCount = -1;
 			}
-			if (gt + 1 == recBeforeLoci[bl]) {
+			if (gt + 1 == m_recBeforeLoci[bl]) {
 				// recombination (if convCount == 0, a conversion event is ending)
-				if (convCount < 0 && bt.trialSucc(bl)) {
+				if (convCount < 0 && m_bt.trialSucc(bl)) {
 					curCp = (curCp + 1) % 2;
 					DBG_DO_(m_recCount[bl]++);
 					// if conversion happens
@@ -472,13 +364,13 @@ void recombinator::recombine(
 	} else {
 #ifndef BINARYALLELE
 		size_t gt = 0, gtEnd = 0;
-		size_t pos = bt.probFirstSucc();
+		size_t pos = m_bt.probFirstSucc();
 		// if there is some recombination
 		int convCount = -1;
 		size_t convEnd;
 		if (pos != BernulliTrials::npos) {
 			// first piece
-			for (; gt < recBeforeLoci[pos]; ++gt)
+			for (; gt < m_recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
@@ -490,10 +382,10 @@ void recombinator::recombine(
 				DBG_DO_(m_convSize[convCount]++);
 			}
 			// next recombination point...
-			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
+			while ((pos = m_bt.probNextSucc(pos)) != BernulliTrials::npos) {
 				// copy from last to this recombination point, but
 				// there might be a conversion event in between
-				gtEnd = recBeforeLoci[pos];
+				gtEnd = m_recBeforeLoci[pos];
 				if (convCount > 0) {
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
@@ -521,7 +413,7 @@ void recombinator::recombine(
 				}
 			}
 		}
-		gtEnd = recBeforeLoci.back();
+		gtEnd = m_recBeforeLoci.back();
 		// copy the last piece
 		if (convCount > 0) {
 			convEnd = gt + convCount;
@@ -535,14 +427,14 @@ void recombinator::recombine(
 			off[gt] = cp[curCp][gt];
 #else
 		size_t gt = 0, gtEnd = 0;
-		size_t pos = bt.probFirstSucc();
+		size_t pos = m_bt.probFirstSucc();
 		// if there is some recombination
 		int convCount = -1;
 		size_t convEnd;
 		if (pos != BernulliTrials::npos) {
 			// first piece
-			gtEnd = recBeforeLoci[pos];
-			copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+			gtEnd = m_recBeforeLoci[pos];
+			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
 			gt = gtEnd;
 			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
@@ -553,8 +445,8 @@ void recombinator::recombine(
 				DBG_DO_(m_convSize[convCount]++);
 			}
 			// next recombination point...
-			while ((pos = bt.probNextSucc(pos)) != BernulliTrials::npos) {
-				gtEnd = recBeforeLoci[pos];
+			while ((pos = m_bt.probNextSucc(pos)) != BernulliTrials::npos) {
+				gtEnd = m_recBeforeLoci[pos];
 				if (convCount > 0) {
 					convEnd = gt + convCount;
 					if (convEnd < gtEnd) {
@@ -566,7 +458,7 @@ void recombinator::recombine(
 					convCount = -1;
 				}
 				// copy from the end of conversion to the next recombination point
-				copyGenotype(cp[curCp] + gt, off + gt, recBeforeLoci[pos] - gt);
+				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
 				gt = gtEnd;
 				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
@@ -581,7 +473,7 @@ void recombinator::recombine(
 				}
 			}
 		}
-		gtEnd = recBeforeLoci.back();
+		gtEnd = m_recBeforeLoci.back();
 		// copy the last piece
 		if (convCount > 0) {
 			convEnd = gt + convCount;
@@ -594,30 +486,6 @@ void recombinator::recombine(
 		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
 #endif
 	}
-	if (setSex && m_chromX != -1)
-		// sex chrom determination
-		// if curCp (last chromosome) is X, Female, otherwise Male.
-		// Note that for daddy, the last one is arranged XY
-		offspring.setSex(curCp == 0 ? Female : Male);
-}
-
-
-// copy the first copy of chromosome from parent to offspring
-void recombinator::copyParentalGenotype(const individual & parent,
-                                        individual & it,
-                                        int ploidy)
-{
-	GenoIterator par = parent.genoBegin(0);
-	GenoIterator off = it.genoBegin(ploidy);
-
-#ifndef BINARYALLELE
-	size_t gt = 0;
-	size_t gt_end = parent.totNumLoci();
-	for (; gt < gt_end; ++gt)
-		off[gt] = par[gt];
-#else
-	copyGenotype(par, off, parent.totNumLoci());
-#endif
 }
 
 
@@ -630,9 +498,85 @@ void recombinator::initialize(const population & pop)
 	// prepare m_bt
 	// female
 	vectorf vecP;
-	// female does not determine sex
-	prepareRecRates(pop, m_intensity, m_rate, m_afterLoci,
-		m_recBeforeLoci, vecP, Female);
+	//
+	DBG_FAILIF(m_intensity < 0 && m_rate.empty(), ValueError,
+		"You should specify m_intensity, or m_rate "
+		"(a number or a sequence of recombination m_rates.)");
+
+	DBG_FAILIF(m_rate.size() > 1 && m_afterLoci.empty(), ValueError,
+		"When more than one m_rates are given, m_afterLoci should be"
+		" explicitly specified.");
+
+	DBG_FAILIF(m_rate.size() > 1 && m_rate.size() != m_afterLoci.size(),
+		ValueError, "If both m_rates and atLoci are specified, "
+		            "they should have the same length.");
+
+	bool useLociDist = m_rate.empty();
+
+	m_recBeforeLoci.clear();
+	vecP.clear();
+	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
+		UINT chBegin = pop.chromBegin(ch);
+		UINT chEnd = pop.chromEnd(ch);
+
+		if (m_afterLoci.empty()) {
+			// get loci distance * m_rate and then recombinant points
+			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
+				m_recBeforeLoci.push_back(loc + 1);
+				double r = useLociDist ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * m_intensity) : m_rate[0];
+
+				DBG_WARNING(fcmp_gt(r, 0.5),
+					"Recombination m_rate after marker " + toStr(loc) + " is out of range ("
+					+ toStr(r) + " ) so it is set to 0.5. This may happen \n"
+					             "when you use recombination m_intensity instead of m_rate, and your loci \n"
+					             "distance is too high.)");
+				vecP.push_back(min(0.5, r));
+			}
+		} else {                                                                          // m_afterLoci not empty
+			DBG_FAILIF(m_rate.size() > 1 && m_rate.size() != m_afterLoci.size(), SystemError,
+				"If an array is given, m_rates and m_afterLoci should have the same length");
+
+			// get loci distance * m_rate and then recombinant points
+			for (UINT loc = chBegin; loc < chEnd - 1; ++loc) {
+				// if this locus will be recombined.
+				vectoru::iterator pos = find(m_afterLoci.begin(), m_afterLoci.end(), loc);
+				if (pos != m_afterLoci.end()) {
+					double r = 0;
+					if (useLociDist)
+						r = m_intensity > 0 ? ((pop.locusPos(loc + 1) - pop.locusPos(loc)) * m_intensity) : r;
+					else if (m_rate.size() == 1 && !useLociDist)
+						r = max(m_rate[0], 0.);
+					else
+						r = m_rate[pos - m_afterLoci.begin()];
+					m_recBeforeLoci.push_back(loc + 1);
+					vecP.push_back(r);
+
+					DBG_ASSERT(fcmp_ge(vecP[vecP.size() - 1], 0) && fcmp_le(vecP[vecP.size() - 1], 1),
+						ValueError,
+						"Recombination m_rate should be in [0,1]. (Maybe your loci distance is too high.)");
+				}
+			}
+		}
+		// after each chromosome ...
+		m_recBeforeLoci.push_back(chEnd);
+		vecP.push_back(0.5);
+	}
+	DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With m_rates "
+		                          << vecP << " before " << m_recBeforeLoci << endl);
+
+	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
+		"Rate and before loci should have the same length.");
+
+	DBG_ASSERT(m_recBeforeLoci.back() == pop.totNumLoci(),
+		SystemError, "The last beforeLoci elem should be total number of loci.");
+
+	DBG_ASSERT(vecP.back() == .5, SystemError,
+		"The last elem of m_rate should be half.");
+
+	// initialize recombination counter,
+	// This will count recombination events after
+	// each locus.
+	DBG_DO_(m_recCount.resize(pop.totNumLoci(), 0));
 
 	m_bt.setParameter(vecP, pop.popSize());
 
@@ -648,41 +592,13 @@ void recombinator::initialize(const population & pop)
 }
 
 
-void recombinator::produceOffspring(const individual & parent,
-                                    individual & off)
-{
-	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
-		"Please use initialize(pop) to set up recombination parameter first.");
-
-	recombine(parent, off, 0, m_bt, m_recBeforeLoci, false);
-	recombine(parent, off, 1, m_bt, m_recBeforeLoci, true);
-}
-
-
-void recombinator::produceOffspring(const individual & mom,
-                                    const individual & dad, individual & off)
-{
-	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
-		"Please use initialize(pop) to set up recombination parameter first.");
-
-	// allows selfing. I.e., if mom or dad is NULL, the other parent will
-	// produce both copies of the offspring chromosomes.
-	recombine(mom, off, 0, m_bt, m_recBeforeLoci, false);
-
-	if (mom.isHaplodiploid())
-		copyParentalGenotype(dad, off, 1);
-	else
-		// only set sex once for offspring
-		recombine(dad, off, 1, m_bt, m_recBeforeLoci, true);
-}
-
-
 bool recombinator::applyDuringMating(population & pop,
                                      RawIndIterator offspring,
                                      individual * dad,
                                      individual * mom)
 {
-	DBG_FAILIF(dad == NULL && mom == NULL, ValueError, "Neither dad or mom is invalid.");
+	DBG_FAILIF(dad == NULL || mom == NULL,
+		ValueError, "One of the parents is invalid.");
 
 	// call initialize if the signature of pop has been changed.
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
@@ -690,15 +606,9 @@ bool recombinator::applyDuringMating(population & pop,
 	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
 		"Uninitialized recombinator");
 
-	if (mom == NULL)
-		produceOffspring(*dad, *offspring);
-	else if (dad == NULL)
-		produceOffspring(*mom, *offspring);
-	else
-		produceOffspring(*mom, *dad, *offspring);
-
+	transmitGenotype(*mom, *offspring, 0);
+	transmitGenotype(*dad, *offspring, 1);
 	return true;
 }
-
 
 }
