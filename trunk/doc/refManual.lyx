@@ -469,90 +469,6 @@ matingRef
 
 
 \backslash
-noMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-cloneMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-binomialSelectionRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-baseRandomMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-randomMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-selfMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-monogamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-polygamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-consanguineousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-alphaMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-haplodiploidMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-pedigreeMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 pyMatingRef
 \end_layout
 
@@ -616,28 +532,7 @@ pyParentsChooserRef
 
 
 \backslash
-cloneOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-selfingOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-haplodiploidOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mendelianOffspringGeneratorRef
+offspringGeneratorRef
 \end_layout
 
 \end_inset

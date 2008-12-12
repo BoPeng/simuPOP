@@ -52,87 +52,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::alphaMating "
-
-Applicability: diploid only
-
-Description:
-
-    Only a number of alpha individuals can mate with individuals of
-    opposite sex.
-
-Details:
-
-    This mating scheme is composed of an random parents chooser with
-    alpha individuals, and a Mendelian offspring generator. That is to
-    say, a certain number of alpha individual (male or female) are
-    determined by alphaNum or an information field. Then, only these
-    alpha individuals are able to mate with random individuals of
-    opposite sex.
-
-"; 
-
-%feature("docstring") simuPOP::alphaMating::alphaMating "
-
-Usage:
-
-    alphaMating(alphaSex=Male, alphaNum=0, alphaField=string,
-      numOffspring=1., numOffspringFunc=None, maxNumOffspring=0,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
-      newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      subPop=[], weight=0)
-
-Details:
-
-    Please refer to class mating for descriptions of other parameters.
-    Note: If selection is enabled, it works regularly on on-alpha sex,
-    but works twice on alpha sex. That is to say, alphaNum alpha
-    indiviudals are chosen selectively, and selected again during
-    mating.
-
-Arguments:
-
-    alphaSex:       the sex of the alpha individual, i.e. alpha male
-                    or alpha female who be the only mating individuals
-                    in their sex group.
-    alphaNum:       Number of alpha individuals. If infoField is not
-                    given, alphaNum random individuals with alphaSex
-                    will be chosen. If selection is enabled,
-                    individuals with higher+ fitness values have
-                    higher probability to be selected. There is by
-                    default no alpha individual (alphaNum = 0).
-    alphaField:     if an information field is given, individuals with
-                    non-zero values at this information field are
-                    alpha individuals. Note that these individuals
-                    must have alphaSex.
-
-"; 
-
-%feature("docstring") simuPOP::alphaMating::clone "
-
-Description:
-
-    deep copy of a random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::alphaMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::baseOperator "
 
 Details:
@@ -340,102 +259,6 @@ Usage:
 
 %ignore simuPOP::baseOperator::applicableSubPops() const;
 
-%feature("docstring") simuPOP::baseRandomMating "
-
-Applicability: diploid only
-
-Details:
-
-    This base class defines a general random mating scheme that makes
-    full use of a general random parents chooser, and a Mendelian
-    offspring generator. A general random parents chooser allows
-    selection without replacement, polygemous parents selection (a
-    parent with more than one partners), and the definition of several
-    alpha individuals. Direct use of this mating scheme is not
-    recommended. randomMating, monogemousMating, polygemousMating,
-    alphaMating are all special cases of this mating scheme. They
-    should be used whenever possible.
-
-"; 
-
-%feature("docstring") simuPOP::baseRandomMating::baseRandomMating "
-
-Usage:
-
-    baseRandomMating(replacement=True, replenish=False,
-      polySex=Male, polyNum=1, alphaSex=Male, alphaNum=0,
-      alphaField=string, numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, contWhenUniSex=True, subPop=[],
-      weight=0)
-
-Arguments:
-
-    replacement:    If set to True, a parent can be chosen to mate
-                    again. Default to False.
-    replenish:      In case that replacement=True, whether or not
-                    replenish a sex group when it is exhausted.
-    polySex:        sex of polygamous mating. Male for polygyny,
-                    Female for polyandry.
-    polyNum:        Number of sex partners.
-    alphaSex:       the sex of the alpha individual, i.e. alpha male
-                    or alpha female who be the only mating individuals
-                    in their sex group.
-    alphaNum:       Number of alpha individuals. If infoField is not
-                    given, alphaNum random individuals with alphaSex
-                    will be chosen. If selection is enabled,
-                    individuals with higher+ fitness values have
-                    higher probability to be selected. There is by
-                    default no alpha individual (alphaNum = 0).
-    alphaField:     if an information field is given, individuals with
-                    non-zero values at this information field are
-                    alpha individuals. Note that these individuals
-                    must have alphaSex.
-
-"; 
-
-%feature("docstring") simuPOP::baseRandomMating::~baseRandomMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~baseRandomMating()
-
-"; 
-
-%feature("docstring") simuPOP::baseRandomMating::clone "
-
-Description:
-
-    deep copy of a random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::baseRandomMating::isCompatible(const population &pop) const;
-
-%feature("docstring") simuPOP::baseRandomMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::baseRandomMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
-
 %feature("docstring") simuPOP::BernulliTrials "
 
 Details:
@@ -592,75 +415,49 @@ Usage:
 
 %ignore simuPOP::BernulliTrials::probabilities();
 
-%feature("docstring") simuPOP::binomialSelection "
-
-Applicability: all ploidy
-
-Description:
-
-    a mating scheme that uses binomial selection, regardless of sex
+%feature("docstring") simuPOP::cloneGenoTransmitter "
 
 Details:
 
-    No sex information is involved (binomial random selection).
-    Offspring is chosen from parental generation by random or
-    according to the fitness values. In this mating scheme,
-    *  numOffspring protocol is honored;
-    *  population size changes are allowed;
-    *  selection is possible;
-    *  haploid population is allowed.
+    This during mating operator copies parental genotype directly to
+    offspring. This operator works for all mating schemes when one or
+    two parents are involved. If both parents are passed, maternal
+    genotype are copied.
 
 "; 
 
-%feature("docstring") simuPOP::binomialSelection::binomialSelection "
-
-Description:
-
-    create a binomial selection mating scheme
+%feature("docstring") simuPOP::cloneGenoTransmitter::cloneGenoTransmitter "
 
 Usage:
 
-    binomialSelection(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=[], weight=0)
+    cloneGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 Details:
 
-    Please refer to class mating for parameter descriptions.
+    Create a cloneGenoTransmitter.
 
 "; 
 
-%feature("docstring") simuPOP::binomialSelection::~binomialSelection "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~binomialSelection()
-
-"; 
-
-%feature("docstring") simuPOP::binomialSelection::clone "
-
-Description:
-
-    deep copy of a binomial selection mating scheme
+%feature("docstring") simuPOP::cloneGenoTransmitter::clone "
 
 Usage:
 
     x.clone()
 
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
 "; 
 
-%feature("docstring") simuPOP::binomialSelection::__repr__ "
+%feature("docstring") simuPOP::cloneGenoTransmitter::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the binomial selection mating scheme
+    of the operator
 
 Usage:
 
@@ -668,88 +465,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::binomialSelection::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::cloneGenoTransmitter::initialize(const population &pop);
 
-%feature("docstring") simuPOP::cloneMating "
-
-Applicability: all ploidy
-
-Description:
-
-    a clone mating that copy everyone from parental to offspring
-    generation.
-
-Details:
-
-    Note that
-    *  selection is not considered (fitness is ignored)
-    *  sequentialParentMating is used. If offspring (virtual)
-    subpopulation size is smaller than parental subpopulation size,
-    not all parents will be cloned. If offspring (virtual)
-    subpopulation size is larger, some parents will be cloned more
-    than once.
-    *  numOffspring interface is respected.
-    *  during mating operators are applied.
-
-"; 
-
-%feature("docstring") simuPOP::cloneMating::cloneMating "
-
-Description:
-
-    create a binomial selection mating scheme
-
-Usage:
-
-    cloneMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=[], weight=0)
-
-Details:
-
-    Please refer to class mating for parameter descriptions.
-
-"; 
-
-%feature("docstring") simuPOP::cloneMating::~cloneMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~cloneMating()
-
-"; 
-
-%feature("docstring") simuPOP::cloneMating::clone "
-
-Description:
-
-    deep copy of a binomial selection mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::cloneMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the binomial selection mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::cloneMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::cloneGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::cloneOffspringGenerator "
 
@@ -787,8 +505,6 @@ Usage:
     x.clone()
 
 "; 
-
-%ignore simuPOP::cloneOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::CombinedAlleleIterator "
 
@@ -886,108 +602,6 @@ Details:
     one of the combined splitters.
 
 "; 
-
-%feature("docstring") simuPOP::consanguineousMating "
-
-Applicability: diploid only
-
-Description:
-
-    a mating scheme of consanguineous mating
-
-Details:
-
-    In this mating scheme, a parent is choosen randomly and mate with
-    a relative that has been located and written to a number of
-    information fields.
-
-"; 
-
-%feature("docstring") simuPOP::consanguineousMating::consanguineousMating "
-
-Description:
-
-    create a consanguineous mating scheme
-
-Usage:
-
-    consanguineousMating(relativeFields=[], func=None, param=None,
-      replacement=False, replenish=True, numOffspring=1.,
-      numOffspringFunc=None, maxNumOffspring=0,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
-      newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=[], weight=0)
-
-Details:
-
-    This mating scheme randomly choose a parent and then choose
-    his/her spouse from indexes stored in infoFields.  Please refer to
-    infoParentsChooser and mendelianOffspringGenerator for other
-    parameters.
-
-Arguments:
-
-    relativeFields: The information fields that stores indexes to
-                    other individuals in a population. If more than
-                    one valid (positive value) indexes exist, a random
-                    index will be chosen. (c.f. infoParentsChooser )
-                    If there is no individual having any valid index,
-                    the second parent will be chosen randomly from the
-                    whole population.
-    func:           A python function that can be used to prepare the
-                    indexes of these information fields. For example,
-                    functions population::locateRelatives and/or
-                    population::setIndexesOfRelatives can be used to
-                    locate certain types of relatives of each
-                    individual.
-    param:          An optional parameter that can be passed to func.
-
-"; 
-
-%feature("docstring") simuPOP::consanguineousMating::~consanguineousMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~consanguineousMating()
-
-"; 
-
-%ignore simuPOP::consanguineousMating::consanguineousMating(const consanguineousMating &rhs);
-
-%feature("docstring") simuPOP::consanguineousMating::clone "
-
-Description:
-
-    deep copy of a consanguineous mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::consanguineousMating::isCompatible(const population &pop) const;
-
-%feature("docstring") simuPOP::consanguineousMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the consanguineous mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::consanguineousMating::preparePopulation(population &pop);
-
-%ignore simuPOP::consanguineousMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::controlledMating "
 
@@ -2002,94 +1616,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::haplodiploidMating "
-
-Applicability: haplodiploid only
-
-Description:
-
-    haplodiploid mating scheme of many hymemopterans
-
-Details:
-
-    This mating scheme is composed of an alphaParentChooser and a
-    haplodiploidOffspringGenerator. The alphaParentChooser chooses a
-    single Female randomly or from a given information field. This
-    female will mate with random males from the colony. The offspring
-    will have one of the two copies of chromosomes from the female
-    parent, and the first copy of chromosomes from the male parent.
-    Note that if a recombinator is used, it should disable
-    recombination of male parent.
-
-"; 
-
-%feature("docstring") simuPOP::haplodiploidMating::haplodiploidMating "
-
-Usage:
-
-    haplodiploidMating(alphaSex=Female, alphaNum=1,
-      alphaField=string, numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\", subPop=[],
-      weight=0)
-
-Details:
-
-    Please refer to class mating for descriptions of other parameters.
-
-Arguments:
-
-    alphaSex:       sex of the alpha individual. Default to Female.
-    alphaNum:       Number of alpha individual. Default to one.
-    alphaField:     information field that identifies the queen of the
-                    colony. By default, a random female will be
-                    chosen.
-
-"; 
-
-%feature("docstring") simuPOP::haplodiploidMating::~haplodiploidMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~haplodiploidMating()
-
-"; 
-
-%feature("docstring") simuPOP::haplodiploidMating::clone "
-
-Description:
-
-    deep copy of a random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::haplodiploidMating::isCompatible(const population &pop) const;
-
-%feature("docstring") simuPOP::haplodiploidMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::haplodiploidMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
-
-%feature("docstring") simuPOP::haplodiploidOffspringGenerator "
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter "
 
 Applicability: haplodiploid only
 
@@ -2107,33 +1634,44 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::haplodiploidOffspringGenerator::haplodiploidOffspringGenerator "
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::haplodiploidGenoTransmitter "
 
 Usage:
 
-    haplodiploidOffspringGenerator(numOffspring=1,
-      numOffspringFunc=None, maxNumOffspring=1,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
+    haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
+      rep=[], subPop=[], infoFields=[])
 
 "; 
 
-%feature("docstring") simuPOP::haplodiploidOffspringGenerator::copyParentalGenotype "
-
-Usage:
-
-    x.copyParentalGenotype(parent, it, ploidy, count)
-
-"; 
-
-%feature("docstring") simuPOP::haplodiploidOffspringGenerator::clone "
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::clone "
 
 Usage:
 
     x.clone()
 
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
 "; 
 
-%ignore simuPOP::haplodiploidOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the operator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::haplodiploidGenoTransmitter::initialize(const population &pop);
+
+%ignore simuPOP::haplodiploidGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::heteroMating "
 
@@ -2340,7 +1878,7 @@ Details:
     but refences to inidividuals can be retrieved using member
     functions of a population object. In addition to structural
     information shared by all individuals in a population (provided by
-    class genoStruTrait), an individual class provides member
+    class genoStruTrait), the individual class provides member
     functions to get and set genotype, sex, affection status and
     information fields of an individual.  Genotypes of an individual
     are stored sequentially and can be accessed locus by locus, or in
@@ -4259,6 +3797,78 @@ Usage:
 
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
 
+%feature("docstring") simuPOP::mendelianGenoTransmitter "
+
+Applicability: diploid only
+
+Details:
+
+    Mendelian offspring generator accepts two parents and pass their
+    genotype to a number of offspring following Mendelian's law.
+    Basically, one of the paternal chromosomes is chosen randomly to
+    form the paternal copy of the offspring, and one of the maternal
+    chromosome is chosen randomly to form the maternal copy of the
+    offspring. The number of offspring produced is controled by
+    parameters numOffspring, numOffspringFunc, maxNumOffspring and
+    mode. Recombination will not happen unless a during-mating
+    operator recombinator is used.
+
+"; 
+
+%feature("docstring") simuPOP::mendelianGenoTransmitter::mendelianGenoTransmitter "
+
+Usage:
+
+    mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
+
+"; 
+
+%feature("docstring") simuPOP::mendelianGenoTransmitter::clone "
+
+Usage:
+
+    x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
+"; 
+
+%feature("docstring") simuPOP::mendelianGenoTransmitter::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the operator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::mendelianGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%ignore simuPOP::mendelianGenoTransmitter::initialize(const population &pop);
+
+%feature("docstring") simuPOP::mendelianGenoTransmitter::transmitGenotype "
+
+Usage:
+
+    x.transmitGenotype(parent, offspring, ploidy)
+
+Details:
+
+    Pass genotype from parent to offspring, and fill the ploidy
+    homologous set of chromosomes. This function does not set
+    genotypes of customized chromosomes and handles sex chromosomes
+    properly, according to offspring sex and ploidy.
+
+"; 
+
 %feature("docstring") simuPOP::mendelianOffspringGenerator "
 
 Applicability: diploid only
@@ -4294,12 +3904,6 @@ Usage:
     x.clone()
 
 "; 
-
-%ignore simuPOP::mendelianOffspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
-
-%ignore simuPOP::mendelianOffspringGenerator::formOffspringGenotype(individual *parent, RawIndIterator &it, int ploidy, int count);
-
-%ignore simuPOP::mendelianOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::mergeSubPops "
 
@@ -4805,69 +4409,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::monogamousMating "
-
-Applicability: diploid only
-
-Description:
-
-    a mating scheme of monogamy
-
-Details:
-
-    This mating scheme is identical to random mating except that
-    parents are chosen without replacement. Under this mating scheme,
-    offspring share the same mother must share the same father. In
-    case that all parental pairs are exhausted, parameter
-    replenish=True allows for the replenishment of one or both sex
-    groups.
-
-"; 
-
-%feature("docstring") simuPOP::monogamousMating::monogamousMating "
-
-Usage:
-
-    monogamousMating(replenish=False, numOffspring=1.,
-      numOffspringFunc=None, maxNumOffspring=0,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex,
-      newSubPopSize=[], newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=[], weight=0)
-
-Details:
-
-    replenish This parameter allows replenishment of one or both
-    parental sex groups in case that they are are exhausted. Default
-    to False. Please refer to class mating for descriptions of other
-    parameters.
-
-"; 
-
-%feature("docstring") simuPOP::monogamousMating::clone "
-
-Description:
-
-    deep copy of a random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::monogamousMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::mutator "
 
 Description:
@@ -5045,90 +4586,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::noMating "
-
-Applicability: all ploidy
-
-Description:
-
-    a mating scheme that does nothing
-
-Details:
-
-    In this scheme, there is
-    *  no mating. Parent generation will be considered as offspring
-    generation.
-    *  no subpopulation change. During-mating operators will be
-    applied, but the return values are not checked. I.e.,
-    subpopulation size parameters will be ignored although some
-    during-mating operators might be applied. Note that because the
-    offspring population is the same as parental population, this
-    mating scheme can not be used with other mating schemes in a
-    heterogeneous mating scheme. cloneMating is recommended for that
-    purpose.
-
-"; 
-
-%feature("docstring") simuPOP::noMating::noMating "
-
-Description:
-
-    creat a scheme with no mating
-
-Usage:
-
-    noMating(numOffspring=1.0, numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=[], weight=0)
-
-Note:
-
-    All parameters are ignored!
-
-"; 
-
-%feature("docstring") simuPOP::noMating::~noMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~noMating()
-
-"; 
-
-%feature("docstring") simuPOP::noMating::clone "
-
-Description:
-
-    deep copy of a scheme with no mating
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::noMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the scheme with no mating
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::noMating::submitScratch(population &pop, population &scratch);
-
-%ignore simuPOP::noMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
-
 %feature("docstring") simuPOP::noneOp "
 
 Description:
@@ -5236,7 +4693,7 @@ Details:
 Usage:
 
     offspringGenerator(numOffspring, numOffspringFunc,
-      maxNumOffspring, mode, sexParam, sexMode)
+      maxNumOffspring, mode, sexParam, sexMode, transmitter)
 
 Arguments:
 
@@ -5269,6 +4726,9 @@ Arguments:
                     MATE_RandomSex. Otherwise, some offspring will be
                     rejected so that offspring sex match what is
                     specified in other modes.
+    transmitter:    is an during mating operator, that will be used if
+                    no during mating operator is used to produce
+                    offspring.
 
 "; 
 
@@ -5292,7 +4752,7 @@ Usage:
 
 %ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
-%ignore simuPOP::offspringGenerator::fixedFamilySize() const;
+%ignore simuPOP::offspringGenerator::mode() const;
 
 %ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
 
@@ -5315,18 +4775,6 @@ Usage:
 Arguments:
 
     count:          the index of offspring
-
-"; 
-
-%feature("docstring") simuPOP::offspringGenerator::isSexOK "
-
-Description:
-
-    If a sex-chromosome defined sex comptible with sexMode.
-
-Usage:
-
-    x.isSexOK(sex, count)
 
 "; 
 
@@ -6106,75 +5554,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::polygamousMating "
-
-Applicability: diploid only
-
-Description:
-
-    a mating scheme of polygymy or polyandry
-
-Details:
-
-    This mating scheme is composed of a random parents chooser that
-    allows for polygamous mating, and a mendelian offspring generator.
-    In this mating scheme, a male (or female) parent will have more
-    than one sex partner (numPartner). Parents returned from this
-    parents chooser will yield the same male (or female) parents, each
-    with varying partners.
-
-"; 
-
-%feature("docstring") simuPOP::polygamousMating::polygamousMating "
-
-Usage:
-
-    polygamousMating(polySex=Male, polyNum=1, replacement=False,
-      replenish=False, numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=[], weight=0)
-
-Arguments:
-
-    polySex:        sex of polygamous mating. Male for polygyny,
-                    Female for polyandry.
-    polyNum:        Number of sex partners.
-    replacement:    If set to True, a parent can be chosen to mate
-                    again. Default to False.
-    replenish:      In case that replacement=True, whether or not
-                    replenish a sex group when it is exhausted. Please
-                    refer to class mating for descriptions of other
-                    parameters.
-
-"; 
-
-%feature("docstring") simuPOP::polygamousMating::clone "
-
-Description:
-
-    deep copy of a random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::polygamousMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::population "
 
 Details:
@@ -6266,6 +5645,8 @@ Arguments:
                     special chromosomes whose inheritance patterns are
                     undefined. They rely on user-defined functions and
                     operators to be passed from parents to offspring.
+                    Multiple customized chromosomes have to be
+                    arranged consecutively.
     lociPos:        Positions of all loci on all chromosome, as a list
                     of float numbers. Default to 1, 2, ... etc on each
                     chromosome. Positions on the same chromosome
@@ -6740,7 +6121,7 @@ Usage:
 Details:
 
     Return an editable array of the genotype of all individuals in
-    subpopulation subPop.
+    subpopulation subPop. Virtual subpopulation is unsupported.
 
 "; 
 
@@ -6766,9 +6147,9 @@ Usage:
 
 Details:
 
-    Fill the genotype of all individuals of in subpopulation subPop
-    using a list of alleles geno. geno will be reused if its length is
-    less than subPopSize(subPop)*totNumLoci()*ploidy().
+    Fill the genotype of all individuals of in (virtual) subpopulation
+    subPop using a list of alleles geno. geno will be reused if its
+    length is less than subPopSize(subPop)*totNumLoci()*ploidy().
 
 "; 
 
@@ -8711,71 +8092,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::randomMating "
-
-Applicability: diploid only
-
-Description:
-
-    a mating scheme of basic sexually random mating
-
-Details:
-
-    In this scheme, sex information is considered for each individual,
-    and ploidy is always 2. Within each subpopulation, males and
-    females are randomly chosen. Then randomly get one copy of
-    chromosomes from father and mother. If only one sex exists in a
-    subpopulation, a parameter (contWhenUniSex) can be set to
-    determine the behavior. Default to continuing without warning.
-
-"; 
-
-%feature("docstring") simuPOP::randomMating::randomMating "
-
-Usage:
-
-    randomMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=[], weight=0)
-
-Details:
-
-    Please refer to class mating for descriptions of other parameters.
-
-Arguments:
-
-    contWhenUniSex: continue when there is only one sex in the
-                    population. Default to True.
-
-"; 
-
-%feature("docstring") simuPOP::randomMating::clone "
-
-Description:
-
-    deep copy of a random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::randomMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::randomParentChooser "
 
 Applicability: all ploidy
@@ -8996,8 +8312,7 @@ Description:
 
 Usage:
 
-    recombinator(intensity=-1, rate=[], afterLoci=[],
-      maleIntensity=-1, maleRate=[], maleAfterLoci=[], convProb=0,
+    recombinator(intensity=-1, rate=[], loci=[], convProb=0,
       convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
       step=1, at=[], rep=[], subPop=[], infoFields=[])
 
@@ -9119,19 +8434,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::recCount "
-
-Description:
-
-    return recombination count at a locus (only valid in standard
-    modules)
-
-Usage:
-
-    x.recCount(locus)
-
-"; 
-
 %feature("docstring") simuPOP::recombinator::recCounts "
 
 Description:
@@ -9172,43 +8474,15 @@ Usage:
 
 %ignore simuPOP::recombinator::initialize(const population &pop);
 
-%feature("docstring") simuPOP::recombinator::produceOffspring "
+%feature("docstring") simuPOP::recombinator::transmitGenotype "
 
 Usage:
 
-    x.produceOffspring(parent, off)
-
-Details:
-
-    Recombine parental chromosomes of parent and pass them to
-    offspring off. The homologous chromosomes ofe parent will be
-    recombined twice and form both homologous sets of the offspring,
-    as if parent mates with itself (a selfing inheritance model). If
-    sex chromosomes are present, offspring sex will be determined by
-    which sex chromosomes are inherited by off. Random sex is assigned
-    to off otherwise.
+    x.transmitGenotype(parent, offspring, ploidy)
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::produceOffspring "
-
-Usage:
-
-    x.produceOffspring(mom, dad, off)
-
-Details:
-
-    Recombine parental chromosomes and pass them to offspring off. A
-    Mendelian inheritance model will be used, which recombine
-    homologous sets of chromosomes of mom and dad and pass them as the
-    first and second sets of homologous chromosomes to offspring off,
-    respectively. If sex chromosomes are present, offspring sex is
-    determined by which sex chromosomes are inherited by off. Random
-    sex is assigned to off otherwise.
-
-"; 
-
-%ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+%ignore simuPOP::recombinator::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad, individual *mom);
 
 %feature("docstring") simuPOP::repList "
 
@@ -9465,6 +8739,14 @@ Description:
 Usage:
 
     x.randGet()
+
+"; 
+
+%feature("docstring") simuPOP::RNG::randBit "
+
+Usage:
+
+    x.randBit()
 
 "; 
 
@@ -9777,7 +9059,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::selfingOffspringGenerator "
+%feature("docstring") simuPOP::selfingGenoTransmitter "
 
 Applicability: diploid only
 
@@ -9793,101 +9075,34 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::selfingOffspringGenerator::selfingOffspringGenerator "
+%feature("docstring") simuPOP::selfingGenoTransmitter::selfingGenoTransmitter "
 
 Usage:
 
-    selfingOffspringGenerator(numOffspring=1, numOffspringFunc=None,
-      maxNumOffspring=1, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex)
+    selfingGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 "; 
 
-%feature("docstring") simuPOP::selfingOffspringGenerator::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::selfingOffspringGenerator::generateOffspring(population &pop, individual *parent, individual *, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
-
-%feature("docstring") simuPOP::selfMating "
-
-Applicability: diploid only
-
-Description:
-
-    a mating scheme of selfing
-
-Details:
-
-    In this mating scheme, a parent is choosen randomly, acts both as
-    father and mother in the usual random mating. The parent is chosen
-    randomly, regardless of sex. If selection is turned on, the
-    probability that an individual is chosen is proportional to
-    his/her fitness.
-
-"; 
-
-%feature("docstring") simuPOP::selfMating::selfMating "
-
-Description:
-
-    create a self mating scheme
-
-Usage:
-
-    selfMating(numOffspring=1., numOffspringFunc=None,
-      maxNumOffspring=0, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=[], weight=0)
-
-Details:
-
-    Please refer to class mating for descriptions of other parameters.
-
-Arguments:
-
-    contWhenUniSex: continue when there is only one sex in the
-                    population. Default to True.
-
-"; 
-
-%feature("docstring") simuPOP::selfMating::~selfMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~selfMating()
-
-"; 
-
-%feature("docstring") simuPOP::selfMating::clone "
-
-Description:
-
-    deep copy of a self mating scheme
+%feature("docstring") simuPOP::selfingGenoTransmitter::clone "
 
 Usage:
 
     x.clone()
 
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
 "; 
 
-%ignore simuPOP::selfMating::isCompatible(const population &pop) const;
-
-%feature("docstring") simuPOP::selfMating::__repr__ "
+%feature("docstring") simuPOP::selfingGenoTransmitter::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the self mating scheme
+    of the operator
 
 Usage:
 
@@ -9895,7 +9110,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::selfMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
+%ignore simuPOP::selfingGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::sequentialParentChooser "
 
@@ -10868,9 +10083,9 @@ Arguments:
                     $ D = P_{AB}-P_{A}P_{B} $
                     $ D' = D/D_{max} $
                     $ D_{max} = \\min\\left(P_{A}\\left(1-P_{B}\\right),\\l
-                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\\\ 
-                    \\min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P
-                    _{B}\\right)\\right) \\textrm{if }D<0 $
+                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\\\ \\
+                    min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P_
+                    {B}\\right)\\right) \\textrm{if }D<0 $
                     $ r^{2} = \\frac{D^{2}}{P_{A}\\left(1-P_{A}\\right)P_
                     {B}\\left(1-P_{B}\\right)} $ If only one item is
                     specified, the outer [] can be ignored. I.e.,
@@ -12305,6 +11520,370 @@ Usage:
     x.a()
 
 "; 
+
+%ignore simuPOP::countAlleles(population &pop, int subpop, const vectori &loci, const vectori &alleles, vectorlu &numAllele);
+
+%ignore simuPOP::getExpectedAlleles(population &pop, vectorf &expFreq, const vectori &loci, const vectori &alleles, vectoru &expAlleles);
+
+%feature("docstring") simuPOP::FreqTrajectoryStoch "
+
+Usage:
+
+    FreqTrajectoryStoch(curGen=0, freq=0, N=0, NtFunc=None,
+      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
+      ploidy=2, restartIfFail=False, maxAttempts=1000,
+      allowFixation=False)
+
+"; 
+
+%ignore simuPOP::MarginalFitness(unsigned nLoci, const vectorf &fitness, const vectorf &freq);
+
+%feature("docstring") simuPOP::FreqTrajectoryMultiStoch "
+
+Usage:
+
+    FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, NtFunc=None,
+      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
+      ploidy=2, restartIfFail=False, maxAttempts=1000)
+
+"; 
+
+%feature("docstring") simuPOP::ForwardFreqTrajectory "
+
+Usage:
+
+    ForwardFreqTrajectory(curGen=0, endGen=0, curFreq=[], freq=[],
+      N=[], NtFunc=None, fitness=[], fitnessFunc=None, migrRate=0,
+      ploidy=2, maxAttempts=1000)
+
+"; 
+
+%feature("docstring") simuPOP::FreqTrajectorySelSim "
+
+Usage:
+
+    FreqTrajectorySelSim(sel, Ne, freq, dom_h, selection)
+
+"; 
+
+%feature("docstring") simuPOP::FreqTrajectoryForward "
+
+Usage:
+
+    FreqTrajectoryForward(lowbound, highbound, disAge, grate, N0,
+      seleCo)
+
+"; 
+
+%feature("docstring") simuPOP::ApplyDuringMatingOperator "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::LoadPopulation "
+
+Usage:
+
+    LoadPopulation(file)
+
+Details:
+
+    load a population from a file.
+
+"; 
+
+%feature("docstring") simuPOP::LoadSimulator "
+
+Description:
+
+    load a simulator from a file with the specified mating scheme. The
+    file format is by default determined by file extension
+    (format=\"auto\"). Otherwise, format can be one of txt, bin, or xml.
+
+Usage:
+
+    LoadSimulator(file, matingScheme)
+
+"; 
+
+%ignore simuPOP::haploKey(const vectori &seq);
+
+%feature("docstring") simuPOP::TurnOnDebug "
+
+Description:
+
+    set debug codes. Default to turn on all debug codes. Only
+    available in non-optimized modules.
+
+Usage:
+
+    TurnOnDebug(code=DBG_ALL)
+
+"; 
+
+%feature("docstring") simuPOP::TurnOnDebug "
+
+Usage:
+
+    TurnOnDebug(code)
+
+"; 
+
+%feature("docstring") simuPOP::TurnOffDebug "
+
+Description:
+
+    turn off debug information. Default to turn off all debug codes.
+    Only available in non-optimized modules.
+
+Usage:
+
+    TurnOffDebug(code=DBG_ALL)
+
+"; 
+
+%ignore simuPOP::debug(DBG_CODE code);
+
+%feature("docstring") simuPOP::ListDebugCode "
+
+Description:
+
+    list all debug codes
+
+Usage:
+
+    ListDebugCode()
+
+"; 
+
+%ignore simuPOP::dbgString(DBG_CODE code);
+
+%ignore simuPOP::simuPOP_kbhit();
+
+%ignore simuPOP::simuPOP_getch();
+
+%ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
+
+%ignore simuPOP::PyObj_As_Int(PyObject *obj, int &val);
+
+%ignore simuPOP::PyObj_As_Double(PyObject *obj, double &val);
+
+%ignore simuPOP::PyObj_As_String(PyObject *obj, string &val);
+
+%ignore simuPOP::PyObj_As_Array(PyObject *obj, vectorf &val);
+
+%ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
+
+%ignore simuPOP::PyObj_As_Matrix(PyObject *obj, matrix &val);
+
+%ignore simuPOP::PyObj_As_StrDict(PyObject *obj, strDict &val);
+
+%ignore simuPOP::PyObj_As_IntDict(PyObject *obj, intDict &val);
+
+%ignore simuPOP::PyObj_Is_IntNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_DoubleNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_AlleleNumArray(PyObject *obj);
+
+%ignore simuPOP::Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
+
+%ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+
+%ignore simuPOP::NumArray_Size(PyObject *obj);
+
+%ignore simuPOP::NumArray_Data(PyObject *obj);
+
+%ignore simuPOP::mainVars();
+
+%ignore simuPOP::moduleVars();
+
+%ignore simuPOP::pyPopObj(void *p);
+
+%ignore simuPOP::pyIndObj(void *p);
+
+%ignore simuPOP::ostreamManager();
+
+%feature("docstring") simuPOP::rng "
+
+Description:
+
+    return the currently used random number generator
+
+Usage:
+
+    rng()
+
+"; 
+
+%feature("docstring") simuPOP::SetRNG "
+
+Description:
+
+    set random number generator. If seed=0 (default), a random seed
+    will be given. If rng=\"\", seed will be set to the current random
+    number generator.
+
+Usage:
+
+    SetRNG(rng=\"\", seed=0)
+
+"; 
+
+%feature("docstring") simuPOP::AvailableRNGs "
+
+Description:
+
+    list the names of all available random number generators
+
+Usage:
+
+    AvailableRNGs()
+
+"; 
+
+%feature("docstring") simuPOP::simuRev "
+
+Description:
+
+    return the revision number of this simuPOP module. Can be used to
+    test if a feature is available.
+
+Usage:
+
+    simuRev()
+
+"; 
+
+%feature("docstring") simuPOP::simuVer "
+
+Description:
+
+    return the version of this simuPOP module
+
+Usage:
+
+    simuVer()
+
+"; 
+
+%feature("docstring") simuPOP::ModuleCompiler "
+
+Description:
+
+    return the compiler used to compile this simuPOP module
+
+Usage:
+
+    ModuleCompiler()
+
+"; 
+
+%feature("docstring") simuPOP::ModuleDate "
+
+Description:
+
+    return the date when this simuPOP module is compiled
+
+Usage:
+
+    ModuleDate()
+
+"; 
+
+%feature("docstring") simuPOP::ModulePyVersion "
+
+Description:
+
+    return the Python version this simuPOP module is compiled for
+
+Usage:
+
+    ModulePyVersion()
+
+"; 
+
+%feature("docstring") simuPOP::ModulePlatForm "
+
+Description:
+
+    return the platform on which this simuPOP module is compiled
+
+Usage:
+
+    ModulePlatForm()
+
+"; 
+
+%ignore simuPOP::initialize();
+
+%feature("docstring") simuPOP::Optimized "
+
+Description:
+
+    return True if this simuPOP module is optimized
+
+Usage:
+
+    Optimized()
+
+"; 
+
+%feature("docstring") simuPOP::Limits "
+
+Description:
+
+    print out system limits
+
+Usage:
+
+    Limits()
+
+"; 
+
+%feature("docstring") simuPOP::AlleleType "
+
+Description:
+
+    return the allele type of the current module. Can be binary,
+    short, or long.
+
+Usage:
+
+    AlleleType()
+
+"; 
+
+%feature("docstring") simuPOP::MaxAllele "
+
+Usage:
+
+    MaxAllele()
+
+Details:
+
+    return the maximum allowed allele state of the current simuPOP
+    module, which is 1 for binary modules, 255 for short modules and
+    65535 for long modules.
+
+"; 
+
+%ignore simuPOP::cnull();
+
+%feature("docstring") simuPOP::setLogOutput "
+
+Description:
+
+    set the standard output (default to standard Python output)
+
+Usage:
+
+    setLogOutput(filename=\"\")
+
+"; 
+
+%ignore simuPOP::isGzipped(const string &filename);
+
+%ignore simuPOP::fileExtension(const string &filename);
+
+%ignore std::pow3(unsigned n);
 
 %feature("docstring") simuPOP::population::dvars "
 
