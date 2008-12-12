@@ -44,15 +44,13 @@ using std::string;
 #include <stack>
 using std::stack;
 
-typedef std::vector<PyObject * >           vectorobj;
-
 namespace simuPOP {
 
 /**
    Offspring generators generate offspring from given parents. Generators differ
    from each other by how and how many offspring is generated at each mating event.
 
-   Parameters \c mode, \c numOffspring, \c maxNumOffspring and \c numOffspringFunc
+   Parameters \c mode, \c numOffspring, \c numOffspringParam and \c numOffspringFunc
    are used to specify how many offspring will be produced at each mating event.
    \c mode can be one of
    \li \c MATE_NumOffspring: a fixed number of offspring will be produced
@@ -67,7 +65,7 @@ namespace simuPOP {
    \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
        is used to determine the number of offspring of each family.
    \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
-   \c numOffspring (a) and \c maxNumOffspring (b) is used to determine the number of offspring of each family.
+   \c numOffspring (a) and \c numOffspringParam (b) is used to determine the number of offspring of each family.
 
    This is the base class of all offspring generators, and should not
    be used directly.
@@ -86,7 +84,7 @@ public:
 #define MATE_GeometricDistribution   3
 #define MATE_PoissonDistribution     4
 #define MATE_BinomialDistribution    5
-	// uniform between numOffspring and maxNumOffspring
+	// uniform between numOffspring and numOffspringParam
 #define MATE_UniformDistribution     6
 
 
@@ -101,7 +99,7 @@ public:
 	    produce, or a paremter of a random distribution.
 	   \param numOffspringFunc a Python function that returns the number of offspring at each
 	    mating event. The setting of this parameter implies \mode=MATE_PyNumOffspring.
-	   \param maxNumOffspring used when \c numOffspring is generated from a binomial or random
+	   \param numOffspringParam used when \c numOffspring is generated from a binomial or random
 	    distribution.
 	   \param mode can be one of <tt>MATE_NumOffspring, MATE_PyNumOffspring,
 	    MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
@@ -117,14 +115,13 @@ public:
 	   If there are sex chromosomes, sex is determined by sex chromosomes when \c sexMode
 	    id \c MATE_RandomSex. Otherwise, some offspring will be rejected so that offspring
 	    sex match what is specified in other modes.
-		\param transmitter is an during mating operator, that will be used if
-			no during mating operator is used to produce offspring.
+	    \param transmitter is an during mating operator, that will be used if
+	        no during mating operator is used to produce offspring.
 	 */
 	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
-		UINT maxNumOffspring, UINT mode,
-		double sexParam, UINT sexMode,
+		UINT numOffspringParam, UINT mode,
+		double sexParam, UINT sexMode, UINT numParents,
 		const baseOperator & transmitter);
-
 
 	virtual ~offspringGenerator()
 	{
@@ -139,8 +136,14 @@ public:
 	virtual offspringGenerator * clone() const
 	{
 		return new offspringGenerator(*this);
-	}		
+	}
 
+
+	/** create an offspring generator, save information from \c pop and \c ops to
+	 *  speed up the calls to \c generateOffspring
+	 *  CPPONLY
+	 */
+	void initialize(const population & pop, vector<baseOperator *> const & ops);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
@@ -148,48 +151,30 @@ public:
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);
 
-	/// CPPONLY
-	int mode() const
-	{
-		return m_mode;
-	}
-
-
-	/// create an offspring generator, save information from \c pop and \c ops to
-	/// speed up the calls to \c generateOffspring
-	/// CPPONLY
-	virtual void initialize(const population & pop, vector<baseOperator *> const & ops);
-
-	virtual void finalize(const population & pop)
+	void finalize(const population & pop)
 	{
 		m_initialized = false;
 	}
 
 
-	/// CPPONLY the number of offspring of a genaration \c gen
-	/**
-	   This is called whenever a family size is needed.
-	   Its actual meaning depending on \c mode.
-	 */
-	ULONG numOffspring(int gen);
-
-	/// return sex according to m_sexParam and m_sexMode
-	/// \param count the index of offspring
-	Sex getSex(int count);
-
-	/// CPPONLY
-	bool initialized() const
+	bool initialized()
 	{
 		return m_initialized;
 	}
 
 
-	/// CPPONLY
-	void setNumParents(int numParents)
-	{
-		m_numParents = numParents;
-	}
+	/** CPPONLY
+	 *  Return the number of offspring of a genaration \e gen
+	 *  This is called whenever a family size is needed.
+	 *  Its actual meaning depending on \c mode.
+	 */
+	ULONG numOffspring(int gen);
 
+	/** CPPONLY
+	 *  return sex according to m_sexParam, m_sexMode and
+	 *  \e count, which is the index of offspring
+	 */
+	Sex getSex(int count);
 
 	/// CPPONLY
 	int numParents() const
@@ -206,7 +191,7 @@ public:
 	PyObject * m_numOffspringFunc;
 
 	///
-	UINT m_maxNumOffspring;
+	UINT m_numOffspringParam;
 
 	/// whether or not call m_numOffspringFunc each time
 	UINT m_mode;
@@ -217,111 +202,17 @@ public:
 	///
 	UINT m_sexMode;
 
+	// number of parents needed
+	int m_numParents;
+
 	/// default transmitter
 	baseOperator * m_transmitter;
 
 protected:
-	/// check if any of the during mating operators will set genotype
-	/// Note that such an operator will also set individual sex
-	/// if sexChromosome is present.
-	bool checkFormOffspringGenotype(vector<baseOperator *> const & ops);
-
 	/// see if who will generate offspring genotype
 	bool m_formOffGenotype;
 
-#ifndef OPTIMIZED
-	size_t m_genoStruIdx;
-#endif
-
-private:
-	// number of parents needed
-	int m_numParents;
-
 	bool m_initialized;
-};
-
-/** clone offspring generator copies parental geneotype to a number
-   of offspring. Only one parent is accepted. The number of offspring
-   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
-   \c maxNumOffspring and \c mode. Parameters \c sexParam and \c sexMode is
-   ignored.
-   <applicability>all ploidy</applicability>
- */
-class cloneOffspringGenerator : public offspringGenerator
-{
-public:
-	/**
-	   \param sexParam ignored because sex is copied from the parent.
-	   \param sexMode ignored because sex is copied from the parent.
-	 */
-	cloneOffspringGenerator(double numOffspring = 1,
-		PyObject * numOffspringFunc = NULL,
-		UINT maxNumOffspring = 1,
-		UINT mode = MATE_NumOffspring,
-		double sexParam = 0.5,
-		UINT sexMode = MATE_RandomSex
-	    ) :
-		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                   mode, sexParam, sexMode,
-		                   cloneGenoTransmitter())
-	{
-		setNumParents(1);
-	}
-
-
-	offspringGenerator * clone() const
-	{
-		return new cloneOffspringGenerator(*this);
-	}
-};
-
-
-/** Mendelian offspring generator accepts two parents and pass their
-   genotype to a number of offspring following Mendelian's law. Basically,
-   one of the paternal chromosomes is chosen randomly to form the paternal
-   copy of the offspring, and one of the maternal chromosome is chosen
-   randomly to form the maternal copy of the offspring. The number of offspring
-   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
-   \c maxNumOffspring and \c mode. Recombination will not happen unless
-   a during-mating operator recombinator is used.
-
-   <applicability>diploid only</applicability>
- */
-class mendelianOffspringGenerator : public offspringGenerator
-{
-public:
-	mendelianOffspringGenerator(double numOffspring = 1,
-		PyObject * numOffspringFunc = NULL,
-		UINT maxNumOffspring = 1,
-		UINT mode = MATE_NumOffspring,
-		double sexParam = 0.5,
-		UINT sexMode = MATE_RandomSex
-	    ) :
-		offspringGenerator(numOffspring, numOffspringFunc, maxNumOffspring,
-		                   mode, sexParam, sexMode,
-		                   mendelianGenoTransmitter()),
-		m_bt(rng())
-	{
-		setNumParents(2);
-	}
-
-
-	offspringGenerator * clone() const
-	{
-		return new mendelianOffspringGenerator(*this);
-	}
-
-
-protected:
-	// use bernullitrisls with p=0.5 for free recombination
-	BernulliTrials m_bt;
-
-	/// sex chromosome handling
-	bool m_hasSexChrom;
-
-	// cache chromBegin, chromEnd for better performance.
-	vectoru m_chIdx;
-
 };
 
 
@@ -996,262 +887,146 @@ public:
 void countAlleles(population & pop, int subpop, const vectori & loci, const vectori & alleles,
 	vectorlu & numAllele);
 
-/// a controlled mating scheme
-/**
-   This is an experimental mating scheme that uses a frequency range to control
-   the allele frequency of the offspring generation at given loci. When allele frequencies
-   at the offspring generation does not fall into the given range, the offspring generation
-   is regenerated. Any mating scheme can be used with this mating scheme by passing through
-   parameter \c matingScheme.
-   <applicability>diploid only</applicability>
- */
-class controlledMating : public mating
-{
-public:
-	/// control allele frequencies at a locus
-	/**
-	   \param matingScheme a mating scheme
-	   \param loci loci at which allele frequency is controlled. Note that controlling
-	    the allele frequencies at several loci may take a long time.
-	   \param alleles alleles to control at each locus. Should have the same length as \c loci.
-	   \param freqFunc frequency boundaries. If the length of the returned value equals the size
-	    of \c loci, the range for loci will be <tt>[value0, value0+range]</tt>,
-	    <tt>[value1, value1+range]</tt> etc. If the length of the returned value is 2 times
-	    the size of \c loci, it will be interpreted as <tt>[low1, high1, low2, high2, ...]</tt>.
-	 */
-	controlledMating(
-		mating & matingScheme,
-		vectori loci,
-		vectori alleles,
-		PyObject * freqFunc,
-		double range = 0.01
-	    )
-		: m_loci(loci), m_alleles(alleles),
-		m_freqFunc(freqFunc),
-		m_range(range)
-	{
-		DBG_FAILIF(m_loci.empty(), ValueError, "Have to specify a locus (or a loci) to control");
-
-		DBG_FAILIF(m_alleles.empty(), ValueError, "Have to specify allele at each locus");
-
-		DBG_FAILIF(m_loci.size() != m_alleles.size(), ValueError, "Should specify allele for each locus");
-
-		if (m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
-			throw ValueError("Please specify a valid frequency function");
-		else
-			Py_INCREF(m_freqFunc);
-
-		m_matingScheme = matingScheme.clone();
-	}
-
-
-	/// CPPONLY
-	controlledMating(const controlledMating & rhs)
-		: m_loci(rhs.m_loci),
-		m_alleles(rhs.m_alleles),
-		m_freqFunc(rhs.m_freqFunc),
-		m_range(rhs.m_range)
-	{
-		Py_INCREF(m_freqFunc);
-		m_matingScheme = rhs.m_matingScheme->clone();
-	}
-
-
-	/// destructor
-	~controlledMating()
-	{
-		if (m_freqFunc != NULL)
-			Py_DECREF(m_freqFunc);
-		delete m_matingScheme;
-	}
-
-
-	/// CPPONLY
-	void submitScratch(population & pop, population & scratch)
-	{
-	}
-
-
-	/// deep copy of a controlled mating scheme
-	virtual mating * clone() const
-	{
-		return new controlledMating(*this);
-	}
-
-
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-		return m_matingScheme->isCompatible(pop);
-	}
-
-
-	/// used by Python print function to print out the general information of the controlled mating scheme
-	virtual string __repr__()
-	{
-		return "<simuPOP::controlled mating>";
-	}
-
-
-	/// CPPONLY perform controlled mating
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
-
-private:
-	/// mating scheme
-	mating * m_matingScheme;
-
-	/// loci at which mating is controlled.
-	vectori m_loci;
-
-	/// allele to be controlled at each locus
-	vectori m_alleles;
-
-	/// function that return an array of frquency range
-	PyObject * m_freqFunc;
-
-	/// range, used when m_freqFunc returns a vector of the same length as m_loci
-	double m_range;
-};
 
 /// CPPONLY
 void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loci, const vectori & alleles,
 	vectoru & expAlleles);
 
-/// a controlled random mating scheme
-/** This is the controlled random mating scheme described in
-   <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc
-   is passed to this mating scheme and set the allele frequencies of given
-   alleles at given loci at the offspring generation.
-   \n
-   The offspring generation is conceptually populated in two steps.
-   At the first step, only families with disease alleles are accepted
-   until the expected number of disease alleles are met. At the second
-   step, only families with wide type alleles are accepted to populate
-   the rest of the offspring generation.
-   <applicability>diploid only</applicability>
- */
-class controlledRandomMating : public randomMating
-{
-public:
-	/// create a controlled random mating scheme
-	/**
-	   \param loci loci at which allele frequencies are monitored (controlled)
-	   \param alleles alleles at given loci. It should have the same length as \c loci
-	   \param freqFunc a Python function that accepts a generation number and returns
-	    expected allele frequencies at given loci
-	   \param acceptScheme internal use only
-
-	   Please refer to class \c mating for descriptions of other parameters.
-	 */
-	controlledRandomMating(
-		vectori loci,
-		vectori alleles,
-		PyObject * freqFunc,
-		int acceptScheme = 0,
-		double numOffspring = 1.,
-		double sexParam = 0.5,
-		UINT sexMode = MATE_RandomSex,
-		PyObject * numOffspringFunc = NULL,
-		UINT maxNumOffspring = 0,
-		UINT mode = MATE_NumOffspring,
-		vectorlu newSubPopSize = vectorlu(),
-		PyObject * newSubPopSizeFunc = NULL,
-		string newSubPopSizeExpr = "",
-		bool contWhenUniSex = true,
-		vspID subPop = vspID(),
-		double weight = 0)
-		: randomMating(numOffspring,
-		               numOffspringFunc, maxNumOffspring, mode,
-		               sexParam, sexMode,
-		               newSubPopSize,
-		               newSubPopSizeFunc,
-		               newSubPopSizeExpr,
-		               contWhenUniSex,
-		               subPop, weight),
-		m_loci(loci),
-		m_alleles(alleles),
-		m_freqFunc(freqFunc),
-		m_stack()
-	{
-		if (m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
-			throw ValueError("Please specify a valid frequency function");
-		else
-			Py_INCREF(m_freqFunc);
-	}
-
-
-	/// CPPONLY
-	controlledRandomMating(const controlledRandomMating & rhs)
-		: randomMating(rhs),
-		m_loci(rhs.m_loci),
-		m_alleles(rhs.m_alleles),
-		m_freqFunc(rhs.m_freqFunc),
-		m_stack()
-	{
-		Py_INCREF(m_freqFunc);
-	}
-
-
-	/// destructor
-	~controlledRandomMating()
-	{
-		if (m_freqFunc != NULL)
-			Py_DECREF(m_freqFunc);
-	}
-
-
-	/// deep copy of a controlled random mating scheme
-	virtual mating * clone() const
-	{
-		return new controlledRandomMating(*this);
-	}
-
-
-	/// CPPONLY
-	virtual bool isCompatible(const population & pop) const
-	{
-#ifndef OPTIMIZED
-		if (pop.ploidy() != 2)
-			cout << "Warning: This mating type only works with diploid population." << endl;
-#endif
-
-		return true;
-	}
-
-
-	/// used by Python print function to print out the general information of the controlled random mating scheme
-	virtual string __repr__()
-	{
-		return "<simuPOP::controlled sexual random mating>";
-	}
-
-
-	/// CPPONLY
-	void submitScratch(population & pop, population & scratch)
-	{
-		pop.turnOffSelection();
-		// use scratch population,
-		pop.push(scratch);
-		DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
-	}
-
-
-	/// CPPONLY perform controlled random mating
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
-
-private:
-	/// locus at which mating is controlled.
-	vectori m_loci;
-
-	/// allele to be controlled at each locus
-	vectori m_alleles;
-
-	/// function that return an array of frquency range
-	PyObject * m_freqFunc;
-
-	///
-	stack<RawIndIterator> m_stack;
-};
+// /// a controlled random mating scheme
+// /** This is the controlled random mating scheme described in
+//    <em> Peng 2007 (PLoS Genetics) </em>. Basically, a \c freqFunc
+//    is passed to this mating scheme and set the allele frequencies of given
+//    alleles at given loci at the offspring generation.
+//    \n
+//    The offspring generation is conceptually populated in two steps.
+//    At the first step, only families with disease alleles are accepted
+//    until the expected number of disease alleles are met. At the second
+//    step, only families with wide type alleles are accepted to populate
+//    the rest of the offspring generation.
+//    <applicability>diploid only</applicability>
+//  */
+// class controlledRandomMating : public randomMating
+// {
+// public:
+//  /// create a controlled random mating scheme
+//  /**
+//     \param loci loci at which allele frequencies are monitored (controlled)
+//     \param alleles alleles at given loci. It should have the same length as \c loci
+//     \param freqFunc a Python function that accepts a generation number and returns
+//      expected allele frequencies at given loci
+//     \param acceptScheme internal use only
+//
+//     Please refer to class \c mating for descriptions of other parameters.
+//   */
+//  controlledRandomMating(
+//      vectori loci,
+//      vectori alleles,
+//      PyObject * freqFunc,
+//      int acceptScheme = 0,
+//      double numOffspring = 1.,
+//      double sexParam = 0.5,
+//      UINT sexMode = MATE_RandomSex,
+//      PyObject * numOffspringFunc = NULL,
+//      UINT numOffspringParam = 0,
+//      UINT mode = MATE_NumOffspring,
+//      vectorlu newSubPopSize = vectorlu(),
+//      PyObject * newSubPopSizeFunc = NULL,
+//      string newSubPopSizeExpr = "",
+//      bool contWhenUniSex = true,
+//      vspID subPop = vspID(),
+//      double weight = 0)
+//      : randomMating(numOffspring,
+//                     numOffspringFunc, numOffspringParam, mode,
+//                     sexParam, sexMode,
+//                     newSubPopSize,
+//                     newSubPopSizeFunc,
+//                     newSubPopSizeExpr,
+//                     contWhenUniSex,
+//                     subPop, weight),
+//      m_loci(loci),
+//      m_alleles(alleles),
+//      m_freqFunc(freqFunc),
+//      m_stack()
+//  {
+//      if (m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
+//          throw ValueError("Please specify a valid frequency function");
+//      else
+//          Py_INCREF(m_freqFunc);
+//  }
+//
+//
+//  /// CPPONLY
+//  controlledRandomMating(const controlledRandomMating & rhs)
+//      : randomMating(rhs),
+//      m_loci(rhs.m_loci),
+//      m_alleles(rhs.m_alleles),
+//      m_freqFunc(rhs.m_freqFunc),
+//      m_stack()
+//  {
+//      Py_INCREF(m_freqFunc);
+//  }
+//
+//
+//  /// destructor
+//  ~controlledRandomMating()
+//  {
+//      if (m_freqFunc != NULL)
+//          Py_DECREF(m_freqFunc);
+//  }
+//
+//
+//  /// deep copy of a controlled random mating scheme
+//  virtual mating * clone() const
+//  {
+//      return new controlledRandomMating(*this);
+//  }
+//
+//
+//  /// CPPONLY
+//  virtual bool isCompatible(const population & pop) const
+//  {
+// #ifndef OPTIMIZED
+//      if (pop.ploidy() != 2)
+//          cout << "Warning: This mating type only works with diploid population." << endl;
+// #endif
+//
+//      return true;
+//  }
+//
+//
+//  /// used by Python print function to print out the general information of the controlled random mating scheme
+//  virtual string __repr__()
+//  {
+//      return "<simuPOP::controlled sexual random mating>";
+//  }
+//
+//
+//  /// CPPONLY
+//  void submitScratch(population & pop, population & scratch)
+//  {
+//      pop.turnOffSelection();
+//      // use scratch population,
+//      pop.push(scratch);
+//      DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+//  }
+//
+//
+//  /// CPPONLY perform controlled random mating
+//  virtual bool mate(population & pop, population & scratch, vector<baseOperator *> & ops, bool submit);
+//
+// private:
+//  /// locus at which mating is controlled.
+//  vectori m_loci;
+//
+//  /// allele to be controlled at each locus
+//  vectori m_alleles;
+//
+//  /// function that return an array of frquency range
+//  PyObject * m_freqFunc;
+//
+//  ///
+//  stack<RawIndIterator> m_stack;
+// };
 
 /// a Python mating scheme
 /**

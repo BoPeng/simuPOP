@@ -731,60 +731,32 @@ del dumper.__init__
 dumper.__init__ = new_dumper
 
 
-def new_controlledMating(self, matingScheme, freqFunc, locus=-1, loci=[],
-    allele=-1, alleles=[], *args, **kwargs):
-    # parameter locus
-    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-        loc = [locus]
-    elif type(loci) in [types.IntType, types.LongType]:
-        loc = [loci]
-    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-        loc = loci
-    else:
-        raise exceptions.TypeError('Please specify locus or loci')
-    if allele != -1 and type(allele) in [types.IntType, types.LongType]:
-        al = [allele]
-    elif type(alleles) in [types.IntType, types.LongType]:
-        al = [alleles]
-    elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
-        al = alleles
-    else:
-        raise exceptions.TypeError('Please specify allele or alleles')
-    cppModule.controlledMating_swiginit(self,
-        cppModule.new_controlledMating(matingScheme=matingScheme,
-            loci=loc, alleles=al, freqFunc=freqFunc, *args, **kwargs))
-
-new_controlledMating.__doc__ = controlledMating.__init__.__doc__
-del controlledMating.__init__
-controlledMating.__init__ = new_controlledMating
-
-
-def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
-    allele=-1, alleles=[], *args, **kwargs):
-    # parameter locus
-    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-        loc = [locus]
-    elif type(loci) in [types.IntType, types.LongType]:
-        loc = [loci]
-    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-        loc = loci
-    else:
-        raise exceptions.TypeError('Please specify locus or loci')
-    if allele != -1 and type(allele) in [types.IntType, types.LongType]:
-        al = [allele]
-    elif type(alleles) in [types.IntType, types.LongType]:
-        al = [alleles]
-    elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
-        al = alleles
-    else:
-        raise exceptions.TypeError('Please specify allele or alleles')
-    cppModule.controlledRandomMating_swiginit(self,
-        cppModule.new_controlledRandomMating( loci=loc, alleles=al,
-        freqFunc=freqFunc, *args, **kwargs))
-
-new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
-del controlledRandomMating.__init__
-controlledRandomMating.__init__ = new_controlledRandomMating
+# def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
+#     allele=-1, alleles=[], *args, **kwargs):
+#     # parameter locus
+#     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
+#         loc = [locus]
+#     elif type(loci) in [types.IntType, types.LongType]:
+#         loc = [loci]
+#     elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
+#         loc = loci
+#     else:
+#         raise exceptions.TypeError('Please specify locus or loci')
+#     if allele != -1 and type(allele) in [types.IntType, types.LongType]:
+#         al = [allele]
+#     elif type(alleles) in [types.IntType, types.LongType]:
+#         al = [alleles]
+#     elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
+#         al = alleles
+#     else:
+#         raise exceptions.TypeError('Please specify allele or alleles')
+#     cppModule.controlledRandomMating_swiginit(self,
+#         cppModule.new_controlledRandomMating( loci=loc, alleles=al,
+#         freqFunc=freqFunc, *args, **kwargs))
+# 
+# new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
+# del controlledRandomMating.__init__
+# controlledRandomMating.__init__ = new_controlledRandomMating
 
 
 def mutator_setRate(self, rate, loci=[], atLoci=[], *args, **kwargs):
