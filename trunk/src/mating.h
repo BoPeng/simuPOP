@@ -118,10 +118,10 @@ public:
 	    \param transmitter is an during mating operator, that will be used if
 	        no during mating operator is used to produce offspring.
 	 */
-	offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
-		UINT numOffspringParam, UINT mode,
-		double sexParam, UINT sexMode, UINT numParents,
-		const baseOperator & transmitter);
+	offspringGenerator(const baseOperator & transmitter, 
+        double numOffspring=1., PyObject * numOffspringFunc=NULL,
+		UINT numOffspringParam=1, UINT mode=MATE_NumOffspring,
+		double sexParam=0.5, UINT sexMode=MATE_RandomSex, UINT numParents=0);
 
 	virtual ~offspringGenerator()
 	{
