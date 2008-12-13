@@ -587,7 +587,7 @@ public:
 	IndIterator indBegin(UINT subPop, IterationType type = VisibleInds)
 	{
 		CHECKRANGESUBPOP(subPop);
-		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == VisibleInds,
+		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == IteratableInds,
 			ValueError, "Can not iterate through an VSP with iteratable iterator");
 
 		return IndIterator(m_inds.begin() + m_subPopIndex[subPop],
