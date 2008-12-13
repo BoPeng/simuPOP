@@ -259,31 +259,72 @@ Dump(pop, structure=False)
 
 
 #file log/accessIndividual.log
-import random
-pop = population(size=[4, 10], loci=[2, 3], infoFields=['x'])
-InitByFreq(pop, [0.4, 0.6])
+# create a population with two generations. The current generation has values
+# 0-9 at information field x, the parental generation has values 10-19.
+pop = population(size=[5, 5], loci=[2, 3], infoFields=['x'], ancGen=1)
+pop.setIndInfo(range(11, 20), 'x')
+pop1 = pop.clone()
+pop1.setIndInfo(range(10), 'x')
+pop.push(pop1)
+#
 ind = pop.individual(5)       # using absolute index
-ind1 = pop.individual(0, 1)   # using relative index
-# use an iterator
+ind.info('x')
+# use a for loop, and relative index
+for idx in range(pop.subPopSize(1)):
+    print pop.individual(idx, 1).info('x'),
+
+# It is usually easier to use an iterator
 for ind in pop.individuals(1):
-    ind.setInfo(random.randint(0, 10), 'x')
+    print ind.info('x'),
 
 # Access individuals in VSPs
 pop.setVirtualSplitter(infoSplitter(cutoff=[3, 7], field='x'))
 for ind in pop.individuals([1, 1]):
-    print ind
+    print ind.info('x'),
 
+# Access individuals in ancetral generations
+pop.ancestor(5, 1).info('x')        # absolute index
+pop.ancestor(0, 1, 1).info('x')     # relative index
+# Or make ancestral generation the current generation and use 'individual'
+pop.useAncestralGen(1)
+pop.individual(5).info('x')         # absolute index
+pop.individual(0, 1).info('x')      # relative index
+# 'ancestor' can still access the 'present' (generation 0) generation
+pop.ancestor(5, 0).info('x')
 #end
 
-#file log/popGenotype.log
+
+#file log/batchAccess.log
 import random
-pop = population(size=[4, 6], loci=[2, 3], infoFields=['x'])
-pop.setIndInfo([random.randint(0, 10) for x in range(14)], 'x')
+pop = population(size=[4, 6], loci=[2], infoFields=['x'])
+pop.setIndInfo([random.randint(0, 10) for x in range(10)], 'x')
+pop.indInfo('x')
 pop.setGenotype([0, 1, 2, 3], 0)
-pop.setVirtualSplitter(infoSplitter(cutoff=[3, 7], field='x'))
+pop.genotype(0)
+pop.setVirtualSplitter(infoSplitter(cutoff=[3], field='x'))
+pop.setGenotype([0])    # clear all values
 pop.setGenotype([5, 6, 7], [1, 1])
-Dump(pop, structure=False)
+pop.indInfo('x', 1)
+pop.genotype(1)
 #end
+
+
+#file log/popInfo.log
+pop = population(10)
+pop.setInfoFields(['a', 'b'])
+pop.addInfoField('c')
+pop.addInfoFields(['d', 'e'])
+pop.infoFields()
+#
+cIdx = pop.infoIdx('c')
+eIdx = pop.infoIdx('e')
+pop.setIndInfo([1], cIdx)
+for ind in pop.individuals():
+    ind.setInfo(ind.info(cIdx) + 1, eIdx)
+
+print pop.indInfo(eIdx)
+#end          
+
 
 
 #file log/popInit.log
