@@ -294,9 +294,11 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
 	// It is a good idea to cache IndIterators. This is however inefficient
 	// for non-virtual populations
-	IndIterator it = pop.indBegin(sp);
-	for (; it.valid(); ++it)
-		m_index.push_back(it.rawIter());
+    if (pop.hasActivatedVirtualSubPop(sp) && !m_replacement) {
+    	IndIterator it = pop.indBegin(sp);
+	    for (; it.valid(); ++it)
+		    m_index.push_back(it.rawIter());
+    }
 
 	if (m_selection) {
 		UINT fit_id = pop.infoIdx("fitness");
@@ -304,12 +306,10 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp),
 				pop.infoEnd(fit_id, sp)));
 	} else {
-		// get currently visible individuals. In case that sp is not virtual
-		// pop.subPopSize is called.
-		DBG_ASSERT(pop.subPopSize(sp) == m_index.size(),
-			SystemError, "Something wrong with virtual population size calculation")
 		m_size = m_index.size();
-	}
+        if (m_size == 0) // if m_index is not used (no VSP)
+            m_size = pop.subPopSize(sp);
+    }
 
 	if (!m_replacement)
 		std::random_shuffle(m_index.begin(), m_index.end());
@@ -321,30 +321,29 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individual * randomParentChooser::chooseParent(RawIndIterator)
+individual * randomParentChooser::chooseParent(RawIndIterator basePtr)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
-	//
 	// choose a parent
 	if (!m_replacement) {
-		if (m_index.empty()) {
-			if (!m_replenish)
-				throw IndexError("All parents have been chosen. You can use parameter replenish=True "
-					             "to allow replenish the parents.");
-			m_index.swap(m_chosen);
-			std::random_shuffle(m_index.begin(), m_index.end());
-		}
+		DBG_FAILIF(m_index.empty(), ValueError,
+			"All parents have been chosen.");
 		individual * ind = & * m_index.back();
-		if (m_replenish)
-			m_chosen.push_back(m_index.back());
 		m_index.pop_back();
 		return ind;
 	}
-	if (m_selection)
-		return & * (m_index[m_sampler.get()]);
-	else
-		return & * (m_index[rng().randInt(m_size)]);
+    if (m_index.empty()) {
+    	if (m_selection)
+	    	return & * (basePtr + m_sampler.get());
+    	else
+	    	return & * (basePtr + rng().randInt(m_size));
+    } else  {
+    	if (m_selection)
+	    	return & * (m_index[m_sampler.get()]);
+    	else
+	    	return & * (m_index[rng().randInt(m_size)]);
+    }
 }
 
 
@@ -352,7 +351,232 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 {
 	m_numMale = 0;
 	m_numFemale = 0;
+
+	IndIterator it = pop.indBegin(subPop);
+	for (; it.valid(); ++it) {
+		if (it->sex() == Male)
+			m_numMale++;
+		else
+			m_numFemale++;
+	}
+
+	// allocate memory at first for performance reasons
+	m_maleIndex.resize(m_numMale);
+	m_femaleIndex.resize(m_numFemale);
+
+	m_selection = pop.selectionOn(subPop);
+	UINT fit_id = 0;
+	if (m_selection) {
+		fit_id = pop.infoIdx("fitness");
+		m_maleFitness.resize(m_numMale);
+		m_femaleFitness.resize(m_numFemale);
+	}
+
+	m_numMale = 0;
+	m_numFemale = 0;
+
+	it = pop.indBegin(subPop);
+	for (; it.valid(); it++) {
+		if (it->sex() == Male) {
+			m_maleIndex[m_numMale] = it.rawIter();
+			if (m_selection)
+				m_maleFitness[m_numMale] = it->info(fit_id);
+			m_numMale++;
+		} else {
+			m_femaleIndex[m_numFemale] = it.rawIter();
+			if (m_selection)
+				m_femaleFitness[m_numFemale] = it->info(fit_id);
+			m_numFemale++;
+		}
+	}
+    
+	if (!m_replacement) {
+		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
+		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
+		std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
+		std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
+    }
+
+	if (m_selection) {
+		m_malesampler.set(m_maleFitness);
+		m_femalesampler.set(m_femaleFitness);
+		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
+		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+	}
+
+	DBG_FAILIF(!m_replacement && m_selection, ValueError,
+		"Selection is not allowed in random sample without replacement");
+
+	m_initialized = true;
+}
+
+
+parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator)
+{
+	DBG_ASSERT(initialized(), SystemError,
+		"Please initialize this parent chooser before using it");
+
+	individual * dad = NULL;
+	individual * mom = NULL;
+
+	if (!m_replacement) {
+		DBG_FAILIF(m_femaleIndex.empty(), ValueError,
+			"All females has been chosen.");
+		mom = & * m_femaleIndex.back();
+		m_femaleIndex.pop_back();
+		
+        DBG_FAILIF(m_maleIndex.empty(), ValueError,
+		    "All males has been chosen.");
+		dad = & * m_maleIndex.back();
+		m_maleIndex.pop_back();
+		return std::make_pair(dad, mom);
+	}
+
+	// using weidhted sampler.
+    if (m_selection) {                                    // with selection
+        if (m_numMale != 0)
+            dad = & * (m_maleIndex[m_malesampler.get()]);
+        else
+            dad = & * (m_femaleIndex[m_femalesampler.get()]);
+    } else {
+        // using random sample.
+        if (m_numMale != 0)
+            dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+        else
+            dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+    }
+
+    if (m_selection) {                                    // with selection
+        if (m_numFemale != 0)
+            mom = & * (m_femaleIndex[m_femalesampler.get()]);
+        else
+            mom = & * (m_maleIndex[m_malesampler.get()]);
+    } else {         // no selection
+        if (m_numFemale != 0)
+            mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+        else
+            mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
+    }
+	return std::make_pair(dad, mom);
+}
+
+
+void polyParentsChooser::initialize(population & pop, SubPopID subPop)
+{
+	m_numMale = 0;
+	m_numFemale = 0;
 	m_polyCount = 0;
+
+	IndIterator it = pop.indBegin(subPop);
+	for (; it.valid(); ++it) {
+		if (it->sex() == Male)
+			m_numMale++;
+		else
+			m_numFemale++;
+	}
+
+	// allocate memory at first for performance reasons
+	m_maleIndex.resize(m_numMale);
+	m_femaleIndex.resize(m_numFemale);
+
+	m_selection = pop.selectionOn(subPop);
+	UINT fit_id = 0;
+	if (m_selection) {
+		fit_id = pop.infoIdx("fitness");
+		m_maleFitness.resize(m_numMale);
+		m_femaleFitness.resize(m_numFemale);
+	}
+
+	m_numMale = 0;
+	m_numFemale = 0;
+
+	it = pop.indBegin(subPop);
+	for (; it.valid(); it++) {
+		if (it->sex() == Male) {
+			m_maleIndex[m_numMale] = it.rawIter();
+			if (m_selection)
+				m_maleFitness[m_numMale] = it->info(fit_id);
+			m_numMale++;
+		} else {
+			m_femaleIndex[m_numFemale] = it.rawIter();
+			if (m_selection)
+				m_femaleFitness[m_numFemale] = it->info(fit_id);
+			m_numFemale++;
+		}
+	}
+
+	if (m_selection) {
+		m_malesampler.set(m_maleFitness);
+		m_femalesampler.set(m_femaleFitness);
+		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
+		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
+	}
+
+	m_initialized = true;
+}
+
+
+parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
+{
+	DBG_ASSERT(initialized(), SystemError,
+		"Please initialize this parent chooser before using it");
+
+	individual * dad = NULL;
+	individual * mom = NULL;
+
+	if (m_polyNum > 1 && m_polyCount > 0) {
+		if (m_polySex == Male)
+			dad = m_lastParent;
+		else
+			mom = m_lastParent;
+		m_polyCount--;
+	}
+
+	// using weidhted sampler.
+	if (dad == NULL) {
+		if (m_selection) {                                    // with selection
+			if (m_numMale != 0)
+				dad = & * (m_maleIndex[m_malesampler.get()]);
+			else
+				dad = & * (m_femaleIndex[m_femalesampler.get()]);
+		} else {
+			// using random sample.
+			if (m_numMale != 0)
+				dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+			else
+				dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+		}
+		if (m_polySex == Male && m_polyNum > 1) {
+			m_polyCount = m_polyNum - 1;
+			m_lastParent = dad;
+		}
+	}
+
+	if (mom == NULL) {
+		if (m_selection) {                                    // with selection
+			if (m_numFemale != 0)
+				mom = & * (m_femaleIndex[m_femalesampler.get()]);
+			else
+				mom = & * (m_maleIndex[m_malesampler.get()]);
+		} else {         // no selection
+			if (m_numFemale != 0)
+				mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+			else
+				mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
+		}
+		if (m_polySex == Female && m_polyNum > 1) {
+			m_polyCount = m_polyNum - 1;
+			m_lastParent = mom;
+		}
+	}
+	return std::make_pair(dad, mom);
+}
+
+
+void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
+{
+	m_numMale = 0;
+	m_numFemale = 0;
 
 	UINT info_id = 0;
 	bool hasAlphaMale = m_alphaNum != 0 || !m_alphaField.empty();
@@ -379,8 +603,6 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	// allocate memory at first for performance reasons
 	m_maleIndex.resize(m_numMale);
 	m_femaleIndex.resize(m_numFemale);
-	m_chosenMale.clear();
-	m_chosenFemale.clear();
 
 	m_selection = pop.selectionOn(subPop);
 	UINT fit_id = 0;
@@ -417,16 +639,6 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 		DBG_DO(DBG_DEVEL, cout << "Male fitness " << m_maleFitness << endl);
 		DBG_DO(DBG_DEVEL, cout << "Female fitness " << m_femaleFitness << endl);
 	}
-
-	if (!m_replacement) {
-		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
-		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
-		std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
-		std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
-	}
-
-	DBG_FAILIF(!m_replacement && m_selection, ValueError,
-		"Selection is not allowed in random sample without replacement");
 
 	if (!hasAlphaMale || useInfo || m_alphaNum >=
 	    (m_alphaSex == Male ? m_numMale : m_numFemale)) {
@@ -465,7 +677,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 }
 
 
-parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator)
+parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -473,90 +685,31 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 	individual * dad = NULL;
 	individual * mom = NULL;
 
-	if (m_polyNum > 1 && m_polyCount > 0) {
-		if (m_polySex == Male)
-			dad = m_lastParent;
-		else
-			mom = m_lastParent;
-		m_polyCount--;
-	}
-
-	if (!m_replacement) {
-		if (mom == NULL) {
-			if (m_femaleIndex.empty()) {
-				if (!m_replenish)
-					throw IndexError("All females has been chosen. You can use parameter replenish=True "
-						             "to allow replenish the females.");
-				m_femaleIndex.swap(m_chosenFemale);
-				std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
-			}
-			mom = & * m_femaleIndex.back();
-			if (m_replenish)
-				m_chosenFemale.push_back(m_femaleIndex.back());
-			m_femaleIndex.pop_back();
-
-			if (m_polyNum > 1) {
-				m_polyCount = m_polyNum - 1;
-				m_lastParent = mom;
-			}
-		}
-		if (dad == NULL) {
-			if (m_maleIndex.empty()) {
-				if (!m_replenish)
-					throw IndexError("All males has been chosen. You can use parameter replenish=True "
-						             "to allow replenish the males.");
-				m_maleIndex.swap(m_chosenMale);
-				std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
-			}
-			dad = & * m_maleIndex.back();
-			if (m_replenish)
-				m_chosenMale.push_back(m_maleIndex.back());
-			m_maleIndex.pop_back();
-			//
-			if (m_polyNum > 1) {
-				m_polyCount = m_polyNum - 1;
-				m_lastParent = dad;
-			}
-		}
-		return std::make_pair(dad, mom);
-	}
 	// using weidhted sampler.
-	if (dad == NULL) {
-		if (m_selection) {                                    // with selection
-			if (m_numMale != 0)
-				dad = & * (m_maleIndex[m_malesampler.get()]);
-			else
-				dad = & * (m_femaleIndex[m_femalesampler.get()]);
-		} else {
-			// using random sample.
-			if (m_numMale != 0)
-				dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
-			else
-				dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-		}
-		if (m_polySex == Male && m_polyNum > 1) {
-			m_polyCount = m_polyNum - 1;
-			m_lastParent = dad;
-		}
-	}
+    if (m_selection) {                                    // with selection
+        if (m_numMale != 0)
+            dad = & * (m_maleIndex[m_malesampler.get()]);
+        else
+            dad = & * (m_femaleIndex[m_femalesampler.get()]);
+    } else {
+        // using random sample.
+        if (m_numMale != 0)
+            dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+        else
+            dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+    }
 
-	if (mom == NULL) {
-		if (m_selection) {                                    // with selection
-			if (m_numFemale != 0)
-				mom = & * (m_femaleIndex[m_femalesampler.get()]);
-			else
-				mom = & * (m_maleIndex[m_malesampler.get()]);
-		} else {         // no selection
-			if (m_numFemale != 0)
-				mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-			else
-				mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
-		}
-		if (m_polySex == Female && m_polyNum > 1) {
-			m_polyCount = m_polyNum - 1;
-			m_lastParent = mom;
-		}
-	}
+    if (m_selection) {                                    // with selection
+        if (m_numFemale != 0)
+            mom = & * (m_femaleIndex[m_femalesampler.get()]);
+        else
+            mom = & * (m_maleIndex[m_malesampler.get()]);
+    } else {         // no selection
+        if (m_numFemale != 0)
+            mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+        else
+            mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
+    }
 	return std::make_pair(dad, mom);
 }
 
@@ -756,7 +909,7 @@ mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newS
 		ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
 
 
-	if (newSubPopSizeFunc != NULL) {
+	if (newSubPopSizeFunc != NULL && newSubPopSizeFunc != Py_None) {
 		if (!PyCallable_Check(newSubPopSizeFunc))
 			throw ValueError("Passed variable is not a callable python function.");
 

@@ -416,9 +416,7 @@ private:
    parental generation. If selection is turned on, parents are
    chosen with probabilities that are proportional to their
    fitness values. Sex is not considered. Parameter \c replacement
-   determines if a parent can be chosen multiple times. In case
-   that \c replacement=false, paremeter \c replenish=true allows
-   restart of the process if all parents are exhausted.
+   determines if a parent can be chosen multiple times. 
    Note that selection is not allowed when \c replacement=false
    because this poses a particular order on individuals in the
    offspring generation.
@@ -430,12 +428,9 @@ public:
 	/**
 	   \param replacement if replacement is false, a parent can not
 	        be chosen more than once.
-	   \param replenish if all parent has been chosen, choose from
-	        the whole parental population again.
 	 */
-	randomParentChooser(bool replacement = true, bool replenish = false) :
-		parentChooser(1),
-		m_replacement(replacement), m_replenish(replenish),
+	randomParentChooser(bool replacement = true) :
+		parentChooser(1), m_replacement(replacement),
 		m_index(0), m_chosen(0), m_sampler(rng())
 	{
 	}
@@ -455,7 +450,6 @@ public:
 
 protected:
 	bool m_replacement;
-	bool m_replenish;
 
 	bool m_selection;
 	///
@@ -472,10 +466,74 @@ protected:
    and a female, from their respective sex groups randomly.
    If selection is turned on, parents are chosen from their sex
    groups with probabilities that are proportional to their
-   fitness values. If parameter \c replacement is false,
-   a chosen pair of parents can no longer be selected. This feature
-   can be used to simulate monopoly. If \c replenish is true,
-   a sex group can be replenished when it is exhausted. Note that
+   fitness values. If replacement = False, each parent can
+   only be used once.
+   <applicability>all ploidy</applicability>
+ */
+class randomParentsChooser : public parentChooser
+{
+public:
+	/**
+	    Note: If selection is enabled, it works regularly on on-alpha sex, but
+	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	    are chosen selectively, and selected again during mating.
+	 */
+	randomParentsChooser(bool replacement = true) :
+		parentChooser(2), m_replacement(replacement),
+		m_maleIndex(0), m_femaleIndex(0),
+		m_maleFitness(0), m_femaleFitness(0),
+		m_malesampler(rng()), m_femalesampler(rng())
+	{
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new randomParentsChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individualPair chooseParents(RawIndIterator basePtr);
+
+	/// CPPONLY
+	ULONG numMale() { return m_numMale; }
+	/// CPPONLY
+	ULONG numFemale() { return m_numFemale; }
+
+private:
+
+    bool m_replacement;
+
+	individual * m_lastParent;
+
+	bool m_selection;
+
+	ULONG m_numMale;
+	ULONG m_numFemale;
+
+	/// internal index to female/males.
+	vector<RawIndIterator> m_maleIndex;
+	vector<RawIndIterator> m_femaleIndex;
+
+	vectorf m_maleFitness;
+	vectorf m_femaleFitness;
+
+	// weighted sampler
+	Weightedsampler m_malesampler;
+	Weightedsampler m_femalesampler;
+
+};
+
+
+/** This parent chooser chooses two parents randomly, a male
+   and a female, from their respective sex groups randomly.
+   If selection is turned on, parents are chosen from their sex
+   groups with probabilities that are proportional to their
+   fitness values. Note that
    selection is not allowed in the case of monopoly because this
    poses a particular order on individuals in the offspring generation.
    This parents chooser also allows polygamous mating by reusing
@@ -484,7 +542,87 @@ protected:
    mating individuals in their sex group.
    <applicability>all ploidy</applicability>
  */
-class randomParentsChooser : public parentChooser
+class polyParentsChooser : public parentChooser
+{
+public:
+	/**
+	   \param polySex Male (polygyny) or Female (polyandry) parent that
+	        will have \c polyNum sex partners.
+	   \param polyNum Number of sex partners.
+	  
+	   Note: If selection is enabled, it works regularly on on-alpha sex, but
+	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
+	    are chosen selectively, and selected again during mating.
+	 */
+	polyParentsChooser(Sex polySex = Male, UINT polyNum = 1) :
+		parentChooser(2),
+		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
+		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
+		m_chosenMale(0), m_chosenFemale(0),
+		m_maleFitness(0), m_femaleFitness(0),
+		m_malesampler(rng()), m_femalesampler(rng())
+	{
+		DBG_FAILIF(polyNum < 1, ValueError,
+			"Number of sex partners has to be at least one");
+	}
+
+
+	parentChooser * clone() const
+	{
+		return new polyParentsChooser(*this);
+	}
+
+
+	/// CPPONLY
+	void initialize(population & pop, SubPopID sp);
+
+	/// CPPONLY
+	individualPair chooseParents(RawIndIterator basePtr);
+
+	/// CPPONLY
+	ULONG numMale() { return m_numMale; }
+	/// CPPONLY
+	ULONG numFemale() { return m_numFemale; }
+
+private:
+	Sex m_polySex;
+	UINT m_polyNum;
+
+	UINT m_polyCount;
+
+	individual * m_lastParent;
+
+	bool m_selection;
+
+	ULONG m_numMale;
+	ULONG m_numFemale;
+
+	/// internal index to female/males.
+	vector<RawIndIterator> m_maleIndex;
+	vector<RawIndIterator> m_femaleIndex;
+	vector<RawIndIterator> m_chosenMale;
+	vector<RawIndIterator> m_chosenFemale;
+
+	vectorf m_maleFitness;
+	vectorf m_femaleFitness;
+
+	// weighted sampler
+	Weightedsampler m_malesampler;
+	Weightedsampler m_femalesampler;
+};
+
+
+/** This parent chooser chooses two parents randomly, a male
+   and a female, from their respective sex groups randomly.
+   If selection is turned on, parents are chosen from their sex
+   groups with probabilities that are proportional to their
+   fitness values.  This parents chooser also allows polygamous mating by reusing
+   a parent multiple times when returning parents, and allows
+   specification of a few alpha individuals who will be the only
+   mating individuals in their sex group.
+   <applicability>all ploidy</applicability>
+ */
+class alphaParentsChooser : public parentChooser
 {
 public:
 	/**
@@ -512,26 +650,19 @@ public:
 	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
 	    are chosen selectively, and selected again during mating.
 	 */
-	randomParentsChooser(bool replacement = true, bool replenish = false,
-		Sex polySex = Male, UINT polyNum = 1,
-		Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
+	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
 		parentChooser(2),
-		m_replacement(replacement), m_replenish(replenish),
-		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
-		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
-		m_chosenMale(0), m_chosenFemale(0),
+		m_maleIndex(0), m_femaleIndex(0),
 		m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
 	{
-		DBG_FAILIF(polyNum < 1, ValueError,
-			"Number of sex partners has to be at least one");
 	}
 
 
 	parentChooser * clone() const
 	{
-		return new randomParentsChooser(*this);
+		return new alphaParentsChooser(*this);
 	}
 
 
@@ -547,19 +678,9 @@ public:
 	ULONG numFemale() { return m_numFemale; }
 
 private:
-	bool m_replacement;
-	bool m_replenish;
-	Sex m_polySex;
-	UINT m_polyNum;
-
-	UINT m_polyCount;
-
 	Sex m_alphaSex;
 	UINT m_alphaNum;
 	string m_alphaField;
-
-
-	individual * m_lastParent;
 
 	bool m_selection;
 
@@ -569,8 +690,6 @@ private:
 	/// internal index to female/males.
 	vector<RawIndIterator> m_maleIndex;
 	vector<RawIndIterator> m_femaleIndex;
-	vector<RawIndIterator> m_chosenMale;
-	vector<RawIndIterator> m_chosenFemale;
 
 	vectorf m_maleFitness;
 	vectorf m_femaleFitness;
@@ -578,7 +697,6 @@ private:
 	// weighted sampler
 	Weightedsampler m_malesampler;
 	Weightedsampler m_femalesampler;
-
 };
 
 
@@ -615,8 +733,8 @@ public:
 	        the whole parental population again.
 	 */
 	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
-		bool replacement = true, bool replenish = false) :
-		randomParentChooser(replacement, replenish),
+		bool replacement = true) :
+		randomParentChooser(replacement),
 		m_infoFields(infoFields), m_degenerate(false)
 	{
 		m_numParents = 2;
