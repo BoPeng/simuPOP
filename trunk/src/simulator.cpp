@@ -386,7 +386,7 @@ vectoru simulator::evolve(const vectorop & ops,
 						continue;
 
 					try {
-						if (!preMatingOps[it]->applyWithScratch(curPop, scratchpopulation(), PreMating)) {
+						if (!preMatingOps[it]->apply(curPop)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep) << endl);
 
@@ -457,7 +457,7 @@ vectoru simulator::evolve(const vectorop & ops,
 						continue;
 
 					try {
-						if (!postMatingOps[it]->applyWithScratch(curPop, scratchpopulation(), PostMating)) {
+						if (!postMatingOps[it]->apply(curPop)) {
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep) << endl);
 							numStopped++;
@@ -542,7 +542,7 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 			if (!ops[it]->isActive(curRep, m_numRep, 0, 0, true))
 				continue;
 
-			ops[it]->applyWithScratch(curPop, scratchpopulation(), PreMating);
+			ops[it]->apply(curPop);
 
 			ElapsedTime("PrePost-preMatingop" + toStr(it));
 		}
