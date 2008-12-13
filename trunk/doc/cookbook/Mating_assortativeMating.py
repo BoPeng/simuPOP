@@ -55,7 +55,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     # In the case of no positive weight, zero weights means proportional to
     # parental (virtual) subpopulation size.
     simu = simulator(pop, heteroMating([randomMating(weight = -1*w)] + \
-        [randomMating(virtualSubPop=x, weight = 0) for x in vsp]))
+        [randomMating(subPop=(0, x), weight = 0) for x in vsp]))
     #
     simu.evolve(
         preOps = [
