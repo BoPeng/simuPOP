@@ -311,10 +311,10 @@ if infoExec.__init__.__doc__ is not None:
 # mating schemes
 
 def cloneMating(numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
     Note that
    \li selection is not considered (fitness is ignored)
@@ -328,8 +328,8 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
     return pyMating(
         chooser = sequentialParentChooser(),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 0,
             cloneGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -338,10 +338,10 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
 
 
 def binomialSelection(numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''a mating scheme that uses binomial selection, regardless of sex
    No sex information is involved (binomial random selection). Offspring is chosen from parental generation
    by random or according to the fitness values.
@@ -355,8 +355,8 @@ def binomialSelection(numOffspring = 1., numOffspringFunc = None,
     return pyMating(
         chooser = randomParentChooser(),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 1,
             cloneGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -365,10 +365,10 @@ def binomialSelection(numOffspring = 1., numOffspringFunc = None,
 
 
 def randomMating(numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
     A mating scheme of basic sexually random mating
 
@@ -380,10 +380,10 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
    Default to continuing without warning.
     '''
     return pyMating(
-        chooser = randomParentsChooser(true, false, Male, 1, Male, 0, ''),
+        chooser = randomParentsChooser(replacement=True),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 2,
             mendelianGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -392,10 +392,10 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
 
 
 def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
    This mating scheme is identical to random mating except that parents
    are chosen without replacement. Under this mating scheme, offspring share
@@ -404,10 +404,10 @@ def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None
    of one or both sex groups.
     '''
     return pyMating(
-        chooser = randomParentsChooser(false, replenish, Male, 1, Male, 0, ''),
+        chooser = randomParentsChooser(replacement=False),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 2,
             mendelianGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -417,10 +417,10 @@ def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None
 
 def polygamousMating(polySex=Male, polyNum=1, replacement =False,
         replenish=False, numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
    This mating scheme is composed of a random parents chooser that allows for
    polygamous mating, and a mendelian offspring generator. In this mating scheme,
@@ -429,11 +429,10 @@ def polygamousMating(polySex=Male, polyNum=1, replacement =False,
    parents, each with varying partners.
     '''
     return pyMating(
-        chooser = randomParentsChooser(replacement, replenish,
-            polySex, polyNum, Male, 0, ''),
+        chooser = polyParentsChooser(polySex, polyNum, Male),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 2,
             mendelianGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -443,10 +442,10 @@ def polygamousMating(polySex=Male, polyNum=1, replacement =False,
 
 def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
         numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
      Only a number of alpha individuals can mate with individuals of opposite sex.
 
@@ -475,10 +474,10 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
 
     '''
     return pyMating(
-        chooser = randomParentsChooser(True, False, Male, 1, alphaSex, alphaNum, alphaField),
+        chooser = alphaParentsChooser(alphaSex, alphaNum, alphaField),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 2,
             mendelianGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -486,11 +485,11 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
         weight = weight)
 
 
-def haplodiploidMating(alphaSex = Female, alphaNum = 1, alphaField = '',
-		numOffspring = 1., numOffspringFunc = None, maxNumOffspring= 1., mode = MATE_NumOffspring,
+def haplodiploidMating(replacement=True,
+		numOffspring = 1., numOffspringFunc = None, numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
     This mating scheme is composed of an alphaParentsChooser and a
     haplodiploidOffspringGenerator. The alphaParentChooser chooses a single
@@ -501,11 +500,10 @@ def haplodiploidMating(alphaSex = Female, alphaNum = 1, alphaField = '',
     is used, it should disable recombination of male parent.
     '''
     return pyMating(
-        chooser = randomParentsChooser(True, False, Male, 1,
-            alphaSex, alphaNum, alphaField),
+        chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 2,
             haplodiploidGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -513,11 +511,11 @@ def haplodiploidMating(alphaSex = Female, alphaNum = 1, alphaField = '',
         weight = weight)
 
 
-def selfMating(numOffspring = 1., numOffspringFunc = None,
-        maxNumOffspring= 1., mode = MATE_NumOffspring,
+def selfMating(replacement=True, numOffspring = 1., numOffspringFunc = None,
+        numOffspringParam= 1., mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
     In this mating scheme, a parent is choosen randomly, acts
     both as father and mother in the usual random mating. The parent
@@ -526,10 +524,10 @@ def selfMating(numOffspring = 1., numOffspringFunc = None,
     his/her fitness.
     '''
     return pyMating(
-        chooser = randomParentChooser(replacement=True, replenish=False),
+        chooser = randomParentChooser(replacement),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
-            sexParam, sexMode,
+            numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode, 1,
             selfingGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
@@ -538,11 +536,10 @@ def selfMating(numOffspring = 1., numOffspringFunc = None,
 
 
 def consanguineousMatingMating(relativeFields = [], func = None, param = None,
-        replacement = False, replenish = True,
-        maxNumOffspring = 1., mode = MATE_NumOffspring,
+        replacement = False, numOffspringParam = 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
        In this mating scheme, a parent is choosen randomly and mate with a
    relative that has been located and written to a number of information
@@ -569,9 +566,9 @@ def consanguineousMatingMating(relativeFields = [], func = None, param = None,
     '''
     # FIXME: lack a mechanism to call preparePopulation(pop)
     return pyMating(
-        chooser = infoParentsChooser(relativeFields, replacement, replenish),
+        chooser = infoParentsChooser(relativeFields, replacement),
         generator = offspringGenerator(numOffspring,
-            numOffspringFunc, maxNumOffspring, mode,
+            numOffspringFunc, numOffspringParam, mode,
             sexParam, sexMode,
             mendelianGenoTransmitter()),
         newSubPopSizeExpr = newSubPopSizeExpr,
@@ -583,7 +580,7 @@ def consanguineousMatingMating(relativeFields = [], func = None, param = None,
 
 def pedigreeMating(ped, generator=None, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = None, weight = 0):
+		subPop = (), weight = 0):
     '''
 //    In this scheme, a pedigree is given and the mating scheme will
 //    choose parents and produce offspring strictly following the pedigree.

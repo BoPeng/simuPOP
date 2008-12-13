@@ -47,10 +47,10 @@ class vspID
 public:
 	vspID(const vectori & subPop)
 	{
-		DBG_FAILIF(subPop.size() != 2, ValueError,
-			"Please specify both subPop and virtualSubPop ID or a virtual subpopulation");
-		m_subPop = subPop[0];
-		m_virtualSubPop = subPop[1];
+		DBG_FAILIF(subPop.size() > 2, ValueError,
+			"VSP should be specified as a subPop and virtualSubPop ID pair");
+		m_subPop = subPop.size() > 0 ? subPop[0] : InvalidSubPopID;
+		m_virtualSubPop = subPop.size() > 1 ? subPop[1] : InvalidSubPopID;
 	}
 
 
