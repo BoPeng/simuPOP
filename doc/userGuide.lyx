@@ -2588,6 +2588,13 @@ ion), one copy of autosome from his father (with recombination), an X chromosome
 
 \begin_layout Subsection
 Information fields
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:stru-infoFields"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3069,7 +3076,7 @@ s at different stages of a disease.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "accessIndividuals"
+reference "batchAccess"
 
 \end_inset
 
@@ -3093,7 +3100,7 @@ name "sub:Individuals"
 
 \end_inset
 
-Access individuals and individual properties
+Access individuals and their properties
 \end_layout
 
 \begin_layout Standard
@@ -3153,114 +3160,41 @@ reference "sub:Ancestral-populations"
 \end_inset
 
  for details).
- 
-\end_layout
-
-\begin_layout Standard
-
+ Because there is no group access function for ancestors, it may be more
+ convenient to use 
 \family typewriter
-individual
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-population!individual
-\end_layout
+useAncestralGen
+\family default
+ to make an 
+\emph on
+ancestral
+\emph default
+ generation the 
+\emph on
+current
+\emph default
+ generation, and use 
+\family typewriter
+population::individuals
+\family default
+.
+ Note that ancestor() function can always access individuals at a certain
+ generation, regardless which generation the current generation is.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "batchAccess"
 
 \end_inset
 
-()
-\family default
-, or its iteration form 
-\family typewriter
-individuals()
-\family default
- function:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individual(ind)
-\family default
- returns the 
-\family typewriter
-ind
-\family default
-'th individual (absolute index) of the whole population.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individual(ind, subPop)
-\family default
- returns the 
-\family typewriter
-ind
-\family default
-'th (relative index) individual in the 
-\family typewriter
-subPop
-\family default
-'th subpopulation.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individuals()
-\family default
-return an iterator that can be used to iterate through all individuals in
- a population.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-individuals(subPop)
-\family default
- return an iterator that can be used to iterate through all individuals
- in the 
-\family typewriter
-subPop
-\family default
-'th subpopulations.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ancestor(ind, gen)
-\family default
- returns the 
-\family typewriter
-ind
-\family default
-'th individual (absolute index) of the gen'th ancestral generation.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ancestor(ind, subPop, gen)
-\family default
- returns the
-\family typewriter
- ind
-\family default
-'th (relative index) individual in the
-\family typewriter
- subPop
-\family default
-'th subpopulation.
+ demonstrates how to use all these individual-access functions.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/accessIndividuals.log"
-lstparams "caption={Access individuals of a population},label={accessIndividuals}"
+filename "log/accessIndividual.log"
+lstparams "caption={Access individuals of a population},label={accessIndividual}"
 
 \end_inset
 
@@ -3268,124 +3202,308 @@ lstparams "caption={Access individuals of a population},label={accessIndividuals
 \end_layout
 
 \begin_layout Standard
-For example, example 
+Although it is easy to access individuals in a population, it is often more
+ efficient to access genotypes and information fields in batch mode.
+ For example, functions 
+\family typewriter
+genotype()
+\family default
+ and
+\family typewriter
+ setGenotype()
+\family default
+ can read/write genotype of all individuals in a population or (virtual)
+ subpopulation, functions 
+\family typewriter
+indInfo()
+\family default
+ and 
+\family typewriter
+setIndInfo()
+\family default
+ can read/write certain information fields in a population or (virtual)
+ subpopulation.
+ The write functions work in a circular manner in the sense that provided
+ values are reused if they are not enough to fill all genotypes or information
+ fields.
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "lst:population-individual"
+reference "batchAccess"
 
 \end_inset
 
- iterates through all individuals in subpopulaiton 2 using 
+ demonstrates the use of such functions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/batchAccess.log"
+lstparams "caption={Access individual properties in batch mode},label={batchAccess}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Information fields
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Information-fields"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Information fields are usually set during population creation, using the
+ 
 \family typewriter
-population::individual() 
+infoFields
 \family default
-function, while 
+ parameter of the population constructor.
+ It can also be set or added using functions 
+\family typewriter
+setInfoFields, addInfoField 
+\family default
+and 
+\family typewriter
+addInfoFields
+\family default
+.
+ Sections 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "lst:population-individuals"
-
-\end_inset
-
- uses 
-\family typewriter
-population::individuals()
-\family default
-.
- The latter is usually easier to use.
-\end_layout
-
-\begin_layout Standard
-You can also access individuals from the ancestral generations directly.
- There is no batch access functions such as 
-\family typewriter
-individuals()
-\family default
-.
- If they are needed, use 
-\family typewriter
-useAncestralPop()
-\family default
- to switch to that ancestral generation and run
-\family typewriter
- individuals()
-\family default
- for the current generation.
-\end_layout
-
-\begin_layout Standard
-simuPOP provies several functions to read/write individual genotype.
- It is important to understand how simuPOP store these genotypes before
- you use these functions.
- Regardless of internal implementation, you can consider the genotype of
- an individual as an array of alleles, ordered by marker, chromosome and
- ploidy.
- This is illustrated in Figure 
-\end_layout
-
-\begin_layout Standard
-It is worth noting that, instead of copying genotypes of an individual to
- a Python tuple or list, the return value of function 
-\family typewriter
-genotype([p, [ch]])
-\family default
- is a special python carray object that reflects the underlying genotypes.
- Modifying elements of this array will change the genotype of an individual
- directly.
- This is demonstrated in the following example.
-\end_layout
-
-\begin_layout Standard
-The return value of two simuPOP functions, namely 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
-individual::genotype([p, [ch]])
-\end_layout
+reference "sub:stru-infoFields"
 
 \end_inset
 
  and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Individuals"
+
+\end_inset
+
+ have demonstrated how to read and write information fields from an individual,
+ or from a population in batch mode.
+\end_layout
+
+\begin_layout Standard
+Information fields can not located by their names or indexes.
+ We have always used field names for clarity, at a cost of performance because
+ these names have to be translated into indexes each time.
+ When performance is a concern, you can use
+\family typewriter
+ idx=pop.infoIdx(name)
+\family default
+ to get and use the index of an information field.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/popInfo.log"
+lstparams "caption={Add and use of information fields in a population},label={popInfo}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Ancestral-populations"
+
+\end_inset
+
+Ancestral populations
+\end_layout
+
+\begin_layout Standard
+By default, a population object only holds the current generation.
+ All ancestral populations (generations) will be discarded.
+ You can, however, keep as many ancestral generations as you wish, provided
+ that you have enough RAM to store all these extra information.
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\family typewriter
+ancestralDepth
+\family default
+ is used to specify the number of generations to keep.
+ This parameter is default to 
+\family typewriter
+0
+\family default
+, meaning keeping no ancestral population.
+ You can specify a positive number 
+\family typewriter
+n
+\family default
+ to store most recent n generations; or -
+\family typewriter
+1
+\family default
+ to store all populations.
+ 
+\end_layout
+
+\begin_layout Standard
+Several important usage of ancestral generations:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+dumper()
+\family default
+ operator and 
+\family typewriter
+Dump()
+\family default
+ function has a parameter 
+\family typewriter
+ancestralPops
+\family default
+.
+ If set to 
+\family typewriter
+True
+\family default
+, they will dump all ancestral generations.
+\end_layout
+
+\begin_layout Itemize
+function 
+\family typewriter
+population::setAncestralDepth()
+\family default
+ and operator 
+\family typewriter
+setAncestralDepth()
+\family default
+ set the number of ancestral generations to keep for a population.
+ A typical use of 
+\family typewriter
+setAncestralDepth()
+\family default
+ is
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
 \begin_inset listings
-inline true
+inline false
 status open
 
 \begin_layout Plain Layout
 
-population::genotype([sp])
+simu.evolve(...
+\end_layout
+
+\begin_layout Plain Layout
+
+  setAncestralDepth(3, at=[-3])
+\end_layout
+
+\begin_layout Plain Layout
+
+)
 \end_layout
 
 \end_inset
 
- is of a special Python type 
+
+\end_layout
+
+\begin_layout Standard
+which saves the last three generations in populations so that pedigree based
+ sampling schemes can be used.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
 \family typewriter
-carray
+pop.useAncestralPop(idx)
 \family default
+ set the current generation of population 
+\family typewriter
+pop
+\family default
+ to 
+\family typewriter
+idx
+\family default
+ generation.
+ 
+\family typewriter
+idx
+\family default
+ 
+\family typewriter
+= 1
+\family default
+ for the first ancestral generation, 
+\family typewriter
+2
+\family default
+ for second ancestral ..., and 
+\family typewriter
+0
+\family default
+ for the current generation.
+ After this function, all functions, operators will be applied to this ancestral
+ generation.
+ You should always call 
+\family typewriter
+setAncestralPop(0)
+\family default
+ after you examined the ancestral generations.
+ 
+\end_layout
+
+\begin_layout Standard
+A typical use of this function is demonstrated in example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ancestralPop"
+
+\end_inset
+
 .
- This object reflects the underlying C/C++ array which can be modified through
- this list-like interface, with the exception that you can not change the
- size of the array.
- Only 
+ In this example, a population with two loci is created and with initial
+ genotype 0.
+ Two 
 \family typewriter
-count
+kamMutator
 \family default
- and
+ with different mutation rates are applied to these two loci.
+ Five most recent populations are kept.
+ The allele frequencies at these generations are calculated afterward.
+ (Note that this is not the best way to exam the changes of allele frequencies,
+ a 
 \family typewriter
- index
+stat
 \family default
- list functions can be used, but all comparison, assignment and slice operations
- are allowed.
- If you would like to copy the content of this 
-\family typewriter
-carray
-\family default
- to a Python list, use the 
-\family typewriter
-list()
-\family default
- function.
+ operator should be used.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ancestralPop.log"
+lstparams "caption={Ancestral populations},label={ancestralPop}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3851,472 +3969,6 @@ evaluates a Python expression and returns its value, while
 LatexCommand lstinputlisting
 filename "log/pyEval.log"
 lstparams "caption={Use of operators \\texttt{pyEval} and \\texttt{pyExec}},label={expreval}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Information fields
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Information-fields"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-An individuals have genotype, sex and affection status information, but
- other information may be needed.
- For example, one or more trait values may be needed to calculate quantitative
- traits, and one may want to keep track of all offspring of a parent.
- Because the need for information fields varies from simulation to simulation,
- simuPOP does not fix the amount of information fields, and allow users
- to specify these fields during the construction of populations, or add
- them when you need them.
-\end_layout
-
-\begin_layout Standard
-Operators may require certain information fields to work properly.
- For example, all selectors require field 
-\family typewriter
-fitness
-\family default
- to store evaluated fitness values for each individual.
- 
-\family typewriter
-parentTagger
-\family default
- needs 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- to store indices of the parents of each individual in the parental generation.
- These information fields can be added by the 
-\family typewriter
-infoFields
-\family default
- parameter of the population constructor or be added later using relevant
- function.
- If a required information field is unavailable, an error message will appear
- and tell you which field is needed.
- Some operators allow you to specify which information field(s) to use.
- For example, quantitative trait operator can work on specified fields so
- an individual can have several quantitative traits.
-\end_layout
-
-\begin_layout Standard
-The information fields is usually set during population creation, using
- the 
-\family typewriter
-infoFields
-\family default
- option of population constructor.
- It can also be set or added by functions
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.setInfoFields(fields, init) 
-\family default
-set information fields of a population, removing all previous ones
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.addInfoField(field, init) 
-\family default
-add an information field to a population
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.addInfoFields(fields, init)
-\family default
- add information fields to a population
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simu.addInfoField(field, init)
-\family default
- add an information field to all populations in a simulator
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-simu.addInfoFields(fields, init) 
-\family default
-add information fields to all populations in a simulator
-\end_layout
-
-\begin_layout Standard
-When adding information fields to a simulator, information fields are added
- to all populations of the simulator.
- Note that it is illegal to add information field (or in a broader sense
- changing genotypic structure) to part of the populations of a simulator,
- because all populations in a simulator should have the same genotypic structure.
-\end_layout
-
-\begin_layout Standard
-One can read/write information fields at individual level:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.info(idx), ind.info(name)
-\family default
- return individual information field by index or name
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.setInfo(value, idx), ind.setInfo(value, name)
-\family default
- set individual information field by index or name
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ind.arrInfo() 
-\family default
-returns a carray of all information fields of an individual
-\end_layout
-
-\begin_layout Standard
-or at the population level
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.indInfo(idx), pop.indInfo(name)
-\family default
- return an information field (referred by index or name) of all individuals
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.indInfo(idx, subPop), pop.indInfo(name, subPop)
-\family default
- return an information field (referred by index or name) of all individuals
- in a subpopulation 
-\family typewriter
-subPop
-\family default
-.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-pop.setIndInfo(values, idx), pop.setInfIndo(values, name)
-\family default
- set information fields of all individuals with values in an array.
-\end_layout
-
-\begin_layout Standard
-Both 
-\family typewriter
-idx
-\family default
- or 
-\family typewriter
-name
-\family default
- can be used in these functions.
- 
-\family typewriter
-name
-\family default
- is easier to use but 
-\family typewriter
-idx
-\family default
-, which can be obtained by
-\family typewriter
- idx=pop.infoIdx(name),
-\family default
- is faster.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/info1.log"
-lstparams "caption={Use regular information field function},label={regu-info}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Information fields can also be used to track individual information fields
- during evolution, using Python operators or operators 
-\family typewriter
-infoEval
-\family default
- and 
-\family typewriter
-infoExec
-\family default
-.
- The latter two operators can evaluate Python expressions and statements
- with varaibles being the information fields of individuals.
- Changes to these variables will change the corresponding information fields
- of an individul.
- For example, assuming that population 
-\family typewriter
-pop
-\family default
- has information field 
-\family typewriter
-a
-\family default
-, the following function (function form of operator 
-\family typewriter
-infoExec
-\family default
-) will increase the information field 
-\family typewriter
-a 
-\family default
-of every individual in the population by 1.
-\end_layout
-
-\begin_layout LyX-Code
-InfoExec(pop, 'a += 1')
-\end_layout
-
-\begin_layout Standard
-These statements are usually used to change the values of an information
- field, or derive an information field from other ones.
- However, variables from a poulation's local namespace can be made available,
- using option 
-\family typewriter
-usePopVars=True
-\family default
-.
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/info2.log"
-lstparams "caption={Use infoExec and infoEval operators},label={infoExec}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Ancestral-populations"
-
-\end_inset
-
-Ancestral populations
-\end_layout
-
-\begin_layout Standard
-By default, a population object only holds the current generation.
- All ancestral populations (generations) will be discarded.
- You can, however, keep as many ancestral generations as you wish, provided
- that you have enough RAM to store all these extra information.
-\end_layout
-
-\begin_layout Standard
-Parameter 
-\family typewriter
-ancestralDepth
-\family default
- is used to specify the number of generations to keep.
- This parameter is default to 
-\family typewriter
-0
-\family default
-, meaning keeping no ancestral population.
- You can specify a positive number 
-\family typewriter
-n
-\family default
- to store most recent n generations; or -
-\family typewriter
-1
-\family default
- to store all populations.
- 
-\end_layout
-
-\begin_layout Standard
-Several important usage of ancestral generations:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-dumper()
-\family default
- operator and 
-\family typewriter
-Dump()
-\family default
- function has a parameter 
-\family typewriter
-ancestralPops
-\family default
-.
- If set to 
-\family typewriter
-True
-\family default
-, they will dump all ancestral generations.
-\end_layout
-
-\begin_layout Itemize
-function 
-\family typewriter
-population::setAncestralDepth()
-\family default
- and operator 
-\family typewriter
-setAncestralDepth()
-\family default
- set the number of ancestral generations to keep for a population.
- A typical use of 
-\family typewriter
-setAncestralDepth()
-\family default
- is
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-simu.evolve(...
-\end_layout
-
-\begin_layout Plain Layout
-
-  setAncestralDepth(3, at=[-3])
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-which saves the last three generations in populations so that pedigree based
- sampling schemes can be used.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-
-\family typewriter
-pop.useAncestralPop(idx)
-\family default
- set the current generation of population 
-\family typewriter
-pop
-\family default
- to 
-\family typewriter
-idx
-\family default
- generation.
- 
-\family typewriter
-idx
-\family default
- 
-\family typewriter
-= 1
-\family default
- for the first ancestral generation, 
-\family typewriter
-2
-\family default
- for second ancestral ..., and 
-\family typewriter
-0
-\family default
- for the current generation.
- After this function, all functions, operators will be applied to this ancestral
- generation.
- You should always call 
-\family typewriter
-setAncestralPop(0)
-\family default
- after you examined the ancestral generations.
- 
-\end_layout
-
-\begin_layout Standard
-A typical use of this function is demonstrated in example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "ancestralPop"
-
-\end_inset
-
-.
- In this example, a population with two loci is created and with initial
- genotype 0.
- Two 
-\family typewriter
-kamMutator
-\family default
- with different mutation rates are applied to these two loci.
- Five most recent populations are kept.
- The allele frequencies at these generations are calculated afterward.
- (Note that this is not the best way to exam the changes of allele frequencies,
- a 
-\family typewriter
-stat
-\family default
- operator should be used.)
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/ancestralPop.log"
-lstparams "caption={Ancestral populations},label={ancestralPop}"
 
 \end_inset
 
