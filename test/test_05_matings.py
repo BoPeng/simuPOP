@@ -21,18 +21,7 @@ def setGen(pop, off, dad, mom):
 
 class TestMatingSchemes(unittest.TestCase):
 
-    def testNoMating(self):
-        'Testing noMating mating scheme'
-        simu = simulator(population(10, loci=[1], ploidy=1),
-            noMating())
-        # during mating operator will be applied
-        simu.step( ops=[ pyOperator(func=setGen, stage=DuringMating) ])
-        self.assertEqual( simu.population(0).arrGenotype(True),
-            [0]*10)
-        simu.step( ops=[ pyOperator(func=setGen, stage=DuringMating) ])
-        self.assertEqual( simu.population(0).arrGenotype(True),
-            [1]*10)
-
+   
     def testBinomialSelection(self):
         'Testing binomialSelection mating scheme (FIXME: imcomplete)'
         simu = simulator(population(10, loci=[1], ploidy=1),
@@ -84,7 +73,7 @@ class TestMatingSchemes(unittest.TestCase):
         #print cnt
         # MATE_BinomialDistribution
         cnt = self.getFamSize( randomMating(numOffspring=.3,
-            maxNumOffspring=5, mode=MATE_BinomialDistribution))
+            numOffspringParam=5, mode=MATE_BinomialDistribution))
         #print cnt
         # MATE_PoissonDistribution
         cnt = self.getFamSize( randomMating(numOffspring=.3,
@@ -98,7 +87,7 @@ class TestMatingSchemes(unittest.TestCase):
         sibFields = ['sibling%d' % x for x in range(4)]
         offFields = ['offspring%d' % x for x in range(4)]
         cousinFields = ['cousin%d' % x for x in range(4)]
-        pop = population([100, 1000], loci=[10], ancestralDepth=3,
+        pop = population([100, 1000], loci=[10], ancGen=3,
             infoFields = parFields + sibFields + offFields + cousinFields)
         def findCousin(pop):
             pop.locateRelatives(REL_Offspring, offFields);
@@ -184,46 +173,6 @@ class TestMatingSchemes(unittest.TestCase):
 ##         # then , with frequency dependent?
 ##         #print path.numTraj(), path.maxLen(), path.traj(0), path.traj(1)
 ##
-
-    def testControlledMating(self):
-        'Testing controlled mating'
-        # planned trajectory
-        freq = FreqTrajectoryStoch(freq=0.05, N=100)
-        #print freq
-        # staring from when?
-        burnin = 100
-        mutAge = len(freq)
-        # trajectory function
-        # 0 ...., 100, 101, .... 100+mutAge
-        #                            x                 freq
-        def freqRange(gen):
-            if gen <= burnin:
-                # whatever
-                return [0,1]
-            expected = freq[gen-1-burnin]
-            return [expected, expected + 0.05]
-        #
-        # turn On debug
-        simu = simulator( population(100, loci=[1], ploidy=2),
-            controlledMating( matingScheme=randomMating(),
-                locus=0, allele=1, freqFunc=freqRange )
-            )
-        #print "Simulator created"
-        simu.evolve(
-            preOps=[
-                initByValue([0])
-                ],
-            ops=[
-                pointMutator(loci=[0],
-                    toAllele=1,
-                    inds = [0],
-                    at = [burnin+1],
-                    stage = PreMating),
-                stat(alleleFreq=[0]),
-                # pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
-            ],
-            gen=burnin+mutAge
-        )
 
 
 
@@ -402,7 +351,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(200, loci=[3,5])
         simu = simulator(pop, pyMating(
             randomParentChooser(),
-            selfingOffspringGenerator()))
+            offspringGenerator(transmitter=selfingGenoTransmitter())))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
