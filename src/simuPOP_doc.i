@@ -52,6 +52,79 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::alphaParentsChooser "
+
+Applicability: all ploidy
+
+Details:
+
+    This parent chooser chooses two parents randomly, a male and a
+    female, from their respective sex groups randomly. If selection is
+    turned on, parents are chosen from their sex groups with
+    probabilities that are proportional to their fitness values. This
+    parents chooser also allows polygamous mating by reusing a parent
+    multiple times when returning parents, and allows specification of
+    a few alpha individuals who will be the only mating individuals in
+    their sex group.
+
+"; 
+
+%feature("docstring") simuPOP::alphaParentsChooser::alphaParentsChooser "
+
+Usage:
+
+    alphaParentsChooser(alphaSex=Male, alphaNum=0,
+      alphaField=string)
+
+Details:
+
+    Note: If selection is enabled, it works regularly on on-alpha sex,
+    but works twice on alpha sex. That is to say, alphaNum alpha
+    indiviudals are chosen selectively, and selected again during
+    mating.
+
+Arguments:
+
+    replacement:    choose with (True, default) or without (False)
+                    replacement. When choosing without replacement,
+                    parents will be paired and can only mate once.
+    replenish:      if set to true, one or both sex groups will be
+                    replenished if they are exhausted.
+    polySex:        Male (polygyny) or Female (polyandry) parent that
+                    will have polyNum sex partners.
+    polyNum:        Number of sex partners.
+    alphaSex:       the sex of the alpha individual, i.e. alpha male
+                    or alpha female who be the only mating individuals
+                    in their sex group.
+    alphaNum:       Number of alpha individuals. If infoField is not
+                    given, alphaNum random individuals with alphaSex
+                    will be chosen. If selection is enabled,
+                    individuals with higher fitness values have higher
+                    probability to be selected. There is by default no
+                    alpha individual (alphaNum = 0).
+    alphaField:     if an information field is given, individuals with
+                    non-zero values at this information field are
+                    alpha individuals. Note that these individuals
+                    must have alphaSex.
+
+"; 
+
+%feature("docstring") simuPOP::alphaParentsChooser::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::alphaParentsChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::alphaParentsChooser::chooseParents(RawIndIterator basePtr);
+
+%ignore simuPOP::alphaParentsChooser::numMale();
+
+%ignore simuPOP::alphaParentsChooser::numFemale();
+
 %feature("docstring") simuPOP::baseOperator "
 
 Details:
@@ -469,43 +542,6 @@ Usage:
 
 %ignore simuPOP::cloneGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%feature("docstring") simuPOP::cloneOffspringGenerator "
-
-Applicability: all ploidy
-
-Details:
-
-    clone offspring generator copies parental geneotype to a number of
-    offspring. Only one parent is accepted. The number of offspring
-    produced is controled by parameters numOffspring,
-    numOffspringFunc, maxNumOffspring and mode. Parameters sexParam
-    and sexMode is ignored.
-
-"; 
-
-%feature("docstring") simuPOP::cloneOffspringGenerator::cloneOffspringGenerator "
-
-Usage:
-
-    cloneOffspringGenerator(numOffspring=1, numOffspringFunc=None,
-      maxNumOffspring=1, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex)
-
-Arguments:
-
-    sexParam:       ignored because sex is copied from the parent.
-    sexMode:        ignored because sex is copied from the parent.
-
-"; 
-
-%feature("docstring") simuPOP::cloneOffspringGenerator::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
-
 %feature("docstring") simuPOP::CombinedAlleleIterator "
 
 Details:
@@ -602,197 +638,6 @@ Details:
     one of the combined splitters.
 
 "; 
-
-%feature("docstring") simuPOP::controlledMating "
-
-Applicability: diploid only
-
-Description:
-
-    a controlled mating scheme
-
-Details:
-
-    This is an experimental mating scheme that uses a frequency range
-    to control the allele frequency of the offspring generation at
-    given loci. When allele frequencies at the offspring generation
-    does not fall into the given range, the offspring generation is
-    regenerated. Any mating scheme can be used with this mating scheme
-    by passing through parameter matingScheme.
-
-"; 
-
-%feature("docstring") simuPOP::controlledMating::controlledMating "
-
-Description:
-
-    control allele frequencies at a locus
-
-Usage:
-
-    controlledMating(matingScheme, loci, alleles, freqFunc,
-      range=0.01)
-
-Arguments:
-
-    matingScheme:   a mating scheme
-    loci:           loci at which allele frequency is controlled. Note
-                    that controlling the allele frequencies at several
-                    loci may take a long time.
-    alleles:        alleles to control at each locus. Should have the
-                    same length as loci.
-    freqFunc:       frequency boundaries. If the length of the
-                    returned value equals the size of loci, the range
-                    for loci will be [value0, value0+range], [value1,
-                    value1+range] etc. If the length of the returned
-                    value is 2 times the size of loci, it will be
-                    interpreted as [low1, high1, low2, high2, ...].
-
-"; 
-
-%ignore simuPOP::controlledMating::controlledMating(const controlledMating &rhs);
-
-%feature("docstring") simuPOP::controlledMating::~controlledMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~controlledMating()
-
-"; 
-
-%ignore simuPOP::controlledMating::submitScratch(population &pop, population &scratch);
-
-%feature("docstring") simuPOP::controlledMating::clone "
-
-Description:
-
-    deep copy of a controlled mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::controlledMating::isCompatible(const population &pop) const;
-
-%feature("docstring") simuPOP::controlledMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the controlled mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::controlledMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
-
-%feature("docstring") simuPOP::controlledRandomMating "
-
-Applicability: diploid only
-
-Description:
-
-    a controlled random mating scheme
-
-Details:
-
-    This is the controlled random mating scheme described in Peng 2007
-    (PLoS Genetics) . Basically, a freqFunc is passed to this mating
-    scheme and set the allele frequencies of given alleles at given
-    loci at the offspring generation.
-    The offspring generation is conceptually populated in two steps.
-    At the first step, only families with disease alleles are accepted
-    until the expected number of disease alleles are met. At the
-    second step, only families with wide type alleles are accepted to
-    populate the rest of the offspring generation.
-
-"; 
-
-%feature("docstring") simuPOP::controlledRandomMating::controlledRandomMating "
-
-Description:
-
-    create a controlled random mating scheme
-
-Usage:
-
-    controlledRandomMating(loci, alleles, freqFunc, acceptScheme=0,
-      numOffspring=1., sexParam=0.5, sexMode=MATE_RandomSex,
-      numOffspringFunc=None, maxNumOffspring=0,
-      mode=MATE_NumOffspring, newSubPopSize=[],
-      newSubPopSizeFunc=None, newSubPopSizeExpr=\"\",
-      contWhenUniSex=True, subPop=[], weight=0)
-
-Details:
-
-    Please refer to class mating for descriptions of other parameters.
-
-Arguments:
-
-    loci:           loci at which allele frequencies are monitored
-                    (controlled)
-    alleles:        alleles at given loci. It should have the same
-                    length as loci
-    freqFunc:       a Python function that accepts a generation number
-                    and returns expected allele frequencies at given
-                    loci
-    acceptScheme:   internal use only
-
-"; 
-
-%ignore simuPOP::controlledRandomMating::controlledRandomMating(const controlledRandomMating &rhs);
-
-%feature("docstring") simuPOP::controlledRandomMating::~controlledRandomMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~controlledRandomMating()
-
-"; 
-
-%feature("docstring") simuPOP::controlledRandomMating::clone "
-
-Description:
-
-    deep copy of a controlled random mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::controlledRandomMating::isCompatible(const population &pop) const;
-
-%feature("docstring") simuPOP::controlledRandomMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the controlled random mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::controlledRandomMating::submitScratch(population &pop, population &scratch);
-
-%ignore simuPOP::controlledRandomMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
 
 %feature("docstring") simuPOP::dumper "
 
@@ -2566,8 +2411,7 @@ Details:
 
 Usage:
 
-    infoParentsChooser(infoFields=[], replacement=True,
-      replenish=False)
+    infoParentsChooser(infoFields=[], replacement=True)
 
 Arguments:
 
@@ -3869,42 +3713,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::mendelianOffspringGenerator "
-
-Applicability: diploid only
-
-Details:
-
-    Mendelian offspring generator accepts two parents and pass their
-    genotype to a number of offspring following Mendelian's law.
-    Basically, one of the paternal chromosomes is chosen randomly to
-    form the paternal copy of the offspring, and one of the maternal
-    chromosome is chosen randomly to form the maternal copy of the
-    offspring. The number of offspring produced is controled by
-    parameters numOffspring, numOffspringFunc, maxNumOffspring and
-    mode. Recombination will not happen unless a during-mating
-    operator recombinator is used.
-
-"; 
-
-%feature("docstring") simuPOP::mendelianOffspringGenerator::mendelianOffspringGenerator "
-
-Usage:
-
-    mendelianOffspringGenerator(numOffspring=1,
-      numOffspringFunc=None, maxNumOffspring=1,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
-
-"; 
-
-%feature("docstring") simuPOP::mendelianOffspringGenerator::clone "
-
-Usage:
-
-    x.clone()
-
-"; 
-
 %feature("docstring") simuPOP::mergeSubPops "
 
 Function form:
@@ -4663,9 +4471,9 @@ Details:
     Offspring generators generate offspring from given parents.
     Generators differ from each other by how and how many offspring is
     generated at each mating event. Parameters mode, numOffspring,
-    maxNumOffspring and numOffspringFunc are used to specify how many
-    offspring will be produced at each mating event. mode can be one
-    of
+    numOffspringParam and numOffspringFunc are used to specify how
+    many offspring will be produced at each mating event. mode can be
+    one of
     *  MATE_NumOffspring: a fixed number of offspring will be produced
     at all mating events .
     *  MATE_PyNumOffspring: A python function, specified by parameter
@@ -4681,7 +4489,7 @@ Details:
     parameter numOffspring is used to determine the number of
     offspring of each family.
     *  MATE_UniformDistribution: a Uniform [a, b] distribution with
-    parameter numOffspring (a) and maxNumOffspring (b) is used to
+    parameter numOffspring (a) and numOffspringParam (b) is used to
     determine the number of offspring of each family. This is the base
     class of all offspring generators, and should not be used
     directly.
@@ -4693,7 +4501,8 @@ Details:
 Usage:
 
     offspringGenerator(numOffspring, numOffspringFunc,
-      maxNumOffspring, mode, sexParam, sexMode, transmitter)
+      numOffspringParam, mode, sexParam, sexMode, numParents,
+      transmitter)
 
 Arguments:
 
@@ -4703,7 +4512,7 @@ Arguments:
     numOffspringFunc:a Python function that returns the number of
                     offspring at each mating event. The setting of
                     this parameter implies =MATE_PyNumOffspring.
-    maxNumOffspring:used when numOffspring is generated from a
+    numOffspringParam:used when numOffspring is generated from a
                     binomial or random distribution.
     mode:           can be one of MATE_NumOffspring,
                     MATE_PyNumOffspring, MATE_GeometricDistribution,
@@ -4750,11 +4559,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
-
-%ignore simuPOP::offspringGenerator::mode() const;
-
 %ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
+
+%ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::offspringGenerator::finalize "
 
@@ -4764,23 +4571,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::numOffspring(int gen);
-
-%feature("docstring") simuPOP::offspringGenerator::getSex "
+%feature("docstring") simuPOP::offspringGenerator::initialized "
 
 Usage:
 
-    x.getSex(count)
-
-Arguments:
-
-    count:          the index of offspring
+    x.initialized()
 
 "; 
 
-%ignore simuPOP::offspringGenerator::initialized() const;
+%ignore simuPOP::offspringGenerator::numOffspring(int gen);
 
-%ignore simuPOP::offspringGenerator::setNumParents(int numParents);
+%ignore simuPOP::offspringGenerator::getSex(int count);
 
 %ignore simuPOP::offspringGenerator::numParents() const;
 
@@ -5553,6 +5354,62 @@ Usage:
     x.mutationCounts()
 
 "; 
+
+%feature("docstring") simuPOP::polyParentsChooser "
+
+Applicability: all ploidy
+
+Details:
+
+    This parent chooser chooses two parents randomly, a male and a
+    female, from their respective sex groups randomly. If selection is
+    turned on, parents are chosen from their sex groups with
+    probabilities that are proportional to their fitness values. Note
+    that selection is not allowed in the case of monopoly because this
+    poses a particular order on individuals in the offspring
+    generation. This parents chooser also allows polygamous mating by
+    reusing a parent multiple times when returning parents, and allows
+    specification of a few alpha individuals who will be the only
+    mating individuals in their sex group.
+
+"; 
+
+%feature("docstring") simuPOP::polyParentsChooser::polyParentsChooser "
+
+Usage:
+
+    polyParentsChooser(polySex=Male, polyNum=1)
+
+Details:
+
+    Note: If selection is enabled, it works regularly on on-alpha sex,
+    but works twice on alpha sex. That is to say, alphaNum alpha
+    indiviudals are chosen selectively, and selected again during
+    mating.
+
+Arguments:
+
+    polySex:        Male (polygyny) or Female (polyandry) parent that
+                    will have polyNum sex partners.
+    polyNum:        Number of sex partners.
+
+"; 
+
+%feature("docstring") simuPOP::polyParentsChooser::clone "
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::polyParentsChooser::initialize(population &pop, SubPopID sp);
+
+%ignore simuPOP::polyParentsChooser::chooseParents(RawIndIterator basePtr);
+
+%ignore simuPOP::polyParentsChooser::numMale();
+
+%ignore simuPOP::polyParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::population "
 
@@ -8102,10 +7959,8 @@ Details:
     generation. If selection is turned on, parents are chosen with
     probabilities that are proportional to their fitness values. Sex
     is not considered. Parameter replacement determines if a parent
-    can be chosen multiple times. In case that replacement=false,
-    paremeter replenish=true allows restart of the process if all
-    parents are exhausted. Note that selection is not allowed when
-    replacement=false because this poses a particular order on
+    can be chosen multiple times. Note that selection is not allowed
+    when replacement=false because this poses a particular order on
     individuals in the offspring generation.
 
 "; 
@@ -8114,14 +7969,12 @@ Details:
 
 Usage:
 
-    randomParentChooser(replacement=True, replenish=False)
+    randomParentChooser(replacement=True)
 
 Arguments:
 
     replacement:    if replacement is false, a parent can not be
                     chosen more than once.
-    replenish:      if all parent has been chosen, choose from the
-                    whole parental population again.
 
 "; 
 
@@ -8147,16 +8000,7 @@ Details:
     female, from their respective sex groups randomly. If selection is
     turned on, parents are chosen from their sex groups with
     probabilities that are proportional to their fitness values. If
-    parameter replacement is false, a chosen pair of parents can no
-    longer be selected. This feature can be used to simulate monopoly.
-    If replenish is true, a sex group can be replenished when it is
-    exhausted. Note that selection is not allowed in the case of
-    monopoly because this poses a particular order on individuals in
-    the offspring generation. This parents chooser also allows
-    polygamous mating by reusing a parent multiple times when
-    returning parents, and allows specification of a few alpha
-    individuals who will be the only mating individuals in their sex
-    group.
+    replacement = False, each parent can only be used once.
 
 "; 
 
@@ -8164,9 +8008,7 @@ Details:
 
 Usage:
 
-    randomParentsChooser(replacement=True, replenish=False,
-      polySex=Male, polyNum=1, alphaSex=Male, alphaNum=0,
-      alphaField=string)
+    randomParentsChooser(replacement=True)
 
 Details:
 
@@ -8174,30 +8016,6 @@ Details:
     but works twice on alpha sex. That is to say, alphaNum alpha
     indiviudals are chosen selectively, and selected again during
     mating.
-
-Arguments:
-
-    replacement:    choose with (True, default) or without (False)
-                    replacement. When choosing without replacement,
-                    parents will be paired and can only mate once.
-    replenish:      if set to true, one or both sex groups will be
-                    replenished if they are exhausted.
-    polySex:        Male (polygyny) or Female (polyandry) parent that
-                    will have polyNum sex partners.
-    polyNum:        Number of sex partners.
-    alphaSex:       the sex of the alpha individual, i.e. alpha male
-                    or alpha female who be the only mating individuals
-                    in their sex group.
-    alphaNum:       Number of alpha individuals. If infoField is not
-                    given, alphaNum random individuals with alphaSex
-                    will be chosen. If selection is enabled,
-                    individuals with higher fitness values have higher
-                    probability to be selected. There is by default no
-                    alpha individual (alphaNum = 0).
-    alphaField:     if an information field is given, individuals with
-                    non-zero values at this information field are
-                    alpha individuals. Note that these individuals
-                    must have alphaSex.
 
 "; 
 

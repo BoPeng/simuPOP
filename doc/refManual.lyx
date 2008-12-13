@@ -511,6 +511,20 @@ randomParentsChooserRef
 
 
 \backslash
+polyParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+alphaParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 infoParentsChooserRef
 \end_layout
 
@@ -1267,20 +1281,6 @@ MaxAlleleRef
 
 
 \backslash
-MergePopulationsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-MergePopulationsByLociRef 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 ModuleCompilerRef
 \end_layout
 
@@ -1360,7 +1360,9 @@ simuVerRef
 \end_layout
 
 \begin_layout Section
-Utility Classes
+Module 
+\family typewriter
+simuPOP
 \end_layout
 
 \begin_layout Standard
@@ -1371,7 +1373,7 @@ status open
 
 
 \backslash
-RNGRef
+simuPOPFuncRef
 \end_layout
 
 \end_inset
@@ -1473,6 +1475,26 @@ status open
 
 \backslash
 simuRPyvarPlotterRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Utility Classes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+RNGRef
 \end_layout
 
 \end_inset

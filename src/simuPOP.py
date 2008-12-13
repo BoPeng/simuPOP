@@ -23,6 +23,9 @@
 #    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ############################################################################
 
+"""
+simuPOP core module.
+"""
 
 # get options
 from simuOpt import simuOptions
@@ -297,16 +300,6 @@ def InfoExec(pop, *args, **kwargs):
 if infoExec.__init__.__doc__ is not None:
     InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
-# These two functions are not really needed.
-#def SavePopulation(pop, filename):
-#    'Save population to file with name filename'
-#    pop.save(filename)
-#
-#def SaveSimulator(simu, filename):
-#    'Save simulator to file with name filename'
-#    simu.saveSimulator(filename)
-
-
 
 # mating schemes
 
@@ -317,13 +310,13 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
 		subPop = (), weight = 0):
     '''
     Note that
-   \li selection is not considered (fitness is ignored)
-   \li sequentialParentMating is used. If offspring (virtual) subpopulation size
+    selection is not considered (fitness is ignored)
+    sequentialParentMating is used. If offspring (virtual) subpopulation size
    is smaller than parental subpopulation size, not all parents will be cloned.
    If offspring (virtual) subpopulation size is larger, some parents will be
    cloned more than once.
-   \li numOffspring interface is respected.
-   \li during mating operators are applied.
+    numOffspring interface is respected.
+    during mating operators are applied.
     '''
     return pyMating(
         chooser = sequentialParentChooser(),
@@ -346,11 +339,10 @@ def binomialSelection(numOffspring = 1., numOffspringFunc = None,
    No sex information is involved (binomial random selection). Offspring is chosen from parental generation
    by random or according to the fitness values.
    In this mating scheme,
-   \li \c numOffspring protocol is honored;
-   \li population size changes are allowed;
-   \li selection is possible;
-   \li haploid population is allowed.
-   <applicability>all ploidy</applicability>
+    numOffspring protocol is honored;
+    population size changes are allowed;
+    selection is possible;
+    haploid population is allowed.
     '''
     return pyMating(
         chooser = randomParentChooser(),
@@ -455,20 +447,20 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
    only these alpha individuals are able to mate with random individuals of
    opposite sex.
 
-   	   \param alphaSex the sex of the alpha individual, i.e. alpha male
+   alphaSex the sex of the alpha individual, i.e. alpha male
 	           or alpha female who be the only mating individuals in their
 	           sex group.
-	   \param alphaNum Number of alpha individuals. If \c infoField is
+   alphaNum Number of alpha individuals. If \c infoField is
 	           not given, \c alphaNum random individuals with \c alphaSex
 	           will be chosen. If selection is enabled, individuals with higher+  
                fitness values have higher probability to be selected. There is
 	           by default no alpha individual (\c alphaNum = 0).
-	   \param alphaField if an information field is given, individuals
+   alphaField if an information field is given, individuals
 	           with non-zero values at this information field are alpha individuals.
 	           Note that these individuals must have \c alphaSex.
 
-	   Please refer to class \c mating for descriptions of other parameters.
-	   Note: If selection is enabled, it works regularly on on-alpha sex, but
+   Please refer to class \c mating for descriptions of other parameters.
+   Note: If selection is enabled, it works regularly on on-alpha sex, but
 	           works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
 	           are chosen selectively, and selected again during mating.
 
@@ -545,21 +537,21 @@ def consanguineousMatingMating(relativeFields = [], func = None, param = None,
    relative that has been located and written to a number of information
    fields.
 
-   	   This mating scheme randomly choose a parent and then choose his/her spouse from indexes
-	   stored in \c infoFields.
+   This mating scheme randomly choose a parent and then choose his/her spouse from indexes
+   stored in \c infoFields.
 
-	   \param relativeFields The information fields that stores indexes to other individuals
+    relativeFields The information fields that stores indexes to other individuals
 	    in a population. If more than one valid (positive value) indexes exist, a random
 	    index will be chosen. (c.f. \c infoParentsChooser ) If there is no individual
 	    having any valid index, the second parent will be chosen randomly from the
 	    whole population.
 
-	   \param func A python function that can be used to prepare the indexes of these
+    func A python function that can be used to prepare the indexes of these
 	    information fields. For example, functions population::locateRelatives and/or
 	    population::setIndexesOfRelatives can be used to locate certain types of relatives
 	    of each individual.
 
-	   \param param An optional parameter that can be passed to \c func.
+	 param An optional parameter that can be passed to \c func.
 
 	   Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
 	   other parameters.
@@ -582,21 +574,21 @@ def pedigreeMating(ped, generator=None, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
     '''
-//    In this scheme, a pedigree is given and the mating scheme will
-//    choose parents and produce offspring strictly following the pedigree.
-//    Parameters setting number of offspring per mating event, and
-//    size of the offspring generations are ignored.
-//
-//    To implement this mating scheme in pyMating,
-//    1.) a newSubPopSizeFunc should be given to return the exact subpopulation
-//      size, returned from pedigree.subPopSizes(gen).
-//    2.) use pedigreeChooser to choose parents
-//    3.) use a suitable offspring generator to generate offspring.
-//
-//    This pedigreeMating helps you do 1 and 2, and use a mendelianOffspringGenerator
-//    as the default offspring generator. You can use another offspring generator
-//    by setting the generator parameter. Note that the offspring generator can
-//    generate one and only one offspring each time.
+   In this scheme, a pedigree is given and the mating scheme will
+   choose parents and produce offspring strictly following the pedigree.
+   Parameters setting number of offspring per mating event, and
+   size of the offspring generations are ignored.
+
+   To implement this mating scheme in pyMating,
+   1.) a newSubPopSizeFunc should be given to return the exact subpopulation
+     size, returned from pedigree.subPopSizes(gen).
+   2.) use pedigreeChooser to choose parents
+   3.) use a suitable offspring generator to generate offspring.
+
+   This pedigreeMating helps you do 1 and 2, and use a mendelianOffspringGenerator
+   as the default offspring generator. You can use another offspring generator
+   by setting the generator parameter. Note that the offspring generator can
+   generate one and only one offspring each time.
     '''
     return pyMating(
         chooser = pedigreeParentsChooser(ped),
