@@ -880,7 +880,12 @@ class Doxy2SWIG:
 
     def latex_formatted_text(self, text):
         """format text according to some simple rules"""
-        return core.publish_parts(source=text, writer = myWriter())['body']
+        txt = core.publish_parts(source=text, writer = myWriter())['body']
+        if 'unexpected unindent' in txt:
+            print text
+            return ''
+        else:
+            return txt
                 
     def swig_text(self, text, start_pos, indent):
         """ wrap text given current indent """
@@ -1215,6 +1220,7 @@ if __name__ == '__main__':
     # add some other functions
     p.scan_interface(os.path.join(src_path, 'src', 'simuPOP_common.i'))
     sys.path = [os.path.join(src_path, 'src')] + sys.path
+    p.scan_module('simuPOP')
     p.scan_module('simuOpt')
     p.scan_module('simuUtil')
     p.scan_module('simuRPy')
