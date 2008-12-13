@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -3069,7 +3069,7 @@ s at different stages of a disease.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "virtualSubPop"
+reference "accessIndividuals"
 
 \end_inset
 
@@ -3097,44 +3097,67 @@ Access individuals and individual properties
 \end_layout
 
 \begin_layout Standard
-Individuals can not be created without population.
- You can create a population and access its individuals through the 
+There are many ways to access individuals of a population.
+ For example, function 
 \family typewriter
-individual
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-population!individual
-\end_layout
-
-\end_inset
-
-(), individuals()
+population::individual(idx)
 \family default
- functions.
- The returned 
+ returns a reference to the 
 \family typewriter
-individual
+idx
 \family default
- object has its own member functions, with which you can 
-\end_layout
-
-\begin_layout Itemize
-access genotype structure
-\end_layout
-
-\begin_layout Itemize
-retrieve/set genotype
-\end_layout
-
-\begin_layout Itemize
-retrieve/set sex, affected status and some other auxiliary information (informat
-ion fields)
+-th individual in a population.
+ An optional parameter 
+\family typewriter
+subPop
+\family default
+ can be specified to return the 
+\family typewriter
+idx
+\family default
+-th individual in the 
+\family typewriter
+subPop
+\family default
+-th subpopulation.
 \end_layout
 
 \begin_layout Standard
-Individuals of a population can be accessed through 
+If you would like to access a group of individuals, either from a whole
+ population, a subpopulation, or from a virtual subpopulation, 
+\family typewriter
+population::individuals([subPop])
+\family default
+ is easier to use.
+ This function returns a Python iterator that can be used to iterate through
+ individuals.
+ An advantage of this function is that 
+\family typewriter
+subPop 
+\family default
+can be a virtual subpopulation which makes it easy to iterate through individual
+s with certain properties (such as all male individuals).
+\end_layout
+
+\begin_layout Standard
+If more then one generations are stored in a population, function 
+\family typewriter
+ancestor(idx, [subPop], gen)
+\family default
+ can be used to access individual from an ancestral generation (see Section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Ancestral-populations"
+
+\end_inset
+
+ for details).
+ 
+\end_layout
+
+\begin_layout Standard
+
 \family typewriter
 individual
 \begin_inset Index
@@ -3234,6 +3257,17 @@ ancestor(ind, subPop, gen)
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/accessIndividuals.log"
+lstparams "caption={Access individuals of a population},label={accessIndividuals}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 For example, example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3276,88 +3310,6 @@ useAncestralPop()
  individuals()
 \family default
  for the current generation.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "lst:population-individual"
-
-\end_inset
-
-Function population::individual()
-\end_layout
-
-\end_inset
-
-for i in range(pop.subPopSize(2)):
-\end_layout
-
-\begin_layout Plain Layout
-
-    ind = pop.individual(i, 2)
-\end_layout
-
-\begin_layout Plain Layout
-
-    print ind.affected()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "lst:population-individuals"
-
-\end_inset
-
-Function population::individuals()
-\end_layout
-
-\end_inset
-
-for ind in pop.individuals(2):
-\end_layout
-
-\begin_layout Plain Layout
-
-    # do something to ind
-\end_layout
-
-\begin_layout Plain Layout
-
-    print ind.affected()
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Access individual and population genotypes
 \end_layout
 
 \begin_layout Standard
