@@ -1464,7 +1464,7 @@ void population::push(population & rhs)
 		"might be changed unexpectedly, e.g. when a sample is drawn from a \n"
 		"population.\n");
 
-	DBG_ASSERT(m_genotype.begin() != rhs.m_genotype.begin(), ValueError,
+	DBG_FAILIF(!m_genotype.empty() && m_genotype.begin() == rhs.m_genotype.begin(), ValueError,
 		"Passed population is a reference of current population, swapPop failed.");
 
 	// front -1 pop, -2 pop, .... end

@@ -304,7 +304,7 @@ if infoExec.__init__.__doc__ is not None:
 # mating schemes
 
 def cloneMating(numOffspring = 1., numOffspringFunc = None,
-        numOffspringParam= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
@@ -331,7 +331,7 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
 
 
 def binomialSelection(numOffspring = 1., numOffspringFunc = None,
-        numOffspringParam= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
@@ -384,7 +384,7 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
 
 
 def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None,
-        numOffspringParam= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
@@ -409,7 +409,7 @@ def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None
 
 def polygamousMating(polySex=Male, polyNum=1, replacement =False,
         replenish=False, numOffspring = 1., numOffspringFunc = None,
-        numOffspringParam= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
@@ -434,7 +434,7 @@ def polygamousMating(polySex=Male, polyNum=1, replacement =False,
 
 def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
         numOffspring = 1., numOffspringFunc = None,
-        numOffspringParam= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
@@ -478,7 +478,7 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
 
 
 def haplodiploidMating(replacement=True,
-		numOffspring = 1., numOffspringFunc = None, numOffspringParam= 1., mode = MATE_NumOffspring,
+		numOffspring = 1., numOffspringFunc = None, numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
@@ -504,7 +504,7 @@ def haplodiploidMating(replacement=True,
 
 
 def selfMating(replacement=True, numOffspring = 1., numOffspringFunc = None,
-        numOffspringParam= 1., mode = MATE_NumOffspring,
+        numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
