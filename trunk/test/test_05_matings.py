@@ -359,11 +359,11 @@ class TestMatingSchemes(unittest.TestCase):
         #
         self.assertRaises(exceptions.ValueError, pyMating,
             randomParentsChooser(),
-            selfingOffspringGenerator())
+            offspringGenerator(selfingGenoTransmitter(), 1))
         #
         simu = simulator(pop, pyMating(
             randomParentChooser(),
-            cloneOffspringGenerator(numOffspring=3)))
+            offspringGenerator(cloneGenoTransmitter(), numOffspring=3)))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -371,7 +371,7 @@ class TestMatingSchemes(unittest.TestCase):
         #
         simu = simulator(pop, pyMating(
             randomParentsChooser(),
-            mendelianOffspringGenerator(numOffspring=3)))
+            offspringGenerator(mendelianGenoTransmitter(), numOffspring=3)))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -383,7 +383,7 @@ class TestMatingSchemes(unittest.TestCase):
                     yield ind
         simu = simulator(pop, pyMating(
             pyParentsChooser(pc),
-            cloneOffspringGenerator(numOffspring=3)))
+            offspringGenerator(cloneGenoTransmitter(), numOffspring=3)))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -396,7 +396,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size=[100, 200])
         InitByFreq(pop, [0.3, 0.7])
         simu = simulator(pop, cloneMating(numOffspring=2))
-        simu.step(ops=[])
+        simu.evolve(ops=[], gen=1)
         pop1 = simu.population(0)
         self.assertEqual(pop.individual(0), pop1.individual(0))
         self.assertEqual(pop.individual(0), pop1.individual(1))
@@ -423,7 +423,7 @@ class TestMatingSchemes(unittest.TestCase):
             for idx,w in enumerate(weights):
                 ms.append(cloneMating(numOffspring=(idx+1)*10, weight=w))
             simu = simulator(pop, heteroMating(ms))
-            simu.step()
+            simu.evolve(ops=[], gen=1)
             fs = simu.dvars(0).famSizes
             ret = [0]*len(weights)
             v0 = fs[0]
@@ -506,8 +506,8 @@ class TestMatingSchemes(unittest.TestCase):
         pop.setVirtualSplitter(proportionSplitter([0.6, 0.4]))
         simu = simulator(pop,
             heteroMating(
-                [selfMating(numOffspring=1, subPop=0, virtualSubPop=0),
-                selfMating(numOffspring=2, subPop=0, virtualSubPop=1),
+                [selfMating(numOffspring=1, subPop=(0, 0)),
+                selfMating(numOffspring=2, subPop=(0, 1)),
                 selfMating(numOffspring=4, subPop=1)])
         )
         simu.evolve(
@@ -524,11 +524,11 @@ class TestMatingSchemes(unittest.TestCase):
         InitByFreq(pop, [.3, .7])
         self.assertRaises(exceptions.ValueError, pyMating,
             sequentialParentChooser(),
-            mendelianOffspringGenerator())
+            offspringGenerator(mendelianGenoTransmitter(), 2))
         simu = simulator(pop, pyMating(
             sequentialParentsChooser(),
-            mendelianOffspringGenerator()))
-        simu.step()
+            offspringGenerator(mendelianGenoTransmitter(), 2)))
+        simu.evolve(ops=[], gen=1)
 
     def testPedigreeMating(self):
         'Testing pedigree mating'
@@ -620,9 +620,9 @@ class TestMatingSchemes(unittest.TestCase):
                 # number of male should be variable, but not too much
                 terminateIf('numOfMale < 4500 or numOfMale > 6500'),
             ],
-            end = 10
+            gen = 10
         )
-        self.assertEqual(simu.gen(), 11)
+        self.assertEqual(simu.gen(), 10)
 
 
     def testMateProbOfMale(self):
@@ -636,9 +636,9 @@ class TestMatingSchemes(unittest.TestCase):
                 # number of male should be variable, but not too much
                 terminateIf('numOfMale < 2500 or numOfMale > 3500'),
             ],
-            end = 10
+            gen = 10
         )
-        self.assertEqual(simu.gen(), 11)
+        self.assertEqual(simu.gen(), 10)
 
 
     def testMateNumOfMale(self):
@@ -653,9 +653,9 @@ class TestMatingSchemes(unittest.TestCase):
                 # number of male should be variable, but not too much
                 terminateIf('numOfMale != 2500'),
             ],
-            end = 10
+            gen = 10
         )
-        self.assertEqual(simu.gen(), 11)
+        self.assertEqual(simu.gen(), 10)
 
 
     def testMateNumOfFemale(self):
@@ -670,9 +670,9 @@ class TestMatingSchemes(unittest.TestCase):
                 # number of male should be variable, but not too much
                 terminateIf('numOfMale != 7500'),
             ],
-            end = 10
+            gen = 10
         )
-        self.assertEqual(simu.gen(), 11)
+        self.assertEqual(simu.gen(), 10)
 
 
 ##   def testFreqTrajWithSubPop(self):
@@ -723,7 +723,7 @@ class TestMatingSchemes(unittest.TestCase):
         # all individuals get the second copy from the first copy of male parents
         # which are all zero
         for ind in simu.population(0).individuals():
-            self.assertEqual(ind.arrGenotype(1), [0]*8)
+            self.assertEqual(ind.genotype(1), [0]*8)
 
 
     def testAlphaMating(self):
@@ -741,10 +741,10 @@ class TestMatingSchemes(unittest.TestCase):
         ch1 = []
         ch2 = []
         for ind in simu.population(0).individuals(0):
-            genotype = ind.arrGenotype(1, 0)
+            genotype = ind.genotype(1, 0)
             if genotype not in ch1:
                 ch1.append(genotype)
-            genotype = ind.arrGenotype(1, 1)
+            genotype = ind.genotype(1, 1)
             if genotype not in ch2:
                 ch2.append(genotype)
         assert len(ch1) <= 2
@@ -753,10 +753,10 @@ class TestMatingSchemes(unittest.TestCase):
         ch1 = []
         ch2 = []
         for ind in simu.population(0).individuals(1):
-            genotype = ind.arrGenotype(1, 0)
+            genotype = ind.genotype(1, 0)
             if genotype not in ch1:
                 ch1.append(genotype)
-            genotype = ind.arrGenotype(1, 1)
+            genotype = ind.genotype(1, 1)
             if genotype not in ch2:
                 ch2.append(genotype)
         assert len(ch1) <= 2
@@ -780,10 +780,10 @@ class TestMatingSchemes(unittest.TestCase):
         ch1 = []
         ch2 = []
         for ind in simu.population(0).individuals(0):
-            genotype = ind.arrGenotype(1, 0)
+            genotype = ind.genotype(1, 0)
             if genotype not in ch1:
                 ch1.append(genotype)
-            genotype = ind.arrGenotype(1, 1)
+            genotype = ind.genotype(1, 1)
             if genotype not in ch2:
                 ch2.append(genotype)
         assert len(ch1) <= 4
@@ -798,7 +798,7 @@ class TestMatingSchemes(unittest.TestCase):
         for i in range(1000):
             pop.individual(i).setSex(Male)
             pop.individual(1000+i).setSex(Female)
-        simu = simulator(pop, monogamousMating(numOffspring=2, replenish=False))
+        simu = simulator(pop, monogamousMating(numOffspring=2))
         simu.evolve(
             preOps = [],
             ops = [parentsTagger()],
@@ -808,7 +808,7 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx'))), 1000)
         #
         # the next generation is unlikely to have exact number of male and female so replenish is needed
-        self.assertRaises(exceptions.IndexError, simu.step)
+        self.assertRaises(exceptions.ValueError, simu.evolve, ops=[], gen=1)
         #
 
 

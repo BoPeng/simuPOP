@@ -25,10 +25,9 @@
 
 namespace simuPOP {
 
-offspringGenerator::offspringGenerator(double numOffspring, PyObject * numOffspringFunc,
-	UINT numOffspringParam, UINT mode,
-	double sexParam, UINT sexMode,
-	UINT numParents, const baseOperator & transmitter) :
+offspringGenerator::offspringGenerator(const baseOperator & transmitter,
+	UINT numParents, double numOffspring, PyObject * numOffspringFunc,
+	UINT numOffspringParam, UINT mode, double sexParam, UINT sexMode) :
 	m_numOffspring(numOffspring), m_numOffspringFunc(NULL),
 	m_numOffspringParam(numOffspringParam), m_mode(mode),
 	m_sexParam(sexParam), m_sexMode(sexMode),

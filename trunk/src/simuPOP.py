@@ -320,10 +320,10 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
     '''
     return pyMating(
         chooser = sequentialParentChooser(),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            cloneGenoTransmitter(), 0, numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 0,
-            cloneGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -346,10 +346,10 @@ def binomialSelection(numOffspring = 1., numOffspringFunc = None,
     '''
     return pyMating(
         chooser = randomParentChooser(),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            cloneGenoTransmitter(), 1, numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 1,
-            cloneGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -373,17 +373,17 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
     '''
     return pyMating(
         chooser = randomParentsChooser(replacement=True),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            mendelianGenoTransmitter(), 2, numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 2,
-            mendelianGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
 
-def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None,
+def monogamousMating(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
@@ -397,10 +397,10 @@ def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None
     '''
     return pyMating(
         chooser = randomParentsChooser(replacement=False),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            mendelianGenoTransmitter(), 2, numOffspring, 
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 2,
-            mendelianGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -408,7 +408,7 @@ def monogamousMating(replenish=False, numOffspring = 1., numOffspringFunc = None
 
 
 def polygamousMating(polySex=Male, polyNum=1, replacement =False,
-        replenish=False, numOffspring = 1., numOffspringFunc = None,
+        numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
@@ -421,18 +421,18 @@ def polygamousMating(polySex=Male, polyNum=1, replacement =False,
    parents, each with varying partners.
     '''
     return pyMating(
-        chooser = polyParentsChooser(polySex, polyNum, Male),
-        generator = offspringGenerator(numOffspring,
+        chooser = polyParentsChooser(polySex, polyNum),
+        generator = offspringGenerator(
+            mendelianGenoTransmitter(), 2, numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 2,
-            mendelianGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
 
-def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
+def alphaMating(alphaSex=Male, alphaNum=0, alphaField='',
         numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, newSubPopSize = [],
@@ -467,10 +467,10 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaFiels='',
     '''
     return pyMating(
         chooser = alphaParentsChooser(alphaSex, alphaNum, alphaField),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            mendelianGenoTransmitter(), 2, numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 2,
-            mendelianGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -493,10 +493,11 @@ def haplodiploidMating(replacement=True,
     '''
     return pyMating(
         chooser = randomParentsChooser(replacement),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            haplodiploidGenoTransmitter(), 2,
+            numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 2,
-            haplodiploidGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -517,10 +518,11 @@ def selfMating(replacement=True, numOffspring = 1., numOffspringFunc = None,
     '''
     return pyMating(
         chooser = randomParentChooser(replacement),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            selfingGenoTransmitter(), 1,
+            numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode, 1,
-            selfingGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -559,10 +561,11 @@ def consanguineousMatingMating(relativeFields = [], func = None, param = None,
     # FIXME: lack a mechanism to call preparePopulation(pop)
     return pyMating(
         chooser = infoParentsChooser(relativeFields, replacement),
-        generator = offspringGenerator(numOffspring,
+        generator = offspringGenerator(
+            mendelianGenoTransmitter(), 2,
+            numOffspring,
             numOffspringFunc, numOffspringParam, mode,
-            sexParam, sexMode,
-            mendelianGenoTransmitter()),
+            sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
@@ -597,8 +600,6 @@ def pedigreeMating(ped, generator=None, newSubPopSize = [],
         newSubPopSizeFunc = newSubPopSizeFunc,
         subPop = subPop,
         weight = weight)
-
-
 
 
 
