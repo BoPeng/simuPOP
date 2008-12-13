@@ -210,19 +210,6 @@ bool pause::apply(population & pop)
 }
 
 
-bool ifElse::applyWithScratch(population & pop, population & scratch, int stage)
-{
-	m_cond.setLocalDict(pop.dict());
-	bool res = m_cond.valueAsBool();
-
-	if (res && m_ifOp != NULL)
-		return m_ifOp->applyWithScratch(pop, scratch, stage);
-	else if (!res && m_elseOp != NULL)
-		return m_elseOp->applyWithScratch(pop, scratch, stage);
-	return true;
-}
-
-
 bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
                                individual * dad, individual * mom)
 {

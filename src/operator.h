@@ -393,13 +393,6 @@ public:
 	}
 
 
-	/// CPPONLY provide interface to apply operator before during or after mating
-	virtual bool applyWithScratch(population & pop, population & scratch, int stage)
-	{
-		return apply(pop);
-	}
-
-
 	/** Apply an operator to population \e pop directly, without checking its
 	 *  applicability.
 	 */
@@ -648,13 +641,6 @@ public:
 	}
 
 
-	///  CPPONLY providing interface to apply operator before during or after mating
-	virtual bool applyWithScratch(population & pop, population & scratch, int stage)
-	{
-		return true;
-	}
-
-
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 	                               individual * dad = NULL, individual * mom = NULL)
@@ -743,9 +729,6 @@ public:
 		return new ifElse(*this);
 	}
 
-
-	/// CPPONLY providing interface to apply operator before during or after mating
-	virtual bool applyWithScratch(population & pop, population & scratch, int stage);
 
 	/// CPPONLY apply during mating, given \c pop, \c offspring, \c dad and \c mom
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
