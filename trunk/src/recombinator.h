@@ -230,6 +230,56 @@ public:
 };
 
 
+/** This geno transmitter transmits some customized chromosomes as human
+	mitochondrial chromosomes. It randomly inherit the first homologous copy of several
+	customized chromosomes of the female parent.
+*/
+class mitochondrialGenoTransmitter : public baseOperator
+{
+public:
+	/** chroms: if not given, all customized chromosomes.
+	 */
+	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
+		: baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
+	{
+	}
+
+
+	baseOperator * clone() const
+	{
+		return new mitochondrialGenoTransmitter(*this);
+	}
+
+
+	virtual string __repr__()
+	{
+		return "<simuPOP::mitochondrialGenoTransmitter>" ;
+	}
+
+
+	/// CPPONLY
+	void initialize(const population & pop);
+
+	virtual bool applyDuringMating(population & pop,
+		RawIndIterator offspring,
+		individual * dad = NULL,
+		individual * mom = NULL);
+
+private:
+	// this is user input.
+	vectoru m_chroms;
+		
+	// this is the temporary holder for different populaitons
+	vectoru m_mitoChroms;
+
+	//
+	UINT m_numLoci;
+};
+
+
 /**
    In simuPOP, only one recombinator is provided. Recombination events between loci
    a/b and b/c are independent, otherwise there will be some linkage between loci. Users

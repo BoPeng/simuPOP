@@ -265,6 +265,67 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 }
 
 
+void mitochondrialGenoTransmitter::initialize(const population & pop)
+{
+	if (m_chroms.empty()) {
+		for (UINT ch = 0; ch < pop.numChrom(); ++ch)
+			if (pop.chromType(ch) == Customized)
+				m_mitoChroms.push_back(ch);
+	} else {
+#ifndef OPTIMIZED	
+		for (UINT ch = 0; ch < m_chroms.size(); ++ch) {
+			DBG_ASSERT(pop.chromType(ch) == Customized, ValueError,
+				"Chromosome " + toStr(ch) + " is not of Customized type.");
+		}
+#endif
+		m_mitoChroms = m_chroms;
+	}
+	DBG_DO(DBG_RECOMBINATOR, cout << "Mitochondrial chromosomes " << m_mitoChroms << endl);
+	if (m_mitoChroms.empty())
+		return;
+
+	m_numLoci = pop.numLoci(m_mitoChroms[0]);
+
+#ifndef OPTIMIZED
+	for (UINT ch = 1; ch < m_mitoChroms.size(); ++ch) {
+		DBG_FAILIF(pop.numLoci(m_mitoChroms[ch]) != m_numLoci, ValueError,
+			"All mitochondrial chromosomes should have the same number of loci");
+	}
+#endif
+}
+
+
+bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
+                                                    RawIndIterator offspring, individual * dad, individual * mom)
+{
+	DBG_FAILIF(mom == NULL, ValueError,
+		"mitochondrialGenoTransmitter requires valid female parent.");
+
+	// call initialize if needed.
+	baseOperator::applyDuringMating(pop, offspring, dad, mom);
+
+	if (m_numLoci == 0)
+		return true;
+
+	//
+	vectoru::iterator it = m_mitoChroms.begin();
+	vectoru::iterator it_end = m_mitoChroms.end();
+	for (; it != it_end; ++it) {
+		UINT src = rng().randInt(m_mitoChroms.size());
+		GenoIterator par = mom->genoBegin(0, m_mitoChroms[src]);
+		GenoIterator off = offspring->genoBegin(0, *it);
+#ifdef BINARYALLELE
+		copyGenotype(par, off, m_numLoci);
+#else
+		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
+		copy(par, par_end, off);
+#endif
+	}
+
+	return true;
+}
+
+
 int recombinator::markersConverted(size_t index, const individual & ind)
 {
 	// IMPORTANT: if conversion length reaches end of chromosome
