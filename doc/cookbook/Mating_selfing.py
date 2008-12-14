@@ -26,8 +26,8 @@ def simuSelfing(perc, N, n_rep, gen):
 
     simu = simulator(pop,
         heteroMating([
-            selfMating(subPop=0, virtualSubPop=0),
-            randomMating(subPop=0, virtualSubPop=1)
+            selfMating(subPop=(0, 0)),
+            randomMating(subPop=(0, 1))
         ]),
         rep=n_rep
     )
@@ -41,7 +41,7 @@ def simuSelfing(perc, N, n_rep, gen):
             stat(LD=[0,1]),
             pyExec('ld_hist.append(LD[0][1])')
         ],
-        end=gen - 1
+        gen = gen
     )
     print simu.dvars(0).ld_hist
     return 0
