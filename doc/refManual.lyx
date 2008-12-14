@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -579,6 +579,61 @@ baseOperatorRef
 \end_layout
 
 \begin_layout Section
+During-mating genotype transmitters
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cloneGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mendelianGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+selfingGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+haplodiploidGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mitochondrialGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+recombinatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Initialization
 \begin_inset Index
 status collapsed
@@ -738,81 +793,6 @@ pyMutatorRef
 
 \backslash
 pointMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Recombination 
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-recombination
-\end_layout
-
-\end_inset
-
- and gene conversion 
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-conversion
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-cloneGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mendelianGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-selfingGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-haplodiploidGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mitochondrialGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-recombinatorRef
 \end_layout
 
 \end_inset
