@@ -662,8 +662,8 @@ bool recombinator::applyDuringMating(population & pop,
                                      individual * dad,
                                      individual * mom)
 {
-	DBG_FAILIF(dad == NULL || mom == NULL,
-		ValueError, "One of the parents is invalid.");
+	DBG_FAILIF(dad == NULL && mom == NULL,
+		ValueError, "None of the parents is invalid.");
 
 	// call initialize if the signature of pop has been changed.
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
@@ -671,8 +671,8 @@ bool recombinator::applyDuringMating(population & pop,
 	DBG_FAILIF(m_recBeforeLoci.empty(), ValueError,
 		"Uninitialized recombinator");
 
-	transmitGenotype(*mom, *offspring, 0);
-	transmitGenotype(*dad, *offspring, 1);
+	transmitGenotype(*(mom ? mom : dad), *offspring, 0);
+	transmitGenotype(*(dad ? dad : mom), *offspring, 1);
 	return true;
 }
 

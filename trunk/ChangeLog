@@ -23,7 +23,7 @@ version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Add parameter initSex to initByFreq and initByValue.
   - NEW: Initializers now support virtual subpopulations.
   - CHG: Recombiantor no longer supports recombination by sex, 
-		haplodiploid chromosomes and selfing.
+		and haplodiploid chromosomes.
   - CHG: Recombinator now supports different types of chromosomes.
   - NEW: Add ops parameter to mating schemes.
 
