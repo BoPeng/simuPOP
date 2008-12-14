@@ -351,7 +351,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(200, loci=[3,5])
         simu = simulator(pop, pyMating(
             randomParentChooser(),
-            offspringGenerator(transmitter=selfingGenoTransmitter())))
+            selfingOffspringGenerator()))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -359,11 +359,11 @@ class TestMatingSchemes(unittest.TestCase):
         #
         self.assertRaises(exceptions.ValueError, pyMating,
             randomParentsChooser(),
-            offspringGenerator(selfingGenoTransmitter(), 1))
+            selfingOffspringGenerator())
         #
         simu = simulator(pop, pyMating(
             randomParentChooser(),
-            offspringGenerator(cloneGenoTransmitter(), numOffspring=3)))
+            cloneOffspringGenerator(numOffspring=3)))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -371,7 +371,7 @@ class TestMatingSchemes(unittest.TestCase):
         #
         simu = simulator(pop, pyMating(
             randomParentsChooser(),
-            offspringGenerator(mendelianGenoTransmitter(), numOffspring=3)))
+            mendelianOffspringGenerator(numOffspring=3)))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -383,7 +383,7 @@ class TestMatingSchemes(unittest.TestCase):
                     yield ind
         simu = simulator(pop, pyMating(
             pyParentsChooser(pc),
-            offspringGenerator(cloneGenoTransmitter(), numOffspring=3)))
+            cloneOffspringGenerator(numOffspring=3)))
         simu.evolve(
             preOps=[initByFreq([0.3, 0.7])],
             ops=[],
@@ -524,10 +524,10 @@ class TestMatingSchemes(unittest.TestCase):
         InitByFreq(pop, [.3, .7])
         self.assertRaises(exceptions.ValueError, pyMating,
             sequentialParentChooser(),
-            offspringGenerator(mendelianGenoTransmitter(), 2))
+            mendelianOffspringGenerator())
         simu = simulator(pop, pyMating(
             sequentialParentsChooser(),
-            offspringGenerator(mendelianGenoTransmitter(), 2)))
+            mendelianOffspringGenerator()))
         simu.evolve(ops=[], gen=1)
 
     def testPedigreeMating(self):

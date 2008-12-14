@@ -118,7 +118,7 @@ public:
 	    \param transmitter is an during mating operator, that will be used if
 	        no during mating operator is used to produce offspring.
 	 */
-	offspringGenerator(const baseOperator & transmitter, UINT numParents=0,
+	offspringGenerator(const vectorop & ops, UINT numParents=0,
         double numOffspring=1., PyObject * numOffspringFunc=NULL,
 		UINT numOffspringParam=1, UINT mode=MATE_NumOffspring,
 		double sexParam=0.5, UINT sexMode=MATE_RandomSex);
@@ -206,7 +206,7 @@ public:
 	int m_numParents;
 
 	/// default transmitter
-	baseOperator * m_transmitter;
+	vectorop m_transmitters;
 
 protected:
 	/// see if who will generate offspring genotype
