@@ -727,19 +727,50 @@ public:
 	/**
 	   \param infoFields information fields that store index of matable
 	        individuals.
-	   \param replacement if replacement is false, a parent can not
-	        be chosen more than once.
-	   \param replenish if all parent has been chosen, choose from
-	        the whole parental population again.
 	 */
 	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
+        PyObject * func = NULL,
+        PyObject * param = NULL,
 		bool replacement = true) :
 		randomParentChooser(replacement),
-		m_infoFields(infoFields), m_degenerate(false)
+		m_infoFields(infoFields), m_func(NULL), m_param(NULL),
+        m_infoIdx(0), m_degenerate(false)
 	{
 		m_numParents = 2;
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
 			"At least one information field should be provided for this infoParentsChooser");
+        if (func && func != Py_None) {
+            if (!PyCallable_Check(func))
+                throw ValueError("Passed variable is not a callable Python function.");
+            m_func = func;
+            Py_XINCREF(func);
+        }
+        if (param && param != Py_None) {
+            m_param = param;
+            Py_XINCREF(param);
+        }
+	}
+
+    
+    ~infoParentsChooser()
+    {
+        if (m_func)
+            Py_DECREF(m_func);
+        if (m_param)
+            Py_DECREF(m_param);
+    }
+        
+    
+    infoParentsChooser(const infoParentsChooser & rhs) :
+		randomParentChooser(rhs),
+		m_infoFields(rhs.m_infoFields),
+		m_func(rhs.m_func),
+		m_param(rhs.m_param)
+	{
+		if (m_func)
+			Py_INCREF(m_func);
+		if (m_param)
+			Py_INCREF(m_param);
 	}
 
 
@@ -757,6 +788,10 @@ public:
 
 private:
 	vectorstr m_infoFields;
+
+    PyObject * m_func;
+    PyObject * m_param;
+
 	vectori m_infoIdx;
 	// if there is no valid individual, this mating schemes
 	// works like a double parentChooser.

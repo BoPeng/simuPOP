@@ -27,7 +27,7 @@ Purpose:
 
   Some minor points:
   1. A population should keep at least two parental generations to locate first cousin,
-    and more generations to locate more distance relatives. (c.f. parameter ancestralDepth
+    and more generations to locate more distance relatives. (c.f. parameter ancGen
     of the population() function).
   2. If only one offspring is produced at each mating event, it would be extremely
     difficult to find full siblings, and cousins in a population. Use numOffspring = 2
@@ -54,16 +54,22 @@ from simuPOP import *
 def findCousin(pop, fields):
     'Find cousins of each individual and put their indexes to cousinFields'
     # locate offsprings
-    if pop.ancestralDepth() < 1:
+    if pop.ancestralGens() < 1:
         return
     (parFields, sibFields, offFields, cousinFields) = fields
-    pop.locateRelatives(REL_Offspring, offFields);
-    pop.locateRelatives(REL_FullSibling, sibFields);
+    # create a pedigree object from the population
+    ped = pedigree(pop, infoFields=parFields + cousinFields)
+    # add intermediate information fields
+    ped.addInfoFields(sibFields + offFields)
+    ped.locateRelatives(REL_Offspring, offFields);
+    ped.locateRelatives(REL_FullSibling, sibFields);
     # Find parents -> siblings -> offspring
     # Another parameter pathSex can control the sex of each step.
-    pop.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
+    ped.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
         pathFields = [parFields, sibFields, offFields],
         resultFields = cousinFields)
+    # get indexes of cousins from the pedigree object
+    pop.updateInfoFieldsFrom(cousinFields, ped)
 
 def simuConsanguineousMating(w, size, gen, numFields=4):
     '''
@@ -76,8 +82,7 @@ def simuConsanguineousMating(w, size, gen, numFields=4):
     offFields = ['offspring%d' % x for x in range(numFields)]
     cousinFields = ['cousin%d' % x for x in range(numFields)]
 
-    pop = population(size, loci=[1], ancestralDepth=2,
-        infoFields = parFields + sibFields + offFields + cousinFields)
+    pop = population(size, loci=[1], ancGen=2, infoFields = parFields + cousinFields)
 
     simu = simulator(pop, heteroMating([
         randomMating(numOffspring=2, weight = w),

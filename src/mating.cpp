@@ -732,6 +732,25 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 
 void infoParentsChooser::initialize(population & pop, SubPopID sp)
 {
+	if (m_func) {
+		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
+		// if pop is valid?
+		if (popObj == NULL)
+			throw SystemError("Could not pass population to the provided function. \n"
+				              "Compiled with the wrong version of SWIG?");
+
+		// parammeter list, ref count increased
+		bool resBool;
+		// parenthesis is needed since PyCallFuncX are macros.
+		if (m_param == NULL) {
+			PyCallFunc(m_func, "(O)", popObj, resBool, PyObj_As_Bool);
+		} else {
+			PyCallFunc2(m_func, "(OO)", popObj, m_param, resBool, PyObj_As_Bool);
+		}
+
+		Py_DECREF(popObj);
+	}
+    
 	// indexes
 	m_infoIdx.resize(m_infoFields.size());
 	for (size_t i = 0; i < m_infoFields.size(); ++i)

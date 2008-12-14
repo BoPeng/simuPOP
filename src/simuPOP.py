@@ -527,16 +527,13 @@ def selfMating(replacement=True, numOffspring = 1., numOffspringFunc = None,
         weight = weight)
 
 
-def consanguineousMatingMating(relativeFields = [], func = None, param = None,
-        replacement = False, numOffspringParam = 1, mode = MATE_NumOffspring,
+def consanguineousMating(relativeFields = [], func = None, param = None,
+        replacement = False, numOffspring = 1., numOffspringFunc = None,
+        numOffspringParam = 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
     '''
-       In this mating scheme, a parent is choosen randomly and mate with a
-   relative that has been located and written to a number of information
-   fields.
-
    This mating scheme randomly choose a parent and then choose his/her spouse from indexes
    stored in \c infoFields.
 
@@ -556,9 +553,8 @@ def consanguineousMatingMating(relativeFields = [], func = None, param = None,
 	   Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
 	   other parameters.
     '''
-    # FIXME: lack a mechanism to call preparePopulation(pop)
     return pyMating(
-        chooser = infoParentsChooser(relativeFields, replacement),
+        chooser = infoParentsChooser(relativeFields, func, param, replacement),
         generator = mendelianOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         newSubPopSizeExpr = newSubPopSizeExpr,
