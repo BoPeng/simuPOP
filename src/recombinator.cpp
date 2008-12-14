@@ -79,6 +79,8 @@ bool cloneGenoTransmitter::applyDuringMating(population & pop,
 		copy(parent->genoBegin(), parent->genoEnd(), offspring->genoBegin());
 #endif
 	}
+	// for clone transmitter, sex is also transmitted
+	offspring->setSex(parent->sex());
 	return true;
 }
 
