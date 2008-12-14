@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -772,6 +772,41 @@ conversion
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cloneGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mendelianGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+selfingGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+haplodiploidGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mitochondrialGenoTransmitterRef
+\end_layout
 
 \begin_layout Plain Layout
 

@@ -255,6 +255,25 @@ class TestRecombinator(unittest.TestCase):
                 self.assertNotEqual(g1 in p1, True)
                 self.assertNotEqual(g2 in p2, True)
     
+    def testMitochondrialGenoTransmitter(self):
+        'Testing operator mitochondrialGenoTransmitter()'
+        #
+        pop = self.getPop(size=100, loci=[10, 20] + [20] + [30]*4,
+            chromTypes=[ChromosomeX, ChromosomeY] + [Customized]*5)
+        self.assertRaises(exceptions.ValueError,
+            ApplyDuringMatingOperator, mitochondrialGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        #
+        pop = self.getPop(size=100, loci=[10, 20] + [30]*5,
+            chromTypes=[ChromosomeX, ChromosomeY] + [Customized]*5)
+        ApplyDuringMatingOperator(mitochondrialGenoTransmitter(),
+            pop, dad = 0, mom = 1, off = 2)
+        # 
+        src = [pop.individual(1).genotype(0, ch) for ch in range(2, 7)]
+        for ch in range(2, 7):
+            self.assertEqual(pop.individual(2).genotype(0, ch) in src,
+                    True)
+
 
     def testRecombinatorAsGenoTransmitter(self):
         'Testing operator recombinator as a genotype transmitter.'
