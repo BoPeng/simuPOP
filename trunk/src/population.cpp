@@ -1632,6 +1632,23 @@ void population::setInfoFields(const vectorstr & fields, double init)
 }
 
 
+void population::updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
+        const vectorstr & fromFields, int ancGen)
+{
+	int depth = ancestralGens();
+	if (ancGen > 0 && ancGen < depth)
+		depth = ancGen;
+	for (; depth >= 0; --depth) {
+        for (UINT i = 0; i < fields.size(); ++i) {
+            UINT fromIdx = fromFields.empty() ? pop.infoIdx(fields[i]) : pop.infoIdx(fromFields[i]);
+            UINT toIdx = pop.infoIdx(fields[i]);
+            // indInfo is supposed to be const, but it is troublesome to change that.
+            setIndInfo(const_cast<population &>(pop).indInfo(fromIdx), toIdx);
+		}
+	}
+}
+
+
 void population::setIndInfo(const vectorinfo & values, UINT idx)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,

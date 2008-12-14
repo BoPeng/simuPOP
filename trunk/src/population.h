@@ -1274,6 +1274,16 @@ public:
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);
 
+    /** Update information fields \e fields from \e fromFields of another
+     *  population (or pedigree) \e pop. Two populations should have the same
+     *  number of individuals. If \e fromFields is not specified, it is assumed
+     *  to be the same as \e fields. If \e ancGen is not \c -1, only the most
+     *  recent \e ancGen generations are updated.
+     *  <group>8-info</group>
+     */
+    void updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
+        const vectorstr & fromFields = vectorstr(), int ancGen = -1);
+
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
 	 *  ancestral generations), and a positive number (store \e depth ancestral
