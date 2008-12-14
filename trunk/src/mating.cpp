@@ -25,13 +25,13 @@
 
 namespace simuPOP {
 
-offspringGenerator::offspringGenerator(const baseOperator & transmitter,
+offspringGenerator::offspringGenerator(const vectorop & ops,
 	UINT numParents, double numOffspring, PyObject * numOffspringFunc,
 	UINT numOffspringParam, UINT mode, double sexParam, UINT sexMode) :
 	m_numOffspring(numOffspring), m_numOffspringFunc(NULL),
 	m_numOffspringParam(numOffspringParam), m_mode(mode),
 	m_sexParam(sexParam), m_sexMode(sexMode),
-	m_numParents(numParents), m_transmitter(NULL),
+	m_numParents(numParents), m_transmitters(0),
 	m_formOffGenotype(true), m_initialized(false)
 {
 	DBG_FAILIF(mode == MATE_PyNumOffspring && numOffspringFunc == NULL, ValueError,
@@ -59,7 +59,8 @@ offspringGenerator::offspringGenerator(const baseOperator & transmitter,
 		ValueError, "Probability of male has to be between 0 and 1");
 	// the genotype transmitter that will be used when no during mating
 	// operator is used to transmit genotype from parents to offspring.
-	m_transmitter = transmitter.clone();
+	for (size_t i = 0; i < ops.size(); ++i)
+		m_transmitters.push_back(ops[i]->clone());
 }
 
 
@@ -71,15 +72,15 @@ offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	m_sexParam(rhs.m_sexParam),
 	m_sexMode(rhs.m_sexMode),
 	m_numParents(rhs.m_numParents),
-	m_transmitter(rhs.m_transmitter),
+	m_transmitters(0),
 	m_formOffGenotype(rhs.m_formOffGenotype),
 	m_initialized(rhs.m_initialized)
 {
 	if (m_numOffspringFunc != NULL)
 		Py_INCREF(m_numOffspringFunc);
 
-	if (rhs.m_transmitter != NULL)
-		m_transmitter = rhs.m_transmitter->clone();
+	for (size_t i = 0; i < rhs.m_transmitters.size(); ++i)
+		m_transmitters.push_back(rhs.m_transmitters[i]->clone());
 }
 
 
@@ -161,15 +162,31 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
 		it->setSex(getSex(count));
-		// use the default offspring genotype transmitter.
-		if (m_formOffGenotype)
-			m_transmitter->applyDuringMating(pop, it, dad, mom);
-
+		// 
 		accept = true;
+		vector<baseOperator *>::iterator iop = m_transmitters.begin();
+		vector<baseOperator *>::iterator iopEnd = m_transmitters.end();
+		for (; iop != iopEnd; ++iop) {
+			try {
+				// During mating operator might reject this offspring.
+				if (!m_formOffGenotype && (*iop)->formOffGenotype())
+					continue;
+
+				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
+					accept = false;
+					break;
+				}
+			} catch (...) {
+				cout << "One of the transmitters " << (*iop)->__repr__()
+				     << " throws an exception." << endl << endl;
+				throw;
+			}
+		}
+
 		// apply during mating operators
-		vector<baseOperator *>::iterator iop = ops.begin();
-		vector<baseOperator *>::iterator iopEnd = ops.end();
-		for (; iop != iopEnd;  ++iop) {
+		iop = ops.begin();
+		iopEnd = ops.end();
+		for (; iop != iopEnd; ++iop) {
 			try {
 				// During mating operator might reject this offspring.
 				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {
