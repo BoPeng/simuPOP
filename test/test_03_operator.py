@@ -17,9 +17,9 @@ import unittest, os, sys
 # record active generations in pop.dvars().hist
 def genRecorder(pop):
     try:
-        pop.dvars().hist.append(pop.gen())
+        pop.dvars().hist.append(pop.dvars().gen)
     except:
-        pop.dvars().hist = [pop.gen()]
+        pop.dvars().hist = [pop.dvars().gen]
     return True
 
 def opRecorder(*args, **kwargs):
@@ -49,7 +49,7 @@ class TestOperator(unittest.TestCase):
         'Testing active generation specifications'
         def getActiveGens(endGen=20, *args, **kwargs):
             d = opRecorder(*args, **kwargs)
-            simu = simulator(population(), noMating())
+            simu = simulator(population(), cloneMating())
             simu.evolve(ops=[d], gen=endGen)
             return simu.population(0).dvars().hist
         self.assertEqual(getActiveGens(begin=2, end=10),
@@ -72,9 +72,9 @@ class TestOperator(unittest.TestCase):
 
     def testReplicate(self):
         'Testing replicate related functions'
-        simu = simulator(population(), noMating(), rep=3)
+        simu = simulator(population(), cloneMating(), rep=3)
         simu.evolve(
-            ops = [opRecorder(rep=REP_LAST)],
+            ops = [opRecorder(rep=-1)],
             gen=10
         )
         try:
@@ -96,7 +96,7 @@ class TestOperator(unittest.TestCase):
     def testOutput(self):
         'Testing output specifications'
         simu = simulator( population(),
-                noMating(), rep=5)
+                cloneMating(), rep=5)
         simu.evolve([
             pyOutput("a", output=">a.txt"),
             ], gen=10)
@@ -127,7 +127,7 @@ class TestOperator(unittest.TestCase):
         # rep = ...
         simu.setGen(0)
         simu.evolve([
-            pyOutput("a", output=">>a.txt", rep=REP_LAST),
+            pyOutput("a", output=">>a.txt", rep=-1),
             ], gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*10)
@@ -136,7 +136,7 @@ class TestOperator(unittest.TestCase):
     def testOutputExpr(self):
         'Testing the usage of output expression'
         simu = simulator( population(),
-            noMating(), rep=5)
+            cloneMating(), rep=5)
         # each replicate
         simu.evolve([
             pyOutput("a", outputExpr="'rep%d.txt'%rep"),
