@@ -9949,9 +9949,9 @@ Arguments:
                     $ D = P_{AB}-P_{A}P_{B} $
                     $ D' = D/D_{max} $
                     $ D_{max} = \\min\\left(P_{A}\\left(1-P_{B}\\right),\\l
-                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\\\ 
-                    \\min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P
-                    _{B}\\right)\\right) \\textrm{if }D<0 $
+                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\\\ \\
+                    min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P_
+                    {B}\\right)\\right) \\textrm{if }D<0 $
                     $ r^{2} = \\frac{D^{2}}{P_{A}\\left(1-P_{A}\\right)P_
                     {B}\\left(1-P_{B}\\right)} $ If only one item is
                     specified, the outer [] can be ignored. I.e.,
@@ -11386,6 +11386,370 @@ Usage:
     x.a()
 
 "; 
+
+%ignore simuPOP::countAlleles(population &pop, int subpop, const vectori &loci, const vectori &alleles, vectorlu &numAllele);
+
+%ignore simuPOP::getExpectedAlleles(population &pop, vectorf &expFreq, const vectori &loci, const vectori &alleles, vectoru &expAlleles);
+
+%feature("docstring") simuPOP::FreqTrajectoryStoch "
+
+Usage:
+
+    FreqTrajectoryStoch(curGen=0, freq=0, N=0, NtFunc=None,
+      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
+      ploidy=2, restartIfFail=False, maxAttempts=1000,
+      allowFixation=False)
+
+"; 
+
+%ignore simuPOP::MarginalFitness(unsigned nLoci, const vectorf &fitness, const vectorf &freq);
+
+%feature("docstring") simuPOP::FreqTrajectoryMultiStoch "
+
+Usage:
+
+    FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, NtFunc=None,
+      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
+      ploidy=2, restartIfFail=False, maxAttempts=1000)
+
+"; 
+
+%feature("docstring") simuPOP::ForwardFreqTrajectory "
+
+Usage:
+
+    ForwardFreqTrajectory(curGen=0, endGen=0, curFreq=[], freq=[],
+      N=[], NtFunc=None, fitness=[], fitnessFunc=None, migrRate=0,
+      ploidy=2, maxAttempts=1000)
+
+"; 
+
+%feature("docstring") simuPOP::FreqTrajectorySelSim "
+
+Usage:
+
+    FreqTrajectorySelSim(sel, Ne, freq, dom_h, selection)
+
+"; 
+
+%feature("docstring") simuPOP::FreqTrajectoryForward "
+
+Usage:
+
+    FreqTrajectoryForward(lowbound, highbound, disAge, grate, N0,
+      seleCo)
+
+"; 
+
+%feature("docstring") simuPOP::ApplyDuringMatingOperator "Obsolete or undocumented function."
+
+%feature("docstring") simuPOP::LoadPopulation "
+
+Usage:
+
+    LoadPopulation(file)
+
+Details:
+
+    load a population from a file.
+
+"; 
+
+%feature("docstring") simuPOP::LoadSimulator "
+
+Description:
+
+    load a simulator from a file with the specified mating scheme. The
+    file format is by default determined by file extension
+    (format=\"auto\"). Otherwise, format can be one of txt, bin, or xml.
+
+Usage:
+
+    LoadSimulator(file, matingScheme)
+
+"; 
+
+%ignore simuPOP::haploKey(const vectori &seq);
+
+%feature("docstring") simuPOP::TurnOnDebug "
+
+Description:
+
+    set debug codes. Default to turn on all debug codes. Only
+    available in non-optimized modules.
+
+Usage:
+
+    TurnOnDebug(code=DBG_ALL)
+
+"; 
+
+%feature("docstring") simuPOP::TurnOnDebug "
+
+Usage:
+
+    TurnOnDebug(code)
+
+"; 
+
+%feature("docstring") simuPOP::TurnOffDebug "
+
+Description:
+
+    turn off debug information. Default to turn off all debug codes.
+    Only available in non-optimized modules.
+
+Usage:
+
+    TurnOffDebug(code=DBG_ALL)
+
+"; 
+
+%ignore simuPOP::debug(DBG_CODE code);
+
+%feature("docstring") simuPOP::ListDebugCode "
+
+Description:
+
+    list all debug codes
+
+Usage:
+
+    ListDebugCode()
+
+"; 
+
+%ignore simuPOP::dbgString(DBG_CODE code);
+
+%ignore simuPOP::simuPOP_kbhit();
+
+%ignore simuPOP::simuPOP_getch();
+
+%ignore simuPOP::PyObj_As_Bool(PyObject *obj, bool &val);
+
+%ignore simuPOP::PyObj_As_Int(PyObject *obj, int &val);
+
+%ignore simuPOP::PyObj_As_Double(PyObject *obj, double &val);
+
+%ignore simuPOP::PyObj_As_String(PyObject *obj, string &val);
+
+%ignore simuPOP::PyObj_As_Array(PyObject *obj, vectorf &val);
+
+%ignore simuPOP::PyObj_As_IntArray(PyObject *obj, vectori &val);
+
+%ignore simuPOP::PyObj_As_Matrix(PyObject *obj, matrix &val);
+
+%ignore simuPOP::PyObj_As_StrDict(PyObject *obj, strDict &val);
+
+%ignore simuPOP::PyObj_As_IntDict(PyObject *obj, intDict &val);
+
+%ignore simuPOP::PyObj_Is_IntNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_DoubleNumArray(PyObject *obj);
+
+%ignore simuPOP::PyObj_Is_AlleleNumArray(PyObject *obj);
+
+%ignore simuPOP::Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
+
+%ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
+
+%ignore simuPOP::NumArray_Size(PyObject *obj);
+
+%ignore simuPOP::NumArray_Data(PyObject *obj);
+
+%ignore simuPOP::mainVars();
+
+%ignore simuPOP::moduleVars();
+
+%ignore simuPOP::pyPopObj(void *p);
+
+%ignore simuPOP::pyIndObj(void *p);
+
+%ignore simuPOP::ostreamManager();
+
+%feature("docstring") simuPOP::rng "
+
+Description:
+
+    return the currently used random number generator
+
+Usage:
+
+    rng()
+
+"; 
+
+%feature("docstring") simuPOP::SetRNG "
+
+Description:
+
+    set random number generator. If seed=0 (default), a random seed
+    will be given. If rng=\"\", seed will be set to the current random
+    number generator.
+
+Usage:
+
+    SetRNG(rng=\"\", seed=0)
+
+"; 
+
+%feature("docstring") simuPOP::AvailableRNGs "
+
+Description:
+
+    list the names of all available random number generators
+
+Usage:
+
+    AvailableRNGs()
+
+"; 
+
+%feature("docstring") simuPOP::simuRev "
+
+Description:
+
+    return the revision number of this simuPOP module. Can be used to
+    test if a feature is available.
+
+Usage:
+
+    simuRev()
+
+"; 
+
+%feature("docstring") simuPOP::simuVer "
+
+Description:
+
+    return the version of this simuPOP module
+
+Usage:
+
+    simuVer()
+
+"; 
+
+%feature("docstring") simuPOP::ModuleCompiler "
+
+Description:
+
+    return the compiler used to compile this simuPOP module
+
+Usage:
+
+    ModuleCompiler()
+
+"; 
+
+%feature("docstring") simuPOP::ModuleDate "
+
+Description:
+
+    return the date when this simuPOP module is compiled
+
+Usage:
+
+    ModuleDate()
+
+"; 
+
+%feature("docstring") simuPOP::ModulePyVersion "
+
+Description:
+
+    return the Python version this simuPOP module is compiled for
+
+Usage:
+
+    ModulePyVersion()
+
+"; 
+
+%feature("docstring") simuPOP::ModulePlatForm "
+
+Description:
+
+    return the platform on which this simuPOP module is compiled
+
+Usage:
+
+    ModulePlatForm()
+
+"; 
+
+%ignore simuPOP::initialize();
+
+%feature("docstring") simuPOP::Optimized "
+
+Description:
+
+    return True if this simuPOP module is optimized
+
+Usage:
+
+    Optimized()
+
+"; 
+
+%feature("docstring") simuPOP::Limits "
+
+Description:
+
+    print out system limits
+
+Usage:
+
+    Limits()
+
+"; 
+
+%feature("docstring") simuPOP::AlleleType "
+
+Description:
+
+    return the allele type of the current module. Can be binary,
+    short, or long.
+
+Usage:
+
+    AlleleType()
+
+"; 
+
+%feature("docstring") simuPOP::MaxAllele "
+
+Usage:
+
+    MaxAllele()
+
+Details:
+
+    return the maximum allowed allele state of the current simuPOP
+    module, which is 1 for binary modules, 255 for short modules and
+    65535 for long modules.
+
+"; 
+
+%ignore simuPOP::cnull();
+
+%feature("docstring") simuPOP::setLogOutput "
+
+Description:
+
+    set the standard output (default to standard Python output)
+
+Usage:
+
+    setLogOutput(filename=\"\")
+
+"; 
+
+%ignore simuPOP::isGzipped(const string &filename);
+
+%ignore simuPOP::fileExtension(const string &filename);
+
+%ignore std::pow3(unsigned n);
 
 %feature("docstring") simuPOP::population::dvars "
 
