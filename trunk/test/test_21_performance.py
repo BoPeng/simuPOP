@@ -21,7 +21,7 @@
 # .cpp files, and will be available ONLY when SIMUDEBUG is defined
 #
 import simuOpt
-simuOpt.setOptions(quiet=False)
+simuOpt.setOptions(quiet=False, optimized=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, time
@@ -103,7 +103,7 @@ class TestPerformance(unittest.TestCase):
             simu.evolve(
                 preOps = [initByFreq([1-p]+[p/10.]*10)],
                 ops = [],
-                end=100
+                gen = 101
             )
             c2 = time.clock()
             print "From ind (no sel): %f " % (c2 - c1)
@@ -116,18 +116,18 @@ class TestPerformance(unittest.TestCase):
             simu.evolve(
                 preOps = [initByFreq([1-p]+[p/10.]*10)],
                 ops = [sel],
-                end = 100
+                gen = 101
             )
             c2 = time.clock()
             print "From ind (sel): %f " % (c2 - c1)
             # with migr and sel
-            pop = population(N, loci=[1], infoFields=['a', 'fitness'])
+            pop = population([N/2]*2, loci=[1], infoFields=['a', 'fitness', 'migrate_to'])
             c1 = time.clock()
             simu = simulator(pop, randomMating())
             simu.evolve(
                 preOps = [initByFreq([1-p]+[p/10.]*10)],
                 ops = [migr, sel],
-                end = 100
+                gen = 101
             )
             c2 = time.clock()
             print "From ind (with migration): %f " % (c2 - c1)
@@ -234,9 +234,21 @@ class TestPerformance(unittest.TestCase):
             # 4,67, 8.48, 11.34
             # 97.75
             #
-            # laop
+            # After another massice mating scheme reconstruction...
+            # op:
+            # 0.30, 0.35, 0.52
+            # 4.16, 7.36, 8.53,
+            # 92.67, ...
             #
-            # baop
+            # laop:
+            # 0.31, 0.36, 0.52
+            # 4.45, 7.84, 8.86
+            # 96.66
+            #
+            # baop:
+            # 0.36, 0.42, 0.60
+            # 5.11, 8.11, 9.84, 
+            # 93.22
 
 
     def TestInfoIterator(self):
