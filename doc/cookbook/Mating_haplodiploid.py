@@ -35,7 +35,12 @@ class haplodiploidRecombinator(pyOperator):
             *args, **kwargs):
         '''
         Create an instance of a Python operator, which will call
-        self.transmitGenotype to create offspring.
+        ``self.transmitGenotype`` to create offspring. For performance
+        considerations, this example uses two existing operators, namely
+        ``recombinator`` and ``cloneGenoTransmitter`` to recombine and copy
+        genotype. It is of course possible to use functions such as
+        ``individual::setGenotype()`` directly if no existing operator
+        fits your need.
         '''
         # This operator is used to recombine maternal chromosomes
         self.recombinator = recombinator(intensity, rate, loci,
