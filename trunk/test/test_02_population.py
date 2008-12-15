@@ -354,7 +354,9 @@ class TestPopulation(unittest.TestCase):
 
     def testExtract(self):
         'Testing population::Extract(field=None, loci=None, infoFields=None, ancGen =-1)'
-        pop = population(size=[3, 5], loci=[2, 3],  infoFields=['x', 'y'])
+        # If subpoulation size is too small, the last subpopulation
+        # may not have any individual.
+        pop = population(size=[30, 50], loci=[2, 3],  infoFields=['x', 'y'])
         for ind in pop.individuals():
             n = random.randint(-1, 5)
             ind.setInfo(n, 'x')
