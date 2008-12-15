@@ -4,7 +4,9 @@ BUGS:
   - Multi-locus version of controlled random mating in test_05_matings.py 
 	does not seem to work.
 
-version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.
   - CHG: migrator now uses an information field "migrate_to".
   - CHG: Add function population::extract.
@@ -28,8 +30,10 @@ version 0.9.0 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add ops parameter to mating schemes.
   - NEW: add mitochondrialGenoTransmitter.
   - NEW: add population::updateInfoFieldsFrom.
+  - NEW: Add two examples in doc/cookbook, demonstrating the use of customized
+		genotype transmitters and mitochondrialGenoTransmitter.
 
-version 0.8.9 - tagged, but not publically released (rev 1948).
+version 0.8.9 - (Rev 1948) Nov 18, 2008 (tagged, but not publically released)
   - DOC: Adjust reference output for simuPOP classes.
   - CHG: Rename genoStruTrait::haplodiploid to isHaplodiploid.
   - CHG: Rename genoStruTrait::sexChrom to hasSexChrom.
