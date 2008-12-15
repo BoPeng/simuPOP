@@ -272,6 +272,7 @@ void haplodiploidGenoTransmitter::initialize(const population & pop)
 	DBG_FAILIF(pop.chromX() >= 0 || pop.chromY() >= 0, ValueError,
 		"Haplodiploid populations do not use sex chromosomes");
 	mendelianGenoTransmitter::initialize(pop);
+	m_copier.initialize(pop);
 }
 
 
@@ -288,7 +289,7 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	transmitGenotype(*mom, *offspring, 0);
 
 	if (offspring->sex() == Female)
-		transmitGenotype(*dad, *offspring, 1);
+		m_copier.transmitGenotype(*dad, 0, *offspring, 1);
 	return true;
 }
 

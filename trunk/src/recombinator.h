@@ -207,7 +207,8 @@ public:
 	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+			m_copier()
 	{
 	}
 
@@ -231,6 +232,8 @@ public:
 		individual * dad = NULL,
 		individual * mom = NULL);
 
+private:
+	cloneGenoTransmitter m_copier;
 };
 
 
