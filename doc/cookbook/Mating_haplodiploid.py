@@ -68,11 +68,26 @@ class haplodiploidRecombinator(pyOperator):
 
 
 def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
-        convProb=0, convMode=CONVERT_NumMarkers, convParam=1, 
-		numOffspring = 1., numOffspringFunc = None, numOffspringParam= 1, mode = MATE_NumOffspring,
+        convProb=0, convMode=CONVERT_NumMarkers, convParam=1, numOffspring = 1.,
+        numOffspringFunc = None, numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], newSubPopSize = [],
 		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
 		subPop = (), weight = 0):
+    '''
+    Return a mating scheme that uses random parents chooser and a customized
+    during mating operator. A large number of parameters are provided to support
+    number of offspring, sex-specification and population size changes. If none
+    of these is needed, and you do not need a fancy recombinator, this function
+    can be simplied to:
+
+    def haplodiploidRecMating(rate):
+        return pyMating(
+            chooser = randomParentsChooser(False),
+            generator = offspringGenerator(
+                ops = [haplodiploidRecombinator(rate=rate)]
+            )
+        )
+    '''
     return pyMating(
         chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(
