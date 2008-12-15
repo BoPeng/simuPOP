@@ -393,9 +393,6 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 
 void recombinator::initialize(const population & pop)
 {
-	DBG_FAILIF(pop.isHaplodiploid(), ValueError,
-		"This operator cannot handle haplodiploid population");
-
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
 	if (!pop.customizedChroms().empty()) {
