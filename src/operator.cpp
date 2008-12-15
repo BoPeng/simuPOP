@@ -274,11 +274,11 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
         throw ValueError("Passed variable is not a callable Python function.");
 
     // inc reference count
-    Py_XINCREF(func);
+    Py_XINCREF(m_func);
 
     if (param != NULL && param != Py_None) {
         m_param = param;
-        Py_XINCREF(param);
+        Py_XINCREF(m_param);
     }
 
     this->setFormOffGenotype(formOffGenotype);
