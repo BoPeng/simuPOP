@@ -129,7 +129,6 @@ public:
 		individual * dad = NULL,
 		individual * mom = NULL);
 
-	/// CPPONLY
 	void initialize(const population & pop);
 
 	/** Transmit genotype from parent to offspring, and fill the \e ploidy
@@ -225,7 +224,6 @@ public:
 	}
 
 
-	/// CPPONLY
 	void initialize(const population & pop);
 
 	virtual bool applyDuringMating(population & pop,
@@ -266,7 +264,6 @@ public:
 	}
 
 
-	/// CPPONLY
 	void initialize(const population & pop);
 
 	virtual bool applyDuringMating(population & pop,

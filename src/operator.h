@@ -470,7 +470,6 @@ public:
 	}
 
 
-	/// CPPONLY
 	virtual void initialize(const population & pop) {}
 
 	/// CPPONLY
@@ -1013,17 +1012,7 @@ public:
 	};
 
 	/// CPPONLY need a copy operator because of m_func
-	pyOperator(const pyOperator & rhs) :
-		baseOperator(rhs),
-		m_func(rhs.m_func),
-		m_param(rhs.m_param)
-	{
-		Py_INCREF(m_func);
-
-		if (m_param != NULL)
-			Py_INCREF(m_param);
-	}
-
+	pyOperator(const pyOperator & rhs);
 
 	/// HIDDEN
 	virtual baseOperator * clone() const
