@@ -720,7 +720,8 @@ class TestMatingSchemes(unittest.TestCase):
             preOps = [
                 initByValue([0]*8 + [1]*8)
                 ],
-            ops = [recombinator(rate=0.3)],
+            # recombinator cannot be used in haplodiploid population.
+            ops = [], # recombinator(rate=0.3)],
             gen = 1)
         # all individuals get the second copy from the first copy of male parents
         # which are all zero
