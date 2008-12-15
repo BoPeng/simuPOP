@@ -424,6 +424,9 @@ void recombinator::initialize(const population & pop)
 		UINT chBegin = pop.chromBegin(ch);
 		UINT chEnd = pop.chromEnd(ch);
 
+		if (chBegin == chEnd)
+			continue;
+
 		if (pop.chromType(ch) == Customized) {
 			// recombine before customized chromosome.
 			if (pop.numChrom() != ch + 1 && pop.chromType(ch + 1) != Customized) {
@@ -478,10 +481,12 @@ void recombinator::initialize(const population & pop)
 	DBG_DO(DBG_RECOMBINATOR, cout << "Specify after Loci. With m_rates "
 		                          << vecP << " before " << m_recBeforeLoci << endl);
 
+	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
+
 	DBG_ASSERT(vecP.size() == m_recBeforeLoci.size(), SystemError,
 		"Rate and before loci should have the same length.");
 
-	DBG_FAILIF(pop.chromType(pop.numChrom() - 1) != Customized && m_recBeforeLoci.back() != pop.totNumLoci(),
+	DBG_FAILIF(pop.chromType(pop.numChrom() - 1) != Customized && !m_recBeforeLoci.empty() && m_recBeforeLoci.back() != pop.totNumLoci(),
 		SystemError,
 		"The last beforeLoci elem should be total number of loci. (If the last chromsome is not customized");
 

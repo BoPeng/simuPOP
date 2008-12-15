@@ -284,6 +284,18 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
     this->setFormOffGenotype(formOffGenotype);
 }
 
+pyOperator::pyOperator(const pyOperator & rhs) :
+	baseOperator(rhs),
+	m_func(rhs.m_func),
+	m_param(rhs.m_param),
+	m_passOffspringOnly(rhs.m_passOffspringOnly)
+{
+	Py_INCREF(m_func);
+
+	if (m_param != NULL)
+		Py_INCREF(m_param);
+}
+
 
 bool pyOperator::apply(population & pop)
 {

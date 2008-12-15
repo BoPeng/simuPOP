@@ -326,7 +326,13 @@ Usage:
 
 %ignore simuPOP::baseOperator::noOutput();
 
-%ignore simuPOP::baseOperator::initialize(const population &pop);
+%feature("docstring") simuPOP::baseOperator::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %ignore simuPOP::baseOperator::applicableSubPops() const;
 
@@ -523,6 +529,20 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::cloneGenoTransmitter::transmitGenotype "
+
+Usage:
+
+    x.transmitGenotype(parent, parPloidy, offspring, ploidy)
+
+Details:
+
+    Transmit the parPloidy set of homologous chromosomes from parent
+    to the ploidy set of homologous chromosomes of offspring.
+    Customized chromosomes are not copied.
+
+"; 
+
 %feature("docstring") simuPOP::cloneGenoTransmitter::__repr__ "
 
 Description:
@@ -536,7 +556,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::cloneGenoTransmitter::initialize(const population &pop);
+%feature("docstring") simuPOP::cloneGenoTransmitter::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %ignore simuPOP::cloneGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -1512,7 +1538,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::haplodiploidGenoTransmitter::initialize(const population &pop);
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %ignore simuPOP::haplodiploidGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -2407,16 +2439,21 @@ Details:
 
 Usage:
 
-    infoParentsChooser(infoFields=[], replacement=True)
+    infoParentsChooser(infoFields=[], func=None, param=None,
+      replacement=True)
 
 Arguments:
 
     infoFields:     information fields that store index of matable
                     individuals.
-    replacement:    if replacement is false, a parent can not be
-                    chosen more than once.
-    replenish:      if all parent has been chosen, choose from the
-                    whole parental population again.
+
+"; 
+
+%feature("docstring") simuPOP::infoParentsChooser::~infoParentsChooser "
+
+Usage:
+
+    x.~infoParentsChooser()
 
 "; 
 
@@ -3692,7 +3729,13 @@ Usage:
 
 %ignore simuPOP::mendelianGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
-%ignore simuPOP::mendelianGenoTransmitter::initialize(const population &pop);
+%feature("docstring") simuPOP::mendelianGenoTransmitter::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %feature("docstring") simuPOP::mendelianGenoTransmitter::transmitGenotype "
 
@@ -3702,7 +3745,7 @@ Usage:
 
 Details:
 
-    Pass genotype from parent to offspring, and fill the ploidy
+    Transmit genotype from parent to offspring, and fill the ploidy
     homologous set of chromosomes. This function does not set
     genotypes of customized chromosomes and handles sex chromosomes
     properly, according to offspring sex and ploidy.
@@ -4000,7 +4043,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mitochondrialGenoTransmitter::initialize(const population &pop);
+%feature("docstring") simuPOP::mitochondrialGenoTransmitter::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %ignore simuPOP::mitochondrialGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -6466,6 +6515,22 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::population::updateInfoFieldsFrom "
+
+Usage:
+
+    x.updateInfoFieldsFrom(fields, pop, fromFields=[], ancGen=-1)
+
+Details:
+
+    Update information fields fields from fromFields of another
+    population (or pedigree) pop. Two populations should have the same
+    number of individuals. If fromFields is not specified, it is
+    assumed to be the same as fields. If ancGen is not -1, only the
+    most recent ancGen generations are updated.
+
+"; 
+
 %feature("docstring") simuPOP::population::setAncestralDepth "
 
 Usage:
@@ -8338,7 +8403,13 @@ Usage:
 
 "; 
 
-%ignore simuPOP::recombinator::initialize(const population &pop);
+%feature("docstring") simuPOP::recombinator::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
 
 %feature("docstring") simuPOP::recombinator::transmitGenotype "
 
