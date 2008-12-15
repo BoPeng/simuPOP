@@ -122,11 +122,11 @@ def build_src(ver):
         rev = rev.split(':')[0]
     #
     # replace simuPOP.release file
-    (old_ver, old_rev) = writeReleaseFile(ver, rev)
+    #(old_ver, old_rev) = writeReleaseFile(ver, rev)
     # build source
     run('python setup.py  sdist --formats=gztar,zip')
     # write old release file back
-    writeReleaseFile(old_ver, old_rev)
+    #writeReleaseFile(old_ver, old_rev)
     # coppy files
     shutil.copy('dist/simuPOP-%s.tar.gz' % ver, '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver))
     print 'Saving ', '%s/simuPOP-%s-src.tar.gz' % (download_directory, ver)
