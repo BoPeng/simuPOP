@@ -369,25 +369,16 @@ if population.extract.__doc__ is not None:
 population.extract = new_extract
 
 
-def new_dumper(self, chrom=[], subPop=[], indRange=[], *args, **kwargs):
+def new_dumper(self, genotype=True, structure=True, ancGen=0,
+        width=1, max=100, chrom=[], *args, **kwargs):
     # param chrom
     if type(chrom) == types.IntType:
         ch = [chrom]
     else:
         ch = chrom
-    # parameter subPop
-    if type(subPop) == types.IntType:
-        sp = [subPop]
-    else:
-        sp = subPop
-    # parameter indRange
-    ir = indRange
-    if len(indRange) > 0 and type(indRange[0]) in [types.TupleType, types.ListType]:
-        ir = []
-        for i in indRange:
-            ir.extend(i)
     cppModule.dumper_swiginit(self,
-        cppModule.new_dumper(chrom=ch, subPop=sp, indRange=ir, *args, **kwargs))
+        cppModule.new_dumper(genotype, structure, ancGen, width, max,
+            ch, *args, **kwargs))
 
 new_dumper.__doc__ = dumper.__init__.__doc__
 del dumper.__init__
@@ -451,7 +442,7 @@ def new_kamMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     else:
         loc = loci
     cppModule.kamMutator_swiginit(self,
-        cppModule.new_kamMutator(rate=r, loci=loc, *args, **kwargs))
+        cppModule.new_kamMutator(r, loc, *args, **kwargs))
 
 new_kamMutator.__doc__ = kamMutator.__init__.__doc__
 del kamMutator.__init__
@@ -471,7 +462,7 @@ def new_smmMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     else:
         loc = loci
     cppModule.smmMutator_swiginit(self,
-        cppModule.new_smmMutator(rate=r, loci=loc, *args, **kwargs))
+        cppModule.new_smmMutator(r, loc, *args, **kwargs))
 
 new_smmMutator.__doc__ = smmMutator.__init__.__doc__
 del smmMutator.__init__
@@ -491,7 +482,7 @@ def new_gsmMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     else:
         loc = loci
     cppModule.gsmMutator_swiginit(self,
-        cppModule.new_gsmMutator(rate=r, loci=loc, *args, **kwargs))
+        cppModule.new_gsmMutator(r, loc, *args, **kwargs))
 
 new_gsmMutator.__doc__ = gsmMutator.__init__.__doc__
 del gsmMutator.__init__
@@ -511,7 +502,7 @@ def new_pyMutator(self, rate=[], loci=[], atLoci=[], *args, **kwargs):
     else:
         loc = loci
     cppModule.pyMutator_swiginit(self,
-        cppModule.new_pyMutator(rate=r, loci=loc, *args, **kwargs))
+        cppModule.new_pyMutator(r, loc, *args, **kwargs))
 
 new_pyMutator.__doc__ = pyMutator.__init__.__doc__
 del pyMutator.__init__
@@ -526,14 +517,14 @@ def new_pointMutator(self, locus=None, loci=[], atLoci=[], *args, **kwargs):
     else:
         loc = loci
     cppModule.pointMutator_swiginit(self,
-        cppModule.new_pointMutator(loci=loc, *args, **kwargs))
+        cppModule.new_pointMutator(loc, *args, **kwargs))
 
 new_pointMutator.__doc__ = pointMutator.__init__.__doc__
 del pointMutator.__init__
 pointMutator.__init__ = new_pointMutator
 
 
-def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
+def new_migrator(self, rate, mode=MigrByProbability, fromSubPop=[], toSubPop=[], *args, **kwargs):
     # parameter rate
     r = rate
     if type(rate) in [types.IntType, types.LongType, types.FloatType]:
@@ -550,14 +541,15 @@ def new_migrator(self, rate, fromSubPop=[], toSubPop=[], *args, **kwargs):
     else:
         ts = toSubPop
     cppModule.migrator_swiginit(self,
-        cppModule.new_migrator(rate=r, fromSubPop=fromSubPop, toSubPop=ts, *args, **kwargs))
+        cppModule.new_migrator(r, mode, fromSubPop, ts, *args, **kwargs))
 
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__
 migrator.__init__ = new_migrator
 
 
-def new_pyMigrator(self, fromSubPop=[], toSubPop=[], *args, **kwargs):
+def new_pyMigrator(self, rateFunc=None, indFunc=None,
+    mode=MigrByProbability, fromSubPop=[], toSubPop=[], *args, **kwargs):
     # parameter fromSubPop
     if type(fromSubPop) not in [types.TupleType, types.ListType]:
         fs = [fromSubPop]
@@ -575,7 +567,7 @@ def new_pyMigrator(self, fromSubPop=[], toSubPop=[], *args, **kwargs):
     else:
         ts = toSubPop
     cppModule.pyMigrator_swiginit(self,
-        cppModule.new_pyMigrator(fromSubPop=fsp, toSubPop=ts, *args, **kwargs))
+        cppModule.new_pyMigrator(rateFunc, indFunc, mode, fsp, ts, *args, **kwargs))
 
 new_pyMigrator.__doc__ = pyMigrator.__init__.__doc__
 del pyMigrator.__init__
@@ -589,8 +581,7 @@ def new_recombinator(self, intensity=-1, rate=[], *args, **kwargs):
     else:
         r = rate
     cppModule.recombinator_swiginit(self,
-        cppModule.new_recombinator(intensity=intensity,
-        rate=r, *args, **kwargs))
+        cppModule.new_recombinator(intensity, r, *args, **kwargs))
 
 new_recombinator.__doc__ = recombinator.__init__.__doc__
 del recombinator.__init__
@@ -605,7 +596,7 @@ def new_initByFreq(self, alleleFreq=[], *args, **kwargs):
     else:
         af = alleleFreq
     cppModule.initByFreq_swiginit(self,
-        cppModule.new_initByFreq(alleleFreq=af, *args, **kwargs))
+        cppModule.new_initByFreq(af, *args, **kwargs))
 
 new_initByFreq.__doc__ = initByFreq.__init__.__doc__
 del initByFreq.__init__
@@ -619,7 +610,7 @@ def new_initByValue(self, value=[], *args, **kwargs):
     else:
         val = value
     cppModule.initByValue_swiginit(self,
-        cppModule.new_initByValue(value=val, *args, **kwargs))
+        cppModule.new_initByValue(val, *args, **kwargs))
 
 new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
@@ -707,13 +698,13 @@ def new_mapSelector(self, locus=-1, loci=[], subPop=-1, subPops=[], *args, **kwa
     else:
         sp = []
     cppModule.mapSelector_swiginit(self,
-        cppModule.new_mapSelector(loci=loc, subPops=sp, *args, **kwargs))
+        cppModule.new_mapSelector(loc, subPops=sp, *args, **kwargs))
 
 new_mapSelector.__doc__ = mapSelector.__init__.__doc__
 del mapSelector.__init__
 mapSelector.__init__ = new_mapSelector
 
-def new_maSelector(self, locus=-1, loci=[], wildtype=[0], subPop=-1, subPops=[], *args, **kwargs):
+def new_maSelector(self, locus=-1, loci=[], fitness=[], wildtype=[0], subPop=-1, subPops=[], *args, **kwargs):
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
         loc = [locus]
     elif type(loci) in [types.IntType, types.LongType]:
@@ -737,7 +728,7 @@ def new_maSelector(self, locus=-1, loci=[], wildtype=[0], subPop=-1, subPops=[],
     else:
         sp = []
     cppModule.maSelector_swiginit(self,
-        cppModule.new_maSelector(loci=loc, wildtype=wt, subPops=sp, *args, **kwargs))
+        cppModule.new_maSelector(loc, fitness, wt, subPops=sp, *args, **kwargs))
 
 new_maSelector.__doc__ = maSelector.__init__.__doc__
 del maSelector.__init__

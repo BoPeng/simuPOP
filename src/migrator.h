@@ -193,24 +193,31 @@ public:
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
+		m_rateFunc(NULL), m_indFunc(NULL), m_loci(loci), m_param(NULL)
 	{
-		// carray of python list/typle
-		DBG_FAILIF(rateFunc != NULL && !PyCallable_Check(rateFunc),
+		DBG_FAILIF(rateFunc != NULL && rateFunc != Py_None && !PyCallable_Check(rateFunc),
 			ValueError, "Passed rateFunc is not a callable Python function.");
-		DBG_FAILIF(indFunc != NULL && !PyCallable_Check(indFunc),
+		DBG_FAILIF(indFunc != NULL && indFunc != Py_None && !PyCallable_Check(indFunc),
 			ValueError, "Passed indFunc is not a callable Python function.");
-		DBG_FAILIF(rateFunc == NULL && indFunc == NULL,
+		DBG_FAILIF((rateFunc == NULL || rateFunc == Py_None) &&
+            (indFunc == NULL || indFunc == Py_None),
 			ValueError, "Please specify either rateFunc or indFunc");
-		DBG_FAILIF(rateFunc != NULL && indFunc != NULL,
+		DBG_FAILIF((rateFunc != NULL && rateFunc != Py_None) &&
+            (indFunc != NULL && indFunc != Py_None),
 			ValueError, "Please specify only one of rateFunc or indFunc");
 
-		if (m_rateFunc != NULL)
+		if (m_rateFunc != NULL && m_rateFunc != Py_None) {
+            m_rateFunc = rateFunc;
 			Py_INCREF(m_rateFunc);
-		if (m_indFunc != NULL)
+        }
+		if (m_indFunc != NULL && m_indFunc != Py_None) {
+            m_indFunc = indFunc;
 			Py_INCREF(m_indFunc);
-		if (m_param != NULL)
+        }
+		if (m_param != NULL && m_param != Py_None) {
+            m_param = param;
 			Py_INCREF(m_param);
+        }
 	}
 
 

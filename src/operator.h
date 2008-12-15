@@ -1001,23 +1001,9 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
-		m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
-	{
-		if (!PyCallable_Check(func))
-			throw ValueError("Passed variable is not a callable Python function.");
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr());
 
-		// inc reference count
-		Py_XINCREF(func);
-
-		if (param != NULL)
-			Py_XINCREF(param);
-
-		this->setFormOffGenotype(formOffGenotype);
-	};
-
-	/// destructor
+    /// destructor
 	virtual ~pyOperator()
 	{
 		Py_DECREF(m_func);

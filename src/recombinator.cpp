@@ -42,6 +42,34 @@ void cloneGenoTransmitter::initialize(const population & pop)
 }
 
 
+void cloneGenoTransmitter::transmitGenotype(const individual & parent,
+	int parPloidy, individual & offspring, int ploidy)
+{
+	// troublesome ...
+	if (m_hasCustomizedChroms) {
+		for (UINT ch = 0; ch < parent.numChrom(); ++ch) {
+			if (m_lociToCopy[ch] == 0)
+				continue;
+			GenoIterator par = parent.genoBegin(parPloidy, ch);
+			GenoIterator off = offspring.genoBegin(ploidy, ch);
+#ifdef BINARYALLELE
+			copyGenotype(par, off, m_lociToCopy[ch]);
+#else
+			GenoIterator par_end = parent.genoEnd(parPloidy, ch);
+			copy(par, par_end, off);
+#endif
+		}
+	} else {             // easy
+#ifdef BINARYALLELE
+		copyGenotype(parent.genoBegin(parPloidy), offspring.genoBegin(ploidy),
+			offspring.totNumLoci());
+#else
+		copy(parent.genoBegin(parPloidy), parent.genoEnd(parPloidy), offspring.genoBegin(ploidy));
+#endif
+	}
+}
+
+
 bool cloneGenoTransmitter::applyDuringMating(population & pop,
                                              RawIndIterator offspring,
                                              individual * dad,
@@ -364,6 +392,9 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 
 void recombinator::initialize(const population & pop)
 {
+	DBG_FAILIF(pop.isHaplodiploid(), ValueError,
+		"This operator cannot handle haplodiploid population");
+
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
 	if (!pop.customizedChroms().empty()) {

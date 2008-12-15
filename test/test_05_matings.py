@@ -90,14 +90,16 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population([100, 1000], loci=[10], ancGen=3,
             infoFields = parFields + sibFields + offFields + cousinFields)
         def findCousin(pop):
-            pop.locateRelatives(REL_Offspring, offFields);
-            pop.locateRelatives(REL_FullSibling, sibFields);
-            pop.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
+            ped = pedigree(pop, infoFields=pop.infoFields())
+            ped.locateRelatives(REL_Offspring, offFields);
+            ped.locateRelatives(REL_FullSibling, sibFields);
+            ped.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
                 pathFields = [parFields, sibFields, offFields],
                 resultFields = cousinFields)
+            pop.updateInfoFieldsFrom(cousinFields, ped)
         #
         simu = simulator(pop, consanguineousMating(relativeFields = cousinFields,
-                func=findCousin, numOffspring=2)) 
+                func=findCousin, numOffspring=4)) 
         simu.evolve(
             preOps = [initByFreq([0.2, 0.8])],
             ops = [parentsTagger()],
@@ -409,7 +411,7 @@ class TestMatingSchemes(unittest.TestCase):
         pop = population(size=[100, 200])
         InitByFreq(pop, [.3, .7])
         simu = simulator(pop, cloneMating())
-        simu.step()
+        simu.evolve(ops=[], gen=1)
         self.assertEqual(simu.population(0), pop)
         TurnOffDebug(DBG_MATING)
 
