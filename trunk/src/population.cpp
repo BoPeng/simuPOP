@@ -89,8 +89,6 @@ population::population(const vectorlu & size,
 		m_subPopSize.resize(1, 0);
 
 	fitSubPopStru(m_subPopSize, subPopNames);
-	// set local variable
-	setRep(-1);
 }
 
 
@@ -187,9 +185,6 @@ population::population(const population & rhs) :
 
 	// copy virtual subpop splitters
 	setVirtualSplitter(rhs.virtualSplitter());
-
-	// set local variable
-	setRep(-1);
 }
 
 

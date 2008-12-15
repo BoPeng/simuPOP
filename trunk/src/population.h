@@ -1287,7 +1287,9 @@ public:
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
 	 *  ancestral generations), and a positive number (store \e depth ancestral
-	 *  generations.
+	 *  generations. If there are more than \e depth ancestral generations (if
+	 *  (\e depth > 0) stored in this population, these ancestral generations
+	 *  will be removed.
 	 *  <group>6-ancestral</group>
 	 */
 	void setAncestralDepth(int depth);
