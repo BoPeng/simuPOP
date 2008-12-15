@@ -1,0 +1,58 @@
+This file describes how to release simuPOP.
+
+1. Update ChangeLog, marking release revision and date.
+
+2. Run the following commands to build simuPOP
+  > doxygen   # process Doxyfile by default
+  > cd tools; doxy2swig.py; cd ..
+  > scons install
+
+3. Test simuPOP
+  > cd test
+  > run_tests.sh
+
+4. Update document
+  > cd doc
+  > runSampleCode userGuide.py
+  > runSampleCode refManual.py
+
+5. Update release number in doc/refManual.lyx, doc/userGuide.lyx (document
+	-> settings -> preamble). Export doc/refManual.pdf and doc/userGuide.lyx.
+
+6. Release simuPOP source package
+  > cd tools
+  > build.py --release=x.x.x doc  # has been done manually, but run it anyway.
+  > build.py --release=x.x.x src  # build a source package
+
+7. Upload source packages (under the download directory) to a windows system.
+  * unzip source package
+  * c:/python24/python setup.py bdist_wininst  # Using MSVC++ 2003.net
+  * c:/python25/python setup.py bdist_wininst  # USing MSVC++ 2003.net
+  * c:/python26/python setup.py bdist_wininst  # Using MSVC++ Express 2008
+  * install the generated binary file and test simuPOP
+
+8. Release simuPOP svn
+  > build.py --release=x.x.x svn  # tag the release
+  > build.py --release=x.x.x x86_64  # linux 64 bit
+
+9. Create a release on simupop.sourceforge.net,
+  * go to https://simupop.sourceforge.net, choose sf.net summary, log on,
+	select simuPOP, admin, file releases
+  * For package simuPOP, add a new release x.x.x
+  * Write announcement, copy/paste ChangeLog
+
+10. Copy files over, from simuPOP directory,
+  > cd download
+  > sftp user@frs.sourceforge.net
+  > cd uploads
+  > put simuPOP-x.x.x-src.zip
+  > put simuPOP-x.x.x-src.tar.gz
+  and other files
+  > exit
+
+11. Update source documentation by running
+  > doxygen Doxy_web
+  > scp -r doxygen_doc/html USER,simupop@web.sourceforge.net:htdocs/src_doc
+
+12. From the file release webpage, refresh, add the uploaded files,
+	set their file type. Send release announcement to the simuPOP mailinglist.
