@@ -263,6 +263,28 @@ bool ticToc::apply(population & pop)
 }
 
 
+pyOperator::pyOperator(PyObject * func, PyObject * param,
+		int stage, bool formOffGenotype, bool passOffspringOnly,
+		int begin, int end, int step, vectorl at,
+		const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
+		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		m_func(func), m_param(NULL), m_passOffspringOnly(passOffspringOnly)
+{
+    if (!PyCallable_Check(func))
+        throw ValueError("Passed variable is not a callable Python function.");
+
+    // inc reference count
+    Py_XINCREF(func);
+
+    if (param != NULL && param != Py_None) {
+        m_param = param;
+        Py_XINCREF(param);
+    }
+
+    this->setFormOffGenotype(formOffGenotype);
+}
+
+
 bool pyOperator::apply(population & pop)
 {
 	// call the python function, pass the whole population in it.

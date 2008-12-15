@@ -59,6 +59,12 @@ public:
 		return new cloneGenoTransmitter(*this);
 	}
 
+	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
+	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
+	 *  Customized chromosomes are not copied.
+	 */
+	void transmitGenotype(const individual & parent, int parPloidy,
+		individual & offspring, int ploidy);
 
 	virtual string __repr__()
 	{
@@ -126,7 +132,7 @@ public:
 	/// CPPONLY
 	void initialize(const population & pop);
 
-	/** Pass genotype from parent to offspring, and fill the \e ploidy
+	/** Transmit genotype from parent to offspring, and fill the \e ploidy
 	 *  homologous set of chromosomes. This function does not set genotypes of
 	 *  customized chromosomes and handles sex chromosomes properly, according
 	 *  to offspring sex and \c ploidy.

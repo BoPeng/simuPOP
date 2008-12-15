@@ -184,7 +184,7 @@ bool initByValue::apply(population & pop)
 	DBG_FAILIF(!m_proportion.empty() && m_proportion.size() != m_value.size(), ValueError,
 		"If proportions are given, its length should match that of values.");
 
-	DBG_FAILIF(!m_value.size() != 1 && m_value.size() != m_proportion.size()
+	DBG_FAILIF(m_value.size() != 1 && m_value.size() != m_proportion.size()
 		&& m_value.size() != subPops.size(), ValueError,
 		"If mutliple values are given, its length should match proportion or (virtual) subpopulations");
 	
