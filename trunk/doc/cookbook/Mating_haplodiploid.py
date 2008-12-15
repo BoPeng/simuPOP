@@ -48,11 +48,11 @@ class haplodiploidRecombinator(pyOperator):
         # this operator is used to copy paternal chromosomes
         self.copier = cloneGenoTransmitter()
         self.initialized = False
-        # With no *param* and stage=DuringMating, this operator expects a
+        # With no *param* and stage=DuringMating, this operator expects a function
         # in the form of ``(pop, off, dad, mom)``. If *param* is given, the
-        # function should have the form ``(pop, off, dad, mom)``. If
+        # function should have the form ``(pop, off, dad, mom, param)``. If
         # *passOffspringOnly* is set to ``True``, the function can be simplied
-        # as ``(off)`` or ``(off, param)``.
+        # to ``(off)`` or ``(off, param)``.
         pyOperator.__init__(self, func=self.transmitGenotype,
             stage=DuringMating, formOffGenotype=True, *args, **kwargs)
 
@@ -108,8 +108,14 @@ def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
 
 def simuHaplodiploid(N, numMito=3, gen=10):
     '''
+    The default genotype transmitter (haplodiploidGenoTransmitter used in
+    mating cheme haplodiploidMaiting) does not support recombination.
+    We cannot use a recombinator directly because it will also recombine
+    maternal chromosomes. This example defines a Python during mating
+    operator that actually uses a recombinator to recombine maternal
+    chromosomes, and then a cloneGenoTransmitter to copy paternal chromosomes.
     '''
-    pop = population(N, loci=[20]*2,
+    pop = population(N, ploidy=Haplodiploid, loci=[20]*2,
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 
@@ -135,34 +141,34 @@ if __name__ == '__main__':
 # A possible output:
 #
 #Subpopulation 0 (unnamed):
-#    0: MU 00120212010013211123 33003123030303201020 | 00000000000000000000 00000000000000000000 |  9 3
+#    0: MU 00120212010013211123 33003123030303201020 | ____________________ ____________________ |  9 3
 #    1: FU 22233212010013211033 01003123030303201002 | 20002010320030301002 30030021133211001113 |  5 3
 #    2: FU 00310232201103033000 00032103001203103020 | 00003100331001033002 30230200113331320030 |  4 1
-#    3: MU 00310232201103032000 01231103010103303021 | 00000000000000000000 00000000000000000000 |  8 1
+#    3: MU 00310232201103032000 01231103010103303021 | ____________________ ____________________ |  8 1
 #    4: FU 22233011331013211123 01003123030303201020 | 22010033023001203010 32132203031200003313 |  2 3
 #    5: FU 01033012330020032010 00032120010103132120 | 22010033023001203010 32132203031200003313 |  2 1
-#    6: MU 02233212010013211123 01003123030303201002 | 00000000000000000000 00000000000000000000 |  6 3
+#    6: MU 02233212010013211123 01003123030303201002 | ____________________ ____________________ |  6 3
 #    7: FU 02220212031220111030 33120123030303201020 | 00003100331001033002 30230200113331320030 |  4 3
 #    8: FU 00310212201120033000 01231320010103132120 | 00311103020110213030 30001033001002233012 |  7 1
-#    9: MU 22233011310010111033 33120102130323320002 | 00000000000000000000 00000000000000000000 |  0 3
+#    9: MU 22233011310010111033 33120102130323320002 | ____________________ ____________________ |  0 3
 # End of individual genotype.
 # 
 # Genotype of individuals in the present generation:
 # Subpopulation 0 (unnamed):
-#    0: MU 20033210320030301002 30033123030303001113 | 00000000000000000000 00000000000000000000 |  0 1
+#    0: MU 20033210320030301002 30033123030303001113 | ____________________ ____________________ |  0 1
 #    1: FU 02220210331001033000 33120123030303200030 | 00310232201103032000 01231103010103303021 |  3 7
-#    2: MU 00020212031001033002 30120123030303200030 | 00000000000000000000 00000000000000000000 |  6 7
+#    2: MU 00020212031001033002 30120123030303200030 | ____________________ ____________________ |  6 7
 #    3: FU 00311103020110033000 01231323001002233122 | 02233212010013211123 01003123030303201002 |  6 8
 #    4: FU 00310232201103033000 30030200113203120020 | 00120212010013211123 33003123030303201020 |  0 2
-#    5: MU 00003100201103033000 30032103001203103020 | 00000000000000000000 00000000000000000000 |  3 2
+#    5: MU 00003100201103033000 30032103001203103020 | ____________________ ____________________ |  3 2
 #    6: FU 00010232201103033002 00230200113333103020 | 22233011310010111033 33120102130323320002 |  9 2
-#    7: MU 22010033023013203010 01003123030303201020 | 00000000000000000000 00000000000000000000 |  0 4
-#    8: MU 22233010320030301002 00033121133211001113 | 00000000000000000000 00000000000000000000 |  3 1
+#    7: MU 22010033023013203010 01003123030303201020 | ____________________ ____________________ |  0 4
+#    8: MU 22233010320030301002 00033121133211001113 | ____________________ ____________________ |  3 1
 #    9: FU 00310232201103033002 30232100113303103020 | 00310232201103032000 01231103010103303021 |  3 2
 # End of individual genotype.
 
 # 
-# - Genotype of all male individuals are 0.
+# - Genotype of all male individuals are unused.
 # - Individual 0 (male),
 #   20033210320030301002 is a recombined copy of maternal chromosomes 
 #       (22233212010013211033 20002010320030301002)
