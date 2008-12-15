@@ -80,18 +80,18 @@ def simuPOP_version():
     import simuPOP_version
     SIMUPOP_VER = simuPOP_version.SIMUPOP_VER
     SIMUPOP_REV = simuPOP_version.SIMUPOP_REV
-    rev = SIMUPOP_REV
-    try:
-        rev = os.popen('svnversion .').readline().strip()
-        if ':' in rev:
-            rev = rev.split(':')[1]
-        rev = rev.rstrip('M')
-    except:
-        pass
-    # if 'svnversion' exists and the revision has changed
-    if rev != '' and rev != SIMUPOP_REV:
-        SIMUPOP_VER += 'svn'
-        SIMUPOP_REV = rev
+    if SIMUPOP_VER.endswith('svn'):
+        rev = SIMUPOP_REV
+        try:
+            rev = os.popen('svnversion .').readline().strip()
+            if ':' in rev:
+                rev = rev.split(':')[1]
+            rev = rev.rstrip('M')
+        except:
+            pass
+        # if 'svnversion' exists and the revision has changed
+        if rev != '':
+            SIMUPOP_REV = rev
     return SIMUPOP_VER, SIMUPOP_REV
 
 
