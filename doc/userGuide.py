@@ -326,6 +326,58 @@ print pop.indInfo(eIdx)
 #end          
 
 
+#file log/ancestralPop.log
+simu = simulator(population(500, loci=[1]), randomMating())
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [
+        # start recording ancestral generations at generation 18
+        setAncestralDepth(2, at=[-2]),
+        stat(alleleFreq=[0], begin=-3),
+        pyEval(r"'%.3f\n' % alleleFreq[0][0]", begin=-3)
+    ],
+    gen = 20
+)
+pop = simu.population(0)
+# start from current generation
+for i in range(pop.ancestralGens(), -1, -1):
+  pop.useAncestralGen(i)
+  Stat(pop, alleleFreq=[0])
+  print '%d   %.3f' % (i, pop.dvars().alleleFreq[0][0])
+
+# restore to the current generation  
+pop.useAncestralGen(0)  
+#end
+
+
+#file log/popVars.log
+from pprint import pprint
+pop = population(100, loci=[2])
+InitByFreq(pop, [0.3, 0.7])
+print pop.vars()    # No variable now
+Stat(pop, popSize=1, alleleFreq=[0])
+# pprint prints in a less messy format
+pprint(pop.vars())
+# print number of allele 1 at locus 0
+print pop.vars()['alleleNum'][0][1]
+# use the dvars() function to access dictionary keys as attributes
+print pop.dvars().alleleNum[0][1]
+print pop.dvars().alleleFreq[0]
+#end
+
+
+#file log/localNamespace.log
+print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
+pop.execute('newPopSize=int(popSize*1.5)')
+ListVars(pop.vars(), level=1, useWxPython=False)
+# this variable is 'local' to the population and is
+# not available in the main namespace
+newPopSize
+#end
+
+
+################################################################################
+#
 
 #file log/popInit.log
 # a Wright-Fisher population
@@ -422,50 +474,6 @@ print ind.sexChar()
 #end
 
 
-
-#file log/popVars.log
-from simuUtil import ListVars
-ListVars(pop.vars(), useWxPython=False)
-Stat(pop, popSize=1, alleleFreq=[0])
-# subPop is True by default, use name to limit the variables to display
-ListVars(pop.vars(), useWxPython=False, subPop=False, name='alleleFreq')
-# print number of allele 1 at locus 0
-print pop.vars()['alleleNum'][0][1]
-print pop.dvars().alleleNum[0][1]
-print pop.dvars().alleleFreq[0]
-#end
-
-
-#file log/localNamespace.log
-print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
-pop.execute('newPopSize=int(popSize*1.5)')
-ListVars(pop.vars(), level=1, useWxPython=False)
-# this variable is 'local' to the population and is
-# not available in the main namespace
-newPopSize
-#end
-
-
-#file log/ancestralPop.log
-simu = simulator(population(10000, loci=[2]), randomMating())
-simu.evolve(
-  ops = [
-    setAncestralDepth(5, at=[-5]),
-    kamMutator(rate=0.01, atLoci=[0], maxAllele=1),
-    kamMutator(rate=0.001, atLoci=[1], maxAllele=1)
-  ],
-  gen = 20
-)
-pop = simu.population(0)
-# start from current generation
-for i in range(pop.ancestralDepth()+1):
-  pop.useAncestralGen(i)
-  Stat(pop, alleleFreq=[0, 1])
-  print '%d   %5f   %5f' % (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
-
-# restore to the current generation  
-pop.useAncestralGen(0)  
-#end
 
 
 
@@ -1188,43 +1196,6 @@ simu.evolve(
 #end
 
 # need reich.py
-#PS /bin/cp -f ../examples/Reich2002/reich.py log/reich.py
-#
-# This script will genreate code/result pieces
-# that will be inserted into simuPOP user's guide
-# and reference manual
-# 
-# #file_begin file
-#
-# #file_end file
-#
-# will be used in this file so the running result can be
-# separated into files specified by 'file'
-#
-# #PS after commands that will be executed.
-#
-# create directory log if not exist
-import os, sys
-
-if not os.path.isdir('log'):
-  try:
-    os.mkdir('log')
-  except:
-    print "Failed to make output directory log"
-    sys.exit(1)
-
-#file log/importSimuPOPOpt.log
-import simuOpt
-simuOpt.setOptions(optimized=False, alleleType='long', quiet=True)
-from simuPOP import *
-# make sure each run generates the same output to avoid unnecessary
-# documentation changes.
-rng().setSeed(12345)
-# remember that global functions start with captical letters
-print AlleleType()
-print Optimized()
-#end
-
 
 #file log/absIndex.log
 pop = population(size=[20, 30], loci=[5, 6])
@@ -1293,23 +1264,6 @@ initByFreq([.2, .3, .4, .1]).apply(pop)
 Dump(pop)
 #end
 
-
-#file log/popVars.log
-from simuUtil import ListVars
-pop = population(size=[1000, 2000], loci=[1])
-InitByFreq(pop, [0.2, 0.8])
-ListVars(pop.vars(), useWxPython=False)
-Stat(pop, popSize=1, alleleFreq=[0])
-# subPop is True by default, use name to limit the variables to display
-ListVars(pop.vars(), useWxPython=False, subPop=False, name='alleleFreq')
-# print number of allele 1 at locus 0
-print pop.vars()['alleleNum'][0][1]
-print pop.dvars().alleleNum[0][1]
-print pop.dvars().alleleFreq[0]
-print pop.dvars(1).alleleNum[0][1]
-#end
-
-
 #file log/localNamespace.log
 pop = population(size=[1000, 2000], loci=[1])
 InitByFreq(pop, [0.2, 0.8])
@@ -1344,54 +1298,6 @@ simu.evolve(
     gen=3
 )
 #end
-
-#file log/info1.log
-pop = population(10, infoFields=['a', 'b'])
-aIdx = pop.infoIdx('a')
-bIdx = pop.infoIdx('b')
-for ind in pop.individuals():
-    a = ind.info(aIdx)
-    ind.setInfo(a+1, bIdx)
-
-print pop.indInfo(bIdx)
-#end
-
-#file log/info2.log
-pop = population(5, infoFields=['a', 'b'])
-InfoExec(pop, 'import random\na=random.randint(2, 10)')
-InfoExec(pop, 'b=a+a*2')
-InfoEval(pop, r"'(%.0f, %.0f) ' % (a, b)")
-
-# this is wrong because 'c' is not available
-InfoExec(pop, 'b=c+a')
-# but we can also make use of population variables.
-pop.vars()['c'] = 6
-InfoExec(pop, 'b=c+a', usePopVars=True)
-print pop.indInfo('b')
-#end
-
-#file log/ancestralPop.log
-simu = simulator(population(10000, loci=[2]), randomMating())
-simu.evolve(
-    ops = [
-        setAncestralDepth(5, at=[-5]),
-        kamMutator(rate=0.01, loci=[0], maxAllele=1),
-        kamMutator(rate=0.001, loci=[1], maxAllele=1)
-    ],
-    gen = 20
-)
-pop = simu.population(0)
-# start from current generation
-for i in range(pop.ancestralDepth()+1):
-    pop.useAncestralPop(i)
-    Stat(pop, alleleFreq=[0, 1])
-    print '%d     %5f     %5f' % \
-        (i, pop.dvars().alleleFreq[0][1], pop.dvars().alleleFreq[1][1])
-
-# restore to the current generation    
-pop.useAncestralPop(0)    
-#end
-
 
 
 #turnOnDebug(DBG_SIMULATOR)

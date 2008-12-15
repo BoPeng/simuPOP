@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1230,7 +1230,7 @@ pos
 \family typewriter
 , subPop 
 \family default
-(subpopulation and virtual subpopulation)
+(subpopulation(s) and virtual subpopulation(s))
 \family typewriter
 , rep 
 \family default
@@ -3325,18 +3325,37 @@ Ancestral populations
 \end_layout
 
 \begin_layout Standard
-By default, a population object only holds the current generation.
- All ancestral populations (generations) will be discarded.
- You can, however, keep as many ancestral generations as you wish, provided
- that you have enough RAM to store all these extra information.
+A simuPOP population usually holds individuals in one generation.
+ During evolution, an offspring generation will replace the parental generation
+ and become the present generation (population), after it is populated from
+ a parental population.
+ The parental generation is discarded.
 \end_layout
 
 \begin_layout Standard
-Parameter 
+This is usually enough when only the present generation is of interest.
+ However, parental generations can provide useful information on how genotype
+ and other information are passed from parental to offspring generations.
+ simuPOP provides a mechanism to store and access arbitrary number of ancestral
+ generations in a population object.
+ Applications of this feature include pedigree tracking, reconstruction,
+ and pedigree ascertainments.
+\end_layout
+
+\begin_layout Standard
+A parameter 
 \family typewriter
-ancestralDepth
+ancGen
 \family default
- is used to specify the number of generations to keep.
+ is used to specify how many generations a population object 
+\emph on
+can
+\emph default
+ store (which is usually called the 
+\emph on
+ancestral depth
+\emph default
+ of a population).
  This parameter is default to 
 \family typewriter
 0
@@ -3346,98 +3365,62 @@ ancestralDepth
 \family typewriter
 n
 \family default
- to store most recent n generations; or -
+ to store n most recent generations; or -
 \family typewriter
 1
 \family default
- to store all populations.
- 
+ to store all generations.
+ Of course, storing all generations during an evolutionary process is likely
+ to exhaust the RAM of your computer quickly.
 \end_layout
 
 \begin_layout Standard
-Several important usage of ancestral generations:
+Several member functions can be used to manipulate ancestral generations:
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-dumper()
+ancestralGens() 
 \family default
- operator and 
-\family typewriter
-Dump()
-\family default
- function has a parameter 
-\family typewriter
-ancestralPops
-\family default
-.
- If set to 
-\family typewriter
-True
-\family default
-, they will dump all ancestral generations.
+returns the number of ancestral generations stored in a population.
 \end_layout
 
 \begin_layout Itemize
-function 
+
 \family typewriter
-population::setAncestralDepth()
+setAncestralDepth(depth)
 \family default
- and operator 
-\family typewriter
-setAncestralDepth()
-\family default
- set the number of ancestral generations to keep for a population.
- A typical use of 
-\family typewriter
-setAncestralDepth()
-\family default
- is
+ resets the number of generations a population can store.
 \end_layout
 
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-simu.evolve(...
-\end_layout
-
-\begin_layout Plain Layout
-
-  setAncestralDepth(3, at=[-3])
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-which saves the last three generations in populations so that pedigree based
- sampling schemes can be used.
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 
 \family typewriter
-pop.useAncestralPop(idx)
+push(pop)
 \family default
- set the current generation of population 
+ will push population 
 \family typewriter
 pop
 \family default
- to 
+ into the current population.
+ 
+\family typewriter
+pop
+\family default
+ will become the current generation, and the current generation will either
+ be removed (if ancGen == 0), or become the parental generation of pop.
+ The greatest ancestral generation may be removed.
+ This function is rarely used because populations with ancestral generations
+ are usually created during an evolutionary process.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+useAncestralGen(idx)
+\family default
+ set the present generation to 
 \family typewriter
 idx
 \family default
@@ -3450,16 +3433,19 @@ idx
 \family typewriter
 = 1
 \family default
- for the first ancestral generation, 
+ for the parental generation, 
 \family typewriter
 2
 \family default
- for second ancestral ..., and 
+ for grandparental, ..., and 
 \family typewriter
 0
 \family default
- for the current generation.
- After this function, all functions, operators will be applied to this ancestral
+ for the present generation.
+ This is useful because most population functions act on the 
+\emph on
+present
+\emph default
  generation.
  You should always call 
 \family typewriter
@@ -3470,7 +3456,7 @@ setAncestralPop(0)
 \end_layout
 
 \begin_layout Standard
-A typical use of this function is demonstrated in example 
+A typical use of ancestral generations is demonstrated in example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "ancestralPop"
@@ -3478,21 +3464,19 @@ reference "ancestralPop"
 \end_inset
 
 .
- In this example, a population with two loci is created and with initial
- genotype 0.
- Two 
-\family typewriter
-kamMutator
-\family default
- with different mutation rates are applied to these two loci.
- Five most recent populations are kept.
- The allele frequencies at these generations are calculated afterward.
- (Note that this is not the best way to exam the changes of allele frequencies,
- a 
+ In this example, a population is created and is initialized with allele
+ frequency 0.5.
+ Its ancestral depth is set to 2 at the beginning of generation 18 so that
+ it can hold parental generations at generation 18 and 19.
+ The allele frequency at each generation is calculated and displayed, both
+ during evolution using a 
 \family typewriter
 stat
 \family default
- operator should be used.)
+ operator, and after evolution using the function form this operator.
+ Note that setting the ancestral depth at the end of an evolutionary process
+ is a common practise because we are usually only interested in the last
+ few generations.
 \end_layout
 
 \begin_layout Standard
@@ -3611,7 +3595,7 @@ It is important to know that this dictionary forms a local namespace in
  As we can see from example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "alg:A-simple-example"
+reference "simple-example"
 
 \end_inset
 
@@ -3648,49 +3632,6 @@ operator!stat
 \begin_layout Standard
 Conceptually, population variables are organized as follows (looking from
  a simulator's point of view):
-\end_layout
-
-\begin_layout LyX-Code
-simu.vars(0)        simu.vars(1) ...
-     // replicate
-\end_layout
-
-\begin_layout LyX-Code
-  popSize             popSize            // local namespace
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[0]       alleleFreq[0]      // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-  alleleFreq[1]       alleleFreq[1]      // at locus 2
-\end_layout
-
-\begin_layout LyX-Code
-  ...
-                 ....
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[0]           subPop[0]          // subpop namespace
-\end_layout
-
-\begin_layout LyX-Code
-    popSize             popSize          // subpopulation 1 size
-\end_layout
-
-\begin_layout LyX-Code
-    allaleFreq[0]       allaleFreq[0]    // allele frequency at locus 1
-\end_layout
-
-\begin_layout LyX-Code
-    ...
-                 ...
-\end_layout
-
-\begin_layout LyX-Code
-  subPop[1]           subPop[1]          // variables for subpop 2
 \end_layout
 
 \begin_layout LyX-Code
