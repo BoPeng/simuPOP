@@ -750,7 +750,8 @@ public:
 		// or
 		// if requires order, but the alleles are not ordered
 		// use individual based
-		if (hasActivatedVirtualSubPop() || !indOrdered())
+		if (hasActivatedVirtualSubPop() || !indOrdered()
+			|| chromType(chromLocusPair(locus).first) != Autosome)
 			return IndAlleleIterator(locus, indBegin(), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
@@ -761,7 +762,8 @@ public:
 	IndAlleleIterator alleleEnd(UINT locus)
 	{
 		CHECKRANGEABSLOCUS(locus);
-		if (hasActivatedVirtualSubPop() || !indOrdered())
+		if (hasActivatedVirtualSubPop() || !indOrdered()
+			|| chromType(chromLocusPair(locus).first) != Autosome)
 			return IndAlleleIterator(locus, indEnd(), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
@@ -778,7 +780,8 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop() || !indOrdered())
+		if (hasActivatedVirtualSubPop() || !indOrdered()
+			|| chromType(chromLocusPair(locus).first) != Autosome)
 			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
@@ -792,7 +795,8 @@ public:
 		CHECKRANGEABSLOCUS(locus);
 		CHECKRANGESUBPOP(subPop);
 
-		if (hasActivatedVirtualSubPop() || !indOrdered())
+		if (hasActivatedVirtualSubPop() || !indOrdered()
+			|| chromType(chromLocusPair(locus).first) != Autosome)
 			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
 		else
 			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +

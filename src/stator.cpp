@@ -439,6 +439,7 @@ bool statAlleleFreq::apply(population & pop)
 
 		vectori & sum = m_alleleNum.back()[loc];
 		fill(sum.begin(), sum.end(), 0);
+		ULONG sumAll = 0;
 
 		// for each subpopulation
 		for (UINT sp = 0; sp < numSP;  ++sp) {
@@ -453,10 +454,14 @@ bool statAlleleFreq::apply(population & pop)
 			// go through all alleles
 			IndAlleleIterator a = pop.alleleBegin(loc, sp);
 			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp);
+			// use allAllelel here because some marker does not have full number
+			// of alleles (e.g. markers on chromosome X and Y).
+			ULONG allAllele = 0;
 			for (; a != aEnd; ++a) {
 				if (AlleleUnsigned(*a) >= num.size())
 					num.resize(*a + 1, 0);
 				num[*a]++;
+				allAllele++;
 			}
 
 			// add this number to overall num
@@ -467,13 +472,13 @@ bool statAlleleFreq::apply(population & pop)
 					sum.resize(num.size(), 0);
 				for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
 					sum[e] += num[e];
+				sumAll += allAllele;
 			}
 
 			vectorf & freq = m_alleleFreq[sp][loc];
 			freq.resize(num.size(), 0.);
-			double dy = pop.subPopSize(sp) * pop.ploidy();
 			for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
-				freq[e] = static_cast<double>(num[e]) / dy;
+				freq[e] = static_cast<double>(num[e]) / allAllele;
 
 			// post result at this locus
 			if (m_ifPost[i]) {
@@ -512,9 +517,8 @@ bool statAlleleFreq::apply(population & pop)
 			// summary?
 			vectorf & freq = m_alleleFreq.back()[loc];
 			freq.resize(sum.size());
-			double dy = pop.popSize() * pop.ploidy();
 			for (size_t e = 0, eEnd = sum.size(); e < eEnd; ++e)
-				freq[e] = static_cast<double>(sum[e]) / dy;
+				freq[e] = static_cast<double>(sum[e]) / sumAll;
 
 			if (m_ifPost[i]) {
 				if (m_output_alleleNum) {
