@@ -3068,6 +3068,21 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 #  endif
 }
 
+void clearGenotype(GenoIterator to, size_t n)
+{
+    WORDTYPE * to_p = BITPTR(to);
+    unsigned int to_off = BITOFF(to);
+
+    // This can be made more efficient.
+	for (size_t i = 0; i < n; ++i) {
+		// set bit according to from bit
+		*to_p &= ~(1UL << to_off);
+		if (to_off++ == WORDBIT - 1) {
+			to_off = 0;
+			++to_p;
+		}
+	}
+}
 
 #endif
 

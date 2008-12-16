@@ -1341,6 +1341,7 @@ string ModulePlatForm();
 // efficiently copy alleles (block by block, rather than 1 by 1)
 /// CPPONLY
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
+void clearGenotype(GenoIterator to, size_t n);
 
 #  ifndef OPTIMIZED
 void testCopyGenotype();
