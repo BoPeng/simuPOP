@@ -345,9 +345,11 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 		GenoIterator off = offspring->genoBegin(0, *it);
 #ifdef BINARYALLELE
 		copyGenotype(par, off, m_numLoci);
+        clearGenotype(off, m_numLoci);
 #else
 		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
 		copy(par, par_end, off);
+        fill(offspring->genoBegin(1, *it), offspring->genoEnd(1, *it), 0);
 #endif
 	}
 
