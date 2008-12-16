@@ -1174,6 +1174,20 @@ public:
 		: m_index(idx), m_useGappedIterator(false),
 		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy), m_size(size)
 	{
+		m_chromType = it->chromType(it->chromLocusPair(idx).first);
+		// we do not know anything about customized chromosome
+		// so we just assume it is autosome.
+		if (m_chromType == Customized)
+			m_chromType = Autosome;
+		// 
+		if (m_chromType == ChromosomeY) {
+			if (m_it->sex() == Female) {
+				while (m_it.valid())
+					if ((++m_it)->sex() == Male)
+						break;
+			}
+			m_p = 1;
+		}
 	}
 
 
@@ -1196,21 +1210,50 @@ public:
 	}
 
 
+	void advance(IndividualIterator<T> & it, UINT & p)
+	{
+		if (m_chromType == Autosome) {
+			++p;
+			if (p == m_ploidy) {
+				p = 0;
+				++it;
+			}
+		} else if (m_chromType == ChromosomeX) {
+			if (it->sex() == Female) {
+				// X0 -> X1
+				if (p == 0)
+					++p;
+				// X1 -> X0 of next ind (male or female)
+				else {
+					p = 0;
+					++it;
+				}
+			} else {
+				// male, no X1.
+				DBG_ASSERT(p == 0, SystemError,
+					"Male individual only has the first homologous copy of chromosome X");
+				// next individual, ploidy 0, sex does not matter.
+				++it;
+			}				
+		} else if (m_chromType == ChromosomeY) {
+			DBG_ASSERT(it->sex() == Male, SystemError,
+				"There is no chromosome Y for Female individuals");
+			while (it.valid())
+				if ((++it)->sex() == Male)
+					break;
+			p = 1;
+		}
+	}
+
 	// return, then advance.
 	CombinedAlleleIterator operator++(int)
 	{
 		// save current state
 		CombinedAlleleIterator tmp(*this);
-
 		if (m_useGappedIterator)
 			m_ptr += m_size;
-		else {
-			++m_p;
-			if (m_p == m_ploidy) {
-				m_p = 0;
-				++m_it;
-			}
-		}
+		else
+			advance(m_it, m_p);
 		return tmp;
 	}
 
@@ -1219,13 +1262,8 @@ public:
 	{
 		if (m_useGappedIterator)
 			m_ptr += m_size;
-		else {
-			++m_p;
-			if (m_p == m_ploidy) {
-				m_p = 0;
-				++m_it;
-			}
-		}
+		else
+			advance();
 		return *this;
 	}
 
@@ -1234,10 +1272,13 @@ public:
 	{
 		if (m_useGappedIterator)
 			m_ptr += diff * m_size;
-		else {
+		else if (m_chromType == Autosome) {
 			m_p += diff;
 			m_it += m_p / m_ploidy;
 			m_p %= m_ploidy;
+		} else {
+			for (size_t i = 0; i < diff; ++i)
+				advance(m_it, m_p);
 		}
 		return *this;
 	}
@@ -1249,10 +1290,13 @@ public:
 
 		if (m_useGappedIterator)
 			tmp.m_ptr += diff * m_size;
-		else {
+		else if (m_chromType == Autosome) {
 			tmp.m_p += diff;
 			tmp.m_it += tmp.m_p / m_ploidy;
 			tmp.m_p %= m_ploidy;
+		} else {
+			for (size_t i = 0; i < diff; ++i)
+				advance(tmp.m_it, tmp.m_p);
 		}
 		return tmp;
 	}
@@ -1263,7 +1307,8 @@ public:
 		if (m_useGappedIterator)
 			return m_ptr != rhs.m_ptr;
 		else {
-			DBG_FAILIF(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size, ValueError,
+			DBG_FAILIF(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
+				|| m_chromType != rhs.m_chromType, ValueError,
 				"Iterator comparison fails");
 			return m_it != rhs.m_it || m_index != rhs.m_index || m_p != rhs.m_p;
 		}
@@ -1285,6 +1330,8 @@ private:
 	UINT m_ploidy;
 	// genosize
 	UINT m_size;
+	// chromosome type
+	int m_chromType;
 };
 
 
