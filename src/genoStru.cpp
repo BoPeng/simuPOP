@@ -501,7 +501,14 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & 
 		DBG_ASSERT(ch < newLoci.size(), ValueError, "Chromosome index out of range\n"
 			                                        "Please use addChrom function if a new chromosome is added");
 		//
-		newLoci[ch]++;
+		// append to the last
+		if (pos > newLociPos.back() && ch == numChrom() - 1) {
+			newLociPos.push_back(pos);
+			newLociNames.push_back(name);
+			newLoci[ch]++;
+			continue;
+		}
+
 		// find beginning and end of chromosome
 		size_t chBegin = 0;
 		size_t chEnd = newLoci[0];
@@ -509,14 +516,8 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & 
 			chBegin += newLoci[i - 1];
 			chEnd += newLoci[i];
 		}
-		// append to the last
-		if (pos > lociPos[chEnd - 1] && ch == numChrom() - 1) {
-			newLociPos.push_back(pos);
-			newLociNames.push_back(name);
-			continue;
-		}
 		size_t insertPos = 0;
-		if (pos > lociPos[chEnd - 1])
+		if (pos > newLociPos[chEnd - 1])
 			insertPos = chEnd;
 		else {
 			for (size_t i = chBegin; i < chEnd; ++i) {
@@ -526,6 +527,7 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & 
 				}
 			}
 		}
+		newLoci[ch]++;
 		// insert here
 		newLociPos.insert(newLociPos.begin() + insertPos, pos);
 		newLociNames.insert(newLociNames.begin() + insertPos, name);

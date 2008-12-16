@@ -907,7 +907,7 @@ void population::mergeSubPops(const vectoru & subPops)
 }
 
 
-void population::addChromFromPop(const population & pop)
+void population::addChromFrom(const population & pop)
 {
 	UINT numLoci1 = totNumLoci();
 	UINT numLoci2 = pop.totNumLoci();
@@ -951,7 +951,7 @@ void population::addChromFromPop(const population & pop)
 }
 
 
-void population::addIndFromPop(const population & pop)
+void population::addIndFrom(const population & pop)
 {
 	DBG_FAILIF(genoStruIdx() != pop.genoStruIdx(), ValueError,
 		"Cannot add individual from a population with different genotypic structure.");
@@ -992,7 +992,7 @@ void population::addIndFromPop(const population & pop)
 }
 
 
-void population::addLociFromPop(const population & pop)
+void population::addLociFrom(const population & pop)
 {
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Can not add chromosomes from a population with different number of ancestral generations");
@@ -1101,16 +1101,15 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 	vectoru loci(totNumLoci());
 	// obtain new genotype structure and set it
 	setGenoStructure(gsAddLoci(chrom, pos, names, newIndex));
-	// use loci to keep the position of old loci in the new structure
+	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex << endl);
+	// loci at newIndex should have zero alleles...
 	for (size_t i = 0, j = 0; j < totNumLoci(); ++j) {
-		// i is the index to loci before insertion.
-		// j is the index to loci after insertion.
-		if (find(newIndex.begin(), newIndex.end(), i) == newIndex.end()) {
-			loci[i] = j;
-			++i;
-		}
+		if (find(newIndex.begin(), newIndex.end(), j) == newIndex.end())
+			loci[i++] = j;
 	}
-
+	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex 
+		<< "\nIndexes of old loci in new structure " << loci << endl);
+	
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		//
