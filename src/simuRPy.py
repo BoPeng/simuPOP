@@ -283,7 +283,17 @@ class _VarPlotter_Base:
                     r.postscript(file=self.dev)
             else:
                 # open a new window
-                r('get(getOption("device"))()')
+                try:
+                    # 46754 is the revision number for R 2.8.0
+                    if int(r.R_Version()['svn rev']) < 46754:
+                        # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
+                        r(r.getOption('device') + '()')
+                    else:
+                        # For R >= 2.8.0, getOption('device') returns a function
+                        r('getOption("device")()')
+                except:
+                    raise SystemError("Failed to get R version to start a graphical device");
+                #
                 # get device number
                 self.device = r.dev_cur()
                 assert self.device > 1, 'Can not open new device'
