@@ -993,7 +993,7 @@ public:
 	 *  \e pop are kept.
 	 *  <group>7-manipulate</group>
 	 */
-	void addIndFromPop(const population & pop);
+	void addIndFrom(const population & pop);
 
 	/** Add chromosomes in population \e pop to the current population.
 	 *  Population \e pop should have the same number of individuals as the
@@ -1002,7 +1002,7 @@ public:
 	 *  new chromosomes from population \c pop individual by individual.
 	 *  <group>7-manipulate</group>
 	 */
-	void addChromFromPop(const population & pop);
+	void addChromFrom(const population & pop);
 
 	/** Add loci from population \e pop, chromosome by chromosome. Added
 	 *  loci will be inserted according to their position. Their position
@@ -1011,7 +1011,7 @@ public:
 	 *  current population in the current and all ancestral generations.
 	 *  <group>7-manipulate</group>
 	 */
-	void addLociFromPop(const population & pop);
+	void addLociFrom(const population & pop);
 
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.

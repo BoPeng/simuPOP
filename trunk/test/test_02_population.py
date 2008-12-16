@@ -239,13 +239,13 @@ class TestPopulation(unittest.TestCase):
         # # given chromsome name is not unique.
         self.assertRaises(exceptions.ValueError,  pop.addChrom, [11, 12, 13], ['l4', 'l5', 'l6'], 'c4')
 
-    def testAddChromFromPop(self):
-        'Testing population::addChromFromPop(pop)'
+    def testAddChromFrom(self):
+        'Testing population::addChromFrom(pop)'
         pop = population(size=100, ploidy=2, loci=[1, 2], chromNames=["c1", "c2"], lociNames = ['l1', 'l2', 'l3'])
         pop2 = pop.clone()
         pop1 = population(size=100, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
             lociNames = ['l4', 'l5', 'l6', 'l7', 'l8'])
-        pop.addChromFromPop(pop1)
+        pop.addChromFrom(pop1)
         self.assertEqual(pop.numChrom(), 4)
         self.assertEqual(pop.chromNames(), ('c1', 'c2', 'c3', 'c4'))
         self.assertEqual(pop.numLoci(), (1, 2, 2, 3))
@@ -259,40 +259,40 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(ind.allele(loc+3), ind2.allele(loc))
         pop = population(size=100, ploidy=2, loci=[1, 2])
         pop1 = population(size=100, ploidy =2, loci=[1, 2])
-        self.assertRaises(exceptions.ValueError, pop.addChromFromPop, pop1)
+        self.assertRaises(exceptions.ValueError, pop.addChromFrom, pop1)
         pop2 = population(size=200, ploidy=2, loci=[2, 3], chromNames=["c3", "c4"],
             lociNames = ['l4', 'l5', 'l6', 'l7', 'l8'])
-        self.assertRaises(exceptions.ValueError, pop.addChromFromPop, pop2)
+        self.assertRaises(exceptions.ValueError, pop.addChromFrom, pop2)
 
-    def testAddIndFromPop(self):
-        'Testing population::addIndFromPop(pop)'
+    def testAddIndFrom(self):
+        'Testing population::addIndFrom(pop)'
         pop = self.getPop(ancGen=3)
         pop1 = self.getPop(ancGen=3)
         pop.setIndInfo([random.randint(4, 10) for x in range(pop.popSize())], 'x')
-        pop.addIndFromPop(pop1)
+        pop.addIndFrom(pop1)
         self.assertEqual(pop.numSubPop(), 4)
         self.assertEqual(pop.subPopSizes(), (20, 80, 20, 80))
         for i in range(100):
             self.assertEqual(pop.individual(100+i), pop1.individual(i))
         pop1 = self.getPop(ancGen=2)
         # different numbers of ancestral generations
-        self.assertRaises(exceptions.ValueError, pop.addIndFromPop, pop1)
+        self.assertRaises(exceptions.ValueError, pop.addIndFrom, pop1)
         pop1 = population(size=100, ploidy=2, loci=[1, 2, 3])
         # different genotype structure
-        self.assertRaises(exceptions.ValueError, pop.addIndFromPop, pop1)
+        self.assertRaises(exceptions.ValueError, pop.addIndFrom, pop1)
         # Test scrambled populations
         pop = self.getPop(scramble=True, ancGen=3)
         pop1 = self.getPop(scramble=True, ancGen=3)
-        pop.addIndFromPop(pop1)
+        pop.addIndFrom(pop1)
         for i in range(100):
             self.assertEqual(pop.individual(100+i), pop1.individual(i))
 
-    def testAddLociFromPop(self):
-        'Testing population::addLociFromPop(pop)'
+    def testAddLociFrom(self):
+        'Testing population::addLociFrom(pop)'
         pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[[1], [2, 5]], lociNames = ['l1', 'l2', 'l3'])
         pop1 = pop.clone()
         pop2 = self.getPop(chromNames=["c3", "c4"], ancGen=5, lociPos=[[4], [3, 6]], lociNames = ['l4', 'l5', 'l6'])
-        pop.addLociFromPop(pop2);
+        pop.addLociFrom(pop2);
         self.assertEqual(pop.numLoci(), (2, 4))
         self.assertEqual(pop.lociPos(), (1, 4, 2, 3, 5, 6))
         self.assertEqual(pop.chromNames(), ('c1', 'c2'))
