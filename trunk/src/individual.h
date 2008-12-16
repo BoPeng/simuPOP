@@ -1263,7 +1263,7 @@ public:
 		if (m_useGappedIterator)
 			m_ptr += m_size;
 		else
-			advance();
+			advance(m_it, m_p);
 		return *this;
 	}
 
