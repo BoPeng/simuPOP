@@ -650,8 +650,10 @@ public:
 
 private:
 	bool validIndex(UINT idx) const;
+
 	bool validIndex(UINT idx, UINT p) const;
-	bool validIndex(UINT idx, UINT p, UINT ch) const;	
+
+	bool validIndex(UINT idx, UINT p, UINT ch) const;
 
 	friend class boost::serialization::access;
 
@@ -712,6 +714,8 @@ public:
 	{
 		return lhs.info(m_field) < rhs.info(m_field);
 	}
+
+
 private:
 	UINT m_field;
 };
@@ -1170,18 +1174,18 @@ public:
 
 
 	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it,
-		UINT ploidy, UINT size)
+		int chromType, UINT ploidy, UINT size)
 		: m_index(idx), m_useGappedIterator(false),
-		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy), m_size(size)
+		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy),
+		m_size(size), m_chromType(chromType)
 	{
-		m_chromType = it->chromType(it->chromLocusPair(idx).first);
 		// we do not know anything about customized chromosome
 		// so we just assume it is autosome.
 		if (m_chromType == Customized)
 			m_chromType = Autosome;
-		// 
+		//
 		if (m_chromType == ChromosomeY) {
-			if (m_it->sex() == Female) {
+			if (m_it.valid() && m_it->sex() == Female) {
 				while (m_it.valid())
 					if ((++m_it)->sex() == Male)
 						break;
@@ -1234,7 +1238,7 @@ public:
 					"Male individual only has the first homologous copy of chromosome X");
 				// next individual, ploidy 0, sex does not matter.
 				++it;
-			}				
+			}
 		} else if (m_chromType == ChromosomeY) {
 			DBG_ASSERT(it->sex() == Male, SystemError,
 				"There is no chromosome Y for Female individuals");
@@ -1245,11 +1249,13 @@ public:
 		}
 	}
 
+
 	// return, then advance.
 	CombinedAlleleIterator operator++(int)
 	{
 		// save current state
 		CombinedAlleleIterator tmp(*this);
+
 		if (m_useGappedIterator)
 			m_ptr += m_size;
 		else

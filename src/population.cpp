@@ -391,26 +391,65 @@ const individual & population::ancestor(ULONG ind, UINT subPop, UINT gen) const
 }
 
 
-PyObject * population::arrGenotype(bool order)
+IndAlleleIterator population::alleleBegin(UINT locus)
 {
-	if (order)
-		sortIndividuals();
-	// directly expose values. Do not copy data over.
-	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+	CHECKRANGEABSLOCUS(locus);
+
+	// if there is virtual subpop, use individual based iterator
+	// or
+	// if requires order, but the alleles are not ordered
+	// use individual based
+	int ct = chromType(chromLocusPair(locus).first);
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || ct != Autosome)
+		return IndAlleleIterator(locus, indBegin(), ct, ploidy(), totNumLoci());
+	else
+		return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
 }
 
 
-// get the whole genotype.
-// individuals will be in order before exposing
-// their genotypes.
-//
-// if order: keep order
-// otherwise: respect subpop structure
-PyObject * population::arrGenotype(UINT subPop, bool order)
+/// CPPONLY allele iterator
+IndAlleleIterator population::alleleEnd(UINT locus)
 {
+	CHECKRANGEABSLOCUS(locus);
+	int ct = chromType(chromLocusPair(locus).first);
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || ct != Autosome)
+		return IndAlleleIterator(locus, indEnd(), ct, ploidy(), totNumLoci());
+	else
+		return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
+}
+
+
+/// CPPONLY allele begin, for given subPop
+IndAlleleIterator population::alleleBegin(UINT locus, UINT subPop)
+{
+	CHECKRANGEABSLOCUS(locus);
 	CHECKRANGESUBPOP(subPop);
-	sortIndividuals();
-	return Allele_Vec_As_NumArray(genoBegin(subPop, order), genoEnd(subPop, order));
+
+	int ct = chromType(chromLocusPair(locus).first);
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || ct != Autosome)
+		return IndAlleleIterator(locus, indBegin(subPop), ct, ploidy(), totNumLoci());
+	else
+		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
+			locus, totNumLoci());
+}
+
+
+///  CPPONLY allele iterator
+IndAlleleIterator population::alleleEnd(UINT locus, UINT subPop)
+{
+	CHECKRANGEABSLOCUS(locus);
+	CHECKRANGESUBPOP(subPop);
+
+	int ct = chromType(chromLocusPair(locus).first);
+	if (hasActivatedVirtualSubPop() || !indOrdered()
+	    || ct != Autosome)
+		return IndAlleleIterator(locus, indEnd(subPop), ct,  ploidy(), totNumLoci());
+	else
+		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
+			locus, totNumLoci());
 }
 
 
@@ -455,24 +494,24 @@ void population::setGenotype(vectora geno, vspID subPop)
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
-    SubPopID sp = subPop.subPop();
+	SubPopID sp = subPop.subPop();
 	CHECKRANGESUBPOP(sp);
 	sortIndividuals();
 
-    ULONG sz = geno.size();
-    if (!subPop.isVirtual()) {
-    	GenoIterator ptr = genoBegin(sp, true);
-    	for (ULONG i = 0; i < subPopSize(sp) * genoSize(); ++i)
-	    	*(ptr++) = geno[i % sz];
-    } else {
-        activateVirtualSubPop(subPop, IteratableInds);
-        IndIterator it = indBegin(sp, IteratableInds);
-        IndIterator it_end = indEnd(sp, IteratableInds);
-        ULONG i = 0;
-        for (; it != it_end; ++it)
-            for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
-                *git = geno[i % sz];
-    }
+	ULONG sz = geno.size();
+	if (!subPop.isVirtual()) {
+		GenoIterator ptr = genoBegin(sp, true);
+		for (ULONG i = 0; i < subPopSize(sp) * genoSize(); ++i)
+			*(ptr++) = geno[i % sz];
+	} else {
+		activateVirtualSubPop(subPop, IteratableInds);
+		IndIterator it = indBegin(sp, IteratableInds);
+		IndIterator it_end = indEnd(sp, IteratableInds);
+		ULONG i = 0;
+		for (; it != it_end; ++it)
+			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
+				*git = geno[i % sz];
+	}
 }
 
 
@@ -1107,9 +1146,9 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 		if (find(newIndex.begin(), newIndex.end(), j) == newIndex.end())
 			loci[i++] = j;
 	}
-	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex 
-		<< "\nIndexes of old loci in new structure " << loci << endl);
-	
+	DBG_DO(DBG_POPULATION, cout << "Indexes of inserted loci " << newIndex
+		                        << "\nIndexes of old loci in new structure " << loci << endl);
+
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
 		//
@@ -1627,17 +1666,18 @@ void population::setInfoFields(const vectorstr & fields, double init)
 
 
 void population::updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
-        const vectorstr & fromFields, int ancGen)
+                                      const vectorstr & fromFields, int ancGen)
 {
 	int depth = ancestralGens();
+
 	if (ancGen > 0 && ancGen < depth)
 		depth = ancGen;
 	for (; depth >= 0; --depth) {
-        for (UINT i = 0; i < fields.size(); ++i) {
-            UINT fromIdx = fromFields.empty() ? pop.infoIdx(fields[i]) : pop.infoIdx(fromFields[i]);
-            UINT toIdx = pop.infoIdx(fields[i]);
-            // indInfo is supposed to be const, but it is troublesome to change that.
-            setIndInfo(const_cast<population &>(pop).indInfo(fromIdx), toIdx);
+		for (UINT i = 0; i < fields.size(); ++i) {
+			UINT fromIdx = fromFields.empty() ? pop.infoIdx(fields[i]) : pop.infoIdx(fromFields[i]);
+			UINT toIdx = pop.infoIdx(fields[i]);
+			// indInfo is supposed to be const, but it is troublesome to change that.
+			setIndInfo(const_cast<population &>(pop).indInfo(fromIdx), toIdx);
 		}
 	}
 }

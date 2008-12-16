@@ -43,7 +43,7 @@ from simuPOP import *
 def simuMitochondrial(N, numMito=3, gen=10):
     '''
     '''
-    pop = population(N, loci=[5]*(3 + numMito),
+    pop = population(N, loci=[2]*(3 + numMito),
         # one autosome, two sex chromosomes, and three mitochondrial chromosomes
         chromTypes=[Autosome, ChromosomeX, ChromosomeY] + [Customized]*numMito,
         # record indexes of parents for verification purpose
@@ -64,7 +64,11 @@ def simuMitochondrial(N, numMito=3, gen=10):
         ],
         gen = gen
     )
-    return simu.extract(0)
+    pop = simu.extract(0)
+    Stat(pop, alleleFreq=range(pop.totNumLoci()))
+    import pprint
+    pprint.pprint(pop.dvars().alleleFreq)
+    return pop
 
 
 if __name__ == '__main__':
