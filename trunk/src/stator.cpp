@@ -478,7 +478,7 @@ bool statAlleleFreq::apply(population & pop)
 			vectorf & freq = m_alleleFreq[sp][loc];
 			freq.resize(num.size(), 0.);
 			for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
-				freq[e] = static_cast<double>(num[e]) / allAllele;
+				freq[e] = allAllele == 0 ? 0 : static_cast<double>(num[e]) / allAllele;
 
 			// post result at this locus
 			if (m_ifPost[i]) {
@@ -518,7 +518,7 @@ bool statAlleleFreq::apply(population & pop)
 			vectorf & freq = m_alleleFreq.back()[loc];
 			freq.resize(sum.size());
 			for (size_t e = 0, eEnd = sum.size(); e < eEnd; ++e)
-				freq[e] = static_cast<double>(sum[e]) / sumAll;
+				freq[e] = sumAll == 0 ? 0 : static_cast<double>(sum[e]) / sumAll;
 
 			if (m_ifPost[i]) {
 				if (m_output_alleleNum) {

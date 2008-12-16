@@ -742,67 +742,19 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-	IndAlleleIterator alleleBegin(UINT locus)
-	{
-		CHECKRANGEABSLOCUS(locus);
-
-		// if there is virtual subpop, use individual based iterator
-		// or
-		// if requires order, but the alleles are not ordered
-		// use individual based
-		if (hasActivatedVirtualSubPop() || !indOrdered()
-			|| chromType(chromLocusPair(locus).first) != Autosome)
-			return IndAlleleIterator(locus, indBegin(), ploidy(), totNumLoci());
-		else
-			return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
-	}
+	IndAlleleIterator alleleBegin(UINT locus);
 
 
 	/// CPPONLY allele iterator
-	IndAlleleIterator alleleEnd(UINT locus)
-	{
-		CHECKRANGEABSLOCUS(locus);
-		if (hasActivatedVirtualSubPop() || !indOrdered()
-			|| chromType(chromLocusPair(locus).first) != Autosome)
-			return IndAlleleIterator(locus, indEnd(), ploidy(), totNumLoci());
-		else
-			return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
-	}
+	IndAlleleIterator alleleEnd(UINT locus);
 
 
 	/// CPPONLY allele begin, for given subPop
-	/**
-	   order = True: keep order
-	   order = false: repect subpop
-	 */
-	IndAlleleIterator alleleBegin(UINT locus, UINT subPop)
-	{
-		CHECKRANGEABSLOCUS(locus);
-		CHECKRANGESUBPOP(subPop);
-
-		if (hasActivatedVirtualSubPop() || !indOrdered()
-			|| chromType(chromLocusPair(locus).first) != Autosome)
-			return IndAlleleIterator(locus, indBegin(subPop), ploidy(), totNumLoci());
-		else
-			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
-				locus, totNumLoci());
-	}
+	IndAlleleIterator alleleBegin(UINT locus, UINT subPop);
 
 
 	///  CPPONLY allele iterator
-	IndAlleleIterator alleleEnd(UINT locus, UINT subPop)
-	{
-		CHECKRANGEABSLOCUS(locus);
-		CHECKRANGESUBPOP(subPop);
-
-		if (hasActivatedVirtualSubPop() || !indOrdered()
-			|| chromType(chromLocusPair(locus).first) != Autosome)
-			return IndAlleleIterator(locus, indEnd(subPop), ploidy(), totNumLoci());
-		else
-			return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
-				locus, totNumLoci());
-	}
-
+	IndAlleleIterator alleleEnd(UINT locus, UINT subPop);
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
 	/**
@@ -898,24 +850,6 @@ public:
 	}
 
 
-	/// HIDDEN get the whole genotypes
-	/**
-	   Return an editable array of all genotypes of the population. You need to
-	   know how these genotypes are organized to safely read/write genotype
-	   directly.
-	   \param order if order is \c true, individuals will be ordered such that
-	    <tt>pop.individual(x).arrGenotype() == pop.arrGenotype()[x*pop.genoSize():(x+1)*pop.genoSize()]</tt>.
-	 */
-	PyObject * arrGenotype(bool order);
-
-	/// HIDDEN get the whole genotypes of individuals in a subpopulation
-	/**
-	   Return an editable array of all genotype in a subpopulation.
-	   \param subPop index of subpopulation (start from 0)
-	   \param order if order is \c true, individuals will be ordered.
-	 */
-	PyObject * arrGenotype(UINT subPop, bool order);
-
 	/** Return an editable array of the genotype of all individuals in this
 	 *  population.
 	 *  <group>5-genotype</group>
@@ -936,9 +870,9 @@ public:
 	void setGenotype(vectora geno);
 
 	/** Fill the genotype of all individuals of in (virtual) subpopulation
-     *  \e subPop using a list of alleles \e geno. \e geno will be reused if
-     *  its length is less than
-     *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
+	 *  \e subPop using a list of alleles \e geno. \e geno will be reused if
+	 *  its length is less than
+	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
 	void setGenotype(vectora geno, vspID subPop);
@@ -1278,15 +1212,15 @@ public:
 	 */
 	void setInfoFields(const vectorstr & fields, double init = 0);
 
-    /** Update information fields \e fields from \e fromFields of another
-     *  population (or pedigree) \e pop. Two populations should have the same
-     *  number of individuals. If \e fromFields is not specified, it is assumed
-     *  to be the same as \e fields. If \e ancGen is not \c -1, only the most
-     *  recent \e ancGen generations are updated.
-     *  <group>8-info</group>
-     */
-    void updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
-        const vectorstr & fromFields = vectorstr(), int ancGen = -1);
+	/** Update information fields \e fields from \e fromFields of another
+	 *  population (or pedigree) \e pop. Two populations should have the same
+	 *  number of individuals. If \e fromFields is not specified, it is assumed
+	 *  to be the same as \e fields. If \e ancGen is not \c -1, only the most
+	 *  recent \e ancGen generations are updated.
+	 *  <group>8-info</group>
+	 */
+	void updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
+		const vectorstr & fromFields = vectorstr(), int ancGen = -1);
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all
