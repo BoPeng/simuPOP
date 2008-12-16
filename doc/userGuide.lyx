@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -3459,7 +3459,7 @@ setAncestralPop(0)
 A typical use of ancestral generations is demonstrated in example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ancestralPop"
+reference "extract"
 
 \end_inset
 
@@ -3491,11 +3491,110 @@ lstparams "caption={Ancestral populations},label={ancestralPop}"
 \end_layout
 
 \begin_layout Subsection
-Modifying a population
+Add and remove loci
+\end_layout
+
+\begin_layout Standard
+Several functions are provided to remove, add empty loci or chromosomes,
+ and to merge loci or chromosomes from another population.
+ They can be used to trim unneeded loci, expand exisiting population or
+ merge two populations.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "extract"
+
+\end_inset
+
+ demonstrates how to use these populations.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/addRemoveLoci.log"
+lstparams "caption={Add and remove loci and chromosomes},keywordstyle={\\ttfamily},label={addRemoveLoci}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
 Population extraction
+\end_layout
+
+\begin_layout Standard
+Another import population member function is 
+\family typewriter
+population::extract(field=None, loci=None, info=None, ancGen=-1, ped=None)
+\family default
+.
+ It is a powerful function that can extract subset of individuals, loci,
+ information fields and ancestral generations from an existing population.
+ This function is widely used in ascertainment operators where individuals
+ or pedigrees are extracted from an existing population and form a sample.
+\end_layout
+
+\begin_layout Standard
+If all default parameters are used, this function is equivalent to 
+\family typewriter
+population::clone()
+\family default
+.
+ If a list of loci or information fields are given to parameters 
+\family typewriter
+loci
+\family default
+ and 
+\family typewriter
+info
+\family default
+, other specified loci and information fields will be copied to the extracted
+ population.
+ If a positive 
+\family typewriter
+ancGen
+\family default
+ is given, only generations 
+\family typewriter
+0
+\family default
+ -
+\family typewriter
+ ancGen
+\family default
+ will be extracted.
+ The most interesting parameter is 
+\family typewriter
+ind
+\family default
+.
+ Instead of given a list of individuals that will be extract, an information
+ field is expected.
+ This information field is expected to hold the new subpopulation ID to
+ which each individual will belong in the extracted population.
+ Individuals with negative values (invalid subpopulation ID) at this information
+ field will not be extracted.
+ If another population (or pedigree) with the same number of individuals
+ is given, the information field from that population is used.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "extract"
+
+\end_inset
+
+ demonstrates the use of this powerful function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/extract.log"
+lstparams "caption={Extract individuals, loci and information fields from an existing population},keywordstyle={\\ttfamily},label={extract}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

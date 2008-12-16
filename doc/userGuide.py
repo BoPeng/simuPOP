@@ -349,6 +349,35 @@ for i in range(pop.ancestralGens(), -1, -1):
 pop.useAncestralGen(0)  
 #end
 
+#file log/addRemoveLoci.log
+pop = population(10, loci=[3], chromNames=['chr1'])
+# 1 1 1, 
+pop.setGenotype([1])
+# 1 1 1, 0 0 0
+pop.addChrom(lociPos=[0.5, 1, 2], lociNames=['rs1', 'rs2', 'rs3'],
+    chromName='chr2')
+pop1 = population(10, loci=[3], chromNames=['chr3'],
+    lociNames=['rs4', 'rs5', 'rs6'])
+# 2 2 2,
+pop1.setGenotype([2])
+# 1 1 1, 0 0 0, 2 2 2
+pop.addChromFrom(pop1)
+# 1 1 1, 0 0 0, 2 0 2 2 0
+pop.addLoci(chrom=[2, 2], pos=[1.5, 3.5], names=['rs7', 'rs8'])
+# 1 1 1, 0 0 0, 2 0 2 0
+pop.removeLoci([8])
+Dump(pop)
+#end
+
+#file log/extract.log
+import random
+pop = population(size=[10, 10], loci=[5, 5],
+    infoFields=['x', 'y'])
+InitByValue(pop, range(10))
+pop.setIndInfo([random.randint(-2, 2) for x in range(20)], 'x')
+pop1 = pop.extract(field='x', loci=[1, 2, 3, 6, 7], infoFields=['x'])
+Dump(pop1, structure=False)
+#end
 
 #file log/popVars.log
 from pprint import pprint
