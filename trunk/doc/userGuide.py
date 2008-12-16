@@ -355,6 +355,8 @@ from pprint import pprint
 pop = population(100, loci=[2])
 InitByFreq(pop, [0.3, 0.7])
 print pop.vars()    # No variable now
+pop.dvars().myVar = 21
+print pop.vars()
 Stat(pop, popSize=1, alleleFreq=[0])
 # pprint prints in a less messy format
 pprint(pop.vars())
@@ -366,15 +368,27 @@ print pop.dvars().alleleFreq[0]
 #end
 
 
-#file log/localNamespace.log
-print pop.evaluate('alleleNum[0][1] + alleleNum[0][2]')
-pop.execute('newPopSize=int(popSize*1.5)')
-ListVars(pop.vars(), level=1, useWxPython=False)
-# this variable is 'local' to the population and is
-# not available in the main namespace
-newPopSize
+#file log/expression.log
+simu = simulator(population(100, loci=[1]),
+    randomMating(), 5)
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [
+        stat(alleleFreq=[0]),
+        terminateIf('alleleFreq[0][0] == 0. or alleleFreq[0][0] == 1.')
+    ]
+)
 #end
 
+
+#file log/savePop.log
+pop = population(100, loci=[5], chromNames=['chrom1'])
+pop.dvars().name = 'my population'
+pop.save('sample.pop')
+pop1 = LoadPopulation('sample.pop')
+pop1.chromName(0)
+pop1.dvars().name
+#end
 
 ################################################################################
 #
