@@ -25,8 +25,8 @@
 #define _UTILITY_H
 
 /**
- \file
- \brief head file for all utility classes/functions
+   \file
+   \brief head file for all utility classes/functions
 
    This file is very important since it handles most of the
    memory, file, IO, random number generator problems.
@@ -505,7 +505,7 @@ class Expression
 {
 public:
 	Expression(const string & expr = "", const string & stmts = "",
-	           PyObject * locals = NULL)
+		PyObject * locals = NULL)
 		: m_expr(NULL), m_stmts(NULL), m_locals(locals)
 	{
 		if (m_locals == NULL)
@@ -528,7 +528,7 @@ public:
 
 	/** CPPONLY
 	 * set local dictionary
-     */
+	 */
 	void setLocalDict(PyObject * dict)
 	{
 		m_locals = dict;
@@ -686,12 +686,12 @@ public:
 
 	/** CPPONLY get an ostream pointer from a name.
 	 * if the stream does not exist, create one and return.
-     */
+	 */
 	ostream * getOstream(const string & name, bool readable,  bool realAppend, bool useString);
 
 	/** CPPONLY if persistant ostream exist for a filename
 	 * this is mostly for debug purposes
-     */
+	 */
 	bool hasOstream(const string & filename);
 
 	/// CPPONLY list all registered ostreams
@@ -782,10 +782,10 @@ public:
 	   the first Operator that uses the file need to specify its
 	   persistancy using >> or >>>
 
-	 \param readable if the file need to be readable (other than writable).
+	   \param readable if the file need to be readable (other than writable).
 	   The file has to be created by >>| or >>>| specifier.
-	 \param gen current generation
-	 \param rep calling replicate
+	   \param gen current generation
+	   \param rep calling replicate
 
 	 */
 	ostream & getOstream(PyObject * dict = NULL, bool readable = false);
@@ -858,10 +858,10 @@ public:
 
 	/// choose an random number generator, or set seed to the current RNG
 	/**
-	 \param rng name of the RNG. If rng is not given, environmental variable
+	   \param rng name of the RNG. If rng is not given, environmental variable
 	   GSL_RNG_TYPE will be used if it is available. Otherwise, RNG \c mt19937
 	   will be used.
-	 \param seed random seed. If not given, <tt>/dev/urandom</tt>,
+	   \param seed random seed. If not given, <tt>/dev/urandom</tt>,
 	   <tt>/dev/random</tt>, system time will be used, depending on availability,
 	   in that order. Note that windows system does not have \c /dev so system
 	   time is used.
@@ -920,7 +920,8 @@ public:
 		return gsl_rng_get(m_RNG);
 	}
 
-    bool randBit();
+
+	bool randBit();
 
 	/// return a random number in the range of [0, 1, 2, ... n-1]
 	unsigned long int randInt(unsigned long int n)
@@ -1215,7 +1216,7 @@ public:
 
 	/** CPPONLY
 	 * return size of trial
-     */
+	 */
 	ULONG trialSize() const
 	{
 		return m_N;
@@ -1341,6 +1342,7 @@ string ModulePlatForm();
 // efficiently copy alleles (block by block, rather than 1 by 1)
 /// CPPONLY
 void copyGenotype(GenoIterator fr, GenoIterator to, size_t n);
+
 void clearGenotype(GenoIterator to, size_t n);
 
 #  ifndef OPTIMIZED
