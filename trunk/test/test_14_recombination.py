@@ -842,7 +842,7 @@ class TestRecombinator(unittest.TestCase):
             preOps = [
                 initByValue([0]*8 + [1]*8)
                 ],
-            ops = [recombinator(rate=0.3)],
+            ops = [],
             gen = 1)
         # all individuals get the second copy from the first copy of male parents
         # which are all zero
