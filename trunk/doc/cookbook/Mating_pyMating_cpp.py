@@ -102,10 +102,10 @@ def plotInds(pop):
     '''plot the location of individuals. This requires R and rpy. '''
     if not has_rpy:
         return True
-    r.postscript('loc_%d.eps' % pop.gen())
+    r.postscript('loc_%d.eps' % pop.dvars().gen)
     r.plot(0, 0, xlim=[-5, 5], ylim=[-5, 5], type='n',
         xlab='x', ylab='y',
-        main='Locations of individuals at generation %d' % pop.gen())
+        main='Locations of individuals at generation %d' % pop.dvars().gen)
     for ind in pop.individuals():
         r.points(ind.info(0), ind.info(1))
     r.dev_off()
@@ -136,7 +136,7 @@ def parentsChooser(pop, sp):
         yield (None, None)
     while True:
         # randomly choose a male
-        male = males[random.randint(0, len(males)-1)]
+        male = males[randint(0, len(males)-1)]
         # choose its closest female
         diff_x = [pop.individual(x).info(0) - pop.individual(male).info(0) for x in females]
         diff_y = [pop.individual(x).info(1) - pop.individual(male).info(1) for x in females]
@@ -162,7 +162,7 @@ def simuGeoMating(size, gen):
             pyTagger(func=locOfOffspring, infoFields=['x', 'y']),
             pyOperator(func=plotInds),
         ],
-        end = gen
+        gen = gen
     )
 
 if __name__ == '__main__':
