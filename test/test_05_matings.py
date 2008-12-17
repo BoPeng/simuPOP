@@ -37,7 +37,7 @@ class TestMatingSchemes(unittest.TestCase):
 
     def getFamSize(self, mate, endGen=1, size=1000):
         simu = simulator(population(size, loci=[1]), mate)
-        simu.evolve(ops=[], gen=endGen)
+        simu.evolve(preOps=[initSex()], ops=[], gen=endGen)
         return simu.population(0).dvars().famSizes
 
     def testNumOffspring(self):
