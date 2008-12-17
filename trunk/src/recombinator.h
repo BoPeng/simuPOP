@@ -35,11 +35,81 @@ using std::ostream_iterator;
 
 namespace simuPOP {
 
+/** This during mating operator is the base class of all genotype transmitters.
+ *  It is made available to users because it provides a few member functions
+ *  that can be used by derived transmitters, and by customized Python
+ *  during mating operators.
+ */
+class genoTransmitter : public baseOperator
+{
+public:
+	genoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
+	{
+		setFormOffGenotype(true);
+	}
+
+
+	baseOperator * clone() const
+	{
+		return new genoTransmitter(*this);
+	}
+
+
+	/** Clear (set alleles to zero) chromosome \e chrom on the \e ploidy-th
+	 *  homologous set of chromosomes of individual \e ind.
+	 */
+	void clearChromosome(const individual & ind, int ploidy, int chrom);
+
+	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
+	 *  chromosomes from \e parent to the \e ploidy set of homologous
+	 *  chromosomes of \e offspring.
+	 */
+	void copyChromosome(const individual & parent, int parPloidy,
+		individual & offspring, int ploidy, int chrom);
+
+	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
+	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
+	 *  Customized chromosomes are not copied.
+	 */
+	void copyChromosomes(const individual & parent, int parPloidy,
+		individual & offspring, int ploidy);
+
+	virtual string __repr__()
+	{
+		return "<simuPOP::genoTransmitter>" ;
+	}
+
+
+	void initialize(const population & pop);
+
+	///
+	bool applyDuringMating(population & pop,
+	                       RawIndIterator offspring,
+	                       individual * dad = NULL,
+	                       individual * mom = NULL)
+	{
+		throw SystemError("The base genotype transmitter does not provide any function to transmit genotype");
+	}
+
+
+protected:
+	// cache some genostructor information for
+	// faster performance
+	UINT m_ploidy;
+	bool m_hasCustomizedChroms;
+	vectoru m_lociToCopy;
+	vectoru m_chromIdx;
+};
+
 /** This during mating operator copies parental genotype directly to offspring.
  *  This operator works for all mating schemes when one or two parents are
  *  involved. If both parents are passed, maternal genotype are copied.
  */
-class cloneGenoTransmitter : public baseOperator
+class cloneGenoTransmitter : public genoTransmitter
 {
 public:
 	/** Create a cloneGenoTransmitter.
@@ -47,8 +117,7 @@ public:
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
-		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0)
+		genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
 	{
 		setFormOffGenotype(true);
 	}
@@ -59,12 +128,6 @@ public:
 		return new cloneGenoTransmitter(*this);
 	}
 
-	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
-	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
-	 *  Customized chromosomes are not copied.
-	 */
-	void transmitGenotype(const individual & parent, int parPloidy,
-		individual & offspring, int ploidy);
 
 	virtual string __repr__()
 	{
@@ -72,20 +135,12 @@ public:
 	}
 
 
-	void initialize(const population & pop);
-
 	///
 	bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
 
-private:
-	// cache some genostructor information for
-	// faster performance
-	UINT m_ploidy;
-	bool m_hasCustomizedChroms;
-	vectoru m_lociToCopy;
 };
 
 
@@ -100,14 +155,14 @@ private:
 
    <applicability>diploid only</applicability>
  */
-class mendelianGenoTransmitter : public baseOperator
+class mendelianGenoTransmitter : public genoTransmitter
 {
 public:
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
-		m_lociToCopy(0), m_chromX(-1), m_chromY(-1), m_numChrom(0)
+		genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+		m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
 	}
 
@@ -141,9 +196,7 @@ public:
 
 protected:
 	// cache chromBegin, chromEnd for better performance.
-	bool m_hasCustomizedChroms;
 	vectoru m_chIdx;
-	vectoru m_lociToCopy;
 	int m_chromX;
 	int m_chromY;
 	UINT m_numChrom;
@@ -208,7 +261,7 @@ public:
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields),
-			m_copier()
+		m_copier()
 	{
 	}
 
@@ -233,15 +286,15 @@ public:
 		individual * mom = NULL);
 
 private:
-	cloneGenoTransmitter m_copier;
+	genoTransmitter m_copier;
 };
 
 
 /** This geno transmitter transmits some customized chromosomes as human
-	mitochondrial chromosomes. It randomly inherit the first homologous copy of several
-	customized chromosomes of the female parent.
-*/
-class mitochondrialGenoTransmitter : public baseOperator
+    mitochondrial chromosomes. It randomly inherit the first homologous copy of several
+    customized chromosomes of the female parent.
+ */
+class mitochondrialGenoTransmitter : public genoTransmitter
 {
 public:
 	/** chroms: if not given, all customized chromosomes.
@@ -249,7 +302,7 @@ public:
 	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		: genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
 	}
@@ -277,7 +330,7 @@ public:
 private:
 	// this is user input.
 	vectoru m_chroms;
-		
+
 	// this is the temporary holder for different populaitons
 	vectoru m_mitoChroms;
 
@@ -306,7 +359,7 @@ private:
     events, depending on the parameters chosen.
  */
 
-class recombinator : public baseOperator
+class recombinator : public genoTransmitter
 {
 public:
 #define CONVERT_NumMarkers                   1
@@ -375,29 +428,7 @@ public:
 		double convProb = 0, UINT convMode = CONVERT_NumMarkers, double convParam = 1.,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		const vectorstr & infoFields = vectorstr())
-		:
-		baseOperator("", "", DuringMating, begin, end, step, at, rep, subPop, infoFields)
-		, m_intensity(intensity), m_rate(rate), m_afterLoci(loci), m_recBeforeLoci(0),
-		m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
-		m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
-#ifndef OPTIMIZED
-		m_recCount(0), m_convSize(),
-#endif
-		m_algorithm(0)
-	{
-		// tells mating schemes that this operator will form
-		// the genotype of offspring so they do not have to
-		// generate default genotype for offspring
-		setFormOffGenotype(true);
-
-		DBG_FAILIF(fcmp_lt(m_convProb, 0) || fcmp_gt(m_convProb, 1),
-			ValueError, "Conversion probability should be between 0 and 1");
-	};
-
-	virtual ~recombinator()
-	{
-	}
+		const vectorstr & infoFields = vectorstr());
 
 
 	/// deep copy of a recombinator
@@ -411,6 +442,19 @@ public:
 	virtual string __repr__()
 	{
 		return "<simuPOP::recombination>" ;
+	}
+
+
+	/// return recombination counts (only valid in standard modules)
+	UINT recCount(size_t idx)
+	{
+		DBG_FAILIF(idx >= m_recCount.size(), IndexError,
+			"RecCount index out of range");
+#ifndef OPTIMIZED
+		return m_recCount[idx];
+#else
+		return 0;
+#endif
 	}
 
 

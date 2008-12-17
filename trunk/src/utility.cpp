@@ -22,8 +22,8 @@
 ***************************************************************************/
 
 /**
- \file
- \brief implementation of some utility functions.
+   \file
+   \brief implementation of some utility functions.
  */
 
 #include "utility.h"
@@ -86,6 +86,7 @@ extern "C" char   carray_type(PyObject * a);
 extern "C" char * carray_data(PyObject * a);
 
 extern "C" void initcarray(void);
+
 extern "C" PyTypeObject Arraytype;
 
 // for streambuf stuff
@@ -140,7 +141,7 @@ void TurnOnDebug(DBG_CODE code)
 #ifndef OPTIMIZED
 	if (code != DBG_ALL)
 		g_dbgCode[static_cast<int>(code)] = true;
-	else  // set all
+	else    // set all
 		g_dbgCode.set();
 #endif
 }
@@ -169,7 +170,7 @@ void TurnOffDebug(DBG_CODE code)
 #ifndef OPTIMIZED
 	if (code != DBG_ALL)
 		g_dbgCode[static_cast<int>(code)] = false;
-	else  // reset all
+	else    // reset all
 		g_dbgCode.reset();
 
 	if (debug(DBG_GENERAL) )
@@ -1252,7 +1253,7 @@ PyObject * load_tuple(const string & vars, size_t & offset)
    void save_carray(string& str, PyObject* args)
    {
    DBG_ASSERT(carray_type(args) != 'a', ValueError,
-   	"Binary carray can not be saved");
+    "Binary carray can not be saved");
 
    char* d = carray_data(args);
    size_t len = carray_length(args);
@@ -1365,7 +1366,6 @@ void SharedVariables::fromString(const string & vars)
 	m_ownVars = true;
 	m_dict = obj;
 }
-
 
 
 // simuVars will hold replicate specific Shared Variables.
@@ -1621,7 +1621,7 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 		}
 	}
 
-	if (m_stream == NULL || ! * m_stream)
+	if (m_stream == NULL || !*m_stream)
 		throw ValueError("Can not open specified file:" + name);
 
 	DBG_DO(DBG_UTILITY, cout << "New file info: " << info() << endl);
@@ -1675,7 +1675,7 @@ void StreamElem::makeReadable()
 	// try to keep file content
 	m_stream = new fstream(m_filename.c_str(),  std::ios::in | std::ios::out | std::ios::ate);
 
-	if (m_stream == NULL || ! * m_stream)
+	if (m_stream == NULL || !*m_stream)
 		throw ValueError("Can not re-open specified file.");
 
 	m_type = FSTREAM;
@@ -1896,7 +1896,7 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 			else
 				m_filePtr = new ofstream(filename.c_str() );
 
-			if (m_filePtr == NULL || ! * m_filePtr)
+			if (m_filePtr == NULL || !*m_filePtr)
 				throw SystemError("Can not create file " + filename);
 
 			return *m_filePtr;
@@ -1994,6 +1994,7 @@ RNG::~RNG()
 	// free current RNG
 	gsl_rng_free(m_RNG);
 }
+
 
 #if  defined (_WIN32) || defined (__WIN32__)
 // the following code is adapted from python os.urandom
@@ -2137,15 +2138,16 @@ void RNG::setRNG(const char * rng, unsigned long seed)
 
 bool RNG::randBit()
 {
-    static WORDTYPE randbyte = 0;
-    static UINT index = 0;
-    if (index == 16)
-        index = 0;
+	static WORDTYPE randbyte = 0;
+	static UINT index = 0;
 
-    if (index == 0)
-        randbyte = randInt(0xFFFF);
+	if (index == 16)
+		index = 0;
 
-    return (randbyte & (1UL << index++)) != 0;
+	if (index == 0)
+		randbyte = randInt(0xFFFF);
+
+	return (randbyte & (1UL << index++)) != 0;
 }
 
 
@@ -2214,7 +2216,6 @@ void Weightedsampler::set(const vectorf & weight)
 	//     m_q[i] /= m_q[m_N-1];
 	// }
 }
-
 
 
 // this is used for BernulliTrials and copyGenotype
@@ -2692,7 +2693,7 @@ void setLogOutput(const string filename)
     else {
         // use a file.
         outputFile = new ofstream(filename.c_str());
-        if (outputFile == NULL || ! * outputFile)
+        if (outputFile == NULL || !*outputFile)
 			throw ValueError("Can not open file " + filename + " to store standard output");
         cout.rdbuf(outputFile->rdbuf());
 	}
@@ -3068,21 +3069,27 @@ void copyGenotype(GenoIterator fr, GenoIterator to, size_t n)
 #  endif
 }
 
+
 void clearGenotype(GenoIterator to, size_t n)
 {
     WORDTYPE * to_p = BITPTR(to);
     unsigned int to_off = BITOFF(to);
 
     // This can be made more efficient.
-	for (size_t i = 0; i < n; ++i) {
-		// set bit according to from bit
-		*to_p &= ~(1UL << to_off);
-		if (to_off++ == WORDBIT - 1) {
-			to_off = 0;
-			++to_p;
+    for (size_t i = 0; i < n; ++i) {
+        // set bit according to from bit
+        *to_p &= ~(1UL << to_off);
+        if (to_off++ == WORDBIT - 1) {
+            while (i + WORDBIT < n) {
+                *++to_p = 0;
+                i += WORDBIT;
+			}
+            ++to_p;
+            to_off = 0;
 		}
 	}
 }
+
 
 #endif
 

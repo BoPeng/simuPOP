@@ -28,22 +28,51 @@ using std::max;
 
 namespace simuPOP {
 
-void cloneGenoTransmitter::initialize(const population & pop)
+void genoTransmitter::initialize(const population & pop)
 {
 	m_hasCustomizedChroms = !pop.customizedChroms().empty();
-	if (m_hasCustomizedChroms) {
-		for (UINT ch = 0; ch < pop.numChrom(); ++ch)
-			if (pop.chromType(ch) == Customized)
-				m_lociToCopy.push_back(0);
-			else
-				m_lociToCopy.push_back(pop.numLoci(ch));
-	}
+	m_lociToCopy.clear();
+	for (UINT ch = 0; ch < pop.numChrom(); ++ch)
+		if (pop.chromType(ch) == Customized)
+			m_lociToCopy.push_back(0);
+		else
+			m_lociToCopy.push_back(pop.numLoci(ch));
 	m_ploidy = pop.ploidy();
+	m_chromIdx = pop.chromIndex();
 }
 
 
-void cloneGenoTransmitter::transmitGenotype(const individual & parent,
-	int parPloidy, individual & offspring, int ploidy)
+void genoTransmitter::clearChromosome(const individual & ind, int ploidy, int chrom)
+{
+#ifdef BINARYALLELE
+	clearGenotype(ind.genoBegin(ploidy) + m_chromIdx[chrom], m_lociToCopy[chrom]);
+#else
+	DBG_FAILIF(m_chromIdx.empty(), ValueError, "GenoTransmitter is not initialized properly");
+	fill(ind.genoBegin(ploidy) + m_chromIdx[chrom],
+		ind.genoBegin(ploidy) + m_chromIdx[chrom + 1], 0);
+#endif
+}
+
+
+void genoTransmitter::copyChromosome(const individual & parent, int parPloidy,
+                                     individual & offspring, int ploidy, int chrom)
+{
+#ifdef BINARYALLELE
+	copyGenotype(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
+		offspring.genoBegin(ploidy) + m_chromIdx[chrom],
+		m_lociToCopy[chrom]);
+#else
+	DBG_FAILIF(m_chromIdx.empty(), ValueError,
+		"GenoTransmitter is not properly initialized.");
+	copy(parent.genoBegin(parPloidy) + m_chromIdx[chrom],
+		parent.genoBegin(parPloidy) + m_chromIdx[chrom + 1],
+		offspring.genoBegin(ploidy) + m_chromIdx[chrom]);
+#endif
+}
+
+
+void genoTransmitter::copyChromosomes(const individual & parent,
+                                      int parPloidy, individual & offspring, int ploidy)
 {
 	// troublesome ...
 	if (m_hasCustomizedChroms) {
@@ -115,15 +144,7 @@ bool cloneGenoTransmitter::applyDuringMating(population & pop,
 
 void mendelianGenoTransmitter::initialize(const population & pop)
 {
-	m_chIdx = pop.chromIndex();
-
-	m_hasCustomizedChroms = !pop.customizedChroms().empty();
-	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-		if (pop.chromType(ch) == Customized)
-			m_lociToCopy.push_back(0);
-		else
-			m_lociToCopy.push_back(pop.numLoci(ch));
-	}
+	genoTransmitter::initialize(pop);
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
 	m_numChrom = pop.numChrom();
@@ -135,40 +156,19 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 {
 	// current parental ploidy (copy from which chromosome copy)
 	int parPloidy = 0;
-	// pointer to parental, and offspring chromosome copies
-	GenoIterator par[2];
-	GenoIterator off;
 
-	//
-	par[0] = parent.genoBegin(0);
-	par[1] = parent.genoBegin(1);
-	off = offspring.genoBegin(ploidy);
-	//
-#ifndef BINARYALLELE
-	// the easy way to copy things.
-	for (int ch = 0; static_cast<UINT>(ch) < m_numChrom; ++ch) {
-		// customized chromosome?
-		if (m_lociToCopy[ch] == 0 || (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
-			continue;
-		if (ploidy == 1 && ch == m_chromX) {
-			if (offspring.sex() == Male)
-				continue;
-			else
-				parPloidy = 0;
-		} else if (ploidy == 1 && ch == m_chromY) {
-			if (offspring.sex() == Male)
-				parPloidy = 1;          // copy chrom Y from second ploidy
-			else
-				continue;
-		} else
-			parPloidy = rng().randBit();
-		//
-		for (size_t gt = m_chIdx[ch]; gt < m_chIdx[ch + 1]; ++gt)
-			off[gt] = par[parPloidy][gt];
-	}
-#else
+#ifdef BINARYALLELE
 	// for the simple case, use faster algorithm
 	if (m_chromX < 0 && m_chromY < 0 && !m_hasCustomizedChroms) {
+		// pointer to parental, and offspring chromosome copies
+		GenoIterator par[2];
+		GenoIterator off;
+
+		//
+		par[0] = parent.genoBegin(0);
+		par[1] = parent.genoBegin(1);
+		off = offspring.genoBegin(ploidy);
+		//
 		//
 		// 1. try to copy in blocks,
 		// 2. if two chromosomes can be copied together, copy together
@@ -191,7 +191,7 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 			}
 			if (copyPar) {
 				// end of this chromosome, is the beginning of the next
-				parEnd = m_chIdx[ch + 1];
+				parEnd = m_chromIdx[ch + 1];
 				size_t length = parEnd - parBegin;
 				//
 				// the easiest case, try to get some speed up...
@@ -205,30 +205,30 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 				parBegin = parEnd;
 			}
 		}
-	} else {    // use the less efficient algorithm
-		for (UINT ch = 0; ch < m_numChrom; ++ch) {
-			// customized chromosome?
-			if (m_lociToCopy[ch] == 0 ||
-			    (ploidy == 0 && ch == m_chromY))    // maternal, Y chromosome
-				continue;
-			if (ploidy == 1 && ch == m_chromX) {
-				if (offspring.sex() == Male)
-					continue;
-				else
-					parPloidy = 0;
-			} else if (ploidy == 1 && ch == m_chromY) {
-				if (offspring.sex() == Male)
-					parPloidy = 1;          // copy chrom Y from second ploidy
-				else
-					continue;
-			} else
-				parPloidy = rng().randBit();
-			//
-			copyGenotype(par[parPloidy] + m_chIdx[ch],
-				off + m_chIdx[ch], m_lociToCopy[ch]);
-		}
+		return;
 	}
 #endif
+	//
+	for (int ch = 0; static_cast<UINT>(ch) < m_numChrom; ++ch) {
+		// customized chromosome?
+		if (m_lociToCopy[ch] == 0)
+			continue;
+		if ((ploidy == 0 && ch == m_chromY) ||   // maternal, Y chromosome
+		    (ploidy == 1 &&
+		     ((ch == m_chromX && offspring.sex() == Male) ||
+		      (ch == m_chromY && offspring.sex() == Female)))) {
+			//clearChromosome(offspring, ploidy, ch);
+			continue;
+		}
+		if (ploidy == 1 && ch == m_chromX)
+			parPloidy = 0;
+		else if (ploidy == 1 && ch == m_chromY)
+			parPloidy = 1;          // copy chrom Y from second ploidy
+		else
+			parPloidy = rng().randBit();
+		//
+		copyChromosome(parent, parPloidy, offspring, ploidy, ch);
+	}
 }
 
 
@@ -255,7 +255,7 @@ bool selfingGenoTransmitter::applyDuringMating(population & pop,
 	DBG_FAILIF(mom == NULL && dad == NULL, ValueError,
 		"Selfing genotype transmitter requires at least one valid parents");
 
-	// call initialize if needed.
+	// call mendelianGenoTransmitter::initialize if needed.
 	baseOperator::applyDuringMating(pop, offspring, dad, mom);
 
 	individual * parent = mom != NULL ? mom : dad;
@@ -272,7 +272,6 @@ void haplodiploidGenoTransmitter::initialize(const population & pop)
 	DBG_FAILIF(pop.chromX() >= 0 || pop.chromY() >= 0, ValueError,
 		"Haplodiploid populations do not use sex chromosomes");
 	mendelianGenoTransmitter::initialize(pop);
-	m_copier.initialize(pop);
 }
 
 
@@ -289,19 +288,20 @@ bool haplodiploidGenoTransmitter::applyDuringMating(population & pop,
 	transmitGenotype(*mom, *offspring, 0);
 
 	if (offspring->sex() == Female)
-		m_copier.transmitGenotype(*dad, 0, *offspring, 1);
+		copyChromosomes(*dad, 0, *offspring, 1);
 	return true;
 }
 
 
 void mitochondrialGenoTransmitter::initialize(const population & pop)
 {
+	genoTransmitter::initialize(pop);
 	if (m_chroms.empty()) {
 		for (UINT ch = 0; ch < pop.numChrom(); ++ch)
 			if (pop.chromType(ch) == Customized)
 				m_mitoChroms.push_back(ch);
 	} else {
-#ifndef OPTIMIZED	
+#ifndef OPTIMIZED
 		for (UINT ch = 0; ch < m_chroms.size(); ++ch) {
 			DBG_ASSERT(pop.chromType(ch) == Customized, ValueError,
 				"Chromosome " + toStr(ch) + " is not of Customized type.");
@@ -325,7 +325,7 @@ void mitochondrialGenoTransmitter::initialize(const population & pop)
 
 
 bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
-                                                    RawIndIterator offspring, individual * dad, individual * mom)
+                                                     RawIndIterator offspring, individual * dad, individual * mom)
 {
 	DBG_FAILIF(mom == NULL, ValueError,
 		"mitochondrialGenoTransmitter requires valid female parent.");
@@ -345,16 +345,39 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 		GenoIterator off = offspring->genoBegin(0, *it);
 #ifdef BINARYALLELE
 		copyGenotype(par, off, m_numLoci);
-        clearGenotype(off, m_numLoci);
 #else
 		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
 		copy(par, par_end, off);
-        fill(offspring->genoBegin(1, *it), offspring->genoEnd(1, *it), 0);
 #endif
+		clearChromosome(*offspring, 1, *it);
 	}
 
 	return true;
 }
+
+
+recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
+	double convProb, UINT convMode, double convParam,
+	int begin, int end, int step, vectorl at,
+	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
+	:
+	genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+	, m_intensity(intensity), m_rate(rate), m_afterLoci(loci), m_recBeforeLoci(0),
+	m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
+	m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
+#ifndef OPTIMIZED
+	m_recCount(0), m_convSize(),
+#endif
+	m_algorithm(0)
+{
+	// tells mating schemes that this operator will form
+	// the genotype of offspring so they do not have to
+	// generate default genotype for offspring
+	setFormOffGenotype(true);
+
+	DBG_FAILIF(fcmp_lt(m_convProb, 0) || fcmp_gt(m_convProb, 1),
+		ValueError, "Conversion probability should be between 0 and 1");
+};
 
 
 int recombinator::markersConverted(size_t index, const individual & ind)
