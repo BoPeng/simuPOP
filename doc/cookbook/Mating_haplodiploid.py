@@ -37,7 +37,7 @@ class haplodiploidRecombinator(pyOperator):
         Create an instance of a Python operator, which will call
         ``self.transmitGenotype`` to create offspring. For performance
         considerations, this example uses two existing operators, namely
-        ``recombinator`` and ``cloneGenoTransmitter`` to recombine and copy
+        ``recombinator`` and ``genoTransmitter`` to recombine and copy
         genotype. It is of course possible to use functions such as
         ``individual::setGenotype()`` directly if no existing operator
         fits your need.
@@ -46,7 +46,7 @@ class haplodiploidRecombinator(pyOperator):
         self.recombinator = recombinator(intensity, rate, loci,
             convProb, convMode, convParam)
         # this operator is used to copy paternal chromosomes
-        self.copier = cloneGenoTransmitter()
+        self.copier = genoTransmitter()
         self.initialized = False
         # With no *param* and stage=DuringMating, this operator expects a function
         # in the form of ``(pop, off, dad, mom)``. If *param* is given, the
@@ -68,7 +68,7 @@ class haplodiploidRecombinator(pyOperator):
         # If the offspring is male, copy the second homologous copy from
         # her father. Male individuals only have one homologous set.
         if off.sex() == Female:
-            self.copier.transmitGenotype(dad, 0, off, 1)
+            self.copier.copyChromosomes(dad, 0, off, 1)
         return True
 
 
@@ -113,7 +113,7 @@ def simuHaplodiploid(N, numMito=3, gen=10):
     We cannot use a recombinator directly because it will also recombine
     maternal chromosomes. This example defines a Python during mating
     operator that actually uses a recombinator to recombine maternal
-    chromosomes, and then a cloneGenoTransmitter to copy paternal chromosomes.
+    chromosomes, and then a genoTransmitter to copy paternal chromosomes.
     '''
     pop = population(N, ploidy=Haplodiploid, loci=[20]*2,
         # record indexes of parents for verification purpose
