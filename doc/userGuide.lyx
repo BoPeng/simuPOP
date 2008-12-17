@@ -3891,6 +3891,239 @@ lstparams "caption={Save and load a population},label={savePop}"
 \end_layout
 
 \begin_layout Section
+Operators
+\end_layout
+
+\begin_layout Standard
+Operators are objects that act on populations.
+ They (there are exceptions) can be applied to populations directly, but
+ most of the time they are managed and applied by a simulator.
+ There are three kinds of operators:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+built-in:
+\emph default
+ written in C++, fastest.
+ They do not interact with Python shell except that some of them set variables
+ that are accessible from Python.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+hybrid
+\emph default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+hybrid
+\end_layout
+
+\end_inset
+
+: written in C++ but calls python function when execution.
+ Less efficient.
+ For example, a hybrid mutator 
+\family typewriter
+pyMutator
+\family default
+ will determine if an allele will be mutated and call a user--defined Python
+ function to mutate it.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+pure python
+\emph default
+: written in python.
+ Same speed as python.
+ For example, a 
+\family typewriter
+varPlotter
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+varPlotter
+\end_layout
+
+\end_inset
+
+
+\family default
+ can plot python variables that are set by other operators.
+\end_layout
+
+\begin_layout Standard
+You do not have to know the type of an operator to use them.
+ The interface of them are all the same.
+ Namely, they all accept a standard set of parameters, and are used in the
+ same fashion.
+ Such parameters include 
+\family typewriter
+rep, begin, step, end
+\family default
+ and 
+\family typewriter
+at
+\family default
+.
+ The first two indicate that the operator only applies to one replicate,
+ and the rest control which generation(s) the operator will be applied to.
+ There are also parameters that redirect operator output to files.
+ For details please refer to the reference manual.
+\end_layout
+
+\begin_layout Standard
+A simuPOP life cycle (each generation) can be divided into pre-mating, during-ma
+ting and post-mating and an operator can be applied to one or more of them.
+ For example, a 
+\family typewriter
+stat
+\family default
+ operator usually applies post-mating, but if you prefer, you can change
+ its 
+\family typewriter
+stage
+\family default
+ parameter to 
+\family typewriter
+preMating
+\family default
+ and apply it pre-mating.
+\end_layout
+
+\begin_layout Subsection
+Applicable generations and stages
+\end_layout
+
+\begin_layout Subsection
+Operator output
+\end_layout
+
+\begin_layout Subsection
+During-mating operators
+\end_layout
+
+\begin_layout Subsection
+Hybrid operators
+\end_layout
+
+\begin_layout Subsection
+Python operators
+\end_layout
+
+\begin_layout Subsection
+Derived Python operators
+\end_layout
+
+\begin_layout Subsection
+Function form of an operator
+\end_layout
+
+\begin_layout Standard
+Operators are usually applied to populations through a simulator.
+ They are created and passed as parameters to the 
+\family typewriter
+evolve 
+\family default
+function of a simulator.
+ During evolution, the 
+\family typewriter
+evolve()
+\family default
+ function determines if an operator can be applied to a population and apply
+ it when appropriate.
+ More details about operators will be described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Operators"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+You can ignore the specialties of an operator and call its 
+\family typewriter
+apply()
+\family default
+ function directly.
+ For example, you can initialize a population outside a simulator by 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+initByFreq( [.3, .2, .5] ).apply(pop)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or dump the content of a population by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+dumper().apply(pop)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This usage is used so often that it deserves some simplification.
+ Equivalent functions are defined for most of the operators.
+ For example, function 
+\family typewriter
+InitByFreq
+\family default
+ is defined for operator 
+\family typewriter
+initByFreq
+\family default
+ as follows
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/InitByFreq.log"
+lstparams "caption={Function \\texttt{InitByFreq}},label={InitByFreq}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The function form of an operator is listed after its class name in this
+ reference manual.
+\end_layout
+
+\begin_layout Section
 Mating Scheme
 \begin_inset Index
 status collapsed
@@ -3961,6 +4194,128 @@ heteroMating
 simuPOP reference manual
 \emph default
 .
+\end_layout
+
+\begin_layout Subsection
+Parent choosers and offspring generators
+\end_layout
+
+\begin_layout Standard
+To implement more complex mating schemes, some concepts need to be understood.
+ The first one is 
+\emph on
+parent chooser
+\emph default
+.
+ Parent chooser determines how parent or parents are chosen from a given
+ subpopulation.
+ There are several predefined parent choosers such as 
+\family typewriter
+linearParentChooser
+\family default
+, 
+\family typewriter
+randomParentChooser, randomParentsChooser
+\family default
+, and the most powerful one is called 
+\family typewriter
+pyParentsChooser.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyParensChooser
+\family default
+ accepts a Python generator function, instead of a normal Python function.
+ When this generator function is called, it returns a 
+\emph on
+generator
+\emph default
+ object that provides an iterator interface.
+ Each time when the 
+\family typewriter
+next()
+\family default
+ member function of this object is called, this function resumes where it
+ was stopped last time, executes and returns what the next 
+\emph on
+yield
+\emph default
+ statement returns.
+ An example of generator is given in simuPOP user's guide.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/generator_random.log"
+lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A user defined parents chooser can be very complicated, involving user defined
+ information such as geometric locations.
+ An example is given in 
+\family typewriter
+scripts/demoNonRandomMating.py
+\family default
+.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "generator_random"
+
+\end_inset
+
+, the parents chooser 
+\family typewriter
+randomChooser 
+\family default
+collects indexes of males and females that are over the age of 30 and return
+ a pair of random male and female repeatedly.
+ That is to say, individuals with age < 30 is not involved in mating.
+ Of course, to completely implement age-dependent mating, other factors
+ need to be considered.
+ For example, a 
+\family typewriter
+pyTagger
+\family default
+ is likely to be used to assign age to offspring.
+\end_layout
+
+\begin_layout Standard
+A parents chooser can yield a pair of parents, or a single parent.
+ Obviously, a single diploid parent can not produce offspring using the
+ usual Medelian fashion, so here comes another concept: 
+\emph on
+offspring generator
+\emph default
+, which determines how to produce offspring from given parent or parents.
+ Currently, there are three standard offspring generators.
+\end_layout
+
+\begin_layout Standard
+These offspring generator defines only the default way to fill offspring
+ genotype.
+ When a during-mating operator is involved, it may override what an offspring
+ generator does.
+ For example, a 
+\family typewriter
+recombinator
+\family default
+ recombines parental chromosomes to fill offspring genotype.
+ In the diploid case, it will behave the same for 
+\family typewriter
+cloneOffspringGenerator
+\family default
+ and 
+\family typewriter
+selfingOffspringGenerator.
 \end_layout
 
 \begin_layout Subsection
@@ -4338,377 +4693,6 @@ simuUtil.py
  All these functions support a burnin stage and then split to equal sized
  subpopulations.
  For all these functions, you can test them by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-func = oneOfTheDemographicFunc(parameters)
-\end_layout
-
-\begin_layout Plain Layout
-
-gen = range(0, yourEndGen)
-\end_layout
-
-\begin_layout Plain Layout
-
-r.plot(gen, [func(x)[0] for x in gen])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-numSubPop
-\family default
- is default to 
-\family typewriter
-1
-\family default
-.
- 
-\family typewriter
-split
-\family default
- is default to 
-\family typewriter
-0
-\family default
- or given 
-\family typewriter
-burnin
-\family default
- value.
- Population size change happens 
-\series bold
-after
-\series default
- burnin (start at 
-\family typewriter
-burnin+1
-\family default
-) and split happens at 
-\family typewriter
-split
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-ConstSize(size, split, numSubPop, bottleneckGen, bottleneckSize)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The population size is constant, but will split into 
-\family typewriter
-numSubPop
-\family default
- subpopulations at generation 
-\family typewriter
-split
-\family default
-.
- If 
-\family typewriter
-bottleneckGen
-\family default
- is specified, population size will be 
-\family typewriter
-bottleneckSize
-\family default
- at that generation.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-LinearExpansion(initSize, endSize, end, burnin, split, numSubPop, 
-\end_layout
-
-\begin_layout Plain Layout
-
-    bottleneckGen, bottleneckSize)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Linearly expand the population size from 
-\family typewriter
-intiSize
-\family default
- to 
-\family typewriter
-endSize
-\family default
- after 
-\family typewriter
-burnin
-\family default
-, split the population at generation 
-\family typewriter
-split
-\family default
-.
- If 
-\family typewriter
-bottleneckGen
-\family default
- is specified, population size will be 
-\family typewriter
-bottleneckSize
-\family default
- at that generation.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-ExponentialExpansion(initSize, endSize, end, burnin, split, 
-\end_layout
-
-\begin_layout Plain Layout
-
-    numSubPop, bottleneckGen, bottleneckSize)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Exponentially expand the population size from 
-\family typewriter
-intiSize
-\family default
- to 
-\family typewriter
-endSize
-\family default
- after 
-\family typewriter
-burnin
-\family default
-, split the population at generation 
-\family typewriter
-split
-\family default
-.
- If 
-\family typewriter
-bottleneckGen
-\family default
- is specified, population size will be 
-\family typewriter
-bottleneckSize
-\family default
- at that generation.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-InstantExpansion(initSize, endSize, end, burnin, split, 
-\end_layout
-
-\begin_layout Plain Layout
-
-    numSubPop, bottleneckGen, bottleneckSize)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Instaneously expand the population size from 
-\family typewriter
-intiSize
-\family default
- to 
-\family typewriter
-endSize
-\family default
- after 
-\family typewriter
-burnin
-\family default
-, split the population at generation 
-\family typewriter
-split
-\family default
-.
- If 
-\family typewriter
-bottleneckGen
-\family default
- is specified, population size will be 
-\family typewriter
-bottleneckSize
-\family default
- at that generation.
-\end_layout
-
-\begin_layout Subsection
-Parent choosers and offspring generators
-\end_layout
-
-\begin_layout Standard
-To implement more complex mating schemes, some concepts need to be understood.
- The first one is 
-\emph on
-parent chooser
-\emph default
-.
- Parent chooser determines how parent or parents are chosen from a given
- subpopulation.
- There are several predefined parent choosers such as 
-\family typewriter
-linearParentChooser
-\family default
-, 
-\family typewriter
-randomParentChooser, randomParentsChooser
-\family default
-, and the most powerful one is called 
-\family typewriter
-pyParentsChooser.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pyParensChooser
-\family default
- accepts a Python generator function, instead of a normal Python function.
- When this generator function is called, it returns a 
-\emph on
-generator
-\emph default
- object that provides an iterator interface.
- Each time when the 
-\family typewriter
-next()
-\family default
- member function of this object is called, this function resumes where it
- was stopped last time, executes and returns what the next 
-\emph on
-yield
-\emph default
- statement returns.
- An example of generator is given in simuPOP user's guide.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/generator_random.log"
-lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A user defined parents chooser can be very complicated, involving user defined
- information such as geometric locations.
- An example is given in 
-\family typewriter
-scripts/demoNonRandomMating.py
-\family default
-.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator_random"
-
-\end_inset
-
-, the parents chooser 
-\family typewriter
-randomChooser 
-\family default
-collects indexes of males and females that are over the age of 30 and return
- a pair of random male and female repeatedly.
- That is to say, individuals with age < 30 is not involved in mating.
- Of course, to completely implement age-dependent mating, other factors
- need to be considered.
- For example, a 
-\family typewriter
-pyTagger
-\family default
- is likely to be used to assign age to offspring.
-\end_layout
-
-\begin_layout Standard
-A parents chooser can yield a pair of parents, or a single parent.
- Obviously, a single diploid parent can not produce offspring using the
- usual Medelian fashion, so here comes another concept: 
-\emph on
-offspring generator
-\emph default
-, which determines how to produce offspring from given parent or parents.
- Currently, there are three standard offspring generators.
-\end_layout
-
-\begin_layout Standard
-These offspring generator defines only the default way to fill offspring
- genotype.
- When a during-mating operator is involved, it may override what an offspring
- generator does.
- For example, a 
-\family typewriter
-recombinator
-\family default
- recombines parental chromosomes to fill offspring genotype.
- In the diploid case, it will behave the same for 
-\family typewriter
-cloneOffspringGenerator
-\family default
- and 
-\family typewriter
-selfingOffspringGenerator.
 \end_layout
 
 \begin_layout Subsection
@@ -5159,215 +5143,6 @@ If there are mixed positive and negative weights, the negative weights are
 \end_layout
 
 \begin_layout Section
-Operators
-\end_layout
-
-\begin_layout Standard
-Operators are objects that act on populations.
- They (there are exceptions) can be applied to populations directly, but
- most of the time they are managed and applied by a simulator.
- There are three kinds of operators:
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-built-in:
-\emph default
- written in C++, fastest.
- They do not interact with Python shell except that some of them set variables
- that are accessible from Python.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-hybrid
-\emph default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-hybrid
-\end_layout
-
-\end_inset
-
-: written in C++ but calls python function when execution.
- Less efficient.
- For example, a hybrid mutator 
-\family typewriter
-pyMutator
-\family default
- will determine if an allele will be mutated and call a user--defined Python
- function to mutate it.
-\end_layout
-
-\begin_layout Itemize
-
-\emph on
-pure python
-\emph default
-: written in python.
- Same speed as python.
- For example, a 
-\family typewriter
-varPlotter
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-varPlotter
-\end_layout
-
-\end_inset
-
-
-\family default
- can plot python variables that are set by other operators.
-\end_layout
-
-\begin_layout Standard
-You do not have to know the type of an operator to use them.
- The interface of them are all the same.
- Namely, they all accept a standard set of parameters, and are used in the
- same fashion.
- Such parameters include 
-\family typewriter
-rep, begin, step, end
-\family default
- and 
-\family typewriter
-at
-\family default
-.
- The first two indicate that the operator only applies to one replicate,
- and the rest control which generation(s) the operator will be applied to.
- There are also parameters that redirect operator output to files.
- For details please refer to the reference manual.
-\end_layout
-
-\begin_layout Standard
-A simuPOP life cycle (each generation) can be divided into pre-mating, during-ma
-ting and post-mating and an operator can be applied to one or more of them.
- For example, a 
-\family typewriter
-stat
-\family default
- operator usually applies post-mating, but if you prefer, you can change
- its 
-\family typewriter
-stage
-\family default
- parameter to 
-\family typewriter
-preMating
-\family default
- and apply it pre-mating.
-\end_layout
-
-\begin_layout Subsection
-Function form of an operator
-\end_layout
-
-\begin_layout Standard
-Operators are usually applied to populations through a simulator.
- They are created and passed as parameters to the 
-\family typewriter
-evolve 
-\family default
-function of a simulator.
- During evolution, the 
-\family typewriter
-evolve()
-\family default
- function determines if an operator can be applied to a population and apply
- it when appropriate.
- More details about operators will be described in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Operators"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-You can ignore the specialties of an operator and call its 
-\family typewriter
-apply()
-\family default
- function directly.
- For example, you can initialize a population outside a simulator by 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-initByFreq( [.3, .2, .5] ).apply(pop)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or dump the content of a population by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-dumper().apply(pop)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This usage is used so often that it deserves some simplification.
- Equivalent functions are defined for most of the operators.
- For example, function 
-\family typewriter
-InitByFreq
-\family default
- is defined for operator 
-\family typewriter
-initByFreq
-\family default
- as follows
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/InitByFreq.log"
-lstparams "caption={Function \\texttt{InitByFreq}},label={InitByFreq}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The function form of an operator is listed after its class name in this
- reference manual.
-\end_layout
-
-\begin_layout Section
 Simulator
 \end_layout
 
@@ -5689,6 +5464,10 @@ stage
 ) may not be what you expect.
  Having a look at the calling sequence before the real evolution is always
  a good idea.
+\end_layout
+
+\begin_layout Subsection
+Terminate a simulator
 \end_layout
 
 \begin_layout Subsection
