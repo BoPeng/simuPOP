@@ -129,7 +129,7 @@ population::population(const population & rhs) :
 		// have 0 length for mpi/non-head node
 		m_info.resize(rhs.m_popSize * infoSize());
 	} catch (...) {
-		throw OutOfMemory("Memory allocation fail");
+		throw RuntimeError("Failed to copy population, likely a memory allocation failure.");
 	}
 
 	// individuals will always have the correct genostructure
@@ -560,7 +560,7 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes,
 			m_info.resize(m_popSize * is);
 			m_inds.resize(m_popSize);
 		} catch (...) {
-			throw OutOfMemory("Memory allocation fail. (popSize=" + toStr(m_popSize) + ")");
+			throw RuntimeError("Failed to create population (popSize=" + toStr(m_popSize) + ")");
 		}
 		// reset individual pointers
 		GenoIterator ptr = m_genotype.begin();

@@ -52,7 +52,7 @@ simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
 	DBG_DO(DBG_SIMULATOR, cout << "mating scheme copied" << endl);
 
 	if (!m_matingScheme->isCompatible(pop))
-		throw TypeError
+		throw ValueError
 			    ("mating type is not compatible with current population settings.");
 
 	// create replicates of given population
@@ -72,9 +72,9 @@ simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
 			// set replication number
 			m_ptrRep[i]->setRep(i);
 		}
-	} catch (OutOfMemory &) {
+	} catch (...) {
 		cout << "Can not create " << m_numRep << " populations" << endl;
-		throw OutOfMemory("Out of memory");
+		throw RuntimeError("Failed to create a population.");
 	}
 
 	// use pop's geno structure
@@ -517,7 +517,7 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 {
 	for (size_t i = 0; i < ops.size(); ++i) {
 		if (ops[i]->canApplyDuringMating())
-			throw TypeError("During-mating operator has to be called by a simulator.");
+			throw ValueError("During-mating operator has to be called by a simulator.");
 		// check compatibility of operators
 		DBG_ASSERT(ops[i]->isCompatible(*m_ptrRep[0]), ValueError,
 			"Operator " + ops[i]->__repr__() + " is not compatible.");
