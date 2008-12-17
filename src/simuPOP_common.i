@@ -180,21 +180,9 @@ namespace std
         SWIG_SetErrorObj(PyExc_StopIteration, SWIG_Py_Void());
         SWIG_fail;
     }
-    catch(simuPOP::OutOfMemory e)
-    {
-        SWIG_exception(SWIG_MemoryError, e.message());
-    }
-    catch(simuPOP::IOError e)
-    {
-        SWIG_exception(SWIG_IOError, e.message());
-    }
     catch(simuPOP::IndexError e)
     {
         SWIG_exception(SWIG_IndexError, e.message());
-    }
-    catch(simuPOP::TypeError e)
-    {
-        SWIG_exception(SWIG_TypeError, e.message());
     }
     catch(simuPOP::ValueError e)
     {
@@ -204,9 +192,13 @@ namespace std
     {
         SWIG_exception(SWIG_SystemError, e.message());
     }
+    catch(simuPOP::RuntimeError e)
+    {
+        SWIG_exception(SWIG_RuntimeError, e.message());
+    }
     catch(...)
     {
-        SWIG_exception(SWIG_RuntimeError, "Unknown runtime error happened.");
+        SWIG_exception(SWIG_UnknownError, "Unknown runtime error happened.");
     }
 }
 

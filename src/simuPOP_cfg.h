@@ -235,23 +235,6 @@ public:
 	};
 };
 
-/// exception, thrown if out of memory
-class OutOfMemory : public Exception
-{
-public:
-	OutOfMemory(string msg) : Exception(msg)
-	{
-	};
-};
-
-/// exception, thrown if file io failure
-class IOError : public Exception
-{
-public:
-	IOError(string msg) : Exception(msg)
-	{
-	};
-};
 
 /// exception, thrown if index out of range
 class IndexError : public Exception
@@ -262,20 +245,29 @@ public:
 	};
 };
 
-/// exception, thrown if type mismatch
-class TypeError : public Exception
-{
-public:
-	TypeError(string msg) : Exception(msg)
-	{
-	};
-};
-
 /// exception, thrown if value of range etc
 class ValueError : public Exception
 {
 public:
 	ValueError(string msg) : Exception(msg)
+	{
+	};
+};
+
+/// exception, thrown if system error occurs
+class SystemError : public Exception
+{
+public:
+	SystemError(string msg) : Exception(msg)
+	{
+	};
+};
+
+/// exception, thrown if a runtime error occurs
+class RuntimeError : public Exception
+{
+public:
+	RuntimeError(string msg) : Exception(msg)
 	{
 	};
 };
@@ -290,14 +282,7 @@ public:
 	};
 };
 
-/// exception, thrown if system error occurs
-class SystemError : public Exception
-{
-public:
-	SystemError(string msg) : Exception(msg)
-	{
-	};
-};
+
 
 // define DEBUG codes
 // DEbUG_CODE_LENGTH should be the number of debug codes

@@ -6,6 +6,7 @@ BUGS:
 
 version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: Improve allele iterator so that stat(alleleFreq) can handle chromosome x and y.
+  - CHG: Raise an error when there is no male or female in a diploid parents chooser.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.

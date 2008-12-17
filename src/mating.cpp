@@ -121,7 +121,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 Sex offspringGenerator::getSex(int count)
 {
 	if (m_sexMode == MATE_RandomSex)
-		return rng().randInt(2) == 0 ? Male : Female;
+		return rng().randBit() ? Male : Female;
 	else if (m_sexMode == MATE_ProbOfMale)
 		return rng().randUniform01() < m_sexParam ? Male : Female;
 	else if (m_sexMode == MATE_NumOfMale)
@@ -162,7 +162,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
 		it->setSex(getSex(count));
-		// 
+		//
 		accept = true;
 		vector<baseOperator *>::iterator iop = m_transmitters.begin();
 		vector<baseOperator *>::iterator iopEnd = m_transmitters.end();
@@ -310,11 +310,11 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
 	// It is a good idea to cache IndIterators. This is however inefficient
 	// for non-virtual populations
-    if (pop.hasActivatedVirtualSubPop(sp) && !m_replacement) {
-    	IndIterator it = pop.indBegin(sp);
-	    for (; it.valid(); ++it)
-		    m_index.push_back(it.rawIter());
-    }
+	if (pop.hasActivatedVirtualSubPop(sp) && !m_replacement) {
+		IndIterator it = pop.indBegin(sp);
+		for (; it.valid(); ++it)
+			m_index.push_back(it.rawIter());
+	}
 
 	if (m_selection) {
 		UINT fit_id = pop.infoIdx("fitness");
@@ -323,9 +323,9 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 				pop.infoEnd(fit_id, sp)));
 	} else {
 		m_size = m_index.size();
-        if (m_size == 0) // if m_index is not used (no VSP)
-            m_size = pop.subPopSize(sp);
-    }
+		if (m_size == 0) // if m_index is not used (no VSP)
+			m_size = pop.subPopSize(sp);
+	}
 
 	if (!m_replacement)
 		std::random_shuffle(m_index.begin(), m_index.end());
@@ -349,17 +349,17 @@ individual * randomParentChooser::chooseParent(RawIndIterator basePtr)
 		m_index.pop_back();
 		return ind;
 	}
-    if (m_index.empty()) {
-    	if (m_selection)
-	    	return & * (basePtr + m_sampler.get());
-    	else
-	    	return & * (basePtr + rng().randInt(m_size));
-    } else  {
-    	if (m_selection)
-	    	return & * (m_index[m_sampler.get()]);
-    	else
-	    	return & * (m_index[rng().randInt(m_size)]);
-    }
+	if (m_index.empty()) {
+		if (m_selection)
+			return & * (basePtr + m_sampler.get());
+		else
+			return & * (basePtr + rng().randInt(m_size));
+	} else {
+		if (m_selection)
+			return & * (m_index[m_sampler.get()]);
+		else
+			return & * (m_index[rng().randInt(m_size)]);
+	}
 }
 
 
@@ -405,13 +405,13 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 			m_numFemale++;
 		}
 	}
-    
+
 	if (!m_replacement) {
 		DBG_FAILIF(m_maleIndex.empty(), IndexError, "No male individual in this population");
 		DBG_FAILIF(m_femaleIndex.empty(), IndexError, "No female individual in this population");
 		std::random_shuffle(m_maleIndex.begin(), m_maleIndex.end());
 		std::random_shuffle(m_femaleIndex.begin(), m_femaleIndex.end());
-    }
+	}
 
 	if (m_selection) {
 		m_malesampler.set(m_maleFitness);
@@ -437,42 +437,32 @@ parentChooser::individualPair randomParentsChooser::chooseParents(RawIndIterator
 
 	if (!m_replacement) {
 		DBG_FAILIF(m_femaleIndex.empty(), ValueError,
-			"All females has been chosen.");
+			"All females have been chosen.");
 		mom = & * m_femaleIndex.back();
 		m_femaleIndex.pop_back();
-		
-        DBG_FAILIF(m_maleIndex.empty(), ValueError,
-		    "All males has been chosen.");
+
+		DBG_FAILIF(m_maleIndex.empty(), ValueError,
+			"All males have been chosen.");
 		dad = & * m_maleIndex.back();
 		m_maleIndex.pop_back();
 		return std::make_pair(dad, mom);
 	}
 
-	// using weidhted sampler.
-    if (m_selection) {                                    // with selection
-        if (m_numMale != 0)
-            dad = & * (m_maleIndex[m_malesampler.get()]);
-        else
-            dad = & * (m_femaleIndex[m_femalesampler.get()]);
-    } else {
-        // using random sample.
-        if (m_numMale != 0)
-            dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
-        else
-            dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-    }
+	// this exception should be raised also in optimized mode because the cause
+	// can be random.
+	if (m_numMale == 0)
+		throw RuntimeError("randomParentsChooser fails because there is no male individual in a subpopulation.");
+	if (m_numFemale == 0)
+		throw RuntimeError("randomParentsChooser fails because there is no female individual in a subpopulation ");
 
-    if (m_selection) {                                    // with selection
-        if (m_numFemale != 0)
-            mom = & * (m_femaleIndex[m_femalesampler.get()]);
-        else
-            mom = & * (m_maleIndex[m_malesampler.get()]);
-    } else {         // no selection
-        if (m_numFemale != 0)
-            mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-        else
-            mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
-    }
+	if (m_selection) {
+		// using weighted sampler.
+		dad = & * (m_maleIndex[m_malesampler.get()]);
+		mom = & * (m_femaleIndex[m_femalesampler.get()]);
+	} else {
+		dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+		mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+	}
 	return std::make_pair(dad, mom);
 }
 
@@ -550,18 +540,14 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 
 	// using weidhted sampler.
 	if (dad == NULL) {
-		if (m_selection) {                                    // with selection
-			if (m_numMale != 0)
-				dad = & * (m_maleIndex[m_malesampler.get()]);
-			else
-				dad = & * (m_femaleIndex[m_femalesampler.get()]);
-		} else {
-			// using random sample.
-			if (m_numMale != 0)
-				dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
-			else
-				dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-		}
+		if (m_numMale == 0)
+			throw RuntimeError("polyParentsChooser fails because there is no male individual in a subpopulation.");
+
+		if (m_selection)
+			dad = & * (m_maleIndex[m_malesampler.get()]);
+		else
+			dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+
 		if (m_polySex == Male && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
 			m_lastParent = dad;
@@ -569,17 +555,14 @@ parentChooser::individualPair polyParentsChooser::chooseParents(RawIndIterator)
 	}
 
 	if (mom == NULL) {
-		if (m_selection) {                                    // with selection
-			if (m_numFemale != 0)
-				mom = & * (m_femaleIndex[m_femalesampler.get()]);
-			else
-				mom = & * (m_maleIndex[m_malesampler.get()]);
-		} else {         // no selection
-			if (m_numFemale != 0)
-				mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-			else
-				mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
-		}
+		if (m_numFemale == 0)
+			throw RuntimeError("polyParentsChooser fails because there is no female individual in a subpopulation.");
+
+		if (m_selection)
+			mom = & * (m_femaleIndex[m_femalesampler.get()]);
+		else
+			mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+
 		if (m_polySex == Female && m_polyNum > 1) {
 			m_polyCount = m_polyNum - 1;
 			m_lastParent = mom;
@@ -701,31 +684,22 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 	individual * dad = NULL;
 	individual * mom = NULL;
 
-	// using weidhted sampler.
-    if (m_selection) {                                    // with selection
-        if (m_numMale != 0)
-            dad = & * (m_maleIndex[m_malesampler.get()]);
-        else
-            dad = & * (m_femaleIndex[m_femalesampler.get()]);
-    } else {
-        // using random sample.
-        if (m_numMale != 0)
-            dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
-        else
-            dad = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-    }
+	// this exception should be raised also in optimized mode because the cause
+	// can be random.
+	if (m_numMale == 0)
+		throw RuntimeError("alphaParentsChooser fails because there is no male individual in a subpopulation.");
+	if (m_numFemale == 0)
+		throw RuntimeError("alphaParentsChooser fails because there is no female individual in a subpopulation ");
 
-    if (m_selection) {                                    // with selection
-        if (m_numFemale != 0)
-            mom = & * (m_femaleIndex[m_femalesampler.get()]);
-        else
-            mom = & * (m_maleIndex[m_malesampler.get()]);
-    } else {         // no selection
-        if (m_numFemale != 0)
-            mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
-        else
-            mom = & * (m_maleIndex[rng().randInt(m_numMale)]);
-    }
+	// using weidhted sampler.
+	if (m_selection) {                                    // with selection
+		dad = & * (m_maleIndex[m_malesampler.get()]);
+		mom = & * (m_femaleIndex[m_femalesampler.get()]);
+	} else {
+		dad = & * (m_maleIndex[rng().randInt(m_numMale)]);
+		mom = & * (m_femaleIndex[rng().randInt(m_numFemale)]);
+	}
+
 	return std::make_pair(dad, mom);
 }
 
@@ -750,7 +724,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 
 		Py_DECREF(popObj);
 	}
-    
+
 	// indexes
 	m_infoIdx.resize(m_infoFields.size());
 	for (size_t i = 0; i < m_infoFields.size(); ++i)
@@ -820,7 +794,7 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 			if (par2->sex() != sex1)
 				return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 		}
-		throw ValueError("Can not locate any individual of opposite sex");
+		throw RuntimeError("Can not locate any individual of opposite sex");
 	}
 	// the way this parent chooser is initialized guranttees that
 	// theres is at lest one valid field.
@@ -1134,7 +1108,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 
 			// if there is no alleles
 			if (numOfAlleles == 0 && expFreq[i] > 0.)
-				throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+				throw RuntimeError("No disease allele exists, but exp allele frequency is greater than 0.\n"
 					             " Generation " + toStr(pop.gen()) );
 
 			// calculate exp number of affected offspring in the next generation.
@@ -1172,7 +1146,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 
 				// if there is no alleles
 				if (n == 0 && expFreq[numSP * i + sp] > 0.)
-					throw ValueError("No disease allele exists, but exp allele frequency is greater than 0.\n"
+					throw RuntimeError("No disease allele exists, but exp allele frequency is greater than 0.\n"
 						             " Generation " + toStr(pop.gen()) );
 #endif
 				expAlleles[numSP * i + sp] = static_cast<UINT>(pop.subPopSize(sp) * pldy * expFreq[numSP * i + sp]);
@@ -1181,7 +1155,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 			}
 		}                                                                                 // each locus
 	} else {
-		throw ValueError("Returned expected frequency has wrong length");
+		throw RuntimeError("Returned expected frequency has wrong length");
 	}
 }
 
@@ -1251,7 +1225,7 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 //          if (m_contWhenUniSex)
 //              cout << "Warning: the subpopulation is uni-sex. Mating will continue with same-sex mate" << endl;
 //          else
-//              throw ValueError("Subpopulation becomes uni-sex. Can not continue. \n"
+//              throw RuntimeError("Subpopulation becomes uni-sex. Can not continue. \n"
 //                               "You can use ignoreParentsSex (do not check parents' sex) or \ncontWhenUnixSex "
 //                               "(same sex mating if have to) options to get around this problem.");
 //      }
@@ -1490,7 +1464,7 @@ pyMating::pyMating(parentChooser & chooser,
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
-	DBG_FAILIF(m_parentChooser->numParents() != 0 && m_offspringGenerator->numParents() != 0 
+	DBG_FAILIF(m_parentChooser->numParents() != 0 && m_offspringGenerator->numParents() != 0
 		&& m_parentChooser->numParents() != m_offspringGenerator->numParents(),
 		ValueError, "Imcompatible parent chooser and offspring generator");
 }
