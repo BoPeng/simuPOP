@@ -402,7 +402,7 @@ IndAlleleIterator population::alleleBegin(UINT locus)
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || ct != Autosome)
-		return IndAlleleIterator(locus, indBegin(), ct, ploidy(), totNumLoci());
+		return IndAlleleIterator(locus, indBegin());
 	else
 		return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
 }
@@ -415,7 +415,7 @@ IndAlleleIterator population::alleleEnd(UINT locus)
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || ct != Autosome)
-		return IndAlleleIterator(locus, indEnd(), ct, ploidy(), totNumLoci());
+		return IndAlleleIterator(locus, indEnd());
 	else
 		return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
 }
@@ -430,7 +430,7 @@ IndAlleleIterator population::alleleBegin(UINT locus, UINT subPop)
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || ct != Autosome)
-		return IndAlleleIterator(locus, indBegin(subPop), ct, ploidy(), totNumLoci());
+		return IndAlleleIterator(locus, indBegin(subPop));
 	else
 		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
 			locus, totNumLoci());
@@ -446,7 +446,7 @@ IndAlleleIterator population::alleleEnd(UINT locus, UINT subPop)
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || ct != Autosome)
-		return IndAlleleIterator(locus, indEnd(subPop), ct,  ploidy(), totNumLoci());
+		return IndAlleleIterator(locus, indEnd(subPop));
 	else
 		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
 			locus, totNumLoci());
