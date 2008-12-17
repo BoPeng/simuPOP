@@ -419,10 +419,58 @@ pop1.chromName(0)
 pop1.dvars().name
 #end
 
+#file log/stageAndGen.log
+simu = simulator(population(100, loci=[20]), randomMating())
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.8])],
+    ops = [
+        stat(alleleFreq=[0], begin=80, step=10),
+        pyEval(r"'After gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
+            begin=80, step=10),
+        pyEval(r"'Around gen %d: allele Freq: %.2f\n' % (gen, alleleFreq[0][0])",
+            at = [-10, -1], stage=PrePostMating)
+    ],
+    postOps = [savePopulation(output='sample.pop')],
+    gen=100
+)
+#end
+
+#file log/dryrun.log
+simu = simulator(population(100, loci=[20]), randomMating())
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.8])],
+    ops = [
+        stat(alleleFreq=[0], begin=80, step=10),
+        pyEval(r"'After gen %d: allele freq: %.2f\n' % (gen, alleleFreq[0][0])",
+            begin=80, step=10),
+        pyEval(r"'Around gen %d: alleleFreq: %.2f\n' % (gen, alleleFreq[0][0])",
+            at = [-10, -1], stage=PrePostMating)
+    ],
+    postOps = [savePopulation(output='sample.pop')],
+    gen=100,
+    dryrun = True
+)
+#end
+
+
+#file log/replicate.log
+simu = simulator(population(100, loci=[20]), randomMating(), 5)
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.8])],
+    ops = [
+        stat(alleleFreq=[0], step=10),
+        pyEval('gen', step=10, rep=0),
+        pyEval(r"'\t%.2f' % alleleFreq[0][0]", step=10, rep=(0, 2, -1)),
+        pyOutput('\n', step=10, rep=-1)
+    ],
+    gen=30,
+)
+#end
+
 ################################################################################
 #
 
-#file log/popInit.log
+#file log/popInit.v
 # a Wright-Fisher population
 WF = population(size=100, ploidy=1, loci=[1])
 
@@ -469,54 +517,6 @@ initByFreq([.2, .3, .4, .1]).apply(pop)
 # function form
 Dump(pop)
 #end
-
-
-
-#file log/popStru.log
-print pop.popSize()
-print pop.numSubPop()
-print pop.subPopSize(0)
-print pop.subPopSizes()
-print pop.subPopBegin(1)
-print pop.subPopEnd(1)
-print pop.subPopIndPair(3)
-print pop.absIndIndex(1, 1)
-#end
-
-#file log/popStruManip.log
-pop.setIndSubPopID([1, 2, 2, 3, 1])
-pop.setSubPopByIndID()
-pop.removeLoci(keep=range(2, 7))
-Dump(pop)
-#end
-
-
-
-#file log/ind.log
-# get an individual
-ind = pop.individual(9)
-# oops, wrong index
-ind = pop.individual(3)
-# you can access genotypic structure info
-print ind.ploidy()
-print ind.numChrom()
-# ...
-# as well as genotype
-print ind.allele(1) 
-ind.setAllele(1, 5)
-print ind.allele(1)
-# you can also use an overloaded function
-# with a second parameter being the ploidy index
-print ind.allele(1, 1) # second locus at the second copy of chromosome
-# other information
-print ind.affected()
-print ind.affectedChar()
-ind.setAffected(1)
-print ind.affectedChar()
-print ind.sexChar()
-#end
-
-
 
 
 
@@ -639,24 +639,6 @@ print simu.dvars(0).famSizes
 TurnOffDebug(DBG_MATING)
 #end
 
-
-#file log/operatorstages.log
-d = dumper()
-print d.canApplyPreMating()
-print d.canApplyDuringMating()
-# so dumper is a post mating operator
-print d.canApplyPostMating()
-#end
-
-#file log/operatorgen.log
-simu = simulator(population(1), binomialSelection(), rep=3)
-op1 = output("a", begin=5, end=20, step=3)
-op2 = output("a", begin=-5, end=-1, step=2)
-op3 = output("a", at=[2, 5, 10])
-op4 = output("a", at=[-10, -5, -1])
-simu.evolve( [ pyEval(r"str(gen)+'\n'", begin=5, end=-1, step=2)],
-               gen=10)
-#end
 
 #file log/operatoroutput.log
 simu = simulator(population(100), randomMating(), rep=2)

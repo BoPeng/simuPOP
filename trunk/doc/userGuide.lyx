@@ -3762,7 +3762,7 @@ pyExec
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "savePop"
+reference "replicate"
 
 \end_inset
 
@@ -3874,7 +3874,7 @@ n variables.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "savePop"
+reference "replicate"
 
 \end_inset
 
@@ -3896,9 +3896,454 @@ Operators
 
 \begin_layout Standard
 Operators are objects that act on populations.
- They (there are exceptions) can be applied to populations directly, but
- most of the time they are managed and applied by a simulator.
- There are three kinds of operators:
+ They can be used in the following ways:
+\end_layout
+
+\begin_layout Itemize
+Operators are usually passed to the 
+\family typewriter
+ops
+\family default
+, 
+\family typewriter
+preOps 
+\family default
+and 
+\family typewriter
+postOps
+\family default
+ parameters the 
+\family typewriter
+evolve
+\family default
+ function of a simulator.
+ The simulator will apply these operators before (
+\family typewriter
+preOps
+\family default
+), after (
+\family typewriter
+postPos
+\family default
+) or during (
+\family typewriter
+ops
+\family default
+) an evolutionary process.
+ Depending on parameters of an operator, it can be applied before, during,
+ and/or after mating in a life cycle of a generation (parameter 
+\family typewriter
+stage
+\family default
+, see Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:life-cycle"
+
+\end_inset
+
+), to a subset of generations (parameters 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+step
+\family default
+, 
+\family typewriter
+at
+\family default
+), a subset of populations in a simulator (parameter 
+\family typewriter
+rep
+\family default
+), a subset of (virtual) subpopulations in each replicate (parameter 
+\family typewriter
+subPop
+\family default
+).
+\end_layout
+
+\begin_layout Itemize
+During-mating operators are used by mating schemes to transmit parental
+ genotype (and sometimes information fields) to offspring.
+ Applicability parameters such as 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+rep
+\family default
+ are ignored.
+\end_layout
+
+\begin_layout Itemize
+Most of the operators can be applied to a population directly, using their
+ function forms.
+ Applicability parameters are ignored.
+\end_layout
+
+\begin_layout Standard
+The following sections will introduce common features of all operators.
+ The next chapter will explain some of the operators in detail.
+\end_layout
+
+\begin_layout Subsection
+Applicable stages and generations
+\end_layout
+
+\begin_layout Standard
+A simuPOP life cycle (a 
+\emph on
+generation
+\emph default
+) can be divided into 
+\emph on
+pre-mating
+\emph default
+, 
+\emph on
+during-mating
+\emph default
+ and 
+\emph on
+post-mating
+\emph default
+.
+ In the pre-mating stage, the present generation is the parental generation.
+ In the during-mating stage, an offspring generation is populated from the
+ parental generation.
+ In the post-mating stage, the offspring generation has become the present
+ generation.
+ An operator can be applied at one or more stages at a life cycle.
+ However, each operator has its own default value for the 
+\family typewriter
+stage
+\family default
+ parameter and changes to this parameter are not always allowed.
+ For example, a 
+\family typewriter
+recombinator
+\family default
+ can only be applied 
+\family typewriter
+DuringMating
+\family default
+ and it will ignore your attemp to apply it at another stage.
+\end_layout
+
+\begin_layout Standard
+Operators that are passed to the 
+\family typewriter
+ops
+\family default
+ parameter of the 
+\family typewriter
+simulator::evolve
+\family default
+ function are, by default, applied to all generations during an evolutionary
+ process.
+ This can be changed using the 
+\family typewriter
+begin
+\family default
+, 
+\family typewriter
+end
+\family default
+, 
+\family typewriter
+step
+\family default
+ and 
+\family typewriter
+at
+\family default
+ parameters.
+ As their names indicate, these parameters control the starting generation
+ (
+\family typewriter
+begin
+\family default
+), ending generation (
+\family typewriter
+end
+\family default
+), generations between two applicable generations (
+\family typewriter
+step
+\family default
+), and an explicit list of applicable generations (
+\family typewriter
+at
+\family default
+).
+ Other parameters will be ignored if 
+\family typewriter
+at
+\family default
+ is specified.
+ It is worth noting that,, if the simulator has an ending generation, negative
+ generations numbers are allowed.
+ They are counted backward from the ending generation.
+ For example, if a simulator starts at generation 
+\family typewriter
+0
+\family default
+, and the 
+\family typewriter
+evolve
+\family default
+ function has parameter 
+\family typewriter
+gen=10
+\family default
+, the simulator will stop at the 
+\emph on
+beginning
+\emph default
+ of generation 
+\family typewriter
+10
+\family default
+.
+ Generation 
+\family typewriter
+-1
+\family default
+ refers to generation 
+\family typewriter
+9
+\family default
+, and generation 
+\family typewriter
+-2
+\family default
+ refers to generation 
+\family typewriter
+8
+\family default
+, and so on.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "replicate"
+
+\end_inset
+
+ demonstrates how to set applicable stages and generations of an operator.
+ In this example, a population is initialized before evolution using a 
+\family typewriter
+initByFreq
+\family default
+ operator.
+ allele frequency at locus 
+\family typewriter
+0
+\family default
+ is calculated at generation 
+\family typewriter
+80
+\family default
+, 
+\family typewriter
+90
+\family default
+, but not 
+\family typewriter
+100
+\family default
+ because the evolution stops at the beginning of generation 
+\family typewriter
+100
+\family default
+.
+ A 
+\family typewriter
+pyEval
+\family default
+ operator outputs generation number and allele frequency at the end of generatio
+n 
+\family typewriter
+80
+\family default
+ and 
+\family typewriter
+90
+\family default
+.
+ Another 
+\family typewriter
+pyEval
+\family default
+ operator outputs similar information at generation 
+\family typewriter
+90
+\family default
+ and 
+\family typewriter
+99
+\family default
+, before and after mating.
+ Note, however, because allele frequencies are only calculated twice, the
+ pre-mating allele frequency at generation 
+\family typewriter
+90
+\family default
+ is actually calculated at generation 
+\family typewriter
+80
+\family default
+, and the allele frequencies display for generation 
+\family typewriter
+99
+\family default
+ are calculated at generation 
+\family typewriter
+90
+\family default
+.
+ At the end of the evolution, the population is saved to a file using a
+ 
+\family typewriter
+savePopulation
+\family default
+ operator.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/stageAndGen.log"
+lstparams "caption={Applicable stages and generations of an operator.},label={stageAndGen}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because it is not always clear which stage(s) an operator can be applied
+ and in which order they will be applied, a parameter 
+\family typewriter
+dryrun
+\family default
+ is provided to the 
+\family typewriter
+simulator::evolve()
+\family default
+ function.
+ If set to 
+\family typewriter
+True
+\family default
+, the 
+\family typewriter
+evolve
+\family default
+ function will list all operators in the order at which they will be applied.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dryrun.log"
+lstparams "caption={List the order at which operators are applied},label={dryrun}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Applicable populations
+\end_layout
+
+\begin_layout Standard
+A simulator can evolve multiple replicates of a population simutaneously.
+ Different operators can be applied to different replicates of this population.
+ This allows side by side comparison between simulations.
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\family typewriter
+rep
+\family default
+ is used to control which replicate(s) an operator can be applied to.
+ This parameter can be a list of replicate numbers or a single replicate
+ number.
+ Negative index is allowed where 
+\family typewriter
+-1
+\family default
+ refers to the last replicate.
+ This technique has been widely used to produce table-like output where
+ a 
+\family typewriter
+pyOutput
+\family default
+ outputs a newline when it is applied to the last replicate of a simulator.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "replicate"
+
+\end_inset
+
+ demonstrates how to use this 
+\family typewriter
+rep
+\family default
+ parameter.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/replicate.log"
+lstparams "caption={Apply operators to a subset of populations},label={replicate}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An operator can also be applied to only one or more (virtual) subpopulations.
+ For example, an 
+\family typewriter
+initializer
+\family default
+ can be applied to male individuals in the first subpopulation, and everyone
+ in the second subpopulation using parameter 
+\family typewriter
+subPop=[(0,0)
+\family default
+, 1], if a virtual subpopulation is defined.
+ However, not all operators support this parameter, and even if they do,
+ their intrepretation of parameter input may vary.
+ Please refer to 
+\emph on
+the simuPOP reference manual
+\emph default
+ for details.
+\end_layout
+
+\begin_layout Subsection
+Operator output
+\end_layout
+
+\begin_layout Subsection
+During-mating operators
+\end_layout
+
+\begin_layout Subsection
+Hybrid operators
 \end_layout
 
 \begin_layout Itemize
@@ -3958,61 +4403,6 @@ varPlotter
 
 \family default
  can plot python variables that are set by other operators.
-\end_layout
-
-\begin_layout Standard
-You do not have to know the type of an operator to use them.
- The interface of them are all the same.
- Namely, they all accept a standard set of parameters, and are used in the
- same fashion.
- Such parameters include 
-\family typewriter
-rep, begin, step, end
-\family default
- and 
-\family typewriter
-at
-\family default
-.
- The first two indicate that the operator only applies to one replicate,
- and the rest control which generation(s) the operator will be applied to.
- There are also parameters that redirect operator output to files.
- For details please refer to the reference manual.
-\end_layout
-
-\begin_layout Standard
-A simuPOP life cycle (each generation) can be divided into pre-mating, during-ma
-ting and post-mating and an operator can be applied to one or more of them.
- For example, a 
-\family typewriter
-stat
-\family default
- operator usually applies post-mating, but if you prefer, you can change
- its 
-\family typewriter
-stage
-\family default
- parameter to 
-\family typewriter
-preMating
-\family default
- and apply it pre-mating.
-\end_layout
-
-\begin_layout Subsection
-Applicable generations and stages
-\end_layout
-
-\begin_layout Subsection
-Operator output
-\end_layout
-
-\begin_layout Subsection
-During-mating operators
-\end_layout
-
-\begin_layout Subsection
-Hybrid operators
 \end_layout
 
 \begin_layout Subsection
@@ -4807,6 +5197,14 @@ pyMating(linearParentChooser(),
 \end_inset
 
 The later simply copy everyone from the parental to the offspring genertion.
+\end_layout
+
+\begin_layout Subsection
+Python parents chooser
+\end_layout
+
+\begin_layout Subsection
+Using C++ to implement a parents chooser
 \end_layout
 
 \begin_layout Subsection
@@ -8399,7 +8797,7 @@ scripts/simuCDCV.py
  
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Simulation scenario
 \end_layout
 
@@ -8435,7 +8833,7 @@ key "Peng2007"
  
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Section
 Demographic model
 \end_layout
 
@@ -8450,7 +8848,7 @@ The initial population size is set to 10,000, as suggested in the paper.
  
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Section
 Mutation model
 \end_layout
 
@@ -8492,7 +8890,7 @@ allele mutation model is used.
  per locus per generation.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Section
 Selection on a common and a rare disease 
 \end_layout
 
@@ -8577,7 +8975,7 @@ lstparams "caption={Set parameters},label={alg:reich0}"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Create a simulator
 \end_layout
 
@@ -8777,7 +9175,7 @@ lstparams "caption={Create a simulator},label={reich1}"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Initialization
 \end_layout
 
@@ -8824,7 +9222,7 @@ initByFreq(atLoci=[1], alleleFreq=R_f),
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Mutation and selection
 \end_layout
 
@@ -8969,7 +9367,7 @@ lstparams "caption={Run the simulator},label={reich2}"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Output statistics
 \end_layout
 
@@ -9411,7 +9809,7 @@ lstparams "caption={The whole program},label={reich3}"
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Option handling
 \end_layout
 
