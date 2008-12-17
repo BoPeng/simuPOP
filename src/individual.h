@@ -812,7 +812,7 @@ public:
 	}
 
 
-	bool valid()
+	bool valid() const
 	{
 		return m_it < m_end;
 	}
@@ -1173,19 +1173,24 @@ public:
 	}
 
 
-	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it,
-		int chromType, UINT ploidy, UINT size)
+	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it)
 		: m_index(idx), m_useGappedIterator(false),
-		m_it(it), m_ptr(), m_p(0), m_ploidy(ploidy),
-		m_size(size), m_chromType(chromType)
+		m_it(it), m_ptr(), m_p(0), m_ploidy(0),
+		m_size(0), m_chromType(0)
 	{
+		if (!it.valid())
+			return;
+
+		m_ploidy = it->ploidy();
+		m_size = it->totNumLoci();
+		m_chromType = it->chromType(it->chromLocusPair(idx).first);
 		// we do not know anything about customized chromosome
 		// so we just assume it is autosome.
 		if (m_chromType == Customized)
 			m_chromType = Autosome;
 		//
 		if (m_chromType == ChromosomeY) {
-			if (m_it.valid() && m_it->sex() == Female) {
+			if (m_it->sex() == Female) {
 				while (m_it.valid())
 					if ((++m_it)->sex() == Male)
 						break;
@@ -1200,8 +1205,10 @@ public:
 	{
 		if (m_useGappedIterator)
 			return *m_ptr;
-		else
+		else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			return *(m_it->genoBegin() + m_index + m_p * m_size);
+		}
 	}
 
 
@@ -1258,8 +1265,10 @@ public:
 
 		if (m_useGappedIterator)
 			m_ptr += m_size;
-		else
+		else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			advance(m_it, m_p);
+		}
 		return tmp;
 	}
 
@@ -1268,8 +1277,10 @@ public:
 	{
 		if (m_useGappedIterator)
 			m_ptr += m_size;
-		else
+		else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			advance(m_it, m_p);
+		}
 		return *this;
 	}
 
@@ -1279,10 +1290,12 @@ public:
 		if (m_useGappedIterator)
 			m_ptr += diff * m_size;
 		else if (m_chromType == Autosome) {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			m_p += diff;
 			m_it += m_p / m_ploidy;
 			m_p %= m_ploidy;
 		} else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (size_t i = 0; i < diff; ++i)
 				advance(m_it, m_p);
 		}
@@ -1297,10 +1310,12 @@ public:
 		if (m_useGappedIterator)
 			tmp.m_ptr += diff * m_size;
 		else if (m_chromType == Autosome) {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			tmp.m_p += diff;
 			tmp.m_it += tmp.m_p / m_ploidy;
 			tmp.m_p %= m_ploidy;
 		} else {
+			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (size_t i = 0; i < diff; ++i)
 				advance(tmp.m_it, tmp.m_p);
 		}
@@ -1313,10 +1328,12 @@ public:
 		if (m_useGappedIterator)
 			return m_ptr != rhs.m_ptr;
 		else {
-			DBG_FAILIF(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
-				|| m_chromType != rhs.m_chromType, ValueError,
-				"Iterator comparison fails");
-			return m_it != rhs.m_it || m_index != rhs.m_index || m_p != rhs.m_p;
+			//DBG_FAILIF(m_it.valid() && rhs.m_it.valid() && 
+			//	(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
+			//	|| m_chromType != rhs.m_chromType), ValueError,
+			//	"Iterator comparison fails");
+			return !(m_index == rhs.m_index && m_it == rhs.m_it &&
+				(m_p == rhs.m_p || !m_it.valid() || !rhs.m_it.valid()));
 		}
 	}
 

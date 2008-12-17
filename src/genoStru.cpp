@@ -149,11 +149,13 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 	// has only one chromX?
 	m_chromX = -1;
 	// check if the type is valid.
+#ifndef OPTIMIZED
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		UINT type = m_chromTypes[i];
 		DBG_ASSERT(type == Autosome || type == ChromosomeX || type == ChromosomeY || type == Customized,
 			ValueError, "Chromsome type can only be one of Autosome, ChromosomeX, ChromosomeY and Customized");
 	}
+#endif
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
 		if (m_chromTypes[i] == ChromosomeX) {
 			DBG_ASSERT(m_chromX == -1, ValueError,
