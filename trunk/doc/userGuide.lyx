@@ -4314,7 +4314,7 @@ lstparams "caption={Apply operators to a subset of populations},label={replicate
 \end_layout
 
 \begin_layout Standard
-An operator can also be applied to only one or more (virtual) subpopulations.
+An operator can also be applied to specified (virtual) subpopulations.
  For example, an 
 \family typewriter
 initializer
@@ -4324,7 +4324,7 @@ initializer
 \family typewriter
 subPop=[(0,0)
 \family default
-, 1], if a virtual subpopulation is defined.
+, 1], if a virtual subpopulation is defined by individual sex.
  However, not all operators support this parameter, and even if they do,
  their intrepretation of parameter input may vary.
  Please refer to 
