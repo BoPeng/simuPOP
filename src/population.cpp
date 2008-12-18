@@ -1673,6 +1673,10 @@ void population::updateInfoFieldsFrom(const vectorstr & fields, const population
 	if (ancGen > 0 && ancGen < depth)
 		depth = ancGen;
 	for (; depth >= 0; --depth) {
+		useAncestralGen(depth);
+		const_cast<population &>(pop).useAncestralGen(depth);
+		DBG_FAILIF(subPopSizes() != pop.subPopSizes(), ValueError,
+			"Two populations should have the same population structure.");
 		for (UINT i = 0; i < fields.size(); ++i) {
 			UINT fromIdx = fromFields.empty() ? pop.infoIdx(fields[i]) : pop.infoIdx(fromFields[i]);
 			UINT toIdx = pop.infoIdx(fields[i]);
