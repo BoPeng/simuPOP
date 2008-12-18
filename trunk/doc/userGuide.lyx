@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4559,31 +4559,67 @@ Hybrid operators
 \end_layout
 
 \begin_layout Standard
-A hybrid operator is an operator that calls a user-defined function when
- its applied to a population.
- The number and meaning of input parameters and return value vary from operator
- to operator.
- For example, a hybrid penetrance operator passes genotype at specified
- markers to a user defined function and use its return values as the penetrance
- values of individuals.
- A hybrid selector uses the return value of a user defined function as individua
-l fitness.
+Despite the large number of built-in operators, it is obviously not possible
+ to implement every genetics models available.
+ For example, although simuPOP provides several penetrance models, a user
+ may want to try a customized one.
+ In this case, one can use a 
+\emph on
+hybrid operator
+\emph default
+.
 \end_layout
 
 \begin_layout Standard
-Compare to operators that implement specific genetic models, hybrid operators
- give users great flexibility to implement arbitrary genetic models.
- For example, the mutation model implemented in Example 
+A 
+\emph on
+hybrid operator
+\emph default
+ is an operator that calls a user-defined function when its applied to a
+ population.
+ The number and meaning of input parameters and return values vary from
+ operator to operator.
+ For example, a hybrid mutator sends a to-be-mutated allele to a user-defined
+ function and use its return value as a mutant allele.
+ A hybrid selector uses the return value of a user defined function as individua
+l fitness.
+ Such an operator handles the routine part of the work (e.g.
+ scan through a chromosome and determine which allele needs to be mutated),
+ and leave the creative part to users.
+ Such a mutator can be used to implement complicated genetic models such
+ as an asymmetric stepwise mutation model for microsatellite markers.
+\end_layout
+
+\begin_layout Standard
+For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "hybridOperator"
 
 \end_inset
 
- mutates an allele by adding a random number (between 1 to 4) to its original
- allele state.
- Very complicated mutation models such as asymmetric stepwise mutation model
- for microsatellite markers can be implemented similarly.
+ defines a three-locus heterogeneity penetrance model 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Risch1990"
+
+\end_inset
+
+ that yields positive penetrance only when at least two disease susceptibility
+ alleles are available.
+ The underlying mechanism of this operator is that for each individual,
+ simuPOP will collect genotype at specified loci (parameter 
+\family typewriter
+loci
+\family default
+) and send them to function 
+\family typewriter
+myPenetrance
+\family default
+ and evaluate.
+ The return values are used as the penetrance value of the individual, which
+ is then interpreted as the probability that this individual will become
+ affected.
 \end_layout
 
 \begin_layout Standard
@@ -4601,12 +4637,409 @@ lstparams "caption={Use a hybrid operator},keywordstyle={\\ttfamily},label={hybr
 Python operators
 \end_layout
 
+\begin_layout Standard
+If hybrid operators are still not flexible enough, you can always resort
+ to a pure-Python operator 
+\family typewriter
+pyOperator
+\family default
+.
+ This operator has full access to the evolving population (or parents and
+ offspring when 
+\family typewriter
+stage=DuringMating
+\family default
+), and can therefore perform arbitrary operations.
+\end_layout
+
+\begin_layout Standard
+A pre- or post-mating 
+\family typewriter
+pyOperator
+\family default
+ expects a function in the form of
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+func(pop [, param])
+\end_layout
+
+\end_inset
+
+where 
+\family typewriter
+param
+\family default
+ is optional, depending on whether or not a parameter is passed to the 
+\family typewriter
+pyOperator()
+\family default
+ constructor.
+ Function 
+\family typewriter
+func
+\family default
+ can perform arbitrary action to 
+\family typewriter
+pop
+\family default
+ and must return 
+\family typewriter
+True
+\family default
+ or 
+\family typewriter
+False
+\family default
+.
+ The evolution of 
+\family typewriter
+pop
+\family default
+ will be stopped if this function returns 
+\family typewriter
+False
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyOperator"
+
+\end_inset
+
+ defines such a function.
+ It accepts a cutoff value and two mutation rates as parameters.
+ It then calculate the frequency of allele 1 at each locus and apply a two-allel
+e model at high mutation rate if the frequency is lower than the cutoff
+ and a low mutation rate otherwise.
+ The 
+\family typewriter
+KamMutate
+\family default
+ function is the function form of a mutator 
+\family typewriter
+kamMutator
+\family default
+ (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Function-form"
+
+\end_inset
+
+ for details).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyOperator.py"
+lstparams "caption={A frequency dependent mutation operator},firstline=5,label={pyOperator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
+
+\end_inset
+
+ demonstrates how to use this operator.
+ It first initializes the population using two 
+\family typewriter
+initByFreq
+\family default
+ operators that initialize loci with different allele frequencies.
+ It applies a 
+\family typewriter
+pyOperator 
+\family default
+with function 
+\family typewriter
+dynaMutator
+\family default
+ and a tuple of parameters.
+ Allele frequencies at all loci are printed at generation 
+\family typewriter
+0
+\family default
+, 
+\family typewriter
+10
+\family default
+, 
+\family typewriter
+20
+\family default
+, and 
+\family typewriter
+30
+\family default
+.
+ Note that this 
+\family typewriter
+pyOperator
+\family default
+ is applied at 
+\family typewriter
+stage=PreMating
+\family default
+ (the default stage is post mating) so allele frequencies have to be recalculate
+d to be used by post-mating operator 
+\family typewriter
+pyEval
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/usePyOperator.log"
+lstparams "caption={Use a pyOperator during evolution},label={usePyOperator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An 
+\family typewriter
+pyOperator
+\family default
+ can also be applied during-mating.
+ They can be used to filter out unwanted offspring (by returnning 
+\family typewriter
+False
+\family default
+ in a user-defined function), modify offspring, calculate statistics, or
+ pass additional information from parents to offspring.
+ Depending on parameter 
+\family typewriter
+param
+\family default
+ and 
+\family typewriter
+offspringOnly
+\family default
+, such an operator accepts a function in the form of
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+func(pop, dad, mom, off [, param])  # if offspringOnly=False (default)
+\end_layout
+
+\begin_layout Plain Layout
+
+func(off [, param])                 # if offspringOnly=True
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
+
+\end_inset
+
+ demonstrates the use of a during-mating Python operator.
+ This operator rejects an offspring if it has allele 1 at the first locus
+ of the first homologous chromosome, and results in an offspring population
+ without such individuals.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyDuringMatingOperator.log"
+lstparams "caption={Use a during-mating pyOperator},label={duringMatingPyOperator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyOperator
+\family default
+ is the most powerful operator in simuPOP and has been widely used, for
+ example, to calculate statistics and is not supported by the 
+\family typewriter
+stat()
+\family default
+ operator, to examine population property during evolution, or prepare populatio
+ns for a special mating scheme.
+ However, because 
+\family typewriter
+pyOperator 
+\family default
+works in the Python interpreter, it is expected that it runs slower than
+ operators that are implemented at the C/C++ level.
+ If performance becomes an issue, you can reimplement part or all the operator
+ in C++.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Using-C++"
+
+\end_inset
+
+ describes how to do this.
+\end_layout
+
 \begin_layout Subsection
-Derived Python operators
+Define your own operators
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+This is an advanced topic of simuPOP.
+ New simuPOP users can safely skip this section.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyOperator
+\family default
+ is a Python class so you can derive your own operator from this operator.
+ The tricky part is that the constructor of the derived operator needs to
+ call the 
+\family typewriter
+__init__
+\family default
+ function of 
+\family typewriter
+pyOperator
+\family default
+ will proper functions.
+ This technique has been used by simuPOP in a number of occasions.
+ For example, the 
+\family typewriter
+varPlotter
+\family default
+ operator defined in 
+\family typewriter
+simuRPy.py
+\family default
+ is derived from 
+\family typewriter
+pyOperator
+\family default
+.
+ This class encapsulates several different plot class that uses 
+\family typewriter
+rpy
+\family default
+ to plot python expressions.
+ One of the plotters is passed to the func parameter of 
+\family typewriter
+pyOperator::__init__
+\family default
+ so that it can be called when this operator is applied.
+\end_layout
+
+\begin_layout Standard
+Example rewrites the dynaMutator defined in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyOperator"
+
+\end_inset
+
+ into a derived operator.
+ The parameters are now passed to the constructor of 
+\family typewriter
+dynaMutator
+\family default
+ and are saved as member variables.
+ A member function 
+\family typewriter
+mutate
+\family default
+ is defined and is passed to the constructor of 
+\family typewriter
+pyOperator
+\family default
+.
+ Other than making 
+\family typewriter
+dynaMutator
+\family default
+ look like a real simuPOP operator, this example does not show a lot of
+ advantage of deriving a class from 
+\family typewriter
+pyOperator
+\family default
+ over defining a function.
+ However, when the operator gets complicated (as in the case for 
+\family typewriter
+varPlotter
+\family default
+), the object oriented implementation will prevail.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/newOperator.log"
+lstparams "caption={Define a new Python operator},label={newOperator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+New during-mating operators can be defined similarly.
+ They are usually used to define customized genotype transmitters.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Customized-genotype-transmitter"
+
+\end_inset
+
+ will describe this feature in detail.
 \end_layout
 
 \begin_layout Subsection
 Function form of an operator
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Function-form"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4631,7 +5064,15 @@ initByFreq([.3, .2, .5]).apply(pop)
 
 \end_inset
 
-Similarly, you can dump the content of a population by
+Similarly, you can apply the hybrid penetrance model defined in Example
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "hybridOperator"
+
+\end_inset
+
+ to a population by
 \end_layout
 
 \begin_layout Standard
@@ -4641,13 +5082,12 @@ status open
 
 \begin_layout Plain Layout
 
-dumper().apply(pop)
+pyPenetrance(func=myPenetrance, loci=[10, 30, 50]).apply(pop)
 \end_layout
 
 \end_inset
 
-In these cases, all applicability parameters are ignored.
- Note that such an operation is not allowed for during mating operators.
+
 \end_layout
 
 \begin_layout Standard
@@ -4668,16 +5108,55 @@ initByFreq
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/InitByFreq.log"
-lstparams "caption={Function \\texttt{InitByFreq}},label={InitByFreq}"
+lstparams "caption={The function form of operator \\texttt{initByFreq}},label={InitByFreq}"
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
 These functions are called function form of operators.
- They are listed after their respective class names in the 
-\emph on
-simuPOP reference manual
-\emph default
-.
+ Using these functions, the above two example can be written as 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+InitByFreq(pop, [.3, .2, .5])
+\end_layout
+
+\end_inset
+
+and 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+PyPenetrance(pop, func=myPenetrance, loci=[10, 30, 50])
+\end_layout
+
+\end_inset
+
+respectively.
+ Note that applicability parameters such as 
+\family typewriter
+begin
+\family default
+ and 
+\family typewriter
+end
+\family default
+ can still be passed, but they are ignored by these functions.
 \end_layout
 
 \begin_layout Section
@@ -4873,6 +5352,177 @@ cloneOffspringGenerator
  and 
 \family typewriter
 selfingOffspringGenerator.
+\end_layout
+
+\begin_layout Subsection
+Genotype transmitter
+\end_layout
+
+\begin_layout Standard
+Some during-mating operators transmit genotype from parents to offspring,
+ and some do not.
+ Unless you construct a mating scheme from scratch, each stocked mating
+ scheme has a default during-mating operator that is responsible for transmittin
+g genotype from parents to offspring.
+ If another operator with the same flag is passed, the default one will
+ not be used.
+ The most common example is a 
+\family typewriter
+recombinator
+\family default
+, which will replace the default 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+ for a 
+\family typewriter
+randomMating
+\family default
+ scheme if it is used.
+\end_layout
+
+\begin_layout Subsection
+Customized genotype transmitter
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Customized-genotype-transmitter"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Although some operators can be applied before, after and during mating,
+ most during-mating operators can only be applied by a mating scheme.
+ During-mating operators have the following properties
+\end_layout
+
+\begin_layout Standard
+used This operator allows implementation of arbitrarily complicated operators,.
+ To use this operator, you will have to know how to use population-related
+ functions.
+ The following example shows how to implement a dynamic mutator which mutate
+ loci according to their allele frequencies.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+pyOperator
+\family default
+ can also be a during-mating operator.
+ You will need to define a function 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def Func(pop, off, dad, mom, para)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def shortFunc(off, para)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\family typewriter
+para
+\family default
+ can be ignored.
+ To use this operator, you can do
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
+\end_layout
+
+\begin_layout Plain Layout
+
+formOffGenotype=False, offspringOnly=True)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If your during-mating 
+\family typewriter
+pyOpeartor
+\family default
+ returns 
+\family typewriter
+False
+\family default
+, the individual will be discarded.
+ Therefore, you can write a filter in this way.
+ However, since the Python function will be called for each mating event,
+ the cost of using such an operator is high, especially when population
+ size is large.
+\end_layout
+
+\begin_layout Standard
+An example of during-mating 
+\family typewriter
+pyOperator
+\family default
+ can be found in 
+\family typewriter
+scripts/demoPyOperator.py
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -5372,6 +6022,13 @@ Python parents chooser
 
 \begin_layout Subsection
 Using C++ to implement a parents chooser
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Using-C++"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -6624,613 +7281,8 @@ r/2 &  &  & r/2 & 1-r\end{array}\right)\]
 
 \end_layout
 
-\begin_layout Section
-Hybrid
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-Hybrid operator
-\end_layout
-
-\end_inset
-
- and pure-Python operator
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-python operator
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Despite the large number of built-in operators, it is obviously not possible
- to implement every genetics models available.
- For example, although simuPOP provides several penetrance models, a user
- may want to try a customized one.
- In this case, one can use a simuPOP feature called 
-\emph on
-hybrid operator
-\emph default
-.
- Such operators accept a Python function and will call this function with
- appropriate parameter(s) when needed.
- For example, example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "hybrid"
-
-\end_inset
-
- defines a three-locus heterogeneity penetrance model 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Risch1990"
-
-\end_inset
-
- that yields positive penetrance only when at least two disease susceptibility
- alleles are available.
- The underlying mechanism of this operator is that for each individual,
- simuPOP will collect genotype at specified loci (
-\family typewriter
-loci
-\family default
-) and send them to function 
-\family typewriter
-myPenetrance
-\family default
- and evaluate.
- The return values are used as the penetrance value of the individual, which
- is then interpreted as the probability of being affected.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "hybrid.py"
-lstparams "caption={An example of hybrid operators},label={hybrid}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "hybrid"
-
-\end_inset
-
- uses the function form of operator 
-\family typewriter
-pyPenetrance
-\family default
- and 
-\family typewriter
-stat
-\family default
- and you should use the operator form in a simulator.
- In these functions, operators are created with the same set of parameters
- as their operator form, applied to the population, and are destroyed afterward.
- For example,
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-PyPenetrance(pop, parameters)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-is the same as
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyPenetrance(parameters).apply(pop)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Of course, parameters 
-\family typewriter
-begin, end, step
-\family default
- etc become meaningless in the function form.
- Note that if you need to apply the same operator to dozens of populations,
- creating one operator and applying it to all populations is more efficient
- than using the function form, since dozens of operators will be created
- and destroyed for each population in the latter usage.
-\end_layout
-
-\begin_layout Standard
-If hybrid operators are still not flexible enough, you can write operators
- in Python.
- Such operators will have full access to the evolving population, and can
- therefore perform arbitrary operations on it.
- A pure-python operator has been used in the previous chapter where complex
- statistics are calculated and printed.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyOperator"
-
-\end_inset
-
- uses a python operator to define a frequency-dependent selection operator
- which has different selection pressures depending on current disease allele
- frequency.
- In this example, a population is initialized with disease allele frequency
- 0.3 (allele 1).
- Then, at each generation, a python function 
-\family typewriter
-freqDependSelector
-\family default
- is called.
- This function
-\end_layout
-
-\begin_layout Itemize
-unpact parameters (
-\family typewriter
-DSL, min, max
-\family default
-)
-\end_layout
-
-\begin_layout Itemize
-calculate allele frequency at the disease locus
-\end_layout
-
-\begin_layout Itemize
-if disease allele frequency is less than 
-\family typewriter
-min
-\family default
-, apply a multi-allele selector and give disease allele strong advantage
- selection;
-\end_layout
-
-\begin_layout Itemize
-if disease allele frequency is greater than 
-\family typewriter
-max
-\family default
-, apply a multi-allele selector and give disease allele strong purifying
- selection;
-\end_layout
-
-\begin_layout Standard
-The result of this operator, unseen to users, is individual 
-\family typewriter
-fitness
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-fitness
-\end_layout
-
-\end_inset
-
-
-\family default
- values set by one of (maybe none of) the multi-allele selector, which will
- be used by 
-\family typewriter
-randomMating()
-\family default
- to select individuals accordingly to population the next generation.
-\end_layout
-
-\begin_layout Standard
-One tricky point of this python operator is that although selectors are
- 
-\family typewriter
-PreMating
-\family default
-, namely fitness will be calculated before mating, 
-\family typewriter
-pyOperator
-\family default
- is 
-\family typewriter
-PostMating
-\family default
-.
- To calculate 
-\family typewriter
-fitness
-\family default
- before mating, a 
-\family typewriter
-stage=PreMating
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-PreMating
-\end_layout
-
-\end_inset
-
- parameter should be used.
- Otherwise, the fitness will be calculated for the offspring generation,
- not the current generation, as shown below:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-preMating | mating -> offspring generation | postMating, fitness calculated
-\end_layout
-
-\begin_layout Plain Layout
-
-preMating | mating -> ...
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Then, because the simulator clears selection flag at the beginning of each
- generation, the fitness will not be used.
- Tricky enough, right? The good news is that 
-\end_layout
-
-\begin_layout Itemize
-If you are using non-optimization libraries, simulation will fail if selection
- flag is on at the beginning of a generation.
- This prevents the use of post-mating selectors.
-\end_layout
-
-\begin_layout Itemize
-If you are not sure in which order the operators are applied, use the 
-\family typewriter
-dryrun
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-dryrun
-\end_layout
-
-\end_inset
-
-=True
-\family default
- in the evolve function.
- 
-\family typewriter
-evolve
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-evolve
-\end_layout
-
-\end_inset
-
-()
-\family default
- function will do nothing but printing out when and in which order operators
- will be applied.
-\end_layout
-
-\begin_layout Standard
-Pure-python operators are extremely flexible and even more complicated form
- can be used.
- For example, 
-\family typewriter
-varPlotter
-\family default
- in 
-\family typewriter
-simuRPy.py
-\family default
- is a class with an instance of different plotters, and a python operator
- is used to call one of them.
- Such advanced usage of pure Python operator is beyond the scope of this
- guide.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "pyOperator.py"
-lstparams "caption={A frequency dependent selection operator},label={pyOperator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Python Individual operator (moved from refManual.lyx)
-\end_layout
-
-\begin_layout Standard
-A Python operator accepts a function and an optional parameter.
- When 
-\family typewriter
-pyOperator
-\family default
- is called, it will simply pass the accepted population (or parents and
- offspring in the case of 
-\family typewriter
-stage=DuringMating
-\family default
-) to the function.
- To use this operator, in case of 
-\family typewriter
-stage=PostMating
-\family default
-, you will need to 
-\end_layout
-
-\begin_layout Itemize
-define a function that handle a population as you wish.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def myOperator(pop, para):
-\end_layout
-
-\begin_layout Plain Layout
-
-    'do whatever you want'
-\end_layout
-
-\begin_layout Plain Layout
-
-    return True
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If you return 
-\family typewriter
-False
-\family default
-, this operator will work like a terminator.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-use 
-\family typewriter
-pyOperator
-\family default
- in the form of
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyOperator(mfunc=pyOperator, param=para)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-all parameters of an operator are supported except for 
-\family typewriter
-output
-\family default
- and 
-\family typewriter
-outputExpr
-\family default
- which are ignored for now.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-This operator allows implementation of arbitrarily complicated operators,.
- To use this operator, you will have to know how to use population-related
- functions.
- The following example shows how to implement a dynamic mutator which mutate
- loci according to their allele frequencies.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyOperator.log"
-lstparams "caption={Define a python operator},label={pyOperator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyOperatorUse.log"
-lstparams "caption={Use of python operator},label={pyOperatorUse}"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
 
-\family typewriter
-pyOperator
-\family default
- can also be a during-mating operator.
- You will need to define a function 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def Func(pop, off, dad, mom, para)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def shortFunc(off, para)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\family typewriter
-para
-\family default
- can be ignored.
- To use this operator, you can do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
-\end_layout
-
-\begin_layout Plain Layout
-
-formOffGenotype=False, passOffspringOnly=True)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If your during-mating 
-\family typewriter
-pyOpeartor
-\family default
- returns 
-\family typewriter
-False
-\family default
-, the individual will be discarded.
- Therefore, you can write a filter in this way.
- However, since the Python function will be called for each mating event,
- the cost of using such an operator is high, especially when population
- size is large.
-\end_layout
-
-\begin_layout Standard
-An example of during-mating 
-\family typewriter
-pyOperator
-\family default
- can be found in 
-\family typewriter
-scripts/demoPyOperator.py
-\family default
-.
 \end_layout
 
 \begin_layout Section

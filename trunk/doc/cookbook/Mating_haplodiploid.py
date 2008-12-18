@@ -51,7 +51,7 @@ class haplodiploidRecombinator(pyOperator):
         # With no *param* and stage=DuringMating, this operator expects a function
         # in the form of ``(pop, off, dad, mom)``. If *param* is given, the
         # function should have the form ``(pop, off, dad, mom, param)``. If
-        # *passOffspringOnly* is set to ``True``, the function can be simplied
+        # *offspringOnly* is set to ``True``, the function can be simplied
         # to ``(off)`` or ``(off, param)``.
         pyOperator.__init__(self, func=self.transmitGenotype,
             stage=DuringMating, formOffGenotype=True, *args, **kwargs)

@@ -490,18 +490,115 @@ print open('LD_2.txt').read()  # Each replicate writes to a different file.
 
 
 #file log/hybrid.log
-import random
+def myPenetrance(geno):
+    'A three-locus heterogeneity penetrance model'
+    if sum(geno) < 2:
+        return 0
+    else:
+        return sum(geno)*0.1
 
-def mut(x):
-  return x + random.randint(1, 4)
-
-simu = simulator(population(10, loci=[5]), randomMating())
+simu = simulator(population(1000, loci=[20]*3), randomMating())
 simu.evolve(
-    preOps = [initSex()],   # initialize sex, leave genotype untouched
-    ops = [pyMutator(rate=.1, loci=range(5), func=mut)],
+    preOps = [initByFreq([0.8, 0.2])],
+    ops = [
+        pyPenetrance(func=myPenetrance, loci=[10, 30, 50]),
+        stat(numOfAffected=True),
+        pyEval(r"'%d: %d\n' % (gen, numOfAffected)")
+    ],
     gen = 5
 )
-Dump(simu.population(0), structure=False)
+#end
+
+
+#file log/pyOperator.log
+def dynaMutator(pop, param):
+    '''This mutator mutates commom loci with low mutation rate and rare
+    loci with high mutation rate, as an attempt to raise allele frequency
+    of rare loci to an higher level.'''
+    # unpack parameter
+    (cutoff, mu1, mu2) = param;
+    Stat(pop, alleleFreq=range(pop.totNumLoci()))
+    for i in range(pop.totNumLoci()):
+        # Get the frequency of allele 1 (disease allele)
+        if pop.dvars().alleleFreq[i][1] < cutoff:
+            KamMutate(pop, maxAllele=1, rate=mu1, loci=[i])
+        else:
+            KamMutate(pop, maxAllele=1, rate=mu2, loci=[i])
+    return True
+
+#end
+
+#file log/usePyOperator.log
+simu = simulator(population(size=10000, loci=[2, 3]),
+    randomMating())
+simu.evolve(
+    preOps = [ 
+        initByFreq([.99, .01], loci=[0, 2, 4]),
+        initByFreq([.8, .2], loci=[1, 3])],
+    ops = [ 
+        pyOperator(func=dynaMutator, param=(.2, 1e-2, 1e-5), stage=PreMating),
+        stat(alleleFreq=range(5), step=10),
+        pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
+            step=10),
+    ],
+    gen = 31
+)                
+#end
+
+#file log/pyDuringMatingOperator.log
+def rejectInd(off):
+    'reject an individual if it off.allele(0) == 1'
+    return off.allele(0) == 0
+
+simu = simulator(population(size=100, loci=[1]),
+    randomMating())
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [ 
+        pyOperator(func=rejectInd, stage=DuringMating, offspringOnly=True),
+    ],
+    gen = 1
+)
+# You should see no individual with allele 1 at locus 0, ploidy 0.
+simu.population(0).genotype()[:20]
+#end
+
+
+#file log/newOperator.log
+class dynaMutator(pyOperator):
+    '''This mutator mutates commom loci with low mutation rate and rare
+    loci with high mutation rate, as an attempt to raise allele frequency
+    of rare loci to an higher level.'''
+    def __init__(self, cutoff, mu1, mu2, *args, **kwargs):
+        self.cutoff = cutoff
+        self.mu1 = mu1
+        self.mu2 = mu2
+        pyOperator.__init__(self, func=self.mutate, *args, **kwargs)
+    #
+    def mutate(self, pop):
+        Stat(pop, alleleFreq=range(pop.totNumLoci()))
+        for i in range(pop.totNumLoci()):
+            # Get the frequency of allele 1 (disease allele)
+            if pop.dvars().alleleFreq[i][1] < self.cutoff:
+                KamMutate(pop, maxAllele=1, rate=self.mu1, loci=[i])
+            else:
+                KamMutate(pop, maxAllele=1, rate=self.mu2, loci=[i])
+        return True
+
+simu = simulator(population(size=10000, loci=[2, 3]),
+    randomMating())
+simu.evolve(
+    preOps = [ 
+        initByFreq([.99, .01], loci=[0, 2, 4]),
+        initByFreq([.8, .2], loci=[1, 3])],
+    ops = [ 
+        dynaMutator(cutoff=.2, mu1=1e-2, mu2=1e-5, stage=PreMating),
+        stat(alleleFreq=range(5), step=10),
+        pyEval(r"' '.join(['%.2f' % alleleFreq[x][1] for x in range(5)]) + '\n'",
+            step=10),
+    ],
+    gen = 31
+)          
 #end
 
 
@@ -738,40 +835,7 @@ os.remove('s.bin')
 os.remove('a0.txt')
 os.remove('a1.txt')
 
-#file log/pyOperator.log
-def dynaMutator(pop, param):
-  ''' this mutator mutate common loci with low mutation rate
-  and rare loci with high mutation rate, as an attempt to
-  bring allele frequency of these loci at an equal level.'''
-  # unpack parameter
-  (cutoff, mu1, mu2) = param;
-  Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-  for i in range( pop.totNumLoci() ):
-    # 1-freq of wild type = total disease allele frequency
-    if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-      KamMutate(pop, maxAllele=2, rate=mu1, atLoci=[i])
-    else:
-      KamMutate(pop, maxAllele=2, rate=mu2, atLoci=[i])
-  return True
-#end
 
-#file log/pyOperatorUse.log
-pop = population(size=10000, ploidy=2, loci=[2, 3])
-
-simu = simulator(pop, randomMating())
-
-simu.evolve(
-  preOps = [ 
-    initByFreq( [.6, .4], atLoci=[0, 2, 4]),
-    initByFreq( [.8, .2], atLoci=[1, 3]) ],
-  ops = [ 
-    pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
-    stat(alleleFreq=range(5)),
-    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1], alleleFreq[1][1])', step=10)
-    ],
-  gen = 30
-)        
-#end
 
 
 #file log/initByFreq.log
@@ -1399,53 +1463,6 @@ simu1 = LoadSimulator("sample.sim", randomMating())
 os.remove('s.sim')
 os.remove('a0.txt')
 os.remove('a1.txt')
-
-#file log/pyOperator.log
-def dynaMutator(pop, param):
-    ''' this mutator mutate common loci with low mutation rate
-    and rare loci with high mutation rate, as an attempt to
-    bring allele frequency of these loci at an equal level.'''
-    # unpack parameter
-    (cutoff, mu1, mu2) = param;
-    Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-    for i in range( pop.totNumLoci() ):
-        # 1-freq of wild type = total disease allele frequency
-        if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-            KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
-        else:
-            KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
-    return True
-#end
-
-#file log/pyOperatorUse.log
-pop = population(size=10000, ploidy=2, loci=[2, 3])
-
-simu = simulator(pop, randomMating())
-
-simu.evolve(
-    preOps = [ 
-        initByFreq( [.6, .4], loci=[0, 2, 4]),
-        initByFreq( [.8, .2], loci=[1, 3]) ],
-    ops = [ 
-        pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
-        stat(alleleFreq=range(5)),
-        pyEval(r'"%f\t%f\n"%(alleleFreq[0][1], alleleFreq[1][1])', step=10)
-        ],
-    gen = 30
-)                
-#end
-
-
-
-#file log/pySubset.log
-simu = simulator(population(size=[2, 3], loci=[3, 4], infoFields=['fitness']),
-        randomMating())
-simu.step([
-        initByFreq([.3, .5, .2]),
-        pySubset( [1, -1, -1, 1, -1] ),
-        dumper(alleleOnly=True, stage=PrePostMating)
-     ])
-#end
 
 #file log/generator_random.log
 from random import randint
@@ -2103,41 +2120,6 @@ simu.step([
   postOps = [ dumper(alleleOnly=True)]
 )
 #end
-
-
-#file log/src_pyOperator.log
-def dynaMutator(pop, param):
-  ''' this mutator mutate common loci with low mutation rate
-  and rare loci with high mutation rate, as an attempt to
-  bring allele frequency of these loci at an equal level.'''
-  # unpack parameter
-  (cutoff, mu1, mu2) = param;
-  Stat(pop, alleleFreq=range( pop.totNumLoci() ) )
-  for i in range( pop.totNumLoci() ):
-    # 1-freq of wild type = total disease allele frequency
-    if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-      KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
-    else:
-      KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
-  return True
-
-pop = population(size=10000, ploidy=2, loci=[2, 3])
-
-simu = simulator(pop, randomMating())
-
-simu.evolve(
-  preOps = [ 
-    initByFreq( [.6, .4], loci=[0, 2, 4]),
-    initByFreq( [.8, .2], loci=[1, 3]) ],
-  ops = [ 
-    pyOperator( func=dynaMutator, param=(.5, .1, 0) ),
-    stat(alleleFreq=range(5)),
-    pyEval(r'"%f\t%f\n"%(alleleFreq[0][1], alleleFreq[1][1])', step=10)
-    ],
-  gen = 30
-)        
-#end
-
 
 
 #file log/src_mating.log
