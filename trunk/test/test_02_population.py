@@ -142,9 +142,19 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.individual(1).genotype(0), [2, 4, 2])
         self.assertEqual(pop.individual(1).genotype(1), [4, 2, 4])
         self.assertEqual(pop.individual(2).genotype(), [2, 4, 2, 4, 2, 4])
+        # virtual subpopulation
+        pop = self.getPop(size = 100, VSP=True)
+        self.assertEqual(pop.numSubPop(), 1)
+        self.assertEqual(pop.numVirtualSubPop(), 2)
+        pop.setGenotype([5],[0,0])
+        pop.setGenotype([6],[0,1])
+        for idx, ind in enumerate(pop.individuals([0,0])):
+            self.assertEqual(ind.allele(idx%6), 5)          
+        for idx, ind in enumerate(pop.individuals([0,1])):
+            self.assertEqual(ind.allele(idx%6), 6)                    
 
     def testAncestor(self):
-        'Testing population::ancestor(idx, gen), ancestor(idx, subPop, gen)'
+        'Testing population::ancestor(idx, gen), ancestor(idx, subPop, gen), push(pop)'
         pop = population([100, 200], loci=[10, 20], infoFields=['x', 'y'],
             ancGen=5)
         InitByFreq(pop, [0.2, 0.8])
@@ -211,6 +221,10 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('x'), inf)
         # out of bound ancestral generation number
         self.assertRaises(exceptions.ValueError, pop.useAncestralGen, 3 )
+        # setAncestralDepth
+        pop = self.getPop(ancGen = 5)
+        pop.setAncestralDepth(3)
+        self.assertEqual(pop.ancestralGens(), 3)                
 
     def testAddChrom(self):
         'Testing population::addChrom'
@@ -312,21 +326,25 @@ class TestPopulation(unittest.TestCase):
 
     def testAddLoci(self):
         'Testing population::addLoci(chrom, pos, names=[])'
-        pop = self.getPop(chromNames=["c1", "c2"], ancGen=5, lociPos=[[1], [3, 5]], lociNames = ['l1', 'l2', 'l3'])
+        pop = self.getPop(size = 100, chromNames=["c1", "c2"], ancGen=5, lociPos=[[1], [3, 5]], lociNames = ['l1', 'l2', 'l3'])
         pop1 = pop.clone()
-        pop.addLoci([1], [6], ['l4'])
-        self.assertEqual(pop.numLoci(), (1, 3))
-        self.assertEqual(pop.lociPos(), (1, 3, 5, 6))
+        newpos = pop.addLoci([0,1,1], [2, 6, 7], ['l4', 'l5', 'l6'])
+        self.assertEqual(pop.numLoci(), (2,4))
+        self.assertEqual(pop.lociPos(), (1, 2, 3, 5, 6, 7))
         for gen in range(pop.ancestralGens(), -1, -1):
             pop.useAncestralGen(gen)
             pop1.useAncestralGen(gen)
             for idx in range(pop.popSize()):
                 ind = pop.individual(idx)
                 ind1 = pop1.individual(idx)
-                for loc in range(3):
-                    self.assertEqual(ind.allele(loc), ind1.allele(loc))
-                self.assertEqual(ind.allele(3), 0)
-        self.assertRaises(exceptions.ValueError, pop.addLoci, [2], [6], ['l4'])
+                # i: index in population
+                # j: index in source population
+                for i, j in [(0, 0), (2, 1), (3, 2)]:
+                    for p in range(pop.ploidy()):
+                        self.assertEqual(ind.allele(i, p), ind1.allele(j, p))
+                for k in newpos:
+                    self.assertEqual(ind.allele(k), 0)
+        self.assertRaises(exceptions.ValueError, pop.addLoci, [2], [8], ['l7'])
 
     def testDeepcopy(self):
         'Testing deepcopy of population'
@@ -582,6 +600,38 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.indInfo('fitness'), tuple([3]*pop.popSize()))
         self.assertEqual(pop.indInfo('misc'), tuple([3]*pop.popSize()))
 
+    def testUpdateInfoFieldsFrom(self):
+        'Testing population::updateInfoFieldsFrom(fields,pop, fromFields=[], ancGen=-1)'
+        pop = self.getPop(size = 100, ancGen = 5)
+        pop.setIndInfo([1,2], 'x')
+        pop1 = pop.clone()
+        pop2 = self.getPop(size = 100, ancGen = 5)
+        pop2.setIndInfo([3,4], 'x')
+        pop.updateInfoFieldsFrom('x', pop2, ancGen = 0)
+        self.assertEqual(pop.indInfo('x'), pop2.indInfo('x'))
+        for gen in range(1, 5):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
+        pop3 = self.getPop(size = 200)
+        self.assertRaises(exceptions.ValueError, pop.updateInfoFieldsFrom, 'x', pop3)
+        
+    def testClone(self):
+        'Testing population::clone()'
+        pop = self.getPop(ancGen = 5)
+        pop1 = pop.clone()
+        for gen in range(pop.ancestralGens(), -1, -1):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            self.assertEqual(pop, pop1)
+   
+    def testSave(self):
+        'Testing population::save(filename)'
+        pop = self.getPop()
+        pop.save("popout");
+        pop1 = LoadPopulation("popout")
+        self.assertEqual(pop, pop1)
+
     def testVars(self):
         'Testing population::vars(), vars(subPop), dvars(), dvars(subPop)'
         pop = self.getPop(size=1000, loci=[2, 4])
@@ -601,8 +651,8 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(len(pop.dvars(1).alleleFreq), 6)
         self.assertEqual(len(pop1.vars(0)["alleleFreq"]), 6)
         self.assertEqual(len(pop1.dvars(1).alleleFreq), 6)
-
-
+    
+    
 
 if __name__ == '__main__':
     unittest.main()
