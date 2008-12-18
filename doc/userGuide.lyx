@@ -4865,7 +4865,7 @@ func(off [, param])                 # if offspringOnly=True
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "newOperator"
+reference "duringMatingPyOperator"
 
 \end_inset
 
