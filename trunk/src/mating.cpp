@@ -158,7 +158,10 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 	UINT count = 0;
 	bool accept = true;
 	UINT numOff = numOffspring(pop.gen());
-	while (count < numOff && it != itEnd) {
+	int attempt = 0;
+	while (count < numOff && attempt < numOff && it != itEnd) {
+		++attempt;
+
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
 		it->setSex(getSex(count));
@@ -182,6 +185,9 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 				throw;
 			}
 		}
+
+		if (!accept)
+			continue;
 
 		// apply during mating operators
 		iop = ops.begin();
@@ -1502,7 +1508,7 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
 		(void)numOff;             // silent warning about unused variable.
 		// record family size (this may be wrong for the last family)
-		DBG_DO(DBG_MATING, m_famSize.push_back(numOff));
+		DBG_DO(DBG_MATING, if (numOff > 0) m_famSize.push_back(numOff));
 	}
 	m_parentChooser->finalize(pop, subPop);
 	m_offspringGenerator->finalize(pop);
