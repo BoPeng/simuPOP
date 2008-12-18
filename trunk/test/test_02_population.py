@@ -603,16 +603,26 @@ class TestPopulation(unittest.TestCase):
     def testUpdateInfoFieldsFrom(self):
         'Testing population::updateInfoFieldsFrom(fields,pop, fromFields=[], ancGen=-1)'
         pop = self.getPop(size = 100, ancGen = 5)
-        pop.setIndInfo([1,2], 'x')
-        pop1 = pop.clone()
-        pop2 = self.getPop(size = 100, ancGen = 5)
-        pop2.setIndInfo([3,4], 'x')
-        pop.updateInfoFieldsFrom('x', pop2, ancGen = 0)
-        self.assertEqual(pop.indInfo('x'), pop2.indInfo('x'))
-        for gen in range(1, 5):
+        pop1 = self.getPop(size = 100, ancGen = 5)
+        for gen in range(0, 6):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            self.assertNotEqual(pop.indInfo('x'), pop1.indInfo('x'))
+        pop.updateInfoFieldsFrom('x', pop1)
+        for gen in range(0, 6):
             pop.useAncestralGen(gen)
             pop1.useAncestralGen(gen)
             self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
+        # do not update all ancestral generations
+        pop1 = self.getPop(size = 100, ancGen = 5)
+        pop.updateInfoFieldsFrom('x', pop1, ancGen=2)
+        for gen in range(0, 6):
+            pop.useAncestralGen(gen)
+            pop1.useAncestralGen(gen)
+            if gen <= 2:
+                self.assertEqual(pop.indInfo('x'), pop1.indInfo('x'))
+            else:
+                self.assertNotEqual(pop.indInfo('x'), pop1.indInfo('x'))
         pop3 = self.getPop(size = 200)
         self.assertRaises(exceptions.ValueError, pop.updateInfoFieldsFrom, 'x', pop3)
         
