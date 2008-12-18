@@ -998,7 +998,7 @@ public:
 	   a selector, a \c PreMating Python operator should be used.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
-		int stage = PostMating, bool formOffGenotype = false, bool passOffspringOnly = false,
+		int stage = PostMating, bool formOffGenotype = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr());
 
