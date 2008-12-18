@@ -181,7 +181,7 @@ public:
 	/** Create a cloned copy of a population. Note that Python statement
 	 *  <tt>pop1 = pop</tt> only creates a reference to an existing population
 	 *  \c pop.
-	 *  <group>1-pop</group>
+	 *  <group>8-pop</group>
 	 */
 	population * clone() const;
 
@@ -486,16 +486,25 @@ public:
 	 */
 	individual & ancestor(ULONG idx, UINT gen);
 
-	/// refrence to an individual \c ind in an ancestral generation
+	/** Return a reference to individual \c idx in ancestral generation \c gen.
+	 *  The correct individual will be returned even if the current generation
+	 *  is not the present one (see also \c useAncestralGen).
+	 *  CPPONLY
+	 *  <group>6-ancestral</group>
+	 */
 	const individual & ancestor(ULONG ind, UINT gen) const;
 
 	/** Return a reference to individual \c idx of subpopulation \e subPop in
-	 *   ancestral generation \c gen.
+	 *  ancestral generation \c gen.
 	 *  <group>6-ancestral</group>
 	 */
 	individual & ancestor(ULONG ind, UINT subPop, UINT gen);
 
-	/// refrence to an individual \c ind in a specified subpopulaton or an ancestral generation
+	/** Return a reference to individual \c idx of subpopulation \e subPop in
+	 *  ancestral generation \c gen.
+	 *  CPPONLY
+	 *  <group>6-ancestral</group>
+	 */
 	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const;
 
 	/** Return a Python iterator that can be used to iterate through all
@@ -1265,15 +1274,12 @@ public:
 
 	/** Save population to a file \e filename, which can be loaded by a global
 	 *  function <tt>LoadPopulation(filename)</tt>.
-	 *  <group>1-pop</group>
+	 *  <group>8-pop</group>
 	 */
 	void save(const string & filename) const;
 
-	/// CPPONLY load population from a file
-	/**
-	   filename load from filename
-
-	   <group>1-pop</group>
+	/** CPPONLY load population from file \e filename
+	 *  <group>8-pop</group>
 	 */
 	void load(const string & filename);
 

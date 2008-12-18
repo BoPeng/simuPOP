@@ -1,4 +1,4 @@
-#LyX 1.6.1svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1143,7 +1143,7 @@ terminateIfRef
 \end_layout
 
 \begin_layout Section
-Python operators
+The Python operator
 \end_layout
 
 \begin_layout Standard
@@ -1155,13 +1155,6 @@ status open
 
 \backslash
 pyOperatorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pyIndOperatorRef
 \end_layout
 
 \end_inset
