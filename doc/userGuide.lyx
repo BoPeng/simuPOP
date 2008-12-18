@@ -3762,7 +3762,7 @@ pyExec
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "output"
+reference "hybridOperator"
 
 \end_inset
 
@@ -3874,7 +3874,7 @@ n variables.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "output"
+reference "hybridOperator"
 
 \end_inset
 
@@ -4137,7 +4137,7 @@ beginning
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "output"
+reference "hybridOperator"
 
 \end_inset
 
@@ -4293,7 +4293,7 @@ pyOutput
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "output"
+reference "hybridOperator"
 
 \end_inset
 
@@ -4436,7 +4436,7 @@ evolve
 Because a table output such as the one in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "output"
+reference "hybridOperator"
 
 \end_inset
 
@@ -4508,7 +4508,42 @@ rep
 \end_layout
 
 \begin_layout Standard
-Example demonstrates the use of this two parameters.
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "hybridOperator"
+
+\end_inset
+
+ demonstrates the use of these two parameters.
+ In this example, a table is written to file 
+\family typewriter
+LD.txt
+\family default
+ using 
+\family typewriter
+output='>>LD.txt'
+\family default
+.
+ Similar operation to 
+\family typewriter
+output='R2.txt'
+\family default
+ fails because only the last 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ value is written to this file.
+ The last operator writes output for each replicate to their respective
+ output file such as 
+\family typewriter
+LD_0.txt
+\family default
+, using an expression that involves variable 
+\family typewriter
+rep
+\family default
+.
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/output.log"
@@ -4520,70 +4555,46 @@ lstparams "caption={Use the output and outputExpr parameters},label={output}"
 \end_layout
 
 \begin_layout Subsection
-During-mating operators
-\end_layout
-
-\begin_layout Subsection
 Hybrid operators
 \end_layout
 
-\begin_layout Itemize
-
-\emph on
-built-in:
-\emph default
- written in C++, fastest.
- They do not interact with Python shell except that some of them set variables
- that are accessible from Python.
+\begin_layout Standard
+A hybrid operator is an operator that calls a user-defined function when
+ its applied to a population.
+ The number and meaning of input parameters and return value vary from operator
+ to operator.
+ For example, a hybrid penetrance operator passes genotype at specified
+ markers to a user defined function and use its return values as the penetrance
+ values of individuals.
+ A hybrid selector uses the return value of a user defined function as individua
+l fitness.
 \end_layout
 
-\begin_layout Itemize
-
-\emph on
-hybrid
-\emph default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-hybrid
-\end_layout
+\begin_layout Standard
+Compare to operators that implement specific genetic models, hybrid operators
+ give users great flexibility to implement arbitrary genetic models.
+ For example, the mutation model implemented in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "hybridOperator"
 
 \end_inset
 
-: written in C++ but calls python function when execution.
- Less efficient.
- For example, a hybrid mutator 
-\family typewriter
-pyMutator
-\family default
- will determine if an allele will be mutated and call a user--defined Python
- function to mutate it.
+ mutates an allele by adding a random number (between 1 to 4) to its original
+ allele state.
+ Very complicated mutation models such as asymmetric stepwise mutation model
+ for microsatellite markers can be implemented similarly.
 \end_layout
 
-\begin_layout Itemize
-
-\emph on
-pure python
-\emph default
-: written in python.
- Same speed as python.
- For example, a 
-\family typewriter
-varPlotter
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-varPlotter
-\end_layout
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/hybrid.log"
+lstparams "caption={Use a hybrid operator},keywordstyle={\\ttfamily},label={hybridOperator}"
 
 \end_inset
 
 
-\family default
- can plot python variables that are set by other operators.
 \end_layout
 
 \begin_layout Subsection
@@ -4599,35 +4610,13 @@ Function form of an operator
 \end_layout
 
 \begin_layout Standard
-Operators are usually applied to populations through a simulator.
- They are created and passed as parameters to the 
+Operators are usually applied to populations through a simulator but they
+ can also be applied to a population directly.
+ For example, it is possible to create an 
 \family typewriter
-evolve 
+initByFreq
 \family default
-function of a simulator.
- During evolution, the 
-\family typewriter
-evolve()
-\family default
- function determines if an operator can be applied to a population and apply
- it when appropriate.
- More details about operators will be described in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Operators"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-You can ignore the specialties of an operator and call its 
-\family typewriter
-apply()
-\family default
- function directly.
- For example, you can initialize a population outside a simulator by 
+ operator and apply to a population as follows:
 \end_layout
 
 \begin_layout Standard
@@ -4637,16 +4626,12 @@ status open
 
 \begin_layout Plain Layout
 
-initByFreq( [.3, .2, .5] ).apply(pop)
+initByFreq([.3, .2, .5]).apply(pop)
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-or dump the content of a population by
+Similarly, you can dump the content of a population by
 \end_layout
 
 \begin_layout Standard
@@ -4661,12 +4646,13 @@ dumper().apply(pop)
 
 \end_inset
 
-
+In these cases, all applicability parameters are ignored.
+ Note that such an operation is not allowed for during mating operators.
 \end_layout
 
 \begin_layout Standard
 This usage is used so often that it deserves some simplification.
- Equivalent functions are defined for most of the operators.
+ Equivalent functions are defined for most operators.
  For example, function 
 \family typewriter
 InitByFreq
@@ -4686,12 +4672,12 @@ lstparams "caption={Function \\texttt{InitByFreq}},label={InitByFreq}"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-The function form of an operator is listed after its class name in this
- reference manual.
+These functions are called function form of operators.
+ They are listed after their respective class names in the 
+\emph on
+simuPOP reference manual
+\emph default
+.
 \end_layout
 
 \begin_layout Section

@@ -488,6 +488,30 @@ print open('R2.txt').read()    # Only the last write operation succeed.
 print open('LD_2.txt').read()  # Each replicate writes to a different file.
 #end
 
+
+#file log/hybrid.log
+import random
+
+def mut(x):
+  return x + random.randint(1, 4)
+
+simu = simulator(population(10, loci=[5]), randomMating())
+simu.evolve(
+    preOps = [initSex()],   # initialize sex, leave genotype untouched
+    ops = [pyMutator(rate=.1, loci=range(5), func=mut)],
+    gen = 5
+)
+Dump(simu.population(0), structure=False)
+#end
+
+
+#file log/InitByFreq.log
+def InitByFreq(pop, *args, **kwargs):
+    initByFreq(*args, **kwargs).apply(pop)
+
+InitByFreq(pop, [.2, .3, .5])
+#end
+
 ################################################################################
 #
 
@@ -519,13 +543,6 @@ simu.evolve(
 )
 #end
 
-
-#file log/InitByFreq.log
-def InitByFreq(pop, *args, **kwargs):
-  initByFreq(*args, **kwargs).apply(pop)
-
-InitByFreq(pop, [.2, .3, .4, .1])
-#end
 
 
 
@@ -824,15 +841,6 @@ simu.step([
     gsmMutator(rate=1, func=rndInt, incProb=.8),
     dumper(alleleOnly=True, stage=PrePostMating)])
 
-#end
-
-#file log/pyMutator.log
-def mut(x):
-  return 8
-
-simu.step([
-  pyMutator(rate=.5, atLoci=[3, 4, 5], func=mut),
-  dumper(alleleOnly=True)])
 #end
 
 
