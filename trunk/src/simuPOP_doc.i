@@ -529,20 +529,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::cloneGenoTransmitter::transmitGenotype "
-
-Usage:
-
-    x.transmitGenotype(parent, parPloidy, offspring, ploidy)
-
-Details:
-
-    Transmit the parPloidy set of homologous chromosomes from parent
-    to the ploidy set of homologous chromosomes of offspring.
-    Customized chromosomes are not copied.
-
-"; 
-
 %feature("docstring") simuPOP::cloneGenoTransmitter::__repr__ "
 
 Description:
@@ -553,14 +539,6 @@ Description:
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::cloneGenoTransmitter::initialize "
-
-Usage:
-
-    x.initialize(pop)
 
 "; 
 
@@ -591,6 +569,14 @@ Usage:
 Usage:
 
     x.ptr()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::advance "
+
+Usage:
+
+    x.advance(it, p)
 
 "; 
 
@@ -1307,6 +1293,103 @@ Details:
 %ignore simuPOP::GenoStruTrait::struSetInfoFields(const vectorstr &fields);
 
 %ignore simuPOP::GenoStruTrait::swap(GenoStruTrait &rhs);
+
+%feature("docstring") simuPOP::genoTransmitter "
+
+Details:
+
+    This during mating operator is the base class of all genotype
+    transmitters. It is made available to users because it provides a
+    few member functions that can be used by derived transmitters, and
+    by customized Python during mating operators.
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::genoTransmitter "
+
+Usage:
+
+    genoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::clone "
+
+Usage:
+
+    x.clone()
+
+Details:
+
+    Return a cloned copy of an operator. This function is available to
+    all operators.
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::clearChromosome "
+
+Usage:
+
+    x.clearChromosome(ind, ploidy, chrom)
+
+Details:
+
+    Clear (set alleles to zero) chromosome chrom on the ploidy-th
+    homologous set of chromosomes of individual ind.
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::copyChromosome "
+
+Usage:
+
+    x.copyChromosome(parent, parPloidy, offspring, ploidy, chrom)
+
+Details:
+
+    Transmit chromosome chrom on the parPloidy set of homologous
+    chromosomes from parent to the ploidy set of homologous
+    chromosomes of offspring.
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::copyChromosomes "
+
+Usage:
+
+    x.copyChromosomes(parent, parPloidy, offspring, ploidy)
+
+Details:
+
+    Transmit the parPloidy set of homologous chromosomes from parent
+    to the ploidy set of homologous chromosomes of offspring.
+    Customized chromosomes are not copied.
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the operator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::genoTransmitter::initialize "
+
+Usage:
+
+    x.initialize(pop)
+
+"; 
+
+%ignore simuPOP::genoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::genotypeSplitter "
 
@@ -2883,22 +2966,6 @@ Description:
 Usage:
 
     x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::IOError "
-
-Description:
-
-    exception, thrown if file io failure
-
-"; 
-
-%feature("docstring") simuPOP::IOError::IOError "
-
-Usage:
-
-    IOError(msg)
 
 "; 
 
@@ -4702,22 +4769,6 @@ Usage:
 
 %ignore simuPOP::OstreamManager::closeAll();
 
-%feature("docstring") simuPOP::OutOfMemory "
-
-Description:
-
-    exception, thrown if out of memory
-
-"; 
-
-%feature("docstring") simuPOP::OutOfMemory::OutOfMemory "
-
-Usage:
-
-    OutOfMemory(msg)
-
-"; 
-
 %feature("docstring") simuPOP::outputer "
 
 Description:
@@ -5934,17 +5985,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::ancestor "
-
-Description:
-
-    refrence to an individual ind in an ancestral generation
-
-Usage:
-
-    x.ancestor(ind, gen)
-
-"; 
+%ignore simuPOP::population::ancestor(ULONG ind, UINT gen) const;
 
 %feature("docstring") simuPOP::population::ancestor "
 
@@ -5959,18 +6000,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::ancestor "
-
-Description:
-
-    refrence to an individual ind in a specified subpopulaton or an
-    ancestral generation
-
-Usage:
-
-    x.ancestor(ind, subPop, gen)
-
-"; 
+%ignore simuPOP::population::ancestor(ULONG ind, UINT subPop, UINT gen) const;
 
 %feature("docstring") simuPOP::population::individuals "
 
@@ -6048,10 +6078,6 @@ Details:
 %ignore simuPOP::population::indGenoBegin(ULONG ind) const;
 
 %ignore simuPOP::population::indGenoEnd(ULONG ind) const;
-
-%feature("docstring") simuPOP::population::arrGenotype "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::population::arrGenotype "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::population::genotype "
 
@@ -6186,11 +6212,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::addIndFromPop "
+%feature("docstring") simuPOP::population::addIndFrom "
 
 Usage:
 
-    x.addIndFromPop(pop)
+    x.addIndFrom(pop)
 
 Details:
 
@@ -6201,11 +6227,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::addChromFromPop "
+%feature("docstring") simuPOP::population::addChromFrom "
 
 Usage:
 
-    x.addChromFromPop(pop)
+    x.addChromFrom(pop)
 
 Details:
 
@@ -6217,11 +6243,11 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::population::addLociFromPop "
+%feature("docstring") simuPOP::population::addLociFrom "
 
 Usage:
 
-    x.addLociFromPop(pop)
+    x.addLociFrom(pop)
 
 Details:
 
@@ -6542,7 +6568,9 @@ Details:
     set the intended ancestral depth of a population to depth, which
     can be 0 (does not store any ancestral generation), -1 (store all
     ancestral generations), and a positive number (store depth
-    ancestral generations.
+    ancestral generations. If there exists more than depth ancestral
+    generations (if depth > 0), extra ancestral generations are
+    removed.
 
 "; 
 
@@ -6967,95 +6995,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyIndOperator "
-
-Description:
-
-    individual operator
-
-Details:
-
-    This operator is similar to a pyOperator but works at the
-    individual level. It expects a function that accepts an
-    individual, optional genotype at certain loci, and an optional
-    parameter. When it is applied, it passes each individual to this
-    function. When infoFields is given, this function should return an
-    array to fill these infoFields. Otherwise, True or False is
-    expected. More specifically, func can be
-    *  func(ind) when neither loci nor param is given.
-    *  func(ind, genotype) when loci is given.
-    *  func(ind, param) when param is given.
-    *  func(ind, genotype, param) when both loci and param are given.
-
-"; 
-
-%feature("docstring") simuPOP::pyIndOperator::pyIndOperator "
-
-Description:
-
-    a Pre- or PostMating Python operator that apply a function to each
-    individual
-
-Usage:
-
-    pyIndOperator(func, loci=[], param=None, stage=PostMating,
-      formOffGenotype=False, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
-
-Arguments:
-
-    func:           a Python function that accepts an individual and
-                    optional genotype and parameters.
-    param:          any Python object that will be passed to func
-                    after pop parameter. Multiple parameters can be
-                    passed as a tuple.
-    infoFields:     if given, func is expected to return an array of
-                    the same length and fill these infoFields of an
-                    individual.
-
-"; 
-
-%feature("docstring") simuPOP::pyIndOperator::~pyIndOperator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyIndOperator()
-
-"; 
-
-%ignore simuPOP::pyIndOperator::pyIndOperator(const pyIndOperator &rhs);
-
-%feature("docstring") simuPOP::pyIndOperator::clone "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::pyIndOperator::apply "
-
-Description:
-
-    apply the pyIndOperator operator to one population
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::pyIndOperator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyIndOperator operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::pyMating "
 
 Applicability: all ploidy
@@ -7359,7 +7298,7 @@ Description:
 Usage:
 
     pyOperator(func, param=None, stage=PostMating,
-      formOffGenotype=False, passOffspringOnly=False, begin=0, end=-1,
+      formOffGenotype=False, offspringOnly=False, begin=0, end=-1,
       step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
@@ -8332,14 +8271,6 @@ Note:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::~recombinator "
-
-Usage:
-
-    x.~recombinator()
-
-"; 
-
 %feature("docstring") simuPOP::recombinator::clone "
 
 Description:
@@ -8362,6 +8293,18 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::recombinator::recCount "
+
+Description:
+
+    return recombination counts (only valid in standard modules)
+
+Usage:
+
+    x.recCount(idx)
 
 "; 
 
@@ -8800,6 +8743,22 @@ Description:
 Usage:
 
     x.pvalChiSq(chisq, df)
+
+"; 
+
+%feature("docstring") simuPOP::RuntimeError "
+
+Description:
+
+    exception, thrown if a runtime error occurs
+
+"; 
+
+%feature("docstring") simuPOP::RuntimeError::RuntimeError "
+
+Usage:
+
+    RuntimeError(msg)
 
 "; 
 
@@ -11239,22 +11198,6 @@ Description:
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::TypeError "
-
-Description:
-
-    exception, thrown if type mismatch
-
-"; 
-
-%feature("docstring") simuPOP::TypeError::TypeError "
-
-Usage:
-
-    TypeError(msg)
 
 "; 
 
