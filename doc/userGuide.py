@@ -467,6 +467,27 @@ simu.evolve(
 )
 #end
 
+
+#file log/output.log
+from simuPOP import *
+simu = simulator(population(size=1000, loci=[2]), randomMating(), rep=3)
+simu.evolve(
+    preOps = [initByValue([1, 2, 2, 1])],  
+    ops = [
+        recombinator(rate=0.01),
+        stat(LD=[0, 1]),
+        pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
+        pyOutput('\n', rep=-1, step=20, output='>>LD.txt'),
+        pyEval(r"'%.2f\t' % R2[0][1]", output='R2.txt'),
+        pyEval(r"'%.2f\t' % LD[0][1]", step=20, outputExpr="'>>LD_%d.txt' % rep"),
+    ],
+    gen=100
+)
+print open('LD.txt').read()
+print open('R2.txt').read()    # Only the last write operation succeed.
+print open('LD_2.txt').read()  # Each replicate writes to a different file.
+#end
+
 ################################################################################
 #
 

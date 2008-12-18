@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -3762,7 +3762,7 @@ pyExec
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "replicate"
+reference "output"
 
 \end_inset
 
@@ -3874,7 +3874,7 @@ n variables.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "replicate"
+reference "output"
 
 \end_inset
 
@@ -4137,7 +4137,7 @@ beginning
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "replicate"
+reference "output"
 
 \end_inset
 
@@ -4293,7 +4293,7 @@ pyOutput
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "replicate"
+reference "output"
 
 \end_inset
 
@@ -4336,6 +4336,187 @@ the simuPOP reference manual
 
 \begin_layout Subsection
 Operator output
+\end_layout
+
+\begin_layout Standard
+All operators we have seen, except for the 
+\family typewriter
+savePopulation
+\family default
+ operator in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "stageAndGen"
+
+\end_inset
+
+, write their output to the standard output, namely your terminal window.
+ However, it would be much easier for bookkeeping and further analysis if
+ these output can be redirected to disk files.
+ The 
+\family typewriter
+output
+\family default
+ and 
+\family typewriter
+outputExpr
+\family default
+ parameters are designed for this purpose.
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\family typewriter
+output
+\family default
+ can take the following values:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+''
+\family default
+ (an empty string): No output.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>'
+\family default
+: Write to standard output.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'filename'
+\family default
+ or 
+\family typewriter
+'>filename'
+\family default
+: Write the output to a file named filename.
+ If multiple operators write to the same file, or if the same operator writes
+ to the file file several times, only the last write operation will succeed.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>>filename'
+\family default
+: Append the output to a file named filename.
+ The file will be opened at the beginning of 
+\family typewriter
+evolve
+\family default
+ function and closed at the end.
+ An existing file will be cleared.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'>>>filename'
+\family default
+: This is similar to the 
+\family typewriter
+'>>'
+\family default
+ form but the file will not be cleared at the beginning of the 
+\family typewriter
+evolve
+\family default
+ function.
+\end_layout
+
+\begin_layout Standard
+Because a table output such as the one in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "output"
+
+\end_inset
+
+ is written by several operators, it is clear that all of them need to use
+ the 
+\family typewriter
+'>>'
+\family default
+ output format.
+\end_layout
+
+\begin_layout Standard
+A question naturally arises: what if I would like to write to different
+ output for different replicate, or at different generation? For example,
+ the 
+\family typewriter
+savePopulation
+\family default
+ operator in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "stageAndGen"
+
+\end_inset
+
+ write to file 
+\family typewriter
+sample.pop
+\family default
+.
+ This works well if there is only one replicate but not so when the operator
+ is applied to multiple populations.
+ Only the last population will be saved successfully! In this case, parameter
+ 
+\family typewriter
+outputExpr
+\family default
+ should be used.
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\family typewriter
+outputExpr
+\family default
+, similar to what is used in operator 
+\family typewriter
+pyEval
+\family default
+, accepts a Python expression.
+ Whenever a filename is needed, this expression is evaluated against the
+ local namespace of the population it is applied to.
+ Because the 
+\family typewriter
+evolve
+\family default
+ function automatically sets variables 
+\family typewriter
+gen
+\family default
+ and 
+\family typewriter
+rep
+\family default
+ in a population's local namespace, such information can be used to produce
+ an output string.
+ Of course, any variable in this namespace can be used so you are not limited
+ to these two variable.
+\end_layout
+
+\begin_layout Standard
+Example demonstrates the use of this two parameters.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/output.log"
+lstparams "caption={Use the output and outputExpr parameters},label={output}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
