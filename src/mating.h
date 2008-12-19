@@ -143,7 +143,7 @@ public:
 	 *  speed up the calls to \c generateOffspring
 	 *  CPPONLY
 	 */
-	void initialize(const population & pop, vector<baseOperator *> const & ops);
+	void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
@@ -260,8 +260,7 @@ public:
 	}
 
 
-	//
-	void initialize(const population & pop, vector<baseOperator *> const & ops);
+	void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
@@ -287,11 +286,18 @@ private:
 	//
 	/// allele to be controlled at each locus
 	vectori m_alleles;
-	//
+
 	/// function that return an array of frquency range
 	PyObject * m_freqFunc;
+	//
 	// expected alleles
 	vectoru m_expAlleles;
+	vectoru m_flip;         // in a subpop
+	vectoru m_totAllele;    // in a subpop
+	vectoru m_curAllele;    // in a subpop
+	//
+	int m_AAattempt;
+	bool m_freqRequMet;
 };
 
 

@@ -133,7 +133,7 @@ Sex offspringGenerator::getSex(int count)
 }
 
 
-void offspringGenerator::initialize(const population & pop, vector<baseOperator *> const & ops)
+void offspringGenerator::initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops)
 {
 	m_formOffGenotype = true;
 	vector<baseOperator *>::const_iterator iop = ops.begin();
@@ -158,7 +158,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 	UINT count = 0;
 	bool accept = true;
 	UINT numOff = numOffspring(pop.gen());
-	int attempt = 0;
+	UINT attempt = 0;
 	while (count < numOff && attempt < numOff && it != itEnd) {
 		++attempt;
 
@@ -221,7 +221,8 @@ controlledOffspringGenerator::controlledOffspringGenerator(
 	UINT numOffspringParam, UINT mode, double sexParam, UINT sexMode)
 	: offspringGenerator(ops, numParents, numOffspring, numOffspringFunc,
 	                     numOffspringParam, mode, sexParam, sexMode),
-	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc)
+	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc),
+	m_expAlleles(), m_totAllele(), m_curAllele()
 {
 	if (m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
 		throw ValueError("Please specify a valid frequency function");
@@ -326,39 +327,61 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 }
 
 
-void controlledOffspringGenerator::initialize(const population & pop, vector<baseOperator *> const & ops)
+void controlledOffspringGenerator::initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops)
 {
 	// expected frequency at each locus
-	vectorf expFreq;
+	if (subPop == 0) {
+		vectorf expFreq;
+		PyCallFunc(m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
+		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
 
-	PyCallFunc(m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
-	DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
+		//
+		// determine expected number of alleles of each allele
+		// at each subpopulation.
+		getExpectedAlleles(pop, expFreq);
+		DBG_DO(DBG_MATING, cout << "expected alleles " << m_expAlleles << endl);
+	}
+
+	// now, for **this** subpopulation...
+
+	// total allowed disease alleles.
+	m_totAllele.resize(m_loci.size());
+	fill(m_totAllele.begin(), m_totAllele.end(), 0);
+	// currently available disease allele. (in the offspring generation)
+	m_curAllele.resize(m_loci.size());
+	fill(m_curAllele.begin(), m_curAllele.end(), 0);
 	//
-	// determine expected number of alleles of each allele
-	// at each subpopulation.
-	getExpectedAlleles(pop, expFreq);
+	m_flip.resize(m_loci.size());
+	fill(m_flip.begin(), m_flip.end(), false);
 
-	DBG_DO(DBG_MATING, cout << "expected alleles " << m_expAlleles << endl);
-	//  //
+	// We control allele 1 if expected allele frequency is less than 0.5
+	for (size_t i = 0; i < m_loci.size(); ++i) {
+		UINT maxCount = pop.subPopSize(subPop) * pop.ploidy();
+		m_totAllele[i] = m_expAlleles[subPop + pop.numSubPop() * i];
+		if (m_totAllele[i] > maxCount) {
+			cout << "Warning: number of planned affected alleles exceed population size.";
+			m_totAllele[i] = maxCount;
+		}
+		if (2 * m_totAllele[i] > maxCount) {
+			m_flip[i] = true;
+			m_totAllele[i] = maxCount - m_totAllele[i];
+		}
+	}
+	//
 
-	//  // total allowed disease alleles.
-	//  vectoru totAllele(nLoci);
-	//  // currently available disease allele. (in the offspring generation)
-	//  vectoru curAllele(nLoci, 0);
-	//  // We control allele 1 if expected allele frequency is less than 0.5
-	//  vector<bool> flip(nLoci, false);
-	//  for (i = 0; i < nLoci; ++i) {
-	//      totAllele[i] = expAlleles[sp + numSP * i];
-	//      if (totAllele[i] > spSize * pldy) {
-	//          cout << "Warning: number of planned affected alleles exceed population size.";
-	//          totAllele[i] = spSize * pldy;
-	//      }
-	//      if (2 * totAllele[i] > spSize * pldy) {
-	//          flip[i] = true;
-	//          totAllele[i] = spSize * pldy - totAllele[i];
-	//      }
-	//  }
-
+	// it is possible that no disease allele is required
+	// so everyone is accepted
+	m_freqRequMet = true;
+	//
+	for (size_t i = 0; i < m_loci.size(); ++i) {
+		if (m_totAllele[i] > 0) {
+			m_freqRequMet = false;
+			break;
+		}
+	}
+	// if mor ethan noAAattempt times, no pure homo found,
+	// accept non-homo cases.
+	m_AAattempt = 200;
 }
 
 
@@ -368,109 +391,79 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
                                                      RawIndIterator & offEnd,
                                                      vector<baseOperator *> & ops)
 {
-// 	// it is possible that no disease allele is required
-// 	// so everyone is accepted
-// 	bool freqRequMet = true;
-// 
-// 	for (i = 0; i < nLoci; ++i) {
-// 		if (totAllele[i] > 0) {
-// 			freqRequMet = false;
-// 			break;
-// 		}
-// 	}
-// 	// start!
-// 	UINT numOff = 0;
-// 	// if mor ethan noAAattempt times, no pure homo found,
-// 	// accept non-homo cases.
-// 	int AAattempt = 200;
-// 
-// 	//
-// 	// generate m_numOffspring offspring per mating
-// 	// record family size (this may be wrong for the last family)
-// 	//
-// 	UINT numOff = offspringGenerator::generateOffspring(pop,
-// 		itBegin, itEnd, ops);
-// 
-// 	if (numOff == 0)
-// 		return numOff;
-// 
-// 	// count number of alleles in the family.
-// 	vectori na(nLoci, 0);
-// 	bool hasAff = false;
-// 	// we know that scratch population has ordered linear genotype
-// 	for (i = 0; i < nLoci; ++i) {
-// 		GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
-// 		for (size_t j = 0; j < numOff * pldy; ++j, ptr += totNumLoci) {
-// 			if (flip[i] ? (*ptr != static_cast<Allele>(m_alleles[i]))
-// 				: (*ptr == static_cast<Allele>(m_alleles[i]))) {
-// 				na[i]++;
-// 				hasAff = true;
-// 			}
-// 		}
-// 	}
-// 	// now check if this family is usable.
-// 	bool accept = false;
-// 	// all disease alleles have been satidfied.
-// 	// only accept unaffected families
-// 	// otherwise, accept any family that can help.
-// 	if (freqRequMet) {
-// 		if (!hasAff) {
-// 			// has AA, so no need to compromise
-// 			AAattempt = 10000;
-// 			accept = true;
-// 		}
-// 		// tried 100 times, no AA is found.
-// 		else if (AAattempt == 0) {
-// 			AAattempt = 100;
-// 			accept = true;
-// 		}
-// 		AAattempt--;
-// 	} else {                                                         // do not use stack
-// 		for (i = 0; i < nLoci; ++i) {
-// 			// accept the whole family, if we need this allele
-// 			if (curAllele[i] < totAllele[i] && na[i] > 0) {
-// 				accept = true;
-// 				break;
-// 			}
-// 		}
-// 	}
-// 	//
-// 	// reject this family
-// 	if (!accept) {
-// 		// it relocate to its begin point
-// 		// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
-// 		it = itBegin;
-// 		continue;
-// 	}
-// 	DBG_DO(DBG_MATING, if (it - scratch.rawIndBegin(sp) < 100) cout << "Accept " << na << endl;);
-// 	//
-// 	// accpet this family, see if all done.
-// 	for (i = 0; i < nLoci; ++i)
-// 		curAllele[i] += na[i];
-// 	if (!freqRequMet) {
-// 		freqRequMet = true;
-// 		for (i = 0; i < nLoci; ++i) {
-// 			if (curAllele[i] < totAllele[i])
-// 				freqRequMet = false;
-// 		}
-// 	}
-// 	// see if break
-// 	if (it == it_end) {
-// 		if (!freqRequMet)
-// 			cout << "Warning: frequency requirement is not met, for subpop " << sp << " at generation " << pop.gen() << endl;
-// #ifndef OPTIMIZED
-// 		if (!freqRequMet || debug(DBG_MATING)) {
-// 			cout << "Subpopulation size " << spSize << "\nExpected:";
-// 			for (size_t ii = 0; ii < nLoci; ++ii)
-// 				cout << " " << expAlleles[sp + numSP * ii];
-// 			cout << endl << "Simulated:";
-// 			for (size_t ii = 0; ii < nLoci; ++ii)
-// 				cout << " " << (flip[ii] ? spSize * pldy - curAllele[ii] : curAllele[ii]);
-// 		}
-// #endif
-// 		break;
-// 	}
-// 	return 0;
+	UINT nLoci = m_loci.size();
+	//
+	// generate m_numOffspring offspring per mating
+	// record family size (this may be wrong for the last family)
+	//
+	RawIndIterator itBegin = offBegin;
+	UINT numOff = offspringGenerator::generateOffspring(pop,
+		dad, mom, offBegin, offEnd, ops);
+
+	//
+	if (numOff == 0)
+		return numOff;
+	//
+	// count number of alleles in the family.
+	vectori na(nLoci, 0);
+	bool hasAff = false;
+	UINT totNumLoci = pop.totNumLoci();
+	// we know that scratch population has ordered linear genotype
+	for (size_t i = 0; i < nLoci; ++i) {
+		GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
+		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
+			if (m_flip[i] ? (*ptr != static_cast<Allele>(m_alleles[i]))
+				: (*ptr == static_cast<Allele>(m_alleles[i]))) {
+				na[i]++;
+				hasAff = true;
+			}
+		}
+	}
+	// now check if this family is usable.
+	bool accept = false;
+	// all disease alleles have been satidfied.
+	// only accept unaffected families
+	// otherwise, accept any family that can help.
+	if (m_freqRequMet) {
+		if (!hasAff) {
+			// has AA, so no need to compromise
+			m_AAattempt = 10000;
+			accept = true;
+		}
+		// tried 100 times, no AA is found.
+		else if (m_AAattempt == 0) {
+			m_AAattempt = 100;
+			accept = true;
+		}
+		m_AAattempt--;
+	} else {                                                          // do not use stack
+		for (size_t i = 0; i < nLoci; ++i) {
+			// accept the whole family, if we need this allele
+			if (m_curAllele[i] < m_totAllele[i] && na[i] > 0) {
+				accept = true;
+				break;
+			}
+		}
+	}
+	//
+	// reject this family
+	if (!accept) {
+		// it relocate to its begin point
+		// DBG_DO(DBG_MATING, cout << "Reject " << na << endl);
+		offBegin = itBegin;
+		return 0;
+	}
+	// accpet this family, see if all done.
+	for (size_t i = 0; i < nLoci; ++i)
+		m_curAllele[i] += na[i];
+	if (!m_freqRequMet) {
+		m_freqRequMet = true;
+		for (size_t i = 0; i < nLoci; ++i) {
+			if (m_curAllele[i] < m_totAllele[i])
+				m_freqRequMet = false;
+		}
+	}
+	return numOff;
 }
 
 
@@ -1301,7 +1294,7 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 		m_parentChooser->initialize(pop, subPop);
 
 	if (!m_offspringGenerator->initialized())
-		m_offspringGenerator->initialize(pop, ops);
+		m_offspringGenerator->initialize(pop, subPop, ops);
 
 	// generate scratch.subPopSize(sp) individuals.
 	RawIndIterator it = offBegin;
