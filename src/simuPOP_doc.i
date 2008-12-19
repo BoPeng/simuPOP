@@ -649,6 +649,70 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::controlledOffspringGenerator "
+
+Details:
+
+    The offspring generation is conceptually populated in two steps.
+    At the first step, only families with disease alleles are accepted
+    until the expected number of disease alleles are met. At the
+    second step, only families with wide type alleles are accepted to
+    populate the rest of the offspring generation.
+
+"; 
+
+%feature("docstring") simuPOP::controlledOffspringGenerator::controlledOffspringGenerator "
+
+Usage:
+
+    controlledOffspringGenerator(loci, alleles, freqFunc,
+      acceptScheme=0, ops=[], numParents=0, numOffspring=1.,
+      numOffspringFunc=None, numOffspringParam=None,
+      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
+
+Arguments:
+
+    loci:           loci at which allele frequencies are monitored
+                    (controlled)
+    alleles:        alleles at given loci. It should have the same
+                    length as loci
+    freqFunc:       a Python function that accepts a generation number
+                    and returns expected allele frequencies at given
+                    loci
+    acceptScheme:   internal use only
+
+"; 
+
+%ignore simuPOP::controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffspringGenerator &rhs);
+
+%feature("docstring") simuPOP::controlledOffspringGenerator::~controlledOffspringGenerator "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~controlledOffspringGenerator()
+
+"; 
+
+%ignore simuPOP::controlledOffspringGenerator::initialize(const population &pop, SubPopID subPop, vector< baseOperator * > const &ops);
+
+%ignore simuPOP::controlledOffspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
+
+%feature("docstring") simuPOP::controlledOffspringGenerator::clone "
+
+Description:
+
+    deep copy of a controlled random mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
 %feature("docstring") simuPOP::dumper "
 
 Description:
@@ -1650,8 +1714,7 @@ Description:
 
 Usage:
 
-    heteroMating(matingSchemes, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None,
+    heteroMating(matingSchemes, subPopSize=[], subPopSizeFunc=None,
       shuffleOffspring=True, subPop=[], weight=0)
 
 Details:
@@ -3641,25 +3704,21 @@ Description:
 
 Usage:
 
-    mating(newSubPopSize=[], newSubPopSizeExpr=\"\",
-      newSubPopSizeFunc=None, subPop=[], weight=0)
+    mating(subPopSize=[], subPopSizeFunc=None, subPop=[], weight=0)
 
 Details:
 
     By default, a mating scheme keeps a constant population size,
     generates one offspring per mating event. These can be changed
-    using certain parameters. newSubPopSize, newSubPopSizeExpr and
-    newSubPopSizeFunc can be used to specify subpopulation sizes of
-    the offspring generation.
+    using certain parameters. subPopSize, and subPopSizeFunc can be
+    used to specify subpopulation sizes of the offspring generation.
 
 Arguments:
 
-    newSubPopSize:  an array of subpopulations sizes, should have the
+    subPopSize:     an array of subpopulations sizes, should have the
                     same number of subpopulations as the current
                     population
-    newSubPopSizeExpr:an expression that will be evaluated as an array
-                    of new subpopulation sizes
-    newSubPopSizeFunc:a function that takes parameters gen (generation
+    subPopSizeFunc: a function that takes parameters gen (generation
                     number) and oldsize (an array of current
                     population size) and return an array of
                     subpopulation sizes of the next generation. This
@@ -3730,8 +3789,6 @@ Usage:
     x.__repr__()
 
 "; 
-
-%ignore simuPOP::mating::preparePopulation(population &pop);
 
 %ignore simuPOP::mating::submitScratch(population &pop, population &scratch);
 
@@ -4723,7 +4780,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::initialize(const population &pop, vector< baseOperator * > const &ops);
+%ignore simuPOP::offspringGenerator::initialize(const population &pop, SubPopID subPop, vector< baseOperator * > const &ops);
 
 %ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
@@ -6624,7 +6681,7 @@ Details:
 
 %ignore simuPOP::population::setRep(int rep, bool setVar=true);
 
-%ignore simuPOP::population::gen();
+%ignore simuPOP::population::gen() const;
 
 %ignore simuPOP::population::setGen(ULONG gen, bool setVar=true);
 
@@ -7020,9 +7077,8 @@ Description:
 
 Usage:
 
-    pyMating(chooser, generator, newSubPopSize=[],
-      newSubPopSizeExpr=\"\", newSubPopSizeFunc=None, subPop=[],
-      weight=0)
+    pyMating(chooser, generator, subPopSize=[], subPopSizeFunc=None,
+      subPop=[], weight=0)
 
 Arguments:
 
@@ -11400,10 +11456,6 @@ Usage:
     x.a()
 
 "; 
-
-%ignore simuPOP::countAlleles(population &pop, int subpop, const vectori &loci, const vectori &alleles, vectorlu &numAllele);
-
-%ignore simuPOP::getExpectedAlleles(population &pop, vectorf &expFreq, const vectori &loci, const vectori &alleles, vectoru &expAlleles);
 
 %feature("docstring") simuPOP::FreqTrajectoryStoch "
 

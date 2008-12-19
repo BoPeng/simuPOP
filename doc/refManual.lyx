@@ -549,6 +549,13 @@ pyParentsChooserRef
 offspringGeneratorRef
 \end_layout
 
+\begin_layout Plain Layout
+
+
+\backslash
+controlledOffspringGeneratorRef
+\end_layout
+
 \end_inset
 
 
