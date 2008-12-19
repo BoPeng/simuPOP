@@ -914,29 +914,24 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-mating::mating(vectorlu newSubPopSize, string newSubPopSizeExpr, PyObject * newSubPopSizeFunc,
+mating::mating(vectorlu subPopSize, PyObject * subPopSizeFunc,
 	vspID subPop, double weight)
-	: m_subPopSize(newSubPopSize),
-	m_subPopSizeExpr(newSubPopSizeExpr, ""), m_subPopSizeFunc(NULL),
+	: m_subPopSize(subPopSize),
+	m_subPopSizeFunc(NULL),
 	m_subPop(subPop), m_weight(weight)
 {
-	DBG_FAILIF(!m_subPopSizeExpr.empty() && newSubPopSizeFunc != NULL,
-		ValueError, "Please only specify one of newSubPopSizeExpr and newSubPopSizeFunc.");
-
-
-	if (newSubPopSizeFunc != NULL && newSubPopSizeFunc != Py_None) {
-		if (!PyCallable_Check(newSubPopSizeFunc))
+	if (subPopSizeFunc != NULL && subPopSizeFunc != Py_None) {
+		if (!PyCallable_Check(subPopSizeFunc))
 			throw ValueError("Passed variable is not a callable python function.");
 
-		Py_INCREF(newSubPopSizeFunc);
-		m_subPopSizeFunc = newSubPopSizeFunc;
+		Py_INCREF(subPopSizeFunc);
+		m_subPopSizeFunc = subPopSizeFunc;
 	}
 }
 
 
 mating::mating(const mating & rhs)
 	: m_subPopSize(rhs.m_subPopSize),
-	m_subPopSizeExpr(rhs.m_subPopSizeExpr),
 	m_subPopSizeFunc(rhs.m_subPopSizeFunc),
 	m_subPop(rhs.m_subPop),
 	m_weight(rhs.m_weight)
@@ -952,21 +947,11 @@ mating::mating(const mating & rhs)
 void mating::prepareScratchPop(population & pop, population & scratch)
 {
 	// use population structure of pop
-	if (m_subPopSize.empty() && m_subPopSizeExpr.empty() && m_subPopSizeFunc == NULL)
+	if (m_subPopSize.empty() && m_subPopSizeFunc == NULL)
 		scratch.fitSubPopStru(pop.subPopSizes(), pop.subPopNames());
 	else if (!m_subPopSize.empty())  // set subPoplation size
 		scratch.fitSubPopStru(m_subPopSize, pop.subPopNames());
-	// evaluate from an expression
-	else if (!m_subPopSizeExpr.empty()) {
-		m_subPopSizeExpr.setLocalDict(pop.dict());
-		vectorf sizef = m_subPopSizeExpr.valueAsArray();
-		vectorlu sz(sizef.size());
-
-		for (size_t i = 0, iEnd = sizef.size(); i < iEnd; i++)
-			sz[i] = static_cast<ULONG>(sizef[i]);
-
-		scratch.fitSubPopStru(sz, pop.subPopNames());
-	} else {                                                                            // use m_subPopSizeFunc
+	else {                                                                            // use m_subPopSizeFunc
 		// get generation number
 		int gen = pop.gen();
 		// convert current pop size to a tuple
@@ -1461,12 +1446,11 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 
 pyMating::pyMating(parentChooser & chooser,
 	offspringGenerator & generator,
-	vectorlu newSubPopSize,
-	string newSubPopSizeExpr,
-	PyObject * newSubPopSizeFunc,
+	vectorlu subPopSize,
+	PyObject * subPopSizeFunc,
 	vspID subPop,
 	double weight)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight)
+	: mating(subPopSize, subPopSizeFunc, subPop, weight)
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
@@ -1517,13 +1501,12 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 
 
 heteroMating::heteroMating(const vectormating & matingSchemes,
-	vectorlu newSubPopSize,
-	string newSubPopSizeExpr,
-	PyObject * newSubPopSizeFunc,
+	vectorlu subPopSize,
+	PyObject * subPopSizeFunc,
 	bool shuffleOffspring,
 	vspID subPop,
 	double weight)
-	: mating(newSubPopSize, newSubPopSizeExpr, newSubPopSizeFunc, subPop, weight),
+	: mating(subPopSize, subPopSizeFunc, subPop, weight),
 	m_shuffleOffspring(shuffleOffspring)
 {
 	DBG_WARNING(subPop.subPop() != InvalidSubPopID || subPop.virtualSubPop() != InvalidSubPopID,

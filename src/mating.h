@@ -899,13 +899,12 @@ public:
 	/**
 	   By default, a mating scheme keeps a constant population size, generates
 	   one offspring per mating event. These can be changed using certain
-	   parameters. \c newSubPopSize, \c newSubPopSizeExpr and \c newSubPopSizeFunc
+	   parameters. \c subPopSize, and \c subPopSizeFunc
 	   can be used to specify subpopulation sizes of the offspring generation.
 
-	   \param newSubPopSize an array of subpopulations sizes, should have the same
+	   \param subPopSize an array of subpopulations sizes, should have the same
 	    number of subpopulations as the current population
-	   \param newSubPopSizeExpr an expression that will be evaluated as an array of new subpopulation sizes
-	   \param newSubPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize
+	   \param subPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize
 	   (an array of current population size) and return an array of subpopulation sizes of the next generation.
 	   This is usually easier to use than its expression version of this parameter.
 	   \param subPop if this parameter is given, the mating scheme
@@ -924,9 +923,8 @@ public:
 	        weights from all (virtual) subpopulations.
 
 	 */
-	mating(vectorlu newSubPopSize = vectorlu(),
-		string newSubPopSizeExpr = "",
-		PyObject * newSubPopSizeFunc = NULL,
+	mating(vectorlu subPopSize = vectorlu(),
+		PyObject * subPopSizeFunc = NULL,
 		vspID subPop = vspID(),
 		double weight = 0);
 
@@ -1011,11 +1009,6 @@ protected:
 	/// after migration.
 	vectorlu m_subPopSize;
 
-	/// expression to evaluate subPopSize
-	/// population size can change as a result of this
-	/// e.g. "%popSize*1.3" whereas %popSize is predefined
-	Expression m_subPopSizeExpr;
-
 	/// the function version of the parameter.
 	/// the python function should take one parameter (gen) and
 	/// return a vector of subpop size.
@@ -1082,18 +1075,16 @@ void getExpectedAlleles(population & pop, vectorf & expFreq, const vectori & loc
 //      PyObject * numOffspringFunc = NULL,
 //      UINT numOffspringParam = 0,
 //      UINT mode = MATE_NumOffspring,
-//      vectorlu newSubPopSize = vectorlu(),
-//      PyObject * newSubPopSizeFunc = NULL,
-//      string newSubPopSizeExpr = "",
+//      vectorlu subPopSize = vectorlu(),
+//      PyObject * subPopSizeFunc = NULL,
 //      bool contWhenUniSex = true,
 //      vspID subPop = vspID(),
 //      double weight = 0)
 //      : randomMating(numOffspring,
 //                     numOffspringFunc, numOffspringParam, mode,
 //                     sexParam, sexMode,
-//                     newSubPopSize,
-//                     newSubPopSizeFunc,
-//                     newSubPopSizeExpr,
+//                     subPopSize,
+//                     subPopSizeFunc,
 //                     contWhenUniSex,
 //                     subPop, weight),
 //      m_loci(loci),
@@ -1202,9 +1193,8 @@ public:
 	 */
 	pyMating(parentChooser & chooser,
 		offspringGenerator & generator,
-		vectorlu newSubPopSize = vectorlu(),
-		string newSubPopSizeExpr = "",
-		PyObject * newSubPopSizeFunc = NULL,
+		vectorlu subPopSize = vectorlu(),
+		PyObject * subPopSizeFunc = NULL,
 		vspID subPop = vspID(),
 		double weight = 0);
 
@@ -1273,9 +1263,8 @@ public:
 	   Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
 	 */
 	heteroMating(const vectormating & matingSchemes,
-		vectorlu newSubPopSize = vectorlu(),
-		string newSubPopSizeExpr = "",
-		PyObject * newSubPopSizeFunc = NULL,
+		vectorlu subPopSize = vectorlu(),
+		PyObject * subPopSizeFunc = NULL,
 		bool shuffleOffspring = true,
 		vspID subPop = vspID(),
 		double weight = 0);
