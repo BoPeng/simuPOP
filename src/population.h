@@ -1374,7 +1374,7 @@ public:
 	    current generation during evolution
 	    <group>evolve</group>
 	 */
-	ULONG gen()
+	ULONG gen() const
 	{
 		return m_gen;
 	}
