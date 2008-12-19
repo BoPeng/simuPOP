@@ -609,6 +609,24 @@ def InitByFreq(pop, *args, **kwargs):
 InitByFreq(pop, [.2, .3, .5])
 #end
 
+#file log/randomMating.log
+def randomMating(numOffspring = 1., numOffspringFunc = None,
+        numOffspringParam= 1, mode = MATE_NumOffspring, sexParam = 0.5,
+        sexMode = MATE_RandomSex, ops = [], subPopSize = [],
+        subPopSizeFunc = None, subPop = (), weight = 0):
+    'A basic sexually random mating scheme.'
+    return pyMating(
+        chooser = randomParentsChooser(replacement=True),
+        generator = offspringGenerator(ops=[mendelianGenoTransmitter()], 2,
+            ops, numOffspring, numOffspringFunc, numOffspringParam, mode,
+            sexParam, sexMode),
+        subPopSize = subPopSize,
+        subPopSizeFunc = subPopSizeFunc,
+        subPop = subPop,
+        weight = weight)
+#end
+
+
 ################################################################################
 #
 
