@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1153,13 +1153,96 @@ If you cannot find the answer you need, or if you believe that you have
 \end_layout
 
 \begin_layout Section
-Naming Conventions
+How to read this user's guide
+\end_layout
+
+\begin_layout Standard
+This user's guide describes all simuPOP features using a lot of examples.
+ Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Core-simuPOP-components"
+
+\end_inset
+
+ describes all classes in the simuPOP core.
+ Although most topics and examples are simple, some topics need in-depth
+ understanding of both the Python language and simuPOP.
+ New simuPOP users can safely skip these sections.
+ Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:simuPOP-Operators"
+
+\end_inset
+
+ describes almost all simuPOP operators, divided largely by genetic models.
+ Features listed in these two chapters are generally implemented at the
+ C++ level and are provided through the 
+\family typewriter
+simuPOP
+\family default
+ module.
+ Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Utility-Modules"
+
+\end_inset
+
+ describes features that are provided by various simuPOP utility modules.
+ These modules provide extensions to the simuPOP core that greatly improves
+ the usability and userfriendliness of simuPOP.
+ The next chapter (Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:A-real-example"
+
+\end_inset
+
+) demonstrates how to write a script to solve a real-world simulation problem.
+ The last chapter gives a quick description on some bundled scripts.
+\end_layout
+
+\begin_layout Standard
+simuPOP is a comprehensive forward-time population genetics simulation environme
+nt with many unique features.
+ If you are new to simuPOP, you can go through Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:Core-simuPOP-components"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:simuPOP-Operators"
+
+\end_inset
+
+ quickly and understand what simuPOP is and what features it provide.
+ Then, you can read Chapter 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cha:A-real-example"
+
+\end_inset
+
+ and learn how to apply simuPOP in real-world problems.
+ After you play with simuPOP for a while and start to write simple scripts,
+ you can study relevant sections in details.
+ The 
+\emph on
+simuPOP reference manual
+\emph default
+ will become more and more useful when the complexity of your scripts grow.
 \end_layout
 
 \begin_layout Standard
 Before we dive into the details of simuPOP, it is helpful to know a few
  name conventions that simuPOP tries to follow.
- Generally speaking, 
+ Generally speaking,
 \end_layout
 
 \begin_layout Itemize
@@ -1254,7 +1337,14 @@ pos
 \end_layout
 
 \begin_layout Chapter
-simuPOP components
+Core simuPOP components
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:Core-simuPOP-components"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -4230,37 +4320,6 @@ lstparams "caption={Applicable stages and generations of an operator.},label={st
 
 \end_layout
 
-\begin_layout Standard
-Because it is not always clear which stage(s) an operator can be applied
- and in which order they will be applied, a parameter 
-\family typewriter
-dryrun
-\family default
- is provided to the 
-\family typewriter
-simulator::evolve()
-\family default
- function.
- If set to 
-\family typewriter
-True
-\family default
-, the 
-\family typewriter
-evolve
-\family default
- function will list all operators in the order at which they will be applied.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/dryrun.log"
-lstparams "caption={List the order at which operators are applied},label={dryrun}"
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Applicable populations
 \end_layout
@@ -4755,7 +4814,7 @@ lstparams "caption={A frequency dependent mutation operator},firstline=5,label={
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "newOperator"
+reference "randomMating"
 
 \end_inset
 
@@ -4968,7 +5027,18 @@ pyOperator::__init__
 \end_layout
 
 \begin_layout Standard
-Example rewrites the dynaMutator defined in Example 
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomMating"
+
+\end_inset
+
+ rewrites the 
+\family typewriter
+dynaMutator
+\family default
+ defined in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "pyOperator"
@@ -4995,11 +5065,7 @@ pyOperator
 dynaMutator
 \family default
  look like a real simuPOP operator, this example does not show a lot of
- advantage of deriving a class from 
-\family typewriter
-pyOperator
-\family default
- over defining a function.
+ advantage over defining a function.
  However, when the operator gets complicated (as in the case for 
 \family typewriter
 varPlotter
@@ -5174,62 +5240,131 @@ mating scheme
 \end_layout
 
 \begin_layout Standard
-Mating schemes specify how to generate offspring from the current population.
- It must be provided when a simulator is created.
- Mating can perform the following tasks:
+Mating schemes are responsible for populating an offspring generation from
+ the parental generation.
+ This is a complex process and involves the following steps:
 \end_layout
 
-\begin_layout Itemize
-Choose parent(s) to generate offspring to populate the next generation.
- The number of offspring per mating event can be a fixed number (default
- to 1), or a random number following one of geometric, Poisson or binomial
- distribution.
- Customized (hybrid) parent choosers can be used.
- Offspring sex can be assigned randomly, with specified or default (0.5)
- probability, or arranged to have certain number of males/females per mating
- event.
+\begin_layout Enumerate
+Create an empty offspring population (generation) with appropriate size.
+ Parental and offspring generation can differ in size but they must have
+ the same number of subpopulations.
 \end_layout
 
-\begin_layout Itemize
-Change population/subpopulation sizes.
- This is where demographic models are handled in simuPOP.
- There are a few methods to control population sizes.
- The most flexible one is through a user-provided function that returns
- population (subpopulation) sizes at each generation.
+\begin_layout Enumerate
+If a 
+\series bold
+heterogeneous mating scheme
+\series default
+ is used to apply different mating schemes to different (virtual) subpopulations
+, determine the virtual subpopulations to use and the number of offspring
+ each 
+\series bold
+homogeneous mating scheme
+\series default
+ will produce.
 \end_layout
 
-\begin_layout Itemize
-During-mating operators are applied to all offspring.
- The most commonly used during mating operator is a recombinator that can
- recombine parental chromosomes and form offspring genotype.
+\begin_layout Enumerate
+For each (virtual) subpopulation, repeatedly choose a parent or a pair of
+ parents from the parental generation.
+ This is done by a simuPOP object called a
+\series bold
+ parent chooser
+\series default
+.
 \end_layout
 
-\begin_layout Itemize
-Apply selection if applicable.
- If individual fitness are given (usually returned by a selector operator),
- a mating scheme will choose an individual to mate, according to its relative
- fitness.
+\begin_layout Enumerate
+One or more offspring are produced from the chosen parent(s) and are placed
+ in the offspring population.
+ This is done by a simuPOP 
+\series bold
+offspring generator
+\series default
+.
+\end_layout
+
+\begin_layout Enumerate
+A offspring generator uses one or more during-mating operators to transmit
+ parental genotype to offspring.
+ These operators are call 
+\series bold
+genotype transmitters
+\series default
+.
+\end_layout
+
+\begin_layout Enumerate
+After the offspring generation is populated, it will replace the parental
+ generation and becomes the present generation of a population.
 \end_layout
 
 \begin_layout Standard
-A few mating schemes are available, among which 
+A simuPOP mating scheme is responsible for all these steps.
+ Each mating scheme uses a particular set of parent chooser, offspring generator
+, and genotype transmitter.
+ For example, a 
 \family typewriter
-randomMating()
+selfingMating
 \family default
- is the most important.
- Non-random mating can be achieved using 
+ uses a 
 \family typewriter
-pyMating
+randomParentChooser
 \family default
- and 
+ to choose a parent randomly from a population, possibly according to individual
+ fitness, it uses a standard 
 \family typewriter
-heteroMating
+offspringGenerator
 \family default
-, which is explained in detailed in 
-\emph on
-simuPOP reference manual
-\emph default
-.
+ that is capable of producing one or more offspring.
+ This offspring generator uses a 
+\family typewriter
+selfingOffspringGenerator
+\family default
+ that transmit genotype.
+ 
+\end_layout
+
+\begin_layout Standard
+simuPOP provides a number of parent choosers, offspring generators and genotype
+ transmitters.
+ It also provides a number of pre-defined mating schemes that make use of
+ these objects.
+ If none of the pre-defined mating schemes fits your need, you can define
+ a new mating scheme by constructing one from stocked or user defined parent
+ choosers, offspring generator, and genotype transmitters.
+ Because both parent choosers and genotype transmitters can be constructed
+ easily at the Python level, it is easy to construct very complicated nonrandom
+ mating schemes.
+\end_layout
+
+\begin_layout Standard
+Before we dive into the details of constructing a mating scheme from scratch,
+ let us have a look at the definition of the most commonly used mating scheme
+ 
+\family typewriter
+randomMating
+\family default
+ (Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomMating"
+
+\end_inset
+
+).
+ The following sections basically explain each parameter of this mating
+ scheme in detail and show you which part can be customized.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/randomMating.py"
+lstparams "caption={Define a random mating scheme},firstline=4,label={randomMating}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -5903,6 +6038,262 @@ simuUtil.py
 \end_layout
 
 \begin_layout Subsection
+Non-random mating
+\end_layout
+
+\begin_layout Standard
+Random-mating implies random choices of parents.
+ Non-random mating is much more difficult to implement because there are
+ numerous way to introduce non-randomness.
+ One of the ways to achive non-random mating in simuPOP is to use a hybrid
+ operator 
+\family typewriter
+pyMating
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyMating
+\family default
+ mating scheme accepts a 
+\emph on
+parents chooser
+\emph default
+ and an 
+\emph on
+offspring generator
+\emph default
+.
+ The parents chooser is responsible for choosing one or two parents from
+ the parental generation, and the offspring generator is responsible for
+ generating a number of offspring from the chosen parents.
+ There are a number of default parents choosers and offspring generators
+ and a 
+\family typewriter
+pyMating
+\family default
+ can be built with them.
+ For example
+\end_layout
+
+\begin_layout LyX-Code
+pyMating(randomParentsChooser(), mendelianOffspringGenerator())
+\end_layout
+
+\begin_layout Standard
+works exactly as a 
+\family typewriter
+randomMating
+\family default
+ scheme, and
+\end_layout
+
+\begin_layout LyX-Code
+pyMating(randomParentChooser(), selfingOffspringGenerator(numOffspring=2))
+\end_layout
+
+\begin_layout Standard
+works as 
+\family typewriter
+selfMating(numOffspring=2)
+\family default
+.
+ Note that parent chooser and offspring generator should be compatible ,
+ meaning that if a parent chooser chooses one parent each time, the offspring
+ generator should be able to produce offspring from a single parent.
+\end_layout
+
+\begin_layout Standard
+The power of 
+\family typewriter
+pyMating 
+\family default
+lies in its 
+\family typewriter
+pyParentChooser()
+\family default
+, which accepts a user-defined Python generator function, instead of a normal
+ python function.
+ Generally speaking, when a generator function is called, it returns a 
+\emph on
+generator
+\emph default
+ object that provides an iterator interface.
+ Each time when the 
+\family typewriter
+next()
+\family default
+ member function of this object is called, this function resumes where it
+ was stopped last time, executes and returns what the next 
+\emph on
+yield
+\emph default
+ statement returns.
+ For example, example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "generator"
+
+\end_inset
+
+ defines a function that calculate 
+\begin_inset Formula $f\left(k\right)=\sum_{i=1}^{k}\frac{1}{i}$
+\end_inset
+
+ for 
+\begin_inset Formula $k=1,...,10$
+\end_inset
+
+.
+ It does not calculate each 
+\begin_inset Formula $f\left(k\right)$
+\end_inset
+
+ repeatedly but returns 
+\begin_inset Formula $f\left(1\right)$
+\end_inset
+
+, 
+\begin_inset Formula $f\left(2\right)$
+\end_inset
+
+, ...
+ in a sequence interface.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/generator.log"
+lstparams "caption={A sample generator function},label={generator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+parents chooser
+\emph default
+ takes two parameters, a population and a subpopulation index.
+ It can return different generator objects for different subpopulations.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/generator_random.log"
+lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A user defined parents chooser can be very complicated, involving user defined
+ information such as geometric locations.
+ An example is given in 
+\family typewriter
+cookbook/Mating_pyMating_cpp.py
+\family default
+.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "generator_random"
+
+\end_inset
+
+, the parents chooser 
+\family typewriter
+randomChooser 
+\family default
+collects indexes of males and females and simply return a pair of random
+ male and female repeatedly.
+ This is exactly what 
+\family typewriter
+randomMating
+\family default
+ does if selection is not considered.
+ It becomes obvious now that whereas a python function can return random
+ male/famale pair, the generator interface is much more efficient because
+ the identification of two sex groups is done only once.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyMating"
+
+\end_inset
+
+ demonstrates how to use this user-defined parent chooser.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyMating.log"
+lstparams "caption={pyMating with a user-defined parent chooser},label={pyMating}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because arbitrary information can be stored with an individual through informati
+on fields, 
+\family typewriter
+pyMating
+\family default
+ can be very complicated.
+ For example, one can choose individuals according their age, and/or geographic
+ information.
+ For populations with well-defined structure, virtual subpopulations can
+ be used.
+ Basically, one needs to specify a virtual subpopulation splitter to a subpopula
+tion.
+ Then, different mating schemes can be applied to different virtual subpopulatio
+ns.
+ A simple example is given in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "heteroMating"
+
+\end_inset
+
+ where the first subpopulation is divided into two parts.
+ The first 20% of individuals undergo selfing, and the rest of the subpopulation
+ undergoes usual sexed random mating.
+ Note that two mating schemes produce different number of offspring per
+ mating event, and the family sizes are recorded in a shared variable 
+\family typewriter
+famSizes
+\family default
+ when 
+\family typewriter
+DBG_MATING
+\family default
+ is turned on.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/heteroMating.log"
+lstparams "caption={A heterogeneous mating scheme},label={heteroMating}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Homogeneous and hybrid mating schemes
 \end_layout
 
@@ -6020,6 +6411,13 @@ The later simply copy everyone from the parental to the offspring genertion.
 Python parents chooser
 \end_layout
 
+\begin_layout Standard
+
+\emph on
+This is an advanced topic of simuPOP.
+ New simuPOP users can safely skip this section.
+\end_layout
+
 \begin_layout Subsection
 Using C++ to implement a parents chooser
 \begin_inset CommandInset label
@@ -6029,6 +6427,13 @@ name "sub:Using-C++"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+This is an advanced topic of simuPOP.
+ New simuPOP users can safely skip this section.
 \end_layout
 
 \begin_layout Subsection
@@ -6371,13 +6776,13 @@ Simulator
 \begin_layout Standard
 Simulators combine three important components of simuPOP: population, mating
  scheme and operators together.
- A simulator is usually created with an instance of population, a replicate
- number and a mating scheme.
- It makes '
+ A simulator is created with an instance of population, a replicate number
+ and a mating scheme.
+ It makes 
 \family typewriter
 rep
 \family default
-' replicates of this population and control the evolution process of these
+ replicates of this population and control the evolution process of these
  populations.
 \end_layout
 
@@ -6688,6 +7093,37 @@ stage
  a good idea.
 \end_layout
 
+\begin_layout Standard
+Because it is not always clear which stage(s) an operator can be applied
+ and in which order they will be applied, a parameter 
+\family typewriter
+dryrun
+\family default
+ is provided to the 
+\family typewriter
+simulator::evolve()
+\family default
+ function.
+ If set to 
+\family typewriter
+True
+\family default
+, the 
+\family typewriter
+evolve
+\family default
+ function will list all operators in the order at which they will be applied.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dryrun.log"
+lstparams "caption={List the order at which operators are applied},label={dryrun}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Terminate a simulator
 \end_layout
@@ -6739,11 +7175,398 @@ lstparams "caption={Save and load a simulator},label={simulatorsaveload}"
 \end_layout
 
 \begin_layout Section
-Utilities
+Pedigrees
+\end_layout
+
+\begin_layout Standard
+simuPOP provides the following functions to manipulate pedigrees
+\end_layout
+
+\begin_layout Itemize
+If you set 
+\family typewriter
+ancestralDepth
+\family default
+ of a population to a positive number (default 0), 
+\family typewriter
+ancestralDepth
+\family default
+ number of ancestral generations will be saved to the population, which
+ makes a total of 
+\family typewriter
+ancestralDepth + 1
+\family default
+ generations.
+\end_layout
+
+\begin_layout Itemize
+You can use 
+\family typewriter
+population::useAncestralPop
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+useAncestralPop
+\end_layout
+
+\end_inset
+
+(idx)
+\family default
+ to use current (0), parental (1), grand-parental (2) generations etc.
+ Just remember to call 
+\family typewriter
+population::useAncestralPop(0)
+\family default
+ to set current generation back.
+\end_layout
+
+\begin_layout Itemize
+You can set 
+\family typewriter
+ancestralDepth
+\family default
+ dynamically using operator 
+\family typewriter
+setAncestralDepth
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+setAncestralDepth
+\end_layout
+
+\end_inset
+
+.
+
+\family default
+ Usually, this operator is called, for example, as 
+\family typewriter
+setAncestralDepth(at=[-2])
+\family default
+, to allow last several generations to be saved at the end of evolution.
+\end_layout
+
+\begin_layout Itemize
+No parental information is saved by default we usually do not know the parents
+ of an offspring.
+ This can be changed by using the 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ information fields, and an appropriate tagger such as 
+\family typewriter
+parentTagger
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+parentTagger
+\end_layout
+
+\end_inset
+
+()
+\family default
+, which is a during mating operator that will record the parents' indices
+ in the parental generation to offspring's information fields.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+randomMating
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+randomMating
+\end_layout
+
+\end_inset
+
+()
+\family default
+ only produce one offspring per mating event.
+ This makes full siblings very unlikely.
+ You usually need to change this at the last several generations.
+\end_layout
+
+\begin_layout Standard
+You can see that generating multi-generation populations are quite different
+ from the usual evolutionary process where random mating is used, and one
+ offspring is generated for each mating event.
+ In practice (see 
+\family typewriter
+scripts/simuComplexDisease.py
+\family default
+), if we need to prepare a population for pedigree sampling, we can run
+ a simulator like this
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+One-stage simulation for pedigree tracking
+\end_layout
+
+\end_inset
+
+pop = population(...., ancestralDepth=2,
+\end_layout
+
+\begin_layout Plain Layout
+
+    infoFields=['father_idx', 'mother_idx'])
+\end_layout
+
+\begin_layout Plain Layout
+
+simu = simulator(pop, randomMating(numOffspring=2))
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.evolve(
+\end_layout
+
+\begin_layout Plain Layout
+
+    preOps=[...],
+\end_layout
+
+\begin_layout Plain Layout
+
+    ops = operators,
+\end_layout
+
+\begin_layout Plain Layout
+
+    end = 1000
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The problem with this approach is that two generations are saved at all
+ generations, and all mating events produce two offspring.
+ The former is not a big deal but the latter will reduce effective population
+ size of the resulting population.
+ To avoid these problems, a two-stage simulation can be done 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Two-stage simulation for pedigree tracking
+\end_layout
+
+\end_inset
+
+pop = population(....)
+\end_layout
+
+\begin_layout Plain Layout
+
+simu = simulator(pop, randomMating())
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.evolve(
+\end_layout
+
+\begin_layout Plain Layout
+
+    preOps=[...],
+\end_layout
+
+\begin_layout Plain Layout
+
+    ops = operators,
+\end_layout
+
+\begin_layout Plain Layout
+
+    end = 1000 - 2
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.setAncestralDepth(2)
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.addInfoFields(['father_idx', 'mother_idx'])
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.setMatingScheme(randomMating(numOffspring=2))
+\end_layout
+
+\begin_layout Plain Layout
+
+operators.append(parentsTagger())
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.evolve(ops=operators, end=2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That is to say, we separate the simulation into two parts.
+ The first part is geared toward performance and maximum effective population
+ size (use true random mating), and the second part is tweaked for the final
+ multi-generation population.
+ Note that 
+\family typewriter
+setAncestralDepth 
+\family default
+and 
+\family typewriter
+addInfoFields
+\family default
+ should be done at the simulator level so that every replicates in the simulator
+ have the same new information fields.
+ 
+\family typewriter
+simu.population(0).addInfoFields(['father_idx', 'mother_idx']) 
+\family default
+will compromise the integrity of the simulator and is disallowed.
+ (Integrity refers to the fact that all populations in a simulator should
+ have the same genotypic structure as the simulator).
+\end_layout
+
+\begin_layout Standard
+Now, at the end of the simulation, you get a population with multiple generation
+s, with parental information.
+ But it is still not easy to obtain pedigrees.
+ As a matter of fact, since individuals can belong to multiple pedigrees,
+ it is not even easy to define a pedigree.
+ simuPOP provides a few pedigree ascertainment operators
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+AffectedSibpairSample
+\family default
+: sample affected sibpairs, along with their parents from a population.
+ Affection status should have been set by other means such as a penetrance
+ operator.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LargePedigreeSample:
+\family default
+ sample grand parents, their children, and the spouse and children of them.
+ Affection status is ignored, although the minimal number of affected individual
+s in each family can be specified.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+NuclearFamilySample: 
+\family default
+sample two-generation pedigrees.
+\end_layout
+
+\begin_layout Standard
+If you need to sample more complicated pedigrees, you should first use 
+\family typewriter
+sample::findOffspringAndSpouse
+\family default
+ to locate each individual's offspring and spouse, then use 
+\family typewriter
+useAncestralPop()
+\family default
+ to go through the generations and set 
+\family typewriter
+pedIndex
+\family default
+ for the pedigree you choose, and then use 
+\family typewriter
+setSubPopID()
+\family default
+, 
+\family typewriter
+newPopByIndID()
+\family default
+ to exclude and remove unneeded individuals.
+ 
+\family typewriter
+sample::resetParentalIndex()
+\family default
+ should also be used to reset the 
+\family typewriter
+father_idx
+\family default
+ and 
+\family typewriter
+mother_idx
+\family default
+ fields.
+ Sound complicated? It is complicated! I hope that I can get some better
+ idea and make this process a bit easier, but this is where simuPOP is at
+ right now.
+\end_layout
+
+\begin_layout Standard
+Finally, you can save the sample populations in a pedigree-aware format
+ like Linkage or Merlin/QTDT format.
+ simuPOP can do this easily for you.
 \end_layout
 
 \begin_layout Chapter
-Selected topics
+simuPOP Operators
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:simuPOP-Operators"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7886,262 +8709,6 @@ lstparams "caption={Population split with changing population size},label={split
 \end_layout
 
 \begin_layout Section
-Non-random mating
-\end_layout
-
-\begin_layout Standard
-Random-mating implies random choices of parents.
- Non-random mating is much more difficult to implement because there are
- numerous way to introduce non-randomness.
- One of the ways to achive non-random mating in simuPOP is to use a hybrid
- operator 
-\family typewriter
-pyMating
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pyMating
-\family default
- mating scheme accepts a 
-\emph on
-parents chooser
-\emph default
- and an 
-\emph on
-offspring generator
-\emph default
-.
- The parents chooser is responsible for choosing one or two parents from
- the parental generation, and the offspring generator is responsible for
- generating a number of offspring from the chosen parents.
- There are a number of default parents choosers and offspring generators
- and a 
-\family typewriter
-pyMating
-\family default
- can be built with them.
- For example
-\end_layout
-
-\begin_layout LyX-Code
-pyMating(randomParentsChooser(), mendelianOffspringGenerator())
-\end_layout
-
-\begin_layout Standard
-works exactly as a 
-\family typewriter
-randomMating
-\family default
- scheme, and
-\end_layout
-
-\begin_layout LyX-Code
-pyMating(randomParentChooser(), selfingOffspringGenerator(numOffspring=2))
-\end_layout
-
-\begin_layout Standard
-works as 
-\family typewriter
-selfMating(numOffspring=2)
-\family default
-.
- Note that parent chooser and offspring generator should be compatible ,
- meaning that if a parent chooser chooses one parent each time, the offspring
- generator should be able to produce offspring from a single parent.
-\end_layout
-
-\begin_layout Standard
-The power of 
-\family typewriter
-pyMating 
-\family default
-lies in its 
-\family typewriter
-pyParentChooser()
-\family default
-, which accepts a user-defined Python generator function, instead of a normal
- python function.
- Generally speaking, when a generator function is called, it returns a 
-\emph on
-generator
-\emph default
- object that provides an iterator interface.
- Each time when the 
-\family typewriter
-next()
-\family default
- member function of this object is called, this function resumes where it
- was stopped last time, executes and returns what the next 
-\emph on
-yield
-\emph default
- statement returns.
- For example, example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator"
-
-\end_inset
-
- defines a function that calculate 
-\begin_inset Formula $f\left(k\right)=\sum_{i=1}^{k}\frac{1}{i}$
-\end_inset
-
- for 
-\begin_inset Formula $k=1,...,10$
-\end_inset
-
-.
- It does not calculate each 
-\begin_inset Formula $f\left(k\right)$
-\end_inset
-
- repeatedly but returns 
-\begin_inset Formula $f\left(1\right)$
-\end_inset
-
-, 
-\begin_inset Formula $f\left(2\right)$
-\end_inset
-
-, ...
- in a sequence interface.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/generator.log"
-lstparams "caption={A sample generator function},label={generator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A 
-\emph on
-parents chooser
-\emph default
- takes two parameters, a population and a subpopulation index.
- It can return different generator objects for different subpopulations.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/generator_random.log"
-lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A user defined parents chooser can be very complicated, involving user defined
- information such as geometric locations.
- An example is given in 
-\family typewriter
-cookbook/Mating_pyMating_cpp.py
-\family default
-.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator_random"
-
-\end_inset
-
-, the parents chooser 
-\family typewriter
-randomChooser 
-\family default
-collects indexes of males and females and simply return a pair of random
- male and female repeatedly.
- This is exactly what 
-\family typewriter
-randomMating
-\family default
- does if selection is not considered.
- It becomes obvious now that whereas a python function can return random
- male/famale pair, the generator interface is much more efficient because
- the identification of two sex groups is done only once.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyMating"
-
-\end_inset
-
- demonstrates how to use this user-defined parent chooser.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyMating.log"
-lstparams "caption={pyMating with a user-defined parent chooser},label={pyMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Because arbitrary information can be stored with an individual through informati
-on fields, 
-\family typewriter
-pyMating
-\family default
- can be very complicated.
- For example, one can choose individuals according their age, and/or geographic
- information.
- For populations with well-defined structure, virtual subpopulations can
- be used.
- Basically, one needs to specify a virtual subpopulation splitter to a subpopula
-tion.
- Then, different mating schemes can be applied to different virtual subpopulatio
-ns.
- A simple example is given in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "heteroMating"
-
-\end_inset
-
- where the first subpopulation is divided into two parts.
- The first 20% of individuals undergo selfing, and the rest of the subpopulation
- undergoes usual sexed random mating.
- Note that two mating schemes produce different number of offspring per
- mating event, and the family sizes are recorded in a shared variable 
-\family typewriter
-famSizes
-\family default
- when 
-\family typewriter
-DBG_MATING
-\family default
- is turned on.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/heteroMating.log"
-lstparams "caption={A heterogeneous mating scheme},label={heteroMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Sex chromosomes
 \end_layout
 
@@ -8227,390 +8794,6 @@ Y
 \family default
  separately.
  
-\end_layout
-
-\begin_layout Section
-Pedigree tracking
-\end_layout
-
-\begin_layout Standard
-simuPOP provides the following functions to manipulate pedigrees
-\end_layout
-
-\begin_layout Itemize
-If you set 
-\family typewriter
-ancestralDepth
-\family default
- of a population to a positive number (default 0), 
-\family typewriter
-ancestralDepth
-\family default
- number of ancestral generations will be saved to the population, which
- makes a total of 
-\family typewriter
-ancestralDepth + 1
-\family default
- generations.
-\end_layout
-
-\begin_layout Itemize
-You can use 
-\family typewriter
-population::useAncestralPop
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-useAncestralPop
-\end_layout
-
-\end_inset
-
-(idx)
-\family default
- to use current (0), parental (1), grand-parental (2) generations etc.
- Just remember to call 
-\family typewriter
-population::useAncestralPop(0)
-\family default
- to set current generation back.
-\end_layout
-
-\begin_layout Itemize
-You can set 
-\family typewriter
-ancestralDepth
-\family default
- dynamically using operator 
-\family typewriter
-setAncestralDepth
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-setAncestralDepth
-\end_layout
-
-\end_inset
-
-.
-
-\family default
- Usually, this operator is called, for example, as 
-\family typewriter
-setAncestralDepth(at=[-2])
-\family default
-, to allow last several generations to be saved at the end of evolution.
-\end_layout
-
-\begin_layout Itemize
-No parental information is saved by default we usually do not know the parents
- of an offspring.
- This can be changed by using the 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- information fields, and an appropriate tagger such as 
-\family typewriter
-parentTagger
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-parentTagger
-\end_layout
-
-\end_inset
-
-()
-\family default
-, which is a during mating operator that will record the parents' indices
- in the parental generation to offspring's information fields.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-randomMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-randomMating
-\end_layout
-
-\end_inset
-
-()
-\family default
- only produce one offspring per mating event.
- This makes full siblings very unlikely.
- You usually need to change this at the last several generations.
-\end_layout
-
-\begin_layout Standard
-You can see that generating multi-generation populations are quite different
- from the usual evolutionary process where random mating is used, and one
- offspring is generated for each mating event.
- In practice (see 
-\family typewriter
-scripts/simuComplexDisease.py
-\family default
-), if we need to prepare a population for pedigree sampling, we can run
- a simulator like this
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-One-stage simulation for pedigree tracking
-\end_layout
-
-\end_inset
-
-pop = population(...., ancestralDepth=2,
-\end_layout
-
-\begin_layout Plain Layout
-
-    infoFields=['father_idx', 'mother_idx'])
-\end_layout
-
-\begin_layout Plain Layout
-
-simu = simulator(pop, randomMating(numOffspring=2))
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.evolve(
-\end_layout
-
-\begin_layout Plain Layout
-
-    preOps=[...],
-\end_layout
-
-\begin_layout Plain Layout
-
-    ops = operators,
-\end_layout
-
-\begin_layout Plain Layout
-
-    end = 1000
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The problem with this approach is that two generations are saved at all
- generations, and all mating events produce two offspring.
- The former is not a big deal but the latter will reduce effective population
- size of the resulting population.
- To avoid these problems, a two-stage simulation can be done 
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Two-stage simulation for pedigree tracking
-\end_layout
-
-\end_inset
-
-pop = population(....)
-\end_layout
-
-\begin_layout Plain Layout
-
-simu = simulator(pop, randomMating())
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.evolve(
-\end_layout
-
-\begin_layout Plain Layout
-
-    preOps=[...],
-\end_layout
-
-\begin_layout Plain Layout
-
-    ops = operators,
-\end_layout
-
-\begin_layout Plain Layout
-
-    end = 1000 - 2
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.setAncestralDepth(2)
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.addInfoFields(['father_idx', 'mother_idx'])
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.setMatingScheme(randomMating(numOffspring=2))
-\end_layout
-
-\begin_layout Plain Layout
-
-operators.append(parentsTagger())
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.evolve(ops=operators, end=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-That is to say, we separate the simulation into two parts.
- The first part is geared toward performance and maximum effective population
- size (use true random mating), and the second part is tweaked for the final
- multi-generation population.
- Note that 
-\family typewriter
-setAncestralDepth 
-\family default
-and 
-\family typewriter
-addInfoFields
-\family default
- should be done at the simulator level so that every replicates in the simulator
- have the same new information fields.
- 
-\family typewriter
-simu.population(0).addInfoFields(['father_idx', 'mother_idx']) 
-\family default
-will compromise the integrity of the simulator and is disallowed.
- (Integrity refers to the fact that all populations in a simulator should
- have the same genotypic structure as the simulator).
-\end_layout
-
-\begin_layout Standard
-Now, at the end of the simulation, you get a population with multiple generation
-s, with parental information.
- But it is still not easy to obtain pedigrees.
- As a matter of fact, since individuals can belong to multiple pedigrees,
- it is not even easy to define a pedigree.
- simuPOP provides a few pedigree ascertainment operators
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-AffectedSibpairSample
-\family default
-: sample affected sibpairs, along with their parents from a population.
- Affection status should have been set by other means such as a penetrance
- operator.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-LargePedigreeSample:
-\family default
- sample grand parents, their children, and the spouse and children of them.
- Affection status is ignored, although the minimal number of affected individual
-s in each family can be specified.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-NuclearFamilySample: 
-\family default
-sample two-generation pedigrees.
-\end_layout
-
-\begin_layout Standard
-If you need to sample more complicated pedigrees, you should first use 
-\family typewriter
-sample::findOffspringAndSpouse
-\family default
- to locate each individual's offspring and spouse, then use 
-\family typewriter
-useAncestralPop()
-\family default
- to go through the generations and set 
-\family typewriter
-pedIndex
-\family default
- for the pedigree you choose, and then use 
-\family typewriter
-setSubPopID()
-\family default
-, 
-\family typewriter
-newPopByIndID()
-\family default
- to exclude and remove unneeded individuals.
- 
-\family typewriter
-sample::resetParentalIndex()
-\family default
- should also be used to reset the 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- fields.
- Sound complicated? It is complicated! I hope that I can get some better
- idea and make this process a bit easier, but this is where simuPOP is at
- right now.
-\end_layout
-
-\begin_layout Standard
-Finally, you can save the sample populations in a pedigree-aware format
- like Linkage or Merlin/QTDT format.
- simuPOP can do this easily for you.
 \end_layout
 
 \begin_layout Section
@@ -9002,7 +9185,41 @@ re
 \end_layout
 
 \begin_layout Chapter
+Utility Modules
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:Utility-Modules"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+simuOpt
+\end_layout
+
+\begin_layout Section
+simuUtil
+\end_layout
+
+\begin_layout Subsection
+ascertainment operators
+\end_layout
+
+\begin_layout Section
+simuRPy
+\end_layout
+
+\begin_layout Chapter
 A real example
+\begin_inset CommandInset label
+LatexCommand label
+name "cha:A-real-example"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
