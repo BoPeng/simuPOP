@@ -1043,7 +1043,7 @@ public:
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
 
 	/// CPPONLY dealing with the \c pop/subPop size change, copy of structure etc.
-	void prepareScratchPop(population & pop, population & scratch);
+	bool prepareScratchPop(population & pop, population & scratch);
 
 protected:
 	/// new subpopulation size. mostly used to 'keep' subPopsize
@@ -1097,7 +1097,7 @@ public:
 	}
 
 
-	void prepareScratchPop(population & pop, population & scratch);
+	bool prepareScratchPop(population & pop, population & scratch);
 
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
 

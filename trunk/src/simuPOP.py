@@ -582,33 +582,6 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
         weight = weight)
 
 
-def pedigreeMating(ped, generator=None, subPopSize = [],
-		subPopSizeFunc = None, subPop = (), weight = 0):
-    '''
-   In this scheme, a pedigree is given and the mating scheme will
-   choose parents and produce offspring strictly following the pedigree.
-   Parameters setting number of offspring per mating event, and
-   size of the offspring generations are ignored.
-
-   To implement this mating scheme in pyMating,
-   1.) a subPopSizeFunc should be given to return the exact subpopulation
-     size, returned from pedigree.subPopSizes(gen).
-   2.) use pedigreeChooser to choose parents
-   3.) use a suitable offspring generator to generate offspring.
-
-   This pedigreeMating helps you do 1 and 2, and use a mendelianOffspringGenerator
-   as the default offspring generator. You can use another offspring generator
-   by setting the generator parameter. Note that the offspring generator can
-   generate one and only one offspring each time.
-    '''
-    return pyMating(
-        chooser = pedigreeParentsChooser(ped),
-        generator = generator,
-        subPopSizeFunc = subPopSizeFunc,
-        subPop = subPop,
-        weight = weight)
-
-
 
 # Utility functions
 
