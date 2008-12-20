@@ -550,7 +550,7 @@ def consanguineousMating(relativeFields = [], func = None, param = None,
 
 
 def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
-        acceptScheme=0, numOffspring = 1., numOffspringFunc = None,
+        numOffspring = 1., numOffspringFunc = None,
         numOffspringParam = 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
 		subPopSizeFunc = None, subPop = (), weight = 0):
@@ -573,8 +573,8 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
 	\param acceptScheme internal use only
     '''
     return pyMating(chooser = randomParentsChooser(True),
-        generator = controlledOffspringGenerator(
-            [mendelianGenoTransmitter] + ops, 2, numOffspring,
+        generator = controlledOffspringGenerator(loci, alleles, freqFunc,
+            [mendelianGenoTransmitter()] + ops, 2, numOffspring,
             numOffspringFunc, numOffspringParam, mode,
             sexParam, sexMode),
         subPopSizeFunc = subPopSizeFunc,
