@@ -1171,7 +1171,7 @@ mating::mating(const mating & rhs)
 }
 
 
-void mating::prepareScratchPop(population & pop, population & scratch)
+bool mating::prepareScratchPop(population & pop, population & scratch)
 {
 	// use population structure of pop
 	if (m_subPopSize.empty() && m_subPopSizeFunc == NULL)
@@ -1209,6 +1209,7 @@ void mating::prepareScratchPop(population & pop, population & scratch)
 	DBG_FAILIF(scratch.numSubPop() != pop.numSubPop(),
 		ValueError, "number of subPopulaitons must agree.\n Pre: "
 		+ toStr(pop.numSubPop()) + " now: " + toStr(scratch.numSubPop() ));
+    return true;
 }
 
 
@@ -1216,7 +1217,8 @@ bool mating::mate(population & pop, population & scratch,
                   vector<baseOperator * > & ops, bool submit)
 {
 	// scrtach will have the right structure.
-	prepareScratchPop(pop, scratch);
+	if (!prepareScratchPop(pop, scratch))
+        return false;
 
 	DBG_DO(DBG_MATING, m_famSize.clear());
 
@@ -1255,6 +1257,11 @@ pedigreeMating::pedigreeMating(const pedigreeMating & rhs)
 	m_motherField(rhs.m_motherField)
 {
 	m_generator = rhs.m_generator->clone();
+    DBG_FAILIF(m_ped.ancestralGens() == 0, ValueError,
+        "Passed pedigree has no ancestral generation.");
+    // scroll to the greatest generation, but this generation
+    // should have no parental generation.
+    m_ped.useAncestralGen(m_ped.ancestralGens());
 }
 
 
@@ -1264,9 +1271,23 @@ pedigreeMating::~pedigreeMating()
 }
 
 
-void pedigreeMating::prepareScratchPop(population & pop, population & scratch)
+bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
 {
+    DBG_FAILIF(pop.numSubPop() != m_ped.numSubPop(), ValueError,
+        "Evolving generation does not have the same number of subpopulation as the pedigree.");
+    for (UINT  sp = 0; sp < pop.numSubPop(); ++sp) {
+        DBG_WARNING(pop.subPopSize(sp) > m_ped.subPopSize(sp),
+            "Giving population has more individuals than the pedigree."
+            "Some of the parents will be ignored");
+        DBG_FAILIF(pop.subPopSize(sp) < m_ped.subPopSize(sp), ValueError,
+            "Given population has less individuals in subpopulation " + toStr(sp)
+            + " than the pedigree. PedigreeMating cannot continue.");
+    }
+    if (m_ped.curAncestralGen() == 0)
+        return false;
+    m_ped.useAncestralGen(m_ped.curAncestralGen() - 1);
 	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
+    return true;
 }
 
 
@@ -1274,7 +1295,8 @@ bool pedigreeMating::mate(population & pop, population & scratch,
                           vector<baseOperator * > & ops, bool submit)
 {
 	// scrtach will have the right structure.
-	prepareScratchPop(pop, scratch);
+	if (!prepareScratchPop(pop, scratch))
+        return false;
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
 		if (!m_generator->initialized())
@@ -1284,9 +1306,9 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 		RawIndIterator itEnd;
 		for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
 			individual * dad = m_fatherField == "" ? NULL :
-			                   &pop.ind(m_ped.ind(i).intInfo(m_fatherField));
+			                   &pop.ind(m_ped.ind(i, sp).intInfo(m_fatherField));
 			individual * mom = m_motherField == "" ? NULL :
-			                   &pop.ind(m_ped.ind(i).intInfo(m_motherField));
+			                   &pop.ind(m_ped.ind(i, sp).intInfo(m_motherField));
 			//
 			itEnd = it + 1;
 			// whatever the numOffspring function returns for this
@@ -1411,7 +1433,8 @@ bool heteroMating::mate(population & pop, population & scratch,
                         vector<baseOperator * > & ops, bool submit)
 {
 	// scrtach will have the right structure.
-	prepareScratchPop(pop, scratch);
+	if (!prepareScratchPop(pop, scratch))
+        return false;
 	vectormating::const_iterator it = m_matingSchemes.begin();
 	vectormating::const_iterator it_end = m_matingSchemes.end();
 

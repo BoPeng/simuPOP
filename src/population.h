@@ -1038,6 +1038,14 @@ public:
 	 */
 	void push(population & pop);
 
+    /** CPPONLY
+     *  Return the current ancestral generation number.
+     *  <group>6-ancestral</group>
+     */
+    UINT curAncestralGen() const
+    {
+        return m_curAncestralGen;
+    }
 	/** Return the actual number of ancestral generations stored in a
 	 *  population, which does not necessarily equal to the number set by
 	 *  \c setAncestralDepth().

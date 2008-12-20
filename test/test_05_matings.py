@@ -536,6 +536,34 @@ class TestMatingSchemes(unittest.TestCase):
             mendelianOffspringGenerator()))
         simu.evolve(ops=[], gen=1)
 
+    def testLivePedigreeMating(self):
+        'Testing pedigree mating using a population object'
+        pop = population(size=[100, 100], loci=[2, 5], ancGen=-1,
+            infoFields=['father_idx', 'mother_idx'])
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [parentsTagger()],
+            gen = 20
+        )
+        ped = pedigree(simu.extract(0), infoFields=['father_idx', 'mother_idx'])
+        simu = simulator(pop, pedigreeMating(ped,
+            mendelianOffspringGenerator()))
+        simu.evolve(
+            ops = [parentsTagger()],
+            gen = 100
+        )
+        ped1 = simu.extract(0)
+        self.assertEqual(simu.gen(), 21)
+        # compare two populations!
+        self.assertEqual(ped.ancestralGens(), ped1.ancestralGens())
+        self.assertEqual(ped.ancestralGens(), 20)
+        for gen in range(21):
+            ped.useAncestralGen(gen)
+            ped1.useAncestralGen(gen)
+            self.assertEqual(ped.indInfo('father_idx'), ped1.indInfo('father_idx'))
+            self.assertEqual(ped.indInfo('mother_idx'), ped1.indInfo('mother_idx'))
+
     def testPedigreeMating(self):
         'Testing pedigree mating'
         pop = population(size=[100, 100], loci=[2,5])
