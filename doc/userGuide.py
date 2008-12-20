@@ -1261,7 +1261,7 @@ recombine = recombinator( rate = recombinationRate )
 simu = simulator(
     population(size=subPopSize, ploidy=2, loci=loci),
     randomMating(numOffspring = numOffspring,
-                       newSubPopSize=subPopSize) )
+                       subPopSize=subPopSize) )
 #
 # evolve
 simu.evolve([
@@ -1320,7 +1320,7 @@ pop = population(size=500)
 # the new popsize relies on a variable newSPSize
 # which is calculated from subPopSize bu newSize operator
 simu = simulator(pop,
-    randomMating(newSubPopSizeFunc=changeSPSize) )
+    randomMating(subPopSizeFunc=changeSPSize) )
 
 # evolve!
 simu.evolve(
@@ -1802,7 +1802,7 @@ recombine = recombinator( rate = recombinationRate )
 simu = simulator(
     population(size=subPopSize, ploidy=2, loci=loci),
     randomMating(numOffspring = numOffspring,
-                         newSubPopSize=subPopSize) )
+                         subPopSize=subPopSize) )
 #
 # evolve
 simu.evolve([
@@ -1861,7 +1861,7 @@ pop = population(size=500)
 # the new popsize relies on a variable newSPSize
 # which is calculated from subPopSize bu newSize operator
 simu = simulator(pop,
-    randomMating(newSubPopSizeFunc=changeSPSize) )
+    randomMating(subPopSizeFunc=changeSPSize) )
 
 # evolve!
 simu.evolve( [
@@ -2147,7 +2147,7 @@ def lin_inc(gen, oldsize=[]):
 
 simu = simulator(
     population(subPop=[5]*5, loci=[1]),
-    randomMating(newSubPopSizeFunc=lin_inc)
+    randomMating(subPopSizeFunc=lin_inc)
 )
 simu.evolve(
     ops = [
