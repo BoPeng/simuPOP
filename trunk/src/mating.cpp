@@ -535,33 +535,6 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIter
 }
 
 
-// void pedigreeParentsChooser::initialize(population & pop, SubPopID subPop)
-// {
-//  m_gen = pop.gen();
-//  m_subPop = subPop;
-//  m_begin = pop.rawIndBegin();
-//  m_index = 0;
-//  m_initialized = true;
-// }
-//
-//
-// parentChooser::individualPair pedigreeParentsChooser::chooseParents(RawIndIterator)
-// {
-//  individual * dad = NULL;
-//  individual * mom = NULL;
-//
-//  dad = & * (m_begin + m_pedigree.father(m_gen, m_subPop, m_index));
-//  if (m_pedigree.numParents() == 2)
-//      mom = & * (m_begin + m_pedigree.mother(m_gen, m_subPop, m_index));
-//  DBG_FAILIF(m_index >= m_pedigree.subPopSize(m_gen, m_subPop), IndexError,
-//      "Trying to retrieve more indiviudals (index=" +
-//      toStr(m_index) + " than what are available from the pedigree ("
-//      + toStr(m_pedigree.subPopSize(m_gen, m_subPop)) + ")");
-//  m_index++;
-//  return std::make_pair(dad, mom);
-// }
-
-
 void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
 	m_selection = pop.selectionOn(sp);
@@ -1264,6 +1237,72 @@ void mating::submitScratch(population & pop, population & scratch)
 	pop.push(scratch);
 	scratch.validate("after push and discard");
 	DBG_DO(DBG_MATING, pop.setIntVectorVar("famSizes", m_famSize));
+}
+
+
+pedigreeMating::pedigreeMating(const pedigree & ped,
+	const offspringGenerator & generator,  const string & fatherField,
+	const string & motherField)
+	: mating(vectorlu(), NULL, vspID(), 0),
+	m_ped(ped), m_fatherField(fatherField), m_motherField(motherField)
+{
+	m_generator = generator.clone();
+}
+
+
+pedigreeMating::pedigreeMating(const pedigreeMating & rhs)
+	: mating(rhs), m_ped(rhs.m_ped), m_fatherField(rhs.m_fatherField),
+	m_motherField(rhs.m_motherField)
+{
+	m_generator = rhs.m_generator->clone();
+}
+
+
+pedigreeMating::~pedigreeMating()
+{
+	delete m_generator;
+}
+
+
+void pedigreeMating::prepareScratchPop(population & pop, population & scratch)
+{
+	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
+}
+
+
+bool pedigreeMating::mate(population & pop, population & scratch,
+                          vector<baseOperator * > & ops, bool submit)
+{
+	// scrtach will have the right structure.
+	prepareScratchPop(pop, scratch);
+
+	for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
+		if (!m_generator->initialized())
+			m_generator->initialize(pop, sp, ops);
+
+		RawIndIterator it = scratch.rawIndBegin(sp);
+		RawIndIterator itEnd;
+		for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
+			individual * dad = m_fatherField == "" ? NULL :
+			                   &pop.ind(m_ped.ind(i).intInfo(m_fatherField));
+			individual * mom = m_motherField == "" ? NULL :
+			                   &pop.ind(m_ped.ind(i).intInfo(m_motherField));
+			//
+			itEnd = it + 1;
+			// whatever the numOffspring function returns for this
+			// offspring generator, only generate one offspring.
+			UINT numOff = m_generator->generateOffspring(pop, dad, mom,
+				it, itEnd, ops);
+			(void)numOff;
+			DBG_FAILIF(numOff != 1, RuntimeError,
+				"Generation of offspring must succeed in pedigreeMating");
+		}
+		m_generator->finalize(pop);
+	}
+
+	if (submit)
+		submitScratch(pop, scratch);
+	return true;
 }
 
 

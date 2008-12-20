@@ -127,6 +127,8 @@ public:
 	{
 		if (m_numOffspringFunc != NULL)
 			Py_DECREF(m_numOffspringFunc);
+		for (size_t i = 0; i < m_transmitters.size(); ++i)
+			delete m_transmitters[i];
 	}
 
 
@@ -455,46 +457,6 @@ private:
 	ULONG m_curFemale;
 };
 
-
-/** This parents chooser chooses one or two parents from
-    a given pedigree. It works even when only one parent
-    is needed.
-   <applicability>all ploidy</applicability>
- */
-// class pedigreeParentsChooser : public parentChooser
-// {
-// public:
-//  pedigreeParentsChooser(const pedigree & ped) :
-//      parentChooser(0), m_pedigree(ped), m_index(0)
-//  {
-//  }
-//
-//
-//  parentChooser * clone() const
-//  {
-//      return new pedigreeParentsChooser(*this);
-//  }
-//
-//
-//  vectorlu subPopSizes(ULONG gen)
-//  {
-//      return m_pedigree.subPopSizes(gen);
-//  }
-//
-//
-//  /// CPPONLY
-//  void initialize(population & pop, SubPopID sp);
-//
-//  /// CPPONLY
-//  individualPair chooseParents(RawIndIterator basePtr);
-//
-// private:
-//  pedigree m_pedigree;
-//  UINT m_gen;
-//  SubPopID m_subPop;
-//  RawIndIterator m_begin;
-//  ULONG m_index;
-// };
 
 /** This parent chooser chooses a parent randomly from the
    parental generation. If selection is turned on, parents are
@@ -1080,7 +1042,6 @@ public:
 	 */
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
 
-public:
 	/// CPPONLY dealing with the \c pop/subPop size change, copy of structure etc.
 	void prepareScratchPop(population & pop, population & scratch);
 
@@ -1106,6 +1067,47 @@ public:
 	/// record family sizes
 	vectori m_famSize;
 #endif
+};
+
+
+class pedigreeMating : public mating
+{
+public:
+	pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
+		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
+
+	/// destructor
+	~pedigreeMating();
+
+	/// CPPONLY
+	pedigreeMating(const pedigreeMating & rhs);
+
+
+	/// deep copy of a Python mating scheme
+	virtual mating * clone() const
+	{
+		return new pedigreeMating(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the Python mating scheme
+	virtual string __repr__()
+	{
+		return "<simuPOP::pedigreeMating>";
+	}
+
+
+	void prepareScratchPop(population & pop, population & scratch);
+
+	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+
+private:
+	pedigree m_ped;
+
+	offspringGenerator * m_generator;
+
+	string m_fatherField;
+	string m_motherField;
 };
 
 
