@@ -215,8 +215,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 
 
 controlledOffspringGenerator::controlledOffspringGenerator(
-	vectori loci, vectori alleles, PyObject * freqFunc,
-	int acceptScheme, const vectorop & ops,
+	vectori loci, vectori alleles, PyObject * freqFunc, const vectorop & ops,
 	UINT numParents, double numOffspring, PyObject * numOffspringFunc,
 	UINT numOffspringParam, UINT mode, double sexParam, UINT sexMode)
 	: offspringGenerator(ops, numParents, numOffspring, numOffspringFunc,
@@ -329,6 +328,8 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 
 void controlledOffspringGenerator::initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops)
 {
+	offspringGenerator::initialize(pop, subPop, ops);
+
 	// expected frequency at each locus
 	if (subPop == 0) {
 		vectorf expFreq;

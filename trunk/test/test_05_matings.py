@@ -178,7 +178,7 @@ class TestMatingSchemes(unittest.TestCase):
 
 
 
-    def TestControlledRandomMating(self):
+    def testControlledRandomMating(self):
         'Testing controlled random mating (FIXME)'
         # planned trajectory
         freq = FreqTrajectoryStoch(freq=0.05, N=100)
@@ -189,14 +189,14 @@ class TestMatingSchemes(unittest.TestCase):
         # 0 ...., 100, 101, .... 100+mutAge
         #                            x                 freq
         def freqRange(gen):
-            if gen <= burnin:
+            if gen < burnin:
                 return [0]
             else:
-                return [freq[gen-1-burnin]]
+                return [freq[gen-burnin]]
         #
         # turn On debug
-        simu = simulator( population(100, loci=[1], ploidy=2),
-            controlledRandomMating( locus=0, allele=1, freqFunc=freqRange )
+        simu = simulator(population(100, loci=[1], ploidy=2),
+            controlledRandomMating(loci=[0], alleles=[1], freqFunc=freqRange )
             )
         #print "Simulator created"
         simu.evolve(
@@ -210,10 +210,14 @@ class TestMatingSchemes(unittest.TestCase):
                     at = [burnin],
                     stage = PreMating),
                 stat(alleleFreq=[0]),
-                #pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])', begin=burnin)
+                # pyEval(r'"%d %6.4f\n"%(gen, 1-alleleFreq[0][0])')
             ],
             gen=burnin+mutAge
         )
+        #
+        pop = simu.population(0)
+        Stat(pop, alleleFreq=[0])
+        self.assertEqual(pop.dvars().alleleFreq[0][1] > 0.04 and pop.dvars().alleleFreq[0][1] < 0.06, True)
 
     def TestControlledMultiRandomMating(self):
         'Testing the multi-locus version of controlled random mating (FIXME)'

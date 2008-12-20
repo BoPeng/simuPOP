@@ -143,7 +143,7 @@ public:
 	 *  speed up the calls to \c generateOffspring
 	 *  CPPONLY
 	 */
-	void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
+	virtual void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
 
 	/// CPPONLY
 	virtual UINT generateOffspring(population & pop, individual * dad, individual * mom,
@@ -151,7 +151,7 @@ public:
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);
 
-	void finalize(const population & pop)
+	virtual void finalize(const population & pop)
 	{
 		m_initialized = false;
 	}
@@ -235,7 +235,6 @@ public:
 		vectori loci,
 		vectori alleles,
 		PyObject * freqFunc,
-		int acceptScheme = 0,
 		//
 		const vectorop & ops = vectorop(),
 		UINT numParents = 0,
