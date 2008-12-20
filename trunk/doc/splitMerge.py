@@ -46,7 +46,7 @@ def popSize(gen, oldSize=[]):
     else:
         return [300, 400, 600]
 
-simu = simulator(pop, binomialSelection(newSubPopSizeFunc=popSize))
+simu = simulator(pop, binomialSelection(subPopSizeFunc=popSize))
 simu.evolve(
     ops=[
         splitSubPop(0, proportions=[0.3, 0.7], at = [3]),
@@ -72,7 +72,7 @@ pop = population(1000, loci=[1], infoFields=['migrate_to'])
 def popSize(gen, oldSize=[]):
     return [x*2 for x in oldSize]
 
-simu = simulator(pop, binomialSelection(newSubPopSizeFunc=popSize))
+simu = simulator(pop, binomialSelection(subPopSizeFunc=popSize))
 simu.evolve(
     ops=[
         splitSubPop(0, proportions=[0.3, 0.7], at = [3]),
