@@ -609,6 +609,55 @@ def InitByFreq(pop, *args, **kwargs):
 InitByFreq(pop, [.2, .3, .5])
 #end
 
+#file log/migrSize.log
+simu = simulator(
+    population(size=[500, 1000], infoFields=['migrate_to']),
+    randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
+        stat(popSize=True),
+        pyEval(r'"%s\n" % subPopSize')
+    ],
+    gen = 3
+)
+#end
+
+#file log/migrFixedSize.log
+simu = simulator(
+    population(size=[500, 1000], infoFields=['migrate_to']),
+    randomMating(subPopSize=[500, 1000]))
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
+        stat(popSize=True, stage=PrePostMating),
+        pyEval(r'"%s\n" % subPopSize', stage=PrePostMating)
+    ],
+    gen = 3
+)
+#end
+
+#file log/demoFunc.log
+def demo(gen, oldSize=[]):
+    return [500 + gen*10, 1000 + gen*10]
+
+simu = simulator(
+    population(size=[500, 1000], infoFields=['migrate_to']),
+    randomMating(subPopSizeFunc=demo))
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        migrator(rate=[[0.8, 0.2], [0.4, 0.6]]),
+        stat(popSize=True),
+        pyEval(r'"%s\n" % subPopSize')
+    ],
+    gen = 3
+)
+#end
+
+
 #file log/randomMating.log
 def randomMating(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring, sexParam = 0.5,
