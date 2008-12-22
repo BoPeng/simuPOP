@@ -5242,7 +5242,477 @@ mating scheme
 \begin_layout Standard
 Mating schemes are responsible for populating an offspring generation from
  the parental generation.
- This is a complex process and involves the following steps:
+ There are currently three types of mating schemes
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+homogeneous mating scheme
+\series default
+ is the most flexible and most frequently used mating scheme and is the
+ center topic of this section.
+ A homogeneous mating is responsible for choosing parent(s) from a (virtual)
+ subpopulation and population all or part of the offspring generation.
+\end_layout
+
+\begin_layout Itemize
+A 
+\series bold
+heterogeneous mating scheme
+\series default
+ applies several homogeneous mating scheme to different (virtual) subpopulations.
+ Because the division of virtual subpopulations can be arbitrary, this mating
+ scheme can be used to simulate mating in heterogeneous populations such
+ as populations with age structure.
+\end_layout
+
+\begin_layout Itemize
+A
+\series bold
+ pedigree mating scheme
+\series default
+ that follows a recorded evolutionary scenario.
+ The selection of parents and the production of offspring are controlled
+ by a pedigree.
+ This mating scheme does not support virtual subpopulation.
+\end_layout
+
+\begin_layout Standard
+Before we dive into the details of each type of mating scheme, let us first
+ explore some features of the standard mating schemes.
+\end_layout
+
+\begin_layout Subsection
+Control the size of the offspring generation
+\end_layout
+
+\begin_layout Standard
+A mating scheme goes through each subpopulation and populates the subpopulations
+ of an offspring generation sequentially.
+ The number of offspring in each subpopulation is determined by the mating
+ scheme, following the following rules:
+\end_layout
+
+\begin_layout Itemize
+A simuPOP mating scheme, by default, produces an offspring generation that
+ has the same subpopulation sizes as the parental generation.
+ This does not gurantee a constant population size because some operators,
+ such as a migrator, can change population or subpopulation sizes.
+\end_layout
+
+\begin_layout Itemize
+If fixed subpopulation sizes are given through parameter 
+\family typewriter
+subPopSize
+\family default
+.
+ A mating scheme will generation an offspring generation with specified
+ sizes even if an operator has changed parental population sizes.
+\end_layout
+
+\begin_layout Itemize
+A demographic function can be specified through parameter 
+\family typewriter
+subPopSizeFunc
+\family default
+.
+ To use this parameter, you need to define a Python function that takes
+ two parameters: the generation number and the current subpopulation sizes,
+ and return an array of new subpopulation sizes (return 
+\family typewriter
+[newsize]
+\family default
+ instead of 
+\family typewriter
+newsize
+\family default
+ if you do not have any subpopulation structure).
+\end_layout
+
+\begin_layout Standard
+The following examples demonstrate these cases.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrSize"
+
+\end_inset
+
+ uses a default 
+\family typewriter
+randomMating()
+\family default
+ scheme that keeps parental subpopulation sizes.
+ Because migration between two subpopulations are asymmetric, the size of
+ the first subpopulation increases at each generation, although the overall
+ population size keeps constant.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrSize.log"
+lstparams "caption={Free change of subpopulation sizes},label={migrSize}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrFixedSize"
+
+\end_inset
+
+ uses the same migrator to move individuals between two subpopulations.
+ Because a constant subpopulation size is specified, the offspring generation
+ always has 500 and 1000 individuals in its two subpopulations.
+ Note that operators 
+\family typewriter
+stat
+\family default
+ and 
+\family typewriter
+pyEval
+\family default
+ are applied both before and after mating.
+ It is clear that subpopulation sizes changes before mating as a result
+ of migration, although the pre-mating population sizes vary because of
+ uncertainties of migration.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrFixedSize.log"
+lstparams "caption={Force constant subpopulation sizes},label={migrFixedSize}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "demoFunc"
+
+\end_inset
+
+ uses a demographic function to control the subpopulation size of the offspring
+ generation.
+ This example implements a linear population expansion model but arbitrarily
+ complex demographic model can be implemented similarly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/demoFunc.log"
+lstparams "caption={Use a demographic function to control population size},label={demoFunc}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All these examples have fixed number of subpopulations.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:splitAndMerge"
+
+\end_inset
+
+ will introduce how to split and merge subpopulations dynamically.
+\end_layout
+
+\begin_layout Subsection
+Determine the number of offspring during mating
+\end_layout
+
+\begin_layout Standard
+Parameters 
+\family typewriter
+numOffspring, maxNumOffspring, numOffspringFunc 
+\family default
+and 
+\family typewriter
+mode
+\family default
+ are provided for each mating scheme (each offspring generator, to be exact)
+ to determine the number of offspring produced at each mating event.
+\end_layout
+
+\begin_layout Standard
+The default value of 
+\family typewriter
+numOffspring
+\family default
+ parameter makes a mating scheme produces one offspring per mating event.
+ This is required by random mating schemes and should be used whenever possible.
+ However, various situations require a larger family size or even changing
+ family sizes.
+ simuPOP provides a comprehensive way to deal with this problem.
+\end_layout
+
+\begin_layout Standard
+As described in the class reference, the method to determine the number
+ of offspring is to set the 
+\family typewriter
+mode
+\family default
+ parameter:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_NumOffspring:
+\family default
+ Produce 
+\family typewriter
+numOffspring
+\family default
+ offspring all the time.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_PyNumOffspring:
+\family default
+ When 
+\family typewriter
+numOffspringFunc
+\family default
+ is defined, this mode is automatically used.
+ A user provided function is called whenever a mating event happens.
+ The return value determins the number of offpspring to use.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_GeometricDistribution: numOffspring
+\family default
+ is considered as 
+\begin_inset Formula $p$
+\end_inset
+
+ for a geometric distribution.
+ The number of offspring for each mating is determined by
+\begin_inset Formula \[
+P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_PoissonDistribution: numOffspring
+\family default
+ is considered as 
+\begin_inset Formula $p$
+\end_inset
+
+ for a Poission distribution.
+ The number of offspring for each mating is determined by
+\begin_inset Formula \[
+P\left(k\right)=\frac{p^{k-1}}{\left(k-1\right)!}e^{-p}\;\textrm{ for}k\geq1\]
+
+\end_inset
+
+Since the mean of this shifted Poisson distribution is 
+\begin_inset Formula $p+1$
+\end_inset
+
+, you need to specify, for example, 2, if you want a mean family size 3.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_BinomialDistribution: numOffspring
+\family default
+ is considered as 
+\begin_inset Formula $p$
+\end_inset
+
+ for a Binomial distribution.
+ Let 
+\begin_inset Formula $N$
+\end_inset
+
+=
+\family typewriter
+maxNumOffspring
+\family default
+, the number of offspring for each mating is determined by
+\begin_inset Formula \[
+P\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k-1}\left(1-p\right)^{n-k}\;\textrm{ for }N\geq k\geq1\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_UniformDistribution:
+\family default
+ 
+\family typewriter
+numOffspring
+\family default
+ is be considered as 
+\begin_inset Formula $a$
+\end_inset
+
+, 
+\begin_inset Formula $b$
+\end_inset
+
+ for a Uniform distribution, respectively.
+ The number of offspring for each mating is determined by
+\begin_inset Formula \[
+P\left(k\right)=\frac{1}{b-a}\;\textrm{ for }b\geq k\geq a\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that all these distributions are adjusted to produce at least one offspring.
+ 
+\end_layout
+
+\begin_layout Subsection
+Determine offspring sex
+\end_layout
+
+\begin_layout Standard
+When the last chromosome is a sex chromosome (
+\family typewriter
+sexChrom=True
+\family default
+), offspring sex is determined by his/her genotype.
+ If an offspring is cloned from his/her parent using a 
+\family typewriter
+cloneOffspringGenerator()
+\family default
+, offspring sex is the same as his/her parent.
+ Otherwise, offspring is by default assigned to Male and Female with equal
+ probability 0.5.
+\end_layout
+
+\begin_layout Standard
+More advanced sex assignment mode is determined by parameters 
+\family typewriter
+sexMode 
+\family default
+and 
+\family typewriter
+sexParam
+\family default
+ of a mating scheme or an offspring generator (see later section).
+ 
+\family typewriter
+sexMode
+\family default
+ can be
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_RandomSex
+\family default
+ This is the default mode where offspring can be Male or Female with equal
+ probability.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_ProbOfMale
+\family default
+ In this mode, parameter 
+\family typewriter
+sexParam
+\family default
+ is considered as the probability of a Male offspring.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_NumOfMale
+\family default
+ In this mode, parameter 
+\family typewriter
+sexParam
+\family default
+ is the number of male in the family.
+ If the number of offspring at a mating event is less than this number,
+ all offspring will be male.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MATE_NumOfFemale
+\family default
+ Similar to 
+\family typewriter
+MATE_NumOfMale
+\family default
+ but parameter 
+\family typewriter
+sexParam
+\family default
+ is considered as the number of female in the family.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+MATE_NumOfMale
+\family default
+ and 
+\family typewriter
+MATE_NumOfFemale
+\family default
+ are useful in theoretical studies where the sex ratio of a population needs
+ to be controlled strictly, or in special mating schemes, usually for animal
+ populations, where only a certain number of male or female individuals
+ are allowed in a family.
+\end_layout
+
+\begin_layout Subsection
+The structure of a homogeneous mating scheme
+\end_layout
+
+\begin_layout Standard
+For simplicity, I will refer to a homogeneous mating scheme as a mating
+ scheme, and use parental and offspring generation directly, although a
+ homogeneous mating scheme can be applied to virtual subpopulations and
+ populate only a fraction of the offspring generation.
+\end_layout
+
+\begin_layout Standard
+A mating scheme populate an offspring generation as follows:
 \end_layout
 
 \begin_layout Enumerate
@@ -5252,22 +5722,8 @@ Create an empty offspring population (generation) with appropriate size.
 \end_layout
 
 \begin_layout Enumerate
-If a 
-\series bold
-heterogeneous mating scheme
-\series default
- is used to apply different mating schemes to different (virtual) subpopulations
-, determine the virtual subpopulations to use and the number of offspring
- each 
-\series bold
-homogeneous mating scheme
-\series default
- will produce.
-\end_layout
-
-\begin_layout Enumerate
-For each (virtual) subpopulation, repeatedly choose a parent or a pair of
- parents from the parental generation.
+For each subpopulation, repeatedly choose a parent or a pair of parents
+ from the parental generation.
  This is done by a simuPOP object called a
 \series bold
  parent chooser
@@ -5322,7 +5778,7 @@ offspringGenerator
 \family typewriter
 selfingOffspringGenerator
 \family default
- that transmit genotype.
+ to transmit genotype.
  
 \end_layout
 
@@ -5335,8 +5791,7 @@ simuPOP provides a number of parent choosers, offspring generators and genotype
  a new mating scheme by constructing one from stocked or user defined parent
  choosers, offspring generator, and genotype transmitters.
  Because both parent choosers and genotype transmitters can be constructed
- easily at the Python level, it is easy to construct very complicated nonrandom
- mating schemes.
+ at the Python level, very complicated nonrandom mating schemes can be defined.
 \end_layout
 
 \begin_layout Standard
@@ -5658,383 +6113,6 @@ pyOperator
 scripts/demoPyOperator.py
 \family default
 .
-\end_layout
-
-\begin_layout Subsection
-Determine the number of offspring during mating
-\end_layout
-
-\begin_layout Standard
-Parameters 
-\family typewriter
-numOffspring, maxNumOffspring, numOffspringFunc 
-\family default
-and 
-\family typewriter
-mode
-\family default
- are provided for each mating scheme (each offspring generator, to be exact)
- to determine the number of offspring produced at each mating event.
-\end_layout
-
-\begin_layout Standard
-The default value of 
-\family typewriter
-numOffspring
-\family default
- parameter makes a mating scheme produces one offspring per mating event.
- This is required by random mating schemes and should be used whenever possible.
- However, various situations require a larger family size or even changing
- family sizes.
- simuPOP provides a comprehensive way to deal with this problem.
-\end_layout
-
-\begin_layout Standard
-As described in the class reference, the method to determine the number
- of offspring is to set the 
-\family typewriter
-mode
-\family default
- parameter:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_NumOffspring:
-\family default
- Produce 
-\family typewriter
-numOffspring
-\family default
- offspring all the time.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_PyNumOffspring:
-\family default
- When 
-\family typewriter
-numOffspringFunc
-\family default
- is defined, this mode is automatically used.
- A user provided function is called whenever a mating event happens.
- The return value determins the number of offpspring to use.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_GeometricDistribution: numOffspring
-\family default
- is considered as 
-\begin_inset Formula $p$
-\end_inset
-
- for a geometric distribution.
- The number of offspring for each mating is determined by
-\begin_inset Formula \[
-P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_PoissonDistribution: numOffspring
-\family default
- is considered as 
-\begin_inset Formula $p$
-\end_inset
-
- for a Poission distribution.
- The number of offspring for each mating is determined by
-\begin_inset Formula \[
-P\left(k\right)=\frac{p^{k-1}}{\left(k-1\right)!}e^{-p}\;\textrm{ for}k\geq1\]
-
-\end_inset
-
-Since the mean of this shifted Poisson distribution is 
-\begin_inset Formula $p+1$
-\end_inset
-
-, you need to specify, for example, 2, if you want a mean family size 3.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_BinomialDistribution: numOffspring
-\family default
- is considered as 
-\begin_inset Formula $p$
-\end_inset
-
- for a Binomial distribution.
- Let 
-\begin_inset Formula $N$
-\end_inset
-
-=
-\family typewriter
-maxNumOffspring
-\family default
-, the number of offspring for each mating is determined by
-\begin_inset Formula \[
-P\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k-1}\left(1-p\right)^{n-k}\;\textrm{ for }N\geq k\geq1\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_UniformDistribution:
-\family default
- 
-\family typewriter
-numOffspring
-\family default
- is be considered as 
-\begin_inset Formula $a$
-\end_inset
-
-, 
-\begin_inset Formula $b$
-\end_inset
-
- for a Uniform distribution, respectively.
- The number of offspring for each mating is determined by
-\begin_inset Formula \[
-P\left(k\right)=\frac{1}{b-a}\;\textrm{ for }b\geq k\geq a\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Note that all these distributions are adjusted to produce at least one offspring.
- 
-\end_layout
-
-\begin_layout Subsection
-Determine offspring sex
-\end_layout
-
-\begin_layout Standard
-When the last chromosome is a sex chromosome (
-\family typewriter
-sexChrom=True
-\family default
-), offspring sex is determined by his/her genotype.
- If an offspring is cloned from his/her parent using a 
-\family typewriter
-cloneOffspringGenerator()
-\family default
-, offspring sex is the same as his/her parent.
- Otherwise, offspring is by default assigned to Male and Female with equal
- probability 0.5.
-\end_layout
-
-\begin_layout Standard
-More advanced sex assignment mode is determined by parameters 
-\family typewriter
-sexMode 
-\family default
-and 
-\family typewriter
-sexParam
-\family default
- of a mating scheme or an offspring generator (see later section).
- 
-\family typewriter
-sexMode
-\family default
- can be
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_RandomSex
-\family default
- This is the default mode where offspring can be Male or Female with equal
- probability.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_ProbOfMale
-\family default
- In this mode, parameter 
-\family typewriter
-sexParam
-\family default
- is considered as the probability of a Male offspring.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_NumOfMale
-\family default
- In this mode, parameter 
-\family typewriter
-sexParam
-\family default
- is the number of male in the family.
- If the number of offspring at a mating event is less than this number,
- all offspring will be male.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_NumOfFemale
-\family default
- Similar to 
-\family typewriter
-MATE_NumOfMale
-\family default
- but parameter 
-\family typewriter
-sexParam
-\family default
- is considered as the number of female in the family.
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-MATE_NumOfMale
-\family default
- and 
-\family typewriter
-MATE_NumOfFemale
-\family default
- are useful in theoretical studies where the sex ratio of a population needs
- to be controlled strictly, or in special mating schemes, usually for animal
- populations, where only a certain number of male or female individuals
- are allowed in a family.
-\end_layout
-
-\begin_layout Subsection
-Determine subpopulation sizes of the next generation
-\end_layout
-
-\begin_layout Standard
-The default behavior of simuPOP is to use the same population/subpopulation
- sizes as those of the parent generation.
- You can change this behavior by setting one of 
-\family typewriter
-newSubPopSize
-\family default
-, 
-\family typewriter
-newSubPopSizeExpr
-\family default
-, and 
-\family typewriter
-newSubPopSizeFunc
-\family default
- parameters:
-\end_layout
-
-\begin_layout Itemize
-If you would like to have fixed subpopulation sizes, use 
-\family typewriter
-newSubPopSize=some_fixed_values
-\family default
-.
- This is useful when subpopulation sizes are changed by migration and you
- do want to keep constant subpopulation sizes.
-\end_layout
-
-\begin_layout Itemize
-If subpopulation sizes can be easily calculated through an expression, you
- can use 
-\family typewriter
-newSubPopSizeExpr
-\family default
- to determine the new subpopulation sizes.
- For example, 
-\family typewriter
-newSubPopSizeExpr='[gen+10]'
-\family default
- uses the generation number + 10 as the new population size.
- More complicated expressions can be used, maybe along with 
-\family typewriter
-pyExec
-\family default
- operators, but in these cases, a specialized function and 
-\family typewriter
-newSubPopSizeFunc
-\family default
- are recommended.
-\end_layout
-
-\begin_layout Itemize
-A more organized (and thus recommended) way to set new population/subpopulation
- sizes is through parameter 
-\family typewriter
-newSubPopSizeFunc
-\family default
-.
- To use this parameter, you need to define a Python function that takes
- two parameters: the generation number and the current subpopulation sizes,
- and return an array of new subpopulation sizes (return 
-\family typewriter
-[newsize]
-\family default
- instead of 
-\family typewriter
-newsize
-\family default
- when you do not have any subpopulation structure).
- The example of 
-\family typewriter
-class Mating 
-\family default
-demonstrates the use of this parameter.
-\end_layout
-
-\begin_layout Subsection
-Demographic change functions
-\end_layout
-
-\begin_layout Standard
-
-\family typewriter
-newSubPopSizeFunc
-\family default
- can take a function with parameters 
-\family typewriter
-gen
-\family default
- and 
-\family typewriter
-oldSize.
-
-\family default
- A few functions are defined in 
-\family typewriter
-simuUtil.py
-\family default
- that will return such a function with given parameters.
- All these functions support a burnin stage and then split to equal sized
- subpopulations.
- For all these functions, you can test them by
 \end_layout
 
 \begin_layout Subsection
@@ -6769,6 +6847,14 @@ If there are mixed positive and negative weights, the negative weights are
  individuals respectively.
 \end_layout
 
+\begin_layout Subsection
+The pedgiree mating scheme
+\end_layout
+
+\begin_layout Standard
+This section is under development.
+\end_layout
+
 \begin_layout Section
 Simulator
 \end_layout
@@ -6832,346 +6918,6 @@ rep, begin, end, step, at, stage
 \family default
  properties and act accordingly.
  
-\end_layout
-
-\begin_layout Subsection
-Generation number
-\end_layout
-
-\begin_layout Standard
-Several aspects of the generation number may cause confusion:
-\end_layout
-
-\begin_layout Itemize
-generation starts from zero
-\end_layout
-
-\begin_layout Itemize
-a generation number presents a 'to-be-evolved' generation
-\end_layout
-
-\begin_layout Itemize
-the ending generation specified in 
-\family typewriter
-evolve()
-\family default
- will be executed
-\end_layout
-
-\begin_layout Standard
-That is to say, a new simulator will have generation 0 (at the beginning
- of generation 0).
- If you do 
-\family typewriter
-evolve(..., end=0), evolve
-\family default
- will evolve one generation and stop at the beginning of generation 1.
-\end_layout
-
-\begin_layout Standard
-It may sound strange that 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-evolve(end=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-evolve the population 3 generations.
- Generation 0, generation 1, and generation 2.
- When you use 
-\family typewriter
-start=0, step=5, end=10
-\family default
- for your operator, it will be applied at generations 
-\family typewriter
-0,5,10
-\family default
- etc.
- At the end of the simulation, current generation number is 3! (If you are
- familiar with C, this is like a 
-\family typewriter
-for
-\family default
- loop index).
- This is why you should test if a simulation is finished correctly by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if(simu.gen() == endGen+1)
-\end_layout
-
-\end_inset
-
-instead of 
-\family typewriter
-simu.gen() == endGen.
-
-\family default
- (endGen is the value for parameter 
-\family typewriter
-end
-\family default
-).
-\end_layout
-
-\begin_layout Subsection
-Operator calling sequence
-\end_layout
-
-\begin_layout Standard
-In a simulation, operators are applied at different stages, pre-, during-,
- and post-mating (controlled by 
-\family typewriter
-stage
-\family default
- parameter), at specified generations (controlled by 
-\family typewriter
-begin, end, step, at
-\family default
- parameters), and to specified replicates (controlled by 
-\family typewriter
-rep
-\family default
- parameter).
- The order of applying operators usually does not matter but errors may
- occur if you are not careful.
- For example, 
-\family typewriter
-stat(...)
-\family default
- calculates the statistics of the current population.
- It is a pre-mating operator so you should set 
-\family typewriter
-stage=PostMating
-\family default
- and put it after all operators if you would like to measure a post-mating
- population.
- It also should be put before any operator (such as an terminator) that
- uses the shared variable set by 
-\family typewriter
-stat(...).
-\end_layout
-
-\begin_layout Standard
-If you are not sure about the calling sequence of operators, you can set
- the 
-\family typewriter
-dryrun
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-simulator!dryun
-\end_layout
-
-\end_inset
-
- parameter of 
-\family typewriter
-evolve()
-\family default
- function to 
-\family typewriter
-True
-\family default
-.
- 
-\family typewriter
-evolve
-\family default
- will then print out the order of operators to apply.
- Consider that operators can be 
-\family typewriter
-PreMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!PreMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!PreMating
-\end_layout
-
-\end_inset
-
-, PostMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!PostMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!PostMating
-\end_layout
-
-\end_inset
-
-, PrePostMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!PrePostMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!PrePostMating
-\end_layout
-
-\end_inset
-
-, DuringMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!DuringMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!DuringMating
-\end_layout
-
-\end_inset
-
-
-\family default
- and the default value (parameter 
-\family typewriter
-stage
-\family default
-) may not be what you expect.
- Having a look at the calling sequence before the real evolution is always
- a good idea.
-\end_layout
-
-\begin_layout Standard
-Because it is not always clear which stage(s) an operator can be applied
- and in which order they will be applied, a parameter 
-\family typewriter
-dryrun
-\family default
- is provided to the 
-\family typewriter
-simulator::evolve()
-\family default
- function.
- If set to 
-\family typewriter
-True
-\family default
-, the 
-\family typewriter
-evolve
-\family default
- function will list all operators in the order at which they will be applied.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/dryrun.log"
-lstparams "caption={List the order at which operators are applied},label={dryrun}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Terminate a simulator
-\end_layout
-
-\begin_layout Subsection
-Save and Load
-\end_layout
-
-\begin_layout Standard
-Using function 
-\family typewriter
-saveSimulator
-\family default
-, we can save a simulator to a file.
- Although files with any extension can be correctly saved/loaded, extension
- 
-\family typewriter
-.sim
-\family default
- is usually used.
- Note that a mating scheme can not be saved and has to be re-specified in
- 
-\family typewriter
-LoadSimulator
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-loadSimulator
-\end_layout
-
-\end_inset
-
-()
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/simulatorsaveload.log"
-lstparams "caption={Save and load a simulator},label={simulatorsaveload}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -7608,6 +7354,602 @@ s, hybrid), ascertainment (case-control, affected sibpairs, random), statistics
 ); pedigree tracing, visualization (using R or other Python modules), load/save
  in text, XML, Fstat or Linkage format.
  In this chapter, I will discuss some practical usages of simuPOP.
+\end_layout
+
+\begin_layout Section
+Population structure and migration
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:splitAndMerge"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You first need to understand that mating schemes populate subpopulations
+ from their corresponding ancestral subpopulations one by one, so it can
+ not change number of subpopulations.
+ Split and merge of subpopulations are done by operators 
+\family typewriter
+splitSubPop
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+splitSubPop
+\end_layout
+
+\end_inset
+
+
+\family default
+ and 
+\family typewriter
+mergeSubPops
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+mergeSubPops
+\end_layout
+
+\end_inset
+
+
+\family default
+ respectively.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrFixedSize"
+
+\end_inset
+
+, these two operators are used to split and merge subpopulations, but keep
+ total population size untouched.
+ Note that after subpopulation merge, subpopulation 2 still exists, but
+ with size 0.
+ This is used to keep subpopulation id of other subpopulations unchanged.
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "splitAndMerge.out"
+lstparams "caption={Population split and merge},label={splitAndMerge}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Migration can change subpopulation size, but not total population size.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrFixedSize"
+
+\end_inset
+
+, two migrators are used.
+ The first migrator moves individuals from subpopulation 0 to subpopulation
+ 1.
+ The second migrator moves individuals around, with given proportions.
+ For example, the migration rate
+\begin_inset Formula \[
+\left(\begin{array}{ccc}
+0. & 0.2 & 0.4\\
+0. & 0. & 0.1\\
+0.1 & 0.1 & 0.\end{array}\right)\]
+
+\end_inset
+
+means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
+ subpop 0 to 1, and keep 40% (automatically determined).
+ Subpopulation sizes change accordingly.
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "splitMigration.out"
+lstparams "caption={Population split and migration},label={splitMigration}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But what if you need to control total population size? In this case, a demograph
+ic function is needed to specify the size of each subpopulation, at each
+ generation.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "splitMigration2"
+
+\end_inset
+
+, function 
+\family typewriter
+popSize
+\family default
+ returns exact subpopulation size at each generation, and the population
+ will behave accordingly.
+ It might surprise you that migration can no longer control the size of
+ subpopulation sizes.
+ What exactly happened is that, for example
+\end_layout
+
+\begin_layout Itemize
+subpopulation size = [200, 400, 400], at the beginning of a generation
+\end_layout
+
+\begin_layout Itemize
+apply migrator, subpopulation size changed to [100, 470, 430]
+\end_layout
+
+\begin_layout Itemize
+pre mating operator 
+\family typewriter
+stat
+\family default
+ is applied and report subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+during mating, with given subpopulation sizes 200, 400, 400 of the offspring
+ generation, the mating scheme generate 200 offspring from 100 parents in
+ subpopulation 0, 400 offspring from 470 parents in subpopulation 1, and
+ 400 offspring from 430 parents in subpopulation 2.
+\end_layout
+
+\begin_layout Itemize
+post mating operator 
+\family typewriter
+stat
+\family default
+ is applied and get the new subpopulation size.
+\end_layout
+
+\begin_layout Standard
+This example also demonstrates the use of stage parameter.
+ As a matter of fact, you can use only one 
+\family typewriter
+stat
+\family default
+ operator by using 
+\family typewriter
+stage
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+stage
+\end_layout
+
+\end_inset
+
+=PrePostMating
+\family default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+PrePostMating
+\end_layout
+
+\end_inset
+
+.
+ If you are confused by the order of operators, use the 
+\family typewriter
+dryrun=True
+\family default
+ parameter of 
+\family typewriter
+evolve
+\family default
+ to check.
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "splitMigration2.out"
+lstparams "caption={Population split with changing population size},label={splitMigration2}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You might say, OK, this looks nice, but how can I grow a population with
+ migration acting freely? This is also easy, all you need to do is using
+ the oldSize parameter of a demographic function in a clever way.
+ The underlying story is that
+\end_layout
+
+\begin_layout Itemize
+before mating, a mating scheme calculates current subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+it calls the given demographic function with current generation number and
+ current subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+it uses the return value as the new subpopulation sizes.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "splitMigration3"
+
+\end_inset
+
+ demonstrate an exponentially increase population with free migration between
+ subpopulations.
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "splitMigration3.out"
+lstparams "caption={Population split with changing population size},label={splitMigration3}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Generation number
+\end_layout
+
+\begin_layout Standard
+Several aspects of the generation number may cause confusion:
+\end_layout
+
+\begin_layout Itemize
+generation starts from zero
+\end_layout
+
+\begin_layout Itemize
+a generation number presents a 'to-be-evolved' generation
+\end_layout
+
+\begin_layout Itemize
+the ending generation specified in 
+\family typewriter
+evolve()
+\family default
+ will be executed
+\end_layout
+
+\begin_layout Standard
+That is to say, a new simulator will have generation 0 (at the beginning
+ of generation 0).
+ If you do 
+\family typewriter
+evolve(..., end=0), evolve
+\family default
+ will evolve one generation and stop at the beginning of generation 1.
+\end_layout
+
+\begin_layout Standard
+It may sound strange that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+evolve(end=2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+evolve the population 3 generations.
+ Generation 0, generation 1, and generation 2.
+ When you use 
+\family typewriter
+start=0, step=5, end=10
+\family default
+ for your operator, it will be applied at generations 
+\family typewriter
+0,5,10
+\family default
+ etc.
+ At the end of the simulation, current generation number is 3! (If you are
+ familiar with C, this is like a 
+\family typewriter
+for
+\family default
+ loop index).
+ This is why you should test if a simulation is finished correctly by
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if(simu.gen() == endGen+1)
+\end_layout
+
+\end_inset
+
+instead of 
+\family typewriter
+simu.gen() == endGen.
+
+\family default
+ (endGen is the value for parameter 
+\family typewriter
+end
+\family default
+).
+\end_layout
+
+\begin_layout Subsection
+Operator calling sequence
+\end_layout
+
+\begin_layout Standard
+In a simulation, operators are applied at different stages, pre-, during-,
+ and post-mating (controlled by 
+\family typewriter
+stage
+\family default
+ parameter), at specified generations (controlled by 
+\family typewriter
+begin, end, step, at
+\family default
+ parameters), and to specified replicates (controlled by 
+\family typewriter
+rep
+\family default
+ parameter).
+ The order of applying operators usually does not matter but errors may
+ occur if you are not careful.
+ For example, 
+\family typewriter
+stat(...)
+\family default
+ calculates the statistics of the current population.
+ It is a pre-mating operator so you should set 
+\family typewriter
+stage=PostMating
+\family default
+ and put it after all operators if you would like to measure a post-mating
+ population.
+ It also should be put before any operator (such as an terminator) that
+ uses the shared variable set by 
+\family typewriter
+stat(...).
+\end_layout
+
+\begin_layout Standard
+If you are not sure about the calling sequence of operators, you can set
+ the 
+\family typewriter
+dryrun
+\family default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+simulator!dryun
+\end_layout
+
+\end_inset
+
+ parameter of 
+\family typewriter
+evolve()
+\family default
+ function to 
+\family typewriter
+True
+\family default
+.
+ 
+\family typewriter
+evolve
+\family default
+ will then print out the order of operators to apply.
+ Consider that operators can be 
+\family typewriter
+PreMating
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+constant!PreMating
+\end_layout
+
+\end_inset
+
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+operator!PreMating
+\end_layout
+
+\end_inset
+
+, PostMating
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+constant!PostMating
+\end_layout
+
+\end_inset
+
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+operator!PostMating
+\end_layout
+
+\end_inset
+
+, PrePostMating
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+constant!PrePostMating
+\end_layout
+
+\end_inset
+
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+operator!PrePostMating
+\end_layout
+
+\end_inset
+
+, DuringMating
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+constant!DuringMating
+\end_layout
+
+\end_inset
+
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+operator!DuringMating
+\end_layout
+
+\end_inset
+
+
+\family default
+ and the default value (parameter 
+\family typewriter
+stage
+\family default
+) may not be what you expect.
+ Having a look at the calling sequence before the real evolution is always
+ a good idea.
+\end_layout
+
+\begin_layout Standard
+Because it is not always clear which stage(s) an operator can be applied
+ and in which order they will be applied, a parameter 
+\family typewriter
+dryrun
+\family default
+ is provided to the 
+\family typewriter
+simulator::evolve()
+\family default
+ function.
+ If set to 
+\family typewriter
+True
+\family default
+, the 
+\family typewriter
+evolve
+\family default
+ function will list all operators in the order at which they will be applied.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dryrun.log"
+lstparams "caption={List the order at which operators are applied},label={dryrun}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Terminate a simulator
+\end_layout
+
+\begin_layout Subsection
+Save and Load
+\end_layout
+
+\begin_layout Standard
+Using function 
+\family typewriter
+saveSimulator
+\family default
+, we can save a simulator to a file.
+ Although files with any extension can be correctly saved/loaded, extension
+ 
+\family typewriter
+.sim
+\family default
+ is usually used.
+ Note that a mating scheme can not be saved and has to be re-specified in
+ 
+\family typewriter
+LoadSimulator
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+loadSimulator
+\end_layout
+
+\end_inset
+
+()
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simulatorsaveload.log"
+lstparams "caption={Save and load a simulator},label={simulatorsaveload}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -8456,255 +8798,6 @@ These auxiliary information will be attached to individuals in a pedigree.
 \end_layout
 
 \begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Section
-Population structure and migration
-\end_layout
-
-\begin_layout Standard
-You first need to understand that mating schemes populate subpopulations
- from their corresponding ancestral subpopulations one by one, so it can
- not change number of subpopulations.
- Split and merge of subpopulations are done by operators 
-\family typewriter
-splitSubPop
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-splitSubPop
-\end_layout
-
-\end_inset
-
-
-\family default
- and 
-\family typewriter
-mergeSubPops
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-mergeSubPops
-\end_layout
-
-\end_inset
-
-
-\family default
- respectively.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitAndMerge"
-
-\end_inset
-
-, these two operators are used to split and merge subpopulations, but keep
- total population size untouched.
- Note that after subpopulation merge, subpopulation 2 still exists, but
- with size 0.
- This is used to keep subpopulation id of other subpopulations unchanged.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "splitAndMerge.out"
-lstparams "caption={Population split and merge},label={splitAndMerge}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Migration can change subpopulation size, but not total population size.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitAndMerge"
-
-\end_inset
-
-, two migrators are used.
- The first migrator moves individuals from subpopulation 0 to subpopulation
- 1.
- The second migrator moves individuals around, with given proportions.
- For example, the migration rate
-\begin_inset Formula \[
-\left(\begin{array}{ccc}
-0. & 0.2 & 0.4\\
-0. & 0. & 0.1\\
-0.1 & 0.1 & 0.\end{array}\right)\]
-
-\end_inset
-
-means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
- subpop 0 to 1, and keep 40% (automatically determined).
- Subpopulation sizes change accordingly.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "splitMigration.out"
-lstparams "caption={Population split and migration},label={splitMigration}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-But what if you need to control total population size? In this case, a demograph
-ic function is needed to specify the size of each subpopulation, at each
- generation.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitMigration2"
-
-\end_inset
-
-, function 
-\family typewriter
-popSize
-\family default
- returns exact subpopulation size at each generation, and the population
- will behave accordingly.
- It might surprise you that migration can no longer control the size of
- subpopulation sizes.
- What exactly happened is that, for example
-\end_layout
-
-\begin_layout Itemize
-subpopulation size = [200, 400, 400], at the beginning of a generation
-\end_layout
-
-\begin_layout Itemize
-apply migrator, subpopulation size changed to [100, 470, 430]
-\end_layout
-
-\begin_layout Itemize
-pre mating operator 
-\family typewriter
-stat
-\family default
- is applied and report subpopulation sizes
-\end_layout
-
-\begin_layout Itemize
-during mating, with given subpopulation sizes 200, 400, 400 of the offspring
- generation, the mating scheme generate 200 offspring from 100 parents in
- subpopulation 0, 400 offspring from 470 parents in subpopulation 1, and
- 400 offspring from 430 parents in subpopulation 2.
-\end_layout
-
-\begin_layout Itemize
-post mating operator 
-\family typewriter
-stat
-\family default
- is applied and get the new subpopulation size.
-\end_layout
-
-\begin_layout Standard
-This example also demonstrates the use of stage parameter.
- As a matter of fact, you can use only one 
-\family typewriter
-stat
-\family default
- operator by using 
-\family typewriter
-stage
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-stage
-\end_layout
-
-\end_inset
-
-=PrePostMating
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-PrePostMating
-\end_layout
-
-\end_inset
-
-.
- If you are confused by the order of operators, use the 
-\family typewriter
-dryrun=True
-\family default
- parameter of 
-\family typewriter
-evolve
-\family default
- to check.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "splitMigration2.out"
-lstparams "caption={Population split with changing population size},label={splitMigration2}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You might say, OK, this looks nice, but how can I grow a population with
- migration acting freely? This is also easy, all you need to do is using
- the oldSize parameter of a demographic function in a clever way.
- The underlying story is that
-\end_layout
-
-\begin_layout Itemize
-before mating, a mating scheme calculates current subpopulation sizes
-\end_layout
-
-\begin_layout Itemize
-it calls the given demographic function with current generation number and
- current subpopulation sizes
-\end_layout
-
-\begin_layout Itemize
-it uses the return value as the new subpopulation sizes.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitMigration3"
-
-\end_inset
-
- demonstrate an exponentially increase population with free migration between
- subpopulations.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "splitMigration3.out"
-lstparams "caption={Population split with changing population size},label={splitMigration3}"
-
-\end_inset
-
 
 \end_layout
 
