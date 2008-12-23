@@ -773,6 +773,24 @@ print ind.sex(), ind.genotype()
 print par.sex(), par.genotype()
 #end
 
+#file log/alphaMating.log
+simu = simulator(population(1000, loci=[5], 
+    infoFields=['father_idx', 'mother_idx', 'fitness']),
+    alphaMating(alphaSex=Male, alphaNum=2))
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [parentsTagger(),
+        maSelector(loci=[0], fitness=[0.8, 0.8, 1]),
+        stat(alleleFreq=[0]),
+        pyEval(r'"%.2f\n" % alleleFreq[0][1]', step=5)
+    ],
+    gen = 20,
+)
+pop = simu.extract(0)
+[ind.intInfo('father_idx') for ind in pop.individuals()][:10]
+[ind.intInfo('mother_idx') for ind in pop.individuals()][:10]
+#end
+
 
 #file log/randomMating.log
 def randomMating(numOffspring = 1., 
