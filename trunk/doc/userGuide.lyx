@@ -5973,6 +5973,86 @@ lstparams "caption={Asexual random mating},label={randomSelection}"
 Mating with alpha individuals
 \end_layout
 
+\begin_layout Standard
+The 
+\family typewriter
+alphaMating
+\family default
+ mating scheme is intended to simulate animal populations in which only
+ individuals with alpha status have the power to mate.
+ In this mating scheme, a number of alpha individuals with specified sex
+ (
+\family typewriter
+alphaSex
+\family default
+) are determined, either randomly (
+\family typewriter
+alphaNum
+\family default
+) or according to values at an information field (
+\family typewriter
+alphaField
+\family default
+).
+ During mating, only individuals from this alpha group can be selected to
+ mate.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alphaMating"
+
+\end_inset
+
+ gives a simple evolutionary scenario where two alpha males are chosen according
+ to individual fitness values at each generation.
+ The fitness value of each individual is determined by his/her genotype
+ at the first locus, 
+\family typewriter
+0.8
+\family default
+, 
+\family typewriter
+0.8
+\family default
+, and 
+\family typewriter
+1
+\family default
+ for genotype 
+\family typewriter
+AA
+\family default
+, 
+\family typewriter
+Aa
+\family default
+, and 
+\family typewriter
+aa
+\family default
+ respectively.
+ Because individuals having mutant 
+\family typewriter
+a
+\family default
+ have a high probability to be selected, and become the alpha male in this
+ population, the frequency of this mutant tend to increase in this population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/alphaMating.log"
+lstparams "caption={Random mating with alpha individuals},label={alphaMating}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Mating in haplodiploid populations
 \end_layout
