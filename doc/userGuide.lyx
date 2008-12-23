@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -5398,7 +5398,7 @@ lstparams "caption={Force constant subpopulation sizes},label={migrFixedSize}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "demoFunc"
+reference "numOff"
 
 \end_inset
 
@@ -5436,165 +5436,194 @@ Determine the number of offspring during mating
 \end_layout
 
 \begin_layout Standard
-Parameters 
-\family typewriter
-numOffspring, maxNumOffspring, numOffspringFunc 
-\family default
-and 
-\family typewriter
-mode
-\family default
- are provided for each mating scheme (each offspring generator, to be exact)
- to determine the number of offspring produced at each mating event.
-\end_layout
-
-\begin_layout Standard
-The default value of 
-\family typewriter
-numOffspring
-\family default
- parameter makes a mating scheme produces one offspring per mating event.
- This is required by random mating schemes and should be used whenever possible.
- However, various situations require a larger family size or even changing
+simuPOP by default produces only one offspring per mating event.
+ Because more parents are involved in the production of offspring, this
+ setting leads to larger effective population sizes than mating schemes
+ that produce more offspring at each mating event.
+ However, various situations require a larger family size or even varying
  family sizes.
- simuPOP provides a comprehensive way to deal with this problem.
-\end_layout
-
-\begin_layout Standard
-As described in the class reference, the method to determine the number
- of offspring is to set the 
-\family typewriter
-mode
-\family default
- parameter:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_NumOffspring:
-\family default
- Produce 
+ In these cases, parameter 
 \family typewriter
 numOffspring
 \family default
- offspring all the time.
+ can be used to control the number of offspring that are produced at each
+ mating event.
+ This parameter takes the following types of inputs
+\end_layout
+
+\begin_layout Itemize
+If a single number is given, 
+\family typewriter
+numOffspring
+\family default
+ offspring are produced at each mating event.
+\end_layout
+
+\begin_layout Itemize
+If a Python function is given, this function will be called each time when
+ a mating event happens.
+ Generation number will be passed to this function, which allows different
+ numbers of offspring at different generations.
+\end_layout
+
+\begin_layout Itemize
+If a tuple (or list) with more than one numbers is given, the first number
+ must be one of 
+\family typewriter
+GeometricDistribution
+\family default
+, 
+\family typewriter
+PoissonDistribution
+\family default
+, 
+\family typewriter
+BinomialDistribution
+\family default
+ and 
+\family typewriter
+UniformDistribution
+\family default
+, with one or two additional parameters.
+ The number of offspring will then follow a specific statistical distribution.
+ Note that all these distributions are adjusted so that the minimal number
+ of offspring is 1.
+\end_layout
+
+\begin_layout Standard
+More specifically, 
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_PyNumOffspring:
+numOffspring=(GeometricDistribution, p)
 \family default
- When 
-\family typewriter
-numOffspringFunc
-\family default
- is defined, this mode is automatically used.
- A user provided function is called whenever a mating event happens.
- The return value determins the number of offpspring to use.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_GeometricDistribution: numOffspring
-\family default
- is considered as 
-\begin_inset Formula $p$
-\end_inset
-
- for a geometric distribution.
- The number of offspring for each mating is determined by
+: The number of offspring for each mating event follows distribution:
 \begin_inset Formula \[
-P\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
+\mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
 
 \end_inset
 
+This distribution has mean 
+\begin_inset Formula $1/p$
+\end_inset
 
+ and variance 
+\begin_inset Formula $\left(1-p\right)/p^{2}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_PoissonDistribution: numOffspring
+numOffspring=(PoissonDistribution, p): 
 \family default
- is considered as 
-\begin_inset Formula $p$
-\end_inset
-
- for a Poission distribution.
- The number of offspring for each mating is determined by
+The number of offspring for each mating event follows a shifted Poisson
+ distribution:
 \begin_inset Formula \[
-P\left(k\right)=\frac{p^{k-1}}{\left(k-1\right)!}e^{-p}\;\textrm{ for}k\geq1\]
+\mbox{Pr}\left(k\right)=p^{k-1}\frac{e^{-p}}{\left(k-1\right)!}\;\textrm{ for}k\geq1\]
 
 \end_inset
 
-Since the mean of this shifted Poisson distribution is 
+Because the mean of this shifted Poisson distribution is 
 \begin_inset Formula $p+1$
 \end_inset
 
-, you need to specify, for example, 2, if you want a mean family size 3.
- 
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MATE_BinomialDistribution: numOffspring
-\family default
- is considered as 
+, you need to specify, for example, 2, if you want a mean family size of
+ 3.
+ The variance of this distribution is 
 \begin_inset Formula $p$
 \end_inset
 
- for a Binomial distribution.
- Let 
-\begin_inset Formula $N$
-\end_inset
-
-=
-\family typewriter
-maxNumOffspring
-\family default
-, the number of offspring for each mating is determined by
-\begin_inset Formula \[
-P\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k-1}\left(1-p\right)^{n-k}\;\textrm{ for }N\geq k\geq1\]
-
-\end_inset
-
-
+.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_UniformDistribution:
+numOffspring=(BinomialDistribution, p, n): 
 \family default
- 
+The number of offspring for each mating event follows a shifted Binomial
+ distribution:
+\begin_inset Formula \[
+\mbox{Pr}\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k-1}\left(1-p\right)^{n-k}+1\;\textrm{ for }n\geq k\geq1\]
+
+\end_inset
+
+The mean of this distribution is 
+\begin_inset Formula $(n-1)p+1$
+\end_inset
+
+ with variance 
+\begin_inset Formula $\left(n-1\right)p\left(1-p\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
 \family typewriter
-numOffspring
+numOffspring=(UniformDistribution, a, b):
 \family default
- is be considered as 
+ The number of offspring for each mating event follows a discrete uniform
+ distribution with lower bound 
 \begin_inset Formula $a$
 \end_inset
 
-, 
+ and upper bound 
 \begin_inset Formula $b$
 \end_inset
 
- for a Uniform distribution, respectively.
- The number of offspring for each mating is determined by
+.
 \begin_inset Formula \[
-P\left(k\right)=\frac{1}{b-a}\;\textrm{ for }b\geq k\geq a\]
+\mbox{Pr}\left(k\right)=\frac{1}{b-a+1}\;\textrm{ for }b\geq k\geq a\]
+
+\end_inset
+
+The mean of this distribution is 
+\begin_inset Formula $\left(a+b\right)/2$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "numOff"
+
+\end_inset
+
+ demonstrates how to use parameter 
+\family typewriter
+numOffspring
+\family default
+.
+ In this example, a function 
+\family typewriter
+checkNumOffspring
+\family default
+ is defined.
+ It takes a mating scheme as its input parameter and use it to evolve a
+ population with 30 individuals.
+ After evolving a population for one generation, parental indexes are used
+ to identify siblings, and then the number of offspring per mating event.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/numOff.log"
+lstparams "caption={Control the number of offspring per mating event.},label={numOff}"
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Note that all these distributions are adjusted to produce at least one offspring.
- 
 \end_layout
 
 \begin_layout Subsection
