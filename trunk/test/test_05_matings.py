@@ -35,51 +35,92 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing means to change population size (FIXME: imcomplete)'
         pass
 
-    def getFamSize(self, mate, endGen=1, size=1000):
-        simu = simulator(population(size, loci=[1]), mate)
-        simu.evolve(preOps=[initSex()], ops=[], gen=endGen)
-        return simu.population(0).dvars().famSizes
+    def getFamSize(self, ms, gen=1, N=1000):
+        '''Check the number of offspring for each family using
+           information field father_idx
+        '''
+        simu = simulator(
+            population(size=[N], infoFields=['father_idx', 'mother_idx']),
+            matingScheme=ms)
+        simu.evolve(
+            preOps = [initSex()],
+            ops=[parentsTagger()],
+            gen=gen)
+        # get the parents of each offspring
+        parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
+            simu.population(0).indInfo('father_idx'))]
+        # Individuals with identical parents are considered as siblings.
+        famSize = []
+        lastParent = (-1, -1)
+        for parent in parents:
+            if parent == lastParent:
+                famSize[-1] += 1
+            else:
+                lastParent = parent
+                famSize.append(1)
+        return famSize
 
     def testNumOffspring(self):
         'Testing means to control number of offspring (FIXME: check distribution)'
-        TurnOnDebug(DBG_MATING)
         self.assertEqual(
-            self.getFamSize(binomialSelection(numOffspring=2)),
+            self.getFamSize(randomMating(numOffspring=2)),
             [2]*500)
         # numOffspringFunc
         def nos(gen):
             return gen%2+1
         self.assertEqual(
-            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=2),
+            self.getFamSize(randomMating(numOffspring=nos), gen=2),
             [2]*500)
         self.assertEqual(
-            self.getFamSize(binomialSelection(numOffspringFunc=nos), endGen=3),
+            self.getFamSize(randomMating(numOffspring=nos), gen=3),
             [1]*1000)
         # what if each family have different number of offspring?
         def nos(gen):
-            return random.randrange(1,4)
+            return random.randint(1,3)
         #
-        cnt = self.getFamSize(randomMating(numOffspringFunc=nos))
-        self.assertEqual( sum(cnt), 1000)
+        cnt = self.getFamSize(randomMating(numOffspring=nos), N=1000)
+        self.assertEqual(sum(cnt), 1000)
         num = [ cnt.count(i) for i in range(1,4) ]
+        #
         # test for uniform?
         mean = sum(num)/3.
         for i in range(3):
             assert num[i] < mean + 50 and num[i] > mean - 50
         #
         # MATE_GeometricDistribution
-        cnt = self.getFamSize( randomMating(numOffspring=.3,
-                mode=MATE_GeometricDistribution))
-        #print cnt
-        # MATE_BinomialDistribution
-        cnt = self.getFamSize( randomMating(numOffspring=.3,
-            numOffspringParam=5, mode=MATE_BinomialDistribution))
-        #print cnt
-        # MATE_PoissonDistribution
-        cnt = self.getFamSize( randomMating(numOffspring=.3,
-            mode=MATE_PoissonDistribution))
-        #print cnt
-        TurnOffDebug(DBG_MATING)
+        p = 0.33
+        cnt = self.getFamSize(randomMating(
+            numOffspring=(GeometricDistribution, p)), N=10000)
+        # mean should be 1/p, variance (1-p)/(p*p)
+        mean = sum(cnt)*1.0/len(cnt)
+        var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
+        self.assertEqual(abs(mean - 1./p) < 0.1, True)
+        self.assertEqual(abs(var - (1-p)/(p*p)) < 1, True)
+        # PoissonDistribution
+        p = 3
+        cnt = self.getFamSize(randomMating(
+            numOffspring=(PoissonDistribution, p)), N=100000)
+        mean = sum(cnt)*1.0/len(cnt)
+        var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
+        self.assertEqual(abs(mean - (p+1)) < 0.1, True)
+        self.assertEqual(abs(var - p) < 0.2, True)
+        # BinomialDistribution
+        p = 0.3
+        n = 10
+        cnt = self.getFamSize(randomMating(
+            numOffspring=(BinomialDistribution, p, n)), N=10000)
+        mean = sum(cnt)*1.0/len(cnt)
+        var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
+        self.assertEqual(abs(mean - ((n-1)*p+1)) < 0.1, True)
+        self.assertEqual(abs(var - (n-1)*p*(1-p)) < 0.2, True)
+        # UniformDistribution
+        a = 3
+        b = 6
+        cnt = self.getFamSize(randomMating(
+            numOffspring=(UniformDistribution, a, b)), N=10000)
+        mean = sum(cnt)*1.0/len(cnt)
+        var = sum([x*x for x in cnt])*1.0/len(cnt) - mean*mean
+        self.assertEqual(abs(mean - (a + b)/2.) < 0.1, True)
 
     def testConsanguineousMating(self):
         'Testing consanguineous mating'

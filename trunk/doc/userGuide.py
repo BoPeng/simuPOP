@@ -670,7 +670,7 @@ def checkNumOffspring(ms):
         ops=[parentsTagger()],
         gen=1)
     # get the parents of each offspring
-    parents = [(x, y) for x, y in zip(simu.population(0).indInfo('father_idx'),
+    parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
         simu.population(0).indInfo('father_idx'))]
     # Individuals with identical parents are considered as siblings.
     famSize = []
@@ -684,7 +684,7 @@ def checkNumOffspring(ms):
     return famSize
 
 # Case 1: produce the given number of offspring
-print checkNumOffspring(randomMating(numOffspring=2))
+checkNumOffspring(randomMating(numOffspring=2))
 # Case 2: Use a Python function
 import random
 def func(gen):
