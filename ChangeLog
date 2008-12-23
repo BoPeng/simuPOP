@@ -12,7 +12,9 @@ version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Merge parameters subPopSize and subPopSizeFunc. This parameter can now
 		take both a list and a function.
   - BUG: Fix population load/save under windows, add simulator equality test (__cmp__).
-  - CHG: Merge parameters numOffspringFunc, numOffspringParam and mode to numOffspring.
+  - CHG: Merge parameters numOffspringFunc, numOffspringParam and mode to numOffspring
+        in offspringGenerator.
+  - CHG: Merge parameter sexParam to sexMode in offspringGenerator.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.

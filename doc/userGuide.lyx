@@ -5398,7 +5398,7 @@ lstparams "caption={Force constant subpopulation sizes},label={migrFixedSize}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "numOff"
+reference "sexMode"
 
 \end_inset
 
@@ -5631,42 +5631,42 @@ Determine offspring sex
 \end_layout
 
 \begin_layout Standard
-When the last chromosome is a sex chromosome (
-\family typewriter
-sexChrom=True
-\family default
-), offspring sex is determined by his/her genotype.
- If an offspring is cloned from his/her parent using a 
-\family typewriter
-cloneOffspringGenerator()
-\family default
-, offspring sex is the same as his/her parent.
- Otherwise, offspring is by default assigned to Male and Female with equal
- probability 0.5.
-\end_layout
-
-\begin_layout Standard
-More advanced sex assignment mode is determined by parameters 
-\family typewriter
-sexMode 
-\family default
-and 
-\family typewriter
-sexParam
-\family default
- of a mating scheme or an offspring generator (see later section).
- 
+Because sex can influence how genotypes are transmitted (e.g.
+ sex chromosomes, haplodiploid population), simuPOP determines offspring
+ sex before it passes an offspring to a 
+\emph on
+genotype transmitter
+\emph default
+ (during-mating operator) to transmit genotype from parents to offspring.
+ The default 
 \family typewriter
 sexMode
 \family default
- can be
+ in almost all mating schemes is 
+\family typewriter
+RandomSex
+\family default
+, in which case simuPOP assign 
+\family typewriter
+Male
+\family default
+ or 
+\family typewriter
+Female
+\family default
+ to offspring with equal probability.
+\end_layout
+
+\begin_layout Standard
+Other sex determination methods are also available:
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_RandomSex
+sexMode=NoSex
 \family default
+: Sex is not simulated so everyone is Male.
  This is the default mode where offspring can be Male or Female with equal
  probability.
 \end_layout
@@ -5674,59 +5674,105 @@ MATE_RandomSex
 \begin_layout Itemize
 
 \family typewriter
-MATE_ProbOfMale
+sexMode=(ProbOfMale, prob)
 \family default
- In this mode, parameter 
-\family typewriter
-sexParam
-\family default
- is considered as the probability of a Male offspring.
+: Produce males with given probability.
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_NumOfMale
+sexMode=(NumOfMale, n)
 \family default
- In this mode, parameter 
+: The first 
 \family typewriter
-sexParam
+n
 \family default
- is the number of male in the family.
- If the number of offspring at a mating event is less than this number,
- all offspring will be male.
+ offspring in each family will be 
+\family typewriter
+Male
+\family default
+.
+ If the number of offspring at a mating event is less than or equal to 
+\family typewriter
+n
+\family default
+, all offspring will be male.
  
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-MATE_NumOfFemale
+sexMode=(NumOfFemale, n)
 \family default
- Similar to 
+: The first 
 \family typewriter
-MATE_NumOfMale
+n
 \family default
- but parameter 
+ offspring in each family will be 
 \family typewriter
-sexParam
+Female
 \family default
- is considered as the number of female in the family.
+.
 \end_layout
 
 \begin_layout Standard
 
 \family typewriter
-MATE_NumOfMale
+NumOfMale
 \family default
  and 
 \family typewriter
-MATE_NumOfFemale
+NumOfFemale
 \family default
  are useful in theoretical studies where the sex ratio of a population needs
  to be controlled strictly, or in special mating schemes, usually for animal
  populations, where only a certain number of male or female individuals
  are allowed in a family.
+ It worth noting that a genotype transmitter can override specified offspring
+ sex.
+ This is the case for 
+\family typewriter
+cloneGenoTransmitter
+\family default
+ where an offspring inherits both genotype and sex from his/her parent.
+ 
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sexMode"
+
+\end_inset
+
+ demonstrates how to use parameter 
+\family typewriter
+sexMode
+\family default
+.
+ In this example, a function 
+\family typewriter
+checkSexMode
+\family default
+ is defined.
+ It takes a mating scheme as its input parameter and use it to evolve a
+ population with 40 individuals.
+ After evolving a population for one generation, sexes of all offspring
+ are returned as a string.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/sexMode.log"
+lstparams "caption={Determine the sex of offspring},label={sexMode}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
