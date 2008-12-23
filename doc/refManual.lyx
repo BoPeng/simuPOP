@@ -441,7 +441,7 @@ combinedSplitterRef
 \end_layout
 
 \begin_layout Section
-Mating Scheme
+Basic Mating Schemes
 \begin_inset Index
 status collapsed
 
@@ -478,6 +478,26 @@ pyMatingRef
 \backslash
 heteroMatingRef
 \end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pedigreeMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Parent Choosers and Offspring generators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
 
 \begin_layout Plain Layout
 
@@ -530,13 +550,6 @@ infoParentsChooserRef
 
 \begin_layout Plain Layout
 
-%
-\backslash
-pedigreeParentsChooserRef
-\end_layout
-
-\begin_layout Plain Layout
-
 
 \backslash
 pyParentsChooserRef
@@ -554,6 +567,68 @@ offspringGeneratorRef
 
 \backslash
 controlledOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmendelianOffspringGeneratorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Pre-defined Mating schemes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomSelectionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmonogamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpolygamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPalphaMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidMatingRef
 \end_layout
 
 \end_inset
@@ -1386,7 +1461,7 @@ status open
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuPOPFuncRef
 \end_layout
@@ -1408,7 +1483,7 @@ status open
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuOptFuncRef
 \end_layout
@@ -1465,7 +1540,7 @@ simuUtilsimuProgressRef
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuUtilFuncRef
 \end_layout

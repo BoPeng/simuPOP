@@ -810,8 +810,11 @@ class Doxy2SWIG:
                 self.content[-1]['Usage'] = key + inspect.formatargspec(
                     args, varargs, varkw, defaults)
                 self.content[-1]['Description'] = getdoc(value)
-                self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Description'] 
-                self.content[-1]['hidden'] = 'HIDDEN' in self.content[-1]['Description']
+                # latex can not yet handle numbers in function name
+                self.content[-1]['ignore'] = 'CPPONLY' in self.content[-1]['Description'] or \
+                    not self.content[-1]['Name'].isalpha()
+                self.content[-1]['hidden'] = 'HIDDEN' in self.content[-1]['Description'] or \
+                    not self.content[-1]['Name'].isalpha()
                 # these is no details...
                 self.content[-1]['Doc'] = self.content[-1]['Description']
 
@@ -951,9 +954,6 @@ class Doxy2SWIG:
         for module in modules:
             # module functions
             mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
-            print >> out, '\\newcommand{\\%sFuncRef}{' % module
-            print >> out, '\n\\subsection{\\texttt{%s} functions\\index{module!%s}' % (module, module)
-            print >> out, '}\n\\par %s' % self.latex_formatted_text(mod['Doc'])
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
@@ -961,6 +961,7 @@ class Doxy2SWIG:
             # print all functions
             #print >> out, '\\begin{description}'
             for mem in funcs:
+                print >> out, '\\newcommand{\\%s%sRef}{\index{%s!%s}' % (module, mem['Name'], module, mem['Name'])
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     func_name = mem['Usage'].split('(')[0]
                     func_body = mem['Usage'][len(func_name):].lstrip('(').rstrip(')')
@@ -971,8 +972,7 @@ class Doxy2SWIG:
                 print >> out, r' %s' % self.latex_formatted_text(mem['Doc'])
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '\\par\n\\strong{Note: }%s\\par' % self.latex_text(mem['note'])
-                print >> out, '\\end{funcdesc}\n'
-            print >> out, '}\n'
+                print >> out, '\\end{funcdesc}\n}\n'
             # module classes
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
@@ -1154,8 +1154,13 @@ xleftmargin=15pt}
         modules = sets.Set(
             [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
-            print >> out, r'\%sFuncRef' % module
-            print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
+            funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            # sort it
+            funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            # print all functions
+            for mem in funcs:
+                print >> out, r'\%s%sRef' % (module, mem['Name'])
+                print >> out, r'\vspace{.5in}\par\rule[.5ex]{\linewidth}{1pt}\par\vspace{0.3in}'
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # print all functions
             for cls in classes:
