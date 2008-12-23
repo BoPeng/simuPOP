@@ -57,12 +57,12 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 			ValueError, "Max number of offspring should be greater than 1.");
 	}
 	DBG_FAILIF(m_sexMode.empty(), ValueError, "Please specify one of the sex modes");
-	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == ProbOfMale || 
-		static_cast<int>(m_sexMode[0]) == NumOfMale || 
-		static_cast<int>(m_sexMode[0]) == NumOfFemale) && m_sexMode.size() < 2,
+	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == ProbOfMale ||
+		        static_cast<int>(m_sexMode[0]) == NumOfMale ||
+		        static_cast<int>(m_sexMode[0]) == NumOfFemale) && m_sexMode.size() < 2,
 		ValueError, "A parameter is required for sex mode ProbOfMale, NumOfMale and NumOfFemale");
-		
-	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMale && 
+
+	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMale &&
 		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
 	// the genotype transmitter that will be used when no during mating
@@ -122,6 +122,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 Sex offspringGenerator::getSex(int count)
 {
 	int mode = static_cast<int>(m_sexMode[0]);
+
 	if (mode == NoSex)
 		return Male;
 	else if (mode == RandomSex)
@@ -219,8 +220,9 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 
 
 controlledOffspringGenerator::controlledOffspringGenerator(
-	vectori loci, vectori alleles, PyObject * freqFunc, const vectorop & ops,
-	UINT numParents, const floatListFunc & numOffspring, const floatList & sexMode)
+	const vectori & loci, const vectori & alleles, PyObject * freqFunc,
+	const vectorop & ops, UINT numParents, const floatListFunc & numOffspring,
+	const floatList & sexMode)
 	: offspringGenerator(ops, numParents, numOffspring, sexMode),
 	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()

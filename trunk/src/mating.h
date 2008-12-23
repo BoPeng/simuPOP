@@ -46,81 +46,77 @@ using std::stack;
 
 namespace simuPOP {
 
-/**
-   Offspring generators generate offspring from given parents. Generators differ
-   from each other by how and how many offspring is generated at each mating event.
-
-   Parameters \c mode, \c numOffspring, \c numOffspringParam and \c numOffspringFunc
-   are used to specify how many offspring will be produced at each mating event.
-   \c mode can be one of
-   \li \c NumOffspring: a fixed number of offspring will be produced
-    at all mating events .
-   \li \c PyNumOffspring: A python function, specified by parameter
-   \c numOffspringFunc, is called at each mating event to determine the number
-    of offspring to produce.
-   \li \c GeometricDistribution: a Geometric distribution with parameter \c numOffspring
-       is used to determine the number of offspring of each family.
-   \li \c PoissonDistribution: a Poisson distribution with parameter \c numOffspring
-       is used to determine the number of offspring of each family.
-   \li \c BinomialDistribution: a Binomial distribution with parameter \c numOffspring
-       is used to determine the number of offspring of each family.
-   \li \c UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
-   \c numOffspring (a) and \c numOffspringParam (b) is used to determine the number of offspring of each family.
-
-   This is the base class of all offspring generators, and should not
-   be used directly.
-   <applicability>all ploidy</applicability>
+/** An <em>offspring generator</em> generates offspring from parents chosen by
+ *  a parent chooser. It is responsible for creating a certain number of
+ *  offspring, determinning their sex, and transmitting genotypes from parents
+ *  to offspring.\n
  */
 class offspringGenerator
 {
 public:
-	// numOffspring: constant, numOffspringFunc: call each time before mating
-#define NumOffspring           1
-	// call numOffspringFunc each time during mating.
-#define NumOffspringEachFamily 2 // This name is obsolete
-#define PyNumOffspring         2
-	// numOffspring and numOffsrpingsFunc call each time before mating is
-	// the p for a geometric distribution
 #define GeometricDistribution   3
 #define PoissonDistribution     4
 #define BinomialDistribution    5
-	// uniform between numOffspring and numOffspringParam
 #define UniformDistribution     6
 
 
-#define NoSex					0
+#define NoSex                   0
 #define RandomSex               1
 #define ProbOfMale              2
 #define NumOfMale               3
 #define NumOfFemale             4
 
 public:
-	/**
-	   \param numOffspring Depending on \mode, this paramter can be the number of offspring to
-	    produce, or a paremter of a random distribution.
-	   \param numOffspringFunc a Python function that returns the number of offspring at each
-	    mating event. The setting of this parameter implies \mode=PyNumOffspring.
-	   \param numOffspringParam used when \c numOffspring is generated from a binomial or random
-	    distribution.
-	   \param mode can be one of <tt>NumOffspring, PyNumOffspring,
-	    GeometricDistribution, PoissonDistribution, BinomialDistribution,</tt>
-	    or <tt>UniformDistribution</tt>.
-	   \param sexParam parameter that controls the sex distribution among offspring. Its exact
-	    meaning is determined by parameter sexMode. Default to 0.5.
-	   \param sexMode can be one of
-	   \li RandomSex  Set sex to Male or Female with probability 0.5. Parameter
-	   \c sexParam is ignored in this case. This is the default mode.
-	   \li ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
-	   \li NumOfMale Set \c sexParam offspring to Male
-	   \li NumOfFemale Set \c sexParam offspring to Female.
-	   If there are sex chromosomes, sex is determined by sex chromosomes when \c sexMode
-	    id \c RandomSex. Otherwise, some offspring will be rejected so that offspring
-	    sex match what is specified in other modes.
-	    \param transmitter is an during mating operator, that will be used if
-	        no during mating operator is used to produce offspring.
+	/** Create a basic offspring generator. This offspring generator uses
+	 *  \e ops genotype transmitters to transmit genotypes from parents to
+	 *  offspring. It expects \e numParents from an upstream parents chooser
+	 *  and raises an \c RuntimeError if incorrect number of parents are
+	 *  passed. If both one and two parents can be handled, \c 0 should be
+	 *  specified for this parameter.\n
+	 *
+	 *  A number of <em>genotype transmitters</em> can be used to transmit
+	 *  genotype from parents to offspring. Additional during-mating operators
+	 *  can be passed from the \c evolve() function of a \e simulator, but the
+	 *  \e ops operators will be applied before them. An exception is that if
+	 *  one of the passed operators is set to form offspring genotype (a flag
+	 *  \c setOffGenotype), operators in \e ops with the same flag will not be
+	 *  applied. For example, a \c recombinator will override a
+	 *  \c mendelianGenoTransmitter used in \c randomMating if it is used in
+	 *  the \c ops parameter of the \c evolve function.\n
+	 *
+	 *  A number of derived offspring generators are available with a default
+	 *  transmitter. For example, a \c mendelianOffspringGenerator uses
+	 *  a \c mendelianGenoTransmitter to transmit genotypes.\n
+	 *
+	 *  Parameter \e numOffspring is used to control the number of offspring
+	 *  per mating event, or in another word the number of offspring in each
+	 *  family. It can be a number, a function, or a mode parameter followed by
+	 *  some optional arguments. If a number is given, given number of
+	 *  offspring will be generated at each mating event. If a Python function
+	 *  is given, it will be called each time when a mating event happens.
+	 *  Current generation number will be passed to this function, and its
+	 *  return value will be considered the number of offspring. In the last
+	 *  case, a tuple (or a list) in one of the following forms:
+	 *  <tt>(GeometricDistribution, p)</tt>, <tt>(PoissonDistribution, p)</tt>,
+	 *  <tt>(BinomialDistribution, p, N)</tt>, or
+	 *  <tt>(UniformDistribution, a, b)</tt> can be given. The number of
+	 *  offspring will be determined randomly following these statistical
+	 *  distributions. Please refer to the simuPOP user's guide for a detailed
+	 *  description of these distribution and their parameters.\n
+	 *
+	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
+	 *  default value is usually \e RandomSex which assign \c Male or \c Female
+	 *  to each individual randomly, with equal probabilities. If \c NoSex is
+	 *  given, all individuals will be \c Male. \e sexMode can also be one of
+	 *  <tt>(ProbOfMale, p)</tt>, <tt>(NumOfMale, n)</tt>, and
+	 *  <tt>(NumOfFemale, n)</tt>. The first case specifies the probability
+	 *  of male for each offspring. The next two cases specifies the number of
+	 *  male or female individuals in each family, respectively. If \c n is
+	 *  greater than or equal to the number of offspring in this family, all
+	 *  offspring in this family will be \c Male or \c Female.
 	 */
 	offspringGenerator(const vectorop & ops, UINT numParents = 0,
-		const floatListFunc & numOffspring = 1.,
+		const floatListFunc & numOffspring = 1,
 		const floatList & sexMode = RandomSex);
 
 	virtual ~offspringGenerator()
@@ -133,6 +129,7 @@ public:
 	/// CPPONLY
 	offspringGenerator(const offspringGenerator & rhs);
 
+	/// Make a deep copy of this offspring generator.
 	virtual offspringGenerator * clone() const
 	{
 		return new offspringGenerator(*this);
@@ -151,12 +148,14 @@ public:
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);
 
+	/// CPPONLY
 	virtual void finalize(const population & pop)
 	{
 		m_initialized = false;
 	}
 
 
+	/// CPPONLY
 	bool initialized()
 	{
 		return m_initialized;
@@ -187,10 +186,10 @@ protected:
 	/// number of offspring
 	floatListFunc m_numOffspring;
 
-	///
+	/// paramter to determine offspring sex
 	floatList m_sexMode;
 
-	// number of parents needed
+	/// number of parents needed
 	int m_numParents;
 
 	/// default transmitter
@@ -203,33 +202,45 @@ protected:
 	bool m_initialized;
 };
 
-/** The offspring generation is conceptually populated in two steps.
-   At the first step, only families with disease alleles are accepted
-   until the expected number of disease alleles are met. At the second
-   step, only families with wide type alleles are accepted to populate
-   the rest of the offspring generation.
+
+/** This offspring generator populates an offspring population and controls
+ *  allele frequencies at specified loci. At each generation, expected allele
+ *  frequencies at these loci are passed from a user defined allele frequency
+ *  \e trajectory function. The offspring population is populated in two steps.
+ *  At the first step, only families with disease alleles are accepted until
+ *  until the expected number of disease alleles are met. At the second step,
+ *  only families with wide type alleles are accepted to populate the rest of
+ *  the offspring generation. This method is described in detail in
+ *  "Peng et al, (2007) <em>Forward-time simulations of populations with
+ *  complex human diseases</em>, PLoS Genetics".
  */
 class controlledOffspringGenerator : public offspringGenerator
 {
 public:
-	/**
-	   \param loci loci at which allele frequencies are monitored (controlled)
-	   \param alleles alleles at given loci. It should have the same length as \c loci
-	   \param freqFunc a Python function that accepts a generation number and returns
-	    expected allele frequencies at given loci
-	   \param acceptScheme internal use only
+	/** Create an offspring generator that selects offspring so that allele
+	 *  frequency at specified loci in the offspring generation reaches specified
+	 *  allele frequency. At the beginning of each generation, expected allele
+	 *  frequency of \e alleles at \e loci is returned from a user-defined
+	 *  trajectory function \e freqFunc. If there are multiple subpopulations,
+	 *  \e freqFunc can return a list of allele frequencies for each subpopulation,
+	 *  or a list of allele frequencies in the whole population. In the latter
+	 *  case, overall expected number of alleles are scattered to each
+	 *  subpopulation in proportion to existing number of alleles in each
+	 *  subpopulation, using a multi-nomial distribution.\n
+	 *
+	 *  After the expected alleles are calculated, this offspring generator
+	 *  accept and reject families according to their genotype at \e loci until
+	 *  allele frequecies reach their expected values. The rest of the
+	 *  offspring generation is then filled with families without only wild
+	 *  type alleles at these \e loci.\n
+	 *
+	 *  This offspring generator is derived from class \e offspringGenerator.
+	 *  Please refer to class \e offspringGenerator for a detailed description
+	 *  of parameters \e ops, \e numParents, \e numOffspring and \e sexMode.
 	 */
-	controlledOffspringGenerator(
-		vectori loci,
-		vectori alleles,
-		PyObject * freqFunc,
-		//
-		const vectorop & ops = vectorop(),
-		UINT numParents = 0,
-		//
-		const floatListFunc & numOffspring = 1.,
-		//
-		const floatList & sexMode = RandomSex);
+	controlledOffspringGenerator(const vectori & loci, const vectori & alleles,
+		PyObject * freqFunc, const vectorop & ops = vectorop(), UINT numParents = 0,
+		const floatListFunc & numOffspring = 1, const floatList & sexMode = RandomSex);
 
 
 	/// CPPONLY
@@ -243,6 +254,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
 
 	/// CPPONLY
@@ -251,9 +263,7 @@ public:
 		RawIndIterator & offEnd,
 		vector<baseOperator *> & ops);
 
-	//
-	//
-	/// deep copy of a controlled random mating scheme
+	/// Deep copy of a controlled random mating scheme
 	virtual offspringGenerator * clone() const
 	{
 		return new controlledOffspringGenerator(*this);
@@ -263,7 +273,6 @@ public:
 private:
 	void getExpectedAlleles(const population & pop, vectorf & expFreq);
 
-private:
 	/// locus at which mating is controlled.
 	vectori m_loci;
 	//

@@ -653,11 +653,17 @@ Details:
 
 Details:
 
-    The offspring generation is conceptually populated in two steps.
-    At the first step, only families with disease alleles are accepted
-    until the expected number of disease alleles are met. At the
-    second step, only families with wide type alleles are accepted to
-    populate the rest of the offspring generation.
+    This offspring generator populates an offspring population and
+    controls allele frequencies at specified loci. At each generation,
+    expected allele frequencies at these loci are passed from a user
+    defined allele frequency trajectory function. The offspring
+    population is populated in two steps. At the first step, only
+    families with disease alleles are accepted until until the
+    expected number of disease alleles are met. At the second step,
+    only families with wide type alleles are accepted to populate the
+    rest of the offspring generation. This method is described in
+    detail in \"Peng et al, (2007) Forward-time simulations of
+    populations with complex human diseases, PLoS Genetics\".
 
 "; 
 
@@ -666,20 +672,30 @@ Details:
 Usage:
 
     controlledOffspringGenerator(loci, alleles, freqFunc, ops=[],
-      numParents=0, numOffspring=1., numOffspringFunc=None,
-      numOffspringParam=None, mode=MATE_NumOffspring, sexParam=0.5,
-      sexMode=MATE_RandomSex)
+      numParents=0, numOffspring=1, sexMode=RandomSex)
 
-Arguments:
+Details:
 
-    loci:           loci at which allele frequencies are monitored
-                    (controlled)
-    alleles:        alleles at given loci. It should have the same
-                    length as loci
-    freqFunc:       a Python function that accepts a generation number
-                    and returns expected allele frequencies at given
-                    loci
-    acceptScheme:   internal use only
+    Create an offspring generator that selects offspring so that
+    allele frequency at specified loci in the offspring generation
+    reaches specified allele frequency. At the beginning of each
+    generation, expected allele frequency of alleles at loci is
+    returned from a user-defined trajectory function freqFunc. If
+    there are multiple subpopulations, freqFunc can return a list of
+    allele frequencies for each subpopulation, or a list of allele
+    frequencies in the whole population. In the latter case, overall
+    expected number of alleles are scattered to each subpopulation in
+    proportion to existing number of alleles in each subpopulation,
+    using a multi-nomial distribution.
+    After the expected alleles are calculated, this offspring
+    generator accept and reject families according to their genotype
+    at loci until allele frequecies reach their expected values. The
+    rest of the offspring generation is then filled with families
+    without only wild type alleles at these loci.
+    This offspring generator is derived from class offspringGenerator.
+    Please refer to class offspringGenerator for a detailed
+    description of parameters ops, numParents, numOffspring and
+    sexMode.
 
 "; 
 
@@ -705,7 +721,7 @@ Usage:
 
 Description:
 
-    deep copy of a controlled random mating scheme
+    Deep copy of a controlled random mating scheme.
 
 Usage:
 
@@ -884,6 +900,70 @@ Usage:
 %ignore simuPOP::Expression::valueAsStrDict();
 
 %ignore simuPOP::Expression::valueAsIntDict();
+
+%feature("docstring") simuPOP::floatList "
+
+"; 
+
+%feature("docstring") simuPOP::floatList::floatList "
+
+Usage:
+
+    floatList(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::floatList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::floatList::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::floatList::elems "
+
+Usage:
+
+    x.elems()
+
+"; 
+
+%feature("docstring") simuPOP::floatListFunc "
+
+"; 
+
+%feature("docstring") simuPOP::floatListFunc::floatListFunc "
+
+Usage:
+
+    floatListFunc(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::floatListFunc::~floatListFunc "
+
+Usage:
+
+    x.~floatListFunc()
+
+"; 
+
+%feature("docstring") simuPOP::floatListFunc::func "
+
+Usage:
+
+    x.func()
+
+"; 
 
 %ignore simuPOP::GenoStructure;
 
@@ -1714,7 +1794,7 @@ Description:
 
 Usage:
 
-    heteroMating(matingSchemes, subPopSize=[],
+    heteroMating(matingSchemes, subPopSize=uintListFunc,
       shuffleOffspring=True, subPop=[], weight=0)
 
 Details:
@@ -4685,35 +4765,12 @@ Usage:
 
 %feature("docstring") simuPOP::offspringGenerator "
 
-Applicability: all ploidy
-
 Details:
 
-    Offspring generators generate offspring from given parents.
-    Generators differ from each other by how and how many offspring is
-    generated at each mating event. Parameters mode, numOffspring,
-    numOffspringParam and numOffspringFunc are used to specify how
-    many offspring will be produced at each mating event. mode can be
-    one of
-    *  MATE_NumOffspring: a fixed number of offspring will be produced
-    at all mating events .
-    *  MATE_PyNumOffspring: A python function, specified by parameter
-    numOffspringFunc, is called at each mating event to determine the
-    number of offspring to produce.
-    *  MATE_GeometricDistribution: a Geometric distribution with
-    parameter numOffspring is used to determine the number of
-    offspring of each family.
-    *  MATE_PoissonDistribution: a Poisson distribution with parameter
-    numOffspring is used to determine the number of offspring of each
-    family.
-    *  MATE_BinomialDistribution: a Binomial distribution with
-    parameter numOffspring is used to determine the number of
-    offspring of each family.
-    *  MATE_UniformDistribution: a Uniform [a, b] distribution with
-    parameter numOffspring (a) and numOffspringParam (b) is used to
-    determine the number of offspring of each family. This is the base
-    class of all offspring generators, and should not be used
-    directly.
+    An offspring generator generates offspring from parents chosen by
+    a parent chooser. It is responsible for creating a certain number
+    of offspring, determinning their sex, and transmitting genotypes
+    from parents to offspring.
 
 "; 
 
@@ -4721,44 +4778,54 @@ Details:
 
 Usage:
 
-    offspringGenerator(ops, numParents=0, numOffspring=1.,
-      numOffspringFunc=None, numOffspringParam=1,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
+    offspringGenerator(ops, numParents=0, numOffspring=1,
+      sexMode=RandomSex)
 
-Arguments:
+Details:
 
-    numOffspring:   Depending on , this paramter can be the number of
-                    offspring to produce, or a paremter of a random
-                    distribution.
-    numOffspringFunc:a Python function that returns the number of
-                    offspring at each mating event. The setting of
-                    this parameter implies =MATE_PyNumOffspring.
-    numOffspringParam:used when numOffspring is generated from a
-                    binomial or random distribution.
-    mode:           can be one of MATE_NumOffspring,
-                    MATE_PyNumOffspring, MATE_GeometricDistribution,
-                    MATE_PoissonDistribution,
-                    MATE_BinomialDistribution, or
-                    MATE_UniformDistribution.
-    sexParam:       parameter that controls the sex distribution among
-                    offspring. Its exact meaning is determined by
-                    parameter sexMode. Default to 0.5.
-    sexMode:        can be one of
-                    * MATE_RandomSex Set sex to Male or Female with
-                    probability 0.5. Parameter sexParam is ignored in
-                    this case. This is the default mode.
-                    * MATE_ProbOfMale Set an offspring to Male with
-                    probability sexParam (default to 0.5)
-                    * MATE_NumOfMale Set sexParam offspring to Male
-                    * MATE_NumOfFemale Set sexParam offspring to
-                    Female. If there are sex chromosomes, sex is
-                    determined by sex chromosomes when sexMode id
-                    MATE_RandomSex. Otherwise, some offspring will be
-                    rejected so that offspring sex match what is
-                    specified in other modes.
-    transmitter:    is an during mating operator, that will be used if
-                    no during mating operator is used to produce
-                    offspring.
+    Create a basic offspring generator. This offspring generator uses
+    ops genotype transmitters to transmit genotypes from parents to
+    offspring. It expects numParents from an upstream parents chooser
+    and raises an RuntimeError if incorrect number of parents are
+    passed. If both one and two parents can be handled, 0 should be
+    specified for this parameter.
+    A number of genotype transmitters can be used to transmit genotype
+    from parents to offspring. Additional during-mating operators can
+    be passed from the evolve() function of a simulator, but the ops
+    operators will be applied before them. An exception is that if one
+    of the passed operators is set to form offspring genotype (a flag
+    setOffGenotype), operators in ops with the same flag will not be
+    applied. For example, a recombinator will override a
+    mendelianGenoTransmitter used in randomMating if it is used in the
+    ops parameter of the evolve function.
+    A number of derived offspring generators are available with a
+    default transmitter. For example, a mendelianOffspringGenerator
+    uses a mendelianGenoTransmitter to transmit genotypes.
+    Parameter numOffspring is used to control the number of offspring
+    per mating event, or in another word the number of offspring in
+    each family. It can be a number, a function, or a mode parameter
+    followed by some optional arguments. If a number is given, given
+    number of offspring will be generated at each mating event. If a
+    Python function is given, it will be called each time when a
+    mating event happens. Current generation number will be passed to
+    this function, and its return value will be considered the number
+    of offspring. In the last case, a tuple (or a list) in one of the
+    following forms: (GeometricDistribution, p), (PoissonDistribution,
+    p), (BinomialDistribution, p, N), or (UniformDistribution, a, b)
+    can be given. The number of offspring will be determined randomly
+    following these statistical distributions. Please refer to the
+    simuPOP user's guide for a detailed description of these
+    distribution and their parameters.
+    Parameter sexMode is used to control the sex of each offspring.
+    Its default value is usually RandomSex which assign Male or Female
+    to each individual randomly, with equal probabilities. If NoSex is
+    given, all individuals will be Male. sexMode can also be one of
+    (ProbOfMale, p), (NumOfMale, n), and (NumOfFemale, n). The first
+    case specifies the probability of male for each offspring. The
+    next two cases specifies the number of male or female individuals
+    in each family, respectively. If n is greater than or equal to the
+    number of offspring in this family, all offspring in this family
+    will be Male or Female.
 
 "; 
 
@@ -4774,6 +4841,10 @@ Usage:
 
 %feature("docstring") simuPOP::offspringGenerator::clone "
 
+Description:
+
+    Make a deep copy of this offspring generator.
+
 Usage:
 
     x.clone()
@@ -4784,21 +4855,9 @@ Usage:
 
 %ignore simuPOP::offspringGenerator::generateOffspring(population &pop, individual *dad, individual *mom, RawIndIterator &offBegin, RawIndIterator &offEnd, vector< baseOperator * > &ops);
 
-%feature("docstring") simuPOP::offspringGenerator::finalize "
+%ignore simuPOP::offspringGenerator::finalize(const population &pop);
 
-Usage:
-
-    x.finalize(pop)
-
-"; 
-
-%feature("docstring") simuPOP::offspringGenerator::initialized "
-
-Usage:
-
-    x.initialized()
-
-"; 
+%ignore simuPOP::offspringGenerator::initialized();
 
 %ignore simuPOP::offspringGenerator::numOffspring(int gen);
 
@@ -7135,7 +7194,8 @@ Description:
 
 Usage:
 
-    pyMating(chooser, generator, subPopSize=[], subPop=[], weight=0)
+    pyMating(chooser, generator, subPopSize=uintListFunc, subPop=[],
+      weight=0)
 
 Arguments:
 
