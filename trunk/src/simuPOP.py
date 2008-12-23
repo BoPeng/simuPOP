@@ -322,7 +322,6 @@ def selfingOffspringGenerator(ops=[], *args, **kwargs):
 def cloneMating(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, 
 		subPop = (), weight = 0):
     '''
     Note that
@@ -339,7 +338,6 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
         generator = cloneOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -347,7 +345,7 @@ def cloneMating(numOffspring = 1., numOffspringFunc = None,
 def binomialSelection(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, subPop = (), weight = 0):
+		subPop = (), weight = 0):
     '''a mating scheme that uses binomial selection, regardless of sex
    No sex information is involved (binomial random selection). Offspring is chosen from parental generation
    by random or according to the fitness values.
@@ -362,7 +360,6 @@ def binomialSelection(numOffspring = 1., numOffspringFunc = None,
         generator = cloneOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -370,7 +367,6 @@ def binomialSelection(numOffspring = 1., numOffspringFunc = None,
 def randomMating(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, 
 		subPop = (), weight = 0):
     '''
     A mating scheme of basic sexually random mating
@@ -387,7 +383,6 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
         generator = mendelianOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -395,7 +390,6 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
 def monogamousMating(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, 
 		subPop = (), weight = 0):
     '''
    This mating scheme is identical to random mating except that parents
@@ -409,7 +403,6 @@ def monogamousMating(numOffspring = 1., numOffspringFunc = None,
         generator = mendelianOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -418,7 +411,6 @@ def polygamousMating(polySex=Male, polyNum=1, replacement =False,
         numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, 
 		subPop = (), weight = 0):
     '''
    This mating scheme is composed of a random parents chooser that allows for
@@ -432,7 +424,6 @@ def polygamousMating(polySex=Male, polyNum=1, replacement =False,
         generator = mendelianOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -441,7 +432,6 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaField='',
         numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, 
 		subPop = (), weight = 0):
     '''
      Only a number of alpha individuals can mate with individuals of opposite sex.
@@ -475,7 +465,6 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaField='',
         generator = mendelianOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -483,7 +472,7 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaField='',
 def haplodiploidMating(replacement=True,
 		numOffspring = 1., numOffspringFunc = None, numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, subPop = (), weight = 0):
+		subPop = (), weight = 0):
     '''
     This mating scheme is composed of an alphaParentsChooser and a
     haplodiploidOffspringGenerator. The alphaParentChooser chooses a single
@@ -498,7 +487,6 @@ def haplodiploidMating(replacement=True,
         generator = haplodiploidOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -506,7 +494,7 @@ def haplodiploidMating(replacement=True,
 def selfMating(replacement=True, numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, subPop = (), weight = 0):
+		subPop = (), weight = 0):
     '''
     In this mating scheme, a parent is choosen randomly, acts
     both as father and mother in the usual random mating. The parent
@@ -519,7 +507,6 @@ def selfMating(replacement=True, numOffspring = 1., numOffspringFunc = None,
         generator = selfingOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 
@@ -528,7 +515,7 @@ def consanguineousMating(relativeFields = [], func = None, param = None,
         replacement = False, numOffspring = 1., numOffspringFunc = None,
         numOffspringParam = 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, subPop = (), weight = 0):
+		subPop = (), weight = 0):
     '''
    This mating scheme randomly choose a parent and then choose his/her spouse from indexes
    stored in \c infoFields.
@@ -553,8 +540,7 @@ def consanguineousMating(relativeFields = [], func = None, param = None,
         chooser = infoParentsChooser(relativeFields, func, param, replacement),
         generator = mendelianOffspringGenerator(ops, numOffspring, numOffspringFunc,
             numOffspringParam, mode, sexParam, sexMode),
-        subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc, subPop = subPop,
+        subPopSize = subPopSize, subPop = subPop,
         weight = weight)
 
 
@@ -562,7 +548,7 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
         numOffspring = 1., numOffspringFunc = None,
         numOffspringParam = 1, mode = MATE_NumOffspring,
 		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-		subPopSizeFunc = None, subPop = (), weight = 0):
+		subPop = (), weight = 0):
     '''
     This is the controlled random mating scheme described in
     *Peng 2007 (PLoS Genetics)*. Basically, a *freqFunc*
@@ -587,7 +573,6 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
             numOffspringFunc, numOffspringParam, mode,
             sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 

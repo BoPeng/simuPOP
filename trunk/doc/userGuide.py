@@ -645,7 +645,7 @@ def demo(gen, oldSize=[]):
 
 simu = simulator(
     population(size=[500, 1000], infoFields=['migrate_to']),
-    randomMating(subPopSizeFunc=demo))
+    randomMating(subPopSize=demo))
 simu.evolve(
     preOps = [initSex()],
     ops = [
@@ -662,7 +662,7 @@ simu.evolve(
 def randomMating(numOffspring = 1., numOffspringFunc = None,
         numOffspringParam= 1, mode = MATE_NumOffspring, sexParam = 0.5,
         sexMode = MATE_RandomSex, ops = [], subPopSize = [],
-        subPopSizeFunc = None, subPop = (), weight = 0):
+        subPop = (), weight = 0):
     'A basic sexually random mating scheme.'
     return pyMating(
         chooser = randomParentsChooser(replacement=True),
@@ -670,7 +670,6 @@ def randomMating(numOffspring = 1., numOffspringFunc = None,
             ops, numOffspring, numOffspringFunc, numOffspringParam, mode,
             sexParam, sexMode),
         subPopSize = subPopSize,
-        subPopSizeFunc = subPopSizeFunc,
         subPop = subPop,
         weight = weight)
 #end
@@ -1369,7 +1368,7 @@ pop = population(size=500)
 # the new popsize relies on a variable newSPSize
 # which is calculated from subPopSize bu newSize operator
 simu = simulator(pop,
-    randomMating(subPopSizeFunc=changeSPSize) )
+    randomMating(subPopSize=changeSPSize) )
 
 # evolve!
 simu.evolve(

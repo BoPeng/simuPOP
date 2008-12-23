@@ -40,6 +40,7 @@
  * StreamProvider
  * RNG
  * BernulliTrials
+ * parameter polymorphism
  */
 
 extern "C" {
@@ -1381,6 +1382,132 @@ bool isGzipped(const string & filename);
 
 /// file extension, including .gz, CPPONLY
 const string fileExtension(const string & filename);
+
+// ////////////////////////////////////////////////////////////
+// / Parameter polymorphism
+// ////////////////////////////////////////////////////////////
+
+
+/** This class defines an interface using which both a integer number and
+ *  a list of numbers can be accpted.
+ */
+template <typename T>
+class typeList {
+public:
+	typeList(const vector<T> & values = vector<T>()) : m_elems(values)
+	{
+	}
+
+	typeList(T value) : m_elems(1, value)
+	{
+	}
+
+	T & operator[](size_t i)
+	{
+		DBG_FAILIF( i >= size(), IndexError, "Index out of range");
+		return m_elems[i];
+	}
+
+	bool empty()
+	{
+		return m_elems.empty();
+	}
+
+	size_t size()
+	{
+		return m_elems.size();
+	}
+
+	vector<T> & elems()
+	{
+		return m_elems;
+	}
+
+protected:
+	vector<T> m_elems;
+};
+
+
+typedef typeList<int> intList;
+typedef typeList<ULONG> uintList;
+typedef typeList<double> floatList;
+
+/** A class to specify replicate list. The reason why I cannot simple
+ *  use vectori() is that users have got used to use a single number
+ *  to specify a single replicate.
+ */
+class repList : public intList
+{
+public:
+	repList(const vectori & reps = vectori()) : 
+		intList(reps)
+	{
+	}
+
+
+	repList(int rep) : intList(rep)
+	{
+	}
+
+
+	bool match(int rep, UINT numRep)
+	{
+		if (m_elems.empty())
+			return true;
+		vectori::iterator it = m_elems.begin();
+		vectori::iterator it_end = m_elems.end();
+		for (; it != it_end; ++it)
+			// when rep number is negative.
+			// numRep = 5 replicates
+			// *it = -1: last replicate, 5 - 1 = 4
+			// *it = -2: replicate 3.
+			if ((*it >= 0 && *it == rep) || (*it < 0 && *it + static_cast<int>(numRep) == rep))
+				return true;
+		return false;
+	}
+};
+
+
+class uintListFunc : public uintList
+{
+public:
+	uintListFunc(const vectorlu & values = vectorlu()) : uintList(values), m_func(NULL)
+	{
+	}
+
+	uintListFunc(ULONG value) : uintList(value), m_func(NULL)
+	{
+	}
+
+	uintListFunc(PyObject * func) : uintList(), m_func(func)
+	{
+		DBG_ASSERT(PyCallable_Check(m_func), ValueError,
+			"Passed parameter should be a Python function");
+		Py_XINCREF(m_func);
+	}
+	
+	~uintListFunc()
+	{
+		if (m_func)
+			Py_DECREF(m_func);
+	}
+
+	uintListFunc(const uintListFunc & rhs) :
+		uintList(rhs),
+		m_func(rhs.m_func)
+	{
+		if (m_func)
+			Py_INCREF(m_func);
+	}
+
+	PyObject * func()
+	{
+		return m_func;
+	}
+
+private:
+	PyObject * m_func;
+};
 
 }
 #endif

@@ -233,13 +233,15 @@ namespace std
 //
 %include "simuPOP_doc.i"
 
+%implicitconv repList;
+%implicitconv uintListFunc;
+
 %include "utility.h"
 %include "misc.h"
 %include "genoStru.h"
 %include "individual.h"
 
 %implicitconv vspID;
-%implicitconv repList;
 
 namespace std
 {

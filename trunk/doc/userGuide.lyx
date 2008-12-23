@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -5302,7 +5302,7 @@ A simuPOP mating scheme, by default, produces an offspring generation that
 \end_layout
 
 \begin_layout Itemize
-If fixed subpopulation sizes are given through parameter 
+If fixed subpopulation sizes are given to parameter 
 \family typewriter
 subPopSize
 \family default
@@ -5312,14 +5312,14 @@ subPopSize
 \end_layout
 
 \begin_layout Itemize
-A demographic function can be specified through parameter 
+A demographic function can be specified to parameter 
 \family typewriter
-subPopSizeFunc
+subPopSize
 \family default
 .
- To use this parameter, you need to define a Python function that takes
- two parameters: the generation number and the current subpopulation sizes,
- and return an array of new subpopulation sizes (return 
+ This function should take two parameters: the generation number and the
+ current subpopulation sizes, and return an array of new subpopulation sizes
+ (return 
 \family typewriter
 [newsize]
 \family default

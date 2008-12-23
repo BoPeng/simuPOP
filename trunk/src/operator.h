@@ -49,45 +49,6 @@ using std::string;
 
 namespace simuPOP {
 
-/** A class to specify replicate list. The reason why I cannot simple
- *  use vectori() is that users have got used to use a single number
- *  to specify a single replicate.
- */
-class repList
-{
-public:
-	repList(const vectori & reps = vectori()) : m_reps(reps)
-	{
-	}
-
-
-	repList(int rep) : m_reps(1, rep)
-	{
-	}
-
-
-	bool match(int rep, UINT numRep)
-	{
-		if (m_reps.empty())
-			return true;
-		vectori::iterator it = m_reps.begin();
-		vectori::iterator it_end = m_reps.end();
-		for (; it != it_end; ++it)
-			// when rep number is negative.
-			// numRep = 5 replicates
-			// *it = -1: last replicate, 5 - 1 = 4
-			// *it = -2: replicate 3.
-			if ((*it >= 0 && *it == rep) || (*it < 0 && *it + static_cast<int>(numRep) == rep))
-				return true;
-		return false;
-	}
-
-
-private:
-	vectori m_reps;
-};
-
-
 /** A class to specify (virtual) subpopulation list. Using a dedicated class
  *  allows users to specify a single subpopulation, or a list of (virutal)
  *  subpoulations easily.
