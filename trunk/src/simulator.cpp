@@ -551,15 +551,28 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 }
 
 
+int simulator::__cmp__(const simulator & rhs) const
+{
+    if (numRep() != rhs.numRep())
+        return 1;
+
+    for (size_t i = 0; i < numRep(); ++i)
+        if (pop(i).__cmp__(rhs.pop(i)) != 0)
+            return 1;
+
+    return 0;
+}
+
+
 void simulator::save(string filename) const
 {
 	boost::iostreams::filtering_ostream ofs;
 
 	ofs.push(boost::iostreams::gzip_compressor());
-	ofs.push(boost::iostreams::file_sink(filename));
+	ofs.push(boost::iostreams::file_sink(filename, std::ios::binary));
 
 	if (!ofs)
-		throw ValueError("Can not open file " + filename);
+		throw RuntimeError("Can not open file " + filename);
 
 	boost::archive::text_oarchive oa(ofs);
 	oa << *this;
@@ -572,19 +585,18 @@ void simulator::load(string filename)
 
 	if (isGzipped(filename))
 		ifs.push(boost::iostreams::gzip_decompressor());
-	ifs.push(boost::iostreams::file_source(filename));
+	ifs.push(boost::iostreams::file_source(filename, std::ios::binary));
 
 	// do not need to test again
 	if (!ifs)
-		throw ValueError("Can not open file " + filename);
+		throw RuntimeError("Can not open file " + filename);
 
 	try {
 		boost::archive::text_iarchive ia(ifs);
 		ia >> *this;
 	} catch (...) {
-		throw ValueError("Failed to load simulator. Your file may be corrupted, "
-			             "or being a copy of non-transferrable file (.bin)");
-	}                                                                                               // try bin
+		throw RuntimeError("Failed to load simulator. Your file may be corrupted.");
+	}
 }
 
 
@@ -593,12 +605,7 @@ simulator & LoadSimulator(const string & file, mating & matingScheme)
 	population p;
 	simulator * a = new simulator(p, matingScheme);
 
-#ifndef _NO_SERIALIZATION_
 	a->load(file);
-	return *a;
-#else
-	cout << "This feature is not supported in this platform" << endl;
-#endif
 	return *a;
 }
 

@@ -294,6 +294,10 @@ public:
 		return m_ptrRep[rep]->vars(subPop);
 	}
 
+    /// a Pyton function used to compare the simulator objects
+    /// Note that mating schemes are not tested.
+    int __cmp__(const simulator & rhs) const;
+
 	/** Save a simulator to file \c filename, which can be loaded by a global
 	 *  function \c LoadSimulator.
 	 *  <group>0-stru</group>
@@ -321,6 +325,9 @@ private:
 		ar & l_gen;
 		ar & m_numRep;
 
+        DBG_DO(DBG_SIMULATOR, cout << "Saving a simulator with "
+            << m_numRep << " populations." << endl);
+
 		// ignore scratch population
 		for (UINT i = 0; i < m_numRep; i++)
 			ar & (*m_ptrRep[i]);
@@ -334,6 +341,9 @@ private:
 		ar & l_gen;
 
 		ar & m_numRep;
+
+        DBG_DO(DBG_SIMULATOR, cout << "Loading a simulator with "
+            << m_numRep << " populations." << endl);
 
 		m_ptrRep = vector<population *>(m_numRep);
 
