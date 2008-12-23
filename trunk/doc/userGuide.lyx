@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -5226,7 +5226,7 @@ end
 \end_layout
 
 \begin_layout Section
-Mating Scheme
+Mating Schemes
 \begin_inset Index
 status collapsed
 
@@ -5279,8 +5279,10 @@ A
 \end_layout
 
 \begin_layout Standard
-Before we dive into the details of each type of mating scheme, let us first
- explore some features of the standard mating schemes.
+This section describes some standard features of mating schemes and most
+ pre-defined mating schemes.
+ The next section will demonstrate how to build complex nonramdom mating
+ schemes from scratch.
 \end_layout
 
 \begin_layout Subsection
@@ -5398,7 +5400,7 @@ lstparams "caption={Force constant subpopulation sizes},label={migrFixedSize}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sexMode"
+reference "monogamous"
 
 \end_inset
 
@@ -5773,6 +5775,435 @@ lstparams "caption={Determine the sex of offspring},label={sexMode}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Monogamous mating
+\end_layout
+
+\begin_layout Standard
+Monogamous mating (monogamy) in simuPOP refers to mating schemes in which
+ each parent mates only once.
+ In an asexual setting, this implies parents are chosen without replacement.
+ In sexual mating schemes, this means that parents are chosen without replacemen
+t, they have only one spouse during their life time so that all siblings
+ have the same parents (no half-sibling).
+\end_layout
+
+\begin_layout Standard
+simuPOP provides a diploid sexual momogamous mating scheme 
+\family typewriter
+monogamousMating
+\family default
+.
+ However, without careful planning, this mating scheme can easily stop working
+ due to the lack of parents.
+ For example, if a population has 40 males and 55 females, only 40 successful
+ mating events can happen and result in 40 offspring in the offspring generation.
+ 
+\family typewriter
+monogamousMating
+\family default
+ will exit if the offspsring genertion is larger than 40.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "monogamous"
+
+\end_inset
+
+ demonstrates one senario of using a monogamous mating scheme where sex
+ of parents and offspring are strictly specified so that parents will not
+ be exhausted.
+ The sex initializer 
+\family typewriter
+initSex
+\family default
+ assign exactly 10 males and 10 females to the initial population.
+ Because of the use of 
+\family typewriter
+numOffspring=2, sexMode=(NumOfMale, 1)
+\family default
+, each mating event will produce two offspring with one male and one female.
+ Unlike a random mating scheme that only about 80% of parents are involved
+ in the production of an offspring population with the same size, this mating
+ scheme makes use of all parents.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/monogamous.log"
+lstparams "caption={Sexual monogamous mating},label={monogamous}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Polygamous mating
+\end_layout
+
+\begin_layout Subsection
+Asexual random mating
+\end_layout
+
+\begin_layout Subsection
+Mating with alpha individuals
+\end_layout
+
+\begin_layout Subsection
+Mating in haplodiploid populations
+\end_layout
+
+\begin_layout Subsection
+Selfing
+\end_layout
+
+\begin_layout Subsection
+Heterogeneous mating schemes
+\end_layout
+
+\begin_layout Standard
+Non-random mating can also be introduced by mating individuals from different
+ groups differently.
+ Different subpopulations, or different virtual subpopulations, can have
+ varying fecundity, represented by different numbers of offspring generated
+ per mating event.
+ For example, it is possible that only adults (may be defined by age > 30
+ and age < 50) in a subpopulation can produce offspring, where other individual
+ will either be copied to the offspring generation or die.
+ It is also quite common in plant genetics that a certain portion of trees
+ go through selfing, while others go through random mating.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+heteroMating
+\family default
+ mating scheme accepts a list of mating schemes that works separately on
+ different subpopulation, or virtual subpopulations.
+ In this way, many homogenous mating schemes can be applied to different
+ (virtual) subpopulations.
+ This is illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:heterogenous-mating"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:heterogenous-mating"
+
+\end_inset
+
+Illustration of a heteogeneous mating scheme
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename MatingScheme.eps
+	lyxscale 30
+	width 6in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+A heterogeneous mating scheme that applies homogenous mating schemes MS0,
+ MS0.0, MS0.1, MS1, MS2.0 and MS2.1 to subpopulation 0, the first and second
+ virtual subpopulation in subpopulation 0, subpopulation 1, the first and
+ second virtual subpopulation in subpopulation 2, respectively.
+ Note that VSP 0 and 1 in subpopulation 0 overlap, and do not add up to
+ subpopulation 0.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+heteroMating([randomMating(numOffspring=2, subPop=0),
+\end_layout
+
+\begin_layout Plain Layout
+
+    randomMating(numOffspring=4, subPop=1)])
+\end_layout
+
+\end_inset
+
+define a heterogeneous mating scheme that mating events in subpopulation
+ 0 produces two offspring, while producing four in subpopulation 1.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]), 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+heteroMating([selfMating(numOffspring=2, subPop=0, virtualSubPop=0),
+\end_layout
+
+\begin_layout Plain Layout
+
+    randomMating(subPop=0, virtualSubPop=1)],
+\end_layout
+
+\begin_layout Plain Layout
+
+    shuffleOffspring=True
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\end_inset
+
+allows different mating schems in one subpopulation.
+ In this example, the first subpopulation is splitted into two virtual subpopula
+tions by proportion.
+ Then, a selfing mating scheme is applied to the first virtual subpopulation,
+ and a random mating scheme is applied to the second.
+ In case that there are more than one mating schemes working on the same
+ subpopulation, offspring are shuffled randomly by default, unless this
+ is turned off by 
+\family typewriter
+shuffleOffspring=False
+\family default
+.
+ Randomization of the order of offspring is usually desired because otherwise,
+ taking this example, the first 20% of individuals will always go through
+ selfing, and the rest will always go through random mating.
+ When offspring are shuffled, each individual will have probability 0.2 to
+ be selfing, and probability 0.8 to mate randomly.
+\end_layout
+
+\begin_layout Standard
+simuPOP determines if a mating scheme will be applied to a particular subpopulat
+ion using the following rules
+\end_layout
+
+\begin_layout Itemize
+If neither 
+\family typewriter
+subPop
+\family default
+, nor 
+\family typewriter
+virtualSubPop
+\family default
+ is specified, the mating scheme is applied to all subpoulations (as a whole,
+ not any virtual subpopulation).
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPop
+\family default
+, but not 
+\family typewriter
+virtualSubPop
+\family default
+ is specified, the mating scheme is applied to the specified subpopulation
+ (as a whole).
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPop
+\family default
+ and 
+\family typewriter
+virtualSubPop
+\family default
+ are both specified, the mating scheme is applied to the specified virtual
+ subpopulation.
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPop
+\family default
+ is not specified, but
+\family typewriter
+ virtualSubPop
+\family default
+ is, the mating scheme is applied to spcified virtual subpopulation of all
+ subpopulations.
+ Note that simuPOP will report an error if a subpopulation does not define
+ such a virtual subpopulation.
+\end_layout
+
+\begin_layout Standard
+If one mating scheme is specified for each parental subpopulation, offspring
+ subpopulation sizes are determined as usual, through parameters 
+\family typewriter
+newSubPopSize, newSubPopSizeFunc
+\family default
+, etc.
+ However, if multiple mating schemes will be applied to the same subpopulation,
+ they have to share the same offspring subpopulation.
+ This problem is addressed by a weight system.
+ That is to say, each mating scheme can be given a weight using parameter
+ 
+\family typewriter
+weight
+\family default
+.
+ A weight can be positive, zero (default) or negative.
+ The number of offspring each mating scheme will produce is determined by
+ these weights.
+ 
+\end_layout
+
+\begin_layout Standard
+This weighting scheme is best explained by an example.
+ Assuming that there are three mating schemes working on the same parental
+ subpopulation
+\end_layout
+
+\begin_layout Itemize
+Mating scheme A works on the whole subpopulation of size 1000
+\end_layout
+
+\begin_layout Itemize
+Mating scheme B works on a virtual subpopulation of size 500
+\end_layout
+
+\begin_layout Itemize
+Mating scheme C works on another virtual subpopulation of size 800
+\end_layout
+
+\begin_layout Standard
+Assuming the corresponding offspring subpopulation has 
+\begin_inset Formula $N$
+\end_inset
+
+ individuals, 
+\end_layout
+
+\begin_layout Itemize
+If all weights are 0, the offspring subpopulation is divided in proportion
+ to parental (virtual) subpopulation sizes.
+ In this example, the mating schemes will produce 
+\begin_inset Formula $\frac{10}{23}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{5}{23}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{8}{23}N$
+\end_inset
+
+ individuals respectively.
+\end_layout
+
+\begin_layout Itemize
+If all weights are negative, they are multiplied to their parental (virtual)
+ subpopulation sizes to get a fixed size.
+ For example, weight (-1, -2, -0.5) will lead to sizes (1000, 1000, 400)
+ in the offspring subpopulation.
+ If 
+\begin_inset Formula $N\ne2400$
+\end_inset
+
+ in this case, an error will be raised.
+\end_layout
+
+\begin_layout Itemize
+If all weights are positive, the number of offspring produced from each
+ mating scheme is proportional to these weights.
+ For example, weights (1, 2, 3) will lead to 
+\begin_inset Formula $\frac{1}{6}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{2}{6}N$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{1}{3}N$
+\end_inset
+
+ individuals respectively.
+ In this case, 0 weights will produce no offspring.
+\end_layout
+
+\begin_layout Itemize
+If there are mixed positive and negative weights, the negative weights are
+ first processed, and the rest of the individuals are divided using positive
+ weights.
+ For example, three mating schemes with weights (-1, 2, 3) will produce
+ 1000, 
+\begin_inset Formula $\frac{2}{5}\left(N-1000\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\frac{3}{5}\left(N-1000\right)$
+\end_inset
+
+ individuals respectively.
+\end_layout
+
+\begin_layout Section
+Non-random and customized mating schemes
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+This is an advanced topic of simuPOP.
+ New simuPOP users can safely skip this section.
 \end_layout
 
 \begin_layout Subsection
@@ -6587,339 +7018,6 @@ name "sub:Using-C++"
 \emph on
 This is an advanced topic of simuPOP.
  New simuPOP users can safely skip this section.
-\end_layout
-
-\begin_layout Subsection
-Heterogeneous mating schemes
-\end_layout
-
-\begin_layout Standard
-Non-random mating can also be introduced by mating individuals from different
- groups differently.
- Different subpopulations, or different virtual subpopulations, can have
- varying fecundity, represented by different numbers of offspring generated
- per mating event.
- For example, it is possible that only adults (may be defined by age > 30
- and age < 50) in a subpopulation can produce offspring, where other individual
- will either be copied to the offspring generation or die.
- It is also quite common in plant genetics that a certain portion of trees
- go through selfing, while others go through random mating.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-heteroMating
-\family default
- mating scheme accepts a list of mating schemes that works separately on
- different subpopulation, or virtual subpopulations.
- In this way, many homogenous mating schemes can be applied to different
- (virtual) subpopulations.
- This is illustrated in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:heterogenous-mating"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:heterogenous-mating"
-
-\end_inset
-
-Illustration of a heteogeneous mating scheme
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename MatingScheme.eps
-	lyxscale 30
-	width 6in
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-A heterogeneous mating scheme that applies homogenous mating schemes MS0,
- MS0.0, MS0.1, MS1, MS2.0 and MS2.1 to subpopulation 0, the first and second
- virtual subpopulation in subpopulation 0, subpopulation 1, the first and
- second virtual subpopulation in subpopulation 2, respectively.
- Note that VSP 0 and 1 in subpopulation 0 overlap, and do not add up to
- subpopulation 0.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For example,
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-heteroMating([randomMating(numOffspring=2, subPop=0),
-\end_layout
-
-\begin_layout Plain Layout
-
-    randomMating(numOffspring=4, subPop=1)])
-\end_layout
-
-\end_inset
-
-define a heterogeneous mating scheme that mating events in subpopulation
- 0 produces two offspring, while producing four in subpopulation 1.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]), 0)
-\end_layout
-
-\begin_layout Plain Layout
-
-heteroMating([selfMating(numOffspring=2, subPop=0, virtualSubPop=0),
-\end_layout
-
-\begin_layout Plain Layout
-
-    randomMating(subPop=0, virtualSubPop=1)],
-\end_layout
-
-\begin_layout Plain Layout
-
-    shuffleOffspring=True
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\end_inset
-
-allows different mating schems in one subpopulation.
- In this example, the first subpopulation is splitted into two virtual subpopula
-tions by proportion.
- Then, a selfing mating scheme is applied to the first virtual subpopulation,
- and a random mating scheme is applied to the second.
- In case that there are more than one mating schemes working on the same
- subpopulation, offspring are shuffled randomly by default, unless this
- is turned off by 
-\family typewriter
-shuffleOffspring=False
-\family default
-.
- Randomization of the order of offspring is usually desired because otherwise,
- taking this example, the first 20% of individuals will always go through
- selfing, and the rest will always go through random mating.
- When offspring are shuffled, each individual will have probability 0.2 to
- be selfing, and probability 0.8 to mate randomly.
-\end_layout
-
-\begin_layout Standard
-simuPOP determines if a mating scheme will be applied to a particular subpopulat
-ion using the following rules
-\end_layout
-
-\begin_layout Itemize
-If neither 
-\family typewriter
-subPop
-\family default
-, nor 
-\family typewriter
-virtualSubPop
-\family default
- is specified, the mating scheme is applied to all subpoulations (as a whole,
- not any virtual subpopulation).
-\end_layout
-
-\begin_layout Itemize
-If 
-\family typewriter
-subPop
-\family default
-, but not 
-\family typewriter
-virtualSubPop
-\family default
- is specified, the mating scheme is applied to the specified subpopulation
- (as a whole).
-\end_layout
-
-\begin_layout Itemize
-If 
-\family typewriter
-subPop
-\family default
- and 
-\family typewriter
-virtualSubPop
-\family default
- are both specified, the mating scheme is applied to the specified virtual
- subpopulation.
-\end_layout
-
-\begin_layout Itemize
-If 
-\family typewriter
-subPop
-\family default
- is not specified, but
-\family typewriter
- virtualSubPop
-\family default
- is, the mating scheme is applied to spcified virtual subpopulation of all
- subpopulations.
- Note that simuPOP will report an error if a subpopulation does not define
- such a virtual subpopulation.
-\end_layout
-
-\begin_layout Standard
-If one mating scheme is specified for each parental subpopulation, offspring
- subpopulation sizes are determined as usual, through parameters 
-\family typewriter
-newSubPopSize, newSubPopSizeFunc
-\family default
-, etc.
- However, if multiple mating schemes will be applied to the same subpopulation,
- they have to share the same offspring subpopulation.
- This problem is addressed by a weight system.
- That is to say, each mating scheme can be given a weight using parameter
- 
-\family typewriter
-weight
-\family default
-.
- A weight can be positive, zero (default) or negative.
- The number of offspring each mating scheme will produce is determined by
- these weights.
- 
-\end_layout
-
-\begin_layout Standard
-This weighting scheme is best explained by an example.
- Assuming that there are three mating schemes working on the same parental
- subpopulation
-\end_layout
-
-\begin_layout Itemize
-Mating scheme A works on the whole subpopulation of size 1000
-\end_layout
-
-\begin_layout Itemize
-Mating scheme B works on a virtual subpopulation of size 500
-\end_layout
-
-\begin_layout Itemize
-Mating scheme C works on another virtual subpopulation of size 800
-\end_layout
-
-\begin_layout Standard
-Assuming the corresponding offspring subpopulation has 
-\begin_inset Formula $N$
-\end_inset
-
- individuals, 
-\end_layout
-
-\begin_layout Itemize
-If all weights are 0, the offspring subpopulation is divided in proportion
- to parental (virtual) subpopulation sizes.
- In this example, the mating schemes will produce 
-\begin_inset Formula $\frac{10}{23}N$
-\end_inset
-
-, 
-\begin_inset Formula $\frac{5}{23}N$
-\end_inset
-
-, 
-\begin_inset Formula $\frac{8}{23}N$
-\end_inset
-
- individuals respectively.
-\end_layout
-
-\begin_layout Itemize
-If all weights are negative, they are multiplied to their parental (virtual)
- subpopulation sizes to get a fixed size.
- For example, weight (-1, -2, -0.5) will lead to sizes (1000, 1000, 400)
- in the offspring subpopulation.
- If 
-\begin_inset Formula $N\ne2400$
-\end_inset
-
- in this case, an error will be raised.
-\end_layout
-
-\begin_layout Itemize
-If all weights are positive, the number of offspring produced from each
- mating scheme is proportional to these weights.
- For example, weights (1, 2, 3) will lead to 
-\begin_inset Formula $\frac{1}{6}N$
-\end_inset
-
-, 
-\begin_inset Formula $\frac{2}{6}N$
-\end_inset
-
-, 
-\begin_inset Formula $\frac{1}{3}N$
-\end_inset
-
- individuals respectively.
- In this case, 0 weights will produce no offspring.
-\end_layout
-
-\begin_layout Itemize
-If there are mixed positive and negative weights, the negative weights are
- first processed, and the rest of the individuals are divided using positive
- weights.
- For example, three mating schemes with weights (-1, 2, 3) will produce
- 1000, 
-\begin_inset Formula $\frac{2}{5}\left(N-1000\right)$
-\end_inset
-
-, 
-\begin_inset Formula $\frac{3}{5}\left(N-1000\right)$
-\end_inset
-
- individuals respectively.
 \end_layout
 
 \begin_layout Subsection
