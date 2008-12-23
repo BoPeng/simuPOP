@@ -70,8 +70,7 @@ using std::swap;
  */
 namespace simuPOP {
 
-/** CPPONLY
-    this class implements a Python itertor class that can be used to iterate
+/** This class implements a Python itertor class that can be used to iterate
     through populations in a population.
  */
 class pyPopIterator
