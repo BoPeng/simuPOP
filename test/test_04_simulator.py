@@ -145,16 +145,16 @@ class TestSimulator(unittest.TestCase):
         Stat(pop, alleleFreq=range(0, 6))
         simu = simulator(pop, randomMating(), rep=5)
         for rep in range(5):
-            self.assertEqual(len(simu.population(rep).vars()["alleleFreq"]), 6)
-            self.assertEqual(len(simu.population(rep).dvars().alleleFreq), 6)
+            self.assertEqual(len(simu.vars(rep)["alleleFreq"]), 6)
+            self.assertEqual(len(simu.dvars(rep).alleleFreq), 6)
         # with subPop
         pop = population(size=[20, 80], loci=[2, 4])
         InitByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=range(0, 6))
         simu = simulator(pop, randomMating(), rep=5)
         for rep in range(5):
-            self.assertEqual(len(simu.population(rep).vars(0)["alleleFreq"]), 6)
-            self.assertEqual(len(simu.population(rep).dvars(1).alleleFreq), 6)
+            self.assertEqual(len(simu.vars(rep)["alleleFreq"]), 6)
+            self.assertEqual(len(simu.dvars(rep, 1).alleleFreq), 6)
 
     def testIntegrity(self):
         'Testing checking of simulator integrity'
