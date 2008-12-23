@@ -702,8 +702,34 @@ checkNumOffspring(randomMating(numOffspring=(UniformDistribution, 2, 6)))
 #end
 
 
+#file log/sexMode.log
+def checkSexMode(ms):
+    '''Check the assignment of sex to offspring'''
+    simu = simulator(
+        population(size=[40]),
+        matingScheme=ms)
+    simu.evolve(preOps = [initSex()], ops=[], gen=1)
+    # return individual sex as a string
+    return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
+
+# Case 1: NoSex (all male, randomMating will not continue)
+checkSexMode(randomMating(sexMode=NoSex))
+# Case 2: RandomSex (Male/Female with probability 0.5)
+checkSexMode(randomMating(sexMode=RandomSex))
+# Case 3: ProbOfMale (Specify probability of male)
+checkSexMode(randomMating(sexMode=(ProbOfMale, 0.8)))
+# Case 4: NumOfMale (Specify number of male in each family)
+checkSexMode(randomMating(numOffspring=3, sexMode=(NumOfMale, 1)))
+# Case 5: NumOfFamel (Specify number of female in each family)
+checkSexMode(randomMating(
+    numOffspring=(UniformDistribution, 4, 6),
+    sexMode=(NumOfFemale, 2))
+)
+#end
+
+
 #file log/randomMating.log
-def randomMating(numOffspring = 1., sexParam = 0.5,
+def randomMating(numOffspring = 1., 
         sexMode = MATE_RandomSex, ops = [], subPopSize = [],
         subPop = (), weight = 0):
     'A basic sexually random mating scheme.'

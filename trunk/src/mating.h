@@ -88,6 +88,7 @@ public:
 #define UniformDistribution     6
 
 
+#define NoSex					0
 #define RandomSex               1
 #define ProbOfMale              2
 #define NumOfMale               3
@@ -120,7 +121,7 @@ public:
 	 */
 	offspringGenerator(const vectorop & ops, UINT numParents = 0,
 		const floatListFunc & numOffspring = 1.,
-		double sexParam = 0.5, UINT sexMode = RandomSex);
+		const floatList & sexMode = RandomSex);
 
 	virtual ~offspringGenerator()
 	{
@@ -187,10 +188,7 @@ protected:
 	floatListFunc m_numOffspring;
 
 	///
-	double m_sexParam;
-
-	///
-	UINT m_sexMode;
+	floatList m_sexMode;
 
 	// number of parents needed
 	int m_numParents;
@@ -229,10 +227,9 @@ public:
 		const vectorop & ops = vectorop(),
 		UINT numParents = 0,
 		//
-		floatListFunc numOffspring = 1.,
+		const floatListFunc & numOffspring = 1.,
 		//
-		double sexParam = 0.5,
-		UINT sexMode = RandomSex);
+		const floatList & sexMode = RandomSex);
 
 
 	/// CPPONLY

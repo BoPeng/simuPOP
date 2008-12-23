@@ -26,9 +26,8 @@
 namespace simuPOP {
 
 offspringGenerator::offspringGenerator(const vectorop & ops,
-	UINT numParents, const floatListFunc & numOffspring, double sexParam, UINT sexMode) :
-	m_numOffspring(numOffspring),
-	m_sexParam(sexParam), m_sexMode(sexMode),
+	UINT numParents, const floatListFunc & numOffspring, const floatList & sexMode) :
+	m_numOffspring(numOffspring), m_sexMode(sexMode),
 	m_numParents(numParents), m_transmitters(0),
 	m_formOffGenotype(true), m_initialized(false)
 {
@@ -57,7 +56,14 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 			(m_numOffspring.size() < 3 || m_numOffspring[2] < 1),
 			ValueError, "Max number of offspring should be greater than 1.");
 	}
-	DBG_FAILIF(m_sexMode == ProbOfMale && (fcmp_lt(m_sexParam, 0) || fcmp_gt(m_sexParam, 1)),
+	DBG_FAILIF(m_sexMode.empty(), ValueError, "Please specify one of the sex modes");
+	DBG_FAILIF((static_cast<int>(m_sexMode[0]) == ProbOfMale || 
+		static_cast<int>(m_sexMode[0]) == NumOfMale || 
+		static_cast<int>(m_sexMode[0]) == NumOfFemale) && m_sexMode.size() < 2,
+		ValueError, "A parameter is required for sex mode ProbOfMale, NumOfMale and NumOfFemale");
+		
+	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMale && 
+		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
 	// the genotype transmitter that will be used when no during mating
 	// operator is used to transmit genotype from parents to offspring.
@@ -68,9 +74,7 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 
 offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	: m_numOffspring(rhs.m_numOffspring),
-	m_sexParam(rhs.m_sexParam),
-	m_sexMode(rhs.m_sexMode),
-	m_numParents(rhs.m_numParents),
+	m_sexMode(rhs.m_sexMode), m_numParents(rhs.m_numParents),
 	m_transmitters(0),
 	m_formOffGenotype(rhs.m_formOffGenotype),
 	m_initialized(rhs.m_initialized)
@@ -117,14 +121,17 @@ ULONG offspringGenerator::numOffspring(int gen)
 
 Sex offspringGenerator::getSex(int count)
 {
-	if (m_sexMode == RandomSex)
+	int mode = static_cast<int>(m_sexMode[0]);
+	if (mode == NoSex)
+		return Male;
+	else if (mode == RandomSex)
 		return rng().randBit() ? Male : Female;
-	else if (m_sexMode == ProbOfMale)
-		return rng().randUniform01() < m_sexParam ? Male : Female;
-	else if (m_sexMode == NumOfMale)
-		return count < static_cast<int>(m_sexParam) ? Male : Female;
-	else if (m_sexMode == NumOfFemale)
-		return count < static_cast<int>(m_sexParam) ? Female : Male;
+	else if (mode == ProbOfMale)
+		return rng().randUniform01() < m_sexMode[1] ? Male : Female;
+	else if (mode == NumOfMale)
+		return count < static_cast<int>(m_sexMode[1]) ? Male : Female;
+	else if (mode == NumOfFemale)
+		return count < static_cast<int>(m_sexMode[1]) ? Female : Male;
 	DBG_ASSERT(false, SystemError, "This line should not be reached.");
 	return Male;
 }
@@ -213,8 +220,8 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 
 controlledOffspringGenerator::controlledOffspringGenerator(
 	vectori loci, vectori alleles, PyObject * freqFunc, const vectorop & ops,
-	UINT numParents, floatListFunc numOffspring, double sexParam, UINT sexMode)
-	: offspringGenerator(ops, numParents, numOffspring, sexParam, sexMode),
+	UINT numParents, const floatListFunc & numOffspring, const floatList & sexMode)
+	: offspringGenerator(ops, numParents, numOffspring, sexMode),
 	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
 {
