@@ -5804,7 +5804,7 @@ monogamousMating
 \family typewriter
 monogamousMating
 \family default
- will exit if the offspsring genertion is larger than 40.
+ will exit if the offspring generation is larger than 40.
 \end_layout
 
 \begin_layout Standard
@@ -5815,19 +5815,19 @@ reference "monogamous"
 
 \end_inset
 
- demonstrates one senario of using a monogamous mating scheme where sex
+ demonstrates one scenario of using a monogamous mating scheme where sex
  of parents and offspring are strictly specified so that parents will not
  be exhausted.
  The sex initializer 
 \family typewriter
 initSex
 \family default
- assign exactly 10 males and 10 females to the initial population.
+ assigns exactly 10 males and 10 females to the initial population.
  Because of the use of 
 \family typewriter
 numOffspring=2, sexMode=(NumOfMale, 1)
 \family default
-, each mating event will produce two offspring with one male and one female.
+, each mating event will produce exactly one male and one female.
  Unlike a random mating scheme that only about 80% of parents are involved
  in the production of an offspring population with the same size, this mating
  scheme makes use of all parents.
