@@ -28,6 +28,8 @@ class TestSimulator(unittest.TestCase):
         for i in range(3):
             self.assertEqual(simu.population(i), simu1.population(i))
         self.assertEqual(simu1.gen(), simu.gen())
+        # this test should be enough
+        self.assertEqual(simu, simu1)
         # test if a cloned simulator can evolve again
         simu1.evolve(
             preOps = [initSex()],
@@ -44,9 +46,8 @@ class TestSimulator(unittest.TestCase):
             ops = [stat(alleleFreq=range(pop.totNumLoci()))],
             gen = 10
         )
-
-        simu.save("simuout");
-        simu1 = LoadSimulator("simuout", randomMating())
+        simu.save("simuout.sim");
+        simu1 = LoadSimulator("simuout.sim", randomMating())
         self.assertEqual(simu, simu1)
 
     def testSetGen(self):
@@ -87,6 +88,7 @@ class TestSimulator(unittest.TestCase):
         repnum = simu.numRep()
         simu.extract(2)
         self.assertEqual(simu.numRep(), repnum-1)
+        self.assertRaises(exceptions.IndexError, simu.population, 5)
         self.assertRaises(exceptions.IndexError, simu.extract, 5)
 
     def testPopulation(self):
