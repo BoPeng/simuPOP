@@ -944,7 +944,7 @@ public:
 	/**
 	   By default, a mating scheme keeps a constant population size, generates
 	   one offspring per mating event. These can be changed using certain
-	   parameters. \c subPopSize, and \c subPopSizeFunc
+	   parameters. \c subPopSize,
 	   can be used to specify subpopulation sizes of the offspring generation.
 
 	   \param subPopSize an array of subpopulations sizes, should have the same
@@ -968,8 +968,7 @@ public:
 	        weights from all (virtual) subpopulations.
 
 	 */
-	mating(vectorlu subPopSize = vectorlu(),
-		PyObject * subPopSizeFunc = NULL,
+	mating(uintListFunc subPopSize = uintListFunc(),
 		vspID subPop = vspID(),
 		double weight = 0);
 
@@ -979,8 +978,6 @@ public:
 	/// destructor
 	virtual ~mating()
 	{
-		if (m_subPopSizeFunc != NULL)
-			Py_DECREF(m_subPopSizeFunc);
 	}
 
 
@@ -1048,12 +1045,7 @@ public:
 protected:
 	/// new subpopulation size. mostly used to 'keep' subPopsize
 	/// after migration.
-	vectorlu m_subPopSize;
-
-	/// the function version of the parameter.
-	/// the python function should take one parameter (gen) and
-	/// return a vector of subpop size.
-	PyObject * m_subPopSizeFunc;
+	uintListFunc m_subPopSize;
 
 	///
 	vspID m_subPop;
@@ -1132,8 +1124,7 @@ public:
 	 */
 	pyMating(parentChooser & chooser,
 		offspringGenerator & generator,
-		vectorlu subPopSize = vectorlu(),
-		PyObject * subPopSizeFunc = NULL,
+		uintListFunc subPopSize = vectorlu(),
 		vspID subPop = vspID(),
 		double weight = 0);
 
@@ -1202,8 +1193,7 @@ public:
 	   Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
 	 */
 	heteroMating(const vectormating & matingSchemes,
-		vectorlu subPopSize = vectorlu(),
-		PyObject * subPopSizeFunc = NULL,
+		uintListFunc subPopSize = vectorlu(),
 		bool shuffleOffspring = true,
 		vspID subPop = vspID(),
 		double weight = 0);

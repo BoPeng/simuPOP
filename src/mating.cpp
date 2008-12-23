@@ -1141,30 +1141,19 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-mating::mating(vectorlu subPopSize, PyObject * subPopSizeFunc,
+mating::mating(uintListFunc subPopSize,
 	vspID subPop, double weight)
 	: m_subPopSize(subPopSize),
-	m_subPopSizeFunc(NULL),
 	m_subPop(subPop), m_weight(weight)
 {
-	if (subPopSizeFunc != NULL && subPopSizeFunc != Py_None) {
-		if (!PyCallable_Check(subPopSizeFunc))
-			throw ValueError("Passed variable is not a callable python function.");
-
-		Py_INCREF(subPopSizeFunc);
-		m_subPopSizeFunc = subPopSizeFunc;
-	}
 }
 
 
 mating::mating(const mating & rhs)
 	: m_subPopSize(rhs.m_subPopSize),
-	m_subPopSizeFunc(rhs.m_subPopSizeFunc),
 	m_subPop(rhs.m_subPop),
 	m_weight(rhs.m_weight)
 {
-	if (m_subPopSizeFunc != NULL)
-		Py_INCREF(m_subPopSizeFunc);
 #ifndef OPTIMIZED
 	m_famSize.clear();
 #endif
@@ -1174,10 +1163,10 @@ mating::mating(const mating & rhs)
 bool mating::prepareScratchPop(population & pop, population & scratch)
 {
 	// use population structure of pop
-	if (m_subPopSize.empty() && m_subPopSizeFunc == NULL)
+	if (m_subPopSize.empty() && m_subPopSize.func() == NULL)
 		scratch.fitSubPopStru(pop.subPopSizes(), pop.subPopNames());
 	else if (!m_subPopSize.empty())                                                     // set subPoplation size
-		scratch.fitSubPopStru(m_subPopSize, pop.subPopNames());
+		scratch.fitSubPopStru(m_subPopSize.elems(), pop.subPopNames());
 	else {                                                                              // use m_subPopSizeFunc
 		// get generation number
 		int gen = pop.gen();
@@ -1190,7 +1179,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 			PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
 		vectorf res;
-		PyCallFunc2(m_subPopSizeFunc, "(iO)", gen, curSize, res, PyObj_As_Array);
+		PyCallFunc2(m_subPopSize.func(), "(iO)", gen, curSize, res, PyObj_As_Array);
 		Py_XDECREF(curSize);
 
 		vectorlu sz(res.size());
@@ -1245,7 +1234,7 @@ void mating::submitScratch(population & pop, population & scratch)
 pedigreeMating::pedigreeMating(const pedigree & ped,
 	const offspringGenerator & generator,  const string & fatherField,
 	const string & motherField)
-	: mating(vectorlu(), NULL, vspID(), 0),
+	: mating(uintListFunc(), vspID(), 0),
 	m_ped(ped), m_fatherField(fatherField), m_motherField(motherField)
 {
 	m_generator = generator.clone();
@@ -1330,11 +1319,10 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 
 pyMating::pyMating(parentChooser & chooser,
 	offspringGenerator & generator,
-	vectorlu subPopSize,
-	PyObject * subPopSizeFunc,
+	uintListFunc subPopSize,
 	vspID subPop,
 	double weight)
-	: mating(subPopSize, subPopSizeFunc, subPop, weight)
+	: mating(subPopSize, subPop, weight)
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
@@ -1389,12 +1377,11 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 
 
 heteroMating::heteroMating(const vectormating & matingSchemes,
-	vectorlu subPopSize,
-	PyObject * subPopSizeFunc,
+	uintListFunc subPopSize,
 	bool shuffleOffspring,
 	vspID subPop,
 	double weight)
-	: mating(subPopSize, subPopSizeFunc, subPop, weight),
+	: mating(subPopSize, subPop, weight),
 	m_shuffleOffspring(shuffleOffspring)
 {
 	DBG_WARNING(subPop.subPop() != InvalidSubPopID || subPop.virtualSubPop() != InvalidSubPopID,
