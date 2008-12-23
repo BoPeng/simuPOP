@@ -339,7 +339,7 @@ def cloneMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [
         weight = weight)
 
 
-def binomialSelection(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
+def randomSelection(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
 		subPop = (), weight = 0):
     '''a mating scheme that uses binomial selection, regardless of sex
    No sex information is involved (binomial random selection). Offspring is chosen from parental generation
@@ -395,8 +395,8 @@ def monogamousMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSiz
         weight = weight)
 
 
-def polygamousMating(polySex=Male, polyNum=1, replacement =False,
-        numOffspring = 1.,	 sexMode = RandomSex, ops = [], subPopSize = [],
+def polygamousMating(polySex=Male, polyNum=1,
+        numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
 		subPop = (), weight = 0):
     '''
    This mating scheme is composed of a random parents chooser that allows for

@@ -15,6 +15,7 @@ version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Merge parameters numOffspringFunc, numOffspringParam and mode to numOffspring
         in offspringGenerator.
   - CHG: Merge parameter sexParam to sexMode in offspringGenerator.
+  - CHG: Rename mating scheme binomialSelection to randomSelection.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.
