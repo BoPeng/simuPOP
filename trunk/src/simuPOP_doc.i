@@ -665,10 +665,10 @@ Details:
 
 Usage:
 
-    controlledOffspringGenerator(loci, alleles, freqFunc,
-      acceptScheme=0, ops=[], numParents=0, numOffspring=1.,
-      numOffspringFunc=None, numOffspringParam=None,
-      mode=MATE_NumOffspring, sexParam=0.5, sexMode=MATE_RandomSex)
+    controlledOffspringGenerator(loci, alleles, freqFunc, ops=[],
+      numParents=0, numOffspring=1., numOffspringFunc=None,
+      numOffspringParam=None, mode=MATE_NumOffspring, sexParam=0.5,
+      sexMode=MATE_RandomSex)
 
 Arguments:
 
@@ -1714,7 +1714,7 @@ Description:
 
 Usage:
 
-    heteroMating(matingSchemes, subPopSize=[], subPopSizeFunc=None,
+    heteroMating(matingSchemes, subPopSize=[],
       shuffleOffspring=True, subPop=[], weight=0)
 
 Details:
@@ -3704,14 +3704,14 @@ Description:
 
 Usage:
 
-    mating(subPopSize=[], subPopSizeFunc=None, subPop=[], weight=0)
+    mating(subPopSize=uintListFunc, subPop=[], weight=0)
 
 Details:
 
     By default, a mating scheme keeps a constant population size,
     generates one offspring per mating event. These can be changed
-    using certain parameters. subPopSize, and subPopSizeFunc can be
-    used to specify subpopulation sizes of the offspring generation.
+    using certain parameters. subPopSize, can be used to specify
+    subpopulation sizes of the offspring generation.
 
 Arguments:
 
@@ -5303,6 +5303,62 @@ Arguments:
 
 "; 
 
+%feature("docstring") simuPOP::pedigreeMating "
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating::pedigreeMating "
+
+Usage:
+
+    pedigreeMating(ped, generator, fatherField=\"father_idx\",
+      motherField=\"mother_idx\")
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating::~pedigreeMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~pedigreeMating()
+
+"; 
+
+%ignore simuPOP::pedigreeMating::pedigreeMating(const pedigreeMating &rhs);
+
+%feature("docstring") simuPOP::pedigreeMating::clone "
+
+Description:
+
+    deep copy of a Python mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::pedigreeMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the Python mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::pedigreeMating::prepareScratchPop(population &pop, population &scratch);
+
+%ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+
 %feature("docstring") simuPOP::pedigreeTagger "
 
 Details:
@@ -6433,6 +6489,8 @@ Details:
 
 "; 
 
+%ignore simuPOP::population::curAncestralGen() const;
+
 %feature("docstring") simuPOP::population::ancestralGens "
 
 Usage:
@@ -7077,8 +7135,7 @@ Description:
 
 Usage:
 
-    pyMating(chooser, generator, subPopSize=[], subPopSizeFunc=None,
-      subPop=[], weight=0)
+    pyMating(chooser, generator, subPopSize=[], subPop=[], weight=0)
 
 Arguments:
 
@@ -7680,7 +7737,14 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyPopIterator;
+%feature("docstring") simuPOP::pyPopIterator "
+
+Details:
+
+    This class implements a Python itertor class that can be used to
+    iterate through populations in a population.
+
+"; 
 
 %feature("docstring") simuPOP::pyPopIterator::pyPopIterator "
 
@@ -9615,6 +9679,18 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::simulator::__cmp__ "
+
+Description:
+
+    Note that mating schemes are not tested.
+
+Usage:
+
+    x.__cmp__(rhs)
+
+"; 
+
 %feature("docstring") simuPOP::simulator::save "
 
 Usage:
@@ -11254,6 +11330,75 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%feature("docstring") simuPOP::typeList "
+
+Details:
+
+    This class defines an interface using which both a integer number
+    and a list of numbers can be accpted.
+
+"; 
+
+%feature("docstring") simuPOP::typeList::typeList "
+
+Usage:
+
+    typeList(values=vector< T >)
+
+"; 
+
+%feature("docstring") simuPOP::typeList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::typeList::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::typeList::elems "
+
+Usage:
+
+    x.elems()
+
+"; 
+
+%feature("docstring") simuPOP::uintListFunc "
+
+"; 
+
+%feature("docstring") simuPOP::uintListFunc::uintListFunc "
+
+Usage:
+
+    uintListFunc(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::uintListFunc::~uintListFunc "
+
+Usage:
+
+    x.~uintListFunc()
+
+"; 
+
+%feature("docstring") simuPOP::uintListFunc::func "
+
+Usage:
+
+    x.func()
 
 "; 
 
