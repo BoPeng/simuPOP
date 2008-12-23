@@ -155,7 +155,7 @@ class TestSimulator(unittest.TestCase):
             self.assertEqual(len(simu.population(rep).dvars(1).alleleFreq), 6)
 
     def testIntegrity(self):
-        'Testing checking of simulator inegrity'
+        'Testing checking of simulator integrity'
         simu = simulator(population(1), cloneMating())
         simu.population(0).addInfoField('something')
         # one can not change the genotype structure of the populations
