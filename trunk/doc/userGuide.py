@@ -374,7 +374,7 @@ import random
 pop = population(size=[10, 10], loci=[5, 5],
     infoFields=['x', 'y'])
 InitByValue(pop, range(10))
-pop.setIndInfo([random.randint(-2, 2) for x in range(20)], 'x')
+pop.setIndInfo([-1]*4 + [0]*3 + [-1]*3 + [2]*4 + [-1]*3 + [1]*4, 'x')
 pop1 = pop.extract(field='x', loci=[1, 2, 3, 6, 7], infoFields=['x'])
 Dump(pop1, structure=False)
 #end
