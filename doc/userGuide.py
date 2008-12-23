@@ -744,6 +744,36 @@ len(set(pop.indInfo('father_idx')))
 len(set(pop.indInfo('mother_idx')))
 #end
 
+#file log/polygamous.log
+simu = simulator(population(100, infoFields=['father_idx', 'mother_idx']),
+    polygamousMating(polySex=Male, polyNum=2))
+simu.evolve(
+    preOps = [initSex()],
+    ops = [parentsTagger()],
+    gen = 5
+)
+pop = simu.extract(0)
+[ind.intInfo('father_idx') for ind in pop.individuals()][:20]
+[ind.intInfo('mother_idx') for ind in pop.individuals()][:20]
+#end
+
+#file log/randomSelection.log
+simu = simulator(population(100, ploidy=1, loci=[5, 5], ancGen=1,
+    infoFields=['parent_idx']),
+    randomSelection())
+simu.evolve(
+    preOps = [initByFreq([0.3, 0.7])],
+    ops = [parentTagger()],
+    gen = 5
+)
+pop = simu.extract(0)
+ind = pop.individual(0)
+par = pop.ancestor(ind.intInfo('parent_idx'), 1)
+print ind.sex(), ind.genotype()
+print par.sex(), par.genotype()
+#end
+
+
 #file log/randomMating.log
 def randomMating(numOffspring = 1., 
         sexMode = MATE_RandomSex, ops = [], subPopSize = [],

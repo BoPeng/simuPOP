@@ -5400,7 +5400,7 @@ lstparams "caption={Force constant subpopulation sizes},label={migrFixedSize}"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "monogamous"
+reference "polygamous"
 
 \end_inset
 
@@ -5846,8 +5846,127 @@ lstparams "caption={Sexual monogamous mating},label={monogamous}"
 Polygamous mating
 \end_layout
 
+\begin_layout Standard
+In comparison to homogamous mating, parents in a polygamous mate with more
+ than one spouse during their life-cycle.
+ Both 
+\emph on
+polygany
+\emph default
+ (one man has more than one wife) and 
+\family typewriter
+\emph on
+polyandry
+\family default
+\emph default
+ (one woman has more than one husband) are supported.
+\end_layout
+
+\begin_layout Standard
+Other than regular parameters such as 
+\family typewriter
+numOffspring
+\family default
+, mating scheme 
+\family typewriter
+polygamousMating
+\family default
+ accepts parameters 
+\family typewriter
+polySex
+\family default
+ (default to 
+\family typewriter
+Male
+\family default
+) and 
+\family typewriter
+polyNum
+\family default
+ (default to 1).
+ During mating, an individual with 
+\family typewriter
+polySex
+\family default
+ is selected and then mate with 
+\family typewriter
+polyNum
+\family default
+ randomly selected spouse.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "polygamous"
+
+\end_inset
+
+ demonstrates the use of this mating schemes.
+ Note that this mating scheme support natural selection, but does not yet
+ handle varying 
+\family typewriter
+polyNum
+\family default
+ and selection of parents without replacement.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/polygamous.log"
+lstparams "caption={Sexual polygamous mating},label={polygamous}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Asexual random mating
+\end_layout
+
+\begin_layout Standard
+Mating scheme 
+\family typewriter
+randomSelection
+\family default
+ implements an asexual random mating scheme.
+ It randomly select parents from a parental population (with replacement)
+ and copy them to an offspring generation.
+ Both genotypes and sex of the parents are copied because genotype and sex
+ are sometimes related.
+ This mating scheme can be used to simulate the evolution of haploid sequences
+ in a standard haploid Wright-Fisher model.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomSelection"
+
+\end_inset
+
+ applies a 
+\family typewriter
+randomSelection
+\family default
+ mating scheme to a haploid population with 100 sequences.
+ A 
+\family typewriter
+parentTagger
+\family default
+ is used to track the parent of each individual.
+ Although sex information is not used in this mating scheme, individual
+ sexes are initialized and passed to offspring.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/randomSelection.log"
+lstparams "caption={Asexual random mating},label={randomSelection}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
