@@ -234,7 +234,9 @@ namespace std
 %include "simuPOP_doc.i"
 
 %implicitconv repList;
+
 %implicitconv uintListFunc;
+%implicitconv floatListFunc;
 
 %include "utility.h"
 %include "misc.h"

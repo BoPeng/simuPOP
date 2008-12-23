@@ -63,9 +63,9 @@ def splitFile(outputFile, runCommand=True):
         end_re = re.compile('^(>>>|\.\.\.)\s*#end')
         cmd_re = re.compile('^(>>>|\.\.\.)\s*#PS\s*(.*)')
     else:
-        begin_re = re.compile('^(## )*#file\s*(.*)')
-        end_re = re.compile('^(## )*#end')
-        cmd_re = re.compile('^#PS\s*(.*)')
+        begin_re = re.compile('^()*#file\s*(.*)')
+        end_re = re.compile('^()*#end')
+        cmd_re = re.compile('^()*#PS\s*(.*)')
     outFile = open(outputFile, 'r')
     out = ''
     first = False
@@ -105,16 +105,10 @@ def splitFile(outputFile, runCommand=True):
                     print >> out, 'from simuPOP import *'
                     print >> out, 'rng().setSeed(12345)'
                     print >> out
-                    if line.startswith('## '):
-                        print >> out, line[3:],
-                    else:
-                        print >> out, line,
+                    print >> out, line,
                 first = False
             else:
-                if not runCommand and line.startswith('## '):
-                    print >> out, line[3:],
-                else:
-                    print >> out, line,
+                print >> out, line,
     outFile.close()
 
 if __name__ == '__main__':

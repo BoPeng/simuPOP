@@ -53,18 +53,18 @@ namespace simuPOP {
    Parameters \c mode, \c numOffspring, \c numOffspringParam and \c numOffspringFunc
    are used to specify how many offspring will be produced at each mating event.
    \c mode can be one of
-   \li \c MATE_NumOffspring: a fixed number of offspring will be produced
+   \li \c NumOffspring: a fixed number of offspring will be produced
     at all mating events .
-   \li \c MATE_PyNumOffspring: A python function, specified by parameter
+   \li \c PyNumOffspring: A python function, specified by parameter
    \c numOffspringFunc, is called at each mating event to determine the number
     of offspring to produce.
-   \li \c MATE_GeometricDistribution: a Geometric distribution with parameter \c numOffspring
+   \li \c GeometricDistribution: a Geometric distribution with parameter \c numOffspring
        is used to determine the number of offspring of each family.
-   \li \c MATE_PoissonDistribution: a Poisson distribution with parameter \c numOffspring
+   \li \c PoissonDistribution: a Poisson distribution with parameter \c numOffspring
        is used to determine the number of offspring of each family.
-   \li \c MATE_BinomialDistribution: a Binomial distribution with parameter \c numOffspring
+   \li \c BinomialDistribution: a Binomial distribution with parameter \c numOffspring
        is used to determine the number of offspring of each family.
-   \li \c MATE_UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
+   \li \c UniformDistribution: a Uniform <tt> [a, b] </tt> distribution with parameter
    \c numOffspring (a) and \c numOffspringParam (b) is used to determine the number of offspring of each family.
 
    This is the base class of all offspring generators, and should not
@@ -75,58 +75,55 @@ class offspringGenerator
 {
 public:
 	// numOffspring: constant, numOffspringFunc: call each time before mating
-#define MATE_NumOffspring           1
+#define NumOffspring           1
 	// call numOffspringFunc each time during mating.
-#define MATE_NumOffspringEachFamily 2 // This name is obsolete
-#define MATE_PyNumOffspring         2
+#define NumOffspringEachFamily 2 // This name is obsolete
+#define PyNumOffspring         2
 	// numOffspring and numOffsrpingsFunc call each time before mating is
 	// the p for a geometric distribution
-#define MATE_GeometricDistribution   3
-#define MATE_PoissonDistribution     4
-#define MATE_BinomialDistribution    5
+#define GeometricDistribution   3
+#define PoissonDistribution     4
+#define BinomialDistribution    5
 	// uniform between numOffspring and numOffspringParam
-#define MATE_UniformDistribution     6
+#define UniformDistribution     6
 
 
-#define MATE_RandomSex               1
-#define MATE_ProbOfMale              2
-#define MATE_NumOfMale               3
-#define MATE_NumOfFemale             4
+#define RandomSex               1
+#define ProbOfMale              2
+#define NumOfMale               3
+#define NumOfFemale             4
 
 public:
 	/**
 	   \param numOffspring Depending on \mode, this paramter can be the number of offspring to
 	    produce, or a paremter of a random distribution.
 	   \param numOffspringFunc a Python function that returns the number of offspring at each
-	    mating event. The setting of this parameter implies \mode=MATE_PyNumOffspring.
+	    mating event. The setting of this parameter implies \mode=PyNumOffspring.
 	   \param numOffspringParam used when \c numOffspring is generated from a binomial or random
 	    distribution.
-	   \param mode can be one of <tt>MATE_NumOffspring, MATE_PyNumOffspring,
-	    MATE_GeometricDistribution, MATE_PoissonDistribution, MATE_BinomialDistribution,</tt>
-	    or <tt>MATE_UniformDistribution</tt>.
+	   \param mode can be one of <tt>NumOffspring, PyNumOffspring,
+	    GeometricDistribution, PoissonDistribution, BinomialDistribution,</tt>
+	    or <tt>UniformDistribution</tt>.
 	   \param sexParam parameter that controls the sex distribution among offspring. Its exact
 	    meaning is determined by parameter sexMode. Default to 0.5.
 	   \param sexMode can be one of
-	   \li MATE_RandomSex  Set sex to Male or Female with probability 0.5. Parameter
+	   \li RandomSex  Set sex to Male or Female with probability 0.5. Parameter
 	   \c sexParam is ignored in this case. This is the default mode.
-	   \li MATE_ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
-	   \li MATE_NumOfMale Set \c sexParam offspring to Male
-	   \li MATE_NumOfFemale Set \c sexParam offspring to Female.
+	   \li ProbOfMale Set an offspring to Male with probability \c sexParam (default to 0.5)
+	   \li NumOfMale Set \c sexParam offspring to Male
+	   \li NumOfFemale Set \c sexParam offspring to Female.
 	   If there are sex chromosomes, sex is determined by sex chromosomes when \c sexMode
-	    id \c MATE_RandomSex. Otherwise, some offspring will be rejected so that offspring
+	    id \c RandomSex. Otherwise, some offspring will be rejected so that offspring
 	    sex match what is specified in other modes.
 	    \param transmitter is an during mating operator, that will be used if
 	        no during mating operator is used to produce offspring.
 	 */
 	offspringGenerator(const vectorop & ops, UINT numParents = 0,
-		double numOffspring = 1., PyObject * numOffspringFunc = NULL,
-		UINT numOffspringParam = 1, UINT mode = MATE_NumOffspring,
-		double sexParam = 0.5, UINT sexMode = MATE_RandomSex);
+		const floatListFunc & numOffspring = 1.,
+		double sexParam = 0.5, UINT sexMode = RandomSex);
 
 	virtual ~offspringGenerator()
 	{
-		if (m_numOffspringFunc != NULL)
-			Py_DECREF(m_numOffspringFunc);
 		for (size_t i = 0; i < m_transmitters.size(); ++i)
 			delete m_transmitters[i];
 	}
@@ -186,17 +183,8 @@ public:
 
 
 protected:
-	/// number of offspring each mate
-	double m_numOffspring;
-
-	/// number of offspring func
-	PyObject * m_numOffspringFunc;
-
-	///
-	UINT m_numOffspringParam;
-
-	/// whether or not call m_numOffspringFunc each time
-	UINT m_mode;
+	/// number of offspring
+	floatListFunc m_numOffspring;
 
 	///
 	double m_sexParam;
@@ -241,13 +229,10 @@ public:
 		const vectorop & ops = vectorop(),
 		UINT numParents = 0,
 		//
-		double numOffspring = 1.,
-		PyObject * numOffspringFunc = NULL,
-		UINT numOffspringParam = NULL,
-		UINT mode = MATE_NumOffspring,
+		floatListFunc numOffspring = 1.,
 		//
 		double sexParam = 0.5,
-		UINT sexMode = MATE_RandomSex);
+		UINT sexMode = RandomSex);
 
 
 	/// CPPONLY
@@ -968,7 +953,7 @@ public:
 	        weights from all (virtual) subpopulations.
 
 	 */
-	mating(uintListFunc subPopSize = uintListFunc(),
+	mating(const uintListFunc & subPopSize = uintListFunc(),
 		vspID subPop = vspID(),
 		double weight = 0);
 
@@ -1053,12 +1038,6 @@ protected:
 	///
 	double m_weight;
 
-#ifndef OPTIMIZED
-
-public:
-	/// record family sizes
-	vectori m_famSize;
-#endif
 };
 
 
@@ -1124,7 +1103,7 @@ public:
 	 */
 	pyMating(parentChooser & chooser,
 		offspringGenerator & generator,
-		uintListFunc subPopSize = vectorlu(),
+		const uintListFunc & subPopSize = uintListFunc(),
 		vspID subPop = vspID(),
 		double weight = 0);
 
@@ -1193,7 +1172,7 @@ public:
 	   Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
 	 */
 	heteroMating(const vectormating & matingSchemes,
-		uintListFunc subPopSize = vectorlu(),
+		const uintListFunc & subPopSize = uintListFunc(),
 		bool shuffleOffspring = true,
 		vspID subPop = vspID(),
 		double weight = 0);
