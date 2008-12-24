@@ -1410,11 +1410,15 @@ public:
 	}
 
 
+	// Note how ... are passed to Py_BuildValue using Py_VaBuildValue
 	template <typename T>
-	T call(char * format, void converter(PyObject *, T &))
+	T call(char * format, void converter(PyObject *, T &), ...)
 	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format);
+		va_list argptr;
+
+		va_start(argptr, converter);
+		PyObject * arglist = Py_VaBuildValue(format, argptr);
+		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
@@ -1429,126 +1433,12 @@ public:
 	}
 
 
-	template <typename T, typename T1>
-	T call(char * format, void converter(PyObject *, T &), T1 param)
+	PyObject * directCall(char * format, ...)
 	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format, param);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed.\n");
-		}
-		T retValue;
-		converter(pyResult, retValue);
-		Py_DECREF(pyResult);
-		return retValue;
-	}
-
-
-	template <typename T, typename T1, typename T2>
-	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2)
-	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format, param1, param2);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed\n");
-		}
-		T retValue;
-		converter(pyResult, retValue);
-		Py_DECREF(pyResult);
-		return retValue;
-	}
-
-
-	template <typename T, typename T1, typename T2, typename T3>
-	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2, T3 param3)
-	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format, param1, param2, param3);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed.\n");
-		}
-		T retValue;
-		converter(pyResult, retValue);
-		Py_DECREF(pyResult);
-		return retValue;
-	}
-
-
-	template <typename T, typename T1, typename T2, typename T3, typename T4>
-	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2, T3 param3, T4 param4)
-	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format, param1, param2, param3, param4);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed.\n");
-		}
-		T retValue;
-		converter(pyResult, retValue);
-		Py_DECREF(pyResult);
-		return retValue;
-	}
-
-
-	template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
-	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format, param1, param2, param3, param4, param5);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed.\n");
-		}
-		T retValue;
-		converter(pyResult, retValue);
-		Py_DECREF(pyResult);
-		return retValue;
-	}
-
-
-// 	// Note how ... are passed to Py_BuildValue
-// 	template <typename T>
-// 	T call(char * format, void converter(PyObject *, T &), ...)
-// 	{
-// 		va_list argptr;
-// 		va_start(argptr, converter);
-// 		PyObject * arglist = Py_BuildValue(format, argptr);
-// 		va_end(argptr);
-// 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-// 
-// 		Py_XDECREF(arglist);
-// 		if (pyResult == NULL) {
-// 			PyErr_Print();
-// 			throw ValueError("Function call failed.\n");
-// 		}
-// 		T retValue;
-// 		converter(pyResult, retValue);
-// 		Py_DECREF(pyResult);
-// 		return retValue;
-// 	}
-
-	template <typename T1, typename T2>
-	PyObject * directCall(char * format, T1 param1, T2 param2)
-	{
-		PyObject * arglist = Py_BuildValue(format, param1, param2);
+		va_list argptr;
+		va_start(argptr, format);
+		PyObject * arglist = Py_VaBuildValue(format, argptr);
+		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
@@ -1558,7 +1448,6 @@ public:
 		}
 		return pyResult;
 	}
-
 
 private:
 	pyObject m_func;
