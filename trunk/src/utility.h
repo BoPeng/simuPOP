@@ -444,54 +444,6 @@ PyObject * pyPopObj(void * p);
 PyObject * pyIndObj(void * p);
 
 // ////////////////////////////////////////////////////////////
-// A macro to call a python function and return value
-// ////////////////////////////////////////////////////////////
-#define PyCallFunc(func, format, param, retValue, converter) \
-	{ \
-		/* use local scope variable to avoid redefinition */ \
-		PyObject * arglist = Py_BuildValue(format, param); \
-		PyObject * pyResult = PyEval_CallObject(func, arglist); \
-		Py_XDECREF(arglist); \
-		if (pyResult == NULL) \
-		{ \
-			PyErr_Print(); \
-			throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-		} \
-		converter(pyResult, retValue); \
-		Py_DECREF(pyResult); \
-	}
-
-#define PyCallFunc2(func, format, param1, param2, retValue, converter) \
-	{ \
-		/* use local scope variable to avoid redefinition */ \
-		PyObject * arglist = Py_BuildValue(format, param1, param2); \
-		PyObject * pyResult = PyEval_CallObject(func, arglist); \
-		Py_XDECREF(arglist); \
-		if (pyResult == NULL) \
-		{ \
-			PyErr_Print(); \
-			throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-		} \
-		converter(pyResult, retValue); \
-		Py_DECREF(pyResult); \
-	}
-
-#define PyCallFunc3(func, format, param1, param2, param3, retValue, converter) \
-	{ \
-		/* use local scope variable to avoid redefinition */ \
-		PyObject * arglist = Py_BuildValue(format, param1, param2, param3); \
-		PyObject * pyResult = PyEval_CallObject(func, arglist); \
-		Py_XDECREF(arglist); \
-		if (pyResult == NULL) \
-		{ \
-			PyErr_Print(); \
-			throw ValueError("Function call failed at " + toStr(__LINE__) + " in " + toStr(__FILE__) + "\n"); \
-		} \
-		converter(pyResult, retValue); \
-		Py_DECREF(pyResult); \
-	}
-
-// ////////////////////////////////////////////////////////////
 // Expression evaluation
 // ////////////////////////////////////////////////////////////
 
@@ -1387,6 +1339,139 @@ const string fileExtension(const string & filename);
 // / Parameter polymorphism
 // ////////////////////////////////////////////////////////////
 
+/// A wrapper to a python function
+class pyFunc
+{
+public:
+	pyFunc(PyObject * func) : m_func(NULL)
+	{
+		if (func != NULL && func != Py_None)
+			m_func = func;
+		Py_XINCREF(m_func);
+		DBG_ASSERT(m_func == NULL || PyCallable_Check(m_func), ValueError,
+			"Passed parameter should be None or a Python function");
+	}
+
+
+	~pyFunc()
+	{
+		Py_XDECREF(m_func);
+	}
+
+
+	pyFunc(const pyFunc & rhs) : m_func(rhs.m_func)
+	{
+		Py_XINCREF(m_func);
+	}
+
+
+	PyObject * func() const
+	{
+		return m_func;
+	}
+
+
+	bool isValid() const
+	{
+		return m_func != NULL;
+	}
+
+
+	template <typename T>
+	T call(void converter(PyObject *, T &))
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue("()");
+		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+	template <typename T, typename T1>
+	T call(char * format, T1 param, void converter(PyObject *, T &))
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue(format, param);
+		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+	template <typename T, typename T1, typename T2>
+	T call(char * format, T1 param1, T2 param2, void converter(PyObject *, T &))
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue(format, param1, param2);
+		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+	template <typename T1, typename T2>
+	PyObject * directCall(char * format, T1 param1, T2 param2)
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue(format, param1, param2);
+		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed\n");
+		}
+		return pyResult;
+	}
+
+
+	template <typename T, typename T1, typename T2, typename T3>
+	T call(char * format, T1 param1, T2 param2, T3 param3, void converter(PyObject *, T &))
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue(format, param1, param2, param3);
+		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+private:
+	PyObject * m_func;
+};
 
 /** This class defines an interface using which both a integer number and
  *  a list of numbers can be accpted.
@@ -1457,7 +1542,8 @@ public:
 
 	double operator[](size_t i) const
 	{
-		DBG_FAILIF(i >= size(), IndexError, "Index out of range");
+		DBG_FAILIF(i >= size(), IndexError,
+			"Index " + toStr(i) + " out of range of 0 ~ " + toStr(size() - 1));
 		return m_elems[i];
 	}
 
@@ -1501,34 +1587,17 @@ public:
 
 	uintListFunc(PyObject * func) : uintList(), m_func(func)
 	{
-		DBG_ASSERT(PyCallable_Check(m_func), ValueError,
-			"Passed parameter should be a Python function");
-		Py_XINCREF(m_func);
 	}
 
 
-	~uintListFunc()
-	{
-		Py_XDECREF(m_func);
-	}
-
-
-	uintListFunc(const uintListFunc & rhs) :
-		uintList(rhs),
-		m_func(rhs.m_func)
-	{
-		Py_XINCREF(m_func);
-	}
-
-
-	PyObject * func() const
+	pyFunc func() const
 	{
 		return m_func;
 	}
 
 
 private:
-	PyObject * m_func;
+	pyFunc m_func;
 };
 
 
@@ -1548,34 +1617,17 @@ public:
 
 	floatListFunc(PyObject * func) : floatList(), m_func(func)
 	{
-		DBG_ASSERT(PyCallable_Check(m_func), ValueError,
-			"Passed parameter should be a Python function");
-		Py_INCREF(m_func);
 	}
 
 
-	~floatListFunc()
-	{
-		Py_XDECREF(m_func);
-	}
-
-
-	floatListFunc(const floatListFunc & rhs) :
-		floatList(rhs),
-		m_func(rhs.m_func)
-	{
-		Py_XINCREF(m_func);
-	}
-
-
-	PyObject * func() const
+	pyFunc func() const
 	{
 		return m_func;
 	}
 
 
 private:
-	PyObject * m_func;
+	pyFunc m_func;
 };
 
 

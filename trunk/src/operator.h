@@ -60,10 +60,12 @@ public:
 	// by swig.
 	typedef std::vector<vspID> vectorvsp;
 	typedef vectorvsp::const_iterator iterator;
+
 public:
 	subPopList(const vectorvsp & subPops = vectorvsp()) : m_subPops(subPops)
 	{
 	}
+
 
 	bool empty() const
 	{
@@ -90,15 +92,18 @@ public:
 		m_subPops.push_back(subPop);
 	}
 
+
 	vectorvsp::const_iterator begin() const
 	{
 		return m_subPops.begin();
 	}
 
+
 	vectorvsp::const_iterator end() const
 	{
 		return m_subPops.end();
 	}
+
 
 private:
 	vectorvsp m_subPops;
@@ -435,6 +440,7 @@ public:
 
 	/// CPPONLY
 	subPopList applicableSubPops() const { return m_subPop; }
+
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc
 	void setFlags();
@@ -963,11 +969,9 @@ public:
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr());
 
-    /// destructor
+	/// destructor
 	virtual ~pyOperator()
 	{
-		Py_DECREF(m_func);
-
 		if (m_param != NULL)
 			Py_DECREF(m_param);
 	};
@@ -998,7 +1002,7 @@ public:
 
 private:
 	/// the function
-	PyObject * m_func;
+	pyFunc m_func;
 
 	/// parammeters
 	PyObject * m_param;

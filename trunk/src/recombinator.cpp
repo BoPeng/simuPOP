@@ -377,7 +377,7 @@ recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 
 	DBG_FAILIF(convMode.empty(), ValueError,
 		"Please specify a conversion mode");
-	
+
 	int mode = static_cast<int>(m_convMode[0]);
 	DBG_FAILIF(mode != NoConversion && m_convMode.size() != 3,
 		ValueError, "Two parameters are required for a non-NoConversion conversion mode");
@@ -390,6 +390,7 @@ recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 int recombinator::markersConverted(size_t index, const individual & ind)
 {
 	int mode = static_cast<int>(m_convMode[0]);
+
 	// IMPORTANT: if conversion length reaches end of chromosome
 	// this is an recombination! Otherwise, conversion will
 	// interfere with free crossover between chromosomes
@@ -603,7 +604,7 @@ void recombinator::transmitGenotype(const individual & parent,
 	//  at each locus, check if recombine after it, if so
 	//  recombine.
 	bool withConversion = static_cast<int>(m_convMode[0]) != NoConversion
-		&& m_convMode[1] > 0.;
+	                      && m_convMode[1] > 0.;
 	if (m_algorithm == 0) {
 		// negative means no conversion is pending.
 		int convCount = -1;

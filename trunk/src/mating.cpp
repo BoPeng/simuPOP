@@ -31,7 +31,7 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 	m_numParents(numParents), m_transmitters(0),
 	m_formOffGenotype(true), m_initialized(false)
 {
-	DBG_FAILIF(numOffspring.size() == 0 && numOffspring.func() == NULL, ValueError,
+	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
 		"Please specify either number of offspring or a function.");
 
 	if (numOffspring.size() == 1) {
@@ -89,9 +89,8 @@ ULONG offspringGenerator::numOffspring(int gen)
 	if (m_numOffspring.size() == 1)
 		return static_cast<UINT>(m_numOffspring[0]);
 
-	if (m_numOffspring.func() != NULL) {
-		int numOff;
-		PyCallFunc(m_numOffspring.func(), "(i)", gen, numOff, PyObj_As_Int);
+	if (m_numOffspring.func().isValid()) {
+		int numOff = m_numOffspring.func().call("(i)", gen, PyObj_As_Int);
 		DBG_FAILIF(numOff < 1, ValueError, "Need at least one offspring.");
 		return numOff;
 	}
@@ -227,10 +226,8 @@ controlledOffspringGenerator::controlledOffspringGenerator(
 	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
 {
-	if (m_freqFunc == NULL || !PyCallable_Check(m_freqFunc))
+	if (!m_freqFunc.isValid())
 		throw ValueError("Please specify a valid frequency function");
-	else
-		Py_INCREF(m_freqFunc);
 }
 
 
@@ -240,7 +237,6 @@ controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffsp
 	m_alleles(rhs.m_alleles),
 	m_freqFunc(rhs.m_freqFunc)
 {
-	Py_INCREF(m_freqFunc);
 }
 
 
@@ -336,8 +332,7 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 
 	// expected frequency at each locus
 	if (subPop == 0) {
-		vectorf expFreq;
-		PyCallFunc(m_freqFunc, "(i)", pop.gen(), expFreq, PyObj_As_Array);
+		vectorf expFreq = m_freqFunc.call("(i)", pop.gen(), PyObj_As_Array);
 		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
 
 		//
@@ -943,7 +938,7 @@ parentChooser::individualPair alphaParentsChooser::chooseParents(RawIndIterator)
 
 void infoParentsChooser::initialize(population & pop, SubPopID sp)
 {
-	if (m_func) {
+	if (m_func.isValid()) {
 		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 		// if pop is valid?
 		if (popObj == NULL)
@@ -952,12 +947,10 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 
 		// parammeter list, ref count increased
 		bool resBool;
-		// parenthesis is needed since PyCallFuncX are macros.
-		if (m_param == NULL) {
-			PyCallFunc(m_func, "(O)", popObj, resBool, PyObj_As_Bool);
-		} else {
-			PyCallFunc2(m_func, "(OO)", popObj, m_param, resBool, PyObj_As_Bool);
-		}
+		if (m_param == NULL)
+			resBool = m_func.call("(O)", popObj, PyObj_As_Bool);
+		else
+			resBool = m_func.call("(OO)", popObj, m_param, PyObj_As_Bool);
 
 		Py_DECREF(popObj);
 	}
@@ -1056,7 +1049,6 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 pyParentsChooser::pyParentsChooser(PyObject * pc)
 	: parentChooser(0), m_func(pc), m_generator(NULL), m_parIterator(NULL)
 {
-	Py_INCREF(m_func);
 }
 
 
@@ -1076,9 +1068,8 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 	DBG_FAILIF(popObj == NULL, SystemError,
 		"Could not pass population to the provided function. \n"
 		"Compiled with the wrong version of SWIG?");
-	PyObject * arglist = Py_BuildValue("(Oi)", popObj, sp);
-	m_generator = PyEval_CallObject(m_func, arglist);
-	Py_XDECREF(arglist);
+
+	m_generator = m_func.directCall("(Oi)", popObj, sp);
 
 	// test if m_generator is a generator
 	DBG_ASSERT(PyGen_Check(m_generator), ValueError,
@@ -1164,7 +1155,7 @@ mating::mating(const mating & rhs)
 bool mating::prepareScratchPop(population & pop, population & scratch)
 {
 	// use population structure of pop
-	if (m_subPopSize.empty() && m_subPopSize.func() == NULL)
+	if (m_subPopSize.empty() && !m_subPopSize.func().isValid())
 		scratch.fitSubPopStru(pop.subPopSizes(), pop.subPopNames());
 	else if (!m_subPopSize.empty())                                                     // set subPoplation size
 		scratch.fitSubPopStru(m_subPopSize.elems(), pop.subPopNames());
@@ -1179,8 +1170,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 		for (size_t i = 0; i < pop.numSubPop(); ++i)
 			PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
-		vectorf res;
-		PyCallFunc2(m_subPopSize.func(), "(iO)", gen, curSize, res, PyObj_As_Array);
+		vectorf res = m_subPopSize.func().call("(iO)", gen, curSize, PyObj_As_Array);
 		Py_XDECREF(curSize);
 
 		vectorlu sz(res.size());

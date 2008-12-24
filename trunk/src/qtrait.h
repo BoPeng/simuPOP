@@ -24,8 +24,8 @@
 #ifndef _QTRAIT_H
 #define _QTRAIT_H
 /**
- \file
- \brief head file of class selector:public baseOperator
+   \file
+   \brief head file of class selector:public baseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -56,7 +56,7 @@ class quanTrait : public baseOperator
 public:
 	/// create a quantitative trait operator
 	quanTrait(int ancestralGen = -1,  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	          const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "qtrait"))
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "qtrait"))
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
@@ -77,8 +77,8 @@ public:
 
 
 	/** CPPONLY
-     *  calculate/return quantitative trait etc.
-     */
+	 *  calculate/return quantitative trait etc.
+	 */
 	virtual double qtrait(individual *)
 	{
 		///
@@ -116,22 +116,22 @@ class mapQuanTrait : public quanTrait
 public:
 	/// create a map quantitative trait operator
 	/**
-	 \param locus the locus index. The quantitative trait is determined by genotype at this locus.
-	 \param loci an array of locus indexes. The quantitative trait is determined by genotypes at these loci.
-	 \param qtrait a dictionary of quantitative traits. The genotype must be in the
-	   	form of 'a-b'. This is the mean	of the quantitative trait. The actual trait
-	   	value will be \f$ N\left(mean,\sigma^{2}\right) \f$. For multiple loci, the form is
-	   	'a-b|c-d|e-f' etc.
-	 \param sigma standard deviation of the environmental factor \f$ N\left(0,\sigma^{2}\right) \f$.
-	 \param phase if \c True, a/b and b/a will have different quantitative trait values.
-	   	Default to \c False.
-	 \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
+	   \param locus the locus index. The quantitative trait is determined by genotype at this locus.
+	   \param loci an array of locus indexes. The quantitative trait is determined by genotypes at these loci.
+	   \param qtrait a dictionary of quantitative traits. The genotype must be in the
+	    form of 'a-b'. This is the mean	of the quantitative trait. The actual trait
+	    value will be \f$ N\left(mean,\sigma^{2}\right) \f$. For multiple loci, the form is
+	    'a-b|c-d|e-f' etc.
+	   \param sigma standard deviation of the environmental factor \f$ N\left(0,\sigma^{2}\right) \f$.
+	   \param phase if \c True, a/b and b/a will have different quantitative trait values.
+	    Default to \c False.
+	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 	 */
 	mapQuanTrait(vectoru loci, const strDict & qtrait, double sigma = 0, bool phase = false,
-	             int ancestralGen = -1,
-	             int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	             const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+		int ancestralGen = -1,
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
 	{
@@ -179,8 +179,8 @@ private:
 /**
    This is called 'multiple-allele' quantitative trait. It separates alleles into
    two groups: wildtype and diseased alleles. Wildtype alleles are specified by parameter
- \c wildtype and any other alleles are considered as diseased alleles.
- \c maQuanTrait accepts an array of fitness. Quantitative trait is then set for any given
+   \c wildtype and any other alleles are considered as diseased alleles.
+   \c maQuanTrait accepts an array of fitness. Quantitative trait is then set for any given
    genotype. A standard normal distribution \f$ N\left(0,\sigma^{2}\right) \f$ will
    be added to the returned trait value.
    <funcForm>MaQuanTrait</funcForm>
@@ -190,19 +190,19 @@ class maQuanTrait : public quanTrait
 public:
 	/// create a multiple allele quantitative trait operator
 	/**
-	 \param qtrait an array of quantitative traits of AA, Aa, aa. A is the wildtype group
-	 \param sigma an array of standard deviations for each of the trait genotype (AA, Aa, aa)
-	 \param wildtype an array of alleles in the wildtype group. Any other alleles will be
-	   	considered as diseased alleles. Default to <tt>[0]</tt>.
-	 \param output and other parameters please refer to help(<tt>baseOperator.__init__</tt>)
+	   \param qtrait an array of quantitative traits of AA, Aa, aa. A is the wildtype group
+	   \param sigma an array of standard deviations for each of the trait genotype (AA, Aa, aa)
+	   \param wildtype an array of alleles in the wildtype group. Any other alleles will be
+	    considered as diseased alleles. Default to <tt>[0]</tt>.
+	   \param output and other parameters please refer to help(<tt>baseOperator.__init__</tt>)
 
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
 	maQuanTrait(vectoru loci, const vectorf & qtrait, const vectora & wildtype,
-	            const vectorf & sigma = vectorf(), int ancestralGen = -1,
-	            int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	            const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+		const vectorf & sigma = vectorf(), int ancestralGen = -1,
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
 	{
@@ -259,14 +259,14 @@ private:
    Operator \c mlQuanTrait is a 'multiple-locus' quantitative trait calculator. It accepts a list
    of quantitative traits and combine them according to the \c mode parameter, which takes
    one of the following values
- \li \c QT_Multiplicative: the mean of the quantitative trait is calculated as
- \f$ f=\prod f_{i} \f$.
- \li \c QT_Additive: the mean of the quantitative trait is calculated as
- \f$ f=\sum f_{i} \f$.
+   \li \c QT_Multiplicative: the mean of the quantitative trait is calculated as
+   \f$ f=\prod f_{i} \f$.
+   \li \c QT_Additive: the mean of the quantitative trait is calculated as
+   \f$ f=\sum f_{i} \f$.
 
    Note that all \f$ \sigma_{i} \f$ (for \f$ f_{i} \f$) and \f$ \sigma \f$ (for \f$ f \f$)
    will be considered. I.e, the trait value should be
- \f[ f=\sum_{i}\left(f_{i}+N\left(0,\sigma_{i}^{2}\right)\right)+\sigma^{2} \f]
+   \f[ f=\sum_{i}\left(f_{i}+N\left(0,\sigma_{i}^{2}\right)\right)+\sigma^{2} \f]
    for \c QT_Additive case. If this is not desired, you can set some of the \f$ \sigma \f$ to zero.
 
    <funcForm>MlQuanTrait</funcForm>
@@ -280,16 +280,16 @@ public:
 public:
 	/// create a multiple locus quantitative trait operator
 	/**
-	 \param qtraits a list of quantitative traits
-	 \param mode can be one of \c QT_Multiplicative and \c QT_Additive
+	   \param qtraits a list of quantitative traits
+	   \param mode can be one of \c QT_Multiplicative and \c QT_Additive
 
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
 	mlQuanTrait(const vectorop qtraits, int mode = QT_Multiplicative,
-	            double sigma = 0, int ancestralGen = -1,
-	            int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	            const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+		double sigma = 0, int ancestralGen = -1,
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_qtraits(0), m_sigma(sigma), m_mode(mode)
 	{
@@ -305,7 +305,7 @@ public:
 	virtual ~mlQuanTrait()
 	{
 		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end(); s != sEnd; ++s)
-			delete * s;
+			delete *s;
 	}
 
 
@@ -348,37 +348,28 @@ class pyQuanTrait : public quanTrait
 public:
 	/// create a Python quantitative trait operator
 	/**
-	 \param loci The genotypes at these loci will be
-	   	passed to \c func.
-	 \param func a Python function that accepts genotypes at specified loci
-	   	and returns the quantitative trait value.
-	 \param output and other parameters please refer to help(<tt>baseOperator.__init__</tt>)
+	   \param loci The genotypes at these loci will be
+	    passed to \c func.
+	   \param func a Python function that accepts genotypes at specified loci
+	    and returns the quantitative trait value.
+	   \param output and other parameters please refer to help(<tt>baseOperator.__init__</tt>)
 
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
 	// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
 	pyQuanTrait(vectoru loci, PyObject * func, int ancestralGen = -1,
-	            int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-	            vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	            const vectorstr & infoFields = vectorstr(1, "qtrait")) :
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
+		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
-		if (!PyCallable_Check(func))
+		if (!m_func.isValid())
 			throw ValueError("Passed variable is not a callable python function.");
-
-		Py_XINCREF(func);
-		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
 			"Please specify susceptibility loci");
 	};
-
-	virtual ~pyQuanTrait()
-	{
-		if (m_func != NULL)
-			Py_DECREF(m_func);
-	}
 
 
 	/// CPPONLY
@@ -390,8 +381,6 @@ public:
 		m_len(rhs.m_len),
 		m_numArray(NULL)
 	{
-		if (m_func != NULL)
-			Py_INCREF(m_func);
 	}
 
 
@@ -419,7 +408,7 @@ private:
 	vectoru m_loci;
 
 	/// user supplied python function
-	PyObject * m_func;
+	pyFunc m_func;
 
 	/// copy of alleles of each individual a time.
 	vectora m_alleles;

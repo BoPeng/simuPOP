@@ -148,8 +148,8 @@ public:
 
 
 	/** Return the current generation number, which is the initial generation
-     *  number (\c 0, or some value set by \c setGen(gen)) plus the total
-     *  number of generations evolved.
+	 *  number (\c 0, or some value set by \c setGen(gen)) plus the total
+	 *  number of generations evolved.
 	 *  <group>1-gen</group>
 	 */
 	ULONG gen() const
@@ -280,9 +280,10 @@ public:
 		return m_ptrRep[rep]->vars();
 	}
 
+
 	/** Return a dictionary of subpopulation variables in the local namespace
-     *  of the \e rep-th population, equivalent to
-     *  <tt>x.population(rep).vars(subPop)</tt>.
+	 *  of the \e rep-th population, equivalent to
+	 *  <tt>x.population(rep).vars(subPop)</tt>.
 	 *  <group>9-var</group>
 	 */
 	PyObject * vars(UINT rep, vspID subPop)
@@ -293,9 +294,10 @@ public:
 		return m_ptrRep[rep]->vars(subPop);
 	}
 
-    /// a Pyton function used to compare the simulator objects
-    /// Note that mating schemes are not tested.
-    int __cmp__(const simulator & rhs) const;
+
+	/// a Pyton function used to compare the simulator objects
+	/// Note that mating schemes are not tested.
+	int __cmp__(const simulator & rhs) const;
 
 	/** Save a simulator to file \c filename, which can be loaded by a global
 	 *  function \c LoadSimulator.
@@ -324,8 +326,8 @@ private:
 		ar & l_gen;
 		ar & m_numRep;
 
-        DBG_DO(DBG_SIMULATOR, cout << "Saving a simulator with "
-            << m_numRep << " populations." << endl);
+		DBG_DO(DBG_SIMULATOR, cout << "Saving a simulator with "
+			                       << m_numRep << " populations." << endl);
 
 		// ignore scratch population
 		for (UINT i = 0; i < m_numRep; i++)
@@ -341,8 +343,8 @@ private:
 
 		ar & m_numRep;
 
-        DBG_DO(DBG_SIMULATOR, cout << "Loading a simulator with "
-            << m_numRep << " populations." << endl);
+		DBG_DO(DBG_SIMULATOR, cout << "Loading a simulator with "
+			                       << m_numRep << " populations." << endl);
 
 		m_ptrRep = vector<population *>(m_numRep);
 

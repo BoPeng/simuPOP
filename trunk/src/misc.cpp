@@ -26,7 +26,7 @@
 namespace simuPOP {
 
 vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
-                            PyObject * NtFunc, vectorf fitness, PyObject * fitnessFunc,
+                            PyObject * NtFunc_ptr, vectorf fitness, PyObject * fitnessFunc_ptr,
                             ULONG minMutAge, ULONG maxMutAge, int ploidy,
                             bool restartIfFail, long maxAttempts, bool allowFixation)
 {
@@ -35,29 +35,20 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 	if (curGen > 0 && maxMutAge > curGen)
 		maxMutAge = curGen;
 
+	pyFunc NtFunc(NtFunc_ptr);
+	pyFunc fitnessFunc(fitnessFunc_ptr);
+
 	DBG_FAILIF(maxMutAge < minMutAge, ValueError, "maxMutAge should >= minMutAge");
-	DBG_FAILIF(curGen == 0 && (ValidPyObject(NtFunc) || ValidPyObject(fitnessFunc)),
+	DBG_FAILIF(curGen == 0 && (NtFunc.isValid() || fitnessFunc.isValid()),
 		ValueError, "curGen should be > 0 if NtFunc or fitnessFunc is defined.");
 	DBG_FAILIF(curGen > 0 && curGen < maxMutAge, ValueError,
 		"curGen should be >= maxMutAge");
 
-	// is NtFunc callable?
-	if (NtFunc != NULL) {
-		if (!PyCallable_Check(NtFunc) )
-			throw ValueError("NtFunc is not a valid Python function.");
-		else
-			// increase the ref, just to be safe
-			Py_INCREF(NtFunc);
-	}
 
 	// 1, 1+s1, 1+s2
 	double s1, s2;
-	if (fitnessFunc != NULL) {
-		if (!PyCallable_Check(fitnessFunc) )
-			throw ValueError("fitnessFunc is not a valid Python function.");
-		else
-			// increase the ref, just to be safe
-			Py_INCREF(fitnessFunc);
+	if (fitnessFunc.isValid()) {
+		;
 	} else if (fitness.empty() ) {
 		// default to [1,1,1]
 		s1 = 0.;
@@ -72,8 +63,8 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 
 	// get current population size
 	vectori Ntmp(1, N);
-	if (NtFunc != NULL) {
-		PyCallFunc(NtFunc, "(i)", curGen, Ntmp, PyObj_As_IntArray);
+	if (NtFunc.isValid()) {
+		Ntmp = NtFunc.call("(i)", curGen, PyObj_As_IntArray);
 		DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 			"Return value from NtFunc should be an array of size >= 1");
 		// Ntmp[0] will be the total size.
@@ -110,8 +101,8 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 
 		// first get N(t-1), if it has not been calculated
 		if (idx + 1 >= Nt.size() ) {
-			if (NtFunc != NULL) {
-				PyCallFunc(NtFunc, "(i)", curGen - idx - 1, Ntmp, PyObj_As_IntArray);
+			if (NtFunc.isValid()) {
+				Ntmp = NtFunc.call("(i)", curGen - idx - 1, PyObj_As_IntArray);
 				DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 					"Return value from NtFunc should be an array of size >= 1");
 				// Ntmp[0] will be the total size.
@@ -122,9 +113,9 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 		}
 		//
 		// get fitness
-		if (fitnessFunc != NULL) {
+		if (fitnessFunc.isValid()) {
 			if (idx + 1 >= s1_cache.size() ) {
-				PyCallFunc(fitnessFunc, "(i)", curGen - idx - 1, s_vec, PyObj_As_Array);
+				s_vec = fitnessFunc.call("(i)", curGen - idx - 1, PyObj_As_Array);
 
 				DBG_ASSERT(s_vec.size() == 3 || s_vec[0] != 0., ValueError,
 					"Returned value from sFunc should be a vector of size 3");
@@ -243,12 +234,6 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 	if (invalidCount > 0)
 		cout << "Trajectories regenerated due to invalid path: " << invalidCount << " times. " << endl;
 
-	// clean up
-	if (NtFunc != NULL)
-		Py_DECREF(NtFunc);
-	if (fitnessFunc != NULL)
-		Py_DECREF(fitnessFunc);
-
 	// number of valid generation is idx+1
 	vectorf traj(idx + 1);
 	if (failedCount < maxAttempts) {
@@ -345,7 +330,7 @@ vectorf MarginalFitness(unsigned nLoci, const vectorf & fitness, const vectorf &
 
 matrix FreqTrajectoryMultiStoch(ULONG curGen,
                                 vectorf freq, long N,
-                                PyObject * NtFunc, vectorf fitness, PyObject * fitnessFunc,
+                                PyObject * NtFunc_ptr, vectorf fitness, PyObject * fitnessFunc_ptr,
                                 ULONG minMutAge, ULONG maxMutAge, int ploidy,
                                 bool restartIfFail, long maxAttempts)
 {
@@ -357,9 +342,12 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 	if (curGen > 0 && maxMutAge > curGen)
 		maxMutAge = curGen;
 
+	pyFunc NtFunc(NtFunc_ptr);
+	pyFunc fitnessFunc(fitnessFunc_ptr);
+
 	DBG_ASSERT(minMutAge <= maxMutAge, ValueError, "minMutAge should be <= maxMutAge. ");
 	DBG_ASSERT(nLoci > 0, ValueError, "Number of loci should be at least one");
-	DBG_FAILIF(curGen == 0 && (NtFunc != NULL || ValidPyObject(fitnessFunc)),
+	DBG_FAILIF(curGen == 0 && (NtFunc.isValid() || fitnessFunc.isValid()),
 		ValueError, "curGen should be > 0 if NtFunc or fitnessFunc is defined.");
 	DBG_FAILIF(curGen > 0 && curGen < maxMutAge, ValueError,
 		"curGen should be >= maxMutAge");
@@ -368,39 +356,25 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 
 	// in the cases of independent and constant selection pressure
 	// easy case.
-	if (InvalidPyObject(fitnessFunc) && fitness.size() == nLoci * 3) {
+	if (!fitnessFunc.isValid() && fitness.size() == nLoci * 3) {
 		for (i = 0; i < nLoci; ++i) {
 			if (!fitness.empty() )
-				result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
+				result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc.func(),
 					vectorf(fitness.begin() + 3 * i, fitness.begin() + 3 * (i + 1)),
 					NULL, minMutAge, maxMutAge, ploidy, restartIfFail, maxAttempts);
 			else
-				result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc,
+				result[i] = FreqTrajectoryStoch(curGen, freq[i], N, NtFunc.func(),
 					vectorf(), NULL, minMutAge, maxMutAge, ploidy, restartIfFail, maxAttempts);
 		}
 		return result;
-	}
-
-	// other wise, use a vectorized version of ...
-	// is NtFunc callable?
-	if (NtFunc != NULL) {
-		if (!PyCallable_Check(NtFunc) )
-			throw ValueError("NtFunc is not a valid Python function.");
-		else
-			// increase the ref, just to be safe
-			Py_INCREF(NtFunc);
 	}
 
 	// sAll will store returned value of sFunc,
 	// and be converted to 1, 1+s1, 1+s2 format ...
 	vectorf sAll;
 	bool interaction = false;
-	if (ValidPyObject(fitnessFunc)) {
-		if (!PyCallable_Check(fitnessFunc) )
-			throw ValueError("sFunc is not a valid Python function.");
-		else
-			// increase the ref, just to be safe
-			Py_INCREF(fitnessFunc);
+	if (fitnessFunc.isValid()) {
+		;
 	} else if (fitness.empty() ) {
 		// default to [1,1,1]
 		sAll.resize(nLoci * 3, 0.);
@@ -422,8 +396,8 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 
 	// get current population size
 	vectori Ntmp(1, N);
-	if (NtFunc != NULL) {
-		PyCallFunc(NtFunc, "(i)", curGen, Ntmp, PyObj_As_IntArray);
+	if (NtFunc.isValid()) {
+		Ntmp = NtFunc.call("(i)", curGen, PyObj_As_IntArray);
 		DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 			"Return value from NtFunc should be an array of size >= 1");
 		// Ntmp[0] will be the total size.
@@ -460,8 +434,8 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 
 		// first get N(t-1), if it has not been calculated
 		if (idx + 1 >= Nt.size() ) {
-			if (NtFunc != NULL) {
-				PyCallFunc(NtFunc, "(i)", curGen - idx - 1, Ntmp, PyObj_As_IntArray);
+			if (NtFunc.isValid()) {
+				Ntmp = NtFunc.call("(i)", curGen - idx - 1, PyObj_As_IntArray);
 				DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 					"Return value from NtFunc should be an array of size >= 1");
 				// Ntmp[0] will be the total size.
@@ -473,11 +447,11 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 		//
 		// get fitness, since it will change according to
 		// xt, I do not cache the result
-		if (ValidPyObject(fitnessFunc)) {
+		if (fitnessFunc.isValid()) {
 			// compile allele frequency... and pass
 			vectorf sAllTmp;
 			PyObject * freqObj = Double_Vec_As_NumArray(xt.begin() + nLoci * idx, xt.begin() + nLoci * (idx + 1) );
-			PyCallFunc2(fitnessFunc, "(iO)", curGen - idx - 1, freqObj, sAllTmp, PyObj_As_Array);
+			sAllTmp = fitnessFunc.call("(iO)", curGen - idx - 1, freqObj, PyObj_As_Array);
 
 			if (sAllTmp.size() == 3 * nLoci) {
 				for (i = 0; i < nLoci; ++i) {
@@ -625,12 +599,6 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 	if (invalidCount > 0)
 		cout << "Trajectories regenerated due to invalid path: " << invalidCount << " times. " << endl;
 
-	// clean up
-	if (NtFunc != NULL)
-		Py_DECREF(NtFunc);
-	if (ValidPyObject(fitnessFunc))
-		Py_DECREF(fitnessFunc);
-
 	// number of valid generation is idx+1
 	if (failedCount < maxAttempts) {
 		vectorf traj(idx + 1);
@@ -652,9 +620,9 @@ matrix ForwardFreqTrajectory(
                              vectorf curFreq,
                              matrix destFreq,
                              vectorlu N,
-                             PyObject * NtFunc,
+                             PyObject * NtFunc_ptr,
                              vectorf fitness,
-                             PyObject * fitnessFunc,
+                             PyObject * fitnessFunc_ptr,
                              double migr,
                              int ploidy,
                              long maxAttempts)
@@ -662,17 +630,15 @@ matrix ForwardFreqTrajectory(
 	size_t nLoci = destFreq.size();
 	size_t nSP = curFreq.size() / nLoci;
 
+	pyFunc NtFunc(NtFunc_ptr);
+	pyFunc fitnessFunc(fitnessFunc_ptr);
+
 	DBG_ASSERT(nLoci > 0, ValueError, "Number of loci should be at least one");
 
 	for (size_t i = 0; i < nLoci; ++i) {
 		DBG_FAILIF(destFreq[i].size() != 2, ValueError,
 			"Please specify frequency range of each marker");
 	}
-
-	if (NtFunc != NULL)
-		Py_INCREF(NtFunc);
-	if (fitnessFunc != NULL)
-		Py_INCREF(fitnessFunc);
 
 	// record mean, min, and max destination freq for this particular
 	// initial freq + demography + selection settings.
@@ -682,11 +648,11 @@ matrix ForwardFreqTrajectory(
 	vectorf maxEndFreq(nLoci, 0.);
 	// combined frequency of the ending generation
 	vectorf endFreq(nLoci, 0.);
-	
+
 	DBG_ASSERT(curGen <= endGen, ValueError,
 		"Current generation should be less than ending generation");
 
-	DBG_FAILIF(N.empty() && NtFunc == NULL, ValueError,
+	DBG_FAILIF(N.empty() && !NtFunc.isValid(), ValueError,
 		"Please specify either N or NtFunc");
 
 	DBG_FAILIF(!N.empty() && N.size() != nSP, ValueError,
@@ -704,12 +670,12 @@ matrix ForwardFreqTrajectory(
 	vector<vectori> Nt;
 	for (idx = curGen; idx <= endGen; ++idx) {
 		vectori Ntmp(N.begin(), N.end());
-		if (NtFunc != NULL) {
+		if (NtFunc.isValid()) {
 			PyObject * lastSize = PyTuple_New(nSP);
 			for (size_t i = 0; i < nSP; ++i)
 				PyTuple_SetItem(lastSize, i,
 					PyInt_FromLong(idx == curGen ? 0 : Nt[idx - curGen - 1][i]));
-			PyCallFunc2(NtFunc, "(iO)", idx, lastSize, Ntmp, PyObj_As_IntArray);
+			Ntmp = NtFunc.call("(iO)", idx, lastSize, PyObj_As_IntArray);
 			Py_XDECREF(lastSize);
 			DBG_ASSERT(Ntmp.size() == nSP, ValueError,
 				"Return value from NtFunc should be an array of size " + toStr(nSP));
@@ -721,12 +687,8 @@ matrix ForwardFreqTrajectory(
 	// selection pressure.
 	vectorf sAll(nLoci * 3);
 	bool interaction = false;
-	if (ValidPyObject(fitnessFunc)) {
-		if (!PyCallable_Check(fitnessFunc) )
-			throw ValueError("sFunc is not a valid Python function.");
-		else
-			// increase the ref, just to be safe
-			Py_INCREF(fitnessFunc);
+	if (fitnessFunc.isValid()) {
+		;
 	} else if (fitness.empty() ) {
 		// default to [1,1,1]
 		sAll.resize(nLoci * 3, 0.);
@@ -763,12 +725,12 @@ matrix ForwardFreqTrajectory(
 		//
 		for (size_t sp = 0; sp < nSP; ++sp) {
 			// update allele frequency
-			if (ValidPyObject(fitnessFunc)) {
+			if (fitnessFunc.isValid()) {
 				vectorf sAllTmp;
 				// compile allele frequency... and pass
 				PyObject * freqObj = Double_Vec_As_NumArray(a_frq[sp].begin(),
 					a_frq[sp].end());
-				PyCallFunc2(fitnessFunc, "(iO)", idx, freqObj, sAllTmp, PyObj_As_Array);
+				sAllTmp = fitnessFunc.call("(iO)", idx, freqObj, PyObj_As_Array);
 
 				if (sAllTmp.size() == 3 * nLoci) {
 					sAll.resize(3 * nLoci);
@@ -806,7 +768,7 @@ matrix ForwardFreqTrajectory(
 				DBG_DO(DBG_DEVEL, cout << "Gen: " << idx << " SP: " << sp
 					                   << " Size: " << N_t << " Loc: " << loc << " xt_1: " << xt_1 << " xt: " << a_frq[sp][loc] << endl);
 			}
-		} // each subpopulation
+		}   // each subpopulation
 
 		// check if alleles get lost in any of the subpopulations
 		for (size_t sp = 0; sp < nSP; ++sp) {
@@ -872,18 +834,17 @@ matrix ForwardFreqTrajectory(
 				meanEndFreq[loc] += endFreq[loc];
 				//
 				if (endFreq[loc] < destFreq[loc][0] || endFreq[loc] > destFreq[loc][1]) {
-                    cout << "Restart due to locus " << loc << ": simulated " 
-                        << endFreq[loc] << ", expected " << destFreq[loc][0] << " - " 
-                        << destFreq[loc][1] << endl;
+					cout << "Restart due to locus " << loc << ": simulated "
+					     << endFreq[loc] << ", expected " << destFreq[loc][0] << " - "
+					     << destFreq[loc][1] << endl;
 					succ = false;
-                }
+				}
 			}
 			// success?
 			if (succ) {
 				cout << "Allele frequency trajectories generated after " << failedCount << " attempts." << endl;
 				break;
-			}
-			else if (++failedCount >= maxAttempts) {
+			} else if (++failedCount >= maxAttempts) {
 				cout << "Failed to generate allele frequency trajectories after " << failedCount << " attempts." << endl;
 				result.clear();
 				break;
@@ -896,15 +857,10 @@ matrix ForwardFreqTrajectory(
 		if (result.size() > 0)
 			cout << "simulated " << endFreq[loc] << ", ";
 		cout << "expected " << destFreq[loc][0] << " - " << destFreq[loc][1]
-			<< ", min hit " << minEndFreq[loc]
-			<< ", mean hit " << (failedCount == 0 ? minEndFreq[loc] : (meanEndFreq[loc] / failedCount))
-			<< ", max hit " << maxEndFreq[loc] << endl;
+		     << ", min hit " << minEndFreq[loc]
+		     << ", mean hit " << (failedCount == 0 ? minEndFreq[loc] : (meanEndFreq[loc] / failedCount))
+		     << ", max hit " << maxEndFreq[loc] << endl;
 	}
-	// clean up
-	if (NtFunc != NULL)
-		Py_DECREF(NtFunc);
-	if (ValidPyObject(fitnessFunc))
-		Py_DECREF(fitnessFunc);
 	return result;
 }
 
@@ -964,7 +920,7 @@ vectorf FreqTrajectorySelSim(
 	int jump = -1;
 	double weight_up;
 
-	int j = int (double (N)*freq);
+	int j = int(double(N) * freq);
 	if ((j == 0) || (j >= N))
 		throw " Starting number selected types = 0 or >=N ";
 
@@ -981,7 +937,7 @@ vectorf FreqTrajectorySelSim(
 	double past_traj_time = 0;
 
 	vector<double> traj_time(1, 0);
-	vector<double> traj_freq(1, double (j) / N);
+	vector<double> traj_freq(1, double(j) / N);
 	vector<double> traj_integral_pos(1, 0);
 	vector<double> traj_integral_neg(1, 0);
 
@@ -1001,7 +957,7 @@ vectorf FreqTrajectorySelSim(
 		position_coeff = (double)j * (N - j) / N;
 
 		//Removed Factor of 2
-		t_time = -(1 / position_coeff) * log(rng().randUniform01() ) / double (N);
+		t_time = -(1 / position_coeff) * log(rng().randUniform01() ) / double(N);
 		past_traj_time += t_time;
 		weight_up = (*u0_pnt_jp1) / (*u0_pnt_j);
 
@@ -1009,7 +965,7 @@ vectorf FreqTrajectorySelSim(
 			prob_up = (1 + (s) * (1 - 2 * ((double)j / N))) / 2.0;
 		if (selection == 3)
 			prob_up = (1 + (s / 2.0) * (((double)j / N) +
-			                            h * (1 - 2 * (double (j) / N)) ) ) / 2.0 ;
+			                            h * (1 - 2 * (double(j) / N)) ) ) / 2.0 ;
 
 		//Jump
 		if (rng().randUniform01() < prob_up * weight_up) {

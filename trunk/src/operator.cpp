@@ -264,25 +264,23 @@ bool ticToc::apply(population & pop)
 
 
 pyOperator::pyOperator(PyObject * func, PyObject * param,
-		int stage, bool formOffGenotype, bool passOffspringOnly,
-		int begin, int end, int step, vectorl at,
-		const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
-		m_func(func), m_param(NULL), m_passOffspringOnly(passOffspringOnly)
+	int stage, bool formOffGenotype, bool passOffspringOnly,
+	int begin, int end, int step, vectorl at,
+	const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
+	baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
+	m_func(func), m_param(NULL), m_passOffspringOnly(passOffspringOnly)
 {
-    if (!PyCallable_Check(func))
-        throw ValueError("Passed variable is not a callable Python function.");
+	if (!m_func.isValid())
+		throw ValueError("Passed variable is not a callable Python function.");
 
-    // inc reference count
-    Py_XINCREF(m_func);
+	if (param != NULL && param != Py_None) {
+		m_param = param;
+		Py_XINCREF(m_param);
+	}
 
-    if (param != NULL && param != Py_None) {
-        m_param = param;
-        Py_XINCREF(m_param);
-    }
-
-    this->setFormOffGenotype(formOffGenotype);
+	this->setFormOffGenotype(formOffGenotype);
 }
+
 
 pyOperator::pyOperator(const pyOperator & rhs) :
 	baseOperator(rhs),
@@ -290,8 +288,6 @@ pyOperator::pyOperator(const pyOperator & rhs) :
 	m_param(rhs.m_param),
 	m_passOffspringOnly(rhs.m_passOffspringOnly)
 {
-	Py_INCREF(m_func);
-
 	if (m_param != NULL)
 		Py_INCREF(m_param);
 }
@@ -311,11 +307,10 @@ bool pyOperator::apply(population & pop)
 	// parammeter list, ref count increased
 	bool resBool;
 	// parenthesis is needed since PyCallFuncX are macros.
-	if (m_param == NULL) {
-		PyCallFunc(m_func, "(O)", popObj, resBool, PyObj_As_Bool);
-	} else {
-		PyCallFunc2(m_func, "(OO)", popObj, m_param, resBool, PyObj_As_Bool);
-	}
+	if (m_param == NULL)
+		resBool = m_func.call("(O)", popObj, PyObj_As_Bool);
+	else
+		resBool = m_func.call("(OO)", popObj, m_param, PyObj_As_Bool);
 
 	Py_DECREF(popObj);
 	return resBool;
@@ -342,7 +337,7 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 
 		// we do not need to catch exceptions here,
 		// our wrapper will do that
-		result = PyEval_CallObject(m_func, arglist);
+		result = PyEval_CallObject(m_func.func(), arglist);
 		Py_DECREF(offObj);
 	} else {
 		// call the python function, pass all the parameters to it.
@@ -376,7 +371,7 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 
 		// we do not need to catch exceptions here,
 		// our wrapper will do that
-		result = PyEval_CallObject(m_func, arglist);
+		result = PyEval_CallObject(m_func.func(), arglist);
 
 		Py_DECREF(offObj);
 		Py_DECREF(popObj);
@@ -400,11 +395,12 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 
 
 void ApplyDuringMatingOperator(const baseOperator & op,
-	population * pop, int dad, int mom, ULONG off)
+                               population * pop, int dad, int mom, ULONG off)
 {
 	baseOperator * opPtr = op.clone();
+
 	opPtr->applyDuringMating(*pop, pop->rawIndBegin() + off,
-		dad < 0 ? NULL : &pop->ind(dad), 
+		dad < 0 ? NULL : &pop->ind(dad),
 		mom < 0 ? NULL : &pop->ind(mom));
 }
 

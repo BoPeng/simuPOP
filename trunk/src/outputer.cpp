@@ -117,11 +117,11 @@ bool dumper::apply(population & pop)
 		}
 
 done:
-        if (m_max > pop.popSize())
-    		out << "End of individual genotype.\n" << endl;
-        else
-    		out << "End of individual genotype (" << m_max << " out of "
-                << pop.popSize() << ").\n" << endl;
+		if (m_max > pop.popSize())
+			out << "End of individual genotype.\n" << endl;
+		else
+			out << "End of individual genotype (" << m_max << " out of "
+			    << pop.popSize() << ").\n" << endl;
 
 		int ancGen = m_ancGen;
 		// ancGen can be -1

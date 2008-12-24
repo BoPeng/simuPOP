@@ -553,14 +553,14 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 
 int simulator::__cmp__(const simulator & rhs) const
 {
-    if (numRep() != rhs.numRep())
-        return 1;
+	if (numRep() != rhs.numRep())
+		return 1;
 
-    for (size_t i = 0; i < numRep(); ++i)
-        if (pop(i).__cmp__(rhs.pop(i)) != 0)
-            return 1;
+	for (size_t i = 0; i < numRep(); ++i)
+		if (pop(i).__cmp__(rhs.pop(i)) != 0)
+			return 1;
 
-    return 0;
+	return 0;
 }
 
 

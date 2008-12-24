@@ -158,51 +158,51 @@ string haploKey(const vectori & seq)
 
 
 stat::stat(
-           bool popSize,
-           //
-           bool numOfMale,
-           strDict numOfMale_param,
-           //
-           bool numOfAffected,
-           strDict numOfAffected_param,
-           //
-           vectori numOfAlleles,
-           strDict numOfAlleles_param,
-           //
-           vectori alleleFreq,
-           strDict alleleFreq_param,
-           //
-           vectori heteroFreq,
-           vectori expHetero,
-           strDict expHetero_param,
-           //
-           vectori homoFreq,
-           vectori genoFreq,
-           strDict genoFreq_param,
-           intMatrix haploFreq,
-           //
-           intMatrix LD,
-           strDict LD_param,
-           //
-           intMatrix association,
-           strDict association_param,
-           //
-           vectori Fst,
-           strDict Fst_param,
-           //
-           intMatrix relGroups,
-           vectori relLoci,
-           strDict rel_param,
-           //
-           bool relBySubPop,                                        // internal use
-           vectori relMethod,
-           int relMinScored,                                        // minimal number of loci required.
-           bool hasPhase,
-           bool midValues,                                          // this parameter will be removed after all _param parameter is given.
-           // regular parameters
-           string output, string outputExpr,
-           int stage, int begin, int end, int step, vectorl at,
-           const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
+	bool popSize,
+	//
+	bool numOfMale,
+	strDict numOfMale_param,
+	//
+	bool numOfAffected,
+	strDict numOfAffected_param,
+	//
+	vectori numOfAlleles,
+	strDict numOfAlleles_param,
+	//
+	vectori alleleFreq,
+	strDict alleleFreq_param,
+	//
+	vectori heteroFreq,
+	vectori expHetero,
+	strDict expHetero_param,
+	//
+	vectori homoFreq,
+	vectori genoFreq,
+	strDict genoFreq_param,
+	intMatrix haploFreq,
+	//
+	intMatrix LD,
+	strDict LD_param,
+	//
+	intMatrix association,
+	strDict association_param,
+	//
+	vectori Fst,
+	strDict Fst_param,
+	//
+	intMatrix relGroups,
+	vectori relLoci,
+	strDict rel_param,
+	//
+	bool relBySubPop,                                               // internal use
+	vectori relMethod,
+	int relMinScored,                                               // minimal number of loci required.
+	bool hasPhase,
+	bool midValues,                                                 // this parameter will be removed after all _param parameter is given.
+	// regular parameters
+	string output, string outputExpr,
+	int stage, int begin, int end, int step, vectorl at,
+	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
 	: stator("", outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
@@ -790,7 +790,7 @@ bool statExpHetero::apply(population & pop)
 
 
 statGenoFreq::statGenoFreq(const vectori & genoFreq,
-                           const strDict & param)
+	const strDict & param)
 	: m_atLoci(genoFreq), m_phase(false)
 {
 	if (!param.empty()) {
@@ -878,7 +878,7 @@ bool statGenoFreq::apply(population & pop)
 
 				// empty dictionary should be allowed
 				varname = subPopVar_String(sp, GenotypeNum_String) +
-				          + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+				          + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
 				pop.setIntDictVar(varname, num[a]);
 
 				// apply frequency
@@ -886,7 +886,7 @@ bool statGenoFreq::apply(population & pop)
 					it->second = it->second / pop.subPopSize(sp);
 
 				varname = subPopVar_String(sp, GenotypeFreq_String) +
-				          + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+				          + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
 				pop.setIntDictVar(varname, num[a]);
 			}
 		}
@@ -896,14 +896,14 @@ bool statGenoFreq::apply(population & pop)
 			//  continue;
 
 			// empty dictionary should be allowed
-			varname = toStr(GenotypeNum_String) + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+			varname = toStr(GenotypeNum_String) + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
 			pop.setIntDictVar(varname, sum[a]);
 
 			// apply frequency
 			for (intDict::iterator it = sum[a].begin(), itEnd = sum[a].end(); it != itEnd; ++it)
 				it->second = it->second / popSize;
 
-			varname = toStr(GenotypeFreq_String) + "[" + toStr(loc) + "][" + toStr(int (a)) + "]";
+			varname = toStr(GenotypeFreq_String) + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
 			pop.setIntDictVar(varname, sum[a]);
 		}
 	}
@@ -999,11 +999,11 @@ bool statHaploFreq::apply(population & pop)
 			map< vectori, double> & freq = m_haploFreq[h + sp * nHap];
 
 			for (map<vectori, UINT>::iterator it = count.begin(); it != count.end(); ++it) {
-				freq[ it->first] = double (it->second) / (pop.subPopSize(sp) * pop.ploidy());
+				freq[ it->first] = double(it->second) / (pop.subPopSize(sp) * pop.ploidy());
 				if (m_ifPost[h]) {
 					pop.setIntVar(varNumName + haploKey(haplotype) + haploKey(it->first), it->second);
 					pop.setDoubleVar(varFreqName + haploKey(haplotype) + haploKey(it->first),
-						double (it->second) / (pop.subPopSize(sp) * pop.ploidy()));
+						double(it->second) / (pop.subPopSize(sp) * pop.ploidy()));
 				}
 			}
 		}
@@ -1015,11 +1015,11 @@ bool statHaploFreq::apply(population & pop)
 		map< vectori, double> & freq = m_haploFreq[h + numSP * nHap];
 
 		for (map<vectori, UINT>::iterator it = count.begin(); it != count.end(); ++it) {
-			freq[ it->first] = double (it->second) / (pop.popSize() * pop.ploidy());
+			freq[ it->first] = double(it->second) / (pop.popSize() * pop.ploidy());
 			if (m_ifPost[h]) {
 				pop.setIntVar(HaplotypeNum_String + haploKey(haplotype) + haploKey(it->first), it->second);
 				pop.setDoubleVar(HaplotypeFreq_String + haploKey(haplotype) + haploKey(it->first),
-					double (it->second) / (pop.popSize() * pop.ploidy()));
+					double(it->second) / (pop.popSize() * pop.ploidy()));
 			}
 		}
 	}
@@ -1028,7 +1028,7 @@ bool statHaploFreq::apply(population & pop)
 
 
 statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-               const intMatrix & LD, const strDict & param)
+	const intMatrix & LD, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
 	m_LD(LD),
 	// default values,
@@ -1382,7 +1382,7 @@ bool statLD::apply(population & pop)
 
 
 statAssociation::statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-                                 const intMatrix & Association, const strDict & param)
+	const intMatrix & Association, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
 	m_association(Association),
 	m_midValues(false),
@@ -1611,7 +1611,7 @@ bool statAssociation::apply(population & pop)
 
 
 statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-                 const vectori & Fst, const strDict & param)
+	const vectori & Fst, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst),
 	m_midValues(false),
 	m_output_Fst(true),
@@ -1783,8 +1783,8 @@ bool statFst::apply(population & pop)
 
 
 statRelatedness::statRelatedness(statAlleleFreq & alleleFreq, const intMatrix & groups,
-                                 bool useSubPop, const vectori & loci, vectori method,
-                                 int minScored, const strDict & param) :
+	bool useSubPop, const vectori & loci, vectori method,
+	int minScored, const strDict & param) :
 	m_alleleFreq(alleleFreq), m_groups(groups), m_useSubPop(useSubPop),
 	m_atLoci(loci), m_method(method), m_minScored(minScored),
 	m_midValues(false)
