@@ -362,11 +362,6 @@ private:
 class recombinator : public genoTransmitter
 {
 public:
-#define CONVERT_NumMarkers                   1
-#define CONVERT_TractLength                  2
-#define CONVERT_ExponentialDistribution      3
-#define CONVERT_GeometricDistribution        4
-
 	/// recombine chromosomes from parents
 	/**
 	   \param intensity intensity of recombination. The actual recombination rate
@@ -385,7 +380,18 @@ public:
 	   \param maleRate recombination rate for male individuals. If given,
 	   parameter \c rate will be considered as female recombination rate.
 	   \param maleAfterLoci if given, males will recombine at different locations.
-	   \param convProb The probability of conversion event among all recombination
+
+	 *
+	 *
+	 * \e convMode can take the following forms
+	 * NoConversion: no conversion
+	 * (NumMarkers, prob, n): converts a fixed number of markers
+	 * (GeometricDistribution, prob, p): An geometric distribution is used to
+	        determine how many markers will be converted.
+	 * (TractLength, prob, n): converts a fixed length of tract.
+	 * (ExponentialDistribution, prob, p): An exponential distribution with parameter
+	        \c convLen will be used to determine track length.
+	 * The first number is that probability of conversion event among all recombination
 	    events. When a recombination event happens, it may become a recombination event
 	    if the Holliday junction is resolved/repaired successfully, or a
 	    conversion event if the junction is not resolved/repaired. The
@@ -393,16 +399,8 @@ public:
 	    Note that the ratio of conversion to recombination events varies greatly from
 	    study to study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics, 2007).
 	    This translate to 0.1/0.9~0.1 to 15/16~0.94 of this parameter. When
-	   \c convProb is 1, all recombination events will be conversion events.
-	   \param convMode conversion mode, determines how track length is determined.
-	   \li CONVERT_NumMarkers Converts a fixed number of markers.
-	   \li CONVERT_GeometricDistribution An geometric distribution is used to
-	        determine how many markers will be converted.
-	   \li CONVERT_TractLength Converts a fixed length of tract.
-	   \li CONVERT_ExponentialDistribution An exponential distribution with parameter
-	   \c convLen will be used to determine track length.
-	   \param convParam Parameter for the conversion process. The exact meaning of this
-	    parameter is determined by \c convMode. Note that
+
+	    Note that
 	   \li conversion tract length is usually short, and is estimated to be
 	        between 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
 	   \li simuPOP does not impose a unit for marker distance so your choice
@@ -425,7 +423,7 @@ public:
 
 	 */
 	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru loci = vectoru(),
-		double convProb = 0, UINT convMode = CONVERT_NumMarkers, double convParam = 1.,
+		const floatList & convMode = NoConversion,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
@@ -523,11 +521,7 @@ private:
 	/// position to recombine, changed to fit a special pop
 	vectoru m_recBeforeLoci;
 
-	double m_convProb;
-
-	UINT m_convMode;
-
-	double m_convParam;
+	floatList m_convMode;
 
 	/// bernulli trials
 	//  vector<BernulliTrials*> m_bt;

@@ -357,13 +357,13 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 
 
 recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
-	double convProb, UINT convMode, double convParam,
+	const floatList & convMode,
 	int begin, int end, int step, vectorl at,
 	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
 	:
 	genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
 	, m_intensity(intensity), m_rate(rate), m_afterLoci(loci), m_recBeforeLoci(0),
-	m_convProb(convProb), m_convMode(convMode), m_convParam(convParam),
+	m_convMode(convMode),
 	m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 #ifndef OPTIMIZED
 	m_recCount(0), m_convSize(),
@@ -375,22 +375,30 @@ recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 	// generate default genotype for offspring
 	setFormOffGenotype(true);
 
-	DBG_FAILIF(fcmp_lt(m_convProb, 0) || fcmp_gt(m_convProb, 1),
+	DBG_FAILIF(convMode.empty(), ValueError,
+		"Please specify a conversion mode");
+	
+	int mode = static_cast<int>(m_convMode[0]);
+	DBG_FAILIF(mode != NoConversion && m_convMode.size() != 3,
+		ValueError, "Two parameters are required for a non-NoConversion conversion mode");
+
+	DBG_FAILIF(mode != NoConversion && (fcmp_lt(m_convMode[1], 0) || fcmp_gt(m_convMode[1], 1)),
 		ValueError, "Conversion probability should be between 0 and 1");
 };
 
 
 int recombinator::markersConverted(size_t index, const individual & ind)
 {
+	int mode = static_cast<int>(m_convMode[0]);
 	// IMPORTANT: if conversion length reaches end of chromosome
 	// this is an recombination! Otherwise, conversion will
 	// interfere with free crossover between chromosomes
-	if (m_convMode == CONVERT_NumMarkers || m_convMode == CONVERT_GeometricDistribution) {
+	if (mode == NumMarkers || mode == GeometricDistribution) {
 		UINT num = 0;
-		if (m_convMode == CONVERT_NumMarkers)
-			num = static_cast<int>(m_convParam);
+		if (mode == NumMarkers)
+			num = static_cast<int>(m_convMode[2]);
 		else
-			num = rng().randGeometric(m_convParam);
+			num = rng().randGeometric(m_convMode[2]);
 
 		// if conversion reaches end of chromosome, it is an recombination event
 		if (num == 0 || num >= ind.lociLeft(index))
@@ -399,8 +407,8 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 			return num;
 	} else {
 		double len = 0;
-		if (m_convMode == CONVERT_TractLength)
-			len = m_convParam;
+		if (mode == TractLength)
+			len = m_convMode[2];
 		else
 			len = rng().randExponential(len);
 		//
@@ -594,7 +602,8 @@ void recombinator::transmitGenotype(const individual & parent,
 	//
 	//  at each locus, check if recombine after it, if so
 	//  recombine.
-	bool withConversion = fcmp_gt(m_convProb, 0);
+	bool withConversion = static_cast<int>(m_convMode[0]) != NoConversion
+		&& m_convMode[1] > 0.;
 	if (m_algorithm == 0) {
 		// negative means no conversion is pending.
 		int convCount = -1;
@@ -637,7 +646,7 @@ void recombinator::transmitGenotype(const individual & parent,
 					// if conversion happens
 					if (withConversion &&
 					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
-					    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+					    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 						// convCount will be decreased, until reconversion completes
 						// or another recombination happens
 						convCount = markersConverted(gt + 1, parent);
@@ -665,7 +674,7 @@ void recombinator::transmitGenotype(const individual & parent,
 			//
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-			    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+			    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 				convCount = markersConverted(gt, parent);
 				DBG_DO_(m_convSize[convCount]++);
 			}
@@ -693,7 +702,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				// conversion event for this recombination event
 				if (withConversion &&
 				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-				    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+				    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
@@ -728,7 +737,7 @@ void recombinator::transmitGenotype(const individual & parent,
 			curCp = (curCp + 1) % 2;
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-			    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+			    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 				convCount = markersConverted(gt, parent);
 				DBG_DO_(m_convSize[convCount]++);
 			}
@@ -753,7 +762,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				// conversion event for this recombination event
 				if (withConversion &&
 				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-				    (m_convProb == 1. || rng().randUniform01() < m_convProb)) {
+				    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
