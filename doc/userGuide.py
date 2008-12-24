@@ -791,6 +791,35 @@ pop = simu.extract(0)
 [ind.intInfo('mother_idx') for ind in pop.individuals()][:10]
 #end
 
+#file log/haplodiploidMating.log
+pop = population(10, ploidy=Haplodiploid, loci=[5, 5],
+    infoFields=['father_idx', 'mother_idx'])
+pop.setVirtualSplitter(sexSplitter())
+simu = simulator(pop, haplodiploidMating())
+simu.evolve(
+    preOps = [initByValue([0]*10, subPop=[(0, 0)]),
+        initByValue([1]*10+[2]*10, subPop=[(0, 1)])],
+    ops = [parentsTagger(),
+        dumper(structure=False, stage=PrePostMating)],
+    gen = 1
+)
+#Dump(simu.population(0))
+#end
+
+#file log/selfMating.log
+pop = population(20, loci=[8])
+# every chromosomes are different. :-)
+for idx, ind in enumerate(pop.individuals()):
+    ind.setGenotype([idx*2], 0)
+    ind.setGenotype([idx*2+1], 1)
+
+simu = simulator(pop, selfMating())
+simu.evolve(
+    ops = [recombinator(rate=0.1)],
+    gen = 1
+)
+Dump(simu.population(0), width=3, structure=False, max=10)
+#end
 
 #file log/randomMating.log
 def randomMating(numOffspring = 1., 

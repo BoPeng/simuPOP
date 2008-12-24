@@ -74,6 +74,10 @@ initByFreq::initByFreq(const matrix & alleleFreq, const vectoru & loci,
 
 bool initByFreq::apply(population & pop)
 {
+    // initSex because initByValue may depend on the sex information
+    // determined here.
+	if (m_initSex)
+		initSex::apply(pop);
 	subPopList subPops = applicableSubPops();
 
 	if (subPops.empty()) {
@@ -127,8 +131,6 @@ bool initByFreq::apply(population & pop)
 			}
 		}
 	}
-	if (m_initSex)
-		initSex::apply(pop);
 	return true;
 }
 
@@ -156,6 +158,10 @@ initByValue::initByValue(intMatrix value, const vectoru & loci, const vectoru & 
 
 bool initByValue::apply(population & pop)
 {
+    // initSex because initByValue may depend on the sex information
+    // determined here.
+	if (m_initSex)
+		initSex::apply(pop);
 #ifndef OPTIMIZED
 	UINT gSz = m_value[0].size();
 	for (size_t v = 1; v < m_value.size(); ++v)
@@ -221,8 +227,6 @@ bool initByValue::apply(population & pop)
 			}
 		}
 	}
-	if (m_initSex)
-		initSex::apply(pop);
 	return true;
 }
 
