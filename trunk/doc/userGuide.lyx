@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6057,8 +6057,80 @@ lstparams "caption={Random mating with alpha individuals},label={alphaMating}"
 Mating in haplodiploid populations
 \end_layout
 
+\begin_layout Standard
+Male individuals in a haplodiploid population are derived from unfertilized
+ eggs and thus have only one set of chromosomes.
+ Mating in such a population is handled by a specifial mating scheme called
+ 
+\family typewriter
+haplodiplodMating
+\family default
+.
+ This mating scheme chooses a pair of parents randomly and produces some
+ offspring.
+ It transmit maternal chromosomes and paternal chromosomes (the only copy)
+ to female offspring, and only maternal chromosomes to male offspring.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "haplodiploidMating"
+
+\end_inset
+
+ demonstrates how to use this mating scheme.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/haplodiploidMating.log"
+lstparams "caption={Random mating in haplodiploid populations},label={haplodiploidMating}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that this mating scheme does not support recombination and the standard
+ recombinator does not work with haplodiploid populations.
+ Please refer to the next Chapter for how to define a customized genotype
+ transmitter to handle such a situation.
+\end_layout
+
 \begin_layout Subsection
-Selfing
+Self-fertilization
+\end_layout
+
+\begin_layout Standard
+Some plant populations evolve through self-fertimization.
+ That is to say, a parent fertilizes with itself during the production of
+ offspring (seeds).
+ In a 
+\family typewriter
+selfMating
+\family default
+ mating scheme, parents are chosen randomly (one at a time), and are used
+ twice to produce two homologous sets of offspring chromosomes.
+ The standard recombinator can be used with this mating scheme.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "selfMating"
+
+\end_inset
+
+ initializes each chromosome with different alleles to demonstrate how these
+ alleles are transmitted in this population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/selfMating.log"
+lstparams "caption={Selfing mating scheme},label={selfMating}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -6674,6 +6746,10 @@ mendelianGenoTransmitter
 randomMating
 \family default
  scheme if it is used.
+\end_layout
+
+\begin_layout Subsection
+Customized chromosome type
 \end_layout
 
 \begin_layout Subsection

@@ -111,17 +111,17 @@ bool dumper::apply(population & pop)
 				ind->display(out, m_width, m_chrom, m_loci);
 				out << endl;
 
-				if (m_max > 0 && count > m_max && count < pop.popSize()) {
-					cout << "population size is " << pop.popSize() << " but dumper() only dump "
-					     << m_max << " individuals" << endl
-					     << "Use parameter max=-1 to output all individuals." << endl;
+				if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
 					goto done;
-				}
 			}
 		}
 
 done:
-		out << "End of individual genotype.\n" << endl;
+        if (m_max > pop.popSize())
+    		out << "End of individual genotype.\n" << endl;
+        else
+    		out << "End of individual genotype (" << m_max << " out of "
+                << pop.popSize() << ").\n" << endl;
 
 		int ancGen = m_ancGen;
 		if (ancGen > pop.ancestralGens())
