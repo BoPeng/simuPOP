@@ -40,6 +40,7 @@
 // under parent directory. Included with -I.. option.
 #include "config.h"
 
+// For the handling of binary modules
 #ifdef _MSC_VER
 
 #  define WORDBIT (8 * sizeof(unsigned))
@@ -130,17 +131,63 @@ const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 #define PopSWIGType "simuPOP::population *"
 #define IndSWIGType "simuPOP::individual *"
 
+// For genotypic structure
 enum Sex {
     Male = 1,
     Female = 2
 };
 
+// For genotypic structure
 enum ChromType {
-    Customized = 0,
-    Autosome = 1,
-    ChromosomeX = 2,
-    ChromosomeY = 3,
+    Customized = 11,
+    Autosome = 12,
+    ChromosomeX = 13,
+    ChromosomeY = 14,
 };
+
+// For numOffspring and gene conversion
+enum Distribution {
+	BinomialDistribution = 21,
+	ExponentialDistribution = 22,
+	GeometricDistribution = 23,
+	PoissonDistribution	= 24,
+	UniformDistribution	= 25
+};
+
+// For sexMode
+enum SexMode {
+	NoSex = 30,
+	RandomSex = 31, 
+	ProbOfMale = 32, 
+	NumOfMale = 33, 
+	NumOfFemale = 34
+};
+
+// For gene conversion
+enum ConversionMode {
+	NoConversion = 41,
+	NumMarkers = 42,
+	TractLength = 43,
+};
+
+// For pedigree tracing
+enum RelativeType {
+	Unrelated = 51,      // do nothing
+	Self = 51,           // individual himself or herself.
+	Offspring = 53,      // All offspring with all spouses (if there are more than one spouse)
+	Spouse = 54,         // All spouses (with at least one offspring)
+	FullSibling = 55,    // Siblings who share two parents
+	Sibling = 56,        // Siblings who share at least one parent
+};
+
+// For pedigree tracing
+enum SexChoice {
+	AnySex = 0,
+	MaleOnly = 1,
+	FemaleOnly = 2,
+	OppositeSex = 3
+};
+
 
 typedef unsigned char TraitIndexType;
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
