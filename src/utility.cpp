@@ -2064,12 +2064,17 @@ unsigned long RNG::generateRandomSeed()
 	unsigned long seed;
 	FILE * devrandom;
 
-
 	if ((devrandom = fopen("/dev/urandom", "r")) != NULL) {
-		fread(&seed, sizeof(seed), 1, devrandom);
+		UINT sz = fread(&seed, sizeof(seed), 1, devrandom);
+		(void)sz; // suppress a warning.
+		DBG_FAILIF(sz != 1, RuntimeError,
+			"Incorrect bits of random digits are read from /dev/urandom");
 		fclose(devrandom);
 	} else if ((devrandom = fopen("/dev/random", "r")) != NULL) {
-		fread(&seed, sizeof(seed), 1, devrandom);
+		UINT sz = fread(&seed, sizeof(seed), 1, devrandom);
+		(void)sz; // suppress a warning.
+		DBG_FAILIF(sz != 1, RuntimeError,
+			"Incorrect bits of random digits are read from /dev/urandom");
 		fclose(devrandom);
 	} else {
 		// this is not the best method, but I am out of ideas
