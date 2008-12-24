@@ -22,10 +22,10 @@ def setGen(pop, off, dad, mom):
 class TestMatingSchemes(unittest.TestCase):
 
    
-    def testBinomialSelection(self):
-        'Testing binomialSelection mating scheme (FIXME: imcomplete)'
+    def testRandomSelection(self):
+        'Testing randomSelection mating scheme (FIXME: imcomplete)'
         simu = simulator(population(10, loci=[1], ploidy=1),
-            binomialSelection())
+            randomSelection())
 
     def testSelection(self):
         'Testing selections (FIXME: imcomplete)'
@@ -132,8 +132,8 @@ class TestMatingSchemes(unittest.TestCase):
             infoFields = parFields + sibFields + offFields + cousinFields)
         def findCousin(pop):
             ped = pedigree(pop, infoFields=pop.infoFields())
-            ped.locateRelatives(REL_Offspring, offFields);
-            ped.locateRelatives(REL_FullSibling, sibFields);
+            ped.locateRelatives(Offspring, offFields);
+            ped.locateRelatives(FullSibling, sibFields);
             ped.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
                 pathFields = [parFields, sibFields, offFields],
                 resultFields = cousinFields)
