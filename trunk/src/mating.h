@@ -748,36 +748,13 @@ public:
 		PyObject * param = NULL,
 		bool replacement = true) :
 		randomParentChooser(replacement),
-		m_infoFields(infoFields), m_func(func), m_param(NULL),
+		m_infoFields(infoFields), m_func(func), m_param(param),
 		m_infoIdx(0), m_degenerate(false)
 	{
 		m_numParents = 2;
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
 			"At least one information field should be provided for this infoParentsChooser");
-		if (param && param != Py_None) {
-			m_param = param;
-			Py_XINCREF(param);
-		}
 	}
-
-
-	~infoParentsChooser()
-	{
-		if (m_param)
-			Py_DECREF(m_param);
-	}
-
-
-	infoParentsChooser(const infoParentsChooser & rhs) :
-		randomParentChooser(rhs),
-		m_infoFields(rhs.m_infoFields),
-		m_func(rhs.m_func),
-		m_param(rhs.m_param)
-	{
-		if (m_param)
-			Py_INCREF(m_param);
-	}
-
 
 	parentChooser * clone() const
 	{
@@ -795,7 +772,7 @@ private:
 	vectorstr m_infoFields;
 
 	pyFunc m_func;
-	PyObject * m_param;
+	pyObject m_param;
 
 	vectori m_infoIdx;
 	// if there is no valid individual, this mating schemes

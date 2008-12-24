@@ -180,9 +180,9 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 
 
 	if (infoSize() <= 1)
-		return m_func.call("(Oi)", m_numArray, gen, PyObj_As_Double);
+		return m_func.call("(Oi)", PyObj_As_Double, m_numArray, gen);
 	else
-		return m_func.call("(OiO)", m_numArray, gen, m_infoArray, PyObj_As_Double);
+		return m_func.call("(OiO)", PyObj_As_Double, m_numArray, gen, m_infoArray);
 	return 0.;
 }
 

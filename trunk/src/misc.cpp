@@ -64,7 +64,7 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 	// get current population size
 	vectori Ntmp(1, N);
 	if (NtFunc.isValid()) {
-		Ntmp = NtFunc.call("(i)", curGen, PyObj_As_IntArray);
+		Ntmp = NtFunc.call("(i)", PyObj_As_IntArray, curGen);
 		DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 			"Return value from NtFunc should be an array of size >= 1");
 		// Ntmp[0] will be the total size.
@@ -102,7 +102,7 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 		// first get N(t-1), if it has not been calculated
 		if (idx + 1 >= Nt.size() ) {
 			if (NtFunc.isValid()) {
-				Ntmp = NtFunc.call("(i)", curGen - idx - 1, PyObj_As_IntArray);
+				Ntmp = NtFunc.call("(i)", PyObj_As_IntArray, curGen - idx - 1);
 				DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 					"Return value from NtFunc should be an array of size >= 1");
 				// Ntmp[0] will be the total size.
@@ -115,7 +115,7 @@ vectorf FreqTrajectoryStoch(ULONG curGen, double freq, long N,
 		// get fitness
 		if (fitnessFunc.isValid()) {
 			if (idx + 1 >= s1_cache.size() ) {
-				s_vec = fitnessFunc.call("(i)", curGen - idx - 1, PyObj_As_Array);
+				s_vec = fitnessFunc.call("(i)", PyObj_As_Array, curGen - idx - 1);
 
 				DBG_ASSERT(s_vec.size() == 3 || s_vec[0] != 0., ValueError,
 					"Returned value from sFunc should be a vector of size 3");
@@ -397,7 +397,7 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 	// get current population size
 	vectori Ntmp(1, N);
 	if (NtFunc.isValid()) {
-		Ntmp = NtFunc.call("(i)", curGen, PyObj_As_IntArray);
+		Ntmp = NtFunc.call("(i)", PyObj_As_IntArray, curGen);
 		DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 			"Return value from NtFunc should be an array of size >= 1");
 		// Ntmp[0] will be the total size.
@@ -435,7 +435,7 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 		// first get N(t-1), if it has not been calculated
 		if (idx + 1 >= Nt.size() ) {
 			if (NtFunc.isValid()) {
-				Ntmp = NtFunc.call("(i)", curGen - idx - 1, PyObj_As_IntArray);
+				Ntmp = NtFunc.call("(i)", PyObj_As_IntArray, curGen - idx - 1);
 				DBG_ASSERT(Ntmp.size() >= 1, ValueError,
 					"Return value from NtFunc should be an array of size >= 1");
 				// Ntmp[0] will be the total size.
@@ -451,7 +451,7 @@ matrix FreqTrajectoryMultiStoch(ULONG curGen,
 			// compile allele frequency... and pass
 			vectorf sAllTmp;
 			PyObject * freqObj = Double_Vec_As_NumArray(xt.begin() + nLoci * idx, xt.begin() + nLoci * (idx + 1) );
-			sAllTmp = fitnessFunc.call("(iO)", curGen - idx - 1, freqObj, PyObj_As_Array);
+			sAllTmp = fitnessFunc.call("(iO)", PyObj_As_Array, curGen - idx - 1, freqObj);
 
 			if (sAllTmp.size() == 3 * nLoci) {
 				for (i = 0; i < nLoci; ++i) {
@@ -675,7 +675,7 @@ matrix ForwardFreqTrajectory(
 			for (size_t i = 0; i < nSP; ++i)
 				PyTuple_SetItem(lastSize, i,
 					PyInt_FromLong(idx == curGen ? 0 : Nt[idx - curGen - 1][i]));
-			Ntmp = NtFunc.call("(iO)", idx, lastSize, PyObj_As_IntArray);
+			Ntmp = NtFunc.call("(iO)", PyObj_As_IntArray, idx, lastSize);
 			Py_XDECREF(lastSize);
 			DBG_ASSERT(Ntmp.size() == nSP, ValueError,
 				"Return value from NtFunc should be an array of size " + toStr(nSP));
@@ -730,7 +730,7 @@ matrix ForwardFreqTrajectory(
 				// compile allele frequency... and pass
 				PyObject * freqObj = Double_Vec_As_NumArray(a_frq[sp].begin(),
 					a_frq[sp].end());
-				sAllTmp = fitnessFunc.call("(iO)", idx, freqObj, PyObj_As_Array);
+				sAllTmp = fitnessFunc.call("(iO)", PyObj_As_Array, idx, freqObj);
 
 				if (sAllTmp.size() == 3 * nLoci) {
 					sAll.resize(3 * nLoci);

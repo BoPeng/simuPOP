@@ -192,9 +192,9 @@ double pyPenetrance::penet(individual * ind)
 
 	double resDouble;
 	if (infoSize() <= 1)
-		resDouble = m_func.call("(O)", m_numArray, PyObj_As_Double);
+		resDouble = m_func.call("(O)", PyObj_As_Double, m_numArray);
 	else
-		resDouble = m_func.call("(OO)", m_numArray, m_infoArray, PyObj_As_Double);
+		resDouble = m_func.call("(OO)", PyObj_As_Double, m_numArray, m_infoArray);
 
 	// make sure the returned value is legitimate.
 	DBG_ASSERT(fcmp_ge(resDouble, 0.) && fcmp_le(resDouble, 1.),
