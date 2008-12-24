@@ -193,38 +193,13 @@ public:
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(NULL)
+		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
 		DBG_FAILIF(!m_rateFunc.isValid() && !m_indFunc.isValid(),
 			ValueError, "Please specify either rateFunc or indFunc");
 		DBG_FAILIF(m_rateFunc.isValid() && m_indFunc.isValid(),
 			ValueError, "Please specify only one of rateFunc or indFunc");
-
-		if (m_param != NULL && m_param != Py_None) {
-			m_param = param;
-			Py_INCREF(m_param);
-		}
 	}
-
-
-	/// destructor
-	virtual ~pyMigrator()
-	{
-		if (m_param != NULL)
-			Py_DECREF(m_param);
-	}
-
-
-	/// CPPONLY
-	pyMigrator(const pyMigrator & rhs) : migrator(rhs),
-		m_rateFunc(rhs.m_rateFunc),
-		m_indFunc(rhs.m_indFunc),
-		m_param(rhs.m_param)
-	{
-		if (m_param != NULL)
-			Py_INCREF(m_param);
-	}
-
 
 	/// deep copy of a \c pyMigrator
 	virtual baseOperator * clone() const
@@ -254,7 +229,7 @@ private:
 	vectoru m_loci;
 
 	/// parameters to indFunc
-	PyObject * m_param;
+	pyObject m_param;
 
 };
 

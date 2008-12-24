@@ -969,16 +969,6 @@ public:
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr());
 
-	/// destructor
-	virtual ~pyOperator()
-	{
-		if (m_param != NULL)
-			Py_DECREF(m_param);
-	};
-
-	/// CPPONLY need a copy operator because of m_func
-	pyOperator(const pyOperator & rhs);
-
 	/// HIDDEN
 	virtual baseOperator * clone() const
 	{
@@ -1005,7 +995,7 @@ private:
 	pyFunc m_func;
 
 	/// parammeters
-	PyObject * m_param;
+	pyObject m_param;
 
 	// whether or not pass pop, dad, mon in a duringMating py function.
 	bool m_passOffspringOnly;

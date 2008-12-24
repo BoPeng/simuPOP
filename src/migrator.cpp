@@ -214,7 +214,7 @@ bool pyMigrator::apply(population & pop)
 
 		DBG_DO(DBG_MIGRATOR, cout << "Current population size " << pop.subPopSizes() << endl);
 
-		matrix rate = m_rateFunc.call("(iO)", pop.gen(), curSize, PyObj_As_Matrix);
+		matrix rate = m_rateFunc.call("(iO)", PyObj_As_Matrix, pop.gen(), curSize);
 
 		DBG_DO(DBG_MIGRATOR, cout << "Migration rate: " << rate << endl);
 		Py_XDECREF(curSize);
@@ -251,16 +251,16 @@ bool pyMigrator::apply(population & pop)
 		}
 		// hold the return subpopulation id.
 		int resID = 0;
-		if (m_param == NULL) {
+		if (m_param.isValid()) {
 			if (m_loci.empty())
-				resID = m_indFunc.call("(O)", indObj, PyObj_As_Int);
+				resID = m_indFunc.call("(OO)", PyObj_As_Int, indObj, m_param.object());
 			else
-				resID = m_indFunc.call("(OO)", indObj, numArray, PyObj_As_Int);
+				resID = m_indFunc.call("(OOO)", PyObj_As_Int, indObj, numArray, m_param.object());
 		} else {
 			if (m_loci.empty())
-				resID = m_indFunc.call("(OO)", indObj, m_param, PyObj_As_Int);
+				resID = m_indFunc.call("(O)", PyObj_As_Int, indObj);
 			else
-				resID = m_indFunc.call("(OOO)", indObj, numArray, m_param, PyObj_As_Int);
+				resID = m_indFunc.call("(OO)", PyObj_As_Int, indObj, numArray);
 		}
 		it->setInfo(resID, info);
 		Py_DECREF(indObj);

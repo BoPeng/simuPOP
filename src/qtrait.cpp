@@ -139,7 +139,7 @@ double pyQuanTrait::qtrait(individual * ind)
 		for (UINT p = 0; p < pEnd; ++p)
 			m_alleles[j++] = ind->allele(m_loci[i], p);
 
-	return m_func.call("(O)", m_numArray, PyObj_As_Double);
+	return m_func.call("(O)", PyObj_As_Double, m_numArray);
 }
 
 

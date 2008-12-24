@@ -268,30 +268,13 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 	int begin, int end, int step, vectorl at,
 	const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
 	baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
-	m_func(func), m_param(NULL), m_passOffspringOnly(passOffspringOnly)
+	m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 {
 	if (!m_func.isValid())
 		throw ValueError("Passed variable is not a callable Python function.");
 
-	if (param != NULL && param != Py_None) {
-		m_param = param;
-		Py_XINCREF(m_param);
-	}
-
 	this->setFormOffGenotype(formOffGenotype);
 }
-
-
-pyOperator::pyOperator(const pyOperator & rhs) :
-	baseOperator(rhs),
-	m_func(rhs.m_func),
-	m_param(rhs.m_param),
-	m_passOffspringOnly(rhs.m_passOffspringOnly)
-{
-	if (m_param != NULL)
-		Py_INCREF(m_param);
-}
-
 
 bool pyOperator::apply(population & pop)
 {
@@ -307,10 +290,10 @@ bool pyOperator::apply(population & pop)
 	// parammeter list, ref count increased
 	bool resBool;
 	// parenthesis is needed since PyCallFuncX are macros.
-	if (m_param == NULL)
-		resBool = m_func.call("(O)", popObj, PyObj_As_Bool);
+	if (m_param.isValid())
+		resBool = m_func.call("(OO)", PyObj_As_Bool, popObj, m_param.object());
 	else
-		resBool = m_func.call("(OO)", popObj, m_param, PyObj_As_Bool);
+		resBool = m_func.call("(O)", PyObj_As_Bool, popObj);
 
 	Py_DECREF(popObj);
 	return resBool;
@@ -327,18 +310,15 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 		"Could not pass offspring to the provided function. \n"
 		"Compiled with the wrong version of SWIG?");
 
-	PyObject * arglist, * result;
+	cout << "HERE" << endl;
+	bool res;
 	if (m_passOffspringOnly) {
 		// parammeter list, ref count increased
-		if (m_param == NULL)
-			arglist = Py_BuildValue("(O)", offObj);
+		if (m_param.isValid())
+			res = m_func.call("(OO)", PyObj_As_Bool, offObj, m_param.object());
 		else
-			arglist = Py_BuildValue("(OO)", offObj, m_param);
+			res = m_func.call("(O)", PyObj_As_Bool, offObj);
 
-		// we do not need to catch exceptions here,
-		// our wrapper will do that
-		result = PyEval_CallObject(m_func.func(), arglist);
-		Py_DECREF(offObj);
 	} else {
 		// call the python function, pass all the parameters to it.
 		// get pop object
@@ -364,33 +344,18 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 			"Compiled with the wrong version of SWIG?");
 
 		// parammeter list, ref count increased
-		if (m_param == NULL)
-			arglist = Py_BuildValue("(OOOO)", popObj, offObj, dadObj, momObj);
+		if (m_param.isValid())
+			res  = m_func.call("(OOOOO)", PyObj_As_Bool, popObj, offObj, dadObj, momObj, m_param.object());
 		else
-			arglist = Py_BuildValue("(OOOOO)", popObj, offObj, dadObj, momObj, m_param);
+			res = m_func.call("(OOOO)", PyObj_As_Bool, popObj, offObj, dadObj, momObj);
 
-		// we do not need to catch exceptions here,
-		// our wrapper will do that
-		result = PyEval_CallObject(m_func.func(), arglist);
-
-		Py_DECREF(offObj);
 		Py_DECREF(popObj);
 		Py_DECREF(dadObj);
 		Py_DECREF(momObj);
 	}
-	// release arglist
-	Py_DECREF(arglist);
+	Py_DECREF(offObj);
 
-	if (result == NULL) {
-		PyErr_Print();
-		throw ValueError("Invalid return from provided function. (Be sure to return True or False)");
-	}
-	// result should be a boolean value
-	bool resBool;
-	// defined in utility.h
-	PyObj_As_Bool(result, resBool);
-	Py_DECREF(result);
-	return resBool;
+	return res;
 }
 
 

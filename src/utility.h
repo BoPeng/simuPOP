@@ -49,6 +49,7 @@ extern "C" {
 
 #include "simuPOP_cfg.h"
 
+#include <stdarg.h>
 #include <iostream>
 using std::ostream;
 using std::iostream;
@@ -1339,50 +1340,82 @@ const string fileExtension(const string & filename);
 // / Parameter polymorphism
 // ////////////////////////////////////////////////////////////
 
-/// A wrapper to a python function
-class pyFunc
+/** A wrapper to a python function
+ *  CPPONLY
+ */
+class pyObject
 {
 public:
-	pyFunc(PyObject * func) : m_func(NULL)
+	pyObject(PyObject * obj) : m_object(NULL)
 	{
-		if (func != NULL && func != Py_None)
-			m_func = func;
-		Py_XINCREF(m_func);
-		DBG_ASSERT(m_func == NULL || PyCallable_Check(m_func), ValueError,
-			"Passed parameter should be None or a Python function");
+		if (obj != NULL && obj != Py_None)
+			m_object = obj;
+
+		Py_XINCREF(m_object);
 	}
 
 
-	~pyFunc()
+	~pyObject()
 	{
-		Py_XDECREF(m_func);
+		Py_XDECREF(m_object);
 	}
 
 
-	pyFunc(const pyFunc & rhs) : m_func(rhs.m_func)
+	pyObject(const pyObject & rhs) : m_object(rhs.m_object)
 	{
-		Py_XINCREF(m_func);
+		Py_XINCREF(m_object);
 	}
 
 
-	PyObject * func() const
+	PyObject * object() const
 	{
-		return m_func;
+		return m_object;
 	}
 
 
 	bool isValid() const
 	{
-		return m_func != NULL;
+		return m_object != NULL;
+	}
+
+
+private:
+	PyObject * m_object;
+};
+
+
+/** A wrapper to a python function
+ *  CPPONLY
+ */
+class pyFunc
+{
+public:
+	pyFunc(PyObject * func) : m_func(func)
+	{
+		DBG_ASSERT(!m_func.isValid() || PyCallable_Check(m_func.object()),
+			ValueError,
+			"Passed parameter should be None or a Python function");
+	}
+
+
+	bool isValid() const
+	{
+		return m_func.isValid();
+	}
+
+
+	PyObject * func() const
+	{
+		return m_func.object();
 	}
 
 
 	template <typename T>
-	T call(void converter(PyObject *, T &))
+	T call(char * format, void converter(PyObject *, T &))
 	{
 		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue("()");
-		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+		PyObject * arglist = Py_BuildValue(format);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
@@ -1397,11 +1430,11 @@ public:
 
 
 	template <typename T, typename T1>
-	T call(char * format, T1 param, void converter(PyObject *, T &))
+	T call(char * format, void converter(PyObject *, T &), T1 param)
 	{
 		/* use local scope variable to avoid redefinition */
 		PyObject * arglist = Py_BuildValue(format, param);
-		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
@@ -1416,11 +1449,11 @@ public:
 
 
 	template <typename T, typename T1, typename T2>
-	T call(char * format, T1 param1, T2 param2, void converter(PyObject *, T &))
+	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2)
 	{
 		/* use local scope variable to avoid redefinition */
 		PyObject * arglist = Py_BuildValue(format, param1, param2);
-		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
@@ -1434,28 +1467,12 @@ public:
 	}
 
 
-	template <typename T1, typename T2>
-	PyObject * directCall(char * format, T1 param1, T2 param2)
-	{
-		/* use local scope variable to avoid redefinition */
-		PyObject * arglist = Py_BuildValue(format, param1, param2);
-		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed\n");
-		}
-		return pyResult;
-	}
-
-
 	template <typename T, typename T1, typename T2, typename T3>
-	T call(char * format, T1 param1, T2 param2, T3 param3, void converter(PyObject *, T &))
+	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2, T3 param3)
 	{
 		/* use local scope variable to avoid redefinition */
 		PyObject * arglist = Py_BuildValue(format, param1, param2, param3);
-		PyObject * pyResult = PyEval_CallObject(m_func, arglist);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
@@ -1469,8 +1486,82 @@ public:
 	}
 
 
+	template <typename T, typename T1, typename T2, typename T3, typename T4>
+	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2, T3 param3, T4 param4)
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue(format, param1, param2, param3, param4);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+	template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+	T call(char * format, void converter(PyObject *, T &), T1 param1, T2 param2, T3 param3, T4 param4, T5 param5)
+	{
+		/* use local scope variable to avoid redefinition */
+		PyObject * arglist = Py_BuildValue(format, param1, param2, param3, param4, param5);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+// 	// Note how ... are passed to Py_BuildValue
+// 	template <typename T>
+// 	T call(char * format, void converter(PyObject *, T &), ...)
+// 	{
+// 		va_list argptr;
+// 		va_start(argptr, converter);
+// 		PyObject * arglist = Py_BuildValue(format, argptr);
+// 		va_end(argptr);
+// 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+// 
+// 		Py_XDECREF(arglist);
+// 		if (pyResult == NULL) {
+// 			PyErr_Print();
+// 			throw ValueError("Function call failed.\n");
+// 		}
+// 		T retValue;
+// 		converter(pyResult, retValue);
+// 		Py_DECREF(pyResult);
+// 		return retValue;
+// 	}
+
+	template <typename T1, typename T2>
+	PyObject * directCall(char * format, T1 param1, T2 param2)
+	{
+		PyObject * arglist = Py_BuildValue(format, param1, param2);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+			PyErr_Print();
+			throw ValueError("Function call failed\n");
+		}
+		return pyResult;
+	}
+
+
 private:
-	PyObject * m_func;
+	pyObject m_func;
 };
 
 /** This class defines an interface using which both a integer number and
