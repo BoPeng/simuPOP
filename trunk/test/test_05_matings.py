@@ -896,7 +896,7 @@ class TestMatingSchemes(unittest.TestCase):
         for i in range(100):
             pop.individual(i).setSex(Male)
             pop.individual(100+i).setSex(Female)
-        simu = simulator(pop, polygamousMating(polySex=Male, polyNum=3, numOffspring=2, replacement=True))
+        simu = simulator(pop, polygamousMating(polySex=Male, polyNum=3, numOffspring=2))
         simu.evolve(
             preOps = [],
             ops = [parentsTagger()],
