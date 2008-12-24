@@ -31,8 +31,7 @@ from simuPOP import *
 # This is implemented in the following Python during-mating operator:
 #
 class haplodiploidRecombinator(pyOperator):
-    def __init__(self, intensity, rate, loci, convProb, convMode, convParam,
-            *args, **kwargs):
+    def __init__(self, intensity, rate, loci, convMode, *args, **kwargs):
         '''
         Create an instance of a Python operator, which will call
         ``self.transmitGenotype`` to create offspring. For performance
@@ -43,8 +42,7 @@ class haplodiploidRecombinator(pyOperator):
         fits your need.
         '''
         # This operator is used to recombine maternal chromosomes
-        self.recombinator = recombinator(intensity, rate, loci,
-            convProb, convMode, convParam)
+        self.recombinator = recombinator(intensity, rate, loci, convMode)
         # this operator is used to copy paternal chromosomes
         self.copier = genoTransmitter()
         self.initialized = False
@@ -73,11 +71,8 @@ class haplodiploidRecombinator(pyOperator):
 
 
 def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
-        convProb=0, convMode=CONVERT_NumMarkers, convParam=1, numOffspring = 1.,
-        numOffspringFunc = None, numOffspringParam= 1, mode = MATE_NumOffspring,
-		sexParam = 0.5, sexMode = MATE_RandomSex, ops = [], newSubPopSize = [],
-		newSubPopSizeFunc = None, newSubPopSizeExpr = "", 
-		subPop = (), weight = 0):
+        convMode=NoConversion, numOffspring = 1., sexMode = RandomSex,
+        ops = [], subPopSize = [], subPop = (), weight = 0):
     '''
     Return a mating scheme that uses random parents chooser and a customized
     during mating operator. A large number of parameters are provided to support
@@ -96,12 +91,9 @@ def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
     return pyMating(
         chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(
-            [haplodiploidRecombinator(intensity, rate, loci, convProb,
-                convMode, convParam)], 2, 
-            numOffspring, numOffspringFunc,
-            numOffspringParam, mode, sexParam, sexMode),
-        newSubPopSizeExpr = newSubPopSizeExpr,
-        newSubPopSizeFunc = newSubPopSizeFunc,
+            [haplodiploidRecombinator(intensity, rate, loci, convMode)], 2, 
+            numOffspring, sexMode),
+        subPopSize = subPopSize,
         subPop = subPop,
         weight = weight)
 
