@@ -87,7 +87,7 @@ class TestMatingSchemes(unittest.TestCase):
         for i in range(3):
             assert num[i] < mean + 50 and num[i] > mean - 50
         #
-        # MATE_GeometricDistribution
+        # GeometricDistribution
         p = 0.33
         cnt = self.getFamSize(randomMating(
             numOffspring=(GeometricDistribution, p)), N=10000)
@@ -703,7 +703,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testMateProbOfMale(self):
         '''Testing assigning offspring sex by probability'''
         pop = population(10000)
-        simu = simulator(pop, randomMating(sexParam=0.3, sexMode=MATE_ProbOfMale))
+        simu = simulator(pop, randomMating(sexMode=(ProbOfMale, 0.3)))
         simu.evolve(
             preOps = [initByFreq([0.5, 0.5])],
             ops = [
@@ -719,8 +719,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testMateNumOfMale(self):
         '''Testing assigning certain number of males among offspring'''
         pop = population(10000)
-        simu = simulator(pop, randomMating(numOffspring=4, sexParam=1,
-            sexMode=MATE_NumOfMale))
+        simu = simulator(pop, randomMating(numOffspring=4, sexMode=(NumOfMale, 1)))
         simu.evolve(
             preOps = [initByFreq([0.5, 0.5])],
             ops = [
@@ -736,8 +735,7 @@ class TestMatingSchemes(unittest.TestCase):
     def testMateNumOfFemale(self):
         '''Testing assigning certain number of females among offspring'''
         pop = population(10000)
-        simu = simulator(pop, randomMating(numOffspring=4, sexParam=1,
-            sexMode=MATE_NumOfFemale))
+        simu = simulator(pop, randomMating(numOffspring=4, sexMode=(NumOfFemale, 1)))
         simu.evolve(
             preOps = [initByFreq([0.5, 0.5])],
             ops = [
