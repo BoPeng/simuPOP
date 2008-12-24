@@ -124,7 +124,8 @@ done:
                 << pop.popSize() << ").\n" << endl;
 
 		int ancGen = m_ancGen;
-		if (ancGen > pop.ancestralGens())
+		// ancGen can be -1
+		if (ancGen > static_cast<int>(pop.ancestralGens()))
 			ancGen = pop.ancestralGens();
 		for (size_t gen = 1; gen <= ancGen; ++gen) {
 			pop.useAncestralGen(gen);
