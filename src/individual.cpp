@@ -89,6 +89,7 @@ int individual::__cmp__(const individual & rhs) const
 bool individual::validIndex(UINT idx) const
 {
 	UINT cnt = totNumLoci();
+
 	return validIndex(idx % cnt, idx / cnt);
 }
 
@@ -105,15 +106,15 @@ bool individual::validIndex(UINT idx, UINT p, UINT ch) const
 	// well, this might change later.
 	if (ploidy() != 2)
 		return true;
-	
+
 	if (p == 1 && isHaplodiploid() && sex() == Male)
 		return false;
-	
-    Sex s = sex();
-    UINT t = chromType(ch);
-	if ((s == Female && t == ChromosomeY) || // female chromsome Y
-		(s == Male &&  // second copy of chromosome X and first copy of chromosome Y
-			((p == 1 && t == ChromosomeX) || (p == 0 && t == ChromosomeY))))
+
+	Sex s = sex();
+	UINT t = chromType(ch);
+	if ((s == Female && t == ChromosomeY) ||    // female chromsome Y
+	    (s == Male &&                           // second copy of chromosome X and first copy of chromosome Y
+	     ((p == 1 && t == ChromosomeX) || (p == 0 && t == ChromosomeY))))
 		return false;
 
 	return true;
@@ -213,7 +214,7 @@ void individual::display(ostream & out, int width, const vectori & chrom, const 
 			out << "| ";
 	}
 	if (infoSize() != 0) {
-	    out << "| ";
+		out << "| ";
 		for (vectorinfo::const_iterator info = infoBegin(); info != infoEnd(); ++info)
 			out << " " << setprecision(2) << *info;
 	}

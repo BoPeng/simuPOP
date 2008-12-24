@@ -94,9 +94,9 @@ bool mutator::apply(population & pop)
 				// alleleBegin is *not* ordered, so the mutation is random
 				AlleleRef ptr = *(pop.alleleBegin(locus) + pos);
 				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
-					                     << " of individual " << (pos / pop.ploidy()) << " from " << int (ptr));
+					                     << " of individual " << (pos / pop.ploidy()) << " from " << int(ptr));
 				mutate(ptr);
-				DBG_DO(DBG_MUTATOR, cout << " to " << int (ptr) << endl);
+				DBG_DO(DBG_MUTATOR, cout << " to " << int(ptr) << endl);
 #else
 				mutate(*(pop.alleleBegin(locus) + pos));
 #endif
@@ -128,20 +128,10 @@ void gsmMutator::mutate(AlleleRef allele)
 {
 	int step;
 
-	if (m_func == NULL)  // use a geometric distribution.
+	if (!m_func.isValid())  // use a geometric distribution.
 		step = rng().randGeometric(m_p);
-	else {
-		PyObject * arglist = Py_BuildValue("()");
-		PyObject * result = PyEval_CallObject(m_func, arglist);
-		Py_DECREF(arglist);
-		if (result == NULL) {
-			PyErr_Print();
-			throw ValueError("Function call failed.");
-		}
-
-		PyObj_As_Int(result, step);
-		Py_DECREF(result);
-	}
+	else
+		step = m_func.call(PyObj_As_Int);
 
 	DBG_DO(DBG_MUTATOR, cout << "step is " << step << endl);
 
@@ -173,9 +163,8 @@ void gsmMutator::mutate(AlleleRef allele)
 // mutate according to the mixed model
 void pyMutator::mutate(AlleleRef allele)
 {
-	int resInt;
+	int resInt = m_func.call("(i)", static_cast<int>(allele), PyObj_As_Int);
 
-	PyCallFunc(m_func, "(i)", static_cast<int>(allele), resInt, PyObj_As_Int);
 #ifdef BINARYALLELE
 	DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
 		"Can only mutate to 0 or 1 in binary mode.");

@@ -205,9 +205,8 @@ bool pyMigrator::apply(population & pop)
 {
 	UINT info = pop.infoIdx(infoField(0));
 
-	if (m_rateFunc != NULL) {
+	if (m_rateFunc.isValid()) {
 		// get rate,
-		matrix rate;
 		PyObject * curSize = PyTuple_New(pop.numSubPop());
 
 		for (size_t i = 0; i < pop.numSubPop(); ++i)
@@ -215,7 +214,7 @@ bool pyMigrator::apply(population & pop)
 
 		DBG_DO(DBG_MIGRATOR, cout << "Current population size " << pop.subPopSizes() << endl);
 
-		PyCallFunc2(m_rateFunc, "(iO)", pop.gen(), curSize, rate, PyObj_As_Matrix);
+		matrix rate = m_rateFunc.call("(iO)", pop.gen(), curSize, PyObj_As_Matrix);
 
 		DBG_DO(DBG_MIGRATOR, cout << "Migration rate: " << rate << endl);
 		Py_XDECREF(curSize);
@@ -252,19 +251,16 @@ bool pyMigrator::apply(population & pop)
 		}
 		// hold the return subpopulation id.
 		int resID = 0;
-		// parenthesis is needed since PyCallFuncX are macros.
 		if (m_param == NULL) {
-			if (m_loci.empty()) {
-				PyCallFunc(m_indFunc, "(O)", indObj, resID, PyObj_As_Int);
-			} else {
-				PyCallFunc2(m_indFunc, "(OO)", indObj, numArray, resID, PyObj_As_Int);
-			}
+			if (m_loci.empty())
+				resID = m_indFunc.call("(O)", indObj, PyObj_As_Int);
+			else
+				resID = m_indFunc.call("(OO)", indObj, numArray, PyObj_As_Int);
 		} else {
-			if (m_loci.empty()) {
-				PyCallFunc2(m_indFunc, "(OO)", indObj, m_param, resID, PyObj_As_Int);
-			} else {
-				PyCallFunc3(m_indFunc, "(OOO)", indObj, numArray, m_param, resID, PyObj_As_Int);
-			}
+			if (m_loci.empty())
+				resID = m_indFunc.call("(OO)", indObj, m_param, PyObj_As_Int);
+			else
+				resID = m_indFunc.call("(OOO)", indObj, numArray, m_param, PyObj_As_Int);
 		}
 		it->setInfo(resID, info);
 		Py_DECREF(indObj);

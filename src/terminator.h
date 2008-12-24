@@ -24,8 +24,8 @@
 #ifndef _TERMINATOR_H
 #define _TERMINATOR_H
 /**
- \file
- \brief head file of class terminator: public baseOperator
+   \file
+   \brief head file of class terminator: public baseOperator
  */
 #include "population.h"
 #include "operator.h"
@@ -56,11 +56,11 @@ public:
 	 *  written to it.
 	 */
 	terminateIf(string condition = "", bool stopAll = false, string message = "",
-	            string output = "", string outputExpr = "",
-	            int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	            const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		string output = "", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
-			m_expr(condition), m_stopAll(stopAll), m_message(message)
+		m_expr(condition), m_stopAll(stopAll), m_message(message)
 	{
 	}
 
@@ -86,12 +86,13 @@ public:
 	{
 	}
 
+
 private:
 	/// alleles to check. If empty, check all alleles.
 	Expression m_expr;
 
-    /// 
-    bool m_stopAll;
+	///
+	bool m_stopAll;
 
 	/// message to print when terminated
 	string m_message;

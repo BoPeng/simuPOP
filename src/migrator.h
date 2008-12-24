@@ -193,41 +193,23 @@ public:
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
 		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_rateFunc(NULL), m_indFunc(NULL), m_loci(loci), m_param(NULL)
+		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(NULL)
 	{
-		DBG_FAILIF(rateFunc != NULL && rateFunc != Py_None && !PyCallable_Check(rateFunc),
-			ValueError, "Passed rateFunc is not a callable Python function.");
-		DBG_FAILIF(indFunc != NULL && indFunc != Py_None && !PyCallable_Check(indFunc),
-			ValueError, "Passed indFunc is not a callable Python function.");
-		DBG_FAILIF((rateFunc == NULL || rateFunc == Py_None) &&
-            (indFunc == NULL || indFunc == Py_None),
+		DBG_FAILIF(!m_rateFunc.isValid() && !m_indFunc.isValid(),
 			ValueError, "Please specify either rateFunc or indFunc");
-		DBG_FAILIF((rateFunc != NULL && rateFunc != Py_None) &&
-            (indFunc != NULL && indFunc != Py_None),
+		DBG_FAILIF(m_rateFunc.isValid() && m_indFunc.isValid(),
 			ValueError, "Please specify only one of rateFunc or indFunc");
 
-		if (m_rateFunc != NULL && m_rateFunc != Py_None) {
-            m_rateFunc = rateFunc;
-			Py_INCREF(m_rateFunc);
-        }
-		if (m_indFunc != NULL && m_indFunc != Py_None) {
-            m_indFunc = indFunc;
-			Py_INCREF(m_indFunc);
-        }
 		if (m_param != NULL && m_param != Py_None) {
-            m_param = param;
+			m_param = param;
 			Py_INCREF(m_param);
-        }
+		}
 	}
 
 
 	/// destructor
 	virtual ~pyMigrator()
 	{
-		if (m_rateFunc != NULL)
-			Py_DECREF(m_rateFunc);
-		if (m_indFunc != NULL)
-			Py_DECREF(m_indFunc);
 		if (m_param != NULL)
 			Py_DECREF(m_param);
 	}
@@ -239,10 +221,6 @@ public:
 		m_indFunc(rhs.m_indFunc),
 		m_param(rhs.m_param)
 	{
-		if (m_rateFunc != NULL)
-			Py_INCREF(m_rateFunc);
-		if (m_indFunc != NULL)
-			Py_INCREF(m_indFunc);
 		if (m_param != NULL)
 			Py_INCREF(m_param);
 	}
@@ -267,10 +245,10 @@ public:
 
 private:
 	/// rateFunc
-	PyObject * m_rateFunc;
+	pyFunc m_rateFunc;
 
 	/// indFunc as in pyIndOperator
-	PyObject * m_indFunc;
+	pyFunc m_indFunc;
 
 	/// loci to indFunc
 	vectoru m_loci;

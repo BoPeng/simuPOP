@@ -29,20 +29,21 @@ namespace simuPOP {
 
 bool terminateIf::apply(population & pop)
 {
-    // experssion return true
-    m_expr.setLocalDict(pop.dict());
+	// experssion return true
+	m_expr.setLocalDict(pop.dict());
 
-    if (m_expr.valueAsBool()) {
-        if (!noOutput()) {
-            ostream & out = getOstream(pop.dict());
-            out << m_message << pop.gen() << endl;
-            closeOstream();
-        }
-        if (m_stopAll)
-            throw StopEvolution(m_message);
-        return false;                                             // return false, this replicate will be stopped
-    } else
-        return true;
+	if (m_expr.valueAsBool()) {
+		if (!noOutput()) {
+			ostream & out = getOstream(pop.dict());
+			out << m_message << pop.gen() << endl;
+			closeOstream();
+		}
+		if (m_stopAll)
+			throw StopEvolution(m_message);
+		return false;                                             // return false, this replicate will be stopped
+	} else
+		return true;
 }
+
 
 }

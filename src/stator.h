@@ -24,8 +24,8 @@
 #ifndef _STATOR_H
 #define _STATOR_H
 /**
- \file
- \brief head file of class stator:public baseOperator
+   \file
+   \brief head file of class stator:public baseOperator
  */
 #include "utility.h"
 #include "population.h"
@@ -58,8 +58,8 @@ public:
 	// default to have NO output (shared variables will be set.)
 	/// create a stator
 	stator(string output = "", string outputExpr = "",
-	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	};
@@ -94,19 +94,19 @@ class pyEval : public stator
 public:
 	/// evaluate expressions/statments in the local namespace of a replicate
 	/**
-	 \param expr the expression to be evaluated. The result will be sent to \c output.
-	 \param stmts the statement that will be executed before the expression
-	 \param preStmts the statement that will be executed when the operator is constructed
-	 \param postStmts the statement that will be executed when the operator is destroyed
-	 \param exposePop if \c True, expose the current population as a variable named \c pop
-	 \param name used to let pure Python operator to identify themselves
-	 \param output default to \c >. I.e., output to standard output.
+	   \param expr the expression to be evaluated. The result will be sent to \c output.
+	   \param stmts the statement that will be executed before the expression
+	   \param preStmts the statement that will be executed when the operator is constructed
+	   \param postStmts the statement that will be executed when the operator is destroyed
+	   \param exposePop if \c True, expose the current population as a variable named \c pop
+	   \param name used to let pure Python operator to identify themselves
+	   \param output default to \c >. I.e., output to standard output.
 	 */
 	pyEval(const string & expr = "", const string & stmts = "", const string & preStmts = "",
-	       const string & postStmts = "", bool exposePop = false, const string & name = "",
-	       string output = ">", string outputExpr = "",
-	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const string & postStmts = "", bool exposePop = false, const string & name = "",
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: stator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
 	{
@@ -173,10 +173,10 @@ public:
 	   Please refer to class \c pyEval for parameter descriptions.
 	 */
 	pyExec(const string & stmts = "", const string & preStmts = "", const string & postStmts = "",
-	       bool exposePop = false, const string & name = "",
-	       string output = ">", string outputExpr = "",
-	       int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	       const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		bool exposePop = false, const string & name = "",
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", "",
 		         stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -234,22 +234,22 @@ public:
 	   3. This operator can be used in all stages. When it is used during-mating,
 	   it will act on each offspring.
 
-	 \param expr the expression to be evaluated. The result will be sent to \c output.
-	 \param stmts the statement that will be executed before the expression
-	 \param subPop a shortcut to <tt>subPops=[subPop]</tt>
-	 \param subPops subpopulations this operator will apply to. Default to all.
-	 \param usePopVars if \c True, import variables from expose the current population as a variable named \c pop
-	 \param exposePop if \c True, expose the current population as a variable named \c pop
-	 \param name used to let pure Python operator to identify themselves
-	 \param output default to \c >. I.e., output to standard output. Note that
-	   	because the expression will be executed for each individual, the output
-	   	can be large.
+	   \param expr the expression to be evaluated. The result will be sent to \c output.
+	   \param stmts the statement that will be executed before the expression
+	   \param subPop a shortcut to <tt>subPops=[subPop]</tt>
+	   \param subPops subpopulations this operator will apply to. Default to all.
+	   \param usePopVars if \c True, import variables from expose the current population as a variable named \c pop
+	   \param exposePop if \c True, expose the current population as a variable named \c pop
+	   \param name used to let pure Python operator to identify themselves
+	   \param output default to \c >. I.e., output to standard output. Note that
+	    because the expression will be executed for each individual, the output
+	    can be large.
 	 */
 	infoEval(const string & expr = "", const string & stmts = "", const vectoru & subPops = vectoru(),
-	         bool usePopVars = false,  bool exposePop = false, const string & name = "",
-	         string output = ">", string outputExpr = "",
-	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		bool usePopVars = false,  bool exposePop = false, const string & name = "",
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: stator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
 		m_name(name), m_dict(NULL)
@@ -331,10 +331,10 @@ public:
 	   Please refer to class \c infoEval for parameter descriptions.
 	 */
 	infoExec(const string & stmts = "",  const vectoru & subPops = vectoru(), bool usePopVars = false,
-	         bool exposePop = false, const string & name = "",
-	         string output = ">", string outputExpr = "",
-	         int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	         const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		bool exposePop = false, const string & name = "",
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output, outputExpr,
 		           stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -844,7 +844,7 @@ class statNumOfAlleles
 {
 public:
 	statNumOfAlleles(statAlleleFreq & calc, const vectori & atLoci = vectori(),
-	                 const strDict & param = strDict())
+		const strDict & param = strDict())
 		: m_calc(calc), m_evalInSubPop(true)
 	{
 		if (!param.empty()) {
@@ -935,7 +935,7 @@ private:
 
 public:
 	statHeteroFreq(const vectori & heteroFreq = vectori(),
-	               const vectori & homoFreq = vectori())
+		const vectori & homoFreq = vectori())
 		: m_atLoci(heteroFreq), m_ifPost(0),
 		m_postHetero(!heteroFreq.empty()), m_postHomo(!homoFreq.empty()),
 		m_heteroNum(0), m_heteroFreq(0), m_homoNum(0), m_homoFreq(0)
@@ -1032,7 +1032,7 @@ private:
 
 public:
 	statExpHetero(statAlleleFreq & alleleFreq, const vectori & expHetero = vectori(),
-	              const strDict & param = strDict())
+		const strDict & param = strDict())
 		: m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0),
 		m_midValues(false), m_evalInSubPop(true)
 	{
@@ -1081,7 +1081,7 @@ private:
 
 public:
 	statGenoFreq(const vectori & genoFreq = vectori(),
-	             const strDict & param = strDict());
+		const strDict & param = strDict());
 
 	bool apply(population & pop);
 
@@ -1221,7 +1221,7 @@ public:
 	// is called before statLD.apply() and ensures that allele frequencies
 	// are calculated when statLD needs them.
 	statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-	       const intMatrix & LD = intMatrix(), const strDict & LD_param = strDict());
+		const intMatrix & LD = intMatrix(), const strDict & LD_param = strDict());
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -1281,7 +1281,7 @@ public:
 	// is called before statAssociation.apply() and ensures that allele frequencies
 	// are calculated when statAssociation needs them.
 	statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-	                const intMatrix & Association = intMatrix(), const strDict & param = strDict());
+		const intMatrix & Association = intMatrix(), const strDict & param = strDict());
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -1319,7 +1319,7 @@ private:
 
 public:
 	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-	        const vectori & Fst = vectori(), const strDict & param = strDict());
+		const vectori & Fst = vectori(), const strDict & param = strDict());
 
 	double Fst()
 	{
@@ -1406,18 +1406,18 @@ public:
 public:
 	/// \brief calculate relatedness measures between elements in groups
 	/**
-	 \param groups can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups of
+	   \param groups can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups of
 	   individuals; or [ 1 3 4] as three subpopulations. To specify between
 	   individual relatedness, use [[1],[2],[3]] (the first form). If this
 	   parameter is ignored, this operator calculate relatedness between
 	   all subpopulations.
 
-	 \param method can be REL_Queller, REL_Lynch, REL_IR, REL_D2
+	   \param method can be REL_Queller, REL_Lynch, REL_IR, REL_D2
 	   or REL_Rel. Please refer to the manual for details.
 	 */
 	statRelatedness(statAlleleFreq & alleleFreq, const intMatrix & groups = intMatrix(),
-	                bool useSubPop = false, const vectori & loci = vectori(), vectori method = vectori(),
-	                int minScored = 10, const strDict & param = strDict());
+		bool useSubPop = false, const vectori & loci = vectori(), vectori method = vectori(),
+		int minScored = 10, const strDict & param = strDict());
 
 	// relatedness between individuals
 	fraction relQueller(individual ind1,
@@ -1486,127 +1486,127 @@ public:
 	/// create an \c stat operator
 	/**
 
-	 \param popSize whether or not calculate population and virtual subpopulation
-	   	sizes. This parameter will set the following variables:
-	 \li \c numSubPop the number of subpopulations.
-	 \li \c subPopSize an array of subpopulation sizes.
-	 \li \c virtualSubPopSize (optional) an array of virtual subpopulation sizes.
-	   	If a subpopulation does not have any virtual subpopulation, the
-	   	subpopulation size is returned.
-	 \li \c popSize, <tt>subPop[sp]['popSize']</tt> the population/subpopulation size.
+	   \param popSize whether or not calculate population and virtual subpopulation
+	    sizes. This parameter will set the following variables:
+	   \li \c numSubPop the number of subpopulations.
+	   \li \c subPopSize an array of subpopulation sizes.
+	   \li \c virtualSubPopSize (optional) an array of virtual subpopulation sizes.
+	    If a subpopulation does not have any virtual subpopulation, the
+	    subpopulation size is returned.
+	   \li \c popSize, <tt>subPop[sp]['popSize']</tt> the population/subpopulation size.
 
-	 \param numOfMale whether or not count the numbers or proportions of males and females.
-	   	This parameter can set the following variables by user's specification:
-	 \li \c numOfMale, <tt>subPop[sp]['numOfMale']</tt> the number of males in the population/subpopulation.
-	 \li \c numOfFemale, <tt>subPop[sp]['numOfFemale']</tt> the number of females in the population/subpopulation.
-	 \li \c propOfMale, <tt>subPop[sp]['propOfMale']</tt> the proportion of
+	   \param numOfMale whether or not count the numbers or proportions of males and females.
+	    This parameter can set the following variables by user's specification:
+	   \li \c numOfMale, <tt>subPop[sp]['numOfMale']</tt> the number of males in the population/subpopulation.
+	   \li \c numOfFemale, <tt>subPop[sp]['numOfFemale']</tt> the number of females in the population/subpopulation.
+	   \li \c propOfMale, <tt>subPop[sp]['propOfMale']</tt> the proportion of
 	   males in the population/subpopulation.
-	 \li \c propOfFemale, <tt>subPop[sp]['propOfFemale']</tt> the proportion of
+	   \li \c propOfFemale, <tt>subPop[sp]['propOfFemale']</tt> the proportion of
 	   females in the population/subpopulation.
 
-	 \param numOfMale_param a dictionary of parameters of \c numOfMale statistics.
+	   \param numOfMale_param a dictionary of parameters of \c numOfMale statistics.
 	   Can be one or more items choosen from the following options: \c numOfMale,
-	 \c propOfMale, \c numOfFemale, and \c propOfFemale.
+	   \c propOfMale, \c numOfFemale, and \c propOfFemale.
 
-	 \param numOfAffected whether or not count the numbers or proportions of affected and unaffected individuals.
+	   \param numOfAffected whether or not count the numbers or proportions of affected and unaffected individuals.
 	   This parameter can set the following variables by user's specification:
-	 \li \c numOfAffected, <tt>subPop[sp]['numOfAffected']</tt> the number of
+	   \li \c numOfAffected, <tt>subPop[sp]['numOfAffected']</tt> the number of
 	   affected individuals in the population/subpopulation.
-	 \li \c numOfUnaffected, <tt>subPop[sp]['numOfUnAffected']</tt> the number of
+	   \li \c numOfUnaffected, <tt>subPop[sp]['numOfUnAffected']</tt> the number of
 	   unaffected individuals in the population/subpopulation.
-	 \li \c propOfAffected, <tt>subPop[sp]['propOfAffected']</tt> the proportion of
+	   \li \c propOfAffected, <tt>subPop[sp]['propOfAffected']</tt> the proportion of
 	   affected individuals in the population/subpopulation.
-	 \li \c propOfUnaffected, <tt>subPop[sp]['propOfUnAffected']</tt> the proportion of
+	   \li \c propOfUnaffected, <tt>subPop[sp]['propOfUnAffected']</tt> the proportion of
 	   unaffected individuals in the population/subpopulation.
 
-	 \param numOfAffected_param a dictionary of parameters of \c numOfAffected statistics.
+	   \param numOfAffected_param a dictionary of parameters of \c numOfAffected statistics.
 	   Can be one or more items choosen from the following options: \c numOfAffected,
-	 \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
+	   \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
 
-	 \param numOfAlleles an array of loci at which the numbers of distinct alleles
+	   \param numOfAlleles an array of loci at which the numbers of distinct alleles
 	   will be counted (<tt>numOfAlleles=[loc1, loc2, ...]</tt> where \c loc1 etc.
 	   are absolute locus indexes). This is done through the calculation of allele
 	   frequencies. Therefore, allele frequencies will also be calculated if this
 	   statistics is requested. This parameter will set the following variables
 	   (\c carray objects of the numbers of alleles for <em>all loci</em>). Unrequested loci will
 	   have \c 0 distinct alleles.
-	 \li \c numOfAlleles, <tt>subPop[sp]['numOfAlleles']</tt> the number of distinct
+	   \li \c numOfAlleles, <tt>subPop[sp]['numOfAlleles']</tt> the number of distinct
 	   alleles at each locus. (Calculated only at requested loci.)
 
-	 \param numOfAlleles_param a dictionary of parameters of \c numOfAlleles statistics.
+	   \param numOfAlleles_param a dictionary of parameters of \c numOfAlleles statistics.
 	   Can be one or more items choosen from the following options: \c numOfAffected,
-	 \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
+	   \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
 
-	 \param alleleFreq an array of loci at which all allele frequencies will be
+	   \param alleleFreq an array of loci at which all allele frequencies will be
 	   calculated (<tt>alleleFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
 	   loci where allele frequencies will be calculated). This parameter will set
 	   the following variables (\c carray objects); for example, <tt>alleleNum[1][2]</tt>
 	   will be the number of allele \c 2 at locus \c 1:
-	 \li <tt>alleleNum[a]</tt>, <tt>subPop[sp]['alleleNum'][a]</tt>
-	 \li <tt>alleleFreq[a]</tt>, <tt>subPop[sp]['alleleFreq'][a]</tt>.
+	   \li <tt>alleleNum[a]</tt>, <tt>subPop[sp]['alleleNum'][a]</tt>
+	   \li <tt>alleleFreq[a]</tt>, <tt>subPop[sp]['alleleFreq'][a]</tt>.
 
-	 \param alleleFreq_param a dictionary of parameters of \c alleleFreq statistics.
+	   \param alleleFreq_param a dictionary of parameters of \c alleleFreq statistics.
 	   Can be one or more items choosen from the following options: \c numOfAlleles,
-	 \c alleleNum, and \c alleleFreq.
+	   \c alleleNum, and \c alleleFreq.
 
-	 \param genoFreq an array of loci at which all genotype frequencies will be
-	   calculated (<tt>genoFreq=[loc1, loc2, ...]</tt>. You may use parameter 
+	   \param genoFreq an array of loci at which all genotype frequencies will be
+	   calculated (<tt>genoFreq=[loc1, loc2, ...]</tt>. You may use parameter
 	   \c genoFreq_param to control if <tt>a/b</tt> and <tt>b/a</tt> are the same
 	   genotype. This parameter will set the following
 	   dictionary variables. Note that unlike list used for \c alleleFreq etc.,
 	   the indexes \c a, \c b of <tt>genoFreq[loc][a][b]</tt> are dictionary keys,
 	   so you will get a \em KeyError when you used a wrong key. You can get around
 	   this problem by using expressions like <tt>genoNum[loc].setDefault(a,{})</tt>.
-	 \li <tt>genoNum[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoNum'][loc][allele1][allele2]</tt>,
+	   \li <tt>genoNum[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoNum'][loc][allele1][allele2]</tt>,
 	   the number of genotype \c allele1-allele2 at locus \c loc.
-	 \li <tt>genoFreq[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoFreq'][loc][allele1][allele2]</tt>,
+	   \li <tt>genoFreq[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoFreq'][loc][allele1][allele2]</tt>,
 	   the frequency of genotype \c allele1-allele2 at locus \c loc.
-	 \li genoFreq_param a dictionary of parameters of \c phase = 0 or 1.
+	   \li genoFreq_param a dictionary of parameters of \c phase = 0 or 1.
 
-	 \param heteroFreq an array of loci at which observed heterozygosities will be calculated
+	   \param heteroFreq an array of loci at which observed heterozygosities will be calculated
 	   (<tt>heteroFreq=[loc1, loc2, ...]</tt>). For each locus, the number and frequency of
 	   allele specific and overall heterozygotes will be calcuated and stored in four population
 	   variables. For example, <tt>heteroNum[loc][1]</tt> stores number of heterozygotes
 	   at locus \c loc, with respect to allele \c 1, which is the number of all genotype
 	   \c 1x or \c x1 where \x does not equal to \c 1. All other genotypes such as \c 02 are
 	   considered as homozygotes when <tt>heteroFreq[loc][1]</tt> is calculated.
-	   The overall number of heterozygotes (<tt>HeteroNum[loc]</tt>) is the number of 
+	   The overall number of heterozygotes (<tt>HeteroNum[loc]</tt>) is the number of
 	   genotype \c xy if \c x does not equal to \c y.
-	 \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote count.
-	 \li <tt>HeteroFreq[loc]</tt>, <tt>subPop[sp]['HeteroFreq'][loc]</tt>, the overall heterozygote frequency.
-	 \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>, allele-specific heterozygote counts.
-	 \li <tt>heteroFreq[loc][allele]</tt>, <tt>subPop[sp]['heteroFreq'][loc][allele]</tt>, allele-specific heterozygote frequency.
+	   \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote count.
+	   \li <tt>HeteroFreq[loc]</tt>, <tt>subPop[sp]['HeteroFreq'][loc]</tt>, the overall heterozygote frequency.
+	   \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>, allele-specific heterozygote counts.
+	   \li <tt>heteroFreq[loc][allele]</tt>, <tt>subPop[sp]['heteroFreq'][loc][allele]</tt>, allele-specific heterozygote frequency.
 
-	 \param homoFreq an array of loci to calculate observed homozygosities
+	   \param homoFreq an array of loci to calculate observed homozygosities
 	   and expected homozygosities (<tt>homoFreq=[loc1, loc2, ...]</tt>).
 	   This parameter will calculate the numbers and frequencies of homozygotes
-	 \b xx and set the following variables:
-	 \li <tt>homoNum[loc]</tt>, <tt>subPop[sp]['homoNum'][loc]</tt>.
-	 \li <tt>homoFreq[loc]</tt>, <tt>subPop[sp]['homoFreq'][loc]</tt>.
+	   \b xx and set the following variables:
+	   \li <tt>homoNum[loc]</tt>, <tt>subPop[sp]['homoNum'][loc]</tt>.
+	   \li <tt>homoFreq[loc]</tt>, <tt>subPop[sp]['homoFreq'][loc]</tt>.
 
-	 \param expHetero an array of loci at which the expected heterozygosities will
+	   \param expHetero an array of loci at which the expected heterozygosities will
 	   be calculated (<tt>expHetero=[loc1, loc2, ...]</tt>). The expected heterozygosity
 	   is calculated by \f[ h_{exp}=1-p_{i}^{2}, \f] where \f$ p_i \f$ is the allele
 	   frequency of allele \f$ i \f$. The following variables will be set:
-	 \li <tt>expHetero[loc]</tt>, <tt>subPop[sp]['expHetero'][loc]</tt>.
+	   \li <tt>expHetero[loc]</tt>, <tt>subPop[sp]['expHetero'][loc]</tt>.
 
-	 \param expHetero_param a dictionary of parameters of \c expHetero statistics.
+	   \param expHetero_param a dictionary of parameters of \c expHetero statistics.
 	   Can be one or more items choosen from the following options: \c subpop and
-	 \c midValues.
+	   \c midValues.
 
-	 \param haploFreq a matrix of haplotypes (allele sequences on different loci) to
+	   \param haploFreq a matrix of haplotypes (allele sequences on different loci) to
 	   count. For example, <tt>haploFreq = [ [ 0,1,2 ], [1,2] ]</tt>  will count
 	   all haplotypes on loci 0, 1 and 2; and all haplotypes on loci 1, 2.
 	   If only one haplotype is specified, the outer <tt>[]</tt> can be omitted. I.e.,
 	   <tt>haploFreq=[0,1]</tt> is acceptable. The following dictionary variables
 	   will be set with keys <tt>0-1-2</tt> etc. For example, <tt>haploNum['1-2']['5-6']</tt>
 	   is the number of allele pair 5, 6 (on loci 1 and 2 respectively) in the population.
-	 \li <tt>haploNum[haplo]</tt> and <tt>subPop[sp]['haploNum'][haplo]</tt>, the number
+	   \li <tt>haploNum[haplo]</tt> and <tt>subPop[sp]['haploNum'][haplo]</tt>, the number
 	   of allele sequencies on loci \c haplo.
-	 \li <tt>haploFreq[haplo]</tt>, <tt>subPop[sp]['haploFreq'][haplo]</tt>, the frequency
+	   \li <tt>haploFreq[haplo]</tt>, <tt>subPop[sp]['haploFreq'][haplo]</tt>, the frequency
 	   of allele sequencies on loci \c haplo.
 
-	 \param LD calculate linkage disequilibria \f$ LD \f$, \f$ LD' \f$
+	   \param LD calculate linkage disequilibria \f$ LD \f$, \f$ LD' \f$
 	   and \f$ r^{2} \f$, given
 	   <tt>LD=[ [loc1, loc2], [ loc1, loc2, allele1, allele2], ... ]</tt>.
 	   For each item <tt>[loc1, loc2, allele1, allele2]</tt>, \f$ D \f$, \f$ D' \f$
@@ -1614,126 +1614,126 @@ public:
 	   based on \c allele1 at \c loc1 and \c allele2 at \c loc2. If only two loci are given,
 	   the LD values are averaged over all allele pairs. For example, for allele \f$ A \f$ at
 	   locus \c 1 and allele \f$ B \f$ at locus \c 2,
-	 \f[ D = P_{AB}-P_{A}P_{B} \f]
-	 \f[ D' = D/D_{max} \f]
-	 \f[ D_{max} =
-	 \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right)  \textrm{if }D>0 \\
-	 \min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right)  \textrm{if }D<0 \f]
-	 \f[ r^{2} = \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)} \f]
+	   \f[ D = P_{AB}-P_{A}P_{B} \f]
+	   \f[ D' = D/D_{max} \f]
+	   \f[ D_{max} =
+	   \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right)  \textrm{if }D>0 \ \
+	   \min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right)  \textrm{if }D<0 \f]
+	   \f[ r^{2} = \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)} \f]
 	   If only one item is specified, the
 	   outer <tt>[]</tt> can be ignored. I.e., <tt>LD=[loc1, loc2]</tt> is acceptable.
 	   This parameter will set the following variables. Please note that the difference between
 	   the data structures used for \c ld and \c LD.
-	 \li <tt>ld['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld']['loc1-loc2']['allele1-allele2']</tt>.
-	 \li <tt>ld_prime['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']</tt>.
-	 \li <tt>r2['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['r2']['loc1-loc2']['allele1-allele2']</tt>.
-	 \li <tt>LD[loc1][loc2]</tt>, <tt>subPop[sp]['LD'][loc1][loc2]</tt>.
-	 \li <tt>LD_prime[loc1][loc2]</tt>, <tt>subPop[sp]['LD_prime'][loc1][loc2]</tt>.
-	 \li <tt>R2[loc1][loc2]</tt>, <tt>subPop[sp]['R2'][loc1][loc2]</tt>.
+	   \li <tt>ld['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld']['loc1-loc2']['allele1-allele2']</tt>.
+	   \li <tt>ld_prime['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']</tt>.
+	   \li <tt>r2['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['r2']['loc1-loc2']['allele1-allele2']</tt>.
+	   \li <tt>LD[loc1][loc2]</tt>, <tt>subPop[sp]['LD'][loc1][loc2]</tt>.
+	   \li <tt>LD_prime[loc1][loc2]</tt>, <tt>subPop[sp]['LD_prime'][loc1][loc2]</tt>.
+	   \li <tt>R2[loc1][loc2]</tt>, <tt>subPop[sp]['R2'][loc1][loc2]</tt>.
 
-	 \param LD_param a dictionary of parameters of \c LD statistics. Can have key \c stat which is
+	   \param LD_param a dictionary of parameters of \c LD statistics. Can have key \c stat which is
 	   a list of statistics to calculate. Default to all. If any statistics is specified,
 	   only those specified will be calculated. For example, you may use <tt>LD_param={LD_prime}</tt>
 	   to calculate D' only, where <tt>LD_prime</tt> is a shortcut for <tt>'stat':['LD_prime']</tt>.
 	   Other parameters that you may use are:
-	 \li \c subPop whether or not calculate statistics for subpopulations.
-	 \li \c midValues whether or not keep intermediate results.
+	   \li \c subPop whether or not calculate statistics for subpopulations.
+	   \li \c midValues whether or not keep intermediate results.
 
-	 \param association association measures
+	   \param association association measures
 
-	 \param association_param a dictionary of parameters of \c association statistics.
+	   \param association_param a dictionary of parameters of \c association statistics.
 	   Can be one or more items choosen from the following options: \c ChiSq,
-	 \c ChiSq_P, \c UC_U, and \c CramerV.
+	   \c ChiSq_P, \c UC_U, and \c CramerV.
 
-	 \param Fst calculate \f$ F_{st} \f$, \f$ F_{is} \f$, \f$ F_{it} \f$.
+	   \param Fst calculate \f$ F_{st} \f$, \f$ F_{is} \f$, \f$ F_{it} \f$.
 	   For example, <tt>Fst = [0,1,2]</tt> will calculate \f$ F_{st} \f$, \f$ F_{is} \f$,
-	 \f$ F_{it} \f$ based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
+	   \f$ F_{it} \f$ based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
 	   to calculate \c AvgFst, which is an average value over all alleles (Weir
 	   & Cockerham, 1984). Terms and values that match Weir & Cockerham are:
-	 \li \f$ F \f$ (\f$ F_{IT} \f$) the correlation of genes within individuals (inbreeding);
-	 \li \f$ \theta \f$ (\f$ F_{ST} \f$) the correlation of genes of difference individuals
+	   \li \f$ F \f$ (\f$ F_{IT} \f$) the correlation of genes within individuals (inbreeding);
+	   \li \f$ \theta \f$ (\f$ F_{ST} \f$) the correlation of genes of difference individuals
 	   in the same population (will evaluate for each subpopulation and the whole population)
-	 \li \f$ f \f$ (\f$ F_{IS} \f$) the correlation of genes within individuals within
+	   \li \f$ f \f$ (\f$ F_{IS} \f$) the correlation of genes within individuals within
 	   populations.
 
 	   This parameter will set the following variables:
-	 \li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>
-	 \li <tt>AvgFst</tt>, <tt>AvgFis</tt>, <tt>AvgFit</tt>.
+	   \li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>
+	   \li <tt>AvgFst</tt>, <tt>AvgFis</tt>, <tt>AvgFit</tt>.
 
-	 \param Fst_param a dictionary of parameters of \c Fst statistics.
+	   \param Fst_param a dictionary of parameters of \c Fst statistics.
 	   Can be one or more items choosen from the following options: \c Fst,
-	 \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
+	   \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
 
-	 \param relMethod method used to calculate relatedness. Can be either \c  REL_Queller or \c REL_Lynch.
+	   \param relMethod method used to calculate relatedness. Can be either \c  REL_Queller or \c REL_Lynch.
 	   The relatedness values between two individuals, or two groups of individuals are calculated according
 	   to Queller & Goodnight (1989) (<tt>method=REL_Queller</tt>) and Lynch et al. (1999) (<tt>method=REL_Lynch</tt>).
 	   The results are pairwise relatedness values, in the form of a matrix. Original group or subpopulation
 	   numbers are discarded. There is no subpopulation level relatedness value.
 
-	 \param relGroups calculate pairwise relatedness between groups. Can be in the form of either
+	   \param relGroups calculate pairwise relatedness between groups. Can be in the form of either
 	   <tt>[[1,2,3],[5,6,7],[8,9]]</tt> or <tt>[2,3,4]</tt>. The first one specifies groups of
 	   individuals, while the second specifies subpopulations. By default, relatedness between
 	   subpopulations is calculated.
 
-	 \param relLoci loci on which relatedness values are calculated
+	   \param relLoci loci on which relatedness values are calculated
 
-	 \param rel_param a dictionary of parameters of relatedness statistics.
+	   \param rel_param a dictionary of parameters of relatedness statistics.
 	   Can be one or more items choosen from the following options: \c Fst,
-	 \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
+	   \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
 
-	 \param hasPhase if a/b and b/a are the same genotype. Default to \c False.
+	   \param hasPhase if a/b and b/a are the same genotype. Default to \c False.
 
-	 \param midValues whether or not post intermediate results. Default to \c False.
+	   \param midValues whether or not post intermediate results. Default to \c False.
 	   For example, \c Fst will need to calculate allele frequencise. If \c midValues
 	   is set to \c True, allele frequencies will be posted as well. This will be
 	   helpful in debugging and sometimes in deriving statistics.
 	 **/
 	stat(bool popSize = false,
-	     //
-	     bool numOfMale = false,
-	     strDict numOfMale_param = strDict(),
-	     //
-	     bool numOfAffected = false,
-	     strDict numOfAffected_param = strDict(),
-	     //
-	     vectori numOfAlleles = vectori(),
-	     strDict numOfAlleles_param = strDict(),
-	     //
-	     vectori alleleFreq = vectori(),
-	     strDict alleleFreq_param = strDict(),
-	     //
-	     vectori heteroFreq = vectori(),
-	     vectori expHetero = vectori(),
-	     strDict expHetero_param = strDict(),
-	     //
-	     vectori homoFreq = vectori(),
-	     vectori genoFreq = vectori(),
-	     strDict genoFreq_param = strDict(),
-	     intMatrix haploFreq = intMatrix(),
-	     //
-	     intMatrix LD = intMatrix(),
-	     strDict LD_param = strDict(),
-	     //
-	     intMatrix association = intMatrix(),
-	     strDict association_param = strDict(),
-	     //
-	     vectori Fst = vectori(),
-	     strDict Fst_param = strDict(),
-	     //
-	     intMatrix relGroups = intMatrix(),
-	     vectori relLoci = vectori(),
-	     strDict rel_param = strDict(),
-	     //
-	     bool relBySubPop = false,                                          // internal use
-	     vectori relMethod = vectori(),
-	     int relMinScored = 10,                                             // minimal number of loci required.
-	     bool hasPhase = false,
-	     bool midValues = false,                                            // this parameter will be removed after all _param parameter is given.
-	     // regular parameters
-	     string output = "", string outputExpr = "",
-	     int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	     const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	     const vectorstr & infoFields = vectorstr());
+		//
+		bool numOfMale = false,
+		strDict numOfMale_param = strDict(),
+		//
+		bool numOfAffected = false,
+		strDict numOfAffected_param = strDict(),
+		//
+		vectori numOfAlleles = vectori(),
+		strDict numOfAlleles_param = strDict(),
+		//
+		vectori alleleFreq = vectori(),
+		strDict alleleFreq_param = strDict(),
+		//
+		vectori heteroFreq = vectori(),
+		vectori expHetero = vectori(),
+		strDict expHetero_param = strDict(),
+		//
+		vectori homoFreq = vectori(),
+		vectori genoFreq = vectori(),
+		strDict genoFreq_param = strDict(),
+		intMatrix haploFreq = intMatrix(),
+		//
+		intMatrix LD = intMatrix(),
+		strDict LD_param = strDict(),
+		//
+		intMatrix association = intMatrix(),
+		strDict association_param = strDict(),
+		//
+		vectori Fst = vectori(),
+		strDict Fst_param = strDict(),
+		//
+		intMatrix relGroups = intMatrix(),
+		vectori relLoci = vectori(),
+		strDict rel_param = strDict(),
+		//
+		bool relBySubPop = false,                                           // internal use
+		vectori relMethod = vectori(),
+		int relMinScored = 10,                                              // minimal number of loci required.
+		bool hasPhase = false,
+		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
+		// regular parameters
+		string output = "", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr());
 
 	~stat()
 	{

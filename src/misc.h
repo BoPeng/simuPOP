@@ -24,8 +24,8 @@
 #ifndef _MISC_H
 #define _MISC_H
 /**
- \file
- \brief head file of class mating and its subclasses
+   \file
+   \brief head file of class mating and its subclasses
  */
 #include "utility.h"
 

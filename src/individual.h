@@ -1328,12 +1328,12 @@ public:
 		if (m_useGappedIterator)
 			return m_ptr != rhs.m_ptr;
 		else {
-			//DBG_FAILIF(m_it.valid() && rhs.m_it.valid() && 
+			//DBG_FAILIF(m_it.valid() && rhs.m_it.valid() &&
 			//	(m_ploidy != rhs.m_ploidy || m_size != rhs.m_size
 			//	|| m_chromType != rhs.m_chromType), ValueError,
 			//	"Iterator comparison fails");
 			return !(m_index == rhs.m_index && m_it == rhs.m_it &&
-				(m_p == rhs.m_p || !m_it.valid() || !rhs.m_it.valid()));
+			         (m_p == rhs.m_p || !m_it.valid() || !rhs.m_it.valid()));
 		}
 	}
 

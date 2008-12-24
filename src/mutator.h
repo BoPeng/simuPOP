@@ -24,8 +24,8 @@
 #ifndef _MUTATOR_H
 #define _MUTATOR_H
 /**
- \file
- \brief head file of class mutator:public baseOperator
+   \file
+   \brief head file of class mutator:public baseOperator
  */
 /// for hybrid mutator
 #include "operator.h"
@@ -34,14 +34,14 @@ namespace simuPOP {
 /// Base class of all mutators
 /**
    The base class of all functional mutators. It is not supposed to be called directly.
- \n
+   \n
    Every mutator can specify \c rate (equal rate or different rates for different
    loci) and a vector of applicable loci (default to all but should have the same
    length as \c rate if \c rate has length greater than one).
- \n
+   \n
    Maximum allele can be specified as well but more parameters, if needed, should
    be implemented by individual mutator classes.
- \n
+   \n
    There are numbers of possible allelic states. Most theoretical studies assume an infinite
    number of allelic states to avoid any homoplasy. If it facilitates any analysis,
    this is however extremely unrealistic.
@@ -55,20 +55,20 @@ public:
 	   of these parameters may vary according to different models. The only differences
 	   between the following mutators are the way they actually mutate an allele, and
 	   corresponding input parameters. The number of mutation events at each locus is
-	   			recorded and can be accessed from the \c mutationCount or \c mutationCounts
-	   			functions.
+	            recorded and can be accessed from the \c mutationCount or \c mutationCounts
+	            functions.
 
-	 \param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
-	 \param loci a vector of locus indexes. Will be ignored only when single rate is specified.
-	   	Default to all loci.
-	 \param maxAllele maximum allowed allele. Interpreted by each sub mutator class. Default to \c pop.maxAllele().
+	   \param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
+	   \param loci a vector of locus indexes. Will be ignored only when single rate is specified.
+	    Default to all loci.
+	   \param maxAllele maximum allowed allele. Interpreted by each sub mutator class. Default to \c pop.maxAllele().
 	 */
 	mutator(const vectorf & rate = vectorf(),
-	        const vectoru & loci = vectoru(),
-	        UINT maxAllele = 0,
-	        string output = ">", string outputExpr = "",
-	        int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	        const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const vectoru & loci = vectoru(),
+		UINT maxAllele = 0,
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
 		m_bt(rng()), m_initialized(false), m_mutCount(0)
@@ -197,28 +197,28 @@ private:
    This mutator mutate an allele to another allelic state with equal probability.
    The specified mutation rate is actually the 'probability to mutate'. So the
    mutation rate to any other allelic state is actually \f$ \frac{rate}{K-1} \f$, where
- \f$ K \f$ is specified by parameter \c maxAllele.
+   \f$ K \f$ is specified by parameter \c maxAllele.
    <funcForm>KamMutate</funcForm>
- \sa Crow & Kimura 1970
+   \sa Crow & Kimura 1970
  */
 class kamMutator : public mutator
 {
 public:
 	/// create a K-Allele Model mutator
 	/**
-	 \param rate mutation rate. It is the 'probability to mutate'. The actual
-	   	mutation rate to any of the other \c K-1 allelic states are <tt>rate/(K-1)</tt>.
-	 \param maxAllele maximum allele that can be mutated to. For binary libraries,
+	   \param rate mutation rate. It is the 'probability to mutate'. The actual
+	    mutation rate to any of the other \c K-1 allelic states are <tt>rate/(K-1)</tt>.
+	   \param maxAllele maximum allele that can be mutated to. For binary libraries,
 	   allelic states will be <tt>[0, maxAllele]</tt>. Otherwise, they are <tt>[1, maxAllele]</tt>.
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
 	kamMutator(const vectorf & rate = vectorf(),
-	           const vectoru & loci = vectoru(),
-	           UINT maxAllele = 0,
-	           string output = ">", string outputExpr = "",
-	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const vectoru & loci = vectoru(),
+		UINT maxAllele = 0,
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -257,7 +257,7 @@ public:
    For variable number tandem repeats(VNTR) loci, the allele value is generally
    taken as the number of tandem repeats in the DNA sequence.
    <funcForm>SmmMutate</funcForm>
- \sa Kimura & Ohta 1978
+   \sa Kimura & Ohta 1978
  */
 class smmMutator : public mutator
 {
@@ -267,17 +267,17 @@ public:
 	   The SMM is developed for allozymes. It  provides better description
 	   for these kinds of evolutionary processes.
 
-	 \param incProb probability to increase allele state. Default to \c 0.5.
+	   \param incProb probability to increase allele state. Default to \c 0.5.
 
 	   Please see class \c mutator for the descriptions of other parameters.
 
 	 */
 	smmMutator(const vectorf & rate = vectorf(),
-	           const vectoru & loci = vectoru(),
-	           UINT maxAllele = 0, double incProb = 0.5,
-	           string output = ">", string outputExpr = "",
-	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const vectoru & loci = vectoru(),
+		UINT maxAllele = 0, double incProb = 0.5,
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_incProb(incProb)
@@ -338,12 +338,12 @@ private:
    distribution. A <em>geometric generalized stepwise model</em> uses a geometric distribution with
    parameter \f$ p \f$, which has mean \f$ \frac{p}{1-p} \f$ and variance \f$ \frac{p}{\left(1-p\right)^{2}} \f$. \n
 
- \c gsmMutator implements both models. If you specify a Python function without a
+   \c gsmMutator implements both models. If you specify a Python function without a
    parameter, this mutator will use its return value each time a mutation occur; otherwise,
    a parameter \f$ p \f$ should be provided and the mutator will act as a geometric generalized stepwise model.
 
    <funcForm>GsmMutate</funcForm>
- \sa Kimura & Ohta 1978
+   \sa Kimura & Ohta 1978
  */
 class gsmMutator : public mutator
 {
@@ -353,18 +353,18 @@ public:
 	   The GSM model is developed for allozymes.
 	   It  provides better description for these kinds of evolutionary processes.
 
-	 \param incProb probability to increase allele state. Default to \c 0.5.
-	 \param func a function that returns the number of steps. This function
-	   	does not accept any parameter.
+	   \param incProb probability to increase allele state. Default to \c 0.5.
+	   \param func a function that returns the number of steps. This function
+	    does not accept any parameter.
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
 	gsmMutator(const vectorf & rate = vectorf(),
-	           const vectoru & loci = vectoru(),
-	           UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
-	           string output = ">", string outputExpr = "",
-	           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const vectoru & loci = vectoru(),
+		UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_incProb(incProb), m_p(p), m_func(func)
@@ -376,13 +376,7 @@ public:
 		DBG_WARNING(true, "Generalized stepwise mutation does not work well on two state alleles.");
 #endif
 
-		if (func != NULL) {                                               // use this function
-			DBG_ASSERT(PyCallable_Check(func),
-				ValueError, "Func is not a Python function");
-
-			Py_XINCREF(func);
-			m_func = func;
-		} else {
+		if (!m_func.isValid()) {
 			DBG_ASSERT(fcmp_ge(p, 0.) && fcmp_le(p, 1.),
 				ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
 		}
@@ -419,7 +413,7 @@ private:
 	double m_p;
 
 	/// the function to return random number
-	PyObject * m_func;
+	pyFunc m_func;
 };
 
 /// A hybrid mutator
@@ -436,36 +430,17 @@ public:
 	/**
 	 */
 	pyMutator(const vectorf & rate = vectorf(),
-	          const vectoru & loci = vectoru(), UINT maxAllele = 0,
-	          PyObject * func = NULL,
-	          string output = ">", string outputExpr = "",
-	          int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	          const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const vectoru & loci = vectoru(), UINT maxAllele = 0,
+		PyObject * func = NULL,
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields), m_func(NULL)
+		          output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
+		m_func(func)
 	{
-		DBG_ASSERT(PyCallable_Check(func), ValueError,
+		DBG_ASSERT(m_func.isValid(), ValueError,
 			"Passed variable is not a callable python function.");
-
-		Py_XINCREF(func);
-		m_func = func;
-	}
-
-
-	/// destructor
-	~pyMutator()
-	{
-		if (m_func != NULL)
-			Py_DECREF(m_func);
-	}
-
-
-	/// CPPONLY
-	pyMutator(const pyMutator & rhs) :
-		mutator(rhs), m_func(rhs.m_func)
-	{
-		if (m_func != NULL)
-			Py_INCREF(m_func);
 	}
 
 
@@ -487,14 +462,14 @@ public:
 
 
 private:
-	PyObject * m_func;
+	pyFunc m_func;
 };
 
 /// point mutator
 /**
    Mutate specified individuals at specified loci to a spcified allele.
    I.e., this is a non-random mutator used to introduce diseases etc.
- \c pointMutator, as its name suggest, does point mutation. This mutator will turn
+   \c pointMutator, as its name suggest, does point mutation. This mutator will turn
    alleles at \c loci on the first chromosome copy to \c toAllele for individual \c inds.
    You can specify \c atPloidy to mutate other, or all ploidy copies.
 
@@ -505,19 +480,19 @@ class pointMutator : public baseOperator
 public:
 	/// create a \c pointMutator
 	/**
-	 \param inds individuals who will mutate
-	 \param toAllele allele that will be mutate to
+	   \param inds individuals who will mutate
+	   \param toAllele allele that will be mutate to
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
 	pointMutator(
-	             const vectoru & loci,
-	             Allele toAllele,
-	             vectoru atPloidy = vectoru(),
-	             vectorlu inds = vectorlu(),
-	             string output = ">", string outputExpr = "",
-	             int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	             const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const vectoru & loci,
+		Allele toAllele,
+		vectoru atPloidy = vectoru(),
+		vectorlu inds = vectorlu(),
+		string output = ">", string outputExpr = "",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_toAllele(toAllele),
 		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)

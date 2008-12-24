@@ -233,14 +233,6 @@ public:
 	/// CPPONLY
 	controlledOffspringGenerator(const controlledOffspringGenerator & rhs);
 
-	/// destructor
-	~controlledOffspringGenerator()
-	{
-		if (m_freqFunc != NULL)
-			Py_DECREF(m_freqFunc);
-	}
-
-
 	/// CPPONLY
 	void initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops);
 
@@ -267,7 +259,7 @@ private:
 	vectori m_alleles;
 
 	/// function that return an array of frquency range
-	PyObject * m_freqFunc;
+	pyFunc m_freqFunc;
 	//
 	// expected alleles
 	vectoru m_expAlleles;
@@ -756,18 +748,12 @@ public:
 		PyObject * param = NULL,
 		bool replacement = true) :
 		randomParentChooser(replacement),
-		m_infoFields(infoFields), m_func(NULL), m_param(NULL),
+		m_infoFields(infoFields), m_func(func), m_param(NULL),
 		m_infoIdx(0), m_degenerate(false)
 	{
 		m_numParents = 2;
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
 			"At least one information field should be provided for this infoParentsChooser");
-		if (func && func != Py_None) {
-			if (!PyCallable_Check(func))
-				throw ValueError("Passed variable is not a callable Python function.");
-			m_func = func;
-			Py_XINCREF(func);
-		}
 		if (param && param != Py_None) {
 			m_param = param;
 			Py_XINCREF(param);
@@ -777,8 +763,6 @@ public:
 
 	~infoParentsChooser()
 	{
-		if (m_func)
-			Py_DECREF(m_func);
 		if (m_param)
 			Py_DECREF(m_param);
 	}
@@ -790,8 +774,6 @@ public:
 		m_func(rhs.m_func),
 		m_param(rhs.m_param)
 	{
-		if (m_func)
-			Py_INCREF(m_func);
 		if (m_param)
 			Py_INCREF(m_param);
 	}
@@ -812,7 +794,7 @@ public:
 private:
 	vectorstr m_infoFields;
 
-	PyObject * m_func;
+	pyFunc m_func;
 	PyObject * m_param;
 
 	vectori m_infoIdx;
@@ -843,7 +825,6 @@ public:
 		m_generator(rhs.m_generator),
 		m_parIterator(rhs.m_parIterator)
 	{
-		Py_INCREF(m_func);
 		if (m_generator != NULL)
 			Py_INCREF(m_generator);
 		if (m_parIterator != NULL)
@@ -869,8 +850,6 @@ public:
 	/// destructor
 	~pyParentsChooser()
 	{
-		if (m_func != NULL)
-			Py_XDECREF(m_func);
 		if (m_generator != NULL)
 			Py_XDECREF(m_generator);
 		if (m_parIterator != NULL)
@@ -887,7 +866,7 @@ private:
 #endif
 	IndIterator m_begin;
 
-	PyObject * m_func;
+	pyFunc m_func;
 	PyObject * m_generator;
 	PyObject * m_parIterator;
 };

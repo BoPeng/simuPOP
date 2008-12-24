@@ -191,11 +191,10 @@ double pyPenetrance::penet(individual * ind)
 			m_alleles[j++] = ind->allele(m_loci[i], p);
 
 	double resDouble;
-	if (infoSize() <= 1) {
-		PyCallFunc(m_func, "(O)", m_numArray, resDouble, PyObj_As_Double);
-	} else {
-		PyCallFunc2(m_func, "(OO)", m_numArray, m_infoArray, resDouble, PyObj_As_Double);
-	}
+	if (infoSize() <= 1)
+		resDouble = m_func.call("(O)", m_numArray, PyObj_As_Double);
+	else
+		resDouble = m_func.call("(OO)", m_numArray, m_infoArray, PyObj_As_Double);
 
 	// make sure the returned value is legitimate.
 	DBG_ASSERT(fcmp_ge(resDouble, 0.) && fcmp_le(resDouble, 1.),

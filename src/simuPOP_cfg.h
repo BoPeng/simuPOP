@@ -22,8 +22,8 @@
 ***************************************************************************/
 
 /**
- \file
- \brief system config file (typedef and macros)
+   \file
+   \brief system config file (typedef and macros)
  */
 
 /// global configuration
@@ -133,16 +133,16 @@ const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
 
 // For genotypic structure
 enum Sex {
-    Male = 1,
-    Female = 2
+	Male = 1,
+	Female = 2
 };
 
 // For genotypic structure
 enum ChromType {
-    Customized = 11,
-    Autosome = 12,
-    ChromosomeX = 13,
-    ChromosomeY = 14,
+	Customized = 11,
+	Autosome = 12,
+	ChromosomeX = 13,
+	ChromosomeY = 14,
 };
 
 // For numOffspring and gene conversion
@@ -150,16 +150,16 @@ enum Distribution {
 	BinomialDistribution = 21,
 	ExponentialDistribution = 22,
 	GeometricDistribution = 23,
-	PoissonDistribution	= 24,
-	UniformDistribution	= 25
+	PoissonDistribution = 24,
+	UniformDistribution = 25
 };
 
 // For sexMode
 enum SexMode {
 	NoSex = 30,
-	RandomSex = 31, 
-	ProbOfMale = 32, 
-	NumOfMale = 33, 
+	RandomSex = 31,
+	ProbOfMale = 32,
+	NumOfMale = 33,
 	NumOfFemale = 34
 };
 
@@ -172,12 +172,12 @@ enum ConversionMode {
 
 // For pedigree tracing
 enum RelativeType {
-	Unrelated = 51,      // do nothing
-	Self = 51,           // individual himself or herself.
-	Offspring = 53,      // All offspring with all spouses (if there are more than one spouse)
-	Spouse = 54,         // All spouses (with at least one offspring)
-	FullSibling = 55,    // Siblings who share two parents
-	Sibling = 56,        // Siblings who share at least one parent
+	Unrelated = 51,         // do nothing
+	Self = 51,              // individual himself or herself.
+	Offspring = 53,         // All offspring with all spouses (if there are more than one spouse)
+	Spouse = 54,            // All spouses (with at least one offspring)
+	FullSibling = 55,       // Siblings who share two parents
+	Sibling = 56,           // Siblings who share at least one parent
 };
 
 // For pedigree tracing
@@ -330,7 +330,6 @@ public:
 };
 
 
-
 // define DEBUG codes
 // DEbUG_CODE_LENGTH should be the number of debug codes
 #define DBG_CODE_LENGTH 20
@@ -383,14 +382,14 @@ enum DBG_CODE {
 #  define DBG_ASSERT(cond, exception, message) \
     if (!(cond)) \
 	{ \
-		throw exception(\
+		throw exception( \
 			toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
 	}
 
 #  define DBG_FAILIF(cond, exception, message) \
     if (cond) \
 	{ \
-		throw exception(\
+		throw exception( \
 			toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
 	}
 

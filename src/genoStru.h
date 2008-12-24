@@ -454,7 +454,7 @@ public:
 		return s_genoStruRepository[m_genoStruIdx].m_numLoci;
 	}
 
-	
+
 	/** CPPONLY
 	 *  Return the index of chromosome X, \c -1 if there is no X chromosome.
 	 *  <group>2-chromosome</group>

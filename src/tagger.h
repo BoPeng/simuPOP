@@ -64,7 +64,7 @@ public:
 
 	/** CPPONLY
 	 * add a newline
-     */
+	 */
 	bool apply(population & pop);
 
 };
@@ -117,7 +117,7 @@ public:
 
 	/** CPPONLY
 	 *  apply the \c inheritTagger
-     */
+	 */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
@@ -181,13 +181,13 @@ public:
 
 	/** CPPONLY
 	 * apply the \c parentTagger
-     */
+	 */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/** at the end of a generation, write population structure information to a file
 	 * with a newline.
-     */
+	 */
 	bool apply(population & pop);
 
 private:
@@ -249,14 +249,14 @@ public:
 
 
 	/** CPPONLY
-     * apply the \c parentsTagger
-     */
+	 * apply the \c parentsTagger
+	 */
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
 	/** at the end of a generation, write population structure information to a file
 	 * with a newline.
-     */
+	 */
 	bool apply(population & pop);
 
 private:
@@ -267,8 +267,8 @@ private:
 
 
 /** Pedigree tagger is used to save a complete pedigree to a pedigree file
- *  during an evolution process. 
- *  Because 
+ *  during an evolution process.
+ *  Because
  *  is destroyedof record individuals involved in an evolutioary process.
    This is a simple post-mating tagger that write given
    information fields to a file (or standard output).
@@ -309,32 +309,15 @@ public:
 		int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
 		const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields)
+		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		m_func(func)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,
 			"infoFields can not be empty.");
 
-		DBG_ASSERT(PyCallable_Check(func), ValueError,
+		DBG_ASSERT(m_func.isValid(), ValueError,
 			"Passed variable is not a callable python function.");
-
-		Py_XINCREF(func);
-		m_func = func;
 	};
-
-	virtual ~pyTagger()
-	{
-		if (m_func != NULL)
-			Py_DECREF(m_func);
-	}
-
-
-	/// CPPONLY
-	pyTagger(const pyTagger & rhs) :
-		tagger(rhs), m_func(rhs.m_func)
-	{
-		if (m_func != NULL)
-			Py_INCREF(m_func);
-	}
 
 
 	/// deep copy of a \c pyTagger
@@ -358,7 +341,7 @@ public:
 		individual * dad = NULL, individual * mom = NULL);
 
 private:
-	PyObject * m_func;
+	pyFunc m_func;
 };
 }
 #endif

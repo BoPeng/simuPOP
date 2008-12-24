@@ -183,10 +183,10 @@ bool parentsTagger::apply(population & pop)
 
 
 pedigreeTagger::pedigreeTagger(int begin, int end, int step, vectorl at,
-		const repList & rep, const subPopList & subPop,
-		int stage, string output, string outputExpr,
-		const vectorstr & pedigreeFields) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, pedigreeFields)
+	const repList & rep, const subPopList & subPop,
+	int stage, string output, string outputExpr,
+	const vectorstr & pedigreeFields) :
+	tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, pedigreeFields)
 {
 	setApplicableStage(stage);
 }
@@ -215,7 +215,6 @@ bool pedigreeTagger::apply(population & pop)
 }
 
 
-
 bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
@@ -236,9 +235,8 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 			values.push_back(mom->info(idx[i]));
 	}
 	//
-	vectorf res;
-	PyCallFunc(m_func, "(O)", Double_Vec_As_NumArray(values.begin(), values.end()),
-		res, PyObj_As_Array);
+	vectorf res = m_func.call("(O)", Double_Vec_As_NumArray(values.begin(), values.end()),
+		PyObj_As_Array);
 
 	DBG_FAILIF(res.size() != numFields, ValueError, "Please return a value for each information field");
 

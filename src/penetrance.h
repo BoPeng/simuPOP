@@ -24,8 +24,8 @@
 #ifndef _PENETRANCE_H
 #define _PENETRANCE_H
 /**
- \file
- \brief head file of class selector:public baseOperator
+   \file
+   \brief head file of class selector:public baseOperator
  */
 #include "utility.h"
 #include "operator.h"
@@ -47,14 +47,14 @@ namespace simuPOP {
    Penetrance can be applied at any stage (default to \c DuringMating). When a penetrance
    operator is applied, it calculates the penetrance value of each offspring and assigns
    affected status accordingly. Penetrance can also be used \c PreMating or
- \c PostMating. In these cases, the affected status will be set to all individuals
+   \c PostMating. In these cases, the affected status will be set to all individuals
    according to their penetrance values. \n
 
    Penetrance values are usually not saved.
    If you would like to know the penetrance value, you need to
- \li use <tt>addInfoField('penetrance')</tt> to the population to analyze. (Or use \c infoFields
+   \li use <tt>addInfoField('penetrance')</tt> to the population to analyze. (Or use \c infoFields
    parameter of the population constructor), and
- \li use e.g., <tt>mlPenetrance(...., infoFields=['penetrance'])</tt> to add the penetrance field
+   \li use e.g., <tt>mlPenetrance(...., infoFields=['penetrance'])</tt> to add the penetrance field
    to the penetrance operator you use. You may choose a name other than \c 'penetrance' as long as
    the field names for the operator and population match.
 
@@ -71,16 +71,16 @@ class penetrance : public baseOperator
 public:
 	/// create a penetrance operator
 	/**
-	 \param ancestralGen if this parameter is set to be \c 0, apply penetrance to
-	   	the current generation; if \c -1, apply to all generations; otherwise, apply
-	   	to the specified numbers of ancestral generations.
-	 \param stage specify the stage this operator will be applied. Default to \c DuringMating.
-	 \param infoFields If one field is specified, it will be used to store penetrance values.
+	   \param ancestralGen if this parameter is set to be \c 0, apply penetrance to
+	    the current generation; if \c -1, apply to all generations; otherwise, apply
+	    to the specified numbers of ancestral generations.
+	   \param stage specify the stage this operator will be applied. Default to \c DuringMating.
+	   \param infoFields If one field is specified, it will be used to store penetrance values.
 	 */
 	penetrance(int ancestralGen = -1, int stage = DuringMating,
-	           int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
-	           const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	           const vectorstr & infoFields = vectorstr())
+		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr())
 		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
@@ -102,7 +102,7 @@ public:
 
 	/** CPPONLY
 	 *  calculate/return penetrance etc.
-     */
+	 */
 	virtual double penet(individual *)
 	{
 		throw ValueError("This penetrance calculator is not supposed to be called directly");
@@ -140,19 +140,19 @@ class mapPenetrance : public penetrance
 public:
 	/// create a map penetrance operator
 	/**
-	 \param locus the locus index. Shortcut to <tt>loci=[locus]</tt>
-	 \param loci the locus indexes. The genotypes of these loci will be used to determine
+	   \param locus the locus index. Shortcut to <tt>loci=[locus]</tt>
+	   \param loci the locus indexes. The genotypes of these loci will be used to determine
 	   penetrance.
-	 \param penet a dictionary of penetrance. The genotype must be in the form
-	   	of 'a-b' for a single locus.
-	 \param phase if \c True, <tt>a/b</tt> and <tt>b/a</tt> will have different penetrance values.
-	   	Default to \c False.
-	 \param output and other parameters please refer to help(baseOperator.__init__)
+	   \param penet a dictionary of penetrance. The genotype must be in the form
+	    of 'a-b' for a single locus.
+	   \param phase if \c True, <tt>a/b</tt> and <tt>b/a</tt> will have different penetrance values.
+	    Default to \c False.
+	   \param output and other parameters please refer to help(baseOperator.__init__)
 	 */
 	mapPenetrance(vectoru loci, const strDict & penet, bool phase = false,
-	              int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	              vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	              const vectorstr & infoFields = vectorstr()) :
+		int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
 		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_dict(penet), m_phase(phase)
 	{
@@ -206,21 +206,21 @@ class maPenetrance : public penetrance
 public:
 	/// create a multiple allele penetrance operator (penetrance according to diseased or wildtype alleles)
 	/**
-	 \param locus the locus index. The genotype of this locus will be used to determine
-	   	penetrance.
-	 \param loci the locus indexes. The genotypes of these loci will be examed.
-	 \param penet an array of penetrance values of AA, Aa, aa. A is the
-	   	wild type group. In the case of multiple loci, penetrance should be in the order of
-	   	AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
-	 \param wildtype an array of alleles in the wildtype group. Any other alleles will
-	   	be considered as in the diseased allele group.
-	 \param output and other parameters please refer to help(baseOperator.__init__)
+	   \param locus the locus index. The genotype of this locus will be used to determine
+	    penetrance.
+	   \param loci the locus indexes. The genotypes of these loci will be examed.
+	   \param penet an array of penetrance values of AA, Aa, aa. A is the
+	    wild type group. In the case of multiple loci, penetrance should be in the order of
+	    AABB, AABb, AAbb, AaBB, AaBb, Aabb, aaBB, aaBb, aabb.
+	   \param wildtype an array of alleles in the wildtype group. Any other alleles will
+	    be considered as in the diseased allele group.
+	   \param output and other parameters please refer to help(baseOperator.__init__)
 	 */
 	maPenetrance(vectoru loci, const vectorf & penet, const vectora & wildtype,
-	             int ancestralGen = -1,
-	             int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	             const vectorstr & infoFields = vectorstr()) :
+		int ancestralGen = -1,
+		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
 		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
 	{
@@ -269,11 +269,11 @@ private:
    penetrances and combine them according to the \c mode parameter, which takes one of the
    following values:
 
- \li \c PEN_Multiplicative: the penetrance is calculated as \f$ f=\prod f_{i} \f$.
- \li \c PEN_Additive: the penetrance is calculated as \f$ f=\min\left(1,\sum f_{i}\right) \f$.
- \f$ f \f$ will be set to \c 1 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are
-   	added, not \f$ f_{i} \f$ directly.
- \li \c PEN_Heterogeneity: the penetrance is calculated as \f$ f=1-\prod\left(1-f_{i}\right) \f$.
+   \li \c PEN_Multiplicative: the penetrance is calculated as \f$ f=\prod f_{i} \f$.
+   \li \c PEN_Additive: the penetrance is calculated as \f$ f=\min\left(1,\sum f_{i}\right) \f$.
+   \f$ f \f$ will be set to \c 1 when \f$ f<0 \f$. In this case, \f$ s_{i} \f$ are
+    added, not \f$ f_{i} \f$ directly.
+   \li \c PEN_Heterogeneity: the penetrance is calculated as \f$ f=1-\prod\left(1-f_{i}\right) \f$.
 
    Please refer to Neil Risch (1990) for detailed information about these models.
 
@@ -289,14 +289,14 @@ public:
 public:
 	/// create a multiple locus penetrance operator
 	/**
-	 \param peneOps a list of penetrance operators
-	 \param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
+	   \param peneOps a list of penetrance operators
+	   \param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
 
 	 */
 	mlPenetrance(const vectorop peneOps, int mode = PEN_Multiplicative,
-	             int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	             const vectorstr & infoFields = vectorstr()) :
+		int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
 		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_peneOps(0), m_mode(mode)
 	{
@@ -313,7 +313,7 @@ public:
 	virtual ~mlPenetrance()
 	{
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end(); s != sEnd; ++s)
-			delete * s;
+			delete *s;
 	}
 
 
@@ -352,8 +352,8 @@ private:
    considered as the penetrance for this individual.
 
    More specifically, \c func can be
- \li <tt>func(geno)</tt> if \c infoFields has length 0 or 1.
- \li <tt>func(geno, fields)</tt> when \c infoFields has more than 1 fields.
+   \li <tt>func(geno)</tt> if \c infoFields has length 0 or 1.
+   \li <tt>func(geno, fields)</tt> when \c infoFields has more than 1 fields.
    Both parameters should be an list.
    <funcForm>PyPenetrance</funcForm>
  */
@@ -361,32 +361,29 @@ class pyPenetrance : public penetrance
 {
 public:
 	/**
-	 \param loci the genotypes at these loci will
-	   	be passed to the provided Python function in the form of <tt>loc1_1, loc1_2, loc2_1, loc2_2, ...</tt>
-	   	if the individuals are diploid.
-	 \param func a user-defined Python function that accepts an array of genotypes
-	   	at specified loci and return a penetrance value. The return value
-	   	should be between \c 0 and \c 1.
-	 \param infoFields if specified, the first field should be the information
-	   	field to save calculated penetrance value. The values of the rest of the
-	   	information fields (if available) will also be passed to the user defined
-	   	penetrance function.
-	 \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
+	   \param loci the genotypes at these loci will
+	    be passed to the provided Python function in the form of <tt>loc1_1, loc1_2, loc2_1, loc2_2, ...</tt>
+	    if the individuals are diploid.
+	   \param func a user-defined Python function that accepts an array of genotypes
+	    at specified loci and return a penetrance value. The return value
+	    should be between \c 0 and \c 1.
+	   \param infoFields if specified, the first field should be the information
+	    field to save calculated penetrance value. The values of the rest of the
+	    information fields (if available) will also be passed to the user defined
+	    penetrance function.
+	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
 	 */
 	/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 	pyPenetrance(const vectoru & loci, PyObject * func, int ancestralGen = -1,
-	             int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-	             vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-	             const vectorstr & infoFields = vectorstr()) :
+		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
+		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
 		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_loci(loci), m_alleles(0), m_len(0), m_numArray(NULL)
+		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
-		if (!PyCallable_Check(func))
+		if (!m_func.isValid())
 			throw ValueError("Passed variable is not a callable python function.");
-
-		Py_XINCREF(func);
-		m_func = func;
 
 		DBG_FAILIF(loci.empty(), ValueError,
 			"Please specify susceptibility loci");
@@ -395,8 +392,6 @@ public:
 	/// destructor
 	virtual ~pyPenetrance()
 	{
-		if (m_func != NULL)
-			Py_DECREF(m_func);
 		if (m_numArray != NULL)
 			Py_DECREF(m_numArray);
 	}
@@ -413,8 +408,6 @@ public:
 		m_numArray(NULL),
 		m_infoArray(NULL)
 	{
-		if (m_func != NULL)
-			Py_INCREF(m_func);
 	}
 
 
@@ -442,7 +435,7 @@ private:
 	vectoru m_loci;
 
 	/// user supplied python function
-	PyObject * m_func;
+	pyFunc m_func;
 
 	/// copy of alleles of each individual a time.
 	vectora m_alleles;

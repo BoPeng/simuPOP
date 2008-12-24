@@ -54,6 +54,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 {
 	string key;
 	size_t ply = ind->ploidy();
+
 	vector<int> alleles(ply);
 
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
@@ -178,13 +179,11 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 	}
 
 
-	double resDouble;
-	if (infoSize() <= 1) {
-		PyCallFunc2(m_func, "(Oi)", m_numArray, gen, resDouble, PyObj_As_Double);
-	} else {
-		PyCallFunc3(m_func, "(OiO)", m_numArray, gen, m_infoArray, resDouble, PyObj_As_Double);
-	}
-	return resDouble;
+	if (infoSize() <= 1)
+		return m_func.call("(Oi)", m_numArray, gen, PyObj_As_Double);
+	else
+		return m_func.call("(OiO)", m_numArray, gen, m_infoArray, PyObj_As_Double);
+	return 0.;
 }
 
 
