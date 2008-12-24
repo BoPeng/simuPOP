@@ -797,8 +797,9 @@ pop = population(10, ploidy=Haplodiploid, loci=[5, 5],
 pop.setVirtualSplitter(sexSplitter())
 simu = simulator(pop, haplodiploidMating())
 simu.evolve(
-    preOps = [initByValue([0]*10, subPop=[(0, 0)]),
-        initByValue([1]*10+[2]*10, subPop=[(0, 1)])],
+    preOps = [initSex(),
+        initByValue([0]*10, subPop=[(0, 0)], initSex=False),
+        initByValue([1]*10+[2]*10, subPop=[(0, 1)], initSex=False)],
     ops = [parentsTagger(),
         dumper(structure=False, stage=PrePostMating)],
     gen = 1
