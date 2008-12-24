@@ -1296,7 +1296,7 @@ public:
 			m_p %= m_ploidy;
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			for (size_t i = 0; i < diff; ++i)
+			for (int i = 0; i < diff; ++i)
 				advance(m_it, m_p);
 		}
 		return *this;
@@ -1316,7 +1316,7 @@ public:
 			tmp.m_p %= m_ploidy;
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			for (size_t i = 0; i < diff; ++i)
+			for (int i = 0; i < diff; ++i)
 				advance(tmp.m_it, tmp.m_p);
 		}
 		return tmp;

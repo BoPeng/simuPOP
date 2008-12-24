@@ -54,19 +54,6 @@ namespace simuPOP {
 class offspringGenerator
 {
 public:
-#define GeometricDistribution   3
-#define PoissonDistribution     4
-#define BinomialDistribution    5
-#define UniformDistribution     6
-
-
-#define NoSex                   0
-#define RandomSex               1
-#define ProbOfMale              2
-#define NumOfMale               3
-#define NumOfFemale             4
-
-public:
 	/** Create a basic offspring generator. This offspring generator uses
 	 *  \e ops genotype transmitters to transmit genotypes from parents to
 	 *  offspring. It expects \e numParents from an upstream parents chooser
