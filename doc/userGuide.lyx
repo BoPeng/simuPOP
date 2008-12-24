@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -6078,6 +6078,8 @@ reference "haplodiploidMating"
 \end_inset
 
  demonstrates how to use this mating scheme.
+ It uses three initializers because sex has to be initialized before two
+ other intializers can initialize genotype by sex.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -6138,11 +6140,10 @@ Heterogeneous mating schemes
 \end_layout
 
 \begin_layout Standard
-Non-random mating can also be introduced by mating individuals from different
- groups differently.
- Different subpopulations, or different virtual subpopulations, can have
- varying fecundity, represented by different numbers of offspring generated
- per mating event.
+Different groups of individuals in a population may have different mating
+ patterns.
+ For example, individuals with different properties can have varying fecundity,
+ represented by different numbers of offspring generated per mating event.
  For example, it is possible that only adults (may be defined by age > 30
  and age < 50) in a subpopulation can produce offspring, where other individual
  will either be copied to the offspring generation or die.
