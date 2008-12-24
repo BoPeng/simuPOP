@@ -310,7 +310,6 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 		"Could not pass offspring to the provided function. \n"
 		"Compiled with the wrong version of SWIG?");
 
-	cout << "HERE" << endl;
 	bool res;
 	if (m_passOffspringOnly) {
 		// parammeter list, ref count increased
