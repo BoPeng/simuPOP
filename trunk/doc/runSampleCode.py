@@ -100,6 +100,8 @@ def splitFile(outputFile, runCommand=True):
             if first:
                 if runCommand:
                     print >> out, '>>> %s' % line[4:],
+                    if 'Error' in line:
+                        print >> sys.stderr, " * * * * * Error is encounted in this file (this is perhaps intentional)"
                 else:
                     print >> out, '#!/usr/bin/env python'
                     print >> out, 'from simuPOP import *'
@@ -109,6 +111,8 @@ def splitFile(outputFile, runCommand=True):
                 first = False
             else:
                 print >> out, line,
+                if 'Error' in line:
+                    print >> sys.stderr, " * * * * * Error is encounted in this file (this is perhaps intentional)"
     outFile.close()
 
 if __name__ == '__main__':
