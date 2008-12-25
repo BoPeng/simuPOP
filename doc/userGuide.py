@@ -821,17 +821,74 @@ simu.evolve(
 Dump(simu.population(0), width=3, structure=False, max=10)
 #end
 
-#file log/heteroMating.log
-pop = population(100, loci=[2])
+#file log/heteroMatingSP.log
+pop = population(size=[1000, 1000], loci=[2],
+    infoFields=['father_idx', 'mother_idx'])
+simu = simulator(pop, heteroMating(
+    [randomMating(numOffspring=2, subPop=0),
+     randomMating(numOffspring=4, subPop=1)
+    ])
+)
+simu.evolve(
+    preOps = [initSex()],
+    ops= [parentsTagger()],
+    gen=10
+)
+pop = simu.extract(0)
+[ind.intInfo('father_idx') for ind in pop.individuals(0)][:10]
+[ind.intInfo('father_idx') for ind in pop.individuals(1)][:10]
+#end
+
+#file log/heteroMatingVSP.log
+pop = population(size=[1000], loci=[2],
+    infoFields=['father_idx', 'mother_idx'])
 pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
 simu = simulator(pop, heteroMating(
-    [selfMating(numOffspring=5, subPop=(0, 0)),
-    randomMating(numOffspring=20, subPop=(0, 11))
+    matingSchemes = [
+        selfMating(subPop=(0, 0)),
+        randomMating(subPop=(0, 1))
+    ])
 )
+simu.evolve(
+    preOps = [initSex()],
+    ops= [parentsTagger()],
+    gen = 10
+)
+pop = simu.extract(0)
+[ind.intInfo('father_idx') for ind in pop.individuals(0)][:15]
+[ind.intInfo('mother_idx') for ind in pop.individuals(0)][:15]
+#end
 
-simu.evolve(ops=[], gen=1)
-print simu.dvars(0).famSizes
-TurnOffDebug(DBG_MATING)
+#file log/heteroMatingWeight.log
+pop = population(size=[1000], loci=[2],
+    infoFields=['mark'])
+pop.setVirtualSplitter(rangeSplitter([[0, 500], [200, 1000]]))
+def markOff(param):
+    '''define a Python during mating operator that marks
+       individual information field 'mark'
+    '''
+    def func(off, param):
+        off.setInfo(param, 'mark')
+        return True
+    return pyOperator(func=func, param=param, stage=DuringMating,
+        offspringOnly=True)
+
+simu = simulator(pop, heteroMating(
+    matingSchemes = [
+        randomMating(subPop=0, weight=-0.5, ops=[markOff(0)]),
+        randomMating(subPop=(0, 0), weight=2, ops=[markOff(1)]),
+        randomMating(subPop=(0, 1), weight=3, ops=[markOff(2)])
+    ])
+)
+simu.evolve(
+    preOps = [initSex()],
+    ops= [],
+    gen = 10
+)
+marks = list(simu.extract(0).indInfo('mark'))
+marks.count(0.)
+marks.count(1.)
+marks.count(2.)
 #end
 
 
