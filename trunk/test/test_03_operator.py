@@ -180,15 +180,15 @@ class TestOperator(unittest.TestCase):
     def testInfoEval(self):
         '''Testing operator infoEval'''
         pop = population(10, infoFields=['a', 'b'])
-        InfoEval(pop, expr='b', stmts='b=a+1')
+        InfoEval(pop, expr='b', stmts='b=a+1', output='')
         self.assertEqual(pop.indInfo('b'), tuple([1]*10))
         #
         # use population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
-        self.assertRaises(exceptions.SystemError, InfoEval, pop, 'c+4')
+        self.assertRaises(exceptions.RuntimeError, InfoEval, pop, 'c+4')
         # usePopVars is needed
-        InfoEval(pop, 'c+4', usePopVars=True)
+        InfoEval(pop, 'c+4', usePopVars=True, output='')
 
 
     def testInfoExec(self):
@@ -204,7 +204,7 @@ class TestOperator(unittest.TestCase):
         # use population variable
         pop.vars()['c'] = 5
         # this should fail because there is no information field c
-        self.assertRaises(exceptions.SystemError, InfoExec, pop, 'b=c+4')
+        self.assertRaises(exceptions.RuntimeError, InfoExec, pop, 'b=c+4')
         # usePopVars is needed
         InfoExec(pop, 'b=c+4', usePopVars=True)
         self.assertEqual(pop.indInfo('b'), tuple([9]*10))
@@ -214,9 +214,9 @@ class TestOperator(unittest.TestCase):
         simu.evolve(
             preOps = [infoExec('b=0', name='set b to zero')],
             ops = [
-                infoEval(r"'\t%.1f' % b", name='output b', stage=PostMating),
-                infoExec('b+=1', name='increase b'),
-                pyOutput('\n'),
+                infoEval(r"'\t%.1f' % b", name='output b', stage=PostMating, output=''),
+                infoExec('b+=1', name='increase b', output=''),
+                pyOutput('\n', output=''),
             ],
             gen = 4
         )
