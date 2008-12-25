@@ -1412,11 +1412,11 @@ public:
 
 	// Note how ... are passed to Py_BuildValue using Py_VaBuildValue
 	template <typename T>
-	T call(char * format, void converter(PyObject *, T &), ...)
+	T call(void converter(PyObject *, T &), char * format, ...)
 	{
 		va_list argptr;
 
-		va_start(argptr, converter);
+		va_start(argptr, format);
 		PyObject * arglist = Py_VaBuildValue(format, argptr);
 		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);

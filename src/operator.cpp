@@ -291,9 +291,9 @@ bool pyOperator::apply(population & pop)
 	bool resBool;
 	// parenthesis is needed since PyCallFuncX are macros.
 	if (m_param.isValid())
-		resBool = m_func.call("(OO)", PyObj_As_Bool, popObj, m_param.object());
+		resBool = m_func.call(PyObj_As_Bool, "(OO)", popObj, m_param.object());
 	else
-		resBool = m_func.call("(O)", PyObj_As_Bool, popObj);
+		resBool = m_func.call(PyObj_As_Bool, "(O)", popObj);
 
 	Py_DECREF(popObj);
 	return resBool;
@@ -314,9 +314,9 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 	if (m_passOffspringOnly) {
 		// parammeter list, ref count increased
 		if (m_param.isValid())
-			res = m_func.call("(OO)", PyObj_As_Bool, offObj, m_param.object());
+			res = m_func.call(PyObj_As_Bool, "(OO)", offObj, m_param.object());
 		else
-			res = m_func.call("(O)", PyObj_As_Bool, offObj);
+			res = m_func.call(PyObj_As_Bool, "(O)", offObj);
 
 	} else {
 		// call the python function, pass all the parameters to it.
@@ -344,9 +344,9 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 
 		// parammeter list, ref count increased
 		if (m_param.isValid())
-			res  = m_func.call("(OOOOO)", PyObj_As_Bool, popObj, offObj, dadObj, momObj, m_param.object());
+			res  = m_func.call(PyObj_As_Bool, "(OOOOO)", popObj, offObj, dadObj, momObj, m_param.object());
 		else
-			res = m_func.call("(OOOO)", PyObj_As_Bool, popObj, offObj, dadObj, momObj);
+			res = m_func.call(PyObj_As_Bool, "(OOOO)", popObj, offObj, dadObj, momObj);
 
 		Py_DECREF(popObj);
 		Py_DECREF(dadObj);
