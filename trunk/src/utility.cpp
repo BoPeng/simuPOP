@@ -190,6 +190,8 @@ bool debug(DBG_CODE code)
 {
 	return g_dbgCode[code];
 }
+#else
+
 
 
 #endif
@@ -1476,8 +1478,13 @@ PyObject * Expression::evaluate()
 		res = PyEval_EvalCode((PyCodeObject *)m_stmts,
 			mainVars().dict(), m_locals);
 		if (res == NULL) {
-			PyErr_Print();
-			throw SystemError("Evalulation of statements failed");
+#ifndef OPTIMIZED
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
+#endif
+			throw RuntimeError("Evalulation of statements failed");
 		} else {
 			Py_DECREF(res);
 			res = NULL;
@@ -1488,8 +1495,13 @@ PyObject * Expression::evaluate()
 		res = PyEval_EvalCode((PyCodeObject *)m_expr,
 			mainVars().dict(), m_locals);
 		if (res == NULL) {
-			PyErr_Print();
-			throw SystemError("Evalulation of expression failed");
+#ifndef OPTIMIZED
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
+#endif
+			throw RuntimeError("Evalulation of expression failed");
 		}
 	}
 
@@ -2832,43 +2844,6 @@ string ModulePlatForm()
     return PLATFORM;
 }
 
-
-// GZIP	\037\213	http://www.ietf.org/rfc/rfc1952.txt
-bool isGzipped(const string & filename)
-{
-    // paranoia check
-    if (filename.empty())
-		return false;
-
-    ifstream ifs(filename.c_str());
-    if (!ifs)
-		// Couldn't open file...
-		return false;
-
-    string str;
-    getline(ifs, str);
-    return str.substr(0, 2) == "\037\213";
-}
-
-
-const string fileExtension(const string & filename)
-{
-    const string::size_type last_slash = filename.rfind('/');
-    string::size_type last_dot;
-
-    if (filename.size() > 3 && filename.substr(filename.size() - 3, 3) == ".gz")
-		last_dot = filename.rfind('.', filename.size() - 4);
-    else
-		last_dot = filename.rfind('.');
-    if (last_dot != string::npos &&
-        (last_slash == string::npos || last_dot > last_slash))
-		return filename.substr(last_dot + 1,
-			filename.size() - (last_dot + 1));
-    else
-		return string();
-}
-
-
 #ifdef BINARYALLELE
 
 // define a good way to copy long genotype sequence
@@ -3114,11 +3089,7 @@ bool initialize()
 			g_bitMask[i] |= (1UL << j);
 	}
 
-#ifndef OPTIMIZED
-    // turn on some debug info
-    TurnOnDebug(DBG_GENERAL);
     // give at most 100 ref count warnings.
-#endif
 #ifdef Py_REF_DEBUG
     g_refWarningCount = 100;
 #endif

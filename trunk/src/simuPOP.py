@@ -70,12 +70,15 @@ if not simuOptions['Quiet']:
         print "This is the standard %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)
     print "For more information, please visit http://simupop.sourceforge.net,"
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
+    # Turn on general debug information when not in 'quiet' mode
+    # This will print out error messages when needed.
+    TurnOnDebug('DBG_GENERAL')
 
-    if simuOptions['Debug'] != []:
-        for g in simuOptions['Debug']:
-            if g not in ['', None]:
-                print "Turn on debug '%s'" % g
-                TurnOnDebug(g)
+if simuOptions['Debug'] != []:
+    for g in simuOptions['Debug']:
+        if g not in ['', None]:
+            print "Turn on debug '%s'" % g
+            TurnOnDebug(g)
 
 # Other definitions that does not really belong to simuUtil.py
 #

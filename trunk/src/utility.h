@@ -1330,12 +1330,6 @@ ostream & cnull();
 /// set the standard output (default to standard Python output)
 void setLogOutput(const string filename = "");
 
-/// check if a file is a gzipped file CPPONLY
-bool isGzipped(const string & filename);
-
-/// file extension, including .gz, CPPONLY
-const string fileExtension(const string & filename);
-
 // ////////////////////////////////////////////////////////////
 // / Parameter polymorphism
 // ////////////////////////////////////////////////////////////
@@ -1423,7 +1417,12 @@ public:
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
-			PyErr_Print();
+#ifndef OPTIMIZED
+            if (debug(DBG_GENERAL)) {
+    			PyErr_Print();
+                PyErr_Clear();
+            }
+#endif
 			throw ValueError("Function call failed.\n");
 		}
 		T retValue;
@@ -1443,7 +1442,12 @@ public:
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
-			PyErr_Print();
+#ifndef OPTIMIZED
+            if (debug(DBG_GENERAL)) {
+			    PyErr_Print();
+                PyErr_Clear();
+            }
+#endif
 			throw ValueError("Function call failed\n");
 		}
 		return pyResult;
