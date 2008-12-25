@@ -235,7 +235,7 @@ bool pyTagger::applyDuringMating(population & pop, RawIndIterator offspring,
 			values.push_back(mom->info(idx[i]));
 	}
 	//
-	vectorf res = m_func.call(PyObj_As_Array, "(O)", Double_Vec_As_NumArray(values.begin(), values.end()));
+	vectorf res = m_func(PyObj_As_Array, "(O)", Double_Vec_As_NumArray(values.begin(), values.end()));
 
 	DBG_FAILIF(res.size() != numFields, ValueError, "Please return a value for each information field");
 
