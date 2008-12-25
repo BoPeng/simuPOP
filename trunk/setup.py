@@ -1,28 +1,36 @@
 """
-simuPOP installer 
+simuPOP installer: 
 
-In case that you have modified the C++ code, or you are
-checking out simuPOP from svn repository, you need to 
-install swig >= 1.3.27 to generate the wrap files.
+A standard simuPOP package has boost and needed SWIG-generated wrapper files so
+you should be able to run this script and install simuPOP using:
+  > python setup.py install
+
+If your copy of simuPOP is checked out from the subversion server, you will
+need to download a supported version of boost (see variable boost_versions
+below) and uncompress it under the simuPOP source directory. You also need to
+install swig >= 1.3.35 for the generation of Python wrapper files.
+
+For a complete development environment, it is recommended that you also install
+  1. doxygen: to generate source and command-line document.
+  2. Python docutils package: to generate reference manual and online document.
+  3. R and rpy: to develop and test R-related functions and modules.
 
 """
 import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions.
-boost_versions = ['1_33_1', '1_34_0', '1_34_1', '1_35_0', '1_36_0']
+boost_versions = ['1_35_0', '1_36_0', '1_37_0']
 
-# if the source package is districuted with boost 1.33.1, use
-# this bundled version.
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
-included_boost_dir = 'boost_1_36_0'
 if len(included_version) > 0:
     included_boost = True
-    included_boost_dir = 'boost_' + included_version[0]
+    included_boost_dir = 'boost_' + included_version[-1]  # use the latest version
     included_boost_include_dir = included_boost_dir
     included_boost_serialization_dir = os.path.join(included_boost_dir, 'libs', 'serialization', 'src')
     included_boost_iostreams_dir = os.path.join(included_boost_dir, 'libs', 'iostreams', 'src')
 else:
     included_boost = False
+    included_boost_dir = 'boost'
 
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
@@ -389,22 +397,6 @@ SIMUPOP_FILES = [
 ]
 
 
-#
-# DETECT BASIC SYSTEM SETTINGS
-#
-
-
-# I use -O option for 'Optimization' and part of my extension code actually
-# depend on this feature (XX_swiginit calls). However, this makes __doc__
-# messages of member functions disappear, as discussed in SWIG user mailing list.
-# 
-# I am using a patched SVN swig version to fix this (as of Apr. 2007). Users 
-# of later version of swig (>1.3.21) may not need this. To test if __doc__ works, 
-# try
-#     help(population.absIndIndex)
-#
-# The patch can be found here:
-#     http://sf.net/tracker/index.php?func=detail&aid=1700146&group_id=1645&atid=301645
 SWIG_FLAGS = '-O -templatereduce -shadow -python -c++ -keyword -nodefaultctor -w-503,-312,-511,-362,-383,-384,-389,-315,-509,-525'
 SWIG_RUNTIME_FLAGS = '-python -external-runtime'
 # python setup.py reads py_modules from src so we have to produce simuPOP_std.py
@@ -441,21 +433,17 @@ large and complex evolutionary processes with ease. At a more
 user-friendly level, simuPOP provides an increasing number of built-in
 scripts that perform simulations ranging from implementation of basic 
 population genetics models to generating datasets under complex 
-evolutionary scenarios. simuPOP is currently bundled with a Python
-binding of coaSim.
+evolutionary scenarios.
 """
             
 
-# find all test files
+#
 DATA_FILES = [
     ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
         'COPYING', 'TODO', 'simuPOP_version.py']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-    ('share/simuPOP/doc/cookbook', ['doc/cookbook/%s' % x for x in 
-        ('Mating_assortativeMating.py', 'Mating_overlappingGeneration.py',
-         'Mating_pyParentsChooser.py', 'Mating_selfing.py', 'Mating_consanguineous.py',
-         'Mating_pyMating_cpp.py', 'Mating_pyMating_cpp.i', 'Mating_pyMating_cpp.h',
-         'Operator_pyOperator.py')]),
+    ('share/simuPOP/doc/cookbook', glob.glob('doc/cookbook/*.py') +
+        ['Mating_pyMating_cpp.i', 'Mating_pyMating_cpp.h']),
     ('share/simuPOP/test', glob.glob('test/test_*.py') + \
         ['test/run_tests.py', 'test/run_tests.sh']),
     ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
