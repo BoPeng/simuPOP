@@ -11,7 +11,7 @@
 #
 
 import simuOpt
-#simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions, random, copy
