@@ -1412,7 +1412,7 @@ public:
 
 	// Note how ... are passed to Py_BuildValue using Py_VaBuildValue
 	template <typename T>
-	T call(void converter(PyObject *, T &), char * format, ...)
+	T operator()(void converter(PyObject *, T &), char * format, ...)
 	{
 		va_list argptr;
 
@@ -1433,7 +1433,7 @@ public:
 	}
 
 
-	PyObject * directCall(char * format, ...)
+	PyObject * operator()(char * format, ...)
 	{
 		va_list argptr;
 		va_start(argptr, format);

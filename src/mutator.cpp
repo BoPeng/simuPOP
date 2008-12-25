@@ -131,7 +131,7 @@ void gsmMutator::mutate(AlleleRef allele)
 	if (!m_func.isValid())  // use a geometric distribution.
 		step = rng().randGeometric(m_p);
 	else
-		step = m_func.call(PyObj_As_Int, "()");
+		step = m_func(PyObj_As_Int, "()");
 
 	DBG_DO(DBG_MUTATOR, cout << "step is " << step << endl);
 
@@ -163,7 +163,7 @@ void gsmMutator::mutate(AlleleRef allele)
 // mutate according to the mixed model
 void pyMutator::mutate(AlleleRef allele)
 {
-	int resInt = m_func.call(PyObj_As_Int, "(i)", static_cast<int>(allele));
+	int resInt = m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
 
 #ifdef BINARYALLELE
 	DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
