@@ -144,8 +144,8 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 		else if (mom != NULL)
 			offspring->setInfo(mom - & * pop.indBegin(), infoField(0));
 	} else if (is == 2) {
-		offspring->setInfo(dad == NULL ? 0 : dad - & * pop.indBegin(), infoField(0));
-		offspring->setInfo(mom == NULL ? 0 : mom - & * pop.indBegin(), infoField(1));
+		offspring->setInfo(dad == NULL ? -1 : dad - & * pop.indBegin(), infoField(0));
+		offspring->setInfo(mom == NULL ? -1 : mom - & * pop.indBegin(), infoField(1));
 	}
 	// output to a file?
 	if (noOutput())
@@ -154,8 +154,8 @@ bool parentsTagger::applyDuringMating(population & pop, RawIndIterator offspring
 	// always output two numbers. Because it is possible to have heteroMating
 	// with selfing + random mating.
 	ostream & out = getOstream(pop.dict());
-	ULONG dadIdx = dad == NULL ? 0 : dad - & * pop.indBegin();
-	ULONG momIdx = mom == NULL ? 0 : mom - & * pop.indBegin();
+	ULONG dadIdx = dad == NULL ? -1 : dad - & * pop.indBegin();
+	ULONG momIdx = mom == NULL ? -1 : mom - & * pop.indBegin();
 	UINT spID = pop.subPopIndPair(std::max(dadIdx, momIdx)).first;
 	// record subpopulation count
 	if (m_subPopSize.size() < spID + 1)
