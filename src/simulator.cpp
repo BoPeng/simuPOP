@@ -583,8 +583,7 @@ void simulator::load(string filename)
 {
 	boost::iostreams::filtering_istream ifs;
 
-	if (isGzipped(filename))
-		ifs.push(boost::iostreams::gzip_decompressor());
+	ifs.push(boost::iostreams::gzip_decompressor());
 	ifs.push(boost::iostreams::file_source(filename, std::ios::binary));
 
 	// do not need to test again
