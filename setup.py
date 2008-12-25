@@ -443,7 +443,7 @@ DATA_FILES = [
         'COPYING', 'TODO', 'simuPOP_version.py']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
     ('share/simuPOP/doc/cookbook', glob.glob('doc/cookbook/*.py') +
-        ['Mating_pyMating_cpp.i', 'Mating_pyMating_cpp.h']),
+        ['doc/cookbook/Mating_pyMating_cpp.i', 'doc/cookbook/Mating_pyMating_cpp.h']),
     ('share/simuPOP/test', glob.glob('test/test_*.py') + \
         ['test/run_tests.py', 'test/run_tests.sh']),
     ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
