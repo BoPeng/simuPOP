@@ -1527,8 +1527,9 @@ bool heteroMating::mate(population & pop, population & scratch,
 		// if more than two mating schemes working on the same subpopulation,
 		// it is better to shuffle offspring afterwards,
 		if (m.size() > 1 && m_shuffleOffspring) {
-			std::random_shuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
-			pop.setIndOrdered(false);
+			DBG_DO(DBG_MATING, cout << "Random shuffle individuals in the offspring generation." << endl);
+			std::random_shuffle(scratch.rawIndBegin(sp), scratch.rawIndEnd(sp));
+			scratch.setIndOrdered(false);
 		}
 	}                         // each subpopulation.
 	if (submit)
