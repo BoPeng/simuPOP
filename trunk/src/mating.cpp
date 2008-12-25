@@ -90,7 +90,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 		return static_cast<UINT>(m_numOffspring[0]);
 
 	if (m_numOffspring.func().isValid()) {
-		int numOff = m_numOffspring.func().call("(i)", PyObj_As_Int, gen);
+		int numOff = m_numOffspring.func().call(PyObj_As_Int, "(i)", gen);
 		DBG_FAILIF(numOff < 1, ValueError, "Need at least one offspring.");
 		return numOff;
 	}
@@ -332,7 +332,7 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 
 	// expected frequency at each locus
 	if (subPop == 0) {
-		vectorf expFreq = m_freqFunc.call("(i)", PyObj_As_Array, pop.gen());
+		vectorf expFreq = m_freqFunc.call(PyObj_As_Array, "(i)", pop.gen());
 		DBG_DO(DBG_MATING, cout << "expected freq " << expFreq << endl);
 
 		//
@@ -948,9 +948,9 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 		// parammeter list, ref count increased
 		bool resBool;
 		if (m_param.isValid())
-			resBool = m_func.call("(OO)", PyObj_As_Bool, popObj, m_param.object());
+			resBool = m_func.call(PyObj_As_Bool, "(OO)", popObj, m_param.object());
 		else
-			resBool = m_func.call("(O)", PyObj_As_Bool, popObj);
+			resBool = m_func.call(PyObj_As_Bool, "(O)", popObj);
 
 		Py_DECREF(popObj);
 	}
@@ -1170,7 +1170,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 		for (size_t i = 0; i < pop.numSubPop(); ++i)
 			PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
-		vectorf res = m_subPopSize.func().call("(iO)", PyObj_As_Array, gen, curSize);
+		vectorf res = m_subPopSize.func().call(PyObj_As_Array, "(iO)", gen, curSize);
 		Py_XDECREF(curSize);
 
 		vectorlu sz(res.size());
