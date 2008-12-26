@@ -923,24 +923,88 @@ simu.evolve(
 
 #file log/controlledOffGenerator.log
 def traj(gen):
-    return [0.5]
+    return [0.5 + gen * 0.01]
 
-simu = simulator(population(1000, loci=[10]),
-    pyMating(randomParentsChooser(),
+simu = simulator(population(1000, loci=[10]*2),
+    pyMating(randomParentChooser(),
         controlledOffspringGenerator(loci=[5],
             alleles=[0], freqFunc=traj,
-            ops = [mendelianGenoTransmitter()]))
+            ops = [selfingGenoTransmitter()]))
 )
 
 # evolve the population while keeping allele frequency 0.5
 simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
-    ops = [stat(alleleFreq=[5]),
-        pyEval(r'"%.2f\n" % alleleFreq[5][0]')],
+    ops = [stat(alleleFreq=[5, 15]),
+        pyEval(r'"%.2f\t%.2f\n" % (alleleFreq[5][0], alleleFreq[15][0])')],
     gen = 5
 )
 
 #end
+
+#file log/mitochondrial.log
+pop = population(10, loci=[5]*5,
+    # one autosome, two sex chromosomes, and two mitochondrial chromosomes
+    chromTypes=[Autosome, ChromosomeX, ChromosomeY] + [Customized]*2,
+    infoFields=['father_idx', 'mother_idx'])
+
+simu = simulator(pop, randomMating(ops=[mitochondrialGenoTransmitter()]))
+
+simu.evolve(
+    preOps=[initByFreq([0.4] + [0.2]*3)],
+    ops=[
+        recombinator(rate=0.1),
+        parentsTagger(),
+        dumper(structure=False),
+    ],
+    gen = 2
+)
+#end
+
+
+#file log/sexSpecificRec.log
+class sexSpecificRecombinator(pyOperator):
+    def __init__(self, intensity=0, rate=0, loci=[], convMode=NoConversion,
+            maleIntensity=0, maleRate=0, maleLoci=[], maleConvMode=NoConversion,
+            *args, **kwargs):
+        # This operator is used to recombine maternal chromosomes
+        self.recombinator = recombinator(intensity, rate, loci, convMode)
+        # This operator is used to recombine paternal chromosomes
+        self.maleRecombinator = recombinator(maleIntensity, maleRate,
+            maleLoci, maleConvMode)
+        #
+        self.initialized = False
+        # Note the use of parameter formOffGenotype.
+        pyOperator.__init__(self, func=self.transmitGenotype,
+            stage=DuringMating, formOffGenotype=True, *args, **kwargs)
+    #
+    def transmitGenotype(self, pop, off, dad, mom):
+        # Recombinators need to be initialized. Basically, they cache some
+        # population properties to speed up genotype transmission.
+        if not self.initialized:
+            self.recombinator.initialize(pop)
+            self.maleRecombinator.initialize(pop)
+            self.initialized = True
+        # Form the first homologous copy of offspring.
+        self.recombinator.transmitGenotype(mom, off, 0)
+        self.maleRecombinator.transmitGenotype(dad, off, 1)
+        return True
+
+pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
+
+simu = simulator(pop, randomMating())
+
+simu.evolve(
+    preOps=[initByFreq([0.4] + [0.2]*3)],
+    ops=[
+        parentsTagger(),
+        sexSpecificRecombinator(rate=0.1, maleRate=0),
+        dumper(structure=False),
+    ],
+    gen = 2
+)
+#end
+
 
 ################################################################################
 #

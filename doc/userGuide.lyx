@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2604,7 +2604,15 @@ The sex of offspring is determined by the types of sex chromosomes he/she
 
 \begin_layout Standard
 As an advanced feature of simuPOP, chromosomes that do not follow the inheritanc
-e patterns of autosomes or sex chromosomes can be handled separately.
+e patterns of autosomes or sex chromosomes can be handled separately (see
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Pre-defined-genotype-transmitters"
+
+\end_inset
+
+ for an Example).
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6938,8 +6946,15 @@ is used to control an evolutionary process so that the allele frequencies
  frequency trajectories
 \emph default
 .
- Please refer to FIXME(REF) for rationals behind such an offspring generator
- and its applications in the simulation of complex human diseases.
+ Please refer to 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Peng2007a"
+
+\end_inset
+
+ for rationals behind such an offspring generator and its applications in
+ the simulation of complex human diseases.
 \end_layout
 
 \begin_layout Standard
@@ -6950,13 +6965,17 @@ reference "controlledOffGenerator"
 
 \end_inset
 
- demonstrates the use of such a controlled offspring generator, although
- this particular mating scheme is already defined in simuPOP as 
+ demonstrates the use of such a controlled offspring generator.
+ Instead of using a realistic frequency trajectory function, it forces allele
+ frequency at locus 5 to increase linearly.
+ In contrast, the allele frequency at locus 15 on the second chromosome
+ osscilates as a result of genetic drift.
+ Note that the random mating version of this mating scheme is defined in
+ simuPOP as 
 \family typewriter
 controlledRandomMating
 \family default
 .
- 
 \end_layout
 
 \begin_layout Standard
@@ -6971,43 +6990,132 @@ lstparams "caption={A controlled random mating scheme},label={controlledOffGener
 \end_layout
 
 \begin_layout Subsection
-Customized genotype transmitters
+Pre-defined genotype transmitters
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Pre-defined-genotype-transmitters"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-I just mentioned that the default genotype transmitter used in a 
+Although any during mating operators can be used in parameter 
 \family typewriter
-mendelianOffspringGenerator
+ops 
 \family default
- will always be used to .
- 
+of an offspring generator, only those that transmit genotype from parents
+ to offspring are called 
+\emph on
+genotype transmitters
+\family typewriter
+\emph default
+.
+
+\family default
+ simuPOP provides a number of genotype transmitters including clone, mendelian,
+ selfing, haplodiploid, genotype transmitter, and a recombinator.
+ They are usually used implicitly in a mating scheme, but they can also
+ be used explicitly.
 \end_layout
 
 \begin_layout Standard
-Some during-mating operators transmit genotype from parents to offspring,
- and some do not.
- Unless you construct a mating scheme from scratch, each stocked mating
- scheme has a default during-mating operator that is responsible for transmittin
-g genotype from parents to offspring.
- If another operator with the same flag is passed, the default one will
- not be used.
- The most common example is a 
+Genotype transmitters in an offspring generator are the 
+\emph on
+default
+\emph default
+ transmitters that can be replaced by another transmitter.
+ If another transmitter is used in the 
 \family typewriter
-recombinator
+evolve
 \family default
-, which will replace the default 
+ function, it will override the default transmitter.
+ For example, a 
 \family typewriter
-mendelianGenoTransmitter
+recombiantor
 \family default
- for a 
+ will override the 
+\family typewriter
+mendelianGenoTransmitter()
+\family default
+ used in a 
 \family typewriter
 randomMating
 \family default
- scheme if it is used.
+ mating scheme.
+ This is usually not a concern, but will be important if you are defining
+ your own genotype transmitters.
 \end_layout
 
-\begin_layout Subsection
-Customized chromosome type
+\begin_layout Standard
+All genotype transmitters only handle known chromosome types such as Autosome,
+ ChromosomeX and ChromosomeY.
+ Customized chromosomes are left untouched because simuPOP does not know
+ how they should be transmitted from parents to offspring.
+ In case that Customized chromosomes are treated as mitochondrial chromosomes,
+ a 
+\family typewriter
+mitochondrialGenoTransmitter
+\family default
+ can be used to transmit Customized chromosomes randomly from mother to
+ offspring.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mitochondrial.log"
+
+\end_inset
+
+ demonstrates the use of a 
+\family typewriter
+recombinator
+\family default
+ to recombine an autosome and two sex chromosomes, and a 
+\family typewriter
+mitochondrialGenoTransmitter
+\family default
+ to transmit mitochondrial chromosomes.
+ Note that,
+\end_layout
+
+\begin_layout Itemize
+These two operators can be used in the ops parameter of both the 
+\family typewriter
+evolve
+\family default
+ function and the mating scheme.
+ Recombinator overrides the default mendelian genotype transmitter defined
+ in the random mating scheme.
+\end_layout
+
+\begin_layout Itemize
+Different applicability rules are applied to these operators when they are
+ used in the 
+\family typewriter
+evolve
+\family default
+ function or in a mating scheme.
+ Namely, it is possible to apply recombination at certain generations if
+ it is used in the evolve function, and it is possible to apply recombination
+ to individuals in a virtual subpopulation if it is used in the mating scheme.
+\end_layout
+
+\begin_layout Itemize
+Because the mitochondrial genotype transmitter is only applied to customized
+ chromosomes, it is not considered as a genotype transmitter so that it
+ will not override any default gentoype transmitter.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mitochondrial.log"
+lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondrial.log}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -7022,136 +7130,110 @@ name "sub:Customized-genotype-transmitter"
 \end_layout
 
 \begin_layout Standard
-Although some operators can be applied before, after and during mating,
- most during-mating operators can only be applied by a mating scheme.
- During-mating operators have the following properties
+Although simuPOP provides a number of genotype transmitters, they may still
+ be cases where customized genotype transmitter is needed.
+ For example, a recombinator can be used to recombine parental chromosomes
+ but it is well known that male and female individuals differ in recombination
+ rates.
+ How can you apply two different recombinators to male and female individuals
+ separately?
 \end_layout
 
 \begin_layout Standard
-used This operator allows implementation of arbitrarily complicated operators,.
- To use this operator, you will have to know how to use population-related
- functions.
- The following example shows how to implement a dynamic mutator which mutate
- loci according to their allele frequencies.
-\end_layout
-
-\begin_layout Standard
-
+An immediate thought can be the use of virtual subpopulations.
+ If you apply two random mating schemes to two virtual subpopulations defined
+ by sex, 
 \family typewriter
-pyOperator
+randomParentsChooser
 \family default
- can also be a during-mating operator.
- You will need to define a function 
+ will not work because no opposite sex can be found in each virtual subpopulatio
+n.
+ In this case, a customized genotype transmitter can be used.
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def Func(pop, off, dad, mom, para)
-\end_layout
+A customized genotype transmitter is only a Python during-mating operator.
+ Although it is possible to define a function and use a pyOperator directly
+ (Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyOperator"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-or
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def shortFunc(off, para)
-\end_layout
+), it is much better to derive an operator from pyOperator, as the case
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
 
 \end_inset
 
-
+.
+ 
 \end_layout
 
 \begin_layout Standard
-where 
-\family typewriter
-para
-\family default
- can be ignored.
- To use this operator, you can do
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyOperator(stage=DuringMating, func=Func, param=someparam, formOffGenotype=True)
-\end_layout
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sexSpecificRec"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-or
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyOperator(stage=DuringMating, func=shortFunc, param=someparam,
-\end_layout
-
-\begin_layout Plain Layout
-
-formOffGenotype=False, offspringOnly=True)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If your during-mating 
+ defines a 
 \family typewriter
-pyOpeartor
+sexSpecificRecombinator
 \family default
- returns 
+ that uses, internally, two different recombinators to recombine male and
+ female parents.
+ The key statement is the 
 \family typewriter
-False
+pyOperator.__init__
 \family default
-, the individual will be discarded.
- Therefore, you can write a filter in this way.
- However, since the Python function will be called for each mating event,
- the cost of using such an operator is high, especially when population
- size is large.
-\end_layout
-
-\begin_layout Standard
-An example of during-mating 
+ line which initialize a Python operator with given function 
 \family typewriter
-pyOperator
-\family default
- can be found in 
-\family typewriter
-scripts/demoPyOperator.py
+self.transmitGenotype
 \family default
 .
+ This operator will override the default Mendelian genotype transmitter
+ used in the random mating scheme because 
+\family typewriter
+formOffGenotype=True
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The actual function to transmit parental genotype is 
+\family typewriter
+self.transmitGenotype
+\family default
+.
+ This function initialize two recombinators if they have not been initialized
+ and use them to transmit parental genotypes.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sexSpecificRec"
+
+\end_inset
+
+ outputs the population in two generations.
+ You should notice that paternal chromosome are not recombined when they
+ are transmitted to offspring.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/sexSpecificRec.log"
+lstparams "caption={A customized genotype transmitter for sex-specific recombination},label={sexSpecificRec}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
