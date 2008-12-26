@@ -217,7 +217,7 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 		    (ploidy == 1 &&
 		     ((ch == m_chromX && offspring.sex() == Male) ||
 		      (ch == m_chromY && offspring.sex() == Female)))) {
-			//clearChromosome(offspring, ploidy, ch);
+			clearChromosome(offspring, ploidy, ch);
 			continue;
 		}
 		if (ploidy == 1 && ch == m_chromX)
@@ -427,6 +427,8 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 
 void recombinator::initialize(const population & pop)
 {
+	genoTransmitter::initialize(pop);
+
 	m_chromX = pop.chromX();
 	m_chromY = pop.chromY();
 	if (!pop.customizedChroms().empty()) {
@@ -783,6 +785,16 @@ void recombinator::transmitGenotype(const individual & parent,
 		}
 		copyGenotype(cp[curCp] + gt, off + gt, gtEnd - gt);
 #endif
+	}
+	// handle special chromosomes
+	if (m_chromX > 0) {
+		if (offspring.sex() == Female) {
+			clearChromosome(offspring, 0, m_chromY);
+			clearChromosome(offspring, 1, m_chromY);
+		} else {
+			clearChromosome(offspring, 0, m_chromY);
+			clearChromosome(offspring, 1, m_chromX);
+		}
 	}
 }
 
