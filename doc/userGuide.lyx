@@ -7191,7 +7191,7 @@ sexSpecificRecombinator
 \family typewriter
 pyOperator.__init__
 \family default
- line which initialize a Python operator with given function 
+ line which initializes a Python operator with given function 
 \family typewriter
 self.transmitGenotype
 \family default
@@ -7211,8 +7211,8 @@ The actual function to transmit parental genotype is
 self.transmitGenotype
 \family default
 .
- This function initialize two recombinators if they have not been initialized
- and use them to transmit parental genotypes.
+ This function initializes two recombinators if they have not been initialized
+ and uses them to transmit parental genotypes.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
