@@ -268,6 +268,7 @@ private:
 	vectoru m_curAllele;    // in a subpop
 	//
 	int m_AAattempt;
+	int m_aaAttempt;
 	bool m_freqRequMet;
 };
 

@@ -166,6 +166,9 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 	while (count < numOff && attempt < numOff && it != itEnd) {
 		++attempt;
 
+        DBG_FAILIF(m_transmitters.empty() && ops.empty(), ValueError,
+            "No valid genotype transmitter is defined.");
+
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
 		it->setSex(getSex(count));
@@ -382,6 +385,7 @@ void controlledOffspringGenerator::initialize(const population & pop, SubPopID s
 	// if mor ethan noAAattempt times, no pure homo found,
 	// accept non-homo cases.
 	m_AAattempt = 200;
+	m_aaAttempt = 200;
 }
 
 
@@ -430,20 +434,28 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 			m_AAattempt = 10000;
 			accept = true;
 		}
-		// tried 100 times, no AA is found.
+		// tried 200 times, no AA is found.
 		else if (m_AAattempt == 0) {
-			m_AAattempt = 100;
+			m_AAattempt = 200;
 			accept = true;
 		}
 		m_AAattempt--;
 	} else {                                                          // do not use stack
-		for (size_t i = 0; i < nLoci; ++i) {
-			// accept the whole family, if we need this allele
-			if (m_curAllele[i] < m_totAllele[i] && na[i] > 0) {
-				accept = true;
-				break;
-			}
-		}
+        if (hasAff) {
+    		for (size_t i = 0; i < nLoci; ++i) {
+	    		// accept the whole family, if we need this allele
+		    	if (m_curAllele[i] < m_totAllele[i] && na[i] > 0) {
+			    	accept = true;
+				    break;
+    			}
+	    	}
+            m_aaAttempt = 10000;
+        }
+        else if (m_aaAttempt == 0) {
+            m_aaAttempt = 200;
+            accept = true;
+        }
+        m_aaAttempt--;
 	}
 	//
 	// reject this family
