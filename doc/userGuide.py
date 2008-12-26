@@ -893,19 +893,54 @@ marks.count(2.)
 
 
 #file log/randomMating.log
-def randomMating(numOffspring = 1., sexMode = RandomSex,
-        ops = [], subPopSize = [],
+def mendelianOffspringGenerator(ops=[], *args, **kwargs):
+    'An offspring generator that uses mendelianGenoTransmitter()'
+    return  offspringGenerator([mendelianGenoTransmitter()] + ops, 2, *args, **kwargs)
+
+def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
         subPop = (), weight = 0):
-    'A basic sexually random mating scheme.'
+    'A basic diploid sexual random mating scheme.'
     return pyMating(
         chooser = randomParentsChooser(replacement=True),
-        generator = offspringGenerator([mendelianGenoTransmitter()], 2,
-            ops, numOffspring, sexParam, sexMode),
+        generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
         subPop = subPop,
         weight = weight)
 #end
 
+
+#file log/sequentialSelfing.log
+simu = simulator(population(100, loci=[5]*3, infoFields=['parent_idx']),
+    pyMating(sequentialParentChooser(), selfingOffspringGenerator()))
+simu.evolve(
+    preOps = [initByFreq([0.2]*5)],
+    ops = [
+        parentTagger(),
+        dumper(structure=False, stage=PrePostMating, max=5)],
+    gen = 1
+)
+#end
+
+#file log/controlledOffGenerator.log
+def traj(gen):
+    return [0.5]
+
+simu = simulator(population(1000, loci=[10]),
+    pyMating(randomParentsChooser(),
+        controlledOffspringGenerator(loci=[5],
+            alleles=[0], freqFunc=traj,
+            ops = [mendelianGenoTransmitter()]))
+)
+
+# evolve the population while keeping allele frequency 0.5
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [stat(alleleFreq=[5]),
+        pyEval(r'"%.2f\n" % alleleFreq[5][0]')],
+    gen = 5
+)
+
+#end
 
 ################################################################################
 #
