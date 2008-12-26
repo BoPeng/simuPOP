@@ -991,9 +991,7 @@ class sexSpecificRecombinator(pyOperator):
         return True
 
 pop = population(10, loci=[15]*2, infoFields=['father_idx', 'mother_idx'])
-
 simu = simulator(pop, randomMating())
-
 simu.evolve(
     preOps=[initByFreq([0.4] + [0.2]*3)],
     ops=[
