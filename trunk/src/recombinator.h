@@ -305,6 +305,8 @@ public:
 		: genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
+		// this is intended to be an auxillary genotype transmitter.
+		setFormOffGenotype(false);
 	}
 
 
