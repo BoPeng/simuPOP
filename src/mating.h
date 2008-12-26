@@ -473,7 +473,7 @@ protected:
 	vector<RawIndIterator> m_index;
 	vector<RawIndIterator> m_chosen;
 	/// accumulative fitness
-	Weightedsampler m_sampler;
+	weightedSampler m_sampler;
 	/// individuals to choose
 	size_t m_size;
 };
@@ -539,8 +539,8 @@ private:
 	vectorf m_femaleFitness;
 
 	// weighted sampler
-	Weightedsampler m_malesampler;
-	Weightedsampler m_femalesampler;
+	weightedSampler m_malesampler;
+	weightedSampler m_femalesampler;
 
 };
 
@@ -623,8 +623,8 @@ private:
 	vectorf m_femaleFitness;
 
 	// weighted sampler
-	Weightedsampler m_malesampler;
-	Weightedsampler m_femalesampler;
+	weightedSampler m_malesampler;
+	weightedSampler m_femalesampler;
 };
 
 
@@ -711,8 +711,8 @@ private:
 	vectorf m_femaleFitness;
 
 	// weighted sampler
-	Weightedsampler m_malesampler;
-	Weightedsampler m_femalesampler;
+	weightedSampler m_malesampler;
+	weightedSampler m_femalesampler;
 };
 
 

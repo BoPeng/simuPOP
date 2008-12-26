@@ -142,7 +142,7 @@ bool migrator::apply(population & pop)
 		ULONG spSize = pop.subPopSize(spFrom);
 
 		if (m_mode == MigrByProbability) {
-			Weightedsampler ws(rng(), m_rate[from]);
+			weightedSampler ws(rng(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
 			for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind) {
