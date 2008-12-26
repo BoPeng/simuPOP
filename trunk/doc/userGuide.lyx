@@ -5260,8 +5260,26 @@ homogeneous mating scheme
 \series default
  is the most flexible and most frequently used mating scheme and is the
  center topic of this section.
- A homogeneous mating is responsible for choosing parent(s) from a (virtual)
- subpopulation and population all or part of the offspring generation.
+ A homogeneous mating is composed of a 
+\emph on
+parent chooser
+\emph default
+ that is responsible for choosing parent(s) from a (virtual) subpopulation
+ and an 
+\emph on
+offsring generator
+\emph default
+ that is used to populate all or part of the offspring generation.
+ During-mating operators are used to transmit genotypes from parents to
+ offspring.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:homogeneous-mating-scheme"
+
+\end_inset
+
+ demonstrates this process.
 \end_layout
 
 \begin_layout Itemize
@@ -5291,6 +5309,57 @@ This section describes some standard features of mating schemes and most
  pre-defined mating schemes.
  The next section will demonstrate how to build complex nonramdom mating
  schemes from scratch.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:homogeneous-mating-scheme"
+
+\end_inset
+
+A homogeneous mating scheme
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename HomoMatingScheme.eps
+	lyxscale 20
+	width 5in
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+A homogeneous mating scheme is responsible to choose parent(s) from a subpopulat
+ion or a virtual subpopulation, and population part or all of the corresponding
+ offspring subpopulation.
+ A parent chooser is used to choose one or two parents from the parental
+ generation, and pass it to an offspring generator, which produces one or
+ more offspring.
+ During mating operators such as taggers and recombinator can be applied
+ when offspring is generated.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -6779,6 +6848,7 @@ weight
  are ignored.
  Otherwise, the number of offspring this mating scheme will produce is determine
 d by the heterogeneous mating scheme.
+ Figure 
 \end_layout
 
 \begin_layout Standard
@@ -7237,23 +7307,22 @@ lstparams "caption={A customized genotype transmitter for sex-specific recombina
 \end_layout
 
 \begin_layout Subsection
-Non-random mating
+Pre-define parent choosers
 \end_layout
 
 \begin_layout Standard
-Random-mating implies random choices of parents.
- Non-random mating is much more difficult to implement because there are
- numerous way to introduce non-randomness.
- One of the ways to achive non-random mating in simuPOP is to use a hybrid
- operator 
-\family typewriter
-pyMating
-\family default
-.
+Parent choosers are responsible for choosing one or two parents from a parental
+ (virtual) subpopulation.
+ simuPOP defines a few parent choosers that choose parent(s) sequentially,
+ randomly (with or without replacement), or with additional conditions.
+ Some of these parent choosers support natual selection.
+ That is to say, they can select parents with probabilities that are proportiona
+l to individual fitness values.
+ Please refer to the simuPOP reference manual for details about these objects.
 \end_layout
 
-\begin_layout LyX-Code
-
+\begin_layout Subsection
+A Python parent chooser
 \end_layout
 
 \begin_layout Standard
@@ -7444,128 +7513,7 @@ lstparams "caption={A heterogeneous mating scheme},label={heteroMating}"
 \end_layout
 
 \begin_layout Subsection
-Homogeneous and hybrid mating schemes
-\end_layout
-
-\begin_layout Standard
-Parent choosers and offspring generators can be combined to form homogeneous
- mating schemes, which work identically on all (virtual) subpopulations
- it is applied.
- The only limit is that they have to be compatible in that a parent chooser
- that choose one parent can not be used with an offspring generator that
- needs two parents.
- A homogenou mating scheme is illustrated in Figure
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:homogeneous-mating-scheme"
-
-\end_inset
-
-A homogeneous mating scheme
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename HomoMatingScheme.eps
-	lyxscale 20
-	width 6in
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-A homogeneous mating scheme is responsible to choose parent(s) from a subpopulat
-ion or a virtual subpopulation, and population part or all of the corresponding
- offspring subpopulation.
- A parent chooser is used to choose one or two parents from the parental
- generation, and pass it to an offspring generator, which produces one or
- more offspring.
- During mating operators such as taggers and recombinator can be applied
- when offspring is generated.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The basic usage of a 
-\family typewriter
-pyMating 
-\family default
-operator is as follows
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyMating(randomParentChooser(),
-\end_layout
-
-\begin_layout Plain Layout
-
-    selfingOffspringGenerator(numOffspring=2))
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-pyMating(linearParentChooser(),
-\end_layout
-
-\begin_layout Plain Layout
-
-    cloneOffspringGenerator())
-\end_layout
-
-\end_inset
-
-The later simply copy everyone from the parental to the offspring genertion.
-\end_layout
-
-\begin_layout Subsection
 Python parents chooser
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-This is an advanced topic of simuPOP.
- New simuPOP users can safely skip this section.
 \end_layout
 
 \begin_layout Standard
