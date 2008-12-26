@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4814,7 +4814,7 @@ lstparams "caption={A frequency dependent mutation operator},firstline=5,label={
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "randomMating"
+reference "sequentialSelfing"
 
 \end_inset
 
@@ -5030,7 +5030,7 @@ pyOperator::__init__
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "randomMating"
+reference "sequentialSelfing"
 
 \end_inset
 
@@ -5287,6 +5287,13 @@ This section describes some standard features of mating schemes and most
 
 \begin_layout Subsection
 Control the size of the offspring generation
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:offspring-size"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5435,6 +5442,13 @@ reference "sec:splitAndMerge"
 
 \begin_layout Subsection
 Determine the number of offspring during mating
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:number-of-offspring"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5630,6 +5644,13 @@ lstparams "caption={Control the number of offspring per mating event.},label={nu
 
 \begin_layout Subsection
 Determine offspring sex
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:offspring-sex"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6248,6 +6269,8 @@ The real power of heterogeneous mating schemes lies on their ability to
  same population may exercise both self and cross-fertilization.
  Because of the randomness of such environmental factors, it is difficult
  to divide a population into self and cross-mating subpopulations.
+ Applying different mating schemes to groups of individuals in the same
+ subpopulation is more appropriate.
 \end_layout
 
 \begin_layout Standard
@@ -6398,13 +6421,12 @@ randomMating
 \end_layout
 
 \begin_layout Standard
-This raises the question about how many offspring each mating scheme will
- produce.
+This raises the question of how many offspring each mating scheme will produce.
  By default, the number of offspring produced will be proportional to the
  size of parental (virtual) subpopulations.
  In the last example, because both mating schemes are applied to the same
- subpopulation, 50% of offspring will be produced by selfing and the other
- half will be produced by random mating.
+ subpopulation, half of all offspring will be produced by selfing and the
+ other half will be produced by random mating.
 \end_layout
 
 \begin_layout Standard
@@ -6416,9 +6438,9 @@ weight
  of each homogeneous mating scheme.
  Briefly speaking, a positive weight will be compared against other mating
  schemes.
- a negative weight is considered as proportion/times to the existing (virtual)
+ a negative weight is considered proportional to the existing (virtual)
  subpopulation size.
- Negative weights will be considered before position or zero weights.
+ Negative weights are considered before position or zero weights.
 \end_layout
 
 \begin_layout Standard
@@ -6498,7 +6520,7 @@ If all weights are positive, the number of offspring produced from each
 
 \begin_layout Itemize
 If there are mixed positive and negative weights, the negative weights are
- first processed, and the rest of the individuals are divided using non-negative
+ processed first, and the rest of the individuals are divided using non-negative
  weights.
  For example, three mating schemes with weights (-0.5, 2, 3) will produce
  500, 
@@ -6532,8 +6554,7 @@ reference "heteroMatingWeight"
 \family typewriter
 (0, 1)
 \family default
-, respectively.
- Weight 
+, with weights 
 \family typewriter
 -
 \family default
@@ -6545,11 +6566,11 @@ reference "heteroMatingWeight"
 \family typewriter
 3
 \family default
- are used.
+ respectively.
  This example uses an advanced features that will be described in the next
  section.
- Namely, three during-mating operators are passed to each mating scheme
- to mark their offspring with different numbers.
+ Namely, three during-mating Python operators are passed to each mating
+ scheme to mark their offspring with different numbers.
 \end_layout
 
 \begin_layout Standard
@@ -6570,8 +6591,8 @@ Non-random and customized mating schemes
 \begin_layout Standard
 
 \emph on
-This is an advanced topic of simuPOP.
- New simuPOP users can safely skip this section.
+The following sections discuss advanced topics of simuPOP.
+ New simuPOP users can safely skip these sections.
 \end_layout
 
 \begin_layout Subsection
@@ -6579,14 +6600,11 @@ The structure of a homogeneous mating scheme
 \end_layout
 
 \begin_layout Standard
-For simplicity, I will refer to a homogeneous mating scheme as a mating
- scheme, and use parental and offspring generation directly, although a
- homogeneous mating scheme can be applied to virtual subpopulations and
- populate only a fraction of the offspring generation.
-\end_layout
-
-\begin_layout Standard
-A mating scheme populate an offspring generation as follows:
+A 
+\emph on
+homogeneous mating scheme
+\emph default
+ populates an offspring generation as follows:
 \end_layout
 
 \begin_layout Enumerate
@@ -6631,14 +6649,13 @@ After the offspring generation is populated, it will replace the parental
 \end_layout
 
 \begin_layout Standard
-A simuPOP mating scheme is responsible for all these steps.
- Each mating scheme uses a particular set of parent chooser, offspring generator
-, and genotype transmitter.
+A simuPOP mating scheme uses a particular set of parent chooser, offspring
+ generator, and genotype transmitters.
  For example, a 
 \family typewriter
 selfingMating
 \family default
- uses a 
+ mating scheme uses a 
 \family typewriter
 randomParentChooser
 \family default
@@ -6647,44 +6664,34 @@ randomParentChooser
 \family typewriter
 offspringGenerator
 \family default
- that is capable of producing one or more offspring.
- This offspring generator uses a 
+ that uses a 
 \family typewriter
 selfingOffspringGenerator
 \family default
  to transmit genotype.
- 
 \end_layout
 
 \begin_layout Standard
-simuPOP provides a number of parent choosers, offspring generators and genotype
- transmitters.
- It also provides a number of pre-defined mating schemes that make use of
- these objects.
- If none of the pre-defined mating schemes fits your need, you can define
- a new mating scheme by constructing one from stocked or user defined parent
- choosers, offspring generator, and genotype transmitters.
- Because both parent choosers and genotype transmitters can be constructed
- at the Python level, very complicated nonrandom mating schemes can be defined.
-\end_layout
-
-\begin_layout Standard
-Before we dive into the details of constructing a mating scheme from scratch,
- let us have a look at the definition of the most commonly used mating scheme
- 
-\family typewriter
-randomMating
-\family default
- (Example 
+Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "randomMating"
 
 \end_inset
 
-).
- The following sections basically explain each parameter of this mating
- scheme in detail and show you which part can be customized.
+ demonstrates how the most commonly used mating scheme, the diploid sexual
+ 
+\family typewriter
+randomMating
+\family default
+ mating scheme is defined in 
+\family typewriter
+simuPOP.py
+\family default
+.
+ The following sections basically explain how you can construct your own
+ mating scheme from cratch, using stocked or customized parent chooser,
+ offspring generator and genotype transmitters.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -6697,129 +6704,283 @@ lstparams "caption={Define a random mating scheme},firstline=4,label={randomMati
 \end_layout
 
 \begin_layout Subsection
-Parent choosers and offspring generators
+
+\family typewriter
+pyMating
+\family default
+ mating scheme
 \end_layout
 
 \begin_layout Standard
-To implement more complex mating schemes, some concepts need to be understood.
- The first one is 
+
+\family typewriter
+pyMating
+\family default
+ is used to define all pre-defined homogeneous mating schemes.
+ It takes five parameters: 
+\family typewriter
+chooser
+\family default
+ (a 
 \emph on
 parent chooser
 \emph default
-.
- Parent chooser determines how parent or parents are chosen from a given
- subpopulation.
- There are several predefined parent choosers such as 
+ that is responsible for choosing one or two parents from the parental generatio
+n), 
 \family typewriter
-linearParentChooser
+generator
 \family default
-, 
+ (an 
+\emph on
+offspring generator
+\emph default
+ that is responsible for generating a number of offspring from the chosen
+ parents), 
 \family typewriter
-randomParentChooser, randomParentsChooser
+subPopSize
 \family default
-, and the most powerful one is called 
+ (parameter to control offspring subpopulation sizes), 
 \family typewriter
-pyParentsChooser.
+subPop
+\family default
+ (applicable subpopulation or virtual subpopulation), and 
+\family typewriter
+weight
+\family default
+ (weighting parameter when used in a heterogeneous mating scheme).
+ When this mating scheme is applied to the whole population, 
+\family typewriter
+subPopSize
+\family default
+ is used to determine the subpopulation sizes of the offspring generation
+ (see Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:offspring-size"
+
+\end_inset
+
+ for details), parameters 
+\family typewriter
+subPop
+\family default
+ and 
+\family typewriter
+weight
+\family default
+ are ignored.
+ Otherwise, the number of offspring this mating scheme will produce is determine
+d by the heterogeneous mating scheme.
 \end_layout
 
 \begin_layout Standard
-A 
+Parameters 
 \family typewriter
-pyParensChooser
+subPopSize
 \family default
- accepts a Python generator function, instead of a normal Python function.
- When this generator function is called, it returns a 
-\emph on
-generator
-\emph default
- object that provides an iterator interface.
- Each time when the 
+, 
 \family typewriter
-next()
+subPop
 \family default
- member function of this object is called, this function resumes where it
- was stopped last time, executes and returns what the next 
+ and 
+\family typewriter
+weight
+\family default
+ are more or less standard but differnt parent choosers and offspring generators
+ can be combined to define a large number of homogeneous mating schemes.
+ For example, the standard 
+\family typewriter
+selfMating
+\family default
+ mating scheme uses a 
+\family typewriter
+randomParentChooser
+\family default
+ but you can easily use a 
+\family typewriter
+sequentialParentChooser
+\family default
+ to choose parents sequentially and self-fertilize parents one by one.
+ This is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sequentialSelfing"
+
+\end_inset
+
+.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/sequentialSelfing.log"
+lstparams "caption={Define a sequential selfing mating scheme},label={sequentialSelfing}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The simuPOP reference manual lists all pre-defined parent choosers and offspring
+ generators.
+ They may or may not work together depending on the number of parents a
+ parent chooser produces, and the number of parents an offspring generator
+ can handle.
+ You can also define your own parent choosers and offspring generators,
+ as shown below.
+\end_layout
+
+\begin_layout Subsection
+Offspring generators
+\end_layout
+
+\begin_layout Standard
+An 
+\family typewriter
+offspringGenerator
+\family default
+ accepts a parameters 
+\family typewriter
+ops
+\family default
+ (a list of during-mating operators), 
+\family typewriter
+numParents
+\family default
+ (number of parents), 
+\family typewriter
+numOffspring
+\family default
+ (control number of offspring per mating event) and 
+\family typewriter
+sexMode
+\family default
+ (control offspring sex).
+ We have examined the last two parameters in detail in sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:number-of-offspring"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:offspring-sex"
+
+\end_inset
+
+.
+ The 
+\family typewriter
+numParents
+\family default
+ parameter merely indicates how many parents the offspring generator should
+ expect from an upstream parent chooser.
+ If both 1 and 2 parents are acceptable, 0 should be given.
+\end_layout
+
+\begin_layout Standard
+The most tricky parameter is the 
+\family typewriter
+ops
+\family default
+ parameter.
+ It accepts a list of during mating operators that are used to transmit
+ genotypes from parent(s) to offspring.
+ The standard 
+\family typewriter
+offspringGenerator
+\family default
+ does not have any default operator so no genotype will be transmitted by
+ default.
+ A number of specialized offspring generators are therefore defined.
+ For example, a 
+\family typewriter
+mendelianOffspringGenerator
+\family default
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "randomMating"
+
+\end_inset
+
+ uses a 
+\family typewriter
+mendelianGenoTransmitter 
+\family default
+as the default genotype transmitter.
+ Additional during-mating operators can be added to the operator list, as
+ shown in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "heteroMatingWeight"
+
+\end_inset
+
+, but the 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+ will always be used to transmit genotypes.
+\end_layout
+
+\begin_layout Standard
+Another offspring generator is provided in simuPOP.
+ This 
+\family typewriter
+controlledOffspringGenerator 
+\family default
+is used to control an evolutionary process so that the allele frequencies
+ at certain loci follows some pre-simulated
 \emph on
-yield
+ frequency trajectories
 \emph default
- statement returns.
- An example of generator is given in simuPOP user's guide.
+.
+ Please refer to FIXME(REF) for rationals behind such an offspring generator
+ and its applications in the simulation of complex human diseases.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "controlledOffGenerator"
+
+\end_inset
+
+ demonstrates the use of such a controlled offspring generator, although
+ this particular mating scheme is already defined in simuPOP as 
+\family typewriter
+controlledRandomMating
+\family default
+.
+ 
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/generator_random.log"
-lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
+filename "log/controlledOffGenerator.log"
+lstparams "caption={A controlled random mating scheme},label={controlledOffGenerator}"
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-A user defined parents chooser can be very complicated, involving user defined
- information such as geometric locations.
- An example is given in 
-\family typewriter
-scripts/demoNonRandomMating.py
-\family default
-.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator_random"
-
-\end_inset
-
-, the parents chooser 
-\family typewriter
-randomChooser 
-\family default
-collects indexes of males and females that are over the age of 30 and return
- a pair of random male and female repeatedly.
- That is to say, individuals with age < 30 is not involved in mating.
- Of course, to completely implement age-dependent mating, other factors
- need to be considered.
- For example, a 
-\family typewriter
-pyTagger
-\family default
- is likely to be used to assign age to offspring.
-\end_layout
-
-\begin_layout Standard
-A parents chooser can yield a pair of parents, or a single parent.
- Obviously, a single diploid parent can not produce offspring using the
- usual Medelian fashion, so here comes another concept: 
-\emph on
-offspring generator
-\emph default
-, which determines how to produce offspring from given parent or parents.
- Currently, there are three standard offspring generators.
-\end_layout
-
-\begin_layout Standard
-These offspring generator defines only the default way to fill offspring
- genotype.
- When a during-mating operator is involved, it may override what an offspring
- generator does.
- For example, a 
-\family typewriter
-recombinator
-\family default
- recombines parental chromosomes to fill offspring genotype.
- In the diploid case, it will behave the same for 
-\family typewriter
-cloneOffspringGenerator
-\family default
- and 
-\family typewriter
-selfingOffspringGenerator.
 \end_layout
 
 \begin_layout Subsection
-Genotype transmitter
+Customized genotype transmitters
+\end_layout
+
+\begin_layout Standard
+I just mentioned that the default genotype transmitter used in a 
+\family typewriter
+mendelianOffspringGenerator
+\family default
+ will always be used to .
+ 
 \end_layout
 
 \begin_layout Standard
@@ -7009,57 +7170,8 @@ pyMating
 .
 \end_layout
 
-\begin_layout Standard
-A 
-\family typewriter
-pyMating
-\family default
- mating scheme accepts a 
-\emph on
-parents chooser
-\emph default
- and an 
-\emph on
-offspring generator
-\emph default
-.
- The parents chooser is responsible for choosing one or two parents from
- the parental generation, and the offspring generator is responsible for
- generating a number of offspring from the chosen parents.
- There are a number of default parents choosers and offspring generators
- and a 
-\family typewriter
-pyMating
-\family default
- can be built with them.
- For example
-\end_layout
-
 \begin_layout LyX-Code
-pyMating(randomParentsChooser(), mendelianOffspringGenerator())
-\end_layout
 
-\begin_layout Standard
-works exactly as a 
-\family typewriter
-randomMating
-\family default
- scheme, and
-\end_layout
-
-\begin_layout LyX-Code
-pyMating(randomParentChooser(), selfingOffspringGenerator(numOffspring=2))
-\end_layout
-
-\begin_layout Standard
-works as 
-\family typewriter
-selfMating(numOffspring=2)
-\family default
-.
- Note that parent chooser and offspring generator should be compatible ,
- meaning that if a parent chooser chooses one parent each time, the offspring
- generator should be able to produce offspring from a single parent.
 \end_layout
 
 \begin_layout Standard
@@ -7372,6 +7484,124 @@ Python parents chooser
 \emph on
 This is an advanced topic of simuPOP.
  New simuPOP users can safely skip this section.
+\end_layout
+
+\begin_layout Standard
+To implement more complex mating schemes, some concepts need to be understood.
+ The first one is 
+\emph on
+parent chooser
+\emph default
+.
+ Parent chooser determines how parent or parents are chosen from a given
+ subpopulation.
+ There are several predefined parent choosers such as 
+\family typewriter
+linearParentChooser
+\family default
+, 
+\family typewriter
+randomParentChooser, randomParentsChooser
+\family default
+, and the most powerful one is called 
+\family typewriter
+pyParentsChooser.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+pyParensChooser
+\family default
+ accepts a Python generator function, instead of a normal Python function.
+ When this generator function is called, it returns a 
+\emph on
+generator
+\emph default
+ object that provides an iterator interface.
+ Each time when the 
+\family typewriter
+next()
+\family default
+ member function of this object is called, this function resumes where it
+ was stopped last time, executes and returns what the next 
+\emph on
+yield
+\emph default
+ statement returns.
+ An example of generator is given in simuPOP user's guide.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/generator_random.log"
+lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A user defined parents chooser can be very complicated, involving user defined
+ information such as geometric locations.
+ An example is given in 
+\family typewriter
+scripts/demoNonRandomMating.py
+\family default
+.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "generator_random"
+
+\end_inset
+
+, the parents chooser 
+\family typewriter
+randomChooser 
+\family default
+collects indexes of males and females that are over the age of 30 and return
+ a pair of random male and female repeatedly.
+ That is to say, individuals with age < 30 is not involved in mating.
+ Of course, to completely implement age-dependent mating, other factors
+ need to be considered.
+ For example, a 
+\family typewriter
+pyTagger
+\family default
+ is likely to be used to assign age to offspring.
+\end_layout
+
+\begin_layout Standard
+A parents chooser can yield a pair of parents, or a single parent.
+ Obviously, a single diploid parent can not produce offspring using the
+ usual Medelian fashion, so here comes another concept: 
+\emph on
+offspring generator
+\emph default
+, which determines how to produce offspring from given parent or parents.
+ Currently, there are three standard offspring generators.
+\end_layout
+
+\begin_layout Standard
+These offspring generator defines only the default way to fill offspring
+ genotype.
+ When a during-mating operator is involved, it may override what an offspring
+ generator does.
+ For example, a 
+\family typewriter
+recombinator
+\family default
+ recombines parental chromosomes to fill offspring genotype.
+ In the diploid case, it will behave the same for 
+\family typewriter
+cloneOffspringGenerator
+\family default
+ and 
+\family typewriter
+selfingOffspringGenerator.
 \end_layout
 
 \begin_layout Subsection
