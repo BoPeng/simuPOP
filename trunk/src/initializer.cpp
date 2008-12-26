@@ -106,8 +106,8 @@ bool initByFreq::apply(population & pop)
 		//
 		vectorf & alleleFreq = m_alleleFreq.size() == 1 ? m_alleleFreq[0] : m_alleleFreq[idx];
 
-		// Weightedsampler ws(rng(), incFreq);
-		Weightedsampler ws(rng(), alleleFreq);
+		// weightedSampler ws(rng(), incFreq);
+		weightedSampler ws(rng(), alleleFreq);
 
 		DBG_ASSERT(fcmp_eq(std::accumulate(alleleFreq.begin(), alleleFreq.end(), 0.), 1),
 			SystemError, "Allele frequecies should add up to one.");
@@ -201,7 +201,7 @@ bool initByValue::apply(population & pop)
 	subPopList::iterator sp_end = subPops.end();
 	for (size_t idx = 0; sp != sp_end; ++sp, ++idx) {
 		//
-		Weightedsampler ws(rng(), m_proportion);
+		weightedSampler ws(rng(), m_proportion);
 
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);

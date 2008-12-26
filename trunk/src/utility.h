@@ -983,17 +983,17 @@ private:
 
 
 // weighted sampling using Walker's alias algorithm
-class Weightedsampler
+class weightedSampler
 {
 public:
 	// set up AliasMethod table
-	Weightedsampler(RNG & rng, const vectorf & weight = vectorf(), bool fast = true)
+	weightedSampler(RNG & rng, const vectorf & weight = vectorf(), bool fast = true)
 		: m_RNG(&rng), m_q(0), m_a(0)                     // , m_fast(fast)
 	{
 		set(weight);
 	};
 
-	~Weightedsampler()
+	~weightedSampler()
 	{
 	};
 

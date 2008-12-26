@@ -2169,7 +2169,7 @@ bool RNG::randBit()
 
 
 // They may be quicker.
-void Weightedsampler::set(const vectorf & weight)
+void weightedSampler::set(const vectorf & weight)
 {
 	m_N = weight.size();
 
