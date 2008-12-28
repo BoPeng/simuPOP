@@ -1049,8 +1049,7 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 		if (par2->sex() != sex1)
 			validInds.push_back(& * par2);
 	}
-	DBG_FAILIF(validInds.empty(), SystemError,
-		"No valid relative is found");
+	DBG_FAILIF(validInds.empty(), SystemError, "No valid relative is found");
 	individual * par2 = validInds[rng().randInt(validInds.size())];
 	DBG_DO(DBG_DEVEL, cout << "infoParentsChooser: par1: " << par1 - & * basePtr
 		                   << " par2: " << par2 - & * basePtr << endl);

@@ -494,7 +494,7 @@ def selfMating(replacement=True, numOffspring = 1.,	 sexMode = RandomSex,
         weight = weight)
 
 
-def consanguineousMating(relativeFields = [], func = None, param = None,
+def consanguineousMating(infoFields = [], func = None, param = None,
         replacement = False, numOffspring = 1.,	 sexMode = RandomSex, ops = [], subPopSize = [],
 		subPop = (), weight = 0):
     '''
@@ -518,7 +518,7 @@ def consanguineousMating(relativeFields = [], func = None, param = None,
 	   other parameters.
     '''
     return pyMating(
-        chooser = infoParentsChooser(relativeFields, func, param, replacement),
+        chooser = infoParentsChooser(infoFields, func, param, replacement),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize, subPop = subPop,
         weight = weight)
