@@ -86,7 +86,7 @@ def simuConsanguineousMating(w, size, gen, numFields=4):
 
     simu = simulator(pop, heteroMating([
         randomMating(numOffspring=2, weight = w),
-        consanguineousMating(relativeFields = cousinFields, func=findCousin,
+        consanguineousMating(infoFields = cousinFields, func=findCousin,
             param = [parFields, sibFields, offFields, cousinFields],
             numOffspring = 2, weight = 1 - w)
         ])
