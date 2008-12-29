@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7247,7 +7247,7 @@ reference "newOperator"
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sexSpecificRec"
+reference "infoChooser"
 
 \end_inset
 
@@ -7316,9 +7316,75 @@ Parent choosers are responsible for choosing one or two parents from a parental
  simuPOP defines a few parent choosers that choose parent(s) sequentially,
  randomly (with or without replacement), or with additional conditions.
  Some of these parent choosers support natual selection.
- That is to say, they can select parents with probabilities that are proportiona
-l to individual fitness values.
  Please refer to the simuPOP reference manual for details about these objects.
+\end_layout
+
+\begin_layout Standard
+We have seen sequential and random parent choosers in Examples 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sequentialSelfing"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "controlledOffGenerator"
+
+\end_inset
+
+.
+ A less-used parent chooser is 
+\family typewriter
+infoParentsChooser
+\family default
+, which chooses a parent randomly, and his/her spouse from indexes stored
+ in his/her information fields.
+ This parent chooser is usually used in a consanguineous mating scheme where
+ certain types of relatives of each individual are stored in his/her informtion
+ fields, and used during the selection of spouses.
+ For example, a 
+\family typewriter
+consanguineousMating
+\family default
+ mating scheme in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "infoChooser"
+
+\end_inset
+
+ produces a male and a female offspring at each mating event.
+ Before mating, a function is called to record every individual's sibling
+ in his/her information field 
+\family typewriter
+sibling
+\family default
+.
+ During mating, a parent is chosen randomly, and mates with his/her sibling.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infoChooser.log"
+lstparams "caption={A consanguineous mating scheme.},label={infoChooser}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This example does not make such sense because consanguineous mating usually
+ happens between first and second degree relatives, and reprents only a
+ small fraction of total parents in a population.
+ 
+\family typewriter
+doc/cook/Mating_consanguineous.py
+\family default
+ gives a more realistic example in which certain proportion of offspring
+ are produced by random mating, and others are results of marriages between
+ first-degree cousins.
 \end_layout
 
 \begin_layout Subsection
@@ -7326,27 +7392,31 @@ A Python parent chooser
 \end_layout
 
 \begin_layout Standard
-The power of 
+A parent choosing scheme can be quite complicated in reality.
+ For example, salamanders along a river may mate with their neighbors and
+ form several subspecies.
+ This behavior cannot be readily simulated using any pre-define parent choosers
+ so a hybrid parent chooser 
 \family typewriter
-pyMating 
+pyParentsChooser()
 \family default
-lies in its 
+ should be used.
+\end_layout
+
+\begin_layout Standard
+A 
 \family typewriter
-pyParentChooser()
+pyParentsChooser
 \family default
-, which accepts a user-defined Python generator function, instead of a normal
- python function.
- Generally speaking, when a generator function is called, it returns a 
+ accepts a user-defined Python generator function, instead of a normal python
+ function, that returns a parent, or a pair of parents repreatedly.
+ Briefly speaking, when a generator function is called, it returns a 
 \emph on
 generator
 \emph default
  object that provides an iterator interface.
- Each time when the 
-\family typewriter
-next()
-\family default
- member function of this object is called, this function resumes where it
- was stopped last time, executes and returns what the next 
+ Each time when this iterator iterates, this function resumes where it was
+ stopped last time, executes and returns what the next 
 \emph on
 yield
 \emph default
@@ -7363,7 +7433,7 @@ reference "generator"
 \end_inset
 
  for 
-\begin_inset Formula $k=1,...,10$
+\begin_inset Formula $k=1,...,5$
 \end_inset
 
 .
@@ -7380,7 +7450,7 @@ reference "generator"
 \end_inset
 
 , ...
- in a sequence interface.
+ sequentially.
 \end_layout
 
 \begin_layout Standard
@@ -7396,19 +7466,55 @@ lstparams "caption={A sample generator function},label={generator}"
 
 \begin_layout Standard
 A 
+\family typewriter
+pyParentsChooser
+\family default
+ accepts a parent generator function, which takes a population and a subpopulati
+on index as parameters.
+ When this parent chooser is applied to a subpopulation, it will call this
+ generator function and ask the generated generator object repeated for
+ parents (
 \emph on
-parents chooser
+indexes relative to a subpopulation
 \emph default
- takes two parameters, a population and a subpopulation index.
- It can return different generator objects for different subpopulations.
- 
+).
+ Note that 
+\family typewriter
+pyParentsChooser
+\family default
+ does not support virtual subpopulation but you can mimic the effect by
+ returnning only parents from certain virtual subpopulations.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyParentsChooser"
+
+\end_inset
+
+ implements a hybrid parent chooser that chooses parents with equal social
+ status (
+\family typewriter
+rank
+\family default
+).
+ In this parent chooser, all males and females are categorized by their
+ sex and social status.
+ A parent is chosen randomly, and then his/her spouse is chosen from females/mal
+es with the same social status.
+ The rank of their offspring can increase or decrease randomly.
+ It becomes obvious now that whereas a python function can return random
+ male/famale pair, the generator interface is much more efficient because
+ the identification of sex/status groups is done only once.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/generator_random.log"
-lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
+filename "log/pyParentsChooser.log"
+lstparams "caption={A hybrid parent chooser that chooses parents by their social status},label={pyParentsChooser}"
 
 \end_inset
 
@@ -7423,215 +7529,7 @@ A user defined parents chooser can be very complicated, involving user defined
 cookbook/Mating_pyMating_cpp.py
 \family default
 .
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator_random"
-
-\end_inset
-
-, the parents chooser 
-\family typewriter
-randomChooser 
-\family default
-collects indexes of males and females and simply return a pair of random
- male and female repeatedly.
- This is exactly what 
-\family typewriter
-randomMating
-\family default
- does if selection is not considered.
- It becomes obvious now that whereas a python function can return random
- male/famale pair, the generator interface is much more efficient because
- the identification of two sex groups is done only once.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyMating"
-
-\end_inset
-
- demonstrates how to use this user-defined parent chooser.
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyMating.log"
-lstparams "caption={pyMating with a user-defined parent chooser},label={pyMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Because arbitrary information can be stored with an individual through informati
-on fields, 
-\family typewriter
-pyMating
-\family default
- can be very complicated.
- For example, one can choose individuals according their age, and/or geographic
- information.
- For populations with well-defined structure, virtual subpopulations can
- be used.
- Basically, one needs to specify a virtual subpopulation splitter to a subpopula
-tion.
- Then, different mating schemes can be applied to different virtual subpopulatio
-ns.
- A simple example is given in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "heteroMating"
-
-\end_inset
-
- where the first subpopulation is divided into two parts.
- The first 20% of individuals undergo selfing, and the rest of the subpopulation
- undergoes usual sexed random mating.
- Note that two mating schemes produce different number of offspring per
- mating event, and the family sizes are recorded in a shared variable 
-\family typewriter
-famSizes
-\family default
- when 
-\family typewriter
-DBG_MATING
-\family default
- is turned on.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/heteroMating.log"
-lstparams "caption={A heterogeneous mating scheme},label={heteroMating}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Python parents chooser
-\end_layout
-
-\begin_layout Standard
-To implement more complex mating schemes, some concepts need to be understood.
- The first one is 
-\emph on
-parent chooser
-\emph default
-.
- Parent chooser determines how parent or parents are chosen from a given
- subpopulation.
- There are several predefined parent choosers such as 
-\family typewriter
-linearParentChooser
-\family default
-, 
-\family typewriter
-randomParentChooser, randomParentsChooser
-\family default
-, and the most powerful one is called 
-\family typewriter
-pyParentsChooser.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-pyParensChooser
-\family default
- accepts a Python generator function, instead of a normal Python function.
- When this generator function is called, it returns a 
-\emph on
-generator
-\emph default
- object that provides an iterator interface.
- Each time when the 
-\family typewriter
-next()
-\family default
- member function of this object is called, this function resumes where it
- was stopped last time, executes and returns what the next 
-\emph on
-yield
-\emph default
- statement returns.
- An example of generator is given in simuPOP user's guide.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/generator_random.log"
-lstparams "caption={A generator function that mimicks random mating},label={generator_random}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-A user defined parents chooser can be very complicated, involving user defined
- information such as geometric locations.
- An example is given in 
-\family typewriter
-scripts/demoNonRandomMating.py
-\family default
-.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "generator_random"
-
-\end_inset
-
-, the parents chooser 
-\family typewriter
-randomChooser 
-\family default
-collects indexes of males and females that are over the age of 30 and return
- a pair of random male and female repeatedly.
- That is to say, individuals with age < 30 is not involved in mating.
- Of course, to completely implement age-dependent mating, other factors
- need to be considered.
- For example, a 
-\family typewriter
-pyTagger
-\family default
- is likely to be used to assign age to offspring.
-\end_layout
-
-\begin_layout Standard
-A parents chooser can yield a pair of parents, or a single parent.
- Obviously, a single diploid parent can not produce offspring using the
- usual Medelian fashion, so here comes another concept: 
-\emph on
-offspring generator
-\emph default
-, which determines how to produce offspring from given parent or parents.
- Currently, there are three standard offspring generators.
-\end_layout
-
-\begin_layout Standard
-These offspring generator defines only the default way to fill offspring
- genotype.
- When a during-mating operator is involved, it may override what an offspring
- generator does.
- For example, a 
-\family typewriter
-recombinator
-\family default
- recombines parental chromosomes to fill offspring genotype.
- In the diploid case, it will behave the same for 
-\family typewriter
-cloneOffspringGenerator
-\family default
- and 
-\family typewriter
-selfingOffspringGenerator.
 \end_layout
 
 \begin_layout Subsection
