@@ -1102,10 +1102,15 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 		"Please initialize this parent chooser before using it");
 
 	PyObject * item = PyIter_Next(m_parIterator);
+
+#ifndef OPTIMIZED
+	if (item == NULL && debug(DBG_GENERAL)) {
+		PyErr_Print();
+		PyErr_Clear();
+	}
 	DBG_FAILIF(item == NULL, ValueError,
-		"User-defined function yield invalid value. This may happen \n"
-		"if you function does not provide enough parents for the mating \n"
-		"scheme (a 'while True' statement is recommended).");
+		"User-defined function yield invalid value.");
+#endif
 
 	vectori parents;
 	int parent;
