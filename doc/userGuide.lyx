@@ -211,7 +211,7 @@ This user's guide shows you how to install and use simuPOP using a large
  number of examples.
  It describes all important concepts and features of simuPOP and shows you
  how to use them in a simuPOP script.
- For a complete and detailed desciprion about all simuPOP functions and
+ For a complete and detailed description about all simuPOP functions and
  classes, please refer to the 
 \emph on
 simuPOP Reference Manual.
@@ -781,7 +781,7 @@ INSTALL
 \end_layout
 
 \begin_layout Standard
-Thanks to the ‘glue language’ nature of Python, it is easy to interoperate
+Thanks to the ‘glue language’ nature of Python, it is easy to inter-operate
  Python with other applications within a simuPOP script.
  For example, users can call any R function from Python/simuPOP for the
  purposes of visualization and statistical analysis, using 
@@ -801,11 +801,6 @@ RPy
 wxPython
 \series default
  toolkit if it is available.
- Several functions, such as the graphical version of the 
-\family typewriter
-ListVars()
-\family default
- function, are only available for wxPython.
 \end_layout
 
 \begin_layout Section
@@ -1126,7 +1121,7 @@ A number of bundled scripts are distributed with simuPOP.
  the evolution of complex human genetic diseases.
  These scripts can be a good source to learn how to write a simuPOP script.
  Of course, if any of these scripts happens to fit your need, you may be
- able to use them directly, with writting a line of code.
+ able to use them directly, with writing a line of code.
 \end_layout
 
 \begin_layout Standard
@@ -1286,7 +1281,7 @@ Constants start with Capital characters as well.
  They are usually prefixed with a category name.
  For example, 
 \family typewriter
-MigrByProportion
+ByProportion
 \family default
  specifies a migration mode.
 \end_layout
@@ -1635,7 +1630,7 @@ False
 \family typewriter
 quiet
 \family default
- can be used supress initial output.
+ can be used suppress initial output.
  An alternative method is to set environmental variable 
 \family typewriter
 SIMUALLELETYPE
@@ -1645,7 +1640,7 @@ SIMUALLELETYPE
 status collapsed
 
 \begin_layout Plain Layout
-SIMUALLELETYPE
+r
 \end_layout
 
 \end_inset
@@ -1675,7 +1670,7 @@ When simuPOP is loaded, it creates a default random number generator (RNG)
 \family typewriter
 mt19937
 \family default
- using a random seed from a system random number generator that gurantees
+ using a random seed from a system random number generator that guarantees
  random seeds for all instances of simuPOP even if they are initialized
  at the same time.
  After simuPOP is loaded, you can reset this system RNG with a different
@@ -1734,7 +1729,7 @@ member function
 \end_layout
 
 \begin_layout Standard
-Assignment in Python only creates a new refernce to an exsting object.
+Assignment in Python only creates a new reference to an existing object.
  For example,
 \end_layout
 
@@ -2294,7 +2289,7 @@ genotypic structure
 \end_layout
 
 \begin_layout Standard
-Genotypic structure refers to stuctural information shared by all individuals
+Genotypic structure refers to structural information shared by all individuals
  in a population, including number of homologous copies of chromosomes (c.f.
  
 \family typewriter
@@ -2388,7 +2383,7 @@ GenoStruTrait!locusPos
 \family typewriter
 locusName(loc)
 \family default
-), and auxillary information attached to each individual (c.f.
+), and axillary information attached to each individual (c.f.
  
 \family typewriter
 infoField
@@ -2498,7 +2493,7 @@ For efficiency considerations, simuPOP saves the same numbers of homologous
 \emph on
 unused
 \emph default
-, which are labelled as 
+, which are labeled as 
 \family typewriter
 '_'
 \family default
@@ -2789,7 +2784,7 @@ reference "sub:Ancestral-populations"
  for details) so the most recent parental generations will be kept in a
  population object.
  After initializing each individual with two chromosomes with all zero and
- all one alleles respectively, the population evolves one generation, suject
+ all one alleles respectively, the population evolves one generation, subject
  to recombination at rate 0.01.
  Parents of each individual are recorded, by operator 
 \family typewriter
@@ -2828,8 +2823,8 @@ Individual
 
 \begin_layout Standard
 Individuals are building blocks of populations.
- An individual object cannot be created independently, but refences to inidividu
-als can be retrieved using member functions of a population object.
+ An individual object cannot be created independently, but references to
+ inidividuals can be retrieved using member functions of a population object.
  In addition to structural information shared by all individuals in a population
 , the individual class provides member functions to get and set 
 \emph on
@@ -2872,9 +2867,9 @@ Genotypes of an individual are stored sequentially and can be accessed locus
  by locus, or in batch.
  The alleles are arranged by position, chromosome and ploidy.
  That is to say, the first allele on the first chromosome of the first homologou
-s set is followed by alleles at other loci on the same chromsome, then markers
- on the second and later chromosomes, followed by alleles on the second
- homologous set of the chromosomes for a diploid individual.
+s set is followed by alleles at other loci on the same chromosome, then
+ markers on the second and later chromosomes, followed by alleles on the
+ second homologous set of the chromosomes for a diploid individual.
  A consequence of this memory layout is that alleles at the same locus of
  a non-haploid individual are separated by 
 \family typewriter
@@ -2933,7 +2928,7 @@ Memory layout of individual genotype
 \end_layout
 
 \begin_layout Standard
-simuPOP provies several functions to read/write individual genotype.
+simuPOP provides several functions to read/write individual genotype.
  It is worth noting that, instead of copying genotypes of an individual
  to a Python tuple or list, the return value of function 
 \family typewriter
@@ -3037,7 +3032,7 @@ setSubPopByIndInfo()
  function.
  This function takes an information field as parameter and rearrange individuals
  according to their values at this information field.
- Individuals with invalid (nagative) values at this information field are
+ Individuals with invalid (negative) values at this information field are
  removed.
  This is essentially how migration is implemented in simuPOP.
 \end_layout
@@ -3087,8 +3082,8 @@ simuPOP subpopulations can be further divided into virtual subpopulations
  For example, all male individuals, all unaffected individuals, all individuals
  with information field age > 20, all individuals with genotype 0, 0 at
  a given locus, can form VSPs.
- VPSs do not have to add up to the whole subpopulation, nor do they have
- to be nonoverlapping.
+ VSPs do not have to add up to the whole subpopulation, nor do they have
+ to be non-overlapping.
  Unlike subpopulations that have strict boundaries, VSPs change easily with
  the changes of individual properties.
 \end_layout
@@ -3535,7 +3530,7 @@ idx
 \family typewriter
 2
 \family default
- for grandparental, ..., and 
+ for grand-parental, ..., and 
 \family typewriter
 0
 \family default
@@ -3573,7 +3568,7 @@ stat
 \family default
  operator, and after evolution using the function form this operator.
  Note that setting the ancestral depth at the end of an evolutionary process
- is a common practise because we are usually only interested in the last
+ is a common practice because we are usually only interested in the last
  few generations.
 \end_layout
 
@@ -3595,8 +3590,8 @@ Add and remove loci
 \begin_layout Standard
 Several functions are provided to remove, add empty loci or chromosomes,
  and to merge loci or chromosomes from another population.
- They can be used to trim unneeded loci, expand exisiting population or
- merge two populations.
+ They can be used to trim unneeded loci, expand existing population or merge
+ two populations.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4333,7 +4328,7 @@ Applicable populations
 \end_layout
 
 \begin_layout Standard
-A simulator can evolve multiple replicates of a population simutaneously.
+A simulator can evolve multiple replicates of a population simultaneously.
  Different operators can be applied to different replicates of this population.
  This allows side by side comparison between simulations.
 \end_layout
@@ -4393,7 +4388,7 @@ subPop=[(0,0)
 \family default
 , 1], if a virtual subpopulation is defined by individual sex.
  However, not all operators support this parameter, and even if they do,
- their intrepretation of parameter input may vary.
+ their interpretations of parameter input may vary.
  Please refer to 
 \emph on
 the simuPOP reference manual
@@ -4891,7 +4886,7 @@ An
 pyOperator
 \family default
  can also be applied during-mating.
- They can be used to filter out unwanted offspring (by returnning 
+ They can be used to filter out unwanted offspring (by returning 
 \family typewriter
 False
 \family default
@@ -4969,7 +4964,7 @@ pyOperator
 \family default
 works in the Python interpreter, it is expected that it runs slower than
  operators that are implemented at the C/C++ level.
- If performance becomes an issue, you can reimplement part or all the operator
+ If performance becomes an issue, you can re-implement part or all the operator
  in C++.
  Section 
 \begin_inset CommandInset ref
@@ -5267,7 +5262,7 @@ parent chooser
  that is responsible for choosing parent(s) from a (virtual) subpopulation
  and an 
 \emph on
-offsring generator
+offspring generator
 \emph default
  that is used to populate all or part of the offspring generation.
  During-mating operators are used to transmit genotypes from parents to
@@ -5307,7 +5302,7 @@ A
 \begin_layout Standard
 This section describes some standard features of mating schemes and most
  pre-defined mating schemes.
- The next section will demonstrate how to build complex nonramdom mating
+ The next section will demonstrate how to build complex nonrandom mating
  schemes from scratch.
 \end_layout
 
@@ -5383,7 +5378,7 @@ A mating scheme goes through each subpopulation and populates the subpopulations
 \begin_layout Itemize
 A simuPOP mating scheme, by default, produces an offspring generation that
  has the same subpopulation sizes as the parental generation.
- This does not gurantee a constant population size because some operators,
+ This does not guarantee a constant population size because some operators,
  such as a migrator, can change population or subpopulation sizes.
 \end_layout
 
@@ -5889,7 +5884,7 @@ t, they have only one spouse during their life time so that all siblings
 \end_layout
 
 \begin_layout Standard
-simuPOP provides a diploid sexual momogamous mating scheme 
+simuPOP provides a diploid sexual monogamous mating scheme 
 \family typewriter
 monogamousMating
 \family default
@@ -5945,7 +5940,7 @@ Polygamous mating
 \end_layout
 
 \begin_layout Standard
-In comparison to homogamous mating, parents in a polygamous mate with more
+In comparison to monogamous mating, parents in a polygamous mate with more
  than one spouse during their life-cycle.
  Both 
 \emph on
@@ -6158,7 +6153,7 @@ Mating in haplodiploid populations
 \begin_layout Standard
 Male individuals in a haplodiploid population are derived from unfertilized
  eggs and thus have only one set of chromosomes.
- Mating in such a population is handled by a specifial mating scheme called
+ Mating in such a population is handled by a special mating scheme called
  
 \family typewriter
 haplodiplodMating
@@ -6201,7 +6196,7 @@ Self-fertilization
 \end_layout
 
 \begin_layout Standard
-Some plant populations evolve through self-fertimization.
+Some plant populations evolve through self-fertilization.
  That is to say, a parent fertilizes with itself during the production of
  offspring (seeds).
  In a 
@@ -6282,7 +6277,7 @@ name "fig:heterogenous-mating"
 
 \end_inset
 
-Illustration of a heteogeneous mating scheme
+Illustration of a heterogeneous mating scheme
 \end_layout
 
 \end_inset
@@ -6302,7 +6297,7 @@ Illustration of a heteogeneous mating scheme
 \end_layout
 
 \begin_layout Plain Layout
-A heterogeneous mating scheme that applies homogenous mating schemes MS0,
+A heterogeneous mating scheme that applies homogeneous mating schemes MS0,
  MS0.0, MS0.1, MS1, MS2.0 and MS2.1 to subpopulation 0, the first and second
  virtual subpopulation in subpopulation 0, subpopulation 1, the first and
  second virtual subpopulation in subpopulation 2, respectively.
@@ -6341,7 +6336,7 @@ lstparams "caption={Applying different mating schemes to different subpopulation
 
 \begin_layout Standard
 The real power of heterogeneous mating schemes lies on their ability to
- apply different mating schems to different virtual subpopulations.
+ apply different mating schemes to different virtual subpopulations.
  For example, due to different micro-environmental factors, plants in the
  same population may exercise both self and cross-fertilization.
  Because of the randomness of such environmental factors, it is difficult
@@ -6359,7 +6354,7 @@ reference "hateroMatingVSP"
 \end_inset
 
  applies two mating schemes to two VSPs defined by proportions of individuals.
- In this mating scheme, 20% of individuals go through seld-mating and 80%
+ In this mating scheme, 20% of individuals go through self-mating and 80%
  of individuals go through random mating.
  This can be seen from the parental indexes of individuals in the offspring
  generation: individuals whose 
@@ -6375,7 +6370,7 @@ mother_idx
 \end_layout
 
 \begin_layout Standard
-It might be suprising that offspring resulted from two mating schemes mix
+It might be surprising that offspring resulted from two mating schemes mix
  with each other so the same VSPs in the next generation include both selfed
  and cross-fertilized offspring.
  If this not desired, you can set parameter 
@@ -6767,7 +6762,7 @@ simuPOP.py
 \family default
 .
  The following sections basically explain how you can construct your own
- mating scheme from cratch, using stocked or customized parent chooser,
+ mating scheme from scratch, using stocked or customized parent chooser,
  offspring generator and genotype transmitters.
  
 \begin_inset CommandInset include
@@ -6864,8 +6859,8 @@ subPop
 \family typewriter
 weight
 \family default
- are more or less standard but differnt parent choosers and offspring generators
- can be combined to define a large number of homogeneous mating schemes.
+ are more or less standard but different parent choosers and offspring generator
+s can be combined to define a large number of homogeneous mating schemes.
  For example, the standard 
 \family typewriter
 selfMating
@@ -7039,7 +7034,7 @@ reference "controlledOffGenerator"
  Instead of using a realistic frequency trajectory function, it forces allele
  frequency at locus 5 to increase linearly.
  In contrast, the allele frequency at locus 15 on the second chromosome
- osscilates as a result of genetic drift.
+ oscillates as a result of genetic drift.
  Note that the random mating version of this mating scheme is defined in
  simuPOP as 
 \family typewriter
@@ -7084,7 +7079,7 @@ genotype transmitters
 .
 
 \family default
- simuPOP provides a number of genotype transmitters including clone, mendelian,
+ simuPOP provides a number of genotype transmitters including clone, Mendelian,
  selfing, haplodiploid, genotype transmitter, and a recombinator.
  They are usually used implicitly in a mating scheme, but they can also
  be used explicitly.
@@ -7155,7 +7150,7 @@ These two operators can be used in the ops parameter of both the
 evolve
 \family default
  function and the mating scheme.
- Recombinator overrides the default mendelian genotype transmitter defined
+ Recombinator overrides the default Mendelian genotype transmitter defined
  in the random mating scheme.
 \end_layout
 
@@ -7174,7 +7169,7 @@ evolve
 \begin_layout Itemize
 Because the mitochondrial genotype transmitter is only applied to customized
  chromosomes, it is not considered as a genotype transmitter so that it
- will not override any default gentoype transmitter.
+ will not override any default genotype transmitter.
 \end_layout
 
 \begin_layout Standard
@@ -7342,7 +7337,7 @@ infoParentsChooser
 , which chooses a parent randomly, and his/her spouse from indexes stored
  in his/her information fields.
  This parent chooser is usually used in a consanguineous mating scheme where
- certain types of relatives of each individual are stored in his/her informtion
+ certain types of relatives of each individual are stored in his/her information
  fields, and used during the selection of spouses.
  For example, a 
 \family typewriter
@@ -7376,8 +7371,8 @@ lstparams "caption={A consanguineous mating scheme.},label={infoChooser}"
 
 \begin_layout Standard
 This example does not make such sense because consanguineous mating usually
- happens between first and second degree relatives, and reprents only a
- small fraction of total parents in a population.
+ happens between first and second degree relatives, and represents only
+ a small fraction of total parents in a population.
  
 \family typewriter
 doc/cook/Mating_consanguineous.py
@@ -7409,7 +7404,7 @@ A
 pyParentsChooser
 \family default
  accepts a user-defined Python generator function, instead of a normal python
- function, that returns a parent, or a pair of parents repreatedly.
+ function, that returns a parent, or a pair of parents repeatedly.
  Briefly speaking, when a generator function is called, it returns a 
 \emph on
 generator
@@ -7483,7 +7478,7 @@ indexes relative to a subpopulation
 pyParentsChooser
 \family default
  does not support virtual subpopulation but you can mimic the effect by
- returnning only parents from certain virtual subpopulations.
+ returning only parents from certain virtual subpopulations.
 \end_layout
 
 \begin_layout Standard
@@ -7506,7 +7501,7 @@ rank
 es with the same social status.
  The rank of their offspring can increase or decrease randomly.
  It becomes obvious now that whereas a python function can return random
- male/famale pair, the generator interface is much more efficient because
+ male/female pair, the generator interface is much more efficient because
  the identification of sex/status groups is done only once.
 \end_layout
 
@@ -7551,7 +7546,7 @@ This is an advanced topic of simuPOP.
 \end_layout
 
 \begin_layout Subsection
-The pedgiree mating scheme
+The pedigree mating scheme
 \end_layout
 
 \begin_layout Standard
