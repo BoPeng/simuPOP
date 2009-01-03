@@ -325,7 +325,7 @@ protected:
 class sequentialParentChooser : public parentChooser
 {
 public:
-	sequentialParentChooser() : parentChooser(1)
+	sequentialParentChooser() : parentChooser()
 	{
 	}
 
@@ -362,7 +362,7 @@ class sequentialParentsChooser : public parentChooser
 {
 public:
 	sequentialParentsChooser() :
-		parentChooser(2), m_maleIndex(0), m_femaleIndex(0),
+		parentChooser(), m_maleIndex(0), m_femaleIndex(0),
 		m_numMale(0), m_numFemale(0),
 		m_curMale(0), m_curFemale(0)
 	{
@@ -418,7 +418,7 @@ public:
 	        be chosen more than once.
 	 */
 	randomParentChooser(bool replacement = true) :
-		parentChooser(1), m_replacement(replacement),
+		parentChooser(), m_replacement(replacement),
 		m_index(0), m_chosen(0), m_sampler(rng())
 	{
 	}
@@ -467,7 +467,7 @@ public:
 	    are chosen selectively, and selected again during mating.
 	 */
 	randomParentsChooser(bool replacement = true) :
-		parentChooser(2), m_replacement(replacement),
+		parentChooser(), m_replacement(replacement),
 		m_maleIndex(0), m_femaleIndex(0),
 		m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
@@ -542,7 +542,7 @@ public:
 	    are chosen selectively, and selected again during mating.
 	 */
 	polyParentsChooser(Sex polySex = Male, UINT polyNum = 1) :
-		parentChooser(2),
+		parentChooser(),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
 		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
@@ -638,7 +638,7 @@ public:
 	    are chosen selectively, and selected again during mating.
 	 */
 	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
-		parentChooser(2),
+		parentChooser(),
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
 		m_maleIndex(0), m_femaleIndex(0),
 		m_maleFitness(0), m_femaleFitness(0),
