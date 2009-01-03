@@ -1087,6 +1087,34 @@ simu.evolve(
 
 #end
 
+#file log/cppParentChooser.log
+# The class myParentsChooser is defined in module myParentsChooser
+from myParentsChooser import myParentsChooser
+
+def parentsChooser(pop, sp):
+    'How to call a C++ level parents chooser.'
+    # create an object with needed information (such as x, y) ...
+    pc = myParentsChooser(
+        [x.info('x') for x in pop.individuals() if x.sex() == Male],
+        [x.info('y') for x in pop.individuals() if x.sex() == Male],
+        [x.info('x') for x in pop.individuals() if x.sex() == Female],
+        [x.info('y') for x in pop.individuals() if x.sex() == Female])
+    while True:
+        # return indexes of parents repeatedly
+        yield pc.chooseParents()
+
+
+pop = population(size, loci=[1], infoFields=['x', 'y'])
+simu = simulator(pop,
+    pyMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
+)
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [],
+    gen = gen
+)
+
+#end
 
 ################################################################################
 #

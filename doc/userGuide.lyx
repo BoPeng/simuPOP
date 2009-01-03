@@ -7545,14 +7545,65 @@ Although it is feasible, and sometimes easier to derive a class from class
 parentChooser
 \family default
  in mating.h (.cpp), modifying simuPOP source code is not recommended because
- you would have to modify a new version of simuPOP when you upgrade your
- simuPOP distribution.
- An example is given in 
+ you would have to modify a new version of simuPOP whenever you upgrade
+ your simuPOP distribution.
+ Implementing your parent choosing algorithm in another Python module is
+ preferred.
+\end_layout
+
+\begin_layout Standard
+An example implemented in files 
 \family typewriter
 cookbook/Mating_pyMating_cpp.py
 \family default
+, 
+\family typewriter
+.i
+\family default
+ and 
+\family typewriter
+.h
+\family default
+ demonstrates how to define a parent chooser at the C++ level.
+ The C++ header file defines a C++ class that implements a parent chooser
+ in C++.
+ This class is initialized by needed information such as sexes of parents
+ and uses a 
+\family typewriter
+chooseParents
+\family default
+ member function to return parents repeatedly.
+ After this C++ class is wrapped (by SWIG or other Python interface generating
+ file) and imported into Python, this C++ level Parent chooser can be used
+ as shown in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "cppParentChooser"
+
+\end_inset
+
 .
- 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/cppParentChooser.py"
+lstparams "caption={Implement a parent chooser in C++},firstline=5,label={cppParentChooser}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Due to compiler and OS differences, the process of wrapping and building
+ this external module varies from platform to platform.
+ Please refer to the module comment in 
+\family typewriter
+cookbook/Mating_pyMaitng_cpp.py
+\family default
+ for detailed instructions.
 \end_layout
 
 \begin_layout Subsection
@@ -7560,7 +7611,7 @@ The pedigree mating scheme
 \end_layout
 
 \begin_layout Standard
-This section is under development.
+This feature is still under development.
 \end_layout
 
 \begin_layout Section
