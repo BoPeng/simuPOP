@@ -7516,19 +7516,8 @@ lstparams "caption={A hybrid parent chooser that chooses parents by their social
 
 \end_layout
 
-\begin_layout Standard
-A user defined parents chooser can be very complicated, involving user defined
- information such as geometric locations.
- An example is given in 
-\family typewriter
-cookbook/Mating_pyMating_cpp.py
-\family default
-.
- 
-\end_layout
-
 \begin_layout Subsection
-Using C++ to implement a parents chooser
+Using C++ to implement a parent chooser
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Using-C++"
@@ -7539,10 +7528,31 @@ name "sub:Using-C++"
 \end_layout
 
 \begin_layout Standard
+A user defined parent chooser can be fairly complex and computationally
+ intensive.
+ For example, if a parent tends to find a spouse in his/her vincinity, geometric
+ distances between all qualified individuals and a chosen parent need to
+ be calculated for each mating event.
+ If the optimization of the parent chooser can speed up the simulation significa
+ntly, it may be worthwhile to write the parent chooser in C++.
+ 
+\end_layout
 
-\emph on
-This is an advanced topic of simuPOP.
- New simuPOP users can safely skip this section.
+\begin_layout Standard
+Although it is feasible, and sometimes easier to derive a class from class
+ 
+\family typewriter
+parentChooser
+\family default
+ in mating.h (.cpp), modifying simuPOP source code is not recommended because
+ you would have to modify a new version of simuPOP when you upgrade your
+ simuPOP distribution.
+ An example is given in 
+\family typewriter
+cookbook/Mating_pyMating_cpp.py
+\family default
+.
+ 
 \end_layout
 
 \begin_layout Subsection
