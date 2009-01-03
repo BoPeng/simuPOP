@@ -308,19 +308,19 @@ if infoExec.__init__.__doc__ is not None:
 
 def cloneOffspringGenerator(ops=[], *args, **kwargs):
     'An offspring generator that uses cloneGenoTransmitter()'
-    return  offspringGenerator([cloneGenoTransmitter()] + ops, 0, *args, **kwargs)
+    return  offspringGenerator([cloneGenoTransmitter()] + ops, *args, **kwargs)
 
 def mendelianOffspringGenerator(ops=[], *args, **kwargs):
     'An offspring generator that uses mendelianGenoTransmitter()'
-    return  offspringGenerator([mendelianGenoTransmitter()] + ops, 2, *args, **kwargs)
+    return  offspringGenerator([mendelianGenoTransmitter()] + ops, *args, **kwargs)
 
 def haplodiploidOffspringGenerator(ops=[], *args, **kwargs):
     'An offspring generator that uses haplodiploidGenoTransmitter()'
-    return  offspringGenerator([haplodiploidGenoTransmitter()] + ops, 2, *args, **kwargs)
+    return  offspringGenerator([haplodiploidGenoTransmitter()] + ops, *args, **kwargs)
 
 def selfingOffspringGenerator(ops=[], *args, **kwargs):
     'An offspring generator that uses selfingGenoTransmitter()'
-    return  offspringGenerator([selfingGenoTransmitter()] + ops, 1, *args, **kwargs)
+    return  offspringGenerator([selfingGenoTransmitter()] + ops, *args, **kwargs)
 
 def cloneMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
 		subPop = (), weight = 0):
@@ -547,7 +547,7 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
     '''
     return pyMating(chooser = randomParentsChooser(True),
         generator = controlledOffspringGenerator(loci, alleles, freqFunc,
-            [mendelianGenoTransmitter()] + ops, 2, numOffspring,
+            [mendelianGenoTransmitter()] + ops, numOffspring,
             sexMode),
         subPopSize = subPopSize,
         subPop = subPop,

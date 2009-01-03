@@ -895,7 +895,7 @@ marks.count(2.)
 #file log/randomMating.log
 def mendelianOffspringGenerator(ops=[], *args, **kwargs):
     'An offspring generator that uses mendelianGenoTransmitter()'
-    return  offspringGenerator([mendelianGenoTransmitter()] + ops, 2, *args, **kwargs)
+    return  offspringGenerator([mendelianGenoTransmitter()] + ops, *args, **kwargs)
 
 def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
         subPop = (), weight = 0):

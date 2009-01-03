@@ -102,8 +102,7 @@ public:
 	 *  greater than or equal to the number of offspring in this family, all
 	 *  offspring in this family will be \c Male or \c Female.
 	 */
-	offspringGenerator(const vectorop & ops, UINT numParents = 0,
-		const floatListFunc & numOffspring = 1,
+	offspringGenerator(const vectorop & ops, const floatListFunc & numOffspring = 1,
 		const floatList & sexMode = RandomSex);
 
 	virtual ~offspringGenerator()
@@ -162,22 +161,12 @@ public:
 	 */
 	Sex getSex(int count);
 
-	/// CPPONLY
-	int numParents() const
-	{
-		return m_numParents;
-	}
-
-
 protected:
 	/// number of offspring
 	floatListFunc m_numOffspring;
 
 	/// paramter to determine offspring sex
 	floatList m_sexMode;
-
-	/// number of parents needed
-	int m_numParents;
 
 	/// default transmitter
 	vectorop m_transmitters;
@@ -223,10 +212,10 @@ public:
 	 *
 	 *  This offspring generator is derived from class \e offspringGenerator.
 	 *  Please refer to class \e offspringGenerator for a detailed description
-	 *  of parameters \e ops, \e numParents, \e numOffspring and \e sexMode.
+	 *  of parameters \e ops, \e numOffspring and \e sexMode.
 	 */
 	controlledOffspringGenerator(const vectori & loci, const vectori & alleles,
-		PyObject * freqFunc, const vectorop & ops = vectorop(), UINT numParents = 0,
+		PyObject * freqFunc, const vectorop & ops = vectorop(), 
 		const floatListFunc & numOffspring = 1, const floatList & sexMode = RandomSex);
 
 
@@ -288,11 +277,8 @@ public:
 
 public:
 	// CPPONLY
-	// numParents can be 0 (undetermined, can be 1 or 2)
-	// 1 (one parent), or 2 (two parents)
-	parentChooser(int numParents) : m_initialized(false)
+	parentChooser() : m_initialized(false)
 	{
-		m_numParents = numParents;
 	}
 
 
@@ -319,20 +305,6 @@ public:
 
 
 	/// CPPONLY
-	int numParents()
-	{
-		return m_numParents;
-	}
-
-
-	/// CPPONLY
-	virtual individual * chooseParent(RawIndIterator basePtr)
-	{
-		return NULL;
-	}
-
-
-	/// CPPONLY
 	virtual individualPair chooseParents(RawIndIterator basePtr)
 	{
 		return individualPair(NULL, NULL);
@@ -342,7 +314,6 @@ public:
 	virtual ~parentChooser() { }
 
 protected:
-	int m_numParents;
 	bool m_initialized;
 };
 
@@ -369,7 +340,7 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individual * chooseParent(RawIndIterator basePtr);
+	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
 	bool m_selection;
@@ -463,7 +434,7 @@ public:
 	void initialize(population & pop, SubPopID sp);
 
 	/// CPPONLY
-	individual * chooseParent(RawIndIterator basePtr);
+	individualPair chooseParents(RawIndIterator basePtr);
 
 protected:
 	bool m_replacement;
@@ -752,7 +723,6 @@ public:
 		m_infoFields(infoFields), m_func(func), m_param(param),
 		m_infoIdx(0), m_degenerate(false)
 	{
-		m_numParents = 2;
 		DBG_FAILIF(m_infoFields.empty(), ValueError,
 			"At least one information field should be provided for this infoParentsChooser");
 	}
