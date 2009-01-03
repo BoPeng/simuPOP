@@ -26,10 +26,9 @@
 namespace simuPOP {
 
 offspringGenerator::offspringGenerator(const vectorop & ops,
-	UINT numParents, const floatListFunc & numOffspring, const floatList & sexMode) :
+	const floatListFunc & numOffspring, const floatList & sexMode) :
 	m_numOffspring(numOffspring), m_sexMode(sexMode),
-	m_numParents(numParents), m_transmitters(0),
-	m_formOffGenotype(true), m_initialized(false)
+	m_transmitters(0), m_formOffGenotype(true), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
 		"Please specify either number of offspring or a function.");
@@ -74,8 +73,7 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 
 offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	: m_numOffspring(rhs.m_numOffspring),
-	m_sexMode(rhs.m_sexMode), m_numParents(rhs.m_numParents),
-	m_transmitters(0),
+	m_sexMode(rhs.m_sexMode), m_transmitters(0),
 	m_formOffGenotype(rhs.m_formOffGenotype),
 	m_initialized(rhs.m_initialized)
 {
@@ -223,9 +221,9 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 
 controlledOffspringGenerator::controlledOffspringGenerator(
 	const vectori & loci, const vectori & alleles, PyObject * freqFunc,
-	const vectorop & ops, UINT numParents, const floatListFunc & numOffspring,
+	const vectorop & ops, const floatListFunc & numOffspring,
 	const floatList & sexMode)
-	: offspringGenerator(ops, numParents, numOffspring, sexMode),
+	: offspringGenerator(ops, numOffspring, sexMode),
 	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
 {
@@ -488,11 +486,11 @@ void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individual * sequentialParentChooser::chooseParent(RawIndIterator)
+individualPair sequentialParentChooser::chooseParents(RawIndIterator)
 {
 	if (m_ind == m_end)
 		m_ind = m_begin;
-	return & * m_ind++;
+	return individualPair(& * m_ind++, NULL);
 }
 
 
@@ -581,29 +579,30 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individual * randomParentChooser::chooseParent(RawIndIterator basePtr)
+individualPair randomParentChooser::chooseParents(RawIndIterator basePtr)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
+	individual * ind = NULL;
 	// choose a parent
 	if (!m_replacement) {
 		DBG_FAILIF(m_index.empty(), ValueError,
 			"All parents have been chosen.");
-		individual * ind = & * m_index.back();
+		ind = & * m_index.back();
 		m_index.pop_back();
-		return ind;
 	}
 	if (m_index.empty()) {
 		if (m_selection)
-			return & * (basePtr + m_sampler.get());
+			ind = & * (basePtr + m_sampler.get());
 		else
-			return & * (basePtr + rng().randInt(m_size));
+			ind = & * (basePtr + rng().randInt(m_size));
 	} else {
 		if (m_selection)
-			return & * (m_index[m_sampler.get()]);
+			ind = & * (m_index[m_sampler.get()]);
 		else
-			return & * (m_index[rng().randInt(m_size)]);
+			ind = & * (m_index[rng().randInt(m_size)]);
 	}
+	return individualPair(ind, NULL);
 }
 
 
@@ -1026,13 +1025,13 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
-	individual * par1 = chooseParent(basePtr);
+	individual * par1 = chooseParents(basePtr).first;
 	Sex sex1 = par1->sex();
 	// there is no valid information field value
 	if (m_degenerate) {
 		int attempt = 0;
 		while (++attempt < 1000) {
-			individual * par2 = chooseParent(basePtr);
+			individual * par2 = chooseParents(basePtr).first;
 			if (par2->sex() != sex1)
 				return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 		}
@@ -1330,9 +1329,6 @@ pyMating::pyMating(parentChooser & chooser,
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
-	DBG_FAILIF(m_parentChooser->numParents() != 0 && m_offspringGenerator->numParents() != 0
-		&& m_parentChooser->numParents() != m_offspringGenerator->numParents(),
-		ValueError, "Imcompatible parent chooser and offspring generator");
 }
 
 
@@ -1355,14 +1351,9 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 	while (it != offEnd) {
 		individual * dad = NULL;
 		individual * mom = NULL;
-		if (m_parentChooser->numParents() == 1)
-			dad = m_parentChooser->chooseParent(pop.rawIndBegin());
-		// 0 or 2, that is to say, dad or mom can be NULL
-		else {
-			parentChooser::individualPair const parents = m_parentChooser->chooseParents(pop.rawIndBegin());
-			dad = parents.first;
-			mom = parents.second;
-		}
+		parentChooser::individualPair const parents = m_parentChooser->chooseParents(pop.rawIndBegin());
+		dad = parents.first;
+		mom = parents.second;
 
 		//
 		UINT numOff = m_offspringGenerator->generateOffspring(pop, dad, mom, it, offEnd, ops);
