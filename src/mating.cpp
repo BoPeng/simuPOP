@@ -486,11 +486,11 @@ void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individualPair sequentialParentChooser::chooseParents(RawIndIterator)
+parentChooser::individualPair sequentialParentChooser::chooseParents(RawIndIterator)
 {
 	if (m_ind == m_end)
 		m_ind = m_begin;
-	return individualPair(& * m_ind++, NULL);
+	return parentChooser::individualPair(& * m_ind++, NULL);
 }
 
 
@@ -579,7 +579,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 }
 
 
-individualPair randomParentChooser::chooseParents(RawIndIterator basePtr)
+parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator basePtr)
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
@@ -1057,7 +1057,7 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 
 
 pyParentsChooser::pyParentsChooser(PyObject * pc)
-	: parentChooser(0), m_func(pc), m_generator(NULL), m_parIterator(NULL)
+	: parentChooser(), m_func(pc), m_generator(NULL), m_parIterator(NULL)
 {
 }
 

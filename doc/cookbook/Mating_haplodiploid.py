@@ -91,7 +91,7 @@ def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
     return pyMating(
         chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(
-            [haplodiploidRecombinator(intensity, rate, loci, convMode)], 2, 
+            [haplodiploidRecombinator(intensity, rate, loci, convMode)],
             numOffspring, sexMode),
         subPopSize = subPopSize,
         subPop = subPop,
