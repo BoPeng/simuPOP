@@ -1025,13 +1025,13 @@ parentChooser::individualPair infoParentsChooser::chooseParents(RawIndIterator b
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
-	individual * par1 = chooseParents(basePtr).first;
+	individual * par1 = randomParentChooser::chooseParents(basePtr).first;
 	Sex sex1 = par1->sex();
 	// there is no valid information field value
 	if (m_degenerate) {
 		int attempt = 0;
 		while (++attempt < 1000) {
-			individual * par2 = chooseParents(basePtr).first;
+			individual * par2 = randomParentChooser::chooseParents(basePtr).first;
 			if (par2->sex() != sex1)
 				return sex1 == Male ? std::make_pair(par1, par2) : std::make_pair(par2, par1);
 		}
