@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -8166,7 +8166,7 @@ reference "migrFixedSize"
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "splitAndMerge.out"
+filename "log/splitAndMerge.log"
 lstparams "caption={Population split and merge},label={splitAndMerge}"
 
 \end_inset
@@ -8204,7 +8204,7 @@ means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "splitMigration.out"
+filename "log/splitMigration.log"
 lstparams "caption={Population split and migration},label={splitMigration}"
 
 \end_inset
@@ -8310,7 +8310,7 @@ evolve
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "splitMigration2.out"
+filename "log/splitMigration2.log"
 lstparams "caption={Population split with changing population size},label={splitMigration2}"
 
 \end_inset
@@ -8353,7 +8353,7 @@ reference "splitMigration3"
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "splitMigration3.out"
+filename "log/splitMigration3.log"
 lstparams "caption={Population split with changing population size},label={splitMigration3}"
 
 \end_inset
@@ -8693,8 +8693,8 @@ loadSimulator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simulatorsaveload.log"
-lstparams "caption={Save and load a simulator},label={simulatorsaveload}"
+filename "log/simulatorCloneSaveLoad.log"
+lstparams "caption={Clone, save and load a simulator},label={simulatorSaveLoad}"
 
 \end_inset
 
