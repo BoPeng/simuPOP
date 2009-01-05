@@ -1364,7 +1364,7 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 	vectormating::const_iterator it_end = matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back(reinterpret_cast<homoMating*>((*it)->clone()));
+		m_matingSchemes.push_back(dynamic_cast<homoMating*>((*it)->clone()));
 }
 
 
@@ -1385,7 +1385,7 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back(reinterpret_cast<homoMating*>((*it)->clone()));
+		m_matingSchemes.push_back(dynamic_cast<homoMating*>((*it)->clone()));
 }
 
 
