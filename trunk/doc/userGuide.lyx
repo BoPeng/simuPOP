@@ -10089,7 +10089,7 @@ reference "alg:reich0"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "reich0.py"
+filename "log/reichParam.py"
 lstparams "caption={Set parameters},label={alg:reich0}"
 
 \end_inset
@@ -10289,7 +10289,7 @@ reference "reich1"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "reich1.py"
+filename "log/reichSimulator.py"
 lstparams "caption={Create a simulator},label={reich1}"
 
 \end_inset
@@ -10481,7 +10481,7 @@ reference "reich2"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "reich2.py"
+filename "log/reichMutSel.py"
 lstparams "caption={Run the simulator},label={reich2}"
 
 \end_inset
@@ -10917,7 +10917,7 @@ pause
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "reich3.py"
+filename "log/reichStat.py"
 lstparams "caption={The whole program},label={reich3}"
 
 \end_inset
@@ -11282,7 +11282,7 @@ reich.py
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "reich4.py"
+filename "log/reichOpt.py"
 lstparams "caption={Option handling},label={reich4}"
 
 \end_inset
