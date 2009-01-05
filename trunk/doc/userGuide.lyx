@@ -6918,10 +6918,6 @@ ops
 \family default
  (a list of during-mating operators), 
 \family typewriter
-numParents
-\family default
- (number of parents), 
-\family typewriter
 numOffspring
 \family default
  (control number of offspring per mating event) and 
@@ -6944,13 +6940,7 @@ reference "sub:offspring-sex"
 \end_inset
 
 .
- The 
-\family typewriter
-numParents
-\family default
- parameter merely indicates how many parents the offspring generator should
- expect from an upstream parent chooser.
- If both 1 and 2 parents are acceptable, 0 should be given.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -7468,9 +7458,9 @@ pyParentsChooser
 on index as parameters.
  When this parent chooser is applied to a subpopulation, it will call this
  generator function and ask the generated generator object repeated for
- parents (
+ either a parent, or a pair of parents (
 \emph on
-indexes relative to a subpopulation
+both are indexes relative to a subpopulation
 \emph default
 ).
  Note that 
@@ -9561,94 +9551,6 @@ These auxiliary information will be attached to individuals in a pedigree.
 \end_layout
 
 \begin_layout Section
-Sex chromosomes
-\end_layout
-
-\begin_layout Standard
-Supports for sex chromosomes are done in simuPOP in the following ways:
-\end_layout
-
-\begin_layout Itemize
-If 
-\family typewriter
-sexChrom
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-sexChrom
-\end_layout
-
-\end_inset
-
-=True
-\family default
- is specified in 
-\family typewriter
-population()
-\family default
-, the last chromosome is assumed to be the sex chromosome.
- For female, it is 
-\family typewriter
-XX,
-\family default
- for male, it is 
-\family typewriter
-XY
-\family default
-, in that order.
-\end_layout
-
-\begin_layout Itemize
-During mating, sex of offspring is determined by sex chromosome.
- (It is otherwise determined randomly with probability 0.5).
-\end_layout
-
-\begin_layout Itemize
-Recombination can not happen between 
-\family typewriter
-X
-\family default
- and 
-\family typewriter
-Y
-\family default
- chromosomes.
- That is to say, offspring can get recombined 
-\family typewriter
-X
-\family default
- from his/her mother, but untouched 
-\family typewriter
-X
-\family default
- or 
-\family typewriter
-Y
-\family default
- from father.
-\end_layout
-
-\begin_layout Standard
-As of version 0.7.5, no other operator recognize sex chromosome.
- Most notably, 
-\family typewriter
-stat
-\family default
- counts allele frequencies etc regardless sex chromosome and can not count
- allele frequency for 
-\family typewriter
-X
-\family default
- or 
-\family typewriter
-Y
-\family default
- separately.
- 
-\end_layout
-
-\begin_layout Section
 Save and load to other formats
 \end_layout
 
@@ -10053,10 +9955,6 @@ simuOpt
 
 \begin_layout Section
 simuUtil
-\end_layout
-
-\begin_layout Subsection
-ascertainment operators
 \end_layout
 
 \begin_layout Section
