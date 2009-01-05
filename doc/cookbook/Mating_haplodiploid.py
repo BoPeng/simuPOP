@@ -81,14 +81,14 @@ def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
     can be simplied to:
 
     def haplodiploidRecMating(rate):
-        return pyMating(
+        return homoMating(
             chooser = randomParentsChooser(False),
             generator = offspringGenerator(
                 ops = [haplodiploidRecombinator(rate=rate)]
             )
         )
     '''
-    return pyMating(
+    return homoMating(
         chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(
             [haplodiploidRecombinator(intensity, rate, loci, convMode)],
