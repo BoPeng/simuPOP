@@ -873,39 +873,12 @@ public:
 	        weights from all (virtual) subpopulations.
 
 	 */
-	mating(const uintListFunc & subPopSize = uintListFunc(),
-		vspID subPop = vspID(),
-		double weight = 0);
-
-	/// CPPONLY
-	mating(const mating & rhs);
+	mating(const uintListFunc & subPopSize = uintListFunc());
 
 	/// destructor
 	virtual ~mating()
 	{
 	}
-
-
-	/// CPPONLY
-	SubPopID subPop() const
-	{
-		return m_subPop.subPop();
-	}
-
-
-	/// CPPONLY
-	SubPopID virtualSubPop() const
-	{
-		return m_subPop.virtualSubPop();
-	}
-
-
-	/// CPPONLY
-	double weight() const
-	{
-		return m_weight;
-	}
-
 
 	/// deep copy of a mating scheme
 	virtual mating * clone() const
@@ -951,12 +924,6 @@ protected:
 	/// new subpopulation size. mostly used to 'keep' subPopsize
 	/// after migration.
 	uintListFunc m_subPopSize;
-
-	///
-	vspID m_subPop;
-
-	///
-	double m_weight;
 
 };
 
@@ -1010,7 +977,7 @@ private:
     produce offspring.
    <applicability>all ploidy</applicability>
  */
-class pyMating : public mating
+class homoMating : public mating
 {
 public:
 	/// create a Python mating scheme
@@ -1021,14 +988,14 @@ public:
 	    parents.
 
 	 */
-	pyMating(parentChooser & chooser,
+	homoMating(parentChooser & chooser,
 		offspringGenerator & generator,
 		const uintListFunc & subPopSize = uintListFunc(),
 		vspID subPop = vspID(),
 		double weight = 0);
 
 	/// destructor
-	~pyMating()
+	~homoMating()
 	{
 		delete m_parentChooser;
 		delete m_offspringGenerator;
@@ -1036,7 +1003,7 @@ public:
 
 
 	/// CPPONLY
-	pyMating(const pyMating & rhs) :
+	homoMating(const homoMating & rhs) :
 		mating(rhs)
 	{
 		m_offspringGenerator = rhs.m_offspringGenerator->clone();
@@ -1047,16 +1014,36 @@ public:
 	/// deep copy of a Python mating scheme
 	virtual mating * clone() const
 	{
-		return new pyMating(*this);
+		return new homoMating(*this);
 	}
 
 
 	/// used by Python print function to print out the general information of the Python mating scheme
 	virtual string __repr__()
 	{
-		return "<simuPOP::pyMating>";
+		return "<simuPOP::homoMating>";
 	}
 
+
+	/// CPPONLY
+	SubPopID subPop() const
+	{
+		return m_subPop.subPop();
+	}
+
+
+	/// CPPONLY
+	SubPopID virtualSubPop() const
+	{
+		return m_subPop.virtualSubPop();
+	}
+
+
+	/// CPPONLY
+	double weight() const
+	{
+		return m_weight;
+	}
 
 	/// CPPONLY perform Python mating
 	/**
@@ -1071,9 +1058,15 @@ private:
 	parentChooser * m_parentChooser;
 	offspringGenerator * m_offspringGenerator;
 
+	///
+	vspID m_subPop;
+
+	///
+	double m_weight;
+
 };
 
-typedef std::vector<mating *> vectormating;
+typedef std::vector<homoMating *> vectormating;
 
 /** a heterogeneous mating scheme that applies a list of mating
    schemes to different (virtual) subpopulations.
@@ -1093,9 +1086,7 @@ public:
 	 */
 	heteroMating(const vectormating & matingSchemes,
 		const uintListFunc & subPopSize = uintListFunc(),
-		bool shuffleOffspring = true,
-		vspID subPop = vspID(),
-		double weight = 0);
+		bool shuffleOffspring = true);
 
 	/// destructor
 	~heteroMating();

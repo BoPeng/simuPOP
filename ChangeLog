@@ -20,7 +20,9 @@ version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/s
 		recombinator.
   - BUG: Fix option shuffleOffspring in heteroMating().
   - CHG: Change the default output of parentsTagger when only one parent is passed.
-  - VHG: Remove parameter numParents from offspringGenerator and parent choosers.
+  - CHG: Remove parameter numParents from offspringGenerator and parent choosers.
+  - CHG: Rename pyMating to homoMating. Remove unused parameters subPop and weight
+		from heteroMating.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.

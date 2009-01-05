@@ -1151,18 +1151,8 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 }
 
 
-mating::mating(const uintListFunc & subPopSize,
-	vspID subPop, double weight)
-	: m_subPopSize(subPopSize),
-	m_subPop(subPop), m_weight(weight)
-{
-}
-
-
-mating::mating(const mating & rhs)
-	: m_subPopSize(rhs.m_subPopSize),
-	m_subPop(rhs.m_subPop),
-	m_weight(rhs.m_weight)
+mating::mating(const uintListFunc & subPopSize)
+	: m_subPopSize(subPopSize)
 {
 }
 
@@ -1237,7 +1227,7 @@ void mating::submitScratch(population & pop, population & scratch)
 pedigreeMating::pedigreeMating(const pedigree & ped,
 	const offspringGenerator & generator,  const string & fatherField,
 	const string & motherField)
-	: mating(uintListFunc(), vspID(), 0),
+	: mating(uintListFunc()),
 	m_ped(ped), m_fatherField(fatherField), m_motherField(motherField)
 {
 	m_generator = generator.clone();
@@ -1320,19 +1310,18 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 }
 
 
-pyMating::pyMating(parentChooser & chooser,
+homoMating::homoMating(parentChooser & chooser,
 	offspringGenerator & generator,
 	const uintListFunc & subPopSize,
-	vspID subPop,
-	double weight)
-	: mating(subPopSize, subPop, weight)
+	vspID subPop, double weight)
+	: mating(subPopSize), m_subPop(subPop), m_weight(weight)
 {
 	m_parentChooser = chooser.clone();
 	m_offspringGenerator = generator.clone();
 }
 
 
-bool pyMating::mateSubPop(population & pop, SubPopID subPop,
+bool homoMating::mateSubPop(population & pop, SubPopID subPop,
                           RawIndIterator offBegin, RawIndIterator offEnd,
                           vector<baseOperator * > & ops)
 {
@@ -1367,20 +1356,15 @@ bool pyMating::mateSubPop(population & pop, SubPopID subPop,
 
 heteroMating::heteroMating(const vectormating & matingSchemes,
 	const uintListFunc & subPopSize,
-	bool shuffleOffspring,
-	vspID subPop,
-	double weight)
-	: mating(subPopSize, subPop, weight),
+	bool shuffleOffspring)
+	: mating(subPopSize),
 	m_shuffleOffspring(shuffleOffspring)
 {
-	DBG_WARNING(subPop.subPop() != InvalidSubPopID || subPop.virtualSubPop() != InvalidSubPopID,
-		"Parameter subPop or virtualSubPop is specified, but is ignored.");
-
 	vectormating::const_iterator it = matingSchemes.begin();
 	vectormating::const_iterator it_end = matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back((*it)->clone());
+		m_matingSchemes.push_back(reinterpret_cast<homoMating*>((*it)->clone()));
 }
 
 
@@ -1401,7 +1385,7 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back((*it)->clone());
+		m_matingSchemes.push_back(reinterpret_cast<homoMating*>((*it)->clone()));
 }
 
 
