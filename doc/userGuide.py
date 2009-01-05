@@ -419,6 +419,8 @@ pop1.chromName(0)
 pop1.dvars().name
 #end
 
+os.remove('sample.pop')
+
 #file log/stageAndGen.log
 simu = simulator(population(100, loci=[20]), randomMating())
 simu.evolve(
@@ -434,6 +436,8 @@ simu.evolve(
     gen=100
 )
 #end
+
+os.remove('sample.pop')
 
 #file log/dryrun.log
 simu = simulator(population(100, loci=[20]), randomMating())
@@ -1142,6 +1146,8 @@ for rep in range(5):
 simu.evolve(ops=[], gen=10)
 simu.gen()
 #end
+
+os.remove('sample.sim')
 
 #file log/splitAndMerge.log
 from simuPOP import *
