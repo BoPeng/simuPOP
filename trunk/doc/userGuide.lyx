@@ -6778,7 +6778,7 @@ lstparams "caption={Define a random mating scheme},firstline=4,label={randomMati
 \begin_layout Subsection
 
 \family typewriter
-pyMating
+homoMating
 \family default
  mating scheme
 \end_layout
@@ -6786,7 +6786,7 @@ pyMating
 \begin_layout Standard
 
 \family typewriter
-pyMating
+homoMating
 \family default
  is used to define all pre-defined homogeneous mating schemes.
  It takes five parameters: 
@@ -7554,7 +7554,7 @@ parentChooser
 \begin_layout Standard
 An example implemented in files 
 \family typewriter
-cookbook/Mating_pyMating_cpp.py
+cookbook/Mating_homoMating_cpp.py
 \family default
 , 
 \family typewriter

@@ -263,7 +263,7 @@ namespace std
 {
     %template()    vector<PyObject*>;
     %template()    vector<simuPOP::baseOperator * >;
-    %template()    vector<simuPOP::mating * >;
+    %template()    vector<simuPOP::homoMating * >;
 }
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////

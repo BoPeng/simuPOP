@@ -900,7 +900,7 @@ def mendelianOffspringGenerator(ops=[], *args, **kwargs):
 def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
         subPop = (), weight = 0):
     'A basic diploid sexual random mating scheme.'
-    return pyMating(
+    return homoMating(
         chooser = randomParentsChooser(replacement=True),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -911,7 +911,7 @@ def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = 
 
 #file log/sequentialSelfing.log
 simu = simulator(population(100, loci=[5]*3, infoFields=['parent_idx']),
-    pyMating(sequentialParentChooser(), selfingOffspringGenerator()))
+    homoMating(sequentialParentChooser(), selfingOffspringGenerator()))
 simu.evolve(
     preOps = [initByFreq([0.2]*5)],
     ops = [
@@ -926,7 +926,7 @@ def traj(gen):
     return [0.5 + gen * 0.01]
 
 simu = simulator(population(1000, loci=[10]*2),
-    pyMating(randomParentChooser(),
+    homoMating(randomParentChooser(),
         controlledOffspringGenerator(loci=[5],
             alleles=[0], freqFunc=traj,
             ops = [selfingGenoTransmitter()]))
@@ -1076,7 +1076,7 @@ def setRank(pop, dad, mom, off):
 pop = population(size=[1000, 2000], loci=[1], infoFields=['rank'])
 pop.setIndInfo([randint(0, 2) for x in range(pop.popSize())], 'rank')
 
-simu = simulator(pop, pyMating(
+simu = simulator(pop, homoMating(
     pyParentsChooser(randomChooser),
     mendelianOffspringGenerator()))
 simu.evolve(
@@ -1106,7 +1106,7 @@ def parentsChooser(pop, sp):
 
 pop = population(size, loci=[1], infoFields=['x', 'y'])
 simu = simulator(pop,
-    pyMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
+    homoMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
 )
 simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
@@ -1187,10 +1187,10 @@ simu.evolve(
 ## 
 
 ## 
-## #file log/pyMating.log
+## #file log/homoMating.log
 ## pop = population(size=[100, 20], loci=[1])
 ## simu = simulator(pop,
-##     pyMating(pyParentsChooser(randomChooser), 
+##     homoMating(pyParentsChooser(randomChooser), 
 ##     mendelianOffspringGenerator()))
 ## simu.evolve(ops=[], gen=1)
 ## #end

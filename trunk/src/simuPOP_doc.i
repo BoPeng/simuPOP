@@ -672,7 +672,7 @@ Details:
 Usage:
 
     controlledOffspringGenerator(loci, alleles, freqFunc, ops=[],
-      numParents=0, numOffspring=1, sexMode=RandomSex)
+      numOffspring=1, sexMode=RandomSex)
 
 Details:
 
@@ -694,24 +694,11 @@ Details:
     without only wild type alleles at these loci.
     This offspring generator is derived from class offspringGenerator.
     Please refer to class offspringGenerator for a detailed
-    description of parameters ops, numParents, numOffspring and
-    sexMode.
+    description of parameters ops, numOffspring and sexMode.
 
 "; 
 
 %ignore simuPOP::controlledOffspringGenerator::controlledOffspringGenerator(const controlledOffspringGenerator &rhs);
-
-%feature("docstring") simuPOP::controlledOffspringGenerator::~controlledOffspringGenerator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~controlledOffspringGenerator()
-
-"; 
 
 %ignore simuPOP::controlledOffspringGenerator::initialize(const population &pop, SubPopID subPop, vector< baseOperator * > const &ops);
 
@@ -946,14 +933,6 @@ Usage:
 Usage:
 
     floatListFunc(values=[])
-
-"; 
-
-%feature("docstring") simuPOP::floatListFunc::~floatListFunc "
-
-Usage:
-
-    x.~floatListFunc()
 
 "; 
 
@@ -1795,7 +1774,7 @@ Description:
 Usage:
 
     heteroMating(matingSchemes, subPopSize=uintListFunc,
-      shuffleOffspring=True, subPop=[], weight=0)
+      shuffleOffspring=True)
 
 Details:
 
@@ -1852,6 +1831,90 @@ Usage:
 "; 
 
 %ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+
+%feature("docstring") simuPOP::homoMating "
+
+Applicability: all ploidy
+
+Description:
+
+    a Python mating scheme
+
+Details:
+
+    This hybrid mating scheme does not have to involve a python
+    function. It requires a parent chooser, and an offspring
+    generator. The parent chooser chooses parent(s) and pass them to
+    the offspring generator to produce offspring.
+
+"; 
+
+%feature("docstring") simuPOP::homoMating::homoMating "
+
+Description:
+
+    create a Python mating scheme
+
+Usage:
+
+    homoMating(chooser, generator, subPopSize=uintListFunc,
+      subPop=[], weight=0)
+
+Arguments:
+
+    chooser:        a parent chooser that chooses parent(s) from the
+                    parental generation.
+    generator:      an offspring generator that produce offspring of
+                    given parents.
+
+"; 
+
+%feature("docstring") simuPOP::homoMating::~homoMating "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~homoMating()
+
+"; 
+
+%ignore simuPOP::homoMating::homoMating(const homoMating &rhs);
+
+%feature("docstring") simuPOP::homoMating::clone "
+
+Description:
+
+    deep copy of a Python mating scheme
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::homoMating::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the Python mating scheme
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
+%ignore simuPOP::homoMating::subPop() const;
+
+%ignore simuPOP::homoMating::virtualSubPop() const;
+
+%ignore simuPOP::homoMating::weight() const;
+
+%ignore simuPOP::homoMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::ifElse "
 
@@ -2672,14 +2735,6 @@ Arguments:
 
     infoFields:     information fields that store index of matable
                     individuals.
-
-"; 
-
-%feature("docstring") simuPOP::infoParentsChooser::~infoParentsChooser "
-
-Usage:
-
-    x.~infoParentsChooser()
 
 "; 
 
@@ -3784,7 +3839,7 @@ Description:
 
 Usage:
 
-    mating(subPopSize=uintListFunc, subPop=[], weight=0)
+    mating(subPopSize=uintListFunc)
 
 Details:
 
@@ -3825,8 +3880,6 @@ Arguments:
 
 "; 
 
-%ignore simuPOP::mating::mating(const mating &rhs);
-
 %feature("docstring") simuPOP::mating::~mating "
 
 Description:
@@ -3838,12 +3891,6 @@ Usage:
     x.~mating()
 
 "; 
-
-%ignore simuPOP::mating::subPop() const;
-
-%ignore simuPOP::mating::virtualSubPop() const;
-
-%ignore simuPOP::mating::weight() const;
 
 %feature("docstring") simuPOP::mating::clone "
 
@@ -4778,8 +4825,7 @@ Details:
 
 Usage:
 
-    offspringGenerator(ops, numParents=0, numOffspring=1,
-      sexMode=RandomSex)
+    offspringGenerator(ops, numOffspring=1, sexMode=RandomSex)
 
 Details:
 
@@ -4862,8 +4908,6 @@ Usage:
 %ignore simuPOP::offspringGenerator::numOffspring(int gen);
 
 %ignore simuPOP::offspringGenerator::getSex(int count);
-
-%ignore simuPOP::offspringGenerator::numParents() const;
 
 %ignore simuPOP::OstreamManager;
 
@@ -4952,7 +4996,7 @@ Details:
 
 Usage:
 
-    parentChooser(numParents)
+    parentChooser()
 
 "; 
 
@@ -4975,10 +5019,6 @@ Usage:
 "; 
 
 %ignore simuPOP::parentChooser::initialized() const;
-
-%ignore simuPOP::parentChooser::numParents();
-
-%ignore simuPOP::parentChooser::chooseParent(RawIndIterator basePtr);
 
 %ignore simuPOP::parentChooser::chooseParents(RawIndIterator basePtr);
 
@@ -5284,22 +5324,19 @@ Details:
 Arguments:
 
     relType:        Relative type, which can be
-                    * REL_Self set indexes of individual themselves.
-                    * REL_Spouse locate spouses of individuals in the
+                    * Self set indexes of individual themselves.
+                    * Spouse locate spouses of individuals in the
                     current generation. A spouse is defined as two
                     individuals having an offspring with shared
                     parentFields. If more than one infoFields is
                     given, multiple spouses can be identified.
-                    * REL_Offspring index of offspring in the
-                    offspring generation. If only one parent is given,
-                    only paternal or maternal relationship is
-                    considered. For example,
-                    parentFields=['father_idx'] will locate offspring
-                    for all fathers.
-                    * REL_FullSibling all siblings with the same
-                    parents
-                    * REL_Sibling all sibs with at least one shared
-                    parent
+                    * Offspring index of offspring in the offspring
+                    generation. If only one parent is given, only
+                    paternal or maternal relationship is considered.
+                    For example, parentFields=['father_idx'] will
+                    locate offspring for all fathers.
+                    * FullSibling all siblings with the same parents
+                    * Sibling all sibs with at least one shared parent
     relFields:      information fields to hold relatives. The number
                     of these fields limits the number of relatives to
                     locate.
@@ -7122,6 +7159,32 @@ Usage:
 
 "; 
 
+%ignore simuPOP::pyFunc;
+
+%feature("docstring") simuPOP::pyFunc::pyFunc "
+
+Usage:
+
+    pyFunc(func)
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::isValid "
+
+Usage:
+
+    x.isValid()
+
+"; 
+
+%feature("docstring") simuPOP::pyFunc::func "
+
+Usage:
+
+    x.func()
+
+"; 
+
 %feature("docstring") simuPOP::pyIndIterator "
 
 Details:
@@ -7168,84 +7231,6 @@ Usage:
     x.next()
 
 "; 
-
-%feature("docstring") simuPOP::pyMating "
-
-Applicability: all ploidy
-
-Description:
-
-    a Python mating scheme
-
-Details:
-
-    This hybrid mating scheme does not have to involve a python
-    function. It requires a parent chooser, and an offspring
-    generator. The parent chooser chooses parent(s) and pass them to
-    the offspring generator to produce offspring.
-
-"; 
-
-%feature("docstring") simuPOP::pyMating::pyMating "
-
-Description:
-
-    create a Python mating scheme
-
-Usage:
-
-    pyMating(chooser, generator, subPopSize=uintListFunc, subPop=[],
-      weight=0)
-
-Arguments:
-
-    chooser:        a parent chooser that chooses parent(s) from the
-                    parental generation.
-    generator:      an offspring generator that produce offspring of
-                    given parents.
-
-"; 
-
-%feature("docstring") simuPOP::pyMating::~pyMating "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyMating()
-
-"; 
-
-%ignore simuPOP::pyMating::pyMating(const pyMating &rhs);
-
-%feature("docstring") simuPOP::pyMating::clone "
-
-Description:
-
-    deep copy of a Python mating scheme
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::pyMating::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the Python mating scheme
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%ignore simuPOP::pyMating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::pyMigrator "
 
@@ -7295,20 +7280,6 @@ Arguments:
     stage:          default to PreMating
 
 "; 
-
-%feature("docstring") simuPOP::pyMigrator::~pyMigrator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyMigrator()
-
-"; 
-
-%ignore simuPOP::pyMigrator::pyMigrator(const pyMigrator &rhs);
 
 %feature("docstring") simuPOP::pyMigrator::clone "
 
@@ -7381,20 +7352,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyMutator::~pyMutator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyMutator()
-
-"; 
-
-%ignore simuPOP::pyMutator::pyMutator(const pyMutator &rhs);
-
 %feature("docstring") simuPOP::pyMutator::clone "
 
 Description:
@@ -7429,6 +7386,40 @@ Description:
 Usage:
 
     x.__repr__()
+
+"; 
+
+%ignore simuPOP::pyObject;
+
+%feature("docstring") simuPOP::pyObject::pyObject "
+
+Usage:
+
+    pyObject(obj)
+
+"; 
+
+%feature("docstring") simuPOP::pyObject::~pyObject "
+
+Usage:
+
+    x.~pyObject()
+
+"; 
+
+%feature("docstring") simuPOP::pyObject::object "
+
+Usage:
+
+    x.object()
+
+"; 
+
+%feature("docstring") simuPOP::pyObject::isValid "
+
+Usage:
+
+    x.isValid()
 
 "; 
 
@@ -7508,20 +7499,6 @@ Note:
     Python operator should be used.
 
 "; 
-
-%feature("docstring") simuPOP::pyOperator::~pyOperator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pyOperator()
-
-"; 
-
-%ignore simuPOP::pyOperator::pyOperator(const pyOperator &rhs);
 
 %feature("docstring") simuPOP::pyOperator::clone "Obsolete or undocumented function."
 
@@ -7883,14 +7860,6 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::pyQuanTrait::~pyQuanTrait "
-
-Usage:
-
-    x.~pyQuanTrait()
-
-"; 
-
 %ignore simuPOP::pyQuanTrait::pyQuanTrait(const pyQuanTrait &rhs);
 
 %feature("docstring") simuPOP::pyQuanTrait::clone "
@@ -7977,18 +7946,6 @@ Arguments:
 
 "; 
 
-%feature("docstring") simuPOP::pySelector::~pySelector "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pySelector()
-
-"; 
-
 %ignore simuPOP::pySelector::pySelector(const pySelector &rhs);
 
 %feature("docstring") simuPOP::pySelector::clone "
@@ -8058,16 +8015,6 @@ Arguments:
                     given.
 
 "; 
-
-%feature("docstring") simuPOP::pyTagger::~pyTagger "
-
-Usage:
-
-    x.~pyTagger()
-
-"; 
-
-%ignore simuPOP::pyTagger::pyTagger(const pyTagger &rhs);
 
 %feature("docstring") simuPOP::pyTagger::clone "
 
@@ -8220,7 +8167,7 @@ Usage:
 
 %ignore simuPOP::randomParentChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::randomParentChooser::chooseParent(RawIndIterator basePtr);
+%ignore simuPOP::randomParentChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::randomParentsChooser "
 
@@ -8362,9 +8309,43 @@ Description:
 
 Usage:
 
-    recombinator(intensity=-1, rate=[], loci=[], convProb=0,
-      convMode=CONVERT_NumMarkers, convParam=1., begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+    recombinator(intensity=-1, rate=[], loci=[],
+      convMode=NoConversion, begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
+
+Details:
+
+    convMode can take the following forms NoConversion: no conversion
+    (NumMarkers, prob, n): converts a fixed number of markers
+    (GeometricDistribution, prob, p): An geometric distribution is
+    used to determine how many markers will be converted.
+    (TractLength, prob, n): converts a fixed length of tract.
+    (ExponentialDistribution, prob, p): An exponential distribution
+    with parameter convLen will be used to determine track length. The
+    first number is that probability of conversion event among all
+    recombination events. When a recombination event happens, it may
+    become a recombination event if the Holliday junction is
+    resolved/repaired successfully, or a conversion event if the
+    junction is not resolved/repaired. The default convProb is 0,
+    meaning no conversion event at all. Note that the ratio of
+    conversion to recombination events varies greatly from study to
+    study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics,
+    2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of this
+    parameter. When Note that
+    *  conversion tract length is usually short, and is estimated to
+    be between 337 and 456 bp, with overall range between maybe 50 -
+    2500 bp.
+    *   simuPOP does not impose a unit for marker distance so your
+    choice of convParam needs to be consistent with your unit. In the
+    HapMap dataset, cM is usually assumed and marker distances are
+    around 10kb (0.001cM ~- 1kb). Gene conversion can largely be
+    ignored. This is important when you use distance based conversion
+    mode such as CONVERT_TrackLength or
+    CONVERT_ExponentialDistribution.
+    *  After a track length is determined, if a second recombination
+    event happens within this region, the track length will be
+    shortened. Note that conversion is identical to double
+    recombination under this context.
 
 Arguments:
 
@@ -8391,52 +8372,6 @@ Arguments:
                     recombination rate.
     maleAfterLoci:  if given, males will recombine at different
                     locations.
-    convProb:       The probability of conversion event among all
-                    recombination events. When a recombination event
-                    happens, it may become a recombination event if
-                    the Holliday junction is resolved/repaired
-                    successfully, or a conversion event if the
-                    junction is not resolved/repaired. The default
-                    convProb is 0, meaning no conversion event at all.
-                    Note that the ratio of conversion to recombination
-                    events varies greatly from study to study, ranging
-                    from 0.1 to 15 (Chen et al, Nature Review
-                    Genetics, 2007). This translate to 0.1/0.9~0.1 to
-                    15/16~0.94 of this parameter. When convProb is 1,
-                    all recombination events will be conversion
-                    events.
-    convMode:       conversion mode, determines how track length is
-                    determined.
-                    * CONVERT_NumMarkers Converts a fixed number of
-                    markers.
-                    * CONVERT_GeometricDistribution An geometric
-                    distribution is used to determine how many markers
-                    will be converted.
-                    * CONVERT_TractLength Converts a fixed length of
-                    tract.
-                    * CONVERT_ExponentialDistribution An exponential
-                    distribution with parameter convLen will be used
-                    to determine track length.
-    convParam:      Parameter for the conversion process. The exact
-                    meaning of this parameter is determined by
-                    convMode. Note that
-                    * conversion tract length is usually short, and is
-                    estimated to be between 337 and 456 bp, with
-                    overall range between maybe 50 - 2500 bp.
-                    * simuPOP does not impose a unit for marker
-                    distance so your choice of convParam needs to be
-                    consistent with your unit. In the HapMap dataset,
-                    cM is usually assumed and marker distances are
-                    around 10kb (0.001cM ~- 1kb). Gene conversion can
-                    largely be ignored. This is important when you use
-                    distance based conversion mode such as
-                    CONVERT_TrackLength or
-                    CONVERT_ExponentialDistribution.
-                    * After a track length is determined, if a second
-                    recombination event happens within this region,
-                    the track length will be shortened. Note that
-                    conversion is identical to double recombination
-                    under this context.
     haplodiploid:   If set to true, the first copy of paternal
                     chromosomes is copied directly as the paternal
                     chromosomes of the offspring. This is because
@@ -9217,7 +9152,7 @@ Usage:
 
 %ignore simuPOP::sequentialParentChooser::initialize(population &pop, SubPopID sp);
 
-%ignore simuPOP::sequentialParentChooser::chooseParent(RawIndIterator basePtr);
+%ignore simuPOP::sequentialParentChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::sequentialParentsChooser "
 
@@ -10171,9 +10106,9 @@ Arguments:
                     $ D = P_{AB}-P_{A}P_{B} $
                     $ D' = D/D_{max} $
                     $ D_{max} = \\min\\left(P_{A}\\left(1-P_{B}\\right),\\l
-                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\\\ \\
-                    min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P_
-                    {B}\\right)\\right) \\textrm{if }D<0 $
+                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\ \\
+                    \\min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P
+                    _{B}\\right)\\right) \\textrm{if }D<0 $
                     $ r^{2} = \\frac{D^{2}}{P_{A}\\left(1-P_{A}\\right)P_
                     {B}\\left(1-P_{B}\\right)} $ If only one item is
                     specified, the outer [] can be ignored. I.e.,
@@ -11446,14 +11381,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::uintListFunc::~uintListFunc "
-
-Usage:
-
-    x.~uintListFunc()
-
-"; 
-
 %feature("docstring") simuPOP::uintListFunc::func "
 
 Usage:
@@ -11602,27 +11529,27 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler "
+%feature("docstring") simuPOP::weightedSampler "
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::Weightedsampler "
+%feature("docstring") simuPOP::weightedSampler::weightedSampler "
 
 Usage:
 
-    Weightedsampler(rng, weight=[], fast=True)
+    weightedSampler(rng, weight=[], fast=True)
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::~Weightedsampler "
+%feature("docstring") simuPOP::weightedSampler::~weightedSampler "
 
 Usage:
 
-    x.~Weightedsampler()
+    x.~weightedSampler()
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::set "
+%feature("docstring") simuPOP::weightedSampler::set "
 
 Usage:
 
@@ -11630,7 +11557,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::biSearch "
+%feature("docstring") simuPOP::weightedSampler::biSearch "
 
 Usage:
 
@@ -11638,7 +11565,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::get "
+%feature("docstring") simuPOP::weightedSampler::get "
 
 Usage:
 
@@ -11646,7 +11573,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::q "
+%feature("docstring") simuPOP::weightedSampler::q "
 
 Usage:
 
@@ -11654,7 +11581,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::Weightedsampler::a "
+%feature("docstring") simuPOP::weightedSampler::a "
 
 Usage:
 
@@ -12015,10 +11942,6 @@ Usage:
     setLogOutput(filename=\"\")
 
 "; 
-
-%ignore simuPOP::isGzipped(const string &filename);
-
-%ignore simuPOP::fileExtension(const string &filename);
 
 %ignore std::pow3(unsigned n);
 

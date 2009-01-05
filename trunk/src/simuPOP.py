@@ -334,7 +334,7 @@ def cloneMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [
     numOffspring interface is respected.
     during mating operators are applied.
     '''
-    return pyMating(
+    return homoMating(
         chooser = sequentialParentChooser(),
         generator = cloneOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -353,7 +353,7 @@ def randomSelection(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize
     selection is possible;
     haploid population is allowed.
     '''
-    return pyMating(
+    return homoMating(
         chooser = randomParentChooser(),
         generator = cloneOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -373,7 +373,7 @@ def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = 
    parameter (\c contWhenUniSex) can be set to determine the behavior.
    Default to continuing without warning.
     '''
-    return pyMating(
+    return homoMating(
         chooser = randomParentsChooser(replacement=True),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -390,7 +390,7 @@ def monogamousMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSiz
    pairs are exhausted, parameter \c replenish=True allows for the replenishment
    of one or both sex groups.
     '''
-    return pyMating(
+    return homoMating(
         chooser = randomParentsChooser(replacement=False),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -408,7 +408,7 @@ def polygamousMating(polySex=Male, polyNum=1,
    Parents returned from this parents chooser will yield the same male (or female)
    parents, each with varying partners.
     '''
-    return pyMating(
+    return homoMating(
         chooser = polyParentsChooser(polySex, polyNum),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -447,7 +447,7 @@ def alphaMating(alphaSex=Male, alphaNum=0, alphaField='',
 	           are chosen selectively, and selected again during mating.
 
     '''
-    return pyMating(
+    return homoMating(
         chooser = alphaParentsChooser(alphaSex, alphaNum, alphaField),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -468,7 +468,7 @@ def haplodiploidMating(replacement=True,
     of chromosomes from the male parent. Note that if a recombinator
     is used, it should disable recombination of male parent.
     '''
-    return pyMating(
+    return homoMating(
         chooser = randomParentsChooser(replacement),
         generator = haplodiploidOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -486,7 +486,7 @@ def selfMating(replacement=True, numOffspring = 1.,	 sexMode = RandomSex,
     the probability that an individual is chosen is proportional to
     his/her fitness.
     '''
-    return pyMating(
+    return homoMating(
         chooser = randomParentChooser(replacement),
         generator = selfingOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
@@ -517,7 +517,7 @@ def consanguineousMating(infoFields = [], func = None, param = None,
 	   Please refer to \c infoParentsChooser and \c mendelianOffspringGenerator for
 	   other parameters.
     '''
-    return pyMating(
+    return homoMating(
         chooser = infoParentsChooser(infoFields, func, param, replacement),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize, subPop = subPop,
@@ -545,7 +545,7 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
 	  expected allele frequencies at given loci
 	\param acceptScheme internal use only
     '''
-    return pyMating(chooser = randomParentsChooser(True),
+    return homoMating(chooser = randomParentsChooser(True),
         generator = controlledOffspringGenerator(loci, alleles, freqFunc,
             [mendelianGenoTransmitter()] + ops, numOffspring,
             sexMode),
