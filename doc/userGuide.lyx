@@ -9700,8 +9700,8 @@ outputExpr
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "saveQTDT1.py"
-lstparams "caption={Function SaveQTDT, part one},label={saveQTDT1}"
+filename "log/saveQTDT.py"
+lstparams "caption={Function SaveQTDT, part one},firstline=5,label={saveQTDT1},lastline=42"
 
 \end_inset
 
@@ -9750,8 +9750,8 @@ locusName
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "saveQTDT2.py"
-lstparams "caption={Function SaveQTDT, part two},label={saveQTDT2}"
+filename "log/saveQTDT.py"
+lstparams "caption={Function SaveQTDT, part two},firstline=43,label={saveQTDT2},lastline=55"
 
 \end_inset
 
@@ -9780,8 +9780,8 @@ simuPOP
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "saveQTDT3.py"
-lstparams "caption={Function SaveQTDT, part three},label={saveQTDT3}"
+filename "log/saveQTDT.py"
+lstparams "caption={Function SaveQTDT, part three},firstline=56,label={saveQTDT3},lastline=61"
 
 \end_inset
 
@@ -9817,8 +9817,8 @@ combine
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "saveQTDT4.py"
-lstparams "caption={Function SaveQTDT, part four},label={saveQTDT4}"
+filename "log/saveQTDT.py"
+lstparams "caption={Function SaveQTDT, part four},firstline=62,label={saveQTDT4},lastline=85"
 
 \end_inset
 
@@ -9850,8 +9850,8 @@ pedindex
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "saveQTDT5.py"
-lstparams "caption={Function SaveQTDT, part five},label={saveQTDT5}"
+filename "log/saveQTDT.py"
+lstparams "caption={Function SaveQTDT, part five},firstline=86,label={saveQTDT5}"
 
 \end_inset
 
@@ -9872,70 +9872,6 @@ clearpage
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Gene mapping
-\end_layout
-
-\begin_layout Standard
-Once you output your sample into a format that can be processed by other
- applications, you can handle them in whatever way you want.
- If you are interested in processing the data in simuPOP (actually, in python),
- you can use python to call these programs.
- 
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "mapping.py"
-lstparams "caption={Example of gene mapping},label={mapping}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-An example is given in example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mapping"
-
-\end_inset
-
-.
- In this function, 
-\family typewriter
-merlin
-\family default
- 
-\begin_inset CommandInset citation
-LatexCommand citep
-key "Abecasis2002"
-
-\end_inset
-
- is called to process file produced by the 
-\family typewriter
-SaveQTDT
-\family default
- function.
- The output is fed into a pipe (
-\family typewriter
-popen
-\family default
-) and be filtered by the python 
-\family typewriter
-re
-\family default
- (regex) module.
- Only the 
-\begin_inset Formula $p$
-\end_inset
-
--values are obtained and returned.
 \end_layout
 
 \begin_layout Chapter

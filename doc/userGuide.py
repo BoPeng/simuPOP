@@ -489,6 +489,9 @@ print open('LD_2.txt').read()  # Each replicate writes to a different file.
 #end
 
 
+for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt', 'LD_2.txt']:
+    os.remove(file)
+
 #file log/hybrid.log
 def myPenetrance(geno):
     'A three-locus heterogeneity penetrance model'
@@ -1119,6 +1122,27 @@ simu.evolve(
 ################################################################################
 #
 
+#file log/simulatorCloneSaveLoad.log
+simu = simulator(population(100, loci=[5, 10], infoFields=['x']),
+    randomMating(), rep=5)
+simu.evolve(preOps=[initByFreq([0.4, 0.6])],
+    ops=[], gen=10)
+# clone
+cloned = simu.clone()
+# save and load
+simu.save("sample.sim")
+loaded = LoadSimulator("sample.sim", randomMating())
+# 
+simu.numRep()
+loaded.numRep()
+for rep in range(5):
+    assert cloned.population(rep) == loaded.population(rep)
+
+# continue to evolve
+simu.evolve(ops=[], gen=10)
+simu.gen()
+#end
+
 #file log/splitAndMerge.log
 from simuPOP import *
 pop = population(1000, loci=[1], infoFields=['migrate_to'])
@@ -1213,6 +1237,493 @@ simu.evolve(
     gen = 10
 )
 #end
+
+
+#file log/saveQTDT.log
+def SaveQTDT(pop, output='', outputExpr='', loci=[], 
+        fields=[], combine=None, shift=1, **kwargs):
+    """ save population in Merlin/QTDT format. The population must have
+        pedindex, father_idx and mother_idx information fields.
+         
+        pop: population to be saved. If pop is a filename, it will be loaded.
+
+        output: base filename. 
+        outputExpr: expression for base filename, will be evaluated in pop's
+            local namespace.
+
+        loci: loci to output
+
+        fields: information fields to output
+
+        combine: an optional function to combine two alleles of a diploid 
+            individual.
+
+        shift: if combine is not given, output two alleles directly, adding
+            this value (default to 1).
+    """
+    if type(pop) == type(''):
+        pop = LoadPopulation(pop)
+    if output != '':
+        file = output
+    elif outputExpr != '':
+        file = eval(outputExpr, globals(), pop.vars())
+    else:
+        raise exceptions.ValueError, "Please specify output or outputExpr"
+    # open data file and pedigree file to write.
+    try:
+        datOut = open(file + ".dat", "w")
+        mapOut = open(file + ".map", "w")
+        pedOut = open(file + ".ped", "w")
+    except exceptions.IOError:
+        raise exceptions.IOError, "Can not open file " + file + " to write."
+    if loci == []:
+        loci = range(0, pop.totNumLoci())
+    # write dat file
+    # 
+    if 'affection' in fields:
+        outputAffectation = True
+        fields.remove('affection')
+        print >> datOut, 'A\taffection'
+    else:
+        outputAffectation = False
+    for f in fields:
+        print >> datOut, 'T\t%s' % f
+    for marker in loci:
+        print >> datOut, 'M\t%s' % pop.locusName(marker)
+    datOut.close()
+    # write map file
+    print >> mapOut, 'CHROMOSOME MARKER POSITION'
+    for marker in loci:
+        print >> mapOut, '%d\t%s\t%f' % (pop.chromLocusPair(marker)[0] + 1, 
+            pop.locusName(marker), pop.locusPos(marker))
+    mapOut.close()
+    # write ped file
+    def sexCode(ind):
+        if ind.sex() == Male:
+            return 1
+        else:
+            return 2
+    # disease status: in linkage affected is 2, unaffected is 1
+    def affectedCode(ind):
+        if ind.affected():
+            return 'a'
+        else:
+            return 'u'
+    #
+    pldy = pop.ploidy()
+    def writeInd(ind, famID, id, fa, mo):
+        print >> pedOut, '%d %d %d %d %d' % (famID, id, fa, mo, sexCode(ind)),
+        if outputAffectation:
+            print >> pedOut, affectedCode(ind),
+        for f in fields:
+            print >> pedOut, '%.3f' % ind.info(f),
+        for marker in loci:
+            for p in range(pldy):
+                print >> pedOut, "%d" % (ind.allele(marker, p) + shift), 
+        print >> pedOut
+    # number of pedigrees
+    # get unique pedgree id numbers
+    from sets import Set
+    peds = Set(pop.indInfo('pedindex', False))
+    # do not count peds -1
+    peds.discard(-1)
+    #
+    newPedIdx = 1
+    #
+    for ped in peds:
+        id = 1
+        # -1 means no parents
+        pastmap = {-1:0}
+        # go from generation 2, 1, 0 (for example)
+        for anc in range(pop.ancestralDepth(), -1, -1):
+            newmap = {-1:0}
+            pop.useAncestralPop(anc)
+            # find all individual in this pedigree
+            for i in range(pop.popSize()):
+                ind = pop.individual(i)
+                if ind.info('pedindex') == ped:
+                    dad = int(ind.info('father_idx'))
+                    mom = int(ind.info('mother_idx'))
+                    if dad == mom and dad != -1:
+                        print ("Something wrong with pedigree %d, father and mother " + \
+                            "idx are the same: %s") % (ped, dad)
+                    writeInd(ind, newPedIdx, id, pastmap.setdefault(dad, 0), \
+                        pastmap.setdefault(mom, 0))
+                    newmap[i] = id
+                    id += 1
+            pastmap = newmap
+        newPedIdx += 1
+    pedOut.close()
+
+#end
+
+#file log/reichParam.py
+initSize =  10000            # initial population size
+finalSize = 1000000          # final population size
+burnin = 500                 # evolve with constant population size
+endGen = 1000                # last generation
+mu = 3.2e-5                  # mutation rate
+C_f0 = 0.2                   # initial allelic frequency of *c*ommon disease
+R_f0 = 0.001                 # initial allelic frequency of *r*are disease
+max_allele = 255             # allele range 1-255 (1 for wildtype)
+C_s = 0.0001                 # selection on common disease
+R_s = 0.9                    # selection on rare disease
+psName = 'lin_exp'           # filename of saved figures 
+
+# allele spectrum
+C_f = [1-C_f0] + [x*C_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
+R_f = [1-R_f0] + [x*R_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
+#end
+
+#file log/reichSimulator.py
+from simuOpt import setOptions
+setOptions(alleleType='long')
+from simuPOP import *
+
+# instantaneous population growth
+def ins_exp(gen, oldSize=[]):
+    if gen < burnin:
+        return [initSize]
+    else:
+        return [finalSize]
+
+def simulate(incScenario):
+    simu = simulator(                                        # create a simulator
+        population(size=incScenario(0), loci=[1,1],
+            infoFields=['fitness']),                         # inital population
+        randomMating(subPopSize=incScenario)           # random mating
+    )
+
+#simulate(ins_exp)
+#end
+
+#file log/reichMutSel.py
+def simulate(incScenario):
+    simu = simulator(                       # create a simulator
+        population(size=incScenario(0), loci=[1,1],
+            infoFields=['fitness']),        # inital population
+        randomMating(subPopSize=incScenario)
+    )
+    simu.evolve(                            # start evolution
+        preOps=[                            # operators that will be applied before evolution
+            # initialize locus 0 (for common disease)
+            initByFreq(loci=[0], alleleFreq=C_f),
+            # initialize locus 1 (for rare disease)
+            initByFreq(loci=[1], alleleFreq=R_f),
+        ],
+        ops=[                               # operators that will be applied at each gen
+            # mutate: k-alleles mutation model
+            kamMutator(rate=mu, maxAllele=max_allele),
+            # selection on common and rare disease,
+            mlSelector([                # multiple loci - multiplicative model
+                maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
+                maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
+            ], mode=SEL_Multiplicative),
+        ],
+        gen = endGen
+    )
+
+#simulate(ins_exp)
+#end
+
+#file log/reichStat.py
+def ne(pop):
+    ' calculate effective number of alleles '
+    Stat(pop, alleleFreq=[0,1])
+    f0 = [0, 0]
+    ne = [0, 0]
+    for i in range(2):
+        freq = pop.dvars().alleleFreq[i][1:]
+        f0[i] = 1 - pop.dvars().alleleFreq[i][0]
+        if f0[i] == 0:
+            ne[i] = 0
+        else:
+            ne[i] = 1. / sum([(x/f0[i])**2 for x in freq])
+    print '%d\t%.3f\t%.3f\t%.3f\t%.3f' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
+    return True
+
+#end
+
+#file log/reichOpt.py
+options = [
+    {'arg': 'h',
+     'longarg': 'help',
+     'default': False, 
+     'description': 'Print this usage message.',
+     'allowedTypes': [types.NoneType, type(True)],
+     'jump': -1                    # if -h is specified, ignore any other parameters.
+    },
+    {'longarg': 'initSize=',
+     'default': 10000,
+     'label': 'Initial population size',
+     'allowedTypes': [types.IntType, types.LongType],
+     'description': '''Initial population size. This size will be maintained
+                till the end of burnin stage''',
+     'validate': simuOpt.valueGT(0)
+    },
+    {'longarg': 'finalSize=',
+     'default': 1000000,
+     'label': 'Final population size',
+     'allowedTypes': [types.IntType, types.LongType],
+     'description': 'Ending population size (after expansion.',
+     'validate': simuOpt.valueGT(0)
+    }, 
+    {'longarg': 'burnin=',
+     'default': 500,
+     'label': 'Length of burn-in stage',
+     'allowedTypes': [types.IntType],
+     'description': 'Number of generations of the burn in stage.',
+     'validate': simuOpt.valueGT(0)
+    },
+    {'longarg': 'endGen=',
+     'default': 1000,
+     'label': 'Last generation',
+     'allowedTypes': [types.IntType],
+     'description': 'Ending generation, should be greater than burnin.',
+     'validate': simuOpt.valueGT(0)
+    },
+    {'longarg': 'growth=',
+     'default': 'instant',
+     'label': 'Population growth model',
+     'description': '''How population is grown from initSize to finalSize.
+                Choose between instant, linear and exponential''',
+     'chooseOneOf': ['linear', 'instant'],
+    },
+    {'longarg': 'name=',
+     'default': 'cdcv',
+     'allowedTypes': [types.StringType],
+     'label': 'Name of the simulation',
+     'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
+    },
+]
+
+def getOptions(details=__doc__):
+    # get all parameters, __doc__ is used for help info
+    allParam = simuOpt.getParam(options, 
+        'This program simulates the evolution of a common and a rare direse\n' +
+        'and observe the evolution of allelic spectra\n', details)
+    #
+    # when user click cancel ...
+    if len(allParam) == 0:
+        sys.exit(1)
+    # -h or --help
+    if allParam[0]:    
+        print simuOpt.usage(options, __doc__)
+        sys.exit(0)
+    # automatically save configurations
+    name = allParam[-1]
+    if not os.path.isdir(name):
+        os.makedirs(name)
+    simuOpt.saveConfig(options, os.path.join(name, name+'.cfg'), allParam)
+    # return the rest of the parameters
+    return allParam[1:-1]
+
+#
+# IGNORED
+# 
+
+if __name__ == '__main__':
+    # get parameters
+    (initSize, finalSize, burnin, endGen, growth) = getOptions()
+    # 
+    from simuPOP import *
+    #
+    if initSize > finalSize:
+        print 'Initial size should be greater than final size'
+        sys.exit(1)
+    if burnin > endGen:
+        print 'Burnin gen should be less than ending gen'
+        sys.exit(1)
+    if growth == 'linear':
+        simulate(lin_exp)
+    else:
+        simulate(ins_exp)
+
+#end
+
+#file log/reich.py
+#!/usr/bin/env python
+
+'''
+simulation for Reich(2001):
+     On the allelic spectrum of human disease
+
+'''
+
+import simuOpt
+simuOpt.setOptions(alleleType='long')
+
+import sys, types, os
+
+options = [
+    {'arg': 'h',
+     'longarg': 'help',
+     'default': False, 
+     'description': 'Print this usage message.',
+     'allowedTypes': [types.NoneType, type(True)],
+     'jump': -1                    # if -h is specified, ignore any other parameters.
+    },
+    {'longarg': 'initSize=',
+     'default': 10000,
+     'label': 'Initial population size',
+     'allowedTypes': [types.IntType, types.LongType],
+     'description': '''Initial population size. This size will be maintained
+                till the end of burnin stage''',
+     'validate': simuOpt.valueGT(0)
+    },
+    {'longarg': 'finalSize=',
+     'default': 1000000,
+     'label': 'Final population size',
+     'allowedTypes': [types.IntType, types.LongType],
+     'description': 'Ending population size (after expansion.',
+     'validate': simuOpt.valueGT(0)
+    }, 
+    {'longarg': 'burnin=',
+     'default': 500,
+     'label': 'Length of burn-in stage',
+     'allowedTypes': [types.IntType],
+     'description': 'Number of generations of the burn in stage.',
+     'validate': simuOpt.valueGT(0)
+    },
+    {'longarg': 'endGen=',
+     'default': 1000,
+     'label': 'Last generation',
+     'allowedTypes': [types.IntType],
+     'description': 'Ending generation, should be greater than burnin.',
+     'validate': simuOpt.valueGT(0)
+    },
+    {'longarg': 'growth=',
+     'default': 'instant',
+     'label': 'Population growth model',
+     'description': '''How population is grown from initSize to finalSize.
+                Choose between instant, linear and exponential''',
+     'chooseOneOf': ['linear', 'instant'],
+    },
+    {'longarg': 'name=',
+     'default': 'cdcv',
+     'allowedTypes': [types.StringType],
+     'label': 'Name of the simulation',
+     'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
+    },
+]
+
+def getOptions(details=__doc__):
+    # get all parameters, __doc__ is used for help info
+    allParam = simuOpt.getParam(options, 
+      'This program simulates the evolution of a common and a rare direse\n' +
+        'and observe the evolution of allelic spectra\n', details)
+    #
+    # when user click cancel ...
+    if len(allParam) == 0:
+        sys.exit(1)
+    # -h or --help
+    if allParam[0]:    
+        print simuOpt.usage(options, __doc__)
+        sys.exit(0)
+    # automatically save configurations
+    name = allParam[-1]
+    if not os.path.isdir(name):
+        os.makedirs(name)
+    simuOpt.saveConfig(options, os.path.join(name, name+'.cfg'), allParam)
+    # return the rest of the parameters
+    return allParam[1:-1]
+
+
+# these can be put as options as well.
+mu = 3.2e-5                  # mutation rate
+C_f0 = 0.2                   # initial allelic frequency of *c*ommon disease
+R_f0 = 0.001                 # initial allelic frequency of *r*are disease
+max_allele = 255             # allele range 1-255 (1 for wildtype)
+C_s = 0.0001                 # selection on common disease
+R_s = 0.9                    # selection on rare disease
+
+C_f = [1-C_f0] + [x*C_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
+R_f = [1-R_f0] + [x*R_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
+
+# instantaneous population growth
+def ins_exp(gen, oldSize=[]):
+    if gen < burnin:
+        return [initSize]
+    else:
+        return [finalSize]
+
+# linear growth after burn-in
+def lin_exp(gen, oldSize=[]):
+    if gen < burnin:
+        return [initSize]
+    elif gen % 10 != 0:
+        return oldSize
+    else:
+        incSize = (finalSize-initSize)/(endGen-burnin)
+        return [oldSize[0]+10*incSize]
+
+def ne(pop):
+    ' calculate effective number of alleles '
+    Stat(pop, alleleFreq=[0,1])
+    f0 = [0, 0]
+    ne = [0, 0]
+    for i in range(2):
+        freq = pop.dvars().alleleFreq[i][1:]
+        f0[i] = 1 - pop.dvars().alleleFreq[i][0]
+        if f0[i] == 0:
+            ne[i] = 0
+        else:
+            ne[i] = 1. / sum([(x/f0[i])**2 for x in freq])
+    print '%d\t%.3f\t%.3f\t%.3f\t%.3f' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
+    return True
+
+def simulate(incScenario):
+    simu = simulator(                                        # create a simulator
+        population(subPop=incScenario(0), loci=[1,1],
+            infoFields=['fitness']),                         # inital population
+        randomMating(subPopSizeFunc=incScenario)           # random mating
+    )
+    simu.evolve(                            # start evolution
+        preOps=[                            # operators that will be applied before evolution
+            # initialize locus 0 (for common disease)
+            initByFreq(atLoci=[0], alleleFreq=C_f),
+            # initialize locus 1 (for rare disease)
+            initByFreq(atLoci=[1], alleleFreq=R_f),
+        ],
+        ops=[                               # operators that will be applied at each gen
+            # mutate: k-alleles mutation model
+            kamMutator(rate=mu, maxAllele=max_allele),
+            # selection on common and rare disease,
+            mlSelector([                # multiple loci - multiplicative model
+                maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
+                maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
+            ], mode=SEL_Multiplicative),
+            # report generation and popsize and total disease allele frequency.
+            pyOperator(func=ne, step=5),
+            # monitor time
+            ticToc(step=100),
+            # pause at any user key input (for presentation purpose)
+            pause(stopOnKeyStroke=1)
+        ],
+        end=endGen
+    )
+
+
+if __name__ == '__main__':
+    # get parameters
+    (initSize, finalSize, burnin, endGen, growth) = getOptions()
+    # 
+    from simuPOP import *
+    #
+    if initSize > finalSize:
+        print 'Initial size should be greater than final size'
+        sys.exit(1)
+    if burnin > endGen:
+        print 'Burnin gen should be less than ending gen'
+        sys.exit(1)
+    if growth == 'linear':
+        simulate(lin_exp)
+    else:
+        simulate(ins_exp)
+
+#end
+
+
 
 ## #file log/popAndOperator.log
 ## pop = population(size=[2, 3], ploidy=2, loci=[5, 10],
@@ -1342,20 +1853,6 @@ simu.evolve(
 ## print open("a0.txt").read()
 ## print open("a1.txt").read()
 ## #end
-## 
-## #file log/simulatorsaveload.log
-## simu.save("sample.sim")
-## simu1 = LoadSimulator("sample.sim", randomMating())
-## #end
-## 
-## # remove these files
-## os.remove('s.txt')
-## os.remove('s.xml')
-## os.remove('s.bin')
-## os.remove('a0.txt')
-## os.remove('a1.txt')
-## 
-## 
 ## 
 ## 
 ## #file log/initByFreq.log
