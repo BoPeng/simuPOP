@@ -145,7 +145,7 @@ typedef std::vector<vspSplitter *> vectorsplitter;
 
 /** This splitter takes several splitters and stacks their VSPs together. For
  *  example, if the first splitter defines \c 3 VSPs and the second splitter
- *  defines \c 2, the two VSPs from the second splitter becomes the fourth
+ *  defines \c 2, the two VSPs from the second splitter become the fourth
  *  (index \c 3) and the fifth (index \c 4) VSPs of the combined splitter.
  *  This splitter is usually used to define different types of VSPs to a
  *  population.
