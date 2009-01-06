@@ -1527,26 +1527,26 @@ Details:
 
 Usage:
 
-    genotypeSplitter(loci (or locus), alleles, phase=False)
+    genotypeSplitter(loci, alleles, phase=False)
 
 Details:
 
-    Create a splitter that defined VSPs by individual genotype at loci
-    loci (or locus if only one locus is used). Each list in a list
+    Create a splitter that defines VSPs by individual genotype at loci
+    (a locus index or a list of loci indexes). Each list in a list
     allele defines a VSP, which is a list of allowed alleles at these
     loci. If only one VSP is defined, the outer list of the nested
     list can be ignored. If phase if true, the order of alleles in
     each list is significant. If more than one set of alleles are
     given, individuals having either of them is qualified.
-    For example, in a haploid population, locus=1, alleles=[0, 1]
+    For example, in a haploid population, loci=1, alleles=[0, 1]
     defines a VSP with individuals having allele 0 or 1 at locus 1,
     alleles=[[0, 1], [2]] defines two VSPs with indivdiuals in the
     second VSP having allele 2 at locus 1. If multiple loci are
     involved, alleles at each locus need to be defined. For example,
     VSP defined by loci=[0, 1], alleles=[0, 1, 1, 1] consists of
     individuals having alleles [0, 1] or [1, 1] at loci [0, 1].
-    In a haploid population, locus=1, alleles=[0, 1] defines a VSP
-    with individuals having genotype [0, 1] or [1, 0] at locus 1.
+    In a haploid population, loci=1, alleles=[0, 1] defines a VSP with
+    individuals having genotype [0, 1] or [1, 0] at locus 1.
     alleles[[0, 1], [2, 2]] defines two VSPs with indivdiuals in the
     second VSP having genotype [2, 2] at locus 1. If phase is set to
     True, the first VSP will only has individuals with genotype [0,
@@ -1756,20 +1756,14 @@ Usage:
 
 %feature("docstring") simuPOP::heteroMating "
 
-Applicability: diploid only
-
 Details:
 
-    a heterogeneous mating scheme that applies a list of mating
+    A heterogeneous mating scheme that applies a list of mating
     schemes to different (virtual) subpopulations.
 
 "; 
 
 %feature("docstring") simuPOP::heteroMating::heteroMating "
-
-Description:
-
-    create a heterogeneous Python mating scheme
 
 Usage:
 
@@ -1778,16 +1772,28 @@ Usage:
 
 Details:
 
-    Parameter subpop, virtualSubPOp and weight of this mating scheme
-    is ignored.
-
-Arguments:
-
-    matingSchemes:  A list of mating schemes. If parameter subPop of
-                    an mating scheme is specified, it will be applied
-                    to specific subpopulation. If virtualSubPop if
-                    specified, it will be applied to specifc virtual
-                    subpopulations.
+    Create a heterogeneous mating scheme that will apply a list of
+    homogeneous mating schemes matingSchemes to different (virtual)
+    subpopulations. Each mating scheme defined in matingSchemes should
+    specify which (virtual) subpopulation it is applied to (parameter
+    subPop), and optionally a weight (parameter weight) to determine
+    how many offspring it will produce, if multiple mating schemes are
+    applied to the same subpopulation.
+    The default for all mating schemes are 0. In this case, the number
+    of offspring each mating scheme produces is proportional to the
+    size of its parental (virtual) subpopulation. If all weights are
+    negative, the numbers of offspring are determined by the
+    multiplication of the absolute values of the weights and their
+    respective parental (virtual) subpopulation sizes. If all weights
+    are positive, the number of offspring produced by each mating
+    scheme is proportional to these weights. Mating schemes with zero
+    weight in this case will produce no offspring. If both negative
+    and positive weights are present, negative weights are processed
+    before positive ones.
+    If multiple mating schemes are applied to the same subpopulation,
+    offspring produced by these mating schemes are shuffled randomly.
+    If this is not desired, you can turn off offspring shuffling by
+    setting parameter shuffleOffspring to False.
 
 "; 
 
@@ -1809,7 +1815,7 @@ Usage:
 
 Description:
 
-    deep copy of a Python mating scheme
+    deep copy of a heterogeneous mating scheme
 
 Usage:
 
@@ -1830,42 +1836,48 @@ Usage:
 
 "; 
 
-%ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+%ignore simuPOP::heteroMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::homoMating "
 
-Applicability: all ploidy
-
-Description:
-
-    a Python mating scheme
-
 Details:
 
-    This hybrid mating scheme does not have to involve a python
-    function. It requires a parent chooser, and an offspring
-    generator. The parent chooser chooses parent(s) and pass them to
-    the offspring generator to produce offspring.
+    A homogeneous mating scheme that uses a parent chooser to choose
+    parents from a prental generation, and an offspring generator to
+    generate offspring from chosen parents. It can be either used
+    directly, or within a heterogeneous mating scheme. In the latter
+    case, it can be applied to a (virtual) subpopulation.
 
 "; 
 
 %feature("docstring") simuPOP::homoMating::homoMating "
-
-Description:
-
-    create a Python mating scheme
 
 Usage:
 
     homoMating(chooser, generator, subPopSize=uintListFunc,
       subPop=[], weight=0)
 
-Arguments:
+Details:
 
-    chooser:        a parent chooser that chooses parent(s) from the
-                    parental generation.
-    generator:      an offspring generator that produce offspring of
-                    given parents.
+    Create a homogeneous mating scheme using a parent chooser chooser
+    and an offspring generator generator.
+    If this mating scheme is used directly in a simulator, it will be
+    responsible for creating an offspring population according to
+    parameter subPopSize. This parameter can be a list of
+    subpopulation sizes (or a number if there is only one
+    subpopulation) or a Python function. The function should take two
+    parameters, a generation number and a list of subpopulation sizes
+    before mating, and return a list of subpopulation sizes for the
+    offspring generation. A single number can be returned if there is
+    only one subpopulation. If latter form is used, the specified
+    function will be called at each generation to determine the size
+    of the offspring generation. Parameters subPop and weight are
+    ignored in this case.
+    If this mating shcme is used within a heterogeneous mating scheme.
+    Parameters subPop and weight are used to determine which (virtual)
+    subpopulation this mating scheme will be applied to, and how many
+    offspring this mating scheme will produce. Please refer to mating
+    scheme heteroMating for the use of these two parameters.
 
 "; 
 
@@ -1887,7 +1899,7 @@ Usage:
 
 Description:
 
-    deep copy of a Python mating scheme
+    Deep copy of a homogeneous mating scheme.
 
 Usage:
 
@@ -3808,34 +3820,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mating "
-
-Description:
-
-    the base class of all mating schemes - a required parameter of
-    simulator
-
-Details:
-
-    Mating schemes specify how to generate offspring from the current
-    population. It must be provided when a simulator is created.
-    Mating can perform the following tasks:
-    *  change population/subpopulation sizes;
-    *  randomly select parent(s) to generate offspring to populate the
-    offspring generation;
-    *  apply during-mating operators;
-    *  apply selection if applicable.
-
-"; 
+%feature("docstring") simuPOP::mating "Obsolete or undocumented function."
 
 %ignore simuPOP::mating::isCompatible(const population &pop) const;
 
 %feature("docstring") simuPOP::mating::mating "
-
-Description:
-
-    create a mating scheme (do not use this base mating scheme, use
-    one of its derived classes instead)
 
 Usage:
 
@@ -3843,40 +3832,8 @@ Usage:
 
 Details:
 
-    By default, a mating scheme keeps a constant population size,
-    generates one offspring per mating event. These can be changed
-    using certain parameters. subPopSize, can be used to specify
-    subpopulation sizes of the offspring generation.
-
-Arguments:
-
-    subPopSize:     an array of subpopulations sizes, should have the
-                    same number of subpopulations as the current
-                    population
-    subPopSizeFunc: a function that takes parameters gen (generation
-                    number) and oldsize (an array of current
-                    population size) and return an array of
-                    subpopulation sizes of the next generation. This
-                    is usually easier to use than its expression
-                    version of this parameter.
-    subPop:         if this parameter is given, the mating scheme will
-                    be applied only to the given (virtual)
-                    subpopulation. This is only used in heteroMating
-                    where mating schemes are passed to.
-    weight:         When subPop is virtual, this is used to detemine
-                    the number of offspring for this mating scheme.
-                    Weight can be
-                    * 0 (default) the weight will be proportional to
-                    the current (virtual) subpopulation size. If other
-                    virutal subpopulation has non-zero weight, this
-                    virtual subpopulation will produce no offspring
-                    (weight 0).
-                    * any negative number -n: the size will be n*m
-                    where m is the size of the (virtual) subpopulation
-                    of the parental generation.
-                    * any positive number n: the size will be
-                    determined by weights from all (virtual)
-                    subpopulations.
+    Create a mating scheme. subPopSize can be used to determine
+    subpopulatio sizes of an offspring generation.
 
 "; 
 
@@ -3921,7 +3878,7 @@ Usage:
 
 %ignore simuPOP::mating::mateSubPop(population &pop, SubPopID subPop, RawIndIterator offBegin, RawIndIterator offEnd, vector< baseOperator * > &ops);
 
-%ignore simuPOP::mating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+%ignore simuPOP::mating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
 
@@ -5401,6 +5358,11 @@ Arguments:
 
 %feature("docstring") simuPOP::pedigreeMating "
 
+Details:
+
+    A pedigree mating scheme that evolves a population following a
+    pedigree object.
+
 "; 
 
 %feature("docstring") simuPOP::pedigreeMating::pedigreeMating "
@@ -5453,7 +5415,7 @@ Usage:
 
 %ignore simuPOP::pedigreeMating::prepareScratchPop(population &pop, population &scratch);
 
-%ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops, bool submit);
+%ignore simuPOP::pedigreeMating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %feature("docstring") simuPOP::pedigreeTagger "
 
@@ -11366,6 +11328,58 @@ Usage:
 Usage:
 
     x.elems()
+
+"; 
+
+%feature("docstring") simuPOP::uintList "
+
+"; 
+
+%feature("docstring") simuPOP::uintList::uintList "
+
+Usage:
+
+    uintList(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::uintList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::uintList::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::uintList::elems "
+
+Usage:
+
+    x.elems()
+
+"; 
+
+%feature("docstring") simuPOP::uintList::begin "
+
+Usage:
+
+    x.begin()
+
+"; 
+
+%feature("docstring") simuPOP::uintList::end "
+
+Usage:
+
+    x.end()
 
 "; 
 

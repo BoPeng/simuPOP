@@ -88,7 +88,7 @@ ULONG offspringGenerator::numOffspring(int gen)
 		return static_cast<UINT>(m_numOffspring[0]);
 
 	if (m_numOffspring.func().isValid()) {
-		int numOff = m_numOffspring.func()(PyObj_As_Int, "(i)", gen);
+		int numOff = m_numOffspring.func() (PyObj_As_Int, "(i)", gen);
 		DBG_FAILIF(numOff < 1, ValueError, "Need at least one offspring.");
 		return numOff;
 	}
@@ -164,8 +164,8 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 	while (count < numOff && attempt < numOff && it != itEnd) {
 		++attempt;
 
-        DBG_FAILIF(m_transmitters.empty() && ops.empty(), ValueError,
-            "No valid genotype transmitter is defined.");
+		DBG_FAILIF(m_transmitters.empty() && ops.empty(), ValueError,
+			"No valid genotype transmitter is defined.");
 
 		// set sex, during mating operator will try to
 		// follow the offspring sex (e.g. pass X or Y chromosome)
@@ -439,21 +439,20 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 		}
 		m_AAattempt--;
 	} else {                                                          // do not use stack
-        if (hasAff) {
-    		for (size_t i = 0; i < nLoci; ++i) {
-	    		// accept the whole family, if we need this allele
-		    	if (m_curAllele[i] < m_totAllele[i] && na[i] > 0) {
-			    	accept = true;
-				    break;
-    			}
-	    	}
-            m_aaAttempt = 10000;
-        }
-        else if (m_aaAttempt == 0) {
-            m_aaAttempt = 200;
-            accept = true;
-        }
-        m_aaAttempt--;
+		if (hasAff) {
+			for (size_t i = 0; i < nLoci; ++i) {
+				// accept the whole family, if we need this allele
+				if (m_curAllele[i] < m_totAllele[i] && na[i] > 0) {
+					accept = true;
+					break;
+				}
+			}
+			m_aaAttempt = 10000;
+		} else if (m_aaAttempt == 0) {
+			m_aaAttempt = 200;
+			accept = true;
+		}
+		m_aaAttempt--;
 	}
 	//
 	// reject this family
@@ -1175,7 +1174,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 		for (size_t i = 0; i < pop.numSubPop(); ++i)
 			PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
 
-		vectorf res = m_subPopSize.func()(PyObj_As_Array, "(iO)", gen, curSize);
+		vectori res = m_subPopSize.func() (PyObj_As_IntArray, "(iO)", gen, curSize);
 		Py_XDECREF(curSize);
 
 		vectorlu sz(res.size());
@@ -1199,7 +1198,7 @@ bool mating::prepareScratchPop(population & pop, population & scratch)
 
 
 bool mating::mate(population & pop, population & scratch,
-                  vector<baseOperator * > & ops, bool submit)
+                  vector<baseOperator * > & ops)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1209,8 +1208,7 @@ bool mating::mate(population & pop, population & scratch,
 		if (!mateSubPop(pop, sp, scratch.rawIndBegin(sp),
 				scratch.rawIndEnd(sp), ops))
 			return false;
-	if (submit)
-		submitScratch(pop, scratch);
+	submitScratch(pop, scratch);
 	return true;
 }
 
@@ -1274,7 +1272,7 @@ bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
 
 
 bool pedigreeMating::mate(population & pop, population & scratch,
-                          vector<baseOperator * > & ops, bool submit)
+                          vector<baseOperator * > & ops)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1304,8 +1302,7 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 		m_generator->finalize(pop);
 	}
 
-	if (submit)
-		submitScratch(pop, scratch);
+	submitScratch(pop, scratch);
 	return true;
 }
 
@@ -1322,8 +1319,8 @@ homoMating::homoMating(parentChooser & chooser,
 
 
 bool homoMating::mateSubPop(population & pop, SubPopID subPop,
-                          RawIndIterator offBegin, RawIndIterator offEnd,
-                          vector<baseOperator * > & ops)
+                            RawIndIterator offBegin, RawIndIterator offEnd,
+                            vector<baseOperator * > & ops)
 {
 	// nothing to do.
 	if (offBegin == offEnd)
@@ -1364,7 +1361,7 @@ heteroMating::heteroMating(const vectormating & matingSchemes,
 	vectormating::const_iterator it_end = matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back(dynamic_cast<homoMating*>((*it)->clone()));
+		m_matingSchemes.push_back(dynamic_cast<homoMating *>((*it)->clone()));
 }
 
 
@@ -1385,12 +1382,12 @@ heteroMating::heteroMating(const heteroMating & rhs) :
 	vectormating::const_iterator it_end = rhs.m_matingSchemes.end();
 
 	for (; it != it_end; ++it)
-		m_matingSchemes.push_back(dynamic_cast<homoMating*>((*it)->clone()));
+		m_matingSchemes.push_back(dynamic_cast<homoMating *>((*it)->clone()));
 }
 
 
 bool heteroMating::mate(population & pop, population & scratch,
-                        vector<baseOperator * > & ops, bool submit)
+                        vector<baseOperator * > & ops)
 {
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
@@ -1405,10 +1402,11 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
+			DBG_FAILIF((*it)->subPop() == InvalidSubPopID, ValueError,
+				"Please specify which subpopulation each homogeneous mating scheme is applied to");
 			// if it is used for this subpop,
 			// for use for all subPops ...
-			if ((*it)->subPop() == sp ||
-			    (*it)->subPop() == InvalidSubPopID) {
+			if ((*it)->subPop() == sp) {
 				m.push_back(*it);
 				double w = (*it)->weight();
 				// less than zero...
@@ -1523,8 +1521,7 @@ bool heteroMating::mate(population & pop, population & scratch,
 			scratch.setIndOrdered(false);
 		}
 	}                         // each subpopulation.
-	if (submit)
-		submitScratch(pop, scratch);
+	submitScratch(pop, scratch);
 	return true;
 }
 

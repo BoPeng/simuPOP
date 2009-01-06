@@ -215,7 +215,7 @@ public:
 	 *  of parameters \e ops, \e numOffspring and \e sexMode.
 	 */
 	controlledOffspringGenerator(const vectori & loci, const vectori & alleles,
-		PyObject * freqFunc, const vectorop & ops = vectorop(), 
+		PyObject * freqFunc, const vectorop & ops = vectorop(),
 		const floatListFunc & numOffspring = 1, const floatList & sexMode = RandomSex);
 
 
@@ -727,6 +727,7 @@ public:
 			"At least one information field should be provided for this infoParentsChooser");
 	}
 
+
 	parentChooser * clone() const
 	{
 		return new infoParentsChooser(*this);
@@ -820,24 +821,16 @@ private:
 };
 
 
-/// the base class of all mating schemes - a required parameter of \c simulator
-/**
-   Mating schemes specify how to generate offspring from the current population.
-   It must be provided when a simulator is created. Mating can perform the following tasks:
-   \li change population/subpopulation sizes;
-   \li randomly select parent(s) to generate offspring to populate the offspring generation;
-   \li apply \em during-mating operators;
-   \li apply selection if applicable.
+/** This class is the base class of all mating schemes. It should not be used
+ * directly.
+ * HIDDEN
  */
 class mating
 {
 
 public:
-	/// CPPONLY check if the mating type is compatible with the population structure
-	/**
-	   possible things to check:
-	   \li need certain types of individuals (age, sex etc)
-	   \li need resizeable population...
+	/** CPPONLY
+	 *  check if the mating type is compatible with the population structure.
 	 */
 	virtual bool isCompatible(const population & pop) const
 	{
@@ -845,33 +838,8 @@ public:
 	}
 
 
-	/// create a mating scheme (do not use this base mating scheme, use one of its derived classes instead)
-	/**
-	   By default, a mating scheme keeps a constant population size, generates
-	   one offspring per mating event. These can be changed using certain
-	   parameters. \c subPopSize,
-	   can be used to specify subpopulation sizes of the offspring generation.
-
-	   \param subPopSize an array of subpopulations sizes, should have the same
-	    number of subpopulations as the current population
-	   \param subPopSizeFunc a function that takes parameters \c gen (generation number) and \c oldsize
-	   (an array of current population size) and return an array of subpopulation sizes of the next generation.
-	   This is usually easier to use than its expression version of this parameter.
-	   \param subPop if this parameter is given, the mating scheme
-	    will be applied only to the given (virtual) subpopulation.
-	    This is only used in heteroMating where mating schemes
-	    are passed to.
-	   \param weight When subPop is virtual, this is used to detemine
-	    the number of offspring for this mating scheme. Weight can be
-	   \li 0 (default) the weight will be proportional to the
-	        current (virtual) subpopulation size. If other virutal
-	        subpopulation has non-zero weight, this virtual subpopulation
-	        will produce no offspring (weight 0).
-	   \li any negative number -n: the size will be n*m where m is the size
-	    of the (virtual) subpopulation of the parental generation.
-	   \li any positive number n: the size will be determined by
-	        weights from all (virtual) subpopulations.
-
+	/** Create a mating scheme. \e subPopSize can be used to determine
+	 * subpopulatio sizes of an offspring generation.
 	 */
 	mating(const uintListFunc & subPopSize = uintListFunc());
 
@@ -879,6 +847,7 @@ public:
 	virtual ~mating()
 	{
 	}
+
 
 	/// deep copy of a mating scheme
 	virtual mating * clone() const
@@ -895,11 +864,12 @@ public:
 
 
 	/** CPPONLY
-	 * a common submit procedure is defined.
 	 */
 	virtual void submitScratch(population & pop, population & scratch);
 
-	/// CPPONLY
+	/** CPPONLY
+	 *  mate a subpopulation, called by mate().
+	 */
 	virtual bool mateSubPop(population & pop, SubPopID subPop,
 	                        RawIndIterator offBegin, RawIndIterator offEnd,
 	                        vector<baseOperator * > & ops)
@@ -908,29 +878,35 @@ public:
 	}
 
 
-	/// CPPONLY this is not supposed to be called for a base mating class
-	/**
-	   \param pop population
-	   \param scratch scratch population
-	   \param ops during-mating operators
-	   \return return false when mating fail
+	/** CPPONLY
+	 *  Generate an offspring population \e scratch from parental population
+	 *  \e pop. During mating operators \e ops will be applied after each
+	 *  offspring is generated.
 	 */
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
 
-	/// CPPONLY dealing with the \c pop/subPop size change, copy of structure etc.
+	/** CPPONLY
+	 *  Prepare a scratch population \e scratch.
+	 */
 	bool prepareScratchPop(population & pop, population & scratch);
 
 protected:
-	/// new subpopulation size. mostly used to 'keep' subPopsize
-	/// after migration.
+	/** Specify subpopulation size of the offspring generation. Can be a
+	 *  list of subpopulation sizes or a function.
+	 */
 	uintListFunc m_subPopSize;
-
 };
 
-
+/** A pedigree mating scheme that evolves a population following a
+ *  pedigree object.
+ *
+ *
+ */
 class pedigreeMating : public mating
 {
 public:
+	/**
+	 */
 	pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
 		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
 
@@ -957,7 +933,7 @@ public:
 
 	bool prepareScratchPop(population & pop, population & scratch);
 
-	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
 
 private:
 	pedigree m_ped;
@@ -969,24 +945,35 @@ private:
 };
 
 
-/// a Python mating scheme
-/**
-    This hybrid mating scheme does not have to involve a python function.
-    It requires a parent chooser, and an offspring generator. The parent
-    chooser chooses parent(s) and pass them to the offspring generator to
-    produce offspring.
-   <applicability>all ploidy</applicability>
+/** A homogeneous mating scheme that uses a parent chooser to choose parents
+ *  from a prental generation, and an offspring generator to generate offspring
+ *  from chosen parents. It can be either used directly, or within a
+ *  heterogeneous mating scheme. In the latter case, it can be applied to a
+ *  (virtual) subpopulation.
  */
 class homoMating : public mating
 {
 public:
-	/// create a Python mating scheme
-	/**
-	   \param chooser a parent chooser that chooses parent(s) from the parental
-	    generation.
-	   \param generator an offspring generator that produce offspring of given
-	    parents.
-
+	/** Create a homogeneous mating scheme using a parent chooser \e chooser
+	 *  and an offspring generator \e generator.\n
+	 *
+	 *  If this mating scheme is used directly in a simulator, it will be
+	 *  responsible for creating an offspring population according to parameter
+	 *  \e subPopSize. This parameter can be a list of subpopulation sizes
+	 *  (or a number if there is only one subpopulation) or a Python function.
+	 *  The function should take two parameters, a generation number and a
+	 *  list of subpopulation sizes before mating, and return a list of
+	 *  subpopulation sizes for the offspring generation. A single number can
+	 *  be returned if there is only one subpopulation. If latter form is used,
+	 *  the specified function will be called at each generation to determine
+	 *  the size of the offspring generation. Parameters \e subPop and
+	 *  \e weight are ignored in this case.\n
+	 *
+	 *  If this mating shcme is used within a heterogeneous mating scheme.
+	 *  Parameters \e subPop and \e weight are used to determine which (virtual)
+	 *  subpopulation this mating scheme will be applied to, and how many
+	 *  offspring this mating scheme will produce. Please refer to mating scheme
+	 *  \c heteroMating for the use of these two parameters.
 	 */
 	homoMating(parentChooser & chooser,
 		offspringGenerator & generator,
@@ -1011,7 +998,7 @@ public:
 	}
 
 
-	/// deep copy of a Python mating scheme
+	/// Deep copy of a homogeneous mating scheme
 	virtual mating * clone() const
 	{
 		return new homoMating(*this);
@@ -1045,6 +1032,7 @@ public:
 		return m_weight;
 	}
 
+
 	/// CPPONLY perform Python mating
 	/**
 	   All individuals will be passed to during mating operators but
@@ -1068,21 +1056,35 @@ private:
 
 typedef std::vector<homoMating *> vectormating;
 
-/** a heterogeneous mating scheme that applies a list of mating
-   schemes to different (virtual) subpopulations.
-   <applicability>diploid only</applicability>
+/** A heterogeneous mating scheme that applies a list of mating
+ *  schemes to different (virtual) subpopulations.
  */
 class heteroMating : public mating
 {
 public:
-	/// create a heterogeneous Python mating scheme
-	/**
-	   \param matingSchemes A list of mating schemes. If parameter \c subPop of an
-	    mating scheme is specified, it will be applied to specific subpopulation.
-	    If \c virtualSubPop if specified, it will be applied to specifc virtual
-	    subpopulations.
-
-	   Parameter subpop, virtualSubPOp and weight of this mating scheme is ignored.
+	/** Create a heterogeneous mating scheme that will apply a list of
+	 *  homogeneous mating schemes \e matingSchemes to different (virtual)
+	 *  subpopulations. Each mating scheme defined in \e matingSchemes should
+	 *  specify which (virtual) subpopulation it is applied to (parameter
+	 *  \e subPop), and optionally a weight (parameter \e weight) to determine
+	 *  how many offspring it will produce, if multiple mating schemes are
+	 *  applied to the same subpopulation.\n
+	 *
+	 *  The default \weight for all mating schemes are \c 0. In this case, the
+	 *  number of offspring each mating scheme produces is proportional to the
+	 *  size of its parental (virtual) subpopulation. If all weights are negative,
+	 *  the numbers of offspring are determined by the multiplication of the
+	 *  absolute values of the weights and their respective parental (virtual)
+	 *  subpopulation sizes. If all weights are positive, the number of offspring
+	 *  produced by each mating scheme is proportional to these weights. Mating
+	 *  schemes with zero weight in this case will produce no offspring. If both
+	 *  negative and positive weights are present, negative weights are processed
+	 *  before positive ones.\n
+	 *
+	 *  If multiple mating schemes are applied to the same subpopulation,
+	 *  offspring produced by these mating schemes are shuffled randomly. If this
+	 *  is not desired, you can turn off offspring shuffling by setting parameter
+	 *  \e shuffleOffspring to \c False.
 	 */
 	heteroMating(const vectormating & matingSchemes,
 		const uintListFunc & subPopSize = uintListFunc(),
@@ -1094,7 +1096,7 @@ public:
 	/// CPPONLY
 	heteroMating(const heteroMating & rhs);
 
-	/// deep copy of a Python mating scheme
+	/// deep copy of a heterogeneous mating scheme
 	virtual mating * clone() const
 	{
 		return new heteroMating(*this);
@@ -1108,11 +1110,10 @@ public:
 	}
 
 
-	/*
-	   mateSubPop is not redefined. They are called by each
-	   mating schemes.
+	/** CPPONLY Call each homogeneous mating scheme to populate offspring
+	 *  generation.
 	 */
-	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops, bool submit);
+	bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
 
 private:
 	vectormating m_matingSchemes;

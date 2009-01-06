@@ -1418,10 +1418,10 @@ public:
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
 #ifndef OPTIMIZED
-            if (debug(DBG_GENERAL)) {
-    			PyErr_Print();
-                PyErr_Clear();
-            }
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
 #endif
 			throw ValueError("Function call failed.\n");
 		}
@@ -1435,6 +1435,7 @@ public:
 	PyObject * operator()(char * format, ...)
 	{
 		va_list argptr;
+
 		va_start(argptr, format);
 		PyObject * arglist = Py_VaBuildValue(format, argptr);
 		va_end(argptr);
@@ -1443,15 +1444,16 @@ public:
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
 #ifndef OPTIMIZED
-            if (debug(DBG_GENERAL)) {
-			    PyErr_Print();
-                PyErr_Clear();
-            }
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
 #endif
 			throw ValueError("Function call failed\n");
 		}
 		return pyResult;
 	}
+
 
 private:
 	pyObject m_func;
@@ -1557,15 +1559,16 @@ public:
 		return m_elems.begin();
 	}
 
+
 	const_iterator end() const
 	{
 		return m_elems.end();
 	}
 
+
 protected:
 	vectorlu m_elems;
 };
-
 
 
 class floatList
