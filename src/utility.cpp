@@ -190,8 +190,9 @@ bool debug(DBG_CODE code)
 {
 	return g_dbgCode[code];
 }
-#else
 
+
+#else
 
 
 #endif
@@ -379,7 +380,7 @@ void PyObj_As_Int(PyObject * obj, int & val)
 	// try to convert
 	PyObject * res = PyNumber_Int(obj);
 	if (res == NULL)
-		throw ValueError("Can not convert object to a integer");
+		throw ValueError("Can not convert object to an integer");
 
 	val = static_cast<int>(PyInt_AS_LONG(res));
 	Py_DECREF(res);
@@ -474,15 +475,18 @@ void PyObj_As_IntArray(PyObject * obj, vectori & val)
 		val = vectori();
 		return;
 	}
-	DBG_ASSERT(PySequence_Check(obj), ValueError, "PyObj_As_IntArray: Expecting a sequence");
+	if (PySequence_Check(obj)) {
+		val.resize(PySequence_Size(obj));
 
-	val.resize(PySequence_Size(obj));
-
-	// assign values
-	for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
-		PyObject * item = PySequence_GetItem(obj, i);
-		PyObj_As_Int(item, val[i]);
-		Py_DECREF(item);
+		// assign values
+		for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			PyObj_As_Int(item, val[i]);
+			Py_DECREF(item);
+		}
+	} else {
+		val.resize(1);
+		PyObj_As_Int(obj, val[0]);
 	}
 }
 
@@ -2843,6 +2847,7 @@ string ModulePlatForm()
 {
     return PLATFORM;
 }
+
 
 #ifdef BINARYALLELE
 

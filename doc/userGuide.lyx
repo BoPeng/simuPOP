@@ -5399,16 +5399,8 @@ subPopSize
 \family default
 .
  This function should take two parameters: the generation number and the
- current subpopulation sizes, and return an array of new subpopulation sizes
- (return 
-\family typewriter
-[newsize]
-\family default
- instead of 
-\family typewriter
-newsize
-\family default
- if you do not have any subpopulation structure).
+ current subpopulation sizes, and return an array of new subpopulation sizes.
+ A single number can be returned if there is only one subpopulation.
 \end_layout
 
 \begin_layout Standard
