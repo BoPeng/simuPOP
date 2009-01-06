@@ -6553,7 +6553,7 @@ If all weights are 0, the offspring subpopulation is divided in proportion
 
 \begin_layout Itemize
 If all weights are negative, they are multiplied to their parental (virtual)
- subpopulation sizes to get a fixed size.
+ subpopulation sizes.
  For example, weight (-1, -2, -0.5) will lead to sizes (1000, 1000, 400)
  in the offspring subpopulation.
  If 
