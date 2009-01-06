@@ -1505,11 +1505,68 @@ protected:
 
 
 typedef typeList<int> intList;
-typedef typeList<ULONG> uintList;
 
 // I cannot use template here because otherwise SWIG does not
 // handle the type correctly. I guess this can be my problem with using
 // of template in simuPOP_common.i
+
+class uintList
+{
+public:
+	typedef vectorlu::iterator iterator;
+	typedef vectorlu::const_iterator const_iterator;
+
+public:
+	uintList(const vectorlu & values = vectorlu()) : m_elems(values)
+	{
+	}
+
+
+	uintList(ULONG value) : m_elems(1, value)
+	{
+	}
+
+
+	ULONG operator[](size_t i) const
+	{
+		DBG_FAILIF(i >= size(), IndexError, "Index out of range");
+		return m_elems[i];
+	}
+
+
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	size_t size() const
+	{
+		return m_elems.size();
+	}
+
+
+	vectorlu & elems()
+	{
+		return m_elems;
+	}
+
+
+	const_iterator begin() const
+	{
+		return m_elems.begin();
+	}
+
+	const_iterator end() const
+	{
+		return m_elems.end();
+	}
+
+protected:
+	vectorlu m_elems;
+};
+
+
 
 class floatList
 {

@@ -472,15 +472,15 @@ private:
 class genotypeSplitter : public vspSplitter
 {
 public:
-	/** Create a splitter that defined VSPs by individual genotype at loci
-	 *  \e loci (or \e locus if only one locus is used). Each list in a list
+	/** Create a splitter that defines VSPs by individual genotype at \e loci
+	 *  (a locus index or a list of loci indexes). Each list in a list
 	 *  \e allele defines a VSP, which is a list of allowed alleles at these
 	 *  \e loci. If only one VSP is defined, the outer list of the nested list
 	 *  can be ignored. If phase if true, the order of alleles in each list is
 	 *  significant. If more than one set of alleles are given, individuals
 	 *  having either of them is qualified.\n
 	 *
-	 *  For example, in a haploid population, <tt>locus=1, alleles=[0, 1]</tt>
+	 *  For example, in a haploid population, <tt>loci=1, alleles=[0, 1]</tt>
 	 *  defines a VSP with individuals having allele \c 0 or \c 1 at locus \c 1,
 	 *  <tt>alleles=[[0, 1], [2]]</tt> defines two VSPs with indivdiuals in the
 	 *  second VSP having allele \c 2 at locus \c 1. If multiple loci are
@@ -489,7 +489,7 @@ public:
 	 *  individuals having alleles <tt>[0, 1]</tt> or <tt>[1, 1]</tt> at loci
 	 *  <tt>[0, 1]</tt>.\n
 	 *
-	 *  In a haploid population, <tt>locus=1, alleles=[0, 1]</tt> defines a VSP
+	 *  In a haploid population, <tt>loci=1, alleles=[0, 1]</tt> defines a VSP
 	 *  with individuals having genotype <tt>[0, 1]</tt> or <tt>[1, 0]</tt> at
 	 *  locus \c 1. <tt>alleles[[0, 1], [2, 2]]</tt> defines two VSPs with
 	 *  indivdiuals in the second VSP having genotype <tt>[2, 2]</tt> at locus
@@ -501,7 +501,7 @@ public:
 	 *  If <tt>phase=False</tt> (default), genotypes <tt>-1-1-, -0-0-</tt>,
 	 *  <tt>-0-1-</tt> and <tt>-1-0-</tt> are all allowed.
 	 */
-	genotypeSplitter(const vectori & loci,
+	genotypeSplitter(const uintList & loci,
 		const intMatrix & alleles, bool phase = false);
 
 	/// HIDDEN
@@ -538,7 +538,7 @@ private:
 	bool matchSingle(const individual * ind, const vectori & alleles) const;
 
 private:
-	vectori m_loci;
+	uintList m_loci;
 	intMatrix m_alleles;
 	bool m_phase;
 };
