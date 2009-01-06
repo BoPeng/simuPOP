@@ -21,8 +21,8 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 
-#ifndef _RECOMBINATOR_H
-#define _RECOMBINATOR_H
+#ifndef _TRANSMITTER_H
+#define _TRANSMITTER_H
 /**
    \file
    \brief head file of class recombinator:public baseOperator
