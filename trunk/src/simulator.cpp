@@ -425,7 +425,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			}
 
 			try {
-				if (!dryrun && !m_matingScheme->mate(curPop, scratchpopulation(), activeDurmatingOps, true)) {
+				if (!dryrun && !m_matingScheme->mate(curPop, scratchpopulation(), activeDurmatingOps)) {
 					DBG_DO(DBG_SIMULATOR, cout << "During-mating Operator stops at replicate "
 						+ toStr(curRep) << endl);
 
