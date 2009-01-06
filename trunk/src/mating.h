@@ -34,7 +34,7 @@
 #include "pedigree.h"
 #include "population.h"
 #include "operator.h"
-#include "recombinator.h"
+#include "transmitter.h"
 
 #include <string>
 #include <algorithm>
