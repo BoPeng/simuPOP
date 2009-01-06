@@ -514,7 +514,7 @@ string rangeSplitter::name(SubPopID subPop)
 }
 
 
-genotypeSplitter::genotypeSplitter(const vectori & loci,
+genotypeSplitter::genotypeSplitter(const uintList & loci,
 	const intMatrix & alleles,
 	bool phase)
 	: vspSplitter(), m_loci(loci), m_alleles(alleles),
@@ -620,8 +620,8 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 	if (m_phase || ploidy == 1) {
 		// if phase=True, has to match exactly.
 		UINT idx = 0;
-		vectori::const_iterator loc = m_loci.begin();
-		vectori::const_iterator loc_end = m_loci.end();
+		uintList::const_iterator loc = m_loci.begin();
+		uintList::const_iterator loc_end = m_loci.end();
 		for (; loc != loc_end; ++loc)
 			for (int p = 0; p < ploidy; ++p)
 				if (static_cast<int>(it->allele(*loc, p)) != alleles[idx++])
@@ -629,8 +629,8 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 		return true;
 	} else if (ploidy == 2) {
 		UINT idx = 0;
-		vectori::const_iterator loc = m_loci.begin();
-		vectori::const_iterator loc_end = m_loci.end();
+		uintList::const_iterator loc = m_loci.begin();
+		uintList::const_iterator loc_end = m_loci.end();
 		UINT numLoci = m_loci.size();
 		for (; loc != loc_end; ++loc, ++idx) {
 			int a1 = it->allele(*loc, 0);
@@ -643,8 +643,8 @@ bool genotypeSplitter::matchSingle(const individual * it, const vectori & allele
 		return true;
 	} else {
 		UINT idx = 0;
-		vectori::const_iterator loc = m_loci.begin();
-		vectori::const_iterator loc_end = m_loci.end();
+		uintList::const_iterator loc = m_loci.begin();
+		uintList::const_iterator loc_end = m_loci.end();
 		UINT numLoci = m_loci.size();
 		vectori v1(ploidy);
 		vectori v2(ploidy);
