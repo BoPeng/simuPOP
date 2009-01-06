@@ -462,13 +462,6 @@ status open
 
 
 \backslash
-matingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 homoMatingRef
 \end_layout
 
@@ -1505,35 +1498,35 @@ status open
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuUtilrandomSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuUtilcaseControlSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuUtilaffectedSibpairSampleRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuUtilpySubsetRef
 \end_layout
 
 \begin_layout Plain Layout
 
-
+%
 \backslash
 simuUtilsimuProgressRef
 \end_layout

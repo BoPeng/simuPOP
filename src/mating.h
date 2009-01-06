@@ -900,7 +900,7 @@ protected:
 /** A pedigree mating scheme that evolves a population following a
  *  pedigree object.
  *
- *
+ *  This mating scheme is current under revision, and should not be used.
  */
 class pedigreeMating : public mating
 {
@@ -1064,11 +1064,17 @@ class heteroMating : public mating
 public:
 	/** Create a heterogeneous mating scheme that will apply a list of
 	 *  homogeneous mating schemes \e matingSchemes to different (virtual)
-	 *  subpopulations. Each mating scheme defined in \e matingSchemes should
-	 *  specify which (virtual) subpopulation it is applied to (parameter
-	 *  \e subPop), and optionally a weight (parameter \e weight) to determine
-	 *  how many offspring it will produce, if multiple mating schemes are
-	 *  applied to the same subpopulation.\n
+	 *  subpopulations. The size of the offspring generation is determined
+	 *  by parameter \e subPopSize, which can be a list of subpopulation sizes
+	 *  or a Python function that returns a list of subpopulation sizes at
+	 *  each generation. Please refer to \c homoMating for a detailed
+	 *  explanation of this parameter.\n
+	 *
+	 *  Each mating scheme defined in \e matingSchemes should specify which
+	 *  (virtual) subpopulation it is applied to (parameter \e subPop), and
+	 *  optionally a weight (parameter \e weight) to determine how many offspring
+	 *  it will produce, if multiple mating schemes are applied to the same
+	 *  subpopulation.\n
 	 *
 	 *  The default \weight for all mating schemes are \c 0. In this case, the
 	 *  number of offspring each mating scheme produces is proportional to the
