@@ -773,7 +773,8 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[], header=False,
 
 
 def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
-        loci=[], combine=None, shift=1, **kwargs):
+        loci=[], combine=None, shift=1,
+        sexCode={Male: '1', Female: '2'}, affectionCode={True: '1', False: '2'}, **kwargs):
     """save file in CSV format
 
     fileds
@@ -810,24 +811,12 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
         raise exceptions.IOError, "Can not open file " + file +" to write."
     # keep the content of pieces in strings first
     content = [''] * pop.numChrom()
-    # for each family
-    def sexCode(ind):
-        if ind.sex() == Male:
-            return 1
-        else:
-            return 2
-    # disease status: in linkage affected is 2, unaffected is 1
-    def affectedCode(ind):
-        if ind.affected():
-            return 1
-        else:
-            return 2
     # write out header
     print >> out, 'id, ', ', '.join(fields), ', ',
     if combine is None:
-        print >> out, ', '.join(['marker%s_1, marker%s_2' % (marker, marker) for marker in loci])
+        print >> out, ', '.join(['%s_1, %s_2' % (pop.locusName(loc), pop.locusName(loc)) for loc in loci])
     else:
-        print >> out, ', '.join(['marker%s' % marker for marker in loci])
+        print >> out, ', '.join(['%s' % pop.locusName(loc) for loc in loci])
     # write out
     id = 1
     pldy = pop.ploidy()
@@ -835,17 +824,17 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
         print >> out, id,
         for f in fields:
             if f == 'sex':
-                print >> out, ', ', sexCode(ind),
+                print >> out, ',', sexCode[ind.sex()],
             elif f == 'affection':
-                print >> out, ', ', affectedCode(ind),
+                print >> out, ',', affectionCode[ind.affected()],
             else:
-                print >> out, ', ', ind.info(f),
+                print >> out, ',', ind.info(f),
         for marker in loci:
             if combine is None:
                 for p in range(pldy):
-                    print >> out, ", %d" % (ind.allele(marker, p) + shift),
+                    out.write(", %d" % (ind.allele(marker, p) + shift))
             else:
-                print >> out, ", %d" % combine([ind.allele(marker, p) for p in range(pldy)]),
+                out.write(", %d" % combine([ind.allele(marker, p) for p in range(pldy)]))
         print >> out
         id += 1
     out.close()
