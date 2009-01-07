@@ -443,7 +443,7 @@ class Doxy2SWIG:
         # @ is used instead of , to avoid separation of replaced text, it will be replaced back to ,
         txt = txt.replace('vectorstr(TAG_InheritFields, TAG_InheritFields+2)',
             '["paternal_tag"@ "maternal_tag"]')
-        txt = txt.replace('vectorstr(TAG_ParentsFields, TAG_ParentsFields+2)',
+        txt = txt.replace('vectorstr(ParentsFields, ParentsFields+2)',
             '["father_idx"@ "mother_idx"]')
         txt = txt.replace('vectorstr(POP_ParentsFields, POP_ParentsFields+2)',
             '["father_idx"@ "mother_idx"]')

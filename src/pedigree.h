@@ -32,14 +32,44 @@
 
 namespace simuPOP {
 
+/** The pedigree class is derived from the population class. Unlike a
+ *  population class that emphasizes on individual properties, the
+ *  pedigree class emphasizes on relationship between individuals.\n
+ *
+ *  A pedigree class can be created from a population, or loaded from
+ *  a disk file, which is usually saved by an operator during a previous
+ *  evolutionary process. Depending on how a pedigree is saved, sex and
+ *  affection status information may be missing.
+ */
 class pedigree : public population
 {
 public:
-	/** Create a pedigree object from a population, using a subset of loci,
-	 *  information fields and ancestral generations.
+	/** Create a pedigree object from a population, using a subset of loci
+	 *  (parameter \e loci, default to no loci), information fields
+	 *  (parameter \e infoFields, default to no information field), and
+	 *  ancestral generations (parameter \e ancGen, default to all ancestral
+	 *  generations). By default, information field \c father_idx and
+	 *  \c mother_idx will be used to locate parents. If individuals in
+	 *  a pedigree has only one parent, one of \e fatherField and
+	 *  \e motherField should be set to an empty string.
 	 */
 	pedigree(const population & pop, const vectoru & loci = vectoru(),
-		const vectorstr & infoFields = vectorstr(), int ancGen = -1);
+		const vectorstr & infoFields = vectorstr(), int ancGen = -1,
+		const vectorstr & parentFields = vectorstr(ParentsFields, ParentsFields + 2));
+
+	/** Return the index of the father of individual \e idx in subpopulation
+	 *  \e subPop in the parental generation. Return \c -1 if this individual
+	 *  has no father (\c fatherField is empty or the valud of information
+	 *  field is negative).
+	 */
+	int father(ULONG idx, SubPopID subPop);
+
+	/** Return the index of the mother of individual \e idx in subpopulation
+	 *  \e subPop in the parental generation. Return \c -1 if this individual
+	 *  has no mother (\c motherField is empty or the valud of information
+	 *  field is negative).
+	 */
+	int mother(ULONG idx, SubPopID subPop);
 
 	/** This function locates relatives (of type \e relType, and sex \e relSex)
 	 *  of each individual and store their indexes in specified information
@@ -115,6 +145,11 @@ public:
 		const vectori & pathSex = vectori(),
 		const vectorstr & resultFields = vectorstr());
 
+private:
+	vectorstr m_parentFields;
+
+	int m_fatherIdx;
+	int m_motherIdx;
 };
 
 // /// A pedigree manipulation class

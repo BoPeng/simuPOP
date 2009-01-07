@@ -30,7 +30,6 @@
 #include "operator.h"
 
 const string TAG_InheritFields[2] = { "paternal_tag", "maternal_tag" };
-const string TAG_ParentsFields[2] = { "father_idx", "mother_idx" };
 
 namespace simuPOP {
 /// base class of tagging individuals
@@ -223,7 +222,7 @@ public:
 	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		string output = "", string outputExpr = "",
-		const vectorstr & infoFields = vectorstr(TAG_ParentsFields, TAG_ParentsFields + 2)) :
+		const vectorstr & infoFields = vectorstr(ParentsFields, ParentsFields + 2)) :
 		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_subPopSize(1, 0)
 	{
