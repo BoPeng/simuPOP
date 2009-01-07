@@ -38,6 +38,7 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 			"Number of offspring has to be positive.");
 	} else if (m_numOffspring.size() > 1) {
 		int mode = static_cast<int>(m_numOffspring[0]);
+		(void)mode;  // fix compiler warning.
 
 		DBG_FAILIF(mode == BinomialDistribution
 			&& (m_numOffspring.size() < 3 || static_cast<UINT>(m_numOffspring[2]) <= 1.),
