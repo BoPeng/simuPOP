@@ -262,13 +262,10 @@ private:
 };
 
 
-/** Parent choosers repeatedly choose parent(s) from a parental
-   population, and pass them to offspring generators. A parent
-   chooser can select one or two parents, which should match what is
-   required by the offspring generator used.
-
-   This is the base class of all parent choosers, and should not
-   be used directly.
+/** A parent chooser repeatedly chooses parent(s) from a parental population
+ *  and pass them to an offspring generator. A parent chooser can select one or
+ *  two parents, which should be matched by the offspring generator. This class
+ *  is the base class of all parent choosers, and should not be used directly.
  */
 class parentChooser
 {
@@ -281,7 +278,7 @@ public:
 	{
 	}
 
-
+	/// Deep copy of a parent chooser
 	virtual parentChooser * clone() const
 	{
 		return new parentChooser(*this);
@@ -291,6 +288,7 @@ public:
 	/// CPPONLY
 	virtual void initialize(population & pop, SubPopID subPop) { }
 
+	/// CPPONLY
 	virtual void finalize(population & pop, SubPopID subPop)
 	{
 		m_initialized = false;
@@ -310,26 +308,32 @@ public:
 		return individualPair(NULL, NULL);
 	}
 
-
+	/// destructor
 	virtual ~parentChooser() { }
 
 protected:
+
 	bool m_initialized;
 };
 
 
-/** This parent chooser chooses a parent linearly, regardless of sex
-   or fitness values (selection is not considered).
-   <applicability>all ploidy</applicability>
+/** This parent chooser chooses a parent from a parental (virtual) subpopulation
+ *  sequentially. Sex and selection is not considered. If the last parent is
+ *  reached, this parent chooser will restart from the  beginning of the
+ *  (virtual) subpopulation.
  */
 class sequentialParentChooser : public parentChooser
 {
 public:
+	/** Create a parent chooser that chooses a parent from a parental (virtual)
+	 *  subpopulation sequentially.
+	 */
 	sequentialParentChooser() : parentChooser()
 	{
 	}
 
 
+	/// Deep copy of a sequential parent chooser.
 	parentChooser * clone() const
 	{
 		return new sequentialParentChooser(*this);
@@ -353,14 +357,18 @@ private:
 };
 
 
-/** This parents chooser chooses two parents sequentially. The
-   parents are chosen from their respective sex groups. Selection
-   is not considered.
-   <applicability>all ploidy</applicability>
+/** This parent chooser chooses two parents (a father and a mother)
+ *  sequentially from their respective sex groups. Selection is not considered.
+ *  If all fathers (or mothers) are exhausted, this parent chooser will choose
+ *  fathers (or mothers) from the beginning of the (virtual) subpopulation
+ *  again.
  */
 class sequentialParentsChooser : public parentChooser
 {
 public:
+	/** Create a parent chooser that chooses two parents sequentially from a
+	 *  parental (virtual) subpopulation.
+	 */
 	sequentialParentsChooser() :
 		parentChooser(), m_maleIndex(0), m_femaleIndex(0),
 		m_numMale(0), m_numFemale(0),
@@ -369,6 +377,7 @@ public:
 	}
 
 
+	/// Deep copy of a sequential parents chooser.
 	parentChooser * clone() const
 	{
 		return new sequentialParentsChooser(*this);
@@ -400,8 +409,10 @@ private:
 };
 
 
-/** This parent chooser chooses a parent randomly from the
-   parental generation. If selection is turned on, parents are
+/** This parent chooser chooses a parent randomly from a (virtual) parental
+ *  subpopulation.
+ 
+ If selection is turned on, parents are
    chosen with probabilities that are proportional to their
    fitness values. Sex is not considered. Parameter \c replacement
    determines if a parent can be chosen multiple times.
