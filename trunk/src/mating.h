@@ -899,13 +899,28 @@ protected:
 
 /** A pedigree mating scheme that evolves a population following a
  *  pedigree object.
- *
- *  This mating scheme is current under revision, and should not be used.
  */
 class pedigreeMating : public mating
 {
 public:
-	/**
+	/** Creates a mating scheme that evolve a population following a pedigree
+	 *  object \e ped. Considering this pedigree as a population with \c N
+	 *  ancestral generations, the starting population is the greatest ancestral
+	 *  generation of \e ped. The mating scheme creates an offspring generation
+	 *  that match the size of generation \c N-1 and chooses parents according
+	 *  to the parents of individuals at this generation. The parental indexes
+	 *  are specified by \e fatherField and \e motherField, which are usually
+	 *  \c father_idx and \c mother_idx respectively. Depending on the \e gen
+	 *  parameter of the simulator, the process continues generation by
+	 *  generation for \c N generations if \c gen >= N), or \c gen generations
+	 *  if \c gen < \c N. During the evolution, an offspring generator
+	 *  \e generator is used to produce one offspring at a time, regardless of
+	 *  the \e numOffspring setting of this offspring generator.\n
+	 *
+	 *  If individuals in pedigree \e ped has only one parent, you can use one of
+	 *  \e fatherField and \e motherField to specify the parent, and set another
+	 *  filed to an empty string. A compatible offspring generator that generates
+	 *  offspring from one parent should be used in this case.\n
 	 */
 	pedigreeMating(const pedigree & ped, const offspringGenerator & generator,
 		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
@@ -931,14 +946,18 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool prepareScratchPop(population & pop, population & scratch);
 
+	/// CPPONLY
 	virtual bool mate(population & pop, population & scratch, vector<baseOperator * > & ops);
 
 private:
 	pedigree m_ped;
 
 	offspringGenerator * m_generator;
+	
+	int m_parentalPopSize;
 
 	string m_fatherField;
 	string m_motherField;

@@ -1265,6 +1265,8 @@ bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
 	}
 	if (m_ped.curAncestralGen() == 0)
 		return false;
+
+	m_parentalPopSize = m_ped.popSize();
 	m_ped.useAncestralGen(m_ped.curAncestralGen() - 1);
 	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
 	return true;
@@ -1285,10 +1287,24 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 		RawIndIterator it = scratch.rawIndBegin(sp);
 		RawIndIterator itEnd;
 		for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
-			individual * dad = m_fatherField == "" ? NULL :
-			                   &pop.ind(m_ped.ind(i, sp).intInfo(m_fatherField));
-			individual * mom = m_motherField == "" ? NULL :
-			                   &pop.ind(m_ped.ind(i, sp).intInfo(m_motherField));
+			individual * dad = NULL;
+			if (m_fatherField != "") {
+				int father_idx = m_ped.ind(i, sp).intInfo(m_fatherField);
+				DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
+					"Parental index " + toStr(father_idx) + " out of range of 0 - "
+						+ toStr(m_parentalPopSize-1));
+				if (father_idx >= 0)
+					dad = &pop.ind(father_idx);
+			}
+			individual * mom = NULL;
+			if (m_motherField != "") {
+				int mother_idx = m_ped.ind(i, sp).intInfo(m_motherField);
+				DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
+					"Parental index " + toStr(mother_idx) + " out of range of 0 - "
+						+ toStr(m_parentalPopSize-1));
+				if (mother_idx >= 0)
+					dad = &pop.ind(mother_idx);
+			}
 			//
 			itEnd = it + 1;
 			// whatever the numOffspring function returns for this
