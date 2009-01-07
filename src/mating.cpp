@@ -72,6 +72,13 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 }
 
 
+offspringGenerator::~offspringGenerator()
+{
+	for (size_t i = 0; i < m_transmitters.size(); ++i)
+		delete m_transmitters[i];
+}
+
+
 offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	: m_numOffspring(rhs.m_numOffspring),
 	m_sexMode(rhs.m_sexMode), m_transmitters(0),
@@ -546,7 +553,6 @@ parentChooser::individualPair sequentialParentsChooser::chooseParents(RawIndIter
 
 void randomParentChooser::initialize(population & pop, SubPopID sp)
 {
-	m_selection = pop.selectionOn(sp);
 	m_index.clear();
 
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
@@ -558,8 +564,9 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 			m_index.push_back(it.rawIter());
 	}
 
+	m_selection = pop.selectionOn(sp) && m_replacement && pop.hasInfoField(m_selectionField);
 	if (m_selection) {
-		UINT fit_id = pop.infoIdx("fitness");
+		UINT fit_id = pop.infoIdx(m_selectionField);
 		// regardless of sex, get fitness for everyone.
 		m_sampler.set(vectorf(pop.infoBegin(fit_id, sp),
 				pop.infoEnd(fit_id, sp)));
@@ -572,9 +579,6 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	if (!m_replacement)
 		std::random_shuffle(m_index.begin(), m_index.end());
 
-	DBG_FAILIF(!m_replacement && m_selection, ValueError,
-		"Selection is not allowed in random sample without replacement");
-
 	m_initialized = true;
 }
 
@@ -583,14 +587,14 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 {
 	DBG_ASSERT(initialized(), SystemError,
 		"Please initialize this parent chooser before using it");
-	individual * ind = NULL;
 	// choose a parent
 	if (!m_replacement) {
-		DBG_FAILIF(m_index.empty(), ValueError,
-			"All parents have been chosen.");
-		ind = & * m_index.back();
+		DBG_FAILIF(m_index.empty(), RuntimeError, "All parents have been chosen.");
+		individual * ind = & * m_index.back();
 		m_index.pop_back();
+		return individualPair(ind, NULL);
 	}
+	individual * ind = NULL;
 	if (m_index.empty()) {
 		if (m_selection)
 			ind = & * (basePtr + m_sampler.get());
@@ -623,10 +627,10 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_maleIndex.resize(m_numMale);
 	m_femaleIndex.resize(m_numFemale);
 
-	m_selection = pop.selectionOn(subPop);
+	m_selection = pop.selectionOn(subPop) && m_replacement && pop.hasInfoField(m_selectionField);
 	UINT fit_id = 0;
 	if (m_selection) {
-		fit_id = pop.infoIdx("fitness");
+		fit_id = pop.infoIdx(m_selectionField);
 		m_maleFitness.resize(m_numMale);
 		m_femaleFitness.resize(m_numFemale);
 	}

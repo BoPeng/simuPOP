@@ -69,11 +69,11 @@ public:
 	 *  \c setOffGenotype), operators in \e ops with the same flag will not be
 	 *  applied. For example, a \c recombinator will override a
 	 *  \c mendelianGenoTransmitter used in \c randomMating if it is used in
-	 *  the \c ops parameter of the \c evolve function.\n
-	 *
-	 *  A number of derived offspring generators are available with a default
-	 *  transmitter. For example, a \c mendelianOffspringGenerator uses
-	 *  a \c mendelianGenoTransmitter to transmit genotypes.\n
+	 *  the \c ops parameter of the \c evolve function. This general offspring
+	 *  generator does not use any genotype transmitter. A number of derived
+	 *  offspring generators are available with a default transmitter. For
+	 *  example, a \c mendelianOffspringGenerator uses a
+	 *  \c mendelianGenoTransmitter to transmit genotypes.\n
 	 *
 	 *  Parameter \e numOffspring is used to control the number of offspring
 	 *  per mating event, or in another word the number of offspring in each
@@ -105,12 +105,7 @@ public:
 	offspringGenerator(const vectorop & ops, const floatListFunc & numOffspring = 1,
 		const floatList & sexMode = RandomSex);
 
-	virtual ~offspringGenerator()
-	{
-		for (size_t i = 0; i < m_transmitters.size(); ++i)
-			delete m_transmitters[i];
-	}
-
+	virtual ~offspringGenerator();
 
 	/// CPPONLY
 	offspringGenerator(const offspringGenerator & rhs);
@@ -319,7 +314,7 @@ protected:
 
 /** This parent chooser chooses a parent from a parental (virtual) subpopulation
  *  sequentially. Sex and selection is not considered. If the last parent is
- *  reached, this parent chooser will restart from the  beginning of the
+ *  reached, this parent chooser will restart from the beginning of the
  *  (virtual) subpopulation.
  */
 class sequentialParentChooser : public parentChooser
@@ -410,31 +405,32 @@ private:
 
 
 /** This parent chooser chooses a parent randomly from a (virtual) parental
- *  subpopulation.
- 
- If selection is turned on, parents are
-   chosen with probabilities that are proportional to their
-   fitness values. Sex is not considered. Parameter \c replacement
-   determines if a parent can be chosen multiple times.
-   Note that selection is not allowed when \c replacement=false
-   because this poses a particular order on individuals in the
-   offspring generation.
-   <applicability>all ploidy</applicability>
+ *  subpopulation. Parents are chosen with or without replacement.
+ *  If parents are chosen with replacement, a parent can be selected multiple
+ *  times. If natural selection is enabled, the probability that an individual
+ *  is chosen is proportional to his/her fitness value stored in an information
+ *  field \e selectionField (default to \c "fitness"). If parents are chosen
+ *  without replacement, a parent can be chosen only once. An \c RuntimeError
+ *  will be raised if all parents are exhausted. Selection is disabled in the
+ *  without-replacement case.
  */
 class randomParentChooser : public parentChooser
 {
 public:
-	/**
-	   \param replacement if replacement is false, a parent can not
-	        be chosen more than once.
+	/** Create a random parent chooser that choose parents with or without
+	 *  replacement (parameter \e replacement, default to \c True). If selection
+	 *  is enabled and information field \e selectionField exists in the passed
+	 *  population, the probability that a parent is chosen is proportional to
+	 *  his/her fitness value stored in \e selectionField.
 	 */
-	randomParentChooser(bool replacement = true) :
-		parentChooser(), m_replacement(replacement),
+	randomParentChooser(bool replacement = true,
+		const string & selectionField = "fitness") :
+		parentChooser(), m_replacement(replacement), m_selectionField(selectionField),
 		m_index(0), m_chosen(0), m_sampler(rng())
 	{
 	}
 
-
+	/// Deep copy of a random parent chooser.
 	parentChooser * clone() const
 	{
 		return new randomParentChooser(*this);
@@ -449,6 +445,7 @@ public:
 
 protected:
 	bool m_replacement;
+	string m_selectionField;
 
 	bool m_selection;
 	///
@@ -461,31 +458,35 @@ protected:
 };
 
 
-/** This parent chooser chooses two parents randomly, a male
-   and a female, from their respective sex groups randomly.
-   If selection is turned on, parents are chosen from their sex
-   groups with probabilities that are proportional to their
-   fitness values. If replacement = False, each parent can
-   only be used once.
-   <applicability>all ploidy</applicability>
+/** This parent chooser chooses two parents, a male and a female, randomly from
+ *  a (virtual) parental subpopulation. Parents are chosen with or without
+ *  replacement from their respective sex group. If parents are chosen with
+ *  replacement, a parent can be selected multiple times. If natural selection
+ *  is enabled, the probability that an individual is chosen is proportional to
+ *  his/her fitness value among all individuals with the same sex. Selection
+ *  will be disabled if specified information field \e selectionField (default
+ *  to \c "fitness") does not exist.If parents are chosen without replacement,
+ *  a parent can be chosen only once. An \c RuntimeError will be raised if all
+ *  males or females are exhausted. Selection is disabled in the
+ *  without-replacement case.
  */
 class randomParentsChooser : public parentChooser
 {
 public:
-	/**
-	    Note: If selection is enabled, it works regularly on on-alpha sex, but
-	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
-	    are chosen selectively, and selected again during mating.
+	/** Create a random parents chooser that choose two parents with or without
+	 *  replacement (parameter \e replacement, default to \c True). If selection
+	 *  is enabled and information field \e selectionField exists in the passed
+	 *  population, the probability that a parent is chosen is proportional to
+	 *  his/her fitness value stored in \e selectionField.	 
 	 */
-	randomParentsChooser(bool replacement = true) :
-		parentChooser(), m_replacement(replacement),
-		m_maleIndex(0), m_femaleIndex(0),
-		m_maleFitness(0), m_femaleFitness(0),
+	randomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
+		parentChooser(), m_replacement(replacement), m_selectionField(selectionField),
+		m_maleIndex(0), m_femaleIndex(0), m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
 	{
 	}
 
-
+	/// Deep copy of a random parents chooser.
 	parentChooser * clone() const
 	{
 		return new randomParentsChooser(*this);
@@ -505,6 +506,7 @@ public:
 
 private:
 	bool m_replacement;
+	string m_selectionField;
 
 	individual * m_lastParent;
 

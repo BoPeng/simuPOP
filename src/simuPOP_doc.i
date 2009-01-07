@@ -111,6 +111,10 @@ Arguments:
 
 %feature("docstring") simuPOP::alphaParentsChooser::clone "
 
+Description:
+
+    Deep copy of a parent chooser.
+
 Usage:
 
     x.clone()
@@ -2757,6 +2761,10 @@ Arguments:
 
 %feature("docstring") simuPOP::infoParentsChooser::clone "
 
+Description:
+
+    Deep copy of a random parent chooser.
+
 Usage:
 
     x.clone()
@@ -4805,10 +4813,11 @@ Details:
     setOffGenotype), operators in ops with the same flag will not be
     applied. For example, a recombinator will override a
     mendelianGenoTransmitter used in randomMating if it is used in the
-    ops parameter of the evolve function.
-    A number of derived offspring generators are available with a
-    default transmitter. For example, a mendelianOffspringGenerator
-    uses a mendelianGenoTransmitter to transmit genotypes.
+    ops parameter of the evolve function. This general offspring
+    generator does not use any genotype transmitter. A number of
+    derived offspring generators are available with a default
+    transmitter. For example, a mendelianOffspringGenerator uses a
+    mendelianGenoTransmitter to transmit genotypes.
     Parameter numOffspring is used to control the number of offspring
     per mating event, or in another word the number of offspring in
     each family. It can be a number, a function, or a mode parameter
@@ -4946,11 +4955,11 @@ Details:
 
 Details:
 
-    Parent choosers repeatedly choose parent(s) from a parental
-    population, and pass them to offspring generators. A parent
-    chooser can select one or two parents, which should match what is
-    required by the offspring generator used. This is the base class
-    of all parent choosers, and should not be used directly.
+    A parent chooser repeatedly chooses parent(s) from a parental
+    population and pass them to an offspring generator. A parent
+    chooser can select one or two parents, which should be matched by
+    the offspring generator. This class is the base class of all
+    parent choosers, and should not be used directly.
 
 "; 
 
@@ -4964,6 +4973,10 @@ Usage:
 
 %feature("docstring") simuPOP::parentChooser::clone "
 
+Description:
+
+    Deep copy of a parent chooser.
+
 Usage:
 
     x.clone()
@@ -4972,19 +4985,17 @@ Usage:
 
 %ignore simuPOP::parentChooser::initialize(population &pop, SubPopID subPop);
 
-%feature("docstring") simuPOP::parentChooser::finalize "
-
-Usage:
-
-    x.finalize(pop, subPop)
-
-"; 
+%ignore simuPOP::parentChooser::finalize(population &pop, SubPopID subPop);
 
 %ignore simuPOP::parentChooser::initialized() const;
 
 %ignore simuPOP::parentChooser::chooseParents(RawIndIterator basePtr);
 
 %feature("docstring") simuPOP::parentChooser::~parentChooser "
+
+Description:
+
+    destructor
 
 Usage:
 
@@ -5251,18 +5262,65 @@ Usage:
 
 %feature("docstring") simuPOP::pedigree "
 
+Details:
+
+    The pedigree class is derived from the population class. Unlike a
+    population class that emphasizes on individual properties, the
+    pedigree class emphasizes on relationship between individuals.
+    A pedigree class can be created from a population, or loaded from
+    a disk file, which is usually saved by an operator during a
+    previous evolutionary process. Depending on how a pedigree is
+    saved, sex and affection status information may be missing.
+
 "; 
 
 %feature("docstring") simuPOP::pedigree::pedigree "
 
 Usage:
 
-    pedigree(pop, loci=[], infoFields=[], ancGen=-1)
+    pedigree(pop, loci=[], infoFields=[], ancGen=-1,
+      parentFields=[\"father_idx\", \"mother_idx\"])
 
 Details:
 
-    Create a pedigree object from a population, using a subset of
-    loci, information fields and ancestral generations.
+    Create a pedigree object from a population, using a subset of loci
+    (parameter loci, default to no loci), information fields
+    (parameter infoFields, default to no information field), and
+    ancestral generations (parameter ancGen, default to all ancestral
+    generations). By default, information field father_idx and
+    mother_idx will be used to locate parents. If individuals in a
+    pedigree has only one parent, one of fatherField and motherField
+    should be set to an empty string.
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::father "
+
+Usage:
+
+    x.father(idx, subPop)
+
+Details:
+
+    Return the index of the father of individual idx in subpopulation
+    subPop in the parental generation. Return -1 if this individual
+    has no father (fatherField is empty or the valud of information
+    field is negative).
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::mother "
+
+Usage:
+
+    x.mother(idx, subPop)
+
+Details:
+
+    Return the index of the mother of individual idx in subpopulation
+    subPop in the parental generation. Return -1 if this individual
+    has no mother (motherField is empty or the valud of information
+    field is negative).
 
 "; 
 
@@ -5374,8 +5432,8 @@ Details:
 
 Usage:
 
-    pedigreeMating(ped, generator, fatherField=\"father_idx\",
-      motherField=\"mother_idx\")
+    pedigreeMating(ped, generator, setSex=False, setAffection=False,
+      copyFields=[])
 
 Details:
 
@@ -5385,19 +5443,24 @@ Details:
     greatest ancestral generation of ped. The mating scheme creates an
     offspring generation that match the size of generation N-1 and
     chooses parents according to the parents of individuals at this
-    generation. The parental indexes are specified by fatherField and
-    motherField, which are usually father_idx and mother_idx
-    respectively. Depending on the gen parameter of the simulator, the
+    generation. Depending on the gen parameter of the simulator, the
     process continues generation by generation for N generations if
     gen >= N), or gen generations if gen < N. During the evolution, an
     offspring generator generator is used to produce one offspring at
     a time, regardless of the numOffspring setting of this offspring
-    generator.
-    If individuals in pedigree ped has only one parent, you can use
-    one of fatherField and motherField to specify the parent, and set
-    another filed to an empty string. A compatible offspring generator
-    that generates offspring from one parent should be used in this
-    case.
+    generator. If individuals in pedigree ped has only one parent, the
+    offspring generator should be compatible.
+    By default, the pedigree mating scheme does not set offspring sex
+    and affection status using sex and affection status of
+    corresponding individuals in the pedigree. However, if such
+    information is valid in the pedigree object ped, you can set
+    parameters setSex and/or setAffection to True to set sex and/of
+    affection status to offspring during the evolutionary process.
+    Similarly, you can specify some information fields in copyFields
+    to copy some information fields from pedigree to the evolving
+    population. Note that these information will be copied also to the
+    starting population (from the greatest ancestral generation in
+    ped).
 
 "; 
 
@@ -5742,6 +5805,10 @@ Arguments:
 "; 
 
 %feature("docstring") simuPOP::polyParentsChooser::clone "
+
+Description:
+
+    Deep copy of a parent chooser.
 
 Usage:
 
@@ -7636,6 +7703,10 @@ Arguments:
 
 %feature("docstring") simuPOP::pyParentsChooser::clone "
 
+Description:
+
+    Deep copy of a parent chooser.
+
 Usage:
 
     x.clone()
@@ -7644,13 +7715,7 @@ Usage:
 
 %ignore simuPOP::pyParentsChooser::initialize(population &pop, SubPopID sp);
 
-%feature("docstring") simuPOP::pyParentsChooser::finalize "
-
-Usage:
-
-    x.finalize(pop, sp)
-
-"; 
+%ignore simuPOP::pyParentsChooser::finalize(population &pop, SubPopID sp);
 
 %feature("docstring") simuPOP::pyParentsChooser::~pyParentsChooser "
 
@@ -8119,17 +8184,18 @@ Usage:
 
 %feature("docstring") simuPOP::randomParentChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parent chooser chooses a parent randomly from the parental
-    generation. If selection is turned on, parents are chosen with
-    probabilities that are proportional to their fitness values. Sex
-    is not considered. Parameter replacement determines if a parent
-    can be chosen multiple times. Note that selection is not allowed
-    when replacement=false because this poses a particular order on
-    individuals in the offspring generation.
+    This parent chooser chooses a parent randomly from a (virtual)
+    parental subpopulation. Parents are chosen with or without
+    replacement. If parents are chosen with replacement, a parent can
+    be selected multiple times. If natural selection is enabled, the
+    probability that an individual is chosen is proportional to
+    his/her fitness value stored in an information field
+    selectionField (default to \"fitness\"). If parents are chosen
+    without replacement, a parent can be chosen only once. An
+    RuntimeError will be raised if all parents are exhausted.
+    Selection is disabled in the without-replacement case.
 
 "; 
 
@@ -8137,16 +8203,23 @@ Details:
 
 Usage:
 
-    randomParentChooser(replacement=True)
+    randomParentChooser(replacement=True, selectionField=\"fitness\")
 
-Arguments:
+Details:
 
-    replacement:    if replacement is false, a parent can not be
-                    chosen more than once.
+    Create a random parent chooser that choose parents with or without
+    replacement (parameter replacement, default to True). If selection
+    is enabled and information field selectionField exists in the
+    passed population, the probability that a parent is chosen is
+    proportional to his/her fitness value stored in selectionField.
 
 "; 
 
 %feature("docstring") simuPOP::randomParentChooser::clone "
+
+Description:
+
+    Deep copy of a random parent chooser.
 
 Usage:
 
@@ -8160,15 +8233,20 @@ Usage:
 
 %feature("docstring") simuPOP::randomParentsChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parent chooser chooses two parents randomly, a male and a
-    female, from their respective sex groups randomly. If selection is
-    turned on, parents are chosen from their sex groups with
-    probabilities that are proportional to their fitness values. If
-    replacement = False, each parent can only be used once.
+    This parent chooser chooses two parents, a male and a female,
+    randomly from a (virtual) parental subpopulation. Parents are
+    chosen with or without replacement from their respective sex
+    group. If parents are chosen with replacement, a parent can be
+    selected multiple times. If natural selection is enabled, the
+    probability that an individual is chosen is proportional to
+    his/her fitness value among all individuals with the same sex.
+    Selection will be disabled if specified information field
+    selectionField (default to \"fitness\") does not exist.If parents
+    are chosen without replacement, a parent can be chosen only once.
+    An RuntimeError will be raised if all males or females are
+    exhausted. Selection is disabled in the without-replacement case.
 
 "; 
 
@@ -8176,18 +8254,23 @@ Details:
 
 Usage:
 
-    randomParentsChooser(replacement=True)
+    randomParentsChooser(replacement=True, selectionField=\"fitness\")
 
 Details:
 
-    Note: If selection is enabled, it works regularly on on-alpha sex,
-    but works twice on alpha sex. That is to say, alphaNum alpha
-    indiviudals are chosen selectively, and selected again during
-    mating.
+    Create a random parents chooser that choose two parents with or
+    without replacement (parameter replacement, default to True). If
+    selection is enabled and information field selectionField exists
+    in the passed population, the probability that a parent is chosen
+    is proportional to his/her fitness value stored in selectionField.
 
 "; 
 
 %feature("docstring") simuPOP::randomParentsChooser::clone "
+
+Description:
+
+    Deep copy of a random parents chooser.
 
 Usage:
 
@@ -9114,12 +9197,12 @@ Usage:
 
 %feature("docstring") simuPOP::sequentialParentChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parent chooser chooses a parent linearly, regardless of sex
-    or fitness values (selection is not considered).
+    This parent chooser chooses a parent from a parental (virtual)
+    subpopulation sequentially. Sex and selection is not considered.
+    If the last parent is reached, this parent chooser will restart
+    from the beginning of the (virtual) subpopulation.
 
 "; 
 
@@ -9129,9 +9212,18 @@ Usage:
 
     sequentialParentChooser()
 
+Details:
+
+    Create a parent chooser that chooses a parent from a parental
+    (virtual) subpopulation sequentially.
+
 "; 
 
 %feature("docstring") simuPOP::sequentialParentChooser::clone "
+
+Description:
+
+    Deep copy of a sequential parent chooser.
 
 Usage:
 
@@ -9145,13 +9237,13 @@ Usage:
 
 %feature("docstring") simuPOP::sequentialParentsChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parents chooser chooses two parents sequentially. The parents
-    are chosen from their respective sex groups. Selection is not
-    considered.
+    This parent chooser chooses two parents (a father and a mother)
+    sequentially from their respective sex groups. Selection is not
+    considered. If all fathers (or mothers) are exhausted, this parent
+    chooser will choose fathers (or mothers) from the beginning of the
+    (virtual) subpopulation again.
 
 "; 
 
@@ -9161,9 +9253,18 @@ Usage:
 
     sequentialParentsChooser()
 
+Details:
+
+    Create a parent chooser that chooses two parents sequentially from
+    a parental (virtual) subpopulation.
+
 "; 
 
 %feature("docstring") simuPOP::sequentialParentsChooser::clone "
+
+Description:
+
+    Deep copy of a sequential parents chooser.
 
 Usage:
 

@@ -27,6 +27,7 @@ version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/s
 		subpopulation.
   - NEW: Allow pedigreeMating to set sex, affection status and some information
 		fields from the pedigree object.
+  - NEW: Allow random parent(s) choosers to set name of information field fitness.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.
