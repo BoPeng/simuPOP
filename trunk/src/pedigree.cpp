@@ -36,12 +36,40 @@
 namespace simuPOP {
 
 pedigree::pedigree(const population & pop, const vectoru & loci,
-	const vectorstr & infoFields, int ancGen)
+	const vectorstr & infoFields, int ancGen, const vectorstr & parentFields)
+	: m_parentFields(parentFields), m_fatherIdx(-1), m_motherIdx(-1)
 {
 	population & ped = pop.extract(false, string(), loci.size() != pop.totNumLoci(),
 		loci, infoFields.size() != pop.infoSize(), infoFields, ancGen, NULL);
 
 	swap(ped);
+
+	DBG_FAILIF(m_parentFields.empty(), ValueError,
+		"Please provide information fields to identify parent(s) of each individual.");
+	DBG_FAILIF(m_parentFields.size() > 2, ValueError,
+		"Please provide no more than two parental information fields.");
+
+	m_fatherIdx = ped.infoIdx(m_parentFields[0]);
+	if (m_parentFields.size() == 2)
+		m_motherIdx = ped.infoIdx(m_parentFields[1]);
+}
+
+
+int pedigree::father(ULONG idx, SubPopID subPop)
+{
+	if (m_fatherIdx < 0)
+		return -1;
+
+	return ind(idx, subPop).intInfo(m_fatherIdx);
+}
+
+
+int pedigree::mother(ULONG idx, SubPopID subPop)
+{
+	if (m_motherIdx < 0)
+		return -1;
+
+	return ind(idx, subPop).intInfo(m_motherIdx);
 }
 
 
@@ -387,23 +415,6 @@ bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
 
 
 // const unsigned long UnusedIndividual = std::numeric_limits<unsigned long>::max();
-//
-// #define CHECK_PARENTAL() DBG_FAILIF(m_numParents != 2, ValueError, \
-// // //   "Only pedigree with two parents have maternal information")
-//
-// #define CHECK_GEN(gen) DBG_FAILIF(gen >= m_paternal.size(), IndexError, \
-// // //   "Generation number " + toStr(gen) + " out of range (<" \
-// // //   + toStr(m_paternal.size()) + ")")
-//
-// #define CHECK_INDEX(gen, idx) DBG_FAILIF(idx >= m_paternal[gen].size(), \
-// // //   IndexError, "Individual index out of range.")
-//
-// #define CHECK_SUBPOP(gen, subPop) DBG_FAILIF(static_cast<UINT>(subPop) >= m_pedSize[gen].size(), \
-// // //   IndexError, "Subpopulation index out of bound")
-//
-// #define CHECK_SUBPOP_INDEX(gen, subPop, idx) DBG_FAILIF(idx >= m_pedSize[gen][subPop], \
-// // //   IndexError, "Individual index out of bound")
-//
 //
 // pedigree::pedigree(int numParents, const string & pedfile)
 //  : m_numParents(numParents)

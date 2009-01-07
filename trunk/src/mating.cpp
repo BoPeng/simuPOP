@@ -1224,18 +1224,18 @@ void mating::submitScratch(population & pop, population & scratch)
 
 
 pedigreeMating::pedigreeMating(const pedigree & ped,
-	const offspringGenerator & generator,  const string & fatherField,
-	const string & motherField)
-	: mating(uintListFunc()),
-	m_ped(ped), m_fatherField(fatherField), m_motherField(motherField)
+	const offspringGenerator & generator, bool setSex, bool setAffection,
+	const vectorstr & copyFields)
+	: mating(uintListFunc()), m_ped(ped),
+	m_setSex(setSex), m_setAffection(setAffection), m_copyFields(copyFields)
 {
 	m_generator = generator.clone();
 }
 
 
 pedigreeMating::pedigreeMating(const pedigreeMating & rhs)
-	: mating(rhs), m_ped(rhs.m_ped), m_fatherField(rhs.m_fatherField),
-	m_motherField(rhs.m_motherField)
+	: mating(rhs), m_ped(rhs.m_ped), m_setSex(rhs.m_setSex),
+	m_setAffection(rhs.m_setAffection), m_copyFields(rhs.m_copyFields)
 {
 	m_generator = rhs.m_generator->clone();
 	DBG_FAILIF(m_ped.ancestralGens() == 0, ValueError,
@@ -1267,6 +1267,26 @@ bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
 	if (m_ped.curAncestralGen() == 0)
 		return false;
 
+	// copy information to the greatest ancestral generation
+	if (m_ped.curAncestralGen() == m_ped.ancestralGens() &&
+	    (m_setSex || m_setAffection || !m_copyFields.empty())) {
+		vectoru infoIdx;
+		vectoru pedInfoIdx;
+		for (size_t i = 0; i < m_copyFields.size(); ++i) {
+			infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
+			pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
+		}
+		for (size_t it = 0; it < pop.popSize(); ++it) {
+			individual & ind = pop.ind(it);
+			individual & pedInd = m_ped.ind(it);
+			if (m_setSex)
+				ind.setSex(pedInd.sex());
+			if (m_setAffection)
+				ind.setAffected(pedInd.affected());
+			for (size_t i = 0; i < m_copyFields.size(); ++i)
+				ind.setInfo(pedInd.info(pedInfoIdx[i]), infoIdx[i]);
+		}
+	}
 	m_parentalPopSize = m_ped.popSize();
 	m_ped.useAncestralGen(m_ped.curAncestralGen() - 1);
 	scratch.fitSubPopStru(m_ped.subPopSizes(), m_ped.subPopNames());
@@ -1280,6 +1300,12 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 	// scrtach will have the right structure.
 	if (!prepareScratchPop(pop, scratch))
 		return false;
+	vectoru infoIdx;
+	vectoru pedInfoIdx;
+	for (size_t i = 0; i < m_copyFields.size(); ++i) {
+		infoIdx.push_back(pop.infoIdx(m_copyFields[i]));
+		pedInfoIdx.push_back(m_ped.infoIdx(m_copyFields[i]));
+	}
 
 	for (SubPopID sp = 0; sp < static_cast<SubPopID>(scratch.numSubPop()); ++sp) {
 		if (!m_generator->initialized())
@@ -1288,24 +1314,25 @@ bool pedigreeMating::mate(population & pop, population & scratch,
 		RawIndIterator it = scratch.rawIndBegin(sp);
 		RawIndIterator itEnd;
 		for (size_t i = 0; i < scratch.subPopSize(sp); ++i) {
-			individual * dad = NULL;
-			if (m_fatherField != "") {
-				int father_idx = m_ped.ind(i, sp).intInfo(m_fatherField);
-				DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
-					"Parental index " + toStr(father_idx) + " out of range of 0 - "
-						+ toStr(m_parentalPopSize-1));
-				if (father_idx >= 0)
-					dad = &pop.ind(father_idx);
-			}
-			individual * mom = NULL;
-			if (m_motherField != "") {
-				int mother_idx = m_ped.ind(i, sp).intInfo(m_motherField);
-				DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
-					"Parental index " + toStr(mother_idx) + " out of range of 0 - "
-						+ toStr(m_parentalPopSize-1));
-				if (mother_idx >= 0)
-					dad = &pop.ind(mother_idx);
-			}
+			int father_idx = m_ped.father(i, sp);
+			DBG_FAILIF(father_idx > m_parentalPopSize, IndexError,
+				"Parental index " + toStr(father_idx) + " out of range of 0 - "
+				+ toStr(m_parentalPopSize - 1));
+			individual * dad = father_idx >= 0 ? &pop.ind(father_idx) : NULL;
+
+			int mother_idx = m_ped.mother(i, sp);
+			DBG_FAILIF(mother_idx > m_parentalPopSize, IndexError,
+				"Parental index " + toStr(mother_idx) + " out of range of 0 - "
+				+ toStr(m_parentalPopSize - 1));
+			individual * mom = mother_idx >= 0 ? &pop.ind(mother_idx) : NULL;
+
+			if (m_setSex)
+				it->setSex(m_ped.ind(i, sp).sex());
+			if (m_setAffection)
+				it->setAffected(m_ped.ind(i, sp).affected());
+			for (size_t i = 0; i < m_copyFields.size(); ++i)
+				it->setInfo(m_ped.ind(i, sp).info(pedInfoIdx[i]), infoIdx[i]);
+
 			//
 			itEnd = it + 1;
 			// whatever the numOffspring function returns for this

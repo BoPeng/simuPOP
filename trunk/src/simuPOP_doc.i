@@ -587,7 +587,7 @@ Details:
     This splitter takes several splitters and stacks their VSPs
     together. For example, if the first splitter defines 3 VSPs and
     the second splitter defines 2, the two VSPs from the second
-    splitter becomes the fourth (index 3) and the fifth (index 4) VSPs
+    splitter become the fourth (index 3) and the fifth (index 4) VSPs
     of the combined splitter. This splitter is usually used to define
     different types of VSPs to a population.
 
@@ -5366,8 +5366,7 @@ Arguments:
 Details:
 
     A pedigree mating scheme that evolves a population following a
-    pedigree object. This mating scheme is current under revision, and
-    should not be used.
+    pedigree object.
 
 "; 
 
@@ -5377,6 +5376,28 @@ Usage:
 
     pedigreeMating(ped, generator, fatherField=\"father_idx\",
       motherField=\"mother_idx\")
+
+Details:
+
+    Creates a mating scheme that evolve a population following a
+    pedigree object ped. Considering this pedigree as a population
+    with N ancestral generations, the starting population is the
+    greatest ancestral generation of ped. The mating scheme creates an
+    offspring generation that match the size of generation N-1 and
+    chooses parents according to the parents of individuals at this
+    generation. The parental indexes are specified by fatherField and
+    motherField, which are usually father_idx and mother_idx
+    respectively. Depending on the gen parameter of the simulator, the
+    process continues generation by generation for N generations if
+    gen >= N), or gen generations if gen < N. During the evolution, an
+    offspring generator generator is used to produce one offspring at
+    a time, regardless of the numOffspring setting of this offspring
+    generator.
+    If individuals in pedigree ped has only one parent, you can use
+    one of fatherField and motherField to specify the parent, and set
+    another filed to an empty string. A compatible offspring generator
+    that generates offspring from one parent should be used in this
+    case.
 
 "; 
 
