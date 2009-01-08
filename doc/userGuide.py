@@ -905,10 +905,10 @@ def mendelianOffspringGenerator(ops=[], *args, **kwargs):
     return  offspringGenerator([mendelianGenoTransmitter()] + ops, *args, **kwargs)
 
 def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = [],
-        subPop = (), weight = 0):
+        subPop = (), weight = 0, selectionField = 'fitness'):
     'A basic diploid sexual random mating scheme.'
     return homoMating(
-        chooser = randomParentsChooser(replacement=True),
+        chooser = randomParentsChooser(True, selectionField),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize,
         subPop = subPop,

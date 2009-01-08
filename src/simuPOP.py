@@ -371,7 +371,7 @@ def randomSelection(numOffspring = 1, sexMode = None, ops = [], subPopSize = [],
     '''
     return homoMating(
         chooser = randomParentChooser(True, selectionField),
-        generator = cloneOffspringGenerator(ops, numOffspring, randomSex),
+        generator = cloneOffspringGenerator(ops, numOffspring, RandomSex),
         subPopSize = subPopSize,
         subPop = subPop,
         weight = weight)
