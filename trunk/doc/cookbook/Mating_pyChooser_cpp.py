@@ -42,7 +42,7 @@
     Under unix/linux, using g++, you can compile this file using
 
 	> g++ -fpic -c Mating_homoMating_cpp_wrap.cxx -I /usr/local/include/python2.5/
-	> g++ -shared Mating_homoMating_cpp_wrap.o /usr/lib64/libstdc++.so.5 -o _Mating_pyMating_cpp_impl.so
+	> g++ -shared Mating_homoMating_cpp_wrap.o /usr/lib64/libstdc++.so.5 -o _Mating_pyChooser_cpp_impl.so
 
  4.	You can then try to import your module using
 
