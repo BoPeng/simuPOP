@@ -48,7 +48,7 @@ def simuAssortativeMating(w, size, gen, vsp=[0, 4]):
     # define four virtual subpopulations. Individuals in the first three virtual
     # subpopulation have genotype (0, 0), (0, 1) or (1, 0), and (1, 1) respectively,
     # and have at leat one mutant (allele 1) in the last virtual subpopulation.
-    pop.setVirtualSplitter(genotypeSplitter(locus=0,
+    pop.setVirtualSplitter(genotypeSplitter(loci=0,
         alleles=[[0, 0], [0, 1], [1, 1], [0, 0, 0, 1], [0, 1, 1, 1]]))
 
     # Negative weight means fixed size (weight * current subpopulation size).

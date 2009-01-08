@@ -65,7 +65,7 @@ def findCousin(pop, fields):
     ped.locateRelatives(FullSibling, sibFields);
     # Find parents -> siblings -> offspring
     # Another parameter pathSex can control the sex of each step.
-    ped.setIndexesOfRelatives(pathGen = [0, 1, 1, 0],
+    ped.traceRelatives(pathGen = [0, 1, 1, 0],
         pathFields = [parFields, sibFields, offFields],
         resultFields = cousinFields)
     # get indexes of cousins from the pedigree object
