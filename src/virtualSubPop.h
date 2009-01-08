@@ -49,14 +49,18 @@ public:
 	{
 		DBG_FAILIF(subPop.size() > 2, ValueError,
 			"VSP should be specified as a subPop and virtualSubPop ID pair");
-		m_subPop = subPop.size() > 0 ? subPop[0] : InvalidSubPopID;
-		m_virtualSubPop = subPop.size() > 1 ? subPop[1] : InvalidSubPopID;
+		m_subPop = subPop.size() > 0 && subPop[0] >= 0 ? subPop[0] : InvalidSubPopID;
+		m_virtualSubPop = subPop.size() > 1 && subPop[1] >= 0 ? subPop[1] : InvalidSubPopID;
 	}
 
 
 	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID)
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
 	{
+        if (m_subPop < 0)
+            m_subPop = InvalidSubPopID;
+        if (m_virtualSubPop < 0)
+            m_virtualSubPop = InvalidSubPopID;
 	}
 
 
@@ -478,7 +482,7 @@ public:
 	 *  \e loci. If only one VSP is defined, the outer list of the nested list
 	 *  can be ignored. If phase if true, the order of alleles in each list is
 	 *  significant. If more than one set of alleles are given, individuals
-	 *  having either of them is qualified.\n
+	 *  having either of them is qualified.
 	 *
 	 *  For example, in a haploid population, <tt>loci=1, alleles=[0, 1]</tt>
 	 *  defines a VSP with individuals having allele \c 0 or \c 1 at locus \c 1,
@@ -487,7 +491,7 @@ public:
 	 *  involved, alleles at each locus need to be defined. For example,
 	 *  VSP defined by <tt>loci=[0, 1], alleles=[0, 1, 1, 1]</tt> consists of
 	 *  individuals having alleles <tt>[0, 1]</tt> or <tt>[1, 1]</tt> at loci
-	 *  <tt>[0, 1]</tt>.\n
+	 *  <tt>[0, 1]</tt>.
 	 *
 	 *  In a haploid population, <tt>loci=1, alleles=[0, 1]</tt> defines a VSP
 	 *  with individuals having genotype <tt>[0, 1]</tt> or <tt>[1, 0]</tt> at

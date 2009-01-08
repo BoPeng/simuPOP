@@ -114,7 +114,7 @@ private:
  *  populations directly using their function forms, but they are usually
  *  managed and applied by a simulator. In the latter case, operators are
  *  passed to the \c evolve function of a simulator, and are applied repeatedly
- *  during the evolution of the simulator.\n
+ *  during the evolution of the simulator.
  *
  *  The \e baseOperator class is the base class for all operators. It defines
  *  a common user interface that specifies at which generations, at which stage
@@ -123,7 +123,7 @@ private:
  *  \c end, \c step, \c at, \c stage for all operators. Note that a specific
  *  operator does not have to honor all these parameters. For example, a
  *  recombinator can only be applied during mating so it ignores the \c stage
- *  parameter.\n
+ *  parameter.
  *
  *  An operator can be applied to all or part of the generations during the
  *  evolution of a simulator. At the beginning of an evolution, a simulator
@@ -133,7 +133,7 @@ private:
  *  generation number \c a has generation number <tt>10 + a</tt>, with -1
  *  referring to the last evolved generation \c 9. Note that the starting
  *  generation number of a simulator can be changed by its \c setGen()
- *  member function.\n
+ *  member function.
  *
  *  Output from an operator is usually directed to the standard output
  *  (\c sys.stdout). This can be configured using a output specification
@@ -504,7 +504,7 @@ typedef std::vector< baseOperator * > vectorop;
    at a key stroke, using <tt>stopOnKeyStroke=True</tt> option. Users can
    use \c 'q' to stop an evolution. When a simulator is stopped, press any
    other key to resume	the simulation or escape to a Python shell to examine
-   the status of the simulation by pressing \c 's'. \n
+   the status of the simulation by pressing \c 's'. 
 
    There are two ways to use this operator, the first one is to pause the
    simulation at specified generations, using the usual operator parameters

@@ -111,37 +111,37 @@ Details:
     to populations directly using their function forms, but they are
     usually managed and applied by a simulator. In the latter case,
     operators are passed to the evolve function of a simulator, and
-    are applied repeatedly during the evolution of the simulator.
-    The baseOperator class is the base class for all operators. It
-    defines a common user interface that specifies at which
-    generations, at which stage of a life cycle, to which populations
-    and subpopulation an operator will be applied. These are achieved
-    by a common set of parameters such as begin, end, step, at, stage
-    for all operators. Note that a specific operator does not have to
+    are applied repeatedly during the evolution of the simulator.  The
+    baseOperator class is the base class for all operators. It defines
+    a common user interface that specifies at which generations, at
+    which stage of a life cycle, to which populations and
+    subpopulation an operator will be applied. These are achieved by a
+    common set of parameters such as begin, end, step, at, stage for
+    all operators. Note that a specific operator does not have to
     honor all these parameters. For example, a recombinator can only
-    be applied during mating so it ignores the stage parameter.
-    An operator can be applied to all or part of the generations
-    during the evolution of a simulator. At the beginning of an
-    evolution, a simulator is usually at the beginning of generation
-    0. If it evolves 10 generations, it evolves generations 0, 1,
-    ,,,., and 9 (10 generations) and stops at the begging of
-    generation 10. A negative generation number a has generation
-    number 10 + a, with -1 referring to the last evolved generation 9.
-    Note that the starting generation number of a simulator can be
-    changed by its setGen() member function.
-    Output from an operator is usually directed to the standard output
-    (sys.stdout). This can be configured using a output specification
-    string, which can be '' for no output, '>' standard terminal
-    output (default), or a filename prefixed by one or more '>'
-    characters. In the case of '>filename' (or equivalently
-    'filename'), the output from an operator is written to this file.
-    However, if two operators write to the same file filename, or if
-    an operator write to this file more than once, only the last write
-    operation will succeed. In the case of '>>filename', file filename
-    will be opened at the beginning of the evolution and closed at the
-    end. Outputs from multiple operators are appended. >>>filename
-    works similar to >>filename but filename, if it already exists at
-    the beginning of an evolutionary process, will not be cleared.
+    be applied during mating so it ignores the stage parameter.  An
+    operator can be applied to all or part of the generations during
+    the evolution of a simulator. At the beginning of an evolution, a
+    simulator is usually at the beginning of generation 0. If it
+    evolves 10 generations, it evolves generations 0, 1, ,,,., and 9
+    (10 generations) and stops at the begging of generation 10. A
+    negative generation number a has generation number 10 + a, with -1
+    referring to the last evolved generation 9. Note that the starting
+    generation number of a simulator can be changed by its setGen()
+    member function.  Output from an operator is usually directed to
+    the standard output (sys.stdout). This can be configured using a
+    output specification string, which can be '' for no output, '>'
+    standard terminal output (default), or a filename prefixed by one
+    or more '>' characters. In the case of '>filename' (or
+    equivalently 'filename'), the output from an operator is written
+    to this file. However, if two operators write to the same file
+    filename, or if an operator write to this file more than once,
+    only the last write operation will succeed. In the case of
+    '>>filename', file filename will be opened at the beginning of the
+    evolution and closed at the end. Outputs from multiple operators
+    are appended. >>>filename works similar to >>filename but
+    filename, if it already exists at the beginning of an evolutionary
+    process, will not be cleared.
 
 "; 
 
@@ -321,20 +321,20 @@ Details:
     this class encapsulate behavior of a sequence of Bernulli trial.
     the main idea is that when doing a sequence of Bernulli trials of
     the same probability, we can use much quicker algorithms instead
-    of doing n Bernulli trials For example, when N=10000, p=0.001. The
-    usual way to do N Bin(p) trials is to do N randUnif(0,1)<p
-    comparison. using the new method, we can use geometric
-    distrubution to find the next true event. Also, for the cases of
-    p=0.5, random bits are generated. This class maintain a two
+    of doing n Bernulli trials  For example, when N=10000, p=0.001.
+    The usual way to do N Bin(p) trials is to do N randUnif(0,1)<p
+    comparison.  using the new method, we can use geometric
+    distrubution to find the next true event.  Also, for the cases of
+    p=0.5, random bits are generated.  This class maintain a two
     dimensional table: a vector of probabilities cross expected number
-    of trials p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N We expect
-    that N is big (usually populaiton size) and p_i are small using
+    of trials  p1 p2 p3 p4 p5 trial 1 trial 2 ... trial N  We expect
+    that N is big (usually populaiton size) and p_i are small  using
     fast BernulliTrial method for fix p, we can fill up this table
-    very quickly column by column This class will provide easy access
-    to row (each trial) or column (called each prob) of this table. if
-    this table is accessed row by row (each trial), a internal index
-    is used. if index exceeds N, trials will be generated all again.
-    if trial will be called, e.g., N+2 times all the time, this
+    very quickly column by column  This class will provide easy access
+    to row (each trial) or column (called each prob) of this table.
+    if this table is accessed row by row (each trial), a internal
+    index is used.  if index exceeds N, trials will be generated all
+    again. if trial will be called, e.g., N+2 times all the time, this
     treatment might not be very efficient.
 
 "; 
@@ -664,15 +664,14 @@ Details:
     frequencies in the whole population. In the latter case, overall
     expected number of alleles are scattered to each subpopulation in
     proportion to existing number of alleles in each subpopulation,
-    using a multi-nomial distribution.
-    After the expected alleles are calculated, this offspring
-    generator accept and reject families according to their genotype
-    at loci until allele frequecies reach their expected values. The
-    rest of the offspring generation is then filled with families
-    without only wild type alleles at these loci.
-    This offspring generator is derived from class offspringGenerator.
-    Please refer to class offspringGenerator for a detailed
-    description of parameters ops, numOffspring and sexMode.
+    using a multi-nomial distribution.  After the expected alleles are
+    calculated, this offspring generator accept and reject families
+    according to their genotype at loci until allele frequecies reach
+    their expected values. The rest of the offspring generation is
+    then filled with families without only wild type alleles at these
+    loci.  This offspring generator is derived from class
+    offspringGenerator. Please refer to class offspringGenerator for a
+    detailed description of parameters ops, numOffspring and sexMode.
 
 "; 
 
@@ -956,19 +955,19 @@ Details:
     properties are stored in this GenoStruTrait class and are
     accessible from individual, population, and simulator classes.
     Currently, a genotypic structure consists of
-    *  Ploidy, namely the number of homologous sets of chromosomes, of
-    a population. Haplodiploid population is also supported.
-    *  Number of chromosomes and number of loci on each chromosome.
-    *  Positions of loci, which determine the relative distance
+    *   Ploidy, namely the number of homologous sets of chromosomes,
+    of a population. Haplodiploid population is also supported.
+    *   Number of chromosomes and number of loci on each chromosome.
+    *   Positions of loci, which determine the relative distance
     between loci on the same chromosome. No unit is assumed so these
     positions can be ordinal (1, 2, 3, ..., the default), in physical
     distance (bp, kb or mb), or in map distance (e.g. centiMorgan)
     depending on applications.
-    *  Names of alleles. Although alleles at different loci usually
+    *   Names of alleles. Although alleles at different loci usually
     have different names, simuPOP uses the same names for alleles
     across loci for simplicity.
-    *  Names of loci and chromosomes.
-    *  Names of information fields attached to each individual. In
+    *   Names of loci and chromosomes.
+    *   Names of information fields attached to each individual. In
     addition to basic property access functions, this class also
     provides some utility functions such as locusByName, which looks
     up a locus by its name.
@@ -1515,24 +1514,24 @@ Details:
     loci. If only one VSP is defined, the outer list of the nested
     list can be ignored. If phase if true, the order of alleles in
     each list is significant. If more than one set of alleles are
-    given, individuals having either of them is qualified.
-    For example, in a haploid population, loci=1, alleles=[0, 1]
-    defines a VSP with individuals having allele 0 or 1 at locus 1,
-    alleles=[[0, 1], [2]] defines two VSPs with indivdiuals in the
-    second VSP having allele 2 at locus 1. If multiple loci are
-    involved, alleles at each locus need to be defined. For example,
-    VSP defined by loci=[0, 1], alleles=[0, 1, 1, 1] consists of
-    individuals having alleles [0, 1] or [1, 1] at loci [0, 1].
-    In a haploid population, loci=1, alleles=[0, 1] defines a VSP with
-    individuals having genotype [0, 1] or [1, 0] at locus 1.
-    alleles[[0, 1], [2, 2]] defines two VSPs with indivdiuals in the
-    second VSP having genotype [2, 2] at locus 1. If phase is set to
-    True, the first VSP will only has individuals with genotype [0,
-    1]. In the multiple loci case, alleles should be arranged by
-    haplotypes, for example, loci=[0, 1], alleles=[0, 0, 1, 1],
-    phase=True defines a VSP with individuals having genotype -0-0-,
-    -1-1- at loci 0 and 1. If phase=False (default), genotypes -1-1-,
-    -0-0-, -0-1- and -1-0- are all allowed.
+    given, individuals having either of them is qualified.  For
+    example, in a haploid population, loci=1, alleles=[0, 1] defines a
+    VSP with individuals having allele 0 or 1 at locus 1, alleles=[[0,
+    1], [2]] defines two VSPs with indivdiuals in the second VSP
+    having allele 2 at locus 1. If multiple loci are involved, alleles
+    at each locus need to be defined. For example, VSP defined by
+    loci=[0, 1], alleles=[0, 1, 1, 1] consists of individuals having
+    alleles [0, 1] or [1, 1] at loci [0, 1].  In a haploid population,
+    loci=1, alleles=[0, 1] defines a VSP with individuals having
+    genotype [0, 1] or [1, 0] at locus 1. alleles[[0, 1], [2, 2]]
+    defines two VSPs with indivdiuals in the second VSP having
+    genotype [2, 2] at locus 1. If phase is set to True, the first VSP
+    will only has individuals with genotype [0, 1]. In the multiple
+    loci case, alleles should be arranged by haplotypes, for example,
+    loci=[0, 1], alleles=[0, 0, 1, 1], phase=True defines a VSP with
+    individuals having genotype -0-0-, -1-1- at loci 0 and 1. If
+    phase=False (default), genotypes -1-1-, -0-0-, -0-1- and -1-0- are
+    all allowed.
 
 "; 
 
@@ -1612,8 +1611,8 @@ Usage:
 Details:
 
     The GSM model is developed for allozymes. It provides better
-    description for these kinds of evolutionary processes.  Please see
-    class mutator for the descriptions of other parameters.
+    description for these kinds of evolutionary processes.   Please
+    see class mutator for the descriptions of other parameters.
 
 Arguments:
 
@@ -1681,7 +1680,7 @@ Details:
     is condiered as haploid. Actually, the first set of male
     chromosomes are used. During mating, female produce eggs, subject
     to potential recombination and gene conversion, while male sperm
-    is identical to the parental chromosome. Female offspring has two
+    is identical to the parental chromosome.  Female offspring has two
     sets of chromosomes, one from mother and one from father. Male
     offspring has one set of chromosomes from his mother.
 
@@ -1745,7 +1744,7 @@ Details:
 
 Usage:
 
-    heteroMating(matingSchemes, subPopSize=uintListFunc,
+    heteroMating(matingSchemes, subPopSize=u[]Func,
       shuffleOffspring=True)
 
 Details:
@@ -1756,27 +1755,31 @@ Details:
     by parameter subPopSize, which can be a list of subpopulation
     sizes or a Python function that returns a list of subpopulation
     sizes at each generation. Please refer to homoMating for a
-    detailed explanation of this parameter.
-    Each mating scheme defined in matingSchemes should specify which
-    (virtual) subpopulation it is applied to (parameter subPop), and
-    optionally a weight (parameter weight) to determine how many
-    offspring it will produce, if multiple mating schemes are applied
-    to the same subpopulation.
-    The default for all mating schemes are 0. In this case, the number
-    of offspring each mating scheme produces is proportional to the
-    size of its parental (virtual) subpopulation. If all weights are
-    negative, the numbers of offspring are determined by the
-    multiplication of the absolute values of the weights and their
-    respective parental (virtual) subpopulation sizes. If all weights
-    are positive, the number of offspring produced by each mating
-    scheme is proportional to these weights. Mating schemes with zero
-    weight in this case will produce no offspring. If both negative
-    and positive weights are present, negative weights are processed
-    before positive ones.
-    If multiple mating schemes are applied to the same subpopulation,
-    offspring produced by these mating schemes are shuffled randomly.
-    If this is not desired, you can turn off offspring shuffling by
-    setting parameter shuffleOffspring to False.
+    detailed explanation of this parameter.  Each mating scheme
+    defined in matingSchemes can be applied to one or more (virtual)
+    subpopulation. If parameter subPop is not specified, a mating
+    scheme will be applied to all subpopulations. If a (virtual)
+    subpopulation is specified, a mating scheme will be applied to a
+    specific (virtual) subpopulation. A special case is when subPop is
+    given as (-1, vsp). In this case, the mating scheme will be
+    applied to virtual subpopulation vsp in all subpopulations.  If
+    multiple mating schemes are applied to the same subpopulation, a
+    weight (parameter weight) can be given to each mating scheme to
+    determine how many offspring it will produce. The default for all
+    mating schemes are 0. In this case, the number of offspring each
+    mating scheme produces is proportional to the size of its parental
+    (virtual) subpopulation. If all weights are negative, the numbers
+    of offspring are determined by the multiplication of the absolute
+    values of the weights and their respective parental (virtual)
+    subpopulation sizes. If all weights are positive, the number of
+    offspring produced by each mating scheme is proportional to these
+    weights. Mating schemes with zero weight in this case will produce
+    no offspring. If both negative and positive weights are present,
+    negative weights are processed before positive ones.  If multiple
+    mating schemes are applied to the same subpopulation, offspring
+    produced by these mating schemes are shuffled randomly. If this is
+    not desired, you can turn off offspring shuffling by setting
+    parameter shuffleOffspring to False.
 
 "; 
 
@@ -1837,30 +1840,29 @@ Details:
 
 Usage:
 
-    homoMating(chooser, generator, subPopSize=uintListFunc,
-      subPop=[], weight=0)
+    homoMating(chooser, generator, subPopSize=u[]Func, subPop=[],
+      weight=0)
 
 Details:
 
     Create a homogeneous mating scheme using a parent chooser chooser
-    and an offspring generator generator.
-    If this mating scheme is used directly in a simulator, it will be
-    responsible for creating an offspring population according to
-    parameter subPopSize. This parameter can be a list of
-    subpopulation sizes (or a number if there is only one
-    subpopulation) or a Python function. The function should take two
-    parameters, a generation number and a list of subpopulation sizes
-    before mating, and return a list of subpopulation sizes for the
-    offspring generation. A single number can be returned if there is
-    only one subpopulation. If latter form is used, the specified
-    function will be called at each generation to determine the size
-    of the offspring generation. Parameters subPop and weight are
-    ignored in this case.
-    If this mating shcme is used within a heterogeneous mating scheme.
-    Parameters subPop and weight are used to determine which (virtual)
-    subpopulation this mating scheme will be applied to, and how many
-    offspring this mating scheme will produce. Please refer to mating
-    scheme heteroMating for the use of these two parameters.
+    and an offspring generator generator.  If this mating scheme is
+    used directly in a simulator, it will be responsible for creating
+    an offspring population according to parameter subPopSize. This
+    parameter can be a list of subpopulation sizes (or a number if
+    there is only one subpopulation) or a Python function. The
+    function should take two parameters, a generation number and a
+    list of subpopulation sizes before mating, and return a list of
+    subpopulation sizes for the offspring generation. A single number
+    can be returned if there is only one subpopulation. If latter form
+    is used, the specified function will be called at each generation
+    to determine the size of the offspring generation. Parameters
+    subPop and weight are ignored in this case.  If this mating shcme
+    is used within a heterogeneous mating scheme. Parameters subPop
+    and weight are used to determine which (virtual) subpopulation
+    this mating scheme will be applied to, and how many offspring this
+    mating scheme will produce. Please refer to mating scheme
+    heteroMating for the use of these two parameters.
 
 "; 
 
@@ -1920,11 +1922,11 @@ Description:
 Details:
 
     This operator accepts
-    *  an expression that will be evaluated when this operator is
+    *   an expression that will be evaluated when this operator is
     applied.
-    *  an operator that will be applied if the expression is True
+    *   an operator that will be applied if the expression is True
     (default to null).
-    *  an operator that will be applied if the expression is False
+    *   an operator that will be applied if the expression is False
     (default to null). When this operator is applied to a population,
     it will evaluate the expression and depending on its value, apply
     the supplied operator. Note that the begin, end, step, and at
@@ -2037,7 +2039,7 @@ Details:
     information shared by all individuals in a population (provided by
     class genoStruTrait), the individual class provides member
     functions to get and set genotype, sex, affection status and
-    information fields of an individual.  Genotypes of an individual
+    information fields of an individual.    Genotypes of an individual
     are stored sequentially and can be accessed locus by locus, or in
     batch. The alleles are arranged by position, chromosome and
     ploidy. That is to say, the first allele on the first chromosome
@@ -2529,7 +2531,7 @@ Details:
     information fields are made available as variables. Population
     dictionary can be made avaialbe with option usePopVars. Changes to
     these variables will change the corresponding information fields
-    of individuals. Please note that, 1. If population variables are
+    of individuals.  Please note that, 1. If population variables are
     used, and there are name conflicts between information fields and
     variables, population variables will be overridden by information
     fields, without any warning. 2. Information fields are float
@@ -2702,19 +2704,18 @@ Details:
     his/her spouse his/her spouse from a given set of information
     fields, which stores indexes of individuals in the same
     generation. An information field will be ignored if its value is
-    negative, or if sex is incompatible.
-    Depending on what indexes are stored in these information fields,
-    this parent chooser can be used to implement different types of
-    mating schemes where selection of spouse is limited. For example,
-    a consanguineous mating scheme can be implemeneted using this
-    mating scheme if certain type of relatives are located for each
-    individual, and are used for mating.
-    This parent chooser uses randomParentChooser to choose one parent
-    and randomly choose another one from the information fields.
-    Natural selection is supported during the selection of the first
-    parent. Because of potentially uneven distribution of valid
-    information fields, the overall process may not be as random as
-    expected.
+    negative, or if sex is incompatible.  Depending on what indexes
+    are stored in these information fields, this parent chooser can be
+    used to implement different types of mating schemes where
+    selection of spouse is limited. For example, a consanguineous
+    mating scheme can be implemeneted using this mating scheme if
+    certain type of relatives are located for each individual, and are
+    used for mating.  This parent chooser uses randomParentChooser to
+    choose one parent and randomly choose another one from the
+    information fields. Natural selection is supported during the
+    selection of the first parent. Because of potentially uneven
+    distribution of valid information fields, the overall process may
+    not be as random as expected.
 
 "; 
 
@@ -3720,13 +3721,13 @@ Details:
     This is called 'multiple-allele' selector. It separates alleles
     into two groups: wildtype and diseased alleles. Wildtype alleles
     are specified by parameter wildtype and any other alleles are
-    considered as diseased alleles. This selector accepts an array of
+    considered as diseased alleles.  This selector accepts an array of
     fitness values:
-    *  For single-locus, fitness is the fitness for genotypes AA, Aa,
+    *   For single-locus, fitness is the fitness for genotypes AA, Aa,
     aa, while A stands for wildtype alleles.
-    *  For a two-locus model, fitness is the fitness for genotypes
+    *   For a two-locus model, fitness is the fitness for genotypes
     AABB, AABb, AAbb, AaBB, AbBb, Aabb, aaBB, aaBb and aaBb.
-    *  For a model with more than two loci, use a table of length $
+    *   For a model with more than two loci, use a table of length $
     3^{n} $ in a order similar to the two-locus model.
 
 "; 
@@ -3820,7 +3821,7 @@ Usage:
 
 Usage:
 
-    mating(subPopSize=uintListFunc)
+    mating(subPopSize=u[]Func)
 
 Details:
 
@@ -4048,15 +4049,15 @@ Details:
     Migrator is the only way to mix genotypes of several
     subpopulations because mating is strictly within subpopulations in
     simuPOP. Migrators are quite flexible in simuPOP in the sense that
-    *  migration can happen from and to a subset of subpopulations.
-    *  migration can be done by probability, proportion or by counts.
+    *   migration can happen from and to a subset of subpopulations.
+    *   migration can be done by probability, proportion or by counts.
     In the case of probability, if the migration rate from
     subpopulation a to b is r, then everyone in subpopulation a will
     have this probability to migrate to b. In the case of proportion,
     exactly r*size_of_subPop_a individuals (chosen by random) will
     migrate to subpopulation b. In the last case, a given number of
     individuals will migrate.
-    *  new subpopulation can be generated through migration. You
+    *   new subpopulation can be generated through migration. You
     simply need to migrate to a subpopulation with a new subpopulation
     number.
 
@@ -4269,12 +4270,12 @@ Details:
     This is the 'multiple-locus' penetrnace calculator. It accepts a
     list of penetrances and combine them according to the mode
     parameter, which takes one of the following values:
-    *  PEN_Multiplicative: the penetrance is calculated as $ f=\\prod
+    *   PEN_Multiplicative: the penetrance is calculated as $ f=\\prod
     f_{i} $.
-    *  PEN_Additive: the penetrance is calculated as $
+    *   PEN_Additive: the penetrance is calculated as $
     f=\\min\\left(1,\\sum f_{i}\\right) $. $ f $ will be set to 1 when $
     f<0 $. In this case, $ s_{i} $ are added, not $ f_{i} $ directly.
-    *  PEN_Heterogeneity: the penetrance is calculated as $
+    *   PEN_Heterogeneity: the penetrance is calculated as $
     f=1-\\prod\\left(1-f_{i}\\right) $. Please refer to Neil Risch (1990)
     for detailed information about these models.
 
@@ -4352,9 +4353,9 @@ Details:
     calculator. It accepts a list of quantitative traits and combine
     them according to the mode parameter, which takes one of the
     following values
-    *  QT_Multiplicative: the mean of the quantitative trait is
+    *   QT_Multiplicative: the mean of the quantitative trait is
     calculated as $ f=\\prod f_{i} $.
-    *  QT_Additive: the mean of the quantitative trait is calculated
+    *   QT_Additive: the mean of the quantitative trait is calculated
     as $ f=\\sum f_{i} $. Note that all $ \\sigma_{i} $ (for $ f_{i} $)
     and $ \\sigma $ (for $ f $) will be considered. I.e, the trait
     value should be
@@ -4450,10 +4451,10 @@ Details:
     evaluate the fitness of an individual as the product or sum of
     individual fitness values. The mode is determined by parameter
     mode, which takes one of the following values
-    *  SEL_Multiplicative: the fitness is calculated as $
+    *   SEL_Multiplicative: the fitness is calculated as $
     f=\\prod_{i}f_{i} $, where $ f_{i} $ is the single-locus fitness
     value.
-    *  SEL_Additive: the fitness is calculated as $
+    *   SEL_Additive: the fitness is calculated as $
     f=\\max\\left(0,1-\\sum_{i}(1-f_{i})\\right) $. $ f $ will be set to 0
     when $ f<0 $.
 
@@ -4783,35 +4784,34 @@ Details:
     offspring. It expects numParents from an upstream parents chooser
     and raises an RuntimeError if incorrect number of parents are
     passed. If both one and two parents can be handled, 0 should be
-    specified for this parameter.
-    A number of genotype transmitters can be used to transmit genotype
-    from parents to offspring. Additional during-mating operators can
-    be passed from the evolve() function of a simulator, but the ops
-    operators will be applied before them. An exception is that if one
-    of the passed operators is set to form offspring genotype (a flag
-    setOffGenotype), operators in ops with the same flag will not be
-    applied. For example, a recombinator will override a
-    mendelianGenoTransmitter used in randomMating if it is used in the
-    ops parameter of the evolve function. This general offspring
-    generator does not use any genotype transmitter. A number of
-    derived offspring generators are available with a default
-    transmitter. For example, a mendelianOffspringGenerator uses a
-    mendelianGenoTransmitter to transmit genotypes.
-    Parameter numOffspring is used to control the number of offspring
-    per mating event, or in another word the number of offspring in
-    each family. It can be a number, a function, or a mode parameter
-    followed by some optional arguments. If a number is given, given
-    number of offspring will be generated at each mating event. If a
-    Python function is given, it will be called each time when a
-    mating event happens. Current generation number will be passed to
-    this function, and its return value will be considered the number
-    of offspring. In the last case, a tuple (or a list) in one of the
-    following forms: (GeometricDistribution, p), (PoissonDistribution,
-    p), (BinomialDistribution, p, N), or (UniformDistribution, a, b)
-    can be given. The number of offspring will be determined randomly
-    following these statistical distributions. Please refer to the
-    simuPOP user's guide for a detailed description of these
-    distribution and their parameters.
+    specified for this parameter.  A number of genotype transmitters
+    can be used to transmit genotype from parents to offspring.
+    Additional during-mating operators can be passed from the evolve()
+    function of a simulator, but the ops operators will be applied
+    before them. An exception is that if one of the passed operators
+    is set to form offspring genotype (a flag setOffGenotype),
+    operators in ops with the same flag will not be applied. For
+    example, a recombinator will override a mendelianGenoTransmitter
+    used in randomMating if it is used in the ops parameter of the
+    evolve function. This general offspring generator does not use any
+    genotype transmitter. A number of derived offspring generators are
+    available with a default transmitter. For example, a
+    mendelianOffspringGenerator uses a mendelianGenoTransmitter to
+    transmit genotypes.  Parameter numOffspring is used to control the
+    number of offspring per mating event, or in another word the
+    number of offspring in each family. It can be a number, a
+    function, or a mode parameter followed by some optional arguments.
+    If a number is given, given number of offspring will be generated
+    at each mating event. If a Python function is given, it will be
+    called each time when a mating event happens. Current generation
+    number will be passed to this function, and its return value will
+    be considered the number of offspring. In the last case, a tuple
+    (or a list) in one of the following forms: (GeometricDistribution,
+    p), (PoissonDistribution, p), (BinomialDistribution, p, N), or
+    (UniformDistribution, a, b) can be given. The number of offspring
+    will be determined randomly following these statistical
+    distributions. Please refer to the simuPOP user's guide for a
+    detailed description of these distribution and their parameters.
     Parameter sexMode is used to control the sex of each offspring.
     Its default value is usually RandomSex which assign Male or Female
     to each individual randomly, with equal probabilities. If NoSex is
@@ -4996,13 +4996,14 @@ Details:
     related operators like affectedSibpairSample to track the pedigree
     information. Because parental population will be discarded or
     stored after mating, these index will not be affected by post-
-    mating operators. This tagger record parental index to one or both
-    *  one or two information fields. Default to father_idx and
+    mating operators.  This tagger record parental index to one or
+    both
+    *   one or two information fields. Default to father_idx and
     mother_idx. If only one parent is passed in a mating scheme (such
     as selfing), only the first information field is used. If two
     parents are passed, the first information field records paternal
     index, and the second records maternal index.
-    *  a file. Indexes will be written to this file. This tagger will
+    *   a file. Indexes will be written to this file. This tagger will
     also act as a post-mating operator to add a new-line to this file.
 
 "; 
@@ -5080,7 +5081,7 @@ Details:
     This during-mating operator set tag() each individual with indexes
     of his/her parent in the parental population. Because only one
     parent is recorded, this is recommended to be used for mating
-    schemes that requires only one parent (such as selfMating). This
+    schemes that requires only one parent (such as selfMating).  This
     tagger record indexes to information field parent_idx, and/or a
     given file. The usage is similar to parentsTagger.
 
@@ -5160,18 +5161,17 @@ Details:
     Users can use 'q' to stop an evolution. When a simulator is
     stopped, press any other key to resume the simulation or escape to
     a Python shell to examine the status of the simulation by pressing
-    's'.
-    There are two ways to use this operator, the first one is to pause
-    the simulation at specified generations, using the usual operator
-    parameters such as at. Another way is to pause a simulation with
-    any key stroke, using the stopOnKeyStroke parameter. This feature
-    is useful for a presentation or an interactive simulation. When
-    's' is pressed, this operator expose the current population to the
-    main Python dictionary as variable pop and enter an interactive
-    Python session. The way current population is exposed can be
-    controlled by parameter exposePop and popName. This feature is
-    useful when you want to examine the properties of a population
-    during evolution.
+    's'.  There are two ways to use this operator, the first one is to
+    pause the simulation at specified generations, using the usual
+    operator parameters such as at. Another way is to pause a
+    simulation with any key stroke, using the stopOnKeyStroke
+    parameter. This feature is useful for a presentation or an
+    interactive simulation. When 's' is pressed, this operator expose
+    the current population to the main Python dictionary as variable
+    pop and enter an interactive Python session. The way current
+    population is exposed can be controlled by parameter exposePop and
+    popName. This feature is useful when you want to examine the
+    properties of a population during evolution.
 
 "; 
 
@@ -5245,11 +5245,11 @@ Details:
 
     The pedigree class is derived from the population class. Unlike a
     population class that emphasizes on individual properties, the
-    pedigree class emphasizes on relationship between individuals.
-    A pedigree class can be created from a population, or loaded from
-    a disk file, which is usually saved by an operator during a
-    previous evolutionary process. Depending on how a pedigree is
-    saved, sex and affection status information may be missing.
+    pedigree class emphasizes on relationship between individuals.  A
+    pedigree class can be created from a population, or loaded from a
+    disk file, which is usually saved by an operator during a previous
+    evolutionary process. Depending on how a pedigree is saved, sex
+    and affection status information may be missing.
 
 "; 
 
@@ -5258,18 +5258,48 @@ Details:
 Usage:
 
     pedigree(pop, loci=[], infoFields=[], ancGen=-1,
-      parentFields=[\"father_idx\", \"mother_idx\"])
+      fatherField=\"father_idx\", motherField=\"mother_idx\")
 
 Details:
 
     Create a pedigree object from a population, using a subset of loci
     (parameter loci, default to no loci), information fields
-    (parameter infoFields, default to no information field), and
-    ancestral generations (parameter ancGen, default to all ancestral
-    generations). By default, information field father_idx and
-    mother_idx will be used to locate parents. If individuals in a
-    pedigree has only one parent, one of fatherField and motherField
-    should be set to an empty string.
+    (parameter infoFields, default to no information field except for
+    parentFields), and ancestral generations (parameter ancGen,
+    default to all ancestral generations). By default, information
+    field father_idx and mother_idx are used to locate parents. If
+    individuals in a pedigree has only one parent, the information
+    field that stores parental indexes should be specified in
+    parameter fatherField or motherField. The other field should be
+    set to an empty string.
+
+"; 
+
+%ignore simuPOP::pedigree::pedigree(const pedigree &rhs);
+
+%feature("docstring") simuPOP::pedigree::clone "
+
+Usage:
+
+    x.clone()
+
+Details:
+
+    Create a cloned copy of a pedigree.
+
+"; 
+
+%feature("docstring") simuPOP::pedigree::numParents "
+
+Usage:
+
+    x.numParents()
+
+Details:
+
+    Return the number of parents each individual has. This function
+    returns the number of information fields used to store parental
+    indexes, even if one of the fields are unused.
 
 "; 
 
@@ -5283,7 +5313,7 @@ Details:
 
     Return the index of the father of individual idx in subpopulation
     subPop in the parental generation. Return -1 if this individual
-    has no father (fatherField is empty or the valud of information
+    has no father (fatherField is empty or the value of information
     field is negative).
 
 "; 
@@ -5298,7 +5328,7 @@ Details:
 
     Return the index of the mother of individual idx in subpopulation
     subPop in the parental generation. Return -1 if this individual
-    has no mother (motherField is empty or the valud of information
+    has no mother (motherField is empty or the value of information
     field is negative).
 
 "; 
@@ -5307,94 +5337,65 @@ Details:
 
 Usage:
 
-    x.locateRelatives(relType, relFields, gen=-1, relSex=AnySex,
-      parentFields=[])
+    x.locateRelatives(relType=u[], relFields=[], ancGen=-1)
 
 Details:
 
-    This function locates relatives (of type relType, and sex relSex)
-    of each individual and store their indexes in specified
-    information fields relFields. The indexes of parents in the
-    parental generation should be available in information fields
-    parentFields (default to ['father_idx', 'mother_idx'] which are
-    the information fields used by operator parentsTagger. This
-    function currently only work for diploid populations.
-
-Arguments:
-
-    relType:        Relative type, which can be
-                    * Self set indexes of individual themselves.
-                    * Spouse locate spouses of individuals in the
-                    current generation. A spouse is defined as two
-                    individuals having an offspring with shared
-                    parentFields. If more than one infoFields is
-                    given, multiple spouses can be identified.
-                    * Offspring index of offspring in the offspring
-                    generation. If only one parent is given, only
-                    paternal or maternal relationship is considered.
-                    For example, parentFields=['father_idx'] will
-                    locate offspring for all fathers.
-                    * FullSibling all siblings with the same parents
-                    * Sibling all sibs with at least one shared parent
-    relFields:      information fields to hold relatives. The number
-                    of these fields limits the number of relatives to
-                    locate.
-    gen:            Find relatives for individuals for how many
-                    generations. Default to -1, meaning for all
-                    generations. If a non-negative number is given, up
-                    till generation gen will be processed.
-    relSex:         Whether or not only locate relative or certain
-                    sex. It can be AnySex (do not care, default),
-                    MaleOnly, FemaleOnly, or OppositeSex (only locate
-                    relatives of opposite sex.
+    This function locates relatives (of type relType) of each
+    individual and store their indexes in specified information fields
+    relFields. The length of relFields determines how many relatives
+    an individual can have.  Parameter relType specifies what type of
+    relative to locate. It can be Self, Spouse (having at least one
+    common offspring), Offspring, FullSibling (having common father
+    and mother), or Sibling (having at least one common parent).
+    Optionally, you can specify the sex of relatives you would like to
+    locate, in the form of relType=(type, sexChoice). sexChoice can be
+    AnySex (default), MaleOnly, FemaleOnly, SameSex or OppositeSex.
+    This function will by default go through all ancestral generations
+    and locate relatives for all individuals. This can be changed by
+    setting parameter ancGen to the greatest ancestral generation you
+    would like to process.
 
 "; 
 
-%feature("docstring") simuPOP::pedigree::setIndexesOfRelatives "
-
-Description:
-
-    Trace a relative path in a population and record the result in the
-    given information fields.
+%feature("docstring") simuPOP::pedigree::traceRelatives "
 
 Usage:
 
-    x.setIndexesOfRelatives(pathGen, pathFields, pathSex=[],
+    x.traceRelatives(pathGen, pathFields, pathSex=[],
       resultFields=[])
 
 Details:
 
-    For example, setInfoWithRelatives(pathGen = [0, 1, 1, 0],
-    pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
-    ['off1', 'off2']], pathSex = [AnySex, MaleOnly, FemaleOnly],
-    resultFields = ['cousin1', 'cousin2']) This function will 1.
-    locate father_idx and mother_idx for each individual at generation
-    0 (pathGen[0]) 2. find AnySex individuals referred by father_idx
-    and mother_idx at generation 1 (pathGen[1]) 3. find informaton
-    fields sib1 and sib2 from these parents 4. locate MaleOnly
-    individuals referred by sib1 and sib2 from generation 1
-    (pathGen[2]) 5. find information fields off1 and off2 from these
-    individuals, and 6. locate FemaleOnly indiviudals referred by off1
-    and from geneartion 0 (pathGen[3]) 7. Save index of these
-    individuals to information fields cousin1 and cousin2 at
-    genearation pathGen[0]. In short, this function locates father or
-    mother's brother's daughters.
-
-Arguments:
-
-    pathGen:        A list of generations that form a relative path.
-                    This array is one element longer than pathFields,
-                    with gen_i, gen_i+1 indicating the current and
-                    destinating generation of information fields
-                    path_i.
-    pathFields:     A list of list of information fields forming a
-                    path to trace a certain type of relative.
-    resultFields:   Where to store located relatives. Note that the
-                    result will be saved in the starting generation
-                    specified in pathGen[0], which is usually 0.
-    pathSex:        (Optional) A list of sex choices, AnySex, Male,
-                    Female or OppositeSex, that is used to choose
-                    individuals at each step. Default to AnySex.
+    Trace a relative path in a population and record the result in the
+    given information fields resultFields. This function is used to
+    locate more distant relatives based on the relatives located by
+    function locateRelatives. For example, after siblings and
+    offspring of all individuals are located, you can locate mother's
+    sibling's offspring using a relative path, and save their indexes
+    in each individuals information fields resultFields.  A relative
+    path consits of three pieces of information specified by three
+    parameters. Parameter pathGen specifies starting, intermediate and
+    ending generations. pathFields specifies which information fields
+    to look for at each step, and pathSex specifies sex choices at
+    each generation, which should be a list of AnySex, MaleOnly,
+    FemaleOnly, SameSex and OppsiteSex. The default value for this
+    paramter is AnySex at all steps. The length of pathGen should be
+    one more than pathFields, and pathSex if pathSex is given.  For
+    example, if pathGen=[0, 1, 1, 0], pathFields = [['father_idx',
+    'mother_idx'], ['sib1', 'sib2'], ['off1', 'off2']], and pathSex =
+    [AnySex, MaleOnly, FemaleOnly], this function will locate
+    father_idx and mother_idx for each individual at generation 0,
+    find all individuals referred by father_idx and mother_idx at
+    generation 1, find informaton fields sib1 and sib2 from these
+    parents and locate male individuals referred by these two
+    information fields. Finally, the information fields off1 and off2
+    from these siblings are located and are used to locate their
+    female offspring at the present geneartion. The results are father
+    or mother's brother's daughters. Their indexes will be saved in
+    each individuals information fields resultFields. Note that this
+    function will locate and set relatives for individuals only at the
+    starting generation specified at pathGen[0].
 
 "; 
 
@@ -5428,18 +5429,17 @@ Details:
     offspring generator generator is used to produce one offspring at
     a time, regardless of the numOffspring setting of this offspring
     generator. If individuals in pedigree ped has only one parent, the
-    offspring generator should be compatible.
-    By default, the pedigree mating scheme does not set offspring sex
-    and affection status using sex and affection status of
-    corresponding individuals in the pedigree. However, if such
-    information is valid in the pedigree object ped, you can set
-    parameters setSex and/or setAffection to True to set sex and/of
-    affection status to offspring during the evolutionary process.
-    Similarly, you can specify some information fields in copyFields
-    to copy some information fields from pedigree to the evolving
-    population. Note that these information will be copied also to the
-    starting population (from the greatest ancestral generation in
-    ped).
+    offspring generator should be compatible.  By default, the
+    pedigree mating scheme does not set offspring sex and affection
+    status using sex and affection status of corresponding individuals
+    in the pedigree. However, if such information is valid in the
+    pedigree object ped, you can set parameters setSex and/or
+    setAffection to True to set sex and/of affection status to
+    offspring during the evolutionary process. Similarly, you can
+    specify some information fields in copyFields to copy some
+    information fields from pedigree to the evolving population. Note
+    that these information will be copied also to the starting
+    population (from the greatest ancestral generation in ped).
 
 "; 
 
@@ -5531,9 +5531,9 @@ Details:
     according to their penetrance values.
     Penetrance values are usually not saved. If you would like to know
     the penetrance value, you need to
-    *  use addInfoField('penetrance') to the population to analyze.
+    *   use addInfoField('penetrance') to the population to analyze.
     (Or use infoFields parameter of the population constructor), and
-    *  use e.g., mlPenetrance(...., infoFields=['penetrance']) to add
+    *   use e.g., mlPenetrance(...., infoFields=['penetrance']) to add
     the penetrance field to the penetrance operator you use. You may
     choose a name other than 'penetrance' as long as the field names
     for the operator and population match. Penetrance functions can be
@@ -5799,38 +5799,38 @@ Details:
     A simuPOP population consists of individuals of the same genotypic
     structure, organized by generations, subpopulations and virtual
     subpopulations. It also contains a Python dictionary that is used
-    to store arbitrary population variables. In addition to genotypic
+    to store arbitrary population variables.  In addition to genotypic
     structured related functions provided by the genoStruTrait class,
     the population class provides a large number of member functions
     that can be used to
-    *  Create, copy and compare populations.
-    *  Manipulate subpopulations. A population can be divided into
+    *   Create, copy and compare populations.
+    *   Manipulate subpopulations. A population can be divided into
     several subpopulations. Because individuals only mate with
     individuals within the same subpopulation, exchange of genetic
     information across subpopulations can only be done through
     migration. A number of functions are provided to access
     subpopulation structure information, and to merge and split
     subpopulations.
-    *  Define and access virtual subpopulations. A virtual
+    *   Define and access virtual subpopulations. A virtual
     subpopulation splitter can be assigned to a population, which
     defines groups of individuals called virtual subpopulations (VSP)
     within each subpopulation.
-    *  Access individuals individually, or through iterators that
+    *   Access individuals individually, or through iterators that
     iterate through individuals in (virtual) subpopulations.
-    *  Access genotype and information fields of individuals at the
+    *   Access genotype and information fields of individuals at the
     population level. From a population point of view, all genotypes
     are arranged sequentially individual by individual. Please refer
     to class individual for an introduction to genotype arragement of
     each individual.
-    *  Store and access ancestral generations. A population can save
+    *   Store and access ancestral generations. A population can save
     arbitrary number of ancestral generations. It is possible to
     directly access an ancestor, or make an ancestral generation the
     current generation for more efficient access.
-    *  Insert or remove loci, resize (shrink or expand) a population,
+    *   Insert or remove loci, resize (shrink or expand) a population,
     sample from a population, or merge with other populations.
-    *  Manipulate population variables and evaluate expressions in
+    *   Manipulate population variables and evaluate expressions in
     this local namespace.
-    *  Save and load a population.
+    *   Save and load a population.
 
 "; 
 
@@ -7219,8 +7219,9 @@ Details:
     individualIterator *will* iterate through only visible
     individuals, and allInds is only provided when we know in advance
     that all individuals are visible. This is a way to obtain better
-    performance in simple cases. An instance of this class is returned
-    by population::individuals() and population::individuals(subPop)
+    performance in simple cases.  An instance of this class is
+    returned by population::individuals() and
+    population::individuals(subPop)
 
 "; 
 
@@ -7265,15 +7266,15 @@ Description:
 Details:
 
     This migrator can be used in two ways
-    *  define a function that accepts a generation number and returns
+    *   define a function that accepts a generation number and returns
     a migration rate matrix. This can be used in various migration
     rate cases.
-    *  define a function that accepts individuals etc, and returns the
-    new subpopulation ID. More specifically, func can be
-    *  func(ind) when neither loci nor param is given.
-    *  func(ind, genotype) when loci is given.
-    *  func(ind, param) when param is given.
-    *  func(ind, genotype, param) when both loci and param are given.
+    *   define a function that accepts individuals etc, and returns
+    the new subpopulation ID. More specifically, func can be
+    *   func(ind) when neither loci nor param is given.
+    *   func(ind, genotype) when loci is given.
+    *   func(ind, param) when param is given.
+    *   func(ind, genotype, param) when both loci and param are given.
 
 "; 
 
@@ -7456,17 +7457,17 @@ Description:
 Details:
 
     This operator accepts a function that can take the form of
-    *  func(pop) when stage=PreMating or PostMating, without setting
+    *   func(pop) when stage=PreMating or PostMating, without setting
     param;
-    *  func(pop, param) when stage=PreMating or PostMating, with
+    *   func(pop, param) when stage=PreMating or PostMating, with
     param;
-    *  func(pop, off, dad, mom) when stage=DuringMating and
+    *   func(pop, off, dad, mom) when stage=DuringMating and
     passOffspringOnly=False, without setting param;
-    *  func(off) when stage=DuringMating and passOffspringOnly=True,
+    *   func(off) when stage=DuringMating and passOffspringOnly=True,
     and without setting param;
-    *  func(pop, off, dad, mom, param) when stage=DuringMating and
+    *   func(pop, off, dad, mom, param) when stage=DuringMating and
     passOffspringOnly=False, with param;
-    *  func(off, param) when stage=DuringMating and
+    *   func(off, param) when stage=DuringMating and
     passOffspringOnly=True, with param. For Pre- and PostMating
     usages, a population and an optional parameter is passed to the
     given function. For DuringMating usages, population, offspring,
@@ -7651,13 +7652,13 @@ Details:
     parent chooser calls the generator function with parental
     population and a subpopulation index for each subpopulation and
     retrieves indexes of parents repeatedly using the iterator
-    interface of the generator function.
-    This parent chooser does not support virtual subpopulation
-    directly. A ValueError will be raised if this parent chooser is
-    applied to a virtual subpopulation. However, because virtual
-    subpopulations are defined in the passed parental population, it
-    is easy to return parents from a particular virtual subpopulation
-    using virtual subpopulation related functions.
+    interface of the generator function.  This parent chooser does not
+    support virtual subpopulation directly. A ValueError will be
+    raised if this parent chooser is applied to a virtual
+    subpopulation. However, because virtual subpopulations are defined
+    in the passed parental population, it is easy to return parents
+    from a particular virtual subpopulation using virtual
+    subpopulation related functions.
 
 "; 
 
@@ -7725,10 +7726,10 @@ Details:
     defined penetrance function func. This function takes genetypes at
     specified loci, and optionally values of specified information
     fields. The return value is considered as the penetrance for this
-    individual. More specifically, func can be
-    *  func(geno) if infoFields has length 0 or 1.
-    *  func(geno, fields) when infoFields has more than 1 fields. Both
-    parameters should be an list.
+    individual.  More specifically, func can be
+    *   func(geno) if infoFields has length 0 or 1.
+    *   func(geno, fields) when infoFields has more than 1 fields.
+    Both parameters should be an list.
 
 "; 
 
@@ -7941,10 +7942,10 @@ Details:
     as the fitness value. The genotypes are arranged in the order of
     0-0,0-1,1-0,1-1 etc. where X-Y represents locus X - ploidy Y. More
     specifically, func can be
-    *  func(geno, gen) if infoFields has length 0 or 1.
-    *  func(geno, gen, fields) when infoFields has more than 1 fields.
-    Values of fields 1, 2, ... will be passed. Both geno and fields
-    should be a list.
+    *   func(geno, gen) if infoFields has length 0 or 1.
+    *   func(geno, gen, fields) when infoFields has more than 1
+    fields. Values of fields 1, 2, ... will be passed. Both geno and
+    fields should be a list.
 
 "; 
 
@@ -8329,20 +8330,20 @@ Details:
     will be some linkage between loci. Users need to specify physical
     recombination rate between adjacent loci. In addition, for the
     recombinator
-    *  it only works for diploid (and for females in haplodiploid)
+    *   it only works for diploid (and for females in haplodiploid)
     populations.
-    *  the recombination rate must be comprised between 0.0 and 0.5. A
-    recombination rate of 0.0 means that the loci are completely
+    *   the recombination rate must be comprised between 0.0 and 0.5.
+    A recombination rate of 0.0 means that the loci are completely
     linked, and thus behave together as a single linked locus. A
     recombination rate of 0.5 is equivalent to free of recombination.
     All other values between 0.0 and 0.5 will represent various
     linkage intensities between adjacent pairs of loci. The
     recombination rate is equivalent to 1-linkage and represents the
     probability that the allele at the next locus is randomly drawn.
-    *  it works for selfing. I.e., when only one parent is provided,
+    *   it works for selfing. I.e., when only one parent is provided,
     it will be recombined twice, producing both maternal and paternal
     chromosomes of the offspring.
-    *  conversion is allowed. Note that conversion will nullify many
+    *   conversion is allowed. Note that conversion will nullify many
     recombination events, depending on the parameters chosen.
 
 "; 
@@ -8377,18 +8378,18 @@ Details:
     conversion to recombination events varies greatly from study to
     study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics,
     2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of this
-    parameter. When Note that
-    *  conversion tract length is usually short, and is estimated to
+    parameter. When  Note that
+    *   conversion tract length is usually short, and is estimated to
     be between 337 and 456 bp, with overall range between maybe 50 -
     2500 bp.
-    *   simuPOP does not impose a unit for marker distance so your
+    *    simuPOP does not impose a unit for marker distance so your
     choice of convParam needs to be consistent with your unit. In the
     HapMap dataset, cM is usually assumed and marker distances are
     around 10kb (0.001cM ~- 1kb). Gene conversion can largely be
     ignored. This is important when you use distance based conversion
     mode such as CONVERT_TrackLength or
     CONVERT_ExponentialDistribution.
-    *  After a track length is determined, if a second recombination
+    *   After a track length is determined, if a second recombination
     event happens within this region, the track length will be
     shortened. Note that conversion is identical to double
     recombination under this context.
@@ -9014,15 +9015,15 @@ Details:
     selection. simuPOP employs an 'ability-to-mate' approach. Namely,
     the probability that an individual will be chosen for mating is
     proportional to its fitness value. More specifically,
-    *  PreMating selectors assign fitness values to each individual,
+    *   PreMating selectors assign fitness values to each individual,
     and mark part or all subpopulations as under selection.
-    *  during sexless mating (e.g. binomialSelection mating scheme),
+    *   during sexless mating (e.g. binomialSelection mating scheme),
     individuals are chosen at probabilities that are proportional to
     their fitness values. If there are $ N $ individuals with fitness
     values $ f_{i},i=1,...,N $, individual $ i $ will have probability
     $ \\frac{f_{i}}{\\sum_{j}f_{j}} $ to be chosen and passed to the
     next generation.
-    *  during randomMating, males and females are separated. They are
+    *   during randomMating, males and females are separated. They are
     chosen from their respective groups in the same manner as
     binomialSelection and mate.
     All of the selection operators, when applied, will set an
@@ -9032,8 +9033,8 @@ Details:
     subpopulations). Then, a 'selector-aware' mating scheme can select
     individuals according to their fitness information fields. This
     implies that
-    *  only mating schemes can actually select individuals.
-    *  a selector has to be a PreMating operator. This is not a
+    *   only mating schemes can actually select individuals.
+    *   a selector has to be a PreMating operator. This is not a
     problem when you use the operator form of the selector since its
     default stage is PreMating. However, if you use the function form
     of the selector in a pyOperator, make sure to set the stage of
@@ -9626,30 +9627,29 @@ Details:
     operators, imposed by the rep parameter of these operators) before
     evolution. They are usually used to initialize populations.
     Operators postOps are applied to all populations after the
-    evolution.
-    Operators ops are applied during the life cycle of each
-    generation. Depending on the stage of these operators, they can be
-    applied before-, during-, and/or post-mating. These operators can
-    be applied at all or some of the generations, depending the begin,
-    end, step, and at parameters of these operators. Populations in a
-    simulator are evolved one by one. At each generation, the
-    applicability of these operators are determined. Pre-mating
-    operators are applied to a population first. A mating scheme is
-    then used to populate an offspring generation, using applicable
-    during-mating operators. After an offspring generation is
-    successfully generated and becomes the current generation,
-    applicable post-mating operators are applied to it. Because the
-    order at which operators are applied can be important, and the
-    stage(s) at which operators are applied are not always clear, a
-    parameter dryRun can be used. If set to True, this function will
-    print out the order at which all operators are applied, without
-    actually evolving the populations.
-    Parameter gen can be set to a positive number, which is the number
-    of generations to evolve. If gen is negative (default), the
-    evolution will continue indefinitely, until all replicates are
-    stopped by a special kind of operators called terminators. At the
-    end of the evolution, the generations that each replicates have
-    evolved are returned.
+    evolution.  Operators ops are applied during the life cycle of
+    each generation. Depending on the stage of these operators, they
+    can be applied before-, during-, and/or post-mating. These
+    operators can be applied at all or some of the generations,
+    depending the begin, end, step, and at parameters of these
+    operators. Populations in a simulator are evolved one by one. At
+    each generation, the applicability of these operators are
+    determined. Pre-mating operators are applied to a population
+    first. A mating scheme is then used to populate an offspring
+    generation, using applicable during-mating operators. After an
+    offspring generation is successfully generated and becomes the
+    current generation, applicable post-mating operators are applied
+    to it. Because the order at which operators are applied can be
+    important, and the stage(s) at which operators are applied are not
+    always clear, a parameter dryRun can be used. If set to True, this
+    function will print out the order at which all operators are
+    applied, without actually evolving the populations.  Parameter gen
+    can be set to a positive number, which is the number of
+    generations to evolve. If gen is negative (default), the evolution
+    will continue indefinitely, until all replicates are stopped by a
+    special kind of operators called terminators. At the end of the
+    evolution, the generations that each replicates have evolved are
+    returned.
 
 "; 
 
@@ -9808,7 +9808,7 @@ Usage:
 Details:
 
     The SMM is developed for allozymes. It provides better description
-    for these kinds of evolutionary processes.  Please see class
+    for these kinds of evolutionary processes.   Please see class
     mutator for the descriptions of other parameters.
 
 Arguments:
@@ -11066,8 +11066,8 @@ Details:
 
     This is a during-mating operator that tags individuals with
     various information. Potential usages are:
-    *  recording the parental information to track pedigree;
-    *  tagging an individual/allele and monitoring its spread in the
+    *   recording the parental information to track pedigree;
+    *   tagging an individual/allele and monitoring its spread in the
     population etc.
 
 "; 
@@ -11338,10 +11338,10 @@ Details:
 
     Turn on debug. There are several ways to turn on debug information
     for non-optimized modules, namely
-    *  set environment variable SIMUDEBUG.
-    *  use simuOpt.setOptions(debug) function.
-    *  use TurnOnDebug or TurnOnDebugByName function.
-    *  use this turnOnDebug operator The advantage of using this
+    *   set environment variable SIMUDEBUG.
+    *   use simuOpt.setOptions(debug) function.
+    *   use TurnOnDebug or TurnOnDebugByName function.
+    *   use this turnOnDebug operator The advantage of using this
     operator is that you can turn on debug at given generations.
 
 "; 
@@ -11568,7 +11568,7 @@ Details:
     fixed number of named VSPs. They do not have to add up to the
     whole subpopulation, nor do they have to be distinct. After a
     splitter is assigned to a population, many functions and operators
-    can be applied to individuals within specified VSPs. Only one VSP
+    can be applied to individuals within specified VSPs.  Only one VSP
     splitter can be assigned to a population, which defined VSPs for
     all its subpopulations. It different splitters are needed for
     different subpopulations, a combinedSplitter should be.

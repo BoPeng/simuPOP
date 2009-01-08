@@ -113,6 +113,16 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 				nameMap[m_lociNames[i]] = 0;
 		}
 	}
+	// check duplicated and empty information field names
+	map<string, int> infoMap;
+	for (i = 0; i < m_infoFields.size(); ++i) {
+		if (m_infoFields[i].empty())
+			throw ValueError("Empty information field name is not allowed");
+		else if (infoMap.find(m_infoFields[i]) != infoMap.end())
+			throw ValueError("Given information field names should be unique");
+		else
+			infoMap[m_infoFields[i]] = 0;
+	}
 #endif
 }
 

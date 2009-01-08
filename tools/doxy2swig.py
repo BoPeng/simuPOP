@@ -315,7 +315,7 @@ class Doxy2SWIG:
 
     def do_para(self, node):
         if self.curField == 'Details' and self.content[-1]['Details'] != '':
-            self.content[-1]['Details'] += '\n'
+            self.content[-1]['Details'] += '\n\n'
         self.parse_childnodes(node)
 
 
@@ -477,12 +477,17 @@ class Doxy2SWIG:
                 defVal = defVal.replace('intDict','{}')
                 defVal = defVal.replace('matrix','[]')
                 defVal = defVal.replace('vspID','[]')
-                defVal = defVal.replace('repList','[]')
-                defVal = defVal.replace('subPopList','[]')
                 defVal = defVal.replace('intMatrix','[]')
                 defVal = defVal.replace('true','True')
                 defVal = defVal.replace('false','False')
                 defVal = defVal.replace('NULL','None')
+                defVal = defVal.replace('intList','[]')
+                defVal = defVal.replace('uintList','[]')
+                defVal = defVal.replace('uintListFunc','[]')
+                defVal = defVal.replace('floatList','[]')
+                defVal = defVal.replace('floatListFunc','[]')
+                defVal = defVal.replace('repList','[]')
+                defVal = defVal.replace('subPopList','[]')
                 #defVal = defVal.replace('""', "''")
                 out.append(var + '=' + defVal)
             else:

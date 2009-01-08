@@ -172,20 +172,20 @@ enum ConversionMode {
 
 // For pedigree tracing
 enum RelativeType {
-	Unrelated = 51,         // do nothing
-	Self = 51,              // individual himself or herself.
-	Offspring = 53,         // All offspring with all spouses (if there are more than one spouse)
-	Spouse = 54,            // All spouses (with at least one offspring)
-	FullSibling = 55,       // Siblings who share two parents
-	Sibling = 56,           // Siblings who share at least one parent
+	Self = 50,              // individual himself or herself.
+	Offspring = 51,         // All offspring with all spouses (if there are more than one spouse)
+	Spouse = 52,            // All spouses (with at least one offspring)
+	FullSibling = 53,       // Siblings who share two parents
+	Sibling = 54,           // Siblings who share at least one parent
 };
 
 // For pedigree tracing
 enum SexChoice {
-	AnySex = 0,
-	MaleOnly = 1,
-	FemaleOnly = 2,
-	OppositeSex = 3
+	AnySex = 60,
+	MaleOnly = 61,
+	FemaleOnly = 62,
+	SameSex = 63,
+	OppositeSex = 64
 };
 
 
@@ -218,8 +218,8 @@ enum IterationType {
 typedef double InfoType;
 typedef std::vector<double>::iterator InfoIterator;
 typedef std::vector<double>::const_iterator ConstInfoIterator;
-typedef signed short SubPopID;
-const signed short InvalidSubPopID = -1;
+typedef signed int SubPopID;
+const signed int InvalidSubPopID = -1;
 const unsigned long MaxSubPopID = std::numeric_limits<SubPopID>::max();
 
 typedef unsigned long ULONG;
