@@ -485,7 +485,7 @@ pedigreeMatingRef
 \end_layout
 
 \begin_layout Section
-Parent Choosers and Offspring generators
+Parent choosers and offspring generators
 \end_layout
 
 \begin_layout Standard
@@ -575,7 +575,7 @@ simuPOPmendelianOffspringGeneratorRef
 \end_layout
 
 \begin_layout Section
-Pre-defined Mating schemes
+Pre-defined offspring generators and mating schemes
 \end_layout
 
 \begin_layout Standard
@@ -586,7 +586,40 @@ status open
 
 
 \backslash
-simuPOPrandomMatingRef
+simuPOPcloneOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmendelianOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfingOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcloneMatingRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -594,6 +627,13 @@ simuPOPrandomMatingRef
 
 \backslash
 simuPOPrandomSelectionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomMatingRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -622,6 +662,27 @@ simuPOPalphaMatingRef
 
 \backslash
 simuPOPhaplodiploidMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPconsanguineousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcontrolledRandomMatingRef
 \end_layout
 
 \end_inset
