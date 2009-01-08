@@ -735,7 +735,7 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_selection = pop.selectionOn(subPop);
 	UINT fit_id = 0;
 	if (m_selection) {
-		fit_id = pop.infoIdx("fitness");
+		fit_id = pop.infoIdx(m_selectionField);
 		m_maleFitness.resize(m_numMale);
 		m_femaleFitness.resize(m_numFemale);
 	}
@@ -853,7 +853,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_selection = pop.selectionOn(subPop);
 	UINT fit_id = 0;
 	if (m_selection) {
-		fit_id = pop.infoIdx("fitness");
+		fit_id = pop.infoIdx(m_selectionField);
 		m_maleFitness.resize(m_numMale);
 		m_femaleFitness.resize(m_numFemale);
 	}
@@ -986,7 +986,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	vectorf fitness;
 	UINT fit_id = 0;
 	if (m_selection)
-		fit_id = pop.infoIdx("fitness");
+		fit_id = pop.infoIdx(m_selectionField);
 	for (; it.valid(); ++it) {
 		Sex mySex = it->sex();
 		for (size_t i = 0; i < infoSz; ++i)
@@ -1071,10 +1071,14 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 #if PY_VERSION_HEX < 0x02040000
 	throw SystemError("Your Python version does not have good support for generator"
 		              " so this python parent chooser can not be used.");
-#else
-#  ifndef OPTIMIZED
+#endif
+
+	DBG_FAILIF(pop.hasActivatedVirtualSubPop(sp), ValueError,
+		"Python parent chooser can not be used in a virtual subpopulation.");
+
+#ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
-#  endif
+#endif
 	m_begin = pop.indBegin(sp);
 
 	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
@@ -1094,7 +1098,7 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 	// test if m_parIterator is iteratable.
 	DBG_FAILIF(m_parIterator == NULL, ValueError,
 		"Can not iterate through parent generator");
-#endif
+
 	m_initialized = true;
 }
 

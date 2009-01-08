@@ -269,9 +269,11 @@ public:
 
 public:
 	// CPPONLY
-	parentChooser() : m_initialized(false)
+	parentChooser(const string & selectionField = string()) : m_initialized(false),
+		m_selectionField(selectionField)
 	{
 	}
+
 
 	/// Deep copy of a parent chooser
 	virtual parentChooser * clone() const
@@ -303,12 +305,14 @@ public:
 		return individualPair(NULL, NULL);
 	}
 
+
 	/// destructor
 	virtual ~parentChooser() { }
 
 protected:
-
 	bool m_initialized;
+
+	string m_selectionField;
 };
 
 
@@ -385,12 +389,6 @@ public:
 	/// CPPONLY
 	individualPair chooseParents(RawIndIterator basePtr);
 
-	/// CPPONLY
-	ULONG numMale() { return m_numMale; }
-
-	/// CPPONLY
-	ULONG numFemale() { return m_numFemale; }
-
 private:
 	/// internal index to female/males.
 	vector<RawIndIterator> m_maleIndex;
@@ -425,10 +423,11 @@ public:
 	 */
 	randomParentChooser(bool replacement = true,
 		const string & selectionField = "fitness") :
-		parentChooser(), m_replacement(replacement), m_selectionField(selectionField),
+		parentChooser(selectionField), m_replacement(replacement),
 		m_index(0), m_chosen(0), m_sampler(rng())
 	{
 	}
+
 
 	/// Deep copy of a random parent chooser.
 	parentChooser * clone() const
@@ -445,7 +444,6 @@ public:
 
 protected:
 	bool m_replacement;
-	string m_selectionField;
 
 	bool m_selection;
 	///
@@ -477,14 +475,15 @@ public:
 	 *  replacement (parameter \e replacement, default to \c True). If selection
 	 *  is enabled and information field \e selectionField exists in the passed
 	 *  population, the probability that a parent is chosen is proportional to
-	 *  his/her fitness value stored in \e selectionField.	 
+	 *  his/her fitness value stored in \e selectionField.
 	 */
 	randomParentsChooser(bool replacement = true, const string & selectionField = "fitness") :
-		parentChooser(), m_replacement(replacement), m_selectionField(selectionField),
+		parentChooser(selectionField), m_replacement(replacement),
 		m_maleIndex(0), m_femaleIndex(0), m_maleFitness(0), m_femaleFitness(0),
 		m_malesampler(rng()), m_femalesampler(rng())
 	{
 	}
+
 
 	/// Deep copy of a random parents chooser.
 	parentChooser * clone() const
@@ -499,14 +498,8 @@ public:
 	/// CPPONLY
 	individualPair chooseParents(RawIndIterator basePtr);
 
-	/// CPPONLY
-	ULONG numMale() { return m_numMale; }
-	/// CPPONLY
-	ULONG numFemale() { return m_numFemale; }
-
 private:
 	bool m_replacement;
-	string m_selectionField;
 
 	individual * m_lastParent;
 
@@ -525,37 +518,29 @@ private:
 	// weighted sampler
 	weightedSampler m_malesampler;
 	weightedSampler m_femalesampler;
-
 };
 
 
-/** This parent chooser chooses two parents randomly, a male
-   and a female, from their respective sex groups randomly.
-   If selection is turned on, parents are chosen from their sex
-   groups with probabilities that are proportional to their
-   fitness values. Note that
-   selection is not allowed in the case of monopoly because this
-   poses a particular order on individuals in the offspring generation.
-   This parents chooser also allows polygamous mating by reusing
-   a parent multiple times when returning parents, and allows
-   specification of a few alpha individuals who will be the only
-   mating individuals in their sex group.
-   <applicability>all ploidy</applicability>
+/** This parent chooser is similar to random parents chooser but instead of
+ *  selecting a new pair of parents each time, one of the parents in this
+ *  parent chooser will mate with several spouses before he/she is replaced.
+ *  This mimicks multi-spouse mating schemes such as polygyny or polyandry
+ *  in some populations. Natural selection is supported for both sexes.
  */
 class polyParentsChooser : public parentChooser
 {
 public:
-	/**
-	   \param polySex Male (polygyny) or Female (polyandry) parent that
-	        will have \c polyNum sex partners.
-	   \param polyNum Number of sex partners.
-
-	   Note: If selection is enabled, it works regularly on on-alpha sex, but
-	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
-	    are chosen selectively, and selected again during mating.
+	/** Create a multi-spouse parents chooser where each father (if \e polySex
+	 *  is Male) or mother (if \e polySex is Female) has \e polyNum spouses.
+	 *  The parents are chosen with replacement. If natural selection
+	 *  is enabled, the probability that an individual is chosen is
+	 *  proportional to his/her fitness value among all individuals with the
+	 *  same sex. Selection will be disabled if specified information field
+	 *  \e selectionField (default to \c "fitness") does not exist.
 	 */
-	polyParentsChooser(Sex polySex = Male, UINT polyNum = 1) :
-		parentChooser(),
+	polyParentsChooser(Sex polySex = Male, UINT polyNum = 1,
+		const string & selectionField = "fitness") :
+		parentChooser(selectionField),
 		m_polySex(polySex), m_polyNum(polyNum), m_polyCount(0),
 		m_lastParent(NULL), m_maleIndex(0), m_femaleIndex(0),
 		m_chosenMale(0), m_chosenFemale(0),
@@ -578,11 +563,6 @@ public:
 
 	/// CPPONLY
 	individualPair chooseParents(RawIndIterator basePtr);
-
-	/// CPPONLY
-	ULONG numMale() { return m_numMale; }
-	/// CPPONLY
-	ULONG numFemale() { return m_numFemale; }
 
 private:
 	Sex m_polySex;
@@ -612,46 +592,29 @@ private:
 };
 
 
-/** This parent chooser chooses two parents randomly, a male
-   and a female, from their respective sex groups randomly.
-   If selection is turned on, parents are chosen from their sex
-   groups with probabilities that are proportional to their
-   fitness values.  This parents chooser also allows polygamous mating by reusing
-   a parent multiple times when returning parents, and allows
-   specification of a few alpha individuals who will be the only
-   mating individuals in their sex group.
-   <applicability>all ploidy</applicability>
+/** This parent chooser mimicks some animal populations where only certain
+ *  individuals (usually males) can mate. Alpha individuals can be chosen
+ *  either randomly (with natural selection) or according to an information
+ *  field. After the alpha individuals are selected, the parent chooser works
+ *  identical to a random mating scheme, except that one of the parents are
+ *  chosen from these alpha individuals.
  */
 class alphaParentsChooser : public parentChooser
 {
 public:
-	/**
-	   \param replacement choose with (\c True, default) or without (\c False)
-	        replacement. When choosing without replacement, parents
-	        will be paired and can only mate once.
-	   \param replenish if set to true, one or both sex groups will
-	        be replenished if they are exhausted.
-	   \param polySex Male (polygyny) or Female (polyandry) parent that
-	        will have \c polyNum sex partners.
-	   \param polyNum Number of sex partners.
-	   \param alphaSex the sex of the alpha individual, i.e. alpha male
-	    or alpha female who be the only mating individuals in their
-	    sex group.
-	   \param alphaNum Number of alpha individuals. If \c infoField is
-	    not given, \c alphaNum random individuals with \c alphaSex
-	    will be chosen. If selection is enabled, individuals with higher
-	    fitness values have higher probability to be selected. There is
-	    by default no alpha individual (\c alphaNum = 0).
-	   \param alphaField if an information field is given, individuals
-	    with non-zero values at this information field are alpha individuals.
-	    Note that these individuals must have \c alphaSex.
-
-	   Note: If selection is enabled, it works regularly on on-alpha sex, but
-	    works twice on alpha sex. That is to say, \c alphaNum alpha indiviudals
-	    are chosen selectively, and selected again during mating.
+	/** Create a parent chooser that chooses father (if \e alphaSex is \c Male)
+	 *  or mother (if \e alphaSex is \c Female) from a selected group of alpha
+	 *  individuals. If \e alphaNum is given, alpha individuals are chosen
+	 *  randomly or according to individual fitness if natural selection is
+	 *  enabled. If \e alphaField is given, individuals with non-zero values
+	 *  at this information field are considered as alpha individuals. After
+	 *  alpha individuals are selected, \e alphaSex parent will be chosen
+	 *  from the alpha individuals randomly or according to individual fitness.
+	 *  The other parents are chosen randomly.
 	 */
-	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string()) :
-		parentChooser(),
+	alphaParentsChooser(Sex alphaSex = Male, UINT alphaNum = 0, string alphaField = string(),
+		const string & selectionField = "fitness") :
+		parentChooser(selectionField),
 		m_alphaSex(alphaSex), m_alphaNum(alphaNum), m_alphaField(alphaField),
 		m_maleIndex(0), m_femaleIndex(0),
 		m_maleFitness(0), m_femaleFitness(0),
@@ -660,6 +623,7 @@ public:
 	}
 
 
+	/// Deep copy of an alpha parents chooser.
 	parentChooser * clone() const
 	{
 		return new alphaParentsChooser(*this);
@@ -671,11 +635,6 @@ public:
 
 	/// CPPONLY
 	individualPair chooseParents(RawIndIterator basePtr);
-
-	/// CPPONLY
-	ULONG numMale() { return m_numMale; }
-	/// CPPONLY
-	ULONG numFemale() { return m_numFemale; }
 
 private:
 	Sex m_alphaSex;
@@ -700,39 +659,38 @@ private:
 };
 
 
-/** This parents chooser choose an individual randomly, but choose
-    his/her spouse from a given set of information fields, which stores
-    indexes of individuals in the same generation. A field will be ignored
-    if its value is negative, or if sex is compatible.
-
-    Depending on what indexes are stored in these information fields,
-    this parent chooser can be used to implement consanguineous mating
-    where close relatives are located for each individual, or certain
-    non-random mating schemes where each individual can only mate with a small
-    number of pre-determinable individuals.
-
-    This parent chooser (currently) uses \c randomParentChooser to choose
-    one parent and randomly choose another one from the information fields.
-    Because of potentially non-even distribution of valid information
-    fields, the overall process may not be as random as expected, especially
-    when selection is applied.
-
-    Note: if there is no valid individual, this parents chooser works like
-    a double parentChooser.
-   <applicability>all ploidy</applicability>
+/** This parent chooser chooses an individual randomly, and then his/her spouse
+ *  his/her spouse from a given set of information fields, which stores indexes
+ *  of individuals in the same generation. An information field will be ignored
+ *  if its value is negative, or if sex is incompatible.\n
+ *
+ *  Depending on what indexes are stored in these information fields, this
+ *  parent chooser can be used to implement different types of mating schemes
+ *  where selection of spouse is limited. For example, a consanguineous mating
+ *  scheme can be implemeneted using this mating scheme if certain type of
+ *  relatives are located for each individual, and are used for mating.\n
+ *
+ *  This parent chooser uses \c randomParentChooser to choose one parent and
+ *  randomly choose another one from the information fields. Natural selection
+ *  is supported during the selection of the first parent. Because of
+ *  potentially uneven distribution of valid information fields, the overall
+ *  process may not be as random as expected.
  */
 class infoParentsChooser : public randomParentChooser
 {
 public:
-	/**
-	   \param infoFields information fields that store index of matable
-	        individuals.
+	/** Create a information parent chooser a parent randomly (with replacement,
+	 *  and with selection if natural selection is enabled), and then his/her
+	 *  spouse from indexes stored in \e infoFields. If a Python function
+	 *  \e func is specified, it will be called before parents are chosen. This
+	 *  function accepts the parental population and an optional parameter
+	 *  \e param and is usually used to locate qualified spouse for each parent.
+	 *  The return value of this function is ignored.
 	 */
 	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
-		PyObject * func = NULL,
-		PyObject * param = NULL,
-		bool replacement = true) :
-		randomParentChooser(replacement),
+		PyObject * func = NULL, PyObject * param = NULL,
+		const string & selectionField = "fitness") :
+		randomParentChooser(true, selectionField),
 		m_infoFields(infoFields), m_func(func), m_param(param),
 		m_infoIdx(0), m_degenerate(false)
 	{
@@ -741,6 +699,7 @@ public:
 	}
 
 
+	/// Deep copy of a infomation parent chooser.
 	parentChooser * clone() const
 	{
 		return new infoParentsChooser(*this);
@@ -766,17 +725,28 @@ private:
 };
 
 
-/** This parents chooser accept a Python generator function that yields
-   repeatedly an index (relative to each subpopulation) of a parent, or
-   indexes of two parents as a Python list of tuple. The generator function
-   is responsible for handling sex or selection if needed.
-   <applicability>all ploidy</applicability>
+/** This parents chooser accept a Python generator function that repeatedly
+ *  yields an index (relative to each subpopulation) of a parent, or indexes
+ *  of two parents as a Python list of tuple. The parent chooser calls the
+ *  generator function with parental population and a subpopulation index
+ *  for each subpopulation and retrieves indexes of parents repeatedly using
+ *  the iterator interface of the generator function.\n
+ *
+ *  This parent chooser does not support virtual subpopulation directly. A
+ *  \c ValueError will be raised if this parent chooser is applied to a
+ *  virtual subpopulation. However, because virtual subpopulations are defined
+ *  in the passed parental population, it is easy to return parents from a
+ *  particular virtual subpopulation using virtual subpopulation related
+ *  functions.
  */
 class pyParentsChooser : public parentChooser
 {
 public:
-	/**
-	   \param parentsGenerator A Python generator function
+	/** Create a Python parent chooser using a Python generator function
+	 *  \e parentsGenerator. This function should accept a population object
+	 *  (the parental population) and a subpopulation number and return
+	 *  the index of a parent or a pair of parents repeatedly using the
+	 *  iterator interface of the generator function.
 	 */
 	pyParentsChooser(PyObject * parentsGenerator);
 
@@ -794,6 +764,7 @@ public:
 	}
 
 
+	/// Deep copy of a python parent chooser.
 	parentChooser * clone() const
 	{
 		return new pyParentsChooser(*this);
@@ -803,6 +774,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
+	/// CPPONLY
 	void finalize(population & pop, SubPopID sp)
 	{
 		m_initialized = false;

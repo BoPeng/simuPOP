@@ -54,18 +54,15 @@ Usage:
 
 %feature("docstring") simuPOP::alphaParentsChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parent chooser chooses two parents randomly, a male and a
-    female, from their respective sex groups randomly. If selection is
-    turned on, parents are chosen from their sex groups with
-    probabilities that are proportional to their fitness values. This
-    parents chooser also allows polygamous mating by reusing a parent
-    multiple times when returning parents, and allows specification of
-    a few alpha individuals who will be the only mating individuals in
-    their sex group.
+    This parent chooser mimicks some animal populations where only
+    certain individuals (usually males) can mate. Alpha individuals
+    can be chosen either randomly (with natural selection) or
+    according to an information field. After the alpha individuals are
+    selected, the parent chooser works identical to a random mating
+    scheme, except that one of the parents are chosen from these alpha
+    individuals.
 
 "; 
 
@@ -74,38 +71,19 @@ Details:
 Usage:
 
     alphaParentsChooser(alphaSex=Male, alphaNum=0,
-      alphaField=string)
+      alphaField=string, selectionField=\"fitness\")
 
 Details:
 
-    Note: If selection is enabled, it works regularly on on-alpha sex,
-    but works twice on alpha sex. That is to say, alphaNum alpha
-    indiviudals are chosen selectively, and selected again during
-    mating.
-
-Arguments:
-
-    replacement:    choose with (True, default) or without (False)
-                    replacement. When choosing without replacement,
-                    parents will be paired and can only mate once.
-    replenish:      if set to true, one or both sex groups will be
-                    replenished if they are exhausted.
-    polySex:        Male (polygyny) or Female (polyandry) parent that
-                    will have polyNum sex partners.
-    polyNum:        Number of sex partners.
-    alphaSex:       the sex of the alpha individual, i.e. alpha male
-                    or alpha female who be the only mating individuals
-                    in their sex group.
-    alphaNum:       Number of alpha individuals. If infoField is not
-                    given, alphaNum random individuals with alphaSex
-                    will be chosen. If selection is enabled,
-                    individuals with higher fitness values have higher
-                    probability to be selected. There is by default no
-                    alpha individual (alphaNum = 0).
-    alphaField:     if an information field is given, individuals with
-                    non-zero values at this information field are
-                    alpha individuals. Note that these individuals
-                    must have alphaSex.
+    Create a parent chooser that chooses father (if alphaSex is Male)
+    or mother (if alphaSex is Female) from a selected group of alpha
+    individuals. If alphaNum is given, alpha individuals are chosen
+    randomly or according to individual fitness if natural selection
+    is enabled. If alphaField is given, individuals with non-zero
+    values at this information field are considered as alpha
+    individuals. After alpha individuals are selected, alphaSex parent
+    will be chosen from the alpha individuals randomly or according to
+    individual fitness. The other parents are chosen randomly.
 
 "; 
 
@@ -113,7 +91,7 @@ Arguments:
 
 Description:
 
-    Deep copy of a parent chooser.
+    Deep copy of an alpha parents chooser.
 
 Usage:
 
@@ -124,10 +102,6 @@ Usage:
 %ignore simuPOP::alphaParentsChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::alphaParentsChooser::chooseParents(RawIndIterator basePtr);
-
-%ignore simuPOP::alphaParentsChooser::numMale();
-
-%ignore simuPOP::alphaParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::baseOperator "
 
@@ -2722,26 +2696,25 @@ Usage:
 
 %feature("docstring") simuPOP::infoParentsChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parents chooser choose an individual randomly, but choose
-    his/her spouse from a given set of information fields, which
-    stores indexes of individuals in the same generation. A field will
-    be ignored if its value is negative, or if sex is compatible.
+    This parent chooser chooses an individual randomly, and then
+    his/her spouse his/her spouse from a given set of information
+    fields, which stores indexes of individuals in the same
+    generation. An information field will be ignored if its value is
+    negative, or if sex is incompatible.
     Depending on what indexes are stored in these information fields,
-    this parent chooser can be used to implement consanguineous mating
-    where close relatives are located for each individual, or certain
-    non-random mating schemes where each individual can only mate with
-    a small number of pre-determinable individuals. This parent
-    chooser (currently) uses randomParentChooser to choose one parent
+    this parent chooser can be used to implement different types of
+    mating schemes where selection of spouse is limited. For example,
+    a consanguineous mating scheme can be implemeneted using this
+    mating scheme if certain type of relatives are located for each
+    individual, and are used for mating.
+    This parent chooser uses randomParentChooser to choose one parent
     and randomly choose another one from the information fields.
-    Because of potentially non-even distribution of valid information
-    fields, the overall process may not be as random as expected,
-    especially when selection is applied. Note: if there is no valid
-    individual, this parents chooser works like a double
-    parentChooser.
+    Natural selection is supported during the selection of the first
+    parent. Because of potentially uneven distribution of valid
+    information fields, the overall process may not be as random as
+    expected.
 
 "; 
 
@@ -2750,12 +2723,18 @@ Details:
 Usage:
 
     infoParentsChooser(infoFields=[], func=None, param=None,
-      replacement=True)
+      selectionField=\"fitness\")
 
-Arguments:
+Details:
 
-    infoFields:     information fields that store index of matable
-                    individuals.
+    Create a information parent chooser a parent randomly (with
+    replacement, and with selection if natural selection is enabled),
+    and then his/her spouse from indexes stored in infoFields. If a
+    Python function func is specified, it will be called before
+    parents are chosen. This function accepts the parental population
+    and an optional parameter param and is usually used to locate
+    qualified spouse for each parent. The return value of this
+    function is ignored.
 
 "; 
 
@@ -2763,7 +2742,7 @@ Arguments:
 
 Description:
 
-    Deep copy of a random parent chooser.
+    Deep copy of a infomation parent chooser.
 
 Usage:
 
@@ -4967,7 +4946,7 @@ Details:
 
 Usage:
 
-    parentChooser()
+    parentChooser(selectionField=string)
 
 "; 
 
@@ -5766,20 +5745,14 @@ Usage:
 
 %feature("docstring") simuPOP::polyParentsChooser "
 
-Applicability: all ploidy
-
 Details:
 
-    This parent chooser chooses two parents randomly, a male and a
-    female, from their respective sex groups randomly. If selection is
-    turned on, parents are chosen from their sex groups with
-    probabilities that are proportional to their fitness values. Note
-    that selection is not allowed in the case of monopoly because this
-    poses a particular order on individuals in the offspring
-    generation. This parents chooser also allows polygamous mating by
-    reusing a parent multiple times when returning parents, and allows
-    specification of a few alpha individuals who will be the only
-    mating individuals in their sex group.
+    This parent chooser is similar to random parents chooser but
+    instead of selecting a new pair of parents each time, one of the
+    parents in this parent chooser will mate with several spouses
+    before he/she is replaced. This mimicks multi-spouse mating
+    schemes such as polygyny or polyandry in some populations. Natural
+    selection is supported for both sexes.
 
 "; 
 
@@ -5787,20 +5760,19 @@ Details:
 
 Usage:
 
-    polyParentsChooser(polySex=Male, polyNum=1)
+    polyParentsChooser(polySex=Male, polyNum=1,
+      selectionField=\"fitness\")
 
 Details:
 
-    Note: If selection is enabled, it works regularly on on-alpha sex,
-    but works twice on alpha sex. That is to say, alphaNum alpha
-    indiviudals are chosen selectively, and selected again during
-    mating.
-
-Arguments:
-
-    polySex:        Male (polygyny) or Female (polyandry) parent that
-                    will have polyNum sex partners.
-    polyNum:        Number of sex partners.
+    Create a multi-spouse parents chooser where each father (if
+    polySex is Male) or mother (if polySex is Female) has polyNum
+    spouses. The parents are chosen with replacement. If natural
+    selection is enabled, the probability that an individual is chosen
+    is proportional to his/her fitness value among all individuals
+    with the same sex. Selection will be disabled if specified
+    information field selectionField (default to \"fitness\") does not
+    exist.
 
 "; 
 
@@ -5819,10 +5791,6 @@ Usage:
 %ignore simuPOP::polyParentsChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::polyParentsChooser::chooseParents(RawIndIterator basePtr);
-
-%ignore simuPOP::polyParentsChooser::numMale();
-
-%ignore simuPOP::polyParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::population "
 
@@ -7675,15 +7643,21 @@ Usage:
 
 %feature("docstring") simuPOP::pyParentsChooser "
 
-Applicability: all ploidy
-
 Details:
 
     This parents chooser accept a Python generator function that
-    yields repeatedly an index (relative to each subpopulation) of a
+    repeatedly yields an index (relative to each subpopulation) of a
     parent, or indexes of two parents as a Python list of tuple. The
-    generator function is responsible for handling sex or selection if
-    needed.
+    parent chooser calls the generator function with parental
+    population and a subpopulation index for each subpopulation and
+    retrieves indexes of parents repeatedly using the iterator
+    interface of the generator function.
+    This parent chooser does not support virtual subpopulation
+    directly. A ValueError will be raised if this parent chooser is
+    applied to a virtual subpopulation. However, because virtual
+    subpopulations are defined in the passed parental population, it
+    is easy to return parents from a particular virtual subpopulation
+    using virtual subpopulation related functions.
 
 "; 
 
@@ -7693,9 +7667,13 @@ Usage:
 
     pyParentsChooser(parentsGenerator)
 
-Arguments:
+Details:
 
-    parentsGenerator:A Python generator function
+    Create a Python parent chooser using a Python generator function
+    parentsGenerator. This function should accept a population object
+    (the parental population) and a subpopulation number and return
+    the index of a parent or a pair of parents repeatedly using the
+    iterator interface of the generator function.
 
 "; 
 
@@ -7705,7 +7683,7 @@ Arguments:
 
 Description:
 
-    Deep copy of a parent chooser.
+    Deep copy of a python parent chooser.
 
 Usage:
 
@@ -8281,10 +8259,6 @@ Usage:
 %ignore simuPOP::randomParentsChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::randomParentsChooser::chooseParents(RawIndIterator basePtr);
-
-%ignore simuPOP::randomParentsChooser::numMale();
-
-%ignore simuPOP::randomParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::rangeSplitter "
 
@@ -9275,10 +9249,6 @@ Usage:
 %ignore simuPOP::sequentialParentsChooser::initialize(population &pop, SubPopID sp);
 
 %ignore simuPOP::sequentialParentsChooser::chooseParents(RawIndIterator basePtr);
-
-%ignore simuPOP::sequentialParentsChooser::numMale();
-
-%ignore simuPOP::sequentialParentsChooser::numFemale();
 
 %feature("docstring") simuPOP::setAncestralDepth "
 
