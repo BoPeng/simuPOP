@@ -518,7 +518,7 @@ def consanguineousMating(infoFields = [], func = None, param = None,
 	   other parameters.
     '''
     return homoMating(
-        chooser = infoParentsChooser(infoFields, func, param, replacement),
+        chooser = infoParentsChooser(infoFields, func, param),
         generator = mendelianOffspringGenerator(ops, numOffspring, sexMode),
         subPopSize = subPopSize, subPop = subPop,
         weight = weight)

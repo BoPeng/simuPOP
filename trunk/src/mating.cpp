@@ -1454,11 +1454,8 @@ bool heteroMating::mate(population & pop, population & scratch,
 		vectormating::iterator it = m_matingSchemes.begin();
 		vectormating::iterator it_end = m_matingSchemes.end();
 		for (; it != it_end; ++it) {
-			DBG_FAILIF((*it)->subPop() == InvalidSubPopID, ValueError,
-				"Please specify which subpopulation each homogeneous mating scheme is applied to");
-			// if it is used for this subpop,
-			// for use for all subPops ...
-			if ((*it)->subPop() == sp) {
+			// if it is used for this subpop, or all subpopulations
+			if ((*it)->subPop() == sp || (*it)->subPop() == InvalidSubPopID) {
 				m.push_back(*it);
 				double w = (*it)->weight();
 				// less than zero...

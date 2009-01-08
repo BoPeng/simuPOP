@@ -113,7 +113,7 @@ private:
  *  to be specified, which will be used to generate offspring generations during
  *  evolution. A number of functions are provided to access simulator
  *  properties, access populations and their variables, copy, save and load a
- *  simulator.\n
+ *  simulator.
  *
  *  The most important member function of a simulator is \c evolve, which
  *  evolves populations forward in time, subject to various \e operators.
@@ -207,7 +207,7 @@ public:
 	 *  populations (subject to applicability restrictions of the operators,
 	 *  imposed by the \e rep parameter of these operators) before evolution.
 	 *  They are usually used to initialize populations. Operators \e postOps
-	 *  are applied to all populations after the evolution.\n
+	 *  are applied to all populations after the evolution.
 	 *
 	 *  Operators \e ops are applied during the life cycle of each generation.
 	 *  Depending on the stage of these operators, they can be applied before-,
@@ -224,7 +224,7 @@ public:
 	 *  the stage(s) at which operators are applied are not always clear,
 	 *  a parameter \e dryRun can be used. If set to \c True, this function
 	 *  will print out the order at which all operators are applied, without
-	 *  actually evolving the populations.\n
+	 *  actually evolving the populations.
 	 *
 	 *  Parameter \e gen can be set to a positive number, which is the number
 	 *  of generations to evolve. If \e gen is negative (default), the evolution

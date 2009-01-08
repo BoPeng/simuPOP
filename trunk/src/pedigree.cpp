@@ -36,22 +36,50 @@
 namespace simuPOP {
 
 pedigree::pedigree(const population & pop, const vectoru & loci,
-	const vectorstr & infoFields, int ancGen, const vectorstr & parentFields)
-	: m_parentFields(parentFields), m_fatherIdx(-1), m_motherIdx(-1)
+	const vectorstr & infoFields, int ancGen,
+	const string & fatherField, const string & motherField)
+	: m_fatherField(fatherField), m_motherField(motherField),
+	m_fatherIdx(-1), m_motherIdx(-1)
 {
+	vectorstr extractFields = infoFields;
+
+	if (!m_fatherField.empty() && find(extractFields.begin(), extractFields.end(), fatherField) == extractFields.end())
+		extractFields.push_back(fatherField);
+	if (!m_motherField.empty() && find(extractFields.begin(), extractFields.end(), motherField) == extractFields.end())
+		extractFields.push_back(motherField);
+	//
 	population & ped = pop.extract(false, string(), loci.size() != pop.totNumLoci(),
-		loci, infoFields.size() != pop.infoSize(), infoFields, ancGen, NULL);
+		loci, extractFields.size() != pop.infoSize(), extractFields, ancGen, NULL);
 
 	swap(ped);
 
-	DBG_FAILIF(m_parentFields.empty(), ValueError,
-		"Please provide information fields to identify parent(s) of each individual.");
-	DBG_FAILIF(m_parentFields.size() > 2, ValueError,
-		"Please provide no more than two parental information fields.");
+	DBG_FAILIF(!m_fatherField.empty() && !pop.hasInfoField(m_fatherField), ValueError,
+		"Invalid father information field " + m_fatherField);
+	DBG_FAILIF(!m_motherField.empty() && !pop.hasInfoField(m_motherField), ValueError,
+		"Invalid mother information field " + m_motherField);
 
-	m_fatherIdx = ped.infoIdx(m_parentFields[0]);
-	if (m_parentFields.size() == 2)
-		m_motherIdx = ped.infoIdx(m_parentFields[1]);
+	m_fatherIdx = m_fatherField.empty() ? -1 : pop.infoIdx(fatherField);
+	m_motherIdx = m_motherField.empty() ? -1 : pop.infoIdx(motherField);
+}
+
+
+pedigree::pedigree(const pedigree & rhs) :
+	population(rhs),
+	m_fatherField(rhs.m_fatherField), m_motherField(rhs.m_motherField),
+	m_fatherIdx(rhs.m_fatherIdx), m_motherIdx(rhs.m_motherIdx)
+{
+}
+
+
+pedigree * pedigree::clone() const
+{
+	return new pedigree(*this);
+}
+
+
+UINT pedigree::numParents()
+{
+	return static_cast<UINT>(m_fatherIdx != -1) + static_cast<UINT>(m_motherIdx != -1);
 }
 
 
@@ -73,18 +101,22 @@ int pedigree::mother(ULONG idx, SubPopID subPop)
 }
 
 
-void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields,
-                               int gen, SexChoice relSex, const vectorstr & fields)
+void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields, int ancGen)
 {
-	if (relType == Unrelated)
+	if (fullRelType.empty() || relFields.empty())
 		return;
 
-	UINT topGen = gen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(gen));
-	vectorstr parentFields(fields.begin(), fields.end());
-	if (fields.empty()) {
-		parentFields.push_back("father_idx");
-		parentFields.push_back("mother_idx");
-	}
+	RelativeType relType = static_cast<RelativeType>(fullRelType[0]);
+
+	DBG_FAILIF(fullRelType.size() > 2, ValueError, "Unrecognized relative type.");
+
+	SexChoice relSex = fullRelType.size() == 2 ? static_cast<SexChoice>(fullRelType[1]) : AnySex;
+
+	DBG_ASSERT(relSex == AnySex || relSex == MaleOnly || relSex == FemaleOnly
+		|| relSex == SameSex || relSex == OppositeSex, ValueError,
+		"Relative sex can only be one of AnySex, MaleOnly, FemaleOnly, SameSex or OppositeSex.");
+
+	UINT topGen = ancGen == -1 ? ancestralGens() : std::min(ancestralGens(), static_cast<UINT>(ancGen));
 
 	if (relType == Self) {
 		DBG_ASSERT(relFields.size() == 1, ValueError,
@@ -98,11 +130,13 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		}
 		useAncestralGen(0);
 	} else if (relType == Spouse) {
-		DBG_ASSERT(parentFields.size() == 2, ValueError,
+		DBG_ASSERT(numParents() == 2, ValueError,
 			"This relative only exists when there are two parents for each indidivual");
 
 		DBG_ASSERT(relFields.size() >= 1, ValueError,
 			"Please provide at least one information field to store Self individuals");
+
+		DBG_FAILIF(relSex == SameSex, ValueError, "Can not locate spouses with the same sex");
 
 		UINT maxSpouse = relFields.size();
 
@@ -121,8 +155,8 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 			vectoru numSpouse;
 			// go to offspring generation
 			useAncestralGen(ans - 1);
-			vectorf father = indInfo(parentFields[0]);
-			vectorf mother = indInfo(parentFields[1]);
+			vectorf father = indInfo(m_fatherIdx);
+			vectorf mother = indInfo(m_motherIdx);
 			//
 			useAncestralGen(ans);
 			if (numSpouse.empty())
@@ -201,7 +235,12 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		for (unsigned ans = 1; ans <= topGen; ++ans) {
 			vectoru numOffspring;
 			// for each type of parental relationship
-			for (vectorstr::const_iterator field = parentFields.begin();
+			vectoru parentFields;
+			if (m_fatherIdx != -1)
+				parentFields.push_back(m_fatherIdx);
+			if (m_motherIdx != -1)
+				parentFields.push_back(m_motherIdx);
+			for (vectoru::const_iterator field = parentFields.begin();
 			     field != parentFields.end(); ++field) {
 				useAncestralGen(ans - 1);
 				vectorf parent = indInfo(*field);
@@ -219,6 +258,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 						Sex offSex = relSex == AnySex ? Male : ancestor(idx, ans - 1).sex();
 						if ((relSex == MaleOnly && offSex != Male) ||
 						    (relSex == FemaleOnly && offSex != Female) ||
+						    (relSex == SameSex && offSex != ind(p).sex()) ||
 						    (relSex == OppositeSex && offSex == ind(p).sex()))
 							continue;
 						ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
@@ -238,7 +278,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 		DBG_ASSERT(relFields.size() >= 1, ValueError,
 			"Please provide at least one information field to store offspring");
 
-		DBG_FAILIF(relType == FullSibling && parentFields.size() != 2, ValueError,
+		DBG_FAILIF(relType == FullSibling && numParents() != 2, ValueError,
 			"Please provide two parental information fields");
 		UINT maxSibling = relFields.size();
 
@@ -263,7 +303,12 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 			map<pair<ULONG, ULONG>, vector<ULONG> > par_map;
 
 			if (relType == Sibling) { // one or two parents
-				for (vectorstr::const_iterator field = parentFields.begin();
+				vectoru parentFields;
+				if (m_fatherIdx != -1)
+					parentFields.push_back(m_fatherIdx);
+				if (m_motherIdx != -1)
+					parentFields.push_back(m_motherIdx);
+				for (vectoru::const_iterator field = parentFields.begin();
 				     field != parentFields.end(); ++field) {
 					vectorf parent = indInfo(*field);
 					for (size_t idx = 0; idx != parent.size(); ++idx) {
@@ -276,8 +321,8 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 					}
 				}
 			} else {
-				vectorf father = indInfo(parentFields[0]);
-				vectorf mother = indInfo(parentFields[1]);
+				vectorf father = indInfo(m_fatherIdx);
+				vectorf mother = indInfo(m_motherIdx);
 				for (size_t idx = 0; idx != father.size(); ++idx) {
 					pair<ULONG, ULONG> parents(static_cast<ULONG>(father[idx]),
 					                           static_cast<ULONG>(mother[idx]));
@@ -306,6 +351,7 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 							continue;
 						if ((relSex == MaleOnly && sexes[j] == Female) ||
 						    (relSex == FemaleOnly && sexes[j] == Male) ||
+						    (relSex == SameSex && sexes[j] != sexes[j]) ||
 						    (relSex == OppositeSex && sexes[i] == sexes[j]))
 							continue;
 						if (numSibling[sibs[i]] < maxSibling) {
@@ -322,14 +368,15 @@ void pedigree::locateRelatives(RelativeType relType, const vectorstr & relFields
 			}
 		}
 		useAncestralGen(0);
+	} else {
+		throw ValueError("Unrecognized relative type");
 	}
 }
 
 
-bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
-                                     const stringMatrix & pathFields,
-                                     const vectori & pathSex,
-                                     const vectorstr & resultFields)
+bool pedigree::traceRelatives(const vectoru & pathGen,
+                              const stringMatrix & pathFields, const vectori & pathSex,
+                              const vectorstr & resultFields)
 {
 	if (pathGen.empty())
 		return true;
@@ -394,6 +441,7 @@ bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
 					Sex indSex = ancestor(static_cast<ULONG>(sIdx), toGen).sex();
 					if ((sex == MaleOnly && indSex == Female) ||
 					    (sex == FemaleOnly && indSex == Male) ||
+					    (sex == SameSex && indSex != mySex) ||
 					    (sex == OppositeSex && indSex == mySex))
 						continue;
 					newInds.push_back(static_cast<ULONG>(sIdx));
@@ -425,183 +473,7 @@ bool pedigree::setIndexesOfRelatives(const vectoru & pathGen,
 //  if (!pedfile.empty())
 //      load(pedfile);
 // }
-//
-//
-// ULONG pedigree::father(ULONG gen, ULONG idx)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_INDEX(gen, idx);
-//
-//  return m_paternal[gen][idx];
-// }
-//
-//
-// ULONG pedigree::mother(ULONG gen, ULONG idx)
-// {
-//  CHECK_PARENTAL();
-//  CHECK_GEN(gen);
-//  CHECK_INDEX(gen, idx);
-//
-//  return m_maternal[gen][idx];
-// }
-//
-//
-// ULONG pedigree::father(ULONG gen, SubPopID subPop, ULONG idx)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//  CHECK_SUBPOP_INDEX(gen, subPop, idx);
-//
-//  size_t shift = 0;
-//  for (SubPopID i = 0; i < subPop; ++i)
-//      shift += m_pedSize[gen][i];
-//  return m_paternal[gen][shift + idx];
-// }
-//
-//
-// ULONG pedigree::mother(ULONG gen, SubPopID subPop, ULONG idx)
-// {
-//  CHECK_PARENTAL();
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//  CHECK_SUBPOP_INDEX(gen, subPop, idx);
-//
-//  size_t shift = 0;
-//  for (SubPopID i = 0; i < subPop; ++i)
-//      shift += m_pedSize[gen][i];
-//  return m_maternal[gen][shift + idx];
-// }
-//
-//
-// void pedigree::setFather(ULONG parent, ULONG gen, ULONG idx)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_INDEX(gen, idx);
-//  CHECK_INDEX(gen - 1, parent);
-//
-//  m_paternal[gen][idx] = parent;
-// }
-//
-//
-// void pedigree::setMother(ULONG parent, ULONG gen, ULONG idx)
-// {
-//  CHECK_PARENTAL();
-//  CHECK_GEN(gen);
-//  CHECK_INDEX(gen, idx);
-//  CHECK_INDEX(gen - 1, parent);
-//
-//  m_maternal[gen][idx] = parent;
-// }
-//
-//
-// void pedigree::setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//  CHECK_SUBPOP_INDEX(gen, subPop, idx);
-//  CHECK_INDEX(gen - 1, parent);
-//
-//  size_t shift = 0;
-//  for (SubPopID i = 0; i < subPop; ++i)
-//      shift += m_pedSize[gen][i];
-//  m_paternal[gen][shift + idx] = parent;
-// }
-//
-//
-// void pedigree::setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx)
-// {
-//  CHECK_PARENTAL();
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//  CHECK_SUBPOP_INDEX(gen, subPop, idx);
-//  CHECK_INDEX(gen - 1, parent);
-//
-//  size_t shift = 0;
-//  for (SubPopID i = 0; i < subPop; ++i)
-//      shift += m_pedSize[gen][i];
-//  m_maternal[gen][shift + idx] = parent;
-// }
-//
-//
-// double pedigree::info(ULONG gen, ULONG idx, const string & name)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_INDEX(gen, idx);
-//
-//  for (size_t i = 0; i < m_infoNames.size(); ++i)
-//      if (m_infoNames[i] == name)
-//          return m_info[gen][idx][i];
-//  DBG_FAILIF(true, ValueError, "Information " + name + " is not found");
-//  return 0;
-// }
-//
-//
-// vectorf pedigree::info(ULONG gen, const string & name)
-// {
-//  CHECK_GEN(gen);
-//
-//  int idx = -1;
-//  for (size_t i = 0; i < m_infoNames.size(); ++i)
-//      if (m_infoNames[i] == name)
-//          idx = i;
-//  DBG_FAILIF(idx == -1, ValueError, "Information " + name + " is not found");
-//  size_t size = m_paternal[gen].size();
-//  vectorf info(size);
-//  for (size_t i = 0; i < size; ++i)
-//      info[i] = m_info[gen][i][idx];
-//  return info;
-// }
-//
-//
-// double pedigree::info(ULONG gen, SubPopID subPop, ULONG idx, const string & name)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//  CHECK_SUBPOP_INDEX(gen, subPop, idx);
-//
-//  size_t shift = 0;
-//  for (SubPopID i = 0; i < subPop; ++i)
-//      shift += m_pedSize[gen][i];
-//  for (size_t i = 0; i < m_infoNames.size(); ++i)
-//      if (m_infoNames[i] == name)
-//          return m_info[gen][shift + idx][i];
-//  DBG_FAILIF(true, ValueError, "Information " + name + " is not found");
-//  return 0;
-// }
-//
-//
-// void pedigree::setInfo(double info, ULONG gen, ULONG idx, const string & name)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_INDEX(gen, idx);
-//
-//  for (size_t i = 0; i < m_infoNames.size(); ++i)
-//      if (m_infoNames[i] == name) {
-//          m_info[gen][idx][i] = info;
-//          return;
-//      }
-//  DBG_FAILIF(true, ValueError, "Information " + name + " is not found");
-// }
-//
-//
-// void pedigree::setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const string & name)
-// {
-//  CHECK_GEN(gen);
-//  CHECK_SUBPOP(gen, subPop);
-//  CHECK_SUBPOP_INDEX(gen, subPop, idx);
-//
-//  size_t shift = 0;
-//  for (SubPopID i = 0; i < subPop; ++i)
-//      shift += m_pedSize[gen][i];
-//  for (size_t i = 0; i < m_infoNames.size(); ++i)
-//      if (m_infoNames[i] == name) {
-//          m_info[gen][shift + idx][i] = info;
-//          return;
-//      }
-//  DBG_FAILIF(true, ValueError, "Information " + name + " is not found");
-// }
-//
-//
+////
 // vectorlu pedigree::subPopSizes(ULONG gen)
 // {
 //  CHECK_GEN(gen);

@@ -49,7 +49,7 @@ namespace simuPOP {
 /** An <em>offspring generator</em> generates offspring from parents chosen by
  *  a parent chooser. It is responsible for creating a certain number of
  *  offspring, determinning their sex, and transmitting genotypes from parents
- *  to offspring.\n
+ *  to offspring.
  */
 class offspringGenerator
 {
@@ -59,7 +59,7 @@ public:
 	 *  offspring. It expects \e numParents from an upstream parents chooser
 	 *  and raises an \c RuntimeError if incorrect number of parents are
 	 *  passed. If both one and two parents can be handled, \c 0 should be
-	 *  specified for this parameter.\n
+	 *  specified for this parameter.
 	 *
 	 *  A number of <em>genotype transmitters</em> can be used to transmit
 	 *  genotype from parents to offspring. Additional during-mating operators
@@ -73,7 +73,7 @@ public:
 	 *  generator does not use any genotype transmitter. A number of derived
 	 *  offspring generators are available with a default transmitter. For
 	 *  example, a \c mendelianOffspringGenerator uses a
-	 *  \c mendelianGenoTransmitter to transmit genotypes.\n
+	 *  \c mendelianGenoTransmitter to transmit genotypes.
 	 *
 	 *  Parameter \e numOffspring is used to control the number of offspring
 	 *  per mating event, or in another word the number of offspring in each
@@ -89,7 +89,7 @@ public:
 	 *  <tt>(UniformDistribution, a, b)</tt> can be given. The number of
 	 *  offspring will be determined randomly following these statistical
 	 *  distributions. Please refer to the simuPOP user's guide for a detailed
-	 *  description of these distribution and their parameters.\n
+	 *  description of these distribution and their parameters.
 	 *
 	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
 	 *  default value is usually \e RandomSex which assign \c Male or \c Female
@@ -197,13 +197,13 @@ public:
 	 *  or a list of allele frequencies in the whole population. In the latter
 	 *  case, overall expected number of alleles are scattered to each
 	 *  subpopulation in proportion to existing number of alleles in each
-	 *  subpopulation, using a multi-nomial distribution.\n
+	 *  subpopulation, using a multi-nomial distribution.
 	 *
 	 *  After the expected alleles are calculated, this offspring generator
 	 *  accept and reject families according to their genotype at \e loci until
 	 *  allele frequecies reach their expected values. The rest of the
 	 *  offspring generation is then filled with families without only wild
-	 *  type alleles at these \e loci.\n
+	 *  type alleles at these \e loci.
 	 *
 	 *  This offspring generator is derived from class \e offspringGenerator.
 	 *  Please refer to class \e offspringGenerator for a detailed description
@@ -662,13 +662,13 @@ private:
 /** This parent chooser chooses an individual randomly, and then his/her spouse
  *  his/her spouse from a given set of information fields, which stores indexes
  *  of individuals in the same generation. An information field will be ignored
- *  if its value is negative, or if sex is incompatible.\n
+ *  if its value is negative, or if sex is incompatible.
  *
  *  Depending on what indexes are stored in these information fields, this
  *  parent chooser can be used to implement different types of mating schemes
  *  where selection of spouse is limited. For example, a consanguineous mating
  *  scheme can be implemeneted using this mating scheme if certain type of
- *  relatives are located for each individual, and are used for mating.\n
+ *  relatives are located for each individual, and are used for mating.
  *
  *  This parent chooser uses \c randomParentChooser to choose one parent and
  *  randomly choose another one from the information fields. Natural selection
@@ -730,7 +730,7 @@ private:
  *  of two parents as a Python list of tuple. The parent chooser calls the
  *  generator function with parental population and a subpopulation index
  *  for each subpopulation and retrieves indexes of parents repeatedly using
- *  the iterator interface of the generator function.\n
+ *  the iterator interface of the generator function.
  *
  *  This parent chooser does not support virtual subpopulation directly. A
  *  \c ValueError will be raised if this parent chooser is applied to a
@@ -900,7 +900,7 @@ public:
 	 *  \e generator is used to produce one offspring at a time, regardless of
 	 *  the \e numOffspring setting of this offspring generator. If individuals
 	 *  in pedigree \e ped has only one parent, the offspring generator should
-	 *  be compatible.\n
+	 *  be compatible.
 	 *
 	 *  By default, the pedigree mating scheme does not set offspring sex and
 	 *  affection status using sex and affection status of corresponding
@@ -968,7 +968,7 @@ class homoMating : public mating
 {
 public:
 	/** Create a homogeneous mating scheme using a parent chooser \e chooser
-	 *  and an offspring generator \e generator.\n
+	 *  and an offspring generator \e generator.
 	 *
 	 *  If this mating scheme is used directly in a simulator, it will be
 	 *  responsible for creating an offspring population according to parameter
@@ -980,7 +980,7 @@ public:
 	 *  be returned if there is only one subpopulation. If latter form is used,
 	 *  the specified function will be called at each generation to determine
 	 *  the size of the offspring generation. Parameters \e subPop and
-	 *  \e weight are ignored in this case.\n
+	 *  \e weight are ignored in this case.
 	 *
 	 *  If this mating shcme is used within a heterogeneous mating scheme.
 	 *  Parameters \e subPop and \e weight are used to determine which (virtual)
@@ -1004,7 +1004,7 @@ public:
 
 	/// CPPONLY
 	homoMating(const homoMating & rhs) :
-		mating(rhs)
+		mating(rhs), m_subPop(rhs.m_subPop), m_weight(rhs.m_weight)
 	{
 		m_offspringGenerator = rhs.m_offspringGenerator->clone();
 		m_parentChooser = rhs.m_parentChooser->clone();
@@ -1081,24 +1081,30 @@ public:
 	 *  by parameter \e subPopSize, which can be a list of subpopulation sizes
 	 *  or a Python function that returns a list of subpopulation sizes at
 	 *  each generation. Please refer to \c homoMating for a detailed
-	 *  explanation of this parameter.\n
+	 *  explanation of this parameter.
 	 *
-	 *  Each mating scheme defined in \e matingSchemes should specify which
-	 *  (virtual) subpopulation it is applied to (parameter \e subPop), and
-	 *  optionally a weight (parameter \e weight) to determine how many offspring
-	 *  it will produce, if multiple mating schemes are applied to the same
-	 *  subpopulation.\n
+	 *  Each mating scheme defined in \e matingSchemes can be applied to
+     *  one or more (virtual) subpopulation. If parameter \e subPop is not
+     *  specified, a mating scheme will be applied to all subpopulations.
+     *  If a (virtual) subpopulation is specified, a mating scheme will be
+     *  applied to a specific (virtual) subpopulation. A special case is
+     *  when \e subPop is given as <tt>(-1, vsp)</tt>. In this case, the
+     *  mating scheme will be applied to virtual subpopulation \c vsp in
+     *  all subpopulations.
 	 *
-	 *  The default \weight for all mating schemes are \c 0. In this case, the
-	 *  number of offspring each mating scheme produces is proportional to the
-	 *  size of its parental (virtual) subpopulation. If all weights are negative,
-	 *  the numbers of offspring are determined by the multiplication of the
-	 *  absolute values of the weights and their respective parental (virtual)
-	 *  subpopulation sizes. If all weights are positive, the number of offspring
-	 *  produced by each mating scheme is proportional to these weights. Mating
-	 *  schemes with zero weight in this case will produce no offspring. If both
-	 *  negative and positive weights are present, negative weights are processed
-	 *  before positive ones.\n
+     *  If multiple mating schemes are applied to the same subpopulation, a
+     *  weight (parameter \e weight) can be given to each mating scheme to
+     *  determine how many offspring it will produce. The default \weight for
+     *  all mating schemes are \c 0. In this case, the number of offspring each
+     *  mating scheme produces is proportional to the size of its parental
+     *  (virtual) subpopulation. If all weights are negative, the numbers of
+     *  offspring are determined by the multiplication of the absolute values
+     *  of the weights and their respective parental (virtual) subpopulation
+     *  sizes. If all weights are positive, the number of offspring produced by
+     *  each mating scheme is proportional to these weights. Mating schemes
+     *  with zero weight in this case will produce no offspring. If both
+	 *  negative and positive weights are present, negative weights are
+     *  processed before positive ones.
 	 *
 	 *  If multiple mating schemes are applied to the same subpopulation,
 	 *  offspring produced by these mating schemes are shuffled randomly. If this

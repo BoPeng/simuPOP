@@ -34,7 +34,7 @@ namespace simuPOP {
 
 /** The pedigree class is derived from the population class. Unlike a
  *  population class that emphasizes on individual properties, the
- *  pedigree class emphasizes on relationship between individuals.\n
+ *  pedigree class emphasizes on relationship between individuals.
  *
  *  A pedigree class can be created from a population, or loaded from
  *  a disk file, which is usually saved by an operator during a previous
@@ -46,107 +46,114 @@ class pedigree : public population
 public:
 	/** Create a pedigree object from a population, using a subset of loci
 	 *  (parameter \e loci, default to no loci), information fields
-	 *  (parameter \e infoFields, default to no information field), and
-	 *  ancestral generations (parameter \e ancGen, default to all ancestral
-	 *  generations). By default, information field \c father_idx and
-	 *  \c mother_idx will be used to locate parents. If individuals in
-	 *  a pedigree has only one parent, one of \e fatherField and
-	 *  \e motherField should be set to an empty string.
+	 *  (parameter \e infoFields, default to no information field except for
+	 *  \e parentFields), and ancestral generations (parameter \e ancGen,
+	 *  default to all ancestral generations). By default, information field
+	 *  \c father_idx and \c mother_idx are used to locate parents. If
+	 *  individuals in a pedigree has only one parent, the information field
+	 *  that stores parental indexes should be specified in parameter
+	 *  \e fatherField or \e motherField. The other field should be set to an
+	 *  empty string.
 	 */
 	pedigree(const population & pop, const vectoru & loci = vectoru(),
 		const vectorstr & infoFields = vectorstr(), int ancGen = -1,
-		const vectorstr & parentFields = vectorstr(ParentsFields, ParentsFields + 2));
+		const string & fatherField = "father_idx", const string & motherField = "mother_idx");
+
+	/// CPPONLY copy constructor
+	pedigree(const pedigree & rhs);
+
+	/** Create a cloned copy of a pedigree.
+	 *  <group>1-ped</group>
+	 */
+	pedigree * clone() const;
+
+	/** Return the number of parents each individual has. This function returns
+	 *  the number of information fields used to store parental indexes, even
+	 *  if one of the fields are unused.
+	 *  <group>2-info</group>
+	 */
+	UINT numParents();
 
 	/** Return the index of the father of individual \e idx in subpopulation
 	 *  \e subPop in the parental generation. Return \c -1 if this individual
-	 *  has no father (\c fatherField is empty or the valud of information
+	 *  has no father (\c fatherField is empty or the value of information
 	 *  field is negative).
+	 *  <group>3-rel</group>
 	 */
 	int father(ULONG idx, SubPopID subPop);
 
 	/** Return the index of the mother of individual \e idx in subpopulation
 	 *  \e subPop in the parental generation. Return \c -1 if this individual
-	 *  has no mother (\c motherField is empty or the valud of information
+	 *  has no mother (\c motherField is empty or the value of information
 	 *  field is negative).
+	 *  <group>3-rel</group>
 	 */
 	int mother(ULONG idx, SubPopID subPop);
 
-	/** This function locates relatives (of type \e relType, and sex \e relSex)
-	 *  of each individual and store their indexes in specified information
-	 *  fields \e relFields. The indexes of parents in the parental generation
-	 *  should be available in information fields \e parentFields (default to
-	 *  <tt>['father_idx', 'mother_idx']</tt> which are the information fields
-	 *  used by operator \c parentsTagger. This function currently only work
-	 *  for diploid populations. \n
+	/** This function locates relatives (of type \e relType) of each individual
+	 *  and store their indexes in specified information fields \e relFields.
+	 *  The length of \e relFields determines how many relatives an individual
+	 *  can have.
 	 *
-	 *  \param relType Relative type, which can be
-	 *  \li Self set indexes of individual themselves.
-	 *  \li Spouse locate spouses of individuals in the current generation.
-	 *    A spouse is defined as two individuals
-	            having an offspring with shared \c parentFields. If more than one \c infoFields is given,
-	            multiple spouses can be identified.
-	   \li Offspring index of offspring in the offspring generation. If only one
-	            parent is given, only paternal or maternal relationship is considered. For example,
-	            <tt>parentFields=['father_idx']</tt> will locate offspring for all fathers.
-	   \li FullSibling all siblings with the same parents
-	   \li Sibling all sibs with at least one shared parent
-	 * \param relFields information fields to hold relatives. The number of these fields
-	 *		limits the number of relatives to locate.
-	 * \param gen Find relatives for individuals for how many generations. Default to -1,
-	 *      meaning for all generations. If a non-negative number is given, up till generation
-	 *      gen will be processed.
-	 * \param relSex Whether or not only locate relative or certain sex. It can be
-	 *		AnySex (do not care, default), MaleOnly, FemaleOnly, or OppositeSex (only locate
-	 *      relatives of opposite sex.
-	 * \return if relatives are successfully located. Possible problems are
-	 *      father and mother indexes are not available, or insufficient parental generations.
+	 *  Parameter \e relType specifies what type of relative to locate. It can
+	 *  be \c Self, \c Spouse (having at least one common offspring),
+	 *  \c Offspring, \c FullSibling (having common father and mother), or
+	 *  \c Sibling (having at least one common parent). Optionally, you can
+	 *  specify the sex of relatives you would like to locate, in the form of
+	 *  <tt>relType=(type, sexChoice)</tt>. sexChoice can be \c AnySex
+	 *  (default), \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex.
 	 *
-	 * <group>6-ancestral</group>
+	 *  This function will by default go through all ancestral generations and
+	 *  locate relatives for all individuals. This can be changed by setting
+	 *  parameter \e ancGen to the greatest ancestral generation you would like
+	 *  to process.
+	 *  <group>4-locate</group>
 	 */
-	void locateRelatives(RelativeType relType, const vectorstr & relFields,
-		int gen = -1, SexChoice relSex = AnySex,
-		const vectorstr & parentFields = vectorstr());
+	void locateRelatives(uintList relType = uintList(), const vectorstr & relFields = vectorstr(),
+		int ancGen = -1);
 
-	/// Trace a relative path in a population and record the result in the given information fields.
-	/**
-	   \param pathGen A list of generations that form a relative path. This array is one element longer
-	    than \c pathFields, with gen_i, gen_i+1 indicating the current and destinating generation
-	    of information fields path_i.
-	   \param pathFields A list of list of information fields forming a path to trace a certain
-	    type of relative.
-	   \param resultFields Where to store located relatives. Note that the result will be saved
-	    in the starting generation specified in \c pathGen[0], which is usually 0.
-	   \param pathSex (Optional) A list of sex choices, AnySex, Male, Female or OppositeSex,
-	    that is used to choose individuals at each step. Default to AnySex.
-
-	   For example,
-	   <tt>
-	    setInfoWithRelatives(pathGen = [0, 1, 1, 0],
-	        pathFields = [['father_idx', 'mother_idx'], ['sib1', 'sib2'],
-	            ['off1', 'off2']],
-	        pathSex = [AnySex, MaleOnly, FemaleOnly],
-	        resultFields = ['cousin1', 'cousin2'])
-	   </tt>
-	   This function will
-	   1. locate father_idx and mother_idx for each individual at generation 0 (\c pathGen[0])
-	   2. find AnySex individuals referred by father_idx and mother_idx at generation 1 (\c pathGen[1])
-	   3. find informaton fields \c sib1 and \c sib2 from these parents
-	   4. locate MaleOnly individuals referred by \c sib1 and \c sib2 from generation 1 (\c pathGen[2])
-	   5. find information fields \c off1 and \c off2 from these individuals, and
-	   6. locate FemaleOnly indiviudals referred by \c off1 and \of2 from geneartion 0 (\c pathGen[3])
-	   7. Save index of these individuals to information fields \c cousin1 and \c cousin2 at
-	    genearation \c pathGen[0].
-
-	   In short, this function locates father or mother's brother's daughters.
-	 * <group>6-ancestral</group>
+	/** Trace a relative path in a population and record the result in the
+	 *  given information fields \e resultFields. This function is used to
+	 *  locate more distant relatives based on the relatives located by
+	 *  function \c locateRelatives. For example, after siblings and offspring
+	 *  of all individuals are located, you can locate mother's sibling's
+	 *  offspring using a <em>relative path</em>, and save their indexes
+	 *  in each individuals information fields \e resultFields.
+	 *
+	 *  A <em>relative path</em> consits of three pieces of information
+	 *  specified by three parameters. Parameter \e pathGen specifies starting,
+	 *  intermediate and ending generations. \e pathFields specifies which
+	 *  information fields to look for at each step, and \e pathSex specifies
+	 *  sex choices at each generation, which should be a list of \c AnySex,
+	 *  \c MaleOnly, \c FemaleOnly, \c SameSex and \c OppsiteSex. The default
+	 *  value for this paramter is \c AnySex at all steps. The length of
+	 *  \e pathGen should be one more than \e pathFields, and \e pathSex if
+	 *  \e pathSex is given.
+	 *
+	 *  For example, if <tt>pathGen=[0, 1, 1, 0]</tt>, <tt>pathFields =
+	 *  [['father_idx', 'mother_idx'], ['sib1', 'sib2'], ['off1', 'off2']]</tt>,
+	 *  and <tt>pathSex = [AnySex, MaleOnly, FemaleOnly]</tt>, this function
+	 *  will locate \c father_idx and \c mother_idx for each individual at
+	 *  generation 0, find all individuals referred by \c father_idx and
+	 *  \c mother_idx at generation 1, find informaton fields \c sib1 and
+	 *  \c sib2 from these parents and locate male individuals referred by
+	 *  these two information fields. Finally, the information fields \c off1
+	 *  and \c off2 from these siblings are located and are used to locate
+	 *  their female offspring at the present geneartion. The results are
+	 *  father or mother's brother's daughters. Their indexes will be saved in
+	 *  each individuals information fields \e resultFields. Note that this
+	 *  function will locate and set relatives for individuals only at the
+	 *  starting generation specified at <tt>pathGen[0]</tt>.
+	 *  <group>4-locate</group>
 	 */
-	bool setIndexesOfRelatives(const vectoru & pathGen,
+	bool traceRelatives(const vectoru & pathGen,
 		const stringMatrix & pathFields,
 		const vectori & pathSex = vectori(),
 		const vectorstr & resultFields = vectorstr());
 
 private:
-	vectorstr m_parentFields;
+	string m_fatherField;
+	string m_motherField;
 
 	int m_fatherIdx;
 	int m_motherIdx;
@@ -213,53 +220,7 @@ private:
 //      return m_paternal.size();
 //  }
 //
-//
-//  /// Return the index of the father of individual \c idx at generation \c gen
-//  /// The returned index is the absolute index of father in the parental generation
-//  ULONG father(ULONG gen, ULONG idx);
-//
-//  /// Return the index of the mother of individual \c idx at generation \c gen
-//  /// The returned index is the absolute index of mother in the parental generation
-//  ULONG mother(ULONG gen, ULONG idx);
-//
-//  /// Return the index of the father of individual \c idx of subpopulation
-//  /// \c subPop at generation \c gen
-//  /// The returned index is the absolute index of father in the parental generation
-//  ULONG father(ULONG gen, SubPopID subPop, ULONG idx);
-//
-//  /// Return the index of the mother of individual \c idx of subpopulation
-//  /// \c subPop at generation \c gen
-//  /// The returned index is the absolute index of mother in the parental generation
-//  ULONG mother(ULONG gen, SubPopID subPop, ULONG idx);
-//
-//  /// Set the index of the father of individual  \c idx at generation \c gen
-//  void setFather(ULONG parent, ULONG gen, ULONG idx);
-//
-//  /// Set the index of the mother of individual  \c idx at generation \c gen
-//  void setMother(ULONG parent, ULONG gen, ULONG idx);
-//
-//  /// Set the index of the father of individual \c idx of subpopulation \c subPop at generation \c gen
-//  void setFather(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx);
-//
-//  /// Set the index of the mother of individual \c idx of subpopulation \c subPop at generation \c gen
-//  void setMother(ULONG parent, ULONG gen, SubPopID subPop, ULONG idx);
-//
-//  /// Return information \c name of individual \c idx at generation \c gen
-//  double info(ULONG gen, ULONG idx, const string & name);
-//
-//  /// Return information \c name of all individuals at generation \c gen
-//  vectorf info(ULONG gen, const string & name);
-//
-//  /// Return information \c name of individual \c idx of subpopulation \c subPop at generation \c gen
-//  double info(ULONG gen, SubPopID subPop, ULONG idx, const string & name);
-//
-//  /// Set information \c name  of individual \c idx at generation \c gen
-//  void setInfo(double info, ULONG gen, ULONG idx, const string & name);
-//
-//  /// Set information \c name of individual \c idx of subpopulation \c subPop at generation \c gen
-//  void setInfo(double info, ULONG gen, SubPopID subPop, ULONG idx, const string & name);
-//
-//  /// Add a generation to the existing pedigree, with given subpopulation sizes
+////  /// Add a generation to the existing pedigree, with given subpopulation sizes
 //  /// \c subPopSize . All parental indexes and information will be set to zero
 //  /// for the new generation.
 //  void addGen(const vectorlu & subPopSize);
