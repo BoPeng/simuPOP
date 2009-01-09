@@ -3157,12 +3157,8 @@ bool repList::match(UINT rep, const vector<bool> & activeRep)
         DBG_ASSERT(!activeRep.empty() && activeRep[rep], SystemError,
 			"Check is avtive should only be done for active replicates");
         // check the simple and most used case
-        if (*it == -1) {
-            if (activeRep.back() && rep + 1 == activeRep.size())
-				return true;
-            else
-				continue;
-		}
+        if (*it == -1 && activeRep.back() && rep + 1 == activeRep.size())
+			return true;
         // find what exactly an negative index refer to
         int cnt = -*it;
         int curRep = activeRep.size() - 1;
