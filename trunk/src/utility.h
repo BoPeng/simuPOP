@@ -1462,21 +1462,20 @@ private:
 /** This class defines an interface using which both a integer number and
  *  a list of numbers can be accpted.
  */
-template <typename T>
-class typeList
+class intList
 {
 public:
-	typeList(const vector<T> & values = vector<T>()) : m_elems(values)
+	intList(const vectorl & values = vectorl()) : m_elems(values)
 	{
 	}
 
 
-	typeList(T value) : m_elems(1, value)
+	intList(long value) : m_elems(1, value)
 	{
 	}
 
 
-	T operator[](size_t i) const
+	long operator[](size_t i) const
 	{
 		DBG_FAILIF(i >= size(), IndexError, "Index out of range");
 		return m_elems[i];
@@ -1495,18 +1494,17 @@ public:
 	}
 
 
-	vector<T> & elems()
+	vectorl & elems()
 	{
 		return m_elems;
 	}
 
 
 protected:
-	vector<T> m_elems;
+	vectorl m_elems;
 };
 
 
-typedef typeList<int> intList;
 
 // I cannot use template here because otherwise SWIG does not
 // handle the type correctly. I guess this can be my problem with using
@@ -1682,7 +1680,7 @@ private:
 class repList : public intList
 {
 public:
-	repList(const vectori & reps = vectori()) :
+	repList(const vectorl & reps = vectorl()) :
 		intList(reps)
 	{
 	}

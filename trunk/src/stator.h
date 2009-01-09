@@ -58,7 +58,7 @@ public:
 	// default to have NO output (shared variables will be set.)
 	/// create a stator
 	stator(string output = "", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -105,7 +105,7 @@ public:
 	pyEval(const string & expr = "", const string & stmts = "", const string & preStmts = "",
 		const string & postStmts = "", bool exposePop = false, const string & name = "",
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: stator(output, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
@@ -175,7 +175,7 @@ public:
 	pyExec(const string & stmts = "", const string & preStmts = "", const string & postStmts = "",
 		bool exposePop = false, const string & name = "",
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", 
 		         stage, begin, end, step, at, rep, subPop, infoFields)
@@ -248,7 +248,7 @@ public:
 	infoEval(const string & expr = "", const string & stmts = "", const vectoru & subPops = vectoru(),
 		bool usePopVars = false,  bool exposePop = false, const string & name = "",
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: stator(output, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
@@ -333,7 +333,7 @@ public:
 	infoExec(const string & stmts = "",  const vectoru & subPops = vectoru(), bool usePopVars = false,
 		bool exposePop = false, const string & name = "",
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output,
 		           stage, begin, end, step, at, rep, subPop, infoFields)
@@ -1731,7 +1731,7 @@ public:
 		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
 		// regular parameters
 		string output = "", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 

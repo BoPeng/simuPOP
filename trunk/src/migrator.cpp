@@ -28,7 +28,7 @@ namespace simuPOP {
 
 migrator::migrator(const matrix & rate, int mode,
 	const subPopList & fromSubPop, vectoru toSubPop,
-	int stage, int begin, int end, int step, vectorl at,
+	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 	m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)

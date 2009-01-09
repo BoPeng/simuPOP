@@ -50,7 +50,7 @@ class outputer : public baseOperator
 public:
 	/// constructor.
 	outputer(string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -82,7 +82,7 @@ public:
 	   \param str string to be outputted
 	 */
 	pyOutput(string str = "", string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer(output, stage, begin, end,
 		         step, at, rep, subPop, infoFields), m_string(str)
@@ -161,7 +161,7 @@ public:
 		const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
 		const vectorlu & indRange = vectorlu(),
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(),    // const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		outputer(output, stage, begin, end, step, at, rep, subPopList(), infoFields),
@@ -229,7 +229,7 @@ public:
 	    \param compress obsolete parameter
 	 */
 	savePopulation(string output = "", int stage = PostMating, int begin = 0, int end = -1,
-		int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_filename(output)
 	{

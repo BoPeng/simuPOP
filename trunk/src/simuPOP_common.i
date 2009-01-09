@@ -236,6 +236,7 @@ namespace std
 %implicitconv floatList;
 %implicitconv repList;
 
+%implicitconv intList;
 %implicitconv uintList;
 %implicitconv uintListFunc;
 %implicitconv floatListFunc;

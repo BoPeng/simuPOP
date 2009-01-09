@@ -67,7 +67,7 @@ public:
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0,
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
@@ -217,7 +217,7 @@ public:
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0,
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, stage, begin, end, step, at, rep, subPop, infoFields)
@@ -276,7 +276,7 @@ public:
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0, double incProb = 0.5,
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, stage, begin, end, step, at, rep, subPop, infoFields),
@@ -363,7 +363,7 @@ public:
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, stage, begin, end, step, at, rep, subPop, infoFields),
@@ -433,7 +433,7 @@ public:
 		const vectoru & loci = vectoru(), UINT maxAllele = 0,
 		PyObject * func = NULL,
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
 		          output, stage, begin, end, step, at, rep, subPop, infoFields),
@@ -491,7 +491,7 @@ public:
 		vectoru atPloidy = vectoru(),
 		vectorlu inds = vectorlu(),
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_toAllele(toAllele),

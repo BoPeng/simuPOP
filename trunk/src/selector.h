@@ -75,7 +75,7 @@ public:
 	   \param subPop a shortcut to <tt>subPops=[subPop]</tt>
 	   \param subPops subpopulations that the selector will apply to. Default to all.
 	 */
-	selector(const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	selector(const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "fitness"))
 		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields), m_subPops(subPops)
 	{
@@ -143,7 +143,7 @@ public:
 	 */
 	mapSelector(vectoru loci, const strDict & fitness, bool phase = false,
 		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_dict(fitness), m_phase(phase)
@@ -220,7 +220,7 @@ public:
 	 */
 	maSelector(vectoru loci, const vectorf & fitness, const vectora & wildtype,
 		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
@@ -296,7 +296,7 @@ public:
 	 */
 	mlSelector(const vectorop selectors, int mode = SEL_Multiplicative,
 		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_selectors(0), m_mode(mode)
@@ -378,7 +378,7 @@ public:
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(vectoru loci, PyObject * func, const vectoru & subPops = vectoru(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
 		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)

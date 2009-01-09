@@ -196,7 +196,7 @@ public:
 	 *    operators that use information fields usually have default values for
 	 *    this parameter.
 	 */
-	baseOperator(string output, int stage, int begin, int end, int step, vectorl at,
+	baseOperator(string output, int stage, int begin, int end, int step, const intList & at,
 		const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
 		m_flags(0), m_rep(rep), m_subPop(subPop),
@@ -465,8 +465,8 @@ private:
 	int m_stepGen;
 
 	/// a list of generations that this oeprator will be active.
-	/// typical usage is m_atGen=[-1] to apply at the last generation.
-	vectorl m_atGen;
+	/// typical usage is m_atGen=-1 to apply at the last generation.
+	intList m_atGen;
 
 	/// various m_flags of Operator for faster processing.
 	unsigned char m_flags;
@@ -525,7 +525,7 @@ public:
 	pause(bool prompt = true, bool stopOnKeyStroke = false,
 		bool exposePop = true, string popName = "pop",
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = -1, const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
@@ -581,7 +581,7 @@ public:
 	/**
 	 */
 	noneOp(string output = ">", 
-		int stage = PostMating, int begin = 0, int end = 0, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -652,7 +652,7 @@ public:
 	 */
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 		string output = ">", 
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
@@ -726,7 +726,7 @@ class ticToc : public baseOperator
 public:
 	/// create a timer
 	ticToc(string output = ">", 
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
@@ -773,7 +773,7 @@ class setAncestralDepth : public baseOperator
 public:
 	/// create a \c setAncestralDepth operator
 	setAncestralDepth(int depth, string output = ">", 
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_depth(depth)
@@ -829,7 +829,7 @@ class turnOnDebug : public baseOperator
 public:
 	/// create a \c turnOnDebug operator
 	turnOnDebug(DBG_CODE code,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_code(code)
@@ -878,7 +878,7 @@ class turnOffDebug : public baseOperator
 public:
 	/// create a \c turnOffDebug operator
 	turnOffDebug(DBG_CODE code,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_code(code)
@@ -960,7 +960,7 @@ public:
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool formOffGenotype = false, bool offspringOnly = false,
-		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr());
 
 	/// HIDDEN
