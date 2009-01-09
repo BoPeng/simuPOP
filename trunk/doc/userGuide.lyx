@@ -7593,7 +7593,7 @@ The pedigree mating scheme
 \end_layout
 
 \begin_layout Standard
-This feature is still under development.
+This feature is still under major revision.
 \end_layout
 
 \begin_layout Section
@@ -7601,64 +7601,197 @@ Simulator
 \end_layout
 
 \begin_layout Standard
-Simulators combine three important components of simuPOP: population, mating
- scheme and operators together.
- A simulator is created with an instance of population, a replicate number
- and a mating scheme.
- It makes 
-\family typewriter
-rep
-\family default
- replicates of this population and control the evolution process of these
- populations.
+A simuPOP simulator evolves one or more copies of a population forward in
+ time, subject to various operators.
+ Although simulators have been used extensively in the previous chapters,
+ it is worthwhile to have a detailed look at this object.
+\end_layout
+
+\begin_layout Subsection
+Generation number
 \end_layout
 
 \begin_layout Standard
-The most important function of a simulator is 
+A generation number is used to track the number of generations a simulator
+ has evolved.
+ In terms of the life cycle of a generation, a generation number refers
+ to a generation before mating.
+ The basic rules about generation number are
+\end_layout
+
+\begin_layout Itemize
+A new simulator has generation number 0.
+\end_layout
+
+\begin_layout Itemize
+If a simulator has evolved 
+\begin_inset Formula $n$
+\end_inset
+
+ generations, its generation number will become 
+\begin_inset Formula $n$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Generation number can be retrieved using function 
 \family typewriter
-evolve()
+gen()
+\family default
+, and set using function 
+\family typewriter
+setGen(gen).
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simuGen"
+
+\end_inset
+
+ demonstrates the change of generation numbers of a simulator.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simuGen.log"
+lstparams "caption={Generation number of a simulator},label={simuGen}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Rep, gen and access to population variables
+\end_layout
+
+\begin_layout Subsection
+Operator calling sequence
+\end_layout
+
+\begin_layout Standard
+In a simulation, operators are applied at different stages, pre-, during-,
+ and post-mating (controlled by 
+\family typewriter
+stage
+\family default
+ parameter), at specified generations (controlled by 
+\family typewriter
+begin, end, step, at
+\family default
+ parameters), and to specified replicates (controlled by 
+\family typewriter
+rep
+\family default
+ parameter).
+ The order of applying operators usually does not matter but errors may
+ occur if you are not careful.
+ For example, 
+\family typewriter
+stat(...)
+\family default
+ calculates the statistics of the current population.
+ It is a pre-mating operator so you should set 
+\family typewriter
+stage=PostMating
+\family default
+ and put it after all operators if you would like to measure a post-mating
+ population.
+ It also should be put before any operator (such as an terminator) that
+ uses the shared variable set by 
+\family typewriter
+stat(...).
+\end_layout
+
+\begin_layout Standard
+Because it is not always clear which stage(s) an operator can be applied
+ and in which order they will be applied, a parameter 
+\family typewriter
+dryrun
+\family default
+ is provided to the 
+\family typewriter
+simulator::evolve()
+\family default
+ function.
+ If set to 
+\family typewriter
+True
+\family default
+, the 
+\family typewriter
+evolve
+\family default
+ function will list all operators in the order at which they will be applied.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dryrun.log"
+lstparams "caption={List the order at which operators are applied},label={dryrun}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Modifying genotypic structure of populations
+\end_layout
+
+\begin_layout Subsection
+Terminate a simulator
+\end_layout
+
+\begin_layout Subsection
+Save and Load
+\end_layout
+
+\begin_layout Standard
+Using function 
+\family typewriter
+saveSimulator
+\family default
+, we can save a simulator to a file.
+ Although files with any extension can be correctly saved/loaded, extension
+ 
+\family typewriter
+.sim
+\family default
+ is usually used.
+ Note that a mating scheme can not be saved and has to be re-specified in
+ 
+\family typewriter
+LoadSimulator
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+loadSimulator
+\end_layout
+
+\end_inset
+
+()
 \family default
 .
- It accepts arrays of operators as its parameters, among which, '
-\family typewriter
-preOps
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-simulato!preOps
-\end_layout
-
-\end_inset
-
-' and '
-\family typewriter
-postOps
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-simulator!postOps
-\end_layout
-
-\end_inset
-
-' will be applied to the populations at the beginning and end of evolution,
- respectively, whereas '
-\family typewriter
-ops
-\family default
-' will be applied at every generation.
- Of course, a simulator will probe and respect each operator's 
-\family typewriter
-rep, begin, end, step, at, stage
-\family default
- properties and act accordingly.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simulatorCloneSaveLoad.log"
+lstparams "caption={Clone, save and load a simulator},label={simulatorSaveLoad}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -7666,387 +7799,11 @@ Pedigrees
 \end_layout
 
 \begin_layout Standard
-simuPOP provides the following functions to manipulate pedigrees
-\end_layout
-
-\begin_layout Itemize
-If you set 
-\family typewriter
-ancestralDepth
-\family default
- of a population to a positive number (default 0), 
-\family typewriter
-ancestralDepth
-\family default
- number of ancestral generations will be saved to the population, which
- makes a total of 
-\family typewriter
-ancestralDepth + 1
-\family default
- generations.
-\end_layout
-
-\begin_layout Itemize
-You can use 
-\family typewriter
-population::useAncestralPop
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-useAncestralPop
-\end_layout
-
-\end_inset
-
-(idx)
-\family default
- to use current (0), parental (1), grand-parental (2) generations etc.
- Just remember to call 
-\family typewriter
-population::useAncestralPop(0)
-\family default
- to set current generation back.
-\end_layout
-
-\begin_layout Itemize
-You can set 
-\family typewriter
-ancestralDepth
-\family default
- dynamically using operator 
-\family typewriter
-setAncestralDepth
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-setAncestralDepth
-\end_layout
-
-\end_inset
-
-.
-
-\family default
- Usually, this operator is called, for example, as 
-\family typewriter
-setAncestralDepth(at=[-2])
-\family default
-, to allow last several generations to be saved at the end of evolution.
-\end_layout
-
-\begin_layout Itemize
-No parental information is saved by default we usually do not know the parents
- of an offspring.
- This can be changed by using the 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- information fields, and an appropriate tagger such as 
-\family typewriter
-parentTagger
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-parentTagger
-\end_layout
-
-\end_inset
-
-()
-\family default
-, which is a during mating operator that will record the parents' indices
- in the parental generation to offspring's information fields.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-randomMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-randomMating
-\end_layout
-
-\end_inset
-
-()
-\family default
- only produce one offspring per mating event.
- This makes full siblings very unlikely.
- You usually need to change this at the last several generations.
-\end_layout
-
-\begin_layout Standard
-You can see that generating multi-generation populations are quite different
- from the usual evolutionary process where random mating is used, and one
- offspring is generated for each mating event.
- In practice (see 
-\family typewriter
-scripts/simuComplexDisease.py
-\family default
-), if we need to prepare a population for pedigree sampling, we can run
- a simulator like this
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-One-stage simulation for pedigree tracking
-\end_layout
-
-\end_inset
-
-pop = population(...., ancestralDepth=2,
-\end_layout
-
-\begin_layout Plain Layout
-
-    infoFields=['father_idx', 'mother_idx'])
-\end_layout
-
-\begin_layout Plain Layout
-
-simu = simulator(pop, randomMating(numOffspring=2))
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.evolve(
-\end_layout
-
-\begin_layout Plain Layout
-
-    preOps=[...],
-\end_layout
-
-\begin_layout Plain Layout
-
-    ops = operators,
-\end_layout
-
-\begin_layout Plain Layout
-
-    end = 1000
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The problem with this approach is that two generations are saved at all
- generations, and all mating events produce two offspring.
- The former is not a big deal but the latter will reduce effective population
- size of the resulting population.
- To avoid these problems, a two-stage simulation can be done 
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Two-stage simulation for pedigree tracking
-\end_layout
-
-\end_inset
-
-pop = population(....)
-\end_layout
-
-\begin_layout Plain Layout
-
-simu = simulator(pop, randomMating())
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.evolve(
-\end_layout
-
-\begin_layout Plain Layout
-
-    preOps=[...],
-\end_layout
-
-\begin_layout Plain Layout
-
-    ops = operators,
-\end_layout
-
-\begin_layout Plain Layout
-
-    end = 1000 - 2
-\end_layout
-
-\begin_layout Plain Layout
-
-)
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.setAncestralDepth(2)
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.addInfoFields(['father_idx', 'mother_idx'])
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.setMatingScheme(randomMating(numOffspring=2))
-\end_layout
-
-\begin_layout Plain Layout
-
-operators.append(parentsTagger())
-\end_layout
-
-\begin_layout Plain Layout
-
-simu.evolve(ops=operators, end=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-That is to say, we separate the simulation into two parts.
- The first part is geared toward performance and maximum effective population
- size (use true random mating), and the second part is tweaked for the final
- multi-generation population.
- Note that 
-\family typewriter
-setAncestralDepth 
-\family default
-and 
-\family typewriter
-addInfoFields
-\family default
- should be done at the simulator level so that every replicates in the simulator
- have the same new information fields.
- 
-\family typewriter
-simu.population(0).addInfoFields(['father_idx', 'mother_idx']) 
-\family default
-will compromise the integrity of the simulator and is disallowed.
- (Integrity refers to the fact that all populations in a simulator should
- have the same genotypic structure as the simulator).
-\end_layout
-
-\begin_layout Standard
-Now, at the end of the simulation, you get a population with multiple generation
-s, with parental information.
- But it is still not easy to obtain pedigrees.
- As a matter of fact, since individuals can belong to multiple pedigrees,
- it is not even easy to define a pedigree.
- simuPOP provides a few pedigree ascertainment operators
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-AffectedSibpairSample
-\family default
-: sample affected sibpairs, along with their parents from a population.
- Affection status should have been set by other means such as a penetrance
- operator.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-LargePedigreeSample:
-\family default
- sample grand parents, their children, and the spouse and children of them.
- Affection status is ignored, although the minimal number of affected individual
-s in each family can be specified.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-NuclearFamilySample: 
-\family default
-sample two-generation pedigrees.
-\end_layout
-
-\begin_layout Standard
-If you need to sample more complicated pedigrees, you should first use 
-\family typewriter
-sample::findOffspringAndSpouse
-\family default
- to locate each individual's offspring and spouse, then use 
-\family typewriter
-useAncestralPop()
-\family default
- to go through the generations and set 
-\family typewriter
-pedIndex
-\family default
- for the pedigree you choose, and then use 
-\family typewriter
-setSubPopID()
-\family default
-, 
-\family typewriter
-newPopByIndID()
-\family default
- to exclude and remove unneeded individuals.
- 
-\family typewriter
-sample::resetParentalIndex()
-\family default
- should also be used to reset the 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- fields.
- Sound complicated? It is complicated! I hope that I can get some better
- idea and make this process a bit easier, but this is where simuPOP is at
- right now.
-\end_layout
-
-\begin_layout Standard
-Finally, you can save the sample populations in a pedigree-aware format
- like Linkage or Merlin/QTDT format.
- simuPOP can do this easily for you.
+This feature is still under major revision.
 \end_layout
 
 \begin_layout Chapter
-simuPOP Operators
+simuPOP Operators (under revision)
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:simuPOP-Operators"
@@ -8347,346 +8104,6 @@ reference "splitMigration3"
 LatexCommand lstinputlisting
 filename "log/splitMigration3.log"
 lstparams "caption={Population split with changing population size},label={splitMigration3}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Generation number
-\end_layout
-
-\begin_layout Standard
-Several aspects of the generation number may cause confusion:
-\end_layout
-
-\begin_layout Itemize
-generation starts from zero
-\end_layout
-
-\begin_layout Itemize
-a generation number presents a 'to-be-evolved' generation
-\end_layout
-
-\begin_layout Itemize
-the ending generation specified in 
-\family typewriter
-evolve()
-\family default
- will be executed
-\end_layout
-
-\begin_layout Standard
-That is to say, a new simulator will have generation 0 (at the beginning
- of generation 0).
- If you do 
-\family typewriter
-evolve(..., end=0), evolve
-\family default
- will evolve one generation and stop at the beginning of generation 1.
-\end_layout
-
-\begin_layout Standard
-It may sound strange that 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-evolve(end=2)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-evolve the population 3 generations.
- Generation 0, generation 1, and generation 2.
- When you use 
-\family typewriter
-start=0, step=5, end=10
-\family default
- for your operator, it will be applied at generations 
-\family typewriter
-0,5,10
-\family default
- etc.
- At the end of the simulation, current generation number is 3! (If you are
- familiar with C, this is like a 
-\family typewriter
-for
-\family default
- loop index).
- This is why you should test if a simulation is finished correctly by
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if(simu.gen() == endGen+1)
-\end_layout
-
-\end_inset
-
-instead of 
-\family typewriter
-simu.gen() == endGen.
-
-\family default
- (endGen is the value for parameter 
-\family typewriter
-end
-\family default
-).
-\end_layout
-
-\begin_layout Subsection
-Operator calling sequence
-\end_layout
-
-\begin_layout Standard
-In a simulation, operators are applied at different stages, pre-, during-,
- and post-mating (controlled by 
-\family typewriter
-stage
-\family default
- parameter), at specified generations (controlled by 
-\family typewriter
-begin, end, step, at
-\family default
- parameters), and to specified replicates (controlled by 
-\family typewriter
-rep
-\family default
- parameter).
- The order of applying operators usually does not matter but errors may
- occur if you are not careful.
- For example, 
-\family typewriter
-stat(...)
-\family default
- calculates the statistics of the current population.
- It is a pre-mating operator so you should set 
-\family typewriter
-stage=PostMating
-\family default
- and put it after all operators if you would like to measure a post-mating
- population.
- It also should be put before any operator (such as an terminator) that
- uses the shared variable set by 
-\family typewriter
-stat(...).
-\end_layout
-
-\begin_layout Standard
-If you are not sure about the calling sequence of operators, you can set
- the 
-\family typewriter
-dryrun
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-simulator!dryun
-\end_layout
-
-\end_inset
-
- parameter of 
-\family typewriter
-evolve()
-\family default
- function to 
-\family typewriter
-True
-\family default
-.
- 
-\family typewriter
-evolve
-\family default
- will then print out the order of operators to apply.
- Consider that operators can be 
-\family typewriter
-PreMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!PreMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!PreMating
-\end_layout
-
-\end_inset
-
-, PostMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!PostMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!PostMating
-\end_layout
-
-\end_inset
-
-, PrePostMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!PrePostMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!PrePostMating
-\end_layout
-
-\end_inset
-
-, DuringMating
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-constant!DuringMating
-\end_layout
-
-\end_inset
-
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-operator!DuringMating
-\end_layout
-
-\end_inset
-
-
-\family default
- and the default value (parameter 
-\family typewriter
-stage
-\family default
-) may not be what you expect.
- Having a look at the calling sequence before the real evolution is always
- a good idea.
-\end_layout
-
-\begin_layout Standard
-Because it is not always clear which stage(s) an operator can be applied
- and in which order they will be applied, a parameter 
-\family typewriter
-dryrun
-\family default
- is provided to the 
-\family typewriter
-simulator::evolve()
-\family default
- function.
- If set to 
-\family typewriter
-True
-\family default
-, the 
-\family typewriter
-evolve
-\family default
- function will list all operators in the order at which they will be applied.
- 
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/dryrun.log"
-lstparams "caption={List the order at which operators are applied},label={dryrun}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Terminate a simulator
-\end_layout
-
-\begin_layout Subsection
-Save and Load
-\end_layout
-
-\begin_layout Standard
-Using function 
-\family typewriter
-saveSimulator
-\family default
-, we can save a simulator to a file.
- Although files with any extension can be correctly saved/loaded, extension
- 
-\family typewriter
-.sim
-\family default
- is usually used.
- Note that a mating scheme can not be saved and has to be re-specified in
- 
-\family typewriter
-LoadSimulator
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-loadSimulator
-\end_layout
-
-\end_inset
-
-()
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/simulatorCloneSaveLoad.log"
-lstparams "caption={Clone, save and load a simulator},label={simulatorSaveLoad}"
 
 \end_inset
 
@@ -9192,357 +8609,6 @@ r/2 &  &  & r/2 & 1-r\end{array}\right)\]
 \end_layout
 
 \begin_layout Section
-Information fields
-\end_layout
-
-\begin_layout Standard
-Information fields are, in short, double values attached to each individual.
- Since different applications require different information fields, simuPOP
- takes a minimal approach in that no information field will be used (to
- save RAM) by default.
- When you apply an operator that needs a particular field, and your population
- does not have it, an error message will be given so that you can add appropriat
-e fields to the 
-\family typewriter
-infoFields
-\family default
- parameter of 
-\family typewriter
-population()
-\family default
-, or use 
-\family typewriter
-setInfoFields(), addInfoField(), addInfoFields()
-\family default
- member functions to add them.
- Commonly used information fields are
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-fitness:
-\family default
- used by all selectors, and by mating schemes
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-father_idx, mother_id
-\family default
-x: used by taggers to track parental information
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-spouse, pedindex, oldindex:
-\family default
- used by ascertainment operators to obtain pedigree information.
-\end_layout
-
-\begin_layout Standard
-Besides these standard information fields, you can define any fields for
- your use.
- The most frequently used functions are 
-\family typewriter
-individual::setInfo
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-setInfo
-\end_layout
-
-\end_inset
-
-(value, field), individual::info
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-info
-\end_layout
-
-\end_inset
-
-(field), population::setIndInfo
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-setIndInfo
-\end_layout
-
-\end_inset
-
-(values, field)
-\family default
- and 
-\family typewriter
-population::indInfo
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-indInfo
-\end_layout
-
-\end_inset
-
-(field).
-
-\family default
- Here field can be the name of the field, or an id returned by 
-\family typewriter
-population::infoIdx
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-infoIdx
-\end_layout
-
-\end_inset
-
-(field)
-\family default
-.
- Accessing information fields using indices is faster than using names.
-\end_layout
-
-\begin_layout Standard
-In the following example (Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "infoFields"
-
-\end_inset
-
-), a proportional hazard model is used to determine the age of onset of
- an individual with given genotype.
- Briefly,
-\end_layout
-
-\begin_layout Itemize
-The base hazard is 
-\begin_inset Formula $h_{0}\left(t\right)=\beta_{0}t$
-\end_inset
-
-, the corresponding survival function is 
-\begin_inset Formula $S\left(s\right)=\exp\left(-\int_{0}^{s}h\left(t\right)dt\right)$
-\end_inset
-
-.
- The age of onset is determined randomly by the survival function.
- (
-\begin_inset Formula $F\left(x\right)=1-S\left(x\right)$
-\end_inset
-
- is used in the example.) The relevant functions are 
-\family typewriter
-hazard, cumHazard, cdf, ageOfOnset
-\family default
-.
- In the last function, 
-\begin_inset Formula $\beta$
-\end_inset
-
- is the fold change of the hazard function so 
-\begin_inset Formula $h\left(t,\beta\right)=\beta\beta_{0}t$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-Date of birth is calculated as 2005 - age, where age is 
-\begin_inset Formula $U\left(0,75\right)$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-The proportional hazard model is
-\begin_inset Formula \[
-h\left(t,X\right)=h_{0}\left(t\right)\exp\left(\beta X\right)\]
-
-\end_inset
-
-where 
-\begin_inset Formula $X$
-\end_inset
-
- is the number of disease alleles at the given disease susceptibility loci.
- The age of onset is determined by individual 
-\begin_inset Formula $h\left(t,X\right)$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-Affection status is determined by date of birth + age of onset < 2005.
-\end_layout
-
-\begin_layout Standard
-The program is pretty self-explainary so I do not comment on the code here.
- The resulting population has information fields 
-\family typewriter
-DateOfBirth
-\family default
-, 
-\family typewriter
-betaX
-\family default
- and 
-\family typewriter
-ageOfOnset
-\family default
-.
- Note that this example does not any operator or simulator, and demonstrate
- simuPOP's ability to manipulation populations.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "infoFields.py"
-lstparams "caption={Proportional hazard model and use of information fields},label={infoFields}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Information fields can also be manipulated during evolution, using one of
- the Python operators, or operators 
-\family typewriter
-infoEval 
-\family default
-and 
-\family typewriter
-infoExec
-\family default
- (new in version 0.8.4).
- Please refer to simuPOP reference manual for details.
-\end_layout
-
-\begin_layout Section
-Pedigree
-\end_layout
-
-\begin_layout Standard
-A pedigree records the parent(s) of each individual during evolution.
- It can be created manually or using tagging operators 
-\family typewriter
-parentTagger
-\family default
- (tagging one parent) and 
-\family typewriter
-parentsTagger 
-\family default
-(tagging both parents).
- The pedigree can be analyzed to study various properties of the evolutionary
- process, manipulated (e.g.
- removing individuals without offspring), and used to re-realize the evolutionar
-y process using 
-\family typewriter
-pedigreeMating
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-A pedigree file has the following format:
-\end_layout
-
-\begin_layout LyX-Code
-p1 p2 p3 p4 .....
- # sp1 sp2 sp3
-\end_layout
-
-\begin_layout LyX-Code
-p1 p2 p3 p4 .....
- # sp1 sp2 sp3
-\end_layout
-
-\begin_layout LyX-Code
-...
-\end_layout
-
-\begin_layout Standard
-Numbers before # of each line of a pedigree file are the parent(s) of individual
-s, starting from generation 0.
- If only one parent is used to produce offspring (e.g.
- using the 
-\family typewriter
-selfMating
-\family default
- mating scheme), 
-\family typewriter
-parentTagger(output, outputExpr)
-\family default
- records the index of the parent of each individual (
-\family typewriter
-p...
-\family default
-) in the parental generation.
- Otherwise, 
-\family typewriter
-parentsTagger(output, outputExpr)
-\family default
- records the indexes of both parents.
-\end_layout
-
-\begin_layout Standard
-The generation number and the size of subpopulations are listed after the
- # character.
- The sum of subpopulation sizes should match the individuals listed before
- #.
-\end_layout
-
-\begin_layout Standard
-A number of auxillary information pedigrees can be loaded after a pedigree
- is created.
- These information pedigree files does not have subpopulation and generation
- information (does not have character # and numbers after it).
- If there are 
-\begin_inset Formula $n$
-\end_inset
-
- individuals at a generation, the corresponding line in an information pedigree
- file should have 
-\begin_inset Formula $m*n$
-\end_inset
-
- numbers where 
-\begin_inset Formula $m$
-\end_inset
-
- is the number of properties for each individual.
- Information pedigrees can be created by other tagging operators such as
- 
-\family typewriter
-pyTagger(output, outputExpr)
-\family default
-.
- 
-\end_layout
-
-\begin_layout Standard
-These auxiliary information will be attached to individuals in a pedigree.
- They will be removed if an individual is removed from the pedigree.
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Section
 Save and load to other formats
 \end_layout
 
@@ -9867,7 +8933,7 @@ clearpage
 \end_layout
 
 \begin_layout Chapter
-Utility Modules
+Utility Modules (missing)
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:Utility-Modules"
@@ -9890,7 +8956,7 @@ simuRPy
 \end_layout
 
 \begin_layout Chapter
-A real example
+A real example (under revision)
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:A-real-example"
@@ -11289,7 +10355,7 @@ lstparams "caption={Option handling},label={reich4}"
 \end_layout
 
 \begin_layout Chapter
-Introduction to bundled scripts
+Introduction to bundled scripts (under revision)
 \end_layout
 
 \begin_layout Standard
