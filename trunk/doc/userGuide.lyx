@@ -7733,32 +7733,6 @@ lstparams "caption={Generation number of a simulator},label={simuGen}"
 \end_layout
 
 \begin_layout Subsection
-
-\family typewriter
-rep
-\family default
-, 
-\family typewriter
-gen
-\family default
- and access to population variables
-\end_layout
-
-\begin_layout Standard
-Two population variables, 
-\family typewriter
-rep
-\family default
- (replicate number) and 
-\family typewriter
-gen
-\family default
- (current generation number), are set to each population during an evolutionary
- process.
- They can be used to 
-\end_layout
-
-\begin_layout Subsection
 Operator calling sequence
 \end_layout
 
@@ -7777,23 +7751,15 @@ begin, end, step, at
 rep
 \family default
  parameter).
- The order of applying operators usually does not matter but errors may
- occur if you are not careful.
+ The order at which operators are applied is usually clear but can cause
+ problems.
  For example, 
 \family typewriter
 stat(...)
 \family default
- calculates the statistics of the current population.
- It is a pre-mating operator so you should set 
-\family typewriter
-stage=PostMating
-\family default
- and put it after all operators if you would like to measure a post-mating
- population.
- It also should be put before any operator (such as an terminator) that
- uses the shared variable set by 
-\family typewriter
-stat(...).
+ should be put before any operator (such as an terminator) that uses the
+ shared variable set by this operator.
+ An error will occur if the variables are used before they are set.
 \end_layout
 
 \begin_layout Standard
@@ -7816,6 +7782,21 @@ True
 evolve
 \family default
  function will list all operators in the order at which they will be applied.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "dryrun"
+
+\end_inset
+
+ shows the operator calling sequence for Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "stageAndGen"
+
+\end_inset
+
+.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -7829,6 +7810,52 @@ lstparams "caption={List the order at which operators are applied},label={dryrun
 
 \begin_layout Subsection
 Modifying genotypic structure of populations
+\end_layout
+
+\begin_layout Standard
+Because all populations in a simulator need to have the same genotypic structure
+, modifying genotypic structure of individual populations in a simulator
+ is disallowed.
+ It is, however, possible to change the information fields and ancestral
+ depths for all populations.
+ 
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+rep
+\family default
+, 
+\family typewriter
+gen
+\family default
+ and access to population variables
+\end_layout
+
+\begin_layout Standard
+Two population variables, 
+\family typewriter
+rep
+\family default
+ (replicate number) and 
+\family typewriter
+gen
+\family default
+ (current generation number), are set to each population during an evolutionary
+ process.
+ They are used, for example, in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "output"
+
+\end_inset
+
+ to let operator 
+\family typewriter
+pyEval 
+\family default
+write to replicate-specific output.
 \end_layout
 
 \begin_layout Subsection
