@@ -81,7 +81,7 @@ public:
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
 	}

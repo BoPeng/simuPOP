@@ -57,7 +57,7 @@ public:
 	/// create a quantitative trait operator
 	quanTrait(int ancestralGen = -1,  int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "qtrait"))
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
 	}

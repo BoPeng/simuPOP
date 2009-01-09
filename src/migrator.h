@@ -260,7 +260,7 @@ public:
 		bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
 		m_randomize(randomize)
 	{
@@ -329,7 +329,7 @@ public:
 	mergeSubPops(vectoru subPops = vectoru(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_subPops(subPops)
 	{
 	}
@@ -392,7 +392,7 @@ public:
 	resizeSubPops(vectorlu newSizes = vectorlu(), vectoru subPops = vectoru(), bool propagate = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_newSizes(newSizes), m_subPops(subPops), m_propagate(propagate)
 	{
 		DBG_FAILIF(!subPops.empty() && subPops.size() != newSizes.size(), ValueError,

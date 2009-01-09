@@ -200,10 +200,10 @@ stat::stat(
 	bool hasPhase,
 	bool midValues,                                                 // this parameter will be removed after all _param parameter is given.
 	// regular parameters
-	string output, string outputExpr,
+	string output,
 	int stage, int begin, int end, int step, vectorl at,
 	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
-	: stator("", outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
+	: stator("", stage, begin, end, step, at, rep, subPop, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
 	m_numOfMale(numOfMale, numOfMale_param),

@@ -703,7 +703,7 @@ class StreamProvider
 {
 public:
 	/// CPPONLY constructor. set the name parser
-	StreamProvider(const string & output, const string & outputExpr);
+	StreamProvider(const string & output);
 
 	~StreamProvider()
 	{
@@ -711,7 +711,7 @@ public:
 
 
 	/// CPPONLY reset format string
-	void setOutput(const string & output, const string & outputExpr);
+	void setOutput(const string & output);
 
 	/// CPPONLY m_flag: if type ''
 	bool noOutput()

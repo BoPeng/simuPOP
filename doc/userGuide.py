@@ -483,7 +483,7 @@ simu.evolve(
         pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
         pyOutput('\n', rep=-1, step=20, output='>>LD.txt'),
         pyEval(r"'%.2f\t' % R2[0][1]", output='R2.txt'),
-        pyEval(r"'%.2f\t' % LD[0][1]", step=20, outputExpr="'>>LD_%d.txt' % rep"),
+        pyEval(r"'%.2f\t' % LD[0][1]", step=20, output="!'>>LD_%d.txt' % rep"),
     ],
     gen=100
 )
@@ -1125,14 +1125,17 @@ simu.evolve(
 
 
 #file log/simuGen.log
-simu = simulator(population(10), randomSelection(), rep=3)
+simu = simulator(population(50, loci=[10], ploidy=1),
+    randomSelection(), rep=3)
+simu.evolve(ops = [], gen = 5)
 simu.gen()
-simu.evolve(ops=[], gen=5)
-simu.gen()
-simu.evolve(ops=[], gen=3)
-simu.gen()
-simu.setGen(1000)
-simu.evolve(ops=[], gen=5)
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [
+        stat(alleleFreq=[5]),
+        terminateIf('alleleNum[5][0] == 0 or alleleNum[5][0] == 50')
+    ],
+)
 simu.gen()
 #end
 
@@ -1259,7 +1262,7 @@ simu.evolve(
 
 
 #file log/saveQTDT.log
-def SaveQTDT(pop, output='', outputExpr='', loci=[], 
+def SaveQTDT(pop, output='', loci=[], 
         fields=[], combine=None, shift=1, **kwargs):
     """ save population in Merlin/QTDT format. The population must have
         pedindex, father_idx and mother_idx information fields.
@@ -1267,8 +1270,6 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
         pop: population to be saved. If pop is a filename, it will be loaded.
 
         output: base filename. 
-        outputExpr: expression for base filename, will be evaluated in pop's
-            local namespace.
 
         loci: loci to output
 
@@ -1284,10 +1285,8 @@ def SaveQTDT(pop, output='', outputExpr='', loci=[],
         pop = LoadPopulation(pop)
     if output != '':
         file = output
-    elif outputExpr != '':
-        file = eval(outputExpr, globals(), pop.vars())
     else:
-        raise exceptions.ValueError, "Please specify output or outputExpr"
+        raise exceptions.ValueError, "Please specify output"
     # open data file and pedigree file to write.
     try:
         datOut = open(file + ".dat", "w")

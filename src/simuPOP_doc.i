@@ -149,8 +149,8 @@ Details:
 
 Usage:
 
-    baseOperator(output, outputExpr, stage, begin, end, step, at,
-      rep, subPop, infoFields)
+    baseOperator(output, stage, begin, end, step, at, rep, subPop,
+      infoFields)
 
 Details:
 
@@ -164,12 +164,6 @@ Arguments:
                     operator is written, which can be '' (no output),
                     '>' (standard output), or 'filename' prefixed by
                     one or more '>'.
-    outputExpr:     An expression that determines the output parameter
-                    dynamically. This expression will be evaluated
-                    against a population's local namespace each time
-                    when an output filename is required. For example,
-                    \"'>>out%s_%s.xml' % (gen, rep)\" will output to
-                    >>out10_1.xml for replicate 1 at generation 10.
     stage:          Stage(s) of a life cycle at which an operator will
                     be applied. It can be PreMating, DuringMating,
                     PostMating and any of their combined stages
@@ -240,7 +234,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly=false);
+%ignore simuPOP::baseOperator::isActive(UINT rep, long gen, long end, const vector< bool > &activeRep, bool repOnly=false);
 
 %ignore simuPOP::baseOperator::setApplicableStage(int stage);
 
@@ -711,8 +705,8 @@ Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
       max=100, chrom=[], loci=[], subPop=[], indRange=[], output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      infoFields=[])
 
 Arguments:
 
@@ -729,8 +723,6 @@ Arguments:
                     Default to 100. This is to avoid careless dump of
                     huge populations.
     output:         output file. Default to the standard output.
-    outputExpr:     and other parameters: refer to
-                    help(baseOperator.__init__)
 
 "; 
 
@@ -1605,8 +1597,8 @@ Description:
 Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
-      func=None, output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+      func=None, output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -1945,7 +1937,7 @@ Description:
 
 Usage:
 
-    ifElse(cond, ifOp=None, elseOp=None, output=\">\", outputExpr=\"\",
+    ifElse(cond, ifOp=None, elseOp=None, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       subPop=[], infoFields=[])
 
@@ -2520,9 +2512,8 @@ Description:
 Usage:
 
     infoEval(expr=\"\", stmts=\"\", subPops=[], usePopVars=False,
-      exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -2653,9 +2644,8 @@ Description:
 Usage:
 
     infoExec(stmts=\"\", subPops=[], usePopVars=False,
-      exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -2871,8 +2861,8 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], output=\"\", outputExpr=\"\",
-      infoFields=[\"paternal_tag\", \"maternal_tag\"])
+      rep=[], subPop=[], output=\"\", infoFields=[\"paternal_tag\",
+      \"maternal_tag\"])
 
 Arguments:
 
@@ -3211,8 +3201,8 @@ Description:
 Usage:
 
     kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 Details:
 
@@ -4549,8 +4539,8 @@ Description:
 Usage:
 
     mutator(rate=[], loci=[], maxAllele=0, output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 Details:
 
@@ -4714,8 +4704,8 @@ Description:
 
 Usage:
 
-    noneOp(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=0, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -4900,8 +4890,8 @@ Description:
 
 Usage:
 
-    outputer(output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    outputer(output=\">\", stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -5017,8 +5007,7 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
-      output=\"\", outputExpr=\"\", infoFields=[\"father_idx\",
-      \"mother_idx\"])
+      output=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
 
 "; 
 
@@ -5096,7 +5085,7 @@ Description:
 Usage:
 
     parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
-      output=\"\", outputExpr=\"\", infoFields=[\"parent_idx\"])
+      output=\"\", infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -5184,9 +5173,8 @@ Description:
 Usage:
 
     pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
-      popName=\"pop\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=-1, subPop=[],
-      infoFields=[])
+      popName=\"pop\", output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=-1, subPop=[], infoFields=[])
 
 Arguments:
 
@@ -5503,8 +5491,7 @@ Details:
 Usage:
 
     pedigreeTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], stage=PostMating, output=\">\", outputExpr=\"\",
-      pedigreeFields=[])
+      subPop=[], stage=PostMating, output=\">\", pedigreeFields=[])
 
 "; 
 
@@ -5656,8 +5643,8 @@ Description:
 Usage:
 
     pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 Details:
 
@@ -7029,9 +7016,8 @@ Description:
 Usage:
 
     pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
-      exposePop=False, name=\"\", output=\">\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -7141,8 +7127,8 @@ Description:
 Usage:
 
     pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
-      name=\"\", output=\">\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+      name=\"\", output=\">\", stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -7372,8 +7358,8 @@ Description:
 Usage:
 
     pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 "; 
 
@@ -7513,11 +7499,11 @@ Arguments:
 
 Note:
 
-    * Output to output or outputExpr is not supported. That is to say,
-    you have to open/close/append to files explicitly in the Python
-    function. Because files specified by output or outputExpr are
-    controlled (opened/closed) by simulators, they should not be
-    manipulated in a pyOperator operator.
+    * Output to output is not supported. That is to say, you have to
+    open/close/append to files explicitly in the Python function.
+    Because files specified by output are controlled (opened/closed)
+    by simulators, they should not be manipulated in a pyOperator
+    operator.
     * This operator can be applied Pre-, During- or Post- Mating and
     is applied PostMating by default. For example, if you would like
     to examine the fitness values set by a selector, a PreMating
@@ -7574,9 +7560,8 @@ Description:
 
 Usage:
 
-    pyOutput(str=\"\", output=\">\", outputExpr=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
-      infoFields=[])
+    pyOutput(str=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
@@ -8032,7 +8017,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], output=\"\", outputExpr=\"\", infoFields=[])
+      subPop=[], output=\"\", infoFields=[])
 
 Arguments:
 
@@ -8548,7 +8533,7 @@ Usage:
 
 Usage:
 
-    x.match(rep, numRep)
+    x.match(rep, activeRep)
 
 "; 
 
@@ -8940,16 +8925,12 @@ Description:
 
 Usage:
 
-    savePopulation(output=\"\", outputExpr=\"\", format=\"\",
-      compress=True, stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+    savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 Arguments:
 
     output:         output filename.
-    outputExpr:     An expression that will be evalulated dynamically
-                    to determine file name. Parameter output will be
-                    ignored if this parameter is given.
     format:         obsolete parameter
     compress:       obsolete parameter
 
@@ -9275,9 +9256,8 @@ Description:
 
 Usage:
 
-    setAncestralDepth(depth, output=\">\", outputExpr=\"\",
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+    setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -9649,7 +9629,12 @@ Details:
     will continue indefinitely, until all replicates are stopped by a
     special kind of operators called terminators. At the end of the
     evolution, the generations that each replicates have evolved are
-    returned.
+    returned. If not all replicates are stopped at the same
+    generation, the negative replicate numbers are calculated
+    according to active replicates, meaning replicate -1 will refer to
+    the last active replicate even if the last replicate has stopped.
+    In addition, postOps are applied to all replicates, including
+    those that stopped before other replicates.
 
 "; 
 
@@ -9802,8 +9787,8 @@ Description:
 Usage:
 
     smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
-      output=\">\", outputExpr=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPop=[], infoFields=[])
 
 Details:
 
@@ -9991,9 +9976,9 @@ Usage:
       LD_param={}, association=[], association_param={}, Fst=[],
       Fst_param={}, relGroups=[], relLoci=[], rel_param={},
       relBySubPop=False, relMethod=[], relMinScored=10,
-      hasPhase=False, midValues=False, output=\"\", outputExpr=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      hasPhase=False, midValues=False, output=\"\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+      infoFields=[])
 
 Arguments:
 
@@ -10759,8 +10744,8 @@ Description:
 
 Usage:
 
-    stator(output=\"\", outputExpr=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    stator(output=\"\", stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -10964,7 +10949,7 @@ Usage:
 
 %ignore simuPOP::StreamProvider;
 
-%ignore simuPOP::StreamProvider::StreamProvider(const string &output, const string &outputExpr);
+%ignore simuPOP::StreamProvider::StreamProvider(const string &output);
 
 %feature("docstring") simuPOP::StreamProvider::~StreamProvider "
 
@@ -10974,7 +10959,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::StreamProvider::setOutput(const string &output, const string &outputExpr);
+%ignore simuPOP::StreamProvider::setOutput(const string &output);
 
 %ignore simuPOP::StreamProvider::noOutput();
 
@@ -11080,8 +11065,8 @@ Description:
 
 Usage:
 
-    tagger(output=\"\", outputExpr=\"\", stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 
@@ -11131,8 +11116,8 @@ Details:
 Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
-      outputExpr=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPop=[], infoFields=[])
 
 Details:
 
@@ -11142,8 +11127,8 @@ Details:
     True, the evolution of the population will be terminated. If
     stopAll is set to True, the evolution of all replicates of the
     simulator will be terminated. If this operator is allowed to write
-    to an output or outputExpr (both default to \"\"), the generation
-    number, preceeded with an optional message will be written to it.
+    to an output (default to \"\"), the generation number, preceeded
+    with an optional message will be written to it.
 
 "; 
 
@@ -11222,8 +11207,8 @@ Description:
 
 Usage:
 
-    ticToc(output=\">\", outputExpr=\"\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPop=[], infoFields=[])
 
 "; 
 

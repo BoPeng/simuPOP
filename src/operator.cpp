@@ -268,7 +268,7 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 	int stage, bool formOffGenotype, bool passOffspringOnly,
 	int begin, int end, int step, vectorl at,
 	const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
-	baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
+	baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 	m_func(func), m_param(param), m_passOffspringOnly(passOffspringOnly)
 {
 	if (!m_func.isValid())

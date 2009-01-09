@@ -57,10 +57,10 @@ public:
 	// constructor. default to be always active.
 	// default to have NO output (shared variables will be set.)
 	/// create a stator
-	stator(string output = "", string outputExpr = "",
+	stator(string output = "", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
+		baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	};
 
@@ -104,10 +104,10 @@ public:
 	 */
 	pyEval(const string & expr = "", const string & stmts = "", const string & preStmts = "",
 		const string & postStmts = "", bool exposePop = false, const string & name = "",
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: stator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
+		: stator(output, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
 	{
 		if (preStmts != "")
@@ -174,10 +174,10 @@ public:
 	 */
 	pyExec(const string & stmts = "", const string & preStmts = "", const string & postStmts = "",
 		bool exposePop = false, const string & name = "",
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", "",
+		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "", 
 		         stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
@@ -247,10 +247,10 @@ public:
 	 */
 	infoEval(const string & expr = "", const string & stmts = "", const vectoru & subPops = vectoru(),
 		bool usePopVars = false,  bool exposePop = false, const string & name = "",
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: stator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields),
+		: stator(output, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
 		m_name(name), m_dict(NULL)
 	{
@@ -332,10 +332,10 @@ public:
 	 */
 	infoExec(const string & stmts = "",  const vectoru & subPops = vectoru(), bool usePopVars = false,
 		bool exposePop = false, const string & name = "",
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output, outputExpr,
+		: infoEval("", stmts, subPops, usePopVars, exposePop, name, output,
 		           stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
@@ -1730,7 +1730,7 @@ public:
 		bool hasPhase = false,
 		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
 		// regular parameters
-		string output = "", string outputExpr = "",
+		string output = "", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
