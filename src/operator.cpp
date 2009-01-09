@@ -25,10 +25,11 @@
 
 namespace simuPOP {
 
-bool baseOperator::isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly)
+bool baseOperator::isActive(UINT rep, long gen, long end,
+                            const vector<bool> & activeRep, bool repOnly)
 {
 	// rep does not match
-	if (!m_rep.match(rep, numRep))
+	if (!m_rep.match(rep, activeRep))
 		return false;
 
 	// only check for rep value.
@@ -276,6 +277,7 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 	this->setFormOffGenotype(formOffGenotype);
 }
 
+
 bool pyOperator::apply(population & pop)
 {
 	// call the python function, pass the whole population in it.
@@ -344,7 +346,7 @@ bool pyOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 
 		// parammeter list, ref count increased
 		if (m_param.isValid())
-			res  = m_func(PyObj_As_Bool, "(OOOOO)", popObj, offObj, dadObj, momObj, m_param.object());
+			res = m_func(PyObj_As_Bool, "(OOOOO)", popObj, offObj, dadObj, momObj, m_param.object());
 		else
 			res = m_func(PyObj_As_Bool, "(OOOO)", popObj, offObj, dadObj, momObj);
 

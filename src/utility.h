@@ -1693,22 +1693,7 @@ public:
 	}
 
 
-	bool match(int rep, UINT numRep)
-	{
-		if (m_elems.empty())
-			return true;
-		vectori::iterator it = m_elems.begin();
-		vectori::iterator it_end = m_elems.end();
-		for (; it != it_end; ++it)
-			// when rep number is negative.
-			// numRep = 5 replicates
-			// *it = -1: last replicate, 5 - 1 = 4
-			// *it = -2: replicate 3.
-			if ((*it >= 0 && *it == rep) || (*it < 0 && *it + static_cast<int>(numRep) == rep))
-				return true;
-		return false;
-	}
-
+	bool match(UINT rep, const vector<bool> & activeRep);
 
 };
 
