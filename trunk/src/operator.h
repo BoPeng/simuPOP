@@ -243,7 +243,7 @@ public:
 	   replicate, current generation, ending generation etc.
 	   \note This function will be called by simulators before applying.
 	 */
-	bool isActive(UINT rep, UINT numRep, long gen, long end, bool repOnly = false);
+	bool isActive(UINT rep, long gen, long end, const vector<bool> & activeRep, bool repOnly = false);
 
 
 	//@}
@@ -504,7 +504,7 @@ typedef std::vector< baseOperator * > vectorop;
    at a key stroke, using <tt>stopOnKeyStroke=True</tt> option. Users can
    use \c 'q' to stop an evolution. When a simulator is stopped, press any
    other key to resume	the simulation or escape to a Python shell to examine
-   the status of the simulation by pressing \c 's'. 
+   the status of the simulation by pressing \c 's'.
 
    There are two ways to use this operator, the first one is to pause the
    simulation at specified generations, using the usual operator parameters

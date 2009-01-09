@@ -271,6 +271,10 @@ vectoru simulator::evolve(const vectorop & ops,
 			"Operator " + ops[i]->__repr__() + " is not compatible.");
 	}
 
+	vector<bool> activeReps(m_numRep);
+	fill(activeReps.begin(), activeReps.end(), true);
+	UINT numStopped = 0;
+
 	if (dryrun) {
 		cout << "Dryrun mode: display calling sequence" << endl;
 		if (!preOps.empty() ) {
@@ -285,7 +289,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			if (!preMatingOps.empty()) {
 				cout << "    Pre-mating operators" << endl;
 				for (size_t it = 0; it < preMatingOps.size(); ++it)
-					if (preMatingOps[it]->isActive(curRep, m_numRep, 0, 0, true) )
+					if (preMatingOps[it]->isActive(curRep, 0, 0, activeReps, true))
 						cout << "      - " << preMatingOps[it]->__repr__() << preMatingOps[it]->atRepr() << endl;
 			}
 			cout << "    Start mating" << endl;
@@ -296,7 +300,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			if (!postMatingOps.empty()) {
 				cout << "    Apply post-mating operators" << endl;
 				for (size_t it = 0; it < postMatingOps.size(); ++it)
-					if (postMatingOps[it]->isActive(curRep, m_numRep, 0, 0, true) )
+					if (postMatingOps[it]->isActive(curRep, 0, 0, activeReps, true))
 						cout << "      - " << postMatingOps[it]->__repr__() << postMatingOps[it]->atRepr() << endl;
 			}
 		}
@@ -347,10 +351,6 @@ vectoru simulator::evolve(const vectorop & ops,
 
 	ElapsedTime("PreopDone");
 
-	vector<bool> stopped(m_numRep);
-	fill(stopped.begin(), stopped.end(), false);
-	UINT numStopped = 0;
-
 	while (1) {
 		// starting a new gen
 		setGen(m_gen);
@@ -366,7 +366,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			DBG_ASSERT(static_cast<int>(curRep) == curPop.rep(), SystemError,
 				"Replicate number does not match");
 
-			if (stopped[curRep])
+			if (!activeReps[curRep])
 				continue;
 
 			// set selection off so that all selector has to be preMating
@@ -382,7 +382,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			// apply pre-mating ops to current gen()
 			if (!preMatingOps.empty()) {
 				for (it = 0; it < preMatingOps.size(); ++it) {
-					if (!preMatingOps[it]->isActive(curRep, m_numRep, m_gen, end))
+					if (!preMatingOps[it]->isActive(curRep, m_gen, end, activeReps))
 						continue;
 
 					try {
@@ -390,9 +390,9 @@ vectoru simulator::evolve(const vectorop & ops,
 							DBG_DO(DBG_SIMULATOR, cout << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep) << endl);
 
-							if (!stopped[curRep]) {
+							if (activeReps[curRep]) {
 								numStopped++;
-								stopped[curRep] = true;
+								activeReps[curRep] = false;
 								break;
 							}
 						}
@@ -402,8 +402,8 @@ vectoru simulator::evolve(const vectorop & ops,
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message())
 							cout << e.message() << endl;
-						fill(stopped.begin(), stopped.end(), true);
-						numStopped = stopped.size();
+						fill(activeReps.begin(), activeReps.end(), false);
+						numStopped = activeReps.size();
 						break;
 					} catch (...) {
 						cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
@@ -413,14 +413,14 @@ vectoru simulator::evolve(const vectorop & ops,
 				}
 			}
 
-			if (stopped[curRep])
+			if (!activeReps[curRep])
 				continue;
 			// start mating:
 			// find out active during-mating operators
 			activeDurmatingOps.clear();
 			for (vectorop::iterator op = durmatingOps.begin(), opEnd = durmatingOps.end();
 			     op != opEnd; ++op) {
-				if ( (*op)->isActive(curRep, m_numRep, m_gen, end))
+				if ( (*op)->isActive(curRep, m_gen, end, activeReps))
 					activeDurmatingOps.push_back(*op);
 			}
 
@@ -430,7 +430,7 @@ vectoru simulator::evolve(const vectorop & ops,
 						+ toStr(curRep) << endl);
 
 					numStopped++;
-					stopped[curRep] = true;
+					activeReps[curRep] = false;
 					// does not execute post-mating operator
 					continue;
 				}
@@ -439,8 +439,8 @@ vectoru simulator::evolve(const vectorop & ops,
 					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
 				if (e.message())
 					cout << e.message() << endl;
-				fill(stopped.begin(), stopped.end(), true);
-				numStopped = stopped.size();
+				fill(activeReps.begin(), activeReps.end(), false);
+				numStopped = activeReps.size();
 				// does not execute post mating operator
 				continue;
 			} catch (...) {
@@ -453,7 +453,7 @@ vectoru simulator::evolve(const vectorop & ops,
 			// apply post-mating ops to next gen()
 			if (!postMatingOps.empty()) {
 				for (it = 0; it < postMatingOps.size(); ++it) {
-					if (!postMatingOps[it]->isActive(curRep, m_numRep, m_gen, end))
+					if (!postMatingOps[it]->isActive(curRep, m_gen, end, activeReps))
 						continue;
 
 					try {
@@ -461,7 +461,7 @@ vectoru simulator::evolve(const vectorop & ops,
 							DBG_DO(DBG_SIMULATOR, cout << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 								" stops at replicate " + toStr(curRep) << endl);
 							numStopped++;
-							stopped[curRep] = true;
+							activeReps[curRep] = false;
 							// does not run the rest of the post-mating operators.
 							break;
 						}
@@ -471,8 +471,8 @@ vectoru simulator::evolve(const vectorop & ops,
 							" stops at replicate " + toStr(curRep) << endl);
 						if (e.message())
 							cout << e.message() << endl;
-						fill(stopped.begin(), stopped.end(), true);
-						numStopped = stopped.size();
+						fill(activeReps.begin(), activeReps.end(), false);
+						numStopped = activeReps.size();
 						// does not run the rest of the post-mating operators.
 						break;
 					} catch (...) {
@@ -539,7 +539,9 @@ bool simulator::apply(const vectorop ops, bool dryrun)
 				continue;
 			}
 
-			if (!ops[it]->isActive(curRep, m_numRep, 0, 0, true))
+			vector<bool> activeReps(m_numRep);
+			fill(activeReps.begin(), activeReps.end(), true);
+			if (!ops[it]->isActive(curRep, 0, 0, activeReps, true))
 				continue;
 
 			ops[it]->apply(curPop);

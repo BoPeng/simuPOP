@@ -30,6 +30,8 @@ version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Allow random parent(s) choosers to set name of information field fitness.
   - CHG: Change interface for pedigree::locateRelatives. Rename setIndexOfRelatives
 		to traceRelatives.
+  - NEW: Allow replicate numbers in a simulator to refer to the last several
+        _active_ populations.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.

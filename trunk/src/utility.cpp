@@ -3139,6 +3139,48 @@ bool initialize()
 }
 
 
+bool repList::match(UINT rep, const vector<bool> & activeRep)
+{
+    if (m_elems.empty())
+		return true;
+    vectori::iterator it = m_elems.begin();
+    vectori::iterator it_end = m_elems.end();
+    for (; it != it_end; ++it) {
+        // positive index is easy
+        if (*it >= 0) {
+            if (static_cast<UINT>(*it) == rep)
+				return true;
+            else
+				continue;
+		}
+        // negative index
+        DBG_ASSERT(!activeRep.empty() && activeRep[rep], SystemError,
+			"Check is avtive should only be done for active replicates");
+        // check the simple and most used case
+        if (*it == -1) {
+            if (activeRep.back() && rep + 1 == activeRep.size())
+				return true;
+            else
+				continue;
+		}
+        // find what exactly an negative index refer to
+        int cnt = -*it;
+        int curRep = activeRep.size() - 1;
+        for (; curRep >= 0; --curRep) {
+            if (activeRep[curRep])
+				--cnt;
+            if (cnt == 0)
+				break;
+		}
+        if (cnt != 0)
+			continue;
+        if (curRep == rep)
+			return true;
+	}
+    return false;
+}
+
+
 #ifndef OPTIMIZED
 
 #  ifdef BINARYALLELE

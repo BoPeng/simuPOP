@@ -231,7 +231,13 @@ public:
 	 *  will continue indefinitely, until all replicates are stopped by a
 	 *  special kind of operators called \e terminators. At the end of the
 	 *  evolution, the generations that each replicates have evolved are
-	 *  returned.
+	 *  returned. If not all replicates are stopped at the same generation, the
+	 *  negative replicate numbers are calculated according to \e active
+	 *  replicates, meaning replicate -1 will refer to the last active
+	 *  replicate even if the last replicate has stopped. In addition,
+	 *  \e postOps are applied to all replicates, including those that stopped
+	 *  before other replicates.
+	 *
 	 *  <group>2-evolve</group>
 	 */
 	vectoru evolve(const vectorop & ops,
