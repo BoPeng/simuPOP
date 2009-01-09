@@ -162,11 +162,6 @@ public:
 	 *  \param output A string that specifies how output from an operator is
 	 *    written, which can be \c '' (no output), \c '>' (standard output),
 	 *    or \c 'filename' prefixed by one or more '>'.
-	 *  \param outputExpr An expression that determines the output parameter
-	 *    dynamically. This expression will be evaluated against a population's
-	 *    local namespace each time when an output filename is required. For
-	 *    example, <tt>"'>>out%s_%s.xml' % (gen, rep)"</tt> will output to
-	 *    <tt>>>out10_1.xml</tt> for replicate \c 1 at generation \c 10.
 	 *  \param stage Stage(s) of a life cycle at which an operator will be
 	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating and
 	 *    any of their combined stages \c PrePostMating, \c PreDuringMating
@@ -201,12 +196,11 @@ public:
 	 *    operators that use information fields usually have default values for
 	 *    this parameter.
 	 */
-	baseOperator(string output, string outputExpr, int stage,
-		int begin, int end, int step, vectorl at,
+	baseOperator(string output, int stage, int begin, int end, int step, vectorl at,
 		const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
 		m_flags(0), m_rep(rep), m_subPop(subPop),
-		m_ostream(output, outputExpr), m_infoFields(infoFields),
+		m_ostream(output), m_infoFields(infoFields),
 		m_lastPop(MaxTraitIndex)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
@@ -530,10 +524,10 @@ public:
 	 */
 	pause(bool prompt = true, bool stopOnKeyStroke = false,
 		bool exposePop = true, string popName = "pop",
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = -1, const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 		m_exposePop(exposePop), m_popName(popName)
 	{
@@ -586,10 +580,10 @@ public:
 	/// create a none operator
 	/**
 	 */
-	noneOp(string output = ">", string outputExpr = "",
+	noneOp(string output = ">", 
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields)
+		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
 
@@ -657,10 +651,10 @@ public:
 
 	 */
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
 	{
 		if (ifOp != NULL)
@@ -731,10 +725,10 @@ class ticToc : public baseOperator
 {
 public:
 	/// create a timer
-	ticToc(string output = ">", string outputExpr = "",
+	ticToc(string output = ">", 
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields)
+		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 		time(&m_startTime);
 		m_lastTime = m_startTime;
@@ -778,10 +772,10 @@ class setAncestralDepth : public baseOperator
 
 public:
 	/// create a \c setAncestralDepth operator
-	setAncestralDepth(int depth, string output = ">", string outputExpr = "",
+	setAncestralDepth(int depth, string output = ">", 
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_depth(depth)
 	{
 	};
@@ -837,7 +831,7 @@ public:
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_code(code)
 	{
 	};
@@ -886,7 +880,7 @@ public:
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", "", stage, begin, end, step, at, rep, subPop, infoFields),
+		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_code(code)
 	{
 	};
@@ -956,9 +950,9 @@ public:
 	   this will improve efficiency. Default to \c False.
 
 	   \note
-	   \li Output to \c output or \c outputExpr is not supported. That is to say,
+	   \li Output to \c output is not supported. That is to say,
 	   you have to open/close/append to files explicitly in the Python function.
-	   Because files specified by \c output or \c outputExpr are controlled (opened/closed) by
+	   Because files specified by \c output are controlled (opened/closed) by
 	   simulators, they should not be manipulated in a \c pyOperator operator.
 	   \li This operator can be applied \c Pre-, \c During- or <tt>Post- Mating</tt> and is applied \c PostMating
 	   by default. For example, if you would like to examine the fitness values set by

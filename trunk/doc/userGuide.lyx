@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -4364,6 +4364,18 @@ reference "hybridOperator"
 rep
 \family default
  parameter.
+ It is worth noting that negative indexes are 
+\emph on
+dynamic
+\emph default
+ indexes relative to number of active populations.
+ For example, 
+\family typewriter
+rep=-1
+\family default
+ will refer to a previous population if the last population has stopped
+ evolving.
+ Use a non-negative replicate number if this is not intended.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -4415,15 +4427,11 @@ reference "stageAndGen"
 , write their output to the standard output, namely your terminal window.
  However, it would be much easier for bookkeeping and further analysis if
  these output can be redirected to disk files.
- The 
+ Parameter 
 \family typewriter
 output
 \family default
- and 
-\family typewriter
-outputExpr
-\family default
- parameters are designed for this purpose.
+ is designed for this purpose.
 \end_layout
 
 \begin_layout Standard
@@ -4492,6 +4500,18 @@ evolve
 evolve
 \family default
  function.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+'!expr'
+\family default
+: 
+\family typewriter
+expr
+\family default
+ is considered as a Python expression 
 \end_layout
 
 \begin_layout Standard
@@ -7608,7 +7628,7 @@ A simuPOP simulator evolves one or more copies of a population forward in
 \end_layout
 
 \begin_layout Subsection
-Generations to evolve
+Number of generations to evolve
 \end_layout
 
 \begin_layout Standard
@@ -7629,7 +7649,7 @@ evolve
 \begin_inset Formula $n$
 \end_inset
 
- after a simulator evolves 
+ after it evolves 
 \begin_inset Formula $n$
 \end_inset
 
@@ -7638,7 +7658,8 @@ evolve
 \end_layout
 
 \begin_layout Standard
-It is not always possible to know the number of generations to evolve.
+It is not always possible to know in advance the number of generations to
+ evolve.
  For example, you may want to evolve a population until a specific allele
  gets fixed or lost in the population.
  In this case, you can let the simulator run indefinitely (do not set the
@@ -7651,18 +7672,31 @@ gen
 terminator 
 \emph default
 to terminate the evolution of a population.
- 
-\end_layout
-
-\begin_layout Standard
-Example 
+ The easiest method to do this is to use population variables to track the
+ status of a population, and use a 
+\family typewriter
+terminateIf
+\family default
+ operator to terminate the evolution according to the value of an expression.
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "simuGen"
 
 \end_inset
 
- demonstrates the change of generation numbers of a simulator.
+ demonstrates use of such a terminator.
+ This example calls the 
+\family typewriter
+evolve
+\family default
+ function twice so the second part starts at generation 5.
+ This can be changed by resetting the generation number of a simulator using
+ its 
+\family typewriter
+setGen(gen)
+\family default
+ member function.
 \end_layout
 
 \begin_layout Standard
@@ -7677,7 +7711,29 @@ lstparams "caption={Generation number of a simulator},label={simuGen}"
 \end_layout
 
 \begin_layout Subsection
-Rep, gen and access to population variables
+
+\family typewriter
+rep
+\family default
+, 
+\family typewriter
+gen
+\family default
+ and access to population variables
+\end_layout
+
+\begin_layout Standard
+Two population variables, 
+\family typewriter
+rep
+\family default
+ (replicate number) and 
+\family typewriter
+gen
+\family default
+ (current generation number), are set to each population during an evolutionary
+ process.
+ They can be used to 
 \end_layout
 
 \begin_layout Subsection

@@ -139,7 +139,7 @@ class TestOperator(unittest.TestCase):
             cloneMating(), rep=5)
         # each replicate
         simu.evolve([
-            pyOutput("a", outputExpr="'rep%d.txt'%rep"),
+            pyOutput("a", output="!'rep%d.txt'%rep"),
             ], gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -150,7 +150,7 @@ class TestOperator(unittest.TestCase):
         # you can ignore >
         simu.setGen(0)
         simu.evolve([
-            pyOutput("a", outputExpr="'>rep%d.txt'%rep"),
+            pyOutput("a", output="!'>rep%d.txt'%rep"),
             ], gen=10)
         # although everyone have written to this file,
         # only the last one will be kept
@@ -161,7 +161,7 @@ class TestOperator(unittest.TestCase):
         # >>
         simu.setGen(0)
         simu.evolve([
-            pyOutput("a", outputExpr="'>>rep%d.txt'%rep"),
+            pyOutput("a", output="!'>>rep%d.txt'%rep"),
             ], gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(5):
@@ -170,7 +170,7 @@ class TestOperator(unittest.TestCase):
         # each generation?
         simu.setGen(0)
         simu.evolve([
-            pyOutput("a", outputExpr="'>>gen%d.txt'%gen"),
+            pyOutput("a", output="!'>>gen%d.txt'%gen"),
             ], gen=10)
         # a is appended 1 rep * 11 generations
         for i in range(10):

@@ -44,7 +44,7 @@ class tagger : public baseOperator
 
 public:
 	/// create a \c tagger, default to be always active but no output
-	tagger(string output = "", string outputExpr = "", int stage = DuringMating,
+	tagger(string output = "",  int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
@@ -92,9 +92,9 @@ public:
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
 		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		string output = "", string outputExpr = "",
+		string output = "", 
 		const vectorstr & infoFields = vectorstr(TAG_InheritFields, TAG_InheritFields + 2)) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields), m_mode(mode)
+		tagger(output, DuringMating, begin, end, step, at, rep, subPop, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() > 0, ValueError,
 			"At least one information field is needed.");
@@ -152,9 +152,9 @@ public:
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
 	parentTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		string output = "", string outputExpr = "",
+		string output = "", 
 		const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		tagger(output, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -221,9 +221,9 @@ public:
 	//  %r will be replicate number %g will be generation number.
 	parentsTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		string output = "", string outputExpr = "",
+		string output = "", 
 		const vectorstr & infoFields = vectorstr(ParentsFields, ParentsFields + 2)) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		tagger(output, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_subPopSize(1, 0)
 	{
 	};
@@ -277,7 +277,7 @@ class pedigreeTagger : public tagger
 public:
 	pedigreeTagger(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		int stage = PostMating, string output = ">", string outputExpr = "",
+		int stage = PostMating, string output = ">", 
 		const vectorstr & pedigreeFields = vectorstr());
 
 	bool apply(population & pop);
@@ -306,9 +306,9 @@ public:
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
-		string output = "", string outputExpr = "",
+		string output = "", 
 		const vectorstr & infoFields = vectorstr()) :
-		tagger(output, outputExpr, DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		tagger(output, DuringMating, begin, end, step, at, rep, subPop, infoFields),
 		m_func(func)
 	{
 		DBG_FAILIF(infoSize() == 0, ValueError,

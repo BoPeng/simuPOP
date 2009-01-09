@@ -77,7 +77,7 @@ public:
 	 */
 	selector(const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "fitness"))
-		: baseOperator("", "", stage, begin, end, step, at, rep, subPop, infoFields), m_subPops(subPops)
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields), m_subPops(subPops)
 	{
 	}
 

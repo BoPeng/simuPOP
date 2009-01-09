@@ -49,10 +49,10 @@ class outputer : public baseOperator
 
 public:
 	/// constructor.
-	outputer(string output = ">", string outputExpr = "",
+	outputer(string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, outputExpr, stage, begin, end, step, at, rep, subPop, infoFields)
+		baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	};
 
@@ -81,10 +81,10 @@ public:
 	/**
 	   \param str string to be outputted
 	 */
-	pyOutput(string str = "", string output = ">", string outputExpr = "",
+	pyOutput(string str = "", string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		outputer(output, outputExpr, stage, begin, end,
+		outputer(output, stage, begin, end,
 		         step, at, rep, subPop, infoFields), m_string(str)
 	{
 	}
@@ -155,17 +155,16 @@ public:
 	   \param max the maximum number of individuals to display. Default to \c 100.
 	        This is to avoid careless dump of huge populations.
 	   \param output output file. Default to the standard output.
-	   \param outputExpr and other parameters: refer to help(baseOperator.__init__)
 
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
 		const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
 		const vectorlu & indRange = vectorlu(),
-		string output = ">", string outputExpr = "",
+		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
 		const repList & rep = repList(),    // const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		outputer(output, outputExpr, stage, begin, end, step, at, rep, subPopList(), infoFields),
+		outputer(output, stage, begin, end, step, at, rep, subPopList(), infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
 	{
@@ -226,21 +225,16 @@ public:
 	/// save population
 	/**
 	    \param output output filename.
-	    \param outputExpr An expression that will be evalulated dynamically to
-	        determine file name. Parameter \c output will be ignored if this
-	        parameter is given.
 	    \param format obsolete parameter
 	    \param compress obsolete parameter
 	 */
-	savePopulation(string output = "", string outputExpr = "",
-		string format = "", bool compress = true, int stage = PostMating, int begin = 0, int end = -1,
+	savePopulation(string output = "", int stage = PostMating, int begin = 0, int end = -1,
 		int step = 1, vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		outputer("", "", stage, begin, end, step, at, rep, subPop, infoFields),
-		m_filename(output), m_filenameParser(outputExpr)
+		outputer("", stage, begin, end, step, at, rep, subPop, infoFields),
+		m_filename(output)
 	{
-		DBG_WARNING(!format.empty(), "Parameter format is now obsolete.");
-		if (output == "" && outputExpr == "")
-			throw ValueError("Please specify one of output and outputExpr.");
+		if (output == "")
+			throw ValueError("Please specify a output file.");
 	}
 
 
@@ -266,9 +260,6 @@ public:
 private:
 	/// filename,
 	string m_filename;
-
-	/// or an expression that will be evaluated dynamically
-	Expression m_filenameParser;
 };
 
 }

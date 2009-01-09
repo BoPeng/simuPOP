@@ -194,11 +194,12 @@ bool savePopulation::apply(population & pop)
 {
 	string filename;
 
-	if (m_filename != "")
+	if (m_filename[0] != '!')
 		filename = m_filename;
 	else {
-		m_filenameParser.setLocalDict(pop.dict());
-		filename = m_filenameParser.valueAsString();
+		Expression filenameParser(m_filename.substr(1));
+		filenameParser.setLocalDict(pop.dict());
+		filename = filenameParser.valueAsString();
 	}
 	DBG_DO(DBG_OUTPUTER, cout << "Save to file " << filename << endl);
 	pop.save(filename);

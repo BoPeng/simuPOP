@@ -1838,19 +1838,26 @@ OstreamManager & ostreamManager()
 // Stream provider
 
 // all flags will be cleared to 0
-StreamProvider::StreamProvider(const string & output, const string & outputExpr)
-	: m_filename(output), m_filenameExpr(outputExpr),
-	m_flags(0), m_filePtr(NULL)
+StreamProvider::StreamProvider(const string & output)
+	: m_filename(output), m_filenameExpr(), m_flags(0), m_filePtr(NULL)
 {
-	if (m_filenameExpr.empty())
-		analyzeOutputString(output);
+	if (!m_filename.empty() && m_filename[0] == '!') {
+		m_filenameExpr.setExpr(m_filename.substr(1));
+		m_filename.clear();
+	} else
+		analyzeOutputString(m_filename);
 }
 
 
-void StreamProvider::setOutput(const string & output, const string & outputExpr)
+void StreamProvider::setOutput(const string & output)
 {
-	m_filename = output;
-	m_filenameExpr = outputExpr;
+	if (!output.empty() && output[0] == '!') {
+		m_filename = "";
+		m_filenameExpr.setExpr(output.substr(1));
+	} else {
+		m_filename = output;
+		m_filenameExpr = Expression();
+	}
 
 	if (m_filenameExpr.empty())
 		analyzeOutputString(output);
@@ -3170,7 +3177,7 @@ bool repList::match(UINT rep, const vector<bool> & activeRep)
 		}
         if (cnt != 0)
 			continue;
-        if (curRep == rep)
+        if (curRep == static_cast<int>(rep))
 			return true;
 	}
     return false;
