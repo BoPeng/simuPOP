@@ -1111,16 +1111,29 @@ def parentsChooser(pop, sp):
         yield pc.chooseParents()
 
 
-pop = population(size, loci=[1], infoFields=['x', 'y'])
+pop = population(100, loci=[1], infoFields=['x', 'y'])
 simu = simulator(pop,
     homoMating(pyParentsChooser(parentsChooser), mendelianOffspringGenerator())
 )
 simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
     ops = [],
-    gen = gen
+    gen = 100
 )
 
+#end
+
+
+#file log/simuGen.log
+simu = simulator(population(10), randomSelection(), rep=3)
+simu.gen()
+simu.evolve(ops=[], gen=5)
+simu.gen()
+simu.evolve(ops=[], gen=3)
+simu.gen()
+simu.setGen(1000)
+simu.evolve(ops=[], gen=5)
+simu.gen()
 #end
 
 ################################################################################
@@ -1766,87 +1779,7 @@ if __name__ == '__main__':
 ## 
 ## # Note that I can not use pop now, since it is
 ## # obtained from simu.population(0) which is invalid now.
-## 
-## #file log/popSaveLoad.log
-## # save it in various formats, default format is "txt"
-## pop = population(1000, loci=[2, 5, 10])
-## pop.save("sample.pop")
-## 
-## # load it in another population
-## pop1 = LoadPopulation("sample.pop")
-## #end
-## 
-## #file log/saveFstat.log
-## from simuUtil import *
-## SaveFstat(pop, "pop.dat", maxAllele=9)
-## print open("pop.dat").read()
-## pop2 = LoadFstat("pop.dat")
-## #end
-## 
-## import os
-## os.remove('pop.xml')
-## os.remove('pop.bin')
-## os.remove('pop.dat')
-## os.remove('pop.txt')
-## 
-## 
-## #file log/calcStat.log
-## pop = population(1000, loci=[20])
-## Stat(pop, popSize=1, alleleFreq=range(0, pop.totNumLoci()),
-##   heteroFreq=range(0, pop.totNumLoci()), Fst=[0])
-## #end
-## 
-## 
-
-## 
-## #file log/homoMating.log
-## pop = population(size=[100, 20], loci=[1])
-## simu = simulator(pop,
-##     homoMating(pyParentsChooser(randomChooser), 
-##     mendelianOffspringGenerator()))
-## simu.evolve(ops=[], gen=1)
-## #end
-## 
-## 
-## #file log/operatoroutput.log
-## simu = simulator(population(100), randomMating(), rep=2)
-## simu.evolve(
-##   preOps=[
-##     initByFreq([0.2, 0.8], rep=0),
-##     initByFreq([0.5, 0.5], rep=1) ],
-##   ops = [
-##     stat(alleleFreq=[0]),
-##     pyEval('alleleFreq[0][0]', output='a.txt')
-##   ],
-##   gen=1
-## )
-## # only from rep 1
-## print open('a.txt').read()
-## 
-## simu.evolve(
-##   ops = [
-##     stat(alleleFreq=[0]),
-##     pyEval('alleleFreq[0][0]', output='>>a.txt')
-##   ], 
-##   gen=1)
-## # from both rep0 and rep1
-## print open("a.txt").read()
-## 
-## outfile='>>>a.txt'
-## simu.evolve(
-##   ops = [
-##     stat(alleleFreq=[0]),
-##     pyEval('alleleFreq[0][0]', output=outfile),
-##     output("\t", output=outfile),
-##     output("\n", output=outfile, rep=0)
-##   ],
-##   gen=1
-## )
-## print open("a.txt").read()
-## #end
-## 
-## os.remove('a.txt')
-## 
+#### 
 ## #file log/operatoroutputexpr.log
 ## outfile="'>>a'+str(rep)+'.txt'"
 ## simu.evolve(
@@ -2132,90 +2065,7 @@ if __name__ == '__main__':
 ##     ops = [ pyEval(stmts="pop=simu.population(rep)")],
 ##     gen=1)
 ## #end
-## 
-## 
-## #file log/saveFstat.log
-## def saveInFstatFormat(pop, output='', outputExpr='', maxAllele=0):
-##     if output != '':
-##         file = output
-##     elif outputExpr != '':
-##         file = eval(outputExpr, globals(), pop.vars() )
-##     else:
-##         raise exceptions.ValueError, "Please specify output or outputExpr"
-##     # open file
-##     try:
-##         f = open(file, "w")
-##     except exceptions.IOError:
-##         raise exceptions.IOError, "Can not open file " + file + " to write."
-##     #    
-##     # file is opened.
-##     np = pop.numSubPop()
-##     if np > 200:
-##         print "Warning: Current version (2.93) of FSTAT can not handle more than 200 samples"
-##     nl = pop.totNumLoci()
-##     if nl > 100:
-##         print "Warning: Current version (2.93) of FSTAT can not handle more than 100 loci"
-##     if maxAllele != 0:
-##         nu = maxAllele
-##     else:
-##         nu = pop.maxAllele()
-##     if nu > 999:
-##         print "Warning: Current version (2.93) of FSTAT can not handle more than 999 alleles at each locus"
-##         print "If you used simuPOP_la library, you can specify maxAllele in population constructure"
-##     if nu < 10:
-##         nd = 1
-##     elif nu < 100:
-##         nd = 2
-##     elif nu < 1000:
-##         nd = 3
-##     else: # FSTAT can not handle this now. how many digits?
-##         nd = len(str(nu))
-##     # write the first line
-##     f.write( '%d %d %d %d\n' % (np, nl, nu, nd) )
-##     # following lines with loci name.
-##     for ch in range(0, pop.numChrom()):
-##         for al in range(0, pop.numLoci(ch)):
-##             f.write( "loc_%d_%d\n" % (ch, al))
-##     # genoSize=totNumLoci()*ploidy()
-##     gs = pop.totNumLoci()
-##     for sp in range(0, pop.numSubPop()):
-##         # genotype of subpopulation sp, individuals are
-##         # rearranged in perfect order
-##         gt = pop.genotype(sp)
-##         for ind in range(0, pop.subPopSize(sp)):
-##             f.write("%d " % (sp+1))
-##             p1 = 2*gs*ind                # begining of first hemo copy
-##             p2 = 2*gs*ind + gs     # second
-##             for al in range(0, gs): # allele
-##                 ale1 = gt[p1+al]
-##                 ale2 = gt[p2+al]
-##                 if ale1 == 0 or ale2 == 0:
-##                     f.write('%%%dd' % (2*nd) % 0 )
-##                 else:
-##                     f.write('%%0%dd%%0%dd ' % (nd, nd) % (ale1, ale2))
-##             f.write( "\n")
-##     f.close()
-## #end
-## #PS head -15 log/saveFstat.tmp > log/saveInFstatFormat.log
-## #PS rm -f log/saveFstat.tmp
-## 
-## #file log/saveFstat.log
-## def saveFstat(output='', outputExpr='', **kwargs):
-##   # deal with additional arguments
-##   parm = ''
-##   for (k, v) in kwargs.items():
-##     parm += str(k) + '=' + str(v) + ', '
-##   # pyEval( exposePop=1, param?, stmts="""
-##   # saveInFSTATFormat( pop, rep=rep?, output=output?, outputExpr=outputExpr?)
-##   # """)
-##   opt = '''pyEval(exposePop=1, %s
-##     stmts=r\'\'\'saveInFstatFormat(pop, rep=rep, output=r"""%s""", 
-##     outputExpr=r"""%s""" )\'\'\')''' % ( parm, output, outputExpr) 
-##   # print opt
-##   return eval(opt)
-## #end
-## 
-## 
+#### 
 ## #file log/expLD.log
 ## #
 ## # this is an example of observing decay of LD
@@ -2453,13 +2303,7 @@ if __name__ == '__main__':
 ## 
 ## # Note that I can not use pop now, since it is
 ## # obtained from simu.population(0) which is invalid now.
-## 
-## 
-## #file log/simulatorsaveload.log
-## simu.save("sample.sim")
-## simu1 = LoadSimulator("sample.sim", randomMating())
-## #end
-## 
+#### 
 ## 
 ## #file log/generator_random.log
 ## from random import randint
@@ -2632,37 +2476,7 @@ if __name__ == '__main__':
 ## )
 ## 
 ## #end
-## 
-## # need reich.py
-## #PS /bin/cp -f ../examples/Reich2002/reich.py log/reich.py
-## #
-## # This script will genreate code/result pieces
-## # that will be inserted into simuPOP user's guide
-## # and reference manual
-## # 
-## # #file_begin file
-## #
-## # #file_end file
-## #
-## # will be used in this file so the running result can be
-## # separated into files specified by 'file'
-## #
-## # #PS after commands that will be executed.
-## #
-## # create directory log if not exist
-## import os, sys
-## 
-## if not os.path.isdir('log'):
-##   try:
-##     os.mkdir('log')
-##   except:
-##     print "Failed to make output directory log"
-##     sys.exit(1)
-## 
-## #
-## from simuPOP import *
-## 
-## 
+#### 
 ## #file log/src_genoStruTrait.log
 ## # create a population, most parameters have default values
 ## pop = population(size=[2,3], ploidy=2, loci=[5, 10],
