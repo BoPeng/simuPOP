@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7608,41 +7608,50 @@ A simuPOP simulator evolves one or more copies of a population forward in
 \end_layout
 
 \begin_layout Subsection
-Generation number
+Generations to evolve
 \end_layout
 
 \begin_layout Standard
-A generation number is used to track the number of generations a simulator
- has evolved.
- In terms of the life cycle of a generation, a generation number refers
- to a generation before mating.
- The basic rules about generation number are
-\end_layout
-
-\begin_layout Itemize
-A new simulator has generation number 0.
-\end_layout
-
-\begin_layout Itemize
-If a simulator has evolved 
-\begin_inset Formula $n$
-\end_inset
-
- generations, its generation number will become 
-\begin_inset Formula $n$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Itemize
-Generation number can be retrieved using function 
+A simulator usually evolves a specific number of generations according to
+ parameter 
 \family typewriter
-gen()
+gen
 \family default
-, and set using function 
+ of the 
 \family typewriter
-setGen(gen).
+evolve
+\family default
+ function.
+ A generation number is used to track the number of generations a simulator
+ has evolved.
+ Because a new simulator has generation number 0, a simulator would be at
+ the beginning of generation 
+\begin_inset Formula $n$
+\end_inset
+
+ after a simulator evolves 
+\begin_inset Formula $n$
+\end_inset
+
+ generations.
+ The generation number would increase if the simulator continues to evolve.
+\end_layout
+
+\begin_layout Standard
+It is not always possible to know the number of generations to evolve.
+ For example, you may want to evolve a population until a specific allele
+ gets fixed or lost in the population.
+ In this case, you can let the simulator run indefinitely (do not set the
+ 
+\family typewriter
+gen
+\family default
+ parameter) and depend on a 
+\emph on
+terminator 
+\emph default
+to terminate the evolution of a population.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -7742,10 +7751,6 @@ lstparams "caption={List the order at which operators are applied},label={dryrun
 
 \begin_layout Subsection
 Modifying genotypic structure of populations
-\end_layout
-
-\begin_layout Subsection
-Terminate a simulator
 \end_layout
 
 \begin_layout Subsection
