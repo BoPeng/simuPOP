@@ -1736,7 +1736,7 @@ Details:
 
 Usage:
 
-    heteroMating(matingSchemes, subPopSize=u[]Func,
+    heteroMating(matingSchemes, subPopSize=[],
       shuffleOffspring=True)
 
 Details:
@@ -1832,7 +1832,7 @@ Details:
 
 Usage:
 
-    homoMating(chooser, generator, subPopSize=u[]Func, subPop=[],
+    homoMating(chooser, generator, subPopSize=[], subPop=[],
       weight=0)
 
 Details:
@@ -3162,6 +3162,47 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::intList "
+
+Details:
+
+    This class defines an interface using which both a integer number
+    and a list of numbers can be accpted.
+
+"; 
+
+%feature("docstring") simuPOP::intList::intList "
+
+Usage:
+
+    intList(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::intList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::intList::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::intList::elems "
+
+Usage:
+
+    x.elems()
+
+"; 
+
 %ignore simuPOP::isAffected;
 
 %feature("docstring") simuPOP::isAffected::isAffected "
@@ -3811,7 +3852,7 @@ Usage:
 
 Usage:
 
-    mating(subPopSize=u[]Func)
+    mating(subPopSize=[])
 
 Details:
 
@@ -5325,7 +5366,7 @@ Details:
 
 Usage:
 
-    x.locateRelatives(relType=u[], relFields=[], ancGen=-1)
+    x.locateRelatives(relType=[], relFields=[], ancGen=-1)
 
 Details:
 
@@ -11370,47 +11411,6 @@ Description:
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::typeList "
-
-Details:
-
-    This class defines an interface using which both a integer number
-    and a list of numbers can be accpted.
-
-"; 
-
-%feature("docstring") simuPOP::typeList::typeList "
-
-Usage:
-
-    typeList(values=vector< T >)
-
-"; 
-
-%feature("docstring") simuPOP::typeList::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::typeList::size "
-
-Usage:
-
-    x.size()
-
-"; 
-
-%feature("docstring") simuPOP::typeList::elems "
-
-Usage:
-
-    x.elems()
 
 "; 
 

@@ -55,7 +55,7 @@ bool initSex::apply(population & pop)
 initByFreq::initByFreq(const matrix & alleleFreq, const vectoru & loci,
 	const vectoru & ploidy, bool identicalInds,
 	bool initsex, double maleFreq, const vectori & sex,
-	int stage, int begin, int end, int step, vectorl at,
+	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPop,
 	const vectorstr & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, rep, subPop, infoFields),
@@ -138,7 +138,7 @@ bool initByFreq::apply(population & pop)
 initByValue::initByValue(intMatrix value, const vectoru & loci, const vectoru & ploidy,
 	const vectorf & proportions,
 	bool initsex, double maleFreq, const vectori & sex,
-	int stage, int begin, int end, int step, vectorl at,
+	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPop,
 	const vectorstr & infoFields)
 	: initSex(maleFreq, sex, stage, begin, end, step, at, rep, subPop, infoFields),

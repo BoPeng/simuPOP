@@ -57,7 +57,7 @@ public:
 	 */
 	initSex(double maleFreq = 0.5, const vectori & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		vectorl at = vectorl(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex)
@@ -128,7 +128,7 @@ public:
 	initByFreq(const matrix & alleleFreq = matrix(), const vectoru & loci = vectoru(),
 		const vectoru & ploidy = vectoru(), bool identicalInds = false,
 		bool initSex = true, double maleFreq = 0.5, const vectori & sex = vectori(),
-		int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
+		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 
@@ -196,7 +196,7 @@ public:
 		const vectoru & loci = vectoru(), const vectoru & ploidy = vectoru(),
 		const vectorf & proportions = vectorf(),
 		bool initSex = true, double maleFreq = 0.5, const vectori & sex = vectori(),
-		int stage = PreMating, int begin = 0, int end = 1, int step = 1, vectorl at = vectorl(),
+		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 

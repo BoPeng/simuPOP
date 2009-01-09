@@ -64,7 +64,7 @@ namespace simuPOP {
 //                      const string & saveAs = "", const string & saveAsExpr = "",
 //                      const string & format = "auto",
 //                      int stage = PostMating, int begin = 0, int end = -1,
-//                      int step = 1, vectorl at = vectorl(),
+//                      int step = 1, const intList & at = intList(),
 //                      const repList & rep = repList(), const subPopList & subPop = subPopList(),
 //                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
@@ -146,7 +146,7 @@ namespace simuPOP {
 //                      const string & saveAs = "", const string & saveAsExpr = "",
 //                      const string & format = "auto",
 //                      int stage = PostMating, int begin = 0, int end = -1,
-//                      int step = 1, vectorl at = vectorl(),
+//                      int step = 1, const intList & at = intList(),
 //                      const repList & rep = repList(), const subPopList & subPop = subPopList(),
 //                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
@@ -233,7 +233,7 @@ namespace simuPOP {
 //  pySample(PyObject * keep, int keepAncestralPops = -1,
 //           const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 //           const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
-//           int stage = PostMating, int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+//           int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 //           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
 //               stage, begin, end, step, at, rep, subPop, infoFields),

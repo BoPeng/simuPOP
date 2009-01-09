@@ -1171,9 +1171,9 @@ pop = population(1000, loci=[1], infoFields=['migrate_to'])
 simu = simulator(pop, randomSelection())
 simu.evolve(
     ops=[
-        splitSubPop(0, proportions=[0.2, 0.8], at = [3]),
-        splitSubPop(1, proportions=[0.4, 0.6], at = [5]),
-        mergeSubPops([0,2], at = [7]),
+        splitSubPop(0, proportions=[0.2, 0.8], at = 3),
+        splitSubPop(1, proportions=[0.4, 0.6], at = 5),
+        mergeSubPops([0,2], at = 7),
         stat(popSize=True),
         pyEval(r'"%s\n" % subPopSize'),
     ],
@@ -1187,7 +1187,7 @@ pop = population(1000, loci=[1], infoFields=['migrate_to'])
 simu = simulator(pop, randomSelection())
 simu.evolve(
     ops=[
-        splitSubPop(0, proportions=[0.2, 0.3, 0.5], at = [3]),
+        splitSubPop(0, proportions=[0.2, 0.3, 0.5], at = 3),
         migrator(rate = [0.2], fromSubPop=[0], toSubPop=[1], 
             begin = 3, end = 4),
         migrator(rate = [
@@ -1216,10 +1216,10 @@ def popSize(gen, oldSize=[]):
 simu = simulator(pop, randomSelection(subPopSize=popSize))
 simu.evolve(
     ops=[
-        splitSubPop(0, proportions=[0.3, 0.7], at = [3]),
+        splitSubPop(0, proportions=[0.3, 0.7], at = 3),
         migrator(rate = [0.2], fromSubPop=[0], toSubPop=[1], 
             begin = 3, end = 4),
-        splitSubPop(0, proportions=[0.3, 0.7], at = [5]),
+        splitSubPop(0, proportions=[0.3, 0.7], at = 5),
         migrator(rate = [
             [0, 0.2, 0.4],
             [0, 0,   0.1],
@@ -1243,10 +1243,10 @@ def popSize(gen, oldSize=[]):
 simu = simulator(pop, randomSelection(subPopSize=popSize))
 simu.evolve(
     ops=[
-        splitSubPop(0, proportions=[0.3, 0.7], at = [3]),
+        splitSubPop(0, proportions=[0.3, 0.7], at = 3),
         migrator(rate = [0.2], fromSubPop=[0], toSubPop=[1], 
             begin = 3, end = 4),
-        splitSubPop(0, proportions=[0.3, 0.7], at = [5]),
+        splitSubPop(0, proportions=[0.3, 0.7], at = 5),
         migrator(rate = [
             [0, 0.2, 0.4],
             [0, 0,   0.1],

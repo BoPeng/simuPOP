@@ -3150,8 +3150,8 @@ bool repList::match(UINT rep, const vector<bool> & activeRep)
 {
     if (m_elems.empty())
 		return true;
-    vectori::iterator it = m_elems.begin();
-    vectori::iterator it_end = m_elems.end();
+    vectorl::iterator it = m_elems.begin();
+    vectorl::iterator it_end = m_elems.end();
     for (; it != it_end; ++it) {
         // positive index is easy
         if (*it >= 0) {

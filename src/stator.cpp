@@ -201,7 +201,7 @@ stat::stat(
 	bool midValues,                                                 // this parameter will be removed after all _param parameter is given.
 	// regular parameters
 	string output,
-	int stage, int begin, int end, int step, vectorl at,
+	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
 	: stator("", stage, begin, end, step, at, rep, subPop, infoFields),
 	// the order of initialization is meaningful since they may depend on each other

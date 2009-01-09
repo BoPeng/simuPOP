@@ -43,7 +43,7 @@ namespace simuPOP {
 class genoTransmitter : public baseOperator
 {
 public:
-	genoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	genoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", DuringMating, begin, end, step, at, rep, subPop, infoFields),
@@ -114,7 +114,7 @@ class cloneGenoTransmitter : public genoTransmitter
 public:
 	/** Create a cloneGenoTransmitter.
 	 */
-	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
@@ -158,7 +158,7 @@ public:
 class mendelianGenoTransmitter : public genoTransmitter
 {
 public:
-	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
@@ -215,7 +215,7 @@ protected:
 class selfingGenoTransmitter : public mendelianGenoTransmitter
 {
 public:
-	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields)
@@ -257,7 +257,7 @@ public:
 class haplodiploidGenoTransmitter : public mendelianGenoTransmitter
 {
 public:
-	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields),
@@ -299,7 +299,7 @@ class mitochondrialGenoTransmitter : public genoTransmitter
 public:
 	/** chroms: if not given, all customized chromosomes.
 	 */
-	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(), int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(), int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
@@ -426,7 +426,7 @@ public:
 	 */
 	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru loci = vectoru(),
 		const floatList & convMode = NoConversion,
-		int begin = 0, int end = -1, int step = 1, vectorl at = vectorl(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 

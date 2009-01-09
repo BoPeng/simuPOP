@@ -34,6 +34,7 @@ version 0.9.1 - Not released, available at https://simupop.svn.sourceforge.net/s
         _active_ populations.
   - CHG: Merge parameter output and outputExpr and use '!expr' for the expression
         case.
+  - NEW: Allow parameter baseOperator::at to take a single number in addition to a list.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.
