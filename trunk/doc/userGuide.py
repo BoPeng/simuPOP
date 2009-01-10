@@ -1095,8 +1095,7 @@ simu.evolve(
 #end
 
 classFile = open('log/myParentsChooser.h', 'w')
-classFile.write('''
-#include <stdlib.h>
+classFile.write('''#include <stdlib.h>
 #include <vector>
 #include <utility>
 using std::pair;
@@ -1127,8 +1126,7 @@ private:
 classFile.close()
 
 interFile = open('log/myParentsChooser.i', 'w')
-interFile.write('''
-%module myParentsChooser
+interFile.write('''%module myParentsChooser
 %{
 #include "myParentsChooser.h"
 %}
@@ -1147,6 +1145,12 @@ interFile.close()
 
 setupFile = open('log/setup.py', 'w')
 setupFile.write('''from distutils.core import setup, Extension
+import sys
+# Under linux/gcc, lib stdc++ is needed for C++ based extension.
+if sys.platform == 'linux2':
+    libs = ['stdc++']
+else:
+    libs = []
 
 setup(name = "myParentsChooser",
     description = "A sample parent chooser",
@@ -1164,7 +1168,7 @@ setup(name = "myParentsChooser",
 setupFile.close()
 
 os.chdir('log')
-os.system('python setup.py install --install-purelib="." --install-platlib="."')
+os.system('python setup.py build_ext --swig-opts="-O -templatereduce -shadow -c++ -keyword -nodefaultctor" install --install-purelib="." --install-platlib="."')
 os.chdir('..')
 
 sys.path.append('log')
