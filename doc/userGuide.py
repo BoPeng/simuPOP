@@ -1139,6 +1139,28 @@ simu.evolve(
 simu.gen()
 #end
 
+
+#file log/twoStage.log
+# First stage: use the standard random mating scheme, do not use any
+# information field for efficiency considerations.
+simu = simulator(population(500, loci=[10]), randomMating())
+simu.evolve(preOps = [initByFreq([0.5, 0.5])],
+    ops = [], gen = 50)
+# Second stage: track parents and produce more offspring per mating
+# event. In preparation for pedigree ascertainment.
+simu.addInfoFields(['father_idx', 'mother_idx'])
+simu.setAncestralDepth(1)
+simu.setMatingScheme(randomMating(numOffspring=2))
+simu.evolve(
+    ops = [
+        parentsTagger(),
+        maPenetrance(loci=0, penetrance=(0.2, 0.4, 0.5))
+    ],
+)
+# Sample affected sibpairs
+sample = AffectedSibpairSample(pop, size=10)[0]
+#end
+
 ################################################################################
 #
 
