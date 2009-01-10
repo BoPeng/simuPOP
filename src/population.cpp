@@ -1411,10 +1411,10 @@ population & population::extract(bool removeInd, const string & field,
 			}
 		}
 		pop.m_popSize = size;
-		if (m_subPopNames.empty())
-			pop.setSubPopStru(spSizes, m_subPopNames);
+		if (m_subPopNames.empty() || m_subPopNames.size() != spSizes.size())
+			pop.setSubPopStru(spSizes, vectorstr());
 		else
-			pop.setSubPopStru(spSizes, vectorstr(m_subPopNames.begin(), m_subPopNames.begin() + spSizes.size()));
+			pop.setSubPopStru(spSizes, m_subPopNames);
 		// set pointer
 		vectora::iterator ptr = new_genotype.begin();
 		vectorinfo::iterator infoPtr = new_info.begin();
