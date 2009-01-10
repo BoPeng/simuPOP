@@ -931,8 +931,9 @@ class affectedSibpairSample(_sample):
                 ped = ind.intInfo(pedindex)
                 if ped != -1 and chosenPeds[ped]:
                     ind.setInfo(ped, sample)
+                else:
+                    ind.setInfo(-1, sample)
         sample = pop.extract(field='sample', ancGen=1, ped=self.pedigree)
-        sample.removeEmptySubPops()
         return sample
 
 
