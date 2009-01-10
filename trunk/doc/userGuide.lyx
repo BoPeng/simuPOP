@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7708,7 +7708,7 @@ reference "simuGen"
 
 \end_inset
 
- demonstrates use of such a terminator.
+ demonstrates the use of such a terminator.
  This example calls the 
 \family typewriter
 evolve
@@ -7718,7 +7718,12 @@ evolve
 \family typewriter
 simu.setGen(0)
 \family default
- to reset the generation number before the second evolution.
+ to reset the generation number if you would like to have a fresh start
+ for the second 
+\family typewriter
+evove()
+\family default
+ call.
 \end_layout
 
 \begin_layout Standard
@@ -7737,22 +7742,26 @@ Operator calling sequence
 \end_layout
 
 \begin_layout Standard
-In a simulation, operators are applied at different stages, pre-, during-,
- and post-mating (controlled by 
+Operators can be applied at different stages of a life cycle (pre-, during-,
+ and post-mating, controlled by parameter 
 \family typewriter
 stage
 \family default
- parameter), at specified generations (controlled by 
+), at specified generations (controlled by parameters 
 \family typewriter
-begin, end, step, at
+begin, end, step
 \family default
- parameters), and to specified replicates (controlled by 
+ and 
+\family typewriter
+at
+\family default
+), and to specified replicates (controlled by parameter 
 \family typewriter
 rep
 \family default
- parameter).
- The order at which operators are applied is usually clear but can cause
- problems.
+).
+ The order at which operators are applied is usually clear but can become
+ confusing when the number of operators increases.
  For example, 
 \family typewriter
 stat(...)
@@ -7809,16 +7818,47 @@ lstparams "caption={List the order at which operators are applied},label={dryrun
 \end_layout
 
 \begin_layout Subsection
-Modifying genotypic structure of populations
+Modifying populations and changing mating scheme
 \end_layout
 
 \begin_layout Standard
 Because all populations in a simulator need to have the same genotypic structure
 , modifying genotypic structure of individual populations in a simulator
  is disallowed.
- It is, however, possible to change the information fields and ancestral
- depths for all populations.
- 
+ Instead, a few functions are provided to change the information fields
+ and ancestral depths for all populations.
+ In addition, This makes it easy the implementation of complex multi-stage
+ evoluationary scenarios.
+\end_layout
+
+\begin_layout Standard
+For example, although a standard Wright-Fisher random mating scheme is preferred
+ because it leads to a larger effective population size than other mating
+ schemes, it is difficult to ascertain pedigrees from a random mating population
+ because there will be very few siblings in such a population.
+ In addition, because we usually only sample from the last few generations,
+ it would be more efficient to keep tract of pedigree information only for
+ these generations.
+ Such considerations lead to the popularity of a two stage evolutionary
+ scenario where the standard random mating is used in the first stage and
+ another mating scheme is used in the second stage, in preparation for pedigree
+ ascertainment.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "twoStage"
+
+\end_inset
+
+ demonstrates the implementation of such a scenario.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/twoStage.log"
+lstparams "caption={A two-stage evolutionary process},label={twoStage}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
