@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7673,6 +7673,21 @@ lstparams "caption={Building and installing the myParentsChooser module},label={
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+You can now simply run command 'python setup.py install' to build and install
+ this module.
+ For a previous version of Python, you may need to specify swig options
+ in command line such as 'python setup.py build_ext --swig-opts=
+\begin_inset Quotes erd
+\end_inset
+
+-O -templatereduce -shadow -c++ -keyword -nodefaultctor
+\begin_inset Quotes erd
+\end_inset
+
+ install'.
 \end_layout
 
 \begin_layout Standard
