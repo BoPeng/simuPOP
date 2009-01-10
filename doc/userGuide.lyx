@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7578,25 +7578,27 @@ parentChooser
 
 \begin_layout Standard
 The first step is to write your own parent chooser in C/C++.
- Example 
+ Basically, you will need to pass all necessary information to the C++ level
+ and implement an algorithm to choose parents randomly.
+ Although simple function based solutions are possible, a C++ level class
+ such as the 
+\family typewriter
+myParentsChooser 
+\family default
+class defined in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "parentChooseHeader"
 
 \end_inset
 
- gives a minimal example.
- In this example, indexes of male and female individuals are passed to a
- C++ class 
-\family typewriter
-myParentsChooser
-\family default
-.
- A function 
+ is recommended.
+ This class is initialized with indexes of male and female individuals and
+ use a function 
 \family typewriter
 chooseParents
 \family default
- is implemented to return a pair of parents randomly.
+ to return a pair of parents randomly.
  This parent chooser is very simple but more complicated parent selection
  scenarios can be implemented similarly.
 \end_layout
@@ -7613,10 +7615,15 @@ lstparams "caption={Implement a parent chooser in C++},label={parentChooseHeader
 \end_layout
 
 \begin_layout Standard
-There are many ways to wrap C/C++ functions and classes and provide them
- in a Python module.
- Using an automatic wrapper such as SWIG (www.swig.org) is the most convenient
- way.
+The second step is to wrap your C++ functions and classes to a Python module.
+ There are many tools available but SWIG (
+\family typewriter
+www.swig.org
+\family default
+) is arguably the most convenient and powerful one.
+ To use SWIG, you will need to prepare an interface file, which basically
+ tells SWIG which functions and classes you would like to expose and how
+ to pass parameters between Python and C++.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7624,8 +7631,7 @@ reference "parentsChooserInterface"
 
 \end_inset
 
- lists an interface file that is used by swig to wrap the C++ class defined
- in Example 
+ lists an interface file for the C++ class defined in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "parentChooseHeader"
@@ -7633,7 +7639,7 @@ reference "parentChooseHeader"
 \end_inset
 
 .
- Please refer to SWIG reference manual for details.
+ Please refer to the SWIG reference manual for details.
 \end_layout
 
 \begin_layout Standard
@@ -7648,13 +7654,23 @@ lstparams "caption={An interface file for the myParentsChooser class},label={par
 \end_layout
 
 \begin_layout Standard
-With the interface file and header file (and an optional .cpp file if the
- class is fairly complicated), you can use swig and a C compiler to build
- this Python module.
- However, using a setup.py file and let Python build and install this module
- for you is the easiest method because Python will take care of all the
- platform and compiler differences for you.
- Such a setup file is given in Example 
+The exact procedure to generate and compile a wrapper file varies from system
+ to system, and from compiler to compiler.
+ Fortunately, the standard Python module setup process supports SWIG.
+ All you need to do is to write a Python 
+\family typewriter
+setup.py
+\family default
+ file and let the 
+\family typewriter
+distutil
+\family default
+ module of Python handle all the details for you.
+ A typical 
+\family typewriter
+setup.py
+\family default
+ file is demonstrated in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "parentsChooserSetup"
@@ -7676,31 +7692,65 @@ lstparams "caption={Building and installing the myParentsChooser module},label={
 \end_layout
 
 \begin_layout Standard
-You can now simply run command 'python setup.py install' to build and install
- this module.
- For a previous version of Python, you may need to specify swig options
- in command line such as 'python setup.py build_ext --swig-opts=
-\begin_inset Quotes erd
-\end_inset
+You parent chooser can now be compiled and installed using the standard
+ Python 
+\family typewriter
+setup.py
+\family default
+ commands such as
+\end_layout
 
--O -templatereduce -shadow -c++ -keyword -nodefaultctor
-\begin_inset Quotes erd
-\end_inset
-
- install'.
+\begin_layout LyX-Code
+python setup.py install
 \end_layout
 
 \begin_layout Standard
-After this C++ class is wrapped (by SWIG or other Python interface generating
- file) and imported into Python, this C++ level Parent chooser can be used
- as shown in Example 
+Please refer to the Python reference manual for other building and installation
+ options.
+ Note that Python 2.4 and earlier do not support option swig_opts well so
+ you might have to pass these options using command
+\end_layout
+
+\begin_layout LyX-Code
+python setup.py build_ext --swig-opts=
+\begin_inset Quotes erd
+\end_inset
+
+-O -templatereduce 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    -shadow -c++ -keyword -nodefaultctor
+\begin_inset Quotes erd
+\end_inset
+
+ install
+\end_layout
+
+\begin_layout Standard
+Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "parentChooseHeader"
 
 \end_inset
 
-.
+ demonstrates how to use such a C++ parents chooser in your simuPOP script.
+ It uses the same Python parent chooser interface as in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyParentsChooser"
+
+\end_inset
+
+, but leaves all the (potentially) computationally intensive parts to the
+ C++ level 
+\family typewriter
+myParentsChooser
+\family default
+ object.
 \end_layout
 
 \begin_layout Standard
