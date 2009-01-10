@@ -1160,7 +1160,8 @@ simu.evolve(
 )
 # Sample affected sibpairs
 pop = simu.extract(0)
-sample = AffectedSibpairSample(pop, size=10)[0]
+sample = AffectedSibpairSample(pop, size=5)[0]
+[ind.intInfo('father_idx')  for ind in sample.individuals()]
 #end
 
 ################################################################################
