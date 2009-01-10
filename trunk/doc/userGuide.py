@@ -1156,8 +1156,10 @@ simu.evolve(
         parentsTagger(),
         maPenetrance(loci=0, penetrance=(0.2, 0.4, 0.5))
     ],
+    gen = 5
 )
 # Sample affected sibpairs
+pop = simu.extract(0)
 sample = AffectedSibpairSample(pop, size=10)[0]
 #end
 

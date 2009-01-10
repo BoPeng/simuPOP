@@ -654,6 +654,7 @@ class randomSample(_sample):
         return True
 
     def drawSample(self, pop):
+        import random
         if type(self.size) not in [type(()), type([])]:
             size = self.size
             if size > pop.popSize():
@@ -714,6 +715,7 @@ class caseControlSample(_sample):
         return True
 
     def drawSample(self, pop):
+        import random
         if type(self.cases) not in [type(()), type([])] and type(self.controls) not in [type(()), type([])]:
             Stat(pop, numOfAffected=True)
             allCases = pop.dvars().numOfAffected
@@ -830,8 +832,8 @@ class affectedSibpairSample(_sample):
         self.pedigree = pedigree(pop, infoFields=self.fields, ancGen=1)
         self.pedigree.addInfoFields(['sample', 'pedindex', 'offspring0', 'offspring1', 'spouse'], -1)
         # locate all affected siblings
-        self.pedigree.locateRelatives(REL_Offspring, ['offspring0', 'offspring1'])
-        self.pedigree.locateRelatives(REL_Spouse, ['spouse'])
+        self.pedigree.locateRelatives(Offspring, ['offspring0', 'offspring1'])
+        self.pedigree.locateRelatives(Spouse, ['spouse'])
         # look for affected siblings from the parental generation
         self.pedigree.useAncestralGen(1)
         parent0 = self.pedigree.infoIdx(self.fields[0])
@@ -886,11 +888,12 @@ class affectedSibpairSample(_sample):
 
     def drawSample(self, pop):
         #
+        import random
         pedindex = self.pedigree.infoIdx('pedindex')
         sample = self.pedigree.infoIdx('sample')
         #
         # clear information sample in case this operator is applied twice
-        pop.setIndInfo([0], sample)
+        self.pedigree.setIndInfo([0], sample)
         #
         pedCount = sum([len(x) for x in self.validPeds])
         chosenPeds = [False] * pedCount
