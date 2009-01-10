@@ -7577,33 +7577,111 @@ parentChooser
 \end_layout
 
 \begin_layout Standard
-An example implemented in files 
+The first step is to write your own parent chooser in C/C++.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentChooseHeader"
+
+\end_inset
+
+ gives a minimal example.
+ In this example, indexes of male and female individuals are passed to a
+ C++ class 
 \family typewriter
-cookbook/Mating_homoMating_cpp.py
+myParentsChooser
 \family default
-, 
-\family typewriter
-.i
-\family default
- and 
-\family typewriter
-.h
-\family default
- demonstrates how to define a parent chooser at the C++ level.
- The C++ header file defines a C++ class that implements a parent chooser
- in C++.
- This class is initialized by needed information such as sexes of parents
- and uses a 
+.
+ A function 
 \family typewriter
 chooseParents
 \family default
- member function to return parents repeatedly.
- After this C++ class is wrapped (by SWIG or other Python interface generating
+ is implemented to return a pair of parents randomly.
+ This parent chooser is very simple but more complicated parent selection
+ scenarios can be implemented similarly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/myParentsChooser.h"
+lstparams "caption={Implement a parent chooser in C++},label={parentChooseHeader},language=C"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are many ways to wrap C/C++ functions and classes and provide them
+ in a Python module.
+ Using an automatic wrapper such as SWIG (www.swig.org) is the most convenient
+ way.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentsChooserInterface"
+
+\end_inset
+
+ lists an interface file that is used by swig to wrap the C++ class defined
+ in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentChooseHeader"
+
+\end_inset
+
+.
+ Please refer to SWIG reference manual for details.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/myParentsChooser.i"
+lstparams "caption={An interface file for the myParentsChooser class},label={parentsChooserInterface},language=Awk"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With the interface file and header file (and an optional .cpp file if the
+ class is fairly complicated), you can use swig and a C compiler to build
+ this Python module.
+ However, using a setup.py file and let Python build and install this module
+ for you is the easiest method because Python will take care of all the
+ platform and compiler differences for you.
+ Such a setup file is given in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "parentsChooserSetup"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/setup.py"
+lstparams "caption={Building and installing the myParentsChooser module},label={parentsChooserSetup}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After this C++ class is wrapped (by SWIG or other Python interface generating
  file) and imported into Python, this C++ level Parent chooser can be used
  as shown in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "cppParentChooser"
+reference "parentChooseHeader"
 
 \end_inset
 
@@ -7619,16 +7697,6 @@ lstparams "caption={Implement a parent chooser in C++},firstline=5,label={cppPar
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Due to compiler and OS differences, the process of wrapping and building
- this external module varies from platform to platform.
- Please refer to the module comment in 
-\family typewriter
-cookbook/Mating_pyMaitng_cpp.py
-\family default
- for detailed instructions.
 \end_layout
 
 \begin_layout Subsection
