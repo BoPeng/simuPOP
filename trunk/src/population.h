@@ -1001,7 +1001,9 @@ public:
 	 *  current population and create a new one. If information field \e field
 	 *  is not \c None, individuals with negative values at this information
 	 *  field will be removed, and others are put into subpopulations specified
-	 *  by this field. If \e loci is not \c None, only genotypes at \e loci
+	 *  by this field. The extracted population will keep the original
+	 *  subpopulation names if two populations have the same number of
+	 *  subpopulations. If \e loci is not \c None, only genotypes at \e loci
 	 *  are extracted. If \e infoFields is not \c None, only these information
 	 *  fields will be extracted. If \e ancGen is not \c -1 (default, meaing
 	 *  all ancestral generations), only \e ancGen ancestral generations will

@@ -43,6 +43,8 @@ namespace simuPOP {
 class genoTransmitter : public baseOperator
 {
 public:
+	/** Create a base genotype transmitter.
+	 */
 	genoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
@@ -53,6 +55,7 @@ public:
 	}
 
 
+	/// Deep copy of a base genotype transmitter.
 	baseOperator * clone() const
 	{
 		return new genoTransmitter(*this);
@@ -83,10 +86,12 @@ public:
 		return "<simuPOP::genoTransmitter>" ;
 	}
 
-
+	/** Initialize a base genotype operator for a population. This function should be
+	 *  called before any other functions are used to transmit genotype.
+	 */
 	void initialize(const population & pop);
 
-	///
+	/// CPPONLY
 	bool applyDuringMating(population & pop,
 	                       RawIndIterator offspring,
 	                       individual * dad = NULL,
@@ -112,7 +117,7 @@ protected:
 class cloneGenoTransmitter : public genoTransmitter
 {
 public:
-	/** Create a cloneGenoTransmitter.
+	/** Create a clone genotype transmitter.
 	 */
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
@@ -122,20 +127,21 @@ public:
 		setFormOffGenotype(true);
 	}
 
-
+	/// Deep copy of a clone genotype transmitter.
 	baseOperator * clone() const
 	{
 		return new cloneGenoTransmitter(*this);
 	}
 
 
+	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::cloneGenoTransmitter>" ;
 	}
 
 
-	///
+	/// CPPONLY
 	bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
@@ -152,12 +158,12 @@ public:
    produced is controled by parameters \c numOffspring, \c numOffspringFunc,
    \c maxNumOffspring and \c mode. Recombination will not happen unless
    a during-mating operator recombinator is used.
-
-   <applicability>diploid only</applicability>
  */
 class mendelianGenoTransmitter : public genoTransmitter
 {
 public:
+	/** Create a Mendelian genotype transmitter.
+	 */
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
@@ -166,24 +172,28 @@ public:
 	{
 	}
 
-
+	/// Deep copy of a Mendelian genotype transmitter.
 	baseOperator * clone() const
 	{
 		return new mendelianGenoTransmitter(*this);
 	}
 
 
+	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::mendelianGenoTransmitter>" ;
 	}
 
-
+	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
 		individual * mom = NULL);
 
+	/** Initialize a base genotype operator for a population. This function should be
+	 *  called before function \c transmitGenotype is used to transmit genotype.
+	 */
 	void initialize(const population & pop);
 
 	/** Transmit genotype from parent to offspring, and fill the \e ploidy
@@ -210,11 +220,11 @@ protected:
    randomly to form the parental copy of the offspring chromosome, and
    is chosen randomly again to form the maternal copy of the offspring
    chromosome.
-   <applicability>diploid only</applicability>
  */
 class selfingGenoTransmitter : public mendelianGenoTransmitter
 {
 public:
+	/// Create a self-fertilization genotype transmitter.
 	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
@@ -223,18 +233,20 @@ public:
 	}
 
 
+	/// Deep copy of a selfing genotype transmitter
 	baseOperator * clone() const
 	{
 		return new selfingGenoTransmitter(*this);
 	}
 
 
+	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::selfingGenoTransmitter>" ;
 	}
 
-
+	/// CPPONLY
 	bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
@@ -257,6 +269,7 @@ public:
 class haplodiploidGenoTransmitter : public mendelianGenoTransmitter
 {
 public:
+	/// Create a haplodiploid genotype transmitter.
 	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
@@ -266,20 +279,22 @@ public:
 	}
 
 
+	/// Deep copy of a haplodiploid transmitter.
 	baseOperator * clone() const
 	{
 		return new haplodiploidGenoTransmitter(*this);
 	}
 
-
+	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::haplodiploidGenoTransmitter>" ;
 	}
 
-
+	/// HIDDEN
 	void initialize(const population & pop);
 
+	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
@@ -290,16 +305,20 @@ private:
 };
 
 
-/** This geno transmitter transmits some customized chromosomes as human
-    mitochondrial chromosomes. It randomly inherit the first homologous copy of several
-    customized chromosomes of the female parent.
+/** This geno transmitter assumes that the first homologous copy of several (or
+ *  all) Customized chromosomes are copies of mitochondrial chromosomes. It
+ *  transmits these chromosomes randomly from the female parent.
  */
 class mitochondrialGenoTransmitter : public genoTransmitter
 {
 public:
-	/** chroms: if not given, all customized chromosomes.
+	/** Createa a mitochondrial genotype transmitter that treats all Customized
+	 *  chromosomes, or a list of chromosomes specified by \e chroms, as human
+	 *  mitochondrial chromosomes. It transmits these chromosomes randomly from
+	 *  the female parent to offspring of both sexes.
 	 */
-	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(), int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
@@ -309,21 +328,22 @@ public:
 		setFormOffGenotype(false);
 	}
 
-
+	/// Deep copy of a mitochondrial genotype transmitter.
 	baseOperator * clone() const
 	{
 		return new mitochondrialGenoTransmitter(*this);
 	}
 
-
+	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::mitochondrialGenoTransmitter>" ;
 	}
 
-
+	/// HIDDEN
 	void initialize(const population & pop);
 
+	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad = NULL,
@@ -377,14 +397,7 @@ public:
 	    to all loci (but meaningless for those loci located at the end of a chromosome).
 	    If this parameter is given, it should be ordered, and can not include loci at
 	   the end of a chromosome.
-	   \param maleIntensity recombination intensity for male individuals. If given,
-	   parameter \c intensity will be considered as female intensity.
-	   \param maleRate recombination rate for male individuals. If given,
-	   parameter \c rate will be considered as female recombination rate.
-	   \param maleAfterLoci if given, males will recombine at different locations.
 
-	 *
-	 *
 	 * \e convMode can take the following forms
 	 * NoConversion: no conversion
 	 * (NumMarkers, prob, n): converts a fixed number of markers

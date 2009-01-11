@@ -118,7 +118,7 @@ private:
  *
  *  The \e baseOperator class is the base class for all operators. It defines
  *  a common user interface that specifies at which generations, at which stage
- *  of a life cycle, to which populations and subpopulation an operator will be
+ *  of a life cycle, to which populations and subpopulations an operator is
  *  applied. These are achieved by a common set of parameters such as \c begin,
  *  \c end, \c step, \c at, \c stage for all operators. Note that a specific
  *  operator does not have to honor all these parameters. For example, a
@@ -138,16 +138,21 @@ private:
  *  Output from an operator is usually directed to the standard output
  *  (\c sys.stdout). This can be configured using a output specification
  *  string, which can be <tt>''</tt> for no output, <tt>'>'</tt> standard
- *  terminal output (default), or a filename prefixed by one or more
- *  <tt>'>'</tt> characters. In the case of \c '>filename' (or equivalently
- *  \c 'filename'), the output from an operator is written to this file.
- *  However, if two operators write to the same file \c filename, or if an
- *  operator write to this file more than once, only the last write operation
- *  will succeed. In the case of <tt>'>>filename'</tt>, file \c filename
- *  will be opened at the beginning of the evolution and closed at the end.
- *  Outputs from multiple operators are appended. <tt>>>>filename</tt> works
- *  similar to <tt>>>filename</tt> but \c filename, if it already exists at the
- *  beginning of an evolutionary process, will not be cleared.
+ *  terminal output (default), a filename prefixed by one or more
+ *  <tt>'>'</tt> characters or a Python expression indicated by a leading
+ *  exclamation mark (<tt>'!expr'</tt>). In the case of \c '>filename' (or
+ *  equivalently \c 'filename'), the output from an operator is written to this
+ *  file. However, if two operators write to the same file \c filename, or if
+ *  an operator writes to this file more than once, only the last write
+ *  operation will succeed. In the case of <tt>'>>filename'</tt>, file
+ *  \c filename will be opened at the beginning of the evolution and closed at
+ *  the end. Outputs from multiple operators are appended. <tt>>>>filename</tt>
+ *  works similar to <tt>>>filename</tt> but \c filename, if it already exists
+ *  at the beginning of an evolutionary process, will not be cleared. If the
+ *  output specification is prefixed by an exclamation mark, the string after
+ *  the mark is considered as a Python expression. When an operator is applied
+ *  to a population, this expression will be evaluated within the population's
+ *  local namespace to obtain a population specific output specification.
  */
 class baseOperator
 {
@@ -161,12 +166,13 @@ public:
 	 *
 	 *  \param output A string that specifies how output from an operator is
 	 *    written, which can be \c '' (no output), \c '>' (standard output),
-	 *    or \c 'filename' prefixed by one or more '>'.
+	 *    \c 'filename' prefixed by one or more '>', or an Python expression
+	 *    prefixed by an exclamation mark (\c '!expr').
 	 *  \param stage Stage(s) of a life cycle at which an operator will be
-	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating and
+	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating or
 	 *    any of their combined stages \c PrePostMating, \c PreDuringMating
 	 *    \c DuringPostMating and \c PreDuringPostMating. Note that all
-	 *    operators have their default stage parameter and some of them ignores
+	 *    operators have their default stage parameter and some of them ignore
 	 *    this parameter because they can only be applied at certain stage(s)
 	 *    of a life cycle.
 	 *  \param begin The starting generation at which an operator will be
@@ -179,6 +185,7 @@ public:
 	 *    Default to \c 1.
 	 *  \param at A list of applicable generations. Parameters \c begin,
 	 *    \c end, and \c step will be ignored if this parameter is specified.
+	 *    A single generation number is also acceptable.
 	 *  \param rep A list of applicable replicates. An empty list (default) is
 	 *    interpreted as all replicates in a simulator. Negative indexes such
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
@@ -430,6 +437,7 @@ public:
 	}
 
 
+	/// HIDDEN Initialize an operator against a population.
 	virtual void initialize(const population & pop) {}
 
 	/// CPPONLY
@@ -524,7 +532,7 @@ public:
 	 */
 	pause(bool prompt = true, bool stopOnKeyStroke = false,
 		bool exposePop = true, string popName = "pop",
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = -1, const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
@@ -580,7 +588,7 @@ public:
 	/// create a none operator
 	/**
 	 */
-	noneOp(string output = ">", 
+	noneOp(string output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields)
@@ -651,7 +659,7 @@ public:
 
 	 */
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
@@ -725,7 +733,7 @@ class ticToc : public baseOperator
 {
 public:
 	/// create a timer
-	ticToc(string output = ">", 
+	ticToc(string output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields)
@@ -772,7 +780,7 @@ class setAncestralDepth : public baseOperator
 
 public:
 	/// create a \c setAncestralDepth operator
-	setAncestralDepth(int depth, string output = ">", 
+	setAncestralDepth(int depth, string output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
