@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -7811,6 +7811,15 @@ evolve
 
  generations.
  The generation number would increase if the simulator continues to evolve.
+ During evoluting, variables 
+\family typewriter
+rep
+\family default
+ (replicate number) and 
+\family typewriter
+gen
+\family default
+ (current generation number) are set to each population's local namespace.
 \end_layout
 
 \begin_layout Standard
@@ -7841,8 +7850,22 @@ reference "simuGen"
 
 \end_inset
 
- demonstrates the use of such a terminator.
- This example calls the 
+ demonstrates the use of such a terminator, which terminates the evolution
+ of a population if allele 0 at locus 5 is fixed or lost.
+ It also shows the application of an interesting operator 
+\family typewriter
+ifElse
+\family default
+, which applies an operator, in this case 
+\family typewriter
+pyEval
+\family default
+, only when an expression returns 
+\family typewriter
+True
+\family default
+.
+ Note that this example calls the 
 \family typewriter
 evolve
 \family default
@@ -7857,6 +7880,7 @@ simu.setGen(0)
 evove()
 \family default
  call.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -7943,7 +7967,7 @@ reference "stageAndGen"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/dryrun.log"
-lstparams "caption={List the order at which operators are applied},label={dryrun}"
+lstparams "caption={List the order at which operators are applied},keywordstyle={\\ttfamily},label={dryrun}"
 
 \end_inset
 
@@ -7951,7 +7975,7 @@ lstparams "caption={List the order at which operators are applied},label={dryrun
 \end_layout
 
 \begin_layout Subsection
-Modifying populations and changing mating scheme
+Modifying populations and mating scheme
 \end_layout
 
 \begin_layout Standard
@@ -7995,58 +8019,66 @@ lstparams "caption={A two-stage evolutionary process},label={twoStage}"
 \end_layout
 
 \begin_layout Subsection
-
-\family typewriter
-rep
-\family default
-, 
-\family typewriter
-gen
-\family default
- and access to population variables
+Population access and other simulator operations
 \end_layout
 
 \begin_layout Standard
-Two population variables, 
+Function 
+\family typewriter
+population()
+\family default
+ and 
+\family typewriter
+populations()
+\family default
+ are provided to access populations within a simulator.
+ Similar to functions 
+\family typewriter
+individual()
+\family default
+ and 
+\family typewriter
+individuals()
+\family default
+ for a population
+\family typewriter
+,population(rep)
+\family default
+ returns a reference to the 
 \family typewriter
 rep
 \family default
- (replicate number) and 
+th population in a simulator and 
 \family typewriter
-gen
+populations()
 \family default
- (current generation number), are set to each population during an evolutionary
- process.
- They are used, for example, in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "output"
-
-\end_inset
-
- to let operator 
+ returns an Python iterator that can be used to iterate through all populations.
+ Modifying these references will change the corresponding populations within
+ the simulator.
+ An independent copy of a population can be made using the 
 \family typewriter
-pyEval 
+clone()
 \family default
-write to replicate-specific output.
-\end_layout
-
-\begin_layout Subsection
-Save and Load
-\end_layout
-
-\begin_layout Standard
-Using function 
-\family typewriter
-saveSimulator
-\family default
-, we can save a simulator to a file.
- Although files with any extension can be correctly saved/loaded, extension
+ function of a population (e.g.
  
 \family typewriter
-.sim
+simu.population(0).clone()
 \family default
- is usually used.
+).
+ Alternatively, you can extract a population from a simulator using function
+ 
+\family typewriter
+extract()
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Just like populations, a simulator can be cloned, saved and loaded.
+ This makes it easy to stop a simulator, take a snapshot and resume evolution.
+ It is even easy to save a simlator, transfer it to another machine and
+ resume the evolution over there.
  Note that a mating scheme can not be saved and has to be re-specified in
  
 \family typewriter
@@ -8069,8 +8101,8 @@ loadSimulator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simulatorCloneSaveLoad.log"
-lstparams "caption={Clone, save and load a simulator},label={simulatorSaveLoad}"
+filename "log/simuFunc.log"
+lstparams "caption={Clone, save and load a simulator},label={simuFunc}"
 
 \end_inset
 

@@ -1167,11 +1167,15 @@ setup(name = "myParentsChooser",
 ''')
 setupFile.close()
 
-os.chdir('log')
-os.system('python setup.py build_ext --swig-opts="-O -templatereduce -shadow -c++ -keyword -nodefaultctor" install --install-purelib="." --install-platlib="."')
-os.chdir('..')
-
 sys.path.append('log')
+
+try:
+    import myParentsChooser
+except:
+    os.chdir('log')
+    os.system('python setup.py build_ext --swig-opts="-O -templatereduce -shadow -c++ -keyword -nodefaultctor" install --install-purelib="." --install-platlib="."')
+    os.chdir('..')
+
 #file log/cppParentChooser.log
 # The class myParentsChooser is defined in module myParentsChooser
 from myParentsChooser import myParentsChooser
@@ -1208,7 +1212,11 @@ simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
     ops = [
         stat(alleleFreq=[5]),
-        terminateIf('alleleNum[5][0] == 0 or alleleNum[5][0] == 50')
+        ifElse('alleleNum[5][0] == 0',
+            pyEval(r"'Allele 0 is lost in rep %d at gen %d\n' % (rep, gen)")),
+        ifElse('alleleNum[5][0] == 50',
+            pyEval(r"'Allele 0 is fixed in rep %d at gen %d\n' % (rep, gen)")),
+        terminateIf('alleleNum[5][0] == 0 or alleleNum[5][0] == 50'),
     ],
 )
 simu.gen()
@@ -1239,24 +1247,21 @@ sample = AffectedSibpairSample(pop, size=5)[0]
 [ind.intInfo('father_idx')  for ind in sample.individuals()]
 #end
 
-################################################################################
-#
-
-#file log/simulatorCloneSaveLoad.log
+#file log/simuFunc.log
 simu = simulator(population(100, loci=[5, 10], infoFields=['x']),
     randomMating(), rep=5)
 simu.evolve(preOps=[initByFreq([0.4, 0.6])],
     ops=[], gen=10)
 # clone
 cloned = simu.clone()
-# save and load
+# save and load, using a different mating scheme
 simu.save("sample.sim")
-loaded = LoadSimulator("sample.sim", randomMating())
+loaded = LoadSimulator("sample.sim", randomMating(numOffspring=2))
 # 
 simu.numRep()
 loaded.numRep()
-for rep in range(5):
-    assert cloned.population(rep) == loaded.population(rep)
+for pop1,pop2 in zip(cloned.populations(), loaded.populations()):
+    assert pop1 == pop2
 
 # continue to evolve
 simu.evolve(ops=[], gen=10)
@@ -1264,6 +1269,9 @@ simu.gen()
 #end
 
 os.remove('sample.sim')
+
+################################################################################
+#
 
 #file log/splitAndMerge.log
 from simuPOP import *
