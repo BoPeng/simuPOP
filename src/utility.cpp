@@ -2761,7 +2761,7 @@ void setLogOutput(const string filename)
 
 int simuRev()
 {
-    char * rev = REVISION;
+    const char * rev = REVISION;
     // can have form xx:xxM etc, or simply a number
     // we certainly like a single number but it is often the case that
     // svn local copy is not up to date.

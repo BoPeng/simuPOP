@@ -60,7 +60,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		if (loc != m_loci.begin() )
 			key += '|';
-		for (int p = 0; p < ply; ++p)
+		for (size_t p = 0; p < ply; ++p)
 			alleles[p] = ind->allele(*loc, p);
 		// if no phase, sort alleles...
 		if (!m_phase && ply > 1) {

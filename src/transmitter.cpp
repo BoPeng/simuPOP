@@ -379,6 +379,7 @@ recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 		"Please specify a conversion mode");
 
 	int mode = static_cast<int>(m_convMode[0]);
+	(void)mode;  // avoid a warning.
 	DBG_FAILIF(mode != NoConversion && m_convMode.size() != 3,
 		ValueError, "Two parameters are required for a non-NoConversion conversion mode");
 
