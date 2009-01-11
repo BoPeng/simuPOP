@@ -7887,7 +7887,7 @@ evove()
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/simuGen.log"
-lstparams "caption={Generation number of a simulator},label={simuGen}"
+lstparams "caption={Generation number of a simulator},keywordstyle={\\ttfamily},label={simuGen}"
 
 \end_inset
 
