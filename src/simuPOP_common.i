@@ -53,7 +53,6 @@
 #include "selector.h"
 #include "qtrait.h"
 #include "penetrance.h"
-#include "sampler.h"
 
 %}
 
@@ -283,7 +282,6 @@ namespace std
 %include "selector.h"
 %include "qtrait.h"
 %include "penetrance.h"
-%include "sampler.h"
 %include "pedigree.h"
 
 ////////////////////////// SIMUPOP PYTHON UTILITY FUNCTIONS //////////////////////////

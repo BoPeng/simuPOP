@@ -261,7 +261,7 @@ include doc/cookbook/Operator_pyOperator.py
 include win32/stdint.h
 recursive-include win32/zlib-1.2.3 *.h *.c
 
-# bundle boost 1.36.0
-recursive-include boost_1_36_0/boost *.hpp *.ipp
-recursive-include boost_1_36_0/libs/iostreams/src *.cpp *.hpp *.ipp
-recursive-include boost_1_36_0/libs/serialization/src *.cpp *.hpp *.ipp
+# bundle boost 1.37.0
+recursive-include boost_1_37_0/boost *.hpp *.ipp
+recursive-include boost_1_37_0/libs/iostreams/src *.cpp *.hpp *.ipp
+recursive-include boost_1_37_0/libs/serialization/src *.cpp *.hpp *.ipp
