@@ -115,7 +115,7 @@ Details:
     baseOperator class is the base class for all operators. It defines
     a common user interface that specifies at which generations, at
     which stage of a life cycle, to which populations and
-    subpopulation an operator will be applied. These are achieved by a
+    subpopulations an operator is applied. These are achieved by a
     common set of parameters such as begin, end, step, at, stage for
     all operators. Note that a specific operator does not have to
     honor all these parameters. For example, a recombinator can only
@@ -131,17 +131,23 @@ Details:
     member function.  Output from an operator is usually directed to
     the standard output (sys.stdout). This can be configured using a
     output specification string, which can be '' for no output, '>'
-    standard terminal output (default), or a filename prefixed by one
-    or more '>' characters. In the case of '>filename' (or
+    standard terminal output (default), a filename prefixed by one or
+    more '>' characters or a Python expression indicated by a leading
+    exclamation mark ('!expr'). In the case of '>filename' (or
     equivalently 'filename'), the output from an operator is written
     to this file. However, if two operators write to the same file
-    filename, or if an operator write to this file more than once,
+    filename, or if an operator writes to this file more than once,
     only the last write operation will succeed. In the case of
     '>>filename', file filename will be opened at the beginning of the
     evolution and closed at the end. Outputs from multiple operators
     are appended. >>>filename works similar to >>filename but
     filename, if it already exists at the beginning of an evolutionary
-    process, will not be cleared.
+    process, will not be cleared. If the output specification is
+    prefixed by an exclamation mark, the string after the mark is
+    considered as a Python expression. When an operator is applied to
+    a population, this expression will be evaluated within the
+    population's local namespace to obtain a population specific
+    output specification.
 
 "; 
 
@@ -162,15 +168,16 @@ Arguments:
 
     output:         A string that specifies how output from an
                     operator is written, which can be '' (no output),
-                    '>' (standard output), or 'filename' prefixed by
-                    one or more '>'.
+                    '>' (standard output), 'filename' prefixed by one
+                    or more '>', or an Python expression prefixed by
+                    an exclamation mark ('!expr').
     stage:          Stage(s) of a life cycle at which an operator will
                     be applied. It can be PreMating, DuringMating,
-                    PostMating and any of their combined stages
+                    PostMating or any of their combined stages
                     PrePostMating, PreDuringMatingDuringPostMating and
                     PreDuringPostMating. Note that all operators have
                     their default stage parameter and some of them
-                    ignores this parameter because they can only be
+                    ignore this parameter because they can only be
                     applied at certain stage(s) of a life cycle.
     begin:          The starting generation at which an operator will
                     be applied. Default to 0. A negative number is
@@ -184,7 +191,8 @@ Arguments:
                     generations. Default to 1.
     at:             A list of applicable generations. Parameters
                     begin, end, and step will be ignored if this
-                    parameter is specified.
+                    parameter is specified. A single generation number
+                    is also acceptable.
     rep:            A list of applicable replicates. An empty list
                     (default) is interpreted as all replicates in a
                     simulator. Negative indexes such as -1 (last
@@ -298,13 +306,7 @@ Usage:
 
 %ignore simuPOP::baseOperator::noOutput();
 
-%feature("docstring") simuPOP::baseOperator::initialize "
-
-Usage:
-
-    x.initialize(pop)
-
-"; 
+%feature("docstring") simuPOP::baseOperator::initialize "Obsolete or undocumented function."
 
 %ignore simuPOP::baseOperator::applicableSubPops() const;
 
@@ -484,35 +486,23 @@ Usage:
 
 Details:
 
-    Create a cloneGenoTransmitter.
+    Create a clone genotype transmitter.
 
 "; 
 
 %feature("docstring") simuPOP::cloneGenoTransmitter::clone "
 
+Description:
+
+    Deep copy of a clone genotype transmitter.
+
 Usage:
 
     x.clone()
 
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
 "; 
 
-%feature("docstring") simuPOP::cloneGenoTransmitter::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::cloneGenoTransmitter::__repr__ "Obsolete or undocumented function."
 
 %ignore simuPOP::cloneGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -1404,18 +1394,21 @@ Usage:
     genoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
       subPop=[], infoFields=[])
 
+Details:
+
+    Create a base genotype transmitter.
+
 "; 
 
 %feature("docstring") simuPOP::genoTransmitter::clone "
 
+Description:
+
+    Deep copy of a base genotype transmitter.
+
 Usage:
 
     x.clone()
-
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
 
 "; 
 
@@ -1478,6 +1471,12 @@ Usage:
 Usage:
 
     x.initialize(pop)
+
+Details:
+
+    Initialize a base genotype operator for a population. This
+    function should be called before any other functions are used to
+    transmit genotype.
 
 "; 
 
@@ -1680,6 +1679,10 @@ Details:
 
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter::haplodiploidGenoTransmitter "
 
+Description:
+
+    Create a haplodiploid genotype transmitter.
+
 Usage:
 
     haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
@@ -1689,37 +1692,19 @@ Usage:
 
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter::clone "
 
+Description:
+
+    Deep copy of a haplodiploid transmitter.
+
 Usage:
 
     x.clone()
 
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
 "; 
 
-%feature("docstring") simuPOP::haplodiploidGenoTransmitter::__repr__ "
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::__repr__ "Obsolete or undocumented function."
 
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::haplodiploidGenoTransmitter::initialize "
-
-Usage:
-
-    x.initialize(pop)
-
-"; 
+%feature("docstring") simuPOP::haplodiploidGenoTransmitter::initialize "Obsolete or undocumented function."
 
 %ignore simuPOP::haplodiploidGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -3908,8 +3893,6 @@ Usage:
 
 %feature("docstring") simuPOP::mendelianGenoTransmitter "
 
-Applicability: diploid only
-
 Details:
 
     Mendelian offspring generator accepts two parents and pass their
@@ -3931,33 +3914,25 @@ Usage:
     mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
       subPop=[], infoFields=[])
 
+Details:
+
+    Create a Mendelian genotype transmitter.
+
 "; 
 
 %feature("docstring") simuPOP::mendelianGenoTransmitter::clone "
+
+Description:
+
+    Deep copy of a Mendelian genotype transmitter.
 
 Usage:
 
     x.clone()
 
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
 "; 
 
-%feature("docstring") simuPOP::mendelianGenoTransmitter::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::mendelianGenoTransmitter::__repr__ "Obsolete or undocumented function."
 
 %ignore simuPOP::mendelianGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -3966,6 +3941,12 @@ Usage:
 Usage:
 
     x.initialize(pop)
+
+Details:
+
+    Initialize a base genotype operator for a population. This
+    function should be called before function transmitGenotype is used
+    to transmit genotype.
 
 "; 
 
@@ -4229,10 +4210,10 @@ Usage:
 
 Details:
 
-    This geno transmitter transmits some customized chromosomes as
-    human mitochondrial chromosomes. It randomly inherit the first
-    homologous copy of several customized chromosomes of the female
-    parent.
+    This geno transmitter assumes that the first homologous copy of
+    several (or all) Customized chromosomes are copies of
+    mitochondrial chromosomes. It transmits these chromosomes randomly
+    from the female parent.
 
 "; 
 
@@ -4245,43 +4226,29 @@ Usage:
 
 Details:
 
-    chroms: if not given, all customized chromosomes.
+    Createa a mitochondrial genotype transmitter that treats all
+    Customized chromosomes, or a list of chromosomes specified by
+    chroms, as human mitochondrial chromosomes. It transmits these
+    chromosomes randomly from the female parent to offspring of both
+    sexes.
 
 "; 
 
 %feature("docstring") simuPOP::mitochondrialGenoTransmitter::clone "
 
+Description:
+
+    Deep copy of a mitochondrial genotype transmitter.
+
 Usage:
 
     x.clone()
 
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
 "; 
 
-%feature("docstring") simuPOP::mitochondrialGenoTransmitter::__repr__ "
+%feature("docstring") simuPOP::mitochondrialGenoTransmitter::__repr__ "Obsolete or undocumented function."
 
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::mitochondrialGenoTransmitter::initialize "
-
-Usage:
-
-    x.initialize(pop)
-
-"; 
+%feature("docstring") simuPOP::mitochondrialGenoTransmitter::initialize "Obsolete or undocumented function."
 
 %ignore simuPOP::mitochondrialGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
@@ -6589,7 +6556,9 @@ Details:
     from the current population and create a new one. If information
     field field is not None, individuals with negative values at this
     information field will be removed, and others are put into
-    subpopulations specified by this field. If loci is not None, only
+    subpopulations specified by this field. The extracted population
+    will keep the original subpopulation names if two populations have
+    the same number of subpopulations. If loci is not None, only
     genotypes at loci are extracted. If infoFields is not None, only
     these information fields will be extracted. If ancGen is not -1
     (default, meaing all ancestral generations), only ancGen ancestral
@@ -8437,14 +8406,6 @@ Arguments:
                     the end of a chromosome). If this parameter is
                     given, it should be ordered, and can not include
                     loci at the end of a chromosome.
-    maleIntensity:  recombination intensity for male individuals. If
-                    given, parameter intensity will be considered as
-                    female intensity.
-    maleRate:       recombination rate for male individuals. If given,
-                    parameter rate will be considered as female
-                    recombination rate.
-    maleAfterLoci:  if given, males will recombine at different
-                    locations.
     haplodiploid:   If set to true, the first copy of paternal
                     chromosomes is copied directly as the paternal
                     chromosomes of the offspring. This is because
@@ -8539,6 +8500,12 @@ Usage:
 Usage:
 
     x.initialize(pop)
+
+Details:
+
+    Initialize a base genotype operator for a population. This
+    function should be called before any other functions are used to
+    transmit genotype.
 
 "; 
 
@@ -9141,8 +9108,6 @@ Usage:
 
 %feature("docstring") simuPOP::selfingGenoTransmitter "
 
-Applicability: diploid only
-
 Details:
 
     selfing offspring generator works similarly as a mendelian
@@ -9157,6 +9122,10 @@ Details:
 
 %feature("docstring") simuPOP::selfingGenoTransmitter::selfingGenoTransmitter "
 
+Description:
+
+    Create a self-fertilization genotype transmitter.
+
 Usage:
 
     selfingGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
@@ -9166,29 +9135,17 @@ Usage:
 
 %feature("docstring") simuPOP::selfingGenoTransmitter::clone "
 
+Description:
+
+    Deep copy of a selfing genotype transmitter.
+
 Usage:
 
     x.clone()
 
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
 "; 
 
-%feature("docstring") simuPOP::selfingGenoTransmitter::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
+%feature("docstring") simuPOP::selfingGenoTransmitter::__repr__ "Obsolete or undocumented function."
 
 %ignore simuPOP::selfingGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 

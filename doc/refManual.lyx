@@ -695,7 +695,7 @@ Operator References (under revision)
 \end_layout
 
 \begin_layout Section
-Common interface of all operators
+Base class for all operators
 \end_layout
 
 \begin_layout Standard
@@ -721,6 +721,13 @@ During-mating genotype transmitters
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+genoTransmitterRef
+\end_layout
 
 \begin_layout Plain Layout
 
