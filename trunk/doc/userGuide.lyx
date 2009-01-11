@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -8170,7 +8170,56 @@ s, hybrid), ascertainment (case-control, affected sibpairs, random), statistics
 \end_layout
 
 \begin_layout Section
-Population structure and migration
+Initialization
+\end_layout
+
+\begin_layout Subsection
+Initialize by allele frequency
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/initByFreq.log"
+lstparams "caption={Initialize by allele frequency},label={initByFreq}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Initialize by haplotype
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/initByValue.log"
+lstparams "caption={initialize by haplotype},label={initByValue}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Expression evaluation
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyEval.log"
+lstparams "caption={evaluate an expression},label={pyEval}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Demographic models
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:splitAndMerge"
@@ -8178,6 +8227,10 @@ name "sec:splitAndMerge"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Split and merge
 \end_layout
 
 \begin_layout Standard
@@ -8216,7 +8269,7 @@ mergeSubPops
  In example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "migrFixedSize"
+reference "splitMerge"
 
 \end_inset
 
@@ -8230,12 +8283,16 @@ reference "migrFixedSize"
 \begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/splitAndMerge.log"
-lstparams "caption={Population split and merge},label={splitAndMerge}"
+filename "log/splitMerge.log"
+lstparams "caption={Split and merge subpopulations during evolution.},label={splitMerge}"
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Demographic mode with selection
 \end_layout
 
 \begin_layout Standard
@@ -8426,6 +8483,164 @@ lstparams "caption={Population split with changing population size},label={split
 \end_layout
 
 \begin_layout Section
+Migration
+\end_layout
+
+\begin_layout Standard
+Migrator is very flexible.
+ It can accept arbitrary migration matrix, from any subset of subpopulations
+ to any (even new) other subset of subpopulations.
+ To facilitate the use of common theoretical migration models, several functions
+ are defined in
+\family typewriter
+ simuUtil.py.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrIslandRates(r, n)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
+\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
+ &  & ...\\
+\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
+\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrSteppingStoneRates(r, n, circular=False)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+ &  &  & r & 1-r\end{array}\right)\]
+
+\end_inset
+
+and if 
+\family typewriter
+circular=True
+\family default
+, returns
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r/2 &  &  & r/2\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+r/2 &  &  & r/2 & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The standard migrator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrator.log"
+lstparams "caption={A complex migration model},label={migrator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Migrate from a virtual subpopulation
+\end_layout
+
+\begin_layout Section
+Mutation
+\end_layout
+
+\begin_layout Subsection
+k-allele mutation model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/kamMutator.log"
+lstparams "caption={A k-allele mutation model},label={kamMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Stepwise mutation model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/smmMutator.log"
+lstparams "caption={A stepwise mutation model},label={smmMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Generalized stepwise mutation model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/gsmMutator.log"
+lstparams "caption={A generalized stepwise mutation model},label={gsmMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Hybrid mutation model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyMutator.log"
+lstparams "caption={A hybrid mutation model},label={pyMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Selection
 \end_layout
 
@@ -8581,8 +8796,76 @@ Which is
  
 \end_layout
 
+\begin_layout Subsection
+Map selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapSelector.log"
+lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-allele selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maSelector.log"
+lstparams "caption={A multi-allele selector},label={maSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-loci selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlSelector.log"
+lstparams "caption={A multi-loci selector},label={mlSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A hybrid selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pySelector.log"
+lstparams "caption={A hybrid selector},label={pySelector}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-Gene conversion
+Recombination and Gene conversion
+\end_layout
+
+\begin_layout Subsection
+Recombination
+\end_layout
+
+\begin_layout Subsection
+Recombination with gene conversion
 \end_layout
 
 \begin_layout Standard
@@ -8845,402 +9128,71 @@ convParam
 \end_layout
 
 \begin_layout Section
-Migration
+Penetrance
+\end_layout
+
+\begin_layout Subsection
+Map penetrance model
 \end_layout
 
 \begin_layout Standard
-Migrator is very flexible.
- It can accept arbitrary migration matrix, from any subset of subpopulations
- to any (even new) other subset of subpopulations.
- To facilitate the use of common theoretical migration models, several functions
- are defined in
-\family typewriter
- simuUtil.py.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrIslandRates(r, n)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
-\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
- &  & ...\\
-\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
-\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapPenetrance.log"
+lstparams "caption={A penetrance model that uses pre-defined fitness value},label={mapPenetrance}"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-
-\family typewriter
-MigrSteppingStoneRates(r, n, circular=False)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
- &  &  & r & 1-r\end{array}\right)\]
-
-\end_inset
-
-and if 
-\family typewriter
-circular=True
-\family default
-, returns
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r/2 &  &  & r/2\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
-r/2 &  &  & r/2 & 1-r\end{array}\right)\]
-
-\end_inset
-
-
+\begin_layout Subsection
+Multi-loci penetrance model
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlPenetrance.log"
+lstparams "caption={A multi-loci penetrance model},label={mlPenetrance}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Hybrid penetrance model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyPenetrance.log"
+lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
+
+\end_inset
+
 
 \end_layout
 
 \begin_layout Section
-Save and load to other formats
+Misc operators
+\end_layout
+
+\begin_layout Subsection
+Pause
+\end_layout
+
+\begin_layout Subsection
+conditional operator
 \end_layout
 
 \begin_layout Standard
-simuPOP data structure is open in that many functions are provided to access
- every aspect of the population.
- This makes it easy to save and load populations in other formats.
- As an example, I will explain 
-\family typewriter
-SaveTDT
-\family default
- function in detail here, which is available in 
-\family typewriter
-simuUtil.py
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-Although all file formats have different characteristics, 
-\family typewriter
-simuPOP
-\family default
- tries to provide a uniform interface to them.
- Common parameters are
-\end_layout
-
-\begin_layout Itemize
-pop: population to save, can be a file name, or a file object (loaded simuPOP
- population)
-\end_layout
-
-\begin_layout Itemize
-output and outputExpr: output is the base filename, and outputExpr should
- be evaluated from pop's local namespace.
-\end_layout
-
-\begin_layout Itemize
-loci: loci to output, default is [], meaning output all loci
-\end_layout
-
-\begin_layout Itemize
-fields: information fields to output.
- 
-\end_layout
-
-\begin_layout Itemize
-combine: a python function, if given, used to combine two alleles at the
- same locus.
- For example
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def comb(geno):
-\end_layout
-
-\begin_layout Plain Layout
-
-    return geno[0]+geno[1]+1
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-returns 1 for genotype(0, 0), 2 for genotype (0, 1) and so on.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-shift: default to 1.
- simuPOP uses 0 based allele and many formats use 1 based allele.
- Setting shift=1 output (1,2) for genotype (0,1).
-\end_layout
-
-\begin_layout Standard
-The 
-\family typewriter
-Merlin/QTDT
-\family default
- format uses several files to store genotype and phenotype information.
- Namely a 
-\family typewriter
-.dat
-\family default
- file for phenotype, 
-\family typewriter
-.map
-\family default
- file for chromosome structure, and 
-\family typewriter
-.ped
-\family default
- for pedigree.
- The population given must have 
-\family typewriter
-pedindex, father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- information fields to indicate family id and parents of each individual.
- These information fields will be available if the sample is obtained from
- 
-\family typewriter
-affectedSibpairSample
-\family default
- or 
-\family typewriter
-largePedigreeSample
-\family default
- operators.
-\end_layout
-
-\begin_layout Standard
-The first part of the function is the usual housekeeping part (see example
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveQTDT1"
-
-\end_inset
-
-).
- It loads population if 
-\family typewriter
-pop
-\family default
- is a name, evaluate 
-\family typewriter
-outputExpr
-\family default
- if needed, and open the files to write.
- This part is likely to be similar for all such functions.
-\end_layout
-
-\begin_layout LyX-Code
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/saveQTDT.py"
-lstparams "caption={Function SaveQTDT, part one},firstline=5,label={saveQTDT1},lastline=42"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Part two of the code (example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveQTDT2"
-
-\end_inset
-
-) output data file.
- There are three kinds of phenotype, affection status, trait and markers.
- We determine if a user wants to output affection from the 
-\family typewriter
-fields
-\family default
- parameter.
- We remove 
-\family typewriter
-affection
-\family default
- from 
-\family typewriter
-fields
-\family default
- because 
-\family typewriter
-affection
-\family default
- is not a real information field (that can be retrieved by 
-\family typewriter
-info()
-\family default
- function).
- You can learn how to use the 
-\family typewriter
-locusName
-\family default
- function from this part.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/saveQTDT.py"
-lstparams "caption={Function SaveQTDT, part two},firstline=43,label={saveQTDT2},lastline=55"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Part three (example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveQTDT3"
-
-\end_inset
-
-) of the function output a map file.
- We need to know the chromosome number (+1 to use 1 based index), locus
- name and locus position, all of which can be retrieved from simple 
-\family typewriter
-simuPOP
-\family default
- functions.
- Note that if locus name, position are not given explicitly when a population
- is created, they all have default values.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/saveQTDT.py"
-lstparams "caption={Function SaveQTDT, part three},firstline=56,label={saveQTDT3},lastline=61"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The next part (example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveQTDT4"
-
-\end_inset
-
-) prepares pedigree output.
- It determines the code to output for sex and affection status.
- These are likely to be different from format to format so we define explicitly
- here.
- The 
-\family typewriter
-writeInd
-\family default
- output the line for one individual, given family id, id, father and mother.
- For QTDT format, two alleles of a genotype are outputted separately so
- the 
-\family typewriter
-combine
-\family default
- parameter is ignored.
- 
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/saveQTDT.py"
-lstparams "caption={Function SaveQTDT, part four},firstline=62,label={saveQTDT4},lastline=85"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The last part of the code (example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "saveQTDT5"
-
-\end_inset
-
-) look most complicated.
- It first get the 
-\family typewriter
-pedindex
-\family default
- information field of the whole population, and figure out how many pedigrees
- to output.
- Then, it go from ancestral generation 2, 1, 0 and look for individuals
- within each pedigree.
- A map is used to map absolute index to within pedigree index.
- Of course, this part would be easier if you do not need to handle pedigree,
- for example, when outputting case control samples.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/saveQTDT.py"
-lstparams "caption={Function SaveQTDT, part five},firstline=86,label={saveQTDT5}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-clearpage
-\end_layout
+filename "log/ifElse.log"
+lstparams "caption={A conditional opeartor},label={ifElse}"
 
 \end_inset
 
