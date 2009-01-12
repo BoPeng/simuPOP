@@ -29,8 +29,8 @@ namespace simuPOP {
 migrator::migrator(const matrix & rate, int mode,
 	const subPopList & fromSubPop, vectoru toSubPop,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
-	: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
+	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
+	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
 {
 	// when migrator is constructed from a pyMigrator, initial
@@ -194,8 +194,16 @@ bool migrator::apply(population & pop)
 	}   // for all subPop.
 
 	// do migration.
+	UINT oldNumSubPop = pop.numSubPop();
 	// true: rearrange individuals
 	pop.setSubPopByIndInfo(infoField(0));
+	if (pop.numSubPop() < oldNumSubPop) {
+		vectorf split(oldNumSubPop - pop.numSubPop() + 1, 0);
+		split[0] = 1.;
+		pop.splitSubPop(pop.numSubPop() - 1, split);
+	}
+	DBG_ASSERT(pop.numSubPop() >= oldNumSubPop, RuntimeError,
+		"Migrator should not decrease number of subpopulations.");
 
 	return true;
 }
