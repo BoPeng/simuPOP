@@ -92,7 +92,7 @@ class TestSelector(unittest.TestCase):
         simulated = []
         sel = mlSelector(
                         [maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])],
-                        mode=SEL_Heterogeneity
+                        mode=Heterogeneity
                         )
         # sel = maSelector(loci=[0], wildtype=[0], fitness=[1, 1-s/2, 1-s])]
         for i in range(100):
@@ -462,7 +462,7 @@ class TestSelector(unittest.TestCase):
                 mlSelector([
                     mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                     mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-                ], mode=SEL_Additive),
+                ], mode=Additive),
             ],
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
             gen=100
@@ -474,7 +474,7 @@ class TestSelector(unittest.TestCase):
                 [
                     mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                     maSelector(locus=1, wildtype=[1], fitness=[1,1,.8])
-                ], mode=SEL_Multiplicative),
+                ], mode=Multiplicative),
             ],
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
             gen=100
