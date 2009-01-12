@@ -116,21 +116,22 @@ def parentsChooser(pop, sp):
     '''Choose parents according to their locations. Because this is only a
        demonstration, performance is not under consideration.
     '''
+    males = [x for x in range(pop.subPopSize(sp)) if pop.individual(x, sp).sex() == Male]
+    females = [x for x in range(pop.subPopSize(sp)) if pop.individual(x, sp).sex() == Female]
     ################### The C++ version ############
     if has_cpp_chooser:
         # create an object with needed information ...
         pc = parentsChooser_cpp(
-            [x.info('x') for x in pop.individuals() if x.sex() == Male],
-            [x.info('y') for x in pop.individuals() if x.sex() == Male],
-            [x.info('x') for x in pop.individuals() if x.sex() == Female],
-            [x.info('y') for x in pop.individuals() if x.sex() == Female],
+            [x.info('x') for x in pop.individuals(sp) if x.sex() == Male],
+            [x.info('y') for x in pop.individuals(sp) if x.sex() == Male],
+            [x.info('x') for x in pop.individuals(sp) if x.sex() == Female],
+            [x.info('y') for x in pop.individuals(sp) if x.sex() == Female],
             random.randint(0, 1e8))
         while True:
             # and return indexes of parents
-            yield pc.chooseParents()
+            m, f = pc.chooseParents()
+            yield males[m], females[f]
     ##################### The Python version ###############
-    males = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Male]
-    females = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Female]
     if len(males) == 0 or len(females) == 0:
         print 'Lacking male or female. Existing'
         yield (None, None)
@@ -138,8 +139,8 @@ def parentsChooser(pop, sp):
         # randomly choose a male
         male = males[randint(0, len(males)-1)]
         # choose its closest female
-        diff_x = [pop.individual(x).info(0) - pop.individual(male).info(0) for x in females]
-        diff_y = [pop.individual(x).info(1) - pop.individual(male).info(1) for x in females]
+        diff_x = [pop.individual(x, sp).info(0) - pop.individual(male, sp).info(0) for x in females]
+        diff_y = [pop.individual(x, sp).info(1) - pop.individual(male, sp).info(1) for x in females]
         dist = [diff_x[i]**2 + diff_y[i]**2 for i in range(len(females))]
         female = females[dist.index(min(dist))]
         #print male, female
