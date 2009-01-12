@@ -359,9 +359,9 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 	const floatList & convMode,
 	int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
+	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
 	:
-	genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+	genoTransmitter(begin, end, step, at, rep, subPops, infoFields)
 	, m_intensity(intensity), m_rate(rate), m_afterLoci(loci), m_recBeforeLoci(0),
 	m_convMode(convMode),
 	m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),

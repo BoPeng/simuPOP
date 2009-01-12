@@ -68,8 +68,8 @@ public:
 		UINT maxAllele = 0,
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
 		m_bt(rng()), m_initialized(false), m_mutCount(0)
 	{
@@ -218,9 +218,9 @@ public:
 		UINT maxAllele = 0,
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPop, infoFields)
+		          output, stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
 
@@ -277,9 +277,9 @@ public:
 		UINT maxAllele = 0, double incProb = 0.5,
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPop, infoFields),
+		          output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_incProb(incProb)
 	{
 #ifdef BINARYALLELE
@@ -364,9 +364,9 @@ public:
 		UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPop, infoFields),
+		          output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_incProb(incProb), m_p(p), m_func(func)
 	{
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
@@ -434,9 +434,9 @@ public:
 		PyObject * func = NULL,
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPop, infoFields),
+		          output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -492,8 +492,8 @@ public:
 		vectorlu inds = vectorlu(),
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_toAllele(toAllele),
 		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
 	{

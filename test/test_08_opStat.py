@@ -84,7 +84,7 @@ class TestStat(unittest.TestCase):
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, alleleFreq=[0], numOfAlleles=[0])
         self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
         self.assertEqual(pop.dvars().alleleNum[0], [1230, 1970])
@@ -131,7 +131,7 @@ class TestStat(unittest.TestCase):
             [0, 100],[100, 600], [600, 1000]]))
         if AlleleType() == 'binary':
             InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-                subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+                subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0])
             self.assertEqual(pop.dvars().HeteroNum[0], 880)
             self.assertEqual(pop.dvars().heteroNum[0][0], 880)
@@ -159,7 +159,7 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroFreq[0][1], 0.6)
         else:
             InitByValue(pop, value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
-                subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+                subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0])
             self.assertEqual(pop.dvars().HeteroNum[0], 1005)
             self.assertEqual(pop.dvars().heteroNum[0][1], 350)
@@ -201,7 +201,7 @@ class TestStat(unittest.TestCase):
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, expHetero=[0])
         #
         assert abs(pop.dvars().expHetero[0] - (1-(123./320)**2-(197./320)**2)) < 0.00001
@@ -216,7 +216,7 @@ class TestStat(unittest.TestCase):
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, genoFreq=[0])
         self.assertEqual(pop.dvars().genoNum[0][0][0], 175)
         self.assertEqual(pop.dvars().genoNum[0][0][1], 880)
@@ -255,7 +255,7 @@ class TestStat(unittest.TestCase):
             [0, 50], [50, 80], [80, 100],
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
+            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         #SaveFstat(simu.population(0), "p1.dat", maxAllele=2)
         # Fst is compaared with result from Fstat.
         #

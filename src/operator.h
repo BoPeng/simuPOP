@@ -201,7 +201,7 @@ public:
 	 *    interpreted as all replicates in a simulator. Negative indexes such
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
 	 *    as a shortcut for <tt>rep=[idx]</tt>.
-	 *  \param subPop A list of applicable (virtual) subpopulations, such as
+	 *  \param subPops A list of applicable (virtual) subpopulations, such as
 	 *    <tt>subPop=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (default) is
 	 *    interpreted as all subpopulations. <tt>subPop=[sp1]</tt> can be
 	 *    simplied as <tt>subPop=sp1</tt>. Negative indexes are not supported.
@@ -215,9 +215,9 @@ public:
 	 *    this parameter.
 	 */
 	baseOperator(string output, int stage, int begin, int end, int step, const intList & at,
-		const repList & rep, const subPopList & subPop, const vectorstr & infoFields) :
+		const repList & rep, const subPopList & subPops, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
-		m_flags(0), m_rep(rep), m_subPop(subPop),
+		m_flags(0), m_rep(rep), m_subPops(subPops),
 		m_ostream(output), m_infoFields(infoFields),
 		m_lastPop(MaxTraitIndex)
 	{
@@ -452,7 +452,7 @@ public:
 	virtual void initialize(const population & pop) {}
 
 	/// CPPONLY
-	subPopList applicableSubPops() const { return m_subPop; }
+	subPopList applicableSubPops() const { return m_subPops; }
 
 protected:
 	/// analyze active generations: set m_flagAtAllGen etc
@@ -494,7 +494,7 @@ private:
 	repList m_rep;
 
 	/// apply to some of the (virtual) subpops.
-	subPopList m_subPop;
+	subPopList m_subPops;
 
 	/// the output stream
 	StreamProvider m_ostream;
@@ -545,8 +545,8 @@ public:
 		bool exposePop = true, string popName = "pop",
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = -1, const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = -1, const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
 		m_exposePop(exposePop), m_popName(popName)
 	{
@@ -601,8 +601,8 @@ public:
 	 */
 	noneOp(string output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields)
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
 
@@ -672,8 +672,8 @@ public:
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
 	{
 		if (ifOp != NULL)
@@ -746,8 +746,8 @@ public:
 	/// create a timer
 	ticToc(string output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields)
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 		time(&m_startTime);
 		m_lastTime = m_startTime;
@@ -793,8 +793,8 @@ public:
 	/// create a \c setAncestralDepth operator
 	setAncestralDepth(int depth, string output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_depth(depth)
 	{
 	};
@@ -849,8 +849,8 @@ public:
 	/// create a \c turnOnDebug operator
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_code(code)
 	{
 	};
@@ -898,8 +898,8 @@ public:
 	/// create a \c turnOffDebug operator
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPop, infoFields),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_code(code)
 	{
 	};
@@ -980,7 +980,7 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool formOffGenotype = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr());
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr());
 
 	/// HIDDEN
 	virtual baseOperator * clone() const

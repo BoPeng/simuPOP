@@ -57,9 +57,9 @@ public:
 	 */
 	initSex(double maleFreq = 0.5, const vectori & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex)
 	{
 		if (!m_sex.empty()) {
@@ -129,7 +129,7 @@ public:
 		const vectoru & ploidy = vectoru(), bool identicalInds = false,
 		bool initSex = true, double maleFreq = 0.5, const vectori & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 
 
@@ -197,7 +197,7 @@ public:
 		const vectorf & proportions = vectorf(),
 		bool initSex = true, double maleFreq = 0.5, const vectori & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 
 	~initByValue()

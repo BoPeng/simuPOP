@@ -249,7 +249,7 @@ InitSex(pop)
 pop.setVirtualSplitter(sexSplitter())
 # initialize male and females with different genotypes. Set initSex
 # to False because this operator will by default also initialize sex.
-InitByValue(pop, [[0]*5, [1]*5], subPop=([0, 0], [0, 1]), initSex=False)
+InitByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]), initSex=False)
 # set Sex information field to 0 for all males, and 1 for all females
 pop.setIndInfo([1], 'Sex', [0, 0])
 pop.setIndInfo([2], 'Sex', [0, 1])
@@ -805,8 +805,8 @@ pop.setVirtualSplitter(sexSplitter())
 simu = simulator(pop, haplodiploidMating())
 simu.evolve(
     preOps = [initSex(),
-        initByValue([0]*10, subPop=[(0, 0)], initSex=False),
-        initByValue([1]*10+[2]*10, subPop=[(0, 1)], initSex=False)],
+        initByValue([0]*10, subPops=[(0, 0)], initSex=False),
+        initByValue([1]*10+[2]*10, subPops=[(0, 1)], initSex=False)],
     ops = [parentsTagger(),
         dumper(structure=False, stage=PrePostMating)],
     gen = 1
@@ -1307,7 +1307,7 @@ simu.evolve(
     ops=[
         splitSubPop(0, proportions=[0.2, 0.8], at = 3),
         splitSubPop(1, proportions=[0.4, 0.6], at = 5),
-        mergeSubPops([0,2], at = 7),
+        mergeSubPops([0, 2], at = 7),
         stat(popSize=True),
         pyEval(r'"%s\n" % subPopSize'),
     ],
@@ -1551,8 +1551,8 @@ s2 = .2
 simu.evolve(
     preOps=[initByFreq(alleleFreq=[.2, .8])],
     ops = [
-        stat( alleleFreq=[0], genoFreq=[0]),
-        mapSelector(locus=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
+        stat(alleleFreq=[0], genoFreq=[0]),
+        mapSelector(loci=0, fitness={'0-0':(1-s1), '0-1':1, '1-1':(1-s2)}),
         pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     gen=300
@@ -1569,8 +1569,8 @@ s2 = .2
 simu.evolve(
     preOps=[initByFreq(alleleFreq=[.2, .8])],
     ops = [
-        stat( alleleFreq=[0], genoFreq=[0]),
-        maSelector(locus=0, fitness=[1-s1, 1, 1-s2]),
+        stat(alleleFreq=[0], genoFreq=[0]),
+        maSelector(loci=0, fitness=[1-s1, 1, 1-s2]),
         pyEval(r"'%.4f\n' % alleleFreq[0][1]", step=100)
     ],
     gen = 300)
@@ -1584,9 +1584,9 @@ simu = simulator(
     randomMating())
 simu.evolve(
     [ mlSelector([
-         mapSelector(locus=0, fitness={'0-0':1, '0-1':1, '1-1':.8}),
-         mapSelector(locus=1, fitness={'0-0':1, '0-1':1, '1-1':.8}),
-         ], mode=SEL_Additive),
+         mapSelector(loci=0, fitness={'0-0':1, '0-1':1, '1-1':.8}),
+         mapSelector(loci=1, fitness={'0-0':1, '0-1':1, '1-1':.8}),
+         ], mode = Additive),
     ],
     preOps = [
         initByFreq(alleleFreq=[.2, .8])
@@ -1634,7 +1634,7 @@ simu.evolve(
 #file log/mapPenetrance.log
 pop = population(size=[2,8], ploidy=2, loci=[2] )
 InitByFreq(pop, [.2, .8])
-MapPenetrance(pop, locus=0, 
+MapPenetrance(pop, loci=0, 
     penetrance={'0-0':0, '0-1':1, '1-1':1})
 Stat(pop, numOfAffected=1)
 #end
@@ -1645,11 +1645,11 @@ pop = population(1000, loci=[3])
 InitByFreq(pop, [0.3, 0.7])
 pen = []
 for loc in (0, 1, 2):
-    pen.append( maPenetrance(locus=loc, wildtype=[1],
+    pen.append(maPenetrance(loci=loc, wildtype=[1],
         penetrance=[0, 0.3, 0.6] ) )
 
 # the multi-loci penetrance
-MlPenetrance(pop, mode=PEN_Multiplicative, peneOps=pen)
+MlPenetrance(pop, mode=Multiplicative, peneOps=pen)
 Stat(pop, numOfAffected=True)
 print pop.dvars().numOfAffected
 #end
@@ -1690,7 +1690,7 @@ simu.evolve(
   preOps = [ initByValue([1, 1])],
   ops = [
     # penetrance, additve penetrance
-    maPenetrance(locus=0, wildtype=[1], penetrance=[0, 0.5, 1]),
+    maPenetrance(loci=0, wildtype=1, penetrance=[0, 0.5, 1]),
     # count number of affected
     stat(numOfAffected=True),
     # introduce disease if no one is affected
@@ -1765,8 +1765,8 @@ def simulate(incScenario):
             kamMutator(rate=mu, maxAllele=max_allele),
             # selection on common and rare disease,
             mlSelector([                # multiple loci - multiplicative model
-                maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
-                maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
+                maSelector(loci=0, fitness=[1,1,1-C_s], wildtype=[0]),
+                maSelector(loci=1, fitness=[1,1,1-R_s], wildtype=[0])
             ], mode=SEL_Multiplicative),
         ],
         gen = endGen
@@ -2039,8 +2039,8 @@ def simulate(incScenario):
             kamMutator(rate=mu, maxAllele=max_allele),
             # selection on common and rare disease,
             mlSelector([                # multiple loci - multiplicative model
-                maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
-                maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
+                maSelector(loci=0, fitness=[1,1,1-C_s], wildtype=[0]),
+                maSelector(loci=1, fitness=[1,1,1-R_s], wildtype=[0])
             ], mode=SEL_Multiplicative),
             # report generation and popsize and total disease allele frequency.
             pyOperator(func=ne, step=5),

@@ -79,11 +79,13 @@ bool dumper::apply(population & pop)
 		out << "Number of ancestral populations: " << pop.ancestralGens() << endl << endl;
 	}
 
+	// FIXME: handle virtual subpopulations
+	subPopList subPops = applicableSubPops();
 	if (m_showGenotype) {
 		// get individual ranges from subpop
 		vectorlu range = m_indRange;
 		if (m_indRange.empty()) {
-			if (m_subPop.empty() ) {                          // all subpop
+			if (subPops.empty() ) {                          // all subpop
 				for (UINT sp = 0; sp < pop.numSubPop();  sp++) {
 					if (pop.subPopSize(sp) == 0)
 						continue;
@@ -91,11 +93,11 @@ bool dumper::apply(population & pop)
 					range.push_back(pop.subPopEnd(sp));
 				}
 			} else {
-				for (vectoru::iterator sp = m_subPop.begin();  sp != m_subPop.end();  sp++) {
-					if (pop.subPopSize(*sp) == 0)
+				for (subPopList::iterator sp = subPops.begin();  sp != subPops.end();  sp++) {
+					if (pop.subPopSize(sp->subPop()) == 0)
 						continue;
-					range.push_back(pop.subPopBegin(*sp));
-					range.push_back(pop.subPopEnd(*sp));
+					range.push_back(pop.subPopBegin(sp->subPop()));
+					range.push_back(pop.subPopEnd(sp->subPop()));
 				}
 			}
 		}
@@ -143,7 +145,7 @@ done:
 			vectorlu range = m_indRange;
 			if (m_indRange.empty()) {
 				// all subpop
-				if (m_subPop.empty() ) {
+				if (subPops.empty() ) {
 					for (UINT sp = 0; sp < pop.numSubPop();  sp++) {
 						if (pop.subPopSize(sp) == 0)
 							continue;
@@ -151,11 +153,11 @@ done:
 						range.push_back(pop.subPopEnd(sp));
 					}
 				} else {
-					for (vectoru::iterator sp = m_subPop.begin();  sp != m_subPop.end();  sp++) {
-						if (pop.subPopSize(*sp) == 0)
+					for (subPopList::iterator sp = subPops.begin();  sp != subPops.end();  sp++) {
+						if (pop.subPopSize(sp->subPop()) == 0)
 							continue;
-						range.push_back(pop.subPopBegin(*sp));
-						range.push_back(pop.subPopEnd(*sp));
+						range.push_back(pop.subPopBegin(sp->subPop()));
+						range.push_back(pop.subPopEnd(sp->subPop()));
 					}
 				}
 			}

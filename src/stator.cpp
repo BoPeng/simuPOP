@@ -101,7 +101,9 @@ bool infoEval::apply(population & pop)
 	prepareDict(pop);
 
 	string res;
-	if (m_subPops.empty()) {
+	// FIXME: support virtual subpop
+	subPopList subPops = applicableSubPops();
+	if (subPops.empty()) {
 		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
 			res = evalInfo(& * it) ;
 			if (!this->noOutput() ) {
@@ -111,11 +113,11 @@ bool infoEval::apply(population & pop)
 			}
 		}
 	} else {
-		for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp) {
-			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
-				"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
+		for (subPopList::iterator sp = subPops.begin(); sp != subPops.end(); ++sp) {
+			DBG_FAILIF(sp->subPop() > pop.numSubPop(), IndexError,
+				"Wrong subpopulation index" + toStr(sp->subPop()) + " (number of subpops is " +
 				toStr(pop.numSubPop()) + ")");
-			for (IndIterator it = pop.indBegin(*sp); it.valid(); ++it) {
+			for (IndIterator it = pop.indBegin(sp->subPop()); it.valid(); ++it) {
 				res = evalInfo(& * it);
 				if (!this->noOutput() ) {
 					ostream & out = this->getOstream(pop.dict());
@@ -202,8 +204,8 @@ stat::stat(
 	// regular parameters
 	string output,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPop, const vectorstr & infoFields)
-	: stator("", stage, begin, end, step, at, rep, subPop, infoFields),
+	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
+	: stator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
 	m_numOfMale(numOfMale, numOfMale_param),

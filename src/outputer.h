@@ -51,8 +51,8 @@ public:
 	/// constructor.
 	outputer(string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, stage, begin, end, step, at, rep, subPop, infoFields)
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	};
 
@@ -83,9 +83,9 @@ public:
 	 */
 	pyOutput(string str = "", string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer(output, stage, begin, end,
-		         step, at, rep, subPop, infoFields), m_string(str)
+		         step, at, rep, subPops, infoFields), m_string(str)
 	{
 	}
 
@@ -158,15 +158,15 @@ public:
 
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
-		const vectori & chrom = vectori(), const vectori & loci = vectori(), const vectoru & subPop = vectoru(),
+		const vectori & chrom = vectori(), const vectori & loci = vectori(), 
 		const vectorlu & indRange = vectorlu(),
 		string output = ">", 
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(),    // const subPopList & subPop = subPopList(),
+		const repList & rep = repList(),    const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		outputer(output, stage, begin, end, step, at, rep, subPopList(), infoFields),
+		outputer(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
-		m_chrom(chrom), m_loci(loci), m_subPop(subPop), m_indRange(indRange), m_max(max)
+		m_chrom(chrom), m_loci(loci), m_indRange(indRange), m_max(max)
 	{
 	}
 
@@ -209,9 +209,6 @@ private:
 	vectori m_loci;
 
 	///
-	vectoru m_subPop;
-
-	///
 	vectorlu m_indRange;
 
 	/// only output first ... individuals. Good for large population
@@ -229,8 +226,8 @@ public:
 	    \param compress obsolete parameter
 	 */
 	savePopulation(string output = "", int stage = PostMating, int begin = 0, int end = -1,
-		int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		outputer("", stage, begin, end, step, at, rep, subPop, infoFields),
+		int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		outputer("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_filename(output)
 	{
 		if (output == "")

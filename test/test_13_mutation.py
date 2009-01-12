@@ -76,9 +76,9 @@ def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
 class TestMutator(unittest.TestCase):
 
     def assertGenotype(self, pop, genotype,
-        loci=[], subPop=[], indRange=[], atPloidy=[]):
+        loci=[], subPops=[], indRange=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
-        geno = getGenotype(pop, loci, subPop, indRange, atPloidy)
+        geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
         if AlleleType() == 'binary':
             if type(genotype) == type(1):
                 self.assertEqual(geno, [genotype>0]*len(geno))
@@ -91,9 +91,9 @@ class TestMutator(unittest.TestCase):
                 self.assertEqual(geno, genotype)
 
     def assertGenotypeFreq(self, pop, freqLow, freqHigh,
-        loci=[], subPop=[], indRange=[], atPloidy=[]):
+        loci=[], subPops=[], indRange=[], atPloidy=[]):
         'Assert if the genotype has the correct allele frequency'
-        geno = getGenotype(pop, loci, subPop, indRange, atPloidy)
+        geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
         if AlleleType() == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
@@ -134,7 +134,7 @@ class TestMutator(unittest.TestCase):
 
     def testUntouchedLoci(self):
         'Testing if mutator would mutate irrelevant locus'
-        simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating() )
         simu.evolve(preOps = [initSex()],
             ops = [ kamMutator(rate=0.5, loci=[1,4])], gen=200)
