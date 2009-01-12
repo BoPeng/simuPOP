@@ -9,7 +9,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=True)
+simuOpt.setOptions(quiet=False)
 
 from simuPOP import *
 import unittest, sys, os, exceptions
@@ -30,18 +30,20 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('subPopSize', numRep=3, byRep=True,
                  varDim=3, win=10, title='subPop size')
              ],
-             end=30
+             gen = 30
         )
         sleep(1)
         r.dev_off()
@@ -51,19 +53,21 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50, 50, 100], ploidy=2, loci=[3,4]),
+            population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]',
                  numRep=3, byVal=True,
                  varDim=3, win=10, title='subPop size')
              ],
-             end=30
+             gen = 30
         )
         sleep(1)
         r.dev_off()
@@ -73,12 +77,14 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('subPopSize', numRep=3,
@@ -87,7 +93,7 @@ class TestRPy(unittest.TestCase):
                  title='subPop size',
                  separate=1)
              ],
-             end=30
+             gen = 30
         )
         sleep(1)
         r.dev_off()
@@ -97,19 +103,21 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', numRep=3, byRep=True,
                  varDim=3, win=10, update=5, title='subPop size',
                  saveAs='demo')
              ],
-             end=30
+             gen = 31
         )
         for f in range(5,31,5):
             os.remove('demo%d.eps' % f)
@@ -121,18 +129,20 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('subPopSize', numRep=3, byRep=True, ylim=[0,100],
                  separate=True, varDim=3, win=10, update=5, title='subPop size')
              ],
-             end=30
+             gen = 30
         )
         sleep(1)
         r.dev_off()
@@ -142,12 +152,14 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]',
@@ -155,7 +167,7 @@ class TestRPy(unittest.TestCase):
                  numRep=3, byRep=True,
                  win=10, update=5, title='subPop size')
              ],
-             end=30
+             gen = 30
         )
         sleep(1)
         r.dev_off()
@@ -165,19 +177,21 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', history=False,
                  numRep=3, win=10, update=5, separate=1,
                  title='subPop size')
              ],
-             end=30
+             gen = 30
         )
         sleep(1)
         r.dev_off()
@@ -189,19 +203,21 @@ class TestRPy(unittest.TestCase):
         # test the operator
         nr = 1
         simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4]),
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=nr)
         migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
                                         mode=MigrByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.setGen(0)
-        simu.evolve([
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
              migr,
              stator,
              varPlotter('subPopSize', history=True, numRep=nr, byRep=True,
                  win=10, update=5, plotType='image', varDim=3, title='subPop size')
              ],
-             end=10
+             gen = 10
         )
         sleep(1)
         r.dev_off()
@@ -215,7 +231,7 @@ class TestRPy(unittest.TestCase):
         popSize=500
         #turnOnDebug(DBG_MUTATOR)
         #turnOnDebug(DBG_SIMULATOR)
-        simu = simulator(population(size=popSize, loci=[10]),
+        simu = simulator(population(size=popSize, loci=[10], infoFields = ['migrate_to']),
             randomMating(), rep=numRep)
         simu.evolve(
             preOps = [ initByFreq([.2,.3,.5])],
@@ -228,8 +244,7 @@ class TestRPy(unittest.TestCase):
                     title='pairwise LD', history=False),
                 # pause(rep=REP_LAST, step=5),
             ],
-            end=20,
-            dryrun=False
+            gen = 20,
         )
         sleep(1)
         r.dev_off()

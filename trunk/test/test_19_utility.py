@@ -44,7 +44,7 @@ class TestUtility(unittest.TestCase):
 
     def testSetRNG(self):
         'Testing all RNG types'
-        for rg in ListAllRNG():
+        for rg in AvailableRNGs():
             SetRNG(rg)
 
     def testDefaultRNG(self):
@@ -133,7 +133,7 @@ class TestUtility(unittest.TestCase):
         'repeated set rng() without seed, and see if the seed repeat'
         import random
         seed = []
-        name = ListAllRNG()[0]
+        name = AvailableRNGs()[0]
         for i in range(100):
             SetRNG(name)
             sd = rng().seed()
@@ -147,7 +147,7 @@ class TestUtility(unittest.TestCase):
 
     def testWeightedSampler(self):
         'Testing weighted sampler'
-        sampler = Weightedsampler(rng(), [1, 2, 3, 4])
+        sampler = weightedSampler(rng(), [1, 2, 3, 4])
         num = []
         for i in range(100000):
             num.append(sampler.get())
