@@ -616,7 +616,7 @@ public:
 	 *  range. c.f. \c chromLocusPair.
 	 *  <group>3-locus</group>
 	 */
-	UINT absLocusIndex(UINT chrom, UINT locus)
+	UINT absLocusIndex(UINT chrom, UINT locus) const
 	{
 		CHECKRANGECHROM(chrom);
 		CHECKRANGELOCUS(chrom, locus);

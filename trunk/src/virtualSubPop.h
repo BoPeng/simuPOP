@@ -73,6 +73,7 @@ private:
 	SubPopID m_virtualSubPop;
 };
 
+ostream & operator<<(ostream & out, const vspID & vsp);
 
 /** This class is the base class of all virtual subpopulation (VSP) splitters,
  *  which provide ways to define groups of individuals in a subpopulation who

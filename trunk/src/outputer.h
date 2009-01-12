@@ -151,7 +151,6 @@ public:
 	   \param chrom chromosome(s) to display
 	   \param loci loci to display
 	   \param subPop only display subpopulation(s)
-	   \param indRange range(s) of individuals to display
 	   \param max the maximum number of individuals to display. Default to \c 100.
 	        This is to avoid careless dump of huge populations.
 	   \param output output file. Default to the standard output.
@@ -159,14 +158,13 @@ public:
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
 		const vectori & chrom = vectori(), const vectori & loci = vectori(),
-		const vectorlu & indRange = vectorlu(),
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(),    const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		outputer(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
-		m_chrom(chrom), m_loci(loci), m_indRange(indRange), m_max(max)
+		m_chrom(chrom), m_loci(loci), m_max(max)
 	{
 	}
 
@@ -190,6 +188,11 @@ public:
 
 
 private:
+	void displayStructure(const population & pop, ostream & out);
+
+	UINT displayGenotype(const population & pop, const subPopList & subPops, ostream & out);
+
+private:
 	///
 	bool m_showGenotype;
 
@@ -207,9 +210,6 @@ private:
 
 	///
 	vectori m_loci;
-
-	///
-	vectorlu m_indRange;
 
 	/// only output first ... individuals. Good for large population
 	UINT m_max;
