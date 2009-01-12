@@ -105,13 +105,13 @@ double maQuanTrait::qtrait(individual * ind)
 
 double mlQuanTrait::qtrait(individual * ind)
 {
-	if (m_mode == QT_Multiplicative) {
+	if (m_mode == Multiplicative) {
 		double fit = 1;
 		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
 		     s != sEnd; ++s)
 			fit *= static_cast<quanTrait *>(*s)->qtrait(ind);
 		return rng().randNormal(fit, m_sigma);
-	} else if (m_mode == QT_Additive) {
+	} else if (m_mode == Additive) {
 		double fit = 0;
 		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
 		     s != sEnd; ++s)
