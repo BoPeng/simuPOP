@@ -259,33 +259,30 @@ private:
    Operator \c mlQuanTrait is a 'multiple-locus' quantitative trait calculator. It accepts a list
    of quantitative traits and combine them according to the \c mode parameter, which takes
    one of the following values
-   \li \c QT_Multiplicative: the mean of the quantitative trait is calculated as
+   \li \c Multiplicative: the mean of the quantitative trait is calculated as
    \f$ f=\prod f_{i} \f$.
-   \li \c QT_Additive: the mean of the quantitative trait is calculated as
+   \li \c Additive: the mean of the quantitative trait is calculated as
    \f$ f=\sum f_{i} \f$.
 
    Note that all \f$ \sigma_{i} \f$ (for \f$ f_{i} \f$) and \f$ \sigma \f$ (for \f$ f \f$)
    will be considered. I.e, the trait value should be
    \f[ f=\sum_{i}\left(f_{i}+N\left(0,\sigma_{i}^{2}\right)\right)+\sigma^{2} \f]
-   for \c QT_Additive case. If this is not desired, you can set some of the \f$ \sigma \f$ to zero.
+   for \c Additive case. If this is not desired, you can set some of the \f$ \sigma \f$ to zero.
 
    <funcForm>MlQuanTrait</funcForm>
  */
 class mlQuanTrait : public quanTrait
 {
-public:
-#define QT_Multiplicative 1
-#define QT_Additive 2
 
 public:
 	/// create a multiple locus quantitative trait operator
 	/**
 	   \param qtraits a list of quantitative traits
-	   \param mode can be one of \c QT_Multiplicative and \c QT_Additive
+	   \param mode can be one of \c Multiplicative and \c Additive
 
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
-	mlQuanTrait(const vectorop qtraits, int mode = QT_Multiplicative,
+	mlQuanTrait(const vectorop qtraits, int mode = Multiplicative,
 		double sigma = 0, int ancestralGen = -1,
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
