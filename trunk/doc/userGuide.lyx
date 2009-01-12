@@ -1308,9 +1308,9 @@ pos
 \family typewriter
 , subPop 
 \family default
-(subpopulation(s) and virtual subpopulation(s))
+(subpopulation and virtual subpopulation)
 \family typewriter
-, rep 
+, subPops (subpopulations and virtual subpopulations), rep 
 \family default
 (replicate)
 \family typewriter
@@ -4399,7 +4399,7 @@ initializer
  can be applied to male individuals in the first subpopulation, and everyone
  in the second subpopulation using parameter 
 \family typewriter
-subPop=[(0,0)
+subPops=[(0,0)
 \family default
 , 1], if a virtual subpopulation is defined by individual sex.
  However, not all operators support this parameter, and even if they do,
