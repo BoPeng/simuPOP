@@ -23,165 +23,116 @@
 #include "outputer.h"
 
 namespace simuPOP {
+
+void dumper::displayStructure(const population & pop, ostream & out)
+{
+	out << "Ploidy: " << pop.ploidy()
+	    << " (" << pop.ploidyName() << ")" << endl;
+	out << "Chromosomes:\n";
+	for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
+		out << (ch + 1) << ": " << pop.chromName(ch);
+		switch (pop.chromType(ch)) {
+		case Autosome:
+			out << " (Autosome, ";
+			break;
+		case ChromosomeX:
+			out << " (ChromosomeX, ";
+			break;
+		case ChromosomeY:
+			out << " (ChromosomeY, ";
+			break;
+		case Customized:
+			out << " (Customized, ";
+			break;
+		default:
+			throw ValueError("Wrong chromosome type");
+		}
+		out << pop.numLoci(ch) << " loci)";
+		for (UINT i = 0; i < pop.numLoci(ch); ++i) {
+			if (i != 0)
+				out << ",";
+			if (i % 5 == 0)
+				out << "\n ";
+			out << " " << pop.locusName(pop.absLocusIndex(ch, i) ) << " ("
+			    << pop.locusPos(pop.absLocusIndex(ch, i)) << ")";
+		}
+		out << endl;
+	}
+	if (pop.infoSize() != 0) {
+		out << "Information fields: " << endl;
+		for (UINT i = 0; i < pop.infoSize(); ++i)
+			out << pop.infoField(i) << " ";
+		out << endl;
+	}
+	out << "population size: " << pop.popSize();
+	out << " (" << pop.numSubPop() << " subpopulations with ";
+	for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i) {
+		out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
+		if (pop.subPopName(i) != UnnamedSubPop)
+			out << " (" << pop.subPopName(i) << ")";
+	}
+	out << " individuals)" << endl;
+	out << "Number of ancestral populations: " << pop.ancestralGens() << endl << endl;
+}
+
+
+UINT dumper::displayGenotype(const population & pop, const subPopList & subPops, ostream & out)
+{
+	UINT count = 0;
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+
+	for ( ; sp != spEnd; ++sp) {
+		ULONG spSize = pop.subPopSize(*sp);
+		out << "Subpopulation " << *sp << " (" << pop.subPopName(*sp) << "), "
+		    << toStr(spSize) << " individuals:" << endl;
+
+		if (sp->isVirtual())
+			const_cast<population &>(pop).activateVirtualSubPop(*sp, IteratableInds);
+		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+
+		for ( ; ind != indEnd; ++ind, ++count) {
+			out << setw(4) << (& * ind - & * pop.rawIndBegin()) << ": ";
+			ind->display(out, m_width, m_chrom, m_loci);
+			out << endl;
+			if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
+				return count;
+		}
+	}
+	return count;
+}
+
+
 bool dumper::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 
 	// dump population structure
-	if (m_showStructure) {
-		out << "Ploidy: " << pop.ploidy()
-		    << " (" << pop.ploidyName() << ")" << endl;
-		out << "Chromosomes:\n";
-		for (UINT ch = 0; ch < pop.numChrom(); ++ch) {
-			out << (ch + 1) << ": " << pop.chromName(ch);
-			switch (pop.chromType(ch)) {
-			case Autosome:
-				out << " (Autosome, ";
-				break;
-			case ChromosomeX:
-				out << " (ChromosomeX, ";
-				break;
-			case ChromosomeY:
-				out << " (ChromosomeY, ";
-				break;
-			case Customized:
-				out << " (Customized, ";
-				break;
-			default:
-				throw ValueError("Wrong chromosome type");
-			}
-			out << pop.numLoci(ch) << " loci)";
-			for (UINT i = 0; i < pop.numLoci(ch); ++i) {
-				if (i != 0)
-					out << ",";
-				if (i % 5 == 0)
-					out << "\n ";
-				out << " " << pop.locusName(pop.absLocusIndex(ch, i) ) << " ("
-				    << pop.locusPos(pop.absLocusIndex(ch, i)) << ")";
-			}
-			out << endl;
-		}
-		if (pop.infoSize() != 0) {
-			out << "Information fields: " << endl;
-			for (UINT i = 0; i < pop.infoSize(); ++i)
-				out << pop.infoField(i) << " ";
-			out << endl;
-		}
-		out << "population size: " << pop.popSize();
-		out << " (" << pop.numSubPop() << " subpopulations with ";
-		for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i) {
-			out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
-			if (pop.subPopName(i) != UnnamedSubPop)
-				out << " (" << pop.subPopName(i) << ")";
-		}
-		out << " individuals)";
-		out << endl;
-		out << "Number of ancestral populations: " << pop.ancestralGens() << endl << endl;
-	}
+	if (m_showStructure)
+		displayStructure(pop, out);
 
-	// FIXME: handle virtual subpopulations
 	subPopList subPops = applicableSubPops();
+	if (subPops.empty())
+		for (UINT i = 0; i < pop.numSubPop(); ++i)
+			subPops.push_back(i);
+
 	if (m_showGenotype) {
-		// get individual ranges from subpop
-		vectorlu range = m_indRange;
-		if (m_indRange.empty()) {
-			if (subPops.empty() ) {                          // all subpop
-				for (UINT sp = 0; sp < pop.numSubPop();  sp++) {
-					if (pop.subPopSize(sp) == 0)
-						continue;
-					range.push_back(pop.subPopBegin(sp));
-					range.push_back(pop.subPopEnd(sp));
-				}
-			} else {
-				for (subPopList::iterator sp = subPops.begin();  sp != subPops.end();  sp++) {
-					if (pop.subPopSize(sp->subPop()) == 0)
-						continue;
-					range.push_back(pop.subPopBegin(sp->subPop()));
-					range.push_back(pop.subPopEnd(sp->subPop()));
-				}
-			}
-		}
-		out << "Genotype of individuals in the present generation:" << endl;
-		UINT count = 0;
-		for (size_t i = 0; i < range.size(); i += 2) {
-			UINT sp = pop.subPopIndPair(range[i]).first;
-			out << "Subpopulation " << sp << " (" << pop.subPopName(sp) << "):" << endl;
-
-			for (IndIterator ind = pop.indBegin() + range[i];
-			     ind != pop.indBegin() + range[i + 1]; ++ind, ++count) {
-				out << setw(4) << (ind - pop.indBegin()) << ": ";
-				ind->display(out, m_width, m_chrom, m_loci);
-				out << endl;
-
-				if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
-					goto done;
-			}
-		}
-
-done:
-		if (m_max > pop.popSize())
-			out << "End of individual genotype.\n" << endl;
-		else
-			out << "End of individual genotype (" << m_max << " out of "
-			    << pop.popSize() << ").\n" << endl;
+		UINT cnt = displayGenotype(pop, subPops, out);
+		if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
+			out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
 
 		int ancGen = m_ancGen;
 		// ancGen can be -1
 		if (ancGen > static_cast<int>(pop.ancestralGens()))
 			ancGen = pop.ancestralGens();
-		for (size_t gen = 1; gen <= ancGen; ++gen) {
+		for (int gen = 1; gen <= ancGen; ++gen) {
 			pop.useAncestralGen(gen);
 			out << endl << "Ancestry population " << gen << endl;
-			out << "population size: " << pop.popSize() << endl;
-			out << " (" << pop.numSubPop() << " subpopulations with ";
-			for (UINT i = 0, iEnd = pop.numSubPop(); i < iEnd;  ++i) {
-				out << (i == 0 ? "" : ", ") << pop.subPopSize(i);
-				if (pop.subPopName(i) != UnnamedSubPop)
-					out << " (" << pop.subPopName(i) << ")";
-			}
-			out << " individuals)\n";
+			UINT cnt = displayGenotype(pop, subPops, out);
+			if (m_max > 0 && cnt == m_max && cnt < pop.popSize())
+				out << " ... (" << m_max << " out of " << pop.popSize() << ").\n" << endl;
 
-			// get individual ranges from subpop
-			vectorlu range = m_indRange;
-			if (m_indRange.empty()) {
-				// all subpop
-				if (subPops.empty() ) {
-					for (UINT sp = 0; sp < pop.numSubPop();  sp++) {
-						if (pop.subPopSize(sp) == 0)
-							continue;
-						range.push_back(pop.subPopBegin(sp));
-						range.push_back(pop.subPopEnd(sp));
-					}
-				} else {
-					for (subPopList::iterator sp = subPops.begin();  sp != subPops.end();  sp++) {
-						if (pop.subPopSize(sp->subPop()) == 0)
-							continue;
-						range.push_back(pop.subPopBegin(sp->subPop()));
-						range.push_back(pop.subPopEnd(sp->subPop()));
-					}
-				}
-			}
-			out << "Genotype info: " << endl;
-			UINT count = 0;
-			for (size_t j = 0; j < range.size(); j += 2) {
-				UINT sp = pop.subPopIndPair(range[j]).first;
-				out << "sub population " << sp << " (" << pop.subPopName(sp) << "):" << endl;
-
-				for (IndIterator ind = pop.indBegin() + range[j]; ind != pop.indBegin() + range[j + 1]; ++ind) {
-					out << setw(4) << count++ << ": " ;
-					ind->display(out, m_width, m_chrom, m_loci);
-					out << endl;
-
-					if (m_max > 0 && count > m_max && count < pop.popSize()) {
-						cout << "population size is " << pop.popSize() << " but dumper() only dump "
-						     << m_max << " individuals" << endl
-						     << "Use parameter max=-1 to output all individuals." << endl;
-						goto doneAnces;
-					}
-				}
-			}
-
-doneAnces:
 			out << endl;
 		}                                                                         // next ancestry
 		// IMPORTANT. Reset ancestral pop

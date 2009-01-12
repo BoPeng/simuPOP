@@ -27,6 +27,15 @@
 
 namespace simuPOP {
 
+ostream & operator<<(ostream & out, const vspID & vsp)
+{
+	out << vsp.subPop();
+	if (vsp.isVirtual())
+		out << "," << vsp.virtualSubPop();
+	return out;
+}
+
+
 void vspSplitter::resetSubPop(population & pop, SubPopID subPop)
 {
 	DBG_ASSERT(m_activated == InvalidSubPopID || m_activated == subPop,

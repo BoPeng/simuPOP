@@ -40,6 +40,7 @@ version 0.9.1 - (Rev 2321) Jan 11, 2009
   - NEW: Disallow parameter alias locus to parameter loci in penetrance,
 		selection and quantitative trait operators. Allow loci to accept a number.
   - NEW: Support other device types in varPlotter::saveAs.
+  - NEW: dumper now supports virtual subpopulations.
 
 version 0.9.0 - (Rev 2130) Dec 15, 2008 (tagged, but not publically released)
   - CHG: add population::setSubPopByIndInfo to allow flexible migration.
