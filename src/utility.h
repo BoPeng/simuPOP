@@ -1411,7 +1411,7 @@ public:
 		va_list argptr;
 
 		va_start(argptr, format);
-		PyObject * arglist = Py_VaBuildValue(format, argptr);
+		PyObject * arglist = Py_VaBuildValue(const_cast<char*>(format), argptr);
 		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
@@ -1437,7 +1437,7 @@ public:
 		va_list argptr;
 
 		va_start(argptr, format);
-		PyObject * arglist = Py_VaBuildValue(format, argptr);
+		PyObject * arglist = Py_VaBuildValue(const_cast<char*>(format), argptr);
 		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 

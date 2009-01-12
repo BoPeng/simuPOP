@@ -155,7 +155,7 @@ Details:
 
 Usage:
 
-    baseOperator(output, stage, begin, end, step, at, rep, subPop,
+    baseOperator(output, stage, begin, end, step, at, rep, subPops,
       infoFields)
 
 Details:
@@ -198,7 +198,7 @@ Arguments:
                     simulator. Negative indexes such as -1 (last
                     replicate) is acceptable. rep=idx can be used as a
                     shortcut for rep=[idx].
-    subPop:         A list of applicable (virtual) subpopulations,
+    subPops:        A list of applicable (virtual) subpopulations,
                     such as subPop=[sp1, sp2, (sp2, vsp1)]. An empty
                     list (default) is interpreted as all
                     subpopulations. subPop=[sp1] can be simplied as
@@ -309,6 +309,122 @@ Usage:
 %feature("docstring") simuPOP::baseOperator::initialize "Obsolete or undocumented function."
 
 %ignore simuPOP::baseOperator::applicableSubPops() const;
+
+%feature("docstring") simuPOP::basePenetrance "
+
+Description:
+
+    Base class of all penetrance operators.
+
+Details:
+
+    Penetrance is the probability that one will have the disease when
+    he has certain genotype(s). An individual will be randomly marked
+    as affected/unaffected according to his/her penetrance value. For
+    example, an individual will have probability 0.8 to be affected if
+    the penetrance is 0.8.
+    Penetrance can be applied at any stage (default to DuringMating).
+    When a penetrance operator is applied, it calculates the
+    penetrance value of each offspring and assigns affected status
+    accordingly. Penetrance can also be used PreMating or PostMating.
+    In these cases, the affected status will be set to all individuals
+    according to their penetrance values.
+    Penetrance values are usually not saved. If you would like to know
+    the penetrance value, you need to
+    *   use addInfoField('penetrance') to the population to analyze.
+    (Or use infoFields parameter of the population constructor), and
+    *   use e.g., mlPenetrance(...., infoFields=['penetrance']) to add
+    the penetrance field to the penetrance operator you use. You may
+    choose a name other than 'penetrance' as long as the field names
+    for the operator and population match. Penetrance functions can be
+    applied to the current, all, or certain number of ancestral
+    generations. This is controlled by the ancestralGen parameter,
+    which is default to -1 (all available ancestral generations). You
+    can set it to 0 if you only need affection status for the current
+    generation, or specify a number n for the number of ancestral
+    generations (n + 1 total generations) to process. Note that the
+    ancestralGen parameter is ignored if the penetrance operator is
+    used as a during mating operator.
+
+"; 
+
+%feature("docstring") simuPOP::basePenetrance::basePenetrance "
+
+Description:
+
+    create a penetrance operator
+
+Usage:
+
+    basePenetrance(ancestralGen=-1, stage=DuringMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+
+Arguments:
+
+    ancestralGen:   if this parameter is set to be 0, apply penetrance
+                    to the current generation; if -1, apply to all
+                    generations; otherwise, apply to the specified
+                    numbers of ancestral generations.
+    stage:          specify the stage this operator will be applied.
+                    Default to DuringMating.
+    infoFields:     If one field is specified, it will be used to
+                    store penetrance values.
+
+"; 
+
+%feature("docstring") simuPOP::basePenetrance::~basePenetrance "
+
+Description:
+
+    destructor
+
+Usage:
+
+    x.~basePenetrance()
+
+"; 
+
+%feature("docstring") simuPOP::basePenetrance::clone "
+
+Description:
+
+    deep copy of a penetrance operator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::basePenetrance::penet(individual *);
+
+%feature("docstring") simuPOP::basePenetrance::apply "
+
+Description:
+
+    set penetrance to all individuals and record penetrance if
+    requested
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::basePenetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::basePenetrance::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the penetrance operator
+
+Usage:
+
+    x.__repr__()
+
+"; 
 
 %feature("docstring") simuPOP::BernulliTrials "
 
@@ -482,7 +598,7 @@ Details:
 Usage:
 
     cloneGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -694,9 +810,9 @@ Description:
 Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
-      max=100, chrom=[], loci=[], subPop=[], indRange=[], output=\">\",
+      max=100, chrom=[], loci=[], indRange=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      infoFields=[])
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -880,6 +996,14 @@ Usage:
 Usage:
 
     x.elems()
+
+"; 
+
+%feature("docstring") simuPOP::floatList::resize "
+
+Usage:
+
+    x.resize(size, v)
 
 "; 
 
@@ -1392,7 +1516,7 @@ Details:
 Usage:
 
     genoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -1597,7 +1721,7 @@ Usage:
 
     gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
       func=None, output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -1686,7 +1810,7 @@ Description:
 Usage:
 
     haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -1924,7 +2048,7 @@ Usage:
 
     ifElse(cond, ifOp=None, elseOp=None, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -2496,9 +2620,9 @@ Description:
 
 Usage:
 
-    infoEval(expr=\"\", stmts=\"\", subPops=[], usePopVars=False,
-      exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposePop=False,
+      name=\"\", output=\">\", stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -2628,9 +2752,9 @@ Description:
 
 Usage:
 
-    infoExec(stmts=\"\", subPops=[], usePopVars=False,
-      exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+    infoExec(stmts=\"\", usePopVars=False, exposePop=False, name=\"\",
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -2846,7 +2970,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], output=\"\", infoFields=[\"paternal_tag\",
+      rep=[], subPops=[], output=\"\", infoFields=[\"paternal_tag\",
       \"maternal_tag\"])
 
 Arguments:
@@ -2913,7 +3037,7 @@ Usage:
     initByFreq(alleleFreq=[], loci=[], ploidy=[],
       identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
       stage=PreMating, begin=0, end=1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -2996,7 +3120,7 @@ Usage:
 
     initByValue(value=[], loci=[], ploidy=[], proportions=[],
       initSex=True, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
-      end=1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+      end=1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -3082,7 +3206,7 @@ Details:
 Usage:
 
     initSex(maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -3228,7 +3352,7 @@ Usage:
 
     kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -3321,9 +3445,9 @@ Description:
 
 Usage:
 
-    maPenetrance(loci, penet, wildtype, ancestralGen=-1,
+    maPenetrance(loci, penetrance, wildtype=[], ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -3403,9 +3527,9 @@ Description:
 
 Usage:
 
-    mapPenetrance(loci, penet, phase=False, ancestralGen=-1,
+    mapPenetrance(loci, penetrance, phase=False, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -3484,9 +3608,9 @@ Description:
 
 Usage:
 
-    mapQuanTrait(loci, qtrait, sigma=0, phase=False,
-      ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[\"qtrait\"])
+    mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[\"qtrait\"])
 
 Arguments:
 
@@ -3572,9 +3696,9 @@ Description:
 
 Usage:
 
-    mapSelector(loci, fitness, phase=False, subPops=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[\"fitness\"])
+    mapSelector(loci, fitness, phase=False, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -3660,9 +3784,9 @@ Description:
 
 Usage:
 
-    maQuanTrait(loci, qtrait, wildtype, sigma=[], ancestralGen=-1,
+    maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[\"qtrait\"])
+      subPops=[], infoFields=[\"qtrait\"])
 
 Details:
 
@@ -3756,8 +3880,8 @@ Description:
 
 Usage:
 
-    maSelector(loci, fitness, wildtype, subPops=[], stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+    maSelector(loci, fitness, wildtype=[], stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[],
       infoFields=[\"fitness\"])
 
 Details:
@@ -3912,7 +4036,7 @@ Details:
 Usage:
 
     mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -3992,7 +4116,7 @@ Description:
 Usage:
 
     mergeSubPops(subPops=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      step=1, at=[], rep=[], infoFields=[])
 
 Arguments:
 
@@ -4085,7 +4209,7 @@ Usage:
 
     migrator(rate, mode=MigrByProbability, fromSubPop=[],
       toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[\"migrate_to\"])
+      rep=[], subPops=[], infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -4222,7 +4346,7 @@ Details:
 Usage:
 
     mitochondrialGenoTransmitter(chroms=[], begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -4287,9 +4411,9 @@ Description:
 
 Usage:
 
-    mlPenetrance(peneOps, mode=PEN_Multiplicative, ancestralGen=-1,
+    mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1,
       stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -4351,14 +4475,14 @@ Details:
     calculator. It accepts a list of quantitative traits and combine
     them according to the mode parameter, which takes one of the
     following values
-    *   QT_Multiplicative: the mean of the quantitative trait is
+    *   Multiplicative: the mean of the quantitative trait is
     calculated as $ f=\\prod f_{i} $.
-    *   QT_Additive: the mean of the quantitative trait is calculated
-    as $ f=\\sum f_{i} $. Note that all $ \\sigma_{i} $ (for $ f_{i} $)
-    and $ \\sigma $ (for $ f $) will be considered. I.e, the trait
-    value should be
+    *   Additive: the mean of the quantitative trait is calculated as
+    $ f=\\sum f_{i} $. Note that all $ \\sigma_{i} $ (for $ f_{i} $) and
+    $ \\sigma $ (for $ f $) will be considered. I.e, the trait value
+    should be
     $ f=\\sum_{i}\\left(f_{i}+N\\left(0,\\sigma_{i}^{2}\\right)\\right)+\\sig
-    ma^{2} $ for QT_Additive case. If this is not desired, you can set
+    ma^{2} $ for Additive case. If this is not desired, you can set
     some of the $ \\sigma $ to zero.
 
 "; 
@@ -4371,9 +4495,9 @@ Description:
 
 Usage:
 
-    mlQuanTrait(qtraits, mode=QT_Multiplicative, sigma=0,
-      ancestralGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[\"qtrait\"])
+    mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[\"qtrait\"])
 
 Details:
 
@@ -4382,7 +4506,7 @@ Details:
 Arguments:
 
     qtraits:        a list of quantitative traits
-    mode:           can be one of QT_Multiplicative and QT_Additive
+    mode:           can be one of Multiplicative and Additive
 
 "; 
 
@@ -4449,10 +4573,10 @@ Details:
     evaluate the fitness of an individual as the product or sum of
     individual fitness values. The mode is determined by parameter
     mode, which takes one of the following values
-    *   SEL_Multiplicative: the fitness is calculated as $
+    *   Multiplicative: the fitness is calculated as $
     f=\\prod_{i}f_{i} $, where $ f_{i} $ is the single-locus fitness
     value.
-    *   SEL_Additive: the fitness is calculated as $
+    *   Additive: the fitness is calculated as $
     f=\\max\\left(0,1-\\sum_{i}(1-f_{i})\\right) $. $ f $ will be set to 0
     when $ f<0 $.
 
@@ -4466,9 +4590,9 @@ Description:
 
 Usage:
 
-    mlSelector(selectors, mode=SEL_Multiplicative, subPops=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[\"fitness\"])
+    mlSelector(selectors, mode=Multiplicative, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[\"fitness\"])
 
 Details:
 
@@ -4548,7 +4672,7 @@ Usage:
 
     mutator(rate=[], loci=[], maxAllele=0, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -4713,7 +4837,7 @@ Description:
 Usage:
 
     noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -4899,7 +5023,7 @@ Description:
 Usage:
 
     outputer(output=\">\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -5014,8 +5138,8 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
-      output=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
+    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], output=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
 
 "; 
 
@@ -5092,7 +5216,7 @@ Description:
 
 Usage:
 
-    parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+    parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
       output=\"\", infoFields=[\"parent_idx\"])
 
 "; 
@@ -5182,7 +5306,7 @@ Usage:
 
     pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
       popName=\"pop\", output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=-1, subPop=[], infoFields=[])
+      step=1, at=[], rep=-1, subPops=[], infoFields=[])
 
 Arguments:
 
@@ -5499,127 +5623,11 @@ Details:
 Usage:
 
     pedigreeTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], stage=PostMating, output=\">\", pedigreeFields=[])
+      subPops=[], stage=PostMating, output=\">\", pedigreeFields=[])
 
 "; 
 
 %ignore simuPOP::pedigreeTagger::apply(population &pop);
-
-%feature("docstring") simuPOP::penetrance "
-
-Description:
-
-    Base class of all penetrance operators.
-
-Details:
-
-    Penetrance is the probability that one will have the disease when
-    he has certain genotype(s). An individual will be randomly marked
-    as affected/unaffected according to his/her penetrance value. For
-    example, an individual will have probability 0.8 to be affected if
-    the penetrance is 0.8.
-    Penetrance can be applied at any stage (default to DuringMating).
-    When a penetrance operator is applied, it calculates the
-    penetrance value of each offspring and assigns affected status
-    accordingly. Penetrance can also be used PreMating or PostMating.
-    In these cases, the affected status will be set to all individuals
-    according to their penetrance values.
-    Penetrance values are usually not saved. If you would like to know
-    the penetrance value, you need to
-    *   use addInfoField('penetrance') to the population to analyze.
-    (Or use infoFields parameter of the population constructor), and
-    *   use e.g., mlPenetrance(...., infoFields=['penetrance']) to add
-    the penetrance field to the penetrance operator you use. You may
-    choose a name other than 'penetrance' as long as the field names
-    for the operator and population match. Penetrance functions can be
-    applied to the current, all, or certain number of ancestral
-    generations. This is controlled by the ancestralGen parameter,
-    which is default to -1 (all available ancestral generations). You
-    can set it to 0 if you only need affection status for the current
-    generation, or specify a number n for the number of ancestral
-    generations (n + 1 total generations) to process. Note that the
-    ancestralGen parameter is ignored if the penetrance operator is
-    used as a during mating operator.
-
-"; 
-
-%feature("docstring") simuPOP::penetrance::penetrance "
-
-Description:
-
-    create a penetrance operator
-
-Usage:
-
-    penetrance(ancestralGen=-1, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
-
-Arguments:
-
-    ancestralGen:   if this parameter is set to be 0, apply penetrance
-                    to the current generation; if -1, apply to all
-                    generations; otherwise, apply to the specified
-                    numbers of ancestral generations.
-    stage:          specify the stage this operator will be applied.
-                    Default to DuringMating.
-    infoFields:     If one field is specified, it will be used to
-                    store penetrance values.
-
-"; 
-
-%feature("docstring") simuPOP::penetrance::~penetrance "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~penetrance()
-
-"; 
-
-%feature("docstring") simuPOP::penetrance::clone "
-
-Description:
-
-    deep copy of a penetrance operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%ignore simuPOP::penetrance::penet(individual *);
-
-%feature("docstring") simuPOP::penetrance::apply "
-
-Description:
-
-    set penetrance to all individuals and record penetrance if
-    requested
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::penetrance::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::penetrance::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the penetrance operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
 
 %feature("docstring") simuPOP::pointMutator "
 
@@ -5652,7 +5660,7 @@ Usage:
 
     pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -7027,7 +7035,7 @@ Usage:
 
     pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
       exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -7138,7 +7146,7 @@ Usage:
 
     pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
       name=\"\", output=\">\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -7285,7 +7293,7 @@ Usage:
     pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
       fromSubPop=[], toSubPop=[], loci=[], param=None,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[\"migrate_to\"])
+      subPops=[], infoFields=[\"migrate_to\"])
 
 Arguments:
 
@@ -7369,7 +7377,7 @@ Usage:
 
     pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 "; 
 
@@ -7484,7 +7492,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       formOffGenotype=False, offspringOnly=False, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -7571,7 +7579,7 @@ Description:
 Usage:
 
     pyOutput(str=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -7737,9 +7745,8 @@ Description:
 
 Usage:
 
-    pyPenetrance(loci, func, ancestralGen=-1, stage=DuringMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
-      infoFields=[])
+    pyPenetrance(loci, func, ancGen=-1, stage=DuringMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -7868,8 +7875,8 @@ Description:
 
 Usage:
 
-    pyQuanTrait(loci, func, ancestralGen=-1, stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+    pyQuanTrait(loci, func, ancGen=-1, stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[],
       infoFields=[\"qtrait\"])
 
 Details:
@@ -7952,9 +7959,8 @@ Description:
 
 Usage:
 
-    pySelector(loci, func, subPops=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[],
-      infoFields=[\"fitness\"])
+    pySelector(loci, func, stage=PreMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPops=[], infoFields=[\"fitness\"])
 
 Arguments:
 
@@ -8027,7 +8033,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], output=\"\", infoFields=[])
+      subPops=[], output=\"\", infoFields=[])
 
 Arguments:
 
@@ -8100,8 +8106,8 @@ Description:
 
 Usage:
 
-    quanTrait(ancestralGen=-1, stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[\"qtrait\"])
+    quanTrait(ancGen=-1, stage=PostMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPops=[], infoFields=[\"qtrait\"])
 
 "; 
 
@@ -8353,7 +8359,7 @@ Usage:
 
     recombinator(intensity=-1, rate=[], loci=[],
       convMode=NoConversion, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -8573,14 +8579,14 @@ Description:
 
 Usage:
 
-    resizeSubPops(newSizes=[], subPops=[], propagate=True,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+    resizeSubPops(newSizes=[], propagate=True, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
 Arguments:
 
     newSizes:       of the specified (or all) subpopulations.
-    subPops:        subpopulations to be resized. Default to all.
+    subPop:         subpopulations to be resized. Default to all.
     propagate:      if true (default) and the new size if greater than
                     the original size, individuals will be copied
                     over.
@@ -8934,7 +8940,7 @@ Description:
 Usage:
 
     savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPop=[], infoFields=[])
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -9044,14 +9050,8 @@ Description:
 
 Usage:
 
-    selector(subPops=[], stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[\"fitness\"])
-
-Arguments:
-
-    subPop:         a shortcut to subPops=[subPop]
-    subPops:        subpopulations that the selector will apply to.
-                    Default to all.
+    selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[\"fitness\"])
 
 "; 
 
@@ -9129,7 +9129,7 @@ Description:
 Usage:
 
     selfingGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 "; 
 
@@ -9255,7 +9255,7 @@ Description:
 Usage:
 
     setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPop=[], infoFields=[])
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -9786,7 +9786,7 @@ Usage:
 
     smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPop=[], infoFields=[])
+      rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -9862,7 +9862,7 @@ Usage:
 
     splitSubPop(which=0, sizes=[], proportions=[], randomize=True,
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[\"migrate_to\"])
+      subPops=[], infoFields=[\"migrate_to\"])
 
 Details:
 
@@ -9975,7 +9975,7 @@ Usage:
       Fst_param={}, relGroups=[], relLoci=[], rel_param={},
       relBySubPop=False, relMethod=[], relMinScored=10,
       hasPhase=False, midValues=False, output=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPop=[],
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
       infoFields=[])
 
 Arguments:
@@ -10743,7 +10743,7 @@ Description:
 Usage:
 
     stator(output=\"\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -11064,7 +11064,7 @@ Description:
 Usage:
 
     tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -11115,7 +11115,7 @@ Usage:
 
     terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPop=[], infoFields=[])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -11206,7 +11206,7 @@ Description:
 Usage:
 
     ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -11264,7 +11264,7 @@ Description:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -11338,7 +11338,7 @@ Description:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPop=[], infoFields=[])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
