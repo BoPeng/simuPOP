@@ -24,7 +24,7 @@ class TestQuanTrait(unittest.TestCase):
         self.pop.setVirtualSplitter(rangeSplitter([[0,1250], [1250,3750],[3750,5000]]))
         InitByValue(self.pop,
             value = [[0,0],[0,1],[1,1]],
-            subPop = ((0, 0), (0, 1), (0, 2)))
+            subPops = ((0, 0), (0, 1), (0, 2)))
 
     def stdev(self, x):
         'calculate standard devisaion'

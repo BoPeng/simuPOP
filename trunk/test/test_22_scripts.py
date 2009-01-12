@@ -30,7 +30,7 @@ class TestScripts(unittest.TestCase):
         assert os.path.isfile('hapmap_22.bin')
         pass
 
-    def testSimuCDCV(self):
+    def TestSimuCDCV(self):
         if AlleleType() != 'short':
              return
         import simuCDCV

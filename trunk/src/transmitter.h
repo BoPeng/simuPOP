@@ -46,9 +46,9 @@ public:
 	/** Create a base genotype transmitter.
 	 */
 	genoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		baseOperator("", DuringMating, begin, end, step, at, rep, subPop, infoFields),
+		baseOperator("", DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
 		setFormOffGenotype(true);
@@ -120,9 +120,9 @@ public:
 	/** Create a clone genotype transmitter.
 	 */
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		genoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+		genoTransmitter(begin, end, step, at, rep, subPops, infoFields)
 	{
 		setFormOffGenotype(true);
 	}
@@ -165,9 +165,9 @@ public:
 	/** Create a Mendelian genotype transmitter.
 	 */
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+		genoTransmitter(begin, end, step, at, rep, subPops, infoFields),
 		m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
 	}
@@ -226,9 +226,9 @@ class selfingGenoTransmitter : public mendelianGenoTransmitter
 public:
 	/// Create a self-fertilization genotype transmitter.
 	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields)
+		: mendelianGenoTransmitter(begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
 
@@ -271,9 +271,9 @@ class haplodiploidGenoTransmitter : public mendelianGenoTransmitter
 public:
 	/// Create a haplodiploid genotype transmitter.
 	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: mendelianGenoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+		: mendelianGenoTransmitter(begin, end, step, at, rep, subPops, infoFields),
 		m_copier()
 	{
 	}
@@ -319,9 +319,9 @@ public:
 	 */
 	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: genoTransmitter(begin, end, step, at, rep, subPop, infoFields),
+		: genoTransmitter(begin, end, step, at, rep, subPops, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
 		// this is intended to be an auxillary genotype transmitter.
@@ -440,7 +440,7 @@ public:
 	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru loci = vectoru(),
 		const floatList & convMode = NoConversion,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr());
 
 

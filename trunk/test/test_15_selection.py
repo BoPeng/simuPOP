@@ -507,7 +507,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = [initByFreq([.4, .6])],
             ops = [
-                mapSelector(loci = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPop=[1]),
+                mapSelector(loci = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPops=[1]),
                 pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
                 ],
             gen = 5
@@ -521,9 +521,9 @@ class TestSelector(unittest.TestCase):
             preOps = [initByFreq([.4, .6])],
             ops = [
                 maSelector(loci=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
-                    subPop=1),
+                    subPops=1),
                 maSelector(loci=0, wildtype=[0], fitness = [0.6, 0.4, 0.6],
-                    subPop=2),
+                    subPops=2),
                 pyOperator(func=testFitness, param=([0],), stage=PreMating),
                 ],
             gen = 5

@@ -65,10 +65,10 @@ namespace simuPOP {
 //                      const string & format = "auto",
 //                      int stage = PostMating, int begin = 0, int end = -1,
 //                      int step = 1, const intList & at = intList(),
-//                      const repList & rep = repList(), const subPopList & subPop = subPopList(),
+//                      const repList & rep = repList(), const subPopList & subPops = subPopList(),
 //                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-//               stage, begin, end, step, at, rep, subPop, infoFields),
+//               stage, begin, end, step, at, rep, subPops, infoFields),
 //      m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 //      m_minPedSize(minPedSize), m_minAffected(minAffected),
 //      m_countOnly(countOnly), m_validPedigrees()
@@ -147,10 +147,10 @@ namespace simuPOP {
 //                      const string & format = "auto",
 //                      int stage = PostMating, int begin = 0, int end = -1,
 //                      int step = 1, const intList & at = intList(),
-//                      const repList & rep = repList(), const subPopList & subPop = subPopList(),
+//                      const repList & rep = repList(), const subPopList & subPops = subPopList(),
 //                      const vectorstr & infoFields = vectorstr (ASC_AS_Fields, ASC_AS_Fields + 2))
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-//               stage, begin, end, step, at, rep, subPop, infoFields),
+//               stage, begin, end, step, at, rep, subPops, infoFields),
 //      m_size(size), m_minTotalSize(minTotalSize), m_maxOffspring(maxOffspring),
 //      m_minPedSize(minPedSize), m_minAffected(minAffected),
 //      m_countOnly(countOnly), m_validPedigrees()
@@ -234,9 +234,9 @@ namespace simuPOP {
 //           const string & name = "sample", const string & nameExpr = "", UINT times = 1,
 //           const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
 //           int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-//           const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
+//           const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,
-//               stage, begin, end, step, at, rep, subPop, infoFields),
+//               stage, begin, end, step, at, rep, subPops, infoFields),
 //      m_keepAncestralPops(keepAncestralPops)
 //  {
 //      DBG_ASSERT(PyObj_Is_IntNumArray(keep), ValueError,

@@ -79,9 +79,9 @@ public:
 	 */
 	basePenetrance(int ancestralGen = -1, int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
+		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
 	}
@@ -151,9 +151,9 @@ public:
 	 */
 	mapPenetrance(const uintList & loci, const strDict & penetrance, bool phase = false,
 		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_dict(penetrance), m_phase(phase)
 	{
 	};
@@ -219,9 +219,9 @@ public:
 	maPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = uintList(0),
 		int ancGen = -1,
 		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -290,9 +290,9 @@ public:
 	 */
 	mlPenetrance(const vectorop peneOps, int mode = Multiplicative,
 		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_peneOps(0), m_mode(mode)
 	{
 		DBG_FAILIF(peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -372,9 +372,9 @@ public:
 	/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
 	pyPenetrance(const uintList & loci, PyObject * func, int ancGen = -1,
 		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())

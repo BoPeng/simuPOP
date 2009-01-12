@@ -107,7 +107,7 @@ class TestTagger(unittest.TestCase):
 
     def testPyTagger(self):
         'Testing python tagger (pass trait from parents to offspring)'
-        pop = population(size=[5,15], ploidy=2, loci=[2,4],
+        pop = population(size=[50,150], ploidy=2, loci=[2,4],
                 infoFields=['trait1', 'trait2'])
         pop.setIndInfo([1], 'trait1')
         pop.setIndInfo([2], 'trait2')

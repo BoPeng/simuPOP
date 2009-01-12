@@ -29,7 +29,7 @@ class TestAscertainment(unittest.TestCase):
             ops = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 migrator(rate=[[0.1,0.1], [0.1,0.1]]),
-                mapPenetrance(locus=0,
+                mapPenetrance(loci=0,
                     penetrance={'0-0':0,'0-1':.7,'1-1':1}),
                 parentsTagger(),
             ],
@@ -52,7 +52,7 @@ class TestAscertainment(unittest.TestCase):
             [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
                 migrator(rate=[[0.1,0.1],[0.1,0.1]]),
-                mapPenetrance(locus=0,
+                mapPenetrance(loci=0,
                     penetrance={'0-0':0,'0-1':.7,'1-1':1}),
                 parentsTagger(),
             ],

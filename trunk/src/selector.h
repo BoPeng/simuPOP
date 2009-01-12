@@ -74,8 +74,8 @@ public:
 	/**
 	 */
 	selector(int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "fitness"))
-		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields)
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr(1, "fitness"))
+		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
 
@@ -138,9 +138,9 @@ public:
 	 */
 	mapSelector(const uintList & loci, const strDict & fitness, bool phase = false,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_dict(fitness), m_phase(phase)
 	{
 	};
@@ -213,11 +213,11 @@ public:
 	   \li \c wildtype alleles at all loci are the same.
 
 	 */
-	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype,
+	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = uintList(0),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -285,9 +285,9 @@ public:
 	 */
 	mlSelector(const vectorop selectors, int mode = Multiplicative,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_selectors(0), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
@@ -367,9 +367,9 @@ public:
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
 	pySelector(uintList loci, PyObject * func, 
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())

@@ -691,7 +691,7 @@ class TestPopulation(unittest.TestCase):
         'Test affectionSplitter::affectionSplitter()'
         pop = population(size=[20, 80], loci=[1, 2])
         InitByFreq(pop, [0.4, 0.6])
-        MaPenetrance(pop, locus=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
+        MaPenetrance(pop, loci=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
         Stat(pop, numOfAffected=True)
         pop.setVirtualSplitter(affectionSplitter())
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfAffected)

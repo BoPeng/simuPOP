@@ -78,9 +78,9 @@ class TestInitialization(unittest.TestCase):
         pop.genotype()[:] = 0
 
     def assertGenotype(self, pop, genotype,
-        loci=[], subPop=[], indRange=[], atPloidy=[]):
+        loci=[], subPops=[], indRange=[], atPloidy=[]):
         'Assert if the genotype of subPop of pop is genotype '
-        geno = getGenotype(pop, loci, subPop, indRange, atPloidy)
+        geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
         if AlleleType() == 'binary':
             if type(genotype) == type(1):
                 self.assertEqual(geno, [genotype>0]*len(geno))
@@ -93,9 +93,9 @@ class TestInitialization(unittest.TestCase):
                 self.assertEqual(geno, genotype)
 
     def assertGenotypeFreq(self, pop, freqLow, freqHigh,
-        loci=[], subPop=[], indRange=[], atPloidy=[]):
+        loci=[], subPops=[], indRange=[], atPloidy=[]):
         'Assert if the genotype has the correct allele frequency'
-        geno = getGenotype(pop, loci, subPop, indRange, atPloidy)
+        geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
         if AlleleType() == 'binary':
             if len(freqLow) == 1:    # only one
                 freq0 = geno.count(0)*1.0 / len(geno)
@@ -134,15 +134,15 @@ class TestInitialization(unittest.TestCase):
         self.assertEqual(pop.individual(10), pop.individual(20))
         #
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .8], identicalInds=1, subPop=[0],
+        InitByFreq(pop, [.2, .8], identicalInds=1, subPops=[0],
             maleFreq=1)
         self.assertEqual(pop.individual(0), pop.individual(1))
         self.assertNotEqual(pop.individual(2), pop.individual(500))
         #
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .8], subPop=[0])
-        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPop=[0])
-        self.assertGenotype(pop, 0, subPop=[1,2])
+        InitByFreq(pop, [.2, .8], subPops=[0])
+        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPops=[0])
+        self.assertGenotype(pop, 0, subPops=[1,2])
         #
         return
         self.clearGenotype(pop)
@@ -156,9 +156,9 @@ class TestInitialization(unittest.TestCase):
         #
         self.clearGenotype(pop)
         InitByFreq(pop, alleleFreq=[[.2, .8],[.8,.2],[.5,.5]])
-        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPop=[0])
-        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], subPop=[1])
-        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPop=[2])
+        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPops=[0])
+        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], subPops=[1])
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPops=[2])
         #
         self.clearGenotype(pop)
         InitByFreq(pop, alleleFreq=[[.2, .8],[.8,.2]], indRange=[[0,300],[500,1300]])
@@ -167,11 +167,11 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, 0, indRange=[[300,500], [1300, 2000]] )
         #
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .8], identicalInds=1, subPop=[0],
+        InitByFreq(pop, [.2, .8], identicalInds=1, subPops=[0],
             maleFreq=1)
         self.assertEqual(pop.individual(6), pop.individual(7))
         self.assertNotEqual(pop.individual(0), pop.individual(500))
-        self.assertGenotype(pop, 0, subPop=[1,2] )
+        self.assertGenotype(pop, 0, subPops=[1,2] )
         #
         self.assertRaises(exceptions.ValueError,
             InitByFreq, pop, alleleFreq=[[.2, .8],[.8,.2]], identicalInds=1)
@@ -223,11 +223,11 @@ class TestInitialization(unittest.TestCase):
         self.assertEqual(pop.individual(0), pop.individual(1))
         #
         self.clearGenotype(pop)
-        InitByFreq(pop, [.2, .8], subPop=[0], atPloidy=1)
+        InitByFreq(pop, [.2, .8], subPops=[0], atPloidy=1)
         self.assertGenotypeFreq(pop, [.15, .75], [.25, .85],
-            atPloidy=1, subPop=[0])
+            atPloidy=1, subPops=[0])
         self.assertGenotype(pop, 0, atPloidy=0)
-        self.assertGenotype(pop, 0, subPop=[1])
+        self.assertGenotype(pop, 0, subPops=[1])
         #
         self.clearGenotype(pop)
         InitByFreq(pop, [.2, .8], identicalInds=1, indRange=[0,1000], atPloidy=0,
@@ -237,9 +237,9 @@ class TestInitialization(unittest.TestCase):
         #
         self.clearGenotype(pop)
         InitByFreq(pop, alleleFreq=[[.2, .8],[.8,.2],[.5,.5]], atPloidy=1)
-        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPop=[0], atPloidy=1)
-        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], subPop=[1], atPloidy=1)
-        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPop=[2], atPloidy=1)
+        self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPops=[0], atPloidy=1)
+        self.assertGenotypeFreq(pop, [.75, .15], [.85, .25], subPops=[1], atPloidy=1)
+        self.assertGenotypeFreq(pop, [.45, .45], [.55, .55], subPops=[2], atPloidy=1)
         self.assertGenotype(pop, 0, atPloidy=0)
         #
         self.clearGenotype(pop)
