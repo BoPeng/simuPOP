@@ -30,13 +30,13 @@ bool quanTrait::apply(population & pop)
 
 	UINT ansGen = 0;
 
-	if (m_ancestralGen == -1)
+	if (m_ancGen == -1)
 		ansGen = pop.ancestralGens();
-	else if (m_ancestralGen > 0) {
-		if (static_cast<UINT>(m_ancestralGen) > pop.ancestralGens())
+	else if (m_ancGen > 0) {
+		if (static_cast<UINT>(m_ancGen) > pop.ancestralGens())
 			ansGen = pop.ancestralGens();
 		else
-			ansGen = m_ancestralGen;
+			ansGen = m_ancGen;
 	}
 
 	for (UINT i = 0; i <= ansGen; ++i) {
@@ -57,7 +57,7 @@ double mapQuanTrait::qtrait(individual * ind)
 {
 	string key;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);
@@ -79,11 +79,32 @@ double mapQuanTrait::qtrait(individual * ind)
 }
 
 
+maQuanTrait::maQuanTrait(const uintList & loci, const vectorf & qtrait, const uintList & wildtype,
+		const floatList & sigma, int ancGen, int stage, int begin, int end, int step,
+		const intList & at, const repList & rep, const subPopList & subPop,
+		const vectorstr & infoFields) :
+		quanTrait(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
+{
+	if (m_sigma.empty())
+		m_sigma.resize(m_qtrait.size(), 0.);
+	else if (m_sigma.size() == 1)
+		m_sigma.resize(m_qtrait.size(), m_sigma[0]);
+
+	DBG_ASSERT(m_qtrait.size() == static_cast<UINT>(pow(static_cast<double>(3),
+														static_cast<double>(m_loci.size()))),
+		ValueError, "Please specify qtrait for every combination of genotype.");
+	DBG_ASSERT(m_sigma.size() == m_qtrait.size(), ValueError,
+		"Size of sigma does not match that of qtrait");
+};
+
+
+
 double maQuanTrait::qtrait(individual * ind)
 {
 	UINT index = 0;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);

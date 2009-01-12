@@ -33,11 +33,11 @@ class TestQuanTrait(unittest.TestCase):
 
     def testMapQuanTrait(self):
         'Testing map qtrait'
-        MapQuanTrait(self.pop, locus=0,
+        MapQuanTrait(self.pop, loci=0,
             qtrait={'0-0':0, '0-1':1, '1-1':2})
 ##         self.assertEqual(self.pop.arrIndInfo(), [0]*1250+[1]*2500+[2]*1250)
         # with variance
-        MapQuanTrait(self.pop, locus=0, sigma=0.5,
+        MapQuanTrait(self.pop, loci=0, sigma=0.5,
             qtrait={'0-0':1, '0-1':1, '1-1':1})
 ##         assert abs( sum(self.pop.arrIndInfo(False))/5000 - 1) < 0.1
         # syandard deviation
@@ -45,10 +45,10 @@ class TestQuanTrait(unittest.TestCase):
 
     def testMaQuanTrait(self):
         'Testing multi-allele qtrait'
-        MaQuanTrait(self.pop, locus=0, wildtype=0, sigma=0, qtrait=[0, 1, 1])
+        MaQuanTrait(self.pop, loci=0, wildtype=0, sigma=0, qtrait=[0, 1, 1])
 ##         self.assertEqual(self.pop.arrIndInfo(), [0]*1250+[1]*2500+[1]*1250)
         # with variance
-        MaQuanTrait(self.pop, locus=0, sigma=0.5, wildtype=0,
+        MaQuanTrait(self.pop, loci=0, sigma=0.5, wildtype=0,
             qtrait=[0, .3, .5])
 ##         assert abs( sum(self.pop.arrIndInfo(False)[:1250])/1250 - 0) < 0.1
 ##         assert abs( sum(self.pop.arrIndInfo(False)[1250:3750])/2500 - 0.3) < 0.1
@@ -58,7 +58,7 @@ class TestQuanTrait(unittest.TestCase):
 ##         assert abs( self.stdev( self.pop.arrIndInfo(False)[1250:3750] ) - 0.5) < 0.1
 ##         assert abs( self.stdev( self.pop.arrIndInfo(False)[3750:5000] ) - 0.5) < 0.1
         # different sigma
-        MaQuanTrait(self.pop, locus=0, sigma=[0.5, 0.8, 1], wildtype=0,
+        MaQuanTrait(self.pop, loci=0, sigma=[0.5, 0.8, 1], wildtype=0,
             qtrait=[0, .3, .5])
 ##         assert abs( sum(self.pop.arrIndInfo(False)[:1250])/1250 - 0) < 0.1
 ##         assert abs( sum(self.pop.arrIndInfo(False)[1250:3750])/2500 - 0.3) < 0.1
@@ -70,10 +70,10 @@ class TestQuanTrait(unittest.TestCase):
 
     def testMultiLocusMaQuanTrait(self):
         'Testing the multi-locus version of maQTrait'
-        pop = population(1000, loci=[3,5], infoFields=['qtrait'])
+        pop = population(1000, loci=[3, 5], infoFields=['qtrait'])
         InitByFreq(pop, [.3, .7])
         #
-        MaQuanTrait(pop, loci=[3,5], wildtype=0, sigma=0.5,
+        MaQuanTrait(pop, loci=[3, 5], wildtype=0, sigma=0.5,
             qtrait=[0, .3, .5, 0.3, 0.6, 0.8, 0.1, 1, 0.8])
 
 
@@ -83,21 +83,21 @@ class TestQuanTrait(unittest.TestCase):
         InitByFreq(pop, [.3, .7])
         #
         MlQuanTrait(pop, [
-            maQuanTrait(locus=0,    wildtype=0, sigma=0.5,
+            maQuanTrait(loci = 0,  wildtype=0, sigma=0.5,
                 qtrait=[0, .3, .5]),
-            mapQuanTrait(locus=1, sigma=1,
+            mapQuanTrait(loci=1, sigma=1,
                 qtrait={'0-0':0, '0-1':1, '1-1':1})
             ],
-            mode=PEN_Additive
+            mode=Additive
         )
         #
         MlQuanTrait(pop, [
-            maQuanTrait(locus=2,    wildtype=0, sigma=0.5,
+            maQuanTrait(loci = 2,    wildtype=0, sigma=0.5,
                 qtrait=[0, .3, .5]),
-            mapQuanTrait(locus=4,
+            mapQuanTrait(loci = 4,
                 qtrait={'0-0':0, '0-1':1, '1-1':1})
             ],
-            mode=PEN_Multiplicative
+            mode=Multiplicative
         )
 
     def testPyQuanTrait(self):
