@@ -189,6 +189,12 @@ enum SexChoice {
 };
 
 
+enum MultiLociMode {
+	Multiplicative = 71,
+	Additive = 72,
+	Heterogeneity = 73
+};
+
 typedef unsigned char TraitIndexType;
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 

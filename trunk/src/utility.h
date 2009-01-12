@@ -1557,8 +1557,17 @@ public:
 		return m_elems.begin();
 	}
 
-
 	const_iterator end() const
+	{
+		return m_elems.end();
+	}
+
+	iterator begin()
+	{
+		return m_elems.begin();
+	}
+
+	iterator end()
 	{
 		return m_elems.end();
 	}
