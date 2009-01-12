@@ -16,6 +16,63 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
+def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
+    '''HIDDEN
+    Obtain genotype as specified by parameters
+
+        atLoci
+            subset of loci, default to all
+
+        subPop
+            subset of subpopulations, default ao all
+
+        indRange
+            individual ranges
+
+    This is mostly used for testing purposes because the returned
+    array can be large for large populations.
+    '''
+    geno = []
+    if type(atPloidy) == type(1):
+        ploidy = [atPloidy]
+    elif len(atPloidy) > 0:
+        ploidy = atPloidy
+    else:
+        ploidy = range(0, pop.ploidy())
+    if len(atLoci) > 0:
+        loci = atLoci
+    else:
+        loci = range(pop.totNumLoci())
+    gs = pop.genoSize()
+    tl = pop.totNumLoci()
+    if len(indRange) > 0:
+        if type(indRange[0]) not in [type([]), type(())]:
+            indRange = [indRange]
+        arr = pop.genotype()
+        for r in indRange:
+            for i in range(r[0], r[1]):
+                for p in ploidy:
+                    for loc in loci:
+                        geno.append( arr[ gs*i + p*tl + loc] )
+    elif len(subPop) > 0:
+        for sp in subPop:
+            arr = pop.genotype(sp)
+            for i in range(pop.subPopSize(sp)):
+                for p in ploidy:
+                    for loc in loci:
+                        geno.append(arr[ gs*i + p*tl +loc])
+    else:
+        arr = pop.genotype()
+        if len(ploidy) == 0 and len(atLoci) == 0:
+            geno = pop.genotype()
+        else:
+            for i in range(pop.popSize()):
+                for p in ploidy:
+                    for loc in loci:
+                        geno.append( arr[ gs*i + p*tl +loc] )
+    return geno
+
+
 class TestMutator(unittest.TestCase):
 
     def assertGenotype(self, pop, genotype,

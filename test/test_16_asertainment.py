@@ -28,7 +28,7 @@ class TestAscertainment(unittest.TestCase):
         simu.evolve(
             ops = [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
-                migrator(rate=[[0.1,0.1],[0.1,0.1]]),
+                migrator(rate=[[0.1,0.1], [0.1,0.1]]),
                 mapPenetrance(locus=0,
                     penetrance={'0-0':0,'0-1':.7,'1-1':1}),
                 parentsTagger(),
@@ -37,7 +37,7 @@ class TestAscertainment(unittest.TestCase):
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
             ],
-            gen=4
+            gen = 4
         )
         self.pop = simu.extract(0)
         for gen in range(self.pop.ancestralGens(), -1, -1):
@@ -47,7 +47,7 @@ class TestAscertainment(unittest.TestCase):
         simu1 = simulator(
             population(size=[5000,20000], ploidy=2, loci=[5,10],
                 ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
-            randomMating(numOffspring=2, maxNumOffspring=5, mode=MATE_UniformDistribution))
+            randomMating(numOffspring=(UniformDistribution, 2, 5)))
         simu1.evolve(
             [
                 stat( alleleFreq=[0,1], genoFreq=[0,1]),
@@ -60,7 +60,7 @@ class TestAscertainment(unittest.TestCase):
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
                  initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
             ],
-            gen=10
+            gen = 10
         )
         self.largepop = simu1.extract(0)
         for gen in range(self.largepop.ancestralGens(), -1, -1):
@@ -114,7 +114,7 @@ class TestAscertainment(unittest.TestCase):
 		# and if the parents are the same.)
 		#
         # find sibpairs
-        (s,) = AffectedSibpairSample(self.pop, [2,3])
+        (s,) = AffectedSibpairSample(self.pop, [2, 3])
         assert s.subPopSize(0) <= 4
         assert s.subPopSize(1) <= 6
         for ind in s.individuals(0):
@@ -137,7 +137,7 @@ class TestAscertainment(unittest.TestCase):
             self.assertEqual(ind, inpop)
 
 
-    def testLargePedigreeSample(self):
+    def TestLargePedigreeSample(self):
         'Testing large pedigree sampling (FIXME)'
         (s,) = LargePedigreeSample(self.largepop, minTotalSize=20, maxOffspring=5,
             minPedSize=3, minAffected=0)
@@ -155,7 +155,7 @@ class TestAscertainment(unittest.TestCase):
         #
 
 
-    def testNuclearFamilySample(self):
+    def TestNuclearFamilySample(self):
         'Testing nuclear family sampling (imcomplete)'
         (s,) = NuclearFamilySample(self.largepop, 50, minTotalSize=50, maxOffspring=5,
             minPedSize=5, minAffected=0)

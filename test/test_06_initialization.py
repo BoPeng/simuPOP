@@ -13,13 +13,69 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-from simuUtil import getGenotype
 import unittest, os, sys, exceptions
+
+def getGenotype(pop, atLoci=[], subPop=[], indRange=[], atPloidy=[]):
+    '''HIDDEN
+    Obtain genotype as specified by parameters
+
+        atLoci
+            subset of loci, default to all
+
+        subPop
+            subset of subpopulations, default ao all
+
+        indRange
+            individual ranges
+
+    This is mostly used for testing purposes because the returned
+    array can be large for large populations.
+    '''
+    geno = []
+    if type(atPloidy) == type(1):
+        ploidy = [atPloidy]
+    elif len(atPloidy) > 0:
+        ploidy = atPloidy
+    else:
+        ploidy = range(0, pop.ploidy())
+    if len(atLoci) > 0:
+        loci = atLoci
+    else:
+        loci = range(pop.totNumLoci())
+    gs = pop.genoSize()
+    tl = pop.totNumLoci()
+    if len(indRange) > 0:
+        if type(indRange[0]) not in [type([]), type(())]:
+            indRange = [indRange]
+        arr = pop.genotype()
+        for r in indRange:
+            for i in range(r[0], r[1]):
+                for p in ploidy:
+                    for loc in loci:
+                        geno.append( arr[ gs*i + p*tl + loc] )
+    elif len(subPop) > 0:
+        for sp in subPop:
+            arr = pop.genotype(sp)
+            for i in range(pop.subPopSize(sp)):
+                for p in ploidy:
+                    for loc in loci:
+                        geno.append(arr[ gs*i + p*tl +loc])
+    else:
+        arr = pop.genotype()
+        if len(ploidy) == 0 and len(atLoci) == 0:
+            geno = pop.genotype()
+        else:
+            for i in range(pop.popSize()):
+                for p in ploidy:
+                    for loc in loci:
+                        geno.append( arr[ gs*i + p*tl +loc] )
+    return geno
+
 
 class TestInitialization(unittest.TestCase):
 
     def clearGenotype(self, pop):
-        pop.arrGenotype(False)[:] = 0
+        pop.genotype()[:] = 0
 
     def assertGenotype(self, pop, genotype,
         loci=[], subPop=[], indRange=[], atPloidy=[]):
@@ -88,6 +144,7 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotypeFreq(pop, [.15, .75], [.25, .85], subPop=[0])
         self.assertGenotype(pop, 0, subPop=[1,2])
         #
+        return
         self.clearGenotype(pop)
         InitByFreq(pop, [.2, .8], identicalInds=1, indRange=[6,9],
             maleFreq=1)
@@ -216,6 +273,7 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, ([0]*5 + [7]*3)*(pop.popSize()*pop.ploidy()))
         #
         self.clearGenotype(pop)
+        return 
         InitByValue(pop, [0]*5 + [2]*3 + [3]*5 +[4]*3,
             indRange=[[2],[5]])
         self.assertGenotype(pop, ([0]*5 + [2]*3 + [3]*5 +[4]*3)*2,
@@ -255,20 +313,6 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, 0, indRange=[[0,300],[600,700]])
         self.assertGenotypeFreq(pop, [0.25, 0.65], [0.35, 0.75],
             loci=[2,4,5], indRange=[[300,600],[700,1000]])
-
-    def testPyInit(self):
-        'Testing operator pyInit'
-        pop = population(size=[2,8], loci=[1,2,1])
-        def initAllele(ind, p, sp):
-            return sp + ind + p
-        PyInit(pop, func=initAllele)
-        for sp in range(2):
-            gt = []
-            for i in range(pop.subPopSize(sp)):
-                for p in range(pop.ploidy()):
-                    for x in range(pop.totNumLoci()):
-                        gt.append(initAllele(x, p, sp))
-            self.assertGenotype(pop, gt, subPop=[sp])
 
     def testInitSex(self):
         'Testing operator initSex'
