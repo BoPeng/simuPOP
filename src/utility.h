@@ -1616,6 +1616,10 @@ public:
 		return m_elems;
 	}
 
+	void resize(size_t size, double v)
+	{
+		m_elems.resize(size, v);
+	}
 
 protected:
 	vectorf m_elems;
