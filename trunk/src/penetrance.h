@@ -66,7 +66,7 @@ namespace simuPOP {
    as a during mating operator.
 
  */
-class penetrance : public baseOperator
+class basePenetrance : public baseOperator
 {
 public:
 	/// create a penetrance operator
@@ -77,7 +77,7 @@ public:
 	   \param stage specify the stage this operator will be applied. Default to \c DuringMating.
 	   \param infoFields If one field is specified, it will be used to store penetrance values.
 	 */
-	penetrance(int ancestralGen = -1, int stage = DuringMating,
+	basePenetrance(int ancestralGen = -1, int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr())
@@ -88,7 +88,7 @@ public:
 
 
 	/// destructor
-	virtual ~penetrance()
+	virtual ~basePenetrance()
 	{
 	}
 
@@ -96,7 +96,7 @@ public:
 	/// deep copy of a penetrance operator
 	virtual baseOperator * clone() const
 	{
-		return new penetrance(*this);
+		return new basePenetrance(*this);
 	}
 
 
@@ -135,7 +135,7 @@ private:
    Assign penetrance using a table with keys 'X-Y' where X and Y are allele numbers.
    <funcForm>MapPenetrance</funcForm>
  */
-class mapPenetrance : public penetrance
+class mapPenetrance : public basePenetrance
 {
 public:
 	/// create a map penetrance operator
@@ -149,12 +149,12 @@ public:
 	    Default to \c False.
 	   \param output and other parameters please refer to help(baseOperator.__init__)
 	 */
-	mapPenetrance(vectoru loci, const strDict & penet, bool phase = false,
-		int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
+	mapPenetrance(const uintList & loci, const strDict & penetrance, bool phase = false,
+		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_loci(loci), m_dict(penet), m_phase(phase)
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		m_loci(loci), m_dict(penetrance), m_phase(phase)
 	{
 	};
 
@@ -183,7 +183,7 @@ public:
 
 private:
 	/// one locus
-	vectoru m_loci;
+	uintList m_loci;
 
 	/// penetrance for each genotype
 	strDict m_dict;
@@ -201,7 +201,7 @@ private:
    multi-locus case. Penetrance is then set for any given genotype.
    <funcForm>MaPenetrance</funcForm>
  */
-class maPenetrance : public penetrance
+class maPenetrance : public basePenetrance
 {
 public:
 	/// create a multiple allele penetrance operator (penetrance according to diseased or wildtype alleles)
@@ -216,13 +216,13 @@ public:
 	    be considered as in the diseased allele group.
 	   \param output and other parameters please refer to help(baseOperator.__init__)
 	 */
-	maPenetrance(vectoru loci, const vectorf & penet, const vectora & wildtype,
-		int ancestralGen = -1,
+	maPenetrance(const uintList & loci, const vectorf & penetrance, const uintList & wildtype = uintList(0),
+		int ancGen = -1,
 		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
-		m_loci(loci), m_penetrance(penet), m_wildtype(wildtype)
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
 																static_cast<double>(loci.size()))),
@@ -255,13 +255,13 @@ public:
 
 private:
 	/// one locus
-	vectoru m_loci;
+	uintList m_loci;
 
 	/// penetrance for each genotype
 	vectorf m_penetrance;
 
 	///
-	vectora m_wildtype;
+	uintList m_wildtype;
 };
 /// penetrance according to the genotype according to a multiple loci multiplicative model
 /**
@@ -279,13 +279,8 @@ private:
 
    <funcForm>MlPenetrance</funcForm>
  */
-class mlPenetrance : public penetrance
+class mlPenetrance : public basePenetrance
 {
-public:
-#define PEN_Multiplicative 1
-#define PEN_Additive 2
-#define PEN_Heterogeneity 3
-
 public:
 	/// create a multiple locus penetrance operator
 	/**
@@ -293,11 +288,11 @@ public:
 	   \param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
 
 	 */
-	mlPenetrance(const vectorop peneOps, int mode = PEN_Multiplicative,
-		int ancestralGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
+	mlPenetrance(const vectorop peneOps, int mode = Multiplicative,
+		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_peneOps(0), m_mode(mode)
 	{
 		DBG_FAILIF(peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
@@ -357,7 +352,7 @@ private:
    Both parameters should be an list.
    <funcForm>PyPenetrance</funcForm>
  */
-class pyPenetrance : public penetrance
+class pyPenetrance : public basePenetrance
 {
 public:
 	/**
@@ -375,11 +370,11 @@ public:
 
 	 */
 	/// provide locus and penetrance for 11, 12, 13 (in the form of dictionary)
-	pyPenetrance(const vectoru & loci, PyObject * func, int ancestralGen = -1,
+	pyPenetrance(const uintList & loci, PyObject * func, int ancGen = -1,
 		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		penetrance(ancestralGen, stage, begin, end, step, at, rep, subPop, infoFields),
+		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())
@@ -399,7 +394,7 @@ public:
 
 	/// CPPONLY
 	pyPenetrance(const pyPenetrance & rhs) :
-		penetrance(rhs),
+		basePenetrance(rhs),
 		m_loci(rhs.m_loci),
 		m_func(rhs.m_func),
 		m_alleles(rhs.m_alleles),
@@ -432,7 +427,7 @@ public:
 
 private:
 	/// susceptibility loci
-	vectoru m_loci;
+	uintList m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;
