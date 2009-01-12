@@ -365,10 +365,33 @@ class _VarPlotter_Base:
         " save plots "
         if self.saveAs == "":
             return
+        name = self.saveAs
+        ext = os.path.splitext(name)[-1]
+        try:
+            device = {'.pdf': r.pdf,
+                '.png': r.png,
+                '.bmp': r.bmp,
+                '.jpg': r.jpeg,
+                '.jped': r.jpeg,
+                '.tiff': r.tiff,
+                '.tif': r.tiff,
+                '.eps': r.postscript,
+                '': r.postscript}[ext.lower()]
+        except Exception, e:
+            print e
+            print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
+            device = r.postscript
+        #
         if gen < 0:
-            r.dev_print(file=self.saveAs + '.eps')
+            if ext == '':
+                name += '.eps'
         else:
-            r.dev_print(file=self.saveAs + str(gen) + '.eps')
+            if ext == '':
+                name += str(gen) + '.eps'
+            else:
+                name = name.replace(ext, str(gen) + ext)
+        print 'Saving to filename ', name
+        r.dev_print(file=name, device = device)
 
 class _VarPlotter_NoHis(_VarPlotter_Base):
     """
@@ -973,8 +996,9 @@ class varPlotter(pyOperator):
             level of image colors (default to 20).
 
         saveAs
-            save figures in files saveAs#gen.eps. For example, if saveAs='demo',
-            you will get files demo1.eps, demo2.eps etc.
+            save figures in files saveAs.ext. If ext (such as pdf, jpeg) is given,
+            a corresponding device will be used. Otherwise, a postscript driver will be used.
+            Generation number will be inserted before file extension.
 
         separate
             plot data lines in separate panels.
