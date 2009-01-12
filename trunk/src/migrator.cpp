@@ -301,18 +301,20 @@ bool resizeSubPops::apply(population & pop)
 {
 	vectorlu newSizes = pop.subPopSizes();
 
-	DBG_FAILIF(m_subPops.empty() && m_subPops.size() != pop.numSubPop(), ValueError,
+	subPopList subPops = applicableSubPops();
+
+	DBG_FAILIF(subPops.empty() && subPops.size() != pop.numSubPop(), ValueError,
 		"Please specify new subpopulation size for all subpopulations.");
 
-	if (m_subPops.empty()) {
+	if (subPops.empty()) {
 		for (size_t i = 0; i < pop.numSubPop(); ++i)
 			newSizes[i] = m_newSizes[i];
 	} else {
-		for (size_t i = 0; i < m_subPops.size(); ++i) {
-			DBG_FAILIF(m_subPops[i] >= pop.numSubPop(), IndexError,
-				"Subpopulation index " + toStr(m_subPops[i]) + " out of range of 0 ~ "
+		for (size_t i = 0; i < subPops.size(); ++i) {
+			DBG_FAILIF(subPops[i].subPop() >= pop.numSubPop(), IndexError,
+				"Subpopulation index " + toStr(subPops[i].subPop()) + " out of range of 0 ~ "
 				+ toStr(pop.numSubPop() - 1));
-			newSizes[m_subPops[i]] = m_newSizes[i];
+			newSizes[subPops[i].subPop()] = m_newSizes[i];
 		}
 	}
 	DBG_DO(DBG_MIGRATOR, cout << "Resize subpopulations to size " << newSizes << endl);

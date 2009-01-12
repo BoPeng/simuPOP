@@ -545,32 +545,6 @@ del migrator.__init__
 migrator.__init__ = new_migrator
 
 
-def new_pyMigrator(self, rateFunc=None, indFunc=None,
-    mode=MigrByProbability, fromSubPop=[], toSubPop=[], *args, **kwargs):
-    # parameter fromSubPop
-    if type(fromSubPop) not in [types.TupleType, types.ListType]:
-        fs = [fromSubPop]
-    else:
-        fs = fromSubPop
-    fsp = []
-    for f in fs:
-        if isinstance(f, vsp):
-            fsp.append(f)
-        else:
-            fsp.append(vsp(f))
-    # parameter toSubPop
-    if type(toSubPop) in [types.IntType, types.LongType]:
-        ts = [toSubPop]
-    else:
-        ts = toSubPop
-    cppModule.pyMigrator_swiginit(self,
-        cppModule.new_pyMigrator(rateFunc, indFunc, mode, fsp, ts, *args, **kwargs))
-
-new_pyMigrator.__doc__ = pyMigrator.__init__.__doc__
-del pyMigrator.__init__
-pyMigrator.__init__ = new_pyMigrator
-
-
 def new_recombinator(self, intensity=-1, rate=[], *args, **kwargs):
     # parameter rate
     if type(rate) in [types.IntType, types.FloatType]:
