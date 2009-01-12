@@ -19,7 +19,7 @@ class TestTagger(unittest.TestCase):
     def testParentsTagger(self):
         'Testing parents tagger.'
         simu = simulator(
-            population(size=[5,15], ploidy=2, loci=[2,4],
+            population(size=[50,150], ploidy=2, loci=[2,4],
                     infoFields=['father_idx', 'mother_idx']),
             randomMating(numOffspring=2))
         simu.evolve(
@@ -42,11 +42,11 @@ class TestTagger(unittest.TestCase):
         # this operator pass tag from one or both parents to offspring
         # the game is not:
         # who is the offspring of one parent?
-        pop = population(size=[5,15], ploidy=2, loci=[2,4],
+        pop = population(size=[50,150], ploidy=2, loci=[2,4],
                 infoFields=['paternal_tag', 'maternal_tag'])
         pop.individual(0).setInfo(1, 'paternal_tag')
-        pop.individual(5).setInfo(2, 'paternal_tag')
-        simu = simulator( pop, randomMating())
+        pop.individual(50).setInfo(2, 'paternal_tag')
+        simu = simulator(pop, randomMating())
         # other mode include TAG_Maternal, TAG_Both
         simu.evolve(
             preOps = [initSex()],
@@ -55,15 +55,15 @@ class TestTagger(unittest.TestCase):
         # we only know subpopulation 0 can not have tag 2
         # we only know subpopulation 1 can not have tag 1
         for i in range(pop.subPopSize(0)):
-            self.assertNotEqual( pop.individual(i,0).info('paternal_tag'), 2 )
+            self.assertNotEqual(pop.individual(i,0).intInfo('paternal_tag'), 2)
         for i in range(pop.subPopSize(1)):
-            self.assertNotEqual( pop.individual(i,1).info('paternal_tag'), 1 )
+            self.assertNotEqual(pop.individual(i,1).intInfo('paternal_tag'), 1)
         # from this test, we can see that genetic drift
         # can easily remove a signal (tag) from population.
 
     def testInheritTaggerToFile(self):
         'Testing inherit tagger that record indexes to a file'
-        pop = population(size=[5,15], ploidy=2, loci=[2,4],
+        pop = population(size=[50,150], ploidy=2, loci=[2,4],
                 infoFields=['paternal_tag', 'maternal_tag'])
         for ind in pop.individuals(0):
             ind.setInfo(1, 'paternal_tag')
@@ -83,7 +83,7 @@ class TestTagger(unittest.TestCase):
         for i in range(pop.subPopSize(1)):
             self.assertNotEqual( pop.individual(i,1).info('paternal_tag'), 1 )
         # the line has to be five 1 and 15 2's
-        self.assertEqual(open('inherit.tag').read(), '1\t'*5+'2\t'*15+'\n')
+        self.assertEqual(open('inherit.tag').read(), '1\t'*50+'2\t'*150+'\n')
         os.remove('inherit.tag')
 
     def TestParentsTaggerToFile(self):

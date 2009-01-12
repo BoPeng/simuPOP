@@ -132,26 +132,48 @@ class TestPopulation(unittest.TestCase):
         'Testing population::setGenotype(geno), setGenotype(geno, subPop)'
         pop = population(loci=[1, 2], size=[1, 2])
         self.assertRaises(exceptions.IndexError, pop.setGenotype, [1], 2)
-        pop.setGenotype([1, 2, 3])
-        self.assertEqual(pop.individual(0).genotype(), [1, 2, 3, 1, 2, 3])
-        self.assertEqual(pop.individual(1).genotype(), [1, 2, 3, 1, 2, 3])
-        self.assertEqual(pop.individual(2).genotype(0), [1, 2, 3])
-        self.assertEqual(pop.individual(2).genotype(1), [1, 2, 3])
-        pop.setGenotype([2, 4], 1)
-        self.assertEqual(pop.individual(0).genotype(), [1, 2, 3, 1, 2, 3])
-        self.assertEqual(pop.individual(1).genotype(0), [2, 4, 2])
-        self.assertEqual(pop.individual(1).genotype(1), [4, 2, 4])
-        self.assertEqual(pop.individual(2).genotype(), [2, 4, 2, 4, 2, 4])
-        # virtual subpopulation
-        pop = self.getPop(size = 100, VSP=True)
-        self.assertEqual(pop.numSubPop(), 1)
-        self.assertEqual(pop.numVirtualSubPop(), 2)
-        pop.setGenotype([5], [0, 0])
-        pop.setGenotype([6], [0, 1])
-        for idx, ind in enumerate(pop.individuals([0, 0])):
-            self.assertEqual(ind.allele(idx%6), 5)
-        for idx, ind in enumerate(pop.individuals([0, 1])):
-            self.assertEqual(ind.allele(idx%6), 6)
+        if AlleleType() == 'binary':
+            pop.setGenotype([0, 1, 0])
+            self.assertEqual(pop.individual(0).genotype(), [0, 1, 0, 0, 1, 0])
+            self.assertEqual(pop.individual(1).genotype(), [0, 1, 0, 0, 1, 0])
+            self.assertEqual(pop.individual(2).genotype(0), [0, 1, 0])
+            self.assertEqual(pop.individual(2).genotype(1), [0, 1, 0])
+            pop.setGenotype([1, 0], 1)
+            self.assertEqual(pop.individual(0).genotype(), [0, 1, 0, 0, 1, 0])
+            self.assertEqual(pop.individual(1).genotype(0), [1, 0, 1])
+            self.assertEqual(pop.individual(1).genotype(1), [0, 1, 0])
+            self.assertEqual(pop.individual(2).genotype(), [1, 0, 1, 0, 1, 0])
+            # virtual subpopulation
+            pop = self.getPop(size = 100, VSP=True)
+            self.assertEqual(pop.numSubPop(), 1)
+            self.assertEqual(pop.numVirtualSubPop(), 2)
+            pop.setGenotype([5], [0, 0])
+            pop.setGenotype([6], [0, 1])
+            for idx, ind in enumerate(pop.individuals([0, 0])):
+                self.assertEqual(ind.allele(idx%6), 1)
+            for idx, ind in enumerate(pop.individuals([0, 1])):
+                self.assertEqual(ind.allele(idx%6), 1)
+        else:
+            pop.setGenotype([1, 2, 3])
+            self.assertEqual(pop.individual(0).genotype(), [1, 2, 3, 1, 2, 3])
+            self.assertEqual(pop.individual(1).genotype(), [1, 2, 3, 1, 2, 3])
+            self.assertEqual(pop.individual(2).genotype(0), [1, 2, 3])
+            self.assertEqual(pop.individual(2).genotype(1), [1, 2, 3])
+            pop.setGenotype([2, 4], 1)
+            self.assertEqual(pop.individual(0).genotype(), [1, 2, 3, 1, 2, 3])
+            self.assertEqual(pop.individual(1).genotype(0), [2, 4, 2])
+            self.assertEqual(pop.individual(1).genotype(1), [4, 2, 4])
+            self.assertEqual(pop.individual(2).genotype(), [2, 4, 2, 4, 2, 4])
+            # virtual subpopulation
+            pop = self.getPop(size = 100, VSP=True)
+            self.assertEqual(pop.numSubPop(), 1)
+            self.assertEqual(pop.numVirtualSubPop(), 2)
+            pop.setGenotype([5], [0, 0])
+            pop.setGenotype([6], [0, 1])
+            for idx, ind in enumerate(pop.individuals([0, 0])):
+                self.assertEqual(ind.allele(idx%6), 5)
+            for idx, ind in enumerate(pop.individuals([0, 1])):
+                self.assertEqual(ind.allele(idx%6), 6)
 
     def testAncestor(self):
         'Testing population::ancestor(idx, gen), ancestor(idx, subPop, gen), push(pop)'
@@ -385,7 +407,10 @@ class TestPopulation(unittest.TestCase):
             for ind in pop1.individuals(sp):
                 self.assertEqual(ind.info('x'), sp)
                 self.assertEqual(ind.info('y'), sp + 10)
-                self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))
+                if AlleleType() == 'binary':
+                    self.assertEqual(ind.genotype(), [1]*(pop.totNumLoci()*pop.ploidy()))
+                else:
+                    self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))
 
     def testMergeSubPops(self):
         'Testing population::mergeSubPops(subpops=[])'

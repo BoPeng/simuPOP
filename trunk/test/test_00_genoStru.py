@@ -227,10 +227,13 @@ class TestCarray(unittest.TestCase):
         pop = self.getPop()
         self.assertEqual(pop.alleleName(0), '_')
         self.assertEqual(pop.alleleName(1), 'A')
-        self.assertEqual(pop.alleleName(2), 'C')
-        self.assertEqual(pop.alleleName(3), 'T')
-        self.assertEqual(pop.alleleName(4), 'G')
-        self.assertEqual(pop.alleleNames(), ('_', 'A', 'C', 'T', 'G'))
+        if AlleleType() != 'binary':
+            self.assertEqual(pop.alleleName(2), 'C')
+            self.assertEqual(pop.alleleName(3), 'T')
+            self.assertEqual(pop.alleleName(4), 'G')
+            self.assertEqual(pop.alleleNames(), ('_', 'A', 'C', 'T', 'G'))
+        else:
+            self.assertEqual(pop.alleleNames(), ('_', 'A'))
         self.assertRaises(exceptions.IndexError, pop.alleleName, MaxAllele()+1)
 
     def testInfoField(self):
