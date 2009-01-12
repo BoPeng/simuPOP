@@ -270,9 +270,9 @@ private:
    selectors (can not be another \c mlSelector) and evaluate the fitness of an
    individual as the product or sum of individual fitness values. The mode is
    determined by parameter \c mode, which takes one of the following values
-   \li \c SEL_Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$, where \f$ f_{i} \f$
+   \li \c Multiplicative: the fitness is calculated as \f$ f=\prod_{i}f_{i} \f$, where \f$ f_{i} \f$
    is the single-locus fitness value.
-   \li \c SEL_Additive: the fitness is calculated as
+   \li \c Additive: the fitness is calculated as
    \f$ f=\max\left(0,1-\sum_{i}(1-f_{i})\right) \f$.
    \f$ f \f$ will be set to \c 0 when \f$ f<0 \f$.
 
@@ -281,12 +281,6 @@ private:
 class mlSelector : public selector
 {
 public:
-#define SEL_None 0
-#define SEL_Multiplicative 1
-#define SEL_Additive 2
-#define SEL_Heterogeneity 3
-
-public:
 	/// create a multiple-locus selector
 	/**
 	   \param selectors a list of selectors
@@ -294,7 +288,7 @@ public:
 	   Please refer to \c mapSelector for other parameter descriptions.
 
 	 */
-	mlSelector(const vectorop selectors, int mode = SEL_Multiplicative,
+	mlSelector(const vectorop selectors, int mode = Multiplicative,
 		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :

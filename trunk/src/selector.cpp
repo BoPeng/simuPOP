@@ -127,26 +127,26 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 
 double mlSelector::indFitness(individual * ind, ULONG gen)
 {
-	if (m_mode == SEL_Multiplicative) {
+	if (m_mode == Multiplicative) {
 		double fit = 1;
 		for (vectorop::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit *= static_cast<selector * >(*s)->indFitness(ind, gen);
 		return fit;
-	} else if (m_mode == SEL_Additive) {
+	} else if (m_mode == Additive) {
 		double fit = 1;
 		for (vectorop::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit -= 1 - static_cast<selector * >(*s)->indFitness(ind, gen);
 		return fit < 0 ? 0. : fit;
-	} else if (m_mode == SEL_Heterogeneity) {
+	} else if (m_mode == Heterogeneity) {
 		double fit = 1;
 		for (vectorop::iterator s = m_selectors.begin(), sEnd = m_selectors.end();
 		     s != sEnd; ++s)
 			fit *= 1 - static_cast<selector * >(*s)->indFitness(ind, gen);
 		return 1 - fit;
 	}
-	// this is the case for SEL_none.
+	// this is the case for none.
 	return 1.0;
 }
 
