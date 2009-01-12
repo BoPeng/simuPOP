@@ -390,7 +390,6 @@ class _VarPlotter_Base:
                 name += str(gen) + '.eps'
             else:
                 name = name.replace(ext, str(gen) + ext)
-        print 'Saving to filename ', name
         r.dev_print(file=name, device = device)
 
 class _VarPlotter_NoHis(_VarPlotter_Base):
