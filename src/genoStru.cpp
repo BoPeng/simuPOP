@@ -124,6 +124,9 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 			infoMap[m_infoFields[i]] = 0;
 	}
 #endif
+	//
+	if (m_alleleNames.size() > ModuleMaxAllele + 1)
+		m_alleleNames.resize(ModuleMaxAllele + 1);
 }
 
 
