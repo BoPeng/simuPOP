@@ -25,7 +25,7 @@
 
 namespace simuPOP {
 // set pentrance to all individuals and record penetrance if requested.
-bool penetrance::apply(population & pop)
+bool basePenetrance::apply(population & pop)
 {
 	double p;
 
@@ -66,7 +66,7 @@ bool penetrance::apply(population & pop)
 }
 
 
-bool penetrance::applyDuringMating(population & pop, RawIndIterator offspring,
+bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
                                    individual * dad, individual * mom)
 {
 	double p = penet(& * offspring);
@@ -85,7 +85,7 @@ double mapPenetrance::penet(individual * ind)
 {
 	string key;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
@@ -113,7 +113,7 @@ double maPenetrance::penet(individual * ind)
 {
 	UINT index = 0;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
@@ -136,26 +136,26 @@ double maPenetrance::penet(individual * ind)
 
 double mlPenetrance::penet(individual * ind)
 {
-	if (m_mode == PEN_Multiplicative) {
+	if (m_mode == Multiplicative) {
 		// x1 x2 x3 ...
 		double pen = 1;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= static_cast<penetrance *>(*s)->penet(ind);
+			pen *= static_cast<basePenetrance *>(*s)->penet(ind);
 		return pen;
-	} else if (m_mode == PEN_Additive) {
+	} else if (m_mode == Additive) {
 		// x1 + x2 + x3
 		double pen = 0;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen += static_cast<penetrance *>(*s)->penet(ind);
+			pen += static_cast<basePenetrance *>(*s)->penet(ind);
 		return pen > 1 ? 1 : pen;
-	} else if (m_mode == PEN_Heterogeneity) {
+	} else if (m_mode == Heterogeneity) {
 		// 1-(1-x1)(1-x2)
 		double pen = 1;
 		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end();
 		     s != sEnd; ++s)
-			pen *= 1 - static_cast<penetrance *>(*s)->penet(ind);
+			pen *= 1 - static_cast<basePenetrance *>(*s)->penet(ind);
 		return 1 - pen;
 	}
 
