@@ -203,7 +203,7 @@ public:
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "qtrait"));
-		
+
 	/// destructor
 	virtual ~maQuanTrait()
 	{

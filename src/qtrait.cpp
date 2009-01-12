@@ -80,11 +80,11 @@ double mapQuanTrait::qtrait(individual * ind)
 
 
 maQuanTrait::maQuanTrait(const uintList & loci, const vectorf & qtrait, const uintList & wildtype,
-		const floatList & sigma, int ancGen, int stage, int begin, int end, int step,
-		const intList & at, const repList & rep, const subPopList & subPops,
-		const vectorstr & infoFields) :
-		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
+	const floatList & sigma, int ancGen, int stage, int begin, int end, int step,
+	const intList & at, const repList & rep, const subPopList & subPops,
+	const vectorstr & infoFields) :
+	quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
+	m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
 {
 	if (m_sigma.empty())
 		m_sigma.resize(m_qtrait.size(), 0.);
@@ -97,7 +97,6 @@ maQuanTrait::maQuanTrait(const uintList & loci, const vectorf & qtrait, const ui
 	DBG_ASSERT(m_sigma.size() == m_qtrait.size(), ValueError,
 		"Size of sigma does not match that of qtrait");
 };
-
 
 
 double maQuanTrait::qtrait(individual * ind)

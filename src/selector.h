@@ -111,6 +111,7 @@ public:
 		return "<simuPOP::selector>" ;
 	}
 
+
 };
 
 /// selection according to the genotype at one or more loci
@@ -365,7 +366,7 @@ public:
 	    be passed to the user defined penetrance function.
 	 */
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
-	pySelector(uintList loci, PyObject * func, 
+	pySelector(uintList loci, PyObject * func,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :

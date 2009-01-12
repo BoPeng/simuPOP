@@ -49,7 +49,7 @@ class outputer : public baseOperator
 
 public:
 	/// constructor.
-	outputer(string output = ">", 
+	outputer(string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields)
@@ -81,7 +81,7 @@ public:
 	/**
 	   \param str string to be outputted
 	 */
-	pyOutput(string str = "", string output = ">", 
+	pyOutput(string str = "", string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		outputer(output, stage, begin, end,
@@ -158,9 +158,9 @@ public:
 
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
-		const vectori & chrom = vectori(), const vectori & loci = vectori(), 
+		const vectori & chrom = vectori(), const vectori & loci = vectori(),
 		const vectorlu & indRange = vectorlu(),
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(),    const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :

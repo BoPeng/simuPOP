@@ -92,7 +92,7 @@ public:
 	 */
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		string output = "", 
+		string output = "",
 		const vectorstr & infoFields = vectorstr(TAG_InheritFields, TAG_InheritFields + 2)) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields), m_mode(mode)
 	{
@@ -152,7 +152,7 @@ public:
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
 	parentTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		string output = "", 
+		string output = "",
 		const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_subPopSize(1, 0)
@@ -221,7 +221,7 @@ public:
 	//  %r will be replicate number %g will be generation number.
 	parentsTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		string output = "", 
+		string output = "",
 		const vectorstr & infoFields = vectorstr(ParentsFields, ParentsFields + 2)) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_subPopSize(1, 0)
@@ -277,7 +277,7 @@ class pedigreeTagger : public tagger
 public:
 	pedigreeTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		int stage = PostMating, string output = ">", 
+		int stage = PostMating, string output = ">",
 		const vectorstr & pedigreeFields = vectorstr());
 
 	bool apply(population & pop);
@@ -306,7 +306,7 @@ public:
 	 */
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		string output = "", 
+		string output = "",
 		const vectorstr & infoFields = vectorstr()) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)

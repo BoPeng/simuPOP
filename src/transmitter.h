@@ -86,6 +86,7 @@ public:
 		return "<simuPOP::genoTransmitter>" ;
 	}
 
+
 	/** Initialize a base genotype operator for a population. This function should be
 	 *  called before any other functions are used to transmit genotype.
 	 */
@@ -126,6 +127,7 @@ public:
 	{
 		setFormOffGenotype(true);
 	}
+
 
 	/// Deep copy of a clone genotype transmitter.
 	baseOperator * clone() const
@@ -172,6 +174,7 @@ public:
 	{
 	}
 
+
 	/// Deep copy of a Mendelian genotype transmitter.
 	baseOperator * clone() const
 	{
@@ -184,6 +187,7 @@ public:
 	{
 		return "<simuPOP::mendelianGenoTransmitter>" ;
 	}
+
 
 	/// CPPONLY
 	virtual bool applyDuringMating(population & pop,
@@ -246,6 +250,7 @@ public:
 		return "<simuPOP::selfingGenoTransmitter>" ;
 	}
 
+
 	/// CPPONLY
 	bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
@@ -285,11 +290,13 @@ public:
 		return new haplodiploidGenoTransmitter(*this);
 	}
 
+
 	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::haplodiploidGenoTransmitter>" ;
 	}
+
 
 	/// HIDDEN
 	void initialize(const population & pop);
@@ -328,17 +335,20 @@ public:
 		setFormOffGenotype(false);
 	}
 
+
 	/// Deep copy of a mitochondrial genotype transmitter.
 	baseOperator * clone() const
 	{
 		return new mitochondrialGenoTransmitter(*this);
 	}
 
+
 	/// HIDDEN
 	virtual string __repr__()
 	{
 		return "<simuPOP::mitochondrialGenoTransmitter>" ;
 	}
+
 
 	/// HIDDEN
 	void initialize(const population & pop);

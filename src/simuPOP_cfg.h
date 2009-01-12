@@ -198,8 +198,7 @@ enum MultiLociMode {
 typedef unsigned char TraitIndexType;
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 
-const string ParentsFields[2] = {"father_idx", "mother_idx"};
-
+const string ParentsFields[2] = { "father_idx", "mother_idx" };
 
 
 // iteratable and visible are two different concepts.

@@ -57,10 +57,10 @@ public:
 	vspID(SubPopID subPop = InvalidSubPopID, SubPopID virtualSubPop = InvalidSubPopID)
 		: m_subPop(subPop), m_virtualSubPop(virtualSubPop)
 	{
-        if (m_subPop < 0)
-            m_subPop = InvalidSubPopID;
-        if (m_virtualSubPop < 0)
-            m_virtualSubPop = InvalidSubPopID;
+		if (m_subPop < 0)
+			m_subPop = InvalidSubPopID;
+		if (m_virtualSubPop < 0)
+			m_virtualSubPop = InvalidSubPopID;
 	}
 
 

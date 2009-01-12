@@ -67,7 +67,7 @@ bool basePenetrance::apply(population & pop)
 
 
 bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offspring,
-                                   individual * dad, individual * mom)
+                                       individual * dad, individual * mom)
 {
 	double p = penet(& * offspring);
 

@@ -1084,27 +1084,27 @@ public:
 	 *  explanation of this parameter.
 	 *
 	 *  Each mating scheme defined in \e matingSchemes can be applied to
-     *  one or more (virtual) subpopulation. If parameter \e subPop is not
-     *  specified, a mating scheme will be applied to all subpopulations.
-     *  If a (virtual) subpopulation is specified, a mating scheme will be
-     *  applied to a specific (virtual) subpopulation. A special case is
-     *  when \e subPop is given as <tt>(-1, vsp)</tt>. In this case, the
-     *  mating scheme will be applied to virtual subpopulation \c vsp in
-     *  all subpopulations.
+	 *  one or more (virtual) subpopulation. If parameter \e subPop is not
+	 *  specified, a mating scheme will be applied to all subpopulations.
+	 *  If a (virtual) subpopulation is specified, a mating scheme will be
+	 *  applied to a specific (virtual) subpopulation. A special case is
+	 *  when \e subPop is given as <tt>(-1, vsp)</tt>. In this case, the
+	 *  mating scheme will be applied to virtual subpopulation \c vsp in
+	 *  all subpopulations.
 	 *
-     *  If multiple mating schemes are applied to the same subpopulation, a
-     *  weight (parameter \e weight) can be given to each mating scheme to
-     *  determine how many offspring it will produce. The default \weight for
-     *  all mating schemes are \c 0. In this case, the number of offspring each
-     *  mating scheme produces is proportional to the size of its parental
-     *  (virtual) subpopulation. If all weights are negative, the numbers of
-     *  offspring are determined by the multiplication of the absolute values
-     *  of the weights and their respective parental (virtual) subpopulation
-     *  sizes. If all weights are positive, the number of offspring produced by
-     *  each mating scheme is proportional to these weights. Mating schemes
-     *  with zero weight in this case will produce no offspring. If both
+	 *  If multiple mating schemes are applied to the same subpopulation, a
+	 *  weight (parameter \e weight) can be given to each mating scheme to
+	 *  determine how many offspring it will produce. The default \weight for
+	 *  all mating schemes are \c 0. In this case, the number of offspring each
+	 *  mating scheme produces is proportional to the size of its parental
+	 *  (virtual) subpopulation. If all weights are negative, the numbers of
+	 *  offspring are determined by the multiplication of the absolute values
+	 *  of the weights and their respective parental (virtual) subpopulation
+	 *  sizes. If all weights are positive, the number of offspring produced by
+	 *  each mating scheme is proportional to these weights. Mating schemes
+	 *  with zero weight in this case will produce no offspring. If both
 	 *  negative and positive weights are present, negative weights are
-     *  processed before positive ones.
+	 *  processed before positive ones.
 	 *
 	 *  If multiple mating schemes are applied to the same subpopulation,
 	 *  offspring produced by these mating schemes are shuffled randomly. If this
