@@ -1505,7 +1505,6 @@ protected:
 };
 
 
-
 // I cannot use template here because otherwise SWIG does not
 // handle the type correctly. I guess this can be my problem with using
 // of template in simuPOP_common.i
@@ -1557,15 +1556,18 @@ public:
 		return m_elems.begin();
 	}
 
+
 	const_iterator end() const
 	{
 		return m_elems.end();
 	}
 
+
 	iterator begin()
 	{
 		return m_elems.begin();
 	}
+
 
 	iterator end()
 	{
@@ -1616,10 +1618,12 @@ public:
 		return m_elems;
 	}
 
+
 	void resize(size_t size, double v)
 	{
 		m_elems.resize(size, v);
 	}
+
 
 protected:
 	vectorf m_elems;

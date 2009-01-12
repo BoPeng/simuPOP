@@ -66,7 +66,7 @@ public:
 	mutator(const vectorf & rate = vectorf(),
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0,
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
@@ -216,7 +216,7 @@ public:
 	kamMutator(const vectorf & rate = vectorf(),
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0,
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
@@ -275,7 +275,7 @@ public:
 	smmMutator(const vectorf & rate = vectorf(),
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0, double incProb = 0.5,
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
@@ -362,7 +362,7 @@ public:
 	gsmMutator(const vectorf & rate = vectorf(),
 		const vectoru & loci = vectoru(),
 		UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
@@ -432,7 +432,7 @@ public:
 	pyMutator(const vectorf & rate = vectorf(),
 		const vectoru & loci = vectoru(), UINT maxAllele = 0,
 		PyObject * func = NULL,
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: mutator(rate, loci, maxAllele,
@@ -490,7 +490,7 @@ public:
 		Allele toAllele,
 		vectoru atPloidy = vectoru(),
 		vectorlu inds = vectorlu(),
-		string output = ">", 
+		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),

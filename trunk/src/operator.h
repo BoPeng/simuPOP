@@ -105,6 +105,7 @@ public:
 		return m_subPops.end();
 	}
 
+
 	iterator begin()
 	{
 		return m_subPops.begin();
@@ -115,6 +116,7 @@ public:
 	{
 		return m_subPops.end();
 	}
+
 
 private:
 	vectorvsp m_subPops;

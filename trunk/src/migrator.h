@@ -201,6 +201,7 @@ public:
 			ValueError, "Please specify only one of rateFunc or indFunc");
 	}
 
+
 	/// deep copy of a \c pyMigrator
 	virtual baseOperator * clone() const
 	{
@@ -326,7 +327,7 @@ public:
 	/**
 	   \param subPops subpopulations to be merged. Default to all.
 	 */
-	mergeSubPops(const subPopList & subPops = subPopList(), 
+	mergeSubPops(const subPopList & subPops = subPopList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
@@ -352,6 +353,7 @@ public:
 	{
 		subPopList sp = applicableSubPops();
 		vectoru subPops(sp.size());
+
 		for (size_t i = 0; i < sp.size(); ++i)
 			subPops[i] = sp[i].subPop();
 		pop.mergeSubPops(subPops);
@@ -364,6 +366,8 @@ public:
 	{
 		return "<simuPOP::merge subpopulations>" ;
 	}
+
+
 };
 
 

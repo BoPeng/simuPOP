@@ -514,7 +514,7 @@ void recombinator::initialize(const population & pop)
 		vecP.push_back(0.5);
 	}
 	DBG_DO(DBG_TRANSMITTER, cout << "Specify after Loci. With m_rates "
-		                          << vecP << " before " << m_recBeforeLoci << endl);
+		                         << vecP << " before " << m_recBeforeLoci << endl);
 
 	DBG_FAILIF(vecP.empty(), ValueError, "No non-empty chromosome.");
 
@@ -587,9 +587,9 @@ void recombinator::transmitGenotype(const individual & parent,
 		}
 	}
 	DBG_DO(DBG_TRANSMITTER, cout << "Ignore " << ignoreBegin << " - " << ignoreEnd
-		                          << "\nForce first: " << forceFirstBegin << " - " << forceFirstEnd
-		                          << "\nForce second: " << forceSecondBegin << " - " << forceSecondEnd
-		                          << endl);
+		                         << "\nForce first: " << forceFirstBegin << " - " << forceFirstEnd
+		                         << "\nForce second: " << forceSecondBegin << " - " << forceSecondEnd
+		                         << endl);
 	// get a new set of values.
 	// const BoolResults& bs = m_bt.trial();
 	m_bt.trial();
