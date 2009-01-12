@@ -243,26 +243,26 @@ def PySelect(pop, *args, **kwargs):
 if pySelector.__init__.__doc__ is not None:
     PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
 
-def MapPenetrance(pop, *args, **kwargs):
-    mapPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+def MapPenetrance(pop, loci, penetrance, phase = False, ancGen = -1, *args, **kwargs):
+    mapPenetrance(loci, penetrance, phase, ancGen, PostMating, *args, **kwargs).apply(pop)
 
 if mapPenetrance.__init__.__doc__ is not None:
     MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
 
-def MaPenetrance(pop, *args, **kwargs):
-    maPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+def MaPenetrance(pop, loci, penetrance, wildtype = 0, ancGen = -1, *args, **kwargs):
+    maPenetrance(loci, penetrance, wildtype, ancGen, PostMating, *args, **kwargs).apply(pop)
 
 if maPenetrance.__init__.__doc__ is not None:
     MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
 
-def MlPenetrance(pop, *args, **kwargs):
-    mlPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+def MlPenetrance(pop, peneOps, mode = Multiplicative, ancGen = -1, *args, **kwargs):
+    mlPenetrance(peneOps, mode, ancGen, PostMating, *args, **kwargs).apply(pop)
 
 if mlPenetrance.__init__.__doc__ is not None:
     MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
 
-def PyPenetrance(pop, *args, **kwargs):
-    pyPenetrance(stage=PostMating, *args, **kwargs).apply(pop)
+def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
+    pyPenetrance(loci, func, ancGen, PostMating, *args, **kwargs).apply(pop)
 
 if pyPenetrance.__init__.__doc__ is not None:
     PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__

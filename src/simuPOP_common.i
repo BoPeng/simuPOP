@@ -750,59 +750,6 @@ new_pySelector.__doc__ = pySelector.__init__.__doc__
 del pySelector.__init__
 pySelector.__init__ = new_pySelector
 
-# for backward compatibility, keep long penetrance parameter
-def new_mapPenetrance(self, locus=-1, loci=[], penetrance={}, *args, **kwargs):
-    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-        loc = [locus]
-    elif type(loci) in [types.IntType, types.LongType]:
-        loc = [loci]
-    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-        loc = loci
-    else:
-        raise exceptions.TypeError('Please specify locus or loci')
-    cppModule.mapPenetrance_swiginit(self,
-        cppModule.new_mapPenetrance(loci=loc, penet=penetrance, *args, **kwargs))
-
-new_mapPenetrance.__doc__ = mapPenetrance.__init__.__doc__
-del mapPenetrance.__init__
-mapPenetrance.__init__ = new_mapPenetrance
-
-def new_maPenetrance(self, locus=-1, loci=[], wildtype=[0], penetrance=[], *args, **kwargs):
-    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-        loc = [locus]
-    elif type(loci) in [types.IntType, types.LongType]:
-        loc = [loci]
-    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-        loc = loci
-    else:
-        raise exceptions.TypeError('Please specify locus or loci')
-    if type(wildtype) in [types.IntType, types.LongType]:
-        wt = [wildtype]
-    else:
-        wt = wildtype
-    cppModule.maPenetrance_swiginit(self,
-        cppModule.new_maPenetrance(loci=loc, wildtype=wt, penet=penetrance, *args, **kwargs))
-
-new_maPenetrance.__doc__ = maPenetrance.__init__.__doc__
-del maPenetrance.__init__
-maPenetrance.__init__ = new_maPenetrance
-
-def new_pyPenetrance(self, locus=-1, loci=[], *args, **kwargs):
-    if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-        loc = [locus]
-    elif type(loci) in [types.IntType, types.LongType]:
-        loc = [loci]
-    elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-        loc = loci
-    else:
-        raise exceptions.TypeError('Please specify locus or loci')
-    cppModule.pyPenetrance_swiginit(self,
-        cppModule.new_pyPenetrance(loci=loc, *args, **kwargs))
-
-new_pyPenetrance.__doc__ = pyPenetrance.__init__.__doc__
-del pyPenetrance.__init__
-pyPenetrance.__init__ = new_pyPenetrance
-
 def new_mapQuanTrait(self, locus=-1, loci=[], *args, **kwargs):
     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
         loc = [locus]
