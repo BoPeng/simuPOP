@@ -24,13 +24,13 @@ class TestSelector(unittest.TestCase):
         InitByFreq(pop, [.2, .8])
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
         for ind in pop.individuals():
-            if ind.arrGenotype() == (0,0):
+            if ind.genotype() == (0,0):
                 assert ind.info('fitness') == 1
-            elif ind.arrGenotype() == (0,1):
+            elif ind.genotype() == (0,1):
                 assert ind.info('fitness') == 0.5
-            elif ind.arrGenotype() == (1,0):
+            elif ind.genotype() == (1,0):
                 assert ind.info('fitness') == 0.5
-            elif ind.arrGenotype() == (1,1):
+            elif ind.genotype() == (1,1):
                 assert ind.info('fitness') == 0.25
         #
         # selector on a population with selection on is not allowed
@@ -40,8 +40,8 @@ class TestSelector(unittest.TestCase):
         # other than 1 alleles
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0])
         for ind in pop.individuals():
-            #print ind.arrGenotype(), ind.info('fitness')
-            if 0 in ind.arrGenotype():
+            #print ind.genotype(), ind.info('fitness')
+            if 0 in ind.genotype():
                 assert ind.info('fitness') > 0.25
         # selector on a population with selection on is not allowed
         # explicitly walk around this.
@@ -50,8 +50,8 @@ class TestSelector(unittest.TestCase):
         # more than one wild type
         MaSelect(pop, loci=[0], fitness=[1, 0.5, 0.25], wildtype=[0, 2])
         for ind in pop.individuals():
-            # print ind.arrGenotype(), ind.info('fitness')
-            if 0 in ind.arrGenotype() or 2 in ind.arrGenotype():
+            # print ind.genotype(), ind.info('fitness')
+            if 0 in ind.genotype() or 2 in ind.genotype():
                 assert ind.info('fitness') > 0.25
 
     def TestAgeOfDistinction(self):
@@ -331,7 +331,7 @@ class TestSelector(unittest.TestCase):
         # there is only one field, so fitness is continuous
 ##         ft = pop.arrIndInfo()
 ##         for ind in range(pop.popSize()):
-##             gt = pop.individual(ind).arrGenotype()
+##             gt = pop.individual(ind).genotype()
 ##             if gt == [0,0,1,1]:
 ##                 self.assertEqual( ft[ind], 0.5)
 ##             # note that 10 => 01
@@ -350,7 +350,7 @@ class TestSelector(unittest.TestCase):
                 '0-1|0-1':0.5, '1-0|1-0':0.75})
 ##         ft = pop.arrIndInfo()
 ##         for ind in range(pop.popSize()):
-##             gt = pop.individual(ind).arrGenotype()
+##             gt = pop.individual(ind).genotype()
 ##             if gt == [0,0,1,1]:
 ##                 self.assertEqual( ft[ind], 0.5)
 ##             # note that 10 != 01
@@ -491,7 +491,7 @@ class TestSelector(unittest.TestCase):
                 mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                 mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
             ],
-            end=10
+            gen = 10
         )
 
     def testSubPops(self):

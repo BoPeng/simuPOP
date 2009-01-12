@@ -63,8 +63,7 @@ class TestPyOperator(unittest.TestCase):
         )
 
     def myFuncAsTerminator(self, pop):
-        # print pop.gen()
-        if pop.gen() == 3:
+        if pop.dvars().gen == 3:
             return False
         else:
             return True
@@ -72,7 +71,8 @@ class TestPyOperator(unittest.TestCase):
     def testTerminator(self):
         'Testing a python terminator'
         simu = simulator(self.pop, randomMating())
-        simu.evolve( ops=[ pyOperator(self.myFuncAsTerminator) ],
+        simu.evolve(preOps = [initSex()],
+            ops=[ pyOperator(self.myFuncAsTerminator) ],
             gen = 10 )
         assert simu.gen() == 4
 
@@ -115,113 +115,6 @@ class TestPyOperator(unittest.TestCase):
         )
         # will not terminate when allele frequency get out of control
         self.assertEqual( simu.gen(), 30)
-
-    def testPyIndOperator(self):
-        'Testing pyIndOperator'
-        def indFunc(ind):
-            ind.setInfo(ind.info('info1')+1, 'info1')
-            return True
-        def testFunc(ind):
-            self.assertEqual(ind.info('info1'), 1)
-            return True
-        def indFunc1(ind, param):
-            ind.setInfo(ind.info('info2')+param[1], 'info2')
-            return True
-        def testFunc1(ind):
-            self.assertEqual(ind.info('info2'), 2)
-            return True
-        def indFunc2(ind, genotype):
-            self.assertEqual(len(genotype), 4)
-            if AlleleType() == 'binary':
-                self.assertEqual(genotype, (1, 1, 1, 1))
-            else:
-                self.assertEqual(genotype, (1, 1, 2, 2))
-            ind.setInfo(sum(genotype), 'info1')
-            return True
-        def testFunc2(ind):
-            if AlleleType() == 'binary':
-                self.assertEqual(ind.info('info1'), 4)
-            else:
-                self.assertEqual(ind.info('info1'), 6)
-            return True
-        def indFunc3(ind, genotype, param):
-            self.assertEqual(len(genotype), 4)
-            if AlleleType() == 'binary':
-                self.assertEqual(genotype, (1, 1, 1, 1))
-            else:
-                self.assertEqual(genotype, (1, 1, 2, 2))
-            ind.setInfo(sum(genotype) + param[0], 'info1')
-            return True
-        def testFunc3(ind):
-            if AlleleType() == 'binary':
-                self.assertEqual(ind.info('info1'), 2)
-            else:
-                self.assertEqual(ind.info('info1'), 4)
-            return True
-        def indFunc4(ind):
-            return [1.5]
-        def testFunc4(ind):
-            self.assertEqual(ind.info('info1'), 1.5)
-            return True
-        def indFunc5(ind, param):
-            return param
-        def testFunc5(ind):
-            self.assertEqual(ind.info('info1'), 3)
-            self.assertEqual(ind.info('info2'), 4)
-            return True
-        def indFunc6(ind, genotype):
-            self.assertEqual(len(genotype), 4)
-            if AlleleType() == 'binary':
-                self.assertEqual(genotype, (1, 1, 1, 1))
-            else:
-                self.assertEqual(genotype, (1, 1, 2, 2))
-            return (sum(genotype),)
-        def testFunc6(ind):
-            if AlleleType() == 'binary':
-                self.assertEqual(ind.info('info1'), 4)
-            else:
-                self.assertEqual(ind.info('info1'), 6)
-            return True
-        def indFunc7(ind, genotype, param):
-            self.assertEqual(len(genotype), 4)
-            if AlleleType() == 'binary':
-                self.assertEqual(genotype, (1, 1, 1, 1))
-            else:
-                self.assertEqual(genotype, (1, 1, 2, 2))
-            return (sum(genotype) + param[0],)
-        def testFunc7(ind):
-            if AlleleType() == 'binary':
-                self.assertEqual(ind.info('info2'), 6)
-            else:
-                self.assertEqual(ind.info('info2'), 8)
-            return True
-        # use noMating, otherwise info will *not* be inherited
-        simu = simulator(population(10, loci=[2,5], infoFields=['info1', 'info2']),
-            noMating(), rep=1)
-        simu.step(
-            preOps = [
-                initByValue(value=[1], loci=[2]),
-                initByValue(value=[2], loci=[4]),
-                ],
-            ops = [
-                pyIndOperator(func=indFunc),
-                pyIndOperator(func=testFunc),
-                pyIndOperator(func=indFunc1, param=(3,2)),
-                pyIndOperator(func=testFunc1),
-                pyIndOperator(func=indFunc2, loci=[2,4]),
-                pyIndOperator(func=testFunc2),
-                pyIndOperator(func=indFunc3, loci=[2,4], param=(-2,)),
-                pyIndOperator(func=testFunc3),
-                pyIndOperator(func=indFunc4, infoFields=['info1']),
-                pyIndOperator(func=testFunc4),
-                pyIndOperator(func=indFunc5, param=(3,4), infoFields=['info1', 'info2']),
-                pyIndOperator(func=testFunc5),
-                pyIndOperator(func=indFunc6, loci=[2,4], infoFields=['info1']),
-                pyIndOperator(func=testFunc6),
-                pyIndOperator(func=indFunc7, loci=[2,4], param=(2,), infoFields=['info2']),
-                pyIndOperator(func=testFunc7 ),
-            ],
-        )
 
 
 if __name__ == '__main__':

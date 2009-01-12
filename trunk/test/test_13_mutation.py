@@ -14,7 +14,6 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
-from simuUtil import getGenotype
 import unittest, os, sys, exceptions
 
 class TestMutator(unittest.TestCase):
@@ -80,22 +79,27 @@ class TestMutator(unittest.TestCase):
         'Testing if mutator would mutate irrelevant locus'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
             randomMating() )
-        simu.evolve([ kamMutator(rate=0.5, loci=[1,4])], gen=200)
+        simu.evolve(preOps = [initSex()],
+            ops = [ kamMutator(rate=0.5, loci=[1,4])], gen=200)
         self.assertGenotype(simu.population(0), 0,
             loci=[0,2,3])
 
     def testKamMutator(self):
         'Testing k-allele mutator'
-        simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         # simu.apply( [ initByFreq([.2,.8])])
         simu.evolve(
-                preOps =    [ initByFreq([.2,.8])],
-                ops = [ kamMutator(rate=0.1)], gen=200)
+                preOps = [ initByFreq([.2,.8])],
+                ops = [ kamMutator(rate=0.1)],
+                gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
-        simu.step([ kamMutator(rate=0.1, loci=[0,4])])
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [ kamMutator(rate=0.1, loci=[0,4])],
+            gen = 1)
         # frequency seems to be OK.
         self.assertGenotypeFreq(simu.population(0),
             [0.85],[0.95], loci=[0,4])
@@ -106,7 +110,7 @@ class TestMutator(unittest.TestCase):
         'Testing generalized step-wise mutation mutator'
         if AlleleType() == 'binary':
             return
-        simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         # simu.apply( [ initByFreq([.2,.8])])
         simu.evolve(preOps=[initByFreq([.2,.8])],
@@ -114,7 +118,9 @@ class TestMutator(unittest.TestCase):
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
-        simu.step([ smmMutator(rate=0.2, loci=[0,4])])
+        simu.evolve(preOps = [initSex()],
+            ops = [ smmMutator(rate=0.2, loci=[0,4])],
+            gen = 1)
         # frequency seems to be OK.
         self.assertGenotypeFreq(simu.population(0),
             [0.85],[0.95], loci=[0,4])
@@ -125,15 +131,17 @@ class TestMutator(unittest.TestCase):
         'Testing generalized step-wise mutation mutator (imcomplete)'
         if AlleleType() == 'binary':
             return
-        simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
+        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
-        simu.evolve( preOps = [ initByFreq([.2,.8])],
-                ops = [ gsmMutator(rate=0.2)], gen=200)
+        simu.evolve(preOps = [ initByFreq([.2,.8])],
+                ops = [gsmMutator(rate=0.2)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
-        simu.population(0).arrGenotype(True)[:] = 1
-        simu.step([ gsmMutator(rate=0.2, loci=[0,4])])
+        simu.population(0).genotype()[:] = 1
+        simu.evolve(preOps = [initSex()], 
+            ops = [ gsmMutator(rate=0.2, loci=[0,4])],
+            gen = 1)
         # frequency? Genometric distribution of step
         #self.assertGenotypeFreq(simu.population(0),
         #    [0.85],[0.95], loci=[0,4])
@@ -157,7 +165,9 @@ class TestMutator(unittest.TestCase):
         pop = population(size=N, ploidy=2, loci=[5])
         simu = simulator(pop, randomMating())
         mut = kamMutator(rate=r, maxAllele=10, loci=[0,2,4])
-        simu.evolve( [mut], gen=G)
+        simu.evolve(preOps = [initSex()],
+            ops = [mut],
+            gen=G)
         assert abs( mut.mutationCount(0) - 2*N*r[0]*G) < 200, \
             "Number of mutation event is not as expected."
         assert abs( mut.mutationCount(2) - 2*N*r[1]*G) < 200, \

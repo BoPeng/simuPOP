@@ -36,9 +36,9 @@ class TestIfElseOperator(unittest.TestCase):
                 # terminate if
                 terminateIf('alleleFreq[0][0]<0.1 or alleleFreq[0][0]>0.9')
             ],
-            end=1000
+            gen = 1000
         )
-        self.assertEqual(simu.gen(), 1001)
+        self.assertEqual(simu.gen(), 1000)
 
 if __name__ == '__main__':
     unittest.main()

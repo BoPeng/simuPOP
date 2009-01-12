@@ -529,7 +529,7 @@ class TestRecombinator(unittest.TestCase):
         pop = population(10000, loci=[3,4])
         InitByValue(pop, value=[a1]*7+[a2]*7)
         simu = simulator(pop, randomMating())
-        rec = recombinator(rate = 0.4, convProb=1, loci=[1,3], convParam=1)
+        rec = recombinator(rate = 0.4, convMode = (NumMarkers, 1, 1), loci=[1,3])
         simu.evolve( [
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             rec ], gen=1 )
@@ -568,7 +568,7 @@ class TestRecombinator(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve( [
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
-            recombinator(rate = 0.4, convProb=1, convParam=2, loci=[1,3]) ], gen=1 )
+            recombinator(rate = 0.4, convMode = (NumMarkers, 1, 2), loci=[1,3]) ], gen=1 )
         #
         assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
         assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
@@ -602,7 +602,7 @@ class TestRecombinator(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve( [
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
-            recombinator(rate = 0.4, convProb=1, convParam=2, loci=[1,3,8]) ], gen=1 )
+            recombinator(rate = 0.4, convMode=(NumMarkers, 1, 2), loci=[1,3,8]) ], gen=1 )
         #
         assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
         assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
@@ -791,7 +791,7 @@ class TestRecombinator(unittest.TestCase):
         rec = recombinator(rate=r)
         pop = population(size=N, loci=[10,10])
         simu = simulator(pop, randomMating())
-        simu.evolve( [ rec ], gen=G)
+        simu.evolve(preOps = [initSex()], ops = [ rec ], gen=G)
         # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
         # at end should be bionomial(ploidy*N*r, 0.5)
         assert abs( rec.recCount(0) - 2*N*r*G ) < 150, \
@@ -855,15 +855,16 @@ class TestRecombinator(unittest.TestCase):
         N = 1000
         G = 100
         for mode, param in \
-                [(CONVERT_GeometricDistribution, 0.3),
-                 (CONVERT_TractLength, 2.5),
-                 (CONVERT_NumMarkers, 2),
-                 (CONVERT_ExponentialDistribution, 1)]:
-            rec = recombinator(rate=r, convProb=0.2,
-                convMode=mode, convParam=param)
+                [(GeometricDistribution, 0.3),
+                 (TractLength, 2.5),
+                 (NumMarkers, 2),
+                 (ExponentialDistribution, 1)]:
+            rec = recombinator(rate=r, 
+                convMode=(mode, 0.2, param))
             pop = population(size=N, loci=[10,10])
             simu = simulator(pop, randomMating())
-            simu.evolve( [ rec ], gen=G-1)
+            simu.evolve(preOps = [initSex()],
+                ops = [ rec ], gen=G-1)
             # at end should be bionomial(ploidy*N*r, 0.5)
             recCount = sum(rec.recCounts()) - max(rec.recCounts())
             convCount = sum(rec.convCounts().values())
