@@ -28,21 +28,23 @@ bool selector::apply(population & pop)
 {
 	UINT fit_id = pop.infoIdx(this->infoField(0));
 
-	if (m_subPops.empty()) {
+	subPopList subPops = applicableSubPops();
+
+	if (subPops.empty()) {
 		IndInfoIterator fitness = pop.infoBegin(fit_id);
 		// fitness may change with generation so pass generation information
 		for (IndIterator it = pop.indBegin(); it.valid(); ++it)
 			*fitness++ = indFitness(& * it, pop.gen()) ;
 		pop.turnOnSelection();
 	} else {
-		for (vectoru::iterator sp = m_subPops.begin(); sp != m_subPops.end(); ++sp) {
+		for (subPopList::iterator sp = subPops.begin(); sp != subPops.end(); ++sp) {
 			IndInfoIterator fitness = pop.infoBegin(fit_id, *sp);
-			DBG_FAILIF(*sp > pop.numSubPop(), IndexError,
-				"Wrong subpopulation index" + toStr(*sp) + " (number of subpops is " +
+			DBG_FAILIF(sp->subPop() > pop.numSubPop(), IndexError,
+				"Wrong subpopulation index" + toStr(sp->subPop()) + " (number of subpops is " +
 				toStr(pop.numSubPop()) + ")");
-			for (IndIterator it = pop.indBegin(*sp); it.valid(); ++it)
+			for (IndIterator it = pop.indBegin(sp->subPop()); it.valid(); ++it)
 				*fitness++ = indFitness(& * it, pop.gen());
-			pop.turnOnSelection(*sp);
+			pop.turnOnSelection(sp->subPop());
 		}
 	}
 
@@ -57,7 +59,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 
 	vector<int> alleles(ply);
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		if (loc != m_loci.begin() )
 			key += '|';
 		for (size_t p = 0; p < ply; ++p)
@@ -100,7 +102,7 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
 
-	for (vectoru::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);

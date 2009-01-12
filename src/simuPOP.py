@@ -219,26 +219,26 @@ def RemoveSubPops(pop, *args, **kwargs):
 if population.removeSubPops.__doc__ is not None:
     RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
-def MapSelect(pop, *args, **kwargs):
-    mapSelector(stage=PostMating, *args, **kwargs).apply(pop)
+def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
+    mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)
 
 if mapSelector.__init__.__doc__ is not None:
     MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
 
-def MaSelect(pop, *args, **kwargs):
-    maSelector(stage=PostMating, *args, **kwargs).apply(pop)
+def MaSelect(pop, loci, fitness, wildtype, *args, **kwargs):
+    maSelector(loci, fitness, wildtype, PostMating, *args, **kwargs).apply(pop)
 
 if maSelector.__init__.__doc__ is not None:
     MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
 
-def MlSelect(pop, *args, **kwargs):
-    mlSelector(stage=PostMating, *args, **kwargs).apply(pop)
+def MlSelect(pop, selectors, mode = Multiplicative, *args, **kwargs):
+    mlSelector(selectors, mode, PostMating, *args, **kwargs).apply(pop)
 
 if mlSelector.__init__.__doc__ is not None:
     MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
 
-def PySelect(pop, *args, **kwargs):
-    pySelector(stage=PostMating, *args, **kwargs).apply(pop)
+def PySelect(pop, loci, func, *args, **kwargs):
+    pySelector(loci, func, PostMating, *args, **kwargs).apply(pop)
 
 if pySelector.__init__.__doc__ is not None:
     PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
