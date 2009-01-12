@@ -22,7 +22,7 @@ class TestAscertainment(unittest.TestCase):
     def setUp(self):
         simu = simulator(
             population(size=[1000,2000], ploidy=2, loci=[5,10],
-                ancestralDepth=2,
+                ancGen=2,
                 infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
             randomMating(numOffspring=2))
         simu.evolve(
@@ -46,7 +46,7 @@ class TestAscertainment(unittest.TestCase):
         # more complicated one
         simu1 = simulator(
             population(size=[5000,20000], ploidy=2, loci=[5,10],
-                ancestralDepth=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
+                ancGen=2, infoFields=['fitness', 'father_idx', 'mother_idx', 'migrate_to', 'oldindex']),
             randomMating(numOffspring=2, maxNumOffspring=5, mode=MATE_UniformDistribution))
         simu1.evolve(
             [
@@ -141,7 +141,7 @@ class TestAscertainment(unittest.TestCase):
         'Testing large pedigree sampling (FIXME)'
         (s,) = LargePedigreeSample(self.largepop, minTotalSize=20, maxOffspring=5,
             minPedSize=3, minAffected=0)
-        assert s.ancestralDepth() == 2
+        assert s.ancGen() == 2
         for ind in s.individuals():
             #old index?
             inpop = self.largepop.individual(ind.intInfo('oldindex'))

@@ -79,12 +79,12 @@ class TestStat(unittest.TestCase):
 
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'
-        pop = population(size=[500,100,1000],
-            ploidy=2, loci = [1])
-        InitByValue(pop,
-            value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            indRange = [[0,125], [125,375],[375,500],[500,550],
-                [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+        pop = population(size=[500,100,1000], ploidy=2, loci = [1])
+        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
+        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, alleleFreq=[0], numOfAlleles=[0])
         self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
         self.assertEqual(pop.dvars().alleleNum[0], [1230, 1970])
@@ -126,11 +126,12 @@ class TestStat(unittest.TestCase):
         'Testing counting of heterozygote frequency'
         pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
+        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
         if AlleleType() == 'binary':
-            InitByValue(pop,
-                value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-                indRange = [[0,125], [125,375],[375,500],[500,550],
-                    [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+            InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+                subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0])
             self.assertEqual(pop.dvars().HeteroNum[0], 880)
             self.assertEqual(pop.dvars().heteroNum[0][0], 880)
@@ -157,10 +158,8 @@ class TestStat(unittest.TestCase):
             self.assertEqual(pop.dvars(2).heteroFreq[0][0], 0.6)
             self.assertEqual(pop.dvars(2).heteroFreq[0][1], 0.6)
         else:
-            InitByValue(pop,
-                value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
-                indRange = [[0,125], [125,375],[375,500],[500,550],
-                    [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+            InitByValue(pop, value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
+                subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
             Stat(pop, heteroFreq=[0])
             self.assertEqual(pop.dvars().HeteroNum[0], 1005)
             self.assertEqual(pop.dvars().heteroNum[0][1], 350)
@@ -197,12 +196,12 @@ class TestStat(unittest.TestCase):
 
     def testExpHetero(self):
         'Testing expected heterozygosity 1-sum p_i2'
-        pop = population(size=[500,100,1000],
-            ploidy=2, loci = [1])
-        InitByValue(pop,
-            value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            indRange = [[0,125], [125,375],[375,500],[500,550],
-                [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+        pop = population(size=[500,100,1000], ploidy=2, loci = [1])
+        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
+        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, expHetero=[0])
         #
         assert abs(pop.dvars().expHetero[0] - (1-(123./320)**2-(197./320)**2)) < 0.00001
@@ -212,12 +211,12 @@ class TestStat(unittest.TestCase):
 
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'
-        pop = population(size=[500,100,1000],
-            ploidy=2, loci = [1])
-        InitByValue(pop,
-            value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            indRange = [[0,125], [125,375],[375,500],[500,550],
-                [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+        pop = population(size=[500,100,1000], ploidy=2, loci = [1])
+        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
+        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, genoFreq=[0])
         self.assertEqual(pop.dvars().genoNum[0][0][0], 175)
         self.assertEqual(pop.dvars().genoNum[0][0][1], 880)
@@ -252,10 +251,11 @@ class TestStat(unittest.TestCase):
         'Testing calculation of Fst value'
         pop = population(size=[500,100,1000],
             ploidy=2, loci = [1])
-        InitByValue(pop,
-            value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            indRange = [[0,125], [125,375],[375,500],[500,550],
-                [550,580],[580,600],[600,700],[700, 1200], [1200,1600]])
+        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
+            [0, 50], [50, 80], [80, 100],
+            [0, 100],[100, 600], [600, 1000]]))
+        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
+            subPop = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         #SaveFstat(simu.population(0), "p1.dat", maxAllele=2)
         # Fst is compaared with result from Fstat.
         #
