@@ -59,7 +59,8 @@ public:
 	// for some unknown reason, std:: is required for this type to be recognized
 	// by swig.
 	typedef std::vector<vspID> vectorvsp;
-	typedef vectorvsp::const_iterator iterator;
+	typedef vectorvsp::iterator iterator;
+	typedef vectorvsp::const_iterator const_iterator;
 
 public:
 	subPopList(const vectorvsp & subPops = vectorvsp()) : m_subPops(subPops)
@@ -93,17 +94,27 @@ public:
 	}
 
 
-	vectorvsp::const_iterator begin() const
+	const_iterator begin() const
 	{
 		return m_subPops.begin();
 	}
 
 
-	vectorvsp::const_iterator end() const
+	const_iterator end() const
 	{
 		return m_subPops.end();
 	}
 
+	iterator begin()
+	{
+		return m_subPops.begin();
+	}
+
+
+	iterator end()
+	{
+		return m_subPops.end();
+	}
 
 private:
 	vectorvsp m_subPops;

@@ -127,7 +127,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(locus=0,
+                mapSelector(loci=0,
                     fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.8', begin=50)
@@ -154,7 +154,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(locus=0,
+                mapSelector(loci=0,
                     fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
@@ -179,7 +179,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                maSelector(locus=0, wildtype=[0],
+                maSelector(loci=0, wildtype=[0],
                     fitness=[1, 0.9, .8]),
                 terminateIf('alleleFreq[0][0] < 0.4'),
                 terminateIf('alleleFreq[0][0] < 0.8', begin=50)
@@ -210,7 +210,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(locus=0,
+                mapSelector(loci=0,
                     fitness={'0-0':1-s1, '0-1':1, '1-1':1-s2}),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
@@ -242,7 +242,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                maSelector(locus=0, wildtype=0,
+                maSelector(loci=0, wildtype=0,
                     fitness=[1-s1, 1, 1-s2]),
                 terminateIf('alleleFreq[0][0] < 0.5', begin=50),
                 terminateIf('alleleFreq[0][0] > 0.9', begin=50)
@@ -265,7 +265,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                mapSelector(locus=0,
+                mapSelector(loci=0,
                     fitness={'0-0':1, '0-1':0.8, '1-1':1}),
                 # pyEval('alleleFreq[0][0]'),
                 terminateIf('alleleFreq[0][0] > 0.4 and    alleleFreq[0][0]    < 0.6',
@@ -293,7 +293,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 stat( alleleFreq=[0], genoFreq=[0]),
-                maSelector(locus=0, wildtype=0,
+                maSelector(loci=0, wildtype=0,
                     fitness=[1, 0.7, 1]),
                 #pyEval('alleleFreq[0][0]'),
                 terminateIf('alleleFreq[0][0] > 0.3 and    alleleFreq[0][0]    < 0.7',
@@ -460,8 +460,8 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             [
                 mlSelector([
-                    mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-                    mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                    mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                    mapSelector(loci=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                 ], mode=Additive),
             ],
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
@@ -472,8 +472,8 @@ class TestSelector(unittest.TestCase):
         simu.evolve([
             mlSelector(
                 [
-                    mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-                    maSelector(locus=1, wildtype=[1], fitness=[1,1,.8])
+                    mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                    maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=Multiplicative),
             ],
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
@@ -488,8 +488,8 @@ class TestSelector(unittest.TestCase):
             randomMating())
         self.assertRaises(exceptions.ValueError, simu.evolve,
             ops = [
-                mapSelector(locus=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
-                mapSelector(locus=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
+                mapSelector(loci=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
             ],
             gen = 10
         )
@@ -507,7 +507,7 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = [initByFreq([.4, .6])],
             ops = [
-                mapSelector(locus = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPops=[1]),
+                mapSelector(loci = 1, fitness = {'0-0':1.,'0-1':1.,'1-1':.8}, subPop=[1]),
                 pyOperator(func=testFitness, stage=PreMating, param=([0, 2],)),
                 ],
             gen = 5
@@ -520,9 +520,9 @@ class TestSelector(unittest.TestCase):
         simu.evolve(
             preOps = [initByFreq([.4, .6])],
             ops = [
-                maSelector(locus=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
+                maSelector(loci=0, wildtype=[0], fitness = [0.5, 0.4, 0.6],
                     subPop=1),
-                maSelector(locus=0, wildtype=[0], fitness = [0.6, 0.4, 0.6],
+                maSelector(loci=0, wildtype=[0], fitness = [0.6, 0.4, 0.6],
                     subPop=2),
                 pyOperator(func=testFitness, param=([0],), stage=PreMating),
                 ],

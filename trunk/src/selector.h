@@ -72,12 +72,10 @@ class selector : public baseOperator
 public:
 	/// create a selector
 	/**
-	   \param subPop a shortcut to <tt>subPops=[subPop]</tt>
-	   \param subPops subpopulations that the selector will apply to. Default to all.
 	 */
-	selector(const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+	selector(int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr(1, "fitness"))
-		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields), m_subPops(subPops)
+		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields)
 	{
 	}
 
@@ -113,9 +111,6 @@ public:
 		return "<simuPOP::selector>" ;
 	}
 
-
-private:
-	vectoru m_subPops;
 };
 
 /// selection according to the genotype at one or more loci
@@ -141,11 +136,11 @@ public:
 	   \param output and other parameters please refer to help (<tt>baseOperator.__init__</tt>)
 
 	 */
-	mapSelector(vectoru loci, const strDict & fitness, bool phase = false,
-		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	mapSelector(const uintList & loci, const strDict & fitness, bool phase = false,
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_dict(fitness), m_phase(phase)
 	{
 	};
@@ -176,7 +171,7 @@ public:
 
 private:
 	/// one locus
-	vectoru m_loci;
+	uintList m_loci;
 
 	/// fitness for each genotype
 	strDict m_dict;
@@ -218,11 +213,11 @@ public:
 	   \li \c wildtype alleles at all loci are the same.
 
 	 */
-	maSelector(vectoru loci, const vectorf & fitness, const vectora & wildtype,
-		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype,
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_fitness(fitness), m_wildtype(wildtype)
 	{
 		DBG_ASSERT(m_fitness.size() == static_cast<UINT>(pow(static_cast<double>(3),
@@ -255,13 +250,13 @@ public:
 
 private:
 	/// one locus
-	vectoru m_loci;
+	uintList m_loci;
 
 	/// fitness for each genotype
 	vectorf m_fitness;
 
 	///
-	vectora m_wildtype;
+	uintList m_wildtype;
 };
 
 /// selection according to genotypes at multiple loci in a multiplicative model
@@ -289,10 +284,10 @@ public:
 
 	 */
 	mlSelector(const vectorop selectors, int mode = Multiplicative,
-		const vectoru & subPops = vectoru(), int stage = PreMating, int begin = 0, int end = -1, int step = 1,
+		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPop, infoFields),
 		m_selectors(0), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
@@ -370,11 +365,11 @@ public:
 	    be passed to the user defined penetrance function.
 	 */
 	// provide locus and fitness for 11, 12, 13 (in the form of dictionary)
-	pySelector(vectoru loci, PyObject * func, const vectoru & subPops = vectoru(),
+	pySelector(uintList loci, PyObject * func, 
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPop = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "fitness")) :
-		selector(subPops, stage, begin, end, step, at, rep, subPop, infoFields),
+		selector(stage, begin, end, step, at, rep, subPop, infoFields),
 		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())
@@ -419,7 +414,7 @@ public:
 
 private:
 	/// susceptibility loci
-	vectoru m_loci;
+	uintList m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;
