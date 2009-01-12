@@ -709,7 +709,7 @@ class caseControlSample(_sample):
         self.repr = '<simuPOP::caseControlSample>'
 
     def prepareSample(self, pop):
-        self.pedigree = pedigree(pop)
+        self.pedigree = pedigree(pop, fatherField='', motherField='')
         self.pedigree.addInfoField('sample', -1)
         self.pedigree.setVirtualSplitter(affectionSplitter())
         return True
