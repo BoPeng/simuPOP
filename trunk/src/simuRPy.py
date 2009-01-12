@@ -556,8 +556,8 @@ class _VarPlotter_NoHis_Image(_VarPlotter_NoHis):
     """
 
     def plot(self, pop, expr):
-        gen = pop.gen()
-        rep = pop.rep()
+        gen = pop.dvars().gen
+        rep = pop.dvars().rep
         data = pop.evaluate(expr)
         #
         if type(data) == type(0) or type(data) == type(0.):
@@ -613,8 +613,8 @@ class _VarPlotter_NoHis_Plot(_VarPlotter_NoHis):
     """
 
     def plot(self, pop, expr):
-        gen = pop.gen()
-        rep = pop.rep()
+        gen = pop.dvars().gen
+        rep = pop.dvars().rep
         data = pop.evaluate(expr)
         #
         if type(data) == type(0) or type(data) == type(0.):
@@ -669,8 +669,8 @@ class _VarPlotter_His_Image(_VarPlotter_His):
     """
 
     def plot(self, pop, expr):
-        gen = pop.gen()
-        rep = pop.rep()
+        gen = pop.dvars().gen
+        rep = pop.dvars().rep
         data = pop.evaluate(expr)
         _data = data
         # now start!
