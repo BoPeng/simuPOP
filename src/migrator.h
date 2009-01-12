@@ -385,17 +385,17 @@ public:
 	/// resize subpopulations
 	/**
 	   \param newSizes of the specified (or all) subpopulations.
-	   \param subPops subpopulations to be resized. Default to all.
+	   \param subPop subpopulations to be resized. Default to all.
 	   \param propagate if true (default) and the new size if greater than
 	    the original size, individuals will be copied over.
 	 */
-	resizeSubPops(vectorlu newSizes = vectorlu(), vectoru subPops = vectoru(), bool propagate = true,
+	resizeSubPops(vectorlu newSizes = vectorlu(), bool propagate = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPop = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPop, infoFields),
-		m_newSizes(newSizes), m_subPops(subPops), m_propagate(propagate)
+		m_newSizes(newSizes), m_propagate(propagate)
 	{
-		DBG_FAILIF(!subPops.empty() && subPops.size() != newSizes.size(), ValueError,
+		DBG_FAILIF(!subPop.empty() && subPop.size() != newSizes.size(), ValueError,
 			"Please specify new sizes for each specified subpopulation");
 	}
 
@@ -427,9 +427,6 @@ public:
 private:
 	///
 	vectorlu m_newSizes;
-
-	///
-	vectoru m_subPops;
 
 	///
 	bool m_propagate;
