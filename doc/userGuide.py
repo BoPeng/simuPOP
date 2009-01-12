@@ -1430,7 +1430,7 @@ migr = migrator(rate=rates, mode=MigrByProbability)
 initMigr = migrator(rate=[[1]], mode=MigrByProportion,
     fromSubPop=[0], toSubPop=[nc/2])
 
-pop = population(size=500, infoFields=['migrate_to'])
+pop = population(size=[500]*nc, infoFields=['migrate_to'])
 
 # the new popsize relies on a variable newSPSize
 # which is calculated from subPopSize bu newSize operator
@@ -1439,7 +1439,7 @@ simu = simulator(pop,
 
 # evolve!
 simu.evolve(
-    preOps = [ initMigr ],
+    preOps = [initSex(), initMigr ],
     ops = [
         migr,
         stat(popSize=True),
