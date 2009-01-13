@@ -37,55 +37,25 @@ using std::hex;
 using std::dec;
 
 namespace simuPOP {
-/**
-   \brief Base class of all operators that out information.
-   different format.
 
-   @author Bo Peng
+/** This operator outputs a given string when it is applied to a population.
  */
-
-class outputer : public baseOperator
+class pyOutput : public baseOperator
 {
 
 public:
-	/// constructor.
-	outputer(string output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields)
-	{
-	};
-
-	/// destructor
-	virtual ~outputer()
-	{
-	};
-
-	virtual baseOperator * clone() const
-	{
-		return new outputer(*this);
-	}
-
-
-};
-
-/// Output a given string
-/**
-   A common usage is to output a new line for the last replicate.
- */
-class pyOutput : public outputer
-{
-
-public:
-	/// Create a \c pyOutput operator that outputs a given string
-	/**
-	   \param str string to be outputted
+	/** Creates a \c pyOutput operator that outputs a string \e msg to
+	 *  \e output (default to standard terminal output) when it is applied
+	 *  to a population. Please refer to class \c baseOperator for a detailed
+	 *  description of common operator parameters such as \e stage, \e begin
+	 *  and \c output.
 	 */
-	pyOutput(string str = "", string output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		outputer(output, stage, begin, end,
-		         step, at, rep, subPops, infoFields), m_string(str)
+	pyOutput(string msg = "", string output = ">", int stage = PostMating,
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
+		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
+		m_string(msg)
 	{
 	}
 
@@ -138,49 +108,53 @@ private:
 };
 
 
-/// dump the content of a population.
-class dumper : public outputer
+/** This operator dumps the content of a population in a human readable format.
+ *  Because this output format is not structured and can not be imported back
+ *  to simuPOP, this operator is usually used to dump a small population to a
+ *  terminal for demonstration and debugging purposes.
+ */
+class dumper : public baseOperator
 {
 public:
-	/// dump a population
-	/**
-	   \param genotype Whether or not display genotype
-	   \param structure Whether or not display genotypic structure
-	   \param width number of characters to display an allele. Default to \c 1.
-	   \param ancGen how many ancestral generations to display
-	   \param chrom chromosome(s) to display
-	   \param loci loci to display
-	   \param subPop only display subpopulation(s)
-	   \param max the maximum number of individuals to display. Default to \c 100.
-	        This is to avoid careless dump of huge populations.
-	   \param output output file. Default to the standard output.
-
+	/** Create a operator that dumps the genotype structure (if \e structure is
+	 *  \c True) and genotype (if \e genotype is \c True) to an \e output (
+	 *  default to standard terminal output). Because a population can be large,
+	 *  this operator will only output the first 100 (parameter \e max)
+	 *  individuals of the present generation (parameter \e ancGen). All loci
+	 *  will be outputed unless parameter \e chrom or \e loci are used to
+	 *  specify a subset of chromosomes or loci. If a list of (virtual)
+	 *  subpopulations are specified, this operator will only output
+	 *  individuals in these outputs. Please refer to class \c baseOperator for
+	 *  a detailed explanation for common parameters such as \e output and
+	 *  \e stage.
 	 */
-	dumper(bool genotype = true, bool structure = true, int ancGen = 0, int width = 1, UINT max = 100,
-		const vectori & chrom = vectori(), const vectori & loci = vectori(),
-		string output = ">",
+	dumper(bool genotype = true, bool structure = true, int ancGen = 0,
+		int width = 1, UINT max = 100, const vectori & chrom = vectori(),
+		const vectori & loci = vectori(), string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(),    const subPopList & subPops = subPopList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
-		outputer(output, stage, begin, end, step, at, rep, subPops, infoFields),
+		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_chrom(chrom), m_loci(loci), m_max(max)
 	{
 	}
 
-
+	/// Deep copy of a dumper operator.
 	virtual baseOperator * clone() const
 	{
 		return new dumper(*this);
 	}
 
-
+	/// Apply a dumper operator to population \e pop.
 	virtual bool apply(population & pop);
 
+	/// destructor.
 	virtual ~dumper()
 	{
 	};
 
+	///
 	virtual string __repr__()
 	{
 		return "<simuPOP::dumper>" ;
@@ -215,19 +189,25 @@ private:
 	UINT m_max;
 };
 
-/// save population to a file
-class savePopulation : public outputer
+
+/** An operator that save populations to specified files.
+ */
+class savePopulation : public baseOperator
 {
 public:
-	/// save population
-	/**
-	    \param output output filename.
-	    \param format obsolete parameter
-	    \param compress obsolete parameter
+	/** Create an operator that saves a population to \e output when it is
+	 *  applied to the population. This operator supports all output
+	 *  specifications (\c '', \c 'filename', \c 'filename' prefixed by one
+	 *  or more '>' characters, and \c '!expr') but output from different
+	 *  operators will always replace existing files (effectively ignore
+	 *  '>' specification). Parameter \e subPops is ignored. Please refer to
+	 *  class \c baseOperator for a detailed description about common operator
+	 *  parameters such as \e stage and \e begin.
 	 */
 	savePopulation(string output = "", int stage = PostMating, int begin = 0, int end = -1,
-		int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		outputer("", stage, begin, end, step, at, rep, subPops, infoFields),
+		int step = 1, const intList & at = intList(), const repList & rep = repList(),
+		const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_filename(output)
 	{
 		if (output == "")
@@ -235,19 +215,23 @@ public:
 	}
 
 
+	/// destructor.
 	~savePopulation()
 	{
 	}
 
 
+	/// Deep copy of a savePopulation operator.
 	virtual baseOperator * clone() const
 	{
 		return new savePopulation(*this);
 	}
 
 
+	/// Apply operator to population \e pop.
 	virtual bool apply(population & pop);
 
+	///
 	virtual string __repr__()
 	{
 		return "<simuPOP::save population>" ;
