@@ -83,13 +83,6 @@ public:
 	}
 
 
-	/// set output string.
-	void setString(const string str)
-	{
-		m_string = str;
-	}
-
-
 	virtual string __repr__()
 	{
 		string reprStr;

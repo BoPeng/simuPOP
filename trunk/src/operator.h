@@ -204,9 +204,9 @@ public:
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
 	 *    as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
-	 *    <tt>subPop=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (default) is
-	 *    interpreted as all subpopulations. <tt>subPop=[sp1]</tt> can be
-	 *    simplied as <tt>subPop=sp1</tt>. Negative indexes are not supported.
+	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (default) is
+	 *    interpreted as all subpopulations. <tt>subPops=[sp1]</tt> can be
+	 *    simplied as <tt>subPops=sp1</tt>. Negative indexes are not supported.
 	 *    Suport for this parameter vary from operator to operator. Some
 	 *    operators do not support virtual subpopulations and some operators
 	 *    do not support this parameter at all. Please refer to the reference

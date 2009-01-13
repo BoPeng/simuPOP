@@ -199,10 +199,10 @@ Arguments:
                     replicate) is acceptable. rep=idx can be used as a
                     shortcut for rep=[idx].
     subPops:        A list of applicable (virtual) subpopulations,
-                    such as subPop=[sp1, sp2, (sp2, vsp1)]. An empty
+                    such as subPops=[sp1, sp2, (sp2, vsp1)]. An empty
                     list (default) is interpreted as all
-                    subpopulations. subPop=[sp1] can be simplied as
-                    subPop=sp1. Negative indexes are not supported.
+                    subpopulations. subPops=[sp1] can be simplied as
+                    subPops=sp1. Negative indexes are not supported.
                     Suport for this parameter vary from operator to
                     operator. Some operators do not support virtual
                     subpopulations and some operators do not support
@@ -795,70 +795,70 @@ Usage:
 
 %feature("docstring") simuPOP::dumper "
 
-Description:
+Details:
 
-    dump the content of a population.
+    This operator dumps the content of a population in a human
+    readable format. Because this output format is not structured and
+    can not be imported back to simuPOP, this operator is usually used
+    to dump a small population to a terminal for demonstration and
+    debugging purposes.
 
 "; 
 
 %feature("docstring") simuPOP::dumper::dumper "
 
-Description:
-
-    dump a population
-
 Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
-      max=100, chrom=[], loci=[], indRange=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      max=100, chrom=[], loci=[], output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
-Arguments:
+Details:
 
-    genotype:       Whether or not display genotype
-    structure:      Whether or not display genotypic structure
-    width:          number of characters to display an allele. Default
-                    to 1.
-    ancGen:         how many ancestral generations to display
-    chrom:          chromosome(s) to display
-    loci:           loci to display
-    subPop:         only display subpopulation(s)
-    indRange:       range(s) of individuals to display
-    max:            the maximum number of individuals to display.
-                    Default to 100. This is to avoid careless dump of
-                    huge populations.
-    output:         output file. Default to the standard output.
+    Create a operator that dumps the genotype structure (if structure
+    is True) and genotype (if genotype is True) to an output ( default
+    to standard terminal output). Because a population can be large,
+    this operator will only output the first 100 (parameter max)
+    individuals of the present generation (parameter ancGen). All loci
+    will be outputed unless parameter chrom or loci are used to
+    specify a subset of chromosomes or loci. If a list of (virtual)
+    subpopulations are specified, this operator will only output
+    individuals in these outputs. Please refer to class baseOperator
+    for a detailed explanation for common parameters such as output
+    and stage.
 
 "; 
 
 %feature("docstring") simuPOP::dumper::clone "
 
+Description:
+
+    Deep copy of a dumper operator.
+
 Usage:
 
     x.clone()
-
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
 
 "; 
 
 %feature("docstring") simuPOP::dumper::apply "
 
+Description:
+
+    Apply a dumper operator to population pop.
+
 Usage:
 
     x.apply(pop)
 
-Details:
-
-    Apply an operator to population pop directly, without checking its
-    applicability.
-
 "; 
 
 %feature("docstring") simuPOP::dumper::~dumper "
+
+Description:
+
+    destructor.
 
 Usage:
 
@@ -3238,7 +3238,7 @@ Usage:
 
 Description:
 
-    deep copy of an initSex
+    deep copy of an initSex operator.
 
 Usage:
 
@@ -5000,57 +5000,6 @@ Usage:
 %ignore simuPOP::OstreamManager::listAll();
 
 %ignore simuPOP::OstreamManager::closeAll();
-
-%feature("docstring") simuPOP::outputer "
-
-Description:
-
-    Base class of all operators that out information. different
-    format.
-
-Details:
-
-    Bo Peng
-
-"; 
-
-%feature("docstring") simuPOP::outputer::outputer "
-
-Description:
-
-    constructor.
-
-Usage:
-
-    outputer(output=\">\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::outputer::~outputer "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~outputer()
-
-"; 
-
-%feature("docstring") simuPOP::outputer::clone "
-
-Usage:
-
-    x.clone()
-
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
-
-"; 
 
 %feature("docstring") simuPOP::parentChooser "
 
@@ -7560,30 +7509,27 @@ Usage:
 
 %feature("docstring") simuPOP::pyOutput "
 
-Description:
-
-    Output a given string.
-
 Details:
 
-    A common usage is to output a new line for the last replicate.
+    This operator outputs a given string when it is applied to a
+    population.
 
 "; 
 
 %feature("docstring") simuPOP::pyOutput::pyOutput "
 
-Description:
-
-    Create a pyOutput operator that outputs a given string.
-
 Usage:
 
-    pyOutput(str=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
+    pyOutput(msg=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
       step=1, at=[], rep=[], subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    str:            string to be outputted
+    Creates a pyOutput operator that outputs a string msg to output
+    (default to standard terminal output) when it is applied to a
+    population. Please refer to class baseOperator for a detailed
+    description of common operator parameters such as stage, begin and
+    output.
 
 "; 
 
@@ -7617,18 +7563,6 @@ Details:
 
     Return a cloned copy of an operator. This function is available to
     all operators.
-
-"; 
-
-%feature("docstring") simuPOP::pyOutput::setString "
-
-Description:
-
-    set output string.
-
-Usage:
-
-    x.setString(str)
 
 "; 
 
@@ -8925,32 +8859,37 @@ Usage:
 
 %feature("docstring") simuPOP::savePopulation "
 
-Description:
+Details:
 
-    save population to a file
+    An operator that save populations to specified files.
 
 "; 
 
 %feature("docstring") simuPOP::savePopulation::savePopulation "
-
-Description:
-
-    save population
 
 Usage:
 
     savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
       step=1, at=[], rep=[], subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    output:         output filename.
-    format:         obsolete parameter
-    compress:       obsolete parameter
+    Create an operator that saves a population to output when it is
+    applied to the population. This operator supports all output
+    specifications ('', 'filename', 'filename' prefixed by one or more
+    '>' characters, and '!expr') but output from different operators
+    will always replace existing files (effectively ignore '>'
+    specification). Parameter subPops is ignored. Please refer to
+    class baseOperator for a detailed description about common
+    operator parameters such as stage and begin.
 
 "; 
 
 %feature("docstring") simuPOP::savePopulation::~savePopulation "
+
+Description:
+
+    destructor.
 
 Usage:
 
@@ -8960,27 +8899,25 @@ Usage:
 
 %feature("docstring") simuPOP::savePopulation::clone "
 
+Description:
+
+    Deep copy of a savePopulation operator.
+
 Usage:
 
     x.clone()
-
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
 
 "; 
 
 %feature("docstring") simuPOP::savePopulation::apply "
 
+Description:
+
+    Apply operator to population pop.
+
 Usage:
 
     x.apply(pop)
-
-Details:
-
-    Apply an operator to population pop directly, without checking its
-    applicability.
 
 "; 
 

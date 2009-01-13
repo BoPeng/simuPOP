@@ -715,7 +715,51 @@ baseOperatorRef
 \end_layout
 
 \begin_layout Section
-During-mating genotype transmitters
+Initialization
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+initializer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+initSexRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+initByFreqRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+initByValueRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Standard genotype transmitters
 \end_layout
 
 \begin_layout Standard
@@ -766,53 +810,6 @@ mitochondrialGenoTransmitterRef
 
 \begin_layout Plain Layout
 
-
-\backslash
-recombinatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Initialization
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-initializer
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-initSexRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-initByFreqRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-initByValueRef
 \end_layout
 
 \end_inset
@@ -991,6 +988,25 @@ pyMutatorRef
 
 \backslash
 pointMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Recombination and gene conversion
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+recombinatorRef
 \end_layout
 
 \end_inset
