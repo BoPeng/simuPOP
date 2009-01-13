@@ -368,15 +368,22 @@ class _VarPlotter_Base:
         name = self.saveAs
         ext = os.path.splitext(name)[-1]
         try:
-            device = {'.pdf': r.pdf,
-                '.png': r.png,
-                '.bmp': r.bmp,
-                '.jpg': r.jpeg,
-                '.jped': r.jpeg,
-                '.tiff': r.tiff,
-                '.tif': r.tiff,
-                '.eps': r.postscript,
-                '': r.postscript}[ext.lower()]
+            # I need to use this more lengthy form because some
+            # functions are not available in, for example, R 2.6.2
+            if ext.lower() == '.pdf':
+                device = r.pdf
+            elif ext.lower() == '.png':
+                device = r.png
+            elif ext.lower() == '.bmp':
+                device = r.bmp
+            elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
+                device = r.jpeg
+            elif ext.lower() == '.tif' or ext.lower() == '.tiff':
+                device = r.tiff
+            elif ext.lower() == '.eps':
+                device = r.postscript
+            else:
+                device = r.postscript
         except Exception, e:
             print e
             print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
