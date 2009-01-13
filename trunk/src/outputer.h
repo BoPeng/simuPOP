@@ -140,11 +140,13 @@ public:
 	{
 	}
 
+
 	/// Deep copy of a dumper operator.
 	virtual baseOperator * clone() const
 	{
 		return new dumper(*this);
 	}
+
 
 	/// Apply a dumper operator to population \e pop.
 	virtual bool apply(population & pop);
