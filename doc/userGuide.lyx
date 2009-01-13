@@ -1277,20 +1277,17 @@ will do nothing apparently, because it creates an operator.
 \end_layout
 
 \begin_layout Itemize
-Constants start with Capital characters as well.
- They are usually prefixed with a category name.
- For example, 
-\family typewriter
-ByProportion
-\family default
- specifies a migration mode.
+Constants start with Capital characters.
+ Their names instead of their actual values should be used because those
+ values can change without notice.
 \end_layout
 
-\begin_layout Standard
-Finally, simuPOP uses the abbreviated forms of the following words in function
- and parameter names:
+\begin_layout Itemize
+simuPOP uses the abbreviated form of the following words in function and
+ parameter names:
 \end_layout
 
+\begin_deeper
 \begin_layout Quote
 
 \family typewriter
@@ -1310,9 +1307,13 @@ pos
 \family default
 (subpopulation and virtual subpopulation)
 \family typewriter
-, subPops (subpopulations and virtual subpopulations), rep 
+, subPops
 \family default
-(replicate)
+ (subpopulations and virtual subpopulations), 
+\family typewriter
+rep 
+\family default
+(replicate and replicates)
 \family typewriter
 , gen 
 \family default
@@ -1331,6 +1332,32 @@ pos
 (statements).
 \end_layout
 
+\begin_layout Standard
+It usually possible to guess whether or not a parameter accepts a single
+ or a list of objects by its name.
+ For example, 
+\family typewriter
+subPop
+\family default
+ specifies a single subpopulation and 
+\family typewriter
+subPops
+\family default
+ accepts a list of subpopulations.
+ Note that the plural form of parameter usually also accepts single input
+ (e.g.
+ 
+\family typewriter
+loci=1
+\family default
+ can be used as a shortcut for 
+\family typewriter
+loci=[1]
+\family default
+).
+\end_layout
+
+\end_deeper
 \begin_layout Chapter
 Core simuPOP components
 \begin_inset CommandInset label
