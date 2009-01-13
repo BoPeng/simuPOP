@@ -821,6 +821,61 @@ initByValueRef
 \end_layout
 
 \begin_layout Section
+Expression and Statements
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+dumperRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyOutputRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyExecRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+infoEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+infoExecRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Migration
 \begin_inset Index
 status collapsed
@@ -1149,68 +1204,6 @@ statRef
 \end_layout
 
 \begin_layout Section
-Expression and Statements
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-dumperRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-savePopulationRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pyOutputRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pyEvalRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pyExecRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-infoEvalRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-infoExecRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Tagging (used for pedigree tracking) 
 \end_layout
 
@@ -1318,6 +1311,13 @@ status open
 
 \backslash
 ifElseRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+savePopulationRef
 \end_layout
 
 \begin_layout Plain Layout
