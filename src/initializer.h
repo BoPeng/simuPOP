@@ -77,7 +77,7 @@ public:
 	}
 
 
-	/// deep copy of an initSex
+	/// deep copy of an \c initSex operator.
 	virtual baseOperator * clone() const
 	{
 		return new initSex(*this);
@@ -91,7 +91,7 @@ public:
 	}
 
 
-	/// apply this operator to population \c pop
+	/// apply this operator to population \e pop
 	bool apply(population & pop);
 
 protected:
@@ -152,7 +152,7 @@ public:
 	}
 
 
-	/// apply this operator to population \c pop
+	/// apply this operator to population \e pop
 	bool apply(population & pop);
 
 private:
@@ -219,7 +219,7 @@ public:
 	}
 
 
-	/// apply this operator to population \c pop
+	/// apply this operator to population \e pop
 	bool apply(population & pop);
 
 private:
