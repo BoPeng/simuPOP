@@ -1,0 +1,1682 @@
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass manual
+\begin_preamble
+\renewcommand{\py@ptsize}{12pt}
+
+\setreleaseinfo{Release 0.9.1 (\mbox{$$Rev$$})}
+\authoraddress{
+{\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
+{\bf Email: } \textsf{bpeng@mdanderson.org}\\
+{\bf URL: } \textsf{http://simupop.sourceforge.net} \\
+{\bf Mailing List: } \textsf{simupop-list@lists.sourceforge.net}
+}
+\author{Bo Peng}
+\date{December 2004\\
+\hfill{}\\
+Last modified \\
+\today }
+
+\ifhtml
+\chapter*{Front Matter\label{front}}
+\fi
+
+\renewcommand\lstlistlistingname{List of Examples}
+\renewcommand\lstlistingname{Example}
+
+\sloppy
+
+\definecolor{TitleColor}{rgb}{0.126,0.263,0.361}
+\definecolor{LinkColor}{rgb}{0.208,0.374,0.486}
+\definecolor{VerbatimColor}{rgb}{0,0,0}
+\definecolor{VerbatimBorderColor}{rgb}{0,0,0}
+
+\usepackage{sectsty}
+\sectionfont{\color{TitleColor}}
+\subsectionfont{\color{TitleColor}}
+\subsubsectionfont{\color{TitleColor}}
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\float_placement h
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "simuPOP Reference Manual"
+\pdf_author "Bo Peng"
+\pdf_keywords "simuPOP"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen true
+\pdf_bookmarksopenlevel 2
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "linkcolor=TitleColor,urlcolor=LinkColor"
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "basicstyle={\ttfamily\color{VerbatimColor}},language=Python,showspaces=false,showstringspaces=false,showtabs=false,xleftmargin=15pt"
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+simuPOP Reference Manual
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "c"
+hor_pos "c"
+has_inner_box 1
+inner_pos "c"
+use_parbox 0
+width "100col%"
+special "none"
+height "1pt"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{7.5in} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+copyright{} 
+\end_layout
+
+\end_inset
+
+ 2004-2008 Bo Peng 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{.3cm} 
+\backslash
+hrule 
+\backslash
+vspace{0.1cm} 
+\end_layout
+
+\end_inset
+
+Permission is granted to make and distribute verbatim copies of this manual
+ provided the copyright notice and this permission notice are preserved
+ on all copies.
+ Permission is granted to copy and distribute modified versions of this
+ manual under the conditions for verbatim copying, provided also that the
+ sections entitled Copying and GNU General Public License are included exactly
+ as in the original, and provided that the entire resulting derived work
+ is distributed under the terms of a permission notice identical to this
+ one.
+ Permission is granted to copy and distribute translations of this manual
+ into another language, under the above conditions for modified versions,
+ except that this permission notice may be stated in a translation approved
+ by the Free Software Foundation.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+simuPOP is a forward-time population genetics simulation environment.
+ Unlike coalescent-based programs, simuPOP evolves populations forward in
+ time, subject to arbitrary number of genetic and environmental forces such
+ as mutation, recombination, migration and population/subpopulation size
+ changes.
+ Statistics of populations can be calculated and visualized dynamically
+ which makes simuPOP an ideal tool to demonstrate population genetics models;
+ generate datasets under various evolutionary settings, and more importantly,
+ study complex evolutionary processes and evaluate gene mapping methods.
+\end_layout
+
+\begin_layout Abstract
+simuPOP is written in C++ and is provided as Python modules.
+ It provides a large number of building blocks (populations, mating schemes,
+ various genetic forces in the form of operators, simulators and gene mapping
+ methods) to construct a simulation.
+ This provides a R/Splus or Matlab-like environment where users can interactivel
+y create, manipulate and evolve populations, monitor and visualize population
+ statistics and apply gene mapping methods.
+ Please refer to the 
+\emph on
+simuPOP user's guide
+\emph default
+ for a detailed introduction to simuPOP concepts, and a number of examples
+ on how to use simuPOP to perform various simulations.
+\end_layout
+
+\begin_layout Abstract
+This reference manual lists all variables, functions, classes and utility
+ modules of simuPOP.
+ Please report any error to the simuPOP mailing list 
+\family typewriter
+simupop-list@lists.sourceforge.net
+\family default
+.
+\end_layout
+
+\begin_layout Abstract
+
+\series bold
+How to cite simuPOP: 
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+Bo Peng and Marek Kimmel (2005) simuPOP: a forward-time population genetics
+ simulation environment.
+ 
+\emph on
+bioinformatics
+\emph default
+, 
+\series bold
+21
+\series default
+ (18): 3686-3687.
+\end_layout
+
+\begin_layout Quote
+Bo Peng and Christopher Amos (2008) Forward-time simulations of nonrandom
+ mating populations using simuPOP.
+ 
+\emph on
+bioinformatics
+\emph default
+, 
+\series bold
+24
+\series default
+ (11)
+\begin_inset Quotes erd
+\end_inset
+
+ 1408-1409.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+This reference manual simuPOP_ref.tex generated by 'doxygen; tools/doxy2swig.py'.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "simuPOP_ref.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Chapter
+\begin_inset space \thinspace{}
+\end_inset
+
+simuPOP Components
+\end_layout
+
+\begin_layout Section
+Individual
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+individual
+\end_layout
+
+\end_inset
+
+, population
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+population
+\end_layout
+
+\end_inset
+
+ and simulator
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Simulator
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+GenoStruTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+individualRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+populationRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simulatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pedigreeRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Virtual subpopulation splitters
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sexSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+affectionSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+infoSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+proportionSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rangeSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+genotypeSplitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+combinedSplitterRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Basic Mating Schemes
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+mating scheme
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+homoMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+heteroMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pedigreeMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Parent choosers and offspring generators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+sequentialParentChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+sequentialParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+randomParentChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+randomParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+polyParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+alphaParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+infoParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyParentsChooserRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+offspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+controlledOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmendelianOffspringGeneratorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Pre-defined offspring generators and mating schemes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcloneOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmendelianOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfingOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcloneMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomSelectionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmonogamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpolygamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPalphaMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPconsanguineousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcontrolledRandomMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Operator References (under revision)
+\end_layout
+
+\begin_layout Section
+Base class for all operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+baseOperatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Initialization
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+initializer
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+initSexRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+initByFreqRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+initByValueRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Standard genotype transmitters
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+genoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+cloneGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mendelianGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+selfingGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+haplodiploidGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mitochondrialGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Expression and Statements
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+dumperRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyOutputRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyExecRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+infoEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+infoExecRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Migration
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+migrator
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+migratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyMigratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+splitSubPopRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mergeSubPopsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+resizeSubPopsRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mutation
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+Mutation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+mutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+kamMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+smmMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+gsmMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pointMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Recombination and gene conversion
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+recombinatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Selection
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+selection
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+selectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mapSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+maSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mlSelectorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pySelectorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Penetrance
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+penetrance
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+basePenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mapPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+maPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mlPenetranceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyPenetranceRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Quantitative Trait
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+quantitative trait
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+quanTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mapQuanTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+maQuanTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mlQuanTraitRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyQuanTraitRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Statistics Calculation
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+statorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+statRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Tagging (used for pedigree tracking) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+taggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+inheritTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+parentTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+parentsTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pedigreeTaggerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyTaggerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Terminator
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+terminateIfRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The Python operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pyOperatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Miscellaneous
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ifElseRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+savePopulationRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+turnOnDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+turnOffDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+noneOpRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pauseRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ticTocRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+setAncestralDepthRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Global and Python Utility functions (under revision)
+\end_layout
+
+\begin_layout Section
+Global functions
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AlleleTypeRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+AvailableRNGsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+LimitsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ListDebugCodeRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+LoadPopulationRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+LoadSimulatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+MaxAlleleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModuleCompilerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModuleDateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModulePlatFormRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModulePyVersionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+OptimizedRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SetRNGRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOffDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOnDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rngRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRevRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuVerRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuPOP
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuPOPFuncRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuOpt
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuOptFuncRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuUtil
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuUtilrandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuUtilcaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuUtilaffectedSibpairSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuUtilpySubsetRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuUtilsimuProgressRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+simuUtilFuncRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Module 
+\family typewriter
+simuRPy
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyvarPlotterRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Utility Classes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+RNGRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset index_print
+LatexCommand printindex
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
