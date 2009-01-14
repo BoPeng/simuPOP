@@ -2457,20 +2457,22 @@ chromLocusPair()
 \begin_layout Standard
 A genotypic structure can be retrieved from 
 \emph on
-individual, population 
+individual
 \emph default
-and 
+ and 
 \emph on
-simulator
+population
 \emph default
- objects.
- Because a population consists of individuals of the same type, and a simulator
- consists of populations of the same type, genotypic information
+objects.
+ Because a population consists of individuals of the same type, genotypic
+ information
 \emph on
  
 \emph default
-can only be changed for all individuals at the population level, or for
- all populations at the simulator level.
+can only be changed for all individuals at the population level.
+ Populations in a simulator usually have the same genotypic structure because
+ they are created by as replicates, but their structure may change during
+ evolution.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -8002,50 +8004,6 @@ lstparams "caption={List the order at which operators are applied},keywordstyle=
 \end_layout
 
 \begin_layout Subsection
-Modifying populations and mating scheme
-\end_layout
-
-\begin_layout Standard
-Because all populations in a simulator need to have the same genotypic structure
-, modifying genotypic structure of individual populations in a simulator
- is disallowed.
- Instead, a few functions are provided to change the information fields
- and ancestral depths for all populations.
- In addition, This makes it easy the implementation of complex multi-stage
- evoluationary scenarios.
-\end_layout
-
-\begin_layout Standard
-For example, although a standard Wright-Fisher random mating scheme is preferred
- because it leads to a larger effective population size than other mating
- schemes, it is difficult to ascertain pedigrees from a random mating population
- because there will be very few siblings in such a population.
- In addition, because we usually only sample from the last few generations,
- it would be more efficient to keep tract of pedigree information only for
- these generations.
- Such considerations lead to the popularity of a two stage evolutionary
- scenario where the standard random mating is used in the first stage and
- another mating scheme is used in the second stage, in preparation for pedigree
- ascertainment.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "twoStage"
-
-\end_inset
-
- demonstrates the implementation of such a scenario.
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/twoStage.log"
-lstparams "caption={A two-stage evolutionary process},label={twoStage}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Population access and other simulator operations
 \end_layout
 
@@ -8092,8 +8050,14 @@ clone()
 simu.population(0).clone()
 \family default
 ).
- Alternatively, you can extract a population from a simulator using function
- 
+\end_layout
+
+\begin_layout Standard
+Populations in a simulator can be added or removed using functions 
+\family typewriter
+add()
+\family default
+ and 
 \family typewriter
 extract()
 \family default
@@ -8130,6 +8094,83 @@ loadSimulator
 LatexCommand lstinputlisting
 filename "log/simuFunc.log"
 lstparams "caption={Clone, save and load a simulator},label={simuFunc}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Modifying populations and mating scheme
+\end_layout
+
+\begin_layout Standard
+Although a standard Wright-Fisher random mating scheme is usually preferred
+ because it leads to a larger effective population size than other mating
+ schemes, it is difficult to ascertain pedigrees from a random mating population
+ because there will be very few siblings in such a population.
+ In addition, because we usually only sample from the last few generations,
+ it would be more efficient to keep tract of pedigree information only for
+ these generations.
+ Such considerations lead to the popularity of a two stage evolutionary
+ scenario where the standard random mating scheme is used in the first stage
+ and another mating scheme that is more suitable for pedigree ascertainment
+ is used in the second stage.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "twoStage"
+
+\end_inset
+
+ demonstrates the implementation of such a scenario.
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/twoStage.log"
+lstparams "caption={A two-stage evolutionary process},label={twoStage}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Change genotypic structure during evolution
+\end_layout
+
+\begin_layout Standard
+Most operators do not change the genotypic structure of populations during
+ evolution.
+ However, it is possible to change the structure of a population, such as
+ adding or removing information fields, loci or chromosomes during evolution.
+ The only restriction is that all individual in a population needs to have
+ the same genotypic structure.
+ That is to say, if you are inserting a new locus to an individual, all
+ individuals in this population should have it.
+ This is why there is no individual-level structure-modification functions.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "changeStru"
+
+\end_inset
+
+ gives an example of a dynamic mutator.
+ This mutator is not a conventional mutator in that it does not mutate any
+ existing loci.
+ It assumes a chromosome region that originally has no polymorphic markers.
+ When a mutation happens, a monomorphic marker that is not simulated becomes
+ polymorphic and is inserted to the chromosome.
+ If the region is long enough, this example effectively simulates an infinite
+ allele mode.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/changeStru.log"
+lstparams "caption={A Python mutator that adds new loci to populations.},label={changeStru}"
 
 \end_inset
 

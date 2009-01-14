@@ -288,6 +288,12 @@ public:
 	int __cmp__(const population & rhs) const;
 
 	/** HIDDEN
+	 *  adapt the current population to anther population structure.
+	 *  population size might or might not be changed.
+	 */
+	void fitGenoStru(size_t stru);
+
+	/** HIDDEN
 	 *  set population/subpopulation structure given subpopulation sizes
 	 *  \param newSubPopSizes an array of new subpopulation sizes. The overall
 	 *    population size should not changed.

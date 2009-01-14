@@ -116,14 +116,12 @@ private:
  *  simulator.
  *
  *  The most important member function of a simulator is \c evolve, which
- *  evolves populations forward in time, subject to various \e operators.
- *  Because populations in a simulator have to keep the same genotypic
- *  structure, several functions are provided to change ancestral depth and
- *  information fields of all populations. These functions cannot be replaced
- *  by similar calls to all populations in a simulator because the genotypic
- *  structure of the simulator itself needs to be updated.
+ *  evolves populations forward in time, subject to various \e operators. For
+ *  convenience, member functions are provided to set virtual splitter, add
+ *  information field and set ancestral depth to all populations in a
+ *  simulator.
  */
-class simulator : public GenoStruTrait
+class simulator
 {
 public:
 	/** Create a simulator with \e rep replicates of population \e pop.
@@ -183,6 +181,13 @@ public:
 	 */
 	population & pop(UINT rep) const;
 
+	/** Add a population \e pop to the end of an existing simulator. This
+	 *  creates an cloned copy of \e pop in the simulator so the evolution
+	 *  of the simulator will not change \e pop.
+	 *  <group>4-modify</group>
+	 */
+	void add(const population & pop);
+
 	/** Extract the \e rep-th population from a simulator. This will reduce
 	 *  the number of populations in this simulator by one.
 	 *  <group>3-pop</group>
@@ -191,16 +196,13 @@ public:
 
 	/** Return a Python iterator that can be used to iterate through all
 	 *  populations in a simulator.
-	 *  <group>3-pop</group>
+	 *  <group>4-modify</group>
 	 */
 	pyPopIterator populations()
 	{
 		return pyPopIterator(m_ptrRep.begin(), m_ptrRep.end());
 	}
 
-
-	/// CPPONLY set population... unsafe!
-	void setPopulation(population & pop, UINT rep);
 
 	/** Evolve all populations \e gen generations, subject to operators \e ops
 	 *  \e preOps and \e postOps. Operators \e preOps are applied to all
@@ -247,26 +249,6 @@ public:
 
 	/// CPPONLY apply a list of operators to all populations
 	bool apply(const vectorop ops, bool dryrun = false);
-
-
-	/** Add an information field \e field to all populations in a simulator,
-	 *  and update the genotypic structure of the simulator itself. The
-	 *  information field will be initialized by value \e init.
-	 *  <group>7-change</group>
-	 */
-	void addInfoField(const string & field, double init = 0);
-
-	/** Add information fields \e fields to all populations in a simulator,
-	 *  and update the genotypic structure of the simulator itself. The
-	 *  information field will be initialized by value \e init.
-	 *  <group>7-change</group>
-	 */
-	void addInfoFields(const vectorstr & fields, double init = 0);
-
-	/** Set ancestral depth of all populations in a simulator.
-	 *  <group>7-change</group>
-	 */
-	void setAncestralDepth(UINT depth);
 
 
 	/** Set a new mating scheme \e matingScheme to a simulator.
@@ -360,7 +342,6 @@ private:
 			m_ptrRep[i]->setRep(i);
 		}
 		m_scratchPop = new population(*m_ptrRep[0]);
-		setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
 
 		// only after all replicates are ready do we set gen
 		setGen(l_gen);

@@ -1231,8 +1231,10 @@ simu.evolve(preOps = [initByFreq([0.5, 0.5])],
     ops = [], gen = 50)
 # Second stage: track parents and produce more offspring per mating
 # event. In preparation for pedigree ascertainment.
-simu.addInfoFields(['father_idx', 'mother_idx'])
-simu.setAncestralDepth(1)
+for pop in simu.populations():
+    pop.addInfoFields(['father_idx', 'mother_idx'])
+    pop.setAncestralDepth(1)
+
 simu.setMatingScheme(randomMating(numOffspring=2))
 simu.evolve(
     ops = [
@@ -1244,8 +1246,35 @@ simu.evolve(
 # Sample affected sibpairs
 pop = simu.extract(0)
 sample = AffectedSibpairSample(pop, size=5)[0]
-[ind.intInfo('father_idx')  for ind in sample.individuals()]
+[ind.intInfo('father_idx') for ind in sample.individuals()]
 #end
+
+#file log/changeStru.log
+import random
+def mutator(pop, param):
+    'Parameter has a length of region and a mutation rate at each basepair'
+    region, rate = param
+    # there are certainly more efficient algorithm, but this 
+    # example just mutate each basepair one by one....
+    for i in range(region):
+        if random.random() < rate:
+            idx = pop.addLoci([0], [i])[0]
+            # choose someone to mutate
+            ind = pop.individual(random.randint(0, pop.popSize() - 1))
+            ind.setAllele(1, idx)
+
+# The populations start with no loci at all.
+simu = simulator(population(1000, loci=[]), randomMating(), rep=3)
+simu.evolve(
+    preOps = [initSex()],
+    ops = [pyOperator(func=mutator, param=(1e5, 5e-5))],
+    gen = 200
+)
+for pop in simu.populations():
+    print pop.totNumLoci(), pop.lociPos()
+
+#end
+
 
 #file log/simuFunc.log
 simu = simulator(population(100, loci=[5, 10], infoFields=['x']),

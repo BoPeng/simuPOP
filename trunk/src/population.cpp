@@ -585,6 +585,35 @@ void population::fitSubPopStru(const vectorlu & newSubPopSizes,
 }
 
 
+void population::fitGenoStru(size_t stru)
+{
+	// set genotypic structure to a population.
+	// This function will try not to change population size.
+	UINT oldSize = genoSize();
+	UINT oldInfoSize = infoSize();
+
+	setGenoStruIdx(stru);
+	UINT newSize = genoSize();
+	UINT newInfoSize = infoSize();
+
+	for (int depth = ancestralGens(); depth >= 0; --depth) {
+		useAncestralGen(depth);
+		if (oldSize != newSize)
+			m_genotype.resize(newSize * popSize());
+		if (oldInfoSize != newInfoSize)
+			m_info.resize(newInfoSize * popSize());
+		// reset structure
+		GenoIterator ptr = m_genotype.begin();
+		InfoIterator infoPtr = m_info.begin();
+		for (ULONG i = 0; i < m_popSize; ++i, ptr += newSize, infoPtr += newInfoSize) {
+			m_inds[i].setGenoStruIdx(stru);
+			m_inds[i].setGenoPtr(ptr);
+			m_inds[i].setInfoPtr(infoPtr);
+		}
+	}
+}
+
+
 void population::setSubPopStru(const vectorlu & newSubPopSizes,
                                const vectorstr & newSubPopNames)
 {
@@ -1493,9 +1522,7 @@ void population::push(population & rhs)
 {
 	DBG_ASSERT(rhs.genoStruIdx() == genoStruIdx(), ValueError,
 		"Evolution can not continue because the new generation has different \n"
-		"genotypic structure. Note that genetypic structure of a population \n"
-		"might be changed unexpectedly, e.g. when a sample is drawn from a \n"
-		"population.\n");
+		"genotypic structure.\n");
 
 	DBG_FAILIF(!m_genotype.empty() && m_genotype.begin() == rhs.m_genotype.begin(), ValueError,
 		"Passed population is a reference of current population, swapPop failed.");
