@@ -77,9 +77,6 @@ simulator::simulator(const population & pop, mating & matingScheme, UINT rep)
 		throw RuntimeError("Failed to create a population.");
 	}
 
-	// use pop's geno structure
-	this->setGenoStruIdx(m_ptrRep[0]->genoStruIdx());
-
 	// set generation number for all replicates
 	setGen(0);
 
@@ -100,7 +97,6 @@ simulator::~simulator()
 
 
 simulator::simulator(const simulator & rhs) :
-	GenoStruTrait(rhs),
 	m_gen(rhs.m_gen),
 	m_matingScheme(NULL),
 	m_numRep(rhs.m_numRep),
@@ -120,69 +116,6 @@ simulator::simulator(const simulator & rhs) :
 simulator * simulator::clone() const
 {
 	return new simulator(*this);
-}
-
-
-void simulator::addInfoField(const string & field, double init)
-{
-	vectorstr newfields;
-
-	try {
-		infoIdx(field);
-	} catch (IndexError &) {
-		newfields.push_back(field);
-	}
-
-	if (!newfields.empty())
-		setGenoStructure(struAddInfoFields(newfields));
-	// all replicate
-	for (UINT i = 0; i < m_numRep; ++i) {
-		m_ptrRep[i]->addInfoField(field, init);
-		DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
-			ValueError, "Genotypic structure of one of the "
-			            "replicates does not agree with the structure of the simulator");
-	}
-	// and the scratch pop
-	m_scratchPop->addInfoField(field, init);
-	DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
-		ValueError, "Genotypic structure of one of the "
-		            "replicates does not agree with the structure of the simulator");
-}
-
-
-void simulator::addInfoFields(const vectorstr & fields, double init)
-{
-	vectorstr newfields;
-
-	for (vectorstr::const_iterator it = fields.begin(); it != fields.end(); ++it) {
-		try {
-			infoIdx(*it);
-		} catch (IndexError &) {
-			newfields.push_back(*it);
-		}
-	}
-
-	if (!newfields.empty())
-		setGenoStructure(struAddInfoFields(newfields));
-
-	for (UINT i = 0; i < m_numRep; ++i) {
-		m_ptrRep[i]->addInfoFields(fields, init);
-		DBG_ASSERT(genoStruIdx() == m_ptrRep[i]->genoStruIdx(),
-			ValueError, "Genotypic structure of one of the "
-			            "replicates does not agree with the structure of the simulator");
-	}
-	m_scratchPop->addInfoFields(fields, init);
-	DBG_ASSERT(genoStruIdx() == m_scratchPop->genoStruIdx(),
-		ValueError, "Genotypic structure of one of the "
-		            "replicates does not agree with the structure of the simulator");
-}
-
-
-void simulator::setAncestralDepth(UINT depth)
-{
-	for (UINT i = 0; i < m_numRep; ++i)
-		m_ptrRep[i]->setAncestralDepth(depth);
-	m_scratchPop->setAncestralDepth(depth);
 }
 
 
@@ -214,23 +147,13 @@ void simulator::setMatingScheme(const mating & matingScheme)
 }
 
 
-void simulator::setPopulation(population & pop, UINT rep)
+void simulator::add(const population & pop)
 {
-	DBG_FAILIF(rep >= m_numRep, IndexError,
-		"replicate index out of range. From 0 to numRep()-1 ");
-	// get a copy of population
-	delete m_ptrRep[rep];
-	m_ptrRep[rep] = new population(pop);
+	++m_numRep;
 
-	if (pop.genoStru() != this->genoStru() ) {
-		DBG_DO(DBG_SIMULATOR,  cout << "Warning: added population has different genotypic structure." << endl);
-		setGenoStruIdx(pop.genoStruIdx());
-	}
-	if (pop.genoStru() != m_scratchPop->genoStru() ) {
-		delete m_scratchPop;
-		m_scratchPop = new population(pop);
-	}
-	m_ptrRep[rep]->setRep(rep);
+	m_ptrRep.push_back(new population(pop));
+	DBG_FAILIF(m_ptrRep.back() == NULL,
+		RuntimeError, "Fail to add new population.");
 }
 
 
@@ -311,23 +234,6 @@ vectoru simulator::evolve(const vectorop & ops,
 		return vectoru(m_numRep, 0);
 	}
 
-	// it is possible that a user changes the internal population's
-	// genotype strucutre. It is therefore necessary to check if
-	// all populations have the same structure.
-#ifndef OPTIMIZED
-	for (size_t i = 0; i < m_numRep; ++i) {
-		DBG_FAILIF(genoStruIdx() != m_ptrRep[i]->genoStruIdx(),
-			ValueError, "Genotypic structure of one of the \n"
-			            "replicates does not agree with the simulator. It is likely that you\n"
-			            "have changed the genotypic structure of a population obtained from \n"
-			            "simu::population(rep). This is not allowed.\n");
-	}
-	DBG_FAILIF(genoStruIdx() != m_scratchPop->genoStruIdx(),
-		ValueError, "Genotypic structure of one of the \n"
-		            "replicates does not agree with the simulator. It is likely that you\n"
-		            "have changed the genotypic structure of a population obtained from \n"
-		            "simu::population(rep). This is not allowed.\n");
-#endif
 	// evolved generations, which will be returned.
 	vectoru evolvedGens(m_numRep, 0U);
 

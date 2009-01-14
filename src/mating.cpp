@@ -1167,6 +1167,9 @@ mating::mating(const uintListFunc & subPopSize)
 
 bool mating::prepareScratchPop(population & pop, population & scratch)
 {
+	if (scratch.genoStruIdx() != pop.genoStruIdx())
+		scratch.fitGenoStru(pop.genoStruIdx());
+
 	// use population structure of pop
 	if (m_subPopSize.empty() && !m_subPopSize.func().isValid())
 		scratch.fitSubPopStru(pop.subPopSizes(), pop.subPopNames());
@@ -1262,6 +1265,9 @@ pedigreeMating::~pedigreeMating()
 
 bool pedigreeMating::prepareScratchPop(population & pop, population & scratch)
 {
+	if (scratch.genoStruIdx() != pop.genoStruIdx())
+		scratch.fitGenoStru(pop.genoStruIdx());
+
 	DBG_FAILIF(pop.numSubPop() != m_ped.numSubPop(), ValueError,
 		"Evolving generation does not have the same number of subpopulation as the pedigree.");
 	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
