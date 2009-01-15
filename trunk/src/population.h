@@ -918,18 +918,18 @@ public:
 	 */
 	void splitSubPop(UINT subPop, vectorf sizes);
 
-	/** Remove subpopulations \e subPop and all their individuals. Indexes of
+	/** Remove subpopulation(s) \e subPop and all their individuals. Indexes of
 	 *  subpopulations after removed subpopulations will be shifted.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeSubPops(const vectoru & subPops);
+	void removeSubPops(const uintList & subPops);
 
-	/** remove individuals \e inds (absolute indexes) from the current
+	/** remove individual(s) \e inds (absolute indexes) from the current
 	 *  population. A subpopulation will be kept even if all individuals from
 	 *  it are removed. This function only affects the current generation.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeIndividuals(const vectoru & inds);
+	void removeIndividuals(const uintList & inds);
 
 	/** Merge subpopulations \e subPops. If \e subPops is empty (default), all
 	 *  subpopulations will be merged. \e subPops do not have to be adjacent to
