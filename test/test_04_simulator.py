@@ -91,6 +91,20 @@ class TestSimulator(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, simu.population, 5)
         self.assertRaises(exceptions.IndexError, simu.extract, 5)
 
+    def testAdd(self):
+        'Testing simulator::add(pop)'
+        pop = population(size=[20, 80], loci=[3])
+        simu = simulator(pop, randomMating(), rep=5)
+        repnum = simu.numRep()
+        pop1 = population(size=[20, 50], loci=[2])
+        simu.add(pop1)
+        self.assertEqual(simu.numRep(), repnum+1)
+        self.assertEqual(simu.population(repnum).subPopSizes(), (20, 50))
+        simu.population(repnum).removeSubPops(1)
+        self.assertEqual(simu.population(repnum).subPopSizes(), (20,))
+        self.assertEqual(pop1.subPopSizes(), (20, 50))
+
+
     def testPopulation(self):
         'Testing simulator::population(rep), populations()'
         pop = population(size=1000, loci=[1])
@@ -122,21 +136,11 @@ class TestSimulator(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, simu.population, 5)
 
     def testAddInfoField(self):
-        'Testing simulator::addInfoFields(field, init=0), addInfoFields(fields, init=0)'
-        'setAncestralDepth(depth), setMatingScheme(matingScheme)'
+        'setMatingScheme(matingScheme)'
         simu = simulator(population(100, infoFields=['a']), cloneMating(), rep=3)
+        simu.evolve(preOps=[initSex()], ops=[], gen=1)
         simu.setMatingScheme(randomMating())
-        simu.addInfoField('b')
-        self.assertEqual(simu.infoFields(), ('a', 'b'))
-        simu.addInfoFields(['c', 'd'])
-        simu.setAncestralDepth(2)
-        simu.evolve(preOps = [initSex()], ops=[], gen=10)
-        self.assertEqual(simu.population(0).ancestralGens(), 2)
-        self.assertEqual(simu.infoFields(), ('a', 'b', 'c', 'd'))
-        self.assertEqual(simu.population(0).infoFields(), ('a', 'b', 'c', 'd'))
-        simu.population(0).addInfoField('l')
-        self.assertRaises(exceptions.ValueError, simu.addInfoField, 'j')
-        self.assertRaises(exceptions.ValueError, simu.evolve, ops=[])
+        simu.evolve(preOps=[initSex()], ops=[], gen=1)
 
     def testVars(self):
         'Testing simulator::vars(rep), vars(rep, subPop), dvars(rep), dvars(rep, subPop)'

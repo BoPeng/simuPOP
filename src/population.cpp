@@ -760,11 +760,12 @@ void population::splitSubPop(UINT subPop, vectorf sizes)
 }
 
 
-void population::removeSubPops(const vectoru & subPops)
+void population::removeSubPops(const uintList & subPopList)
 {
+	const vectorlu & subPops = subPopList.elems();
 #ifndef OPTIMIZED
 	// check if subPops are valid
-	for (vectoru::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
+	for (vectorlu::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
 		DBG_FAILIF(*sp >= numSubPop(), IndexError, "Subpopulation " + toStr(*sp) + " does not exist.");
 	}
 #endif
@@ -818,8 +819,9 @@ void population::removeSubPops(const vectoru & subPops)
 }
 
 
-void population::removeIndividuals(const vectoru & inds)
+void population::removeIndividuals(const uintList & indList)
 {
+	const vectorlu & inds = indList.elems();
 	sortIndividuals();
 	vectorlu new_size = m_subPopSize;
 
@@ -834,8 +836,8 @@ void population::removeIndividuals(const vectoru & inds)
 
 	// which ones are removed?
 	vector<bool> removed(popSize(), false);
-	vectoru::const_iterator it = inds.begin();
-	vectoru::const_iterator it_end = inds.end();
+	vectorlu::const_iterator it = inds.begin();
+	vectorlu::const_iterator it_end = inds.end();
 	for (; it != it_end; ++it)
 		removed[*it] = true;
 	//
