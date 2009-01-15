@@ -1159,9 +1159,12 @@ void population::addChrom(const vectorf & lociPos, const vectorstr & lociNames,
 }
 
 
-vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
+vectoru population::addLoci(const uintList & chromList, const floatList & posList,
                             const vectorstr & names)
 {
+	const vectorlu & chrom = chromList.elems();
+	const vectorf & pos = posList.elems();
+
 	DBG_ASSERT(chrom.size() == pos.size(), ValueError,
 		"Chromosome and position lists should have the same length");
 	DBG_ASSERT(names.empty() || pos.size() == names.size(), ValueError,
@@ -1214,8 +1217,10 @@ vectoru population::addLoci(const vectoru & chrom, const vectorf & pos,
 }
 
 
-void population::resize(const vectorlu & newSubPopSizes, bool propagate)
+void population::resize(const uintList & sizeList, bool propagate)
 {
+	const vectorlu & newSubPopSizes = sizeList.elems();
+
 	DBG_FAILIF(newSubPopSizes.size() != numSubPop(), ValueError,
 		"Resize should give subpopulation size for each subpopulation");
 

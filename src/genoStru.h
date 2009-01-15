@@ -392,7 +392,7 @@ public:
 	 *  is used to return the indexes of these loci in the new
 	 *  structure
 	 */
-	GenoStructure & gsAddLoci(const vectoru & chrom, const vectorf & pos,
+	GenoStructure & gsAddLoci(const vectorlu & chrom, const vectorf & pos,
 		const vectorstr & names, vectoru & newIndex) const;
 
 	/// CPPONLY return the GenoStructure
