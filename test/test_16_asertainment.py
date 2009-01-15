@@ -35,7 +35,7 @@ class TestAscertainment(unittest.TestCase):
             ],
             preOps = [
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.population(0).totNumLoci()))
             ],
             gen = 4
         )
@@ -58,7 +58,7 @@ class TestAscertainment(unittest.TestCase):
             ],
             preOps=[
                  initByFreq(alleleFreq=[.2, .8], loci=[0]),
-                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu.totNumLoci()))
+                 initByFreq(alleleFreq=[.2]*5, loci=range(1, simu1.population(0).totNumLoci()))
             ],
             gen = 10
         )
