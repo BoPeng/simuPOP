@@ -1486,15 +1486,18 @@ population & population::extract(bool removeInd, const string & field,
 }
 
 
-void population::removeLoci(const vectoru & loci, const vectoru & keep)
+void population::removeLoci(const uintList & lociList, const uintList & keepList)
 {
+	const vectorlu & loci = lociList.elems();
+	const vectorlu & keep = keepList.elems();
+
 	DBG_FAILIF(!loci.empty() && !keep.empty(), ValueError,
 		"Please specify only one of parameters loci and keep");
 
 	if (loci.empty() && keep.empty())
 		return;
 
-	vectoru kept = keep;
+	vectorlu kept = keep;
 	UINT oldTotNumLoci = totNumLoci();
 	// new geno structure is in effective now!
 	setGenoStructure(gsRemoveLoci(loci, kept));
@@ -1513,7 +1516,7 @@ void population::removeLoci(const vectoru & loci, const vectoru & keep)
 			// new genotype
 			m_inds[i].setGenoPtr(newPtr);
 			for (UINT p = 0; p < pEnd; ++p) {
-				vectoru::iterator loc = kept.begin();
+				vectorlu::iterator loc = kept.begin();
 				for (; loc != kept.end(); ++loc)
 					*(newPtr++) = oldPtr[*loc];
 				oldPtr += oldTotNumLoci;

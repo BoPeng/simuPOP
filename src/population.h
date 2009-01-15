@@ -1030,7 +1030,7 @@ public:
 	 *  specify loci that will not be removed.
 	 *  <group>7-manipulate</group>
 	 */
-	void removeLoci(const vectoru & loci = vectoru(), const vectoru & keep = vectoru());
+	void removeLoci(const uintList & loci = uintList(), const uintList & keep = uintList());
 
 	/** Push population \e pop into the current population. Both populations
 	 *  should have the same genotypic structure. The current population is

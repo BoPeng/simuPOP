@@ -447,6 +447,8 @@ class TestPopulation(unittest.TestCase):
             for idx in range(pop2.subPopSize(oldsp)):
                 self.assertEqual(pop2.individual(idx, oldsp), pop.individual(idx, newsp))
         self.assertRaises(exceptions.IndexError, pop.removeSubPops, [8])
+        # accept single input
+        pop.removeSubPops(0)
 
 
     def testRemoveIndividuals(self):
@@ -459,12 +461,14 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop1.individual(idx), pop.individual(idx))
         for idx in range(15, pop.popSize()):
             self.assertEqual(pop1.individual(idx+1), pop.individual(idx))
+        # accept single input
+        pop.removeIndividuals(2)
 
     def testRemoveLoci(self):
         'Testing population::removeLoci(loci=[], keep=[])'
         pop = self.getPop(size=[1, 2], loci=[2, 3, 1], ancGen=5)
         pop1 = pop.clone()
-        pop.removeLoci([2])
+        pop.removeLoci(2)
         for gen in range(pop.ancestralGens(), -1, -1):
             pop.useAncestralGen(gen)
             pop1.useAncestralGen(gen)

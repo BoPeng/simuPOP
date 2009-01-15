@@ -414,8 +414,8 @@ GenoStructure & GenoStruTrait::gsAddLociFromStru(size_t idx) const
 }
 
 
-GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
-                                            vectoru & kept)
+GenoStructure & GenoStruTrait::gsRemoveLoci(const vectorlu & loci,
+                                            vectorlu & kept)
 {
 	if (kept.empty()) {
 		for (size_t loc = 0; loc < totNumLoci(); ++loc) {
@@ -428,7 +428,7 @@ GenoStructure & GenoStruTrait::gsRemoveLoci(const vectoru & loci,
 	vectoru numLoci(numChrom(), 0);
 	vectorf lociPos;
 	vectorstr lociNames;
-	vectoru::iterator loc = kept.begin();
+	vectorlu::iterator loc = kept.begin();
 	for (; loc != kept.end(); ++loc) {
 		UINT ch = chromLocusPair(*loc).first;
 		numLoci[ch]++;
