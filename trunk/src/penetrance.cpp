@@ -85,7 +85,7 @@ double mapPenetrance::penet(individual * ind)
 {
 	string key;
 
-	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
@@ -113,7 +113,7 @@ double maPenetrance::penet(individual * ind)
 {
 	UINT index = 0;
 
-	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);

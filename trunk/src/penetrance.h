@@ -154,7 +154,7 @@ public:
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_dict(penetrance), m_phase(phase)
+		m_loci(loci.elems()), m_dict(penetrance), m_phase(phase)
 	{
 	};
 
@@ -183,7 +183,7 @@ public:
 
 private:
 	/// one locus
-	uintList m_loci;
+	vectorlu m_loci;
 
 	/// penetrance for each genotype
 	strDict m_dict;
@@ -222,10 +222,10 @@ public:
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_penetrance(penetrance), m_wildtype(wildtype)
+		m_loci(loci.elems()), m_penetrance(penetrance), m_wildtype(wildtype.elems())
 	{
 		DBG_ASSERT(m_penetrance.size() == static_cast<UINT>(pow(static_cast<double>(3),
-																static_cast<double>(loci.size()))),
+																static_cast<double>(m_loci.size()))),
 			ValueError, "Please specify penetrance for each combination of genotype.");
 	};
 
@@ -255,13 +255,13 @@ public:
 
 private:
 	/// one locus
-	uintList m_loci;
+	vectorlu m_loci;
 
 	/// penetrance for each genotype
 	vectorf m_penetrance;
 
 	///
-	uintList m_wildtype;
+	vectorlu m_wildtype;
 };
 /// penetrance according to the genotype according to a multiple loci multiplicative model
 /**
@@ -375,12 +375,12 @@ public:
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
+		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())
 			throw ValueError("Passed variable is not a callable python function.");
 
-		DBG_FAILIF(loci.empty(), ValueError,
+		DBG_FAILIF(m_loci.empty(), ValueError,
 			"Please specify susceptibility loci");
 	};
 
@@ -427,7 +427,7 @@ public:
 
 private:
 	/// susceptibility loci
-	uintList m_loci;
+	vectorlu m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;

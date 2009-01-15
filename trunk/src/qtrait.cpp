@@ -57,7 +57,7 @@ double mapQuanTrait::qtrait(individual * ind)
 {
 	string key;
 
-	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);
@@ -84,7 +84,7 @@ maQuanTrait::maQuanTrait(const uintList & loci, const vectorf & qtrait, const ui
 	const intList & at, const repList & rep, const subPopList & subPops,
 	const vectorstr & infoFields) :
 	quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-	m_loci(loci), m_qtrait(qtrait), m_sigma(sigma), m_wildtype(wildtype)
+	m_loci(loci.elems()), m_qtrait(qtrait), m_sigma(sigma.elems()), m_wildtype(wildtype.elems())
 {
 	if (m_sigma.empty())
 		m_sigma.resize(m_qtrait.size(), 0.);
@@ -103,7 +103,7 @@ double maQuanTrait::qtrait(individual * ind)
 {
 	UINT index = 0;
 
-	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);

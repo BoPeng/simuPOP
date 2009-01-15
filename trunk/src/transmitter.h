@@ -546,7 +546,7 @@ private:
 	/// position to recombine, changed to fit a special pop
 	vectoru m_recBeforeLoci;
 
-	floatList m_convMode;
+	vectorf m_convMode;
 
 	/// bernulli trials
 	//  vector<BernulliTrials*> m_bt;

@@ -103,14 +103,16 @@ int pedigree::mother(ULONG idx, SubPopID subPop)
 
 void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields, int ancGen)
 {
-	if (fullRelType.empty() || relFields.empty())
+	const vectorlu & fullType = fullRelType.elems();
+
+	if (fullType.empty() || relFields.empty())
 		return;
 
-	RelativeType relType = static_cast<RelativeType>(fullRelType[0]);
+	RelativeType relType = static_cast<RelativeType>(fullType[0]);
 
-	DBG_FAILIF(fullRelType.size() > 2, ValueError, "Unrecognized relative type.");
+	DBG_FAILIF(fullType.size() > 2, ValueError, "Unrecognized relative type.");
 
-	SexChoice relSex = fullRelType.size() == 2 ? static_cast<SexChoice>(fullRelType[1]) : AnySex;
+	SexChoice relSex = fullType.size() == 2 ? static_cast<SexChoice>(fullType[1]) : AnySex;
 
 	DBG_ASSERT(relSex == AnySex || relSex == MaleOnly || relSex == FemaleOnly
 		|| relSex == SameSex || relSex == OppositeSex, ValueError,

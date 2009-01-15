@@ -363,7 +363,7 @@ recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 	:
 	genoTransmitter(begin, end, step, at, rep, subPops, infoFields)
 	, m_intensity(intensity), m_rate(rate), m_afterLoci(loci), m_recBeforeLoci(0),
-	m_convMode(convMode),
+	m_convMode(convMode.elems()),
 	m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 #ifndef OPTIMIZED
 	m_recCount(0), m_convSize(),
@@ -375,7 +375,7 @@ recombinator::recombinator(double intensity, vectorf rate, vectoru loci,
 	// generate default genotype for offspring
 	setFormOffGenotype(true);
 
-	DBG_FAILIF(convMode.empty(), ValueError,
+	DBG_FAILIF(m_convMode.empty(), ValueError,
 		"Please specify a conversion mode");
 
 	int mode = static_cast<int>(m_convMode[0]);

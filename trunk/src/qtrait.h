@@ -133,7 +133,7 @@ public:
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
+		m_loci(loci.elems()), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
 	{
 	};
 
@@ -163,7 +163,7 @@ public:
 
 private:
 	/// one locus
-	uintList m_loci;
+	vectorlu m_loci;
 
 	/// qtrait for each genotype
 	strDict m_dict;
@@ -231,16 +231,16 @@ public:
 
 private:
 	/// one locus
-	uintList m_loci;
+	vectorlu m_loci;
 
 	/// qtrait for each genotype
 	vectorf m_qtrait;
 
 	///
-	floatList m_sigma;
+	vectorf m_sigma;
 
 	///
-	uintList m_wildtype;
+	vectorlu m_wildtype;
 };
 
 /// quantitative trait according to genotypes from a multiple loci multiplicative model
@@ -348,12 +348,12 @@ public:
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr(1, "qtrait")) :
 		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
+		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())
 			throw ValueError("Passed variable is not a callable python function.");
 
-		DBG_FAILIF(loci.empty(), ValueError,
+		DBG_FAILIF(m_loci.empty(), ValueError,
 			"Please specify susceptibility loci");
 	};
 
@@ -391,7 +391,7 @@ public:
 
 private:
 	/// susceptibility loci
-	uintList m_loci;
+	vectorlu m_loci;
 
 	/// user supplied python function
 	pyFunc m_func;
