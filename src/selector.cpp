@@ -59,7 +59,7 @@ double mapSelector::indFitness(individual * ind, ULONG gen)
 
 	vector<int> alleles(ply);
 
-	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		if (loc != m_loci.begin() )
 			key += '|';
 		for (size_t p = 0; p < ply; ++p)
@@ -102,7 +102,7 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 	UINT index = 0;
 	bool singleST = m_wildtype.size() == 1;
 
-	for (uintList::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
+	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
 		Allele a = ind->allele(*loc, 0);
 		Allele b = ind->allele(*loc, 1);

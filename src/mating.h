@@ -161,7 +161,7 @@ protected:
 	floatListFunc m_numOffspring;
 
 	/// paramter to determine offspring sex
-	floatList m_sexMode;
+	vectorf m_sexMode;
 
 	/// default transmitter
 	vectorop m_transmitters;

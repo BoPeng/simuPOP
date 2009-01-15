@@ -526,7 +526,7 @@ string rangeSplitter::name(SubPopID subPop)
 genotypeSplitter::genotypeSplitter(const uintList & loci,
 	const intMatrix & alleles,
 	bool phase)
-	: vspSplitter(), m_loci(loci), m_alleles(alleles),
+	: vspSplitter(), m_loci(loci.elems()), m_alleles(alleles),
 	m_phase(phase)
 {
 }

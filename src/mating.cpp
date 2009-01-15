@@ -27,7 +27,7 @@ namespace simuPOP {
 
 offspringGenerator::offspringGenerator(const vectorop & ops,
 	const floatListFunc & numOffspring, const floatList & sexMode) :
-	m_numOffspring(numOffspring), m_sexMode(sexMode),
+	m_numOffspring(numOffspring), m_sexMode(sexMode.elems()),
 	m_transmitters(0), m_formOffGenotype(true), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,

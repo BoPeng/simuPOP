@@ -218,7 +218,7 @@ public:
 	 */
 	baseOperator(string output, int stage, int begin, int end, int step, const intList & at,
 		const repList & rep, const subPopList & subPops, const vectorstr & infoFields) :
-		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at),
+		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_rep(rep), m_subPops(subPops),
 		m_ostream(output), m_infoFields(infoFields),
 		m_lastPop(MaxTraitIndex)
@@ -487,7 +487,7 @@ private:
 
 	/// a list of generations that this oeprator will be active.
 	/// typical usage is m_atGen=-1 to apply at the last generation.
-	intList m_atGen;
+	vectorl m_atGen;
 
 	/// various m_flags of Operator for faster processing.
 	unsigned char m_flags;

@@ -1411,7 +1411,7 @@ public:
 		va_list argptr;
 
 		va_start(argptr, format);
-		PyObject * arglist = Py_VaBuildValue(const_cast<char*>(format), argptr);
+		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
 		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
@@ -1437,7 +1437,7 @@ public:
 		va_list argptr;
 
 		va_start(argptr, format);
-		PyObject * arglist = Py_VaBuildValue(const_cast<char*>(format), argptr);
+		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
 		va_end(argptr);
 		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
 
@@ -1475,26 +1475,7 @@ public:
 	}
 
 
-	long operator[](size_t i) const
-	{
-		DBG_FAILIF(i >= size(), IndexError, "Index out of range");
-		return m_elems[i];
-	}
-
-
-	bool empty() const
-	{
-		return m_elems.empty();
-	}
-
-
-	size_t size() const
-	{
-		return m_elems.size();
-	}
-
-
-	vectorl & elems()
+	const vectorl & elems() const
 	{
 		return m_elems;
 	}
@@ -1526,52 +1507,9 @@ public:
 	}
 
 
-	ULONG operator[](size_t i) const
-	{
-		DBG_FAILIF(i >= size(), IndexError, "Index out of range");
-		return m_elems[i];
-	}
-
-
-	bool empty() const
-	{
-		return m_elems.empty();
-	}
-
-
-	size_t size() const
-	{
-		return m_elems.size();
-	}
-
-
-	vectorlu & elems()
+	const vectorlu & elems() const
 	{
 		return m_elems;
-	}
-
-
-	const_iterator begin() const
-	{
-		return m_elems.begin();
-	}
-
-
-	const_iterator end() const
-	{
-		return m_elems.end();
-	}
-
-
-	iterator begin()
-	{
-		return m_elems.begin();
-	}
-
-
-	iterator end()
-	{
-		return m_elems.end();
 	}
 
 
@@ -1593,35 +1531,9 @@ public:
 	}
 
 
-	double operator[](size_t i) const
-	{
-		DBG_FAILIF(i >= size(), IndexError,
-			"Index " + toStr(i) + " out of range of 0 ~ " + toStr(size() - 1));
-		return m_elems[i];
-	}
-
-
-	bool empty() const
-	{
-		return m_elems.empty();
-	}
-
-
-	size_t size() const
-	{
-		return m_elems.size();
-	}
-
-
-	vectorf & elems()
+	const vectorf & elems() const
 	{
 		return m_elems;
-	}
-
-
-	void resize(size_t size, double v)
-	{
-		m_elems.resize(size, v);
 	}
 
 
@@ -1655,6 +1567,12 @@ public:
 	}
 
 
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
 private:
 	pyFunc m_func;
 };
@@ -1676,6 +1594,26 @@ public:
 
 	floatListFunc(PyObject * func) : floatList(), m_func(func)
 	{
+	}
+
+
+	double operator[](size_t i) const
+	{
+		DBG_FAILIF(i >= size(), IndexError,
+			"Index " + toStr(i) + " out of range of 0 ~ " + toStr(size() - 1));
+		return m_elems[i];
+	}
+
+
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	size_t size() const
+	{
+		return m_elems.size();
 	}
 
 
