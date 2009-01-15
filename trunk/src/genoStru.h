@@ -379,7 +379,7 @@ public:
 	 *  of the remaining loci. However, if a non-empty kept is passed
 	 *  it will be used directly (loci is ignored).
 	 */
-	GenoStructure & gsRemoveLoci(const vectoru & loci, vectoru & kept);
+	GenoStructure & gsRemoveLoci(const vectorlu & loci, vectorlu & kept);
 
 	/** CPPONLY
 	 *  add a new chromosome to genotype structure and create a new structure.
