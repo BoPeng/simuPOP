@@ -1344,9 +1344,12 @@ subPop
 subPops
 \family default
  accepts a list of subpopulations.
- Note that the plural form of parameter usually also accepts single input
- (e.g.
- 
+ Note that
+\series bold
+ plural form parameters usually accept single inputs
+\series default
+.
+ For example, 
 \family typewriter
 loci=1
 \family default
@@ -1354,7 +1357,7 @@ loci=1
 \family typewriter
 loci=[1]
 \family default
-).
+.
 \end_layout
 
 \end_deeper
