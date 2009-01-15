@@ -1339,7 +1339,7 @@ It usually possible to guess whether or not a parameter accepts a single
 \family typewriter
 subPop
 \family default
- specifies a single subpopulation and 
+ accepts single subpopulation and 
 \family typewriter
 subPops
 \family default
