@@ -517,7 +517,7 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectorlu & chrom, const vectorf &
 			                                        "Please use addChrom function if a new chromosome is added");
 		//
 		// append to the last
-		if (pos > newLociPos.back() && ch == numChrom() - 1) {
+		if (newLociPos.empty() || (pos > newLociPos.back() && ch == numChrom() - 1)) {
 			newLociPos.push_back(pos);
 			newLociNames.push_back(name);
 			newLoci[ch]++;
