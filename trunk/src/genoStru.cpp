@@ -478,7 +478,7 @@ GenoStructure & GenoStruTrait::gsAddChrom(const vectorf & lociPos, const vectors
 }
 
 
-GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & lociPos,
+GenoStructure & GenoStruTrait::gsAddLoci(const vectorlu & chrom, const vectorf & lociPos,
                                          const vectorstr & lociNames, vectoru & newIndex) const
 {
 	DBG_ASSERT(chrom.size() == lociPos.size(), ValueError,
@@ -510,7 +510,7 @@ GenoStructure & GenoStruTrait::gsAddLoci(const vectoru & chrom, const vectorf & 
 	vectoru newLoci = gs.m_numLoci;
 	vectorf newLociPos = gs.m_lociPos;
 	for (size_t i = 0; i < lociPos.size(); ++i) {
-		UINT ch = chrom[i];
+		ULONG ch = chrom[i];
 		double pos = lociPos[i];
 		string name = newNames[i];
 		DBG_ASSERT(ch < newLoci.size(), ValueError, "Chromosome index out of range\n"

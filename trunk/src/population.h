@@ -980,16 +980,17 @@ public:
 	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
 	 *  \e names may be ignored, in which case random names will be given.
-	 *  Alleles at inserted loci are initialized with zero alleles. Note that
-	 *  loci have to be added to existing chromosomes. If loci on a new
-	 *  chromosome need to be added, function <tt>addChrom</tt> should be
-	 *  used. This function returns indexes of the inserted loci.
+	 *  Single-value input is allowed for parameter \e chrom and \e pos if only
+	 *  one locus is added. Alleles at inserted loci are initialized with zero
+	 *  alleles. Note that loci have to be added to existing chromosomes. If
+	 *  loci on a new chromosome need to be added, function <tt>addChrom</tt>
+	 *  should be used. This function returns indexes of the inserted loci.
 	 *  <group>7-manipulate</group>
 	 */
-	vectoru addLoci(const vectoru & chrom, const vectorf & pos,
+	vectoru addLoci(const uintList & chrom, const floatList & pos,
 		const vectorstr & names = vectorstr());
 
-	/** Resize population by giving new subpopulation sizes \e newSubPopSizes.
+	/** Resize population by giving new subpopulation sizes \e size.
 	 *  Individuals at the end of some subpopulations will be removed if the
 	 *  new subpopulation size is smaller than the old one. New individuals
 	 *  will be appended to a subpopulation if the new size is larger. Their
@@ -1001,7 +1002,7 @@ public:
 	 *  the current generation.
 	 *  <group>7-manipulate</group>
 	 */
-	void resize(const vectorlu & newSubPopSizes, bool propagate = false);
+	void resize(const uintList & size, bool propagate = false);
 
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new one. If information field \e field
