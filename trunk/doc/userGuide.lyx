@@ -3973,11 +3973,17 @@ load..
 LoadPopulation
 \family default
  is a global function.).
+ 
+\series bold
+Virtual splitters are not saved
+\series default
+ because they are considered as runtime definitions.
  Although files in any extension can be used, extension 
 \family typewriter
 .pop
 \family default
  is recommended.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -8065,7 +8071,15 @@ add()
 extract()
 \family default
 .
- 
+ The
+\series bold
+ newly added populations do not have to have the same genotypic structure
+ as existing populations
+\series default
+.
+ However, because the same operators will be applied to all populations,
+ it is your responsibility to make sure that the operators can be applied
+ to these populations.
 \end_layout
 
 \begin_layout Standard
@@ -8073,23 +8087,12 @@ Just like populations, a simulator can be cloned, saved and loaded.
  This makes it easy to stop a simulator, take a snapshot and resume evolution.
  It is even easy to save a simlator, transfer it to another machine and
  resume the evolution over there.
- Note that a mating scheme can not be saved and has to be re-specified in
- 
-\family typewriter
-LoadSimulator
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-loadSimulator
-\end_layout
-
-\end_inset
-
-()
-\family default
-.
- 
+ Because 
+\series bold
+virtual splitters are not saved with populations
+\series default
+, you will have to re-assign splitters to populations if they are needed
+ for subsequent simulations.
 \end_layout
 
 \begin_layout Standard
