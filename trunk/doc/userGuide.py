@@ -1300,6 +1300,15 @@ simu.gen()
 os.remove('sample.sim')
 
 
+#file log/initSex.log
+pop = population(size=[1000, 1000])
+InitSex(pop, maleFreq=0.3, subPops=0)
+InitSex(pop, sex=[Male, Female, Female], subPops=1)
+Stat(pop, numOfMale=True)
+print pop.dvars(0).numOfMale
+print pop.dvars(1).numOfMale
+#end
+
 #file log/initByFreq.log
 pop = population(size=[2, 3], loci=[5, 7])
 InitByFreq(pop, alleleFreq=[[.2, .8], [.8, .2]])

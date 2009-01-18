@@ -8192,7 +8192,7 @@ This feature is still under major revision.
 \end_layout
 
 \begin_layout Chapter
-simuPOP Operators (under revision)
+simuPOP Operators
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:simuPOP-Operators"
@@ -8210,11 +8210,11 @@ simuPOP is large, consisting of more than 80 operators and various functions
 k
 \emph default
 -allele, stepwise, generalized stepwise), migration (arbitrary, can create
- new subpopulation), recombination (uniform or nonuniform), gene conversion
- (new in v 0.8.5), quantitative trait, selection, penetrance (single or multi-locu
-s, hybrid), ascertainment (case-control, affected sibpairs, random), statistics
- calculation (allele, genotype, haplotype, heterozygote number and frequency;
- expected heterozygosity; bi-allelic and multi-allelic 
+ new subpopulation), recombination (uniform or nonuniform), gene conversion,
+ quantitative trait, selection, penetrance (single or multi-locus, hybrid),
+ ascertainment (case-control, affected sibpairs, random), statistics calculation
+ (allele, genotype, haplotype, heterozygote number and frequency; expected
+ heterozygosity; bi-allelic and multi-allelic 
 \begin_inset Formula $D$
 \end_inset
 
@@ -8238,17 +8238,114 @@ s, hybrid), ascertainment (case-control, affected sibpairs, random), statistics
 \begin_inset Formula $F_{is}$
 \end_inset
 
-); pedigree tracing, visualization (using R or other Python modules), load/save
- in text, XML, Fstat or Linkage format.
- In this chapter, I will discuss some practical usages of simuPOP.
+); pedigree tracing, visualization (using R or other Python modules).
+ This chapter covers the basic and some not-so-basic usages of these operators,
+ organized roughly by genetic factors.
 \end_layout
 
 \begin_layout Section
 Initialization
 \end_layout
 
+\begin_layout Standard
+simuPOP provides three operators to initialize individual sex and genotype.
+ A number of parameter are provided to cover most commonly used initialization
+ scenarios.
+ A Python operator can be used to intialize a population explicitly if none
+ of the operators fits your need.
+ 
+\end_layout
+
+\begin_layout Subsection
+Initialize individual sex
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+initSex()
+\family default
+ and function 
+\family typewriter
+InitSex()
+\family default
+ initialize individual sex either randomly or using a given sequence.
+ In the first case, individuals are assigned 
+\family typewriter
+Male
+\family default
+ or 
+\family typewriter
+Female
+\family default
+ with equal probability unless parameter 
+\emph on
+maleFreq
+\emph default
+ is used to specify the probability of having a male individual.
+ In the second case, a sequence of sex (
+\family typewriter
+Male
+\family default
+ or 
+\family typewriter
+Female
+\family default
+) is assigned to individuals succesively.
+ The list will be reused if needed.
+ If a list of (virtual) subpopulations are given, this operator will only
+ initialize individuals in these (virtual) subpopulations.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "initSex"
+
+\end_inset
+
+ uses two 
+\family typewriter
+initSex
+\family default
+ operators to initialize two subpopulations.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/initSex.log"
+lstparams "caption={Initialize individual sex},label={initSex}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Initialize by allele frequency
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+initByFreq
+\family default
+ (and its function form 
+\family typewriter
+InitByFreq
+\family default
+) initialize individual genotype by allele frequency.
+ For example, 
+\family typewriter
+alleleFreq=(0, 0.2, 0.4, 0.2)
+\family default
+ will yield allele 0, 1, 2, and 3 with probability 0, 0.2, 0.4 and 0.2 respectively.
+ Parameter loci and ploidy can be used to specify a subset of loci and homologou
+s sets of chromosomes to initialize, and parameter 
+\family typewriter
+subPops
+\family default
+ can be used to specify subsets of individuals to initialize.
+ In the latter case, a list of allele frequency distribution can be given
+ to assign different genotype with different allele frequency for each (virtual)
+ subpopulation.
 \end_layout
 
 \begin_layout Standard
@@ -8260,6 +8357,11 @@ lstparams "caption={Initialize by allele frequency},label={initByFreq}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+It is sometimes desired to creates identical individuals with random genotype.
+ 
 \end_layout
 
 \begin_layout Subsection

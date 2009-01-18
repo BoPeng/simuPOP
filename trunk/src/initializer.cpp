@@ -66,9 +66,13 @@ initByFreq::initByFreq(const matrix & alleleFreq, const vectoru & loci,
 	DBG_FAILIF(m_alleleFreq.empty(),
 		IndexError, "Should specify one of alleleFreq, alleleFreqs");
 
-	for (size_t i = 0; i < m_alleleFreq.size(); ++i)
+	for (size_t i = 0; i < m_alleleFreq.size(); ++i) {
+		for (size_t j = 0; j < m_alleleFreq[i].size(); ++j)
+			if (fcmp_lt(m_alleleFreq[i][j], 0) || fcmp_gt(m_alleleFreq[i][j], 1))
+				throw ValueError("Allele frequency should be between 0 and 1");
 		if (fcmp_ne(accumulate(m_alleleFreq[i].begin(), m_alleleFreq[i].end(), 0.), 1.0))
 			throw ValueError("Allele frequencies should add up to one.");
+	}
 }
 
 
