@@ -57,7 +57,8 @@ public:
 	 */
 	initSex(double maleFreq = 0.5, const vectori & sex = vectori(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const intList & at = intList(), const repList & rep = repList(),
+		const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex)
@@ -111,17 +112,18 @@ protected:
 class initByFreq : public initSex
 {
 public:
-	/** This function creates an initializer that initialize individual
-	 *  genotypes randomly. \e alleleFreq specified the allele frequencies of
-	 *  allele \c 0, \c 1, ... respectively. These frequencies should add up to
-	 *  \c 1. If \e loci, \e ploidy and/or \e subPop are specified, only
-	 *  specified loci, ploidy, and individuals in these (virtual)
-	 *  subpopulations will be initialized. If \e identicalInds is \c True, the
-	 *  first individual in each (virtual) subpopulation will be initialized
-	 *  randomly, and be copied to all other individuals in this (virtual)
-	 *  subpopulation. If a list of frequencies are given, they will be used
-	 *  for each (virtual) subpopulation. If \e initSex is \c True (default),
-	 *  <tt>initSex(maleFreq, sex)</tt> will be applied. This operator
+	/** This function creates an initializer that initializes individual
+	 *  genotypes randomly, using allele frequencies specified in parameter
+	 *  \e alleleFreq. Elements in \e alleleFreq specifies the allele
+	 *  frequencies of allele \c 0, \c 1, ... respectively. These frequencies
+	 *  should add up to \c 1. If \e loci, \e ploidy and/or \e subPop are
+	 *  specified, only specified loci, ploidy, and individuals in these
+	 *  (virtual) subpopulations will be initialized. If \e identicalInds is
+	 *  \c True, the first individual in each (virtual) subpopulation will be
+	 *  initialized randomly, and be copied to all other individuals in this
+	 *  (virtual) subpopulation. If a list of frequencies are given, they will be
+	 *  used for each (virtual) subpopulation. If \e initSex is \c True
+	 *  (default), <tt>initSex(maleFreq, sex)</tt> will be applied. This operator
 	 *  initializes all chromosomes, including unused genotype locations and
 	 *  customized chromosomes.
 	 */
@@ -178,7 +180,7 @@ private:
 class initByValue : public initSex
 {
 public:
-	/** This function creates an initializer that initialize individual
+	/** This function creates an initializer that initializes individual
 	 *  genotypes with given genotype \e value. If \e loci, \e ploidy
 	 *  and/or \e subPop are specified, only specified loci, ploidy, and
 	 *  individuals in these (virtual) subpopulations will be initialized.
