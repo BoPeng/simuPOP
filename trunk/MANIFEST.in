@@ -245,7 +245,6 @@ include doc/cookbook.pdf
 
 # cookbook examples
 include doc/cookbook/Mating_haplodiploid.py
-include doc/cookbook/Mating_mitochondrial.py
 include doc/cookbook/Mating_pyChooser_cpp.py
 include doc/cookbook/Mating_pyChooser_cpp.i
 include doc/cookbook/Mating_pyChooser_cpp.h
