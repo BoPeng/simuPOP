@@ -203,7 +203,6 @@ include gsl/cdf/gamma.c
 include scripts/loadHapMap.py
 include scripts/simuViewPop.py
 include scripts/simuCDCV.py
-include scripts/simuLDDecay.py
 include scripts/simuRecHotSpot.py
 include scripts/simuCluster.py
 include scripts/simuForward.py
