@@ -442,8 +442,6 @@ DATA_FILES = [
     ('share/simuPOP', ['README', 'INSTALL', 'ChangeLog', 'AUTHORS', 
         'COPYING', 'TODO', 'simuPOP_version.py']), 
     ('share/simuPOP/doc', ['doc/userGuide.pdf', 'doc/userGuide.py', 'doc/refManual.pdf']), 
-    ('share/simuPOP/doc/cookbook', glob.glob('doc/cookbook/*.py') +
-        ['doc/cookbook/Mating_pyChooser_cpp.i', 'doc/cookbook/Mating_pyChooser_cpp.h']),
     ('share/simuPOP/test', glob.glob('test/test_*.py') + \
         ['test/run_tests.py', 'test/run_tests.sh']),
     ('share/simuPOP/scripts', glob.glob('scripts/*.py'))
