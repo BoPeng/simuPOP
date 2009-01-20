@@ -243,12 +243,6 @@ include doc/userGuide.py
 include doc/refManual.pdf
 include doc/cookbook.pdf
 
-# cookbook examples
-include doc/cookbook/Mating_pyChooser_cpp.py
-include doc/cookbook/Mating_pyChooser_cpp.i
-include doc/cookbook/Mating_pyChooser_cpp.h
-include doc/cookbook/Operator_pyOperator.py
-
 # win32 files
 include win32/stdint.h
 recursive-include win32/zlib-1.2.3 *.h *.c
