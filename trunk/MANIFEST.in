@@ -244,16 +244,11 @@ include doc/refManual.pdf
 include doc/cookbook.pdf
 
 # cookbook examples
-include doc/cookbook/Mating_assortativeMating.py
-include doc/cookbook/Mating_consanguineous.py
 include doc/cookbook/Mating_haplodiploid.py
 include doc/cookbook/Mating_mitochondrial.py
-include doc/cookbook/Mating_overlappingGeneration.py
 include doc/cookbook/Mating_pyChooser_cpp.py
 include doc/cookbook/Mating_pyChooser_cpp.i
 include doc/cookbook/Mating_pyChooser_cpp.h
-include doc/cookbook/Mating_pyParentsChooser.py
-include doc/cookbook/Mating_selfing.py
 include doc/cookbook/Operator_pyOperator.py
 
 # win32 files
