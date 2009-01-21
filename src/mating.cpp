@@ -228,11 +228,11 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 
 
 controlledOffspringGenerator::controlledOffspringGenerator(
-	const vectori & loci, const vectori & alleles, PyObject * freqFunc,
+	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
 	const vectorop & ops, const floatListFunc & numOffspring,
 	const floatList & sexMode)
 	: offspringGenerator(ops, numOffspring, sexMode),
-	m_loci(loci), m_alleles(alleles), m_freqFunc(freqFunc),
+	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
 	m_expAlleles(), m_totAllele(), m_curAllele()
 {
 	if (!m_freqFunc.isValid())
@@ -272,7 +272,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 		// I need to find the current allele frequencies
 		// and use them as proportions for the next generation.
 		for (size_t i = 0; i < nLoci; ++i) {
-			int locus = m_loci[i];
+			UINT locus = m_loci[i];
 			Allele allele = static_cast<Allele>(m_alleles[i]);
 
 			// determine the number alleles at each subpopulation.
@@ -310,7 +310,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 		for (size_t i = 0; i < nLoci; ++i) {
 			for (size_t sp = 0; sp < numSP; ++sp) {
 #ifndef OPTIMIZED
-				int locus = m_loci[i];
+				UINT locus = m_loci[i];
 				Allele allele = m_alleles[i];
 				ULONG n = 0;
 				// go through all alleles
