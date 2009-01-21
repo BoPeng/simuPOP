@@ -209,7 +209,7 @@ public:
 	 *  Please refer to class \e offspringGenerator for a detailed description
 	 *  of parameters \e ops, \e numOffspring and \e sexMode.
 	 */
-	controlledOffspringGenerator(const vectori & loci, const vectori & alleles,
+	controlledOffspringGenerator(const uintList & loci, const uintList & alleles,
 		PyObject * freqFunc, const vectorop & ops = vectorop(),
 		const floatListFunc & numOffspring = 1, const floatList & sexMode = RandomSex);
 
@@ -237,10 +237,10 @@ private:
 	void getExpectedAlleles(const population & pop, vectorf & expFreq);
 
 	/// locus at which mating is controlled.
-	vectori m_loci;
+	vectorlu m_loci;
 	//
 	/// allele to be controlled at each locus
-	vectori m_alleles;
+	vectorlu m_alleles;
 
 	/// function that return an array of frquency range
 	pyFunc m_freqFunc;

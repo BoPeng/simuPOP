@@ -456,16 +456,19 @@ void PyObj_As_Array(PyObject * obj, vectorf & val)
 		val = vectorf();
 		return;
 	}
-	DBG_ASSERT(PySequence_Check(obj), ValueError, "PyObj_As_Array: Expecting a sequence");
+    if (PySequence_Check(obj)) {
+    	val.resize(PySequence_Size(obj));
 
-	val.resize(PySequence_Size(obj));
-
-	// assign values
-	for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
-		PyObject * item = PySequence_GetItem(obj, i);
-		PyObj_As_Double(item, val[i]);
-		Py_DECREF(item);
-	}
+	    // assign values
+    	for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
+	    	PyObject * item = PySequence_GetItem(obj, i);
+		    PyObj_As_Double(item, val[i]);
+    		Py_DECREF(item);
+	    }
+    } else {
+        val.resize(1);
+        PyObj_As_Double(obj, val[0]);
+    }
 }
 
 
