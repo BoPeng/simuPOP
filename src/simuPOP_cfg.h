@@ -195,6 +195,12 @@ enum MultiLociMode {
 	Heterogeneity = 73
 };
 
+enum MigrMode {
+	ByProbability = 81,
+	ByProportion = 82,
+	ByCounts = 83,
+};
+
 typedef unsigned char TraitIndexType;
 const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
 

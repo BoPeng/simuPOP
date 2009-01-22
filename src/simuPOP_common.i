@@ -521,7 +521,7 @@ del pointMutator.__init__
 pointMutator.__init__ = new_pointMutator
 
 
-def new_migrator(self, rate, mode=MigrByProbability, fromSubPop=[], toSubPop=[], *args, **kwargs):
+def new_migrator(self, rate, *args, **kwargs):
     # parameter rate
     r = rate
     if type(rate) in [types.IntType, types.LongType, types.FloatType]:
@@ -532,13 +532,8 @@ def new_migrator(self, rate, mode=MigrByProbability, fromSubPop=[], toSubPop=[],
             raise exceptions.ValueError('Migration rate can not be empty')
         elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
             r = [rate]
-    # parameter toSubPop
-    if type(toSubPop) in [types.IntType, types.LongType]:
-        ts = [toSubPop]
-    else:
-        ts = toSubPop
     cppModule.migrator_swiginit(self,
-        cppModule.new_migrator(r, mode, fromSubPop, ts, *args, **kwargs))
+        cppModule.new_migrator(r, *args, **kwargs))
 
 new_migrator.__doc__ = migrator.__init__.__doc__
 del migrator.__init__

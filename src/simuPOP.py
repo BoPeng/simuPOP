@@ -184,10 +184,9 @@ if pointMutator.__init__.__doc__ is not None:
     PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
 
 def Migrate(pop, *args, **kwargs):
+    'Function form of operator migrator.'
     migrator(*args, **kwargs).apply(pop)
 
-if migrator.__init__.__doc__ is not None:
-    Migrate.__doc__ = "Function version of operator migrator whose __init__ function is \n" + migrator.__init__.__doc__
 
 def PyMigrate(pop, *args, **kwargs):
     pyMigrator(*args, **kwargs).apply(pop)
