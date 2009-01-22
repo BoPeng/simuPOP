@@ -19,8 +19,7 @@ class TestMatingSchemes(unittest.TestCase):
 
     def getFamSize(self, ms, gen=1, N=1000):
         '''Check the number of offspring for each family using
-           information field father_idx
-        '''
+           information field father_idx'''
         simu = simulator(
             population(size=[N], infoFields=['father_idx', 'mother_idx']),
             matingScheme=ms)
@@ -162,7 +161,147 @@ class TestMatingSchemes(unittest.TestCase):
         )
         self.assertEqual(simu.gen(), 10)
 
+    def testMonoMating(self):
+        'Testing monogemous mating scheme'
+        pop = population(size=[2000], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
+        InitByFreq(pop, [0.2, 0.3, 0.5])
+        simu = simulator(pop, monogamousMating(numOffspring=2, sexMode=(NumOfMale, 1)))
+        simu.evolve(
+            preOps = [initSex(sex=(Male, Female))], 
+            ops = [parentsTagger()],
+            gen = 5)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('father_idx'))), 1000)
+        self.assertEqual(len(sets.Set(simu.population(0).indInfo('mother_idx'))), 1000)
+        pop = simu.extract(0)
+        self.assertEqual([ind.sex() for ind in pop.individuals()], [1,2]*1000)
+               
+    def testHeteroMating(self):
+        'Testing heterogeneous mating schemes'
+        pop = population(size=[1000, 1000], loci=[2], infoFields=['father_idx', 'mother_idx'])
+        simu = simulator(pop,
+            heteroMating(
+                [randomMating(numOffspring=2, subPop=0),
+                randomMating(numOffspring=4, subPop=1)])
+        )
+        simu.evolve(
+            preOps=[initSex()],
+            ops=[parentsTagger()],
+            gen=10)      
+        parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
+            simu.population(0).indInfo('father_idx'))]
+        # Individuals with identical parents are considered as siblings.
+        famSize = []
+        lastParent = (-1, -1)
+        for parent in parents:
+            if parent == lastParent:
+                famSize[-1] += 1
+            else:
+                lastParent = parent
+                famSize.append(1)
+        self.assertEqual(famSize, [2]*500+[4]*250)
 
+        # virtual subpopulation
+        pop = population(size =[1000, 1000], loci=[2], infoFields=['father_idx', 'mother_idx'])
+        pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
+        simu = simulator(pop, heteroMating(
+            matingSchemes = [
+                randomMating(numOffspring=1, subPop=(0,0)),
+                randomMating(numOffspring=2, subPop=(1,1))
+            ])
+        )
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [parentsTagger()],
+            gen =10
+        )
+        parents = [(x, y) for x, y in zip(simu.population(0).indInfo('mother_idx'),
+            simu.population(0).indInfo('father_idx'))]
+        # Individuals with identical parents are considered as siblings.
+        famSize = []
+        lastParent = (-1, -1)
+        for parent in parents:
+            if parent == lastParent:
+                famSize[-1] += 1
+            else:
+                lastParent = parent
+                famSize.append(1)
+        self.assertEqual(famSize, [1]*1000+[2]*500)
+         
+    def testPolygamousMating(self):
+        'Testing polygamous mating scheme'
+        pop = population(size=[200], loci=[3,5], infoFields=['father_idx', 'mother_idx'])
+        InitByFreq(pop, [0.2, 0.3, 0.5])
+        # exactly 100 males and 100 females
+        for i in range(100):
+            pop.individual(i).setSex(Male)
+            pop.individual(100+i).setSex(Female)
+        simu = simulator(pop, polygamousMating(polySex=Male, polyNum=3, numOffspring=2))
+        simu.evolve(
+            preOps = [],
+            ops = [parentsTagger()],
+            gen = 1)
+        # there is only one Male...
+        fi = simu.population(0).indInfo('father_idx')
+        self.assertEqual(fi[0], fi[1])
+        self.assertEqual(fi[0], fi[5])
+        self.assertNotEqual(fi[0], fi[6])
+        mi = simu.population(0).indInfo('mother_idx')
+        self.assertEqual(mi[0], mi[1])
+        self.assertNotEqual(mi[0], mi[2])              
+       
+    def testPedigreeMating(self):
+        'Testing pedigree mating using a population object'
+        pop = population(size=[100, 100], loci=[2, 5], ancGen=-1,
+            infoFields=['father_idx', 'mother_idx'])
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [parentsTagger()],
+            gen = 20
+        )
+        ped = pedigree(simu.extract(0), infoFields=['father_idx', 'mother_idx'])
+        simu = simulator(pop, pedigreeMating(ped,
+            mendelianOffspringGenerator()))
+        simu.evolve(
+            ops = [parentsTagger()],
+            gen = 100
+        )
+        ped1 = simu.extract(0)
+        self.assertEqual(simu.gen(), 21)
+        # compare two populations!
+        self.assertEqual(ped.ancestralGens(), ped1.ancestralGens())
+        self.assertEqual(ped.ancestralGens(), 20)
+        for gen in range(21):
+            ped.useAncestralGen(gen)
+            ped1.useAncestralGen(gen)
+            self.assertEqual(ped.indInfo('father_idx'), ped1.indInfo('father_idx'))
+            self.assertEqual(ped.indInfo('mother_idx'), ped1.indInfo('mother_idx'))
+
+    def testSequentialParentsChooser(self):
+        'Testing sequential parent chooser'
+        pop = population(size=[100, 200], infoFields=['parent_idx'])
+        InitByFreq(pop, [.3, .7])
+        simu = simulator(pop, homoMating(
+            sequentialParentsChooser(),
+            selfingOffspringGenerator()))
+        simu.evolve(
+            ops=[parentTagger()], 
+            gen=1)
+
+    def testRandomParentsChooser(self):
+        'Testing sequential parent chooser'
+        def traj(gen):
+            return [0.5 + gen*0.01]
+        pop = population(size=[1000, 2000], infoFields=['parent_idx'])
+        InitByFreq(pop, [.2, .8])
+        simu = simulator(pop, homoMating(
+            randomParentChooser(),
+            selfingOffspringGenerator()))
+        simu.evolve(
+            ops=[parentTagger()], 
+            gen=1)
+
+  
 if __name__ == '__main__':
   unittest.main()
   sys.exit(0)
