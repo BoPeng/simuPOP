@@ -36,11 +36,10 @@ namespace simuPOP {
 /** This operator evaluates an expression in a population's local namespace
  *  and terminate the evolution of this population, or the whole simulator,
  *  if the return value of this expression is \c True. Termination caused by
- *  an operator will stop the execution of all operators after it. Because
- *  a life-cycle is considered to be complete if mating is complete, the
+ *  an operator will stop the execution of all operators after it. The
+ *  generation at which the population is terminated will be counted in the
  *  <em>evolved generations</em> (return value from <tt>simulator::evolve</tt>)
- *  of a terminated replicate is determined by when the last evolution cycle is
- *  terminated.
+ *  if termination happens after mating.
  */
 class terminateIf : public baseOperator
 {
@@ -56,9 +55,9 @@ public:
 	 *  written to it.
 	 */
 	terminateIf(string condition = "", bool stopAll = false, string message = "",
-		string output = "",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		string output = "", int stage = PostMating, int begin = 0, int end = -1,
+		int step = 1, const intList & at = intList(), const repList & rep = repList(),
+		const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_expr(condition), m_stopAll(stopAll), m_message(message)
 	{

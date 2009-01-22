@@ -48,64 +48,71 @@ using std::random_shuffle;
 namespace simuPOP {
 
 
-/// migrate individuals from (virtual) subpopulations to other subpopulations
-/**
-   Migrator is the only way to mix genotypes of several subpopulations
-   because mating is strictly within subpopulations in simuPOP. Migrators
-   are quite flexible in simuPOP in the sense that
-   \li migration can happen from and to a subset of subpopulations.
-   \li migration can be done by probability, proportion or by counts. In
-    the case of probability, if the migration rate from subpopulation
-   \c a to \c b is \c r, then everyone in subpopulation \c a will have this
-    probability to migrate to \c b. In the case of proportion, exactly
-    <tt>r*size_of_subPop_a</tt> individuals (chosen by random) will migrate
-    to subpopulation \c b. In the last case, a given number of individuals will
-   migrate.
-   \li new subpopulation can be generated through migration. You simply
-   need to migrate to a subpopulation with a new subpopulation number.
+/** This operator migrate individuals from (virtual) subpopulations to other
+ *  subpopulations according to a migration matrix. The elements in this matrix
+ *  can be probabilities to migrate, proportions of individuals to migrate,
+ *  or exact number of individuals to migrate. An information field (default
+ *  to \c migrate_to) is required for this operator.
+ *
+ *  By default, the migration matrix should have \c m by \c m elements if there
+ *  are \c m subpopulations. Element <tt>(i, j)</tt> in this matrix represents
+ *  migration probability, rate or count from subpopulation \c i to \c j. If
+ *  \e subPops (length \c m) and/or \e toSubPops (length \c n) are given,
+ *  the matrix should have \c m by \c n elements, corresponding to specified 
+ *  source and destination subpopulations. Subpopulations in \e fromSubPops can
+ *  be virtual subpopulations, which makes it possible to migrate, for example,
+ *  males and females at different rates from a subpopulation.
+ *  
+ *  If migration is applied by probability, the row of the migration matrix
+ *  corresponding to a source subpopulation is intepreted as probabilities to
+ *  migrate to each destination subpopulation. Each individual's detination
+ *  subpopulation is assigned randomly according to these probabilities. Note
+ *  that the probability of staying at the present subpopulation is
+ *  automatically calculated so the corresponding matrix elements are ignored.
+ *
+ *  If migration is applied by proportion, the row of the migration matrix
+ *  corresponding to a source subpopulation is intepreted as proportions to
+ *  migrate to each destination subpopulation. The number of migrants to each
+ *  destination subpopulation is determined before random indidividuals are
+ *  chosen to migrate.
+ *
+ *  If migration is applied by counts, the row of the migration matrix
+ *  corresponding to a source subpopulation is intepreted as number of
+ *  individuals to migrate to each detination subpopulation. The migrants are
+ *  chosen randomly.
+ *  
+ *  This operator goes through all source (virtual) subpopulations and assign
+ *  detination subpopulation of each individual to an information field. If
+ *  overlapped or duplicated (virtual) source subpopulations are given, latter
+ *  destination assignments will override previous assignments. After all
+ *  source subpopulations are handled, individuals will migrate to their
+ *  assigned destination subpopulation altogether.
  */
 class migrator : public baseOperator
 {
-
 public:
-#define MigrByProbability  1
-#define MigrByProportion   2
-#define MigrByCounts       3
-
-public:
-	/// create a migrator
-	/**
-	   \param rate migration rate, can be a proportion or counted number. Determined by
-	    parameter \c mode. \c rate should be an m by n matrix. If a number is given,
-	    the migration rate will be a \c m by \c n matrix of value \c r
-	   \param mode one of \c MigrByProbability (default), \c MigrByProportion or \c MigrByCounts
-	   \param fromSubPop an array of 'from' subpopulations (a number) or virtual subpopulations
-	    (a pair of numbers). Default to all subpopulations. For example, if you define a
-	    virtual subpopulation by sex, you can use <tt>fromSubpop=[(0,0), 1]</tt> to choose migrants
-	    from the first virtual subpopulation of subpopulation 0, and from subpopulation 1.
-	    If a single number \c sp is given, it is intepretted as [sp]. Note that
-	    <tt>fromSubPop=(0, 1)</tt> (two subpopulation) is different from <tt>fromSubPop=[(0,1)]</tt>
-	    (a virtual subpopulation).
-	   \param toSubPop an array of 'to' subpopulations. Default to all
-	    subpopulations. If a single subpopulation is specified,
-	    <tt>[]</tt> can be ignored.
-	   \param stage default to \c PreMating
-
-	   \note
-	   \li The overall population size will not be changed. (Mating schemes can
-	   do that). If you would like to keep the subpopulation sizes after migration, you
-	   can use the \c newSubPopSize or \c newSubPopSizeExpr parameter of a mating scheme.
-	   \li \c rate is a matrix with dimensions determined by \c fromSubPop and \c toSubPop.
-	   By default, \c rate is a matrix with element \c r(i,j), where \c r(i, j) is the
-	   migration rate, probability or count from subpopulation \c i to \c j. If \c fromSubPop
-	   and/or \c toSubPop are given, migration will only happen between these subpopulations.
-	   An extreme case is 'point migration', <tt>rate=[[r]], fromSubPop=a, toSubPop=b</tt>
-	   which migrate from subpopulation \c a to \c b with given rate \c r.
+	/** Create a migrator that moves individuals from source (virtual)
+	 *  subpopulations \e subPops (default to migrate from all subpopulations)
+	 *  to destination subpopulations \e toSubPops (default to all
+	 *  subpopulations), according to a migration matrix \e rate. The size of
+	 *  this matrix should match the number of source and destination (virtual)
+	 *  subpopulations. This migrator goes through all source subpoulations,
+	 *  assign each individual's destination subpopulation to an information
+	 *  field \e infoFields[0] (default to \c migrate_to), and migrate
+	 *  individuals to their destination subpopulations altogether.
+	 *
+	 *  Depending on the value of parameter \e mode, elements in the migration
+	 *  matrix (\e rate) are interpreted as either the probabilities to migrate
+	 *  from source to destination subpopulations (\e mode = \c ByProbability),
+	 *  proportions of individuals in the source (virtual) subpopulations to
+	 *  the destination subpopulations (\e mode = \c ByProportion), or numbers
+	 *  of migrants in the source (virtual) subpopulations (\e mode
+	 *  = \c ByCounts).
 	 */
-	migrator(const matrix & rate, int mode = MigrByProbability,
-		const subPopList & fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
+	migrator(const matrix & rate, int mode = ByProbability, const uintList & toSubPops = uintList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"));
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const vectorstr & infoFields = vectorstr(1, "migrate_to"));
 
 	/// destructor
 	virtual ~migrator()
@@ -129,7 +136,7 @@ public:
 	/// set migration rate
 	/**
 	   Format should be <tt>0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2</tt>.
-	   For mode \c MigrByProbability or \c MigrByProportion, <tt>0-0,1-1,2-2</tt> will be set
+	   For mode \c ByProbability or \c ByProportion, <tt>0-0,1-1,2-2</tt> will be set
 	   automatically regardless of input.
 	 */
 	void setRates(const matrix & rate, int mode);
@@ -153,8 +160,7 @@ protected:
 
 	/// from->to subPop index.
 	/// default to 0 - rows of rate - 1, 0 - columns of rate - 1
-	subPopList m_from;
-	vectoru m_to;
+	vectorlu m_to;
 };
 
 /// a more flexible Python migrator
@@ -187,12 +193,11 @@ public:
 	   \param stage default to \c PreMating
 	 */
 	pyMigrator(PyObject * rateFunc = NULL, PyObject * indFunc = NULL,
-		int mode = MigrByProbability,
-		subPopList fromSubPop = subPopList(), vectoru toSubPop = vectoru(),
+		int mode = ByProbability, const uintList & toSubPops = uintList(),
 		const vectoru & loci = vectoru(), PyObject * param = NULL,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
-		: migrator(matrix(), mode, fromSubPop, toSubPop, stage, begin, end, step, at, rep, subPops, infoFields),
+		: migrator(matrix(), mode, toSubPops, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rateFunc(rateFunc), m_indFunc(indFunc), m_loci(loci), m_param(param)
 	{
 		DBG_FAILIF(!m_rateFunc.isValid() && !m_indFunc.isValid(),

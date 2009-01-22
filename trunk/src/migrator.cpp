@@ -26,24 +26,24 @@
 
 namespace simuPOP {
 
-migrator::migrator(const matrix & rate, int mode,
-	const subPopList & fromSubPop, vectoru toSubPop,
+migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-	m_rate(0), m_mode(mode), m_from(fromSubPop), m_to(toSubPop)
+	m_rate(0), m_mode(mode), m_to(toSubPops.elems())
 {
 	// when migrator is constructed from a pyMigrator, initial
 	// rate is empty
-	if (!rate.empty()) {
-		DBG_FAILIF(!m_from.empty() && m_from.size() != rate.size(),
-			ValueError, "Length of param fromSubPop must match rows of rate matrix.");
+	if (rate.empty())
+		return;
 
-		DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
-			ValueError, "Length of param toSubPop must match columns of rate matrix.");
+	DBG_FAILIF(!subPops.empty() && subPops.size() != rate.size(),
+		ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
-		setRates(rate, mode);
-	}
+	DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
+		ValueError, "Length of param toSubPop must match columns of rate matrix.");
+
+	setRates(rate, mode);
 }
 
 
@@ -55,9 +55,11 @@ void migrator::setRates(const matrix & rate, int mode)
 	UINT szFrom = rate.size();
 	UINT szTo = rate[0].size();
 
-	if (m_from.empty() )
+	subPopList fromSubPops = applicableSubPops();
+
+	if (fromSubPops.empty() )
 		for (UINT i = 0; i < szFrom; ++i)
-			m_from.push_back(vspID(i));
+			fromSubPops.push_back(vspID(i));
 
 	if (m_to.empty() )
 		for (UINT i = 0; i < szTo; ++i)
@@ -65,10 +67,10 @@ void migrator::setRates(const matrix & rate, int mode)
 
 	m_mode = mode;
 
-	if (m_mode != MigrByProbability && m_mode != MigrByProportion
-	    && m_mode != MigrByCounts)
-		throw ValueError("Migration mode can only be MigrByProbability), "
-			             " MigrByProportion or MigrByCounts");
+	if (m_mode != ByProbability && m_mode != ByProportion
+	    && m_mode != ByCounts)
+		throw ValueError("Migration mode can only be ByProbability), "
+			             " ByProportion or ByCounts");
 
 	// check parameters
 	for (UINT i = 0; i < szFrom; ++i) {
@@ -77,20 +79,20 @@ void migrator::setRates(const matrix & rate, int mode)
 
 		for (size_t j = 0; j < szTo; ++j)
 			if (fcmp_lt(rate[i][j], 0.)
-			    || (m_mode != MigrByCounts && fcmp_gt(rate[i][j], 1.)))
+			    || (m_mode != ByCounts && fcmp_gt(rate[i][j], 1.)))
 				throw ValueError("Migration rate should be in the range of [0,1]");
 	}
 
 	m_rate = rate;
 
 	// set r[i][i]--- may need to extend rate (to add i->i)
-	if (m_mode == MigrByProbability || m_mode == MigrByProportion) {
+	if (m_mode == ByProbability || m_mode == ByProportion) {
 		for (UINT i = 0; i < szFrom; i++) {               // from
 			// look for from=to cell.
-			UINT spFrom = m_from[i].subPop();
+			UINT spFrom = fromSubPops[i].subPop();
 			double sum = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0);
 			//
-			vectoru::iterator spTo = find(m_to.begin(), m_to.end(), spFrom);
+			vectorlu::iterator spTo = find(m_to.begin(), m_to.end(), spFrom);
 			if (spTo == m_to.end() ) {                        // if no to, only check if sum <= 1
 				if (fcmp_gt(sum, 1.0) )
 					throw ValueError("Sum of migrate rate from one subPop should <= 1");
@@ -124,24 +126,29 @@ bool migrator::apply(population & pop)
 	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), ValueError,
 		"Migration can not be applied to virtual subpopulations");
 
-	for (UINT from = 0, fromEnd = m_from.size(); from < fromEnd; ++from) {
-		UINT spFrom = m_from[from].subPop();
+	subPopList fromSubPops = applicableSubPops();
+	if (fromSubPops.empty() )
+		for (UINT i = 0; i < pop.numSubPop(); ++i)
+			fromSubPops.push_back(vspID(i));
+
+	for (UINT from = 0, fromEnd = fromSubPops.size(); from < fromEnd; ++from) {
+		UINT spFrom = fromSubPops[from].subPop();
 		// rateSize might be toSize + 1, the last one is from->from
 		UINT toSize = m_to.size();
 		UINT toIndex;
 
-		// m_from out of range.... ignore.
+		// fromSubPops out of range.... ignore.
 		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError,
 			"Subpopulation index " + toStr(spFrom) + " out of range");
 
-		if (m_from[from].isVirtual()) {
-			pop.activateVirtualSubPop(m_from[from]);
+		if (fromSubPops[from].isVirtual()) {
+			pop.activateVirtualSubPop(fromSubPops[from]);
 		}
 		// if subpopulation spFrom is activated, subPopSize can
 		// get the correct size.
 		ULONG spSize = pop.subPopSize(spFrom);
 
-		if (m_mode == MigrByProbability) {
+		if (m_mode == ByProbability) {
 			weightedSampler ws(rng(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
@@ -164,7 +171,7 @@ bool migrator::apply(population & pop)
 			// first find out how many people will move to other subPop
 			// then randomly assign individuals to move
 			vectorlu toNum(toSize);
-			if (m_mode == MigrByProportion) {
+			if (m_mode == ByProportion) {
 				for (UINT i = 0; i < toSize; ++i)
 					toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
 			} else {                                                                      // by count
@@ -189,7 +196,7 @@ bool migrator::apply(population & pop)
 				// SubPopID is signed short, to save a few bits
 				ind->setInfo(static_cast<SubPopID>(toIndices[i]), info);
 		}
-		if (m_from[from].isVirtual())
+		if (fromSubPops[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
 	}   // for all subPop.
 
