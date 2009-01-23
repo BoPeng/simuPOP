@@ -13,6 +13,11 @@ version 0.9.2 - Not released, available at https://simupop.svn.sourceforge.net/s
 		Handle single return value of allele frequency trajectory function.
   - NEW: Rename parameter fromSubPop to subPops and toSubPop to toSubPops for migrator, for
         naming consistency.
+  - NEW: Add mode = ByIndInfo to migrator so that users can explicitly set
+        migrate_to informatin field and migrate.
+  - NEW: Remove pyMigrator from the core. The varying migration rate migrator can
+        be easily implemented in a Python operator. The indFunc mode is not at all
+        useful because it can be done by a Python operator plus mode=ByIndInfo.
 		
 
 version 0.9.1 - (Rev 2330) Jan 13, 2009

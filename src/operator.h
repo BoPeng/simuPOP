@@ -80,7 +80,7 @@ public:
 	}
 
 
-	vspID operator[](unsigned int idx)
+	vspID operator[](unsigned int idx) const
 	{
 		DBG_FAILIF(idx >= m_subPops.size(), IndexError,
 			"Index out of range.");

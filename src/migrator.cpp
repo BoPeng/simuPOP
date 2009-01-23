@@ -30,60 +30,40 @@ migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-	m_rate(0), m_mode(mode), m_to(toSubPops.elems())
+	m_rate(rate), m_mode(mode), m_to(toSubPops.elems())
 {
-	// when migrator is constructed from a pyMigrator, initial
-	// rate is empty
-	if (rate.empty())
-		return;
-
 	DBG_FAILIF(!subPops.empty() && subPops.size() != rate.size(),
 		ValueError, "Length of param fromSubPop must match rows of rate matrix.");
 
 	DBG_FAILIF(!m_to.empty() && m_to.size() != rate[0].size(),
 		ValueError, "Length of param toSubPop must match columns of rate matrix.");
-
-	setRates(rate, mode);
 }
 
 
-void migrator::setRates(const matrix & rate, int mode)
+void migrator::setRates(int mode, const subPopList & fromSubPops, const vectorlu & toSubPops)
 {
-	if (rate.empty() )
+	if (mode == ByIndInfo)
 		return;
 
-	UINT szFrom = rate.size();
-	UINT szTo = rate[0].size();
-
-	subPopList fromSubPops = applicableSubPops();
-
-	if (fromSubPops.empty() )
-		for (UINT i = 0; i < szFrom; ++i)
-			fromSubPops.push_back(vspID(i));
-
-	if (m_to.empty() )
-		for (UINT i = 0; i < szTo; ++i)
-			m_to.push_back(i);
+	UINT szFrom = m_rate.size();
+	UINT szTo = m_rate[0].size();
 
 	m_mode = mode;
 
-	if (m_mode != ByProbability && m_mode != ByProportion
-	    && m_mode != ByCounts)
-		throw ValueError("Migration mode can only be ByProbability), "
-			             " ByProportion or ByCounts");
+	if (m_mode != ByProbability && m_mode != ByProportion && m_mode != ByCounts)
+		throw ValueError("Migration mode can only be ByProbability, ByProportion or ByCounts");
 
 	// check parameters
 	for (UINT i = 0; i < szFrom; ++i) {
-		if (rate[i].size() != szTo)
-			throw ValueError("Expecting a matrix of migration rate.");
+		DBG_FAILIF(m_rate[i].size() != szTo, ValueError,
+			"Expecting a matrix of migration rate.");
 
 		for (size_t j = 0; j < szTo; ++j)
-			if (fcmp_lt(rate[i][j], 0.)
-			    || (m_mode != ByCounts && fcmp_gt(rate[i][j], 1.)))
-				throw ValueError("Migration rate should be in the range of [0,1]");
+			DBG_FAILIF(fcmp_lt(m_rate[i][j], 0.), ValueError,
+				"Migration rate should be positive.");
+			DBG_FAILIF(m_mode != ByCounts && fcmp_gt(m_rate[i][j], 1.), ValueError,
+				"Migration rate should be in the range of [0,1]");
 	}
-
-	m_rate = rate;
 
 	// set r[i][i]--- may need to extend rate (to add i->i)
 	if (m_mode == ByProbability || m_mode == ByProportion) {
@@ -92,14 +72,14 @@ void migrator::setRates(const matrix & rate, int mode)
 			UINT spFrom = fromSubPops[i].subPop();
 			double sum = accumulate(m_rate[i].begin(), m_rate[i].end(), 0.0);
 			//
-			vectorlu::iterator spTo = find(m_to.begin(), m_to.end(), spFrom);
-			if (spTo == m_to.end() ) {                        // if no to, only check if sum <= 1
+			vectorlu::const_iterator spTo = find(toSubPops.begin(), toSubPops.end(), spFrom);
+			if (spTo == toSubPops.end() ) {                        // if no to, only check if sum <= 1
 				if (fcmp_gt(sum, 1.0) )
 					throw ValueError("Sum of migrate rate from one subPop should <= 1");
 				// adding i->i item
 				m_rate[i].push_back(1.0 - sum);
 			} else {                                                          // if not, set r[i][i]
-				double & self = m_rate[i][ spTo - m_to.begin() ];
+				double & self = m_rate[i][ spTo - toSubPops.begin() ];
 				sum -= self;
 				if (fcmp_gt(sum, 1.0) )
 					throw ValueError("Sum of migrate rate from one subPop should <= 1");
@@ -116,39 +96,63 @@ bool migrator::apply(population & pop)
 	// set info of individual
 	UINT info = pop.infoIdx(infoField(0));
 
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		RawIndIterator it = pop.rawIndBegin(sp);
-		RawIndIterator it_end = pop.rawIndEnd(sp);
-		for (; it != it_end; ++it)
-			it->setInfo(sp, info);
+	subPopList fromSubPops = applicableSubPops();
+	
+	vectorinfo oldInfo;
+	if (m_mode == ByIndInfo && !fromSubPops.empty()) {
+		oldInfo.resize(pop.popSize());
+		for (size_t i = 0; i < pop.popSize(); ++i)
+			oldInfo[i] = pop.ind(i).info(info);
 	}
 
-	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), ValueError,
-		"Migration can not be applied to virtual subpopulations");
+	if (m_mode != ByIndInfo || !fromSubPops.empty()) {
+		for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
+			RawIndIterator it = pop.rawIndBegin(sp);
+			RawIndIterator it_end = pop.rawIndEnd(sp);
+			for (; it != it_end; ++it)
+				it->setInfo(sp, info);
+		}
+	}
 
-	subPopList fromSubPops = applicableSubPops();
+	DBG_FAILIF(pop.hasActivatedVirtualSubPop(), RuntimeError,
+		"Migration can not be applied to activated virtual subpopulations");
+
 	if (fromSubPops.empty() )
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
 			fromSubPops.push_back(vspID(i));
 
+	vectorlu toSubPops = m_to;
+	if (m_to.empty() )
+		for (UINT i = 0; i < pop.numSubPop(); ++i)
+			toSubPops.push_back(i);
+
+	setRates(m_mode, fromSubPops, toSubPops);
+
 	for (UINT from = 0, fromEnd = fromSubPops.size(); from < fromEnd; ++from) {
 		UINT spFrom = fromSubPops[from].subPop();
 		// rateSize might be toSize + 1, the last one is from->from
-		UINT toSize = m_to.size();
+		UINT toSize = toSubPops.size();
 		UINT toIndex;
 
-		// fromSubPops out of range.... ignore.
+		// fromSubPops out of range....
 		DBG_FAILIF(spFrom >= pop.numSubPop(), IndexError,
 			"Subpopulation index " + toStr(spFrom) + " out of range");
 
-		if (fromSubPops[from].isVirtual()) {
+		if (fromSubPops[from].isVirtual())
 			pop.activateVirtualSubPop(fromSubPops[from]);
-		}
+
 		// if subpopulation spFrom is activated, subPopSize can
 		// get the correct size.
 		ULONG spSize = pop.subPopSize(spFrom);
 
-		if (m_mode == ByProbability) {
+		if (m_mode == ByIndInfo) {
+			// restore information fields set by user so that other individuals
+			// can stay at their original subpopulation.
+			if (!oldInfo.empty()) {
+				for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind)
+					ind->setInfo(oldInfo[&*ind - &*pop.rawIndBegin()], info);
+			}
+		} else if (m_mode == ByProbability) {
 			weightedSampler ws(rng(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
@@ -159,12 +163,12 @@ bool migrator::apply(population & pop)
 				DBG_ASSERT(toIndex < m_rate[from].size(), ValueError,
 					"Return index out of range.");
 
-				// rateSize==toSize (no i->i addition)
-				//   toIndex < toSize
+				// rateSize == toSize (no i->i addition)
+				//     toIndex < toSize
 				// rateSize = toSize + 1, ignore i->1 (last one)
-				//  toIndex < toSize
-				if (toIndex < toSize && m_to[toIndex] != spFrom)
-					ind->setInfo(m_to[toIndex], info);
+				//     toIndex < toSize
+				if (toIndex < toSize && toSubPops[toIndex] != spFrom)
+					ind->setInfo(toSubPops[toIndex], info);
 			}
 		} else {
 			// 2nd, or 3rd method
@@ -172,6 +176,8 @@ bool migrator::apply(population & pop)
 			// then randomly assign individuals to move
 			vectorlu toNum(toSize);
 			if (m_mode == ByProportion) {
+				// in case that to sub is not in from sub, the last added
+				// element is not used. sum of toNum is not spSize.
 				for (UINT i = 0; i < toSize; ++i)
 					toNum[i] = static_cast<ULONG>(spSize * m_rate[from][i]);
 			} else {                                                                      // by count
@@ -184,8 +190,9 @@ bool migrator::apply(population & pop)
 			UINT k = 0;
 			for (UINT i = 0; i < toSize && k < spSize; ++i)
 				for (UINT j = 0; j < toNum[i] && k < spSize; ++j)
-					toIndices[k++] = m_to[i];
+					toIndices[k++] = toSubPops[i];
 
+			// the rest of individuals will stay in their original subpopulation.
 			while (k < spSize)
 				toIndices[k++] = spFrom;
 
@@ -193,8 +200,8 @@ bool migrator::apply(population & pop)
 			IndIterator ind = pop.indBegin(spFrom);
 			// set info
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
-				// SubPopID is signed short, to save a few bits
-				ind->setInfo(static_cast<SubPopID>(toIndices[i]), info);
+				// The previous migration_to value, if set by a previous vsp, will be overridden.
+				ind->setInfo(static_cast<InfoType>(toIndices[i]), info);
 		}
 		if (fromSubPops[from].isVirtual())
 			pop.deactivateVirtualSubPop(spFrom);
@@ -202,8 +209,8 @@ bool migrator::apply(population & pop)
 
 	// do migration.
 	UINT oldNumSubPop = pop.numSubPop();
-	// true: rearrange individuals
 	pop.setSubPopByIndInfo(infoField(0));
+	// try to keep number of subpopulations.
 	if (pop.numSubPop() < oldNumSubPop) {
 		vectorf split(oldNumSubPop - pop.numSubPop() + 1, 0);
 		split[0] = 1.;
@@ -212,77 +219,6 @@ bool migrator::apply(population & pop)
 	DBG_ASSERT(pop.numSubPop() >= oldNumSubPop, RuntimeError,
 		"Migrator should not decrease number of subpopulations.");
 
-	return true;
-}
-
-
-bool pyMigrator::apply(population & pop)
-{
-	UINT info = pop.infoIdx(infoField(0));
-
-	if (m_rateFunc.isValid()) {
-		// get rate,
-		PyObject * curSize = PyTuple_New(pop.numSubPop());
-
-		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			PyTuple_SetItem(curSize, i, PyInt_FromLong(pop.subPopSize(i)));
-
-		DBG_DO(DBG_MIGRATOR, cout << "Current population size " << pop.subPopSizes() << endl);
-
-		matrix rate = m_rateFunc(PyObj_As_Matrix, "(iO)", pop.gen(), curSize);
-
-		DBG_DO(DBG_MIGRATOR, cout << "Migration rate: " << rate << endl);
-		Py_XDECREF(curSize);
-		//
-		setRates(rate, m_mode);
-		// apply migrator
-		return migrator::apply(pop);
-	}
-	// now, m_indFunc
-	//
-	// if loci is given
-	vectora alleles;
-	PyObject * numArray = NULL;
-	UINT pld = pop.ploidy();
-	//
-	if (!m_loci.empty()) {
-		alleles.resize(m_loci.size() * pld);
-		numArray = Allele_Vec_As_NumArray(alleles.begin(), alleles.end());
-	}
-	// call the python function, pass the each individual to it.
-	// get pop object
-	for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
-		PyObject * indObj = pyIndObj(static_cast<void *>(& * it));
-		// if pop is valid?
-		if (indObj == NULL)
-			throw SystemError("Could not pass population to the provided function. \n"
-				              "Compiled with the wrong version of SWIG?");
-
-		// loci
-		if (!m_loci.empty()) {
-			for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)
-				for (UINT p = 0; p < pld; ++p)
-					alleles[j++] = it->allele(m_loci[i], p);
-		}
-		// hold the return subpopulation id.
-		int resID = 0;
-		if (m_param.isValid()) {
-			if (m_loci.empty())
-				resID = m_indFunc(PyObj_As_Int, "(OO)", indObj, m_param.object());
-			else
-				resID = m_indFunc(PyObj_As_Int, "(OOO)", indObj, numArray, m_param.object());
-		} else {
-			if (m_loci.empty())
-				resID = m_indFunc(PyObj_As_Int, "(O)", indObj);
-			else
-				resID = m_indFunc(PyObj_As_Int, "(OO)", indObj, numArray);
-		}
-		it->setInfo(resID, info);
-		Py_DECREF(indObj);
-	}
-	// do migration.
-	// true: rearrange individuals
-	pop.setSubPopByIndInfo(infoField(0));
 	return true;
 }
 

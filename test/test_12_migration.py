@@ -43,12 +43,45 @@ class TestMigrator(unittest.TestCase):
             rate = [ [0, .05, .05],
                              [0.025, 0, 0],
                              [0.025, 0, 0] ])
-        assert pop.subPopSizes() == (2000, 4000, 4000)
+        self.assertEqual(pop.subPopSizes(), (2000, 4000, 4000))
         Migrate(pop, mode=ByProportion,
             rate = [ [0, .25, .25],
                              [0.25, 0, 0],
                              [0, 0.25, 0] ])
-        assert pop.subPopSizes() == (2000, 4500, 3500)
+        self.assertEqual(pop.subPopSizes(), (2000, 4500, 3500))
+
+    def testMigrateByIndInfo(self):
+        'Testing migrate by indinfo'
+        pop = population(size=[2000, 4000, 4000], loci=[2], infoFields=['migrate_to'])
+        for sp in range(3):
+            pop.setIndInfo([sp], 'migrate_to', sp)
+        Migrate(pop, mode=ByIndInfo)
+        self.assertEqual(pop.subPopSizes(), (2000, 4000, 4000))
+        # migrate a few individuals?
+        for i in range(10):
+            pop.individual(i, 0).setInfo(1, 'migrate_to')
+            pop.individual(i, 1).setInfo(2, 'migrate_to')
+        Migrate(pop, mode=ByIndInfo)
+        self.assertEqual(pop.subPopSizes(), (1990, 4000, 4010))
+        # virtual subpopulations?
+        pop = population(size=[2000, 4000, 4000], loci=[2], infoFields=['migrate_to'])
+        InitSex(pop, sex=[Male, Female])
+        pop.setVirtualSplitter(sexSplitter())
+        # only get male out of the second subpopulation
+        Migrate(pop, mode=ByIndInfo, subPops=[(1, 0)])
+        self.assertEqual(pop.subPopSizes(), (4000, 2000, 4000))
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.sex(), Female)
+        pop.setIndInfo([1], 'migrate_to', [0])
+        # only 1000 females will go
+        Migrate(pop, mode=ByIndInfo, subPops=[(0, 1)])
+        self.assertEqual(pop.subPopSizes(), (3000, 3000, 4000))
+        for ind in pop.individuals(1):
+            self.assertEqual(ind.sex(), Female)
+        for ind in pop.individuals(0):
+            self.assertEqual(ind.sex(), Male)
+
+
 
     def testMigrateByProbability(self):
         'Testing migrate by probability'
@@ -231,41 +264,6 @@ class TestMigrator(unittest.TestCase):
                              [0, 0.25, 0] ])
         assert pop.dvars().alleleFreq[0][1] == af
 
-    def testPyMigrator(self):
-        'Testing operator pyMigrator'
-        #pop = population(size=[2,4,4], loci=[2,6])
-        #InitByFreq(pop, [.2,.4,.4])
-        #ind1 = pop.individual(0).genotype()
-        #PyMigrate(pop, subPopID=[2,2,0,0,2,2,1,1,1,1])
-        #assert ind1 == pop.individual(6).genotype()
-        #PyMigrate(pop, subPopID=[0,0,2,2,2,2,1,1,1,1])
-        #assert ind1 == pop.individual(2).genotype()
-        #self.assertRaises(exceptions.ValueError,
-        #    PyMigrate, pop, [0,0,2,2,2,2,1,1])
-        #TurnOnDebug(DBG_MIGRATOR)
-        def rFunc(gen, size = []):
-            if gen == 0:
-                return [ [0.1] ]
-            elif gen == 1:
-                return [ [0.5] ]
-            else:
-                return [[0]]
-        pop = population(size=[2000,4000], loci=[2], infoFields=['migrate_to'])
-        InitByFreq(pop, [.2, .8])
-        simu = simulator(pop, randomMating())
-        simu.evolve(
-            preOps = [],
-            ops = [
-                pyMigrator(rateFunc = rFunc, subPops = [0],
-                           toSubPops = [1], mode = ByProportion),
-                stat( popSize = True ),
-                # pyEval('subPopSize'),
-                terminateIf( "subPopSize != [1800, 4200]", at = [0]),
-                terminateIf( "subPopSize != [900, 5100]", at = [1])
-            ],
-            gen=5
-        )
-        self.assertEqual(simu.gen(), 5)
 
     def testSplitSubPop(self):
         'Testing population split'
