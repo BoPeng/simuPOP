@@ -187,13 +187,6 @@ def Migrate(pop, *args, **kwargs):
     'Function form of operator migrator.'
     migrator(*args, **kwargs).apply(pop)
 
-
-def PyMigrate(pop, *args, **kwargs):
-    pyMigrator(*args, **kwargs).apply(pop)
-
-if pyMigrator.__init__.__doc__ is not None:
-    PyMigrate.__doc__ = "Function version of operator pyMigrate whose __init__ function is \n" + pyMigrator.__init__.__doc__
-
 def SplitSubPop(pop, *args, **kwargs):
     splitSubPop(*args, **kwargs).apply(pop)
 
@@ -1059,76 +1052,6 @@ AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSam
 # 
 
 
-# Utility functions
-
-def MergePopulations(pops, subPopSizes=[], keepAncestralPops=-1):
-    'merge several populations with the same genotypic structure and create a new population'
-    if len(pops) == 0:
-        raise exceptions.ValueError("MergePopuations: empty population list is given")
-    elif len(pops) == 1:
-        return pops[0].clone()
-    # to avoid repeated merging, it is better to merge files two by two
-    merged = []
-    for i in range(len(pops)):
-        if i*2 < len(pops):
-            merged.append(pops[i*2].clone())
-        if i*2 + 1 < len(pops):
-            merged[i].mergePopulation(pops[i*2+1], keepAncestralPops=keepAncestralPops)
-    # merge merged with minimal population copying
-    while True:
-        count = 0
-        for i in range(len(merged)):
-            if merged[i] is not None:
-                count += 1
-                for j in range(i+1, len(merged)):
-                    if merged[j] is not None:
-                        merged[i].mergePopulation(merged[j], keepAncestralPops=keepAncestralPops)
-                        merged[j] = None
-                        break
-        if count == 1:
-            break
-    res = merged[0]
-    if len(subPopSizes) != 0:
-        if sum(subPopSizes) != res.popSize():
-            raise exceptions.ValueError("MergePopulations: can not change total population size")
-        res.setSubPopStru(subPopSizes)
-    return res
-
-
-def MergePopulationsByLoci(pops, newNumLoci=[], newLociPos=[], byChromosome=False):
-    'merge several populations of the same size by loci and create a new population'
-    if len(pops) == 0:
-        raise exceptions.ValueError("MergePopuations: empty population list is given")
-    elif len(pops) == 1:
-        return pops[0].clone()
-    # to avoid repeated merging, it is better to merge files two by two
-    merged = []
-    for i in range(len(pops)):
-        if i*2 < len(pops):
-            merged.append(pops[i*2].clone())
-        if i*2 + 1 < len(pops):
-            merged[i].mergePopulationByLoci(pops[i*2+1], [], [], byChromosome)
-    # merge merged with minimal population copying
-    while True:
-        count = 0
-        for i in range(len(merged)):
-            if merged[i] is not None:
-                count += 1
-                for j in range(i+1, len(merged)):
-                    if merged[j] is not None:
-                        merged[i].mergePopulationByLoci(merged[j], [], [], byChromosome)
-                        merged[j] = None
-                        break
-        if count == 1:
-            break
-    res = merged[0]
-    if len(newNumLoci) != 0:
-        if sum(newNumLoci) != res.totNumLoci():
-            raise exceptions.ValueError("MergePopulationsByLoci: can not change total number of loci")
-        if sum(newLociPos) != res.totNumLoci():
-            raise exceptions.ValueError("MergePopulationsByLoci: can not change total number of loci")
-        res.rearrangeLoci(newNumLoci, newLociPos)
-    return res
 
 
 

@@ -521,17 +521,15 @@ del pointMutator.__init__
 pointMutator.__init__ = new_pointMutator
 
 
-def new_migrator(self, rate, *args, **kwargs):
+def new_migrator(self, rate=[], *args, **kwargs):
     # parameter rate
     r = rate
     if type(rate) in [types.IntType, types.LongType, types.FloatType]:
         r = [[rate]]
     # if a single vector, [a,b] ==> [[a,b]]
-    if type(rate) in [types.ListType, types.TupleType, types.FloatType]:
-        if len(rate) == 0:
-            raise exceptions.ValueError('Migration rate can not be empty')
-        elif type(rate[0]) in [types.IntType, types.LongType, types.FloatType]:
-            r = [rate]
+    if type(rate) in [types.ListType, types.TupleType, types.FloatType] and \
+        (len(rate) == 0 or type(rate[0]) in [types.IntType, types.LongType, types.FloatType]):
+        r = [rate]
     cppModule.migrator_swiginit(self,
         cppModule.new_migrator(r, *args, **kwargs))
 

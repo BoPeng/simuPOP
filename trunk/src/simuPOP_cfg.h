@@ -196,9 +196,10 @@ enum MultiLociMode {
 };
 
 enum MigrMode {
-	ByProbability = 81,
-	ByProportion = 82,
-	ByCounts = 83,
+	ByIndInfo = 81,
+	ByProbability = 82,
+	ByProportion = 83,
+	ByCounts = 84,
 };
 
 typedef unsigned char TraitIndexType;
