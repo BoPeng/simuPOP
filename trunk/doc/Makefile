@@ -44,12 +44,17 @@ checkout:
 	  echo "Checking out Pygments..."; \
 	  svn checkout $(SVNROOT)/external/Pygments-0.11.1/pygments tools/pygments; \
 	fi
+	@if [ ! -d tools/converter ]; then \
+	  echo "Checking out converter..."; \
+	  svn checkout $(SVNROOT)/doctools/converter/converter tools/converter; \
+	fi
 
 update: checkout
 	svn update tools/sphinx
 	svn update tools/docutils
 	cd tools/jinja2; hg update; cd ../..
 	svn update tools/pygments
+	svn update tools/converter
 
 build: checkout
 	mkdir -p build/$(BUILDER) build/doctrees
