@@ -4,8 +4,12 @@
 #
 
 # You can set these variables from the command line.
+
+ifeq ($(HOST), 'bp8')
 PYTHON       = $(HOME)/Python26/bin/python
-#PYTHON       = python
+else
+PYTHON       = python
+endif
 SVNROOT      = http://svn.python.org/projects
 SPHINXOPTS   =
 PAPER        =
