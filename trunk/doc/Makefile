@@ -5,7 +5,7 @@
 
 # You can set these variables from the command line.
 
-ifeq ($(HOST), 'bp8')
+ifeq ($(HOSTNAME), bp8)
 PYTHON       = $(HOME)/Python26/bin/python
 else
 PYTHON       = python
@@ -124,6 +124,10 @@ clean:
 dist: html
 	cd ..; doxygen Doxy_web
 	rsync -v -rlt -z ../doxygen_doc/html/ simupop,simupop@web.sourceforge.net:htdocs/src_doc
+	# remove old directory
+	rm -rf build/empty
+	mkdir build/empty
+	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual
 
 
