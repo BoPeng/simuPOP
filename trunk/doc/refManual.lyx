@@ -282,12 +282,17 @@ filename "simuPOP_ref.tex"
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Chapter
+\begin_inset ERT
+status open
 
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{0cm}
 \end_layout
 
-\begin_layout Chapter
-\begin_inset space \thinspace{}
 \end_inset
 
 simuPOP Components
@@ -901,13 +906,6 @@ migratorRef
 
 
 \backslash
-pyMigratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 splitSubPopRef
 \end_layout
 
@@ -1004,6 +1002,7 @@ Recombination and gene conversion
 status open
 
 \begin_layout Plain Layout
+
 
 \backslash
 recombinatorRef
