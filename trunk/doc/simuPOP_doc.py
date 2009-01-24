@@ -13,7 +13,7 @@ def drawGenotype():
     '''Draw a figure that demonstrates the memory layout of
        individual genotypes.
     '''
-    r.pdf('genotype.pdf', height=4, width=8)
+    r.png('genotype.png', height=400, width=800)
     ch0 = 10
     ch1 = 15
     ch = ch0+ch1
@@ -68,7 +68,7 @@ def drawGenotype():
 
 
 def drawChromType():
-    r.pdf('chromType.pdf', height=3, width=8)
+    r.png('chromType.png', height=300, width=800)
     r.par(mar=[0, 0, 0, 0])
     r.plot(0, 0, axes=False, type='n', main='', xlab='', ylab='',
         ylim=[-6, 6], xlim=[-40, 40])

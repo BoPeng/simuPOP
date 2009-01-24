@@ -1,4 +1,3 @@
-#
 # This script will genreate code/result pieces
 # that will be inserted into simuPOP user's guide
 # and reference manual
@@ -1262,6 +1261,7 @@ def mutator(pop, param):
             # choose someone to mutate
             ind = pop.individual(random.randint(0, pop.popSize() - 1))
             ind.setAllele(1, idx)
+    return True
 
 # The populations start with no loci at all.
 simu = simulator(population(1000, loci=[]), randomMating(), rep=3)
@@ -1360,7 +1360,7 @@ simu = simulator(pop, randomSelection())
 simu.evolve(
     ops=[
         splitSubPop(0, proportions=[0.2, 0.3, 0.5], at = 3),
-        migrator(rate = [0.2], fromSubPop=[0], toSubPop=[1], 
+        migrator(rate = [0.2], subPops=0, toSubPops=1, 
             begin = 3, end = 4),
         migrator(rate = [
             [0, 0.2, 0.4],
@@ -1389,7 +1389,7 @@ simu = simulator(pop, randomSelection(subPopSize=popSize))
 simu.evolve(
     ops=[
         splitSubPop(0, proportions=[0.3, 0.7], at = 3),
-        migrator(rate = [0.2], fromSubPop=[0], toSubPop=[1], 
+        migrator(rate = [0.2], subPops=0, toSubPops=1, 
             begin = 3, end = 4),
         splitSubPop(0, proportions=[0.3, 0.7], at = 5),
         migrator(rate = [
@@ -1416,7 +1416,7 @@ simu = simulator(pop, randomSelection(subPopSize=popSize))
 simu.evolve(
     ops=[
         splitSubPop(0, proportions=[0.3, 0.7], at = 3),
-        migrator(rate = [0.2], fromSubPop=[0], toSubPop=[1], 
+        migrator(rate = [0.2], subPops=0, toSubPops=1, 
             begin = 3, end = 4),
         splitSubPop(0, proportions=[0.3, 0.7], at = 5),
         migrator(rate = [
@@ -1462,10 +1462,10 @@ rates[nc-1][nc-2] = 0.1
 
 # print rates
 print rates
-migr = migrator(rate=rates, mode=MigrByProbability)
+migr = migrator(rate=rates, mode=ByProbability)
 
 # initially, we need to set everyone to middle subpop
-initMigr = migrator(rate=[[1]], mode=MigrByProportion,
+initMigr = migrator(rate=[[1]], mode=ByProportion,
     fromSubPop=[0], toSubPop=[nc/2])
 
 pop = population(size=[500]*nc, infoFields=['migrate_to'])
@@ -2155,7 +2155,7 @@ if __name__ == '__main__':
 ## 
 ## # migrate
 ## migr = migrator([[0, .2, .1], [.25, 0, .1], [.1, .2, 0]],
-##     mode=MigrByProbability)
+##     mode=ByProbability)
 ## # and count the size of subpopulations
 ## stat = stat(popSize=1, stage=PreMating)
 ## # plot subPopSize. 
@@ -2199,7 +2199,7 @@ if __name__ == '__main__':
 ## migrRate = .1
 ## # rate[i->i] will be ignored so we can do the following
 ## migrRates = [[migrRate/(numSubPop-1)]*numSubPop]*numSubPop 
-## migrMode = MigrByProbability
+## migrMode = ByProbability
 ## #
 ## migrate = migrator(migrRates, mode=migrMode)
 ## 

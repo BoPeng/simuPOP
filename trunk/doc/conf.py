@@ -14,7 +14,7 @@ sys.path.extend([os.path.abspath('tools/sphinxext'), os.path.abspath('..'), os.p
 # ---------------------
 
 extensions = ['sphinx.ext.refcounting', 'sphinx.ext.coverage',
-              'sphinx.ext.doctest', 'pyspecific']
+              'sphinx.ext.doctest']
 templates_path = ['tools/sphinxext']
 
 # General substitutions.
@@ -69,20 +69,20 @@ html_use_smartypants = True
 
 # Custom sidebar templates, filenames relative to this file.
 html_sidebars = {
-    'index': 'indexsidebar.html',
+    #'index': 'indexsidebar.html',
 }
 
 # Additional templates that should be rendered to pages.
 html_additional_pages = {
-    'download': 'download.html',
-    'index': 'indexcontent.html',
+    #'download': 'download.html',
+    #'index': 'indexcontent.html',
 }
 
 # Output an OpenSearch description file.
 html_use_opensearch = 'http://docs.python.org/dev'
 
 # Additional static files.
-html_static_path = ['tools/sphinxext/static']
+html_static_path = [] #['tools/sphinxext/static']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'python' + release.replace('.', '')
