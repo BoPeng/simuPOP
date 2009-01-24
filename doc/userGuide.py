@@ -1257,7 +1257,11 @@ def mutator(pop, param):
     # example just mutate each basepair one by one....
     for i in range(region):
         if random.random() < rate:
-            idx = pop.addLoci(chrom=0, loci=i)[0]
+            try:
+                idx = pop.addLoci(chrom=0, pos=i)[0]
+            except:
+                # position might duplicate
+                continue
             # choose someone to mutate
             ind = pop.individual(random.randint(0, pop.popSize() - 1))
             ind.setAllele(1, idx)
@@ -1267,7 +1271,7 @@ def mutator(pop, param):
 simu = simulator(population(1000, loci=[]), randomMating(), rep=3)
 simu.evolve(
     preOps = [initSex()],
-    ops = [pyOperator(func=mutator, param=(10000, 3e-4))],
+    ops = [pyOperator(func=mutator, param=(10000, 1e-5))],
     gen = 200
 )
 for pop in simu.populations():
@@ -1466,7 +1470,7 @@ migr = migrator(rate=rates, mode=ByProbability)
 
 # initially, we need to set everyone to middle subpop
 initMigr = migrator(rate=[[1]], mode=ByProportion,
-    fromSubPop=[0], toSubPop=[nc/2])
+    subPops=[0], toSubPops=[nc/2])
 
 pop = population(size=[500]*nc, infoFields=['migrate_to'])
 
