@@ -8,7 +8,7 @@
 # that aren't pickleable (module imports are okay, they're removed automatically).
 
 import sys, os, time
-sys.path.extend([os.path.abspath('tools/sphinxext'), '..'])
+sys.path.extend([os.path.abspath('tools/sphinxext'), os.path.abspath('..'), os.path.abspath('tools/jinja2')])
 
 # General configuration
 # ---------------------
@@ -44,7 +44,7 @@ unused_docs = [
 ]
 
 # Relative filename of the reference count data file.
-refcount_file = 'data/refcounts.dat'
+#refcount_file = 'data/refcounts.dat'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
