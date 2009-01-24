@@ -33,7 +33,8 @@ from converter.docnodes import CommentNode, RootNode, NodeList, ParaSepNode, \
      ListNode, ItemizeNode, EnumerateNode, DescriptionNode, \
      DefinitionsNode, ProductionListNode
 
-from converter.util import umlaut, empty
+from converter.util import umlaut, empty, text
+from converter.latexparser import ParserError
 
 class MyDocParser(DocParser):
     def __init__(self, *args, **kwargs):
@@ -45,6 +46,8 @@ class MyDocParser(DocParser):
         # argspec: M = mandatory, T = mandatory, check text-only,
         #          O = optional, Q = optional, check text-only
         args = []
+        # ignore \[ \] for now
+        
         def optional_end(type, value, bracelevel):
             return type == 'eoptional' and bracelevel == 0
 
@@ -92,14 +95,23 @@ class MyDocParser(DocParser):
             return EmptyNode()
         return handler
 
-    handle_lstset = mk_metadata_handler(None, 'lstset')
+    def handle_special_command(self, cmdname):
+        if cmdname == '[':
+            print 'MATH START'
+            while True:
+                nextl, nextt, nextv, nextr = self.tokens.next()
+                print 'MATH %s %s' % (nextr, nextt)
+                if nextr == '\\]':
+                    break
+            print 'MATH END'
+            return EmptyNode()
+        return DocParser.handle_special_command(self, cmdname)
+
     handle_color = mk_metadata_handler(None, 'color', None, 'M')
-    handle_setcounter = mk_metadata_handler(None, 'setcounter')
+    handle_lstset = mk_metadata_handler(None, 'lstset')
+    handle_setcounter = mk_metadata_handler(None, 'setcounter', None, 'MM')
     handle_hypersetup = mk_metadata_handler(None, 'hypersetup')
-    handle_newcommand = mk_metadata_handler(None, 'newcommand')
-    handle_renewcommand = mk_metadata_handler(None, 'renewcommand', None, 'QMM')
     handle_definecolor = mk_metadata_handler(None, 'definecolor', None, 'MMM')
-    handle_newenvironment = mk_metadata_handler(None, 'newenvironment', None, 'QTT')
     handle_sectionfont = mk_metadata_handler(None, 'sectionfont', None, 'O')
     handle_subsectionfont = mk_metadata_handler(None, 'subsectionfont', None, 'O')
     handle_subsubsectionfont = mk_metadata_handler(None, 'subsubsectionfont', None, 'O')
@@ -109,14 +121,12 @@ class MyDocParser(DocParser):
     handle_vspace = mk_metadata_handler(None, 'vspace', None, 'M')
     handle_hrule = mk_metadata_handler(None, 'hrule', None, 'O')
     handle_lstlistoflistings = mk_metadata_handler(None, 'lstlistoflistings', None, 'O')
-    handle_caption = mk_metadata_handler(None, 'caption', None, 'O')
     handle_centering = mk_metadata_handler(None, 'centering', None, 'O')
-    handle_includegraphics = mk_metadata_handler(None, 'includegraphics', None, 'O')
     handle_textwidth = mk_metadata_handler(None, 'textwidth', None, 'O')
     handle_end = mk_metadata_handler(None, 'end', None, 'O')
     handle_textendash = mk_metadata_handler(None, 'textendash', None, 'O')
-    handle_textquoteleft = mk_metadata_handler(None, 'textquoteleft', None, 'O')
-    handle_item = mk_metadata_handler(None, 'item', None, 'O')
+
+    #handle_item = mk_metadata_handler(None, 'item', None, 'O')
     handle_textmd = mk_metadata_handler(None, 'textmd', None, 'O')
     handle_normalsize = mk_metadata_handler(None, 'normalsize', None, 'O')
     handle_textcompwordmark = mk_metadata_handler(None, 'textcompwordmark', None, 'O')
@@ -130,6 +140,7 @@ class MyDocParser(DocParser):
     handle_ne = mk_metadata_handler(None, 'ne', None, 'O')
     handle_sum = mk_metadata_handler(None, 'sum', None, 'O')
     handle_mu = mk_metadata_handler(None, 'mu', None, 'O')
+    handle_py = mk_metadata_handler(None, 'py', None, 'O')
     handle_infty = mk_metadata_handler(None, 'infty', None, 'O')
     handle_gg = mk_metadata_handler(None, 'gg', None, 'O')
     handle_left = mk_metadata_handler(None, 'left', None, 'O')
@@ -141,33 +152,61 @@ class MyDocParser(DocParser):
         data = self.parse_args('\\textquoteright', 'M')
         return TextNode("'")
 
+    def handle_textquoteleft(self):
+        data = self.parse_args('\\textquoteleft', 'M')
+        return TextNode("'")
+
     def handle_minipage_env(self):
         # Ignore the minipage part.
-        text = ''
-        while not text.endswith('end{minipage}'):
+        txt = ''
+        while not txt.endswith('end{minipage}'):
             nextl, nextt, nextv, nextr = self.tokens.pop()
-            text += nextv
+            txt += nextv
         return EmptyNode()
 
     def handle_lyxcode_env(self):
         return VerbatimNode(TextNode('a'))
 
-    def handle_lstinputlisting(self):
-        text = ''
-        while not text.endswith('\n'):
+    def handle_newenvironment(self, numOpt=3):
+        txt = ''
+        opt = 0
+        depth = 0
+        while True:
             nextl, nextt, nextv, nextr = self.tokens.pop()
-            text += nextr
+            if nextr == '{' or nextr == '[':
+                depth += 1
+            elif nextr == '}' or nextr == ']':
+                depth -= 1
+            if nextr == '}' and depth == 0:
+                opt += 1
+            if opt == numOpt:
+                break
+        return EmptyNode()
+
+    def handle_newcommand(self):
+        return self.handle_newenvironment(2)
+    
+    #def handle_renewcommand(self):
+    #    return self.handle_newenvironment(2)
+
+
+    def handle_lstinputlisting(self):
+        txt = ''
+        while not txt.endswith('\n'):
+            nextl, nextt, nextv, nextr = self.tokens.pop()
+            txt += nextr
         try:
-            label = re.search('label={([^}]*)}', text).groups()[0]
+            label = re.search('label={([^}]*)}', txt).groups()[0]
+            label = label.split(':')[-1]
         except:
             label = ''
         try:
-            caption = re.search('caption={([^}]*)}', text).groups()[0]
+            caption = re.search('caption={([^}]*)}', txt).groups()[0]
             caption = caption.replace(label, '')
         except:
             caption = ''
         try:
-            listing = re.search('\]{([^{]*)}', text).groups()[0]
+            listing = re.search('\]{([^{]*)}', txt).groups()[0]
         except:
             listing = ''
         # do not use this one yet
@@ -177,66 +216,90 @@ class MyDocParser(DocParser):
         except:
             print("File ", listing, " can not be opened")
             return EmptyNode()
-        text = src.read()
-        if label != '':
-            return NodeList([CommandNode('label', [TextNode(label)]),
-                VerbatimNode(TextNode(text))])
-        return VerbatimNode(TextNode(text))
+        txt = src.read()
+        return NodeList([CommandNode('label', [TextNode(label)]),
+                InlineNode('strong', [TextNode('Example')]),
+                TextNode(': ' + caption),
+                VerbatimNode(TextNode(txt))])
 
 
     def handle_figure_env(self):
-        text = ''
-        while not text.endswith('end{figure}'):
+        txt = ''
+        while not txt.endswith('end{figure}'):
             nextl, nextt, nextv, nextr = self.tokens.pop()
-            text += nextr
-        print re.match('label', text)
+            txt += nextr
+        print re.match('label', txt)
         try:
-            label = re.search('\\label\{([^}]*)}', text).groups()[0]
+            label = re.search('\\label{([^}]*)}', txt).groups()[0]
+            label = label.split(':')[-1]
         except:
             label = ''
         try:
-            caption = re.search('\\caption{(.*)}', text).groups()[0]
-            caption = caption.replace('\\label{%s}' % label, '')
+            txt = txt.replace('\\label{fig:%s}' % label, '')
+            print 'LABEL', label
+            print txt
+            caption = re.search('\\caption{([^}]*)}', txt).groups()[0]
         except:
             caption = ''
         try:
-            figure = re.search('\\includegraphics(\[.*\]){([^}]*)}', text).groups()[1]
+            figure = re.search('\\includegraphics(\[.*\]){([^}]*)}', txt).groups()[1]
         except:
             figure = ''
         try:
-            legend = re.search('\\includegraphics[^\n]*([^\z]*)', text, re.M).groups()[0]
+            legend = re.search('\\includegraphics[^\n]*([^\z]*)', txt, re.M).groups()[0]
             legendlist = legend.split()
             legend = ''
             for line in legendlist:
-                if not line.startswith('end{'):
+                if not line.startswith('\\end{'):
                     legend += line + ' '
         except:
             legend = ''
-        if label != '':
-            return NodeList([CommandNode('label', [TextNode(label)]),
-                InlineNode('figure', '%s\n%s\n%s\n%s' % (figure, label, caption, legend))])
-        else:
-            return InlineNode('figure', '%s\n%s\n%s\n%s' % (figure, label, caption, legend))
+        return NodeList([CommandNode('label', [TextNode(label)]),
+                InlineNode('strong', [TextNode('Figure')]),
+                TextNode(': '),
+                InlineNode('emph', [TextNode(caption.strip())]),
+                #BreakNode(), 
+                InlineNode('figure', figure),
+                TextNode('\n\n' + legend)])
 
     def handle_lstlisting_env(self):
-        text = ''
+        txt = ''
         opt = False
-        while not text.endswith('end{lstlisting}'):
+        optText = ''
+        while not txt.endswith('end{lstlisting}'):
             nextl, nextt, nextv, nextr = self.tokens.pop()
             if nextr == '[':
                 opt = True
             elif opt and nextr == ']':
                 opt = False
                 continue
-            if not opt:
-                text += nextr
-        textlist = text.split('\n')
-        text = ''
-        for t in textlist:
+            if opt:
+                optText += nextr
+            else:
+                txt += nextr
+        # find label
+        try:
+            label = re.search('label=\{([^}]*)}', optText).groups()[0]
+            label = label.split(':')[-1]
+        except:
+            label = ''
+        try:
+            caption = re.search('caption=\{([^}]*)}', optText).groups()[0]
+            caption = caption.split(':')[-1]
+        except:
+            caption = ''
+        txtlist = txt.split('\n')
+        txt = ''
+        for t in txtlist:
             if t.startswith('[cap') or '\\end{lstlisting}' in t:
                 continue
-            text += t + '\n'
-        return VerbatimNode(TextNode(text))
+            txt += t + '\n'
+        if label != '':
+            return NodeList([CommandNode('label', [TextNode(label)]),
+                InlineNode('strong', [TextNode('Example')]),
+                TextNode(': ' + caption),
+                VerbatimNode(TextNode(txt))])
+        return VerbatimNode(TextNode(txt))
 
 
     def handle_centering_env(self):
@@ -266,28 +329,31 @@ class MyRestWriter(RestWriter):
         if cmdname == 'figure':
             content = node.args[0]
             #self.flush_par()
-            text = node.args.split('\n')
-            figure = text[0]
-            label = text[1]
-            caption = text[2]
-            legend = text[3]
-            self.write('.. figure:: %s' % figure)
-            self.write('   %s' % caption)
-            self.write('')
-            self.write(legend)
+            figure = node.args
+            for suffix in ['', '.pdf', '.png', '.jpg', '.eps']:
+                if os.path.isfile(figure + suffix):
+                    figure += suffix
+                    break
+            self.write('.. image:: %s\n' % figure )
         elif cmdname == 'listing':
             content = node.args[0]
             #self.flush_par()
-            text = node.args.split('\n')
-            file = text[0]
-            label = text[1]
-            caption = text[2]
+            txt = node.args.split('\n')
+            file = txt[0]
+            label = txt[1]
+            caption = txt[2]
             self.write('.. literalinclude:: %s' % file)
             self.write('   :language: python')
             self.write('   %s\n' % caption)
+        elif cmdname == 'ref':
+            self.curpar.append('`%s%s`_' % (self.labelprefix,
+                                                text(node.args[0]).lower().split(':')[-1]))
         else:
             RestWriter.visit_InlineNode(self, node)
 
+    def visit_CommentNode(self, node):
+        # no inline comments -> they are all output at the start of a new paragraph
+        pass #self.comments.append(node.comment.strip())
 
 def convert_file(infile, outfile, doraise=True, splitchap=False,
                  toctree=None, deflang=None, labelprefix=''):

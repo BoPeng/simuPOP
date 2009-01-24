@@ -214,9 +214,9 @@ This user's guide shows you how to install and use simuPOP using a large
  For a complete and detailed description about all simuPOP functions and
  classes, please refer to the 
 \emph on
-simuPOP Reference Manual.
-
+simuPOP Reference Manual
 \emph default
+.
  All resources, including a pdf version of this guide and a mailing list
  can be found at the simuPOP homepage 
 \family typewriter
@@ -228,7 +228,7 @@ http://simupop.sourceforge.net
 \begin_layout Abstract
 
 \series bold
-How to cite simuPOP: 
+How to cite simuPOP:
 \end_layout
 
 \begin_deeper
@@ -243,7 +243,7 @@ bioinformatics
 \series bold
 21
 \series default
-(18): 3686-3687
+ (18): 3686-3687
 \end_layout
 
 \begin_layout Quote
@@ -251,17 +251,13 @@ Bo Peng and Christopher Amos (2008) Forward-time simulations of nonrandom
  mating populations using simuPOP.
  
 \emph on
-bioinformatics,
+bioinformatics
 \emph default
- 
+, 
 \series bold
 24
 \series default
- (11)
-\begin_inset Quotes erd
-\end_inset
-
- 1408-1409.
+ (11) 1408-1409.
 \end_layout
 
 \end_deeper
@@ -8943,14 +8939,15 @@ class mapSelector
 \end_inset
 
  the genotype frequencies will go to an equilibrium state.
- Theoretically, if
-\begin_inset Formula \begin{eqnarray*}
-s_{1} & = & w_{12}-w_{11}\\
-s_{2} & = & w_{12}-w_{22}\end{eqnarray*}
-
+ Theoretically, if 
+\begin_inset Formula $s_{1}=w_{12}-w_{11}$
 \end_inset
 
-the stable allele frequency of allele 1 is
+ and 
+\begin_inset Formula $s_{2}=w_{12}-w_{22}$
+\end_inset
+
+, the stable allele frequency of allele 1 is
 \begin_inset Formula \[
 p=\frac{s_{2}}{s_{1}+s_{2}}\]
 
