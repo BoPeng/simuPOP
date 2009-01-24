@@ -975,35 +975,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::floatList::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::floatList::size "
-
-Usage:
-
-    x.size()
-
-"; 
-
 %feature("docstring") simuPOP::floatList::elems "
 
 Usage:
 
     x.elems()
-
-"; 
-
-%feature("docstring") simuPOP::floatList::resize "
-
-Usage:
-
-    x.resize(size, v)
 
 "; 
 
@@ -1016,6 +992,22 @@ Usage:
 Usage:
 
     floatListFunc(values=[])
+
+"; 
+
+%feature("docstring") simuPOP::floatListFunc::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::floatListFunc::size "
+
+Usage:
+
+    x.size()
 
 "; 
 
@@ -1123,11 +1115,11 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx) const;
 
-%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectoru &loci, vectoru &kept);
+%ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectorlu &loci, vectorlu &kept);
 
 %ignore simuPOP::GenoStruTrait::gsAddChrom(const vectorf &lociPos, const vectorstr &lociNames, const string &chromName, UINT chromType) const;
 
-%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectoru &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
+%ignore simuPOP::GenoStruTrait::gsAddLoci(const vectorlu &chrom, const vectorf &pos, const vectorstr &names, vectoru &newIndex) const;
 
 %ignore simuPOP::GenoStruTrait::genoStru() const;
 
@@ -3041,19 +3033,20 @@ Usage:
 
 Details:
 
-    This function creates an initializer that initialize individual
-    genotypes randomly. alleleFreq specified the allele frequencies of
-    allele 0, 1, ... respectively. These frequencies should add up to
-    1. If loci, ploidy and/or subPop are specified, only specified
-    loci, ploidy, and individuals in these (virtual) subpopulations
-    will be initialized. If identicalInds is True, the first
-    individual in each (virtual) subpopulation will be initialized
-    randomly, and be copied to all other individuals in this (virtual)
-    subpopulation. If a list of frequencies are given, they will be
-    used for each (virtual) subpopulation. If initSex is True
-    (default), initSex(maleFreq, sex) will be applied. This operator
-    initializes all chromosomes, including unused genotype locations
-    and customized chromosomes.
+    This function creates an initializer that initializes individual
+    genotypes randomly, using allele frequencies specified in
+    parameter alleleFreq. Elements in alleleFreq specifies the allele
+    frequencies of allele 0, 1, ... respectively. These frequencies
+    should add up to 1. If loci, ploidy and/or subPop are specified,
+    only specified loci, ploidy, and individuals in these (virtual)
+    subpopulations will be initialized. If identicalInds is True, the
+    first individual in each (virtual) subpopulation will be
+    initialized randomly, and be copied to all other individuals in
+    this (virtual) subpopulation. If a list of frequencies are given,
+    they will be used for each (virtual) subpopulation. If initSex is
+    True (default), initSex(maleFreq, sex) will be applied. This
+    operator initializes all chromosomes, including unused genotype
+    locations and customized chromosomes.
 
 "; 
 
@@ -3124,7 +3117,7 @@ Usage:
 
 Details:
 
-    This function creates an initializer that initialize individual
+    This function creates an initializer that initializes individual
     genotypes with given genotype value. If loci, ploidy and/or subPop
     are specified, only specified loci, ploidy, and individuals in
     these (virtual) subpopulations will be initialized. value can be
@@ -3285,22 +3278,6 @@ Details:
 Usage:
 
     intList(values=[])
-
-"; 
-
-%feature("docstring") simuPOP::intList::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::intList::size "
-
-Usage:
-
-    x.size()
 
 "; 
 
@@ -4175,79 +4152,84 @@ Usage:
 
 %feature("docstring") simuPOP::migrator "
 
-Description:
-
-    migrate individuals from (virtual) subpopulations to other
-    subpopulations
-
 Details:
 
-    Migrator is the only way to mix genotypes of several
-    subpopulations because mating is strictly within subpopulations in
-    simuPOP. Migrators are quite flexible in simuPOP in the sense that
-    *   migration can happen from and to a subset of subpopulations.
-    *   migration can be done by probability, proportion or by counts.
-    In the case of probability, if the migration rate from
-    subpopulation a to b is r, then everyone in subpopulation a will
-    have this probability to migrate to b. In the case of proportion,
-    exactly r*size_of_subPop_a individuals (chosen by random) will
-    migrate to subpopulation b. In the last case, a given number of
-    individuals will migrate.
-    *   new subpopulation can be generated through migration. You
-    simply need to migrate to a subpopulation with a new subpopulation
-    number.
+    This operator migrates individuals from (virtual) subpopulations
+    to other subpopulations, according to either pre-specified
+    destination subpopulation stored in an information field, or
+    randomly according to a migration matrix.  In the former case,
+    values in a specified information field (default to migrate_to)
+    are considered as destination subpopulation for each individual.
+    If subPops is given, only individuals in specified (virtual)
+    subpopulations will be migrated where others will stay in their
+    original subpopulation. Negative values are not allowed in this
+    information field because they do not represent a valid
+    destination subpopulation ID.  In the latter case, a migration
+    matrix is used to randomly assign destination subpoulations to
+    each individual. The elements in this matrix can be probabilities
+    to migrate, proportions of individuals to migrate, or exact number
+    of individuals to migrate.  By default, the migration matrix
+    should have m by m elements if there are m subpopulations. Element
+    (i, j) in this matrix represents migration probability, rate or
+    count from subpopulation i to j. If subPops (length m) and/or
+    toSubPops (length n) are given, the matrix should have m by n
+    elements, corresponding to specified source and destination
+    subpopulations. Subpopulations in subPops can be virtual
+    subpopulations, which makes it possible to migrate, for example,
+    males and females at different rates from a subpopulation. If a
+    subpopulation in toSubPops does not exist, it will be created. In
+    case that all individuals from a subpopulation are migrated, the
+    empty subpopulation will be kept.  If migration is applied by
+    probability, the row of the migration matrix corresponding to a
+    source subpopulation is intepreted as probabilities to migrate to
+    each destination subpopulation. Each individual's detination
+    subpopulation is assigned randomly according to these
+    probabilities. Note that the probability of staying at the present
+    subpopulation is automatically calculated so the corresponding
+    matrix elements are ignored.  If migration is applied by
+    proportion, the row of the migration matrix corresponding to a
+    source subpopulation is intepreted as proportions to migrate to
+    each destination subpopulation. The number of migrants to each
+    destination subpopulation is determined before random
+    indidividuals are chosen to migrate.  If migration is applied by
+    counts, the row of the migration matrix corresponding to a source
+    subpopulation is intepreted as number of individuals to migrate to
+    each detination subpopulation. The migrants are chosen randomly.
+    This operator goes through all source (virtual) subpopulations and
+    assign detination subpopulation of each individual to an
+    information field. An RuntimeError will be raised if an individual
+    is assigned to migrate more than once. This might happen if you
+    are migrating from two overlapping virtual subpopulations.
 
 "; 
 
 %feature("docstring") simuPOP::migrator::migrator "
 
-Description:
-
-    create a migrator
-
 Usage:
 
-    migrator(rate, mode=MigrByProbability, fromSubPop=[],
-      toSubPop=[], stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[\"migrate_to\"])
+    migrator(rate=[], mode=ByProbability, toSubPops=[],
+      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[\"migrate_to\"])
 
-Arguments:
+Details:
 
-    rate:           migration rate, can be a proportion or counted
-                    number. Determined by parameter mode. rate should
-                    be an m by n matrix. If a number is given, the
-                    migration rate will be a m by n matrix of value r
-    mode:           one of MigrByProbability (default),
-                    MigrByProportion or MigrByCounts
-    fromSubPop:     an array of 'from' subpopulations (a number) or
-                    virtual subpopulations (a pair of numbers).
-                    Default to all subpopulations. For example, if you
-                    define a virtual subpopulation by sex, you can use
-                    fromSubpop=[(0,0), 1] to choose migrants from the
-                    first virtual subpopulation of subpopulation 0,
-                    and from subpopulation 1. If a single number sp is
-                    given, it is intepretted as [sp]. Note that
-                    fromSubPop=(0, 1) (two subpopulation) is different
-                    from fromSubPop=[(0,1)] (a virtual subpopulation).
-    toSubPop:       an array of 'to' subpopulations. Default to all
-                    subpopulations. If a single subpopulation is
-                    specified, [] can be ignored.
-    stage:          default to PreMating
-
-Note:
-
-    * The overall population size will not be changed. (Mating schemes
-    can do that). If you would like to keep the subpopulation sizes
-    after migration, you can use the newSubPopSize or
-    newSubPopSizeExpr parameter of a mating scheme.
-    * rate is a matrix with dimensions determined by fromSubPop and
-    toSubPop. By default, rate is a matrix with element r(i,j), where
-    r(i, j) is the migration rate, probability or count from
-    subpopulation i to j. If fromSubPop and/or toSubPop are given,
-    migration will only happen between these subpopulations. An
-    extreme case is 'point migration', rate=[[r]], fromSubPop=a,
-    toSubPop=b which migrate from subpopulation a to b with given rate
-    r.
+    Create a migrator that moves individuals from source (virtual)
+    subpopulations subPops (default to migrate from all
+    subpopulations) to destination subpopulations toSubPops (default
+    to all subpopulations), according to existing values in an
+    information field infoFields[0], or randomly according to a
+    migration matrix rate. In the latter case, the size of the matrix
+    should match the number of source and destination subpopulations.
+    Depending on the value of parameter mode, elements in the
+    migration matrix (rate) are interpreted as either the
+    probabilities to migrate from source to destination subpopulations
+    (mode = ByProbability), proportions of individuals in the source
+    (virtual) subpopulations to the destination subpopulations (mode =
+    ByProportion), numbers of migrants in the source (virtual)
+    subpopulations (mode = ByCounts), or ignored completely (mode =
+    ByIndInfo). In the last case, parameter subPops is respected (only
+    individuals in specified (virtual) subpopulations will migrate)
+    but toSubPops is ignored.
 
 "; 
 
@@ -4287,29 +4269,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::migrator::setRates "
-
-Description:
-
-    set migration rate
-
-Usage:
-
-    x.setRates(rate, mode)
-
-Details:
-
-    Format should be 0-0 0-1 0-2, 1-0 1-1 1-2, 2-0, 2-1, 2-2. For mode
-    MigrByProbability or MigrByProportion, 0-0,1-1,2-2 will be set
-    automatically regardless of input.
-
-"; 
+%ignore simuPOP::migrator::setRates(int mode, const subPopList &fromSubPops, const vectorlu &toSubPops);
 
 %feature("docstring") simuPOP::migrator::apply "
 
 Description:
 
-    apply the migrator
+    apply the migrator to populaiton pop.
 
 Usage:
 
@@ -5966,6 +5932,8 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::population::fitGenoStru "Obsolete or undocumented function."
+
 %feature("docstring") simuPOP::population::setSubPopStru "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::population::numSubPop "
@@ -6361,8 +6329,8 @@ Usage:
 
 Details:
 
-    Remove subpopulations subPop and all their individuals. Indexes of
-    subpopulations after removed subpopulations will be shifted.
+    Remove subpopulation(s) subPop and all their individuals. Indexes
+    of subpopulations after removed subpopulations will be shifted.
 
 "; 
 
@@ -6374,7 +6342,7 @@ Usage:
 
 Details:
 
-    remove individuals inds (absolute indexes) from the current
+    remove individual(s) inds (absolute indexes) from the current
     population. A subpopulation will be kept even if all individuals
     from it are removed. This function only affects the current
     generation.
@@ -6472,11 +6440,12 @@ Details:
 
     Insert loci names at positions pos on chromosome chrom. These
     parameters should be lists of the same length, although names may
-    be ignored, in which case random names will be given. Alleles at
-    inserted loci are initialized with zero alleles. Note that loci
-    have to be added to existing chromosomes. If loci on a new
-    chromosome need to be added, function addChrom should be used.
-    This function returns indexes of the inserted loci.
+    be ignored, in which case random names will be given. Single-value
+    input is allowed for parameter chrom and pos if only one locus is
+    added. Alleles at inserted loci are initialized with zero alleles.
+    Note that loci have to be added to existing chromosomes. If loci
+    on a new chromosome need to be added, function addChrom should be
+    used. This function returns indexes of the inserted loci.
 
 "; 
 
@@ -6484,20 +6453,20 @@ Details:
 
 Usage:
 
-    x.resize(newSubPopSizes, propagate=False)
+    x.resize(size, propagate=False)
 
 Details:
 
-    Resize population by giving new subpopulation sizes
-    newSubPopSizes. Individuals at the end of some subpopulations will
-    be removed if the new subpopulation size is smaller than the old
-    one. New individuals will be appended to a subpopulation if the
-    new size is larger. Their genotypes will be set to zero (default),
-    or be copied from existing individuals if propagate is set to
-    True. More specifically, if a subpopulation with 3 individuals is
-    expanded to 7, the added individuals will copy genotypes from
-    individual 1, 2, 3, and 1 respectively. Note that this function
-    only resizes the current generation.
+    Resize population by giving new subpopulation sizes size.
+    Individuals at the end of some subpopulations will be removed if
+    the new subpopulation size is smaller than the old one. New
+    individuals will be appended to a subpopulation if the new size is
+    larger. Their genotypes will be set to zero (default), or be
+    copied from existing individuals if propagate is set to True. More
+    specifically, if a subpopulation with 3 individuals is expanded to
+    7, the added individuals will copy genotypes from individual 1, 2,
+    3, and 1 respectively. Note that this function only resizes the
+    current generation.
 
 "; 
 
@@ -7207,92 +7176,6 @@ Usage:
 Usage:
 
     x.next()
-
-"; 
-
-%feature("docstring") simuPOP::pyMigrator "
-
-Description:
-
-    a more flexible Python migrator
-
-Details:
-
-    This migrator can be used in two ways
-    *   define a function that accepts a generation number and returns
-    a migration rate matrix. This can be used in various migration
-    rate cases.
-    *   define a function that accepts individuals etc, and returns
-    the new subpopulation ID. More specifically, func can be
-    *   func(ind) when neither loci nor param is given.
-    *   func(ind, genotype) when loci is given.
-    *   func(ind, param) when param is given.
-    *   func(ind, genotype, param) when both loci and param are given.
-
-"; 
-
-%feature("docstring") simuPOP::pyMigrator::pyMigrator "
-
-Description:
-
-    create a hybrid migrator
-
-Usage:
-
-    pyMigrator(rateFunc=None, indFunc=None, mode=MigrByProbability,
-      fromSubPop=[], toSubPop=[], loci=[], param=None,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[\"migrate_to\"])
-
-Arguments:
-
-    rateFunc:       a Python function that accepts a generation
-                    number, current subpopulation sizes, and returns a
-                    migration rate matrix. The migrator then migrate
-                    like a usual migrator.
-    indFunc:        a Python function that accepts an individual,
-                    optional genotypes and parameters, then returns a
-                    subpopulation ID. This method can be used to
-                    separate a population according to individual
-                    genotype.
-    stage:          default to PreMating
-
-"; 
-
-%feature("docstring") simuPOP::pyMigrator::clone "
-
-Description:
-
-    deep copy of a pyMigrator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::pyMigrator::apply "
-
-Description:
-
-    apply a pyMigrator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::pyMigrator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyMigrator
-
-Usage:
-
-    x.__repr__()
 
 "; 
 
@@ -9397,12 +9280,9 @@ Details:
     populations and their variables, copy, save and load a simulator.
     The most important member function of a simulator is evolve, which
     evolves populations forward in time, subject to various operators.
-    Because populations in a simulator have to keep the same genotypic
-    structure, several functions are provided to change ancestral
-    depth and information fields of all populations. These functions
-    cannot be replaced by similar calls to all populations in a
-    simulator because the genotypic structure of the simulator itself
-    needs to be updated.
+    For convenience, member functions are provided to set virtual
+    splitter, add information field and set ancestral depth to all
+    populations in a simulator.
 
 "; 
 
@@ -9500,6 +9380,20 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::simulator::add "
+
+Usage:
+
+    x.add(pop)
+
+Details:
+
+    Add a population pop to the end of an existing simulator. This
+    creates an cloned copy of pop in the simulator so the evolution of
+    the simulator will not change pop.
+
+"; 
+
 %feature("docstring") simuPOP::simulator::extract "
 
 Usage:
@@ -9525,8 +9419,6 @@ Details:
     populations in a simulator.
 
 "; 
-
-%ignore simuPOP::simulator::setPopulation(population &pop, UINT rep);
 
 %feature("docstring") simuPOP::simulator::evolve "
 
@@ -9574,46 +9466,6 @@ Details:
 "; 
 
 %ignore simuPOP::simulator::apply(const vectorop ops, bool dryrun=false);
-
-%feature("docstring") simuPOP::simulator::addInfoField "
-
-Usage:
-
-    x.addInfoField(field, init=0)
-
-Details:
-
-    Add an information field field to all populations in a simulator,
-    and update the genotypic structure of the simulator itself. The
-    information field will be initialized by value init.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::addInfoFields "
-
-Usage:
-
-    x.addInfoFields(fields, init=0)
-
-Details:
-
-    Add information fields fields to all populations in a simulator,
-    and update the genotypic structure of the simulator itself. The
-    information field will be initialized by value init.
-
-"; 
-
-%feature("docstring") simuPOP::simulator::setAncestralDepth "
-
-Usage:
-
-    x.setAncestralDepth(depth)
-
-Details:
-
-    Set ancestral depth of all populations in a simulator.
-
-"; 
 
 %feature("docstring") simuPOP::simulator::setMatingScheme "
 
@@ -11039,10 +10891,9 @@ Details:
     namespace and terminate the evolution of this population, or the
     whole simulator, if the return value of this expression is True.
     Termination caused by an operator will stop the execution of all
-    operators after it. Because a life-cycle is considered to be
-    complete if mating is complete, the evolved generations (return
-    value from simulator::evolve) of a terminated replicate is
-    determined by when the last evolution cycle is terminated.
+    operators after it. The generation at which the population is
+    terminated will be counted in the evolved generations (return
+    value from simulator::evolve) if termination happens after mating.
 
 "; 
 
@@ -11320,43 +11171,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::uintList::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::uintList::size "
-
-Usage:
-
-    x.size()
-
-"; 
-
 %feature("docstring") simuPOP::uintList::elems "
 
 Usage:
 
     x.elems()
-
-"; 
-
-%feature("docstring") simuPOP::uintList::begin "
-
-Usage:
-
-    x.begin()
-
-"; 
-
-%feature("docstring") simuPOP::uintList::end "
-
-Usage:
-
-    x.end()
 
 "; 
 
@@ -11377,6 +11196,14 @@ Usage:
 Usage:
 
     x.func()
+
+"; 
+
+%feature("docstring") simuPOP::uintListFunc::empty "
+
+Usage:
+
+    x.empty()
 
 "; 
 
