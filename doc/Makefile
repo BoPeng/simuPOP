@@ -4,7 +4,8 @@
 #
 
 # You can set these variables from the command line.
-PYTHON       = $(HOME)/Python26/bin/python
+#PYTHON       = $(HOME)/Python26/bin/python
+PYTHON       = python
 SVNROOT      = http://svn.python.org/projects
 SPHINXOPTS   =
 PAPER        =
@@ -61,8 +62,11 @@ build: checkout
 	$(PYTHON) tools/sphinx-build.py $(ALLSPHINXOPTS)
 	@echo
 
+userGuide.tex:
+	lyx --export latex userGuide.lyx
+
 rst: userGuide.tex
-	$(PYTHON) convert.py userGuide.tex
+	$(PYTHON) tools/convert.py userGuide.tex
 
 html: BUILDER = html
 html: build rst
