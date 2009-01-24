@@ -66,7 +66,7 @@ userGuide.tex:
 	lyx --export latex userGuide.lyx
 
 rst: userGuide.tex
-	$(PYTHON) tools/convert.py userGuide.tex
+	$(PYTHON) tools/convert.py userGuide.tex userGuide.rst
 
 html: BUILDER = html
 html: build rst
@@ -117,39 +117,9 @@ clean:
 	-rm -rf build/*
 	-rm -rf tools/sphinx
 
-dist:
-	-rm -rf dist
-	mkdir -p dist
+dist: html
+	cd ..; doxygen Doxy_web
+	rsync -v -rlt -z doxygen_doc/html simupop,simupop@web.sourceforge.net:htdocs/src_doc
+	rsync -v -rlt -z doc/build/html simupop,simupop@web.sourceforge.net:htdocs/manual
 
-	# archive the HTML
-	make html
-	cp -a build/html dist/python$(DISTVERSION)-docs-html
-	tar -C dist -cf dist/python$(DISTVERSION)-docs-html.tar python$(DISTVERSION)-docs-html
-	bzip2 -9 -k dist/python$(DISTVERSION)-docs-html.tar
-	(cd dist; zip -q -r -9 python$(DISTVERSION)-docs-html.zip python$(DISTVERSION)-docs-html)
-	rm -r dist/python$(DISTVERSION)-docs-html
-	rm dist/python$(DISTVERSION)-docs-html.tar
-
-	# archive the text build
-	make text
-	cp -a build/text dist/python$(DISTVERSION)-docs-text
-	tar -C dist -cf dist/python$(DISTVERSION)-docs-text.tar python$(DISTVERSION)-docs-text
-	bzip2 -9 -k dist/python$(DISTVERSION)-docs-text.tar
-	(cd dist; zip -q -r -9 python$(DISTVERSION)-docs-text.zip python$(DISTVERSION)-docs-text)
-	rm -r dist/python$(DISTVERSION)-docs-text
-	rm dist/python$(DISTVERSION)-docs-text.tar
-	
-	# archive the A4 latex
-	-rm -r build/latex
-	make latex PAPER=a4
-	(cd build/latex; make clean && make all-pdf && make FMT=pdf zip bz2)
-	cp build/latex/docs-pdf.zip dist/python$(DISTVERSION)-docs-pdf-a4.zip
-	cp build/latex/docs-pdf.tar.bz2 dist/python$(DISTVERSION)-docs-pdf-a4.tar.bz2
-
-	# archive the letter latex
-	rm -r build/latex
-	make latex PAPER=letter
-	(cd build/latex; make clean && make all-pdf && make FMT=pdf zip bz2)
-	cp build/latex/docs-pdf.zip dist/python$(DISTVERSION)-docs-pdf-letter.zip
-	cp build/latex/docs-pdf.tar.bz2 dist/python$(DISTVERSION)-docs-pdf-letter.tar.bz2
 

@@ -164,9 +164,6 @@ class MyDocParser(DocParser):
             txt += nextv
         return EmptyNode()
 
-    def handle_lyxcode_env(self):
-        return VerbatimNode(TextNode('a'))
-
     def handle_newenvironment(self, numOpt=3):
         txt = ''
         opt = 0
@@ -383,4 +380,4 @@ def convert_file(infile, outfile, doraise=True, splitchap=False,
 
 
 if __name__ == '__main__':
-    convert_file('userGuide.tex', 'userGuide.rst')
+    convert_file(*sys.argv[1:])

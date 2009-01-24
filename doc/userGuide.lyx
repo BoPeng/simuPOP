@@ -7734,8 +7734,18 @@ setup.py
  commands such as
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
 python setup.py install
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7745,7 +7755,12 @@ Please refer to the Python reference manual for other building and installation
  you might have to pass these options using command
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
 python setup.py build_ext --swig-opts=
 \begin_inset Quotes erd
 \end_inset
@@ -7755,12 +7770,17 @@ python setup.py build_ext --swig-opts=
 
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Plain Layout
     -shadow -c++ -keyword -nodefaultctor
 \begin_inset Quotes erd
 \end_inset
 
  install
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8452,7 +8472,7 @@ reference "splitMerge"
  This is used to keep subpopulation id of other subpopulations unchanged.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/splitMerge.log"
@@ -8494,7 +8514,7 @@ means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
  Subpopulation sizes change accordingly.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/splitMigration.log"
@@ -8600,7 +8620,7 @@ evolve
  to check.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/splitMigration2.log"
@@ -8643,7 +8663,7 @@ reference "splitMigration3"
  subpopulations.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/splitMigration3.log"
@@ -9812,7 +9832,7 @@ initByFreq
  We need only to specify locus to initialize, and use it like
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
@@ -10505,7 +10525,7 @@ to view help information.
 enter parameters in a parameter dialog, or use short or long command arguments
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
@@ -10581,7 +10601,7 @@ and of course use
 \end_layout
 
 \begin_deeper
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
@@ -11234,7 +11254,7 @@ command
  variable.
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "joblist.lst"
