@@ -352,7 +352,7 @@ class MyRestWriter(RestWriter):
         # no inline comments -> they are all output at the start of a new paragraph
         pass #self.comments.append(node.comment.strip())
 
-def convert_file(infile, outfile, doraise=True, splitchap=False,
+def convert_file(infile, outfile, doraise=True, splitchap=True,
                  toctree=None, deflang=None, labelprefix=''):
     inf = codecs.open(infile, 'r', 'latin1')
     p = MyDocParser(Tokenizer(inf.read()).tokenize(), infile)
@@ -364,12 +364,18 @@ def convert_file(infile, outfile, doraise=True, splitchap=False,
     try:
         r.write_document(p.parse())
         if splitchap:
+            outf = codecs.open(outfile, 'w', 'utf-8')
+            outf.write('.. toctree::\n\n')
             for i, chapter in enumerate(r.chapters[1:]):
-                coutf = codecs.open('%s/%d_%s' % (
-                    path.dirname(outfile), i+1, path.basename(outfile)),
-                                    'w', 'utf-8')
+                dir = path.dirname(outfile)
+                if dir == '':
+                    dir = '.'
+                filename = '%s/%d_%s' % (dir, i+1, path.basename(outfile))
+                outf.write('   %s\n' % filename.lstrip('./'))
+                coutf = codecs.open(filename, 'w', 'utf-8')
                 coutf.write(chapter.getvalue())
                 coutf.close()
+            outf.close()
         else:
             outf.close()
         return 1, r.warnings
