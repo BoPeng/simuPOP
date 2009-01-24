@@ -58,11 +58,12 @@ void migrator::setRates(int mode, const subPopList & fromSubPops, const vectorlu
 		DBG_FAILIF(m_rate[i].size() != szTo, ValueError,
 			"Expecting a matrix of migration rate.");
 
-		for (size_t j = 0; j < szTo; ++j)
+		for (size_t j = 0; j < szTo; ++j) {
 			DBG_FAILIF(fcmp_lt(m_rate[i][j], 0.), ValueError,
 				"Migration rate should be positive.");
 			DBG_FAILIF(m_mode != ByCounts && fcmp_gt(m_rate[i][j], 1.), ValueError,
 				"Migration rate should be in the range of [0,1]");
+		}
 	}
 
 	// set r[i][i]--- may need to extend rate (to add i->i)
