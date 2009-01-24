@@ -4,8 +4,8 @@
 #
 
 # You can set these variables from the command line.
-#PYTHON       = $(HOME)/Python26/bin/python
-PYTHON       = python
+PYTHON       = $(HOME)/Python26/bin/python
+#PYTHON       = python
 SVNROOT      = http://svn.python.org/projects
 SPHINXOPTS   =
 PAPER        =
@@ -62,8 +62,8 @@ build: checkout
 	$(PYTHON) tools/sphinx-build.py $(ALLSPHINXOPTS)
 	@echo
 
-userGuide.tex:
-	lyx --export latex userGuide.lyx
+userGuide.tex: userGuide.lyx
+	/usr/local/bin/lyx --export pdflatex userGuide.lyx
 
 rst: userGuide.tex
 	$(PYTHON) tools/convert.py userGuide.tex userGuide.rst
@@ -119,7 +119,7 @@ clean:
 
 dist: html
 	cd ..; doxygen Doxy_web
-	rsync -v -rlt -z doxygen_doc/html simupop,simupop@web.sourceforge.net:htdocs/src_doc
-	rsync -v -rlt -z doc/build/html simupop,simupop@web.sourceforge.net:htdocs/manual
+	rsync -v -rlt -z ../doxygen_doc/html/ simupop,simupop@web.sourceforge.net:htdocs/src_doc
+	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual
 
 
