@@ -42,7 +42,7 @@ unused_docs = [
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
 
-master_doc = 'contents'
+master_doc = 'index'
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
