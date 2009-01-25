@@ -37,10 +37,57 @@ from converter.util import umlaut, empty, text
 from converter.latexparser import ParserError
 
 class MyDocParser(DocParser):
+    #def handle_ifhtml1(self):
+    #    txt = ''
+    #    while not txt.endswith('\\fi'):
+    #        nextl, nextt, nextv, nextr = self.tokens.pop()
+    #        txt += nextr
+    #    return EmptyNode()
+
     def __init__(self, *args, **kwargs):
         DocParser.__init__(self, *args, **kwargs)
+    #    self.handle_ifhtml = self.handle_ifhtml1
     #
-    
+    def handle_unrecognized(self, name):
+        def handler():
+            print 'Unrecognized name: %s, use include directive to try to include an external file' % name
+            return InlineNode('include', name)
+        return handler
+
+    def parse_until(self, condition=None, endatbrace=False):
+        nodelist = NodeList()
+        bracelevel = 0
+        for l, t, v, r in self.tokens:
+            if condition and condition(t, v, bracelevel):
+                return nodelist.flatten()
+            if t == 'command':
+                if len(v) == 1 and not v.isalpha():
+                    nodelist.append(self.handle_special_command(v))
+                    continue
+                handler = getattr(self, 'handle_' + v, None)
+                if not handler:
+                    handler = self.handle_unrecognized(v)
+                nodelist.append(handler())
+            elif t == 'bgroup':
+                bracelevel += 1
+            elif t == 'egroup':
+                if bracelevel == 0 and endatbrace:
+                    return nodelist.flatten()
+                bracelevel -= 1
+            elif t == 'comment':
+                nodelist.append(CommentNode(v))
+            elif t == 'tilde':
+                nodelist.append(NbspNode())
+            elif t == 'mathmode':
+                pass # ignore math mode
+            elif t == 'parasep':
+                nodelist.append(ParaSepNode())
+            else:
+                # includes 'boptional' and 'eoptional' which don't have a
+                # special meaning in text
+                nodelist.append(TextNode(v))
+        return nodelist.flatten()
+ 
     def parse_args(self, cmdname, argspec):
         """ Helper to parse arguments of a command. """
         # argspec: M = mandatory, T = mandatory, check text-only,
@@ -95,6 +142,7 @@ class MyDocParser(DocParser):
             return EmptyNode()
         return handler
 
+
     def handle_special_command(self, cmdname):
         if cmdname == '[':
             print 'MATH START'
@@ -119,6 +167,7 @@ class MyDocParser(DocParser):
     handle_totalheight = mk_metadata_handler(None, 'totalheight', None, 'O')
     handle_columnwidth = mk_metadata_handler(None, 'columnwidth', None, 'O')
     handle_vspace = mk_metadata_handler(None, 'vspace', None, 'M')
+    handle_hspace = mk_metadata_handler(None, 'hspace', None, 'M')
     handle_hrule = mk_metadata_handler(None, 'hrule', None, 'O')
     handle_lstlistoflistings = mk_metadata_handler(None, 'lstlistoflistings', None, 'O')
     handle_centering = mk_metadata_handler(None, 'centering', None, 'O')
@@ -164,6 +213,10 @@ class MyDocParser(DocParser):
             txt += nextv
         return EmptyNode()
 
+    def handle_include(self):
+        data = self.parse_args('\\include', 'M')[0].text
+        return EmptyNode()
+
     def handle_newenvironment(self, numOpt=3):
         txt = ''
         opt = 0
@@ -186,6 +239,9 @@ class MyDocParser(DocParser):
     #def handle_renewcommand(self):
     #    return self.handle_newenvironment(2)
 
+    #def handle_title(self):
+    #    data = self.parse_args('\\title', 'M')
+    #    return SectioningNode('chapter', data)
 
     def handle_lstinputlisting(self):
         txt = ''
@@ -328,8 +384,9 @@ class MyRestWriter(RestWriter):
             #self.flush_par()
             figure = node.args
             for suffix in ['', '.pdf', '.png', '.jpg', '.eps']:
-                if os.path.isfile(figure + suffix):
-                    figure += suffix
+                file = os.path.join('..', figure + suffix)
+                if os.path.isfile(file):
+                    figure = file
                     break
             self.write('.. image:: %s\n' % figure )
         elif cmdname == 'listing':
@@ -342,6 +399,14 @@ class MyRestWriter(RestWriter):
             self.write('.. literalinclude:: %s' % file)
             self.write('   :language: python')
             self.write('   %s\n' % caption)
+        elif cmdname == 'include':
+            file = node.args
+            for suffix in ['', '.ref', '.rst', '.txt']:
+                if os.path.isfile(file + suffix):
+                    file += suffix
+                    txt = open(file).read()
+                    self.write(txt)
+                    break
         elif cmdname == 'ref':
             self.curpar.append('`%s%s`_' % (self.labelprefix,
                                                 text(node.args[0]).lower().split(':')[-1]))
@@ -371,7 +436,7 @@ def convert_file(infile, outfile, doraise=True, splitchap=True,
                 if dir == '':
                     dir = '.'
                 filename = '%s/%d_%s' % (dir, i+1, path.basename(outfile))
-                outf.write('   %s\n' % filename.lstrip('./'))
+                outf.write('   %s\n' % filename.lstrip('%s/' % dir))
                 coutf = codecs.open(filename, 'w', 'utf-8')
                 coutf.write(chapter.getvalue())
                 coutf.close()

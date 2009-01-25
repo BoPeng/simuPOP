@@ -4,4 +4,6 @@
 
 .. toctree::
 
-   userGuide.rst
+   build/userGuide.rst
+   build/refManual.rst
+
