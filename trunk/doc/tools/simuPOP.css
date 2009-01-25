@@ -15,7 +15,7 @@ body {
     font-size: 14px;
     text-align: justify;
     /* The background will repeat vertically and make footbar look
-	 dangling around if the body is short. */
+	 dangling around if the body is short.
 	background: #cbced0 url(background.png) top center repeat-y;*/
     background-color: #cbced0;
     height: 100%;
@@ -54,6 +54,7 @@ div.sphinxsidebar {
     width: 230px;
     margin-left: -100%;
     font-size: 90%;
+	text-align: left;
 }
 
 div.clearer {
