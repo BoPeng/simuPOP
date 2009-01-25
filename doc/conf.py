@@ -75,7 +75,9 @@ html_additional_pages = {
 html_use_opensearch = '' #'http://docs.python.org/dev'
 
 # Additional static files.
-html_static_path = [] #['tools/sphinxext/static']
+html_static_path = ['tools']
+
+html_style = 'simuPOP.css'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'python' + release.replace('.', '')
