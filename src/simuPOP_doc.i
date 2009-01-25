@@ -278,7 +278,7 @@ Usage:
 
 Details:
 
-    Apply an operator to population pop directly, without checking its
+    Apply an operator to populationpop directly, without checking its
     applicability.
 
 "; 
@@ -627,7 +627,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using 1. an IndIterator
+    infomation fields in a (sub) population using 1. an IndIterator
     that will skip invisible individuals, or 2. a gapped iterator that
     will run faster. Note that 1, 2 should yield identical result, and
     2 should be used when there is no virtual subpopulation.q
@@ -846,7 +846,7 @@ Usage:
 
 Description:
 
-    Apply a dumper operator to population pop.
+    Apply a dumper operator to populationpop.
 
 Usage:
 
@@ -888,6 +888,10 @@ Description:
 "; 
 
 %feature("docstring") simuPOP::Exception::Exception "
+
+Description:
+
+    constructor
 
 Usage:
 
@@ -1537,7 +1541,7 @@ Usage:
 Details:
 
     Clear (set alleles to zero) chromosome chrom on the ploidy-th
-    homologous set of chromosomes of individual ind.
+    homologous set of chromosomes of individualind.
 
 "; 
 
@@ -2553,7 +2557,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    individuals in a (sub)population. If allInds are true, the
+    individuals in a (sub) population. If allInds are true, the
     visiblility of individuals will not be checked. Note that
     individualIterator *will* iterate through only visible
     individuals, and allInds is only provided when we know in advance
@@ -2740,7 +2744,9 @@ Details:
 
 Description:
 
-    fields, optionally with variable in population's local namespace
+    evaluate statments in the a namespace consists of individual
+    information fields, optionally with variable in population's local
+    namespace
 
 Usage:
 
@@ -2851,7 +2857,7 @@ Usage:
 Details:
 
     this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using 1. an IndIterator
+    infomation fields in a (sub) population using 1. an IndIterator
     that will skip invisible individuals, or 2. a gapped iterator that
     will run faster. Note that 1, 2 should yield identical result, and
     2 should be used when there is no virtual subpopulation.q
@@ -3087,7 +3093,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3170,7 +3176,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3256,7 +3262,7 @@ Usage:
 
 Description:
 
-    apply this operator to population pop
+    apply this operator to populationpop
 
 Usage:
 
@@ -3905,17 +3911,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::maSelector::indFitness "
-
-Description:
-
-    calculate/return the fitness value, currently assuming diploid
-
-Usage:
-
-    x.indFitness(ind, gen)
-
-"; 
+%ignore simuPOP::maSelector::indFitness(individual *ind, ULONG gen);
 
 %feature("docstring") simuPOP::maSelector::__repr__ "
 
@@ -4496,17 +4492,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mlQuanTrait::qtrait "
-
-Description:
-
-    currently assuming diploid
-
-Usage:
-
-    x.qtrait(ind)
-
-"; 
+%ignore simuPOP::mlQuanTrait::qtrait(individual *ind);
 
 %feature("docstring") simuPOP::mlQuanTrait::__repr__ "
 
@@ -5346,7 +5332,7 @@ Usage:
 
 Details:
 
-    Return the index of the father of individual idx in subpopulation
+    Return the index of the father of individualidx in subpopulation
     subPop in the parental generation. Return -1 if this individual
     has no father (fatherField is empty or the value of information
     field is negative).
@@ -5361,7 +5347,7 @@ Usage:
 
 Details:
 
-    Return the index of the mother of individual idx in subpopulation
+    Return the index of the mother of individualidx in subpopulation
     subPop in the parental generation. Return -1 if this individual
     has no mother (motherField is empty or the value of information
     field is negative).
@@ -5463,7 +5449,7 @@ Details:
     gen >= N), or gen generations if gen < N. During the evolution, an
     offspring generator generator is used to produce one offspring at
     a time, regardless of the numOffspring setting of this offspring
-    generator. If individuals in pedigree ped has only one parent, the
+    generator. If individuals in pedigreeped has only one parent, the
     offspring generator should be compatible.  By default, the
     pedigree mating scheme does not set offspring sex and affection
     status using sex and affection status of corresponding individuals
@@ -5560,7 +5546,7 @@ Details:
     allele. I.e., this is a non-random mutator used to introduce
     diseases etc. pointMutator, as its name suggest, does point
     mutation. This mutator will turn alleles at loci on the first
-    chromosome copy to toAllele for individual inds. You can specify
+    chromosome copy to toAllele for individualinds. You can specify
     atPloidy to mutate other, or all ploidy copies.
 
 "; 
@@ -5845,7 +5831,7 @@ Usage:
 Details:
 
     Create a cloned copy of a population. Note that Python statement
-    pop1 = pop only creates a reference to an existing population pop.
+    pop1 = pop only creates a reference to an existing populationpop.
 
 "; 
 
@@ -6052,7 +6038,7 @@ Usage:
 
 Details:
 
-    return the absolute index of an individual idx in subpopulation
+    return the absolute index of an individualidx in subpopulation
     subPop.
 
 "; 
@@ -6106,7 +6092,7 @@ Usage:
 
 Details:
 
-    Return a refernce to individual ind in the population.
+    Return a refernce to individualind in the population.
 
 "; 
 
@@ -6118,7 +6104,7 @@ Usage:
 
 Details:
 
-    Return a refernce to individual ind in subpopulation subPop.
+    Return a refernce to individualind in subpopulation subPop.
 
 "; 
 
@@ -6132,7 +6118,7 @@ Usage:
 
 Details:
 
-    Return a reference to individual idx in ancestral generation gen.
+    Return a reference to individualidx in ancestral generation gen.
     The correct individual will be returned even if the current
     generation is not the present one (see also useAncestralGen).
 
@@ -6148,7 +6134,7 @@ Usage:
 
 Details:
 
-    Return a reference to individual idx of subpopulation subPop in
+    Return a reference to individualidx of subpopulation subPop in
     ancestral generation gen.
 
 "; 
@@ -6376,7 +6362,7 @@ Details:
     Add all individuals, including ancestors, in pop to the current
     population. Two populations should have the same genotypic
     structures and number of ancestral generations. Subpopulations in
-    population pop are kept.
+    populationpop are kept.
 
 "; 
 
@@ -6388,11 +6374,11 @@ Usage:
 
 Details:
 
-    Add chromosomes in population pop to the current population.
+    Add chromosomes in populationpop to the current population.
     Population pop should have the same number of individuals as the
     current population in the current and all ancestral generations.
     This function merges genotypes on the new chromosomes from
-    population pop individual by individual.
+    populationpop individual by individual.
 
 "; 
 
@@ -6404,7 +6390,7 @@ Usage:
 
 Details:
 
-    Add loci from population pop, chromosome by chromosome. Added loci
+    Add loci from populationpop, chromosome by chromosome. Added loci
     will be inserted according to their position. Their position and
     names should not overlap with any locus in the current population.
     Population pop should have the same number of individuals as the
@@ -6464,7 +6450,7 @@ Details:
     larger. Their genotypes will be set to zero (default), or be
     copied from existing individuals if propagate is set to True. More
     specifically, if a subpopulation with 3 individuals is expanded to
-    7, the added individuals will copy genotypes from individual 1, 2,
+    7, the added individuals will copy genotypes from individual1, 2,
     3, and 1 respectively. Note that this function only resizes the
     current generation.
 
@@ -6518,7 +6504,7 @@ Usage:
 
 Details:
 
-    Push population pop into the current population. Both populations
+    Push populationpop into the current population. Both populations
     should have the same genotypic structure. The current population
     is discarded if ancestralDepth (maximum number of ancestral
     generations to hold) is zero so no ancestral generation can be
@@ -6527,7 +6513,7 @@ Details:
     ancestral generations by one. If ancestralDepth is positive and
     there are already ancestralDepth ancestral generations (see also:
     ancestralGens()), the greatest ancestral generation will be
-    discarded. In any case, population pop becomes invalid as all its
+    discarded. In any case, populationpop becomes invalid as all its
     individuals are absorbed by the current population.
 
 "; 
@@ -7136,7 +7122,7 @@ Usage:
 Details:
 
     this class implements a Python itertor class that can be used to
-    iterate through individuals in a (sub)population. If allInds are
+    iterate through individuals in a (sub) population. If allInds are
     true, visiblility of individuals will not be checked. Note that
     individualIterator *will* iterate through only visible
     individuals, and allInds is only provided when we know in advance
@@ -8479,6 +8465,7 @@ Details:
 
 Description:
 
+    Create a RNG object. You can also use rng() function to get the
     RNG used by simuPOP.
 
 Usage:
@@ -8558,7 +8545,8 @@ Usage:
 
 Description:
 
-    if seed is 0, method described in setRNG is used.
+    set random seed for this random number generator if seed is 0,
+    method described in setRNG is used.
 
 Usage:
 
@@ -8796,7 +8784,7 @@ Usage:
 
 Description:
 
-    Apply operator to population pop.
+    Apply operator to populationpop.
 
 Usage:
 
@@ -9184,7 +9172,8 @@ Usage:
 
 Description:
 
-    hence call this destructore.
+    destructor I can not clear dict here since a resize of g_vars will
+    copy this object and hence call this destructore.
 
 Usage:
 
@@ -9294,7 +9283,7 @@ Usage:
 
 Details:
 
-    Create a simulator with rep replicates of population pop.
+    Create a simulator with rep replicates of populationpop.
     Population pop will be copied rep times (default to 1), while
     keeping the passed population intact. A mating scheme matingScheme
     will be used to evolve these populations.
@@ -9388,7 +9377,7 @@ Usage:
 
 Details:
 
-    Add a population pop to the end of an existing simulator. This
+    Add a populationpop to the end of an existing simulator. This
     creates an cloned copy of pop in the simulator so the evolution of
     the simulator will not change pop.
 
@@ -9510,7 +9499,8 @@ Details:
 
 Description:
 
-    Note that mating schemes are not tested.
+    a Pyton function used to compare the simulator objects Note that
+    mating schemes are not tested.
 
 Usage:
 
@@ -9537,6 +9527,7 @@ Details:
 
 Description:
 
+    used by Python print function to print out the general information
     of the simulator
 
 Usage:
@@ -10676,7 +10667,7 @@ Usage:
 
 Description:
 
-    all replicates.
+    exception, throw if an operator would like to stop all replicates.
 
 "; 
 
@@ -10951,7 +10942,7 @@ Usage:
 
 Details:
 
-    Apply an operator to population pop directly, without checking its
+    Apply an operator to populationpop directly, without checking its
     applicability.
 
 "; 
