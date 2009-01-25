@@ -1115,6 +1115,188 @@ class Doxy2SWIG:
                     (title, label, cons['ExampleFile'].replace('\\', '/'))
             print >> out, '\\end{classdesc}\n}\n'
 
+    def wrap_reST(self, input, initial_indent = '   ', subsequent_indent = '   '):
+        text = input.replace('<em>', '*')
+        text = text.replace('</em>', '*')
+        for i in range(5):
+            for tag in ['<tt>', '<bf>', '<em.']:
+                text = text.replace(tag + ' ', tag)
+        for i in range(5):
+            text = text.replace('<item>\n', '<item>')
+            text = text.replace('<item> ', '<item>')
+        text = text.replace('<tt>', '``')
+        text = text.replace('</tt>', '``')
+        text = text.replace('<bf>', '**')
+        text = text.replace('</bf>', '**')
+        text = text.replace('</newline>', '\n\n')
+        text = text.replace('<itemize>', '\n')
+        text = text.replace('</itemize>', '')
+        text = text.replace('<item>', '\n+ ')
+        text = text.replace('</item>', '\n')
+        text = text.split('\n')
+        txt = []
+        for t in text:
+            if t.startswith('+'):
+                txt.append('\n')
+                txt.extend(textwrap.wrap(t, initial_indent = '',
+                    subsequent_indent = '  '))
+            else:
+                txt.extend(textwrap.wrap(t, initial_indent = initial_indent,
+                    subsequent_indent=subsequent_indent))
+        return '\n'.join(txt)
+
+    def write_reST(self, dir):
+        # first handle glocal functions
+        for entry in [x for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
+                and 'test' not in x['Name']]:
+            refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1)
+            out = open(os.path.join(dir, refName), 'w')
+            print >> out, '\n.. function::',
+            if entry.has_key('Usage') and entry['Usage'] != '':
+                print >> out, self.wrap_reST(entry['Usage'], '')
+            else:
+                print >> out, '%s()' % entry['Name'].replace('simuPOP::', '', 1)
+            #
+            print >> out
+            if entry['Doc'] != '':
+                print >> out, self.wrap_reST(entry['Doc'])
+
+            if entry.has_key('note') and entry['note'] != '':
+                print >> out, '**Note**:'
+                print >> out, self.wrap_reST(entry['note'])
+            out.close()
+        # then python modules
+        modules = sets.Set(
+            [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
+        for module in modules:
+            # module functions
+            mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
+            # module functions
+            funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            # sort it
+            funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            # print all functions
+            #print >> out, '\\begin{description}'
+            for mem in funcs:
+                refName = '%s%sRef.ref' % (module, mem['Name'])
+                print 'Writing functions ', refName
+                out = open(os.path.join(dir, refName), 'w')
+                print >> out, '\n.. function::',
+                if mem.has_key('Usage') and mem['Usage'] != '':
+                    print >> out, mem['Usage']
+                else:
+                    print >> out, '%s()' % mem['Name']
+                print >> out
+                print >> out, self.wrap_reST(mem['Doc'])
+                if mem.has_key('note') and mem['note'] != '':
+                    print >> out, '**Note**'
+                    print >> out, self.wrap_reST(mem['note'])
+                out.close()
+            # module classes
+            classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            # sort it
+            classes.sort(lambda x, y: cmp(x['Name'], y['Name']))
+            # print all functions
+            for cls in classes:
+                refName = '%s%sRef.ref' % (module, cls['Name'])
+                out = open(os.path.join(dir, refName), 'w')
+                print >> out, '.. class::',
+                if cls.has_key('Usage') and cls['Usage'] != '':
+                    print >> out, cls['Usage']
+                else:
+                    print >> out, '%s()' % cls['Name']
+                if entry.has_key('funcForm'):
+                    print >> out, '\n   Function form: %s\n' % self.wrap_reST(entry['funcForm'], '', '')
+                #
+                print >> out, self.wrap_reST(cls['Doc'])
+                print >> out, self.wrap_reST(cls['InitDoc'])
+                #
+                for mem in cls['Members']:
+                    if mem['Doc'] == '':
+                        continue
+                    usage = self.latex_text(mem['Usage'])
+                    print >> out, '\n.. function::'
+                    if mem.has_key('Usage') and mem['Usage'] != '':
+                        print >> out, mem['Usage']
+                    else:
+                        print >> out, '%s()' % mem['Name']
+                    print >> out
+                    if mem['Doc'] != '':
+                        print >> out, self.wrap_reST(mem['Doc'])
+                out.close()
+        # then classes
+        for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
+            refName = '%sRef.ref' % entry['Name'].replace('simuPOP::', '', 1)
+            out = open(os.path.join(dir, refName), 'w')
+            classname = self.latex_text(entry['Name'].replace('simuPOP::', '', 1))
+            print >> out, '\nclass %s' % classname
+            print >> out, '-' * (6 + len(classname))
+            print >> out
+            print >> out, '.. class::', classname
+            if entry.has_key('funcForm'):
+                print >> out, '\n   Function form: %s' % entry['funcForm']
+            print >> out
+            print >> out, self.wrap_reST(entry['Doc'])
+            if entry.has_key('note') and entry['note'] != '':
+                print >> out, '   **Note**:'
+                print >> out, self.wrap_reST(entry['note'])
+            print >> out
+            # only use the first constructor
+            constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore'] and not x['hidden']]
+            if len(constructor) == 0:
+                continue
+            elif len(constructor) > 1:
+                print "Warning: multiple constructors: %s" % entry['Name']
+            cons = constructor[0]
+            #
+            #print >> out, '\\par\n\\strong{Initialization}\n\\par'
+            if cons.has_key('Usage') and cons['Usage'] != '':
+                usage = self.latex_text(cons['Usage'])
+                print >> out, '\n.. function:: %s\n' % cons['Usage']
+            else:
+                print >> out, '\n.. function:: %s()\n' % entry['Name']
+            if cons['Doc'] != '':
+                print >> out, '\n%s\n' % self.wrap_reST(cons['Doc'])
+            if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
+                # cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
+                for arg in cons['Arguments']:
+                    #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
+                    print >> out, '%s\n   %s\n' % (arg['Name'], self.wrap_reST(arg['Description'], ''))
+            if cons.has_key('note') and cons['note'] != '':
+                print >> out, '   **Note**:'
+                print >> out, '%s' % self.wrap_reST(cons['note'])
+            #
+            members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
+                       not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
+            for entry in members:
+                # change pop()->population() in simulator.h
+                # change ind()->individual() in population.h
+                if entry.has_key('Usage'):
+                    if entry['Name'] == 'simuPOP::simulator::pop':
+                        entry['Name'] = 'simuPOP::simulator::population'
+                        entry['Usage'] = entry['Usage'].replace('pop(', 'population(')
+                    if entry['Name'] == 'simuPOP::population::ind':
+                        entry['Name'] = 'simuPOP::population::individual'
+                        entry['Usage'] = entry['Usage'].replace('ind(', 'individual(')
+            def sort_member(x, y):
+                res = cmp(x['group'], y['group'])
+                if res == 0:
+                    return cmp(x['Name'], y['Name'])
+                else:
+                    return res
+            members.sort(sort_member)
+            if len(members) == 0:
+                continue
+            group = ''
+            for mem in members:
+                if group != mem['group']:
+                    group = mem['group']
+                if mem.has_key('Usage') and mem['Usage'] != '':
+                    print >> out, '\n.. function:: %s\n' % (mem['Usage'].lstrip('x.'))
+                else:
+                    print >> out, '\n.. function:: %s()\n' % mem['Name'].split(':')[-1]
+                print >> out, self.wrap_reST(mem['Doc'])
+            out.close()
 
     def write_latex_testfile(self, out, ref_file):
         print >> out, r'''\documentclass[oneside,english]{manual}
@@ -1177,6 +1359,9 @@ xleftmargin=15pt}
 
     def write(self, output, type, ref_file=''):
         # write in binary (b) mode so that \n is written as \n, not \r\n under windows.
+        if type == 'reST':
+            self.write_reST(output)
+            return
         fout = open(output, 'wb')
         if type == 'swig':
             self.write_swig(fout)
@@ -1235,6 +1420,11 @@ if __name__ == '__main__':
     p.scan_module('hapMapUtil')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
+    p.uniqueName = []
+    builddir = os.path.join(src_path, 'doc', 'build')
+    if not os.path.isdir(builddir):
+        os.mkdir(builddir)
+    p.write(builddir, type='reST')
     # clear unique name
     p.uniqueName = []
     print 'Writing latex test file to', latex_testfile
