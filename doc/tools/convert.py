@@ -263,6 +263,14 @@ class MyDocParser(DocParser):
             listing = re.search('\]{([^{]*)}', txt).groups()[0]
         except:
             listing = ''
+        try:
+            firstline = int(re.search('firstline=(\d+)', txt).groups()[0])
+        except:
+            firstline = None
+        try:
+            lastline = int(re.search('lastline=(\d+)', txt).groups()[0])
+        except:
+            lastline = None
         # do not use this one yet
         #return InlineNode('listing', '%s\n%s\n%s' % (listing, label, caption))
         try:
@@ -271,6 +279,13 @@ class MyDocParser(DocParser):
             print("File ", listing, " can not be opened")
             return EmptyNode()
         txt = src.read()
+        try:
+            if lastline is not None:
+                txt = '\n'.join(txt.split('\n')[:(lastline+1)])
+            if firstline is not None:
+                txt = '\n'.join(txt.split('\n')[firstline-1:])
+        except:
+            pass
         return NodeList([CommandNode('label', [TextNode(label)]),
                 InlineNode('strong', [TextNode('Example')]),
                 TextNode(': ' + caption),
@@ -291,7 +306,6 @@ class MyDocParser(DocParser):
         try:
             txt = txt.replace('\\label{fig:%s}' % label, '')
             print 'LABEL', label
-            print txt
             caption = re.search('\\caption{([^}]*)}', txt).groups()[0]
         except:
             caption = ''
@@ -300,21 +314,31 @@ class MyDocParser(DocParser):
         except:
             figure = ''
         try:
-            legend = re.search('\\includegraphics[^\n]*([^\z]*)', txt, re.M).groups()[0]
-            legendlist = legend.split()
             legend = ''
-            for line in legendlist:
-                if not line.startswith('\\end{'):
-                    legend += line + ' '
+            lines = txt.split('\n')
+            start = False
+            for l in lines:
+                if l.startswith('\\includegraphics'):
+                    start = True
+                    continue
+                if not start:
+                    continue
+                l = l.replace('\\end{centering}', '')
+                l = l.replace('\\end{figure}', '')
+                l = l.replace('\\par', '')
+                legend += l
         except:
             legend = ''
-        return NodeList([CommandNode('label', [TextNode(label)]),
+        nodes = [CommandNode('label', [TextNode(label)])]
+        if caption != '':
+            nodes.extend([
                 InlineNode('strong', [TextNode('Figure')]),
                 TextNode(': '),
-                InlineNode('emph', [TextNode(caption.strip())]),
-                #BreakNode(), 
-                InlineNode('figure', figure),
-                TextNode('\n\n' + legend)])
+                InlineNode('emph', [TextNode(caption.strip())])])
+        nodes.append(InlineNode('figure', figure))
+        if legend != '':
+            nodes.append(TextNode('\n\n' + legend))
+        return NodeList(nodes)
 
     def handle_lstlisting_env(self):
         txt = ''
@@ -386,13 +410,17 @@ class MyRestWriter(RestWriter):
         if cmdname == 'figure':
             content = node.args[0]
             #self.flush_par()
-            figure = node.args
-            for suffix in ['', '.pdf', '.png', '.jpg', '.eps']:
-                file = os.path.join('..', figure + suffix)
-                if os.path.isfile(file):
-                    figure = file
-                    break
-            self.write('.. image:: %s\n' % figure )
+            figure = os.path.splitext(node.args)[0]
+            curPath = os.path.abspath('.')
+            os.chdir(self.dirname)
+            for path in ['.', '..', 'build']:
+                for suffix in ['', '.png', '.jpg', '.eps', '.pdf']:
+                    file = os.path.join(path, figure + suffix)
+                    if os.path.isfile(file):
+                        figure = file
+                        break
+            self.write('.. image:: %s\n   :width: 670\n' % figure )
+            os.chdir(curPath)
         elif cmdname == 'listing':
             content = node.args[0]
             #self.flush_par()
