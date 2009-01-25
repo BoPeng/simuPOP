@@ -1983,15 +1983,15 @@ operators
 \family typewriter
 pop
 \family default
- using the
+ using the 
 \family typewriter
- deepcopy
+deepcopy
 \family default
  function defined in the Python 
 \family typewriter
-copy 
+copy
 \family default
-module
+ module
 \end_layout
 
 \begin_layout Standard
@@ -2031,9 +2031,11 @@ All arrays in simuPOP start at index 0
 \end_layout
 
 \begin_layout Standard
-Another two important concepts are the
+Another two important concepts are the 
 \emph on
- absolute index
+absolute index
+\emph default
+
 \begin_inset Index
 status collapsed
 
@@ -2043,15 +2045,11 @@ index!absolute
 
 \end_inset
 
+ and the 
+\emph on
+relative index
+\emph default
 
-\emph default
- and
-\emph on
- 
-\emph default
-the
-\emph on
- relative index
 \begin_inset Index
 status collapsed
 
@@ -2061,15 +2059,9 @@ index!relative
 
 \end_inset
 
- 
-\emph default
-of a locus.
+ of a locus.
  The former index ignores chromosome structure.
-
-\emph on
- 
-\emph default
-For example, if there are 5 and 7 loci on the first two chromosomes, the
+ For example, if there are 5 and 7 loci on the first two chromosomes, the
  absolute indexes of the two chromosomes are (0, 1, 2, 3, 4), (5, 6, 7,
  8, 9, 10, 11) and the relative indexes are (0, 1, 2, 3, 4), (0, 1, 2, 3,
  4, 5, 6).
@@ -2087,6 +2079,8 @@ absLocusIndex(chrom,index)
  An individual can also be referred by its 
 \emph on
 absolute index
+\emph default
+
 \begin_inset Index
 status collapsed
 
@@ -2096,11 +2090,11 @@ index!absolute
 
 \end_inset
 
-
-\emph default
- and
+ and 
 \emph on
- relative index
+relative index
+\emph default
+
 \begin_inset Index
 status collapsed
 
@@ -2110,13 +2104,11 @@ index!relative
 
 \end_inset
 
- 
-\emph default
-where 
+ where 
 \emph on
-relative index 
+relative index
 \emph default
-is the index in its subpopulation.
+ is the index in its subpopulation.
  Related member functions are 
 \family typewriter
 subPopIndPair(idx)
@@ -2167,9 +2159,9 @@ refers to the index of the first locus on chromosome 1 (actually exists),
 \family typewriter
 pop.chromEnd(1) 
 \family default
-refers to the index of the last locus on chromosome 1
+refers to the index of the last locus on chromosome 1 
 \series bold
- plus 1
+plus 1
 \series default
 , which might or might not be a valid index.
 \end_layout
@@ -2462,13 +2454,9 @@ individual
 \emph on
 population
 \emph default
-objects.
+ objects.
  Because a population consists of individuals of the same type, genotypic
- information
-\emph on
- 
-\emph default
-can only be changed for all individuals at the population level.
+ information can only be changed for all individuals at the population level.
  Populations in a simulator usually have the same genotypic structure because
  they are created by as replicates, but their structure may change during
  evolution.
@@ -2562,9 +2550,9 @@ ChromosomeX
 \emph default
 , 
 \emph on
-ChromosomeY 
+ChromosomeY
 \emph default
-and 
+ and 
 \emph on
 Customized
 \emph default
@@ -5366,9 +5354,9 @@ heterogeneous mating scheme
 \end_layout
 
 \begin_layout Itemize
-A
+A 
 \series bold
- pedigree mating scheme
+pedigree mating scheme
 \series default
  that follows a recorded evolutionary scenario.
  The selection of parents and the production of offspring are controlled
@@ -6757,9 +6745,9 @@ Create an empty offspring population (generation) with appropriate size.
 \begin_layout Enumerate
 For each subpopulation, repeatedly choose a parent or a pair of parents
  from the parental generation.
- This is done by a simuPOP object called a
+ This is done by a simuPOP object called a 
 \series bold
- parent chooser
+parent chooser
 \series default
 .
 \end_layout
@@ -7065,9 +7053,9 @@ Another offspring generator is provided in simuPOP.
 controlledOffspringGenerator 
 \family default
 is used to control an evolutionary process so that the allele frequencies
- at certain loci follows some pre-simulated
+ at certain loci follows some pre-simulated 
 \emph on
- frequency trajectories
+frequency trajectories
 \emph default
 .
  Please refer to 
@@ -7133,11 +7121,8 @@ of an offspring generator, only those that transmit genotype from parents
  to offspring are called 
 \emph on
 genotype transmitters
-\family typewriter
 \emph default
 .
-
-\family default
  simuPOP provides a number of genotype transmitters including clone, Mendelian,
  selfing, haplodiploid, genotype transmitter, and a recombinator.
  They are usually used implicitly in a mating scheme, but they can also
@@ -7740,6 +7725,7 @@ inline false
 status open
 
 \begin_layout Plain Layout
+
 python setup.py install
 \end_layout
 
@@ -7755,12 +7741,13 @@ Please refer to the Python reference manual for other building and installation
  you might have to pass these options using command
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
 
 \begin_layout Plain Layout
+
 python setup.py build_ext --swig-opts=
 \begin_inset Quotes erd
 \end_inset
@@ -7771,6 +7758,7 @@ python setup.py build_ext --swig-opts=
 \end_layout
 
 \begin_layout Plain Layout
+
     -shadow -c++ -keyword -nodefaultctor
 \begin_inset Quotes erd
 \end_inset

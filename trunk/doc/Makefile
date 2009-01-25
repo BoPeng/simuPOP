@@ -77,7 +77,7 @@ rst: tex
 	$(PYTHON) tools/convert.py build/refManual.tex build/refManual.rst
 
 html: BUILDER = html
-html: build rst
+html: rst build
 	@echo "Build finished. The HTML pages are in build/html."
 
 htmlhelp: BUILDER = htmlhelp
