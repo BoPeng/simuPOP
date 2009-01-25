@@ -46,6 +46,7 @@ class MyDocParser(DocParser):
 
     def __init__(self, *args, **kwargs):
         DocParser.__init__(self, *args, **kwargs)
+
     #    self.handle_ifhtml = self.handle_ifhtml1
     #
     def handle_unrecognized(self, name):
@@ -374,8 +375,11 @@ class MyDocParser(DocParser):
 
 
 class MyRestWriter(RestWriter):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, dir = '.', *args, **kwargs):
         RestWriter.__init__(self, *args, **kwargs)
+        self.dirname = dir
+        if self.dirname == '':
+            self.dirname = '.'
 
     def visit_InlineNode(self, node):
         cmdname = node.cmdname
@@ -401,12 +405,14 @@ class MyRestWriter(RestWriter):
             self.write('   %s\n' % caption)
         elif cmdname == 'include':
             file = node.args
-            for suffix in ['', '.ref', '.rst', '.txt']:
-                if os.path.isfile(file + suffix):
-                    file += suffix
-                    txt = open(file).read()
-                    self.write(txt)
-                    break
+            for dir in ['.', self.dirname, 'build']:
+                for suffix in ['', '.ref', '.rst', '.txt']:
+                    filename = os.path.join(dir, file + suffix)
+                    if os.path.isfile(filename):
+                        txt = open(filename).read()
+                        self.write(txt)
+                        return
+            print 'Warning: Failed to find included file for filename "%s".' % file
         elif cmdname == 'ref':
             self.curpar.append('`%s%s`_' % (self.labelprefix,
                                                 text(node.args[0]).lower().split(':')[-1]))
@@ -425,7 +431,7 @@ def convert_file(infile, outfile, doraise=True, splitchap=True,
         outf = codecs.open(outfile, 'w', 'utf-8')
     else:
         outf = None
-    r = MyRestWriter(outf, splitchap, toctree, deflang, labelprefix)
+    r = MyRestWriter(os.path.dirname(infile), outf, splitchap, toctree, deflang, labelprefix)
     try:
         r.write_document(p.parse())
         if splitchap:
