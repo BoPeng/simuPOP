@@ -27,11 +27,11 @@ body {
 
 div.document {
     /*background-color: #1c4e63;*/
+    background: #cbced0 url(background.png) top center repeat-y;
 	height: 100%;
 }
 
 div.documentwrapper {
-    background: #cbced0 url(background.png) top center repeat-y;
     float: left;
     width: 100%;
 }
