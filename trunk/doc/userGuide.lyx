@@ -1287,45 +1287,45 @@ simuPOP uses the abbreviated form of the following words in function and
 \begin_layout Quote
 
 \family typewriter
-pos 
+pos
 \family default
-(position)
+ (position),  
 \family typewriter
-,  info 
+info
 \family default
-(information)
+ (information), 
 \family typewriter
-, migr 
+migr
 \family default
-(migration)
+ (migration), 
 \family typewriter
-, subPop 
+subPop
 \family default
-(subpopulation and virtual subpopulation)
+ (subpopulation and virtual subpopulation), 
 \family typewriter
-, subPops
+subPops
 \family default
  (subpopulations and virtual subpopulations), 
 \family typewriter
-rep 
+rep
 \family default
-(replicate and replicates)
+ (replicate and replicates), 
 \family typewriter
-, gen 
+gen
 \family default
-(generation)
+ (generation), 
 \family typewriter
-, ops 
+ops
 \family default
-(operators)
+ (operators), 
 \family typewriter
-, expr 
+expr
 \family default
-(expression),
+ (expression), 
 \family typewriter
- stmts 
+stmts
 \family default
-(statements).
+ (statements).
 \end_layout
 
 \begin_layout Standard
@@ -1340,9 +1340,9 @@ subPop
 subPops
 \family default
  accepts a list of subpopulations.
- Note that
+ Note that 
 \series bold
- plural form parameters usually accept single inputs
+plural form parameters usually accept single inputs
 \series default
 .
  For example, 
@@ -1374,7 +1374,7 @@ simuPOP modules
 
 \begin_layout Standard
 simuPOP consists of a number of Python modules, documents, tests and examples.
- Using windows as an example, simuPOP installs the following files to your
+ Using Linux as an example, simuPOP installs the following files to your
  operating system:
 \end_layout
 
@@ -1385,21 +1385,15 @@ simuPOP_XXX.py
 \family default
 , 
 \family typewriter
-_simuPOP_XXX.pyd
+_simuPOP_XXX.
 \family default
-) and a number of utility modules (
+so) and a number of utility modules (
 \family typewriter
 simuUtil.py, simuOpt.py
 \family default
  etc) under 
 \family typewriter
-c:
-\backslash
-python2X
-\backslash
-Lib
-\backslash
-site-packages
+/usr/lib/python2X/site-packages
 \family default
 .
  
@@ -1408,15 +1402,7 @@ site-packages
 \begin_layout Itemize
 
 \family typewriter
-c:
-\backslash
-python2X
-\backslash
-share
-\backslash
-simuPOP
-\backslash
-doc
+/usr/share/simuPOP/doc
 \family default
 : This directory contains the pdf version of this user's guide and the 
 \emph on
@@ -1428,17 +1414,9 @@ simuPOP reference manual
 \begin_layout Itemize
 
 \family typewriter
-c:
-\backslash
-python2X
-\backslash
-share
-\backslash
-simuPOP
-\backslash
-test:
+/usr/share/simuPOP/test
 \family default
- This directory contains all unit test cases.
+: This directory contains all unit test cases.
  It is recommended that you test your simuPOP installation using these scripts
  if you compile simuPOP from source.
  
@@ -1447,22 +1425,9 @@ test:
 \begin_layout Itemize
 
 \family typewriter
-c:
-\backslash
-python2X
-\backslash
-share
-\backslash
-simuPOP
-\backslash
-scripts
-\series bold
-\emph on
-:
+/usr/share/simuPOP/scripts
 \family default
-\series default
-\emph default
- This directory contains all the bundled scripts.
+: This directory contains all the bundled scripts.
  It is worth noting that although these scripts are distributed with simuPOP,
  they are not tested as rigorously and as frequently as the simuPOP core.
  Please send an email to the simuPOP mailinglist if you notice any problem
@@ -5644,13 +5609,8 @@ More specifically,
 \family typewriter
 numOffspring=(GeometricDistribution, p)
 \family default
-: The number of offspring for each mating event follows distribution:
-\begin_inset Formula \[
-\mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
-
-\end_inset
-
-This distribution has mean 
+: The number of offspring for each mating event follows a geometric distribution
+ with mean 
 \begin_inset Formula $1/p$
 \end_inset
 
@@ -5658,32 +5618,38 @@ This distribution has mean
 \begin_inset Formula $\left(1-p\right)/p^{2}$
 \end_inset
 
-.
+: 
+\begin_inset Formula \[
+\mbox{Pr}\left(k\right)=p\left(1-p\right)^{k-1}\;\textrm{ for }k\geq1\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
 
 \family typewriter
-numOffspring=(PoissonDistribution, p): 
+numOffspring=(PoissonDistribution, p)
 \family default
-The number of offspring for each mating event follows a shifted Poisson
- distribution:
+: The number of offspring for each mating event follows a shifted Poisson
+ distribution with mean 
+\begin_inset Formula $p+1$
+\end_inset
+
+ (you need to specify, for example, 2, if you want a mean family size of
+ 3) and variance 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ The distribution is
 \begin_inset Formula \[
 \mbox{Pr}\left(k\right)=p^{k-1}\frac{e^{-p}}{\left(k-1\right)!}\;\textrm{ for}k\geq1\]
 
 \end_inset
 
-Because the mean of this shifted Poisson distribution is 
-\begin_inset Formula $p+1$
-\end_inset
 
-, you need to specify, for example, 2, if you want a mean family size of
- 3.
- The variance of this distribution is 
-\begin_inset Formula $p$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Itemize
@@ -5692,21 +5658,22 @@ Because the mean of this shifted Poisson distribution is
 numOffspring=(BinomialDistribution, p, n): 
 \family default
 The number of offspring for each mating event follows a shifted Binomial
- distribution:
+ distribution with mean 
+\begin_inset Formula $(n-1)p+1$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\left(n-1\right)p\left(1-p\right)$
+\end_inset
+
+.
+ 
 \begin_inset Formula \[
 \mbox{Pr}\left(k\right)=\frac{\left(n-1\right)!}{\left(k-1\right)!\left(n-k\right)!}p^{k-1}\left(1-p\right)^{n-k}+1\;\textrm{ for }n\geq k\geq1\]
 
 \end_inset
 
-The mean of this distribution is 
-\begin_inset Formula $(n-1)p+1$
-\end_inset
 
- with variance 
-\begin_inset Formula $\left(n-1\right)p\left(1-p\right)$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Itemize
@@ -5724,16 +5691,13 @@ numOffspring=(UniformDistribution, a, b):
 \end_inset
 
 .
+ 
 \begin_inset Formula \[
 \mbox{Pr}\left(k\right)=\frac{1}{b-a+1}\;\textrm{ for }b\geq k\geq a\]
 
 \end_inset
 
-The mean of this distribution is 
-\begin_inset Formula $\left(a+b\right)/2$
-\end_inset
 
-.
 \end_layout
 
 \begin_layout Standard

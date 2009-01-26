@@ -51,17 +51,26 @@ class MyDocParser(DocParser):
     #
     def handle_unrecognized(self, name):
         def handler():
-            print 'Unrecognized name: %s, use include directive to try to include an external file' % name
+            #print 'Unrecognized name: %s, use include directive to try to include an external file' % name
             return InlineNode('include', name)
         return handler
 
     def parse_until(self, condition=None, endatbrace=False):
         nodelist = NodeList()
         bracelevel = 0
+        mathMode = False
+        math = ''
         for l, t, v, r in self.tokens:
             if condition and condition(t, v, bracelevel):
                 return nodelist.flatten()
-            if t == 'command':
+            if mathMode:
+                if t == 'mathmode':
+                    nodelist.append(InlineNode('math', [TextNode(math)]))
+                    math = ''
+                    mathMode = False
+                else:
+                    math += r
+            elif t == 'command':
                 if len(v) == 1 and not v.isalpha():
                     nodelist.append(self.handle_special_command(v))
                     continue
@@ -80,7 +89,7 @@ class MyDocParser(DocParser):
             elif t == 'tilde':
                 nodelist.append(NbspNode())
             elif t == 'mathmode':
-                pass # ignore math mode
+                mathMode = True
             elif t == 'parasep':
                 nodelist.append(ParaSepNode())
             else:
@@ -146,14 +155,13 @@ class MyDocParser(DocParser):
 
     def handle_special_command(self, cmdname):
         if cmdname == '[':
-            print 'MATH START'
+            math = ''
             while True:
                 nextl, nextt, nextv, nextr = self.tokens.next()
-                print 'MATH %s %s' % (nextr, nextt)
                 if nextr == '\\]':
                     break
-            print 'MATH END'
-            return EmptyNode()
+                math += nextr
+            return InlineNode('dispmath', math)
         return DocParser.handle_special_command(self, cmdname)
 
     handle_color = mk_metadata_handler(None, 'color', None, 'M')
@@ -297,7 +305,6 @@ class MyDocParser(DocParser):
         while not txt.endswith('end{figure}'):
             nextl, nextt, nextv, nextr = self.tokens.pop()
             txt += nextr
-        print re.match('label', txt)
         try:
             label = re.search('\\label{([^}]*)}', txt).groups()[0]
             label = label.split(':')[-1]
@@ -305,7 +312,6 @@ class MyDocParser(DocParser):
             label = ''
         try:
             txt = txt.replace('\\label{fig:%s}' % label, '')
-            print 'LABEL', label
             caption = re.search('\\caption{([^}]*)}', txt).groups()[0]
         except:
             caption = ''
@@ -408,7 +414,6 @@ class MyRestWriter(RestWriter):
     def visit_InlineNode(self, node):
         cmdname = node.cmdname
         if cmdname == 'figure':
-            content = node.args[0]
             #self.flush_par()
             figure = os.path.splitext(node.args)[0]
             curPath = os.path.abspath('.')
@@ -444,6 +449,15 @@ class MyRestWriter(RestWriter):
         elif cmdname == 'ref':
             self.curpar.append('`%s%s`_' % (self.labelprefix,
                                                 text(node.args[0]).lower().split(':')[-1]))
+        elif cmdname == 'math':
+            math = node.args[0]
+            self.visit_wrapped(':math:`', math, '`')
+        elif cmdname == 'dispmath':
+            math = node.args
+            self.flush_par()
+            self.write('\n.. math::')
+            self.write('\n   '.join(math.split('\n')))
+            self.write('\n')
         else:
             RestWriter.visit_InlineNode(self, node)
 
@@ -451,10 +465,48 @@ class MyRestWriter(RestWriter):
         # no inline comments -> they are all output at the start of a new paragraph
         pass #self.comments.append(node.comment.strip())
 
+class MyTokenizer(Tokenizer):
+    def _tokenize(self):
+        lineno = 1
+        while not self.eos:
+            if self.scan(r'\\verb([^a-zA-Z])(.*?)(\1)'):
+                # specialcase \verb here
+                yield lineno, 'command', 'verb', '\\verb'
+                yield lineno, 'text', self.match.group(1), self.match.group(1)
+                yield lineno, 'text', self.match.group(2), self.match.group(2)
+                yield lineno, 'text', self.match.group(3), self.match.group(3)
+            elif self.scan(r'\\([a-zA-Z]+\*?)[ \t]*'):
+                yield lineno, 'command', self.match.group(1), self.mtext
+            elif self.scan(r'\\.'):
+                yield lineno, 'command', self.mtext[1], self.mtext
+            elif self.scan(r'\\\n'):
+                yield lineno, 'text', self.mtext, self.mtext
+                lineno += 1
+            elif self.scan(r'%(.*)\n[ \t]*'):
+                yield lineno, 'comment', self.match.group(1), self.mtext
+                lineno += 1
+            elif self.scan(r'[{}\[\]~$]'):
+                yield lineno, self.specials[self.mtext], self.mtext, self.mtext
+            elif self.scan(r'(\n[ \t]*){2,}'):
+                lines = self.mtext.count('\n')
+                yield lineno, 'parasep', '\n' * lines, self.mtext
+                lineno += lines
+            elif self.scan(r'\n[ \t]*'):
+                yield lineno, 'text', ' ', self.mtext
+                lineno += 1
+            ########## FIX A BUG HERE #####
+            elif self.scan(r'[^\\%}{\[\]~\n\$]+'):
+                yield lineno, 'text', self.mtext, self.mtext
+            else:
+                raise RuntimeError('unexpected text on line %d: %r' %
+                                   (lineno, self.data[self.pos:self.pos+100]))
+
+
+    
 def convert_file(infile, outfile, doraise=True, splitchap=True,
                  toctree=None, deflang=None, labelprefix=''):
     inf = codecs.open(infile, 'r', 'latin1')
-    p = MyDocParser(Tokenizer(inf.read()).tokenize(), infile)
+    p = MyDocParser(MyTokenizer(inf.read()).tokenize(), infile)
     if not splitchap:
         outf = codecs.open(outfile, 'w', 'utf-8')
     else:
