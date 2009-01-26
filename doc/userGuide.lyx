@@ -352,11 +352,8 @@ genotype structure
 \series bold
 subpopulations
 \series default
- that can be further divided into
-\emph on
- 
+ that can be further divided into 
 \series bold
-\emph default
 virtual subpopulations
 \series default
  according to individual properties such as sex, affection status, or arbitrary
