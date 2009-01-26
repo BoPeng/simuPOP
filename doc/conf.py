@@ -14,7 +14,7 @@ sys.path.extend([os.path.abspath('..'), os.path.abspath('tools/jinja2')])
 # ---------------------
 
 extensions = ['sphinx.ext.refcounting', 'sphinx.ext.coverage',
-              'sphinx.ext.doctest']
+              'sphinx.ext.doctest', 'sphinx.ext.pngmath']
 templates_path = ['tools']
 
 # General substitutions.
@@ -48,6 +48,7 @@ master_doc = 'index'
 # unit titles (such as .. function::).
 add_module_names = True
 
+pngmath_use_preview = True
 
 # Options for HTML output
 # -----------------------
