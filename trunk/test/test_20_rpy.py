@@ -33,7 +33,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -56,7 +56,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -80,7 +80,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -106,7 +106,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -132,7 +132,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -155,7 +155,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -180,7 +180,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
             randomMating(), rep=3)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=MigrByProbability)
+            mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -206,7 +206,7 @@ class TestRPy(unittest.TestCase):
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=nr)
         migr = migrator([[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-                                        mode=MigrByProbability)
+                                        mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.setGen(0)
         simu.evolve(
