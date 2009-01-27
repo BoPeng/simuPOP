@@ -113,6 +113,11 @@ ind.locusName(1)
 # utility functions
 ind.chromBegin(1)
 ind.chromByName('Chr2')
+# loci pos can be unordered within each chromosome
+pop = population(loci=[2, 3], lociPos=[3, 1, 1, 3, 2],
+    lociNames=['loc%d' % x for x in range(5)])
+pop.lociPos()
+pop.lociNames()
 #end
 
 
