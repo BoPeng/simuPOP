@@ -127,13 +127,15 @@ clean:
 	-rm -rf build/*
 	-rm -rf tools/sphinx
 
-dist: html
+src_doc:
 	cd ..; doxygen Doxy_web
 	rsync -v -rlt -z ../doxygen_doc/html/ simupop,simupop@web.sourceforge.net:htdocs/src_doc
+
+dist: html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
-	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual
+	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual/build
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual
 
 
