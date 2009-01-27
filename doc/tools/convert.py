@@ -120,6 +120,13 @@ class MyDocParser(DocParser):
     def handle_newcommand(self):
         return self.handle_newenvironment(2)
 
+    def handle_unrecognized(self, name, line):
+        def handler():
+            #self.unrecognized.add(name)
+            return InlineNode('include', name)
+        return handler
+
+        
     handle_small = mk_metadata_handler(None, '\\small', None, 'O')
     handle_ttfamily = mk_metadata_handler(None, '\\small', None, 'O')
     handle_textsf = mk_metadata_handler(None, '\\textsf', None, 'O')
@@ -144,17 +151,7 @@ class MyRestWriter(RestWriter):
 
     def visit_InlineNode(self, node):
         cmdname = node.cmdname
-        if cmdname == 'listing':
-            content = node.args[0]
-            #self.flush_par()
-            txt = node.args.split('\n')
-            file = txt[0]
-            label = txt[1]
-            caption = txt[2]
-            self.write('.. literalinclude:: %s' % file)
-            self.write('   :language: python')
-            self.write('   %s\n' % caption)
-        elif cmdname == 'include':
+        if cmdname == 'include':
             file = node.args
             for dir in ['.', self.dirname, 'build']:
                 for suffix in ['', '.ref', '.rst', '.txt']:
@@ -172,7 +169,7 @@ class MyRestWriter(RestWriter):
 
     def visit_CommandNode(self, node):
         cmdname = node.cmdname
-        if cmdname == 'figure1':
+        if cmdname == 'figure':
             self.write('.. image:: %s\n   :width: 670\n' % text(node.args[0]))
             return
         else:

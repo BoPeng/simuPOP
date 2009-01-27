@@ -5805,10 +5805,12 @@ Arguments:
                     arranged consecutively.
     lociPos:        Positions of all loci on all chromosome, as a list
                     of float numbers. Default to 1, 2, ... etc on each
-                    chromosome. Positions on the same chromosome
-                    should be ordered. A nested list that specifies
-                    positions of loci on each chromosome is also
-                    acceptable.
+                    chromosome. lociPos should be arranged chromosome
+                    by chromosome. If lociPos are not in order within
+                    a chromosome, they will be re-arranged along with
+                    corresponding lociNames (if specified). A nested
+                    list that specifies positions of loci on each
+                    chromosome is also acceptable.
     ancGen:         Number of the most recent ancestral generations to
                     keep during evolution. Default to 0, which means
                     only the current generation will be kept. If it is
@@ -5825,7 +5827,8 @@ Arguments:
     lociNames:      A list or a matrix (separated by chromosomes) of
                     names for each locus. Default to \"locX-Y\" where X
                     and Y are 1-based chromosome and locus indexes,
-                    respectively.
+                    respectively. Loci names will be rearranged
+                    according to their position on the chromosome.
     subPopNames:    A list of subpopulation names. All subpopulations
                     will have name '' if this parameter is not
                     specified.

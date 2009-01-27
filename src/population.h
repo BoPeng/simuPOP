@@ -153,8 +153,8 @@ public:
 	 *  \param chromNames A list of chromosome names. Default to \c chrom1,
 	 *    \c chrom2, ... etc.
 	 *  \param alleleNames A list of allele names for all markers. For example,
-	 *    <em>alleleNames</em><tt>=('A','C','T','G')</tt> names allele \c 0 --
-	 *    \c 3 \c 'A', \c 'C', \c 'T', and \c 'G' respectively. Note that
+	 *    <tt>alleleNames=('A','C','T','G')</tt> names allele \c 0 --
+	 *    \c 3 \c A, \c C, \c T, and \c G respectively. Note that
 	 *    simuPOP does not yet support locus-specific allele names.
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
 	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
