@@ -23,7 +23,12 @@
 
 #include "genoStru.h"
 
+#include "boost/lambda/lambda.hpp"
+
+using namespace boost::lambda;
+
 namespace simuPOP {
+
 GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & chromTypes, bool haplodiploid,
 	const vectorf & lociPos, const vectorstr & chromNames, const vectorstr & alleleNames,
 	const vectorstr & lociNames, const vectorstr & infoFields)
@@ -47,75 +52,113 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 	setChromTypes(chromTypes);
 
 	// build chromosome index
-	ULONG i, j;
-	for (m_chromIndex[0] = 0, i = 1; i <= m_numLoci.size(); ++i)
+	m_chromIndex[0] = 0;
+	for (size_t i = 1; i <= m_numLoci.size(); ++i)
 		m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
 
 	m_totNumLoci = m_chromIndex[m_numLoci.size()];
 
+	DBG_ASSERT(m_lociNames.empty() || m_lociNames.size() == m_totNumLoci, ValueError,
+		"Loci names, if specified, should be given to every loci");
+
 	// if lociPos not specified, use 1,2,3.. 1,2,3. .. on each chromosome.
 	if (m_lociPos.empty() ) {
 		m_lociPos.resize(m_totNumLoci);
-		for (i = 0; i < m_numLoci.size(); ++i)
-			for (j = 0; j < m_numLoci[i]; j++)
+		for (size_t i = 0; i < m_numLoci.size(); ++i)
+			for (size_t j = 0; j < m_numLoci[i]; j++)
 				m_lociPos[m_chromIndex[i] + j] = j + 1;
 	}
-#ifndef OPTIMIZED
 	else {                                                                            // check loci distance
 		// loci distance, if specified, chould have length of chromosome.
 		DBG_FAILIF(m_lociPos.size() != m_totNumLoci, ValueError,
 			"You should specify loci distance for every locus (" + toStr(m_totNumLoci) + ")");
 
-		for (i = 0; i < m_numLoci.size(); ++i)
-			for (j = 0; j < m_numLoci[i]; ++j)
-				DBG_FAILIF(j > 0 && fcmp_le(m_lociPos[m_chromIndex[i] + j], m_lociPos[m_chromIndex[i] + j - 1]),
-					ValueError, "Loci position should be distinct, and in increasing order.");
-	}
-#endif
+		for (size_t ch = 0; ch < m_numLoci.size(); ++ch) {
+			if (m_numLoci[ch] <= 1)
+				continue;
 
-	DBG_ASSERT(m_chromNames.empty() || m_chromNames.size() == m_numLoci.size(), ValueError,
-		"Chromosome names, if specified, should be given to every chromosomes");
+			size_t begin = m_chromIndex[ch];
+			size_t end = m_chromIndex[ch+1];
 
-	if (m_chromNames.empty()) {
-		m_chromNames.resize(m_numLoci.size());
-		for (i = 0; i < m_numLoci.size(); ++i)
-			m_chromNames[i] = "chrom" + toStr(i + 1);
-	}
-#ifndef OPTIMIZED
-	else {
-		map<string, int> nameMap;
-		// check uniqueness of the names
-		for (i = 0; i < m_numLoci.size(); ++i) {
-			if (nameMap.find(m_chromNames[i]) != nameMap.end())
-				throw ValueError("Given chromosome names should be unique");
-			else
-				nameMap[m_chromNames[i]] = 0;
+			bool ordered = true;
+			for (size_t j = begin + 1; j < end; ++j) {
+				if (fcmp_le(m_lociPos[j], m_lociPos[j - 1])) {
+					ordered = false;
+					break;
+				}
+			}
+			if (ordered)
+				continue;
+
+			DBG_DO(DBG_POPULATION, cout << "Loci on chromosome " << ch << " are unordered.");
+			
+			vectorf lociPos(m_lociPos.begin() + begin, m_lociPos.begin() + end);
+
+			// rank
+			vectoru rank(m_numLoci[ch]);
+			for (size_t i = 0; i < rank.size(); ++i)
+				rank[i] = i;
+			// sort according to value of pos
+			std::sort(rank.begin(), rank.end(),
+				var(lociPos)[_1] < var(lociPos)[_2]);
+			// apply sorted loci positions
+			for (size_t i = 0; i < rank.size(); ++i)
+				m_lociPos[begin + i] = lociPos[rank[i]];
+			// check again for loci duplication etc
+			for (size_t j = begin + 1; j < end; ++j) {
+				DBG_FAILIF(fcmp_le(m_lociPos[j], m_lociPos[j - 1]),	ValueError,
+					"Loci on the same chromosome should have different positions.");
+			}
+			// lociNames?
+			if (m_lociNames.empty())
+				continue;
+			vectorstr lociNames(m_lociNames.begin() + begin, m_lociNames.begin() + end);
+			for (size_t i = 0; i < rank.size(); ++i)
+				m_lociNames[begin + i] = lociNames[rank[i]];
 		}
 	}
-#endif
 
-	DBG_ASSERT(m_lociNames.empty() || m_lociNames.size() == m_totNumLoci, ValueError,
-		"Loci names, if specified, should be given to every loci");
 	if (m_lociNames.empty()) {
 		m_lociNames.resize(m_totNumLoci);
-		for (i = 0; i < m_numLoci.size(); ++i)
-			for (j = 0; j < m_numLoci[i]; j++)
+		for (size_t i = 0; i < m_numLoci.size(); ++i)
+			for (size_t j = 0; j < m_numLoci[i]; j++)
 				m_lociNames[m_chromIndex[i] + j] = "loc" + toStr(i + 1) + "-" + toStr(j + 1);
 	}
 #ifndef OPTIMIZED
 	else {
 		map<string, int> nameMap;
 		// check uniqueness of the names
-		for (i = 0; i < m_totNumLoci; ++i) {
+		for (size_t i = 0; i < m_totNumLoci; ++i) {
 			if (nameMap.find(m_lociNames[i]) != nameMap.end())
 				throw ValueError("Given loci names should be unique");
 			else
 				nameMap[m_lociNames[i]] = 0;
 		}
 	}
+#endif
+	DBG_ASSERT(m_chromNames.empty() || m_chromNames.size() == m_numLoci.size(), ValueError,
+		"Chromosome names, if specified, should be given to every chromosomes");
+
+	if (m_chromNames.empty()) {
+		m_chromNames.resize(m_numLoci.size());
+		for (size_t i = 0; i < m_numLoci.size(); ++i)
+			m_chromNames[i] = "chrom" + toStr(i + 1);
+	}
+#ifndef OPTIMIZED
+	else {
+		map<string, int> nameMap;
+		// check uniqueness of the names
+		for (size_t i = 0; i < m_numLoci.size(); ++i) {
+			if (nameMap.find(m_chromNames[i]) != nameMap.end())
+				throw ValueError("Given chromosome names should be unique");
+			else
+				nameMap[m_chromNames[i]] = 0;
+		}
+	}
+
 	// check duplicated and empty information field names
 	map<string, int> infoMap;
-	for (i = 0; i < m_infoFields.size(); ++i) {
+	for (size_t i = 0; i < m_infoFields.size(); ++i) {
 		if (m_infoFields[i].empty())
 			throw ValueError("Empty information field name is not allowed");
 		else if (infoMap.find(m_infoFields[i]) != infoMap.end())
