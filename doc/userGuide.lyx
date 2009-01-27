@@ -23,8 +23,8 @@ Last modified \\
 \chapter*{Front Matter\label{front}}
 \fi
 
-\renewcommand\lstlistlistingname{List of Examples}
-\renewcommand\lstlistingname{Example}
+\renewcommand{\lstlistlistingname}{List of Examples}
+\renewcommand{\lstlistingname}{Example}
 
 \sloppy
 
@@ -2605,7 +2605,7 @@ reference "fig:chromTypes"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -2628,7 +2628,7 @@ Inheritance of different types of chromosomes in a diploid population
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename chromType.pdf
+	filename chromType.png
 	lyxscale 40
 	width 90text%
 
@@ -2869,7 +2869,7 @@ reference "fig:genotype-layout"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -2891,7 +2891,7 @@ Memory layout of individual genotype
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename genotype.pdf
+	filename genotype.png
 	lyxscale 30
 	width 90text%
 

@@ -23,8 +23,8 @@ Last modified \\
 \chapter*{Front Matter\label{front}}
 \fi
 
-\renewcommand\lstlistlistingname{List of Examples}
-\renewcommand\lstlistingname{Example}
+\renewcommand{\lstlistlistingname}{List of Examples}
+\renewcommand{\lstlistingname}{Example}
 
 \sloppy
 
