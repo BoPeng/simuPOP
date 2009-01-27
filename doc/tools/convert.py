@@ -73,7 +73,7 @@ class MyDocParser(DocParser):
     handle_hspace = mk_metadata_handler(None, 'hspace', None, 'M')
     handle_hrule = mk_metadata_handler(None, 'hrule', None, 'O')
     handle_lstlistoflistings = mk_metadata_handler(None, 'lstlistoflistings', None, 'O')
-    handle_centering = mk_metadata_handler(None, 'centering', None, 'O')
+    handle_centering = mk_metadata_handler(None, 'centering', None, 'M')
     handle_textwidth = mk_metadata_handler(None, 'textwidth', None, 'O')
     handle_end = mk_metadata_handler(None, 'end', None, 'O')
     handle_textendash = mk_metadata_handler(None, 'textendash', None, 'O')
@@ -161,16 +161,13 @@ class MyRestWriter(RestWriter):
                         self.write(txt)
                         return
             print 'Warning: Failed to find included file for filename "%s".' % file
-        elif cmdname == 'ref':
-            self.curpar.append('`%s%s`_' % (self.labelprefix,
-                                                text(node.args[0]).lower().split(':')[-1]))
         else:
             RestWriter.visit_InlineNode(self, node)
 
     def visit_CommandNode(self, node):
         cmdname = node.cmdname
         if cmdname == 'figure':
-            self.write('.. image:: %s\n   :width: 670\n' % text(node.args[0]))
+            self.write('.. figure:: %s\n   :width: 670\n' % text(node.args[0]))
             return
         else:
             RestWriter.visit_CommandNode(self, node)

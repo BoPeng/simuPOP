@@ -364,7 +364,7 @@ virtual subpopulations
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption
@@ -393,6 +393,10 @@ A life cycle of an evolutionary process
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+Illustration of the discrete-generation evolutionary model used by simuPOP.
 \end_layout
 
 \end_inset
@@ -8804,7 +8808,7 @@ It is not very clear that our method agrees with the traditional 'average
  (as derived in any population genetics textbook):
 \end_layout
 
-\begin_layout Quote
+\begin_layout Standard
 At generation 
 \begin_inset Formula $t$
 \end_inset
@@ -8825,7 +8829,7 @@ At generation
  etc., should be
 \end_layout
 
-\begin_layout Quote
+\begin_layout Standard
 \begin_inset Formula \[
 \frac{P_{11}w_{11}}{P_{11}w_{11}+P_{12}w_{12}+P_{22}w_{22}}\]
 
