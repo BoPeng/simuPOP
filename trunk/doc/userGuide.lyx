@@ -2431,6 +2431,16 @@ reference "subPopName"
 
  demonstrates how to access genotypic structure functions at the population
  and individual levels.
+ Note that 
+\family typewriter
+lociPos
+\family default
+ determines the order at which loci are arranged on a chromosome.
+ Loci positions and names will be rearranged if given 
+\family typewriter
+lociPos
+\family default
+ is unordered.
 \end_layout
 
 \begin_layout Standard
