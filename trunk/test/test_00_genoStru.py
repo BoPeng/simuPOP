@@ -16,7 +16,7 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
-class TestCarray(unittest.TestCase):
+class TestGenoStru(unittest.TestCase):
     # define a function to create basic populations
     def getPop(self):
         pop = population(size=[20, 80], ploidy=2, loci=[5, 7],
@@ -25,6 +25,16 @@ class TestCarray(unittest.TestCase):
             infoFields=['a', 'b'])
         InitSex(pop)
         return pop
+
+    def testLociPos(self):
+        'Testing the specification of loci position'
+        pop = population(loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 5, 4, 3, 2])
+        self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 1, 2, 3, 4, 5))
+        self.assertRaises(exceptions.ValueError, population, loci=[4, 5], lociPos=[1, 3, 2, 4, 1, 3, 4, 3, 2])
+        #
+        pop = population(loci=[4, 2], lociPos=[1, 3, 2, 4, 10, 5], lociNames=['1', '2', '3', '4', '5', '6'])
+        self.assertEqual(pop.lociPos(), (1, 2, 3, 4, 5, 10))
+        self.assertEqual(pop.lociNames(), ('1', '3', '2', '4', '6', '5'))
 
     def testGenotypeCarray(self):
         'Testing allele carray type returned by genotype'
