@@ -66,13 +66,15 @@ build: checkout
 	$(PYTHON) tools/sphinx-build.py $(ALLSPHINXOPTS)
 	@echo
 
-tex: userGuide.lyx refManual.lyx
+build/userGuide.tex: userGuide.lyx
 	/usr/local/bin/lyx --export pdflatex userGuide.lyx
-	/usr/local/bin/lyx --export pdflatex refManual.lyx
-	mv userGuide.tex build
-	mv refManual.tex build
+	mv userGuide.tex build/
 
-rst: tex
+build/refManual.tex: refManual.lyx
+	/usr/local/bin/lyx --export pdflatex refManual.lyx
+	mv refManual.tex build/
+
+rst: build/userGuide.tex build/refManual.tex
 	$(PYTHON) tools/convert.py build/userGuide.tex build/userGuide.rst
 	$(PYTHON) tools/convert.py build/refManual.tex build/refManual.rst
 
