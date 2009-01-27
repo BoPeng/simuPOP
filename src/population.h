@@ -141,9 +141,10 @@ public:
 	 *    have to be arranged consecutively.
 	 *  \param lociPos Positions of all loci on all chromosome, as a list of
 	 *    float numbers. Default to \c 1, \c 2, ... etc on each chromosome.
-	 *    Positions on the same chromosome should be ordered. A nested list
-	 *    that specifies positions of loci on each chromosome is also
-	 *    acceptable.
+	 *    \e lociPos should be arranged chromosome by chromosome. If \c lociPos
+	 *    are not in order within a chromosome, they will be re-arranged along
+	 *    with corresponding \e lociNames (if specified). A nested list that
+	 *    specifies positions of loci on each chromosome is also acceptable.
 	 *  \param ancGen Number of the most recent ancestral generations to keep
 	 *    during evolution. Default to \c 0, which means only the current
 	 *    generation will be kept. If it is set to \c -1, all ancestral
@@ -157,7 +158,8 @@ public:
 	 *    simuPOP does not yet support locus-specific allele names.
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
 	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
-	 *    chromosome and locus indexes, respectively.
+	 *    chromosome and locus indexes, respectively. Loci names will be
+	 *    rearranged according to their position on the chromosome.
 	 *  \param subPopNames A list of subpopulation names. All subpopulations
 	 *    will have name \c '' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
