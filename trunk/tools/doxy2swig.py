@@ -1136,14 +1136,20 @@ class Doxy2SWIG:
         text = text.split('\n')
         txt = []
         for t in text:
+            if t.strip() == '':
+                continue
+            txt.append('')
+            # itemize
             if t.startswith('+'):
-                txt.append('\n')
                 txt.extend(textwrap.wrap(t, initial_indent = '',
                     subsequent_indent = '  '))
             else:
                 txt.extend(textwrap.wrap(t, initial_indent = initial_indent,
                     subsequent_indent=subsequent_indent))
-        return '\n'.join(txt)
+        return ('\n'.join(txt)).strip('\n')
+
+    def shiftText(self, txt, shift='   '):
+        return '\n'.join([shift + x for x in txt.split('\n')])
 
     def write_reST(self, dir):
         # first handle glocal functions
@@ -1187,10 +1193,10 @@ class Doxy2SWIG:
                 else:
                     print >> out, '%s()' % mem['Name']
                 print >> out
-                print >> out, self.wrap_reST(mem['Doc'])
+                print >> out, self.shiftText(mem['Doc'])
                 if mem.has_key('note') and mem['note'] != '':
                     print >> out, '**Note**'
-                    print >> out, self.wrap_reST(mem['note'])
+                    print >> out, self.shiftText(mem['note'])
                 out.close()
             # module classes
             classes = [x for x in self.content if x['type'] == 'module_class' and x['module'] == module and not x['ignore'] and not x['hidden']]
@@ -1206,10 +1212,10 @@ class Doxy2SWIG:
                 else:
                     print >> out, '%s()' % cls['Name']
                 if entry.has_key('funcForm'):
-                    print >> out, '\n   Function form: %s\n' % self.wrap_reST(entry['funcForm'], '', '')
+                    print >> out, '\n   Function form: %s\n' % entry['funcForm']
                 #
-                print >> out, self.wrap_reST(cls['Doc'])
-                print >> out, self.wrap_reST(cls['InitDoc'])
+                print >> out, self.shiftText(cls['Doc'])
+                print >> out, self.shiftText(cls['InitDoc'])
                 #
                 for mem in cls['Members']:
                     if mem['Doc'] == '':
@@ -1222,7 +1228,7 @@ class Doxy2SWIG:
                         print >> out, '%s()' % mem['Name']
                     print >> out
                     if mem['Doc'] != '':
-                        print >> out, self.wrap_reST(mem['Doc'])
+                        print >> out, self.shiftText(mem['Doc'], '   ')
                 out.close()
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
