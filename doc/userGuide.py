@@ -1324,6 +1324,11 @@ InitByFreq(pop, alleleFreq=[[.2, .8], [.8, .2]])
 Dump(pop, structure=False)
 #end
 
+#file log/initByFreqIdenticalInds.log
+pop = population(size=[2, 3], loci=[5, 7])
+InitByFreq(pop, alleleFreq=[.2, .8], identicalInds=True)
+Dump(pop, structure=False)
+#end
 
 #file log/initByValue.log
 pop = population(size=[2, 3], loci=[5, 7])
