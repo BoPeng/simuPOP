@@ -1670,8 +1670,11 @@ SIMUOPTIMIZED
 \end_layout
 
 \begin_layout Standard
-When simuPOP is loaded, it creates a default random number generator (RNG)
- of type 
+When simuPOP is loaded, it creates a default random number generator (
+\family typewriter
+RNG
+\family default
+) of type 
 \family typewriter
 mt19937
 \family default
@@ -1682,37 +1685,33 @@ mt19937
  random number generator (c.f.
  
 \family typewriter
-AvailableRNG
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-
-\family typewriter
-AvailableRNG
-\end_layout
-
-\end_inset
-
-()
+AvailableRNGs()
 \family default
-, 
-\family typewriter
-SetRNG
+
 \begin_inset Index
 status open
 
 \begin_layout Plain Layout
+AvailableRNG
+\end_layout
 
+\end_inset
+
+, 
 \family typewriter
+SetRNG(name, seed)
+\family default
+)
+\begin_inset Index
+status open
+
+\begin_layout Plain Layout
 SetRNG
 \end_layout
 
 \end_inset
 
-(name, seed)
-\family default
-).
+.
  It is also possible to save the random seed of a simuPOP session (c.f.
  
 \family typewriter
@@ -8431,7 +8430,8 @@ initByValue
 InitByValue
 \family default
 ) initializes individual genotypes using given haplotypes.
- 
+ The simplest form of this operator is to specify genotype on one or all
+ homologous sets of chromosomes.
 \end_layout
 
 \begin_layout Standard
