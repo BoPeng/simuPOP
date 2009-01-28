@@ -40,7 +40,9 @@ unused_docs = [
 #refcount_file = 'data/refcounts.dat'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-add_function_parentheses = True
+# This is set to false because the document already had (), and sometimes
+# with options
+add_function_parentheses = False
 
 master_doc = 'index'
 

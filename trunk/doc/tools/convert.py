@@ -143,11 +143,12 @@ class MyDocParser(DocParser):
 
 
 class MyRestWriter(RestWriter):
-    def __init__(self, dir = '.', *args, **kwargs):
+    def __init__(self, dir = '.', auto_keywords = {}, *args, **kwargs):
         RestWriter.__init__(self, *args, **kwargs)
         self.dirname = dir
         if self.dirname == '':
             self.dirname = '.'
+        self.auto_keywords = auto_keywords
 
     def visit_InlineNode(self, node):
         cmdname = node.cmdname
@@ -185,7 +186,10 @@ def convert_file(infile, outfile, doraise=True, splitchap=True,
         outf = codecs.open(outfile, 'w', 'utf-8')
     else:
         outf = None
-    r = MyRestWriter(os.path.dirname(infile), outf, splitchap, toctree, deflang, labelprefix)
+    refFile = os.path.join(os.path.dirname(infile), 'reflist.py')
+    if os.path.isfile(refFile):
+        execfile(refFile, globals(), globals())
+    r = MyRestWriter(os.path.dirname(infile), auto_keywords, outf, splitchap, toctree, deflang, labelprefix)
     try:
         r.write_document(p.parse())
         if splitchap:

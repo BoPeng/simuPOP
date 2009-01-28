@@ -531,7 +531,7 @@ class Doxy2SWIG:
             #    pass
 
 
-    def post_process(self):
+    def post_process(self, refFile):
         # remove duplicate entry
         # They might be introduced if a function is list both under 'file' and under 'namespace'
         # Add additional entries manually
@@ -669,7 +669,27 @@ class Doxy2SWIG:
                     print "File " + filename + " does not exist\n"
         #
         self.content.sort(lambda x, y: x['Name'] > y['Name'])
-
+        # list of classes and functions....
+        #
+        # self.module_classes = set([x['Name'] for x in self.content if x['type'] == 'module_class' \
+        #    and x['module'] == module and not x['ignore'] and not x['hidden']])
+        # self.modules = set([x['Name'] for x in self.content if x['type'].startswith('module') \
+        #    and not x['ignore'] and not x['hidden']])
+        global_funcs = set([x['Name'].replace('simuPOP::', '') for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
+                and 'test' not in x['Name']])
+        classes = set([x['Name'].replace('simuPOP::', '') for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']])
+        members = set([x['Name'].replace('simuPOP::', '').replace('::', '.') \
+                for x in self.content if x['type'].startswith('memberofclass_') and \
+                not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']])
+        # print 'MODULES', self.modules
+        # print 'MODULES_CLASSES', self.module_classes
+        self.auto_keywords =  {'func': global_funcs, 'class': classes, 'meth': members}
+        try:
+            lst = open(refFile, 'w')
+            print >> lst, 'auto_keywords = %s' % self.auto_keywords
+            lst.close()
+        except:
+            print 'Failed to write a list file for cross referencing purposes'
 
     def write_swig(self, out):
         for entry in self.content:
@@ -1116,14 +1136,17 @@ class Doxy2SWIG:
             print >> out, '\\end{classdesc}\n}\n'
 
     def wrap_reST(self, input, initial_indent = '   ', subsequent_indent = '   '):
-        text = input.replace('<em>', '*')
+        text = input
+        for tag in ['<tt>', '<bf>', '<em>', '<item>']:
+            text = re.sub('%s\s*' % tag, tag, text)
+        # highlight stuff
+        for keyword in self.auto_keywords.keys():
+            for tag in ['tt', 'bf']:
+                for cls in self.auto_keywords[keyword]:
+                    text = text.replace('<%s>%s</%s>' % (tag, cls, tag),
+                        ':%s:`%s`' % (keyword, cls))
+        text = text.replace('<em>', '*')
         text = text.replace('</em>', '*')
-        for i in range(5):
-            for tag in ['<tt>', '<bf>', '<em.']:
-                text = text.replace(tag + ' ', tag)
-        for i in range(5):
-            text = text.replace('<item>\n', '<item>')
-            text = text.replace('<item> ', '<item>')
         text = text.replace('<tt>', '``')
         text = text.replace('</tt>', '``')
         text = text.replace('<bf>', '**')
@@ -1141,8 +1164,8 @@ class Doxy2SWIG:
             txt.append('')
             # itemize
             if t.startswith('+'):
-                txt.extend(textwrap.wrap(t, initial_indent = '',
-                    subsequent_indent = '  '))
+                txt.extend(textwrap.wrap(t, initial_indent = initial_indent,
+                    subsequent_indent = '  ' + subsequent_indent))
             else:
                 txt.extend(textwrap.wrap(t, initial_indent = initial_indent,
                     subsequent_indent=subsequent_indent))
@@ -1172,7 +1195,7 @@ class Doxy2SWIG:
                 print >> out, self.wrap_reST(entry['note'])
             out.close()
         # then python modules
-        modules = sets.Set(
+        modules = set(
             [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
             # module functions
@@ -1240,7 +1263,7 @@ class Doxy2SWIG:
             print >> out
             print >> out, '.. class::', classname
             if entry.has_key('funcForm'):
-                print >> out, '\n   Function form: %s' % entry['funcForm']
+                print >> out, '\n   Function form: %s' % self.wrap_reST(entry['funcForm'])
             print >> out
             print >> out, self.wrap_reST(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
@@ -1258,16 +1281,16 @@ class Doxy2SWIG:
             #print >> out, '\\par\n\\strong{Initialization}\n\\par'
             if cons.has_key('Usage') and cons['Usage'] != '':
                 usage = self.latex_text(cons['Usage'])
-                print >> out, '\n.. function:: %s\n' % cons['Usage']
+                print >> out, '\n   .. method:: %s\n' % cons['Usage']
             else:
-                print >> out, '\n.. function:: %s()\n' % entry['Name']
+                print >> out, '\n   .. method:: %s()\n' % entry['Name']
             if cons['Doc'] != '':
-                print >> out, '\n%s\n' % self.wrap_reST(cons['Doc'])
+                print >> out, '\n%s\n' % self.wrap_reST(cons['Doc'], ' '*6, ' '*6)
             if cons.has_key('Arguments') and len(cons['Arguments']) > 0:
                 # cons['Arguments'].sort(lambda x, y: cmp(x['Name'], y['Name']))
                 for arg in cons['Arguments']:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
-                    print >> out, '%s\n   %s\n' % (arg['Name'], self.wrap_reST(arg['Description'], ''))
+                    print >> out, '      %s\n         %s\n' % (arg['Name'], self.wrap_reST(arg['Description'], '', ' '*9))
             if cons.has_key('note') and cons['note'] != '':
                 print >> out, '   **Note**:'
                 print >> out, '%s' % self.wrap_reST(cons['note'])
@@ -1298,10 +1321,10 @@ class Doxy2SWIG:
                 if group != mem['group']:
                     group = mem['group']
                 if mem.has_key('Usage') and mem['Usage'] != '':
-                    print >> out, '\n.. function:: %s\n' % (mem['Usage'].lstrip('x.'))
+                    print >> out, '\n   .. method:: %s.%s\n' % (classname, mem['Usage'].lstrip('x.'))
                 else:
-                    print >> out, '\n.. function:: %s()\n' % mem['Name'].split(':')[-1]
-                print >> out, self.wrap_reST(mem['Doc'])
+                    print >> out, '\n   .. method:: %s.%s()\n' % (classname, mem['Name'].split(':')[-1])
+                print >> out, self.wrap_reST(mem['Doc'], ' '*6, ' '*6)
             out.close()
 
     def write_latex_testfile(self, out, ref_file):
@@ -1407,12 +1430,13 @@ if __name__ == '__main__':
         latex_testfile = os.path.join(src_path, 'doc', 'simuPOP_ref_test.tex')
     else:
         latex_testfile = sys.argv[4]
+    refFile = os.path.join(src_path, 'doc', 'build', 'reflist.py')
     # read the XML file (actually a index.xml file that contains all others)
     p = Doxy2SWIG(xml_file)
     # generate interface file.
     p.generate()
     # clean up, and process CPPONLY etc
-    p.post_process()
+    p.post_process(refFile)
     # write interface file to output interface file.
     print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')

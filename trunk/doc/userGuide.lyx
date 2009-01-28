@@ -456,9 +456,9 @@ reference "fig:life-cycle"
 pre-mating operators
 \series default
  such as a 
-\emph on
+\family typewriter
 mutator
-\emph default
+\family default
  are applied to a population before a mating scheme repeatedly chooses a
  parent or parents to produce offspring.
  
@@ -883,15 +883,11 @@ Some classes are derived from other classes and have access to member functions
 \family typewriter
 population
 \family default
-, 
+ and 
 \family typewriter
 individual
 \family default
- and 
-\family typewriter
-simulator
-\family default
- are all derived from class 
+ are both derived from class 
 \family typewriter
 GenoStruTrait
 \family default
@@ -1246,13 +1242,17 @@ population
 ()), member functions (e.g.
  
 \family typewriter
-population::vars()
+population.vars
 \family default
-) and parameter names start with small character and use capital character
+()) and parameter names start with small character and use capital character
  for the first character of each word afterward (e.g.
  
 \family typewriter
-population::subPopSize(), individual::setInfo
+population.subPopSize
+\family default
+(), 
+\family typewriter
+individual.setInfo
 \family default
 ()).
 \end_layout
@@ -8310,21 +8310,32 @@ initByFreq
 \family typewriter
 InitByFreq
 \family default
-) initialize individual genotype by allele frequency.
+) initialize individual genotype by 
+\series bold
+allelic spectrum
+\series default
+, which is the number and frequency of alleles at a locus.
  For example, 
 \family typewriter
 alleleFreq=(0, 0.2, 0.4, 0.2)
 \family default
  will yield allele 0, 1, 2, and 3 with probability 0, 0.2, 0.4 and 0.2 respectively.
- Parameter loci and ploidy can be used to specify a subset of loci and homologou
-s sets of chromosomes to initialize, and parameter 
+ Parameter 
+\family typewriter
+loci
+\family default
+ and 
+\family typewriter
+ploidy
+\family default
+ can be used to specify a subset of loci and homologous sets of chromosomes
+ to initialize, and parameter 
 \family typewriter
 subPops
 \family default
  can be used to specify subsets of individuals to initialize.
- In the latter case, a list of allele frequency distribution can be given
- to assign different genotype with different allele frequency for each (virtual)
- subpopulation.
+ In the latter case, a list of allelic spectra can be given to assign different
+ genotype with different allele frequency for each (virtual) subpopulation.
 \end_layout
 
 \begin_layout Standard
@@ -8340,11 +8351,74 @@ lstparams "caption={Initialize by allele frequency},label={initByFreq}"
 
 \begin_layout Standard
 It is sometimes desired to creates identical individuals with random genotype.
- 
+ Parameter 
+\family typewriter
+identicalInds
+\family default
+ can be used for this purpose.
+ When this parameter is set to true, a random individual will be created
+ for each subpopulation (using different allele frequencies if a list of
+ allelic spectra are given), and be copied to all other individuals in the
+ subpopulation.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "initByFreqIdenticalInds"
+
+\end_inset
+
+ demonstrates this usage.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/initByFreqIdenticalInds.log"
+lstparams "caption={Initialize by allele frequency},label={initByFreqIdenticalInds}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For convenience and for backward-compatibility, this operator by default
+ also initialize individual sex (parameters 
+\emph on
+maleFreq
+\emph default
+ and 
+\emph on
+sex
+\emph default
+ are accepted).
+ If this is not needed (e.g.
+ indiviudal sex has already been initialized), you can set paramter 
+\emph on
+initSex
+\emph default
+ to 
+\family typewriter
+False
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
 Initialize by haplotype
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+initByValue
+\family default
+ (and its function form 
+\family typewriter
+InitByValue
+\family default
+) initializes individual genotypes using given haplotypes.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -8356,6 +8430,23 @@ lstparams "caption={initialize by haplotype},label={initByValue}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+This operator also initialize individual sex by default.
+ Parameters 
+\emph on
+initSex
+\emph default
+, 
+\emph on
+maleFreq
+\emph default
+ and 
+\emph on
+sex
+\emph default
+ are provided to control this behavior.
 \end_layout
 
 \begin_layout Section
