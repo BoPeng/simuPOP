@@ -30,3 +30,12 @@ End
 ProvidesUrl 1
 #NoStyle LyX-Code
 NoStyle Right_Address
+
+Style Note
+	CopyStyle             Quote
+	LatexName             note
+	LabelType             Static
+	LabelSep              xx
+	Margin                First_Dynamic
+	LabelString           "Note:"
+End
