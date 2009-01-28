@@ -1234,7 +1234,7 @@ Before we dive into the details of simuPOP, it is helpful to know a few
 \end_layout
 
 \begin_layout Itemize
-All classes (objects, e.g.
+All classes (e.g.
  
 \family typewriter
 population
@@ -1341,11 +1341,11 @@ subPop
 subPops
 \family default
  accepts a list of subpopulations.
- Note that 
-\series bold
-plural form parameters usually accept single inputs
-\series default
-.
+\end_layout
+
+\end_deeper
+\begin_layout Note
+Plural form parameters usually accept single inputs.
  For example, 
 \family typewriter
 loci=1
@@ -1355,9 +1355,22 @@ loci=1
 loci=[1]
 \family default
 .
+ An exception to this convention is list of strings (e.g.
+ parameter 
+\family typewriter
+infoFields=['smoke']
+\family default
+) because a single string such as 
+\family typewriter
+infoFields='smoke'
+\family default
+ will be interpreted as 
+\family typewriter
+infoFields=['s', 'm', 'o', 'k', 'e']
+\family default
+.
 \end_layout
 
-\end_deeper
 \begin_layout Chapter
 Core simuPOP components
 \begin_inset CommandInset label
