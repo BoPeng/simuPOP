@@ -5821,9 +5821,9 @@ Arguments:
                     chrom2, ... etc.
     alleleNames:    A list of allele names for all markers. For
                     example, alleleNames=('A','C','T','G') names
-                    allele 0 -- 3'A', 'C', 'T', and 'G' respectively.
-                    Note that simuPOP does not yet support locus-
-                    specific allele names.
+                    allele 0 -- 3A, C, T, and G respectively. Note
+                    that simuPOP does not yet support locus-specific
+                    allele names.
     lociNames:      A list or a matrix (separated by chromosomes) of
                     names for each locus. Default to \"locX-Y\" where X
                     and Y are 1-based chromosome and locus indexes,

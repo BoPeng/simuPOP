@@ -447,8 +447,7 @@ class Doxy2SWIG:
             '["father_idx"@ "mother_idx"]')
         txt = txt.replace('vectorstr(POP_ParentsFields, POP_ParentsFields+2)',
             '["father_idx"@ "mother_idx"]')
-        txt = txt.replace('vectorstr(ASC_AS_Fields, ASC_AS_Fields+2)',
-            '["father_idx"@ "mother_idx"]')
+        txt = re.sub('vectorstr(1, ([^)]+))', '[\1]', txt)
         # re function used to replace the following sentances
         vec1 = re.compile('(.*)vectorstr\(1,\s*([\w"]+)\)(.*)')
         txt = vec1.sub(r'\1[\2]\3', txt)
