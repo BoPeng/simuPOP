@@ -530,7 +530,7 @@ class Doxy2SWIG:
             #    pass
 
 
-    def post_process(self, refFile):
+    def post_process(self):
         # remove duplicate entry
         # They might be introduced if a function is list both under 'file' and under 'namespace'
         # Add additional entries manually
@@ -668,27 +668,6 @@ class Doxy2SWIG:
                     print "File " + filename + " does not exist\n"
         #
         self.content.sort(lambda x, y: x['Name'] > y['Name'])
-        # list of classes and functions....
-        #
-        # self.module_classes = set([x['Name'] for x in self.content if x['type'] == 'module_class' \
-        #    and x['module'] == module and not x['ignore'] and not x['hidden']])
-        # self.modules = set([x['Name'] for x in self.content if x['type'].startswith('module') \
-        #    and not x['ignore'] and not x['hidden']])
-        global_funcs = set([x['Name'].replace('simuPOP::', '') for x in self.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
-                and 'test' not in x['Name']])
-        classes = set([x['Name'].replace('simuPOP::', '') for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']])
-        members = set([x['Name'].replace('simuPOP::', '').replace('::', '.') \
-                for x in self.content if x['type'].startswith('memberofclass_') and \
-                not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']])
-        # print 'MODULES', self.modules
-        # print 'MODULES_CLASSES', self.module_classes
-        self.auto_keywords =  {'func': global_funcs, 'class': classes, 'meth': members}
-        try:
-            lst = open(refFile, 'w')
-            print >> lst, 'auto_keywords = %s' % self.auto_keywords
-            lst.close()
-        except:
-            print 'Failed to write a list file for cross referencing purposes'
 
     def write_swig(self, out):
         for entry in self.content:
@@ -975,7 +954,13 @@ class Doxy2SWIG:
             [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
             # module functions
-            mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
+            #mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
+
+            print >> out, '\\newcommand{\\%sRef}{\\index{%s}' % (module, module)
+            doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
+            print >> out, self.latex_text(doc)
+            print >> out, '}\n'
+
             # module functions
             funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
@@ -983,7 +968,7 @@ class Doxy2SWIG:
             # print all functions
             #print >> out, '\\begin{description}'
             for mem in funcs:
-                print >> out, '\\newcommand{\\%s%sRef}{\index{%s!%s}' % (module, mem['Name'], module, mem['Name'])
+                print >> out, '\\newcommand{\\%s%sRef}{\\index{%s!%s}' % (module, mem['Name'], module, mem['Name'])
                 if mem.has_key('Usage') and mem['Usage'] != '':
                     func_name = mem['Usage'].split('(')[0]
                     func_body = mem['Usage'][len(func_name):].lstrip('(').rstrip(')')
@@ -1198,9 +1183,22 @@ class Doxy2SWIG:
             [x['module'] for x in self.content if x['type'].startswith('module') and not x['ignore'] and not x['hidden']])
         for module in modules:
             # module functions
-            mod = [x for x in self.content if x['type'] == 'docofmodule_' + module][0]
+            # MODULE DOC
+            refName = '%sRef.ref' % module
+            out = open(os.path.join(dir, refName), 'w')
+            #print >> out, ':mod:`%s`' % module
+            #print >> out, '='*(len(module)+7)
+            print >> out
+            print >> out, '.. module:: %s\n' % module
+            doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
+            print >> out, doc
+            out.close()
+            #
+            #
+            #
             # module functions
-            funcs = [x for x in self.content if x['type'] == 'module_func' and x['module'] == module and not x['ignore'] and not x['hidden']]
+            funcs = [x for x in self.content if x['type'] == 'module_func' \
+                and x['module'] == module and not x['ignore'] and not x['hidden']]
             # sort it
             funcs.sort(lambda x, y: cmp(x['Name'], y['Name']))
             # print all functions
@@ -1291,8 +1289,8 @@ class Doxy2SWIG:
                     #print >> out, r'{\emph{%s: }\MakeUppercase %s\par}' \
                     print >> out, '      %s\n         %s\n' % (arg['Name'], self.wrap_reST(arg['Description'], '', ' '*9))
             if cons.has_key('note') and cons['note'] != '':
-                print >> out, '   **Note**:'
-                print >> out, '%s' % self.wrap_reST(cons['note'])
+                print >> out, '      .. note::\n'
+                print >> out, '%s' % self.wrap_reST(cons['note'], ' '*9, ' '*9)
             #
             members = [x for x in self.content if x['type'] == 'memberofclass_' + entry['Name'] and \
                        not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']]
@@ -1435,7 +1433,7 @@ if __name__ == '__main__':
     # generate interface file.
     p.generate()
     # clean up, and process CPPONLY etc
-    p.post_process(refFile)
+    p.post_process()
     # write interface file to output interface file.
     print 'Writing SWIG interface file to', interface_file
     p.write(interface_file, type='swig')
@@ -1450,6 +1448,33 @@ if __name__ == '__main__':
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     p.uniqueName = []
+    #
+    # list of classes and functions....
+    #
+    module_classes = set(['%s.%s' % (x['module'], x['Name']) for x in p.content if x['type'] == 'module_class' \
+        and not x['ignore'] and not x['hidden']])
+    module_funcs = set([('%s.%s') % (x['module'], x['Name']) for x in p.content if x['type'] == 'module_func' \
+        and not x['ignore'] and not x['hidden']])
+    simuPOP_classes = set([x.lstrip('simuPOP.') for x in module_classes if x.startswith('simuPOP.')])
+    simuPOP_funcs = set([x.lstrip('simuPOP.') for x in module_funcs if x.startswith('simuPOP.')])
+    modules = set([x['Name'] for x in p.content if x['type'].startswith('docofmodule_')])
+    global_funcs = set([x['Name'].replace('simuPOP::', '') for x in p.content if x['type'] == 'global_function' and not x['ignore'] and not x['hidden'] \
+            and 'test' not in x['Name']])
+    classes = set([x['Name'].replace('simuPOP::', '') for x in p.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']])
+    members = set([x['Name'].replace('simuPOP::', '').replace('::', '.') \
+            for x in p.content if x['type'].startswith('memberofclass_') and \
+            not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']])
+    p.auto_keywords =  {'func': global_funcs | module_funcs | simuPOP_funcs,
+        'class': classes | module_classes | simuPOP_classes,
+        'meth': members,
+        'mod': modules}
+    try:
+        lst = open(refFile, 'w')
+        print >> lst, 'auto_keywords = %s' % p.auto_keywords
+        lst.close()
+    except:
+        print 'Failed to write a list file for cross referencing purposes'
+    #
     builddir = os.path.join(src_path, 'doc', 'build')
     if not os.path.isdir(builddir):
         os.mkdir(builddir)

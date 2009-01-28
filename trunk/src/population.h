@@ -154,8 +154,7 @@ public:
 	 *    \c chrom2, ... etc.
 	 *  \param alleleNames A list of allele names for all markers. For example,
 	 *    <tt>alleleNames=('A','C','T','G')</tt> names allele \c 0 --
-	 *    \c 3 \c A, \c C, \c T, and \c G respectively. Note that
-	 *    simuPOP does not yet support locus-specific allele names.
+	 *    \c 3 \c A, \c C, \c T, and \c G respectively. 
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
 	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
 	 *    chromosome and locus indexes, respectively. Loci names will be
@@ -164,6 +163,8 @@ public:
 	 *    will have name \c '' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
+	 *
+	 *  \note simuPOP does not yet support locus-specific allele names.
 	 */
 	population(const vectorlu & size = vectorlu(),
 		float ploidy = 2,

@@ -575,122 +575,6 @@ simuPOPmendelianOffspringGeneratorRef
 
 \end_layout
 
-\begin_layout Section
-Pre-defined offspring generators and mating schemes
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcloneOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmendelianOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPhaplodiploidOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPselfingOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcloneMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPrandomSelectionRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPrandomMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmonogamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPpolygamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPalphaMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPhaplodiploidMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPselfMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPconsanguineousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcontrolledRandomMatingRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Chapter
 Operator References (under revision)
 \end_layout
@@ -1527,19 +1411,252 @@ Module
 simuPOP
 \end_layout
 
+\begin_layout Subsection
+Function form of operators
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
-simuPOPFuncRef
+simuPOPRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPDumpRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitSexRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitByFreqRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitByValueRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyExecRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMigrateRef
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Subsection
+Offspring generators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcloneOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmendelianOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfingOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mating schemes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPcloneMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPrandomSelectionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPrandomMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPmonogamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPpolygamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPalphaMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPhaplodiploidMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPselfMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPconsanguineousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPcontrolledRandomMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Ascertainment operators
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPrandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPRandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPcaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPCaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPaffectedSibpairSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+simuPOPAffectedSibpairSampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 
 \end_layout
 
@@ -1555,9 +1672,142 @@ status open
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
-simuOptFuncRef
+simuOptRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptprintConfigRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueNotRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueOrRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueAndRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueOneOfRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueTrueFalseRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueBetweenRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueGTRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueGERef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueLTRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueLERef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueEqualRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueNotEqualRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueIsNumRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueIsListRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueValidDirRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptvalueValidFileRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptsetOptionsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptrequireRevisionRef
 \end_layout
 
 \end_inset
@@ -1577,44 +1827,20 @@ status open
 
 \begin_layout Plain Layout
 
-%
+
 \backslash
-simuUtilrandomSampleRef
+simuUtilRef
 \end_layout
 
 \begin_layout Plain Layout
 
-%
-\backslash
-simuUtilcaseControlSampleRef
-\end_layout
 
-\begin_layout Plain Layout
-
-%
-\backslash
-simuUtilaffectedSibpairSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\backslash
-simuUtilpySubsetRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
 \backslash
 simuUtilsimuProgressRef
 \end_layout
 
 \begin_layout Plain Layout
 
-%
-\backslash
-simuUtilFuncRef
 \end_layout
 
 \end_inset
@@ -1631,6 +1857,13 @@ simuRPy
 \begin_layout Standard
 \begin_inset ERT
 status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyRef
+\end_layout
 
 \begin_layout Plain Layout
 
