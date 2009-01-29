@@ -37,12 +37,6 @@ from converter.util import umlaut, empty, text
 from converter.latexparser import ParserError
 
 class MyDocParser(DocParser):
-    #def handle_ifhtml1(self):
-    #    txt = ''
-    #    while not txt.endswith('\\fi'):
-    #        nextl, nextt, nextv, nextr = self.tokens.pop()
-    #        txt += nextr
-    #    return EmptyNode()
 
     def __init__(self, *args, **kwargs):
         DocParser.__init__(self, *args, **kwargs)
@@ -56,7 +50,6 @@ class MyDocParser(DocParser):
             self.rootnode.params[mdname] = data[0]
             return EmptyNode()
         return handler
-
 
     handle_color = mk_metadata_handler(None, 'color', None, 'M')
     handle_lstset = mk_metadata_handler(None, 'lstset')
@@ -152,6 +145,10 @@ class MyRestWriter(RestWriter):
 
     def visit_InlineNode(self, node):
         cmdname = node.cmdname
+        if not node.args:
+            self.curpar.append(self.simplecmd_mapping[cmdname])
+            return
+        content = node.args[0]
         if cmdname == 'include':
             file = node.args
             for dir in ['.', self.dirname, 'build']:
@@ -162,8 +159,41 @@ class MyRestWriter(RestWriter):
                         self.write(txt)
                         return
             print 'Warning: Failed to find included file for filename "%s".' % file
-        else:
-            RestWriter.visit_InlineNode(self, node)
+            return
+        elif cmdname == 'ref':
+            ref_text = text(node.args[0]).lower().replace(':', '-')
+            if ref_text.startswith('cha-'):
+                self.curpar.append(':ref:`%s%s`' % (self.labelprefix, ref_text))
+            else:
+                self.curpar.append('`%s%s`_' % (self.labelprefix, ref_text))
+            return
+        sym = ''
+        if cmdname in ('code', 'bfcode', 'samp', 'texttt', 'regexp'):
+            sym = '``'
+        elif cmdname in ('strong', 'textbf'):
+            sym = '**'
+        if sym != '':
+            cnt = self.get_textonly_node(content, 'code', warn=1)
+            done = False
+            if isinstance(cnt, TextNode):
+                for keyword in self.auto_keywords.keys():
+                    txt = text(cnt).split('(')[0]
+                    leftover = text(cnt)[len(txt):]
+                    if txt in self.auto_keywords[keyword]:
+                        self.curpar.append(':%s:`%s`' % (keyword, txt))
+                        if leftover != '':
+                            if leftover.startswith('()'):
+                                # sphinx ignores them!!
+                                self.curpar.append("()")
+                                if len(leftover) > 2:
+                                    self.curpar.append("%s%s%s" % (sym, leftover[2:], sym))
+                            elif leftover.startswith('(') and leftover.endswith(')'):
+                                self.curpar.append("(%s%s%s)" % (sym, leftover[1:-1], sym))
+                            else:
+                                self.curpar.append("%s%s%s" % (sym, leftover, sym))
+                        return
+        # the regular emph/strong case and other stuff
+        RestWriter.visit_InlineNode(self, node)
 
     def visit_CommandNode(self, node):
         cmdname = node.cmdname
