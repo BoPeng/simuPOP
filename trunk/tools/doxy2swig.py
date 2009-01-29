@@ -1188,8 +1188,9 @@ class Doxy2SWIG:
             out = open(os.path.join(dir, refName), 'w')
             #print >> out, ':mod:`%s`' % module
             #print >> out, '='*(len(module)+7)
-            print >> out
-            print >> out, '.. module:: %s\n' % module
+            if module != 'simuPOP':
+                print >> out
+                print >> out, '.. module:: %s\n' % module
             doc = [x['Doc'] for x in self.content if x['type'] == 'docofmodule_' + module][0]
             print >> out, doc
             out.close()

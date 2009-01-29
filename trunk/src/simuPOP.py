@@ -112,28 +112,20 @@ baseOperator.__deepcopy__ = deepcopy
 #
 # functions to corresponding operators
 def Dump(pop, *args, **kwargs):
+    'Apply operator ``dumper`` to population *pop*.'
     dumper(*args, **kwargs).apply(pop)
 
-if dumper.__init__.__doc__ is not None:
-    Dump.__doc__ = "Function version of operator dump whose __init__ function is \n" + dumper.__init__.__doc__
-
 def InitSex(pop, *args, **kwargs):
+    'Apply operator ``initSex`` to population *pop*.'
     initSex(*args, **kwargs).apply(pop)
 
-if initSex.__init__.__doc__ is not None:
-    InitSex.__doc__ = "Function version of operator initSex whose __init__ function is \n" + initSex.__init__.__doc__
-
 def InitByFreq(pop, *args, **kwargs):
+    'Apply operator ``initByFreq`` to population *pop*.'
     initByFreq(*args, **kwargs).apply(pop)
 
-if initByFreq.__init__.__doc__ is not None:
-    InitByFreq.__doc__ = "Function version of operator initByFreq whose __init__ function is \n" + initByFreq.__init__.__doc__
-
 def InitByValue(pop, *args, **kwargs):
+    'Apply operator ``initByValue`` to population *pop*.'
     initByValue(*args, **kwargs).apply(pop)
-
-if initByValue.__init__.__doc__ is not None:
-    InitByValue.__doc__ = "Function version of operator initByValue whose __init__ function is \n" + initByValue.__init__.__doc__
 
 def PyEval(pop, *args, **kwargs):
     pyEval(*args, **kwargs).apply(pop)
