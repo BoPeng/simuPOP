@@ -114,22 +114,20 @@ public:
 	 *  default to standard terminal output). Because a population can be large,
 	 *  this operator will only output the first 100 (parameter \e max)
 	 *  individuals of the present generation (parameter \e ancGen). All loci
-	 *  will be outputed unless parameter \e chrom or \e loci are used to
-	 *  specify a subset of chromosomes or loci. If a list of (virtual)
-	 *  subpopulations are specified, this operator will only output
-	 *  individuals in these outputs. Please refer to class \c baseOperator for
-	 *  a detailed explanation for common parameters such as \e output and
-	 *  \e stage.
+	 *  will be outputed unless parameter \e loci are used to specify a subset
+	 *  of loci. If a list of (virtual) subpopulations are specified, this
+	 *  operator will only output individuals in these outputs. Please refer to
+	 *  class \c baseOperator for a detailed explanation for common parameters
+	 *  such as \e output and \e stage.
 	 */
 	dumper(bool genotype = true, bool structure = true, int ancGen = 0,
-		int width = 1, UINT max = 100, const vectori & chrom = vectori(),
-		const vectori & loci = vectori(), string output = ">",
+		int width = 1, UINT max = 100, const uintList & loci = uintList(), string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
-		m_chrom(chrom), m_loci(loci), m_max(max)
+		m_loci(loci.elems()), m_max(max)
 	{
 	}
 
@@ -175,10 +173,7 @@ private:
 	int m_width;
 
 	///
-	vectori m_chrom;
-
-	///
-	vectori m_loci;
+	vectorlu m_loci;
 
 	/// only output first ... individuals. Good for large population
 	UINT m_max;

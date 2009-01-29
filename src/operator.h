@@ -590,16 +590,14 @@ private:
 	string m_popName;
 };
 
-/// none operator
-/**
-   This operator does nothing.
- */
+/** This operator does nothing when it is applied to a population. It is
+  * usually used as a placeholder when an operator is needed syntactically.
+  */
 class noneOp : public baseOperator
 {
 
 public:
-	/// create a none operator
-	/**
+	/** Create a \c noneOp.
 	 */
 	noneOp(string output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),

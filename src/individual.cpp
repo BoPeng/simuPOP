@@ -177,7 +177,7 @@ string individual::__repr__()
 		width = 1;
 	else
 		width = 3;
-	display(os, width, vectori(), vectori());
+	display(os, width, vectorlu());
 	const string & str = os.str();
 	if (str.size() < 100)
 		return str;
@@ -186,29 +186,22 @@ string individual::__repr__()
 }
 
 
-void individual::display(ostream & out, int width, const vectori & chrom, const vectori & loci)
+void individual::display(ostream & out, int width, const vectorlu & loci)
 {
 	out << sexChar() << affectedChar() << " ";
 	UINT pEnd = ploidy();
 	for (UINT p = 0; p < pEnd;  ++p) {
-		if (chrom.empty() && loci.empty()) {
+		if (loci.empty()) {
 			for (UINT ch = 0, chEnd = numChrom(); ch < chEnd; ++ch) {
 				for (UINT j = 0, jEnd = numLoci(ch); j < jEnd;  ++j)
 					out << setw(width) << alleleChar(j, p, ch);
 				out << " ";
 			}
-		} else if (!chrom.empty() && loci.empty()) {
-			for (vectori::const_iterator ch = chrom.begin(); ch != chrom.end(); ++ch) {
-				for (UINT j = 0, jEnd = numLoci(*ch); j < jEnd;  ++j)
-					out << setw(width) << alleleChar(j, p, *ch);
-				out << " ";
-			}
-		} else if (chrom.empty() && !loci.empty()) {
-			for (vectori::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
+		} else {
+			for (vectorlu::const_iterator loc = loci.begin(); loc != loci.end(); ++loc)
 				out << setw(width) << alleleChar(*loc, p);
 			out << " ";
-		} else  // both specified
-			throw ValueError("Please specify only one of chrom and loci.");
+		}
 
 		if (p != pEnd - 1)
 			out << "| ";

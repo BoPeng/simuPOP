@@ -94,7 +94,7 @@ UINT dumper::displayGenotype(const population & pop, const subPopList & subPops,
 
 		for ( ; ind != indEnd; ++ind, ++count) {
 			out << setw(4) << (& * ind - & * pop.rawIndBegin()) << ": ";
-			ind->display(out, m_width, m_chrom, m_loci);
+			ind->display(out, m_width, m_loci);
 			out << endl;
 			if (m_max > 0 && count + 1 >= m_max && count < pop.popSize())
 				return count;
@@ -124,7 +124,7 @@ bool dumper::apply(population & pop)
 
 		int ancGen = m_ancGen;
 		// ancGen can be -1
-		if (ancGen > static_cast<int>(pop.ancestralGens()))
+		if (ancGen < 0 || ancGen > static_cast<int>(pop.ancestralGens()))
 			ancGen = pop.ancestralGens();
 		for (int gen = 1; gen <= ancGen; ++gen) {
 			pop.useAncestralGen(gen);

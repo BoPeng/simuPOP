@@ -1336,6 +1336,34 @@ InitByValue(pop, [1]*5 + [2]*7 + [3]*5 +[4]*7)
 Dump(pop, structure=False)
 #end
 
+#file log/initByValueProp.log
+pop = population(size=[6, 8], loci=[5, 7])
+pop.setVirtualSplitter(sexSplitter())
+# initialize sex and the first two loci
+InitByValue(pop, loci=range(5), value=range(10))
+# initialize all males
+InitByValue(pop, loci=range(5, 12), value=[2]*7,
+    subPops=[(0, 0), (1, 0)], initSex=False)
+# initialize females by proportion
+InitByValue(pop, loci=range(5, 12), ploidy=1, value=[[3]*7, [4]*7],
+    initSex=False, subPops=[(0, 1), (1, 1)], proportions=[0.4, 0.6])
+Dump(pop, structure=False)
+#end
+
+#file log/dumper.log
+pop = population(size=[10, 10], loci=[20, 30], infoFields=['gen'],
+    ancGen=-1)
+pop.setVirtualSplitter(sexSplitter())
+pop1 = pop.clone()
+InitByFreq(pop, [0]*20 + [0.1]*10)
+pop.setIndInfo(1, 'gen')
+InitByFreq(pop1, [0]*50 + [0.1]*10)
+pop1.setIndInfo(2, 'gen')
+pop.push(pop1)
+Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
+    max=10, structure=False, ancGen=-1)
+
+#end
 
 #file log/pyEval.log
 simu = simulator(population(100, loci=[1]),
