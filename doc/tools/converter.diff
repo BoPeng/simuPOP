@@ -366,16 +366,17 @@ Index: restwriter.py
          elif envname in ('seealso', 'seealso*'):
              self.write_directive('seealso', '', node.content, spabove=True)
          elif envname == 'abstract':
-@@ -569,7 +571,7 @@
+@@ -569,7 +571,8 @@
      def visit_CommandNode(self, node):
          cmdname = node.cmdname
          if cmdname == 'label':
 -            labelname = self.labelprefix + text(node.args[0]).lower()
++            # latex users frequently use labels such as 'fig:blah', 'cha:blah' ...
 +            labelname = self.labelprefix + text(node.args[0]).lower().replace(':', '-')
              if self.no_flushing:
                  # in section
                  self.sectionlabel = labelname
-@@ -577,7 +579,46 @@
+@@ -577,7 +580,46 @@
                  self.flush_par()
                  self.write('.. _%s:\n' % labelname)
              return
@@ -423,76 +424,12 @@ Index: restwriter.py
          elif cmdname in ('declaremodule', 'modulesynopsis',
                         'moduleauthor', 'sectionauthor', 'platform'):
              self.flush_par(nocb=True, nocomments=True)
-@@ -889,14 +930,54 @@
-             return
-         content = node.args[0]
-         if cmdname in ('code', 'bfcode', 'samp', 'texttt', 'regexp'):
--            self.visit_wrapped('``', self.get_textonly_node(content, 'code',
--                                                            warn=1), '``', noescape=True)
-+            node = self.get_textonly_node(content, 'code', warn=1)
-+            done = False
-+            if isinstance(node, TextNode):
-+                for keyword in self.auto_keywords.keys():
-+                    txt = text(node).split('(')[0]
-+                    leftover = text(node)[len(txt):]
-+                    if txt in self.auto_keywords[keyword]:
-+                        self.curpar.append(':%s:`%s`' % (keyword, txt))
-+                        if leftover != '':
-+                            if leftover.startswith('()'):
-+                                # sphinx ignores them!!
-+                                self.curpar.append("()")
-+                                if len(leftover) > 2:
-+                                    self.curpar.append("``%s``" % leftover[2:])
-+                            elif leftover.startswith('(') and leftover.endswith(')'):
-+                                self.curpar.append("(``%s``)" % leftover[1:-1])
-+                            else:
-+                                self.curpar.append("``%s``" % leftover)
-+                        done = True
-+                        break
-+            if not done:
-+                self.visit_wrapped('``', node, '``', noescape=True)
-         elif cmdname in ('emph', 'textit', 'var'):
-             self.visit_wrapped('*', self.get_textonly_node(content, 'emph',
-                                                            warn=1), '*')
-         elif cmdname in ('strong', 'textbf'):
--            self.visit_wrapped('**', self.get_textonly_node(content, 'strong',
--                                                            warn=1), '**')
-+            node = self.get_textonly_node(content, 'strong', warn=1)
-+            done = False
-+            if isinstance(node, TextNode):
-+                for keyword in self.auto_keywords.keys():
-+                    txt = text(node).split('(')[0]
-+                    leftover = text(node)[len(txt):]
-+                    if txt in self.auto_keywords[keyword]:
-+                        self.curpar.append(':%s:`%s`' % (keyword, txt))
-+                        if leftover != '':
-+                            if leftover.startswith('()'):
-+                                # sphinx ignores them!!
-+                                self.curpar.append("()")
-+                                if len(leftover) > 2:
-+                                    self.curpar.append("``%s``" % leftover[2:])
-+                            elif leftover.startswith('(') and leftover.endswith(')'):
-+                                self.curpar.append("(``%s``)" % leftover[1:-1])
-+                            else:
-+                                self.curpar.append("``%s``" % leftover)
-+                        done = True
-+                        break
-+            if not done:
-+                self.visit_wrapped('**', node, '**')
-         elif cmdname in ('b', 'textrm', 'email'):
-             self.visit_node(content)
-         elif cmdname == 'token':
-@@ -904,8 +985,11 @@
-             self.visit_wrapped('`', self.get_textonly_node(content, 'var',
+@@ -905,7 +947,7 @@
                                                             warn=1), '`')
          elif cmdname == 'ref':
--            self.curpar.append(':ref:`%s%s`' % (self.labelprefix,
+             self.curpar.append(':ref:`%s%s`' % (self.labelprefix,
 -                                                text(node.args[0]).lower()))
-+            ref_text = text(node.args[0]).lower().replace(':', '-')
-+            if ref_text.startswith('cha-'):
-+                self.curpar.append(':ref:`%s%s`' % (self.labelprefix, ref_text))
-+            else:
-+                self.curpar.append('`%s%s`_' % (self.labelprefix, ref_text))
++                                                text(node.args[0]).lower().replace(':', '-')))
          elif cmdname == 'refmodule':
              self.visit_wrapped(':mod:`', node.args[1], '`', noescape=True)
          elif cmdname == 'optional':
