@@ -1076,14 +1076,14 @@ public:
 	 *  <tt>popSize()</tt>.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const vectorinfo & values, UINT idx);
+	void setIndInfo(const floatList & values, UINT idx);
 
 	/** Set information field \c name of the current population to \e values.
 	 *  \e values will be reused if its length is smaller than
 	 *  <tt>popSize()</tt>.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const vectorinfo & values, const string & name)
+	void setIndInfo(const floatList & values, const string & name)
 	{
 		setIndInfo(values, infoIdx(name));
 	}
@@ -1095,7 +1095,7 @@ public:
 	 *  its length is smaller than <tt>subPopSize(subPop)</tt>.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const vectorinfo & values, UINT idx, vspID subPop);
+	void setIndInfo(const floatList & values, UINT idx, vspID subPop);
 
 	/** Set information field \c name of a subpopulation (<tt>subPop=sp</tt>) or
 	 *  a virtual subpopulation (<tt>subPop=[sp, vsp]</tt>) to \e values.
@@ -1103,7 +1103,7 @@ public:
 	 *  <tt>subPopSize(subPop)</tt>.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const vectorinfo & values, const string & name, vspID subPop)
+	void setIndInfo(const floatList & values, const string & name, vspID subPop)
 	{
 		setIndInfo(values, infoIdx(name), subPop);
 	}

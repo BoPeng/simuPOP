@@ -712,9 +712,6 @@ status open
 
 \begin_layout Plain Layout
 
-
-\backslash
-dumperRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1205,7 +1202,14 @@ status open
 
 
 \backslash
-ifElseRef
+noneOpRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+dumperRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1213,6 +1217,27 @@ ifElseRef
 
 \backslash
 savePopulationRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+setAncestralDepthRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ifElseRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+pauseRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1233,28 +1258,7 @@ turnOffDebugRef
 
 
 \backslash
-noneOpRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-pauseRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 ticTocRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-setAncestralDepthRef
 \end_layout
 
 \end_inset
@@ -1263,7 +1267,7 @@ setAncestralDepthRef
 \end_layout
 
 \begin_layout Chapter
-Global and Python Utility functions (under revision)
+Python Modules (under revision)
 \end_layout
 
 \begin_layout Section

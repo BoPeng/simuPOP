@@ -8248,7 +8248,11 @@ simuPOP provides three operators to initialize individual sex and genotype.
 \end_layout
 
 \begin_layout Subsection
-Initialize individual sex
+Initialize individual sex (operator 
+\family typewriter
+initSex
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -8310,7 +8314,11 @@ lstparams "caption={Initialize individual sex},label={initSex}"
 \end_layout
 
 \begin_layout Subsection
-Initialize by allele frequency
+Initialize by allele frequency (operator 
+\family typewriter
+initByFreq
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -8417,7 +8425,11 @@ False
 \end_layout
 
 \begin_layout Subsection
-Initialize by haplotype
+Initialize by haplotype (operator 
+\family typewriter
+initByValue
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -8427,7 +8439,7 @@ initByValue
 \family default
  (and its function form 
 \family typewriter
-simuPOP.InitByValue
+InitByValue
 \family default
 ) initializes individual genotypes using given haplotypes.
  The simplest form of this operator is to specify genotype on one or all
@@ -8470,32 +8482,35 @@ subPops
 ploidy
 \family default
 ).
- The most useful parameter is 
+ If multiple haplotypes are given, you can specify the probabilities at
+ which each haplotype will be used using parameter 
 \family typewriter
 proportions
 \family default
-, which assigns multiple values specified in parameter 
-\family typewriter
-value
-\family default
- randomly according to
-\end_layout
+.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "initByValueProp"
 
-\begin_layout Standard
-s This operator also initialize individual sex by default.
- Parameters 
+\end_inset
+
+ demonstrates the use of these parameters.
+ Note that operator 
+\family typewriter
+initByValue
+\family default
+ also initializes individual sex so 
+\family typewriter
 \emph on
 initSex
+\family default
 \emph default
-, 
-\emph on
-maleFreq
-\emph default
- and 
-\emph on
-sex
-\emph default
- are provided to control this behavior.
+ should be set to 
+\family typewriter
+False
+\family default
+ when multiple initializers are applied.
 \end_layout
 
 \begin_layout Standard
@@ -8507,6 +8522,248 @@ lstparams "caption={initialize by haplotypes with given proportion},label={initB
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Miscellaneous operators
+\end_layout
+
+\begin_layout Subsection
+An operator that does nothing (operator 
+\family typewriter
+noneOp
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+noneOp
+\family default
+ does nothing when it is applied to a population.
+ It provides a placeholder when an operator is needed but no action is required.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "noneOp"
+
+\end_inset
+
+ demonstrates a typical usage of this operator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "noneOp"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if hasSelection:
+\end_layout
+
+\begin_layout Plain Layout
+
+    sel = mapSelector(loci=[0], fitness=[1, 0.99, 0.98])
+\end_layout
+
+\begin_layout Plain Layout
+
+else:
+\end_layout
+
+\begin_layout Plain Layout
+
+    sel = noneOp()
+\end_layout
+
+\begin_layout Plain Layout
+
+#
+\end_layout
+
+\begin_layout Plain Layout
+
+simu.evolve(
+\end_layout
+
+\begin_layout Plain Layout
+
+    ops = [sel], # and other operators
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Dump the content of a population (operator 
+\family typewriter
+dumper
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+dumper
+\family default
+ and its function form 
+\family typewriter
+Dump
+\family default
+ has been used extensively in this guide.
+ They are prefect for demonstration and debugging purposes because they
+ display all properties of a population in a human readable format.
+ This operator is rarely used in realistic settings because outputting a
+ large population to your terminal can be disastrous.
+\end_layout
+
+\begin_layout Standard
+Even with modestly-sized populations, it is a good idea to dump only parts
+ of the population that you are interested.
+ For example, you can use parameter 
+\family typewriter
+genotype=False
+\family default
+ to stop outputting individual genotype, 
+\family typewriter
+structure=False
+\family default
+ to stop outtputing genotypic and population structure information, 
+\family typewriter
+loci=range(5)
+\family default
+ to output genotype only at the first five loci, 
+\family typewriter
+max=N
+\family default
+ to output only the first 
+\family typewriter
+N
+\family default
+ individuals (default to 
+\family typewriter
+100
+\family default
+), 
+\family typewriter
+subPops=[(0, 0)]
+\family default
+ to output, for example, only the first virtual subpopulation in subpopulation
+ 0.
+ This operator by default only dump the present generation but you can set
+ 
+\family typewriter
+ancGen
+\family default
+ to a positive number or 
+\family typewriter
+-1
+\family default
+ to dump part or all ancestral generations.
+ Finally, if there are more than 10 alleles, you can set the 
+\family typewriter
+width
+\family default
+ at which each allele will be printed.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "dumper"
+
+\end_inset
+
+ presents a rather complicated usage of this operator.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/dumper.log"
+lstparams "caption={Dump the content of a population},label={dumper}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Save a population during evolution (operator 
+\family typewriter
+savePopulation
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Change ancestral depth of populations (operator 
+\family typewriter
+setAncestralDepth
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Conditional operator (operator ifElse)
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ifElse.log"
+lstparams "caption={A conditional opeartor},label={ifElse}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Pause and resume an evolutionary process (operator 
+\family typewriter
+pause
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Turn on and off debugging mode (operator 
+\family typewriter
+turnOnDebug
+\family default
+ and 
+\family typewriter
+turnOffDebug
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Measuring execution time of operators (operator 
+\family typewriter
+ticToc
+\family default
+)
 \end_layout
 
 \begin_layout Section
@@ -8533,6 +8790,10 @@ name "sec:splitAndMerge"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Migration
 \end_layout
 
 \begin_layout Subsection
@@ -9477,29 +9738,6 @@ Hybrid penetrance model
 LatexCommand lstinputlisting
 filename "log/pyPenetrance.log"
 lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Misc operators
-\end_layout
-
-\begin_layout Subsection
-Pause
-\end_layout
-
-\begin_layout Subsection
-conditional operator
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/ifElse.log"
-lstparams "caption={A conditional opeartor},label={ifElse}"
 
 \end_inset
 

@@ -366,50 +366,6 @@ if population.extract.__doc__ is not None:
 population.extract = new_extract
 
 
-def new_dumper(self, genotype=True, structure=True, ancGen=0,
-        width=1, max=100, chrom=[], *args, **kwargs):
-    # param chrom
-    if type(chrom) == types.IntType:
-        ch = [chrom]
-    else:
-        ch = chrom
-    cppModule.dumper_swiginit(self,
-        cppModule.new_dumper(genotype, structure, ancGen, width, max,
-            ch, *args, **kwargs))
-
-new_dumper.__doc__ = dumper.__init__.__doc__
-del dumper.__init__
-dumper.__init__ = new_dumper
-
-
-# def new_controlledRandomMating(self, freqFunc, locus=-1, loci=[],
-#     allele=-1, alleles=[], *args, **kwargs):
-#     # parameter locus
-#     if locus != -1 and type(locus) in [types.IntType, types.LongType]:
-#         loc = [locus]
-#     elif type(loci) in [types.IntType, types.LongType]:
-#         loc = [loci]
-#     elif type(loci) in [types.TupleType, types.ListType] and len(loci)>0:
-#         loc = loci
-#     else:
-#         raise exceptions.TypeError('Please specify locus or loci')
-#     if allele != -1 and type(allele) in [types.IntType, types.LongType]:
-#         al = [allele]
-#     elif type(alleles) in [types.IntType, types.LongType]:
-#         al = [alleles]
-#     elif type(alleles) in [types.TupleType, types.ListType] and len(alleles)>0:
-#         al = alleles
-#     else:
-#         raise exceptions.TypeError('Please specify allele or alleles')
-#     cppModule.controlledRandomMating_swiginit(self,
-#         cppModule.new_controlledRandomMating( loci=loc, alleles=al,
-#         freqFunc=freqFunc, *args, **kwargs))
-# 
-# new_controlledRandomMating.__doc__ = controlledRandomMating.__init__.__doc__
-# del controlledRandomMating.__init__
-# controlledRandomMating.__init__ = new_controlledRandomMating
-
-
 def mutator_setRate(self, rate, loci=[], atLoci=[], *args, **kwargs):
     # rate -> [rate] if needed
     if type(rate)    in [types.IntType, types.FloatType]:

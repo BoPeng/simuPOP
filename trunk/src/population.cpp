@@ -1724,12 +1724,13 @@ void population::updateInfoFieldsFrom(const vectorstr & fields, const population
 }
 
 
-void population::setIndInfo(const vectorinfo & values, UINT idx)
+void population::setIndInfo(const floatList & valueList, UINT idx)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	CHECKRANGEINFO(idx);
+    const vectorf & values = valueList.elems();
 	size_t valueSize = values.size();
 	IndInfoIterator ptr = infoBegin(idx);
 	for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
@@ -1737,12 +1738,13 @@ void population::setIndInfo(const vectorinfo & values, UINT idx)
 }
 
 
-void population::setIndInfo(const vectorinfo & values, UINT idx, vspID subPop)
+void population::setIndInfo(const floatList & valueList, UINT idx, vspID subPop)
 {
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	CHECKRANGEINFO(idx);
+    const vectorf & values = valueList.elems();
 	size_t valueSize = values.size();
 	IndInfoIterator ptr = infoBegin(idx, subPop);
 	for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)

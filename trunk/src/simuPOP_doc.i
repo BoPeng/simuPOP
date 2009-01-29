@@ -810,9 +810,8 @@ Details:
 Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
-      max=100, chrom=[], loci=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      max=100, loci=[], output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -821,12 +820,11 @@ Details:
     to standard terminal output). Because a population can be large,
     this operator will only output the first 100 (parameter max)
     individuals of the present generation (parameter ancGen). All loci
-    will be outputed unless parameter chrom or loci are used to
-    specify a subset of chromosomes or loci. If a list of (virtual)
-    subpopulations are specified, this operator will only output
-    individuals in these outputs. Please refer to class baseOperator
-    for a detailed explanation for common parameters such as output
-    and stage.
+    will be outputed unless parameter loci are used to specify a
+    subset of loci. If a list of (virtual) subpopulations are
+    specified, this operator will only output individuals in these
+    outputs. Please refer to class baseOperator for a detailed
+    explanation for common parameters such as output and stage.
 
 "; 
 
@@ -2546,7 +2544,7 @@ Usage:
 
 %ignore simuPOP::individual::swap(individual &ind, bool swapContent=true);
 
-%ignore simuPOP::individual::display(ostream &out, int width=1, const vectori &chrom=vectori(), const vectori &loci=vectori());
+%ignore simuPOP::individual::display(ostream &out, int width=1, const vectorlu &loci=vectorlu());
 
 %feature("docstring") simuPOP::IndividualIterator "
 
@@ -4784,26 +4782,24 @@ Usage:
 
 %feature("docstring") simuPOP::noneOp "
 
-Description:
-
-    none operator
-
 Details:
 
-    This operator does nothing.
+    This operator does nothing when it is applied to a population. It
+    is usually used as a placeholder when an operator is needed
+    syntactically.
 
 "; 
 
 %feature("docstring") simuPOP::noneOp::noneOp "
 
-Description:
-
-    create a none operator
-
 Usage:
 
     noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
       at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    Create a noneOp.
 
 "; 
 

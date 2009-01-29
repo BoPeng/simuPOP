@@ -44,6 +44,8 @@ from docutils.writers.latex2e import LaTeXTranslator
 overrides = {'input_encoding': 'ascii',
              'output_encoding': 'latin-1'}
 
+import pprint
+
 # customized latex output
 class myLaTeXTranslator(LaTeXTranslator):
     def visit_definition_list(self, node):
@@ -1156,7 +1158,14 @@ class Doxy2SWIG:
         return ('\n'.join(txt)).strip('\n')
 
     def shiftText(self, txt, shift='   '):
-        return '\n'.join([shift + x for x in txt.split('\n')])
+        # highlight stuff
+        text = txt
+        for keyword in self.auto_keywords.keys():
+            for tag in ['``', '**']:
+                for cls in self.auto_keywords[keyword]:
+                    text = text.replace('%s%s%s' % (tag, cls, tag),
+                        ':%s:`%s`' % (keyword, cls))
+        return '\n'.join([shift + x for x in text.split('\n')])
 
     def write_reST(self, dir):
         # first handle glocal functions
@@ -1465,13 +1474,14 @@ if __name__ == '__main__':
     members = set([x['Name'].replace('simuPOP::', '').replace('::', '.') \
             for x in p.content if x['type'].startswith('memberofclass_') and \
             not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']])
-    p.auto_keywords =  {'func': global_funcs | module_funcs | simuPOP_funcs,
-        'class': classes | module_classes | simuPOP_classes,
-        'meth': members,
-        'mod': modules}
+    p.auto_keywords =  {'func': list(global_funcs | module_funcs | simuPOP_funcs),
+        'class': list(classes | module_classes | simuPOP_classes),
+        'meth': list(members),
+        'mod': list(modules)}
     try:
         lst = open(refFile, 'w')
-        print >> lst, 'auto_keywords = %s' % p.auto_keywords
+        print >> lst, 'auto_keywords = \\'
+        pprint.pprint(p.auto_keywords, stream = lst)
         lst.close()
     except:
         print 'Failed to write a list file for cross referencing purposes'
