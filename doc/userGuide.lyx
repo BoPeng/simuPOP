@@ -8386,7 +8386,7 @@ reference "initByFreqIdenticalInds"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/initByFreqIdenticalInds.log"
-lstparams "caption={Initialize by allele frequency},label={initByFreqIdenticalInds}"
+lstparams "caption={Initialize by allele frequency with identical individuals in each subpopulation},label={initByFreqIdenticalInds}"
 
 \end_inset
 
@@ -8427,11 +8427,19 @@ initByValue
 \family default
  (and its function form 
 \family typewriter
-InitByValue
+simuPOP.InitByValue
 \family default
 ) initializes individual genotypes using given haplotypes.
  The simplest form of this operator is to specify genotype on one or all
  homologous sets of chromosomes.
+ For example, all individuals in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "initByValue"
+
+\end_inset
+
+ get the same genotype using such an operator.
 \end_layout
 
 \begin_layout Standard
@@ -8446,7 +8454,35 @@ lstparams "caption={initialize by haplotype},label={initByValue}"
 \end_layout
 
 \begin_layout Standard
-This operator also initialize individual sex by default.
+A number of parameters are provided to initialize individual genotype at
+ a finer scale.
+ More specifically, you can apply the operator to specified loci (parameter
+ 
+\emph on
+loci
+\emph default
+), (virtual) subpopulations (parameter 
+\family typewriter
+subPops
+\family default
+), homologous sets of chromosomes (parameter 
+\family typewriter
+ploidy
+\family default
+).
+ The most useful parameter is 
+\family typewriter
+proportions
+\family default
+, which assigns multiple values specified in parameter 
+\family typewriter
+value
+\family default
+ randomly according to
+\end_layout
+
+\begin_layout Standard
+s This operator also initialize individual sex by default.
  Parameters 
 \emph on
 initSex
@@ -8460,6 +8496,17 @@ maleFreq
 sex
 \emph default
  are provided to control this behavior.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/initByValueProp.log"
+lstparams "caption={initialize by haplotypes with given proportion},label={initByValueProp}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

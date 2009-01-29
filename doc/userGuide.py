@@ -1276,7 +1276,7 @@ def mutator(pop, param):
 simu = simulator(population(1000, loci=[]), randomMating(), rep=3)
 simu.evolve(
     preOps = [initSex()],
-    ops = [pyOperator(func=mutator, param=(10000, 1e-5))],
+    ops = [pyOperator(func=mutator, param=(10000, 2e-6))],
     gen = 200
 )
 for pop in simu.populations():
