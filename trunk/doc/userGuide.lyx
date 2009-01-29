@@ -8633,8 +8633,8 @@ Dump
  has been used extensively in this guide.
  They are prefect for demonstration and debugging purposes because they
  display all properties of a population in a human readable format.
- This operator is rarely used in realistic settings because outputting a
- large population to your terminal can be disastrous.
+ They are, however, rarely used in realistic settings because outputting
+ a large population to your terminal can be disastrous.
 \end_layout
 
 \begin_layout Standard
@@ -8685,17 +8685,14 @@ ancGen
 width
 \family default
  at which each allele will be printed.
-\end_layout
-
-\begin_layout Standard
-Example 
+ The following example (Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "dumper"
 
 \end_inset
 
- presents a rather complicated usage of this operator.
+) presents a rather complicated usage of this operator.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -8724,7 +8721,11 @@ setAncestralDepth
 \end_layout
 
 \begin_layout Subsection
-Conditional operator (operator ifElse)
+Conditional operator (operator 
+\family typewriter
+ifElse
+\family default
+)
 \end_layout
 
 \begin_layout Standard
