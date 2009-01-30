@@ -1398,6 +1398,70 @@ print pop.ancestralGens()
 print pop.ancestor(10, 1).info('father_idx')
 #end
 
+
+#file log/ifElse.log
+simu = simulator(
+    population(size=1000, loci=[1]),
+    randomMating(), rep=4)
+simu.evolve(
+    preOps = [
+        initByFreq([0.5, 0.5]),
+        pyExec('below40, above60 = 0, 0')
+    ],
+    ops = [
+        stat(alleleFreq=[0]),
+        ifElse('alleleFreq[0][1] < 0.4',
+            pyExec('below40 += 1')),
+        ifElse('alleleFreq[0][1] > 0.6',
+            pyExec('above60 += 1')),
+        ifElse('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1',
+            pyExec('stoppedAt = gen')),
+        terminateIf('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1')
+    ]
+)
+for pop in simu.populations():
+    print 'Overall: %4d, below 40%%: %4d, above 60%%: %4d' % \
+        (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60)
+
+#end
+
+#file log/debug.log
+simu = simulator(population(100, loci=[1]), randomMating(), rep=5)
+simu.evolve(
+    preOps = [initByFreq([0.1, 0.9])],
+    ops = [
+        stat(alleleFreq=[0]),
+        ifElse('alleleNum[0][0] == 0',
+            turnOnDebug(DBG_MUTATOR),
+            turnOffDebug(DBG_MUTATOR)),
+        ifElse('alleleNum[0][0] == 0',
+            pointMutator(loci=[0], toAllele=0, inds=[0])),
+    ],
+    gen = 100
+)
+#end
+
+#file log/pause.log
+simu = simulator(population(100), randomMating(), rep=10)
+simu.evolve(
+    preOps = [initByFreq([0.5, 0.5])],
+    ops = [pause(stopOnKeyStroke=str(x), rep=x) for x in range(10)],
+    gen = 100
+)
+#end
+
+#file log/ticToc.log
+simu = simulator(population(10000, loci=[100]*5), randomMating(), rep=2)
+simu.evolve(
+    preOps = [initByFreq([0.1, 0.9])],
+    ops = [
+        stat(alleleFreq=[0]),
+        ticToc(step=50, rep=-1),
+    ],
+    gen = 101
+)
+#end
+
 #file log/pyEval.log
 simu = simulator(population(100, loci=[1]),
     randomMating(), rep=2)
@@ -1794,32 +1858,6 @@ PyPenetrance(pop, loci=(0, 1, 2),
 
 
 
-
-#file log/ifElse.log
-simu = simulator(
-    population(size=1000, loci=[1]),
-    randomMating(), rep=4)
-simu.evolve(
-    preOps = [
-        initByFreq([0.5, 0.5]),
-        pyExec('below40, above60 = 0, 0')
-    ],
-    ops = [
-        stat(alleleFreq=[0]),
-        ifElse('alleleFreq[0][1] < 0.4',
-            pyExec('below40 += 1')),
-        ifElse('alleleFreq[0][1] > 0.6',
-            pyExec('above60 += 1')),
-        ifElse('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1',
-            pyExec('stoppedAt = gen')),
-        terminateIf('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1')
-    ]
-)
-for pop in simu.populations():
-    print 'Overall: %4d, below 40%%: %4d, above 60%%: %4d' % \
-        (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60)
-
-#end
 
 
 ## 

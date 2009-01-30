@@ -516,23 +516,7 @@ public:
 
 
 	/// apply a \c pointMutator
-	virtual bool apply(population & pop)
-	{
-		m_mutCount.resize(pop.totNumLoci(), 0);
-		// mutate each mutable locus
-		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-			for (vectorlu::iterator ind = m_inds.begin();
-			     ind != m_inds.end(); ++ind) {
-				for (size_t p = 0; p < m_atPloidy.size(); ++p) {
-					m_mutCount[m_loci[i]]++;
-					*(pop.ind(*ind).genoBegin(m_atPloidy[p]) + m_loci[i]) = m_toAllele;
-				}
-			}
-		}                                                                                 // each applicable loci
-
-		return true;
-	}
-
+	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c pointMutator
 	virtual string __repr__()

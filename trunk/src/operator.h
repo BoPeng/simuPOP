@@ -513,44 +513,42 @@ private:
 
 typedef std::vector< baseOperator * > vectorop;
 
-/// pause a simulator
-/**
-   This operator pauses the evolution of a simulator at given generations or
-   at a key stroke, using <tt>stopOnKeyStroke=True</tt> option. Users can
-   use \c 'q' to stop an evolution. When a simulator is stopped, press any
-   other key to resume	the simulation or escape to a Python shell to examine
-   the status of the simulation by pressing \c 's'.
-
-   There are two ways to use this operator, the first one is to pause the
-   simulation at specified generations, using the usual operator parameters
-   such as \c at. Another way is to pause a simulation with any key stroke,
-   using the \c stopOnKeyStroke parameter. This feature is useful for a
-   presentation or an interactive simulation. When \c 's' is pressed, this operator
-   expose the current population to the main Python dictionary as variable \c pop
-   and enter an interactive Python session. The way current population is exposed
-   can be controlled by parameter \c exposePop and \c popName. This feature is
-   useful when you want to examine the properties of a population during evolution.
+/** This operator pauses the evolution of a simulator at given generations or
+ *  at a key stroke. When a simulator is stopped, you can go to a Python
+ *  shell to examine the status of an evolutionary process, resume or stop the
+ *  evolution.
  */
 class pause : public baseOperator
 {
 
 public:
-	/// stop a simulation. Press \c 'q' to exit or any other key to continue.
-	/**
-	   \param prompt if \c True (default), print prompt message.
-	   \param stopOnKeyStroke if \c True, stop only when a key was pressed.
-	   \param exposePop whether or not expose \c pop to user namespace, only
-	    useful when user choose \c 's' at pause. Default to \c True.
-	   \param popName by which name the population is exposed. Default to \c pop.
+	/** Create an operator that pause the evolution of a population when it is
+	 *  applied to this population. If \e stopOnKeyStroke is \c False (default),
+	 *  it will always pause a population when it is applied, if this parameter
+	 *  is set to \c True, the operator will pause a population if *any* key
+	 *  has been pressed. If a specific character is set, the operator will stop
+	 *  when this key has been pressed. This allows, for example, the use of
+	 *  several pause operators to pause different populations.
+	 *
+	 *  After a population has been paused, a message will be displayed (unless
+	 *  \e prompt is set to \c False) and tells you how to proceed. You can
+	 *  press \c 's' to stop the evolution of this population, \c 'S' to
+	 *  stop the evolution of all populations, or \c 'p' to enter a Python
+	 *  shell. The current population will be available in this Python shell
+	 *  as \c "pop_X_Y" when \c X is generation number and \c Y is replicate
+	 *  number. The evolution will continue after you exit this interactive
+	 *  Python shell.
+	 *
+	 *  \note Ctrl-C will be intercepted even if a specific character is
+	 *  specified in parameter \e stopOnKeyStroke.
 	 */
-	pause(bool prompt = true, bool stopOnKeyStroke = false,
-		bool exposePop = true, string popName = "pop",
-		string output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = -1, const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+	pause(char stopOnKeyStroke = false, bool prompt = true,
+		string output = ">", int stage = PostMating,
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke),
-		m_exposePop(exposePop), m_popName(popName)
+		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
 	}
 
@@ -581,13 +579,9 @@ public:
 private:
 	bool m_prompt;
 
-	bool m_stopOnKeyStroke;
+	char m_stopOnKeyStroke;
 
-	/// whether or not expose population to user namespace
-	bool m_exposePop;
-
-	/// name of the population object
-	string m_popName;
+	static vectori s_cachedKeys;
 };
 
 /** This operator does nothing when it is applied to a population. It is
@@ -719,20 +713,19 @@ private:
 	baseOperator * m_elseOp;
 };
 
-/// timer operator
-/**
-   This operator, when called, output the difference between current and the
-   last called clock time. This can be used to estimate execution time of
-   each generation. Similar information can also be obtained from
-   <tt>turnOnDebug(DBG_PROFILE)</tt>, but this operator has the advantage
-   of measuring the duration between several generations by setting \c step
-   parameter.
-   <funcForm>TicToc</funcForm>
+/** This operator, when called, output the difference between current and the
+ *  last called clock time. This can be used to estimate execution time of
+ *  each generation. Similar information can also be obtained from
+ *  <tt>turnOnDebug(DBG_PROFILE)</tt>, but this operator has the advantage
+ *  of measuring the duration between several generations by setting \c step
+ *  parameter.
  */
 class ticToc : public baseOperator
 {
 public:
-	/// create a timer
+	/** Create a \c ticToc operator that outputs the elapsed since the last
+	 *  time it was applied, and the overall time since it was created.
+	 */
 	ticToc(string output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :

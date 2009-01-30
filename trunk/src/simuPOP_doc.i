@@ -5165,52 +5165,45 @@ Details:
 
 %feature("docstring") simuPOP::pause "
 
-Description:
-
-    pause a simulator
-
 Details:
 
     This operator pauses the evolution of a simulator at given
-    generations or at a key stroke, using stopOnKeyStroke=True option.
-    Users can use 'q' to stop an evolution. When a simulator is
-    stopped, press any other key to resume the simulation or escape to
-    a Python shell to examine the status of the simulation by pressing
-    's'.  There are two ways to use this operator, the first one is to
-    pause the simulation at specified generations, using the usual
-    operator parameters such as at. Another way is to pause a
-    simulation with any key stroke, using the stopOnKeyStroke
-    parameter. This feature is useful for a presentation or an
-    interactive simulation. When 's' is pressed, this operator expose
-    the current population to the main Python dictionary as variable
-    pop and enter an interactive Python session. The way current
-    population is exposed can be controlled by parameter exposePop and
-    popName. This feature is useful when you want to examine the
-    properties of a population during evolution.
+    generations or at a key stroke. When a simulator is stopped, you
+    can go to a Python shell to examine the status of an evolutionary
+    process, resume or stop the evolution.
 
 "; 
 
 %feature("docstring") simuPOP::pause::pause "
 
-Description:
-
-    stop a simulation. Press 'q' to exit or any other key to continue.
-
 Usage:
 
-    pause(prompt=True, stopOnKeyStroke=False, exposePop=True,
-      popName=\"pop\", output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=-1, subPops=[], infoFields=[])
+    pause(stopOnKeyStroke=False, prompt=True, output=\">\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    prompt:         if True (default), print prompt message.
-    stopOnKeyStroke:if True, stop only when a key was pressed.
-    exposePop:      whether or not expose pop to user namespace, only
-                    useful when user choose 's' at pause. Default to
-                    True.
-    popName:        by which name the population is exposed. Default
-                    to pop.
+    Create an operator that pause the evolution of a population when
+    it is applied to this population. If stopOnKeyStroke is False
+    (default), it will always pause a population when it is applied,
+    if this parameter is set to True, the operator will pause a
+    population if *any* key has been pressed. If a specific character
+    is set, the operator will stop when this key has been pressed.
+    This allows, for example, the use of several pause operators to
+    pause different populations.  After a population has been paused,
+    a message will be displayed (unless prompt is set to False) and
+    tells you how to proceed. You can press 's' to stop the evolution
+    of this population, 'S' to stop the evolution of all populations,
+    or 'p' to enter a Python shell. The current population will be
+    available in this Python shell as \"pop_X_Y\" when X is generation
+    number and Y is replicate number. The evolution will continue
+    after you exit this interactive Python shell.
+
+Note:
+
+    Ctrl-C will be intercepted even if a specific character is
+    specified in parameter stopOnKeyStroke.
 
 "; 
 
@@ -10949,14 +10942,6 @@ Usage:
 
 %feature("docstring") simuPOP::ticToc "
 
-Function form:
-
-    TicToc
-
-Description:
-
-    timer operator
-
 Details:
 
     This operator, when called, output the difference between current
@@ -10970,14 +10955,15 @@ Details:
 
 %feature("docstring") simuPOP::ticToc::ticToc "
 
-Description:
-
-    create a timer
-
 Usage:
 
     ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
       at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    Create a ticToc operator that outputs the elapsed since the last
+    time it was applied, and the overall time since it was created.
 
 "; 
 

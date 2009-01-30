@@ -152,6 +152,7 @@ bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 	return true;
 }
 
+vectori pause::s_cachedKeys = vectori();
 
 bool pause::apply(population & pop)
 {
@@ -160,52 +161,65 @@ bool pause::apply(population & pop)
 
 	char a;
 
-	if (m_stopOnKeyStroke) {
-		// check if key is already pressed
-		if (!simuPOP_kbhit() )
-			return true;
-		else
-			simuPOP_getch();
+	if (m_stopOnKeyStroke != static_cast<char>(false)) {
+		// stop on any key
+		if (m_stopOnKeyStroke == static_cast<char>(true)) {
+			// check if key is already pressed
+			if (!simuPOP_kbhit() )
+				return true;
+		} else {
+			// get all keys
+			while (simuPOP_kbhit())
+				s_cachedKeys.push_back(simuPOP_getch());
+			// if the required key is pressed?
+			vectori::iterator it = find(s_cachedKeys.begin(), s_cachedKeys.end(),
+				static_cast<int>(m_stopOnKeyStroke));
+			if (it == s_cachedKeys.end())
+				// also look for C-c
+				it = find(s_cachedKeys.begin(), s_cachedKeys.end(), 3);
+			if (it == s_cachedKeys.end())
+				return true;
+			s_cachedKeys.erase(it);
+		}
 	}
 	// clear input and wait for user input
-	// std::cin.clear();
-	// std::cin.ignore(std::numeric_limits<int>::max());
+	std::cin.clear();
 
+	string popName = "pop_" + toStr(pop.gen()) + "_" + toStr(pop.rep());
 	if (m_prompt) {
-		cout << "Simulation paused. " << endl
-		     << " Press " << endl
-		     << "   q to stop evolution, " << endl
-		     << "   s to start an interative shell, (current population is ";
-		if (m_exposePop)
-			cout << "exported as " << m_popName << ')' << endl;
-		else
-			cout << "not exported)" << endl;
-		cout << "   or any other key to continue...." << endl;
+		cout << "Simulation paused for population " << pop.rep() << "\n"
+		     << "Press\n"
+		     << "   's' to (s)top the evolution of this population,\n"
+			 << "   'q' to quit (stop the evolution of all populations),\n"
+		     << "   'p' to start an interative (P)ython shell, (current population will be exported as "
+					 << popName << ")\n"
+			 << "   'r' or any other key to (r)esume evolution...." << endl;
 	}
-	a = simuPOP_getch();                                              // std::cin.get(a);
+	a = simuPOP_getch();
 
-	if (a == 'q' || a == 'Q')
-		throw SystemError("Terminated by user");
-	else if (a == 's' || a == 'S') {
+	if (a == 's' || a == 'S') {
+		cout << "Evolution of population " << pop.rep() << " is stopped." << endl;	
+		return false;
+	}
+	else if (a == 'q' || a == 'Q') {
+		cout << "Evolution of all populations are terminated." << endl;	
+		throw StopEvolution(string());
+	}
+	if (a == 'p' || a == 'P') {
 		// export current population
 		PyObject * popObj;
-		if (m_exposePop) {
-			popObj = pyPopObj(static_cast<void *>(&pop));
-			if (popObj == NULL)
-				throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
+		popObj = pyPopObj(static_cast<void *>(&pop));
+		if (popObj == NULL)
+			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 
-			// get global dictionary
-			mainVars().setVar(m_popName, popObj);
-		}
+		// get global dictionary
+		mainVars().setVar(popName, popObj);
 		PyRun_InteractiveLoop(stdin, "<stdin>");
 		// if expose pop, release it.
-		if (m_exposePop)
-			mainVars().removeVar(m_popName);
+		if (mainVars().hasVar(popName))
+			mainVars().removeVar(popName);
 	}
-
-	// clear input and wait for user input
-	// std::cin.clear();
-	// std::cin.ignore(std::numeric_limits<int>::max());
+	cout << "Resume evolution of population " << pop.rep() << "..." << endl;
 
 	return true;
 }
