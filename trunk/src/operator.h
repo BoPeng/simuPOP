@@ -644,30 +644,19 @@ public:
 
 };
 
-/// conditional operator
-/**
-   This operator accepts
-   \li an expression that will be evaluated when this operator is applied.
-   \li an operator that will be applied if the expression is <tt>True</tt> (default to null).
-   \li an operator that will be applied if the expression is <tt>False</tt> (default to null).
-
-   When this operator is applied to a population, it will evaluate the expression and
-   depending on its value, apply the supplied operator. Note that the \c begin, \c end,
-   \c step, and \c at parameters of \c ifOp and \c elseOp will be ignored.
-   For example, you can mimic the \c at parameter of an operator by
-   <tt>ifElse('rep in [2,5,9]' operator)</tt>. The real use of this machanism is
-   to monitor the population statistics and act accordingly.
+/** This operator accepts an expression that will be evaluated when this
+ *  operator is applied. An if-operator will be applied when the expression
+ *  returns \c True. Otherwise an else-operator will be applied.
  */
 class ifElse : public baseOperator
 {
 
 public:
-	/// create a conditional operator
-	/**
-	   \param cond expression that will be treated as a boolean variable
-	   \param ifOp an operator that will be applied when \c cond is \c True
-	   \param elseOp an operator that will be applied when \c cond is \c False
-
+	/** Create a conditional operator that will apply operator \e ifOp if
+	 *  condition \e cond is met and \e elseOp otherwise. The replicate and
+	 *  generation applicability parameters (\e begin, \e end, \e step, \e at
+	 *  and \e rep) of the \e ifOp and \e elseOp are ignored because their
+	 *  applicability is determined by the \c ifElse operator.
 	 */
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 		string output = ">",
@@ -713,7 +702,7 @@ public:
 	virtual bool applyDuringMating(population & pop, RawIndIterator offspring,
 		individual * dad = NULL, individual * mom = NULL);
 
-	/// apply the \c ifElse operator to one population
+	/// apply the \c ifElse operator to population \e pop.
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c ifElse operator
@@ -779,18 +768,21 @@ private:
 	time_t m_startTime, m_lastTime;
 };
 
-/// set ancestral depth
-/**
-   This operator set the number of ancestral generations to keep in a population.
-   It is usually called like <tt>setAncestral(at=[-2])</tt> to start recording
-   ancestral generations to a population at the end of the evolution. This is
-   useful when constructing pedigree trees from a population.
+/** This operator sets the number of ancestral generations to keep during the
+ *  evolution of a population. This is usually used to start storing ancestral
+ *  generations at the end of an evolutionary process. A typical usage is
+ *  <tt>setAncestralDepth(1, at=-1)</tt> which will cause the parental
+ *  generation of the present population to be stored at the last generation
+ *  of an evolutionary process.
  */
 class setAncestralDepth : public baseOperator
 {
 
 public:
-	/// create a \c setAncestralDepth operator
+	/** Create a \c setAncestralDepth operator that sets the ancestral depth of
+	 *  an population. It basically calls the
+	 *  <tt>population.setAncestralDepth</tt> member function of a population.
+	 */
 	setAncestralDepth(int depth, string output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :

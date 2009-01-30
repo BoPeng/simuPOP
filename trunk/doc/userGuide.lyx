@@ -8712,6 +8712,63 @@ savePopulation
 )
 \end_layout
 
+\begin_layout Standard
+Because it is usually not feasible to store all parental generations of
+ an evolving population, it is a common practise to save snapshots of a
+ population during an evolutionary process for further analysis.
+ Operator 
+\family typewriter
+savePopulation
+\family default
+ is designed for this purpose.
+ When it is applied to a population, it will save the population to a file
+ specified by parameter 
+\family typewriter
+output
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The tricky part is that populations at different generations need to be
+ saved to different filenames so the expression version of parameter 
+\family typewriter
+output
+\family default
+ needs to be used (see operator 
+\family typewriter
+baseOperator
+\family default
+ for details).
+ For example, expression 
+\family typewriter
+'snapshot_%d_%d.pop' % (rep, gen)
+\family default
+ is used in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "savePopulation"
+
+\end_inset
+
+ to save population to files such as 
+\family typewriter
+snapshot_5_20.pop
+\family default
+ during the evolution.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/savePopulation.log"
+lstparams "caption={Save snapshots of an evolving population},label={savePopulation}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Change ancestral depth of populations (operator 
 \family typewriter
@@ -8720,12 +8777,84 @@ setAncestralDepth
 )
 \end_layout
 
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "twoStage"
+
+\end_inset
+
+ describes a two-stage evolutionary process where a random mating scheme
+ is used in the first stage and another mating scheme is used in the second
+ stage to prepare for pedigree ascertainment.
+ The ancestral depth of each population is changed to 1 before the second
+ 
+\family typewriter
+simulator.evolve
+\family default
+ call.
+ This step can also be done using a 
+\family typewriter
+setAncestralDepth
+\family default
+ operator, which simply set the ancestral depth of each population to a
+ given depth (please refer to class 
+\family typewriter
+population
+\family default
+ for a detailed explanation for 
+\emph on
+ancetral depth
+\emph default
+).
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "setAncDepth"
+
+\end_inset
+
+ demonstrates a tpical usage of this operator.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/setAncDepth.log"
+lstparams "caption={Change ancestral depth during the evolution},label={setAncDepth}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Conditional operator (operator 
 \family typewriter
 ifElse
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+ifElse
+\family default
+ provides a simple way to conditionally apply an operator.
+ For example, you can re-introduce a mutant if it gets lost in the population,
+ output a warning when certain condition is met, or record the occurance
+ of certain events in a population.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ifElse"
+
+\end_inset
+
+ records the number of generations the frequency of an allele goes below
+ 0.4 and beyong 0.6 before it gets lost or fixed in the population.
+ Note that an else-operator can also be executed when the condition is not
+ met.
 \end_layout
 
 \begin_layout Standard
@@ -8739,12 +8868,31 @@ lstparams "caption={A conditional opeartor},label={ifElse}"
 
 \end_layout
 
+\begin_layout Standard
+If more complicated logic is involved, a Python operator (
+\family typewriter
+pyOperator
+\family default
+) should be used.
+\end_layout
+
 \begin_layout Subsection
 Pause and resume an evolutionary process (operator 
 \family typewriter
 pause
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ifElse.log"
+lstparams "caption={A conditional opeartor},label={ifElse}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -11605,17 +11753,6 @@ qsub job1
 command
 \family default
  variable.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "joblist.lst"
-lstparams "caption={A sample job list file},label={joblist}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
