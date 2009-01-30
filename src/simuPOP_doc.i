@@ -2006,33 +2006,16 @@ Usage:
 
 %feature("docstring") simuPOP::ifElse "
 
-Description:
-
-    conditional operator
-
 Details:
 
-    This operator accepts
-    *   an expression that will be evaluated when this operator is
+    This operator accepts an expression that will be evaluated when
+    this operator is applied. An if-operator will be applied when the
+    expression returns True. Otherwise an else-operator will be
     applied.
-    *   an operator that will be applied if the expression is True
-    (default to null).
-    *   an operator that will be applied if the expression is False
-    (default to null). When this operator is applied to a population,
-    it will evaluate the expression and depending on its value, apply
-    the supplied operator. Note that the begin, end, step, and at
-    parameters of ifOp and elseOp will be ignored. For example, you
-    can mimic the at parameter of an operator by ifElse('rep in
-    [2,5,9]' operator). The real use of this machanism is to monitor
-    the population statistics and act accordingly.
 
 "; 
 
 %feature("docstring") simuPOP::ifElse::ifElse "
-
-Description:
-
-    create a conditional operator
 
 Usage:
 
@@ -2040,13 +2023,13 @@ Usage:
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    cond:           expression that will be treated as a boolean
-                    variable
-    ifOp:           an operator that will be applied when cond is True
-    elseOp:         an operator that will be applied when cond is
-                    False
+    Create a conditional operator that will apply operator ifOp if
+    condition cond is met and elseOp otherwise. The replicate and
+    generation applicability parameters (begin, end, step, at and rep)
+    of the ifOp and elseOp are ignored because their applicability is
+    determined by the ifElse operator.
 
 "; 
 
@@ -2072,7 +2055,7 @@ Usage:
 
 Description:
 
-    apply the ifElse operator to one population
+    apply the ifElse operator to population pop.
 
 Usage:
 
@@ -9053,30 +9036,29 @@ Usage:
 
 %feature("docstring") simuPOP::setAncestralDepth "
 
-Description:
-
-    set ancestral depth
-
 Details:
 
-    This operator set the number of ancestral generations to keep in a
-    population. It is usually called like setAncestral(at=[-2]) to
-    start recording ancestral generations to a population at the end
-    of the evolution. This is useful when constructing pedigree trees
-    from a population.
+    This operator sets the number of ancestral generations to keep
+    during the evolution of a population. This is usually used to
+    start storing ancestral generations at the end of an evolutionary
+    process. A typical usage is setAncestralDepth(1, at=-1) which will
+    cause the parental generation of the present population to be
+    stored at the last generation of an evolutionary process.
 
 "; 
 
 %feature("docstring") simuPOP::setAncestralDepth::setAncestralDepth "
 
-Description:
-
-    create a setAncestralDepth operator
-
 Usage:
 
     setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
       end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    Create a setAncestralDepth operator that sets the ancestral depth
+    of an population. It basically calls the
+    population.setAncestralDepth member function of a population.
 
 "; 
 

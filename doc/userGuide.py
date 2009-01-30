@@ -1365,6 +1365,39 @@ Dump(pop, width=3, loci=[5, 6, 30], subPops=([0, 0], [1, 1]),
 
 #end
 
+#file log/savePopulation.log
+simu = simulator(population(100, loci=[2]),
+    randomMating(), rep=5)
+simu.evolve(
+    preOps = [initByFreq([0.2, 0.8])],
+    ops = [
+        savePopulation(output="!'snapshot_%d_%d.pop' % (rep, gen)",
+            step = 10),
+        ],
+    gen = 50
+)
+#end
+
+for rep in range(5):
+    for gen in range(0, 50, 10):
+        os.remove('snapshot_%d_%d.pop' % (rep, gen))
+
+#file log/setAncDepth.log
+simu = simulator(population(100, infoFields=['father_idx', 'mother_idx']),
+    randomMating(), rep=5)
+simu.evolve(
+    preOps = [initByFreq([0.3, 0.7])],
+    ops = [
+        setAncestralDepth(2, at=-2),
+        parentsTagger(begin=-2)
+    ],
+    gen = 100
+)
+pop = simu.population(3)
+print pop.ancestralGens()
+print pop.ancestor(10, 1).info('father_idx')
+#end
+
 #file log/pyEval.log
 simu = simulator(population(100, loci=[1]),
     randomMating(), rep=2)
@@ -1767,20 +1800,25 @@ simu = simulator(
     population(size=1000, loci=[1]),
     randomMating(), rep=4)
 simu.evolve(
-  preOps = [ initByValue([1, 1])],
-  ops = [
-    # penetrance, additve penetrance
-    maPenetrance(loci=0, wildtype=1, penetrance=[0, 0.5, 1]),
-    # count number of affected
-    stat(numOfAffected=True),
-    # introduce disease if no one is affected
-    ifElse(cond='numOfAffected==0',
-      ifOp=kamMutator(rate=0.01, maxAllele=2)),
-    ifElse(cond='numOfAffected==0',
-        ifOp=pyEval(r'"No affected at gen %d\n" % gen'))
-  ],
-  gen = 50
+    preOps = [
+        initByFreq([0.5, 0.5]),
+        pyExec('below40, above60 = 0, 0')
+    ],
+    ops = [
+        stat(alleleFreq=[0]),
+        ifElse('alleleFreq[0][1] < 0.4',
+            pyExec('below40 += 1')),
+        ifElse('alleleFreq[0][1] > 0.6',
+            pyExec('above60 += 1')),
+        ifElse('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1',
+            pyExec('stoppedAt = gen')),
+        terminateIf('alleleFreq[0][1] == 0 or alleleFreq[0][1] == 1')
+    ]
 )
+for pop in simu.populations():
+    print 'Overall: %4d, below 40%%: %4d, above 60%%: %4d' % \
+        (pop.dvars().stoppedAt, pop.dvars().below40, pop.dvars().above60)
+
 #end
 
 
