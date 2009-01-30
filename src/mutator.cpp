@@ -177,4 +177,22 @@ void pyMutator::mutate(AlleleRef allele)
 }
 
 
+bool pointMutator::apply(population & pop)
+{
+	m_mutCount.resize(pop.totNumLoci(), 0);
+	// mutate each mutable locus
+	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
+		for (vectorlu::iterator ind = m_inds.begin();
+			ind != m_inds.end(); ++ind) {
+			for (size_t p = 0; p < m_atPloidy.size(); ++p) {
+				m_mutCount[m_loci[i]]++;
+				*(pop.ind(*ind).genoBegin(m_atPloidy[p]) + m_loci[i]) = m_toAllele;
+				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << m_loci[i] <<
+					" to allele " << toStr(m_toAllele) << " at generation " << pop.gen() << endl);
+			}
+		}
+	}                                                                                 // each applicable loci
+
+	return true;
+}
 }

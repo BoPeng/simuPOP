@@ -8847,7 +8847,7 @@ ifElse
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "ifElse"
+reference "ticToc"
 
 \end_inset
 
@@ -8877,25 +8877,6 @@ pyOperator
 \end_layout
 
 \begin_layout Subsection
-Pause and resume an evolutionary process (operator 
-\family typewriter
-pause
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/ifElse.log"
-lstparams "caption={A conditional opeartor},label={ifElse}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Turn on and off debugging mode (operator 
 \family typewriter
 turnOnDebug
@@ -8907,12 +8888,202 @@ turnOffDebug
 )
 \end_layout
 
+\begin_layout Standard
+Debug information can be useful when something looks suspicious.
+ By turnning on certain debug code, simuPOP will print out some internal
+ information before and during evolution.
+ The usually way to turn on and off debug information is to use functions
+ 
+\family typewriter
+TurnOnDebug(code)
+\family default
+ and 
+\family typewriter
+TurnOffDebug(code)
+\family default
+, or setting environmental variable 
+\family typewriter
+SIMUDEBUG=code
+\family default
+ where 
+\family typewriter
+code
+\family default
+ is one of the debug codes listed by function 
+\family typewriter
+ListDebugCodes
+\family default
+.
+ Note that debug information is only available in standard modules.
+\end_layout
+
+\begin_layout Standard
+However, the amount of output can be overwhelming in some cases which makes
+ it necessary to limit the debug information to certain generations.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "debug"
+
+\end_inset
+
+ demonstrates how to turn on debug information conditionally and turn it
+ off afterwards, using operators 
+\family typewriter
+turnOnDebug
+\family default
+ and 
+\family typewriter
+turnOffDebug
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/debug.log"
+lstparams "caption={Turn on and off debug information during evolution.},label={debug},lastline=17"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Pause and resume an evolutionary process (operator 
+\family typewriter
+pause
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+If you are presenting an evolutinary process in public, you might want to
+ temporarily stop the evolution so that your audience can have a better
+ look at intermediate results or figures.
+ If you have an exceptionally long evolutionary process, you might want
+ to examine the status of the evolution process from time to time.
+ These can be done using a 
+\family typewriter
+pause
+\family default
+ operator.
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+pause
+\family default
+ operator can stop the evolution at specified generations, or when you press
+ a key.
+ In the first case, you usually specify the generations to pause (e.g.
+ 
+\family typewriter
+pause(step=1000)
+\family default
+) so that you can examine the status of a simulation from time to time.
+ In the second case, you can apply the operator at each generation and pause
+ the simulation when you press a key (e.g.
+ 
+\family typewriter
+pause(stopOnKeyStroke=True)
+\family default
+).
+ A specific key can be specified so that you can use different keys to stop
+ different populations, as shown in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pause"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pause.log"
+lstparams "caption={Pause the evolution of a simulation},label={pause}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When a simulation is paused, you are given the options to resume evolution,
+ stop the evolution of the paused population or all populations, or enter
+ an interactive Python shell to examine the status of a population, which
+ will be available in the Python shell as 
+\family typewriter
+pop_X_Y
+\family default
+ where 
+\family typewriter
+X
+\family default
+ and 
+\family typewriter
+Y
+\family default
+ are generation and replicate number of the population, respectively.
+ The evolution will resume after you exit the Python shell.
+\end_layout
+
 \begin_layout Subsection
 Measuring execution time of operators (operator 
 \family typewriter
 ticToc
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+ticToc
+\family default
+ operator can be used to measure the time between two events during an evolution
+ary process.
+ It outputs the elapsed time since the last time it is called, and the overall
+ time since the operator is created.
+ It is very flexible in that you can measure the time spent for mating in
+ an evolutionary cycle if you set its stage to 
+\family typewriter
+prePostMating
+\family default
+, and you can measure time spent for several evolutionary cycles using generatio
+n applicability parameters such as 
+\family typewriter
+step
+\family default
+ and 
+\family typewriter
+at
+\family default
+.
+ The latter usage is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ticToc"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/ticToc.log"
+lstparams "caption={Monitor the performance of operators},label={ticToc}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

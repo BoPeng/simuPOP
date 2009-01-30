@@ -172,10 +172,6 @@ void TurnOffDebug(DBG_CODE code)
 		g_dbgCode[static_cast<int>(code)] = false;
 	else    // reset all
 		g_dbgCode.reset();
-
-	if (debug(DBG_GENERAL) )
-		cout << "Debug code " << g_dbgString[static_cast<int>(code)]
-		     << " is turned off. cf. ListDebugCode(), TurnOnDebug()." << endl;
 #else
 	cout << "Debug info is ignored in optimized mode." << endl;
 #endif
@@ -265,6 +261,18 @@ int simuPOP_getch(void)
 
 int simuPOP_kbhit(void)
 {
+	// tcsetattr is executed very slowly. To avoid
+	// significant slow down, this function will be
+	// called every 1 sec. The response time should
+	// still be good.
+	static time_t last_time = 0;
+
+	time_t cur_time = time(NULL);
+	if (cur_time != last_time)
+		last_time = cur_time;
+	else
+		return 0;
+
 	struct termios term, oterm;
 	int fd = 0;
 	int c = 0;
