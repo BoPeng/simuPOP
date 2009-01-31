@@ -9073,7 +9073,7 @@ Usage:
 
 Description:
 
-    apply the setAncestralDepth operator to one population
+    apply the setAncestralDepth operator to population pop.
 
 Usage:
 
@@ -11002,26 +11002,24 @@ Function form:
 
     TurnOffDebug
 
-Description:
-
-    set debug off
-
 Details:
 
-    Turn off debug.
+    Turn off certain debug information. Please refer to operator
+    turnOnDebug for detailed usages.
 
 "; 
 
 %feature("docstring") simuPOP::turnOffDebug::turnOffDebug "
 
-Description:
-
-    create a turnOffDebug operator
-
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
       at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    create a turnOffDebug operator that turns off debug information
+    code when it is applied to a population.
 
 "; 
 
@@ -11039,17 +11037,7 @@ Usage:
 
 %feature("docstring") simuPOP::turnOffDebug::clone "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::turnOffDebug::apply "
-
-Description:
-
-    apply the turnOffDebug operator to one population
-
-Usage:
-
-    x.apply(pop)
-
-"; 
+%feature("docstring") simuPOP::turnOffDebug::apply "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::turnOffDebug::__repr__ "
 
@@ -11070,32 +11058,29 @@ Function form:
 
     TurnOnDebug
 
-Description:
-
-    set debug on
-
 Details:
 
     Turn on debug. There are several ways to turn on debug information
     for non-optimized modules, namely
     *   set environment variable SIMUDEBUG.
     *   use simuOpt.setOptions(debug) function.
-    *   use TurnOnDebug or TurnOnDebugByName function.
-    *   use this turnOnDebug operator The advantage of using this
+    *   use function TurnOnDebug
+    *   use the turnOnDebug operator The advantage of using an
     operator is that you can turn on debug at given generations.
 
 "; 
 
 %feature("docstring") simuPOP::turnOnDebug::turnOnDebug "
 
-Description:
-
-    create a turnOnDebug operator
-
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
       at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    create a turnOnDebug operator that turns on debug information code
+    when it is applied to a population.
 
 "; 
 
@@ -11458,53 +11443,30 @@ Usage:
 
 %feature("docstring") simuPOP::TurnOnDebug "
 
-Description:
-
-    set debug codes. Default to turn on all debug codes. Only
-    available in non-optimized modules.
-
-Usage:
-
-    TurnOnDebug(code=DBG_ALL)
-
-"; 
-
-%feature("docstring") simuPOP::TurnOnDebug "
-
 Usage:
 
     TurnOnDebug(code)
+
+Details:
+
+    Set debug code code. Name of available codes are available from
+    DebugCodes.
 
 "; 
 
 %feature("docstring") simuPOP::TurnOffDebug "
 
-Description:
-
-    turn off debug information. Default to turn off all debug codes.
-    Only available in non-optimized modules.
-
 Usage:
 
     TurnOffDebug(code=DBG_ALL)
 
+Details:
+
+    Turn off debug code code. Default to turn off all debug codes.
+
 "; 
 
 %ignore simuPOP::debug(DBG_CODE code);
-
-%feature("docstring") simuPOP::ListDebugCode "
-
-Description:
-
-    list all debug codes
-
-Usage:
-
-    ListDebugCode()
-
-"; 
-
-%ignore simuPOP::dbgString(DBG_CODE code);
 
 %ignore simuPOP::simuPOP_kbhit();
 

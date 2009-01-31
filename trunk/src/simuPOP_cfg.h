@@ -202,12 +202,6 @@ enum MigrMode {
 	ByCounts = 84,
 };
 
-typedef unsigned char TraitIndexType;
-const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
-
-const string ParentsFields[2] = { "father_idx", "mother_idx" };
-
-
 // iteratable and visible are two different concepts.
 // When a population is activated by setting the visible flag
 // All operations that work on this subpopulation will be limited
@@ -219,10 +213,46 @@ const string ParentsFields[2] = { "father_idx", "mother_idx" };
 // respond to it.
 //
 enum IterationType {
-	AllInds = 1,
-	IteratableInds = 2,
-	VisibleInds = 3
+	AllInds = 91,
+	IteratableInds = 92,
+	VisibleInds = 93
 };
+
+#define DBG_CODE_LENGTH 20
+
+enum DBG_CODE {
+	DBG_ALL = 0,
+	DBG_GENERAL = 1,
+	DBG_UTILITY = 2,
+	DBG_OPERATOR = 3,
+	DBG_SIMULATOR = 4,
+	DBG_INDIVIDUAL = 5,
+	DBG_OUTPUTER = 6,
+	DBG_MUTATOR = 7,
+	DBG_TRANSMITTER = 8,
+	DBG_INITIALIZER = 9,
+	DBG_POPULATION = 10,
+	DBG_STATOR = 11,
+	DBG_TERMINATOR = 12,
+	DBG_TAGGER = 13,
+	DBG_VISUALIZER = 14,
+	DBG_SELECTOR = 15,
+	DBG_MATING = 16,
+	DBG_MIGRATOR = 17,
+	DBG_PROFILE = 18,
+	DBG_DEVEL = 19
+};
+
+typedef unsigned char TraitIndexType;
+const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+
+const string ParentsFields[2] = { "father_idx", "mother_idx" };
+
+
+// DBG_NAMES are defined in utility.cpp
+// if you add any debug code here, you need to add its name
+// in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
+// etc will be function well.
 
 // info is usually used for subpopulation index.
 // signed short should be enough.
@@ -345,37 +375,6 @@ public:
 };
 
 
-// define DEBUG codes
-// DEbUG_CODE_LENGTH should be the number of debug codes
-#define DBG_CODE_LENGTH 20
-
-enum DBG_CODE {
-	DBG_ALL = 0,
-	DBG_GENERAL = 1,
-	DBG_UTILITY = 2,
-	DBG_OPERATOR = 3,
-	DBG_SIMULATOR = 4,
-	DBG_INDIVIDUAL = 5,
-	DBG_OUTPUTER = 6,
-	DBG_MUTATOR = 7,
-	DBG_TRANSMITTER = 8,
-	DBG_INITIALIZER = 9,
-	DBG_POPULATION = 10,
-	DBG_STATOR = 11,
-	DBG_TERMINATOR = 12,
-	DBG_TAGGER = 13,
-	DBG_VISUALIZER = 14,
-	DBG_SELECTOR = 15,
-	DBG_MATING = 16,
-	DBG_MIGRATOR = 17,
-	DBG_PROFILE = 18,
-	DBG_DEVEL = 19
-};
-
-// DBG_NAMES are defined in utility.cpp
-// if you add any debug code here, you need to add its name
-// in utility.cpp as well. Otherwise, turnOnDebug, turnOffDebug
-// etc will be function well.
 
 #define PreMating            1
 #define DuringMating         2

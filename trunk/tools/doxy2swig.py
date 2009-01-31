@@ -1236,29 +1236,27 @@ class Doxy2SWIG:
             for cls in classes:
                 refName = '%s%sRef.ref' % (module, cls['Name'])
                 out = open(os.path.join(dir, refName), 'w')
-                print >> out, '.. class::',
-                if cls.has_key('Usage') and cls['Usage'] != '':
-                    print >> out, cls['Usage']
-                else:
-                    print >> out, '%s()' % cls['Name']
-                if entry.has_key('funcForm'):
-                    print >> out, '\n   Function form: %s\n' % entry['funcForm']
-                #
+                print >> out, '.. class:: %s\n' % cls['Name']
                 print >> out, self.shiftText(cls['Doc'])
-                print >> out, self.shiftText(cls['InitDoc'])
+                print >> out
+                if cls.has_key('Usage') and cls['Usage'] != '':
+                    print >> out, '   .. method:: %s.%s' % (cls['Name'], cls['Usage'])
+                else:
+                    print >> out, '   .. method:: %s.%s()' % (cls['Name'], cls['Name'])
+                print >> out
+                print >> out, self.shiftText(cls['InitDoc'], ' '*6)
+                print >> out
                 #
                 for mem in cls['Members']:
-                    if mem['Doc'] == '':
-                        continue
                     usage = self.latex_text(mem['Usage'])
-                    print >> out, '\n.. function::'
                     if mem.has_key('Usage') and mem['Usage'] != '':
-                        print >> out, mem['Usage']
+                        print >> out, '   .. method:: %s.%s' % (cls['Name'], mem['Usage'])
                     else:
-                        print >> out, '%s()' % mem['Name']
+                        print >> out, '   .. method:: %s.%s()' % (cls['Name'], mem['Name'])
                     print >> out
                     if mem['Doc'] != '':
-                        print >> out, self.shiftText(mem['Doc'], '   ')
+                        print >> out, self.shiftText(mem['Doc'], ' '*6)
+                    print >> out
                 out.close()
         # then classes
         for entry in [x for x in self.content if x['type'] == 'class' and not x['ignore'] and not x['hidden']]:
