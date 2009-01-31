@@ -109,31 +109,6 @@ namespace simuPOP {
 // debug codes in a bitset.
 DbgBitSet g_dbgCode;
 
-// debug code string. For output purpose only.
-// debug code and DBG_CODE_LENGTH is defined in simuPOP_cfg.h
-string g_dbgString[DBG_CODE_LENGTH] =
-{
-	"DBG_ALL",
-	"DBG_GENERAL",
-	"DBG_UTILITY",
-	"DBG_OPERATOR",
-	"DBG_SIMULATOR",
-	"DBG_INDIVIDUAL",
-	"DBG_OUTPUTER",
-	"DBG_MUTATOR",
-	"DBG_TRANSMITTER",
-	"DBG_INITIALIZER",
-	"DBG_POPULATION",
-	"DBG_STATOR",
-	"DBG_TERMINATOR",
-	"DBG_TAGGER",
-	"DBG_VISUALIZER",
-	"DBG_SELECTOR",
-	"DBG_MATING",
-	"DBG_MIGRATOR",
-	"DBG_PROFILE",
-	"DBG_DEVEL"
-};
 
 // set debug area, default to turn all code on
 void TurnOnDebug(DBG_CODE code)
@@ -143,23 +118,6 @@ void TurnOnDebug(DBG_CODE code)
 		g_dbgCode[static_cast<int>(code)] = true;
 	else    // set all
 		g_dbgCode.set();
-#endif
-}
-
-
-// set debug area, default to turn all code on
-void TurnOnDebug(string code)
-{
-#ifndef OPTIMIZED
-	for (int i = 0; i < DBG_CODE_LENGTH; ++i) {
-		if (code == g_dbgString[i]) {
-			TurnOnDebug(static_cast<DBG_CODE>(i));
-			return;
-		}
-	}
-	// this line should not have been reached
-	cout << "Wrong DEBUG name " << code << endl
-	     << "Please check it against the result of ListDebugCode()" << endl;
 #endif
 }
 
@@ -186,35 +144,8 @@ bool debug(DBG_CODE code)
 {
 	return g_dbgCode[code];
 }
-
-
-#else
-
-
 #endif
 
-void ListDebugCode()
-{
-#ifndef OPTIMIZED
-	cout << "Debug code                  On/Off" << endl;
-
-	for (int i = 0; i < DBG_CODE_LENGTH; ++i)
-		cout << g_dbgString[i] << string("                        ", 30 - g_dbgString[i].size())
-		     << debug(static_cast<DBG_CODE>(i)) << endl;
-
-	cout << endl;
-	if (debug(DBG_GENERAL))
-		cout << "cf. TurnOnDebug(), TurnOffDebug(). " << endl;
-#else
-	cout << "Debug info is ignored in optimized mode." << endl;
-#endif
-}
-
-
-string dbgString(DBG_CODE code)
-{
-	return g_dbgString[code];
-}
 
 
 #ifdef Py_REF_DEBUG

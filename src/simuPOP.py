@@ -50,6 +50,28 @@ else:
     else:
         from simuPOP_std import *
 
+_dbgCode = {
+	'DBG_ALL': DBG_ALL,
+	'DBG_GENERAL': DBG_GENERAL,
+	'DBG_UTILITY': DBG_UTILITY,
+	'DBG_OPERATOR': DBG_OPERATOR,
+	'DBG_SIMULATOR': DBG_SIMULATOR,
+	'DBG_INDIVIDUAL': DBG_INDIVIDUAL,
+	'DBG_OUTPUTER': DBG_OUTPUTER,
+	'DBG_MUTATOR': DBG_MUTATOR,
+	'DBG_TRANSMITTER': DBG_TRANSMITTER,
+	'DBG_INITIALIZER': DBG_INITIALIZER,
+	'DBG_POPULATION': DBG_POPULATION,
+	'DBG_STATOR': DBG_STATOR,
+	'DBG_TERMINATOR': DBG_TERMINATOR,
+	'DBG_TAGGER': DBG_TAGGER,
+	'DBG_VISUALIZER': DBG_VISUALIZER,
+	'DBG_SELECTOR': DBG_SELECTOR,
+	'DBG_MATING': DBG_MATING,
+	'DBG_MIGRATOR': DBG_MIGRATOR,
+	'DBG_PROFILE': DBG_PROFILE,
+	'DBG_DEVEL': DBG_DEVEL,
+}
 
 if not simuOptions['Quiet']:
     print "simuPOP : Copyright (c) 2004-2008 Bo Peng"
@@ -72,13 +94,17 @@ if not simuOptions['Quiet']:
     print "or email simupop-list@lists.sourceforge.net (subscription required)."
     # Turn on general debug information when not in 'quiet' mode
     # This will print out error messages when needed.
-    TurnOnDebug('DBG_GENERAL')
+    TurnOnDebug(_dbgCode['DBG_GENERAL'])
 
 if simuOptions['Debug'] != []:
     for g in simuOptions['Debug']:
         if g not in ['', None]:
-            print "Turn on debug '%s'" % g
-            TurnOnDebug(g)
+            try:
+                print "Turn on debug '%s'" % g
+                TurnOnDebug(_dbgCode[g])
+            except:
+                print 'Incorrect debug code. Please use one of'
+                print _dbgCode.keys()
 
 # Other definitions that does not really belong to simuUtil.py
 #
@@ -108,6 +134,11 @@ def deepcopy(self, memo):
 population.__deepcopy__ = deepcopy
 simulator.__deepcopy__ = deepcopy
 baseOperator.__deepcopy__ = deepcopy
+
+
+def DebugCodes():
+    'Return names of all debug codes'
+    return _dbgCode.keys()
 
 #
 # functions to corresponding operators
@@ -610,15 +641,13 @@ class _sample(pyOperator):
 
 
 class randomSample(_sample):
-    '''
-    This operator draws random individuals from a population repeatedly and
+    '''This operator draws random individuals from a population repeatedly and
     forms a number of random samples. These samples can be put in the
     population's local namespace, or save to disk files. The function form
     of this operator returns a list of samples directly.
     '''
     def __init__(self, size, *args, **kwargs):
-        '''
-        Draw *size* random samples from a population *times* times. *size* can
+        '''Draw *size* random samples from a population *times* times. *size* can
         be a number or a list of numbers. In the former case, individuals are
         drawn from the whole population and the samples has only one
         subpopulation. In the latter case, a given number of individuals are
@@ -665,7 +694,7 @@ def RandomSample(pop, *args, **kwargs):
      s.apply(pop)
      return s.samples
  
-RandomSample.__doc__ = "Function version of operator randomSample whose __init__function is \n" + randomSample.__init__.__doc__
+RandomSample.__doc__ = "Function version of operator ``randomSample``."
 
 
 class caseControlSample(_sample):

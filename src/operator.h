@@ -796,7 +796,7 @@ public:
 	}
 
 
-	/// apply the \c setAncestralDepth operator to one population
+	/// apply the \c setAncestralDepth operator to population \e pop.
 	virtual bool apply(population & pop)
 	{
 		pop.setAncestralDepth(m_depth);
@@ -815,23 +815,23 @@ private:
 	int m_depth;
 };
 
-/// set debug on
-/**
-   Turn on debug. There are several ways to turn on debug information for
-   non-optimized modules, namely
-   \li set environment variable \c SIMUDEBUG.
-   \li use <tt>simuOpt.setOptions(debug)</tt> function.
-   \li use \c TurnOnDebug or \c TurnOnDebugByName function.
-   \li use this \c turnOnDebug operator
-
-   The advantage of using this operator is that you can turn on debug at
-   given generations.
-   <funcForm>TurnOnDebug</funcForm>
+/** Turn on debug. There are several ways to turn on debug information for
+ *  non-optimized modules, namely
+ *  \li set environment variable \c SIMUDEBUG.
+ *  \li use <tt>simuOpt.setOptions(debug)</tt> function.
+ *  \li use function \c TurnOnDebug 
+ *  \li use the \c turnOnDebug operator
+ *
+ *  The advantage of using an operator is that you can turn on debug at
+ *  given generations.
+ *  <funcForm>TurnOnDebug</funcForm>
  */
 class turnOnDebug : public baseOperator
 {
 public:
-	/// create a \c turnOnDebug operator
+	/** create a \c turnOnDebug operator that turns on debug information \e code
+	 *  when it is applied to a population.
+	 */
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
@@ -863,7 +863,7 @@ public:
 	/// used by Python print function to print out the general information of the \c turnOnDebug operator
 	virtual string __repr__()
 	{
-		return "<simuPOP::turnOnDebug " + dbgString(m_code) + ">";
+		return "<simuPOP::turnOnDebug>";
 	}
 
 
@@ -871,16 +871,18 @@ private:
 	DBG_CODE m_code;
 };
 
-/// set debug off
-/**
-   Turn off debug.
-   <funcForm>TurnOffDebug</funcForm>
+
+/** Turn off certain debug information. Please refer to operator \c turnOnDebug
+ *  for detailed usages.
+ *  <funcForm>TurnOffDebug</funcForm>
  */
 class turnOffDebug : public baseOperator
 {
 
 public:
-	/// create a \c turnOffDebug operator
+	/** create a \c turnOffDebug operator that turns off debug information
+	 *  \e code when it is applied to a population.
+	 */
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
@@ -901,7 +903,7 @@ public:
 	}
 
 
-	/// apply the \c turnOffDebug operator to one population
+	/// HIDDEN
 	virtual bool apply(population & pop)
 	{
 		TurnOffDebug(m_code);
@@ -912,7 +914,7 @@ public:
 	/// used by Python print function to print out the general information of the \c turnOffDebug operator
 	virtual string __repr__()
 	{
-		return "<simuPOP::turnOffDebug " + dbgString(m_code) + ">";
+		return "<simuPOP::turnOffDebug>";
 	}
 
 

@@ -83,12 +83,12 @@ namespace simuPOP {
 // / Debug and info functions
 // ////////////////////////////////////////////////////////////
 
-/// set debug codes. Default to turn on all debug codes. Only available in non-optimized modules.
-void TurnOnDebug(DBG_CODE code = DBG_ALL);
+/** Set debug code \e code. Name of available codes are available from \c DebugCodes.
+ */
+void TurnOnDebug(DBG_CODE code);
 
-void TurnOnDebug(string code);
-
-/// turn off debug information. Default to turn off all debug codes. Only available in non-optimized modules.
+/** Turn off debug code \e code. Default to turn off all debug codes.
+ */
 void TurnOffDebug(DBG_CODE code = DBG_ALL);
 
 #ifndef OPTIMIZED
@@ -96,12 +96,6 @@ void TurnOffDebug(DBG_CODE code = DBG_ALL);
 bool debug(DBG_CODE code);
 
 #endif
-
-/// list all debug codes
-void ListDebugCode();
-
-/// dbg string for a code CPPONLY
-string dbgString(DBG_CODE code);
 
 #ifdef Py_REF_DEBUG
 /// refcount debug

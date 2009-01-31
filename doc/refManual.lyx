@@ -1332,6 +1332,20 @@ simuPOPInitByValueRef
 
 
 \backslash
+TurnOnDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOffDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPPyEvalRef
 \end_layout
 
@@ -1583,7 +1597,7 @@ LimitsRef
 
 
 \backslash
-ListDebugCodeRef
+simuPOPDebugCodesRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1647,20 +1661,6 @@ OptimizedRef
 
 \backslash
 SetRNGRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-TurnOffDebugRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-TurnOnDebugRef
 \end_layout
 
 \begin_layout Plain Layout
