@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -9087,7 +9087,40 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 \end_layout
 
 \begin_layout Section
-Expression evaluation
+Expressions and statements
+\end_layout
+
+\begin_layout Subsection
+Output an Python string (operator 
+\family typewriter
+pyOutput
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+pyOutput
+\family default
+ is a simple operator that prints a Python string when it is applied to
+ a population.
+ It is commonly used to print the progress of a simulation (e.g.
+ 
+\family typewriter
+pyOutput('start migration
+\backslash
+n', at=200)
+\family default
+) or output separators to beautify outputs from 
+\end_layout
+
+\begin_layout Subsection
+Evaluate and output Python expressions (operator 
+\family typewriter
+pyEval
+\family default
+)
 \end_layout
 
 \begin_layout Standard
