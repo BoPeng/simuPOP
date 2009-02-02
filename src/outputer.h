@@ -48,7 +48,7 @@ public:
 	 *  \e output (default to standard terminal output) when it is applied
 	 *  to a population. Please refer to class \c baseOperator for a detailed
 	 *  description of common operator parameters such as \e stage, \e begin
-	 *  and \c output.
+	 *  and \e output.
 	 */
 	pyOutput(string msg = "", string output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
@@ -71,12 +71,13 @@ public:
 	}
 
 
-	///// destructor
+	/// destructor
 	virtual ~pyOutput()
 	{
 	}
 
 
+	/// Deep copy of a \e pyOutput operator.
 	virtual baseOperator * clone() const
 	{
 		return new pyOutput(*this);
