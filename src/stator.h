@@ -25,7 +25,7 @@
 #define _STATOR_H
 /**
    \file
-   \brief head file of class stator:public baseOperator
+   \brief head file of class baseOperator:public baseOperator
  */
 #include "utility.h"
 #include "population.h"
@@ -45,39 +45,7 @@ using std::max;
 using std::setprecision;
 
 namespace simuPOP {
-/// base class of all the statistics calculator
-/**
-   Operator \c stator calculates various basic statistics for the population and set
-   variables in the local namespace. Other operators or functions can refer to the results
-   from the namespace after \c stat is applied.
- */
-class stator : public baseOperator
-{
-public:
-	// constructor. default to be always active.
-	// default to have NO output (shared variables will be set.)
-	/// create a stator
-	stator(string output = "",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
-		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields)
-	{
-	};
 
-	/// destructor
-	virtual ~stator()
-	{
-	}
-
-
-	/// deep copy of a stator
-	virtual baseOperator * clone() const
-	{
-		return new stator(*this);
-	}
-
-
-};
 
 /// evaluate an expression
 /**
@@ -89,7 +57,7 @@ public:
    uses this feature to initialize R plots and save plots to a file when finished.
    <funcForm>PyEval</funcForm>
  */
-class pyEval : public stator
+class pyEval : public baseOperator
 {
 public:
 	/// evaluate expressions/statments in the local namespace of a replicate
@@ -107,7 +75,7 @@ public:
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: stator(output, stage, begin, end, step, at, rep, subPops, infoFields),
+		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
 	{
 		if (preStmts != "")
@@ -214,7 +182,7 @@ public:
    be used with caution.
    <funcForm>infoEval</funcForm>
  */
-class infoEval : public stator
+class infoEval : public baseOperator
 {
 public:
 	/// evaluate Python statements with variables being an individual's information fields
@@ -250,7 +218,7 @@ public:
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: stator(output, stage, begin, end, step, at, rep, subPops, infoFields),
+		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposePop(exposePop),
 		m_name(name), m_dict(NULL)
 	{
@@ -1478,7 +1446,7 @@ private:
 
    <funcForm>Stat</funcForm>
  */
-class stat : public stator
+class stat : public baseOperator
 {
 public:
 	/// create an \c stat operator

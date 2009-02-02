@@ -205,7 +205,7 @@ stat::stat(
 	string output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
-	: stator("", stage, begin, end, step, at, rep, subPops, infoFields),
+	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
 	m_numOfMale(numOfMale, numOfMale_param),
