@@ -24,19 +24,29 @@
 #include "stator.h"
 
 namespace simuPOP {
-bool pyEval::apply(population & pop)
+
+string pyEval::evaluate(population & pop)
 {
-	if (m_exposePop) {
+	if (!m_exposePop.empty()) {
 		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 		if (popObj == NULL)
 			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
 
 		// set dictionary variable pop to this object
-		pop.setVar("pop", popObj);
+		pop.setVar(m_exposePop, popObj);
 	}
 
 	m_expr.setLocalDict(pop.dict());
 	string res = m_expr.valueAsString();
+	if (!m_exposePop.empty())
+		pop.removeVar(m_exposePop);
+	return res;
+}
+
+
+bool pyEval::apply(population & pop)
+{
+	string res = evaluate(pop);
 
 	if (!this->noOutput() ) {
 		ostream & out = this->getOstream(pop.dict());

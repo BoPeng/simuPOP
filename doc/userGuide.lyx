@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -8525,6 +8525,216 @@ lstparams "caption={initialize by haplotypes with given proportion},label={initB
 \end_layout
 
 \begin_layout Section
+Expressions and statements
+\end_layout
+
+\begin_layout Subsection
+Output an Python string (operator 
+\family typewriter
+pyOutput
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+pyOutput
+\family default
+ is a simple operator that prints a Python string when it is applied to
+ a population.
+ It is commonly used to print the progress of a simulation (e.g.
+ 
+\family typewriter
+pyOutput('start migration
+\backslash
+n', at=200)
+\family default
+) or output separators to beautify outputs from 
+\family typewriter
+pyEval
+\family default
+ outputs (e.g.
+ 
+\family typewriter
+pyOutput('
+\backslash
+n', rep=-1)
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Execute Python statements (operator 
+\family typewriter
+pyExec
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+pyExec
+\family default
+ executes Python statements in a population's local namespace when it is
+ applied to that population.
+ This operator is designed to execute short Python statements but multiple
+ statements separated by newline characters are allowed.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyExec"
+
+\end_inset
+
+ uses two 
+\family typewriter
+pyExec
+\family default
+ operators to create and use a variable 
+\family typewriter
+traj
+\family default
+ in each population's local namespace.
+ The first operator initialize this variable as an empty list.
+ During evolution, the frequency of allele 1 at locus 0 is calcuated (operator
+ 
+\family typewriter
+stat
+\family default
+) and appended to this variable (operator 
+\family typewriter
+pyExec
+\family default
+).
+ The result is a trajectory of allele frequencies during evolution.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyExec.log"
+lstparams "caption={Execute Python statements during evolution},label={pyExec}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Evaluate and output Python expressions (operator 
+\family typewriter
+pyEval
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+pyEval
+\family default
+ evaluate a given Python expression in a population's local namespace and
+ output its return value.
+ This operator has been widely used (e.g.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "simple-example"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "ancestralPop"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "stageAndGen"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "output"
+
+\end_inset
+
+) to output statistics of populations and report progress.
+\end_layout
+
+\begin_layout Standard
+Two additional features of this operator may become handy from time to time.
+ First, an optional Python statements (parameter 
+\emph on
+stmts
+\emph default
+) can be specified which will be executed before the expression is evaluated.
+ Second, the population being applied can be exposed in its own namespace
+ as a variable (parameter 
+\emph on
+exposePop
+\emph default
+).
+ This makes it possible to access properties of a population other than
+ its variables.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyEval"
+
+\end_inset
+
+ demonstrates both features.
+ In this example, two statements are executed to count the number of unique
+ parents in an offspring population and save them as variables 
+\family typewriter
+numFather
+\family default
+ and 
+\family typewriter
+numMother
+\family default
+.
+ The operator outputs these two variables alone with a generation number.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyEval.log"
+lstparams "caption={evaluate an expression},label={pyEval}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the function form of this operator (
+\family typewriter
+PyEval
+\family default
+) returns the result of the expression rather than writting it to an output.
+\end_layout
+
+\begin_layout Subsection
+Expressions involve information fields (operator 
+\family typewriter
+infoEval
+\family default
+)
+\end_layout
+
+\begin_layout Section
 Miscellaneous operators
 \end_layout
 
@@ -9080,54 +9290,6 @@ reference "ticToc"
 LatexCommand lstinputlisting
 filename "log/ticToc.log"
 lstparams "caption={Monitor the performance of operators},label={ticToc}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Expressions and statements
-\end_layout
-
-\begin_layout Subsection
-Output an Python string (operator 
-\family typewriter
-pyOutput
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-Operator 
-\family typewriter
-pyOutput
-\family default
- is a simple operator that prints a Python string when it is applied to
- a population.
- It is commonly used to print the progress of a simulation (e.g.
- 
-\family typewriter
-pyOutput('start migration
-\backslash
-n', at=200)
-\family default
-) or output separators to beautify outputs from 
-\end_layout
-
-\begin_layout Subsection
-Evaluate and output Python expressions (operator 
-\family typewriter
-pyEval
-\family default
-)
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyEval.log"
-lstparams "caption={evaluate an expression},label={pyEval}"
 
 \end_inset
 

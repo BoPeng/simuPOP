@@ -6903,50 +6903,35 @@ Function form:
 
     PyEval
 
-Description:
-
-    evaluate an expression
-
 Details:
 
-    Python expressions/statements will be executed when pyEval is
-    applied to a population by using parameters expr/stmts. Statements
-    can also been executed when pyEval is created and destroyed or
-    before expr is executed. The corresponding parameters are
-    preStmts, postStmts and stmts. For example, operator varPlotter
-    uses this feature to initialize R plots and save plots to a file
-    when finished.
+    A pyEval operator evaluates a Python expression in a population's
+    local namespace when it is applied to this population. The result
+    is written to an output specified by parameter output.
 
 "; 
 
 %feature("docstring") simuPOP::pyEval::pyEval "
 
-Description:
-
-    evaluate expressions/statments in the local namespace of a
-    replicate
-
 Usage:
 
-    pyEval(expr=\"\", stmts=\"\", preStmts=\"\", postStmts=\"\",
-      exposePop=False, name=\"\", output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+    pyEval(expr=\"\", stmts=\"\", exposePop=string, output=\">\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    expr:           the expression to be evaluated. The result will be
-                    sent to output.
-    stmts:          the statement that will be executed before the
-                    expression
-    preStmts:       the statement that will be executed when the
-                    operator is constructed
-    postStmts:      the statement that will be executed when the
-                    operator is destroyed
-    exposePop:      if True, expose the current population as a
-                    variable named pop
-    name:           used to let pure Python operator to identify
-                    themselves
-    output:         default to >. I.e., output to standard output.
+    Crete a pyEval operator that evaluates a Python expression expr in
+    a population's local namespace when it is applied to this
+    population. If Python statements stmts is given (a single or
+    multi-line string), the statement will be executed before expr. If
+    exposePop is set to an non-empty string, the current population
+    will be exposed in its own local namespace as a variable with this
+    name. This allows the execution of expressions such as
+    'pop.individual(0).allele(0)'. The result of expr will be sent to
+    an output stream specified by parameter output. The exposed
+    population variable will be removed after expr is evaluated.
+    Please refer to class baseOperator for other parameters.
 
 "; 
 
@@ -6970,11 +6955,24 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::pyEval::evaluate "
+
+Usage:
+
+    x.evaluate(pop)
+
+Details:
+
+    Evaluate the expression and optional statements in the local
+    namespace of population pop and return its result as a string.
+
+"; 
+
 %feature("docstring") simuPOP::pyEval::apply "
 
 Description:
 
-    apply the pyEval operator
+    Apply the pyEval operator to population pop.
 
 Usage:
 
@@ -6995,57 +6993,37 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyEval::name "
-
-Description:
-
-    return the name of an expression
-
-Usage:
-
-    x.name()
-
-Details:
-
-    The name of a pyEval operator is given by an optional parameter
-    name. It can be used to identify this pyEval operator in debug
-    output, or in the dryrun mode of simulator::evolve.
-
-"; 
-
 %feature("docstring") simuPOP::pyExec "
 
 Function form:
 
     PyExec
 
-Description:
-
-    execute a Python statement
-
 Details:
 
-    This operator takes a list of statements and executes them. No
-    value will be returned or outputted.
+    This operator executes given Python statements in a population's
+    local namespace when it is applied to this population.
 
 "; 
 
 %feature("docstring") simuPOP::pyExec::pyExec "
 
-Description:
-
-    evaluate statments in the local replicate namespace, no return
-    value
-
 Usage:
 
-    pyExec(stmts=\"\", preStmts=\"\", postStmts=\"\", exposePop=False,
-      name=\"\", output=\">\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+    pyExec(stmts=\"\", exposePop=string, output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
 Details:
 
-    Please refer to class pyEval for parameter descriptions.
+    Create a pyExec operator that executes statements stmts in a
+    population's local namespace when it is applied to this
+    population. If exposePop is given, current population will be
+    exposed in its local namespace as a variable named by exposePop.
+    Although multiple statements can be executed, it is recommended
+    that you use this operator to execute short statements and use
+    pyOperator for more complex once. Note that exposed population
+    variable will be removed after the statements are executed.
 
 "; 
 
@@ -7407,6 +7385,10 @@ Usage:
 
 %feature("docstring") simuPOP::pyOutput::~pyOutput "
 
+Description:
+
+    destructor
+
 Usage:
 
     x.~pyOutput()
@@ -7415,14 +7397,13 @@ Usage:
 
 %feature("docstring") simuPOP::pyOutput::clone "
 
+Description:
+
+    Deep copy of a pyOutput operator.
+
 Usage:
 
     x.clone()
-
-Details:
-
-    Return a cloned copy of an operator. This function is available to
-    all operators.
 
 "; 
 
@@ -10481,58 +10462,6 @@ Usage:
 Usage:
 
     x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::stator "
-
-Description:
-
-    base class of all the statistics calculator
-
-Details:
-
-    Operator stator calculates various basic statistics for the
-    population and set variables in the local namespace. Other
-    operators or functions can refer to the results from the namespace
-    after stat is applied.
-
-"; 
-
-%feature("docstring") simuPOP::stator::stator "
-
-Description:
-
-    create a stator
-
-Usage:
-
-    stator(output=\"\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::stator::~stator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~stator()
-
-"; 
-
-%feature("docstring") simuPOP::stator::clone "
-
-Description:
-
-    deep copy of a stator
-
-Usage:
-
-    x.clone()
 
 "; 
 

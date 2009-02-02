@@ -1351,6 +1351,10 @@ xleftmargin=15pt}
 \makeindex
 \usepackage{listings}
 
+\newlength{\admonitionwidth} 
+\setlength{\admonitionwidth}{0.7\textwidth}
+
+
 \makeatletter
 \usepackage{babel}
 \makeatother
