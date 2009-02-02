@@ -159,16 +159,21 @@ def InitByValue(pop, *args, **kwargs):
     initByValue(*args, **kwargs).apply(pop)
 
 def PyEval(pop, *args, **kwargs):
-    pyEval(*args, **kwargs).apply(pop)
+    '''Evaluate statements *stmts* (optional) and expression *expr* in
+    population *pop*\ 's local namespace and return the result of *expr*.
+    If *exposePop* is given, population *pop* will be exposed in its local
+    namespace as a variable with a name specified by *exposePop*.
 
-if pyEval.__init__.__doc__ is not None:
-    PyEval.__doc__ = "Function version of operator pyEval whose __init__ function is \n" + pyEval.__init__.__doc__
+    .. note::
+
+       Unlike its operator counterpart, this function returns the result of
+       *expr* rather than writting it to an output.
+    '''
+    return pyEval(*args, **kwargs).evaluate(pop)
 
 def PyExec(pop, *args, **kwargs):
+    '''Execute *stmts* in population *pop*\ 's local namespace.'''
     pyExec(*args, **kwargs).apply(pop)
-
-if pyExec.__init__.__doc__ is not None:
-    PyExec.__doc__ = "Function version of operator pyExec whose __init__ function is \n" + pyExec.__init__.__doc__
 
 def Stat(pop, *args, **kwargs):
     stat(*args, **kwargs).apply(pop)

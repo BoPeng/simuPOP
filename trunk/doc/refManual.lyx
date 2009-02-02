@@ -37,6 +37,9 @@ Last modified \\
 \sectionfont{\color{TitleColor}}
 \subsectionfont{\color{TitleColor}}
 \subsubsectionfont{\color{TitleColor}}
+
+\newlength{\admonitionwidth} 
+\setlength{\admonitionwidth}{0.7\textwidth}
 \end_preamble
 \use_default_options false
 \language english
@@ -1071,13 +1074,6 @@ Statistics Calculation
 \begin_layout Standard
 \begin_inset ERT
 status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-statorRef
-\end_layout
 
 \begin_layout Plain Layout
 

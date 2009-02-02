@@ -47,45 +47,38 @@ using std::setprecision;
 namespace simuPOP {
 
 
-/// evaluate an expression
-/**
-   Python expressions/statements will be executed when \c pyEval is applied
-   to a population by using parameters <tt>expr/stmts</tt>. Statements can
-   also been executed when \c pyEval is created and destroyed or before \c expr
-   is executed. The corresponding parameters are \c preStmts, \c postStmts
-   and \c stmts. For example, operator \c varPlotter
-   uses this feature to initialize R plots and save plots to a file when finished.
-   <funcForm>PyEval</funcForm>
+/** A \c pyEval operator evaluates a Python expression in a population's local
+ *  namespace when it is applied to this population. The result is written to
+ *  an output specified by parameter \e output.
+ *  <funcForm>PyEval</funcForm>
  */
 class pyEval : public baseOperator
 {
 public:
-	/// evaluate expressions/statments in the local namespace of a replicate
-	/**
-	   \param expr the expression to be evaluated. The result will be sent to \c output.
-	   \param stmts the statement that will be executed before the expression
-	   \param preStmts the statement that will be executed when the operator is constructed
-	   \param postStmts the statement that will be executed when the operator is destroyed
-	   \param exposePop if \c True, expose the current population as a variable named \c pop
-	   \param name used to let pure Python operator to identify themselves
-	   \param output default to \c >. I.e., output to standard output.
+	/** Crete a \c pyEval operator that evaluates a Python expression \e expr
+	 *  in a population's local namespace when it is applied to this population.
+	 *  If Python statements \e stmts is given (a single or multi-line string),
+	 *  the statement will be executed before \e expr. If \e exposePop is set
+	 *  to an non-empty string, the current population will be exposed in its
+	 *  own local namespace as a variable with this name. This allows the
+	 *  execution of expressions such as <tt>'pop.individual(0).allele(0)'</tt>.
+	 *  The result of \e expr will be sent to an output stream specified by
+	 *  parameter \c output. The exposed population variable will be removed
+	 *  after \e expr is evaluated. Please refer to class \c baseOperator for
+	 *  other parameters.
 	 */
-	pyEval(const string & expr = "", const string & stmts = "", const string & preStmts = "",
-		const string & postStmts = "", bool exposePop = false, const string & name = "",
-		string output = ">",
+	pyEval(const string & expr = "", const string & stmts = "", 
+		const string & exposePop = string(), string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_expr(expr, stmts), m_postExpr("", postStmts), m_exposePop(exposePop), m_name(name)
+		m_expr(expr, stmts), m_exposePop(exposePop)
 	{
-		if (preStmts != "")
-			Expression("", preStmts).evaluate();
 	}
 
 
 	~pyEval()
 	{
-		m_postExpr.evaluate();
 	}
 
 
@@ -95,58 +88,51 @@ public:
 		return new pyEval(*this);
 	}
 
+	/** Evaluate the expression and optional statements in the local namespace
+	 *  of population \e pop and return its result as a string.
+	 */
+	string evaluate(population & pop);
 
-	// check all alleles in vector allele if they are fixed.
-	/// apply the \c pyEval operator
+	/// Apply the \c pyEval operator to population \e pop.
 	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c pyEval operator
 	virtual string __repr__()
 	{
-		return "<simuPOP::pyEval " + m_name + ">";
-	}
-
-
-	/// return the name of an expression
-	/** The name of a \c pyEval operator is given by an optional parameter \c name.
-	   It can be used to identify this \c pyEval operator in debug output, or in the dryrun
-	   mode of simulator::evolve.
-	 */
-	string & name()
-	{
-		return m_name;
+		return "<simuPOP::pyEval>";
 	}
 
 
 private:
 	/// expression to evaluate
-	Expression m_expr, m_postExpr;
+	Expression m_expr;
 
 	/// if expose pop
-	bool m_exposePop;
-
-	string m_name;
+	string m_exposePop;
 };
 
-/// execute a Python statement
-/**
-   This operator takes a list of statements and executes them. No value will be returned or outputted.
-   <funcForm>PyExec</funcForm>
+
+/** This operator executes given Python statements in a population's local
+ *  namespace when it is applied to this population.
+ *  <funcForm>PyExec</funcForm>
  */
 class pyExec : public pyEval
 {
 public:
-	/// evaluate statments in the local replicate namespace, no return value
-	/**
-	   Please refer to class \c pyEval for parameter descriptions.
+	/** Create a \c pyExec operator that executes statements \e stmts in a
+	 *  population's local namespace when it is applied to this population.
+	 *  If \e exposePop is given, current population will be exposed in
+	 *  its local namespace as a variable named by \e exposePop. Although
+	 *  multiple statements can be executed, it is recommended that you use
+	 *  this operator to execute short statements and use \c pyOperator for
+	 *  more complex once. Note that exposed population variable will be
+	 *  removed after the statements are executed.
 	 */
-	pyExec(const string & stmts = "", const string & preStmts = "", const string & postStmts = "",
-		bool exposePop = false, const string & name = "",
+	pyExec(const string & stmts = "", const string & exposePop = string(),
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: pyEval("", stmts, preStmts, postStmts, exposePop, name, "",
-		         stage, begin, end, step, at, rep, subPops, infoFields)
+		: pyEval("", stmts, exposePop, "", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
 
@@ -166,10 +152,8 @@ public:
 	/// used by Python print function to print out the general information of the \c pyExec operator
 	virtual string __repr__()
 	{
-		return "<simuPOP::pyExec " + this->name() + ">";
+		return "<simuPOP::pyExec>";
 	}
-
-
 };
 
 

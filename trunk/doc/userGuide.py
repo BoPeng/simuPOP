@@ -1462,16 +1462,39 @@ simu.evolve(
 )
 #end
 
-#file log/pyEval.log
+#file log/pyExec.log
 simu = simulator(population(100, loci=[1]),
     randomMating(), rep=2)
 simu.evolve(
-    preOps = [initByFreq([0.2, 0.8])],
-    ops = [ stat(alleleFreq=[0]),
-        pyExec('myNum = alleleNum[0][0] * 2'),
-        pyEval(r'"gen %d, rep %d, num %d, myNum %d\n"' \
-            ' % (gen, rep, alleleNum[0][0], myNum)')
-        ],
+    preOps = [
+        initByFreq([0.2, 0.8]),
+        pyExec('traj=[]')
+    ],
+    ops = [
+        stat(alleleFreq=[0]),
+        pyExec('traj.append(alleleFreq[0][1])'),
+    ],
+    gen=5
+)
+# print trajectory
+print ', '.join(['%.3f' % x for x in simu.dvars(0).traj])
+#end
+
+#file log/pyEval.log
+simu = simulator(population(1000, loci=[1],
+    infoFields=['mother_idx', 'father_idx']),
+    randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        stat(alleleFreq=[0]),
+        parentsTagger(),
+        pyEval(r'"gen %d, #father %d, #mother %d\n"' \
+            ' % (gen, numFather, numMother)',
+            stmts="numFather = len(set(pop.indInfo('father_idx')))\n"
+                "numMother = len(set(pop.indInfo('mother_idx')))",
+            exposePop='pop')
+    ],
     gen=3
 )
 #end
