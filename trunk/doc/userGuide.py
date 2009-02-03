@@ -1499,6 +1499,19 @@ simu.evolve(
 )
 #end
 
+#file log/infoEval.log
+import random
+pop = population(20, loci=[1], infoFields=['a'])
+pop.setVirtualSplitter(infoSplitter('a', cutoff=[3]))
+InitByFreq(pop, [0.2, 0.8])
+pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
+InfoEval(pop, 'a', subPops=[(0, 0)])
+InfoEval(pop, 'ind.allele(0, 0)', exposeInd='ind')
+# use population variables
+pop.dvars().b = 5
+InfoEval(pop, '"%d " % (a+b)', usePopVars=True)
+#end
+
 #file log/infoExec.log
 pop = population(100, loci=[1], infoFields=['a', 'b', 'c'])
 InitByFreq(pop, [0.2, 0.8])
