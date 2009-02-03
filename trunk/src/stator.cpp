@@ -57,25 +57,9 @@ bool pyEval::apply(population & pop)
 }
 
 
-void infoEval::prepareDict(population & pop)
-{
-	if (m_usePopVars && m_exposePop) {
-		PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
-		if (popObj == NULL)
-			throw SystemError("Could not expose population pointer. Compiled with the wrong version of SWIG? ");
-
-		// set dictionary variable pop to this object
-		pop.setVar("pop", popObj);
-	}
-
-	if (m_usePopVars)
-		m_dict = pop.dict();
-	else
-		m_dict = PyDict_New();
-}
 
 
-string infoEval::evalInfo(individual * ind)
+string infoExec::evalInfo(individual * ind)
 {
 	vectorstr infos = ind->infoFields();
 
@@ -84,6 +68,15 @@ string infoEval::evalInfo(individual * ind)
 		string name = infos[idx];
 		double val = ind->info(idx);
 		PyDict_SetItemString(m_dict, name.c_str(), PyFloat_FromDouble(val));
+	}
+
+	if (!m_exposeInd.empty()) {
+		PyObject * indObj = pyPopObj(static_cast<void *>(ind));
+		if (indObj == NULL)
+			throw SystemError("Could not expose individual pointer. Compiled with the wrong version of SWIG? ");
+
+		// set dictionary variable pop to this object
+		SharedVariables(m_dict, false).setVar(m_exposeInd, indObj);
 	}
 
 	m_expr.setLocalDict(m_dict);
@@ -106,9 +99,9 @@ string infoEval::evalInfo(individual * ind)
 }
 
 
-bool infoEval::apply(population & pop)
+bool infoExec::apply(population & pop)
 {
-	prepareDict(pop);
+	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	string res;
 	// FIXME: support virtual subpop
@@ -141,11 +134,10 @@ bool infoEval::apply(population & pop)
 }
 
 
-bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
+bool infoExec::applyDuringMating(population & pop, RawIndIterator offspring,
                                  individual * dad, individual * mom)
 {
-	// FIXME: This potentially can be very slow.
-	prepareDict(pop);
+	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
 	string res = evalInfo(& * offspring);
 
