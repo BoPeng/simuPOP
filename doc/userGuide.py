@@ -1505,11 +1505,11 @@ pop = population(20, loci=[1], infoFields=['a'])
 pop.setVirtualSplitter(infoSplitter('a', cutoff=[3]))
 InitByFreq(pop, [0.2, 0.8])
 pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
-InfoEval(pop, 'a', subPops=[(0, 0)])
-InfoEval(pop, 'ind.allele(0, 0)', exposeInd='ind')
+InfoEval(pop, 'a', subPops=[(0, 0)]);print
+InfoEval(pop, 'ind.allele(0, 0)', exposeInd='ind');print
 # use population variables
 pop.dvars().b = 5
-InfoEval(pop, '"%d " % (a+b)', usePopVars=True)
+InfoEval(pop, '"%d " % (a+b)', usePopVars=True);print
 #end
 
 #file log/infoExec.log
