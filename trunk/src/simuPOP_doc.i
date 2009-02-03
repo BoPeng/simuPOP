@@ -2597,9 +2597,9 @@ Note:
 
 Usage:
 
-    infoEval(expr=\"\", usePopVars=False, exposeInd=string, output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    infoEval(expr=\"\", usePopVars=False, exposeInd=string,
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 Details:
 
