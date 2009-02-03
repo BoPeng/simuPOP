@@ -212,7 +212,7 @@ public:
 	 *  variables and functions in this operator is discouraged.
 	 */
 	infoEval(const string & expr = "", bool usePopVars = false,  const string & exposeInd = string(),
-		string output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		string output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_expr(expr, ""), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
