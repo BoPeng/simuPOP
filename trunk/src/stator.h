@@ -66,6 +66,13 @@ public:
 	 *  parameter \c output. The exposed population variable will be removed
 	 *  after \e expr is evaluated. Please refer to class \c baseOperator for
 	 *  other parameters.
+     *
+     *  \note Although the statements and expressions are evaluated in a
+     *  population's local namespace, they have access to a **global**
+     *  namespace which is the module global namespace. It is therefore
+     *  possible to refer to any module variable in these expressions. Such
+     *  mixed use of local and global variables is, however, strongly
+     *  discouraged.
 	 */
 	pyEval(const string & expr = "", const string & stmts = "", 
 		const string & exposePop = string(), string output = ">",
@@ -195,6 +202,12 @@ public:
 	 *  This operator is by default applied post-mating. If it stage is set to
 	 *  \c DuringMating, it will be applied to all offspring, regardless of
 	 *  \c subPops settings.
+     *
+     *  \note Although \e stmts are executed in individual or population level
+     *  local namespaces, they also have access to a global namespace which is
+     *  the module namespace of your script. Although it is possible to use
+     *  module level variables and functions in \e stmts, such usage is
+     *  discouraged due to the variable nature of the global namespace.
 	 */
 	infoExec(const string & stmts = "", bool usePopVars = false,  const string & exposeInd = string(),
 		string output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),

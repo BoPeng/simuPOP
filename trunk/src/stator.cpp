@@ -71,7 +71,7 @@ string infoExec::evalInfo(individual * ind)
 	}
 
 	if (!m_exposeInd.empty()) {
-		PyObject * indObj = pyPopObj(static_cast<void *>(ind));
+		PyObject * indObj = pyIndObj(static_cast<void *>(ind));
 		if (indObj == NULL)
 			throw SystemError("Could not expose individual pointer. Compiled with the wrong version of SWIG? ");
 

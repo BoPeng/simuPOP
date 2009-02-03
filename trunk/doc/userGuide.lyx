@@ -8711,7 +8711,7 @@ numMother
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pyEval.log"
-lstparams "caption={evaluate an expression},label={pyEval}"
+lstparams "caption={Evaluate a expression and statements in a population's local namespace.},label={pyEval}"
 
 \end_inset
 
@@ -8727,11 +8727,22 @@ PyEval
 \end_layout
 
 \begin_layout Subsection
-Expressions involve information fields (operator 
+Execute statements involving individual information fields (operator 
 \family typewriter
-infoEval
+infoExec
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infoExec.log"
+lstparams "caption={Execute statements using individual information fields},label={infoExec}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

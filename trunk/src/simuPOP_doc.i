@@ -2567,171 +2567,65 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::infoEval "
-
-Function form:
-
-    infoEval
-
-Details:
-
-    Unlike operator pyEval and pyExec that work at the population
-    level, in its local namespace, infoEval works at the individual
-    level, working with individual information fields. is statement
-    can change the value of existing information fields. Optionally,
-    variables in population's local namespace can be used in the
-    statement, but this should be used with caution.
-
-"; 
-
-%feature("docstring") simuPOP::infoEval::infoEval "
-
-Description:
-
-    evaluate Python statements with variables being an individual's
-    information fields
-
-Usage:
-
-    infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposePop=False,
-      name=\"\", output=\">\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
-
-Details:
-
-    The expression and statements will be executed for each
-    individual, in a Python namespace (dictionary) where individual
-    information fields are made available as variables. Population
-    dictionary can be made avaialbe with option usePopVars. Changes to
-    these variables will change the corresponding information fields
-    of individuals.  Please note that, 1. If population variables are
-    used, and there are name conflicts between information fields and
-    variables, population variables will be overridden by information
-    fields, without any warning. 2. Information fields are float
-    numbers. An exceptions will raise if an information field can not
-    be converted to a float number. 3. This operator can be used in
-    all stages. When it is used during-mating, it will act on each
-    offspring.
-
-Arguments:
-
-    expr:           the expression to be evaluated. The result will be
-                    sent to output.
-    stmts:          the statement that will be executed before the
-                    expression
-    subPop:         a shortcut to subPops=[subPop]
-    subPops:        subpopulations this operator will apply to.
-                    Default to all.
-    usePopVars:     if True, import variables from expose the current
-                    population as a variable named pop
-    exposePop:      if True, expose the current population as a
-                    variable named pop
-    name:           used to let pure Python operator to identify
-                    themselves
-    output:         default to >. I.e., output to standard output.
-                    Note that because the expression will be executed
-                    for each individual, the output can be large.
-
-"; 
-
-%feature("docstring") simuPOP::infoEval::~infoEval "
-
-Usage:
-
-    x.~infoEval()
-
-"; 
-
-%feature("docstring") simuPOP::infoEval::clone "
-
-Description:
-
-    deep copy of a infoEval operator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::infoEval::apply "
-
-Description:
-
-    apply the infoEval operator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::infoEval::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
-
-%feature("docstring") simuPOP::infoEval::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the infoEval operator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::infoEval::name "
-
-Description:
-
-    return the name of an expression
-
-Usage:
-
-    x.name()
-
-Details:
-
-    The name of a infoEval operator is given by an optional parameter
-    name. It can be used to identify this infoEval operator in debug
-    output, or in the dryrun mode of simulator::evolve.
-
-"; 
-
 %feature("docstring") simuPOP::infoExec "
 
 Function form:
 
-    infoExec
-
-Description:
-
-    execute a Python statement for each individual, using information
-    fields
+    InfoExec
 
 Details:
 
-    This operator takes a list of statements and executes them. No
-    value will be returned or outputted.
+    Unlike operator pyEval and pyExec that work at the population
+    level, in a population's local namespace, operator infoExec works
+    at the individual level, working with individual information
+    fields. When this operator is applied to a population, information
+    fields of eligible individuals are put into either a temporary
+    dictionary or in the local namespace of the population. The
+    information fields are updated from this dictionary after
+    specified statements are execuated.
 
 "; 
 
 %feature("docstring") simuPOP::infoExec::infoExec "
 
-Description:
-
-    fields, optionally with variable in population's local namespace
-
 Usage:
 
-    infoExec(stmts=\"\", usePopVars=False, exposePop=False, name=\"\",
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+    infoExec(stmts=\"\", usePopVars=False, exposeInd=string,
+      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=[], subPops=[], infoFields=[])
 
 Details:
 
-    Please refer to class infoEval for parameter descriptions.
+    Create an operator that executes Python statements stmts using
+    individual information fields as variables. For each eligible
+    individual (individuals in (virtual) subpopulations specified by
+    parameter subPops, default to all individuals), its information
+    fields are copied either to a temporary namespace (default) or the
+    population's local namespace (if usePopVars is True). If exposeInd
+    is not empty, the individual itself will be exposed in this
+    namespace as a variable with name specified by exposeInd. In the
+    usePopVars=True case, any population variable whose name matches
+    an information field or exposeInd will be silently overridden.
+    One or more python statements (stmts) are executed for each
+    individual. Information fields of these individuals are then
+    updated from the corresponding variables. For example, a=1 will
+    set information field a of all individuals to 1, a=b will set
+    information field a of all individuals to information field b or a
+    population variable b if b is not an information field but a
+    population variable (needs usePopVars=True), and a=ind.sex() will
+    set information field a of all individuals to its sex (needs
+    exposeInd='ind'.  This operator is by default applied post-mating.
+    If it stage is set to DuringMating, it will be applied to all
+    offspring, regardless of subPops settings.
+
+Note:
+
+    Although stmts are executed in individual or population level
+    local namespaces, they also have access to a global namespace
+    which is the module namespace of your script. Although it is
+    possible to use module level variables and functions in stmts,
+    such usage is discouraged due to the variable nature of the global
+    namespace.
 
 "; 
 
@@ -2754,6 +2648,20 @@ Usage:
     x.clone()
 
 "; 
+
+%feature("docstring") simuPOP::infoExec::apply "
+
+Description:
+
+    apply the infoExec operator
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::infoExec::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
 %feature("docstring") simuPOP::infoExec::__repr__ "
 
@@ -6932,6 +6840,15 @@ Details:
     an output stream specified by parameter output. The exposed
     population variable will be removed after expr is evaluated.
     Please refer to class baseOperator for other parameters.
+
+Note:
+
+    Although the statements and expressions are evaluated in a
+    population's local namespace, they have access to a **global**
+    namespace which is the module global namespace. It is therefore
+    possible to refer to any module variable in these expressions.
+    Such mixed use of local and global variables is, however, strongly
+    discouraged.
 
 "; 
 

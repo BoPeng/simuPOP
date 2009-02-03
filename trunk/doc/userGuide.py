@@ -1499,8 +1499,21 @@ simu.evolve(
 )
 #end
 
+#file log/infoExec.log
+pop = population(100, loci=[1], infoFields=['a', 'b', 'c'])
+InitByFreq(pop, [0.2, 0.8])
+InfoExec(pop, 'a=1')
+print pop.indInfo('a')[:10]
+InfoExec(pop, 'b=ind.sex()', exposeInd='ind')
+print pop.indInfo('b')[:10]
+InfoExec(pop, 'c=a+b')
+print pop.indInfo('c')[:10]
+pop.dvars().d = 5
+InfoExec(pop, 'c+=d', usePopVars=True)
+print pop.indInfo('c')[:10]
+#end
+
 #file log/splitMerge.log
-from simuPOP import *
 pop = population(1000, loci=[1], infoFields=['migrate_to'])
 simu = simulator(pop, randomSelection())
 simu.evolve(
