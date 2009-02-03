@@ -175,6 +175,12 @@ def PyExec(pop, *args, **kwargs):
     '''Execute *stmts* in population *pop*\ 's local namespace.'''
     pyExec(*args, **kwargs).apply(pop)
 
+def InfoExec(pop, *args, **kwargs):
+    '''Execute *stmts* for each individual, using information fields as variables.
+    Please refer to operator ``infoExec`` for details.
+    '''
+    infoExec(*args, **kwargs).apply(pop)
+
 def Stat(pop, *args, **kwargs):
     stat(*args, **kwargs).apply(pop)
 
@@ -310,18 +316,6 @@ def PyQuanTrait(pop, *args, **kwargs):
 
 if pyQuanTrait.__init__.__doc__ is not None:
     PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
-
-def InfoEval(pop, *args, **kwargs):
-    infoEval(*args, **kwargs).apply(pop)
-
-if infoEval.__init__.__doc__ is not None:
-    InfoEval.__doc__ = "Function version of operator infoEval whose __init__function is \n" + infoEval.__init__.__doc__
-
-def InfoExec(pop, *args, **kwargs):
-    infoExec(*args, **kwargs).apply(pop)
-
-if infoExec.__init__.__doc__ is not None:
-    InfoExec.__doc__ = "Function version of operator infoExec whose __init__function is \n" + infoExec.__init__.__doc__
 
 
 # mating schemes
