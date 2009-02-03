@@ -1352,6 +1352,20 @@ simuPOPPyExecRef
 
 
 \backslash
+simuPOPInfoEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInfoExecRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuPOPMigrateRef
 \end_layout
 
