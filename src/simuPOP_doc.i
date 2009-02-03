@@ -2567,6 +2567,114 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::infoEval "
+
+Function form:
+
+    InfoEval
+
+Details:
+
+    Unlike operator pyEval and pyExec that work at the population
+    level, in a population's local namespace, operator infoEval works
+    at the individual level, working with individual information
+    fields. When this operator is applied to a population, information
+    fields of eligible individuals are put into either a temporary
+    dictionary or in the local namespace of the population. A Python
+    expression is then evaluated for each individual. The result is
+    written to an output.  Unlike operator ``infoExec``, individual
+    information fields are not changed after this operator is applied
+    to a population.
+
+Note:
+
+    This operator tends to generate a large amount of output so use it
+    is with caution.
+
+"; 
+
+%feature("docstring") simuPOP::infoEval::infoEval "
+
+Usage:
+
+    infoEval(expr=\"\", usePopVars=False, exposeInd=string, output=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[])
+
+Details:
+
+    Create an operator that evaluate a Python expression expr using
+    individual information fields as variables. For each eligible
+    individual (individuals in (virtual) subpopulations specified by
+    parameter subPops, default to all individuals), its information
+    fields are copied either to a temporary namespace (default) or the
+    population's local namespace (if usePopVars is True). If exposeInd
+    is not empty, the individual itself will be exposed in this
+    namespace as a variable with name specified by exposeInd. In the
+    usePopVars=True case, any population variable whose name matches
+    an information field or exposeInd will be silently overridden.  A
+    Python expression (expr) is evaluated for each individual. The
+    results are converted to strings and are written to an output
+    specified by parameter output.  This operator is by default
+    applied post-mating. If it stage is set to DuringMating, it will
+    be applied to all offspring, regardless of subPops settings.
+
+Note:
+
+    Although expr is evaluated in individual or population level local
+    namespaces, it can also access a global namespace which is the
+    module namespace of your script. However, using module level
+    variables and functions in this operator is discouraged.
+
+"; 
+
+%feature("docstring") simuPOP::infoEval::~infoEval "
+
+Usage:
+
+    x.~infoEval()
+
+"; 
+
+%feature("docstring") simuPOP::infoEval::clone "
+
+Description:
+
+    deep copy of a infoEval operator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::infoEval::apply "
+
+Description:
+
+    apply the infoEval operator
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::infoEval::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
+
+%feature("docstring") simuPOP::infoEval::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the infoEval operator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
 %feature("docstring") simuPOP::infoExec "
 
 Function form:
@@ -2575,14 +2683,12 @@ Function form:
 
 Details:
 
-    Unlike operator pyEval and pyExec that work at the population
-    level, in a population's local namespace, operator infoExec works
-    at the individual level, working with individual information
-    fields. When this operator is applied to a population, information
-    fields of eligible individuals are put into either a temporary
-    dictionary or in the local namespace of the population. The
-    information fields are updated from this dictionary after
-    specified statements are execuated.
+    Operator infoExec is similar to infoEval in that it works at the
+    individual level, using individual information fields as
+    variables. The difference is that instead of evaluating an
+    expression and outputing its result, this operator execute one or
+    more statements and update individual information fields from the
+    namespace after the specified statements are execuated.
 
 "; 
 
@@ -2622,10 +2728,8 @@ Note:
 
     Although stmts are executed in individual or population level
     local namespaces, they also have access to a global namespace
-    which is the module namespace of your script. Although it is
-    possible to use module level variables and functions in stmts,
-    such usage is discouraged due to the variable nature of the global
-    namespace.
+    which is the module namespace of your script. However, using
+    module level variables and functions in stmts is discouraged.
 
 "; 
 

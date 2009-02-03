@@ -144,8 +144,9 @@ bool debug(DBG_CODE code)
 {
 	return g_dbgCode[code];
 }
-#endif
 
+
+#endif
 
 
 #ifdef Py_REF_DEBUG
@@ -199,6 +200,7 @@ int simuPOP_kbhit(void)
 	static time_t last_time = 0;
 
 	time_t cur_time = time(NULL);
+
 	if (cur_time != last_time)
 		last_time = cur_time;
 	else
@@ -395,19 +397,19 @@ void PyObj_As_Array(PyObject * obj, vectorf & val)
 		val = vectorf();
 		return;
 	}
-    if (PySequence_Check(obj)) {
-    	val.resize(PySequence_Size(obj));
+	if (PySequence_Check(obj)) {
+		val.resize(PySequence_Size(obj));
 
-	    // assign values
-    	for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
-	    	PyObject * item = PySequence_GetItem(obj, i);
-		    PyObj_As_Double(item, val[i]);
-    		Py_DECREF(item);
-	    }
-    } else {
-        val.resize(1);
-        PyObj_As_Double(obj, val[0]);
-    }
+		// assign values
+		for (size_t i = 0, iEnd = val.size(); i < iEnd; ++i) {
+			PyObject * item = PySequence_GetItem(obj, i);
+			PyObj_As_Double(item, val[i]);
+			Py_DECREF(item);
+		}
+	} else {
+		val.resize(1);
+		PyObj_As_Double(obj, val[0]);
+	}
 }
 
 
@@ -1354,20 +1356,16 @@ PyObject * pyIndObj(void * p)
 Expression::Expression(const Expression & rhs)
 	: m_expr(rhs.m_expr), m_stmts(rhs.m_stmts), m_locals(rhs.m_locals)
 {
-	if (m_expr != NULL)
-		Py_INCREF(m_expr);
-	if (m_stmts != NULL)
-		Py_INCREF(m_stmts);
+	Py_XINCREF(m_expr);
+	Py_XINCREF(m_stmts);
 }
 
 
 Expression::~Expression()
 {
 	// release compiled code
-	if (m_expr != NULL)
-		Py_DECREF(m_expr);
-	if (m_stmts != NULL)
-		Py_DECREF(m_stmts);
+	Py_XDECREF(m_expr);
+	Py_XDECREF(m_stmts);
 }
 
 

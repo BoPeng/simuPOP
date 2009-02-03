@@ -175,6 +175,12 @@ def PyExec(pop, *args, **kwargs):
     '''Execute *stmts* in population *pop*\ 's local namespace.'''
     pyExec(*args, **kwargs).apply(pop)
 
+def InfoEval(pop, *args, **kwargs):
+    '''Evaluate *expr* for each individual, using information fields as variables.
+    Please refer to operator ``infoEval`` for details.
+    '''
+    infoEval(*args, **kwargs).apply(pop)
+
 def InfoExec(pop, *args, **kwargs):
     '''Execute *stmts* for each individual, using information fields as variables.
     Please refer to operator ``infoExec`` for details.

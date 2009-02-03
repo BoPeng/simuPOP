@@ -8727,11 +8727,250 @@ PyEval
 \end_layout
 
 \begin_layout Subsection
-Execute statements involving individual information fields (operator 
+Expression and statement involving individual information fields (operator
+ 
+\family typewriter
+infoEval
+\family default
+ and 
 \family typewriter
 infoExec
 \family default
 )
+\end_layout
+
+\begin_layout Standard
+Operators 
+\family typewriter
+pyEval
+\family default
+ and 
+\family typewriter
+pyExec
+\family default
+ work at the population level, using the local namespace of populations.
+ Operator 
+\family typewriter
+infoEval
+\family default
+ and 
+\family typewriter
+infoExec
+\family default
+, on the contraray, work at the individual level, using individual information
+ fields.
+\end_layout
+
+\begin_layout Standard
+Because there is no individual-specific namespace, these two operators make
+ use of either a temporary namespace for every individual, or the population
+ namespace (parameter 
+\emph on
+usePopVars
+\emph default
+).
+ In the first case, a namespace is created for each invidividual, with variables
+ being the information fields of this individual.
+ In the second case, individual information fields are copied to the population
+ namespace one by one.
+ Expressions and statements can make use of population variables in this
+ case.
+ Optionally, the individual object can be exposed to these namespace using
+ a user-specified name (parameter 
+\emph on
+exposeInd
+\emph default
+).
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+infoEval
+\family default
+ evaluates an expression and outputs its value.
+ Operator 
+\family typewriter
+infoExec
+\family default
+ executes one or more statements and does not produce any output.
+ The major difference between them is that 
+\family typewriter
+infoEval
+\family default
+ does not change individual information fields while 
+\family typewriter
+infoExec
+\family default
+ update individual information fields from the namespace after the statements
+ are executed.
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+infoEval
+\family default
+ is usually used to output individual information fields and properties
+ in batch mode.
+ It is faster and sometimes easier to use than corresponding for loop plus
+ individual level operations.
+ For example
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoEval(r'
+\begin_inset Quotes erd
+\end_inset
+
+%.2f
+\backslash
+t
+\begin_inset Quotes erd
+\end_inset
+
+ % a')
+\family default
+ outputs the value of information field a for all individuals, separated
+ by tabs.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoEval('ind.sexChar()', exposeInd='ind')
+\family default
+ outputs the sex of all individuals using an exposed individual object 
+\family typewriter
+ind
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoEval('a+b**2')
+\family default
+ outputs 
+\begin_inset Formula $a+b^{2}$
+\end_inset
+
+ for information fields 
+\begin_inset Formula $a$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+ for all individuals.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "infoEval"
+
+\end_inset
+
+ demonstrates the use of this operator.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infoEval.log"
+lstparams "caption={Evaluate expressions using individual information fields},label={infoEval}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+infoExec
+\family default
+ is usually used to set individual information fields.
+ For example
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoExec('age += 1')
+\family default
+ increases the age of all individuals by one.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoExec('risk = 2 if packPerYear > 10 else 1.5')
+\family default
+ sets information field 
+\family typewriter
+risk
+\family default
+ to 
+\family typewriter
+2
+\family default
+ if 
+\family typewriter
+packPerYear
+\family default
+ is greater than 
+\family typewriter
+10
+\family default
+, and 
+\family typewriter
+1.5
+\family default
+ otherwise.
+ Note that conditional expression is only available for Python version 2.5
+ or later.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+infoExec('a = b*c')
+\family default
+ sets the value of information field 
+\family typewriter
+a
+\family default
+ to the product of 
+\family typewriter
+b
+\family default
+ and 
+\family typewriter
+c
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "infoExec"
+
+\end_inset
+
+ demonstrates the use of this operator, using its function form 
+\family typewriter
+InfoExec
+\family default
+.
 \end_layout
 
 \begin_layout Standard
@@ -8743,6 +8982,20 @@ lstparams "caption={Execute statements using individual information fields},labe
 \end_inset
 
 
+\end_layout
+
+\begin_layout Note
+Except for the local (temporary) namespace, operator 
+\family typewriter
+infoEval
+\family default
+ and 
+\family typewriter
+infoExec
+\family default
+ can also access variables and functions in a global namespace, which is
+ the module namespace of your script.
+ However, use of global variables in these operators are strongly discouraged.
 \end_layout
 
 \begin_layout Section

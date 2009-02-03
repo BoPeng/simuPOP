@@ -57,9 +57,7 @@ bool pyEval::apply(population & pop)
 }
 
 
-
-
-string infoExec::evalInfo(individual * ind)
+string infoEval::evalInfo(individual * ind)
 {
 	vectorstr infos = ind->infoFields();
 
@@ -82,7 +80,59 @@ string infoExec::evalInfo(individual * ind)
 	m_expr.setLocalDict(m_dict);
 	// evaluate
 	string res = m_expr.valueAsString();
-	// update information fields
+	return res;
+}
+
+
+bool infoEval::apply(population & pop)
+{
+	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
+
+	subPopList subPops = applicableSubPops();
+	if (subPops.empty())
+		for (UINT i = 0; i < pop.numSubPop(); ++i)
+			subPops.push_back(i);
+
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for ( ; sp != spEnd; ++sp) {
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp, IteratableInds);
+		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for (; ind != indEnd; ++ind) {
+			string res = evalInfo(& * ind) ;
+			if (!this->noOutput() ) {
+				ostream & out = this->getOstream(pop.dict());
+				out << res;
+				this->closeOstream();
+			}
+		}
+	}
+	return true;
+}
+
+
+bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
+                                 individual * dad, individual * mom)
+{
+	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
+
+	string res = evalInfo(& * offspring);
+
+	if (!this->noOutput() ) {
+		ostream & out = this->getOstream(pop.dict());
+		out << res;
+		this->closeOstream();
+	}
+	return true;
+}
+
+
+void infoExec::updateInfo(individual * ind)
+{
+	vectorstr infos = ind->infoFields();
+
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		double info = 0;
 		string name = infos[idx];
@@ -95,7 +145,6 @@ string infoExec::evalInfo(individual * ind)
 				" from a dictionary of information fields.");
 		}
 	}
-	return res;
 }
 
 
@@ -103,31 +152,21 @@ bool infoExec::apply(population & pop)
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	string res;
-	// FIXME: support virtual subpop
 	subPopList subPops = applicableSubPops();
-	if (subPops.empty()) {
-		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
-			res = evalInfo(& * it) ;
-			if (!this->noOutput() ) {
-				ostream & out = this->getOstream(pop.dict());
-				out << res;
-				this->closeOstream();
-			}
-		}
-	} else {
-		for (subPopList::iterator sp = subPops.begin(); sp != subPops.end(); ++sp) {
-			DBG_FAILIF(sp->subPop() > pop.numSubPop(), IndexError,
-				"Wrong subpopulation index" + toStr(sp->subPop()) + " (number of subpops is " +
-				toStr(pop.numSubPop()) + ")");
-			for (IndIterator it = pop.indBegin(sp->subPop()); it.valid(); ++it) {
-				res = evalInfo(& * it);
-				if (!this->noOutput() ) {
-					ostream & out = this->getOstream(pop.dict());
-					out << res;
-					this->closeOstream();
-				}
-			}
+	if (subPops.empty())
+		for (UINT i = 0; i < pop.numSubPop(); ++i)
+			subPops.push_back(i);
+
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for ( ; sp != spEnd; ++sp) {
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp, IteratableInds);
+		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for (; ind != indEnd; ++ind) {
+			evalInfo(& * ind);
+			updateInfo(& * ind);
 		}
 	}
 	return true;
@@ -139,13 +178,8 @@ bool infoExec::applyDuringMating(population & pop, RawIndIterator offspring,
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	string res = evalInfo(& * offspring);
-
-	if (!this->noOutput() ) {
-		ostream & out = this->getOstream(pop.dict());
-		out << res;
-		this->closeOstream();
-	}
+	evalInfo(& * offspring);
+	updateInfo(& * offspring);
 	return true;
 }
 

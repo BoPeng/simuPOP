@@ -66,15 +66,15 @@ public:
 	 *  parameter \c output. The exposed population variable will be removed
 	 *  after \e expr is evaluated. Please refer to class \c baseOperator for
 	 *  other parameters.
-     *
-     *  \note Although the statements and expressions are evaluated in a
-     *  population's local namespace, they have access to a **global**
-     *  namespace which is the module global namespace. It is therefore
-     *  possible to refer to any module variable in these expressions. Such
-     *  mixed use of local and global variables is, however, strongly
-     *  discouraged.
+	 *
+	 *  \note Although the statements and expressions are evaluated in a
+	 *  population's local namespace, they have access to a **global**
+	 *  namespace which is the module global namespace. It is therefore
+	 *  possible to refer to any module variable in these expressions. Such
+	 *  mixed use of local and global variables is, however, strongly
+	 *  discouraged.
 	 */
-	pyEval(const string & expr = "", const string & stmts = "", 
+	pyEval(const string & expr = "", const string & stmts = "",
 		const string & exposePop = string(), string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
@@ -94,6 +94,7 @@ public:
 	{
 		return new pyEval(*this);
 	}
+
 
 	/** Evaluate the expression and optional statements in the local namespace
 	 *  of population \e pop and return its result as a string.
@@ -161,24 +162,32 @@ public:
 	{
 		return "<simuPOP::pyExec>";
 	}
+
+
 };
 
 
 /** Unlike operator \c pyEval and \c pyExec that work at the population level,
- *  in a population's local namespace, operator \c infoExec works at the
+ *  in a population's local namespace, operator \c infoEval works at the
  *  individual level, working with individual information fields. When this
  *  operator is applied to a population, information fields of eligible
  *  individuals are put into either a temporary dictionary or in the local
- *  namespace of the population. The information fields are updated from
- *  this dictionary after specified statements are execuated.
+ *  namespace of the population. A Python expression is then evaluated for
+ *  each individual. The result is written to an output.
  *
- *  <funcForm>InfoExec</funcForm>
+ *  \node Unlike operator ``infoExec``, individual information fields are not
+ *  changed after this operator is applied to a population.
+ *
+ *  \note This operator tends to generate a large amount of output so use it
+ *  is with caution.
+ *
+ *  <funcForm>InfoEval</funcForm>
  */
-class infoExec : public baseOperator
+class infoEval : public baseOperator
 {
 public:
-	/** Create an operator that executes Python statements \e stmts using
-	 *  individual information fields as variables. For each eligible 
+	/** Create an operator that evaluate a Python expression \e expr using
+	 *  individual information fields as variables. For each eligible
 	 *  individual (individuals in (virtual) subpopulations specified by
 	 *  parameter \e subPops, default to all individuals), its information
 	 *  fields are copied either to a temporary namespace (default) or the
@@ -188,7 +197,94 @@ public:
 	 *  the <tt>usePopVars=True</tt> case, any population variable whose name
 	 *  matches an information field or \e exposeInd will be silently
 	 *  overridden.
-	 *  
+	 *
+	 *  A Python expression (\e expr) is evaluated for each individual. The
+	 *  results are converted to strings and are written to an output specified
+	 *  by parameter \e output.
+	 *
+	 *  This operator is by default applied post-mating. If it stage is set to
+	 *  \c DuringMating, it will be applied to all offspring, regardless of
+	 *  \c subPops settings.
+	 *
+	 *  \note Although \e expr is evaluated in individual or population level
+	 *  local namespaces, it can also access a global namespace which is
+	 *  the module namespace of your script. However, using module level
+	 *  variables and functions in this operator is discouraged.
+	 */
+	infoEval(const string & expr = "", bool usePopVars = false,  const string & exposeInd = string(),
+		string output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
+		m_expr(expr, ""), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
+	{
+	}
+
+
+	~infoEval()
+	{
+		if (!m_usePopVars && m_dict != NULL)
+			Py_DECREF(m_dict);
+	}
+
+
+	/// deep copy of a \c infoEval operator
+	virtual baseOperator * clone() const
+	{
+		return new infoEval(*this);
+	}
+
+
+	// check all alleles in vector allele if they are fixed.
+	/// apply the \c infoEval operator
+	bool apply(population & pop);
+
+	bool applyDuringMating(population & pop, RawIndIterator offspring,
+		individual * dad = NULL, individual * mom = NULL);
+
+	/// used by Python print function to print out the general information of the \c infoEval operator
+	virtual string __repr__()
+	{
+		return "<simuPOP::infoEval>";
+	}
+
+
+protected:
+	string evalInfo(individual *);
+
+	/// expression to evaluate
+	Expression m_expr;
+
+	bool m_usePopVars;
+
+	string m_exposeInd;
+
+	PyObject * m_dict;
+};
+
+/** Operator \c infoExec is similar to \c infoEval in that it works at the
+ *  individual level, using individual information fields as variables. The
+ *  difference is that instead of evaluating an expression and outputing its
+ *  result, this operator execute one or more statements and <bf>update
+ *  individual information fields</bf> from the namespace after the
+ *  specified statements are execuated.
+ *
+ *  <funcForm>InfoExec</funcForm>
+ */
+class infoExec : public infoEval
+{
+public:
+	/** Create an operator that executes Python statements \e stmts using
+	 *  individual information fields as variables. For each eligible
+	 *  individual (individuals in (virtual) subpopulations specified by
+	 *  parameter \e subPops, default to all individuals), its information
+	 *  fields are copied either to a temporary namespace (default) or the
+	 *  population's local namespace (if \e usePopVars is \c True). If
+	 *  \e exposeInd is not empty, the individual itself will be exposed in
+	 *  this namespace as a variable with name specified by \e exposeInd. In
+	 *  the <tt>usePopVars=True</tt> case, any population variable whose name
+	 *  matches an information field or \e exposeInd will be silently
+	 *  overridden.
+	 *
 	 *  One or more python statements (\e stmts) are executed for each
 	 *  individual. Information fields of these individuals are then updated
 	 *  from the corresponding variables. For example, <tt>a=1</tt> will set
@@ -202,26 +298,23 @@ public:
 	 *  This operator is by default applied post-mating. If it stage is set to
 	 *  \c DuringMating, it will be applied to all offspring, regardless of
 	 *  \c subPops settings.
-     *
-     *  \note Although \e stmts are executed in individual or population level
-     *  local namespaces, they also have access to a global namespace which is
-     *  the module namespace of your script. Although it is possible to use
-     *  module level variables and functions in \e stmts, such usage is
-     *  discouraged due to the variable nature of the global namespace.
+	 *
+	 *  \note Although \e stmts are executed in individual or population level
+	 *  local namespaces, they also have access to a global namespace which is
+	 *  the module namespace of your script. However, using module level
+	 *  variables and functions in \e stmts is discouraged.
 	 */
 	infoExec(const string & stmts = "", bool usePopVars = false,  const string & exposeInd = string(),
 		string output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_expr("", stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
+		: infoEval(string(), usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields)
 	{
+		m_expr.setStmts(stmts);
 	}
 
 
 	~infoExec()
 	{
-		if (!m_usePopVars && m_dict != NULL)
-			Py_DECREF(m_dict);
 	}
 
 
@@ -247,19 +340,9 @@ public:
 
 
 private:
-	string evalInfo(individual *);
+	void updateInfo(individual * ind);
 
-private:
-	/// expression to evaluate
-	Expression m_expr;
-
-	bool m_usePopVars;
-
-	string m_exposeInd;
-
-	PyObject * m_dict;
 };
-
 
 
 // The following classes apply various statistics
