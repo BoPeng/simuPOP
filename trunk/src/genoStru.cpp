@@ -231,8 +231,8 @@ void GenoStructure::setChromTypes(const vectoru & chromTypes)
 			m_chromY = i;
 		}
 	}
-	DBG_FAILIF(m_chromX * m_chromY < 0, ValueError,
-		"It is invalid to set only chromosome X or Y.");
+	DBG_WARNING(m_chromX * m_chromY < 0,
+		"Chromosome X and Y should be both present for sexual transmission to work.");
 	//
 	m_customized.clear();
 	for (size_t i = 0; i < m_chromTypes.size(); ++i) {
