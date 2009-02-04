@@ -88,7 +88,6 @@ include src/simuPOP.py
 include src/simuOpt.py
 include src/simuUtil.py
 include src/simuRPy.py
-include src/hapMapUtil.py
 
 # gsl files
 include gsl/gsl_machine.h
@@ -200,7 +199,6 @@ include gsl/cdf/gamma.c
 
 
 # bundled scripts
-include scripts/loadHapMap.py
 include scripts/simuViewPop.py
 include scripts/simuCDCV.py
 include scripts/simuRecHotSpot.py
