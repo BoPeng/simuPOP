@@ -10613,7 +10613,7 @@ reference "lst:Use-of-optimized-module"
 \end_layout
 
 \begin_layout Standard
-simuOpt also provides an
+simuOpt also provides a number of functions to 
 \end_layout
 
 \begin_layout Section
