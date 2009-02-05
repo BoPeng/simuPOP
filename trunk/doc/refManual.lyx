@@ -1712,6 +1712,46 @@ status open
 simuOptRef
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Loadding a simuPOP module
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptsetOptionsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuOptrequireRevisionRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Parameter handling
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
 \begin_layout Plain Layout
 
 
@@ -1833,16 +1873,6 @@ simuOptvalueValidFileRef
 
 \begin_layout Plain Layout
 
-
-\backslash
-simuOptsetOptionsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuOptrequireRevisionRef
 \end_layout
 
 \end_inset
