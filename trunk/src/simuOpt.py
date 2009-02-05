@@ -938,9 +938,9 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
         return _termGetParam(options, False, True)
     else:
         title = os.path.split(sys.argv[0])[-1]
-        if useTkinter:
+        if _useTkinter:
             return _tkParamDialog(options, title, doc, details, nCol).getParam()
-        elif useWxPython:
+        elif _useWxPython:
             return _wxParamDialog(options, title, doc, details, nCol).getParam()
         else:
             return _termGetParam(options, False, True)
@@ -1389,8 +1389,8 @@ if simuOptions['AlleleType'] == 'standard':
 if simuOptions['Optimized'] not in [True, False]:
     simuOptions['Optimized'] = False
 
-useTkinter = False
-useWxPython = False
+_useTkinter = False
+_useWxPython = False
 
 if not _par_useTkinter:
     try:
@@ -1399,12 +1399,12 @@ if not _par_useTkinter:
         if not _par_noDialog:
             import wx
     except:
-        useWxPython = False
+        _useWxPython = False
     else:
-        useWxPython = True
+        _useWxPython = True
 
 
-if _par_useTkinter or not useWxPython:
+if _par_useTkinter or not _useWxPython:
     # Tkinter should almost always exists, but ...
     try:
         imp.find_module('Tkinter')
@@ -1413,10 +1413,10 @@ if _par_useTkinter or not useWxPython:
             import tkFont as tkFont
     except:
         print "Tkinter can not be loaded. Please check your Python installation."
-        useTkinter = False
+        _useTkinter = False
     else:
-        useTkinter = True
+        _useTkinter = True
         # this is not possible now because of the use of find_module
         #if TkVersion < 8.0 :
-        #    useTkinter = False
+        #    _useTkinter = False
 
