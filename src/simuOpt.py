@@ -1318,13 +1318,18 @@ if _env_longAllele in ['standard', 'short', 'long', 'binary']:
 else:
     _longAllele = 'standard'
 
-simuOptions = {'Optimized':_optimized,
-    'AlleleType':_longAllele, 'Debug':[], 'Quiet':_par_quiet}
+simuOptions = {
+    'Optimized':_optimized,
+    'AlleleType':_longAllele,
+    'Debug':[],
+    'Quiet':_par_quiet,
+    'Revision':None,
+}
 
 if _env_debug is not None:
     simuOptions['Debug'].extend( _env_debug.split(',') )
 
-def setOptions(alleleType=None, optimized=None, quiet=None, debug=None):
+def setOptions(alleleType=None, optimized=None, quiet=None, debug=None, revision=None):
     '''Set options before simuPOP is loaded to control which simuPOP module to
     load, and how the module should be loaded.
 
@@ -1354,6 +1359,12 @@ def setOptions(alleleType=None, optimized=None, quiet=None, debug=None):
         debug code specified in environmental variable ``SIMUDEBUG``, if
         available, will be used. Note that setting ``debug=[]`` will remove
         any debug code that might have been by variable ``SIMUDEBUG``.
+
+    revision
+        A number indicating the required revision number for the simuPOP module
+        to be loaded. simuPOP will fail to load if the installed simuPOP is
+        older than the required revision. Please check simuPOP ChangeLog for
+        the revision number of distributed versions.
     '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
@@ -1366,19 +1377,17 @@ def setOptions(alleleType=None, optimized=None, quiet=None, debug=None):
             simuOptions['Debug'] = [debug]
         else:
             simuOptions['Debug'] = debug
+    if revision is not None:
+        if type(revision) == type(1):
+            simuOptions['Revision'] = revision
+        else:
+            raise exceptions.TypeError("A revision number is expected")
 
 # short = standard
 if simuOptions['AlleleType'] == 'standard':
     simuOptions['AlleleType'] = 'short'
 if simuOptions['Optimized'] not in [True, False]:
     simuOptions['Optimized'] = False
-
-def requireRevision(rev):
-    '''Compare the revision of this simuPOP module with given revision. Raise
-    an exception if current module is out of date. '''
-    if simuRev() <= rev:
-        raise exceptions.SystemError('''This script requires simuPOP revision >= %d,
-            please upgrade your installation. ''' % rev)
 
 useTkinter = False
 useWxPython = False

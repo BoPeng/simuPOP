@@ -30,6 +30,7 @@ simuPOP core module.
 # get options
 from simuOpt import simuOptions
 import os, sys
+from exceptions import ImportError
 
 if simuOptions['Optimized']:
     if simuOptions['AlleleType'] == 'short':
@@ -49,6 +50,11 @@ else:
         from simuPOP_ba import *
     else:
         from simuPOP_std import *
+
+if simuOptions['Revision'] is not None and simuRev() < simuOptions['Revision']:
+    raise ImportError('simuPOP version %s (revision %d) is installed ' % (simuVer(), simuRev()) +
+        'but simuPOP revision >= %d is required. ' % simuOptions['Revision'] +
+        'Please consider upgrading your simuPOP installation.')
 
 _dbgCode = {
 	'DBG_ALL': DBG_ALL,
