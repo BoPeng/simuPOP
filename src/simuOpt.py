@@ -933,7 +933,7 @@ def getParam(options=[], doc="", details="", noDialog=False, UnprocessedArgs=Tru
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
 
-    if noDialog or par_noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
+    if noDialog or _par_noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
         or True not in map(lambda x:x.has_key('label'), options):
         return _termGetParam(options, False, True)
     else:
@@ -1286,17 +1286,17 @@ def valueListOf(t):
     return func
 
 
-env_optimized = os.getenv('SIMUOPTIMIZED')
-env_longAllele = os.getenv('SIMUALLELETYPE')
-env_debug = os.getenv('SIMUDEBUG')
+_env_optimized = os.getenv('SIMUOPTIMIZED')
+_env_longAllele = os.getenv('SIMUALLELETYPE')
+_env_debug = os.getenv('SIMUDEBUG')
 
-[par_optimized] = _termGetParam([{'longarg':'optimized', \
+[_par_optimized] = _termGetParam([{'longarg':'optimized', \
     'default':''}], True, False)
-[par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
+[_par_quiet] = _termGetParam([{'arg':'q','longarg':'quiet', \
     'default':False}], True, False)
-[par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
+[_par_useTkinter] = _termGetParam([{'longarg':'useTkinter', \
     'default':False }], True, False)
-[par_noDialog] = _termGetParam([{'longarg':'noDialog', \
+[_par_noDialog] = _termGetParam([{'longarg':'noDialog', \
     'default':False }], True, False)
 
 # remove these parameters from sys.argv
@@ -1306,59 +1306,66 @@ for arg in ['--optimized', '--quiet', '-q', '--useTkinter']:
     except:
         pass
 
-if par_optimized != '':
-    _optimized = par_optimized
-elif env_optimized is not None:
+if _par_optimized != '':
+    _optimized = _par_optimized
+elif _env_optimized is not None:
     _optimized = True
 else:     # default to false
     _optimized = False
 
-if env_longAllele in ['standard', 'short', 'long', 'binary']:
-    _longAllele = env_longAllele
+if _env_longAllele in ['standard', 'short', 'long', 'binary']:
+    _longAllele = _env_longAllele
 else:
     _longAllele = 'standard'
 
 simuOptions = {'Optimized':_optimized,
-    'AlleleType':_longAllele, 'Debug':[], 'Quiet':par_quiet}
+    'AlleleType':_longAllele, 'Debug':[], 'Quiet':_par_quiet}
 
-if env_debug is not None:
-    simuOptions['Debug'].extend( env_debug.split(',') )
+if _env_debug is not None:
+    simuOptions['Debug'].extend( _env_debug.split(',') )
 
-def setOptions(optimized=None, mpi=None, chromMap=[], alleleType=None, quiet=None, debug=[]):
-    '''set options before simuPOP is loaded to control which simuPOP module to load,
-    and how the module should be loaded.
+def setOptions(alleleType=None, optimized=None, quiet=None, debug=None):
+    '''Set options before simuPOP is loaded to control which simuPOP module to
+    load, and how the module should be loaded.
 
-    optimized: whether or not load optimized version of a module. If not set,
-        environmental variable SIMUOPTIMIZED, and commandline option --optimized
-        will be used if available. If nothing is defined, standard version will
-        be used.
+    alleleType
+        Use the standard, binary or long allele version of the simuPOP module
+        if ``alleleType`` is set to 'short', 'binary', or 'long' respectively.
+        If this parameter is not set, this function will try to get its value
+        from environmental variable ``SIMUALLELETYPE``. The standard (short)
+        module will be used if the environmental variable is not defined.
 
-    mpi: obsolete.
+    optimized
+        Load the optimized version of a module if this parameter is set to
+        ``True`` and the standard version if it is set to ``False``. If this
+        parameter is not set (``None``), the optimized version will be used
+        if environmental variable ``SIMUOPTIMIZED`` is defined, or if
+        commandline option ``--optimized`` is used. The standard version will
+        be used otherwise. ``--optimized`` will be removed from ``sys.argv``
+        after this module is loaded.
 
-    chromMap: obsolete.
+    quiet
+        If set to ``True``, suppress the banner message when a simuPOP module
+        is loaded.
 
-    alleleType: 'binary', 'short', or 'long'. 'standard' can be used as 'short'
-        for backward compatibility. If not set, environmental variable
-        SIMUALLELETYPE will be used if available. if it is not defined, the
-        short allele version will be used.
-
-    quiet: If True, supress banner information when simuPOP is loaded.
-
-    debug: a list of debug code (as string). If not set, environmental variable
-        SIMUDEBUG will be used if available.
-
+    debug
+        A list of debug code (as string) that will be turned on when simuPOP
+        is loaded. If this parameter is not set, a list of comma separated
+        debug code specified in environmental variable ``SIMUDEBUG``, if
+        available, will be used. Note that setting ``debug=[]`` will remove
+        any debug code that might have been by variable ``SIMUDEBUG``.
     '''
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
-    if alleleType in ['standard', 'long', 'binary', 'short']:
+    if alleleType in ['long', 'binary', 'short']:
         simuOptions['AlleleType'] = alleleType
     if quiet in [True, False]:
         simuOptions['Quiet'] = quiet
-    if len(debug) > 0:
+    if debug is not None:
         if type(debug) == type(''):
-            simuOptions['Debug'].append(debug)
+            simuOptions['Debug'] = [debug]
         else:
-            simuOptions['Debug'].extend(debug)
+            simuOptions['Debug'] = debug
 
 # short = standard
 if simuOptions['AlleleType'] == 'standard':
@@ -1376,11 +1383,11 @@ def requireRevision(rev):
 useTkinter = False
 useWxPython = False
 
-if not par_useTkinter:
+if not _par_useTkinter:
     try:
         # wxPython might not exist
         imp.find_module('wx')
-        if not par_noDialog:
+        if not _par_noDialog:
             import wx
     except:
         useWxPython = False
@@ -1388,11 +1395,11 @@ if not par_useTkinter:
         useWxPython = True
 
 
-if par_useTkinter or not useWxPython:
+if _par_useTkinter or not useWxPython:
     # Tkinter should almost always exists, but ...
     try:
         imp.find_module('Tkinter')
-        if not par_noDialog:
+        if not _par_noDialog:
             import Tkinter as tk
             import tkFont as tkFont
     except:

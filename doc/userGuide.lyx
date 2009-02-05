@@ -10538,6 +10538,56 @@ name "cha:Utility-Modules"
 simuOpt
 \end_layout
 
+\begin_layout Standard
+Module 
+\family typewriter
+simuOpt
+\family default
+ handles options to specify which simuPOP module to load (
+\family typewriter
+short
+\family default
+, 
+\family typewriter
+long
+\family default
+, or 
+\family typewriter
+binary
+\family default
+, 
+\family typewriter
+standard
+\family default
+ or 
+\family typewriter
+optimized
+\family default
+), and how this module should be loaded (with or without banner message,
+ which debug code to turn on).
+ This has been demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-standard-module"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "lst:Use-of-optimized-module"
+
+\end_inset
+
+.
+ Note that most options can be set by environmental variables which are
+ sometimes more versatile to use.
+\end_layout
+
+\begin_layout Standard
+simuOpt also provides an
+\end_layout
+
 \begin_layout Section
 simuUtil
 \end_layout
