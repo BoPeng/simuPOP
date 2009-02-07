@@ -272,40 +272,31 @@ def getOptions(details=__doc__):
     '''
     #
     # get all parameters, __doc__ is used for help info
-    allParam = simuOpt.getParam(options, 
+    opt = simuOpt.simuOpt(options, 
         'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
         'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
-        'and plotted (if R/RPy is available).\n',
-        details, nCol=2)
-    #
-    # when user click cancel ...
-    if len(allParam) == 0:
+        'and plotted (if R/RPy is available).\n', details)
+    if not opt.getParam(nCol=2):
         sys.exit(1)
-    #    
     # -h or --help
-    if allParam[0]:    
-        print simuOpt.usage(options, __doc__)
+    if opt.help:    
+        print opt.usage()
         sys.exit(0)
     #
     # --name
-    if allParam[-2] is None: 
+    if opt.name is None: 
         print "Name of the simulation is invalid"
         sys.exit(1)
     else:
-        if not os.path.isdir(allParam[-2]):
-            os.makedirs(allParam[-2])
-        simuOpt.saveConfig(options, os.path.join(allParam[-2], allParam[-2]+'.cfg'), allParam)
+        if not os.path.isdir(opt.name):
+            os.makedirs(opt.name)
+        opt.save(os.path.join(opt.name, opt.name + '.cfg'))
     #
     # --verbose or -v 
-    if allParam[-1]:                 # verbose
-        for p in range(0, len(options)):
-            if options[p].has_key('label'):
-                if type(allParam[p]) == types.StringType:
-                    print options[p]['label'], '\t"'+str(allParam[p])+'"'
-                else:
-                    print options[p]['label'], '\t', str(allParam[p])
+    if opt.verbose:                 # verbose
+        print opt.listOptions
     # return the rest of the parameters
-    return allParam[1:-1]
+    return opt.asList()[1:-1]
 
 # 
 # calculate statistics from a populations
