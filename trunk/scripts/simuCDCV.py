@@ -290,7 +290,7 @@ def getOptions(details=__doc__):
     else:
         if not os.path.isdir(opt.name):
             os.makedirs(opt.name)
-        opt.save(os.path.join(opt.name, opt.name + '.cfg'))
+        opt.saveConfig(os.path.join(opt.name, opt.name + '.cfg'))
     #
     # --verbose or -v 
     if opt.verbose:                 # verbose

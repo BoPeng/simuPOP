@@ -256,7 +256,6 @@ def _prettyString(value, quoted=False, outer=True):
         return str(value)
 
 
-
 def _getParamValue(p, val):
     ''' try to get a value from value, raise exception if error happens. '''
     # if we are giving a unicode string, convert!
@@ -584,6 +583,8 @@ class _tkParamDialog(_paramDialog):
 class _wxParamDialog(_paramDialog):
     def __init__(self, options, title = '', description='', details='', nCol=1):
         _paramDialog.__init__(self, options, title, description, details, nCol)
+        import wx
+        globals()['wx'] = wx
 
     def onHelp(self, event):
         # open another dialog
@@ -884,10 +885,13 @@ class simuOpt:
                 raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
             if 'default' not in opt.keys() and 'separator' not in opt.keys():
                 raise exceptions.ValueError('A default value must be provided for all options')
-            if opt.has_key('arg') and opt.has_key('longarg') and \
+            if opt.has_key('arg') and \
                 opt['arg'].endswith(':') != opt['longarg'].endswith('='):
                 raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
-    
+            if opt.has_key('arg') and opt['arg'] in ['c', 'c:']:
+                raise exceptions.ValueError('Option -c is reserved for configuration loading')
+            if opt['longarg'] in ['config', 'config=']:
+                raise exceptions.ValueError('Option --config is reserved for configuration loading')
         #
         self.options = options
         self.dict = {}
@@ -898,14 +902,26 @@ class simuOpt:
             self.dict[name] = opt
         self.doc = doc
         self.details = details
+        #
+        if '-c' in sys.argv:
+            idx = sys.argv.index('-c')
+            self.configFile = sys.argv[idx+1]
+        elif '--config' in sys.argv:
+            idx = sys.argv.index('--config')
+            self.configFile = sys.argv[idx+1]
+        else:
+            self.configFile = None
+        
 
     def __getattr__(self, name):
-        '''Return the value of a parameter as an attribute'''
-        return self.dict[name]['value']
+        '''Return the value of a parameter as an attribute. If a parameter happens
+        to be named some member functions, prefix it with a underscore'''
+        return self.dict[name.lstrip('_')]['value']
         
-    def save(self, file):
+    def saveConfig(self, file):
         '''Write a configuration file to *file*. This file can be later read
-        with command line option ``-c`` or ``--config``.
+        with command line option ``-c`` or ``--config``. Note that
+        # Only options with a @@label@@ entry is saved.
         '''
         cfg = open(file,'w')
         try:
@@ -915,28 +931,25 @@ class simuOpt:
             pass
         print >> cfg, "# Configuration saved at at ", time.asctime()
         for opt in self.options:
+            if not opt.has_key('label'):
+                continue
+            print >> cfg
+            # write arg and long arg
             if opt.has_key('label'):
-                print >> cfg
-                # write arg and long arg
-                if opt.has_key('label'):
-                    print >> cfg, "# label:\t%s" % opt['label']
-                if opt.has_key('arg'):
-                    if opt['arg'][-1] == ':':
-                        print >> cfg, "# shortarg:\t-%s = %s" % (opt['arg'][:-1], _prettyString(opt['value']))
-                    else:
-                        print >> cfg, "# shortarg:\t-%s" % opt['arg']
-                # write description
-                if opt.has_key('description'):
-                    desc = opt['description'].splitlines()
-                    print >> cfg, "# description:"
-                    for d in desc:
-                        print >> cfg, "#\t", d.strip()
-                if opt['longarg'].endswith('='):
-                    arg = opt['longarg'][:-1]
+                print >> cfg, "# label:\t%s" % opt['label']
+            if opt.has_key('arg'):
+                if opt['arg'].endswith(':'):
+                    print >> cfg, "# shortarg:\t-%s = %s" % (opt['arg'].rstrip(':'), _prettyString(opt['value']))
                 else:
-                    arg = opt['longarg']
-                # write out option value, try to make it python readable
-                print >> cfg, "%s = %s" % (arg, _prettyString(opt['value'], quoted=True))
+                    print >> cfg, "# shortarg:\t-%s" % opt['arg']
+            # write description
+            if opt.has_key('description'):
+                desc = opt['description'].splitlines()
+                print >> cfg, "# description:"
+                for d in desc:
+                    print >> cfg, "#\t", d.strip()
+            # write out option value, try to make it python readable
+            print >> cfg, "%s = %s" % (opt['longarg'].rstrip('='), _prettyString(opt['value'], quoted=True))
         print >> cfg, "\n\n#The same options can be given by command line options (subject to minor changes)"
         cmd = "#    --noDialog "
         # shorter version
@@ -965,6 +978,24 @@ class simuOpt:
         print >> cfg, ' \\\n#    '.join(textwrap.wrap(scmd, break_long_words=False))
         cfg.close()
 
+    def loadConfig(self, file):
+        '''Load configuration from a file. This function is usually called
+        with commandline option @@-c@@ or @@--config@@, but can also be called
+        explicitly.
+        '''
+        cfg = open(file)
+        for line in cfg.readlines():
+            if line.strip() == '' or line.startswith('#'):
+                continue
+            for opt in self.options:
+                name = opt['longarg'].rstrip('=')
+                scan = re.compile(name + r'\s*=\s*(.*)')
+                if scan.match(line):
+                    value = scan.match(l).groups()[0]
+                    opt['value'] = _getParamValue(opt, value.strip('''"'\n'''))
+        cfg.close()
+
+        
     def listOptions(self, out=sys.stdout):
         '''Print options to an output *out* (default to standard output)
         '''
@@ -976,143 +1007,92 @@ class simuOpt:
                 else:
                     print >> out, opt['label'], '\t', str(opt['value'])
 
-    def _getParamShortArg(self, p):
-        ''' try to get a param from short arg '''
-        if not p.has_key('arg'):
-            return None
-        if p['arg'] == 'c':
-            raise exceptions.ValueError("-c option is reserved for config file.")
-        if p['arg'].endswith(':'): # expecting an argument
-            try:
-                idx = map(lambda x:x[:2]=='-'+p['arg'][0], sys.argv[1:]).index(True)
-                # has something like -a
-                # case 1: -a file
-                if sys.argv[idx+1] == '-'+p['arg'][0]:
-                    if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
+    def __getParamShortArg(self):
+        ''' try to get parameters from short arg '''
+        for opt in self.options:
+            if not opt.has_key('arg'):
+                continue
+            if opt['arg'].endswith(':'): # expecting an argument
+                try:
+                    idx = map(lambda x:x[:2]=='-' + opt['arg'][0], sys.argv[1:]).index(True)
+                    # has something like -a
+                    # case 1: -a file
+                    if sys.argv[idx+1] == '-' + opt['arg'][0]:
+                        if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
+                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+                        try:
+                            val = _getParamValue(opt, sys.argv[idx+2])
+                            self.processedArgs.append(idx+1)
+                            self.processedArgs.append(idx+2)
+                            opt['value'] = val
+                        except:
+                            continue
+                    # case 2: -aopt or -a=opt
+                    else:
+                        if idx+1 in self.processedArgs:
+                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+                        try:
+                            arg = sys.argv[idx+1]
+                            if len(arg) > 3 and arg[2] == '=':
+                                val = _getParamValue(opt, sys.argv[idx+1][3:])
+                            else:
+                                val = _getParamValue(opt, sys.argv[idx+1][2:])
+                            self.processedArgs.append(idx+1)
+                            opt['value'] = val
+                        except:
+                            continue
+                except:
+                    continue
+            else:     # true or false
+                if '-' + opt['arg'] in sys.argv[1:]:
+                    idx = sys.argv[1:].index('-' + opt['arg'])
+                    if idx + 1 in self.processedArgs:
                         raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    try:
-                        val = _getParamValue(p, sys.argv[idx+2])
-                        self.processedArgs.append(idx+1)
-                        self.processedArgs.append(idx+2)
-                        return val
-                    except:
-                        return None
-                # case 2: -aopt or -a=opt
-                else:
+                    self.processedArgs.append(idx+1)
+                    opt['value'] = True
+    
+    
+    def __getParamLongArg(self):
+        '''get param from long arg '''
+        for opt in self.options:
+            if opt['longarg'].endswith('='): # expecting an argument
+                try:
+                    endChar = len(opt['longarg'].split('=')[0])
+                    idx = map(lambda x:x[:(endChar+2)]=='--'+opt['longarg'][0:endChar], sys.argv[1:]).index(True)
+                    # case 1: --arg something
+                    if sys.argv[idx+1] == '--'+opt['longarg'][0:-1]:
+                        if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
+                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
+                        try:
+                            val = _getParamValue(p, sys.argv[idx+2])
+                            self.processedArgs.append(idx+1)
+                            self.processedArgs.append(idx+2)
+                            opt['value'] = val
+                        except:
+                            continue
+                    # case 2 --arg=something
+                    else:
+                        if sys.argv[idx+1][endChar+2] != '=':
+                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
+                        try:
+                            val = _getParamValue(p, sys.argv[idx+1][(endChar+3):])
+                            self.processedArgs.append(idx+1)
+                            opt['value'] = val
+                        except:
+                            continue
+                except:
+                    # not available
+                    continue
+            else:     # true or false
+                if '--' + opt['longarg'] in sys.argv[1:]:
+                    idx = sys.argv[1:].index('--'+opt['longarg'])
                     if idx+1 in self.processedArgs:
                         raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    try:
-                        opt = sys.argv[idx+1]
-                        if len(opt) > 3 and opt[2] == '=':
-                            val = _getParamValue(p, sys.argv[idx+1][3:])
-                        else:
-                            val = _getParamValue(p, sys.argv[idx+1][2:])
-                        self.processedArgs.append(idx+1)
-                        return val
-                    except:
-                        return None
-            except:
-                # not available
-                return None
-        else:     # true or false
-            # handle -h option, as a special case
-            if '-'+p['arg'] in sys.argv[1:]:
-                idx = sys.argv[1:].index('-'+p['arg'])
-                if idx+1 in self.processedArgs:
-                    raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                self.processedArgs.append(idx+1)
-                return True
-            else:
-                return None
+                    self.processedArgs.append(idx+1)
+                    opt['value'] = True
     
     
-    def _getParamLongArg(self, p):
-        ''' get param from long arg '''
-        if p['longarg'] == 'config':
-            raise exceptions.ValueError("--config option is reserved for config gile.")
-        if p['longarg'].endswith('='): # expecting an argument
-            try:
-                endChar = len(p['longarg'].split('=')[0])
-                idx = map(lambda x:x[:(endChar+2)]=='--'+p['longarg'][0:endChar], sys.argv[1:]).index(True)
-                # case 1: --arg something
-                if sys.argv[idx+1] == '--'+p['longarg'][0:-1]:
-                    if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    try:
-                        val = _getParamValue(p, sys.argv[idx+2])
-                        self.processedArgs.append(idx+1)
-                        self.processedArgs.append(idx+2)
-                        return val
-                    except:
-                        return None
-                # case 2 --arg=something
-                else:
-                    if sys.argv[idx+1][endChar+2] != '=':
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
-                    try:
-                        val = _getParamValue(p, sys.argv[idx+1][(endChar+3):])
-                        self.processedArgs.append(idx+1)
-                        return val
-                    except:
-                        return None
-            except:
-                # not available
-                return None
-        else:     # true or false
-            if '--'+p['longarg'] in sys.argv[1:]:
-                idx = sys.argv[1:].index('--'+p['longarg'])
-                if idx+1 in self.processedArgs:
-                    raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                self.processedArgs.append(idx+1)
-                return True
-    
-    
-    def _getParamConfigFile(self, p):
-        ''' get param from configuration file    '''
-        config = None
-        if '-c' in sys.argv:
-            idx = sys.argv[1:].index('-c')
-            self.processedArgs.append(idx+1)
-            self.processedArgs.append(idx+2)
-            config = sys.argv[idx+2]
-        elif '--config' in sys.argv:
-            idx = sys.argv[1:].index('--config')
-            self.processedArgs.append(idx+1)
-            self.processedArgs.append(idx+2)
-            config = sys.argv[idx+2]
-        if config is None:
-            return None
-        # OK
-        # read configuration file
-        # deal with () in label.
-        if p['longarg'].endswith('='):
-            name = p['longarg'][0:-1]
-        else:
-            name = p['longarg']
-        scan = re.compile(name+r'\s*=\s*(.*)')
-        try:
-            file = open(config)
-            for l in file.readlines():
-                try:
-                    (value,) = scan.match(l).groups()
-                except:
-                    # does not match
-                    continue
-                else:
-                    file.close()
-                    try:
-                        return _getParamValue(p, value.strip('''"'\n'''))
-                    except:
-                        return None
-            file.close()
-            # get nothing
-            return None
-        except:    # can not open file
-            print "Can not open configuration file ", config
-            return None
-    
-    
-    def _getParamUserInput(self, p):
+    def __getParamUserInput(self, p):
         ''' get param from user input '''
         # prompt
         if p.has_key('prompt'):
@@ -1139,30 +1119,31 @@ class simuOpt:
                 raise exceptions.ValueError("Can not get param for parameter (no default value): " + str(p['longarg']))
 
    
-    def _termGetParam(self, options, useDefault=False, checkUnprocessedArgs=False):
+    def __termGetParam(self, options, useDefault=False, checkUnprocessedArgs=False):
         ''' using user input to get param '''
         # get param from short arg
         self.processedArgs = []
         # process all options
         goto = 0
+        # get from config file
+        if self.configFile is not None:
+            self.loadConfig(self.configFile)
+        # get from command line options, these may override values from config file
+        self.__getParamLongArg()
+        self.__getParamShortArg()
+        #
         for opt in range(0, len(options)):
             p = options[opt]
             # validate p
-            for k in p.keys():
-                if not k in allowed_keys:
-                    raise exceptions.ValueError("Unrecognized option entry " + k )
             if p.has_key('separator'):
                 continue
-            val = self._getParamShortArg(p)
-            if val == None:
-                val = self._getParamLongArg(p)
-            if val == None:
-                val = self._getParamConfigFile(p)
+            #
+            val = p['value']
             if val == None:
                 if (useDefault or (not p.has_key('label')) or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
                     val = p['default']
                 elif opt >= goto:
-                    val = self._getParamUserInput(p)
+                    val = self.__getParamUserInput(p)
             # these parameters are skipped, but still processed to check unprocessed args
             if opt < goto:
                 p['value'] = val
@@ -1244,21 +1225,20 @@ class simuOpt:
         #
         if self.noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
             or True not in map(lambda x:x.has_key('label'), self.options):
-            return self._termGetParam(False, True)
+            return self.__termGetParam(False, True)
         else:
             # first assign values from non-GUI sources
             self.processedArgs = []
+            if self.configFile is not None:
+                self.__getParamConfigFile()
+            self.__getParamLongArg()
+            self.__getParamShortArg()
+            #
             for opt in self.options:
                 if opt.has_key('separator'):
                     continue
-                val = self._getParamShortArg(opt)
-                if val == None:
-                    val = self._getParamLongArg(opt)
-                if val == None:
-                    val = self._getParamConfigFile(opt)
-                if val is None and opt.has_key('default'):
-                    val = opt['default']
-                opt['value'] = val
+                if opt['value'] is None and opt.has_key('default'):
+                    opt['value'] = opt['default']
             # look if any argument was not processed
             for i in range(1, len(sys.argv)):
                 if (not sys.argv[i] in allowed_commandline_options) and (not i in self.processedArgs):
@@ -1270,7 +1250,7 @@ class simuOpt:
             elif self.useWxPython:
                 return _wxParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
             else:
-                return self._termGetParam(self.options, False, True)
+                return self.__termGetParam(self.options, False, True)
         return False
     
     
