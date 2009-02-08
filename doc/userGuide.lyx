@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -10613,7 +10613,360 @@ reference "lst:Use-of-optimized-module"
 \end_layout
 
 \begin_layout Standard
-simuOpt also provides a number of functions to 
+The 
+\family typewriter
+simuOpt
+\family default
+ module also provides a class 
+\family typewriter
+simuOpt
+\family default
+ to help users handle and manage script parameters.
+ There are many other standard or third-party parameter handling modules
+ in Python but this class is designed help users run a simuPOP script in
+ both batch and GUI modes, using a combination of parameter determination
+ methods.
+ More specifically, if a script uses the 
+\family typewriter
+simuOpt
+\family default
+ class to handle parameters,
+\end_layout
+
+\begin_layout Itemize
+By default, a parameter input dialog is used to accept user input if the
+ script is executed directly.
+ Default values are given to each parameter and users are allowed to edit
+ them using standard parameter input widgets (on/off button, edit box, dropdown
+ list etc).
+ Detailed explanations to parameters are available as tooltips of corresponding
+ input widgets.
+ A help button is provided that will display the usage of the script when
+ clicked.
+\end_layout
+
+\begin_layout Itemize
+If a configuration file is saved for a previous simulation, command line
+ option 
+\family typewriter
+--config configFile
+\family default
+ can be used to load all parameters from that configuration file.
+ The parameter input dialog is still used to review and modify parameters.
+\end_layout
+
+\begin_layout Itemize
+Each parameter can also be set using command line options.
+ If specified, they will override values read from a configuration file.
+\end_layout
+
+\begin_layout Itemize
+If command line option 
+\family typewriter
+--noDialog
+\family default
+ is given, the script will work in batch mode.
+ All parameters are obtained from command line options, configuration file
+ and default values of parameters.
+ For example, 
+\family typewriter
+myscript.py --noDialog --config configFile
+\family default
+ will execute a previous simulation directly.
+ 
+\end_layout
+
+\begin_layout Itemize
+In the batch mode, if the value of a parameter cannot be determined through
+ command line or a configuration file, and is set not to use its default
+ value, users will be asked to enter its value interactively.
+\end_layout
+
+\begin_layout Standard
+The following sections describes how to use the 
+\family typewriter
+simuOpt
+\family default
+ class in a simuPOP script.
+\end_layout
+
+\begin_layout Subsection
+Define a parameter specification list.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+simuOpt
+\family default
+ object is created from a list of parameter specification dictionaries,
+ and optional short and long descriptions of a script.
+ Each parameter specification dictionary consits of mandatory fields 
+\family typewriter
+longarg
+\family default
+ (long command line argument) and 
+\family typewriter
+default
+\family default
+ (default value for this parameter) and optional fields such as 
+\family typewriter
+label
+\family default
+ (label to display in the parameter input dialog and as prompt for user
+ input), 
+\family typewriter
+description
+\family default
+ (a detailed description), 
+\family typewriter
+allowedTypes
+\family default
+ (allowed types of input parameter), 
+\family typewriter
+validate
+\family default
+ (a function that return tells if a user input is valid), 
+\family typewriter
+chooseOneOf
+\family default
+ (tells the parameter input dialog to allow users to choose one of the provided
+ values) and 
+\family typewriter
+chooseFrom
+\family default
+ (tells the parameter input dialog to allow users to choose one or more
+ values from the provided values).
+ Although it can be lengthy to describe a parameter in this way, it is a
+ self-documentary process from which your users and even yourself will benefit
+ from.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+ shows a parameter specification list that defines parameter 
+\family typewriter
+help
+\family default
+, 
+\family typewriter
+rate
+\family default
+, 
+\family typewriter
+rep
+\family default
+ and 
+\family typewriter
+pops
+\family default
+.
+ What is special about each parameter is that 
+\family typewriter
+help
+\family default
+ will not be listed in the parameter input dialog (no 
+\family typewriter
+label
+\family default
+) and setting 
+\family typewriter
+help
+\family default
+ to 
+\family typewriter
+True
+\family default
+ during interactive parameter input will ignore all other options (
+\family typewriter
+jump
+\family default
+); 
+\family typewriter
+rate
+\family default
+ has to be between 0 and 1 (using a validation function 
+\family typewriter
+valueBetween
+\family default
+), 
+\family typewriter
+rep
+\family default
+ has to be a positive integer, and 
+\family typewriter
+pops
+\family default
+ can be one of the three HapMap populations.
+ Please refer to the simuPOP reference manual for details about each dictionary
+ key.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simuOpt.py"
+lstparams "caption={A sample parameter specification list},label={paramSpec}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Get parameters
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+simuOpt
+\family default
+ object can be created from a parameter specification list.
+ A few member functions are immediately usable.
+ For example, 
+\family typewriter
+simuOpt.usage()
+\family default
+ returns a detailed usage message about the script and all its parameters.
+ The parameters become attributes of this object using 
+\family typewriter
+longarg
+\family default
+ names so that you can access them easily (e.g.
+ 
+\family typewriter
+par.rate
+\family default
+).
+ Not surprosingly, all parameters now have value 
+\family typewriter
+None
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Although member functions such as 
+\family typewriter
+simuOpt.loadConfig
+\family default
+ and 
+\family typewriter
+simuOpt.processArgs
+\family default
+ can be used to determine parameters from sources such as a configuration
+ file or command line arguments (
+\family typewriter
+sys.argv
+\family default
+), 
+\family typewriter
+simuOpt.getParam()
+\family default
+ is used most of the time.
+ This function process each parameter in the following order:
+\end_layout
+
+\begin_layout Itemize
+If a short or a long command line argument exists, use the command line
+ argument.
+\end_layout
+
+\begin_layout Itemize
+If a configuration file is specified from command line (
+\family typewriter
+--config configFile
+\family default
+), look in this configuration file for a value.
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+useDefault
+\family default
+ is specified, assign a default value to this parameter.
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+--noDialog
+\family default
+ is specified, and the value of the parameter has not be determined, ask
+ users interactively for a value.
+ Otherwise, a parameter input dialog is displayed.
+ A 
+\emph on
+Tkinter
+\emph default
+ dialog is usually used but a 
+\emph on
+wxPython
+\emph default
+ dialog will be used if 
+\emph on
+wxPython
+\emph default
+ is available (unless parameter 
+\family typewriter
+useTkinter
+\family default
+ is set).
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+simuOpt.getParam
+\family default
+ returns 
+\family typewriter
+False
+\family default
+ if this process fails (e.g.
+ users click cancel in the parameter input dialog).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simuOpt.py"
+lstparams "caption={Get prameters using function getParam},label={getParam}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Access, manipulate and extract parameters
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+simuOpt
+\family default
+ object 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/simuOpt.py"
+lstparams "caption={Use the simuOpt object},label={useSimuOpt}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
