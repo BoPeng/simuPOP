@@ -1526,6 +1526,72 @@ InfoExec(pop, 'c+=d', usePopVars=True)
 print pop.indInfo('c')[:10]
 #end
 
+
+content = """
+import types, simuOpt
+from simuPOP import *
+
+options = [
+    {'arg': 'h',
+     'longarg': 'help',
+     'default': False, 
+     'description': 'Print a usage message.',
+     'allowedTypes': [types.BooleanType],
+     'jump': -1                    # if -h is specified, ignore any other parameters.
+    },
+    {'longarg': 'rate=',
+     'default': [0.01],
+     'useDefault': True,
+     'label': 'Recombination rate',
+     'allowedTypes': [types.ListType, types.TupleType],
+     'description': '''Recombination rate for each replicate. If a single value
+                is given, it will be used for all replicates.''',
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
+    },
+    {'longarg': 'rep=',
+     'default': 5,
+     'label': 'Number of replicates',
+     'allowedTypes': [types.IntType, types.LongType],
+     'description': 'Number of replicates.',
+     'validate': simuOpt.valueGT(0)
+    }, 
+    {'longarg': 'pop=',
+     'default': 'CEU',
+     'label': 'Which HapMap population to use',
+     'allowedTypes': [types.StringType],
+     'description': 'Start evolving from one of the HapMap populations',
+     'chooseOneOf': ['CEU', 'YRI', 'CHB+JPT'],
+     'validate': simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
+    }
+]
+
+pars = simuOpt.simuOpt(options, 'A demo simulation')
+print pars.usage()
+# You can manually feed parameters...
+pars.processArgs(['--rep=10'])
+# but simuOpt.getParam is commonly used
+if not pars.getParam():
+    sys.exit(1)
+
+# save prameters to a configuration file
+pars.saveConfig('sample.cfg')
+# post-process parameters
+pars.rate = pars.rate * pars.rep
+# extract parameters as a dictionary or a list
+pars.asDict()
+pars.asList()
+"""
+
+file = open('log/getParam.py', 'w')
+print >> file, content
+file.close()
+
+if not os.path.isfile('getParam.png'):
+    os.system('python log/getParam.py --pop=YRI')
+
+
+################################################
+
 #file log/splitMerge.log
 pop = population(1000, loci=[1], infoFields=['migrate_to'])
 simu = simulator(pop, randomSelection())
