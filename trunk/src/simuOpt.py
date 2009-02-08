@@ -275,7 +275,7 @@ def _getParamValue(p, val):
         else:
             raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['longarg'])
     # other wise, need conversion
-    if type(val) in [types.StringType, types.UnicodeType] :
+    if type(val) in [types.StringType, types.UnicodeType]:
         try:
             val = eval(val)
         except:
@@ -872,6 +872,8 @@ class simuOpt:
             'useDefault', 'jump', 'jumpIfFalse', 'default', 'description',
             'validate', 'chooseOneOf', 'chooseFrom', 'separator']
         #
+        methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
+            'usage', 'processArgs']
         # validate
         if type(options) != type([]):
             raise exceptions.ValueError('An option specification list is expected')
@@ -892,6 +894,9 @@ class simuOpt:
                 raise exceptions.ValueError('Option -c is reserved for configuration loading')
             if opt['longarg'] in ['config', 'config=']:
                 raise exceptions.ValueError('Option --config is reserved for configuration loading')
+            if opt['longarg'].rstrip('=') in methods:
+                raise exceptions.ValueError('Option %s conflicts with the %s member function of the simuOpt class.' % \
+                    (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         #
         self.options = options
         self.dict = {}
@@ -903,20 +908,22 @@ class simuOpt:
         self.doc = doc
         self.details = details
         #
+        self.processedArgs = []
         if '-c' in sys.argv:
             idx = sys.argv.index('-c')
             self.configFile = sys.argv[idx+1]
+            self.processedArgs.extend([idx, idx+1])
         elif '--config' in sys.argv:
             idx = sys.argv.index('--config')
             self.configFile = sys.argv[idx+1]
+            self.processedArgs.extend([idx, idx+1])
         else:
             self.configFile = None
-        
 
     def __getattr__(self, name):
         '''Return the value of a parameter as an attribute. If a parameter happens
         to be named some member functions, prefix it with a underscore'''
-        return self.dict[name.lstrip('_')]['value']
+        return self.dict[name]['value']
         
     def saveConfig(self, file):
         '''Write a configuration file to *file*. This file can be later read
@@ -991,106 +998,80 @@ class simuOpt:
                 name = opt['longarg'].rstrip('=')
                 scan = re.compile(name + r'\s*=\s*(.*)')
                 if scan.match(line):
-                    value = scan.match(l).groups()[0]
+                    value = scan.match(line).groups()[0]
                     opt['value'] = _getParamValue(opt, value.strip('''"'\n'''))
         cfg.close()
 
-        
-    def listOptions(self, out=sys.stdout):
-        '''Print options to an output *out* (default to standard output)
-        '''
-        # remove separators from opt
+    def processArgs(self, args=sys.argv):
+        '''try to get parameters from a list of arguments *argv* (default to ``sys.argv``)'''
         for opt in self.options:
-            if opt.has_key('label'):
-                if type(opt['value']) == types.StringType:
-                    print >> out, opt['label'], '\t"'+str(opt['value'])+'"'
+            if not opt['longarg'].endswith('='): # do not expect an argument, simple
+                if '--' + opt['longarg'] in args[1:]:
+                    idx = args[1:].index('--'+opt['longarg'])
+                elif opt.has_key('arg') and '-' + opt['arg'] in args[1:]:
+                    idx = args[1:].index('-' + opt['arg'])
                 else:
-                    print >> out, opt['label'], '\t', str(opt['value'])
-
-    def __getParamShortArg(self):
-        ''' try to get parameters from short arg '''
-        for opt in self.options:
+                    continue
+                if idx+1 in self.processedArgs:
+                    raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                self.processedArgs.append(idx+1)
+                opt['value'] = True
+                continue
+            # this is a more complicated case
+            endChar = len(opt['longarg'].split('=')[0])
+            hasArg = map(lambda x:x[:(endChar+2)]=='--'+opt['longarg'][0:endChar], args[1:])
+            if True in hasArg:
+                idx = hasArg.index(True)
+                # case 1: --arg something
+                if args[idx+1] == '--'+opt['longarg'].rstrip('='):
+                    if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
+                        raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                    try:
+                        val = _getParamValue(p, args[idx+2])
+                        self.processedArgs.extend([idx+1, idx+2])
+                        opt['value'] = val
+                    except:
+                        continue
+                # case 2 --arg=something
+                else:
+                    if args[idx+1][endChar+2] != '=':
+                        raise exceptions.ValueError("Parameter " + args[idx+1] + " is invalid. (--longarg=value)")
+                    try:
+                        val = _getParamValue(opt, args[idx+1][(endChar+3):])
+                        self.processedArgs.append(idx+1)
+                        opt['value'] = val
+                    except:
+                        continue
             if not opt.has_key('arg'):
                 continue
-            if opt['arg'].endswith(':'): # expecting an argument
-                try:
-                    idx = map(lambda x:x[:2]=='-' + opt['arg'][0], sys.argv[1:]).index(True)
-                    # has something like -a
-                    # case 1: -a file
-                    if sys.argv[idx+1] == '-' + opt['arg'][0]:
-                        if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
-                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                        try:
-                            val = _getParamValue(opt, sys.argv[idx+2])
-                            self.processedArgs.append(idx+1)
-                            self.processedArgs.append(idx+2)
-                            opt['value'] = val
-                        except:
-                            continue
-                    # case 2: -aopt or -a=opt
-                    else:
-                        if idx+1 in self.processedArgs:
-                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                        try:
-                            arg = sys.argv[idx+1]
-                            if len(arg) > 3 and arg[2] == '=':
-                                val = _getParamValue(opt, sys.argv[idx+1][3:])
-                            else:
-                                val = _getParamValue(opt, sys.argv[idx+1][2:])
-                            self.processedArgs.append(idx+1)
-                            opt['value'] = val
-                        except:
-                            continue
-                except:
-                    continue
-            else:     # true or false
-                if '-' + opt['arg'] in sys.argv[1:]:
-                    idx = sys.argv[1:].index('-' + opt['arg'])
-                    if idx + 1 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    self.processedArgs.append(idx+1)
-                    opt['value'] = True
-    
-    
-    def __getParamLongArg(self):
-        '''get param from long arg '''
-        for opt in self.options:
-            if opt['longarg'].endswith('='): # expecting an argument
-                try:
-                    endChar = len(opt['longarg'].split('=')[0])
-                    idx = map(lambda x:x[:(endChar+2)]=='--'+opt['longarg'][0:endChar], sys.argv[1:]).index(True)
-                    # case 1: --arg something
-                    if sys.argv[idx+1] == '--'+opt['longarg'][0:-1]:
-                        if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
-                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                        try:
-                            val = _getParamValue(p, sys.argv[idx+2])
-                            self.processedArgs.append(idx+1)
-                            self.processedArgs.append(idx+2)
-                            opt['value'] = val
-                        except:
-                            continue
-                    # case 2 --arg=something
-                    else:
-                        if sys.argv[idx+1][endChar+2] != '=':
-                            raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " is invalid. (--longarg=value)")
-                        try:
-                            val = _getParamValue(p, sys.argv[idx+1][(endChar+3):])
-                            self.processedArgs.append(idx+1)
-                            opt['value'] = val
-                        except:
-                            continue
-                except:
-                    # not available
-                    continue
-            else:     # true or false
-                if '--' + opt['longarg'] in sys.argv[1:]:
-                    idx = sys.argv[1:].index('--'+opt['longarg'])
+            hasArg = map(lambda x:x[:2]=='-' + opt['arg'][0], args[1:])
+            if True in hasArg:
+                idx = hasArg.index(True)
+                # has something like -a
+                # case 1: -a file
+                if args[idx+1] == '-' + opt['arg'][0]:
+                    if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
+                        raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                    try:
+                        val = _getParamValue(opt, args[idx+2])
+                        self.processedArgs.extend([idx+1, idx+2])
+                        opt['value'] = val
+                    except:
+                        continue
+                # case 2: -aopt or -a=opt
+                else:
                     if idx+1 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + sys.argv[idx+1] + " has been processed before.")
-                    self.processedArgs.append(idx+1)
-                    opt['value'] = True
-    
+                        raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                    try:
+                        arg = args[idx+1]
+                        if len(arg) > 3 and arg[2] == '=':
+                            val = _getParamValue(opt, args[idx+1][3:])
+                        else:
+                            val = _getParamValue(opt, args[idx+1][2:])
+                        self.processedArgs.append(idx+1)
+                        opt['value'] = val
+                    except:
+                        continue
     
     def __getParamUserInput(self, p):
         ''' get param from user input '''
@@ -1122,18 +1103,16 @@ class simuOpt:
     def __termGetParam(self, options, useDefault=False, checkUnprocessedArgs=False):
         ''' using user input to get param '''
         # get param from short arg
-        self.processedArgs = []
         # process all options
         goto = 0
         # get from config file
         if self.configFile is not None:
             self.loadConfig(self.configFile)
         # get from command line options, these may override values from config file
-        self.__getParamLongArg()
-        self.__getParamShortArg()
+        self.processArgs()
         #
-        for opt in range(0, len(options)):
-            p = options[opt]
+        for opt in range(0, len(self.options)):
+            p = self.options[opt]
             # validate p
             if p.has_key('separator'):
                 continue
@@ -1155,8 +1134,8 @@ class simuOpt:
             # now we really should have something not None, unless the default is None
             # if a string is fine
             # now, deal with jump option
-            if (values[-1] == True and p.has_key('jump')) or \
-                (values[-1] == False and p.has_key('jumpIfFalse')):
+            if (p['value'] == True and p.has_key('jump')) or \
+                (p['value'] == False and p.has_key('jumpIfFalse')):
                 if p.has_key('jump'):
                     jumpTo = p['jump']
                 else:
@@ -1182,6 +1161,8 @@ class simuOpt:
             for i in range(1, len(sys.argv)):
                 if (not sys.argv[i] in self.allowed_commandline_options) and (not i in self.processedArgs):
                     raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+        #
+        return True
     
     # get parameter
     def getParam(self, noDialog=None, nCol = 1, checkArgs=True, useTkinter=None, verbose=False):
@@ -1228,11 +1209,9 @@ class simuOpt:
             return self.__termGetParam(False, True)
         else:
             # first assign values from non-GUI sources
-            self.processedArgs = []
             if self.configFile is not None:
-                self.__getParamConfigFile()
-            self.__getParamLongArg()
-            self.__getParamShortArg()
+                self.loadConfig(self.configFile)
+            self.processArgs()
             #
             for opt in self.options:
                 if opt.has_key('separator'):
@@ -1241,7 +1220,8 @@ class simuOpt:
                     opt['value'] = opt['default']
             # look if any argument was not processed
             for i in range(1, len(sys.argv)):
-                if (not sys.argv[i] in allowed_commandline_options) and (not i in self.processedArgs):
+                if (not sys.argv[i] in self.allowed_commandline_options) and \
+                    (not i in self.processedArgs):
                     raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
             # call dialog
             title = os.path.split(sys.argv[0])[-1]
