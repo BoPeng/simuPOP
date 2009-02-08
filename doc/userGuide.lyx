@@ -1,4 +1,4 @@
-#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -10811,8 +10811,8 @@ pops
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simuOpt.py"
-lstparams "caption={A sample parameter specification list},label={paramSpec}"
+filename "log/getParam.py"
+lstparams "caption={A sample parameter specification list},firstline=5,label={paramSpec},lastline=37"
 
 \end_inset
 
@@ -10857,9 +10857,17 @@ Although member functions such as
 \family typewriter
 simuOpt.loadConfig
 \family default
- and 
+, 
 \family typewriter
 simuOpt.processArgs
+\family default
+, 
+\family typewriter
+simuOpt.termGetParam
+\family default
+, and 
+\family typewriter
+simuOpt.guiGetParam
 \family default
  can be used to determine parameters from sources such as a configuration
  file or command line arguments (
@@ -10933,13 +10941,98 @@ False
 \family default
  if this process fails (e.g.
  users click cancel in the parameter input dialog).
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+ lists some methods to determine parameter values.
+ The parameter input dialog is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:parameter-input-dialog"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simuOpt.py"
-lstparams "caption={Get prameters using function getParam},label={getParam}"
+filename "log/getParam.py"
+lstparams "caption={Get prameters using function getParam},firstline=38,label={getParam},lastline=45"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:parameter-input-dialog"
+
+\end_inset
+
+A parameter input dialog for Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename getParam.png
+	width 50line%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+A parameter input dialog for a script that uses the same parameter specification
+ list as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+.
+ The command line is 
+\family typewriter
+simu.py --pop=YRI
+\family default
+.
+ The first parameter is in red because its input is invalid.
+\end_layout
 
 \end_inset
 
@@ -10951,18 +11044,65 @@ Access, manipulate and extract parameters
 \end_layout
 
 \begin_layout Standard
-The 
+If 
+\family typewriter
+simuOpt.getParam
+\family default
+ runs successfully, the 
 \family typewriter
 simuOpt
 \family default
- object 
+ object should have valid value for each parameter.
+ They can be retrieved as attributes (such as 
+\family typewriter
+par.rate
+\family default
+) and manipulated easily.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "useSimuOpt"
+
+\end_inset
+
+ demonstrates how to extend parameter 
+\family typewriter
+par.rate
+\family default
+ to have the same length as 
+\family typewriter
+par.rep
+\family default
+.
+ Additional derived parameters can be added if needed.
+\end_layout
+
+\begin_layout Standard
+When there are a large number of parameters, passing this 
+\family typewriter
+simuOpt
+\family default
+ object, instead of tens of parameters, is a good way to provide clean interface
+s.
+ Alternatively, you can get a list or a dictionary of parameters using member
+ functions 
+\family typewriter
+simuOpt.asList()
+\family default
+ and 
+\family typewriter
+simuOpt.asDict()
+\family default
+.
+ Note that derived parameters are not returned because they are not listed
+ in the parameter specification list.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/simuOpt.py"
-lstparams "caption={Use the simuOpt object},label={useSimuOpt}"
+filename "log/getParam.py"
+lstparams "caption={Use the simuOpt object},firstline=47,label={useSimuOpt}"
 
 \end_inset
 

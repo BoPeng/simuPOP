@@ -258,6 +258,37 @@ def _prettyString(value, quoted=False, outer=True):
         return str(value)
 
 
+def _usage(options, msg):
+    'Return a usage message.'
+    message = msg
+    message += '\n' + sys.argv[0] + ' usage:\n'
+    message += '    > ' + sys.argv[0] + ' options\n\n'
+    message += '    Options: (-shortoption --longoption: description.)\n'
+    message += '        --config xxx :\n                Load parameters from file xxx\n'
+    message += '        --noDialog :\n                Enter parameter from command line\n\n'
+    for p in options:
+        message += "        "
+        if p.has_key('arg'):
+            if p['arg'][-1] == ':':
+                message += '-'+ p['arg'][0:-1] + ' xxx '
+            else:
+                message += '-'+ p['arg'] + ' '
+        if p.has_key('longarg'):
+            if p['longarg'][-1] == '=':
+                message += '--' + p['longarg'][0:-1] + ' xxx '
+            else:
+                message += '--' + p['longarg'] + ' '
+        if p.has_key('label'):
+            message += '(config file entry: ' + p['label'] + ')'
+        message += ':\n                '
+        if p.has_key('description'):
+            message += p['description']
+        message += '\n'
+        if p.has_key('default') and p['default'] is not None:
+            message +=    '                Default to ' + _prettyString(p['default']) + '\n'
+            message += '\n'
+    return message
+    
 def _getParamValue(p, val):
     ''' try to get a value from value, raise exception if error happens. '''
     # if we are giving a unicode string, convert!
@@ -265,7 +296,8 @@ def _getParamValue(p, val):
         val = str(val)
     if (not p.has_key('allowedTypes')) or type(val) in p['allowedTypes']:
         if p.has_key('validate') and not p['validate'](val):
-                raise exceptions.ValueError("Value "+str(val)+' does not pass validation')
+                raise exceptions.ValueError('Value %s is not allowed for parameter %s' % \
+                    (str(val), p['longarg'].rstrip('=')))
         return val
     # handle another 'auto-boolean' case
     elif (p.has_key('arg') and p['arg'][-1] != ':') or \
@@ -392,7 +424,7 @@ class _tkParamDialog(_paramDialog):
         self.helpDlg.title('Help for ' + self.title)
         #
         msg = tk.Text(self.helpDlg, wrap=tk.WORD)
-        msg.insert(tk.END, usage(self.options, self.details))
+        msg.insert(tk.END, _usage(self.options, self.details))
         msg.grid(column=0, row=0, pady=10, padx=10,
             sticky = tk.E + tk.W + tk.N + tk.S)
         # scrollbar
@@ -480,6 +512,8 @@ class _tkParamDialog(_paramDialog):
                 continue
             colIndex = rowIndex / numRows
             value = self.options[g]['value']
+            if value is None:
+                value = self.options[g]['default']
             # use different entry method for different types
             if opt.has_key('separator'):
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'],
@@ -596,7 +630,7 @@ class _wxParamDialog(_paramDialog):
         box = wx.BoxSizer(wx.VERTICAL)
         box.Add(wx.TextCtrl(parent=helpDlg, id=-1, size=[600,400],
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            value=usage(self.options, self.details)), 0, wx.ALL, 20)
+            value=_usage(self.options, self.details)), 0, wx.ALL, 20)
         self.addButton(wx.ID_OK, "OK", lambda event:helpDlg.EndModal(wx.ID_OK), helpDlg, box)
         helpDlg.SetSizerAndFit(box)
         helpDlg.Layout()
@@ -684,6 +718,8 @@ class _wxParamDialog(_paramDialog):
             if not (opt.has_key('label') or opt.has_key('separator')) :
                 continue
             value = self.options[g]['value']
+            if value is None:
+                value = self.options[g]['default']
             colIndex = rowIndex / numRows
             if opt.has_key('separator'):
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
@@ -869,14 +905,13 @@ class simuOpt:
         document (the first string object in a Python script) as *details*,
         using parameter ``details=__doc__``.
         '''
-        self.allowed_commandline_options = ['--config', '--noDialog']
         #
         self.allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
             'useDefault', 'jump', 'jumpIfFalse', 'default', 'description',
             'validate', 'chooseOneOf', 'chooseFrom', 'separator']
         #
         methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
-            'usage', 'processArgs']
+            'usage', 'processArgs', 'guiGetParam', 'termGetParam']
         # validate
         if type(options) != type([]):
             raise exceptions.ValueError('An option specification list is expected')
@@ -910,10 +945,12 @@ class simuOpt:
         self.details = details
         #
         self.processedArgs = []
+        #
         if '--config' in sys.argv:
             idx = sys.argv.index('--config')
+            if idx == len(sys.argv) - 1:
+                raise exception.ValueError('Expect a filename after --config')
             self.configFile = sys.argv[idx+1]
-            self.processedArgs.extend([idx, idx+1])
         else:
             self.configFile = None
 
@@ -1003,69 +1040,69 @@ class simuOpt:
         '''try to get parameters from a list of arguments *argv* (usually ``sys.argv``)'''
         for opt in self.options:
             if not opt['longarg'].endswith('='): # do not expect an argument, simple
-                if '--' + opt['longarg'] in args[1:]:
-                    idx = args[1:].index('--'+opt['longarg'])
-                elif opt.has_key('arg') and '-' + opt['arg'] in args[1:]:
-                    idx = args[1:].index('-' + opt['arg'])
+                if '--' + opt['longarg'] in args:
+                    idx = args.index('--'+opt['longarg'])
+                elif opt.has_key('arg') and '-' + opt['arg'] in args:
+                    idx = args.index('-' + opt['arg'])
                 else:
                     continue
-                if idx+1 in self.processedArgs:
-                    raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
-                self.processedArgs.append(idx+1)
+                if idx in self.processedArgs:
+                    raise exceptions.ValueError("Parameter " + args[idx] + " has been processed before.")
+                self.processedArgs.append(idx)
                 opt['value'] = True
                 continue
             # this is a more complicated case
             endChar = len(opt['longarg'].split('=')[0])
-            hasArg = map(lambda x:x[:(endChar+2)]=='--'+opt['longarg'][0:endChar], args[1:])
+            hasArg = [x[:(endChar+2)] == '--'+opt['longarg'][0:endChar] for x in args]
             if True in hasArg:
                 idx = hasArg.index(True)
                 # case 1: --arg something
-                if args[idx+1] == '--'+opt['longarg'].rstrip('='):
-                    if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                if args[idx] == '--'+opt['longarg'].rstrip('='):
+                    if idx in self.processedArgs or idx+1 in self.processedArgs:
+                        raise exceptions.ValueError("Parameter " + args[idx] + " has been processed before.")
                     try:
-                        val = _getParamValue(p, args[idx+2])
-                        self.processedArgs.extend([idx+1, idx+2])
+                        val = _getParamValue(p, args[idx+1])
+                        self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                     except:
                         continue
                 # case 2 --arg=something
                 else:
-                    if args[idx+1][endChar+2] != '=':
-                        raise exceptions.ValueError("Parameter " + args[idx+1] + " is invalid. (--longarg=value)")
+                    if args[idx][endChar+2] != '=':
+                        raise exceptions.ValueError("Parameter " + args[idx] + " is invalid. (--longarg=value)")
                     try:
-                        val = _getParamValue(opt, args[idx+1][(endChar+3):])
-                        self.processedArgs.append(idx+1)
+                        val = _getParamValue(opt, args[idx][(endChar+3):])
+                        self.processedArgs.append(idx)
                         opt['value'] = val
                     except:
                         continue
             if not opt.has_key('arg'):
                 continue
-            hasArg = map(lambda x:x[:2]=='-' + opt['arg'][0], args[1:])
+            hasArg = [x[:2] == '-' + opt['arg'][0] for x in args]
             if True in hasArg:
                 idx = hasArg.index(True)
                 # has something like -a
                 # case 1: -a file
-                if args[idx+1] == '-' + opt['arg'][0]:
-                    if idx+1 in self.processedArgs or idx+2 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                if args[idx] == '-' + opt['arg'][0]:
+                    if idx in self.processedArgs or idx+1 in self.processedArgs:
+                        raise exceptions.ValueError("Parameter " + args[idx] + " has been processed before.")
                     try:
-                        val = _getParamValue(opt, args[idx+2])
-                        self.processedArgs.extend([idx+1, idx+2])
+                        val = _getParamValue(opt, args[idx+1])
+                        self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                     except:
                         continue
                 # case 2: -aopt or -a=opt
                 else:
-                    if idx+1 in self.processedArgs:
-                        raise exceptions.ValueError("Parameter " + args[idx+1] + " has been processed before.")
+                    if idx in self.processedArgs:
+                        raise exceptions.ValueError("Parameter " + args[idx] + " has been processed before.")
                     try:
-                        arg = args[idx+1]
+                        arg = args[idx]
                         if len(arg) > 3 and arg[2] == '=':
-                            val = _getParamValue(opt, args[idx+1][3:])
+                            val = _getParamValue(opt, args[idx][3:])
                         else:
-                            val = _getParamValue(opt, args[idx+1][2:])
-                        self.processedArgs.append(idx+1)
+                            val = _getParamValue(opt, args[idx][2:])
+                        self.processedArgs.append(idx)
                         opt['value'] = val
                     except:
                         continue
@@ -1097,16 +1134,14 @@ class simuOpt:
                 raise exceptions.ValueError("Can not get param for parameter (no default value): " + str(p['longarg']))
 
    
-    def __termGetParam(self, options, useDefault=False, checkUnprocessedArgs=False):
-        ''' using user input to get param '''
+    def termGetParam(self):
+        '''Get parameters from interactive user input. Note that parameters
+        with existing (not ``None``) values and parameters with ``useDefault``
+        set to ``True`` are not processed.
+        '''
         # get param from short arg
         # process all options
         goto = 0
-        # get from config file
-        if self.configFile is not None:
-            self.loadConfig(self.configFile)
-        # get from command line options, these may override values from config file
-        self.processArgs(sys.argv)
         #
         for opt in range(0, len(self.options)):
             p = self.options[opt]
@@ -1115,17 +1150,17 @@ class simuOpt:
                 continue
             #
             val = p['value']
-            if val == None:
-                if (useDefault or (not p.has_key('label')) or (p.has_key('useDefault') and p['useDefault'])) and p.has_key('default'):
-                    val = p['default']
-                elif opt >= goto:
-                    val = self.__getParamUserInput(p)
-            # these parameters are skipped, but still processed to check unprocessed args
+            if val is not None:
+                continue
+            if p.has_key('useDefault') and p['useDefault']:
+                p['value'] = p['default']
+            elif opt >= goto:
+                val = self.__getParamUserInput(p)
             if opt < goto:
-                p['value'] = val
-            elif val == None:
+                continue
+            if val == None and (not p.has_key('allowedTypes') or types.NoneType not in p['allowedTypes']):
                 # should have a valid value now.
-                raise exceptions.ValueError("Failed to get parameter " + p.setdefault("label",'') + " " + p.setdefault("longarg",''))
+                return False
             else:
                 p['value'] = _getParamValue(p, val)
             # now we really should have something not None, unless the default is None
@@ -1153,79 +1188,65 @@ class simuOpt:
                     raise ValueError("Can not stay or jump backwards when processing options.")
                 else:
                     goto = jumpTo
-        # look if any argument was not processed
-        if checkUnprocessedArgs:
-            for i in range(1, len(sys.argv)):
-                if (not sys.argv[i] in self.allowed_commandline_options) and (not i in self.processedArgs):
-                    raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
-        #
+        # successfully handled all parameters
         return True
     
+    def guiGetParam(self, nCol = 1, useTkinter=None):
+        '''Get parameter from a dialog.'''
+        title = os.path.split(sys.argv[0])[-1]
+        if useTkinter != True:
+            try:
+                return _wxParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
+            except exceptions.ImportError:
+                # continue to try tk
+                pass
+        # try tkinter
+        try:
+            return _tkParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
+        except exceptions.ImportError:
+            return False
+
     # get parameter
-    def getParam(self, noDialog=None, nCol = 1, checkArgs=True, useTkinter=None, verbose=False):
-        '''
-        Get parameters from commandline option, configuration file, a parameter
-        input dialog (if ``tkInter`` or ``wxPython`` is available and if
-        *noDialog* is ``False``), and from interactive user input.
+    def getParam(self, noDialog=None, nCol = 1, checkArgs=True, useTkinter=None):
+        '''Get parameters from commandline option, configuration file, a
+        parameter input dialog (if ``tkInter`` or ``wxPython`` is available and
+        if *noDialog* is ``False``), and from interactive user input. This
+        function by default checks if all commandline arguments have been
+        processed, you can set ``chekArgs`` to ``False`` if some of the
+        arguments are intended to be processed separately.
         '''
         if noDialog in [True, False]:
             self.noDialog = noDialog
-        elif '--noDialog' in sys.argv:
-            self.noDialog = True
         else:
-            self.noDialog = False
+            self.noDialog = '--noDialog' in sys.argv
         #
-        if useTkinter in [True, False]:
-            self.useTkinter = useTkinter
-        else:
-            self.useTkinter = None
-        # first try to use wxPython
-        if not self.useTkinter:
-            try:
-                # wxPython might not exist
-                imp.find_module('wx')
-            except:
-                self.useWxPython = False
-            else:
-                self.useWxPython = True
-        # then tkInter
-        if self.useTkinter or not self.useWxPython:
-            # Tkinter should almost always exists, but ...
-            try:
-                imp.find_module('Tkinter')
-            except:
-                print "Tkinter can not be loaded. Please check your Python installation."
-                self.useTkinter = False
-            else:
-                self.useTkinter = True
+        # Start processing
         #
-        if self.noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
-            or True not in map(lambda x:x.has_key('label'), self.options):
-            return self.__termGetParam(False, True)
-        else:
-            # first assign values from non-GUI sources
-            if self.configFile is not None:
-                self.loadConfig(self.configFile)
-            self.processArgs(sys.argv)
-            #
-            for opt in self.options:
-                if opt.has_key('separator'):
-                    continue
-                if opt['value'] is None and opt.has_key('default'):
-                    opt['value'] = opt['default']
+        self.processedArgs = []
+        # first assign values from non-GUI sources
+        if self.configFile is not None:
+            self.loadConfig(self.configFile)
+        self.processArgs(sys.argv)
+        #
+        if checkArgs:
             # look if any argument was not processed
             for i in range(1, len(sys.argv)):
-                if (not sys.argv[i] in self.allowed_commandline_options) and \
-                    (not i in self.processedArgs):
-                    raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
-            # call dialog
-            title = os.path.split(sys.argv[0])[-1]
-            if self.useTkinter:
-                return _tkParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
-            elif self.useWxPython:
-                return _wxParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
-            else:
-                return self.__termGetParam(self.options, False, True)
+                if i in self.processedArgs:
+                    continue
+                elif sys.argv[i] in ['--config', '--noDialog']:
+                    continue
+                elif i > 0 and sys.argv[i-1] == '--config':
+                    continue
+                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+        #
+        if self.noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
+            or True not in [x.has_key('label') for x in self.options]:
+            return self.termGetParam()
+        # GUI
+        try:
+            return self.guiGetParam()
+        except exceptions.ImportError:
+            return self.termGetParam()
         return False
     
     
@@ -1246,35 +1267,8 @@ class simuOpt:
 
     def usage(self):
         '''Reutn the usage message from the option description list.'''
-        message = ''
-        message += '\n' + sys.argv[0] + ' usage:\n'
-        message += '    > ' + sys.argv[0] + ' options\n\n'
-        message += '    Options: (-shortoption --longoption: description.)\n'
-        message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
-        message += '        --noDialog :\n                Enter parameter from command line\n'
-        for p in self.options:
-            message += "        "
-            if p.has_key('arg'):
-                if p['arg'][-1] == ':':
-                    message += '-'+ p['arg'][0:-1] + ' xxx '
-                else:
-                    message += '-'+ p['arg'] + ' '
-            if p.has_key('longarg'):
-                if p['longarg'][-1] == '=':
-                    message += '--' + p['longarg'][0:-1] + ' xxx '
-                else:
-                    message += '--' + p['longarg'] + ' '
-            if p.has_key('label'):
-                message += '(config file entry: ' + p['label'] + ')'
-            message += ':\n                '
-            if p.has_key('description'):
-                message += p['description']
-            message += '\n'
-            if p.has_key('default') and p['default'] is not None:
-                message +=    '                Default to ' + _prettyString(p['default']) + '\n'
-                message += '\n'
-        return message
-    
+        return _usage(self.options, self.doc + '\n' + self.details)
+
     
 #
 # simuOptions that will be checked by simuPOP.py when simuPOP is loaded.

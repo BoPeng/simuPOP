@@ -1476,9 +1476,16 @@ if __name__ == '__main__':
     members = set([x['Name'].replace('simuPOP::', '').replace('::', '.') \
             for x in p.content if x['type'].startswith('memberofclass_') and \
             not x['ignore'] and not x['hidden'] and not '~' in x['Name'] and not '__' in x['Name']])
+    # class members;
+    module_class_members = []
+    for mod in modules:
+        for cls in [x for x in p.content if x['type'] == 'module_class' and x['module'] == mod and not x['ignore'] and not x['hidden']]:
+            if cls.has_key('Members'):
+                module_class_members.extend(['%s.%s.%s' % (mod, cls['Name'], x['Name']) for x in cls['Members']])
+                #print 'Extending', ['%s.%s' % (cls['Name'], x['Name']) for x in cls['Members']]
     p.auto_keywords =  {'func': list(global_funcs | module_funcs | simuPOP_funcs),
         'class': list(classes | module_classes | simuPOP_classes),
-        'meth': list(members),
+        'meth': list(members) + module_class_members,
         'mod': list(modules)}
     try:
         lst = open(refFile, 'w')

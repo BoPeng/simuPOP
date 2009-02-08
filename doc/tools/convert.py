@@ -179,8 +179,17 @@ class MyRestWriter(RestWriter):
                 for keyword in self.auto_keywords.keys():
                     txt = text(cnt).split('(')[0]
                     leftover = text(cnt)[len(txt):]
+                    match = False
                     if txt in self.auto_keywords[keyword]:
                         self.curpar.append(':%s:`%s`' % (keyword, txt))
+                        match = True
+                    elif '.' in txt:
+                        ends = [x.endswith(txt) for x in self.auto_keywords[keyword]]
+                        if True in ends:
+                            fullword = self.auto_keywords[keyword][ends.index(True)]
+                            self.curpar.append(':%s:`~%s`' % (keyword, fullword))
+                            match = True
+                    if match:
                         if leftover != '':
                             if leftover.startswith('()'):
                                 # sphinx ignores them!!
