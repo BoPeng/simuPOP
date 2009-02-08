@@ -24,35 +24,37 @@
 ############################################################################
 
 '''
-Module  simuOpt  can be used to control which simuPOP module to load, and
-how it is loaded using function  setOptions  . It also provides a simple
-way to set simulation options, from user input, command line, configuration
-file or a parameter dialog. All you need to do is to define an option
-description list that lists all parameters in a given format, and call
-the getParam function.
+Module ``simuOpt`` provides a function ``simuOpt.setOptions`` to control which
+simuPOP module to load, and how it is loaded, and a class ``simuOpt.simuOpt``
+that helps users manage script options.
 
-This module, if loaded, pre-process the command line options. More specifically,
-it checks command line option:
-
--c configfile: read from a configuration file
-
---config configfile: the same as -c
-
---optimized: load optimized modules, unless setOption explicitly use non-optimized
-  modules.
-
--q: Do not display banner information when simuPOP is loaded
-
---quiet: the same as -q
-
---useTkinter: force the use of Tcl/Tk dialog even when wxPython is available. By
-  default, wxPython is used whenever possible.
-
---noDialog: do not use option dialog. If the options can not be obtained from
-  command line or configuraiton file, users will be asked to input them interactively.
+When simuPOP is loaded, it checkes a few environmental variables
+(``SIMUOPTIMIZED``, ``SIMUALLELETYPE``, and ``SIMUDEBUG``) to determine which
+simuPOP module to load, and how to load it. More options can be set using the
+``simuOpt.setOptions`` function. For example, you can suppress the banner
+message when simuPOP is loaded and require a minimal revision of simuPOP for
+your script.
 
 
-Because these options are reserved, you can not use them in your simuPOP script.
+class ``simuOpt.simuOpt`` provides a powerful way to handle commandline
+arguments. Briefly speaking, a ``simuOpt`` object can be created from a list
+of parameter specification dictionaries. The parameters are then become
+attributes of this object. A number of functions are provided to determine
+values of these parameters using commandline arguments, a configuration
+file, or a parameter input dialog (using ``Tkinter`` or ``wxPython``).
+Values of these parameters can be accessed as attributes, or extracted
+as a list or a dictionary. Note that the ``simuOpt.getParam`` function
+automatically handles the following commandline arguments.
+
+``--config configFile``
+    Read parameters from a configuration file *configFile*.
+
+``--noDialog``
+    Do not use a parameter input dialog. If an option can not be obtained
+    from command line or a configuraiton file, and it does not use its
+    default value (``useDefault``), users will be asked to input
+    them interactively.
+
 '''
 
 # First try to get environmental variable
@@ -867,8 +869,7 @@ class simuOpt:
         document (the first string object in a Python script) as *details*,
         using parameter ``details=__doc__``.
         '''
-        self.allowed_commandline_options = ['-c', '--config', '--optimized',
-            '-q', '--useTkinter', '--quiet', '--noDialog']
+        self.allowed_commandline_options = ['--config', '--noDialog']
         #
         self.allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
             'useDefault', 'jump', 'jumpIfFalse', 'default', 'description',
@@ -892,8 +893,6 @@ class simuOpt:
             if opt.has_key('arg') and \
                 opt['arg'].endswith(':') != opt['longarg'].endswith('='):
                 raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
-            if opt.has_key('arg') and opt['arg'] in ['c', 'c:']:
-                raise exceptions.ValueError('Option -c is reserved for configuration loading')
             if opt['longarg'] in ['config', 'config=']:
                 raise exceptions.ValueError('Option --config is reserved for configuration loading')
             if opt['longarg'].rstrip('=') in methods:
@@ -911,11 +910,7 @@ class simuOpt:
         self.details = details
         #
         self.processedArgs = []
-        if '-c' in sys.argv:
-            idx = sys.argv.index('-c')
-            self.configFile = sys.argv[idx+1]
-            self.processedArgs.extend([idx, idx+1])
-        elif '--config' in sys.argv:
+        if '--config' in sys.argv:
             idx = sys.argv.index('--config')
             self.configFile = sys.argv[idx+1]
             self.processedArgs.extend([idx, idx+1])
@@ -1182,8 +1177,6 @@ class simuOpt:
         #
         if useTkinter in [True, False]:
             self.useTkinter = useTkinter
-        elif '--useTkinter' in sys.argv:
-            self.useTkinter = True
         else:
             self.useTkinter = None
         # first try to use wxPython
@@ -1259,7 +1252,6 @@ class simuOpt:
         message += '    Options: (-shortoption --longoption: description.)\n'
         message += '        -c xxx --config xxx :\n                Load parameters from file xxx\n'
         message += '        --noDialog :\n                Enter parameter from command line\n'
-        message += '        --optimized :\n                Use optimized library (no error checking)\n'
         for p in self.options:
             message += "        "
             if p.has_key('arg'):
@@ -1297,8 +1289,8 @@ simuOptions = {
     'Revision': None,
 }
 
-# Optimized: get commandline or environmental variable SIMUOPTIMIZED
-if '--optimized' in sys.argv or os.getenv('SIMUOPTIMIZED') is not None:
+# Optimized: environmental variable SIMUOPTIMIZED
+if os.getenv('SIMUOPTIMIZED') is not None:
     simuOptions['Optimized'] = True
 
 # AlleleType: from environmental variable SIMUALLELETYPE
@@ -1326,10 +1318,8 @@ def setOptions(alleleType=None, optimized=None, quiet=None, debug=None, revision
         Load the optimized version of a module if this parameter is set to
         ``True`` and the standard version if it is set to ``False``. If this
         parameter is not set (``None``), the optimized version will be used
-        if environmental variable ``SIMUOPTIMIZED`` is defined, or if
-        commandline option ``--optimized`` is used. The standard version will
-        be used otherwise. ``--optimized`` will be removed from ``sys.argv``
-        after this module is loaded.
+        if environmental variable ``SIMUOPTIMIZED`` is defined. The standard
+        version will be used otherwise.
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
