@@ -1749,13 +1749,6 @@ status open
 
 
 \backslash
-simuOptprintConfigRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 simuOptvalueNotRef
 \end_layout
 
@@ -1866,6 +1859,9 @@ simuOptvalueValidFileRef
 
 \begin_layout Plain Layout
 
+
+\backslash
+simuOptsimuOptRef
 \end_layout
 
 \end_inset

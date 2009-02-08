@@ -371,7 +371,9 @@ class _tkParamDialog(_paramDialog):
         _paramDialog.__init__(self, options, title, description, details, nCol)
         # style wise, this seems to be very bad
         import Tkinter as tk
+        import tkFont
         globals()['tk'] = tk
+        globals()['tkFont'] = tkFont
 
     def denyWindowManagerClose(self):
         '''Don't allow WindowManager close'''
@@ -928,7 +930,7 @@ class simuOpt:
     def saveConfig(self, file):
         '''Write a configuration file to *file*. This file can be later read
         with command line option ``-c`` or ``--config``. Note that
-        # Only options with a @@label@@ entry is saved.
+        # Only options with a ``label`` entry is saved.
         '''
         cfg = open(file,'w')
         try:
@@ -987,7 +989,7 @@ class simuOpt:
 
     def loadConfig(self, file):
         '''Load configuration from a file. This function is usually called
-        with commandline option @@-c@@ or @@--config@@, but can also be called
+        with commandline option ``-c`` or ``--config``, but can also be called
         explicitly.
         '''
         cfg = open(file)
@@ -1002,8 +1004,8 @@ class simuOpt:
                     opt['value'] = _getParamValue(opt, value.strip('''"'\n'''))
         cfg.close()
 
-    def processArgs(self, args=sys.argv):
-        '''try to get parameters from a list of arguments *argv* (default to ``sys.argv``)'''
+    def processArgs(self, args):
+        '''try to get parameters from a list of arguments *argv* (usually ``sys.argv``)'''
         for opt in self.options:
             if not opt['longarg'].endswith('='): # do not expect an argument, simple
                 if '--' + opt['longarg'] in args[1:]:
@@ -1109,7 +1111,7 @@ class simuOpt:
         if self.configFile is not None:
             self.loadConfig(self.configFile)
         # get from command line options, these may override values from config file
-        self.processArgs()
+        self.processArgs(sys.argv)
         #
         for opt in range(0, len(self.options)):
             p = self.options[opt]
@@ -1211,7 +1213,7 @@ class simuOpt:
             # first assign values from non-GUI sources
             if self.configFile is not None:
                 self.loadConfig(self.configFile)
-            self.processArgs()
+            self.processArgs(sys.argv)
             #
             for opt in self.options:
                 if opt.has_key('separator'):
@@ -1249,17 +1251,9 @@ class simuOpt:
             res.append(opt['value'])
         return res
 
-    def usage(self, before=''):
-        """ Print usage information from the option description list. Used
-        with  -h  (or  --help   ) option, and in the parameter input dialog.
-    
-        options: option description list.
-    
-        before: optional information
-        """
+    def usage(self):
+        '''Reutn the usage message from the option description list.'''
         message = ''
-        if before != '':
-            message += '    ' + before + '\n'
         message += '\n' + sys.argv[0] + ' usage:\n'
         message += '    > ' + sys.argv[0] + ' options\n\n'
         message += '    Options: (-shortoption --longoption: description.)\n'
