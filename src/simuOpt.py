@@ -260,9 +260,13 @@ def _prettyString(value, quoted=False, outer=True):
 
 def _usage(options, msg):
     'Return a usage message.'
+    if len(sys.argv) > 0:
+        progName = sys.argv[0]
+    else:
+        progName = ''
     message = msg
-    message += '\n' + sys.argv[0] + ' usage:\n'
-    message += '    > ' + sys.argv[0] + ' options\n\n'
+    message += '\n' + progName + ' usage:\n'
+    message += '    > ' + progName + ' options\n\n'
     message += '    Options: (-shortoption --longoption: description.)\n'
     message += '        --config xxx :\n                Load parameters from file xxx\n'
     message += '        --noDialog :\n                Enter parameter from command line\n\n'
@@ -288,7 +292,7 @@ def _usage(options, msg):
             message +=    '                Default to ' + _prettyString(p['default']) + '\n'
             message += '\n'
     return message
-    
+
 def _getParamValue(p, val):
     ''' try to get a value from value, raise exception if error happens. '''
     # if we are giving a unicode string, convert!
@@ -335,7 +339,7 @@ def _getParamValue(p, val):
     else:
         raise exceptions.ValueError('Type of input parameter ' + str(val) + " is incorrect. (param " \
             + p.setdefault('longarg','none') +")")
-        
+
 
 class _paramDialog:
     def __init__(self, options, title = '', description='', details='', nCol=1):
@@ -347,7 +351,11 @@ class _paramDialog:
         self.title = title
         self.description = description
         self.details = details
-        self.nCol = nCol
+        if nCol is None:
+            self.nCol = len(self.options)/10 + 1
+        else:
+            self.nCol = nCol
+
 
     def getNumOfRows(self, multiLineChooseOneOf=False):
         '''Count the number of rows that is needed for all parameters'''
@@ -919,23 +927,14 @@ class simuOpt:
         #
         self.doc = doc
         self.details = details
-        #
         self.processedArgs = []
-        #
-        if '--config' in sys.argv:
-            idx = sys.argv.index('--config')
-            if idx == len(sys.argv) - 1:
-                raise exception.ValueError('Expect a filename after --config')
-            self.configFile = sys.argv[idx+1]
-        else:
-            self.configFile = None
 
     def __getattr__(self, name):
         'Return the value of a parameter as an attribute.'
         if self.dict.has_key(name):
             return self.dict[name]['value']
         raise exceptions.AttributeError('Can not locate attribute %s.' % name)
-        
+
     def __setattr__(self, name, value):
         'Set the value of a parameter as an attribute.'
         if self.__dict__.has_key('dict') and self.dict.has_key(name):
@@ -1140,7 +1139,7 @@ class simuOpt:
                         opt['value'] = val
                     except:
                         continue
-    
+
     def __getParamUserInput(self, p):
         ''' get param from user input '''
         # prompt
@@ -1167,7 +1166,10 @@ class simuOpt:
             else:
                 raise exceptions.ValueError("Can not get param for parameter (no default value): " + str(p['longarg']))
 
-   
+    def usage(self):
+        '''Reutn the usage message from the option description list.'''
+        return _usage(self.options, self.doc + '\n' + self.details)
+
     def termGetParam(self):
         '''Get parameters from interactive user input. Note that parameters
         with existing (not ``None``) values and parameters with ``useDefault``
@@ -1224,8 +1226,8 @@ class simuOpt:
                     goto = jumpTo
         # successfully handled all parameters
         return True
-    
-    def guiGetParam(self, nCol = 1, useTkinter=None):
+
+    def guiGetParam(self, nCol = None, useTkinter=None):
         '''Get parameter from a dialog.'''
         title = os.path.split(sys.argv[0])[-1]
         if useTkinter != True:
@@ -1241,49 +1243,85 @@ class simuOpt:
             return False
 
     # get parameter
-    def getParam(self, noDialog=None, nCol = 1, checkArgs=True, useTkinter=None):
+    def getParam(self, noDialog=None, nCol=None, configFile=None, args=None,
+        checkArgs=True, useTkinter=None):
         '''Get parameters from commandline option, configuration file, a
-        parameter input dialog (if ``tkInter`` or ``wxPython`` is available and
-        if *noDialog* is ``False``), and from interactive user input. This
-        function by default checks if all commandline arguments have been
-        processed, you can set ``chekArgs`` to ``False`` if some of the
-        arguments are intended to be processed separately.
+        parameter input dialog and from interactive user input.
+
+        noDialog
+            No parameter input dialog is used if this parameter is set to
+            ``True`` or ``--noDialog`` is specified in commandline.
+            Undetermined parameters will be obtained from interactive user
+            input.
+
+        nCol
+            Number of columns in the parameter input dialog. This is usual
+            determine automatically depending on the number of options.
+
+        configFile
+            Configuration file from which to load values of parameters. If
+            unspecified, it will be determined from command line option
+            ``--config``.
+
+        args
+            Command line arguments are obtained from ``sys.argv`` unless a
+            list of options are provided in this argument.
+
+        checkArgs
+            This function by default checks if all commandline arguments have
+            been processed, you can set ``chekArgs`` to ``False`` if some of
+            the arguments are intended to be processed separately.
+
+        useTkinter
+            If both ``Tkinter`` and ``wxPython`` are available, a ``wxPython``
+            dialog will be used unless *useTkinter* is set to ``True``.
         '''
+        if args is None:
+            cmdArgs = sys.argv
+        else:
+            cmdArgs = args
+        #
         if noDialog in [True, False]:
             self.noDialog = noDialog
         else:
-            self.noDialog = '--noDialog' in sys.argv
+            self.noDialog = '--noDialog' in cmdArgs
         #
         # Start processing
         #
         self.processedArgs = []
         # first assign values from non-GUI sources
-        if self.configFile is not None:
-            self.loadConfig(self.configFile)
-        self.processArgs(sys.argv)
+        if configFile is not None:
+            self.loadConfig(configFile)
+        elif '--config' in cmdArgs:
+            idx = cmdArgs.index('--config')
+            if idx == len(cmdArgs) - 1:
+                raise exception.ValueError('Expect a filename after --config')
+            self.loadConfig(cmdArgs[idx+1])
+        #
+        self.processArgs(cmdArgs)
         #
         if checkArgs:
             # look if any argument was not processed
-            for i in range(1, len(sys.argv)):
+            for i in range(1, len(cmdArgs)):
                 if i in self.processedArgs:
                     continue
-                elif sys.argv[i] in ['--config', '--noDialog']:
+                elif cmdArgs[i] in ['--config', '--noDialog']:
                     continue
-                elif i > 0 and sys.argv[i-1] == '--config':
+                elif i > 0 and cmdArgs[i-1] == '--config':
                     continue
-                raise exceptions.ValueError("Unprocessed command line argument: " + sys.argv[i])
+                raise exceptions.ValueError("Unprocessed command line argument: " + cmdArgs[i])
         #
-        if self.noDialog or '-h' in sys.argv[1:] or '--help' in sys.argv[1:] \
+        if self.noDialog or '-h' in cmdArgs[1:] or '--help' in cmdArgs[1:] \
             or True not in [x.has_key('label') for x in self.options]:
             return self.termGetParam()
         # GUI
         try:
-            return self.guiGetParam()
+            return self.guiGetParam(nCol, useTkinter)
         except exceptions.ImportError:
             return self.termGetParam()
         return False
-    
-    
+
+
     def asDict(self):
         '''Return parameters as a dictionary.'''
         res = {}
@@ -1299,11 +1337,6 @@ class simuOpt:
             res.append(opt['value'])
         return res
 
-    def usage(self):
-        '''Reutn the usage message from the option description list.'''
-        return _usage(self.options, self.doc + '\n' + self.details)
-
-    
 #
 # simuOptions that will be checked by simuPOP.py when simuPOP is loaded.
 # This structure can be changed by function setOptions

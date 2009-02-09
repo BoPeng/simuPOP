@@ -10962,8 +10962,8 @@ reference "fig:parameter-input-dialog"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/getParam.py"
-lstparams "caption={Get prameters using function getParam},firstline=38,label={getParam},lastline=45"
+filename "log/getParam.log"
+lstparams "caption={Get prameters using function getParam},firstline=38,label={getParam},lastline=73"
 
 \end_inset
 
@@ -11094,8 +11094,8 @@ simuOpt.asDict()
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/getParam.py"
-lstparams "caption={Use the simuOpt object},firstline=47,label={useSimuOpt}"
+filename "log/getParam.log"
+lstparams "caption={Use the simuOpt object},firstline=75,label={useSimuOpt}"
 
 \end_inset
 
