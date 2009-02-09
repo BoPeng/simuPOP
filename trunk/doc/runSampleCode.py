@@ -54,7 +54,8 @@ def runScript(inputFile, outputFile):
     
     outFile.close()
     
-    print "Finished executing ", sys.argv[1]
+    #print "Finished executing ", sys.argv[1]
+    print sys.argv
 
 
 def splitFile(outputFile, runCommand=True):
@@ -69,7 +70,15 @@ def splitFile(outputFile, runCommand=True):
     outFile = open(outputFile, 'r')
     out = ''
     first = False
+    ignore = False
     for line in outFile.readlines():
+        if line.strip().endswith('#beginignore'):
+            ignore = True
+        elif line.strip().endswith('#endignore'):
+            ignore = False
+            continue
+        if ignore:
+            continue
         if begin_re.match(line):
             (tmp, file) = begin_re.match(line).groups()
             file = file.strip()
