@@ -204,14 +204,6 @@ class MyRestWriter(RestWriter):
         # the regular emph/strong case and other stuff
         RestWriter.visit_InlineNode(self, node)
 
-    def visit_CommandNode(self, node):
-        cmdname = node.cmdname
-        if cmdname == 'figure':
-            self.write('.. figure:: %s\n   :width: 670\n' % text(node.args[0]))
-            return
-        else:
-            RestWriter.visit_CommandNode(self, node)
-
     def visit_CommentNode(self, node):
         # no inline comments -> they are all output at the start of a new paragraph
         pass #self.comments.append(node.comment.strip())
