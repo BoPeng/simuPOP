@@ -10990,14 +10990,7 @@ name "fig:parameter-input-dialog"
 
 \end_inset
 
-A parameter input dialog for Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "getParam"
-
-\end_inset
-
-
+A sample parameter input dialog
 \end_layout
 
 \end_inset
