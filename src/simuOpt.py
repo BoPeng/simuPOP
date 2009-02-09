@@ -906,41 +906,17 @@ class simuOpt:
         using parameter ``details=__doc__``.
         '''
         #
-        self.allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
-            'useDefault', 'jump', 'jumpIfFalse', 'default', 'description',
-            'validate', 'chooseOneOf', 'chooseFrom', 'separator']
-        #
-        methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
-            'usage', 'processArgs', 'guiGetParam', 'termGetParam']
         # validate
         if type(options) != type([]):
             raise exceptions.ValueError('An option specification list is expected')
+        #
+        self.options = []
+        self.dict = {}
         for opt in options:
             if type(opt) != type({}):
                 raise exceptions.ValueError('An option specification dictionary is expected')
-            for key in opt.keys():
-                if key not in self.allowed_keys:
-                    raise exceptions.ValueError('Invalid option specification key %s.' % key)
-            if 'longarg' not in opt.keys():
-                raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
-            if 'default' not in opt.keys() and 'separator' not in opt.keys():
-                raise exceptions.ValueError('A default value must be provided for all options')
-            if opt.has_key('arg') and \
-                opt['arg'].endswith(':') != opt['longarg'].endswith('='):
-                raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
-            if opt['longarg'] in ['config', 'config=']:
-                raise exceptions.ValueError('Option --config is reserved for configuration loading')
-            if opt['longarg'].rstrip('=') in methods:
-                raise exceptions.ValueError('Option %s conflicts with the %s member function of the simuOpt class.' % \
-                    (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
+            self.addOption(**opt)
         #
-        self.options = options
-        self.dict = {}
-        for opt in options:
-            # default value for each parameter
-            opt['value'] = None
-            name = opt['longarg'].rstrip('=')
-            self.dict[name] = opt
         self.doc = doc
         self.details = details
         #
@@ -955,10 +931,68 @@ class simuOpt:
             self.configFile = None
 
     def __getattr__(self, name):
-        '''Return the value of a parameter as an attribute. If a parameter happens
-        to be named some member functions, prefix it with a underscore'''
-        return self.dict[name]['value']
+        'Return the value of a parameter as an attribute.'
+        if self.dict.has_key(name):
+            return self.dict[name]['value']
+        raise exceptions.AttributeError('Can not locate attribute %s.' % name)
         
+    def __setattr__(self, name, value):
+        'Set the value of a parameter as an attribute.'
+        if self.__dict__.has_key('dict') and self.dict.has_key(name):
+            self.dict[name]['value'] = value
+        else:
+            self.__dict__[name] = value
+
+    def addOption(self, pos=-1, value=None, **kwargs):
+        '''
+        Append an entry to the parameter specification list. Dictionary
+        entries should be specified as keyword arguments such as
+        ``longarg='option='``. An optional parameter *pos* can be given to
+        specify an index before which this option will be inserted. The
+        value of this option can set using parameter *value* (default to
+        ``None``).
+        '''
+        allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
+            'useDefault', 'jump', 'jumpIfFalse', 'default', 'description',
+            'validate', 'chooseOneOf', 'chooseFrom', 'separator']
+        #
+        methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
+            'usage', 'processArgs', 'guiGetParam', 'termGetParam', 'addOption']
+        #
+        opt = {}
+        for key in kwargs:
+            if key in allowed_keys:
+                opt[key] = kwargs[key]
+            else:
+                raise exceptions.ValueError('Invalid option specification key %s' % key)
+        if 'longarg' not in opt.keys():
+            raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
+        if 'default' not in opt.keys() and 'separator' not in opt.keys():
+            raise exceptions.ValueError('A default value must be provided for all options')
+        if opt.has_key('arg') and \
+            opt['arg'].endswith(':') != opt['longarg'].endswith('='):
+            raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
+        if opt['longarg'] in ['config', 'config=']:
+            raise exceptions.ValueError("Option '--config' is reserved for configuration loading")
+        if opt['longarg'].rstrip('=') in methods:
+            raise exceptions.ValueError("Option '%s' conflicts with the '%s' member function of the simuOpt class." % \
+                (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
+        if opt['longarg'].rstrip('=') in self.__dict__.keys():
+            raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this simuOpt object." % \
+                (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
+        #
+        opt['value'] = value
+        if pos >= 0 and pos < len(self.options):
+            self.options.insert(pos, opt)
+        else:
+            self.options.append(opt)
+        #
+        name = opt['longarg'].rstrip('=')
+        if self.dict.has_key(name):
+            raise exceptions.ValueError('Option %s already exists.' % name)
+        self.dict[name] = opt
+
+
     def saveConfig(self, file):
         '''Write a configuration file to *file*. This file can be later read
         with command line option ``-c`` or ``--config``. Note that
