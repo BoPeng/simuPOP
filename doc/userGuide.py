@@ -1529,7 +1529,6 @@ print pop.indInfo('c')[:10]
 
 #file log/getParam.log
 import types, simuOpt
-from simuPOP import *
 
 options = [
     {'arg': 'h',
@@ -1569,6 +1568,7 @@ pars = simuOpt.simuOpt(options, 'A demo simulation')
 print pars.usage()
 # You can manually feed parameters...
 pars.processArgs(['--rep=10'])
+pars.rep
 #beginignore
 oldArg = sys.argv[-1]
 sys.argv.pop()
@@ -1577,23 +1577,23 @@ if not os.path.isfile('getParam.png'):
 else:
     sys.argv.append('--noDialog')
     pars.help = False
-    pars.rate = 0.10
-    pars.rep = 10
+    pars.rate = [0.25]
+    pars.rep = 5
     pars.pop = 'CEU'
 
 #endignore
-# but simuOpt.getParam is commonly used
+# but simuOpt.getParam is easiest to used
 if not pars.getParam():
     sys.exit(1)
 
 #beginignore
-if sys.argv[-1] == '--noDialog':
-    sys.argv[-1] = oldArg
-
+sys.argv[-1] = oldArg
 #endignore
 # save prameters to a configuration file
 pars.saveConfig('sample.cfg')
 # post-process parameters
+pars.rate
+pars.rep
 pars.rate = pars.rate * pars.rep
 # extract parameters as a dictionary or a list
 pars.asDict()
