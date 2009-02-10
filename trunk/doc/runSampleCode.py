@@ -54,7 +54,7 @@ def runScript(inputFile, outputFile):
     
     outFile.close()
     
-    #print "Finished executing ", sys.argv[1]
+    print "Finished executing ", sys.argv[1]
     print sys.argv
 
 
