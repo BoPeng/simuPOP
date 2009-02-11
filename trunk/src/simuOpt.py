@@ -315,15 +315,22 @@ options:
             name += '--%s' % opt['longarg']
         #
         if opt.has_key('label'):
-            label = opt['label']
+            label = opt['label'] + ' '
         else:
             label = ''
         if len(name) >= 22:
             name += '\n' + ' '*24
-        message += '  %-22s%s [default: %s ]\n' % (name, label, _prettyString(opt['default']))
+        else:
+            name = '%-21s ' % name
+        if opt['default'] == '':
+            defaultVal = "''"
+        elif opt['default'] is None:
+            defaultVal = 'None'
+        else:
+            defaultVal = _prettyString(opt['default'])
+        message += '  %s%s[default: %s ]\n' % (name, label, defaultVal)
         if opt.has_key('description'):
-            message += _prettyDesc(opt['description'], indent=' '*24)
-        message += '\n'
+            message += _prettyDesc(opt['description'], indent=' '*24) + '\n'
     return message
 
 def _getParamValue(p, val):
@@ -337,14 +344,13 @@ def _getParamValue(p, val):
                     (str(val), p['longarg'].rstrip('=')))
         return val
     # handle another 'auto-boolean' case
-    elif (p.has_key('arg') and p['arg'][-1] != ':') or \
-        (p.has_key('longarg') and p['longarg'][-1] != '='):
+    elif not (p['longarg'].endswith('=')):
         if val in ['1', 'true', 'True']:
             return True
         elif val in ['0', 'false', 'False']:
             return False
         else:
-            raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['longarg'])
+            raise exceptions.ValueError('Expect 0/1, true/false for boolean values for parameter %s ' % p['longarg'].rstrip('='))
     # other wise, need conversion
     if type(val) in [types.StringType, types.UnicodeType]:
         try:
@@ -510,7 +516,6 @@ class _tkParamDialog(_paramDialog):
                     var = self.options[g]['value'].get()
                     val = _getParamValue(self.options[g], var == 1)
             except Exception,e:
-                print e
                 for lab in self.labelWidgets:
                     if lab is not None:
                         lab.configure(fg='black')
@@ -966,14 +971,14 @@ class simuOpt:
         else:
             self.__dict__[name] = value
 
-    def addOption(self, pos=-1, value=None, **kwargs):
+    def addOption(self, pos=-1, **kwargs):
         '''
         Append an entry to the parameter specification list. Dictionary
         entries should be specified as keyword arguments such as
         ``longarg='option='``. An optional parameter *pos* can be given to
         specify an index before which this option will be inserted. The
-        value of this option can set using parameter *value* (default to
-        ``None``).
+        value of this option is initialized to the default value of this
+        option.
         '''
         allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
             'useDefault', 'default', 'description',
@@ -1007,7 +1012,7 @@ class simuOpt:
             raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this simuOpt object." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         #
-        opt['value'] = value
+        opt['value'] = opt['default']
         if pos >= 0 and pos < len(self.options):
             self.options.insert(pos, opt)
         else:
@@ -1213,18 +1218,13 @@ class simuOpt:
 
     def termGetParam(self):
         '''Get parameters from interactive user input. Note that parameters
-        with existing (not ``None``) values and parameters with ``useDefault``
-        set to ``True`` are not processed.
+        without a label and parameters with ``useDefault`` set to ``True``
+        are not processed.
         '''
         #
         for opt in self.options:
-            if opt.has_key('separator'):
-                continue
-            #
-            if opt['value'] is not None:
-                continue
-            if opt.has_key('useDefault') and opt['useDefault']:
-                opt['value'] = opt['default']
+            if opt.has_key('separator') or not opt.has_key('label') or \
+                opt.has_key('useDefault') and opt['useDefault']:
                 continue
             val = self.__getParamUserInput(opt)
             if val is None and not (opt.has_key('allowedTypes') and types.NoneType in opt['allowedTypes']):
