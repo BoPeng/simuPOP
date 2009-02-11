@@ -10812,7 +10812,7 @@ pops
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.py"
-lstparams "caption={A sample parameter specification list},firstline=5,label={paramSpec},lastline=40"
+lstparams "caption={A sample parameter specification list},firstline=5,label={paramSpec},lastline=39"
 
 \end_inset
 
@@ -10879,7 +10879,52 @@ sys.argv
 simuOpt.getParam()
 \family default
  is used most of the time.
- This function process each parameter in the following order:
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+ lists some methods to determine parameter values.
+ The 
+\family typewriter
+simuOpt.usage()
+\family default
+ call of this example demonstrates a special rule in the formatting of parameter
+ description texts, namely 
+\series bold
+lines with symbol 
+\family typewriter
+'|'
+\family default
+ as the first non-space/tab character are outputed as a separate line without
+ the leading 
+\family typewriter
+'|'
+\family default
+ character
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/getParam.log"
+lstparams "caption={Get prameters using function getParam},firstline=37,keywordstyle={\\small\\ttfamily},label={getParam},lastline=66"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+simuOpt.getParam()
+\family default
+ function processes each parameter in the following order:
 \end_layout
 
 \begin_layout Itemize
@@ -10941,14 +10986,6 @@ False
 \family default
  if this process fails (e.g.
  users click cancel in the parameter input dialog).
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "getParam"
-
-\end_inset
-
- lists some methods to determine parameter values.
  The parameter input dialog is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -10957,17 +10994,6 @@ reference "fig:parameter-input-dialog"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/getParam.log"
-lstparams "caption={Get prameters using function getParam},firstline=37,label={getParam},lastline=75"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -11095,7 +11121,7 @@ simuOpt.asDict()
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Use the simuOpt object},firstline=76,label={useSimuOpt}"
+lstparams "caption={Use the simuOpt object},firstline=67,label={useSimuOpt}"
 
 \end_inset
 

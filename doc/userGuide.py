@@ -1531,34 +1531,33 @@ print pop.indInfo('c')[:10]
 import types, simuOpt
 
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'default': False, 
-     'description': 'Print a usage message.',
-     'allowedTypes': [types.BooleanType],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
-    },
-    {'longarg': 'rate=',
+    {'arg': 'r:',
+    'longarg': 'rate=',
      'default': [0.01],
      'useDefault': True,
      'label': 'Recombination rate',
      'allowedTypes': [types.ListType, types.TupleType],
      'description': '''Recombination rate for each replicate. If a single value
-                is given, it will be used for all replicates.''',
+            is given, it will be used for all replicates.''',
      'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1))
     },
     {'longarg': 'rep=',
      'default': 5,
      'label': 'Number of replicates',
      'allowedTypes': [types.IntType, types.LongType],
-     'description': 'Number of replicates.',
+     'description': 'Number of replicates to simulate.',
      'validate': simuOpt.valueGT(0)
     }, 
     {'longarg': 'pop=',
      'default': 'CEU',
-     'label': 'Which HapMap population to use',
+     'label': 'Initial population',
      'allowedTypes': [types.StringType],
-     'description': 'Start evolving from one of the HapMap populations',
+     'description': '''Use one of the HapMap populations as the initial
+            population for this simulation. You can choose from:
+            |YRI: 33 trios from the Yoruba people in Nigeria (Africa)
+            |CEU: 30 trios from Utah with European ancestry (European)
+            |CHB+JPT: 90 unrelated individuals from China and Japan (Asia)
+            ''',
      'chooseOneOf': ['CEU', 'YRI', 'CHB+JPT'],
      'validate': simuOpt.valueOneOf(['CEU', 'YRI', 'CHB+JPT'])
     }
@@ -1582,7 +1581,7 @@ else:
     pars.pop = 'CEU'
 
 #endignore
-# but simuOpt.getParam is easiest to used
+# but simuOpt.getParam is the easiest to used
 if not pars.getParam():
     sys.exit(1)
 
