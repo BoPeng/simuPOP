@@ -338,9 +338,15 @@ def _getParamValue(p, val):
     # if we are giving a unicode string, convert!
     if type(val) == types.UnicodeType:
         val = str(val)
+    # remove quotes from string?
+    if p.has_key('allowedTypes') and type('') in p['allowedTypes']:
+        for quote in ['"', "'", '"""', "'''"]:
+            if val.startswith(quote) and val.endswith(quote):
+                val = val[len(quote):-len(quote)]
+                break
     if (not p.has_key('allowedTypes')) or type(val) in p['allowedTypes']:
         if p.has_key('validate') and not p['validate'](val):
-                raise exceptions.ValueError('Value %s is not allowed for parameter %s' % \
+                raise exceptions.ValueError("Value '%s' is not allowed for parameter %s" % \
                     (str(val), p['longarg'].rstrip('=')))
         return val
     # handle another 'auto-boolean' case
@@ -975,10 +981,15 @@ class simuOpt:
         '''
         Append an entry to the parameter specification list. Dictionary
         entries should be specified as keyword arguments such as
-        ``longarg='option='``. An optional parameter *pos* can be given to
-        specify an index before which this option will be inserted. The
-        value of this option is initialized to the default value of this
-        option.
+        ``longarg='option='``. More specifically, you can specify parameters
+        ``arg``, ``longarg`` (required), ``label``, ``allowedTypes``,
+        ``useDefault``, ``default`` (required), ``description``, ``validate``,
+        ``chooseOneOf``, ``chooseFrom`` and ``separator``. This option will
+        have a name specified by ``longarg`` (without optional trailing ``=``)
+        and an initial default value specified by ``default``.
+
+        An optional parameter *pos* can be given to specify an index before
+        which this option will be inserted.
         '''
         allowed_keys = ['arg', 'longarg', 'label', 'allowedTypes',
             'useDefault', 'default', 'description',
@@ -995,11 +1006,15 @@ class simuOpt:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
         if 'longarg' not in opt.keys():
             raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
+        if not opt['longarg'].strip('=').isalnum() or not opt['longarg'][0].isalpha():
+            raise exceptions.ValueError('Name of an option should starts with a letter and can not have special characters')
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
             raise exceptions.ValueError('A default value must be provided for all options')
         if opt.has_key('arg') and \
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
+        if opt.has_key('arg') and (len(opt['arg'].rstrip(':')) != 1 or not opt['arg'][0].isalpha()):
+            raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
         if opt.has_key('arg') and True in [x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]:
             raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
         if opt['longarg'] in ['config', 'config=']:
@@ -1027,10 +1042,11 @@ class simuOpt:
         self.dict[name] = opt
 
 
-    def saveConfig(self, file):
+    def saveConfig(self, file, params=[]):
         '''Write a configuration file to *file*. This file can be later read
-        with command line option ``-c`` or ``--config``. Note that
-        # Only options with a ``label`` entry is saved.
+        with command line option ``-c`` or ``--config``. All parameters with a
+        ``label`` entry are saved unless a list of parameters are specified
+        in *params*.
         '''
         cfg = open(file,'w')
         try:
@@ -1040,7 +1056,10 @@ class simuOpt:
             pass
         print >> cfg, "# Configuration saved at at ", time.asctime()
         for opt in self.options:
-            if not opt.has_key('label'):
+            if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+                continue
+            # no label, and is not specified in params
+            if not opt.has_key('label') and len(params) == 0:
                 continue
             print >> cfg
             # write arg and long arg
@@ -1087,16 +1106,17 @@ class simuOpt:
         print >> cfg, ' \\\n#    '.join(textwrap.wrap(scmd, break_long_words=False))
         cfg.close()
 
-    def loadConfig(self, file):
-        '''Load configuration from a file. This function is usually called
-        with commandline option ``-c`` or ``--config``, but can also be called
-        explicitly.
+    def loadConfig(self, file, params=[]):
+        '''Load configuration from a file. If a list of parameters are
+        specified in *params*, only these parameters will be processed.
         '''
         cfg = open(file)
         for line in cfg.readlines():
             if line.strip() == '' or line.startswith('#'):
                 continue
             for opt in self.options:
+                if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+                    continue
                 name = opt['longarg'].rstrip('=')
                 scan = re.compile(name + r'\s*=\s*(.*)')
                 if scan.match(line):
@@ -1105,10 +1125,12 @@ class simuOpt:
                     opt['processed'] = True
         cfg.close()
 
-    def processArgs(self, args=None):
+    def processArgs(self, args=None, params=[]):
         '''try to get parameters from a list of arguments *args* (default to
         ``sys.argv``). If ``-h`` or ``--help`` is in *args*, this function
-        prints out a usage message and returns ``False``.
+        prints out a usage message and returns ``False``. If a list of
+        parameters are specified in *params*, only these parameters will be
+        processed.
         '''
         if args is None:
             cmdArgs = sys.argv
@@ -1118,6 +1140,8 @@ class simuOpt:
             print self.usage()
             return False
         for opt in self.options:
+            if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
+                continue
             if not opt['longarg'].endswith('='): # do not expect an argument, simple
                 if '--' + opt['longarg'] in cmdArgs:
                     idx = cmdArgs.index('--'+opt['longarg'])
@@ -1145,9 +1169,10 @@ class simuOpt:
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
-                    except:
+                    except Exception, e:
                         print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
                             cmdArgs[idx+1])
+                        print e
                         continue
                 # case 2 --arg=something
                 else:
@@ -1156,9 +1181,10 @@ class simuOpt:
                         self.processedArgs.append(idx)
                         opt['value'] = val
                         opt['processed'] = True
-                    except:
+                    except Exception, e:
                         print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
-                            cmdArgs[idx])
+                            cmdArgs[idx][(len(name)+3):])
+                        print e
                         continue
             if not opt.has_key('arg') or len(opt['arg']) == 0:
                 continue
@@ -1175,9 +1201,10 @@ class simuOpt:
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
-                    except:
+                    except Exception, e:
                         print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
                             cmdArgs[idx+1])
+                        print e
                         continue
                 # case 2: -aopt or -a=opt
                 else:
@@ -1192,9 +1219,10 @@ class simuOpt:
                         self.processedArgs.append(idx)
                         opt['value'] = val
                         opt['processed'] = True
-                    except:
+                    except Exception, e:
                         print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
                             cmdArgs[idx])
+                        print e
                         continue
         return True
 
@@ -1205,27 +1233,46 @@ class simuOpt:
         '''
         return _usage(self.options, self.doc + '\n' + self.details)
 
-    def termGetParam(self):
-        '''Get parameters from interactive user input. Note that parameters
-        without a label and parameters with ``useDefault`` set to ``True``,
-        and those that have been determined from command line options or a
-        configuration file are not processed.
+    def termGetParam(self, params=[]):
+        '''Get parameters from interactive user input. By default, all
+        parameters are processed unless one of the following conditions is
+        met:
+
+        1. Parameter without a label
+        2. Parameter with ``useDefault`` set to ``True``
+        3. Parameter that have been determined from command line options or a
+           configuration file
+        4. Parameter that have been determined by a previous call of this
+           function.
+
+        If a list of parameters are given in *params*, these parameters are
+        processed regardless the mentioned conditions.
         '''
         #
         for opt in self.options:
-            if opt['processed'] or opt.has_key('separator') or \
+            if opt.has_key('separator'):
+                continue
+            if len(params) == 0 and (
+                opt['processed'] or \
                 (not opt.has_key('label')) or \
-                (opt.has_key('useDefault') and opt['useDefault']):
+                (opt.has_key('useDefault') and opt['useDefault'])):
+                continue
+            if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
                 continue
             # prompt
-            prompt = '%s (%s): ' % (opt['label'], str(opt['value']))
+            if opt.has_key('label'):
+                prompt = '%s (%s): ' % (opt['label'], str(opt['value']))
+            else:
+                prompt = '%s (%s): ' % (opt['longarg'].rstrip('='), str(opt['value']))
             while True:
                 value = raw_input('\n' + prompt)
                 if value == '':
                     # use existing value...
+                    opt['processed'] = True
                     break
                 try:
                     opt['value'] = _getParamValue(opt, value)
+                    opt['processed'] = True
                     break
                 except:
                     print "Invalid input.\n"
@@ -1324,8 +1371,7 @@ class simuOpt:
                     continue
                 raise exceptions.ValueError("Unprocessed command line argument: " + cmdArgs[i])
         #
-        if self.noDialog or '-h' in cmdArgs[1:] or '--help' in cmdArgs[1:] \
-            or True not in [x.has_key('label') for x in self.options]:
+        if self.noDialog:
             return self.termGetParam()
         # GUI
         try:

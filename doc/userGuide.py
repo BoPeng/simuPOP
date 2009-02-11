@@ -537,9 +537,6 @@ def dynaMutator(pop, param):
             KamMutate(pop, maxAllele=1, rate=mu2, loci=[i])
     return True
 
-#end
-
-#file log/usePyOperator.log
 simu = simulator(population(size=10000, loci=[2, 3]),
     randomMating())
 simu.evolve(
@@ -1574,11 +1571,8 @@ sys.argv.pop()
 if not os.path.isfile('getParam.png'):
     print 'Run a GUI if getParam has not been runned'
 else:
-    sys.argv.append('--noDialog')
-    pars.help = False
-    pars.rate = [0.25]
-    pars.rep = 5
-    pars.pop = 'CEU'
+    sys.argv.extend(['--noDialog', '--rate=[0.25]', '--rep=5', '--pop="CEU"'])
+    pars.processArgs(sys.argv)
 
 #endignore
 # but simuOpt.getParam is the easiest to used
