@@ -1000,6 +1000,8 @@ class simuOpt:
         if opt.has_key('arg') and \
             opt['arg'].endswith(':') != opt['longarg'].endswith('='):
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
+        if opt.has_key('arg') and True in [x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]:
+            raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
         if opt['longarg'] in ['config', 'config=']:
             raise exceptions.ValueError("Option '--config' is reserved for configuration loading")
         if (not opt['longarg'].endswith('=')) and (opt.has_key('chooseOneOf') or \
@@ -1013,6 +1015,7 @@ class simuOpt:
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
         #
         opt['value'] = opt['default']
+        opt['processed'] = False
         if pos >= 0 and pos < len(self.options):
             self.options.insert(pos, opt)
         else:
@@ -1099,6 +1102,7 @@ class simuOpt:
                 if scan.match(line):
                     value = scan.match(line).groups()[0]
                     opt['value'] = _getParamValue(opt, value.strip('''"'\n'''))
+                    opt['processed'] = True
         cfg.close()
 
     def processArgs(self, args=None):
@@ -1125,33 +1129,38 @@ class simuOpt:
                     raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                 self.processedArgs.append(idx)
                 opt['value'] = True
+                opt['processed'] = True
                 continue
             # this is a more complicated case
-            endChar = len(opt['longarg'].split('=')[0])
-            hasArg = [x[:(endChar+2)] == '--'+opt['longarg'][0:endChar] for x in cmdArgs]
+            name = opt['longarg'].rstrip('=')
+            hasArg = [x.startswith('--%s=' % name) or x == '--' + name for x in cmdArgs]
             if True in hasArg:
                 idx = hasArg.index(True)
                 # case 1: --arg something
-                if cmdArgs[idx] == '--'+opt['longarg'].rstrip('='):
+                if cmdArgs[idx] == '--' + name:
                     if idx in self.processedArgs or idx+1 in self.processedArgs:
                         raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
                         val = _getParamValue(p, cmdArgs[idx+1])
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
+                        opt['processed'] = True
                     except:
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                            cmdArgs[idx+1])
                         continue
                 # case 2 --arg=something
                 else:
-                    if cmdArgs[idx][endChar+2] != '=':
-                        raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " is invalid. (--longarg=value)")
                     try:
-                        val = _getParamValue(opt, cmdArgs[idx][(endChar+3):])
+                        val = _getParamValue(opt, cmdArgs[idx][(len(name)+3):])
                         self.processedArgs.append(idx)
                         opt['value'] = val
+                        opt['processed'] = True
                     except:
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                            cmdArgs[idx])
                         continue
-            if not opt.has_key('arg'):
+            if not opt.has_key('arg') or len(opt['arg']) == 0:
                 continue
             hasArg = [x[:2] == '-' + opt['arg'][0] for x in cmdArgs]
             if True in hasArg:
@@ -1165,7 +1174,10 @@ class simuOpt:
                         val = _getParamValue(opt, cmdArgs[idx+1])
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
+                        opt['processed'] = True
                     except:
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                            cmdArgs[idx+1])
                         continue
                 # case 2: -aopt or -a=opt
                 else:
@@ -1179,35 +1191,12 @@ class simuOpt:
                             val = _getParamValue(opt, cmdArgs[idx][2:])
                         self.processedArgs.append(idx)
                         opt['value'] = val
+                        opt['processed'] = True
                     except:
+                        print "ERROR: Failed to assign parameter %s with value '%s'" % (opt['longarg'].rstrip('='),
+                            cmdArgs[idx])
                         continue
         return True
-
-    def __getParamUserInput(self, p):
-        ''' get param from user input '''
-        # prompt
-        if p.has_key('prompt'):
-            prompt = p['prompt']
-        elif p.has_key('label'):
-            prompt = '%s (%s): ' % (p['label'], str(p['default']))
-        else:
-            prompt = '--%s (%s): ' % (p['longarg'], str(p['default']))
-        while True:
-            value = raw_input('\n' + prompt)
-            if value == '':
-                value = None    # will use default value
-                break
-            else:
-                try:
-                    return _getParamValue(p, value)
-                except:
-                    print "Invalid input.\n"
-                    continue
-        if value == None:
-            if p.has_key('default'):
-                return p['default']
-            else:
-                raise exceptions.ValueError("Can not get param for parameter (no default value): " + str(p['longarg']))
 
     def usage(self, usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'):
         '''Reutn the usage message from the option description list.
@@ -1218,19 +1207,31 @@ class simuOpt:
 
     def termGetParam(self):
         '''Get parameters from interactive user input. Note that parameters
-        without a label and parameters with ``useDefault`` set to ``True``
-        are not processed.
+        without a label and parameters with ``useDefault`` set to ``True``,
+        and those that have been determined from command line options or a
+        configuration file are not processed.
         '''
         #
         for opt in self.options:
-            if opt.has_key('separator') or not opt.has_key('label') or \
-                opt.has_key('useDefault') and opt['useDefault']:
+            if opt['processed'] or opt.has_key('separator') or \
+                (not opt.has_key('label')) or \
+                (opt.has_key('useDefault') and opt['useDefault']):
                 continue
-            val = self.__getParamUserInput(opt)
-            if val is None and not (opt.has_key('allowedTypes') and types.NoneType in opt['allowedTypes']):
+            # prompt
+            prompt = '%s (%s): ' % (opt['label'], str(opt['value']))
+            while True:
+                value = raw_input('\n' + prompt)
+                if value == '':
+                    # use existing value...
+                    break
+                try:
+                    opt['value'] = _getParamValue(opt, value)
+                    break
+                except:
+                    print "Invalid input.\n"
+            if value is None and not (opt.has_key('allowedTypes') and types.NoneType in opt['allowedTypes']):
                 # should have a valid value now.
                 return False
-            opt['value'] = _getParamValue(opt, val)
         # successfully handled all parameters
         return True
 
