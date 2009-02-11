@@ -4859,7 +4859,7 @@ reference "sub:Function-form"
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/pyOperator.py"
-lstparams "caption={A frequency dependent mutation operator},firstline=5,label={pyOperator}"
+lstparams "caption={A frequency dependent mutation operator},firstline=5,label={pyOperator},lastline=19"
 
 \end_inset
 
@@ -4925,8 +4925,8 @@ pyEval
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/usePyOperator.log"
-lstparams "caption={Use a pyOperator during evolution},label={usePyOperator}"
+filename "log/pyOperator.log"
+lstparams "caption={Use a pyOperator during evolution},firstline=16,label={usePyOperator}"
 
 \end_inset
 
