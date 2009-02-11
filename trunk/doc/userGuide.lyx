@@ -10806,6 +10806,29 @@ pops
  can be one of the three HapMap populations.
  Please refer to the simuPOP reference manual for details about each dictionary
  key.
+ The 
+\family typewriter
+description
+\family default
+ of parameter 
+\family typewriter
+pop 
+\family default
+demonstrates a special rule in the formatting of such description texts,
+ namely 
+\series bold
+lines with symbol 
+\family typewriter
+'|'
+\family default
+ as the first non-space/tab character are outputed as a separate line without
+ the leading 
+\family typewriter
+'|'
+\family default
+ character
+\series default
+.
 \end_layout
 
 \begin_layout Standard
@@ -10834,7 +10857,17 @@ simuOpt
 \family typewriter
 simuOpt.usage()
 \family default
- returns a detailed usage message about the script and all its parameters.
+ returns a detailed usage message about the script and all its parameters
+ (although the usage message will be displayed automatically if command
+ line option 
+\family typewriter
+-h
+\family default
+ or 
+\family typewriter
+--help
+\family default
+ is detected).
  The parameters become attributes of this object using 
 \family typewriter
 longarg
@@ -10845,67 +10878,46 @@ longarg
 par.rate
 \family default
 ).
- Not surprosingly, all parameters now have value 
-\family typewriter
-None
-\family default
-.
+ Not surprosingly, all parameters now have the default value you assigned
+ to them.
 \end_layout
 
 \begin_layout Standard
-Although member functions such as 
+The 
+\family typewriter
+simuOpt.simuOpt
+\family default
+ class provides a number of member functions that allow you to acquire user
+ input in a number of ways.
+ For example 
 \family typewriter
 simuOpt.loadConfig
 \family default
-, 
+ reads a configuration file, 
 \family typewriter
 simuOpt.processArgs
 \family default
-, 
+ checks commandline options, 
 \family typewriter
 simuOpt.termGetParam
 \family default
-, and 
+ asks user input interactively, and 
 \family typewriter
 simuOpt.guiGetParam
 \family default
- can be used to determine parameters from sources such as a configuration
- file or command line arguments (
+ generates and uses a parameter input dialog.
+ These functions can be used several times, on different sets of parameters.
+ In addition, new options could be added programmatically using function
+ 
 \family typewriter
-sys.argv
+simuOpt.addOption
 \family default
-), 
-\family typewriter
-simuOpt.getParam()
-\family default
- is used most of the time.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "getParam"
-
-\end_inset
-
- lists some methods to determine parameter values.
- The 
-\family typewriter
-simuOpt.usage()
-\family default
- call of this example demonstrates a special rule in the formatting of parameter
- description texts, namely 
-\series bold
-lines with symbol 
-\family typewriter
-'|'
-\family default
- as the first non-space/tab character are outputed as a separate line without
- the leading 
-\family typewriter
-'|'
-\family default
- character
-\series default
-.
+ and allows further flexibility on how parameters are generated.
+ Please refer to 
+\emph on
+the simuPOP reference manual
+\emph default
+ on how to use these functions.
 \end_layout
 
 \begin_layout Standard
@@ -10920,11 +10932,20 @@ lstparams "caption={Get prameters using function getParam},firstline=37,keywords
 \end_layout
 
 \begin_layout Standard
-The 
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+ lists some methods to determine parameter values but the last function,
+ 
 \family typewriter
 simuOpt.getParam()
 \family default
- function processes each parameter in the following order:
+, will be used most of the time.
+ This function processes each parameter in the following order:
 \end_layout
 
 \begin_layout Itemize
@@ -10986,7 +11007,14 @@ False
 \family default
  if this process fails (e.g.
  users click cancel in the parameter input dialog).
- The parameter input dialog is shown in Figure 
+ The parameter input dialog for Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "getParam"
+
+\end_inset
+
+ is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:parameter-input-dialog"
