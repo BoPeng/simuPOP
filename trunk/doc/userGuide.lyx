@@ -10678,7 +10678,7 @@ lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
 \end_layout
 
 \begin_layout Chapter
-Utility Modules (missing)
+Utility Modules (under revision)
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:Utility-Modules"
@@ -10817,14 +10817,14 @@ Each parameter can also be set using command line options.
 \begin_layout Itemize
 If command line option 
 \family typewriter
---noDialog
+--gui=False
 \family default
  is given, the script will work in batch mode.
  All parameters are obtained from command line options, configuration file
  and default values of parameters.
  For example, 
 \family typewriter
-myscript.py --noDialog --config configFile
+myscript.py --gui=False --config configFile
 \family default
  will execute a previous simulation directly.
  
@@ -11078,7 +11078,7 @@ the simuPOP reference manual
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Get prameters using function getParam},firstline=37,keywordstyle={\\small\\ttfamily},label={getParam},lastline=66"
+lstparams "caption={Get prameters using function getParam},firstline=37,keywordstyle={\\small\\ttfamily},label={getParam},lastline=67"
 
 \end_inset
 
@@ -11126,7 +11126,7 @@ useDefault
 \begin_layout Itemize
 If 
 \family typewriter
---noDialog
+--gui=False
 \family default
  is specified, and the value of the parameter has not be determined, ask
  users interactively for a value.
@@ -11145,7 +11145,7 @@ wxPython
 \emph default
  is available (unless parameter 
 \family typewriter
-useTkinter
+--gui=Tkinter
 \family default
  is set).
 \end_layout
@@ -11303,7 +11303,7 @@ simuOpt.asDict()
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Use the simuOpt object},firstline=67,label={useSimuOpt}"
+lstparams "caption={Use the simuOpt object},firstline=68,label={useSimuOpt}"
 
 \end_inset
 
@@ -12435,7 +12435,7 @@ status open
 
 \begin_layout Plain Layout
 
-> simuLDDecay.py -s 500 -e 10 --recRate 0.1 --numRep 5 --noDialog
+> simuLDDecay.py -s 500 -e 10 --recRate 0.1 --numRep 5 --gui=False
 \end_layout
 
 \end_inset

@@ -1310,7 +1310,7 @@ class simuOpt:
 
     # get parameter
     def getParam(self, gui=None, nCol=None, configFile=None, args=None,
-        checkArgs=True, useTkinter=None):
+        checkArgs=True):
         '''Get parameters from commandline option, configuration file, a
         parameter input dialog and from interactive user input.
 
@@ -1337,10 +1337,6 @@ class simuOpt:
             This function by default checks if all commandline arguments have
             been processed, you can set ``chekArgs`` to ``False`` if some of
             the arguments are intended to be processed separately.
-
-        useTkinter
-            If both ``Tkinter`` and ``wxPython`` are available, a ``wxPython``
-            dialog will be used unless *useTkinter* is set to ``True``.
 
         '''
         if args is None:
