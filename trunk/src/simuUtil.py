@@ -36,9 +36,9 @@ import exceptions, operator, types, os, sys, re
 
 from simuPOP import *
 import pprint
+from simuOpt import simuOptions
 
-
-def ViewVars(var, gui=True):
+def ViewVars(var, gui=None):
     '''
     list a variable in tree format, either in text format or in a
         wxPython window.
@@ -57,7 +57,10 @@ def ViewVars(var, gui=True):
         whether or not display info in subPop
 
     '''
-    if not gui:
+    if gui is None:
+        gui = simuOptions['GUI']
+    #
+    if gui == False or gui == 'Tkinter':
         pprint.pprint(var)
         return
 
@@ -857,7 +860,7 @@ class simuProgress:
         # if you would like to make sure the done message is displayed.
         progress.done()
     '''
-    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=True):
+    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=None):
         '''
         totalCount
             Total expected steps.
@@ -877,8 +880,11 @@ class simuProgress:
         self.block = block
         self.doneMsg = done
         self.completed = False
-        self.gui = gui
-        self.message = message
+        if gui is None:
+            self.gui = simuOptions['GUI']
+        else:
+            self.gui = gui
+        self.gui = self.gui in ['wxPython', True]
         if self.gui:
             try:
                 import wx
