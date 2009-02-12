@@ -1782,7 +1782,7 @@ simuUtil.ViewVars
  Note that the 
 \series bold
 use of GUI in simuPOP is optional in the sense that all functionalities
- can be achieved with a GUI
+ can be achieved without a GUI
 \series default
 .
  For examples, 
