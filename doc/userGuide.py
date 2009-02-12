@@ -1571,7 +1571,8 @@ sys.argv.pop()
 if not os.path.isfile('getParam.png'):
     print 'Run a GUI if getParam has not been runned'
 else:
-    sys.argv.extend(['--noDialog', '--rate=[0.25]', '--rep=5', '--pop="CEU"'])
+    sys.argv.extend(['--rate=[0.25]', '--rep=5', '--pop="CEU"'])
+    simuOpt.setOptions(gui=False)
     pars.processArgs(sys.argv)
 
 #endignore
