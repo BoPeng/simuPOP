@@ -1383,7 +1383,7 @@ name "cha:Core-simuPOP-components"
 \end_layout
 
 \begin_layout Section
-simuPOP modules
+Loading a simuPOP module
 \end_layout
 
 \begin_layout Standard
@@ -1446,6 +1446,10 @@ simuPOP reference manual
  they are not tested as rigorously and as frequently as the simuPOP core.
  Please send an email to the simuPOP mailinglist if you notice any problem
  with them.
+\end_layout
+
+\begin_layout Subsection
+Short, long and binary modules and their optimized versions
 \end_layout
 
 \begin_layout Standard
@@ -1667,6 +1671,15 @@ binary
 SIMUOPTIMIZED
 \family default
  to use the optimized modules.
+ Command line options 
+\family typewriter
+--optimized
+\family default
+ can also be used.
+\end_layout
+
+\begin_layout Subsection
+Random number generator
 \end_layout
 
 \begin_layout Standard
@@ -1718,6 +1731,147 @@ SetRNG
 rng().seed()
 \family default
 ) and use it to replay the session later.
+ 
+\end_layout
+
+\begin_layout Note
+
+\family typewriter
+rng().seed()
+\family default
+ returns the seed of the simuPOP random number generator.
+ It can be used to replay your simulation if 
+\family typewriter
+rng()
+\family default
+ is your only source of random number generator.
+ If you also use the Python 
+\family typewriter
+random
+\family default
+ module, it is a good practise to set its seed using 
+\family typewriter
+random.seed(rng().seed())
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Graphical user interface
+\end_layout
+
+\begin_layout Standard
+There is no graphical user interface to simuPOP but various dialogs can
+ be used for simple tasks.
+ For example, a parameter input dialog can be constructed automatically
+ from a parameter specification list, and be used to accept user input if
+ class 
+\family typewriter
+simuOpt.simuOpt
+\family default
+ is used to handle parameters.
+ Other examples include class 
+\family typewriter
+simuUtil.simuProgress
+\family default
+ that makes use of a progress dialog, and function 
+\family typewriter
+simuUtil.ViewVars
+\family default
+ that uses a dialog to display a large number of variables.
+ Note that the 
+\series bold
+use of GUI in simuPOP is optional in the sense that all functionalities
+ can be achieved with a GUI
+\series default
+.
+ For examples, 
+\family typewriter
+simuOpt.getParam()
+\family default
+ will use a terminal to accept user input and 
+\family typewriter
+simuUtil.simuProgress
+\family default
+ turns to a text-based progress bar in the non-GUI mode.
+\end_layout
+
+\begin_layout Standard
+The use of GUI can be controlled either globally or individually.
+ More specifically,
+\end_layout
+
+\begin_layout Itemize
+By default, a GUI is used whenever possible.
+ All GUI-capable functions support 
+\family typewriter
+wxPython
+\family default
+ so a 
+\family typewriter
+wxPython
+\family default
+ dialog will be used if 
+\family typewriter
+wxPython
+\family default
+ is available.
+ Otherwise, 
+\family typewriter
+tkInter
+\family default
+ based dialogs or text-mode will be used.
+\end_layout
+
+\begin_layout Itemize
+If environmental variable 
+\family typewriter
+SIMUGUI
+\family default
+ is set to 
+\family typewriter
+False
+\family default
+, no GUI will be used.
+ If it is set to 
+\family typewriter
+Tkinter
+\family default
+, 
+\family typewriter
+Tkinter
+\family default
+-based dialogs will be used even if 
+\family typewriter
+wxPython
+\family default
+ is available.
+\end_layout
+
+\begin_layout Itemize
+The same parameters 
+\family typewriter
+True/False/wxPython/Tkinter
+\family default
+ at the script level using command line option 
+\family typewriter
+--gui.
+ 
+\family default
+Note that 
+\family typewriter
+--gui=False
+\family default
+ is commonly used to run scripts in batch mode.
+\end_layout
+
+\begin_layout Itemize
+For each involved function or class, parameter 
+\family typewriter
+gui
+\family default
+ is usually provided.
+ The same set of options apply.
 \end_layout
 
 \begin_layout Section

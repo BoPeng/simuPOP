@@ -33,7 +33,18 @@ When simuPOP is loaded, it checkes a few environmental variables
 simuPOP module to load, and how to load it. More options can be set using the
 ``simuOpt.setOptions`` function. For example, you can suppress the banner
 message when simuPOP is loaded and require a minimal revision of simuPOP for
-your script.
+your script. simuPOP recognize the following commandline arguments
+
+``--optimized``
+    Load the optimized version of a simuPOP module.
+
+``--gui=True|False|wxPython|Tkinter``
+    Whether or not use a graphical toolkit and which one to use.
+    ``--gui=False`` is usually used to run a script in batch mode (do not start
+    a parameter input dialog and use interactive user input if a parameter can
+    not be determined from command line or a configuraiton file, and it does not
+    use its default value (``useDefault`` not set). Please refer to parameter
+    ``gui`` for ``simuOpt.setOptions`` for details.
 
 
 class ``simuOpt.simuOpt`` provides a powerful way to handle commandline
@@ -49,14 +60,8 @@ automatically handles the following commandline arguments.
 ``-h`` or ``--help``
     Print usage message.
 
-``--config configFile``
+``--config=configFile``
     Read parameters from a configuration file *configFile*.
-
-``--noDialog``
-    Do not use a parameter input dialog. If an option can not be obtained
-    from command line or a configuraiton file, and it does not use its
-    default value (``useDefault``), users will be asked to input
-    them interactively.
 
 '''
 
@@ -299,7 +304,8 @@ def _usage(options, msg='', usage='usage: %prog [-opt [arg] | --opt [=arg]] ...'
 options:
   -h, --help            show this help message and exit
   --config ARG          load parameters from ARG
-  --noDialog            do not use a parameter input dialog
+  --optimized           run the script using an optimized simuPOP module
+  --gui ARG             which graphical toolkit to use
 ''' % usage.replace('%prog', os.path.basename(sys.argv[0]))
     for opt in options:
         name = ''
@@ -998,6 +1004,8 @@ class simuOpt:
         methods = ['asDict', 'asList', 'getParam', 'loadConfig', 'saveConfig',
             'usage', 'processArgs', 'guiGetParam', 'termGetParam', 'addOption']
         #
+        reserved_options = ['optimized', 'gui', 'config', 'help']
+        #
         opt = {}
         for key in kwargs:
             if key in allowed_keys:
@@ -1017,8 +1025,8 @@ class simuOpt:
             raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
         if opt.has_key('arg') and True in [x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]:
             raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
-        if opt['longarg'] in ['config', 'config=']:
-            raise exceptions.ValueError("Option '--config' is reserved for configuration loading")
+        if opt['longarg'].rstrip('=') in reserved_options:
+            raise exceptions.ValueError("Option '--%s' is reserved. Please use another name." % opt['longarg'].rstrip('='))
         if (not opt['longarg'].endswith('=')) and (opt.has_key('chooseOneOf') or \
             opt.has_key('chooseFrom')):
             raise exceptions.ValueError('Directive chooseOneOf or chooseFrom can only be used for option that expects a value.');
@@ -1079,9 +1087,9 @@ class simuOpt:
             # write out option value, try to make it python readable
             print >> cfg, "%s = %s" % (opt['longarg'].rstrip('='), _prettyString(opt['value'], quoted=True))
         print >> cfg, "\n\n#The same options can be given by command line options (subject to minor changes)"
-        cmd = "#    --noDialog "
+        cmd = "#    --gui=False "
         # shorter version
-        scmd = "#    --noDialog "
+        scmd = "#    --gui=False "
         for opt in self.options:
             if opt.has_key('label'):
                 defaultVal = opt.has_key('useDefault') and opt['useDefault'] and str(opt['value']) == str(opt['default'])
@@ -1282,16 +1290,16 @@ class simuOpt:
         # successfully handled all parameters
         return True
 
-    def guiGetParam(self, nCol = None, useTkinter=None):
+    def guiGetParam(self, nCol = None, gui=None):
         '''Get parameter from a ``Tkinter`` or ``wxPython`` dialog. The
         parameter will try to arrange parameters optimaly but you can also
         set the number of columns using parameter *nCol*. If both GUI toolkits
-        are available, ``wxPython`` will be used unless *useTkinter* is set to
-        ``True``. If none of the toolkits are available, this function will
+        are available, ``wxPython`` will be used unless *gui* is set to
+        ``Tkinter``. If none of the toolkits are available, this function will
         raise an ``ImportError``.
         '''
         title = os.path.split(sys.argv[0])[-1]
-        if useTkinter != True:
+        if gui != 'Tkinter':
             try:
                 return _wxParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
             except exceptions.ImportError:
@@ -1301,16 +1309,16 @@ class simuOpt:
         return _tkParamDialog(self.options, title, self.doc, self.details, nCol).getParam()
 
     # get parameter
-    def getParam(self, noDialog=None, nCol=None, configFile=None, args=None,
+    def getParam(self, gui=None, nCol=None, configFile=None, args=None,
         checkArgs=True, useTkinter=None):
         '''Get parameters from commandline option, configuration file, a
         parameter input dialog and from interactive user input.
 
-        noDialog
-            No parameter input dialog is used if this parameter is set to
-            ``True`` or ``--noDialog`` is specified in commandline.
-            Undetermined parameters will be obtained from interactive user
-            input.
+        gui
+            Whether or not use a dialog and which graphical toolkit to use.
+            Global gui setting is used by default but you can also set this
+            parameter to ``True``, ``False``, ``Tkinter`` or ``wxPython`` to
+            override the global setting.
 
         nCol
             Number of columns in the parameter input dialog. This is usual
@@ -1333,16 +1341,18 @@ class simuOpt:
         useTkinter
             If both ``Tkinter`` and ``wxPython`` are available, a ``wxPython``
             dialog will be used unless *useTkinter* is set to ``True``.
+
         '''
         if args is None:
             cmdArgs = sys.argv
         else:
             cmdArgs = args
         #
-        if noDialog in [True, False]:
-            self.noDialog = noDialog
+        if gui is None:
+            # command line option --gui should have been processed...
+            self.gui = simuOptions['GUI']
         else:
-            self.noDialog = '--noDialog' in cmdArgs
+            self.gui = gui
         #
         # Start processing
         #
@@ -1355,6 +1365,13 @@ class simuOpt:
             if idx == len(cmdArgs) - 1:
                 raise exception.ValueError('Expect a filename after --config')
             self.loadConfig(cmdArgs[idx+1])
+        elif True in [x.startswith('--config=') for x in cmdArgs]:
+            idx = [x.startswith('--config=') for x in cmdArgs].index(True)
+            file = cmdArgs[idx][len('--config='):]
+            for quote in ['"', "'"]:
+                if file.startswith(quote) and file.endswith(quote):
+                    file = file[1:-1]
+            self.loadConfig(file)
         #
         if not self.processArgs(cmdArgs):
             # encounter -h or --help
@@ -1365,17 +1382,19 @@ class simuOpt:
             for i in range(1, len(cmdArgs)):
                 if i in self.processedArgs:
                     continue
-                elif cmdArgs[i] in ['-h', '--help', '--config', '--noDialog']:
+                elif cmdArgs[i] in ['-h', '--help', '--optimized', '--config', '--gui']:
                     continue
-                elif i > 0 and cmdArgs[i-1] == '--config':
+                elif cmdArgs[i].startswith('--config=') or cmdArgs[i].startswith('--gui='):
+                    continue
+                elif i > 0 and cmdArgs[i-1] in ['--config', '--gui']:
                     continue
                 raise exceptions.ValueError("Unprocessed command line argument: " + cmdArgs[i])
         #
-        if self.noDialog:
+        if self.gui != True:
             return self.termGetParam()
         # GUI
         try:
-            return self.guiGetParam(nCol, useTkinter)
+            return self.guiGetParam(nCol, gui=self.gui)
         except exceptions.ImportError:
             return self.termGetParam()
         return False
@@ -1407,10 +1426,11 @@ simuOptions = {
     'Debug': [],
     'Quiet': False,
     'Revision': None,
+    'GUI': True,
 }
 
-# Optimized: environmental variable SIMUOPTIMIZED
-if os.getenv('SIMUOPTIMIZED') is not None:
+# Optimized: command line option --optimized or environmental variable SIMUOPTIMIZED
+if '--optimized' in sys.argv or os.getenv('SIMUOPTIMIZED') is not None:
     simuOptions['Optimized'] = True
 
 # AlleleType: from environmental variable SIMUALLELETYPE
@@ -1423,7 +1443,30 @@ elif os.getenv('SIMUALLELETYPE') is not None:
 if os.getenv('SIMUDEBUG') is not None:
     simuOptions['Debug'].extend(_env_debug.split(','))
 
-def setOptions(alleleType=None, optimized=None, quiet=None, debug=None, revision=None):
+# GUI: from environmental variable SIMUGUI
+if os.getenv('SIMUGUI') is not None:
+    _gui = os.getenv('SIMUGUI')
+elif '--gui' in sys.argv:
+    if sys.argv[-1] == '-gui':
+        raise exceptions.ValueError('An value is expected for command line option --gui')
+    _gui = sys.argv[sys.argv.index('--gui') + 1]
+elif True in [x.startswith('--gui=') for x in sys.argv]:
+    _gui = sys.argv[[x.startswith('--gui=') for x in sys.argv].index(True)][len('--gui='):]
+else:
+    _gui = None
+
+if _gui in ['True', 'true', '1']:
+    simuOptions['GUI'] = True
+elif _gui in ['False', 'false', '0']:
+    simuOptions['GUI'] = False
+elif _gui == 'wxPython':
+    simuOptions['GUI'] = 'wxPython'
+elif _gui == 'Tkinter':
+    simuOptions['GUI'] = 'Tkinter'
+elif _gui is not None:
+    print "Invalid value '%s' for environmental variable SIMUGUI or commandline option --gui." % _gui
+
+def setOptions(alleleType=None, optimized=None, gui=None, quiet=None, debug=None, revision=None):
     '''Set options before simuPOP is loaded to control which simuPOP module to
     load, and how the module should be loaded.
 
@@ -1440,6 +1483,29 @@ def setOptions(alleleType=None, optimized=None, quiet=None, debug=None, revision
         parameter is not set (``None``), the optimized version will be used
         if environmental variable ``SIMUOPTIMIZED`` is defined. The standard
         version will be used otherwise.
+    
+    gui
+        Whether or not use graphical user interfaces, and which graphical
+        toolkit to use. If this parameter is ``None`` (default), this function
+        will check environmental variable ``SIMUGUI`` for a value, and assume
+        ``True`` if such an option is unavailable.
+        
+        gui=True
+            allows simuPOP to use ``wxPython``-based dialogs if ``wxPython``
+            is available, and use ``Tkinter``-based dialogs if ``Tkinter``
+            is available.
+        
+        gui='Tkinter'
+            Use ``Tkinter`` based dialogs even if ``wxPython`` is available.
+
+        gui='wxPython'
+            Use ``wxPython``  based dialogs. Usually not needed.
+        
+        gui=False
+            Do not use any graphical toolkit. Run the script in batch mode.
+
+        This option is usually left to ``None`` so that the same script can
+        be ran in both GUI and batch mode using commandline option ``--gui``.
 
     quiet
         If set to ``True``, suppress the banner message when a simuPOP module
@@ -1462,17 +1528,22 @@ def setOptions(alleleType=None, optimized=None, quiet=None, debug=None, revision
     if optimized in [True, False]:
         simuOptions['Optimized'] = optimized
     elif optimized is not None:
-        raise exceptions.TypeError("Parameter optimized can be either True or False.")
+        raise exceptions.TypeError('Parameter optimized can be either True or False.')
     # Allele type
     if alleleType in ['long', 'binary', 'short']:
         simuOptions['AlleleType'] = alleleType
     elif alleleType is not None:
-        raise exceptions.TypeError("Parameter alleleType can be either short, long, or binary.")
+        raise exceptions.TypeError('Parameter alleleType can be either short, long, or binary.')
+    # Graphical toolkit
+    if gui in [True, False, 'wxPython', 'Tkinter']:
+        simuOptions['GUI'] = gui
+    elif gui is not None:
+        raise exceptions.TypeError('Parameter gui can be True/False, wxPython or Tkinter.')
     # Quiet
     if quiet in [True, False]:
         simuOptions['Quiet'] = quiet
     elif quiet is not None:
-        raise exceptions.TypeError("Parameter quiet can be either True or False.")
+        raise exceptions.TypeError('Parameter quiet can be either True or False.')
     # Debug
     if debug is not None:
         if type(debug) == type(''):
@@ -1483,6 +1554,6 @@ def setOptions(alleleType=None, optimized=None, quiet=None, debug=None, revision
     if type(revision) == type(1):
         simuOptions['Revision'] = revision
     elif revision is not None:
-        raise exceptions.TypeError("A revision number is expected for parameter revision.")
+        raise exceptions.TypeError('A revision number is expected for parameter revision.')
 
 
