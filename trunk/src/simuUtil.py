@@ -32,13 +32,13 @@ and format conversion utilities.
 
 """
 
-import exceptions, operator, types, os, sys, getopt, re, math, tempfile, shutil
-import copy, random
+import exceptions, operator, types, os, sys, re
 
 from simuPOP import *
+import pprint
 
 
-def ViewVars(var, level=-1, name='', subPop=True, gui=True):
+def ViewVars(var, gui=True):
     '''
     list a variable in tree format, either in text format or in a
         wxPython window.
@@ -57,14 +57,17 @@ def ViewVars(var, level=-1, name='', subPop=True, gui=True):
         whether or not display info in subPop
 
     '''
-    # a wxPython version of listVars
-    try:
-        import wx, wx.py.filling as fill
-    except:
-        print 'wxPython is unavailable'
+    if not gui:
+        pprint.pprint(var)
         return
 
-    app = wx.App()
+    try:
+        import wx, wx.py.filling as fill
+    except ImportError:
+        pprint.pprint(var)
+        return
+
+    app = wx.PySimpleApp()
     wx.InitAllImageHandlers()
     if var==None:
         fillFrame = fill.FillingFrame()
@@ -76,7 +79,6 @@ def ViewVars(var, level=-1, name='', subPop=True, gui=True):
             fillFrame = fill.FillingFrame(rootObject=var,
                 rootLabel='var')
     fillFrame.Show(True)
-    app.SetTopWindow(fillFrame)
     app.MainLoop()
 
 
@@ -855,7 +857,7 @@ class simuProgress:
         # if you would like to make sure the done message is displayed.
         progress.done()
     '''
-    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n'):
+    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=True):
         '''
         totalCount
             Total expected steps.
@@ -875,8 +877,29 @@ class simuProgress:
         self.block = block
         self.doneMsg = done
         self.completed = False
-        sys.stdout.write(message)
-        sys.stdout.flush()
+        self.gui = gui
+        self.message = message
+        if self.gui:
+            try:
+                import wx
+            except ImportError:
+                self.gui = False
+        if self.gui:
+            self.app = wx.PySimpleApp()
+            self.dialog = wx.ProgressDialog(
+                'Progress', self.message + '\n', self.totalCount,
+                style = \
+                    # wx.PD_CAN_ABORT | \
+                    # wx.PD_CAN_SKIP | \
+                    wx.PD_ELAPSED_TIME | \
+                    # wx.PD_ESTIMATED_TIME | \
+                    wx.PD_AUTO_HIDE | \
+                    wx.PD_REMAINING_TIME
+                )
+            self.dialog.Update(0)
+        else:
+            sys.stdout.write(message)
+            sys.stdout.flush()
 
     def update(self, count):
         '''
@@ -884,19 +907,23 @@ class simuProgress:
         '''
         #
         count = min(count, self.totalCount)
-        #
         completed = int(round(100*count/self.totalCount))
         if completed <= self.percent:
             return
-        for p in range(self.percent + 1, completed + 1):
-            if p == 100:
+        if self.gui:
+            self.dialog.Update(count, self.message + "\n%d%% completed." % completed)
+            if completed == 100:
                 self.done()
-            elif p % 10 == 0:
-                sys.stdout.write(str(p/10))
-            elif p % self.block == 0:
-                sys.stdout.write(self.progressChar)
+        else:
+            for p in range(self.percent + 1, completed + 1):
+                if p == 100:
+                    self.done()
+                elif p % 10 == 0:
+                    sys.stdout.write(str(p/10))
+                elif p % self.block == 0:
+                    sys.stdout.write(self.progressChar)
+            sys.stdout.flush()
         self.percent = completed
-        sys.stdout.flush()
 
     def done(self):
         '''
@@ -904,8 +931,11 @@ class simuProgress:
         '''
         if self.completed:
             return
-        sys.stdout.write(self.doneMsg)
-        sys.stdout.flush()
+        if self.gui:
+            self.dialog.Destroy()
+        else:
+            sys.stdout.write(self.doneMsg)
+            sys.stdout.flush()
         self.completed = True
 
 
