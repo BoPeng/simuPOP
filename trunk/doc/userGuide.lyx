@@ -10732,6 +10732,11 @@ optimized
 \family default
 ), 
 \emph on
+gui
+\emph default
+ (whether or not use a graphical user interface and which graphical toolkit
+ to use), 
+\emph on
 revision
 \emph default
  
@@ -10747,7 +10752,7 @@ quiet
 debug
 \emph default
  (which debug code to turn on).
- This has been demonstrated in Example 
+ These options have been discussed in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "lst:Use-of-standard-module"
@@ -10761,9 +10766,12 @@ reference "lst:Use-of-optimized-module"
 
 \end_inset
 
-.
- Note that most options can be set by environmental variables which are
- sometimes more versatile to use.
+ and other related sections.
+ Note that 
+\series bold
+most options can be set by environmental variables and command line options
+\series default
+ which are sometimes more versatile to use.
 \end_layout
 
 \begin_layout Standard
@@ -10777,12 +10785,12 @@ simuOpt
 \family default
  to help users handle and manage script parameters.
  There are many other standard or third-party parameter handling modules
- in Python but this class is designed help users run a simuPOP script in
- both batch and GUI modes, using a combination of parameter determination
+ in Python but this class is designed to help users run a simuPOP script
+ in both batch and GUI modes, using a combination of parameter determination
  methods.
  More specifically, if a script uses the 
 \family typewriter
-simuOpt
+simuOpt.simuOpt
 \family default
  class to handle parameters,
 \end_layout
@@ -10811,7 +10819,7 @@ If a configuration file is saved for a previous simulation, command line
 
 \begin_layout Itemize
 Each parameter can also be set using command line options.
- If specified, they will override values read from a configuration file.
+ Command line inputs will override values read from a configuration file.
 \end_layout
 
 \begin_layout Itemize
@@ -10820,20 +10828,14 @@ If command line option
 --gui=False
 \family default
  is given, the script will work in batch mode.
- All parameters are obtained from command line options, configuration file
- and default values of parameters.
+ If the value of a parameter cannot be determined through command line or
+ a configuration file, and is set not to use its default value, users will
+ be asked to enter its value interactively.
  For example, 
 \family typewriter
 myscript.py --gui=False --config configFile
 \family default
  will execute a previous simulation directly.
- 
-\end_layout
-
-\begin_layout Itemize
-In the batch mode, if the value of a parameter cannot be determined through
- command line or a configuration file, and is set not to use its default
- value, users will be asked to enter its value interactively.
 \end_layout
 
 \begin_layout Standard
@@ -10892,8 +10894,7 @@ chooseFrom
  (tells the parameter input dialog to allow users to choose one or more
  values from the provided values).
  Although it can be lengthy to describe a parameter in this way, it is a
- self-documentary process from which your users and even yourself will benefit
- from.
+ self-documentary process from which your users and even yourself will benefit.
 \end_layout
 
 \begin_layout Standard
