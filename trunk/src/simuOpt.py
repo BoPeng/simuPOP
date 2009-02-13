@@ -737,7 +737,7 @@ class _wxParamDialog(_paramDialog):
         self.dlg.Bind(wx.EVT_BUTTON, func, button)
 
     def createDialog(self):
-        self.app = wx.App(0)
+        self.app = wx.PySimpleApp(0)
         self.dlg = wx.Dialog(parent=None, id=-1, title = self.title)
         self.entryWidgets = [None]*len(self.options)
         self.labelWidgets = [None]*len(self.options)
@@ -849,7 +849,9 @@ class _wxParamDialog(_paramDialog):
     def runDialog(self):
         self.dlg.ShowModal()
         self.dlg.Destroy()
-
+        # This app may get in the way when getParam() or another wxPython
+        # related function is called.
+        del self.app
 
 
 class simuOpt:
@@ -1014,8 +1016,9 @@ class simuOpt:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
         if 'longarg' not in opt.keys():
             raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
-        if not opt['longarg'].strip('=').isalnum() or not opt['longarg'][0].isalpha():
-            raise exceptions.ValueError('Name of an option should starts with a letter and can not have special characters')
+        # allow alphabet, number and underscore (_).
+        if not opt['longarg'].strip('=').replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
+            raise exceptions.ValueError('Invalid option name %s' % opt['longarg'].strip('='))
         if 'default' not in opt.keys() and 'separator' not in opt.keys():
             raise exceptions.ValueError('A default value must be provided for all options')
         if opt.has_key('arg') and \
@@ -1386,7 +1389,7 @@ class simuOpt:
                     continue
                 raise exceptions.ValueError("Unprocessed command line argument: " + cmdArgs[i])
         #
-        if self.gui != True:
+        if self.gui == False:
             return self.termGetParam()
         # GUI
         try:

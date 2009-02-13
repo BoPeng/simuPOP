@@ -874,6 +874,7 @@ class simuProgress:
         done
             Message displayed when the job is finished.
         '''
+        self.message = message
         self.totalCount = totalCount
         self.percent = 0
         self.progressChar = progressChar
@@ -891,7 +892,7 @@ class simuProgress:
             except ImportError:
                 self.gui = False
         if self.gui:
-            self.app = wx.PySimpleApp()
+            self.app = wx.PySimpleApp(0)
             self.dialog = wx.ProgressDialog(
                 'Progress', self.message + '\n', self.totalCount,
                 style = \
@@ -939,6 +940,7 @@ class simuProgress:
             return
         if self.gui:
             self.dialog.Destroy()
+            del self.app
         else:
             sys.stdout.write(self.doneMsg)
             sys.stdout.flush()
