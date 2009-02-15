@@ -1581,7 +1581,7 @@ if not pars.getParam():
     sys.exit(1)
 
 #beginignore
-sys.argv[-1] = oldArg
+sys.argv[1] = oldArg
 #endignore
 # save prameters to a configuration file
 pars.saveConfig('sample.cfg')
