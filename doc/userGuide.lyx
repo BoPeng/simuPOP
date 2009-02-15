@@ -9153,6 +9153,393 @@ infoExec
 \end_layout
 
 \begin_layout Section
+Demographic changes
+\end_layout
+
+\begin_layout Subsection
+Change of population size
+\end_layout
+
+\begin_layout Standard
+A mating scheme controls the size of an offspring generation using parameter
+ 
+\family typewriter
+subPopSize
+\family default
+.
+ This parameter has been described in detail in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:offspring-size"
+
+\end_inset
+
+.
+ In summary,
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPopSize
+\family default
+ is not set, the offspring generation will have the same subpopulation sizes
+ as the parental generation.
+\end_layout
+
+\begin_layout Itemize
+If 
+\family typewriter
+subPopSize
+\family default
+ is set to a number (no subpopulation) or a list of subpopulation sizes,
+ 
+\end_layout
+
+\begin_layout Subsection
+Split and merge
+\end_layout
+
+\begin_layout Standard
+You first need to understand that mating schemes populate subpopulations
+ from their corresponding ancestral subpopulations one by one, so it can
+ not change number of subpopulations.
+ Split and merge of subpopulations are done by operators 
+\family typewriter
+splitSubPop
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+splitSubPop
+\end_layout
+
+\end_inset
+
+
+\family default
+ and 
+\family typewriter
+mergeSubPops
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+mergeSubPops
+\end_layout
+
+\end_inset
+
+
+\family default
+ respectively.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "splitMerge"
+
+\end_inset
+
+, these two operators are used to split and merge subpopulations, but keep
+ total population size untouched.
+ Note that after subpopulation merge, subpopulation 2 still exists, but
+ with size 0.
+ This is used to keep subpopulation id of other subpopulations unchanged.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/splitMerge.log"
+lstparams "caption={Split and merge subpopulations during evolution.},label={splitMerge}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Demographic mode with selection
+\end_layout
+
+\begin_layout Standard
+Migration can change subpopulation size, but not total population size.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrFixedSize"
+
+\end_inset
+
+, two migrators are used.
+ The first migrator moves individuals from subpopulation 0 to subpopulation
+ 1.
+ The second migrator moves individuals around, with given proportions.
+ For example, the migration rate
+\begin_inset Formula \[
+\left(\begin{array}{ccc}
+0. & 0.2 & 0.4\\
+0. & 0. & 0.1\\
+0.1 & 0.1 & 0.\end{array}\right)\]
+
+\end_inset
+
+means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
+ subpop 0 to 1, and keep 40% (automatically determined).
+ Subpopulation sizes change accordingly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/splitMigration.log"
+lstparams "caption={Population split and migration},label={splitMigration}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But what if you need to control total population size? In this case, a demograph
+ic function is needed to specify the size of each subpopulation, at each
+ generation.
+ In example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "splitMigration2"
+
+\end_inset
+
+, function 
+\family typewriter
+popSize
+\family default
+ returns exact subpopulation size at each generation, and the population
+ will behave accordingly.
+ It might surprise you that migration can no longer control the size of
+ subpopulation sizes.
+ What exactly happened is that, for example
+\end_layout
+
+\begin_layout Itemize
+subpopulation size = [200, 400, 400], at the beginning of a generation
+\end_layout
+
+\begin_layout Itemize
+apply migrator, subpopulation size changed to [100, 470, 430]
+\end_layout
+
+\begin_layout Itemize
+pre mating operator 
+\family typewriter
+stat
+\family default
+ is applied and report subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+during mating, with given subpopulation sizes 200, 400, 400 of the offspring
+ generation, the mating scheme generate 200 offspring from 100 parents in
+ subpopulation 0, 400 offspring from 470 parents in subpopulation 1, and
+ 400 offspring from 430 parents in subpopulation 2.
+\end_layout
+
+\begin_layout Itemize
+post mating operator 
+\family typewriter
+stat
+\family default
+ is applied and get the new subpopulation size.
+\end_layout
+
+\begin_layout Standard
+This example also demonstrates the use of stage parameter.
+ As a matter of fact, you can use only one 
+\family typewriter
+stat
+\family default
+ operator by using 
+\family typewriter
+stage
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+stage
+\end_layout
+
+\end_inset
+
+=PrePostMating
+\family default
+
+\begin_inset Index
+status collapsed
+
+\begin_layout Plain Layout
+PrePostMating
+\end_layout
+
+\end_inset
+
+.
+ If you are confused by the order of operators, use the 
+\family typewriter
+dryrun=True
+\family default
+ parameter of 
+\family typewriter
+evolve
+\family default
+ to check.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/splitMigration2.log"
+lstparams "caption={Population split with changing population size},label={splitMigration2}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You might say, OK, this looks nice, but how can I grow a population with
+ migration acting freely? This is also easy, all you need to do is using
+ the oldSize parameter of a demographic function in a clever way.
+ The underlying story is that
+\end_layout
+
+\begin_layout Itemize
+before mating, a mating scheme calculates current subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+it calls the given demographic function with current generation number and
+ current subpopulation sizes
+\end_layout
+
+\begin_layout Itemize
+it uses the return value as the new subpopulation sizes.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "splitMigration3"
+
+\end_inset
+
+ demonstrate an exponentially increase population with free migration between
+ subpopulations.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/splitMigration3.log"
+lstparams "caption={Population split with changing population size},label={splitMigration3}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Migrator is very flexible.
+ It can accept arbitrary migration matrix, from any subset of subpopulations
+ to any (even new) other subset of subpopulations.
+ To facilitate the use of common theoretical migration models, several functions
+ are defined in
+\family typewriter
+ simuUtil.py.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrIslandRates(r, n)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
+\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
+ &  & ...\\
+\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
+\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrSteppingStoneRates(r, n, circular=False)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+ &  &  & r & 1-r\end{array}\right)\]
+
+\end_inset
+
+and if 
+\family typewriter
+circular=True
+\family default
+, returns
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r/2 &  &  & r/2\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+r/2 &  &  & r/2 & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The standard migrator
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrator.log"
+lstparams "caption={A complex migration model},label={migrator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Migrate from a virtual subpopulation
+\end_layout
+
+\begin_layout Section
 Miscellaneous operators
 \end_layout
 
@@ -9712,368 +10099,6 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Demographic models
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:splitAndMerge"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Migration
-\end_layout
-
-\begin_layout Subsection
-Split and merge
-\end_layout
-
-\begin_layout Standard
-You first need to understand that mating schemes populate subpopulations
- from their corresponding ancestral subpopulations one by one, so it can
- not change number of subpopulations.
- Split and merge of subpopulations are done by operators 
-\family typewriter
-splitSubPop
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-splitSubPop
-\end_layout
-
-\end_inset
-
-
-\family default
- and 
-\family typewriter
-mergeSubPops
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-mergeSubPops
-\end_layout
-
-\end_inset
-
-
-\family default
- respectively.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitMerge"
-
-\end_inset
-
-, these two operators are used to split and merge subpopulations, but keep
- total population size untouched.
- Note that after subpopulation merge, subpopulation 2 still exists, but
- with size 0.
- This is used to keep subpopulation id of other subpopulations unchanged.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/splitMerge.log"
-lstparams "caption={Split and merge subpopulations during evolution.},label={splitMerge}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Demographic mode with selection
-\end_layout
-
-\begin_layout Standard
-Migration can change subpopulation size, but not total population size.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "migrFixedSize"
-
-\end_inset
-
-, two migrators are used.
- The first migrator moves individuals from subpopulation 0 to subpopulation
- 1.
- The second migrator moves individuals around, with given proportions.
- For example, the migration rate
-\begin_inset Formula \[
-\left(\begin{array}{ccc}
-0. & 0.2 & 0.4\\
-0. & 0. & 0.1\\
-0.1 & 0.1 & 0.\end{array}\right)\]
-
-\end_inset
-
-means moving 20% of individuals from subpop 0 to 1, 40% of individuals from
- subpop 0 to 1, and keep 40% (automatically determined).
- Subpopulation sizes change accordingly.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/splitMigration.log"
-lstparams "caption={Population split and migration},label={splitMigration}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-But what if you need to control total population size? In this case, a demograph
-ic function is needed to specify the size of each subpopulation, at each
- generation.
- In example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitMigration2"
-
-\end_inset
-
-, function 
-\family typewriter
-popSize
-\family default
- returns exact subpopulation size at each generation, and the population
- will behave accordingly.
- It might surprise you that migration can no longer control the size of
- subpopulation sizes.
- What exactly happened is that, for example
-\end_layout
-
-\begin_layout Itemize
-subpopulation size = [200, 400, 400], at the beginning of a generation
-\end_layout
-
-\begin_layout Itemize
-apply migrator, subpopulation size changed to [100, 470, 430]
-\end_layout
-
-\begin_layout Itemize
-pre mating operator 
-\family typewriter
-stat
-\family default
- is applied and report subpopulation sizes
-\end_layout
-
-\begin_layout Itemize
-during mating, with given subpopulation sizes 200, 400, 400 of the offspring
- generation, the mating scheme generate 200 offspring from 100 parents in
- subpopulation 0, 400 offspring from 470 parents in subpopulation 1, and
- 400 offspring from 430 parents in subpopulation 2.
-\end_layout
-
-\begin_layout Itemize
-post mating operator 
-\family typewriter
-stat
-\family default
- is applied and get the new subpopulation size.
-\end_layout
-
-\begin_layout Standard
-This example also demonstrates the use of stage parameter.
- As a matter of fact, you can use only one 
-\family typewriter
-stat
-\family default
- operator by using 
-\family typewriter
-stage
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-stage
-\end_layout
-
-\end_inset
-
-=PrePostMating
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-PrePostMating
-\end_layout
-
-\end_inset
-
-.
- If you are confused by the order of operators, use the 
-\family typewriter
-dryrun=True
-\family default
- parameter of 
-\family typewriter
-evolve
-\family default
- to check.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/splitMigration2.log"
-lstparams "caption={Population split with changing population size},label={splitMigration2}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-You might say, OK, this looks nice, but how can I grow a population with
- migration acting freely? This is also easy, all you need to do is using
- the oldSize parameter of a demographic function in a clever way.
- The underlying story is that
-\end_layout
-
-\begin_layout Itemize
-before mating, a mating scheme calculates current subpopulation sizes
-\end_layout
-
-\begin_layout Itemize
-it calls the given demographic function with current generation number and
- current subpopulation sizes
-\end_layout
-
-\begin_layout Itemize
-it uses the return value as the new subpopulation sizes.
-\end_layout
-
-\begin_layout Standard
-Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "splitMigration3"
-
-\end_inset
-
- demonstrate an exponentially increase population with free migration between
- subpopulations.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/splitMigration3.log"
-lstparams "caption={Population split with changing population size},label={splitMigration3}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Migration
-\end_layout
-
-\begin_layout Standard
-Migrator is very flexible.
- It can accept arbitrary migration matrix, from any subset of subpopulations
- to any (even new) other subset of subpopulations.
- To facilitate the use of common theoretical migration models, several functions
- are defined in
-\family typewriter
- simuUtil.py.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrIslandRates(r, n)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
-\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
- &  & ...\\
-\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
-\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrSteppingStoneRates(r, n, circular=False)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
- &  &  & r & 1-r\end{array}\right)\]
-
-\end_inset
-
-and if 
-\family typewriter
-circular=True
-\family default
-, returns
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r/2 &  &  & r/2\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
-r/2 &  &  & r/2 & 1-r\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-The standard migrator
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/migrator.log"
-lstparams "caption={A complex migration model},label={migrator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Migrate from a virtual subpopulation
 \end_layout
 
 \begin_layout Section
