@@ -11336,6 +11336,28 @@ lstparams "caption={Use the simuOpt object},firstline=68,label={useSimuOpt}"
 
 \end_layout
 
+\begin_layout Note
+Functions in a script that makes use of the 
+\family typewriter
+simuOpt
+\family default
+ class may accept a 
+\family typewriter
+simuOpt
+\family default
+ object directly.
+ If you import such a script, you can usually create a 
+\family typewriter
+simuOpt
+\family default
+ object using the parameter specification list in that script.
+ Alternatively, you can create an empty 
+\family typewriter
+simuOpt
+\family default
+ object and assign values to its attributes.
+\end_layout
+
 \begin_layout Section
 simuUtil
 \end_layout
