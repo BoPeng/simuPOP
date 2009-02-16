@@ -308,6 +308,8 @@ options:
   --gui ARG             which graphical toolkit to use
 ''' % usage.replace('%prog', os.path.basename(sys.argv[0]))
     for opt in options:
+        if opt.has_key('separator'):
+            continue
         name = ''
         if opt.has_key('arg'):
             if opt['arg'].endswith(':'):
@@ -341,6 +343,8 @@ options:
 
 def _getParamValue(p, val):
     ''' try to get a value from value, raise exception if error happens. '''
+    if p.has_key('separator'):
+        raise exceptions.ValueError('Cannot get a value for separator')
     # if we are giving a unicode string, convert!
     if type(val) == types.UnicodeType:
         val = str(val)
@@ -403,7 +407,7 @@ class _paramDialog:
         self.description = description
         self.details = details
         if nCol is None:
-            self.nCol = len(self.options)/10 + 1
+            self.nCol = len(self.options)/20 + 1
         else:
             self.nCol = nCol
 
@@ -563,9 +567,6 @@ class _tkParamDialog(_paramDialog):
             if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
             colIndex = rowIndex / numRows
-            value = self.options[g]['value']
-            if value is None:
-                value = self.options[g]['default']
             # use different entry method for different types
             if opt.has_key('separator'):
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['separator'],
@@ -578,6 +579,9 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g] = None
                 rowIndex += 1
                 continue
+            value = self.options[g]['value']
+            if value is None:
+                value = self.options[g]['default']
             if opt.has_key('chooseOneOf'):    # single choice
                 height = len(opt['chooseOneOf'])
                 self.labelWidgets[g] = tk.Label(self.app, text=opt['label'])
@@ -767,11 +771,8 @@ class _wxParamDialog(_paramDialog):
         rowIndex = 0
         # all entries
         for g,opt in enumerate(self.options):
-            if not (opt.has_key('label') or opt.has_key('separator')) :
+            if not (opt.has_key('label') or opt.has_key('separator')):
                 continue
-            value = self.options[g]['value']
-            if value is None:
-                value = self.options[g]['default']
             colIndex = rowIndex / numRows
             if opt.has_key('separator'):
                 self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['separator'])
@@ -783,6 +784,9 @@ class _wxParamDialog(_paramDialog):
                 gridBox[colIndex].Add(wx.StaticText(parent=self.dlg, id=-1, label=''), 1, wx.ALIGN_LEFT )
                 rowIndex += 1
                 continue
+            value = self.options[g]['value']
+            if value is None:
+                value = self.options[g]['default']
             # label
             self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
             gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
@@ -1014,7 +1018,14 @@ class simuOpt:
                 opt[key] = kwargs[key]
             else:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
-        if 'longarg' not in opt.keys() and 'separator' not in opt.keys():
+        #
+        if pos >= 0 and pos < len(self.options):
+            self.options.insert(pos, opt)
+        else:
+            self.options.append(opt)
+        if opt.has_key('separator'):
+            return
+        if 'longarg' not in opt.keys():
             raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
         # allow alphabet, number and underscore (_).
         if not opt['longarg'].strip('=').replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
@@ -1039,13 +1050,11 @@ class simuOpt:
         if opt['longarg'].rstrip('=') in self.__dict__.keys():
             raise exceptions.ValueError("Option '%s' conflicts with attribute '%s' of this simuOpt object." % \
                 (opt['longarg'].rstrip('='), (opt['longarg'].rstrip('='))))
+        if not opt['longarg'].endswith('=') and opt.has_key('allowedTypes') and type(True) not in opt['allowedTypes']:
+            raise exceptions.ValueError("Boolean type (True/False) should be allowed in boolean option %s." % opt['longarg'])
         #
         opt['value'] = opt['default']
         opt['processed'] = False
-        if pos >= 0 and pos < len(self.options):
-            self.options.insert(pos, opt)
-        else:
-            self.options.append(opt)
         #
         name = opt['longarg'].rstrip('=')
         if self.dict.has_key(name):
@@ -1067,6 +1076,8 @@ class simuOpt:
             pass
         print >> cfg, "# Configuration saved at at ", time.asctime()
         for opt in self.options:
+            if opt.has_key('separator'):
+                continue
             if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
                 continue
             # no label, and is not specified in params
@@ -1094,23 +1105,24 @@ class simuOpt:
         # shorter version
         scmd = "#    --gui=False "
         for opt in self.options:
-            if opt.has_key('label'):
-                defaultVal = opt.has_key('useDefault') and opt['useDefault'] and str(opt['value']) == str(opt['default'])
-                if opt['longarg'][-1] == '=':
-                    if ',' in str(opt['value']):    # has single quote
-                        arg = " --" + opt['longarg'][0:-1] + '=' + _prettyString(opt['value'], quoted=True)
-                        cmd += arg
-                        if not defaultVal:
-                            scmd += arg
-                    else:
-                        arg = " --" + opt['longarg'][0:-1] + "=" + _prettyString(opt['value'], quoted=True)
-                        cmd += arg
-                        if not defaultVal:
-                            scmd += arg
-                elif opt['value']: # this option is True
-                    cmd += " --" + opt['longarg']
+            if opt.has_key('separator') or not opt.has_key('label'):
+                continue
+            defaultVal = opt.has_key('useDefault') and opt['useDefault'] and str(opt['value']) == str(opt['default'])
+            if opt['longarg'][-1] == '=':
+                if ',' in str(opt['value']):    # has single quote
+                    arg = " --" + opt['longarg'][0:-1] + '=' + _prettyString(opt['value'], quoted=True)
+                    cmd += arg
                     if not defaultVal:
-                        scmd += " --" + opt['longarg']
+                        scmd += arg
+                else:
+                    arg = " --" + opt['longarg'][0:-1] + "=" + _prettyString(opt['value'], quoted=True)
+                    cmd += arg
+                    if not defaultVal:
+                        scmd += arg
+            elif opt['value']: # this option is True
+                cmd += " --" + opt['longarg']
+                if not defaultVal:
+                    scmd += " --" + opt['longarg']
         print >> cfg, ' \\\n#    '.join(textwrap.wrap(cmd, break_long_words=False))
         # print out shorter version
         print >> cfg, "\n\n#Or a shorter version if default arguments are ignored"
@@ -1126,6 +1138,8 @@ class simuOpt:
             if line.strip() == '' or line.startswith('#'):
                 continue
             for opt in self.options:
+                if opt.has_key('separator'):
+                    continue
                 if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
                     continue
                 name = opt['longarg'].rstrip('=')
@@ -1151,6 +1165,8 @@ class simuOpt:
             print self.usage()
             return False
         for opt in self.options:
+            if opt.has_key('separator'):
+                continue
             if len(params) > 0 and opt['longarg'].rstrip('=') not in params:
                 continue
             if not opt['longarg'].endswith('='): # do not expect an argument, simple
@@ -1398,11 +1414,12 @@ class simuOpt:
             return self.termGetParam()
         return False
 
-
     def asDict(self):
         '''Return parameters as a dictionary.'''
         res = {}
         for opt in self.options:
+            if opt.has_key('separator'):
+                continue
             name = opt['longarg'].rstrip('=')
             res[name] = opt['value']
         return res
@@ -1411,6 +1428,8 @@ class simuOpt:
         '''Return parameters as a list.'''
         res = []
         for opt in self.options:
+            if opt.has_key('separator'):
+                continue
             res.append(opt['value'])
         return res
 
