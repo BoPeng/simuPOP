@@ -673,7 +673,7 @@ class randomSample(_sample):
         self.repr = '<simuPOP::randomSample>'
 
     def prepareSample(self, pop):
-        self.pedigree = pedigree(pop)
+        self.pedigree = pedigree(pop, fatherField='', motherField='')
         self.pedigree.addInfoField('sample', -1)
         return True
 
