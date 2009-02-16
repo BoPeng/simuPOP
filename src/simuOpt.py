@@ -1014,7 +1014,7 @@ class simuOpt:
                 opt[key] = kwargs[key]
             else:
                 raise exceptions.ValueError('Invalid option specification key %s' % key)
-        if 'longarg' not in opt.keys():
+        if 'longarg' not in opt.keys() and 'separator' not in opt.keys():
             raise exceptions.ValueError('Item longarg cannot be ignored in an option specification dictionary')
         # allow alphabet, number and underscore (_).
         if not opt['longarg'].strip('=').replace('_', '').isalnum() or not opt['longarg'][0].isalpha():
