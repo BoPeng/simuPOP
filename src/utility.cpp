@@ -1560,18 +1560,18 @@ StreamElem::StreamElem(const string & name, bool readable, bool realAppend, bool
 		m_append = false;
 	} else {                                                                          // no string, usual file
 		m_append = realAppend;
+		m_type = FSTREAM;
 		if (readable) {
-			m_type = FSTREAM;
 			if (realAppend)     // readable , append
 				m_stream = new fstream(name.c_str(),  std::ios::in | std::ios::out | std::ios::ate);
 			else                // readable, ! append
 				// existing file will be truncated...
 				m_stream = new fstream(name.c_str(),  std::ios::in | std::ios::trunc | std::ios::out);
 		} else {
-			m_type = OFSTREAM;
-			if (realAppend)     // ! readable, append
+			if (realAppend) {     // ! readable, append
 				m_stream = new ofstream(name.c_str(), std::ios::out | std::ios::app);
-			else                //  !readable, !append )
+				m_type = OFSTREAM;
+			} else                //  !readable, !append )
 				// existing file will be truncated...
 				m_stream = new fstream(name.c_str(),  std::ios::trunc | std::ios::out);
 		}
