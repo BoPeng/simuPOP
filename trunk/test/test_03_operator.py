@@ -181,7 +181,8 @@ class TestOperator(unittest.TestCase):
         '''Testing operator infoEval'''
         pop = population(10, infoFields=['a', 'b'])
         InfoEval(pop, expr='b', stmts='b=a+1', output='')
-        self.assertEqual(pop.indInfo('b'), tuple([1]*10))
+        # information field b is NOT updated
+        self.assertEqual(pop.indInfo('b'), tuple([0]*10))
         #
         # use population variable
         pop.vars()['c'] = 5
@@ -212,10 +213,10 @@ class TestOperator(unittest.TestCase):
         # as an operator
         simu = simulator(pop, cloneMating())
         simu.evolve(
-            preOps = [infoExec('b=0', name='set b to zero')],
+            preOps = [infoExec('b=0')],
             ops = [
-                infoEval(r"'\t%.1f' % b", name='output b', stage=PostMating, output=''),
-                infoExec('b+=1', name='increase b', output=''),
+                infoEval(r"'\t%.1f' % b", stage=PostMating, output=''),
+                infoExec('b+=1', output=''),
                 pyOutput('\n', output=''),
             ],
             gen = 4
