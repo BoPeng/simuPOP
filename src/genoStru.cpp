@@ -124,18 +124,12 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 			for (size_t j = 0; j < m_numLoci[i]; j++)
 				m_lociNames[m_chromIndex[i] + j] = "loc" + toStr(i + 1) + "-" + toStr(j + 1);
 	}
-#ifndef OPTIMIZED
-	else {
-		map<string, int> nameMap;
-		// check uniqueness of the names
-		for (size_t i = 0; i < m_totNumLoci; ++i) {
-			if (nameMap.find(m_lociNames[i]) != nameMap.end())
-				throw ValueError("Given loci names should be unique");
-			else
-				nameMap[m_lociNames[i]] = 0;
-		}
+	// set up a map for loci names and check uniqueness of the names
+	for (size_t i = 0; i < m_totNumLoci; ++i) {
+		if (m_lociNameMap.find(m_lociNames[i]) != m_lociNameMap.end())
+			throw ValueError("Given loci names should be unique");
+		m_lociNameMap[m_lociNames[i]] = i;
 	}
-#endif
 	DBG_ASSERT(m_chromNames.empty() || m_chromNames.size() == m_numLoci.size(), ValueError,
 		"Chromosome names, if specified, should be given to every chromosomes");
 

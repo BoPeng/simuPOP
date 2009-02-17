@@ -175,8 +175,8 @@ public:
  *  namespace of the population. A Python expression is then evaluated for
  *  each individual. The result is written to an output.
  *
- *  \node Unlike operator ``infoExec``, individual information fields are not
- *  changed after this operator is applied to a population.
+ *  \note Unlike operator ``infoExec``, individual information fields are not
+ *  updated after this operator is applied to a population.
  *
  *  \note This operator tends to generate a large amount of output so use it
  *  is with caution.
@@ -200,7 +200,8 @@ public:
 	 *
 	 *  A Python expression (\e expr) is evaluated for each individual. The
 	 *  results are converted to strings and are written to an output specified
-	 *  by parameter \e output.
+	 *  by parameter \e output. Optionally, a statement (or several statements
+	 *  separated by newline) can be executed before \e expr is evaluated.
 	 *
 	 *  This operator is by default applied post-mating. If it stage is set to
 	 *  \c DuringMating, it will be applied to all offspring, regardless of
@@ -211,11 +212,12 @@ public:
 	 *  the module namespace of your script. However, using module level
 	 *  variables and functions in this operator is discouraged.
 	 */
-	infoEval(const string & expr = "", bool usePopVars = false,  const string & exposeInd = string(),
+	infoEval(const string & expr = "", const string & stmts = "", bool usePopVars = false,
+		const string & exposeInd = string(),
 		string output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_expr(expr, ""), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
+		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
 	{
 	}
 
@@ -307,9 +309,8 @@ public:
 	infoExec(const string & stmts = "", bool usePopVars = false,  const string & exposeInd = string(),
 		string output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: infoEval(string(), usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields)
+		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields)
 	{
-		m_expr.setStmts(stmts);
 	}
 
 

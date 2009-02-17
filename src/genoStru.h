@@ -86,7 +86,7 @@ public:
 	GenoStructure() : m_ploidy(2), m_totNumLoci(0),
 		m_numLoci(0), m_chromTypes(), m_chromX(-1), m_chromY(-1), m_customized(),
 		m_haplodiploid(false), m_lociPos(0), m_chromIndex(0),
-		m_chromNames(), m_alleleNames(), m_lociNames(), m_infoFields(0)
+		m_chromNames(), m_alleleNames(), m_lociNames(), m_lociNameMap(), m_infoFields(0)
 	{
 	}
 
@@ -207,6 +207,10 @@ private:
 		ar & m_lociNames;
 		ar & m_infoFields;
 
+		m_lociNameMap.clear();
+		for (size_t i = 0; i < m_lociNames.size(); ++i)
+			m_lociNameMap[m_lociNames[i]] = i;
+
 		// build chromosome index
 		m_chromIndex.resize(m_numLoci.size() + 1);
 		ULONG i;
@@ -258,6 +262,9 @@ private:
 
 	/// loci names
 	vectorstr m_lociNames;
+
+	/// map of locinames
+	map<string, UINT> m_lociNameMap;
 
 	/// name of the information field
 	vectorstr m_infoFields;
@@ -747,12 +754,16 @@ public:
 	 */
 	UINT locusByName(const string name) const
 	{
-		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
-		vectorstr::const_iterator it = std::find(names.begin(), names.end(), name);
+		const map<string, UINT> & names = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
+
+		DBG_FAILIF(names.size() != s_genoStruRepository[m_genoStruIdx].m_lociNames.size(),
+			SystemError, "Loci names and their index map do not match");
+
+		map<string, UINT>::const_iterator it = names.find(name);
 
 		if (it == names.end())
 			throw ValueError("Failed to find locus with name " + name);
-		return it - names.begin();
+		return it->second;
 	}
 
 
