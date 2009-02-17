@@ -179,8 +179,12 @@ class TestInitialization(unittest.TestCase):
         self.clearGenotype(pop)
         InitByFreq(pop, [[0, 0, 1], [0, 1], [1]], subPops=[[0,0],[1,1], [2,1]])
         for ind in pop.individuals([0,0]):
-            for allele in ind.genotype():
-                 self.assertEqual(allele, 2) 
+            if AlleleType() == 'binary':
+                for allele in ind.genotype():
+                     self.assertEqual(allele, 1) 
+            else:
+                for allele in ind.genotype():
+                     self.assertEqual(allele, 2) 
         for ind in pop.individuals([1,1]):
             for allele in ind.genotype():
                  self.assertEqual(allele, 1)
