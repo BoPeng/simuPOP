@@ -1459,7 +1459,7 @@ elif os.getenv('SIMUALLELETYPE') is not None:
 
 # Debug: from environmental variable SIMUDEBUG
 if os.getenv('SIMUDEBUG') is not None:
-    simuOptions['Debug'].extend(os.getenv('SIMUDEBUG'))
+    simuOptions['Debug'].extend(os.getenv('SIMUDEBUG').split(','))
 
 # GUI: from environmental variable SIMUGUI
 if os.getenv('SIMUGUI') is not None:
