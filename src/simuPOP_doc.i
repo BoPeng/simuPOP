@@ -2582,14 +2582,14 @@ Details:
     fields of eligible individuals are put into either a temporary
     dictionary or in the local namespace of the population. A Python
     expression is then evaluated for each individual. The result is
-    written to an output.  Unlike operator ``infoExec``, individual
-    information fields are not changed after this operator is applied
-    to a population.
+    written to an output.
 
 Note:
 
-    This operator tends to generate a large amount of output so use it
-    is with caution.
+    Unlike operator ``infoExec``, individual information fields are
+    not updated after this operator is applied to a population.This
+    operator tends to generate a large amount of output so use it is
+    with caution.
 
 "; 
 
@@ -2597,7 +2597,7 @@ Note:
 
 Usage:
 
-    infoEval(expr=\"\", usePopVars=False, exposeInd=string,
+    infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=string,
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=[], subPops=[], infoFields=[])
 
@@ -2615,9 +2615,11 @@ Details:
     an information field or exposeInd will be silently overridden.  A
     Python expression (expr) is evaluated for each individual. The
     results are converted to strings and are written to an output
-    specified by parameter output.  This operator is by default
-    applied post-mating. If it stage is set to DuringMating, it will
-    be applied to all offspring, regardless of subPops settings.
+    specified by parameter output. Optionally, a statement (or several
+    statements separated by newline) can be executed before expr is
+    evaluated.  This operator is by default applied post-mating. If it
+    stage is set to DuringMating, it will be applied to all offspring,
+    regardless of subPops settings.
 
 Note:
 

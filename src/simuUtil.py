@@ -104,7 +104,7 @@ def MigrIslandRates(r, n):
     #
     m = []
     for i in range(0,n):
-        m.append( [r/(n-1.)]*n)
+        m.append([r/(n-1.)]*n)
         m[-1][i] = 1-r
     return m
 

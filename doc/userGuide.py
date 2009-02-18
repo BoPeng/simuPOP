@@ -1523,6 +1523,86 @@ InfoExec(pop, 'c+=d', usePopVars=True)
 print pop.indInfo('c')[:10]
 #end
 
+#file log/migrateByProb.log
+simu = simulator(
+    population(size=[1000]*3, infoFields=['migrate_to']),
+    randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        migrator(rate=[
+            [0, 0.1, 0.1],
+            [0, 0, 0.1],
+            [0, 0.1, 0]
+        ]),
+        stat(popSize=True),
+        pyEval('subPopSize'),
+        pyOutput('\n')
+    ],
+    gen = 5
+)        
+#end
+
+#file log/migrateByPropAndCount.log
+simu = simulator(
+    population(size=[1000]*3, infoFields=['migrate_to']),
+    randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        migrator(rate=[[0.1], [0.2]],
+            mode=ByProportion,
+            subPops=[1, 2],
+            toSubPops=[3]),
+        stat(popSize=True),
+        pyEval('subPopSize'),
+        pyOutput('\n')
+    ],
+    gen = 5
+)        
+#
+simu.evolve(
+    ops = [
+        migrator(rate=[[50, 50], [100, 50]],
+            mode=ByCounts,
+            subPops=[3, 2],
+            toSubPops=[2, 1]),
+        stat(popSize=True),
+        pyEval('subPopSize'),
+        pyOutput('\n')
+    ],
+    gen = 5
+)        
+#end
+
+#file log/migrateVSP.log
+pop = population(size=[1000]*2, infoFields=['migrate_to'])
+pop.setVirtualSplitter(sexSplitter())
+simu = simulator(pop, randomMating())
+simu.evolve(
+    # 500 males and 500 females
+    preOps = [initSex(sex=[Male, Female])],
+    ops = [
+        migrator(rate=[
+            [0, 0.10],
+            [0, 0.05],
+            ],
+            mode = ByProportion,
+            subPops=[(0, 0), (0, 1)]),
+        stat(popSize=True, numOfMale=True, stage=PrePostMating),
+        pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
+            "subPop[1]['numOfMale'], subPopSize[1])", stage=PrePostMating),
+    ],
+    gen = 2
+)   
+#end
+
+#file log/manualMigration.log
+pop = population([10]*2, infoFields=['migrate_to'])
+pop.setIndInfo([0, 1, 2, 3]*5, 'migrate_to')
+Migrate(pop, mode=ByIndInfo)
+pop.subPopSizes()
+#end
 
 #file log/getParam.log
 import types, simuOpt
