@@ -1037,8 +1037,8 @@ class simuOpt:
             raise exceptions.ValueError('Error: arg and longarg should both accept or not accept an argument')
         if opt.has_key('arg') and (len(opt['arg'].rstrip(':')) != 1 or not opt['arg'][0].isalpha()):
             raise exceptions.ValueError('Short arg should have one and only one alphabetic character.')
-        if opt.has_key('arg') and True in [x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]:
-            raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'])
+        if opt.has_key('arg') and sum([x.has_key('arg') and x['arg'][0] == opt['arg'][0] for x in self.options]) > 1:
+            raise exceptions.ValueError("Duplicated short argument '%s'" % opt['arg'].rstrip(':'))
         if opt['longarg'].rstrip('=') in reserved_options:
             raise exceptions.ValueError("Option '--%s' is reserved. Please use another name." % opt['longarg'].rstrip('='))
         if (not opt['longarg'].endswith('=')) and (opt.has_key('chooseOneOf') or \
