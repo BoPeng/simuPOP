@@ -9156,10 +9156,6 @@ infoExec
 Demographic changes
 \end_layout
 
-\begin_layout Subsection
-Change of population size
-\end_layout
-
 \begin_layout Standard
 A mating scheme controls the size of an offspring generation using parameter
  
@@ -9179,21 +9175,524 @@ reference "sub:offspring-size"
 \end_layout
 
 \begin_layout Itemize
-If 
-\family typewriter
-subPopSize
-\family default
- is not set, the offspring generation will have the same subpopulation sizes
- as the parental generation.
+The subpopulation sizes of the offspring generation will be the same as
+ the parental generation if subPopSize is not set.
 \end_layout
 
 \begin_layout Itemize
-If 
+The offspring generation will have a fixed size if 
 \family typewriter
 subPopSize
 \family default
- is set to a number (no subpopulation) or a list of subpopulation sizes,
+ is set to a number (no subpopulation) or a list of subpopulation sizes.
  
+\end_layout
+
+\begin_layout Itemize
+The subpopulation sizes of an offspring generation will be determined by
+ the return value of a demographic function if 
+\family typewriter
+subPopSize
+\family default
+ is set to such a function (a function that returns subpopulation sizes
+ at each generation).
+\end_layout
+
+\begin_layout Note
+Parameter 
+\family typewriter
+subPopSize
+\family default
+ only controls subpopulation sizes of an offspring generation immediately
+ after it is generated.
+ Population or subpopulation sizes could be changed by other operators.
+\end_layout
+
+\begin_layout Standard
+During mating, a mating scheme goes through each parental subpopulation
+ and populates its corresponding offspring subpopulation.
+ This implies that
+\end_layout
+
+\begin_layout Itemize
+Parental and offspring populations should have the same number of subpopulations.
+\end_layout
+
+\begin_layout Itemize
+Mating happens strictly within each subpopulation.
+\end_layout
+
+\begin_layout Standard
+This section will introduce several operators that allow you to move individuals
+ across the boundary of subpopulations (migration), and change the number
+ of subpopulations during evolution (split and merge).
+\end_layout
+
+\begin_layout Subsection
+Migration (operator 
+\family typewriter
+migrator
+\family default
+)
+\end_layout
+
+\begin_layout Subsubsection
+Migration by probability
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+migrator
+\family default
+ (and its function form 
+\family typewriter
+Migrate
+\family default
+) migrates individuals from one subpopulation to another.
+ The key parameters are
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+from
+\emph default
+ subpopulations (parameter 
+\family typewriter
+subPops
+\family default
+).
+ A list of subpopulations from which individuals migrate.
+ Default to all subpopulations.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+to
+\emph default
+ subpopulations (parameter 
+\family typewriter
+toSubPops
+\family default
+).
+ A list of subpopulations to which individuals migrate.
+ Default to all subpopulations.
+ 
+\series bold
+A new subpopulation ID can be specified to create a new subpopulation from
+ migrants.
+\end_layout
+
+\begin_layout Itemize
+A migration rate matrix (parameter 
+\family typewriter
+rate
+\family default
+).
+ A 
+\begin_inset Formula $m$
+\end_inset
+
+ by 
+\begin_inset Formula $n$
+\end_inset
+
+ matrix ( a nested list in Python) that specifies migration rate from each
+ source to each destination subpopulation.
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ and 
+\begin_inset Formula $n$
+\end_inset
+
+ are determined by the number of 
+\emph on
+from
+\emph default
+ and 
+\emph on
+to
+\emph default
+ subpopulations.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrateByProb"
+
+\end_inset
+
+ demonstrate the use of a 
+\family typewriter
+migrator
+\family default
+ to migrate individuals between three subpopulations.
+ Note that 
+\end_layout
+
+\begin_layout Itemize
+Operator 
+\family typewriter
+migrator
+\family default
+ relies on an information field 
+\family typewriter
+migrate_to
+\family default
+ (configurable) to record destination subpopulation of each individual so
+ this information field needs to be added to a population befor migration.
+\end_layout
+
+\begin_layout Itemize
+Migration rates to subpopulation themselves are determined automatically
+ so they can be left unspecified.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrateByProb.log"
+lstparams "caption={Migration by probability},label={migrateByProb}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Migration by proportion and counts
+\end_layout
+
+\begin_layout Standard
+Migration rate specified in the rate parameter in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrateByProb"
+
+\end_inset
+
+ is intepreted as probabilities.
+ That is to say, a migration rate 
+\begin_inset Formula $r_{m,n}$
+\end_inset
+
+ is interpreted as the probability at which any individual in subpopulation
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ migrates to subpopulation 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ The exact number of migrants are randomly distributed.
+\end_layout
+
+\begin_layout Standard
+If you would like to specify exactly how many migrants migrate from a subpopulat
+ion to another, you can specify parameter 
+\family typewriter
+mode
+\family default
+ of operator 
+\family typewriter
+migrator
+\family default
+ to 
+\family typewriter
+ByProportion
+\family default
+ or 
+\family typewriter
+ByCount
+\family default
+s.
+ The 
+\family typewriter
+ByProportion
+\family default
+ mode interpret 
+\begin_inset Formula $r_{m,n}$
+\end_inset
+
+ as proportion of individuals who will migrate from subpopulation 
+\begin_inset Formula $m$
+\end_inset
+
+ to 
+\begin_inset Formula $n$
+\end_inset
+
+ so the number of 
+\begin_inset Formula $m\rightarrow n$
+\end_inset
+
+ migrant will be exactly 
+\begin_inset Formula $r_{m,n}\times$
+\end_inset
+
+subPopSize(m).
+ In the 
+\family typewriter
+ByCounts
+\family default
+ mode, 
+\begin_inset Formula $r_{m,n}$
+\end_inset
+
+ is interpretted as number of migrants, regardless the size of subpopulation
+ 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrateByPropAndCount"
+
+\end_inset
+
+ demonstrates these two migration modes, as well as the use of parameters
+ 
+\family typewriter
+subPops
+\family default
+ and 
+\family typewriter
+toSubPops.
+
+\family default
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrateByPropAndCount.log"
+lstparams "caption={Migration by proportion and count},label={migrateByPropAndCount}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Theoretical migration models
+\end_layout
+
+\begin_layout Standard
+To facilitate the use of widely used theoretical migration models, two functions
+ are defined in module 
+\family typewriter
+simuUtil
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrIslandRates(r, n)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
+\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
+ &  & ...\\
+\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
+\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrSteppingStoneRates(r, n, circular=False)
+\family default
+ returns a 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+ &  &  & r & 1-r\end{array}\right)\]
+
+\end_inset
+
+and if 
+\family typewriter
+circular=True
+\family default
+, returns
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r & r/2 &  &  & r/2\\
+r/2 & 1-r & r/2\\
+ &  & ...\\
+ &  & r/2 & 1-r & r/2\\
+r/2 &  &  & r/2 & 1-r\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Migrate from virtual subpopulations
+\end_layout
+
+\begin_layout Standard
+Under a realistic eco-social settings, individuals in a subpopulation rarely
+ have the same probability to migrate.
+ Genetic evidence has shown that female has a higher migrate rate than male
+ in humans, perhaps due to migration patterns related to inter-population
+ marriages.
+ Such sex-biased migration also happens in other large migration events
+ such as slave trade.
+\end_layout
+
+\begin_layout Standard
+It is easy to simulate most of such complex migration models by migrating
+ from virtual subpopulations.
+ For example, if you define virtual subpopulations by sex, you can specify
+ different migration rates for males and females and control the proportion
+ of males among migrants.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "migrateVSP"
+
+\end_inset
+
+ demonstrate a sex-biased migration model where males dominate migrants
+ from subpopulation 0.
+\end_layout
+
+\begin_layout Standard
+To avoid confusing, this example uses the proportion migration mode.
+ At the beginning of the first generation, there are 500 males and 500 females
+ in each subpopulation.
+ A 10% male migration rate and 5% female migration rate leads to 50 male
+ migrants and 25 female migrants.
+ Subpopulation sizes and number of males in each subpopulation before mating
+ are therefore:
+\end_layout
+
+\begin_layout Itemize
+Subpopulation 0: male 500-50, female 500-25, total 925
+\end_layout
+
+\begin_layout Itemize
+Subpopulation 1: male 500+50, female 500+25, total 1075
+\end_layout
+
+\begin_layout Standard
+Note that the unspecified 
+\emph on
+to
+\emph default
+ subpopulations are subpopulation 0 and 1, which cannot be virtual.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/migrateVSP.log"
+lstparams "caption={Migration from virtual subpopulations},label={migrateVSP}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Arbitrary migration models
+\end_layout
+
+\begin_layout Standard
+If none of the described migration mothods fits your need, you can always
+ resort to manual migration.
+ One such example is when you need to mimick an existing evolutionary scenario
+ so you know exactly which subpopulation each individual will migrate to.
+\end_layout
+
+\begin_layout Standard
+Manual migration is actually very easy.
+ All you need to do is specifying the destination subpopulation of all individua
+ls in the 
+\emph on
+from
+\emph default
+ subpopulations (parameter 
+\family typewriter
+subPops
+\family default
+), using an information field (usually 
+\family typewriter
+migrate_to
+\family default
+).
+ You can then call the 
+\family typewriter
+migrator
+\family default
+ using 
+\family typewriter
+mode=ByIndInfo
+\family default
+.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "manualMigration"
+
+\end_inset
+
+ shows how to manually move individuals around.
+ This example uses the function form of 
+\family typewriter
+migrator
+\family default
+.
+ You usually need to use a Python operator to set destination subpopulations
+ if you would like to manually migrate individuals during an evolutionary
+ process.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/manualMigration.log"
+lstparams "caption={Manual migration},label={manualMigration}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Note
+Individuals with an invalid destination subpopulation ID (e.g.
+ an negative number) will be discarded silently.
+ Although not recommended, this feature can be used to remove individuals
+ from a subpopulation.
 \end_layout
 
 \begin_layout Subsection
@@ -9447,96 +9946,6 @@ lstparams "caption={Population split with changing population size},label={split
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Migrator is very flexible.
- It can accept arbitrary migration matrix, from any subset of subpopulations
- to any (even new) other subset of subpopulations.
- To facilitate the use of common theoretical migration models, several functions
- are defined in
-\family typewriter
- simuUtil.py.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrIslandRates(r, n)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & \frac{r}{n-1} & ... & ... & \frac{r}{n-1}\\
-\frac{r}{n-1} & 1-r & ... & ... & \frac{r}{n-1}\\
- &  & ...\\
-\frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
-\frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-MigrSteppingStoneRates(r, n, circular=False)
-\family default
- returns a 
-\begin_inset Formula $n\times n$
-\end_inset
-
- migration matrix
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
- &  &  & r & 1-r\end{array}\right)\]
-
-\end_inset
-
-and if 
-\family typewriter
-circular=True
-\family default
-, returns
-\begin_inset Formula \[
-\left(\begin{array}{ccccc}
-1-r & r/2 &  &  & r/2\\
-r/2 & 1-r & r/2\\
- &  & ...\\
- &  & r/2 & 1-r & r/2\\
-r/2 &  &  & r/2 & 1-r\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-The standard migrator
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/migrator.log"
-lstparams "caption={A complex migration model},label={migrator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Migrate from a virtual subpopulation
 \end_layout
 
 \begin_layout Section

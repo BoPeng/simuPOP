@@ -193,6 +193,10 @@ def InfoExec(pop, *args, **kwargs):
     '''
     infoExec(*args, **kwargs).apply(pop)
 
+def Migrate(pop, *args, **kwargs):
+    'Function form of operator ``migrator``.'
+    migrator(*args, **kwargs).apply(pop)
+
 def Stat(pop, *args, **kwargs):
     stat(*args, **kwargs).apply(pop)
 
@@ -228,10 +232,6 @@ def PointMutate(pop, *args, **kwargs):
 
 if pointMutator.__init__.__doc__ is not None:
     PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
-
-def Migrate(pop, *args, **kwargs):
-    'Function form of operator migrator.'
-    migrator(*args, **kwargs).apply(pop)
 
 def SplitSubPop(pop, *args, **kwargs):
     splitSubPop(*args, **kwargs).apply(pop)
