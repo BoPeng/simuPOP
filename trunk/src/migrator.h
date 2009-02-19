@@ -174,41 +174,60 @@ protected:
 };
 
 
-/// split a subpopulation
-/**
-   <funcForm>SplitSubPop</funcForm>
+/** Split a given list of subpopulations according to either sizes of the
+ *  resulting subpopulations, proportion of individuals, or an information
+ *  field. The resulting subpopulations will have the same name as the
+ *  original subpopulation.
+ *  <funcForm>SplitSubPop</funcForm>
  */
 class splitSubPop : public baseOperator
 {
 
 public:
-	/// split a subpopulation
-	/**
-	   Split a subpopulation by sizes or proportions. Individuals are randomly (by default)
-	   assigned to the resulting subpopulations. Because mating schemes may introduce
-	   certain order to individuals, randomization ensures that split subpopulations have
-	   roughly even distribution of genotypes.
-
-	   \param which which subpopulation to split. If there is no subpopulation structure,
-	    use \c 0 as the first (and only) subpopulation.
-	   \param sizes new subpopulation sizes. The sizes should be added up to the original
-	    subpopulation (subpopulation \c which) size.
-	   \param proportions proportions of new subpopulations. Should be added up to \c 1.
-	   \param randomize Whether or not randomize individuals before population split. Default
-	    to True.
+	/** Split a list of subpopulations \e subPops into finer subpopulations. A
+	 *  single subpopulation is acceptable but virtual subpopulations are not
+	 *  allowed. All subpopulations will be split if \e subPops is not specified.
+	 *  
+	 *  The subpopulations can be split in three ways:
+	 *  \li If parameter \e sizes is given, each subpopulation will be split
+	 *  into subpopulations with given size. The \e sizes should add up to the
+	 *  size of all orignal subpopulations. 
+	 *  \li If parameter \e proportions is given, each subpopulation will be
+	 *  split into subpopulations with corresponding proportion of individuals.
+	 *  \e proportions should add up to \c 1. 
+	 *  \li If an information field is given (parameter \e infoFields),
+	 *  individuals having the same value at this information field will be
+	 *  grouped into a subpopulation. The number of resulting subpopulations is
+	 *  determined by the number of distinct values at this information field.
+	 *
+	 *  If parameter \c randomize is \c True (default), individuals will be
+	 *  randomized before a subpopulation is split. This is designed to remove
+	 *  artificial order of individuals introduced, for example, by some non-
+	 *  random mating schemes. Note that, however, the original individual
+	 *  order is not guaranteed even if this parameter is et to \c False.
+	 *
+	 *  Unless the last subpopulation is split, the indexes of existing
+	 *  subpopulations will be changed. If a subpopulation has a name, this
+	 *  name will become the name for all subpopulations separated from this
+	 *  subpopulation.
+	 *
+	 *  \note Unlike operator \c migrator, this operator does not require an
+	 *  information field such as \c migrate_to.
 	 */
-	splitSubPop(UINT which = 0,  vectorlu sizes = vectorlu(), vectorf proportions = vectorf(),
-		bool randomize = true,
+	splitSubPop(const subPopList & subPops = subPopList(),  vectorlu sizes = vectorlu(),
+		vectorf proportions = vectorf(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr(1, "migrate_to"))
+		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-		m_which(which), m_subPopSizes(sizes), m_proportions(proportions),
-		m_randomize(randomize)
+		m_subPopSizes(sizes), m_proportions(proportions), m_randomize(randomize)
 	{
-		DBG_FAILIF(sizes.empty() && proportions.empty(), ValueError,
-			"Please specify one of subPop and proportions.");
-		DBG_FAILIF(!sizes.empty() && !proportions.empty(), ValueError,
-			"Please specify only one of subPop and proportions.");
+		for (size_t i = 0; i < subPops.size(); ++i) {
+			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
+				"Virtual subpopulations are not supported in operator splitSubPop");
+		}
+
+		DBG_FAILIF(sizes.empty() + proportions.empty() + infoFields.empty() != 2, ValueError,
+			"Please specify one and only one of sizes, proportions and infoFields.");
 	}
 
 
@@ -231,14 +250,11 @@ public:
 	/// used by Python print function to print out the general information of the \c splitSubPop operator
 	virtual string __repr__()
 	{
-		return "<simuPOP::split population>" ;
+		return "<simuPOP::split subpopulation>" ;
 	}
 
 
 private:
-	/// which subpop to split
-	UINT m_which;
-
 	/// new subpopulation size
 	vectorlu m_subPopSizes;
 
@@ -246,10 +262,6 @@ private:
 	vectorf m_proportions;
 
 	/// random split
-	/// randomize population before split.
-	/// this is because some mating schemes generate
-	/// individuals non-randomly, for example,
-	/// put affected individuals at the beginning.
 	bool m_randomize;
 };
 

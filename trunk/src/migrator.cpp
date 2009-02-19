@@ -226,25 +226,46 @@ bool migrator::apply(population & pop)
 
 bool splitSubPop::apply(population & pop)
 {
-	UINT info = pop.infoIdx(infoField(0));
+	subPopList subPops = applicableSubPops();
+	if (subPops.empty() )
+		for (UINT i = 0; i < pop.numSubPop(); ++i)
+			subPops.push_back(vspID(i));
+	
+	for (size_t i = 0; i < subPops.size(); ++i) {
+		SubPopID sp = subPops[i].subPop();
+		if (pop.subPopSize(sp) == 0)
+			continue;
 
-	// randomize indiviudlas
-	if (m_randomize) {
-		// random shuffle individuals
-		for (ULONG it = 0; it < pop.subPopSize(m_which); ++it)
-			pop.ind(it, m_which).setInfo(static_cast<SubPopID>(rng().randInt(MaxSubPopID)), info);
-		std::sort(pop.indBegin(m_which), pop.indEnd(m_which), indCompare(info));
-		// not actully required since spliSubPop will do this.
-		// this is to remind myself this step is important.
-		pop.setIndOrdered(false);
+		// randomize indiviudlas
+		if (m_randomize) {
+			random_shuffle(pop.rawIndBegin(sp), pop.rawIndEnd(sp));
+			pop.setIndOrdered(false);
+		}
+
+		if (!m_subPopSizes.empty()) {
+			vectorf sizes;
+			for (size_t i = 0; i < m_subPopSizes.size(); ++i)
+				sizes.push_back(m_subPopSizes[i]);
+			pop.splitSubPop(sp, sizes);
+		} else if (!m_proportions.empty()) {
+			pop.splitSubPop(sp, m_proportions);
+		} else {
+			// using an information field
+			UINT idx = pop.infoIdx(infoField(0));
+			std::sort(pop.rawIndBegin(sp), pop.rawIndEnd(sp), indCompare(idx));
+			ConstRawIndIterator it = pop.rawIndBegin(sp);
+			ConstRawIndIterator it_end = pop.rawIndEnd(sp);
+			vectorf spSize(1, 1);
+			float value = it->info(idx);
+			for (++it; it != it_end; ++it) {
+				if (fcmp_ne(it->info(idx), value))
+					spSize.push_back(1);
+				else
+					++spSize.back();
+			}
+			pop.splitSubPop(sp, spSize);
+		}
 	}
-	if (!m_subPopSizes.empty()) {
-		vectorf sizes;
-		for (size_t i = 0; i < m_subPopSizes.size(); ++i)
-			sizes.push_back(m_subPopSizes[i]);
-		pop.splitSubPop(m_which, sizes);
-	} else
-		pop.splitSubPop(m_which, m_proportions);
 	return true;
 }
 
