@@ -1948,41 +1948,6 @@ void population::sortIndividuals(bool infoOnly) const
 }
 
 
-void population::scramble()
-{
-	UINT step = genoSize();
-	UINT infoStep = infoSize();
-
-	vectorlu pointers(m_popSize);
-
-	for (ULONG i = 0; i < m_popSize; ++i)
-		pointers[i] = i;
-	random_shuffle(pointers.begin(), pointers.end());
-
-	vectora newGenotype(m_popSize * genoSize());
-	vectorinfo newInfo(m_popSize * infoSize());
-	vectora::iterator newGenoPtr = newGenotype.begin();
-	vectorinfo::iterator newInfoPtr = newInfo.begin();
-
-	GenoIterator ptr = m_genotype.begin();
-	InfoIterator infoPtr = m_info.begin();
-	for (ULONG i = 0; i < m_popSize; ++i, ptr += step, infoPtr += infoStep) {
-#ifdef BINARYALLELE
-		copyGenotype(m_inds[i].genoBegin(), newGenoPtr + pointers[i] * step, step);
-#else
-		copy(m_inds[i].genoBegin(), m_inds[i].genoEnd(), newGenoPtr + pointers[i] * step);
-#endif
-		m_inds[i].setGenoPtr(newGenoPtr + pointers[i] * step);
-
-		copy(m_inds[i].infoBegin(), m_inds[i].infoEnd(), newInfoPtr + pointers[i] * infoStep);
-		m_inds[i].setInfoPtr(newInfoPtr + pointers[i] * infoStep);
-	}
-	m_genotype.swap(newGenotype);
-	m_info.swap(newInfo);
-	setIndOrdered(false);
-}
-
-
 population & LoadPopulation(const string & file)
 {
 	population * p = new population();

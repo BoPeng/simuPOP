@@ -1598,14 +1598,6 @@ public:
 	}
 
 
-	/** HIDDEN
-	 *  This function changes individual genotype pointer and information
-	 *  pointer so that the population appear to be after a massive migration.
-	 *  It is used to test population functions and see if they behave the
-	 *  same under this situation.
-	 */
-	void scramble();
-
 private:
 	friend class boost::serialization::access;
 
