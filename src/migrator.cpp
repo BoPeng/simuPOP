@@ -223,13 +223,24 @@ bool migrator::apply(population & pop)
 	return true;
 }
 
+struct compareVSP
+{
+	int operator()(const vspID & v1, const vspID & v2)
+	{
+		return v1.subPop() > v2.subPop();
+	}
+};
 
 bool splitSubPop::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
+	// we have to split from top to bottom subpopulations
+	// because split will change subpopulation index
 	if (subPops.empty() )
-		for (UINT i = 0; i < pop.numSubPop(); ++i)
+		for (UINT i = pop.numSubPop() - 1; i >=0; --i)
 			subPops.push_back(vspID(i));
+	else
+		std::sort(subPops.begin(), subPops.end(), compareVSP());
 	
 	for (size_t i = 0; i < subPops.size(); ++i) {
 		SubPopID sp = subPops[i].subPop();
@@ -255,12 +266,13 @@ bool splitSubPop::apply(population & pop)
 			std::sort(pop.rawIndBegin(sp), pop.rawIndEnd(sp), indCompare(idx));
 			ConstRawIndIterator it = pop.rawIndBegin(sp);
 			ConstRawIndIterator it_end = pop.rawIndEnd(sp);
-			vectorf spSize(1, 1);
+			vectorf spSize(1, 1.);
 			float value = it->info(idx);
 			for (++it; it != it_end; ++it) {
-				if (fcmp_ne(it->info(idx), value))
+				if (fcmp_ne(it->info(idx), value)) {
 					spSize.push_back(1);
-				else
+					value = it->info(idx);
+				} else
 					++spSize.back();
 			}
 			pop.splitSubPop(sp, spSize);
