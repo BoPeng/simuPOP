@@ -265,6 +265,7 @@ private:
 	bool m_randomize;
 };
 
+
 ///  merge subpopulations
 /**
    This operator merges subpopulations \c subPops to a

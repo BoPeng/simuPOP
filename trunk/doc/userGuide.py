@@ -1604,6 +1604,49 @@ Migrate(pop, mode=ByIndInfo)
 pop.subPopSizes()
 #end
 
+#file log/splitBySize.log
+simu = simulator(population(1000), randomSelection())
+simu.evolve(
+    ops = [
+        splitSubPop(subPops=0, sizes=[300, 300, 400], at=2),
+        stat(popSize=True),
+        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+    ],
+    gen = 4
+)
+#end
+
+#file log/splitByProp.log
+def demo(gen, oldSize=[]):
+    if gen < 2:
+        return 1000 + 100 * gen
+    else:
+        return [x + 50 * gen for x in oldSize]
+
+simu = simulator(population(1000),
+    randomSelection(subPopSize=demo))
+simu.evolve(
+    ops = [
+        splitSubPop(subPops=0, proportions=[.5]*2, at=2),
+        stat(popSize=True),
+        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+    ],
+    gen = 4
+)
+#end
+
+
+#file log/splitByInfo.log
+import random
+pop = population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields=['x'])
+pop.setIndInfo([random.randint(0, 3) for x in range(1000)], 'x')
+print pop.subPopSizes()
+print pop.subPopNames()
+SplitSubPop(pop, subPops=[0, 2], infoFields=['x'])
+print pop.subPopSizes()
+print pop.subPopNames()
+#end
+
 #file log/getParam.log
 import types, simuOpt
 
