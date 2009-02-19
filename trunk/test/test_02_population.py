@@ -18,7 +18,7 @@ import unittest, os, sys, exceptions, random, copy
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
-    def getPop(self, scramble=False, VSP=False, size=[20, 80], loci = [1, 2],
+    def getPop(self, VSP=False, size=[20, 80], loci = [1, 2],
             ancGen=0, *arg, **kwargs):
         pop = population(size=size, ploidy=2, loci=loci, infoFields=['x'],
             ancGen=ancGen, *arg, **kwargs)
@@ -29,8 +29,6 @@ class TestPopulation(unittest.TestCase):
         InitSex(pop)
         if VSP:
             pop.setVirtualSplitter(sexSplitter())
-        if scramble:
-            pop.scramble()
         return pop
 
     def testAbsIndIndex(self):
@@ -113,8 +111,6 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(len(list(pop.individuals(1))), pop.subPopSize(1))
         testAllInd(self.getPop())
         testAllInd(self.getPop(True))
-        testAllInd(self.getPop(False, True))
-        testAllInd(self.getPop(True, True))
         pop = population([20, 80], loci = [5, 7], infoFields=['x'])
         pop.individual(0).setAllele(1, 0)
         self.assertEqual(pop.individual(0).allele(0), 1)
@@ -316,12 +312,6 @@ class TestPopulation(unittest.TestCase):
         pop1 = population(size=100, ploidy=2, loci=[1, 2, 3])
         # different genotype structure
         self.assertRaises(exceptions.ValueError, pop.addIndFrom, pop1)
-        # Test scrambled populations
-        pop = self.getPop(scramble=True, ancGen=3)
-        pop1 = self.getPop(scramble=True, ancGen=3)
-        pop.addIndFrom(pop1)
-        for i in range(100):
-            self.assertEqual(pop.individual(100+i), pop1.individual(i))
 
     def testAddLociFrom(self):
         'Testing population::addLociFrom(pop)'
@@ -370,7 +360,7 @@ class TestPopulation(unittest.TestCase):
 
     def testDeepcopy(self):
         'Testing deepcopy of population'
-        pop = self.getPop(True, False, ancGen=3)
+        pop = self.getPop(False, ancGen=3)
         InitByFreq(pop, [0.2, 0.8])
         # shallow copy
         pop1 = pop
@@ -596,8 +586,6 @@ class TestPopulation(unittest.TestCase):
         #
         testSetAndRead(self.getPop())
         testSetAndRead(self.getPop(True))
-        testSetAndRead(self.getPop(True, True))
-        testSetAndRead(self.getPop(False, True))
         # test for virtual subpopulation
         def testVSPSetAndRead(pop):
             pop.setIndInfo([1, 2], 'x', [1, 0])
@@ -616,9 +604,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop.indInfo(0, [1, 1]), tuple([3]*pop.subPopSize([1, 1])))
         #
         self.assertRaises(exceptions.IndexError, testVSPSetAndRead, self.getPop())
-        self.assertRaises(exceptions.IndexError, testVSPSetAndRead, self.getPop(True))
-        testVSPSetAndRead(self.getPop(False, True))
-        testVSPSetAndRead(self.getPop(True, True))
+        testVSPSetAndRead(self.getPop(True))
 
     def testSetInfoFields(self):
         'Testing population::setInfoFields(fields, init=0)'
