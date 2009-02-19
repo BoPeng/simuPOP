@@ -197,6 +197,13 @@ def Migrate(pop, *args, **kwargs):
     'Function form of operator ``migrator``.'
     migrator(*args, **kwargs).apply(pop)
 
+def SplitSubPop(pop, *args, **kwargs):
+    '''Split subpopulations (*subPops*) of population *pop* according to either
+    *sizes* or *proportions* of the resulting subpopulations, or an information
+    field. Please refer to the operator form of this function (``splitSubPop``)
+    for details.'''
+    splitSubPop(*args, **kwargs).apply(pop)
+
 def Stat(pop, *args, **kwargs):
     stat(*args, **kwargs).apply(pop)
 
@@ -232,12 +239,6 @@ def PointMutate(pop, *args, **kwargs):
 
 if pointMutator.__init__.__doc__ is not None:
     PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
-
-def SplitSubPop(pop, *args, **kwargs):
-    splitSubPop(*args, **kwargs).apply(pop)
-
-if splitSubPop.__init__.__doc__ is not None:
-    SplitSubPop.__doc__ = "Function version of operator splitSubPops whose __init__ function is \n" + splitSubPop.__init__.__doc__
 
 def MergeSubPops(pop, *args, **kwargs):
     mergeSubPops(*args, **kwargs).apply(pop)
