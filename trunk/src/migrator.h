@@ -178,9 +178,9 @@ protected:
  *  resulting subpopulations, proportion of individuals, or an information
  *  field. The resulting subpopulations will have the same name as the
  *  original subpopulation.
- *  <funcForm>SplitSubPop</funcForm>
+ *  <funcForm>SplitSubPops</funcForm>
  */
-class splitSubPop : public baseOperator
+class splitSubPops : public baseOperator
 {
 
 public:
@@ -214,7 +214,7 @@ public:
 	 *  \note Unlike operator \c migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
-	splitSubPop(const subPopList & subPops = subPopList(),  vectorlu sizes = vectorlu(),
+	splitSubPops(const subPopList & subPops = subPopList(),  vectorlu sizes = vectorlu(),
 		vectorf proportions = vectorf(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
@@ -223,7 +223,7 @@ public:
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
-				"Virtual subpopulations are not supported in operator splitSubPop");
+				"Virtual subpopulations are not supported in operator splitSubPops");
 		}
 
 		DBG_FAILIF(sizes.empty() + proportions.empty() + infoFields.empty() != 2, ValueError,
@@ -232,22 +232,22 @@ public:
 
 
 	/// destructor
-	virtual ~splitSubPop()
+	virtual ~splitSubPops()
 	{
 	}
 
 
-	/// deep copy of a \c splitSubPop operator
+	/// deep copy of a \c splitSubPops operator
 	virtual baseOperator * clone() const
 	{
-		return new splitSubPop(*this);
+		return new splitSubPops(*this);
 	}
 
 
-	/// apply a \c splitSubPop operator
+	/// apply a \c splitSubPops operator
 	virtual bool apply(population & pop);
 
-	/// used by Python print function to print out the general information of the \c splitSubPop operator
+	/// used by Python print function to print out the general information of the \c splitSubPops operator
 	virtual string __repr__()
 	{
 		return "<simuPOP::split subpopulation>" ;
@@ -266,25 +266,29 @@ private:
 };
 
 
-///  merge subpopulations
-/**
-   This operator merges subpopulations \c subPops to a
-   single subpopulation. If \c subPops is ignored, all subpopulations will be merged.
-   <funcForm>MergeSubPops</funcForm>
+/** This operator merges subpopulations \e subPops to a single subpopulation.
+ *  If \c subPops is ignored, all subpopulations will be merged. Virtual
+ *  subpopulations are not allowed in \e subPops.
+ *  <funcForm>MergeSubPops</funcForm>
  */
 class mergeSubPops : public baseOperator
 {
 
 public:
-	/// merge subpopulations
-	/**
-	   \param subPops subpopulations to be merged. Default to all.
+	/** Create an operator that merges subpopulations \e subPops to a single
+	 *  subpopulation. If \e subPops is not given, all subpopulations will be
+	 *  merged. The merged subpopulation will take the name of the first
+	 *  subpopulation being merged. 
 	 */
 	mergeSubPops(const subPopList & subPops = subPopList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
+		for (size_t i = 0; i < subPops.size(); ++i) {
+			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
+				"Virtual subpopulations are not supported in operator mergeSubPops");
+		}
 	}
 
 
@@ -302,17 +306,7 @@ public:
 
 
 	/// apply a \c mergeSubPops operator
-	virtual bool apply(population & pop)
-	{
-		subPopList sp = applicableSubPops();
-		vectoru subPops(sp.size());
-
-		for (size_t i = 0; i < sp.size(); ++i)
-			subPops[i] = sp[i].subPop();
-		pop.mergeSubPops(subPops);
-		return true;
-	}
-
+	virtual bool apply(population & pop);
 
 	/// used by Python print function to print out the general information of the \c mergeSubPops operator
 	virtual string __repr__()
@@ -324,27 +318,21 @@ public:
 };
 
 
-/// resize subpopulations
-/**
-   This operator resize subpopulations \c subPops to a
-   another size. If \c subPops is ignored, all subpopulations will be resized.
-   If the new size is smaller than the original one, the remaining individuals
-   are discarded. If the new size if greater, individuals will be copied
-   again if propagate is true, and be empty otherwise.
-   <funcForm>ResizeSubPops</funcForm>
+/** This operator resizes subpopulations to specified sizes. Individuals are
+ *  added or removed depending on the new subpopulation sizes.
+ *  <funcForm>ResizeSubPops</funcForm>
  */
 class resizeSubPops : public baseOperator
 {
 
 public:
-	/// resize subpopulations
-	/**
+	/** Resize given subpopulations \e subPops to new sizes \e sizes. 
 	   \param newSizes of the specified (or all) subpopulations.
 	   \param subPop subpopulations to be resized. Default to all.
 	   \param propagate if true (default) and the new size if greater than
 	    the original size, individuals will be copied over.
 	 */
-	resizeSubPops(vectorlu newSizes = vectorlu(), bool propagate = true,
+	resizeSubPops(const vectorlu & sizes = vectorlu(), bool propagate = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),

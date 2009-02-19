@@ -197,12 +197,24 @@ def Migrate(pop, *args, **kwargs):
     'Function form of operator ``migrator``.'
     migrator(*args, **kwargs).apply(pop)
 
-def SplitSubPop(pop, *args, **kwargs):
+def SplitSubPops(pop, *args, **kwargs):
     '''Split subpopulations (*subPops*) of population *pop* according to either
     *sizes* or *proportions* of the resulting subpopulations, or an information
     field. Please refer to the operator form of this function (``splitSubPop``)
     for details.'''
-    splitSubPop(*args, **kwargs).apply(pop)
+    splitSubPops(*args, **kwargs).apply(pop)
+
+def MergeSubPops(pop, *args, **kwargs):
+    '''Merge subpopulations *subPops* of population *pop* into a single
+    subpopulation. Please refer to the operator form of this funciton
+    (``mergeSubPops``) for details'''
+    mergeSubPops(*args, **kwargs).apply(pop)
+
+def ResizeSubPops(pop, *args, **kwargs):
+    '''Resize subpopulations *subPops* of population *pop* into new sizes
+    *size*. Individuals will be added or removed accordingly. Please refer to
+    the operator form of this funciton (``resizeSubPops``) for details'''
+    resizeSubPops(*args, **kwargs).apply(pop)
 
 def Stat(pop, *args, **kwargs):
     stat(*args, **kwargs).apply(pop)
@@ -239,24 +251,6 @@ def PointMutate(pop, *args, **kwargs):
 
 if pointMutator.__init__.__doc__ is not None:
     PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
-
-def MergeSubPops(pop, *args, **kwargs):
-    mergeSubPops(*args, **kwargs).apply(pop)
-
-if mergeSubPops.__init__.__doc__ is not None:
-    MergeSubPops.__doc__ = "Function version of operator mergeSubPops whose __init__ function is \n" + mergeSubPops.__init__.__doc__
-
-def ResizeSubPops(pop, *args, **kwargs):
-    resizeSubPops(*args, **kwargs).apply(pop)
-
-if resizeSubPops.__init__.__doc__ is not None:
-    ResizeSubPops.__doc__ = "Function version of operator resizeSubPops whose __init__ function is \n" + resizeSubPops.__init__.__doc__
-
-def RemoveSubPops(pop, *args, **kwargs):
-    pop.removeSubPops(*args, **kwargs)
-
-if population.removeSubPops.__doc__ is not None:
-    RemoveSubPops.__doc__ = "Function versionof member function population::removeSubPop with help info:\n" + population.removeSubPops.__doc__
 
 def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
     mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)

@@ -282,6 +282,18 @@ bool splitSubPop::apply(population & pop)
 }
 
 
+bool mergeSubPops::apply(population & pop)
+{
+	subPopList sp = applicableSubPops();
+	vectoru subPops(sp.size());
+
+	for (size_t i = 0; i < sp.size(); ++i)
+		subPops[i] = sp[i].subPop();
+	pop.mergeSubPops(subPops);
+	return true;
+}
+
+
 bool resizeSubPops::apply(population & pop)
 {
 	vectorlu newSizes = pop.subPopSizes();
