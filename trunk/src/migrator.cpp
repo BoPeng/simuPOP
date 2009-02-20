@@ -272,7 +272,7 @@ bool splitSubPops::apply(population & pop)
 			ConstRawIndIterator it = pop.rawIndBegin(sp);
 			ConstRawIndIterator it_end = pop.rawIndEnd(sp);
 			vectorlu spSize(1, 1);
-			float value = it->info(idx);
+			double value = it->info(idx);
 			for (++it; it != it_end; ++it) {
 				if (fcmp_ne(it->info(idx), value)) {
 					spSize.push_back(1);
