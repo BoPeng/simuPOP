@@ -1247,7 +1247,7 @@ void population::resize(const uintList & sizeList, bool propagate)
 		ULONG spSize = subPopSize(sp);
 		for (ULONG i = 0, j = 0; i < newSubPopSizes[sp]; ++j, ++i) {
 			// repeating?
-			if ((j / spSize) > 0 && !propagate)
+			if (spSize == 0 || ((j / spSize) > 0 && !propagate))
 				break;
 			newInds[startSP + i].copyFrom(ind(j % spSize, sp));
 		}
