@@ -1,0 +1,19 @@
+{% extends "defindex.html" %}
+{% block tables %}
+  <table class="contentstable" align="center"><tr>
+    <td width="100%">
+      <p class="biglink"><a class="biglink" href="{{ pathto("build/userGuide") }}">simuPOP User's Guide</a><br/>
+         <span class="linkdescr">Teach you how to use simuPOP using tons of examples</span></p>
+    </td></tr>
+	<tr><td width="100%">
+      <p class="biglink"><a class="biglink" href="{{
+	  pathto("build/refManual") }}">simuPOP Reference Manual</a><br/>
+         <span class="linkdescr">Reference to all classes, functions and utility modules</span></p>
+    </td></tr>
+	<tr><td width="100%">
+      <p class="biglink"><a class="biglink" href="http://simupop.sourceforge.net/src_doc/index.html">simuPOP Source Code Reference</a><br/>
+         <span class="linkdescr">Reference to all C++ classes and functions.</span></p>
+    </td></tr>
+  </table>
+
+{% endblock %}

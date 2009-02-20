@@ -1,0 +1,60 @@
+RoadMap of simuPOP
+
+Towards simuPOP 1.0
+
+simuPOP 1.0 should have a consistently defined and well documented interface.
+
+* Continue to polish user's guide. (Add bibtex reference to programs cited
+  on page 3).
+
+* Go through each function and add support for subpopulation names.
+
+* For each operator,
+  - Check applicability (haploid, diploid, etc), and implement it in
+	isCompatible().
+  - Check the implementation of initialize() which should reinitialize
+	an operator if it is applied to another population.
+  - Check the support for subPop parameter. Add support if not too
+	troublesome. Document it clearly.
+  - Test the operator thoroughly.
+  - Remove operators that are not used widely.
+
+* For each mating scheme,
+  - Check applicability and implement it in isCompatible().
+  - Test each feature of mating scheme thoroughly.
+
+* Finish the pedigree class. Move the logic of samplers out of sampler.cpp.
+  Add pedigreeSample and subclass all pedigree related samplers to this class.
+  These classes only need to define a probePedigree function to find a valid
+  pedigree from a proband.
+
+* Remove most functions from simuUtil.py and remove hapMapUtil.py. Remove
+  simuViewPop.py. Carefully document others.
+
+* Remove the examples directory.
+
+* Implement a demography class that return a demographic function by adding
+  'events' to a demographic model.
+
+* Move genotype producing code to another during mating operator.
+
+* Add ops option to mating schemes so that each mating scheme can use
+  its own during-mating operators.
+
+* Redefine selfing, making it randomMating + selfing operator.
+
+* Define an operator to handle customized operators.
+
+After 1.0,
+
+* Efficiency improvement and possible use of openMP.
+  Better ways to profile simuPOP?
+
+* Complete VSP support for all operators.
+
+* add models from population genetics book (for the book).
+
+* investigate the potential of python image module. See if it is easy to install and support
+
+* A real GUI other than the tk-based simple parameter dialog
+
