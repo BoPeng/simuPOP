@@ -3033,6 +3033,11 @@ bool initialize()
     // tie python stdout to cout
     setLogOutput();
 
+#if __WORDSIZE == 32
+	DBG_ASSERT(WORDBIT == 32, SystemError,
+		"We are assuming 32 bit word size for this system but we are wrong."
+		"Please report this problem to the simuPOP mailinglist.");
+#endif
     // for example, if WORDBIT is 8 (most likely 32), we define
     // 0x0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
     for (size_t i = 0; i < WORDBIT; ++i) {

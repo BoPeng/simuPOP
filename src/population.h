@@ -1622,23 +1622,31 @@ private:
 		size_t rest = size - blks * WORDBIT;
 		DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
 
-		WORDTYPE tmp, tmp1;
+		WORDTYPE tmp = 0;
 		for (size_t i = 0; i < blks; ++i) {
 			tmp = *ptr++;
+#if __WORDSIZE == 32
+			ar & tmp;
+#else
 			for (size_t j = 0; j < WORDBIT / 32; ++j) {
-				tmp1 = tmp & 0xFFFFFFFF;
+				WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
 				ar & tmp1;
 			}
+#endif
 		}
 		// last block
 		if (rest > 0) {
 			tmp = *ptr;
+#if __WORDSIZE == 32
+			ar & tmp;
+#else
 			for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-				tmp1 = tmp & 0xFFFFFFFF;
+				WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
 				ar & tmp1;
 			}
+#endif
 		}
 #else
 		ar & m_genotype;
@@ -1665,25 +1673,33 @@ private:
 			size_t rest = size - blks * WORDBIT;
 			DBG_ASSERT(WORDBIT >= 32, SystemError, "WordBit should be at least 32 bits");
 
-			WORDTYPE tmp, tmp1;
+			WORDTYPE tmp = 0;
 			for (size_t i = 0; i < blks; ++i) {
 				tmp = *ptr++;
+#if __WORDSIZE == 32
+				ar & tmp;
+#else
 				for (size_t j = 0; j < WORDBIT / 32; ++j) {
-					tmp1 = tmp & 0xFFFFFFFF;
+					WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
 					ar & tmp1;
 				}
+#endif
 			}
 			// last block
 			if (rest > 0) {
 				tmp = *ptr;
 				// rest = 1-31: (rest-1)/32=0, j <= rest/32 = 0
 				// rest = 32; j <= (rest-1)/32 = 0
+#if __WORDSIZE == 32
+				ar & tmp;
+#else
 				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
-					tmp1 = tmp & 0xFFFFFFFF;
+					WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
 					ar & tmp1;
 				}
+#endif
 			}
 #else
 			ar & m_genotype;
