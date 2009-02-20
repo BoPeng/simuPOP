@@ -4067,32 +4067,29 @@ Function form:
 
     MergeSubPops
 
-Description:
-
-    merge subpopulations
-
 Details:
 
     This operator merges subpopulations subPops to a single
     subpopulation. If subPops is ignored, all subpopulations will be
-    merged.
+    merged. Virtual subpopulations are not allowed in subPops.
 
 "; 
 
 %feature("docstring") simuPOP::mergeSubPops::mergeSubPops "
-
-Description:
-
-    merge subpopulations
 
 Usage:
 
     mergeSubPops(subPops=[], stage=PreMating, begin=0, end=-1,
       step=1, at=[], rep=[], infoFields=[])
 
-Arguments:
+Details:
 
-    subPops:        subpopulations to be merged. Default to all.
+    Create an operator that merges subpopulations subPops to a single
+    subpopulation. If subPops is not given, all subpopulations will be
+    merged. The merged subpopulation will take the name of the first
+    subpopulation being merged.  This operator is by default applied
+    pre-mating (parameter stage). Please refer to operator
+    baseOperator for a detailed explanation for all parameters.
 
 "; 
 
@@ -4224,7 +4221,9 @@ Details:
     subpopulations (mode = ByCounts), or ignored completely (mode =
     ByIndInfo). In the last case, parameter subPops is respected (only
     individuals in specified (virtual) subpopulations will migrate)
-    but toSubPops is ignored.
+    but toSubPops is ignored.  This operator is by default applied
+    pre-mating (parameter stage). Please refer to operator
+    baseOperator for a detailed explanation for all parameters.
 
 "; 
 
@@ -6852,8 +6851,6 @@ Details:
 
 %feature("docstring") simuPOP::population::execute "Obsolete or undocumented function."
 
-%feature("docstring") simuPOP::population::scramble "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::proportionSplitter "
 
 Details:
@@ -8355,39 +8352,33 @@ Function form:
 
     ResizeSubPops
 
-Description:
-
-    resize subpopulations
-
 Details:
 
-    This operator resize subpopulations subPops to a another size. If
-    subPops is ignored, all subpopulations will be resized. If the new
-    size is smaller than the original one, the remaining individuals
-    are discarded. If the new size if greater, individuals will be
-    copied again if propagate is true, and be empty otherwise.
+    This operator resizes subpopulations to specified sizes.
+    Individuals are added or removed depending on the new
+    subpopulation sizes.
 
 "; 
 
 %feature("docstring") simuPOP::resizeSubPops::resizeSubPops "
 
-Description:
-
-    resize subpopulations
-
 Usage:
 
-    resizeSubPops(newSizes=[], propagate=True, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+    resizeSubPops(size=[], propagate=True, stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    newSizes:       of the specified (or all) subpopulations.
-    subPop:         subpopulations to be resized. Default to all.
-    propagate:      if true (default) and the new size if greater than
-                    the original size, individuals will be copied
-                    over.
+    Resize given subpopulations subPops to new sizes size. All
+    subpopulations will be resized if subPops is not specified. If the
+    new size of a subpopulation is smaller than its original size,
+    extra individuals will be removed. If the new size is larger, new
+    individuals with empty genotype will be inserted, unless parameter
+    propagate is set to True (default). In this case, existing
+    individuals will be copied sequentially, and repeatedly if needed.
+    This operator is by default applied pre-mating (parameter stage).
+    Please refer to operator baseOperator for a detailed explanation
+    for all parameters.
 
 "; 
 
@@ -9605,58 +9596,66 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPop "
+%feature("docstring") simuPOP::splitSubPops "
 
 Function form:
 
-    SplitSubPop
-
-Description:
-
-    split a subpopulation
+    SplitSubPops
 
 Details:
 
-    
+    Split a given list of subpopulations according to either sizes of
+    the resulting subpopulations, proportion of individuals, or an
+    information field. The resulting subpopulations will have the same
+    name as the original subpopulation.
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPop::splitSubPop "
-
-Description:
-
-    split a subpopulation
+%feature("docstring") simuPOP::splitSubPops::splitSubPops "
 
 Usage:
 
-    splitSubPop(which=0, sizes=[], proportions=[], randomize=True,
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[\"migrate_to\"])
+    splitSubPops(subPops=[], sizes=[], proportions=[],
+      randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=[], infoFields=[])
 
 Details:
 
-    Split a subpopulation by sizes or proportions. Individuals are
-    randomly (by default) assigned to the resulting subpopulations.
-    Because mating schemes may introduce certain order to individuals,
-    randomization ensures that split subpopulations have roughly even
-    distribution of genotypes.
+    Split a list of subpopulations subPops into finer subpopulations.
+    A single subpopulation is acceptable but virtual subpopulations
+    are not allowed. All subpopulations will be split if subPops is
+    not specified.  The subpopulations can be split in three ways:
+    *   If parameter sizes is given, each subpopulation will be split
+    into subpopulations with given size. The sizes should add up to
+    the size of all orignal subpopulations.
+    *   If parameter proportions is given, each subpopulation will be
+    split into subpopulations with corresponding proportion of
+    individuals. proportions should add up to 1.
+    *   If an information field is given (parameter infoFields),
+    individuals having the same value at this information field will
+    be grouped into a subpopulation. The number of resulting
+    subpopulations is determined by the number of distinct values at
+    this information field. If parameter randomize is True (default),
+    individuals will be randomized before a subpopulation is split.
+    This is designed to remove artificial order of individuals
+    introduced, for example, by some non- random mating schemes. Note
+    that, however, the original individual order is not guaranteed
+    even if this parameter is et to False.  Unless the last
+    subpopulation is split, the indexes of existing subpopulations
+    will be changed. If a subpopulation has a name, this name will
+    become the name for all subpopulations separated from this
+    subpopulation.  This operator is by default applied pre-mating
+    (parameter stage). Please refer to operator baseOperator for a
+    detailed explanation for all parameters.
 
-Arguments:
+Note:
 
-    which:          which subpopulation to split. If there is no
-                    subpopulation structure, use 0 as the first (and
-                    only) subpopulation.
-    sizes:          new subpopulation sizes. The sizes should be added
-                    up to the original subpopulation (subpopulation
-                    which) size.
-    proportions:    proportions of new subpopulations. Should be added
-                    up to 1.
-    randomize:      Whether or not randomize individuals before
-                    population split. Default to True.
+    Unlike operator migrator, this operator does not require an
+    information field such as migrate_to.
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPop::~splitSubPop "
+%feature("docstring") simuPOP::splitSubPops::~splitSubPops "
 
 Description:
 
@@ -9664,15 +9663,15 @@ Description:
 
 Usage:
 
-    x.~splitSubPop()
+    x.~splitSubPops()
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPop::clone "
+%feature("docstring") simuPOP::splitSubPops::clone "
 
 Description:
 
-    deep copy of a splitSubPop operator
+    deep copy of a splitSubPops operator
 
 Usage:
 
@@ -9680,11 +9679,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPop::apply "
+%feature("docstring") simuPOP::splitSubPops::apply "
 
 Description:
 
-    apply a splitSubPop operator
+    apply a splitSubPops operator
 
 Usage:
 
@@ -9692,12 +9691,12 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::splitSubPop::__repr__ "
+%feature("docstring") simuPOP::splitSubPops::__repr__ "
 
 Description:
 
     used by Python print function to print out the general information
-    of the splitSubPop operator
+    of the splitSubPops operator
 
 Usage:
 

@@ -231,7 +231,7 @@ struct compareVSP
 	}
 };
 
-bool splitSubPop::apply(population & pop)
+bool splitSubPops::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 	// we have to split from top to bottom subpopulations
@@ -305,13 +305,13 @@ bool resizeSubPops::apply(population & pop)
 
 	if (subPops.empty()) {
 		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			newSizes[i] = m_newSizes[i];
+			newSizes[i] = m_size[i];
 	} else {
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].subPop() >= pop.numSubPop(), IndexError,
 				"Subpopulation index " + toStr(subPops[i].subPop()) + " out of range of 0 ~ "
 				+ toStr(pop.numSubPop() - 1));
-			newSizes[subPops[i].subPop()] = m_newSizes[i];
+			newSizes[subPops[i].subPop()] = m_size[i];
 		}
 	}
 	DBG_DO(DBG_MIGRATOR, cout << "Resize subpopulations to size " << newSizes << endl);
