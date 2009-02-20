@@ -514,23 +514,6 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop1.subPopName(oldsp), pop.subPopName(newsp))
             for idx in range(pop1.subPopSize(oldsp)):
                 self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
-        # split by proportion
-        pop = population(size=[100, 80, 50], subPopNames=['A', 'B', 'C'])
-        pop1 = pop.clone()
-        self.assertRaises(exceptions.ValueError, pop.splitSubPop, 1, [1/4., 2/4.])
-        pop.splitSubPop(1, [1/4., 3/4.])
-        self.assertEqual(pop1.subPopSize(1), pop.subPopSize(1)+pop.subPopSize(2))
-        self.assertEqual(pop1.subPopName(1), pop.subPopName(1))
-        self.assertEqual(pop1.subPopName(1), pop.subPopName(2))
-        for idx in range(20):
-            self.assertEqual(pop1.individual(idx, 1), pop. individual(idx, 1))
-        for idx in range(20, 80):
-            self.assertEqual(pop1.individual(idx, 1), pop. individual(idx-20, 2))
-        for (oldsp, newsp) in [(0, 0), (2, 3)]:  # map of old and new id.
-            self.assertEqual(pop1.subPopSize(oldsp), pop.subPopSize(newsp))
-            self.assertEqual(pop1.subPopName(oldsp), pop.subPopName(newsp))
-            for idx in range(pop1.subPopSize(oldsp)):
-                self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
 
     def testSetSubPopByIndInfo(self):
         'Testing population::setSubPopByIndInfo(field)'
