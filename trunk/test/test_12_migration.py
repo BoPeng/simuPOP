@@ -265,16 +265,16 @@ class TestMigrator(unittest.TestCase):
         assert pop.dvars().alleleFreq[0][1] == af
 
 
-    def testSplitSubPop(self):
+    def testSplitSubPops(self):
         'Testing population split'
         pop = population(size=10, loci=[2,6], infoFields=['migrate_to'])
         InitByFreq(pop, [.2,.4,.4])
         genotype = list(pop.genotype())
-        SplitSubPop(pop, which=0, sizes=[2,8], randomize=False)
+        SplitSubPops(pop, subPops=0, sizes=[2,8], randomize=False)
         # individual untouched
         self.assertEqual(pop.genotype(), genotype)
         # split, with randomization
-        SplitSubPop(pop, which=1, sizes=[6,2], randomize=True)
+        SplitSubPops(pop, subPops=1, sizes=[6,2], randomize=True)
         self.assertNotEqual(pop.genotype(), genotype)
 
 
@@ -316,7 +316,7 @@ class TestMigrator(unittest.TestCase):
         'Testing population resize'
         pop = population(size=[2, 4, 4], loci=[2,6])
         InitByFreq(pop, [0.3, 0.7])
-        ResizeSubPops(pop, newSizes=[6], subPops=[0])
+        ResizeSubPops(pop, size=[6], subPops=[0])
         self.assertEqual(pop.subPopSizes(), (6, 4, 4))
         for ind in (2, 4):
             self.assertEqual(pop.individual(ind, 0), pop.individual(0, 0))
@@ -325,7 +325,7 @@ class TestMigrator(unittest.TestCase):
             self.assertEqual(pop.individual(ind, 0), pop.individual(1, 0))
             self.assertNotEqual(pop.individual(ind, 0), pop.individual(0, 0))
         # no propagate
-        ResizeSubPops(pop, newSizes=[8, 7], subPops=[1,2], propagate=False)
+        ResizeSubPops(pop, size=[8, 7], subPops=[1,2], propagate=False)
         self.assertEqual(pop.subPopSizes(), (6, 8, 7))
         for ind in (10, 11, 12, 13, 18, 19, 20):
             self.assertEqual(pop.individual(ind).genotype(), [0]*16)
