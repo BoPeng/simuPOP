@@ -316,7 +316,7 @@ class TestMigrator(unittest.TestCase):
         'Testing population resize'
         pop = population(size=[2, 4, 4], loci=[2,6])
         InitByFreq(pop, [0.3, 0.7])
-        ResizeSubPops(pop, size=[6], subPops=[0])
+        ResizeSubPops(pop, sizes=[6], subPops=[0])
         self.assertEqual(pop.subPopSizes(), (6, 4, 4))
         for ind in (2, 4):
             self.assertEqual(pop.individual(ind, 0), pop.individual(0, 0))
@@ -325,7 +325,7 @@ class TestMigrator(unittest.TestCase):
             self.assertEqual(pop.individual(ind, 0), pop.individual(1, 0))
             self.assertNotEqual(pop.individual(ind, 0), pop.individual(0, 0))
         # no propagate
-        ResizeSubPops(pop, size=[8, 7], subPops=[1,2], propagate=False)
+        ResizeSubPops(pop, sizes=[8, 7], subPops=[1,2], propagate=False)
         self.assertEqual(pop.subPopSizes(), (6, 8, 7))
         for ind in (10, 11, 12, 13, 18, 19, 20):
             self.assertEqual(pop.individual(ind).genotype(), [0]*16)
