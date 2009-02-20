@@ -372,7 +372,8 @@ array_richcompare(PyObject *v, PyObject *w, int op)
         }
 
         /* Search for the first index where items are different */
-        PyObject* vi, *wi;
+        PyObject * vi = NULL;
+	PyObject * wi = NULL;
         int k = 1;
         for (int i = 0; i < vs && i < ws; i++)
         {

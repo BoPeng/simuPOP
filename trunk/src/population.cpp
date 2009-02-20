@@ -726,12 +726,8 @@ void population::splitSubPop(UINT subPop, const vectorlu & sizes)
 	if (sizes.size() <= 1)
 		return;
 
-	ULONG all = accumulate(sizes.begin(), sizes.end(), 0LU);
-	DBG_ASSERT(all == subPopSize(subPop),
-		ValueError,
+	DBG_FAILIF(accumulate(sizes.begin(), sizes.end(), 0LU) != subPopSize(subPop), ValueError,
 		"Sum of parameter sizes should be the size of subpopulation " + toStr(subPop));
-
-	ULONG spSize = subPopSize(subPop);
 
 	vectorlu subPopSizes;
 	vectorstr subPopNames;
