@@ -213,8 +213,8 @@ private:
 
 		// build chromosome index
 		m_chromIndex.resize(m_numLoci.size() + 1);
-		ULONG i;
-		for (m_chromIndex[0] = 0, i = 1; i <= m_numLoci.size(); ++i)
+		m_chromIndex[0] = 0;
+		for (size_t i = 1; i <= m_numLoci.size(); ++i)
 			m_chromIndex[i] = m_chromIndex[i - 1] + m_numLoci[i - 1];
 
 		m_totNumLoci = m_chromIndex[m_numLoci.size()];
