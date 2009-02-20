@@ -490,6 +490,11 @@ class TestPopulation(unittest.TestCase):
         for sp in range(pop1.numSubPop()):
             for i in range(pop2.subPopSize(sp)):
                 self.assertEqual(pop2.individual(i, sp), pop.individual(i%pop.subPopSize(sp), sp))
+        # resize from empty subpopulation?
+        pop = self.getPop(size=[100, 0, 30, 0], loci=[4, 5, 1])
+        self.assertEqual(pop.subPopSizes(), (100, 0, 30, 0))
+        pop.resize([100, 20, 50, 20])
+        self.assertEqual(pop.subPopSizes(), (100, 20, 50, 20))
 
     def testSplitSubPop(self):
         'Testing population::splitSubPop(subPop, sizes)'
