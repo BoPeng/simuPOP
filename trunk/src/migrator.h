@@ -52,7 +52,7 @@ namespace simuPOP {
  *  subpopulations, according to either pre-specified destination
  *  subpopulation stored in an information field, or randomly according to a
  *  migration matrix.
- *  
+ *
  *  In the former case, values in a specified information field (default to
  *  \e migrate_to) are considered as destination subpopulation for each
  *  individual. If \e subPops is given, only individuals in specified (virtual)
@@ -63,20 +63,20 @@ namespace simuPOP {
  *  In the latter case, a migration matrix is used to randomly assign
  *  destination subpoulations to each individual. The elements in this matrix
  *  can be probabilities to migrate, proportions of individuals to migrate, or
- *  exact number of individuals to migrate. 
+ *  exact number of individuals to migrate.
  *
  *  By default, the migration matrix should have \c m by \c m elements if there
  *  are \c m subpopulations. Element <tt>(i, j)</tt> in this matrix represents
  *  migration probability, rate or count from subpopulation \c i to \c j. If
  *  \e subPops (length \c m) and/or \e toSubPops (length \c n) are given,
- *  the matrix should have \c m by \c n elements, corresponding to specified 
+ *  the matrix should have \c m by \c n elements, corresponding to specified
  *  source and destination subpopulations. Subpopulations in \e subPops can
  *  be virtual subpopulations, which makes it possible to migrate, for example,
  *  males and females at different rates from a subpopulation. If a
  *  subpopulation in \e toSubPops does not exist, it will be created. In case
  *  that all individuals from a subpopulation are migrated, the empty
  *  subpopulation will be kept.
- *  
+ *
  *  If migration is applied by probability, the row of the migration matrix
  *  corresponding to a source subpopulation is intepreted as probabilities to
  *  migrate to each destination subpopulation. Each individual's detination
@@ -94,7 +94,7 @@ namespace simuPOP {
  *  corresponding to a source subpopulation is intepreted as number of
  *  individuals to migrate to each detination subpopulation. The migrants are
  *  chosen randomly.
- *  
+ *
  *  This operator goes through all source (virtual) subpopulations and assign
  *  detination subpopulation of each individual to an information field. An
  *  \c RuntimeError will be raised if an individual is assigned to migrate
@@ -151,7 +151,7 @@ public:
 	}
 
 
-	/** CPPONLY  set migration rate. 
+	/** CPPONLY  set migration rate.
 	 */
 	void setRates(int mode, const subPopList & fromSubPops, const vectorlu & toSubPops);
 
@@ -191,14 +191,14 @@ public:
 	/** Split a list of subpopulations \e subPops into finer subpopulations. A
 	 *  single subpopulation is acceptable but virtual subpopulations are not
 	 *  allowed. All subpopulations will be split if \e subPops is not specified.
-	 *  
+	 *
 	 *  The subpopulations can be split in three ways:
 	 *  \li If parameter \e sizes is given, each subpopulation will be split
 	 *  into subpopulations with given size. The \e sizes should add up to the
-	 *  size of all orignal subpopulations. 
+	 *  size of all orignal subpopulations.
 	 *  \li If parameter \e proportions is given, each subpopulation will be
 	 *  split into subpopulations with corresponding proportion of individuals.
-	 *  \e proportions should add up to \c 1. 
+	 *  \e proportions should add up to \c 1.
 	 *  \li If an information field is given (parameter \e infoFields),
 	 *  individuals having the same value at this information field will be
 	 *  grouped into a subpopulation. The number of resulting subpopulations is
@@ -286,7 +286,7 @@ public:
 	/** Create an operator that merges subpopulations \e subPops to a single
 	 *  subpopulation. If \e subPops is not given, all subpopulations will be
 	 *  merged. The merged subpopulation will take the name of the first
-	 *  subpopulation being merged. 
+	 *  subpopulation being merged.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
@@ -338,7 +338,8 @@ class resizeSubPops : public baseOperator
 {
 
 public:
-	/** Resize given subpopulations \e subPops to new sizes \e size. All
+	/** Resize given subpopulations \e subPops to new sizes \e size, or sizes
+	 *  proportional to original sizes (parameter \e proportions). All
 	 *  subpopulations will be resized if \e subPops is not specified. If the
 	 *  new size of a subpopulation is smaller than its original size, extra
 	 *  individuals will be removed. If the new size is larger, new individuals
@@ -350,18 +351,25 @@ public:
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	resizeSubPops(const vectorlu & size = vectorlu(), bool propagate = true,
-		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+	resizeSubPops(const subPopList & subPops = subPopList(),
+		const vectorlu & sizes = vectorlu(), const vectorf & proportions = vectorf(),
+		bool propagate = true, int stage = PreMating,
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-		m_size(size), m_propagate(propagate)
+		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
 				"Virtual subpopulations are not supported in operator splitSubPops");
 		}
 
-		DBG_FAILIF(!subPops.empty() && subPops.size() != m_size.size(), ValueError,
+		DBG_FAILIF(m_sizes.empty() + m_proportions.empty() != 1, ValueError,
+			"Please specify one and only one of parameter sizes and proportions");
+
+		DBG_FAILIF(!subPops.empty() &&
+			((subPops.size() != m_sizes.size()) && (subPops.size() != m_proportions.size())),
+			ValueError,
 			"Please specify new sizes for each specified subpopulation");
 	}
 
@@ -392,8 +400,9 @@ public:
 
 private:
 	///
-	vectorlu m_size;
+	vectorlu m_sizes;
 
+	vectorf m_proportions;
 	///
 	bool m_propagate;
 };

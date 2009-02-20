@@ -754,7 +754,7 @@ infoExecRef
 \end_layout
 
 \begin_layout Section
-Migration
+Demographic models
 \begin_inset Index
 status collapsed
 
@@ -782,7 +782,7 @@ migratorRef
 
 
 \backslash
-splitSubPopRef
+splitSubPopsRef
 \end_layout
 
 \begin_layout Plain Layout

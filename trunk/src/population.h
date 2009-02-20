@@ -993,7 +993,7 @@ public:
 	vectoru addLoci(const uintList & chrom, const floatList & pos,
 		const vectorstr & names = vectorstr());
 
-	/** Resize population by giving new subpopulation sizes \e size.
+	/** Resize population by giving new subpopulation sizes \e sizes.
 	 *  Individuals at the end of some subpopulations will be removed if the
 	 *  new subpopulation size is smaller than the old one. New individuals
 	 *  will be appended to a subpopulation if the new size is larger. Their
@@ -1005,7 +1005,7 @@ public:
 	 *  the current generation.
 	 *  <group>7-manipulate</group>
 	 */
-	void resize(const uintList & size, bool propagate = false);
+	void resize(const uintList & sizes, bool propagate = false);
 
 	/** Extract subsets of individuals, loci and/or information fields from the
 	 *  current population and create a new one. If information field \e field
