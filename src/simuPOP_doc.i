@@ -6443,11 +6443,11 @@ Details:
 
 Usage:
 
-    x.resize(size, propagate=False)
+    x.resize(sizes, propagate=False)
 
 Details:
 
-    Resize population by giving new subpopulation sizes size.
+    Resize population by giving new subpopulation sizes sizes.
     Individuals at the end of some subpopulations will be removed if
     the new subpopulation size is smaller than the old one. New
     individuals will be appended to a subpopulation if the new size is
@@ -8364,12 +8364,14 @@ Details:
 
 Usage:
 
-    resizeSubPops(size=[], propagate=True, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+    resizeSubPops(subPops=[], sizes=[], proportions=[],
+      propagate=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
+      rep=[], infoFields=[])
 
 Details:
 
-    Resize given subpopulations subPops to new sizes size. All
+    Resize given subpopulations subPops to new sizes size, or sizes
+    proportional to original sizes (parameter proportions). All
     subpopulations will be resized if subPops is not specified. If the
     new size of a subpopulation is smaller than its original size,
     extra individuals will be removed. If the new size is larger, new

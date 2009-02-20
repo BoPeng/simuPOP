@@ -199,7 +199,7 @@ pop.subPopSize(1)
 # merge subpopulations
 pop.mergeSubPops([1, 2])
 # split subpopulations
-pop.splitSubPop(1, [2, 7])
+pop.splitSubPops(1, [2, 7])
 pop.subPopSizes()
 # set information field to each individual's new subpopulation ID
 pop.setIndInfo([0, 1, 2, -1, 0, 1, 2, -1, -1, 0, 1, 2], 'x')
@@ -215,7 +215,7 @@ pop = population(size=[3, 4, 5], subPopNames=['x', 'y', 'z'])
 pop.removeSubPops([1])
 pop.subPopNames()
 pop.subPopByName('z')
-pop.splitSubPop(1, [2, 3])
+pop.splitSubPops(1, [2, 3])
 pop.subPopNames()
 pop.setSubPopName('z-1', 1)
 pop.subPopNames()
@@ -1608,7 +1608,7 @@ pop.subPopSizes()
 simu = simulator(population(1000), randomSelection())
 simu.evolve(
     ops = [
-        splitSubPop(subPops=0, sizes=[300, 300, 400], at=2),
+        splitSubPops(subPops=0, sizes=[300, 300, 400], at=2),
         stat(popSize=True),
         pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
     ],
@@ -1627,7 +1627,7 @@ simu = simulator(population(1000),
     randomSelection(subPopSize=demo))
 simu.evolve(
     ops = [
-        splitSubPop(subPops=0, proportions=[.5]*2, at=2),
+        splitSubPops(subPops=0, proportions=[.5]*2, at=2),
         stat(popSize=True),
         pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
     ],
@@ -1642,9 +1642,94 @@ pop = population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields=['x'])
 pop.setIndInfo([random.randint(0, 3) for x in range(1000)], 'x')
 print pop.subPopSizes()
 print pop.subPopNames()
-SplitSubPop(pop, subPops=[0, 2], infoFields=['x'])
+SplitSubPops(pop, subPops=[0, 2], infoFields=['x'])
 print pop.subPopSizes()
 print pop.subPopNames()
+#end
+
+#file log/mergeSubPops.log
+simu = simulator(population([500]*2),
+    randomSelection())
+simu.evolve(
+    ops = [
+        mergeSubPops(subPops=[0, 1], at=3),
+        stat(popSize=True),
+        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+    ],
+    gen = 5
+)
+#end
+
+
+#file log/resizeSubPops.log
+simu = simulator(population([500]*2),
+    randomSelection())
+simu.evolve(
+    ops = [
+        resizeSubPops(proportions=(1.5, 2), at=3),
+        stat(popSize=True),
+        pyEval(r'"Gen %d:\t%s\n" % (gen, subPopSize)')
+    ],
+    gen = 5
+)
+
+#end
+
+#file log/migrator.log
+from simuUtil import *
+
+#number of cities
+nc = 6
+
+# how to change subpop size?
+def changeSPSize(gen, oldSize):
+    size = [0]*len(oldSize)
+    for i in range(0, len(size)):
+        size[i] = oldSize[i]*1.2
+    if size[i] > 1000:
+        size[i] /= 2
+    return size
+
+# migration between subpopulaitons
+rates = []
+for i in range(nc):
+    rates.append([0.]*nc)
+
+for i in range(1, nc-1):
+    rates[i][i+1]=0.05
+    rates[i][i-1]=0.05
+
+#
+rates[0][1] = 0.1
+rates[nc-1][nc-2] = 0.1
+
+# print rates
+print rates
+migr = migrator(rate=rates, mode=ByProbability)
+
+# initially, we need to set everyone to middle subpop
+initMigr = migrator(rate=[[1]], mode=ByProportion,
+    subPops=[0], toSubPops=[nc/2])
+
+pop = population(size=[500]*nc, infoFields=['migrate_to'])
+
+# the new popsize relies on a variable newSPSize
+# which is calculated from subPopSize bu newSize operator
+simu = simulator(pop,
+    randomMating(subPopSize=changeSPSize) )
+
+# evolve!
+simu.evolve(
+    preOps = [initSex(), initMigr ],
+    ops = [
+        migr,
+        stat(popSize=True),
+        pyEval('list(subPopSize)'),
+        pyOutput('\n', rep=-1)
+    ],
+    gen=10
+)
+
 #end
 
 #file log/getParam.log
@@ -1719,157 +1804,6 @@ pars.asList()
 
 
 ################################################
-
-#file log/splitMerge.log
-pop = population(1000, loci=[1], infoFields=['migrate_to'])
-simu = simulator(pop, randomSelection())
-simu.evolve(
-    ops=[
-        splitSubPop(0, proportions=[0.2, 0.8], at = 3),
-        splitSubPop(1, proportions=[0.4, 0.6], at = 5),
-        mergeSubPops([0, 2], at = 7),
-        stat(popSize=True),
-        pyEval(r'"%s\n" % subPopSize'),
-    ],
-    gen = 10
-)
-#end
-
-#file log/splitMigration.log
-from simuPOP import *
-pop = population(1000, loci=[1], infoFields=['migrate_to'])
-simu = simulator(pop, randomSelection())
-simu.evolve(
-    ops=[
-        splitSubPop(0, proportions=[0.2, 0.3, 0.5], at = 3),
-        migrator(rate = [0.2], subPops=0, toSubPops=1, 
-            begin = 3, end = 4),
-        migrator(rate = [
-            [0, 0.2, 0.4],
-            [0, 0,   0.1],
-            [0.1, 0.1, 0]],
-            begin = 4),
-        stat(popSize=True),
-        pyEval(r'"%s\n" % subPopSize'),
-    ],
-    gen = 10
-)
-#end
-
-#file log/splitMigration2.log
-from simuPOP import *
-pop = population(1000, loci=[1], infoFields=['migrate_to'])
-def popSize(gen, oldSize=[]):
-    if gen < 3:
-        return [1000]
-    elif gen < 5:
-        return [400, 500]
-    else:
-        return [300, 400, 600]
-
-simu = simulator(pop, randomSelection(subPopSize=popSize))
-simu.evolve(
-    ops=[
-        splitSubPop(0, proportions=[0.3, 0.7], at = 3),
-        migrator(rate = [0.2], subPops=0, toSubPops=1, 
-            begin = 3, end = 4),
-        splitSubPop(0, proportions=[0.3, 0.7], at = 5),
-        migrator(rate = [
-            [0, 0.2, 0.4],
-            [0, 0,   0.1],
-            [0.1, 0.1, 0]],
-            begin = 5),
-        stat(popSize=True, stage=PreMating),
-        pyEval(r'"From %s\t" % subPopSize', stage=PreMating),
-        stat(popSize=True),
-        pyEval(r'"to: %s\n" % subPopSize'),
-    ],
-    gen = 10
-)
-#end
-
-#file log/splitMigration3.log
-from simuPOP import *
-pop = population(1000, loci=[1], infoFields=['migrate_to'])
-def popSize(gen, oldSize=[]):
-    return [x*2 for x in oldSize]
-
-simu = simulator(pop, randomSelection(subPopSize=popSize))
-simu.evolve(
-    ops=[
-        splitSubPop(0, proportions=[0.3, 0.7], at = 3),
-        migrator(rate = [0.2], subPops=0, toSubPops=1, 
-            begin = 3, end = 4),
-        splitSubPop(0, proportions=[0.3, 0.7], at = 5),
-        migrator(rate = [
-            [0, 0.2, 0.4],
-            [0, 0,   0.1],
-            [0.1, 0.1, 0]],
-            begin = 5),
-        stat(popSize=True, stage=PrePostMating),
-        pyEval(r'"From %s\t" % subPopSize', stage=PreMating),
-        pyEval(r'"to: %s\n" % subPopSize'),
-    ],
-    gen = 10
-)
-#end
-
-#file log/migrator.log
-from simuUtil import *
-
-#number of cities
-nc = 6
-
-# how to change subpop size?
-def changeSPSize(gen, oldSize):
-    size = [0]*len(oldSize)
-    for i in range(0, len(size)):
-        size[i] = oldSize[i]*1.2
-    if size[i] > 1000:
-        size[i] /= 2
-    return size
-
-# migration between subpopulaitons
-rates = []
-for i in range(nc):
-    rates.append([0.]*nc)
-
-for i in range(1, nc-1):
-    rates[i][i+1]=0.05
-    rates[i][i-1]=0.05
-
-#
-rates[0][1] = 0.1
-rates[nc-1][nc-2] = 0.1
-
-# print rates
-print rates
-migr = migrator(rate=rates, mode=ByProbability)
-
-# initially, we need to set everyone to middle subpop
-initMigr = migrator(rate=[[1]], mode=ByProportion,
-    subPops=[0], toSubPops=[nc/2])
-
-pop = population(size=[500]*nc, infoFields=['migrate_to'])
-
-# the new popsize relies on a variable newSPSize
-# which is calculated from subPopSize bu newSize operator
-simu = simulator(pop,
-    randomMating(subPopSize=changeSPSize) )
-
-# evolve!
-simu.evolve(
-    preOps = [initSex(), initMigr ],
-    ops = [
-        migr,
-        stat(popSize=True),
-        pyEval('list(subPopSize)'),
-        pyOutput('\n', rep=-1)
-    ],
-    gen=10
-)
-
-#end
 
 
 #file log/kamMutator.log
