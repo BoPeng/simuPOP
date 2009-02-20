@@ -122,6 +122,10 @@ public:
 	 *  In the last case, parameter \e subPops is respected (only individuals
 	 *  in specified (virtual) subpopulations will migrate) but \e toSubPops
 	 *  is ignored.
+	 *
+	 *  This operator is by default applied pre-mating (parameter \e stage).
+	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  all parameters.
 	 */
 	migrator(const matrix & rate = matrix(), int mode = ByProbability, const uintList & toSubPops = uintList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
@@ -211,6 +215,10 @@ public:
 	 *  name will become the name for all subpopulations separated from this
 	 *  subpopulation.
 	 *
+	 *  This operator is by default applied pre-mating (parameter \e stage).
+	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  all parameters.
+	 *
 	 *  \note Unlike operator \c migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
@@ -279,6 +287,10 @@ public:
 	 *  subpopulation. If \e subPops is not given, all subpopulations will be
 	 *  merged. The merged subpopulation will take the name of the first
 	 *  subpopulation being merged. 
+	 *
+	 *  This operator is by default applied pre-mating (parameter \e stage).
+	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  all parameters.
 	 */
 	mergeSubPops(const subPopList & subPops = subPopList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
@@ -326,19 +338,30 @@ class resizeSubPops : public baseOperator
 {
 
 public:
-	/** Resize given subpopulations \e subPops to new sizes \e sizes. 
-	   \param newSizes of the specified (or all) subpopulations.
-	   \param subPop subpopulations to be resized. Default to all.
-	   \param propagate if true (default) and the new size if greater than
-	    the original size, individuals will be copied over.
+	/** Resize given subpopulations \e subPops to new sizes \e size. All
+	 *  subpopulations will be resized if \e subPops is not specified. If the
+	 *  new size of a subpopulation is smaller than its original size, extra
+	 *  individuals will be removed. If the new size is larger, new individuals
+	 *  with empty genotype will be inserted, unless parameter \e propagate is
+	 *  set to \c True (default). In this case, existing individuals will be
+	 *  copied sequentially, and repeatedly if needed.
+	 *
+	 *  This operator is by default applied pre-mating (parameter \e stage).
+	 *  Please refer to operator \c baseOperator for a detailed explanation for
+	 *  all parameters.
 	 */
-	resizeSubPops(const vectorlu & sizes = vectorlu(), bool propagate = true,
+	resizeSubPops(const vectorlu & size = vectorlu(), bool propagate = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-		m_newSizes(newSizes), m_propagate(propagate)
+		m_size(size), m_propagate(propagate)
 	{
-		DBG_FAILIF(!subPops.empty() && subPops.size() != newSizes.size(), ValueError,
+		for (size_t i = 0; i < subPops.size(); ++i) {
+			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
+				"Virtual subpopulations are not supported in operator splitSubPops");
+		}
+
+		DBG_FAILIF(!subPops.empty() && subPops.size() != m_size.size(), ValueError,
 			"Please specify new sizes for each specified subpopulation");
 	}
 
@@ -369,7 +392,7 @@ public:
 
 private:
 	///
-	vectorlu m_newSizes;
+	vectorlu m_size;
 
 	///
 	bool m_propagate;
