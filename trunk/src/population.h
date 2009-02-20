@@ -911,15 +911,13 @@ public:
 	void setSubPopByIndInfo(const string & field);
 
 	/** Split subpopulation \e subPop into subpopulations of given \e sizes,
-	 *  which should add up to the size of subpopulation \e subPop.
-	 *  Alternatively, \e sizes can be a list of proportions (add up to \c 1)
-	 *  from which the sizes of new subpopulations are determined. If \e subPop
+	 *  which should add up to the size of subpopulation \e subPop. If \e subPop
 	 *  is not the last subpopulation, indexes of subpopulations after
 	 *  \e subPop are shifted. If \e subPop is named, the same name will be
-	 *  given to all split subpopulations.
+	 *  given to all new subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
-	void splitSubPop(UINT subPop, vectorf sizes);
+	void splitSubPop(UINT subPop, const vectorlu & sizes);
 
 	/** Remove subpopulation(s) \e subPop and all their individuals. Indexes of
 	 *  subpopulations after removed subpopulations will be shifted.

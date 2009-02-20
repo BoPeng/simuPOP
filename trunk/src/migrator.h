@@ -222,8 +222,8 @@ public:
 	 *  \note Unlike operator \c migrator, this operator does not require an
 	 *  information field such as \c migrate_to.
 	 */
-	splitSubPops(const subPopList & subPops = subPopList(),  vectorlu sizes = vectorlu(),
-		vectorf proportions = vectorf(), bool randomize = true,
+	splitSubPops(const subPopList & subPops = subPopList(), const vectorlu & sizes = vectorlu(),
+		const vectorf & proportions = vectorf(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
