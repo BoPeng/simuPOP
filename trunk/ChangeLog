@@ -1,6 +1,8 @@
 ChangeLog of simuPOP
 
-version 0.9.2 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.9.2 - (Rev 2472) Feb 20, 2009
   - NEW: Allow populations in a simulator to have different genotype structure. 
   - CHG: A simulator can no longer access genotypic structure information.
   - NEW: Add simulator::add to add new populations to a simulator.
