@@ -39,7 +39,7 @@ bool selector::apply(population & pop)
 	} else {
 		for (subPopList::iterator sp = subPops.begin(); sp != subPops.end(); ++sp) {
 			IndInfoIterator fitness = pop.infoBegin(fit_id, *sp);
-			DBG_FAILIF(sp->subPop() > pop.numSubPop(), IndexError,
+			DBG_FAILIF(static_cast<UINT>(sp->subPop()) > pop.numSubPop(), IndexError,
 				"Wrong subpopulation index" + toStr(sp->subPop()) + " (number of subpops is " +
 				toStr(pop.numSubPop()) + ")");
 			for (IndIterator it = pop.indBegin(sp->subPop()); it.valid(); ++it)
