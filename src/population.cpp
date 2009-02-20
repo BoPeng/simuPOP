@@ -721,26 +721,17 @@ void population::setSubPopByIndInfo(const string & field)
 }
 
 
-void population::splitSubPop(UINT subPop, vectorf sizes)
+void population::splitSubPop(UINT subPop, const vectorlu & sizes)
 {
 	if (sizes.size() <= 1)
 		return;
 
-	double all = accumulate(sizes.begin(), sizes.end(), 0.);
-	DBG_ASSERT(static_cast<ULONG>(all) == subPopSize(subPop) || fcmp_eq(all, 1.),
+	ULONG all = accumulate(sizes.begin(), sizes.end(), 0LU);
+	DBG_ASSERT(all == subPopSize(subPop),
 		ValueError,
-		"Sum of parameter sizes should be 1 (proportions) or the size of subpopulation subPop.");
+		"Sum of parameter sizes should be the size of subpopulation " + toStr(subPop));
 
 	ULONG spSize = subPopSize(subPop);
-	vectorlu newSizes(sizes.size());
-	for (size_t i = 0; i < sizes.size() - 1; ++i) {
-		if (fcmp_eq(all, 1.))
-			newSizes[i] = static_cast<ULONG>(floor(spSize * sizes[i]));
-		else
-			newSizes[i] = static_cast<ULONG>(sizes[i]);
-	}
-	// to avoid round off problem, calculate the last subpopulation
-	newSizes[sizes.size() - 1] = spSize - accumulate(newSizes.begin(), newSizes.end() - 1, 0L);
 
 	vectorlu subPopSizes;
 	vectorstr subPopNames;
@@ -750,7 +741,7 @@ void population::splitSubPop(UINT subPop, vectorf sizes)
 			if (!m_subPopNames.empty())
 				subPopNames.push_back(m_subPopNames[sp]);
 		} else {
-			subPopSizes.insert(subPopSizes.end(), newSizes.begin(), newSizes.end());
+			subPopSizes.insert(subPopSizes.end(), sizes.begin(), sizes.end());
 			if (!m_subPopNames.empty())
 				for (size_t i = 0; i < sizes.size(); ++i)
 					subPopNames.push_back(m_subPopNames[subPop]);

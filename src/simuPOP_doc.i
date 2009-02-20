@@ -6302,12 +6302,10 @@ Usage:
 Details:
 
     Split subpopulation subPop into subpopulations of given sizes,
-    which should add up to the size of subpopulation subPop.
-    Alternatively, sizes can be a list of proportions (add up to 1)
-    from which the sizes of new subpopulations are determined. If
-    subPop is not the last subpopulation, indexes of subpopulations
-    after subPop are shifted. If subPop is named, the same name will
-    be given to all split subpopulations.
+    which should add up to the size of subpopulation subPop. If subPop
+    is not the last subpopulation, indexes of subpopulations after
+    subPop are shifted. If subPop is named, the same name will be
+    given to all new subpopulations.
 
 "; 
 

@@ -199,7 +199,7 @@ pop.subPopSize(1)
 # merge subpopulations
 pop.mergeSubPops([1, 2])
 # split subpopulations
-pop.splitSubPops(1, [2, 7])
+pop.splitSubPop(1, [2, 7])
 pop.subPopSizes()
 # set information field to each individual's new subpopulation ID
 pop.setIndInfo([0, 1, 2, -1, 0, 1, 2, -1, -1, 0, 1, 2], 'x')
@@ -215,7 +215,7 @@ pop = population(size=[3, 4, 5], subPopNames=['x', 'y', 'z'])
 pop.removeSubPops([1])
 pop.subPopNames()
 pop.subPopByName('z')
-pop.splitSubPops(1, [2, 3])
+pop.splitSubPop(1, [2, 3])
 pop.subPopNames()
 pop.setSubPopName('z-1', 1)
 pop.subPopNames()
