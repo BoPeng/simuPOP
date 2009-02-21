@@ -88,8 +88,8 @@ double mapPenetrance::penet(individual * ind)
 	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
 		// get genotype of ind
-		Allele a = ind->allele(*loc, 0);
-		Allele b = ind->allele(*loc, 1);
+		Allele a = ToAllele(ind->allele(*loc, 0));
+		Allele b = ToAllele(ind->allele(*loc, 1));
 
 		if (loc != m_loci.begin() )
 			key += '|';
@@ -116,16 +116,16 @@ double maPenetrance::penet(individual * ind)
 	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 
 		// get genotype of ind
-		Allele a = ind->allele(*loc, 0);
-		Allele b = ind->allele(*loc, 1);
+		Allele a = ToAllele(ind->allele(*loc, 0));
+		Allele b = ToAllele(ind->allele(*loc, 1));
 
 		int numWildtype = 0;
 
 		// count number of wildtype
-		if (find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
+		if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) != m_wildtype.end() )
 			numWildtype++;
 
-		if (find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
+		if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(b)) != m_wildtype.end() )
 			numWildtype++;
 		index = index * 3 + 2 - numWildtype;
 	}
@@ -188,7 +188,7 @@ double pyPenetrance::penet(individual * ind)
 	UINT pEnd = ind->ploidy();
 	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)
 		for (UINT p = 0; p < pEnd; ++p)
-			m_alleles[j++] = ind->allele(m_loci[i], p);
+			m_alleles[j++] = ToAllele(ind->allele(m_loci[i], p));
 
 	double resDouble;
 	if (infoSize() <= 1)

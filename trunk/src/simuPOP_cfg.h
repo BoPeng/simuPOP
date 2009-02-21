@@ -95,6 +95,7 @@ typedef uint16_t & AlleleRef;
 #  define AlleleAdd(a, b) (a) += (b)
 #  define AlleleMinus(a, b) (a) -= (b)
 #  define AlleleUnsigned(a) (a)
+#  define ToAllele(a)    (a)
 
 #else
 
@@ -108,6 +109,8 @@ typedef vector<Allele>::reference AlleleRef;
 #    define AlleleAdd(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? true : false))
 #    define AlleleMinus(a, b) (a) = ((b) == 0 ? (a) : ((b) > 0 ? false : true))
 #    define AlleleUnsigned(a) (static_cast<unsigned char>(a))
+// this is used to avoid a VC++ C4800 warning when converting int to bool
+#    define ToAllele(a)   ((a) != 0)
 
 #  else
 
@@ -118,6 +121,7 @@ typedef unsigned char & AlleleRef;
 #    define AlleleAdd(a, b) (a) += (b)
 #    define AlleleMinus(a, b) (a) -= (b)
 #    define AlleleUnsigned(a) (a)
+#    define ToAllele(a)   (a)
 #  endif
 #endif
 

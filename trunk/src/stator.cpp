@@ -1853,10 +1853,10 @@ statRelatedness::fraction statRelatedness::relQueller(individual ind1,
 
 	for (vectori::iterator locus = m_atLoci.begin();
 	     locus != m_atLoci.end(); ++locus) {
-		Allele a = ind1.allele(*locus, 0);
-		Allele b = ind1.allele(*locus, 1);
-		Allele c = ind2.allele(*locus, 0);
-		Allele d = ind2.allele(*locus, 1);
+		Allele a = ToAllele(ind1.allele(*locus, 0));
+		Allele b = ToAllele(ind1.allele(*locus, 1));
+		Allele c = ToAllele(ind2.allele(*locus, 0));
+		Allele d = ToAllele(ind2.allele(*locus, 1));
 
 		if (a == 0 || b == 0 || c == 0 || d == 0) continue;
 
@@ -1893,10 +1893,10 @@ statRelatedness::fraction statRelatedness::relLynch(individual ind1,
 
 	for (vectori::iterator locus = m_atLoci.begin();
 	     locus != m_atLoci.end(); ++locus) {
-		Allele a = ind1.allele(*locus, 0);
-		Allele b = ind1.allele(*locus, 1);
-		Allele c = ind2.allele(*locus, 0);
-		Allele d = ind2.allele(*locus, 1);
+		Allele a = ToAllele(ind1.allele(*locus, 0));
+		Allele b = ToAllele(ind1.allele(*locus, 1));
+		Allele c = ToAllele(ind2.allele(*locus, 0));
+		Allele d = ToAllele(ind2.allele(*locus, 1));
 
 		if (a == 0 || b == 0 || c == 0 || d == 0) continue;
 
@@ -1934,8 +1934,8 @@ statRelatedness::fraction statRelatedness::relIR(individual ind1, int locus)
 {
 	matrix & af = m_alleleFreq.alleleFreqAll();
 	statRelatedness::fraction res(0., 0.);
-	Allele a = ind1.allele(locus, 0);
-	Allele b = ind1.allele(locus, 1);
+	Allele a = ToAllele(ind1.allele(locus, 0));
+	Allele b = ToAllele(ind1.allele(locus, 1));
 	double pa = af[locus][a];
 	double pb = af[locus][b];
 
@@ -1952,8 +1952,8 @@ statRelatedness::fraction statRelatedness::relIR(individual ind1, int locus)
 statRelatedness::fraction statRelatedness::relD2(individual ind1, int locus)
 {
 	statRelatedness::fraction res(0., 1.);
-	Allele a = ind1.allele(locus, 0);
-	Allele b = ind1.allele(locus, 1);
+	Allele a = ToAllele(ind1.allele(locus, 0));
+	Allele b = ToAllele(ind1.allele(locus, 1));
 
 	UINT mx = m_alleleFreq.numOfAlleles()[locus];
 
@@ -1970,10 +1970,10 @@ statRelatedness::fraction statRelatedness::relRel(individual ind1,
 	matrix & af = m_alleleFreq.alleleFreqAll();
 
 	statRelatedness::fraction res(0., 0.);
-	Allele a = ind1.allele(locus, 0);
-	Allele b = ind1.allele(locus, 1);
-	Allele c = ind2.allele(locus, 0);
-	Allele d = ind2.allele(locus, 1);
+	Allele a = ToAllele(ind1.allele(locus, 0));
+	Allele b = ToAllele(ind1.allele(locus, 1));
+	Allele c = ToAllele(ind2.allele(locus, 0));
+	Allele d = ToAllele(ind2.allele(locus, 1));
 
 	if (a == 0 || b == 0 || c == 0 || d == 0)
 		return res;
