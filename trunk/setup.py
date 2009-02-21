@@ -70,6 +70,7 @@ SWIG = 'swig'
 ############################################################################
 
 from distutils.core import setup, Extension
+from distutils.sysconfig import get_config_var
 
 
 def swig_version():
@@ -489,7 +490,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['extra_compile_args'] = ['-O3', '-Wall']
     # if Intel ICC is used, turn off remark 981
-    if os.getenv('CC', '').endswith('icc'):
+    if os.getenv('CC', '').endswith('icc') or 'icc' in  get_config_var('CC'):
         res['extra_compile_args'].append('-wd981')
     # define_macros (deep copy)
     res['define_macros'] = [x for x in MACROS[modu]]

@@ -452,7 +452,7 @@ PyObject * pyIndObj(void * p);
 class Expression
 {
 public:
-	Expression(const string & expr = "", const string & stmts = "",
+	Expression(const string & expr = string(), const string & stmts = string(),
 		PyObject * locals = NULL)
 		: m_expr(NULL), m_stmts(NULL), m_locals(locals)
 	{
@@ -491,14 +491,14 @@ public:
 
 
 	/// CPPONLY
-	void setExpr(const string & expr = "")
+	void setExpr(const string & expr = string())
 	{
 		compileExpr(expr);
 	}
 
 
 	/// CPPONLY
-	void setStmts(const string & stmts = "")
+	void setStmts(const string & stmts = string())
 	{
 		compileStmts(stmts);
 	}
@@ -981,8 +981,8 @@ class weightedSampler
 {
 public:
 	// set up AliasMethod table
-	weightedSampler(RNG & rng, const vectorf & weight = vectorf(), bool fast = true)
-		: m_RNG(&rng), m_q(0), m_a(0)                     // , m_fast(fast)
+	weightedSampler(RNG & rng, const vectorf & weight = vectorf())
+		: m_RNG(&rng), m_q(0), m_a(0)
 	{
 		set(weight);
 	};
