@@ -347,7 +347,7 @@ void PyObj_As_Double(PyObject * obj, double & val)
 void PyObj_As_String(PyObject * obj, string & val)
 {
 	if (obj == NULL) {
-		val = "";
+		val = string();
 		return;
 	}
 
@@ -1792,7 +1792,7 @@ StreamProvider::StreamProvider(const string & output)
 void StreamProvider::setOutput(const string & output)
 {
 	if (!output.empty() && output[0] == '!') {
-		m_filename = "";
+		m_filename = string();
 		m_filenameExpr.setExpr(output.substr(1));
 	} else {
 		m_filename = output;
@@ -1932,7 +1932,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 	} else
 		throw ValueError("Ostream types can only be one of '', '>', '>>', '>>>', '|'");
 
-	if (format == "") {
+	if (format.empty()) {
 		SETFLAG(m_flags, m_flagUseDefault);
 		RESETFLAG(m_flags, m_flagCloseAfterUse);
 	} else
@@ -2656,7 +2656,7 @@ void setLogOutput(const string filename)
         outputFile = NULL;
 	}
     // use stanard output
-    if (filename == "")
+    if (filename.empty())
 		cout.rdbuf(&g_pythonCoutBuf);
     else {
         // use a file.

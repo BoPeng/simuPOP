@@ -1259,7 +1259,7 @@ private:
 RNG & rng();
 
 /// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
-void SetRNG(const string rng = "", unsigned long seed = 0);
+void SetRNG(const string rng = string(), unsigned long seed = 0);
 
 /// list the names of all available random number generators
 vectorstr AvailableRNGs();
@@ -1322,7 +1322,7 @@ ULONG MaxAllele();
 ostream & cnull();
 
 /// set the standard output (default to standard Python output)
-void setLogOutput(const string filename = "");
+void setLogOutput(const string filename = string());
 
 // ////////////////////////////////////////////////////////////
 // / Parameter polymorphism
