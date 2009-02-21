@@ -104,20 +104,20 @@ double maSelector::indFitness(individual * ind, ULONG gen)
 
 	for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc) {
 		// get genotype of ind
-		Allele a = ind->allele(*loc, 0);
-		Allele b = ind->allele(*loc, 1);
+		Allele a = ToAllele(ind->allele(*loc, 0));
+		Allele b = ToAllele(ind->allele(*loc, 1));
 
 		int numWildtype = 0;
 
 		// count number of wildtype
 		// this improve the performance a little bit
 		if (singleST) {
-			numWildtype = (a == m_wildtype[0]) + (b == m_wildtype[0]);
+			numWildtype = (AlleleUnsigned(a) == m_wildtype[0]) + (AlleleUnsigned(b) == m_wildtype[0]);
 		} else {
-			if (find(m_wildtype.begin(), m_wildtype.end(), a) != m_wildtype.end() )
+			if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(a)) != m_wildtype.end() )
 				numWildtype++;
 
-			if (find(m_wildtype.begin(), m_wildtype.end(), b) != m_wildtype.end() )
+			if (find(m_wildtype.begin(), m_wildtype.end(), AlleleUnsigned(b)) != m_wildtype.end() )
 				numWildtype++;
 		}
 
@@ -168,7 +168,7 @@ double pySelector::indFitness(individual * ind, ULONG gen)
 	UINT pEnd = ind->ploidy();
 	for (size_t i = 0, iEnd = m_loci.size(), j = 0; i < iEnd; ++i)
 		for (UINT p = 0; p < pEnd; ++p)
-			m_alleles[j++] = ind->allele(m_loci[i], p);
+			m_alleles[j++] = ToAllele(ind->allele(m_loci[i], p));
 
 	if (infoSize() > 1) {
 		if (m_info.size() + 1 != infoSize()) {

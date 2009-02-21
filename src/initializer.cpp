@@ -126,12 +126,12 @@ bool initByFreq::apply(population & pop)
 			if (!m_identicalInds || it == left) {
 				for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc)
 					for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-						it->setAllele(static_cast<Allele>(ws.get()), *loc, *p);
+						it->setAllele(ToAllele(ws.get()), *loc, *p);
 			} else {
 				// identical individuals
 				for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc)
 					for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
-						it->setAllele(left->allele(*loc, *p), *loc, *p);
+						it->setAllele(ToAllele(left->allele(*loc, *p)), *loc, *p);
 			}
 		}
 	}
