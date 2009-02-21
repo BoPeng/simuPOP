@@ -273,7 +273,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 		// and use them as proportions for the next generation.
 		for (size_t i = 0; i < nLoci; ++i) {
 			UINT locus = m_loci[i];
-			Allele allele = static_cast<Allele>(m_alleles[i]);
+			Allele allele = ToAllele(m_alleles[i]);
 
 			// determine the number alleles at each subpopulation.
 			vectorf curFreq(numSP, 0);
@@ -311,7 +311,7 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			for (size_t sp = 0; sp < numSP; ++sp) {
 #ifndef OPTIMIZED
 				UINT locus = m_loci[i];
-				Allele allele = m_alleles[i];
+				Allele allele = ToAllele(m_alleles[i]);
 				ULONG n = 0;
 				// go through all alleles
 				IndAlleleIterator a = const_cast<population &>(pop).alleleBegin(locus, sp);
@@ -422,8 +422,8 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 	for (size_t i = 0; i < nLoci; ++i) {
 		GenoIterator ptr = itBegin->genoBegin() + m_loci[i];
 		for (size_t j = 0; j < numOff * pop.ploidy(); ++j, ptr += totNumLoci) {
-			if (m_flip[i] ? (*ptr != static_cast<Allele>(m_alleles[i]))
-				: (*ptr == static_cast<Allele>(m_alleles[i]))) {
+			if (m_flip[i] ? (*ptr != ToAllele(m_alleles[i]))
+				: (*ptr == ToAllele(m_alleles[i]))) {
 				na[i]++;
 				hasAff = true;
 			}
