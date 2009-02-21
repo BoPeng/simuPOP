@@ -32,20 +32,8 @@
 #include "utility.h"
 #include "simuPOP_cfg.h"
 
-//
-// the following is required by a vc7.1 bug.
-#if  defined (_WIN32) || defined (__WIN32__)
-#  include <boost/archive/text_iarchive.hpp>
-#  include <boost/archive/text_oarchive.hpp>
-#  include <fstream>
-using std::ofstream;
-using std::ifstream;
-#endif                                                                                    // win32
-
-#include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
-#include <boost/serialization/tracking.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/split_free.hpp>
 
@@ -135,35 +123,6 @@ public:
 		return m_chromIndex[ch];
 	}
 
-
-#if  defined (_WIN32) || defined (__WIN32__)
-
-	// due to an weird compiling error fo vc7.1,
-	// if I do not specify these two functions, the ar & process
-	// will fail to compile.
-	// This will only be defined for win32 system
-	/// CPPONLY
-	void saveStru(string filename)
-	{
-		ofstream ofs(filename.c_str());
-		boost::archive::text_oarchive oa(ofs);
-
-		oa << *this;
-	}
-
-
-	/// CPPONLY
-	void loadStru(string filename)
-	{
-		ifstream ifs(filename.c_str());
-
-		boost::archive::text_iarchive ia(ifs);
-
-		ia >> *this;
-	}
-
-
-#endif                                                                    // win32
 
 	/// CPPONLY
 	void setChromTypes(const vectoru & chromTypes);
