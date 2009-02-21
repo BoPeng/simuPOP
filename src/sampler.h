@@ -60,8 +60,8 @@ namespace simuPOP {
 //                      unsigned minPedSize = 5,
 //                      unsigned minAffected = 0,
 //                      bool countOnly = false,
-//                      const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-//                      const string & saveAs = "", const string & saveAsExpr = "",
+//                      const string & name = "sample", const string & nameExpr = string(), UINT times = 1,
+//                      const string & saveAs = string(), const string & saveAsExpr = string(),
 //                      const string & format = "auto",
 //                      int stage = PostMating, int begin = 0, int end = -1,
 //                      int step = 1, const intList & at = intList(),
@@ -142,8 +142,8 @@ namespace simuPOP {
 //                      unsigned minPedSize = 5,
 //                      unsigned minAffected = 0,
 //                      bool countOnly = false,
-//                      const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-//                      const string & saveAs = "", const string & saveAsExpr = "",
+//                      const string & name = "sample", const string & nameExpr = string(), UINT times = 1,
+//                      const string & saveAs = string(), const string & saveAsExpr = string(),
 //                      const string & format = "auto",
 //                      int stage = PostMating, int begin = 0, int end = -1,
 //                      int step = 1, const intList & at = intList(),
@@ -231,8 +231,8 @@ namespace simuPOP {
 //     Please refer to class \c sample for other parameter descriptions.
 //   */
 //  pySample(PyObject * keep, int keepAncestralPops = -1,
-//           const string & name = "sample", const string & nameExpr = "", UINT times = 1,
-//           const string & saveAs = "", const string & saveAsExpr = "",   const string & format = "auto",
+//           const string & name = "sample", const string & nameExpr = string(), UINT times = 1,
+//           const string & saveAs = string(), const string & saveAsExpr = string(),   const string & format = "auto",
 //           int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 //           const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 //      : sample(name, nameExpr, times, saveAs, saveAsExpr, format,

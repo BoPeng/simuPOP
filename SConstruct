@@ -58,6 +58,9 @@ for i in range(len(vars)):
     if vars[i] is None:
         vars[i] = ""
 (cc, cxx, opt, basicflags, ccshared, ldshared, so_ext, lib_dest, python_inc_dir) = vars
+# C++ does not need this option, remove it to avoid annoying warning messages.
+opt = opt.replace('-Wstrict-prototypes', '')
+
 #
 # get compiler and hack options
 from distutils.ccompiler import new_compiler

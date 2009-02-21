@@ -976,7 +976,7 @@ public:
 	 *  <group>7-manipulate</group>
 	 */
 	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
-		const string & chromName = "", UINT chromType = Autosome);
+		const string & chromName = string(), UINT chromType = Autosome);
 
 	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
@@ -1581,7 +1581,7 @@ public:
 	 *  and return its result as a string. Optionally run statement( \c stmts ) first.
 	 *  <group>8-var</group>
 	 */
-	PyObject * evaluate(const string & expr = "", const string & stmts = "")
+	PyObject * evaluate(const string & expr = string(), const string & stmts = string())
 	{
 		return Expression(expr, stmts, m_vars.dict() ).evaluate();
 	}
@@ -1590,7 +1590,7 @@ public:
 	/** HIDDEN
 	 *  execute a statement (can be a multi-line string) in the population's local namespace
 	 */
-	void execute(const string & stmts = "")
+	void execute(const string & stmts = string())
 	{
 		Expression("", stmts, m_vars.dict() ).evaluate();
 	}

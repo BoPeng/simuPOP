@@ -74,7 +74,7 @@ public:
 	 *  mixed use of local and global variables is, however, strongly
 	 *  discouraged.
 	 */
-	pyEval(const string & expr = "", const string & stmts = "",
+	pyEval(const string & expr = string(), const string & stmts = string(),
 		const string & exposePop = string(), string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
@@ -136,7 +136,7 @@ public:
 	 *  more complex once. Note that exposed population variable will be
 	 *  removed after the statements are executed.
 	 */
-	pyExec(const string & stmts = "", const string & exposePop = string(),
+	pyExec(const string & stmts = string(), const string & exposePop = string(),
 		string output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
@@ -212,7 +212,7 @@ public:
 	 *  the module namespace of your script. However, using module level
 	 *  variables and functions in this operator is discouraged.
 	 */
-	infoEval(const string & expr = "", const string & stmts = "", bool usePopVars = false,
+	infoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
 		string output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
@@ -306,8 +306,8 @@ public:
 	 *  the module namespace of your script. However, using module level
 	 *  variables and functions in \e stmts is discouraged.
 	 */
-	infoExec(const string & stmts = "", bool usePopVars = false,  const string & exposeInd = string(),
-		string output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
+		string output = string(), int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields)
 	{
@@ -1713,7 +1713,7 @@ public:
 		bool hasPhase = false,
 		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
 		// regular parameters
-		string output = "",
+		string output = string(),
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr());
