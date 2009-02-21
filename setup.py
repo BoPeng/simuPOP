@@ -74,7 +74,7 @@ from distutils.core import setup, Extension
 
 def swig_version():
     ''' get the version of swig '''
-    fout = os.popen('swig -version')
+    fout = os.popen(SWIG + ' -version')
     #
     try:
         version = re.match('SWIG Version\s*(\d+).(\d+).(\d+).*', fout.readlines()[1]).groups()
@@ -483,8 +483,9 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['library_dirs'].append('win32')
     if os.name == 'nt':
         # msvc does not have O3 option, /GR is to fix a C4541 warning
-        # /EHsc is for VC exception handling
-        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc']
+        # /EHsc is for VC exception handling,
+		# /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
+        res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819']
     else:
         # force the use of static boost libraries because I do not
         # want to bundle boost libraries with simuPOP distributions.
@@ -496,7 +497,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['define_macros'].extend([('BOOST_ALL_NO_LIB', None),
             ('NO_ZLIB', 0), ('NO_BZIP' , 1),
 			# this one disables a lot of warnings about VC Checked iterators. Might not be a good idea.
-			('_SCL_SECURE_NO_WARNINGS', None)])
+			('_SCL_SECURE_NO_WARNINGS', None)
+			])
     res['undef_macros'] = []
     return res
 

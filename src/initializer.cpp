@@ -217,7 +217,7 @@ bool initByValue::apply(population & pop)
 					vectori & value = m_proportion.empty() ?
 					                  (m_value.size() == 1 ? m_value[0] : m_value[idx]) : m_value[ws.get()];
 					for (size_t i = 0; i < value.size(); ++i)
-						it->setAllele(value[i], loci[i], *p);
+						it->setAllele(ToAllele(value[i]), loci[i], *p);
 				}
 			} else {
 				// (m_value[0].size() == loci.size() * ploidy.size())
@@ -226,7 +226,7 @@ bool initByValue::apply(population & pop)
 				size_t i = 0;
 				for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
 					for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc, ++i)
-						it->setAllele(value[i], *loc, *p);
+						it->setAllele(ToAllele(value[i]), *loc, *p);
 			}
 		}
 	}
