@@ -487,9 +487,10 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
 		# /wd4819 is used to disable a warning for non-unicode character in boost/uitlity/enable_if.hpp
         res['extra_compile_args'] = ['/O2', '/GR', '/EHsc', '/wd4819']
     else:
-        # force the use of static boost libraries because I do not
-        # want to bundle boost libraries with simuPOP distributions.
         res['extra_compile_args'] = ['-O3', '-Wall']
+    # if Intel ICC is used, turn off remark 981
+    if os.getenv('CC', '').endswith('icc'):
+        res['extra_compile_args'].append('-wd981')
     # define_macros (deep copy)
     res['define_macros'] = [x for x in MACROS[modu]]
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
