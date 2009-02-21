@@ -494,7 +494,9 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     res['define_macros'].extend([('SIMUPOP_VER', SIMUPOP_VER), ('SIMUPOP_REV', SIMUPOP_REV)])
     if os.name == 'nt':
         res['define_macros'].extend([('BOOST_ALL_NO_LIB', None),
-            ('NO_ZLIB', 0), ('NO_BZIP' , 1)])
+            ('NO_ZLIB', 0), ('NO_BZIP' , 1),
+			# this one disables a lot of warnings about VC Checked iterators. Might not be a good idea.
+			('_SCL_SECURE_NO_WARNINGS', None)])
     res['undef_macros'] = []
     return res
 
