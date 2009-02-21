@@ -2470,7 +2470,7 @@ size_t BernulliTrials::trialNextSucc(size_t idx, size_t pos) const
     else {                                                                                  // last block?
         size_t rest = m_N - blk * WORDBIT;
         // mask out bits after rest
-        size_t tmp = *ptr & g_bitMask[rest];
+        tmp = *ptr & g_bitMask[rest];
         if (tmp == 0)
 			return npos;
         else

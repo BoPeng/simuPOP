@@ -146,7 +146,7 @@ enum ChromType {
 	Customized = 11,
 	Autosome = 12,
 	ChromosomeX = 13,
-	ChromosomeY = 14,
+	ChromosomeY = 14
 };
 
 // For numOffspring and gene conversion
@@ -171,7 +171,7 @@ enum SexMode {
 enum ConversionMode {
 	NoConversion = 41,
 	NumMarkers = 42,
-	TractLength = 43,
+	TractLength = 43
 };
 
 // For pedigree tracing
@@ -180,7 +180,7 @@ enum RelativeType {
 	Offspring = 51,         // All offspring with all spouses (if there are more than one spouse)
 	Spouse = 52,            // All spouses (with at least one offspring)
 	FullSibling = 53,       // Siblings who share two parents
-	Sibling = 54,           // Siblings who share at least one parent
+	Sibling = 54            // Siblings who share at least one parent
 };
 
 // For pedigree tracing
@@ -203,7 +203,7 @@ enum MigrMode {
 	ByIndInfo = 81,
 	ByProbability = 82,
 	ByProportion = 83,
-	ByCounts = 84,
+	ByCounts = 84
 };
 
 // iteratable and visible are two different concepts.
@@ -301,7 +301,7 @@ class Exception
 public:
 	/// constructor
 	/// \param msg error message
-	Exception(string msg) : m_msg(msg)
+	Exception(const string & msg) : m_msg(msg)
 	{
 	}
 
@@ -326,7 +326,7 @@ private:
 class StopIteration : public Exception
 {
 public:
-	StopIteration(string msg) : Exception(msg)
+	StopIteration(const string msg) : Exception(msg)
 	{
 	};
 };
@@ -336,7 +336,7 @@ public:
 class IndexError : public Exception
 {
 public:
-	IndexError(string msg) : Exception(msg)
+	IndexError(const string msg) : Exception(msg)
 	{
 	};
 };
@@ -345,7 +345,7 @@ public:
 class ValueError : public Exception
 {
 public:
-	ValueError(string msg) : Exception(msg)
+	ValueError(const string msg) : Exception(msg)
 	{
 	};
 };
@@ -354,7 +354,7 @@ public:
 class SystemError : public Exception
 {
 public:
-	SystemError(string msg) : Exception(msg)
+	SystemError(const string msg) : Exception(msg)
 	{
 	};
 };
@@ -363,7 +363,7 @@ public:
 class RuntimeError : public Exception
 {
 public:
-	RuntimeError(string msg) : Exception(msg)
+	RuntimeError(const string msg) : Exception(msg)
 	{
 	};
 };
@@ -373,7 +373,7 @@ public:
 class StopEvolution : public Exception
 {
 public:
-	StopEvolution(string msg) : Exception(msg)
+	StopEvolution(const string msg) : Exception(msg)
 	{
 	};
 };
@@ -397,18 +397,20 @@ public:
 // standard library
 #ifndef OPTIMIZED
 
+// toStr(__LINE__) would trigger a icc warning about using temporary variate in function.
+// a variable is therefore defined to hold __LINE__
 #  define DBG_ASSERT(cond, exception, message) \
     if (!(cond)) \
 	{ \
-		throw exception( \
-			toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
+		int line = __LINE__; \
+		throw exception(__FILE__ + string(":") +  toStr(line) + string(" ") + message); \
 	}
 
 #  define DBG_FAILIF(cond, exception, message) \
     if (cond) \
 	{ \
-		throw exception( \
-			toStr(__FILE__) + toStr(":") + toStr(__LINE__) + toStr(" ") + message); \
+		int line = __LINE__; \
+		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
 	}
 
 #  define DBG_WARNING(cond, message) \

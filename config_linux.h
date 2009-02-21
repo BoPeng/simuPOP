@@ -7,6 +7,9 @@
 /* define if the compiler supports const_cast<> */
 #define HAVE_CONST_CAST
 
+#define HAVE_DECL_LOG1P 0
+#define HAVE_DECL_ASINH 0
+
 /* Define to 1 if you have the declaration of `acosh', and to 0 if you don't.
  */
 #define HAVE_DECL_ACOSH 1
