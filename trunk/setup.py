@@ -490,7 +490,8 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
     else:
         res['extra_compile_args'] = ['-O3', '-Wall']
     # if Intel ICC is used, turn off remark 981
-    if os.getenv('CC', '').endswith('icc') or 'icc' in  get_config_var('CC'):
+    if os.getenv('CC', '').endswith('icc') or \
+        (get_config_var('CC') is not None and 'icc' in get_config_var('CC')):
         res['extra_compile_args'].append('-wd981')
     # define_macros (deep copy)
     res['define_macros'] = [x for x in MACROS[modu]]
