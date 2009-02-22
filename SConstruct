@@ -36,14 +36,6 @@ if not os.path.isfile('SConstruct'):
     print 'Please run scons from simuPOP source directory.'
     Exit(1)
 
-# Needs scons 0.96.93
-from SCons import __version__
-__version__ = __version__.split('d')[0]
-version = map(int, __version__.split('.'))
-if version[0] == 0 and version[1] <= 97:
-    print "Scons version > 0.97 is required."
-    Exit(1)
-
 # load all the module information from setup.py
 from setup import *
 
