@@ -923,7 +923,7 @@ Usage:
 
 Usage:
 
-    Expression(expr=\"\", stmts=\"\", locals=None)
+    Expression(expr=string, stmts=string, locals=None)
 
 "; 
 
@@ -941,9 +941,9 @@ Usage:
 
 %ignore simuPOP::Expression::empty();
 
-%ignore simuPOP::Expression::setExpr(const string &expr="");
+%ignore simuPOP::Expression::setExpr(const string &expr=string());
 
-%ignore simuPOP::Expression::setStmts(const string &stmts="");
+%ignore simuPOP::Expression::setStmts(const string &stmts=string());
 
 %ignore simuPOP::Expression::evaluate();
 
@@ -2597,9 +2597,9 @@ Note:
 
 Usage:
 
-    infoEval(expr=\"\", stmts=\"\", usePopVars=False, exposeInd=string,
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+    infoEval(expr=string, stmts=string, usePopVars=False,
+      exposeInd=string, output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -2698,8 +2698,8 @@ Details:
 
 Usage:
 
-    infoExec(stmts=\"\", usePopVars=False, exposeInd=string,
-      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+    infoExec(stmts=string, usePopVars=False, exposeInd=string,
+      output=string, stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=[], subPops=[], infoFields=[])
 
 Details:
@@ -2957,7 +2957,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], output=\"\", infoFields=[\"paternal_tag\",
+      rep=[], subPops=[], output=string, infoFields=[\"paternal_tag\",
       \"maternal_tag\"])
 
 Arguments:
@@ -5046,7 +5046,8 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
+      subPops=[], output=string, infoFields=[\"father_idx\",
+      \"mother_idx\"])
 
 "; 
 
@@ -5124,7 +5125,7 @@ Description:
 Usage:
 
     parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      output=\"\", infoFields=[\"parent_idx\"])
+      output=string, infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -6404,7 +6405,7 @@ Details:
 
 Usage:
 
-    x.addChrom(lociPos, lociNames=[], chromName=\"\",
+    x.addChrom(lociPos, lociNames=[], chromName=string,
       chromType=Autosome)
 
 Details:
@@ -6924,7 +6925,7 @@ Details:
 
 Usage:
 
-    pyEval(expr=\"\", stmts=\"\", exposePop=string, output=\">\",
+    pyEval(expr=string, stmts=string, exposePop=string, output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
 
@@ -7028,9 +7029,9 @@ Details:
 
 Usage:
 
-    pyExec(stmts=\"\", exposePop=string, output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+    pyExec(stmts=string, exposePop=string, output=\">\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -7376,8 +7377,8 @@ Details:
 
 Usage:
 
-    pyOutput(msg=\"\", output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+    pyOutput(msg=string, output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -7826,7 +7827,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=\"\", infoFields=[])
+      subPops=[], output=string, infoFields=[])
 
 Arguments:
 
@@ -8724,7 +8725,7 @@ Details:
 
 Usage:
 
-    savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
+    savePopulation(output=string, stage=PostMating, begin=0, end=-1,
       step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
@@ -9742,9 +9743,9 @@ Usage:
       LD_param={}, association=[], association_param={}, Fst=[],
       Fst_param={}, relGroups=[], relLoci=[], rel_param={},
       relBySubPop=False, relMethod=[], relMinScored=10,
-      hasPhase=False, midValues=False, output=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      hasPhase=False, midValues=False, output=string,
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -10779,8 +10780,8 @@ Description:
 
 Usage:
 
-    tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+    tagger(output=string, stage=DuringMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -10828,9 +10829,9 @@ Details:
 
 Usage:
 
-    terminateIf(condition=\"\", stopAll=False, message=\"\", output=\"\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    terminateIf(condition=string, stopAll=False, message=string,
+      output=string, stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -11260,7 +11261,7 @@ Details:
 
 Usage:
 
-    weightedSampler(rng, weight=[], fast=True)
+    weightedSampler(rng, weight=[])
 
 "; 
 
@@ -11487,7 +11488,7 @@ Description:
 
 Usage:
 
-    SetRNG(rng=\"\", seed=0)
+    SetRNG(rng=string, seed=0)
 
 "; 
 
@@ -11639,7 +11640,7 @@ Description:
 
 Usage:
 
-    setLogOutput(filename=\"\")
+    setLogOutput(filename=string)
 
 "; 
 

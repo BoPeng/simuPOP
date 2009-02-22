@@ -11355,23 +11355,13 @@ description
 \family default
  of parameter 
 \family typewriter
-pop 
+pop
 \family default
-demonstrates a special rule in the formatting of such description texts,
+ demonstrates a special rule in the formatting of such description texts,
  namely 
 \series bold
-lines with symbol 
-\family typewriter
-'|'
-\family default
- as the first non-space/tab character are outputed as a separate line without
- the leading 
-\family typewriter
-'|'
-\family default
- character
-\series default
-.
+lines with symbol '|' as the first non-space/tab character are outputed
+ as a separate line without the leading '|' character.
 \end_layout
 
 \begin_layout Standard
