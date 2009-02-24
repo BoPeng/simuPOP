@@ -82,7 +82,7 @@ _dbgCode = {
 }
 
 if not simuOptions['Quiet']:
-    print "simuPOP : Copyright (c) 2004-2008 Bo Peng"
+    print "simuPOP : Copyright (c) 2004-2009 Bo Peng"
     # compile date, compiler etc are macros that are replaced during compile time.
     if simuVer() == '9.9.9':
         # this is the subversion version of simuPOP
@@ -92,7 +92,7 @@ if not simuOptions['Quiet']:
         print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), ModuleDate(),
             ModulePyVersion() ))
     print ModuleCompiler()
-    print "Random Number Generator is set to %s with random seed 0x%08x" % (rng().name(), rng().seed())
+    print "Random Number Generator is set to %s with random seed 0x%08x." % (rng().name(), rng().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
     if Optimized():
         print "This is the optimized %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)
