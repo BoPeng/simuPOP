@@ -1,4 +1,28 @@
-# file SConstruct
+#
+# $File: SConstruct $
+# $LastChangedDate: 2009-02-24 15:50:38 -0600 (Tue, 24 Feb 2009) $
+# $Rev: 2491 $
+#
+# This file is part of simuPOP, a forward-time population genetics
+# simulation environment. Please visit http://simupop.sourceforge.net
+# for details.
+#
+# Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
 #
 # A scons based build system for simuPOP. It is better for development
 # usage because it is a real multi-thread, dependency-based build system
@@ -24,9 +48,6 @@
 #      default to all modules
 #      install: install specified targets
 #
-#
-#  BUG: This script does *not* work under solaris because a needed change in _wrap.cpp files.
-#       This change is handled in setup.py, but not in SConstruct
 #
 import os, sys
 
