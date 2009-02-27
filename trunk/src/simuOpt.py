@@ -952,15 +952,21 @@ class simuOpt:
     The ``simuOpt.simuOpt`` class defines a number of functions to collect,
     validate, and manipulate parameters using this parameter specification
     list.
+
+    As a shortcut to create a simuOpt object with a number of attributes,
+    a simuOpt object can be created with additional ``key=value`` pairs that
+    could be assessed as attributes. This is used to create a ``simuOpt``
+    object in which *parameters* are assigned directly.
     '''
-    def __init__(self, options=[], doc='', details=''):
+    def __init__(self, options=[], doc='', details='', **kwargs):
         '''Create a ``simuOpt`` oject using a list of parameter specification
         dictionaries *options*. Additional *doc* and *details* can be
         specified which will be displayed as script summary (on the top of
         a parameter input dialog) and script introduction (the first part of
-        a help message), respectively. Note that it is customary to use module
-        document (the first string object in a Python script) as *details*,
-        using parameter ``details=__doc__``.
+        a help message), respectively. Additional attributes could be assigned
+        to a ``simuOpt`` object as keyword arguments. Note that it is customary
+        to use module document (the first string object in a Python script) as
+        *details*, using parameter ``details=__doc__``.
         '''
         #
         # validate
@@ -977,6 +983,7 @@ class simuOpt:
         self.doc = doc
         self.details = details
         self.processedArgs = []
+        self.__dict__.update(kwargs)
 
     def __getattr__(self, name):
         'Return the value of a parameter as an attribute.'
