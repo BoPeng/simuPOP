@@ -986,7 +986,7 @@ class simuOpt:
         # allow the change of default parameter or addition of parameters
         # using additional key=value pairs.
         for key in kwargs.keys():
-            if self.dict.has_key():
+            if self.dict.has_key(key):
                 self.dict[key]['value'] = kwargs[key]
             else:
                 self.__dict__[key] = kwargs[key]

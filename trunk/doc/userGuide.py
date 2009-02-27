@@ -1800,7 +1800,20 @@ pars.rate = pars.rate * pars.rep
 # extract parameters as a dictionary or a list
 pars.asDict()
 pars.asList()
+# Default value of parameter rep is changed
+# additional attribute is added.
+par1 = simuOpt.simuOpt(options, # all parameters with default values
+    rep=50,                     # default value of rep is changed
+    additional=10               # derived parameters are added
+)
+# print all parameters except for derived ones.
+print par1.asDict()
+# All parameters are derived ...
+par2 = simuOpt.simuOpt(rep=50, pop='CEU', rate=[0.5])
+print par2.asDict()
+print par2.rep, par2.pop
 #end
+
 
 
 ################################################

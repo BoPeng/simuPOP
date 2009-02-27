@@ -11689,26 +11689,43 @@ lstparams "caption={Use the simuOpt object},firstline=68,label={useSimuOpt}"
 
 \end_layout
 
-\begin_layout Note
-Functions in a script that makes use of the 
-\family typewriter
-simuOpt
-\family default
- class may accept a 
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "useSimuOpt"
+
+\end_inset
+
+ also demonstrates how to create a 
 \family typewriter
 simuOpt
 \family default
  object directly.
- If you import such a script, you can usually create a 
+ This is usually used to call a function that uses a 
 \family typewriter
 simuOpt
 \family default
- object using the parameter specification list in that script.
- Alternatively, you can create an empty 
+ object as parameter.
+ In this case, you can create a 
 \family typewriter
 simuOpt
 \family default
- object and assign values to its attributes.
+ object with real parameters and change their values, or create a 
+\family typewriter
+simuOpt
+\family default
+ object with all derived parameters.
+ Although derived parameters are not listed as 
+\family typewriter
+simuOpt
+\family default
+ parameters (e.g.
+ not in 
+\family typewriter
+simuOpt.asDict()
+\family default
+), they can be used just like real parameters.
 \end_layout
 
 \begin_layout Section
