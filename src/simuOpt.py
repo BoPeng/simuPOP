@@ -983,7 +983,13 @@ class simuOpt:
         self.doc = doc
         self.details = details
         self.processedArgs = []
-        self.__dict__.update(kwargs)
+        # allow the change of default parameter or addition of parameters
+        # using additional key=value pairs.
+        for key in kwargs.keys():
+            if self.dict.has_key():
+                self.dict[key]['value'] = kwargs[key]
+            else:
+                self.__dict__[key] = kwargs[key]
 
     def __getattr__(self, name):
         'Return the value of a parameter as an attribute.'
