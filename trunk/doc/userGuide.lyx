@@ -11654,7 +11654,7 @@ par.rate
 par.rep
 \family default
 .
- Additional derived parameters can be added if needed.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -11674,8 +11674,6 @@ simuOpt.asList()
 simuOpt.asDict()
 \family default
 .
- Note that derived parameters are not returned because they are not listed
- in the parameter specification list.
 \end_layout
 
 \begin_layout Standard
@@ -11690,42 +11688,73 @@ lstparams "caption={Use the simuOpt object},firstline=68,label={useSimuOpt}"
 \end_layout
 
 \begin_layout Standard
-Example 
+It is easy to set 
+\series bold
+additional attributes
+\series default
+ to a 
+\family typewriter
+simuOpt
+\family default
+ object, using either 
+\family typewriter
+par.name = value
+\family default
+ statement or additional 
+\family typewriter
+name=value
+\family default
+ pairs in the constructor of a 
+\family typewriter
+simuOpt
+\family default
+ object.
+ These attributes are not considered as parameters of an 
+\family typewriter
+simuOpt
+\family default
+ object (e.g.
+ they are not returned by function 
+\family typewriter
+simuOpt.asDict()
+\family default
+) but could be used just like regular parameters.
+ Note that the same operations for 
+\family typewriter
+simuOpt
+\family default
+ parameters change the value of these parameters.
+\end_layout
+
+\begin_layout Standard
+Additional attributes can be used to create a 
+\family typewriter
+simuOpt
+\family default
+ object without user interaction.
+ For example, objects 
+\family typewriter
+par1
+\family default
+ and 
+\family typewriter
+par2
+\family default
+ in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "useSimuOpt"
 
 \end_inset
 
- also demonstrates how to create a 
+ are created easily with needed attributes.
+ They can be passed to functions where a 
 \family typewriter
 simuOpt
 \family default
- object directly.
- This is usually used to call a function that uses a 
-\family typewriter
-simuOpt
-\family default
- object as parameter.
- In this case, you can create a 
-\family typewriter
-simuOpt
-\family default
- object with real parameters and change their values, or create a 
-\family typewriter
-simuOpt
-\family default
- object with all derived parameters.
- Although derived parameters are not listed as 
-\family typewriter
-simuOpt
-\family default
- parameters (e.g.
- not in 
-\family typewriter
-simuOpt.asDict()
-\family default
-), they can be used just like real parameters.
+ object is needed, although some of the attributes are not real parameters
+ (in the sense that they are not created by a parameter specification dictionary
+ and will not be used to handle user input).
 \end_layout
 
 \begin_layout Section
