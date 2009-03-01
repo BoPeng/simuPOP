@@ -1487,6 +1487,8 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 		return;
 
 	vectorlu kept = keep;
+	// kept must be in order so that genotypes could be copied correctly
+	std::sort(kept.begin(), kept.end());
 	UINT oldTotNumLoci = totNumLoci();
 	// new geno structure is in effective now!
 	setGenoStructure(gsRemoveLoci(loci, kept));
@@ -1507,6 +1509,7 @@ void population::removeLoci(const uintList & lociList, const uintList & keepList
 			for (UINT p = 0; p < pEnd; ++p) {
 				vectorlu::iterator loc = kept.begin();
 				for (; loc != kept.end(); ++loc)
+					// this line needs ordered kept array
 					*(newPtr++) = oldPtr[*loc];
 				oldPtr += oldTotNumLoci;
 			}
