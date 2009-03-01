@@ -456,6 +456,7 @@ class TestPopulation(unittest.TestCase):
 
     def testRemoveLoci(self):
         'Testing population::removeLoci(loci=[], keep=[])'
+        # Fixme: test loci, and keep, and test unordered parameters
         pop = self.getPop(size=[1, 2], loci=[2, 3, 1], ancGen=5)
         pop1 = pop.clone()
         pop.removeLoci(2)
