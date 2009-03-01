@@ -11457,7 +11457,7 @@ the simuPOP reference manual
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Get prameters using function getParam},firstline=37,keywordstyle={\\small\\ttfamily},label={getParam},lastline=67"
+lstparams "caption={Get prameters using function getParam},firstline=36,keywordstyle={\\small\\ttfamily},label={getParam},lastline=67"
 
 \end_inset
 
