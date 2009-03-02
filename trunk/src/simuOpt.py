@@ -287,8 +287,17 @@ def _prettyDesc(text, indent=''):
             blocks[-1] += ' ' + txt
     txt = []
     for blk in blocks:
-        if blk.startswith('|'):
-            txt.append(indent + blk[1:])
+        if blk == '|':
+            txt.append('')
+        elif blk.startswith('|'):
+            blk_indent = ''
+            for c in blk[1:]:
+                if c not in [' ', '\t']:
+                    break
+                blk_indent += c
+            txt.extend(textwrap.wrap(blk[1:], width=80,
+                initial_indent=indent + blk_indent, # keep spaces after | character
+                subsequent_indent=indent))
         else:
             txt.extend(textwrap.wrap(blk, width=80, initial_indent=indent,
                 subsequent_indent=indent))
@@ -980,6 +989,10 @@ class simuOpt:
                 raise exceptions.ValueError('An option specification dictionary is expected')
             self.addOption(**opt)
         #
+        if type(doc) != type(''):
+            raise exceptions.ValueError('Parameter doc must be a string.')
+        if type(details) != type(''):
+            raise exceptions.ValueError('Parameter details must be a string.')
         self.doc = doc
         self.details = details
         self.processedArgs = []
