@@ -401,6 +401,7 @@ class TestPopulation(unittest.TestCase):
                     self.assertEqual(ind.genotype(), [1]*(pop.totNumLoci()*pop.ploidy()))
                 else:
                     self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))
+        # FIXME: test extraction of loci and ancestral generations
 
     def testMergeSubPops(self):
         'Testing population::mergeSubPops(subpops=[])'
@@ -445,6 +446,8 @@ class TestPopulation(unittest.TestCase):
         'Testing population::removeIndividuals(inds)'
         pop = self.getPop(size =[20, 100, 30])
         pop1 = pop.clone()
+        # FIXME: test remove multiple individuals from multiple subpopulations,
+        # which may not be in order
         pop.removeIndividuals([15])
         self.assertEqual(pop.subPopSizes(), (19, 100, 30))
         for idx in range(15):
@@ -459,6 +462,8 @@ class TestPopulation(unittest.TestCase):
         # Fixme: test loci, and keep, and test unordered parameters
         pop = self.getPop(size=[1, 2], loci=[2, 3, 1], ancGen=5)
         pop1 = pop.clone()
+        # FIXME: test remove multiple loci from multiple chromosomes,
+        # which may not be in order
         pop.removeLoci(2)
         for gen in range(pop.ancestralGens(), -1, -1):
             pop.useAncestralGen(gen)
