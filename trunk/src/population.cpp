@@ -1048,6 +1048,19 @@ void population::addIndFrom(const population & pop)
 		for (m_subPopIndex[0] = 0; j <= numSubPop(); ++j)
 			m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
 	}
+    if (!m_subPopNames.empty() && pop.m_subPopNames.empty()) {
+        for (size_t i = 0; i < pop.numSubPop(); ++i)
+            m_subPopNames.push_back(UnnamedSubPop);
+    } else if (m_subPopNames.empty() && !pop.m_subPopNames.empty()) {
+        m_subPopNames.resize(numSubPop(), UnnamedSubPop);
+        m_subPopNames.insert(m_subPopNames.end(),
+            pop.m_subPopNames.begin(), pop.m_subPopNames.end());
+    } else {
+        m_subPopNames.insert(m_subPopNames.end(),
+            pop.m_subPopNames.begin(), pop.m_subPopNames.end());
+    }
+	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
+		"subpopulation names can either be empty, or be specified for all subpopulations.");
 }
 
 
