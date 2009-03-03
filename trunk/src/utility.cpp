@@ -2207,6 +2207,9 @@ BernulliTrials::BernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
 
 	// initialize the table
 	for (size_t i = 0; i < probSize(); ++i) {
+		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
+			"Probability for a Bernulli trail should be between 0 and 1 (value " 
+			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
 		m_table[i].resize(trials);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
@@ -2231,6 +2234,9 @@ void BernulliTrials::setParameter(const vectorf & prob, ULONG trials)
 	DBG_FAILIF(prob.empty(), ValueError, "probability table can not be empty.");
 
 	for (size_t i = 0; i < probSize(); ++i) {
+		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
+			"Probability for a Bernulli trail should be between 0 and 1 (value " 
+			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
 		m_table[i].resize(trials);
 		m_pointer[i] = BITPTR(m_table[i].begin());
 	}
