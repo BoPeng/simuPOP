@@ -4,6 +4,7 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - BUG: Fix a bug with population::removeLoci when given keep loci are not in order.
   - NEW: Prevent the use of greater than one probabilities in Bernulli trails.
   - NEW: Add a Tkinter implementation for simuProgress.
+  - BUG: Fix a bug where subpopulation names of merged population are not properly merged.
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009
   - NEW: Allow populations in a simulator to have different genotype structure. 
