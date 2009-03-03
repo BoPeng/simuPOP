@@ -803,7 +803,8 @@ class _wxParamDialog(_paramDialog):
             gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
             # use different entry method for different types
             if opt.has_key('chooseOneOf'):    # single choice
-                self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g, choices = opt['chooseOneOf'])
+                self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g,
+                    choices = [str(x) for x in opt['chooseOneOf']])
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(_prettyDesc(opt['description']))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
@@ -817,7 +818,7 @@ class _wxParamDialog(_paramDialog):
             elif opt.has_key('chooseFrom'):    # multiple choice
                 # the height is a little bit too much...
                 self.entryWidgets[g] = wx.CheckListBox(parent=self.dlg, id=g,
-                    choices = opt['chooseFrom'])
+                    choices = [str(x) for x in opt['chooseFrom']])
                 if opt.has_key('description'):
                     self.entryWidgets[g].SetToolTipString(_prettyDesc(opt['description']))
                 if value is not None:
