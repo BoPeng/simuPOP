@@ -847,6 +847,223 @@ def SaveCSV(pop, output='', outputExpr='', fields=['sex', 'affection'],
     out.close()
 
 
+class _baseProgressBar:
+    def __init__(self, message, totalCount):
+        '''
+        message
+            Title of the progress bar
+
+        totalCount
+            Total expected steps.
+
+        done
+            Message displayed when the job is finished.
+        '''
+        self.message = message
+        self.totalCount = totalCount
+        self.percent = 0
+        self.completed = False
+
+    def update(self, count):
+        '''
+        Update the progreebar.
+        '''
+        count = min(count, self.totalCount)
+        self.progress = int(round(100*count/self.totalCount))
+        if self.progress <= self.percent:
+            return False
+        else:
+            return True
+
+    def done(self):
+        '''
+        Finish progressbar, print 'done' message.
+        '''
+        if self.completed:
+            return False
+        else:
+            self.completed = True
+            return True
+
+class _textProgressBar(_baseProgressBar):
+    def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n'):
+        '''
+        message
+            Title of the progress bar
+
+        totalCount
+            Total expected steps.
+
+        progressChar
+            Character to be displayed for each progress.
+
+        block
+            display progress at which interval (in terms of percentage)?
+
+        done
+            Message displayed when the job is finished.
+        '''
+        _baseProgressBar.__init__(self, message, totalCount)
+        self.percent = 0
+        self.progressChar = progressChar
+        self.block = block
+        self.doneMsg = done
+        sys.stdout.write(message)
+        sys.stdout.flush()
+
+    def update(self, count):
+        '''
+        Update the text progreebar.
+        '''
+        if not _baseProgressBar.update(self, count):
+            return
+        for p in range(self.percent + 1, self.progress + 1):
+            if p == 100:
+                self.done()
+            elif p % 10 == 0:
+                sys.stdout.write(str(p/10))
+            elif p % self.block == 0:
+                sys.stdout.write(self.progressChar)
+        sys.stdout.flush()
+        self.percent = self.progress
+        if self.percent == 100:
+            self.done()
+
+    def done(self):
+        '''
+        Finish progressbar, print 'done' message.
+        '''
+        if not _baseProgressBar.done(self):
+            return
+        sys.stdout.write(self.doneMsg)
+        sys.stdout.flush()
+
+
+class _tkProgressBar(_baseProgressBar):
+    def __init__(self, message, totalCount):
+        '''
+        totalCount
+            Total expected steps.
+
+        progressChar
+            Character to be displayed for each progress.
+
+        block
+            display progress at which interval (in terms of percentage)?
+
+        done
+            Message displayed when the job is finished.
+        '''
+        _baseProgressBar.__init__(self, message, totalCount)
+        import Tkinter as tk
+        self.width = 300
+        self.height = 30
+        self.max = 100
+        self.fillColor = 'blue'
+        self.labelColor = 'black'
+        self.label = 'Progress'
+        #
+        self.app = tk.Tk()
+        self.app.title(self.label)
+        self.frame = tk.Frame(self.app, bd=0)
+        self.canvas = tk.Canvas(self.frame, bd=0, width=self.width+40,
+            height = self.height + 70, highlightthickness=0)
+        self.label = self.canvas.create_text(20, 20, 
+            text='', anchor="w", fill=self.labelColor, font=('Verdana', 10))
+        self.scale = self.canvas.create_rectangle(
+            20, 50, self.width + 20, 50 + self.height, fill=self.fillColor)
+        self.rect = self.canvas.create_rectangle(
+            20, 50, self.width + 20, 50 + self.height)
+        self.canvas.pack(side='top', fill='x', expand='yes', padx=0)
+        self.update(0)
+        self.frame.pack(padx=0, pady=0)
+
+    def update(self, count):
+        '''
+        Update the progreebar.
+        '''
+        if not _baseProgressBar.update(self, count):
+            return
+        #
+        self.canvas.coords(self.scale, 20, 50,
+            20 + self.progress * 1.0 / self.max * self.width, 50 + self.height)
+        # Now update the colors
+        self.canvas.itemconfig(self.scale, fill=self.fillColor)
+        self.canvas.itemconfig(self.label, fill=self.labelColor)
+        # And update the label
+        if self.progress > 0:
+            self.canvas.itemconfig(self.label, text=self.message + "\n%d%% completed." % self.progress)
+        else:
+            self.canvas.itemconfig(self.label, text=self.message)
+        self.canvas.update_idletasks()
+        self.app.update()
+        #
+        self.percent = self.progress
+        if self.percent == 100:
+            self.done()
+
+    def done(self):
+        '''
+        Finish progressbar, print 'done' message.
+        '''
+        if not _baseProgressBar.done(self):
+            return
+        self.app.destroy()
+        del self.app
+
+
+class _wxProgressBar(_baseProgressBar):
+    def __init__(self, message, totalCount):
+        '''
+        totalCount
+            Total expected steps.
+
+        progressChar
+            Character to be displayed for each progress.
+
+        block
+            display progress at which interval (in terms of percentage)?
+
+        done
+            Message displayed when the job is finished.
+        '''
+        _baseProgressBar.__init__(self, message, totalCount)
+        import wx
+        self.app = wx.PySimpleApp(0)
+        self.dialog = wx.ProgressDialog(
+            'Progress', self.message + '\n', self.totalCount,
+            style = \
+                # wx.PD_CAN_ABORT | \
+                # wx.PD_CAN_SKIP | \
+                wx.PD_ELAPSED_TIME | \
+                # wx.PD_ESTIMATED_TIME | \
+                wx.PD_AUTO_HIDE | \
+                wx.PD_REMAINING_TIME
+            )
+        self.dialog.Update(0)
+
+    def update(self, count):
+        '''
+        Update the progreebar.
+        '''
+        if not _baseProgressBar.update(self, count):
+            return
+        self.dialog.Update(count, self.message + "\n%d%% completed." % self.progress)
+        self.percent = self.progress
+        if self.percent == 100:
+            self.done()
+
+    def done(self):
+        '''
+        Finish progressbar, print 'done' message.
+        '''
+        if not _baseProgressBar.done(self):
+            return
+        self.dialog.Destroy()
+        del self.app
+
+
+
 class simuProgress:
     '''
     This class defines a very simple text based progress bar. It will display a
@@ -864,6 +1081,9 @@ class simuProgress:
     '''
     def __init__(self, message, totalCount, progressChar='.', block=2, done=' Done.\n', gui=None):
         '''
+        message
+            Title of the progress bar.
+
         totalCount
             Total expected steps.
 
@@ -876,77 +1096,38 @@ class simuProgress:
         done
             Message displayed when the job is finished.
         '''
-        self.message = message
-        self.totalCount = totalCount
-        self.percent = 0
-        self.progressChar = progressChar
-        self.block = block
-        self.doneMsg = done
-        self.completed = False
         if gui is None:
             self.gui = simuOptions['GUI']
         else:
             self.gui = gui
-        self.gui = self.gui in ['wxPython', True]
-        if self.gui:
+        if self.gui in ['wxPython', True]:
             try:
                 import wx
             except ImportError:
+                self.gui = 'Tkinter'
+        if self.gui == 'Tkinter':
+            try:
+                import Tkinter
+            except ImportError:
                 self.gui = False
-        if self.gui:
-            self.app = wx.PySimpleApp(0)
-            self.dialog = wx.ProgressDialog(
-                'Progress', self.message + '\n', self.totalCount,
-                style = \
-                    # wx.PD_CAN_ABORT | \
-                    # wx.PD_CAN_SKIP | \
-                    wx.PD_ELAPSED_TIME | \
-                    # wx.PD_ESTIMATED_TIME | \
-                    wx.PD_AUTO_HIDE | \
-                    wx.PD_REMAINING_TIME
-                )
-            self.dialog.Update(0)
+        if self.gui == 'wxPython':
+            self.progressBar = _wxProgressBar(message, totalCount)
+        elif self.gui == 'Tkinter':
+            self.progressBar = _tkProgressBar(message, totalCount)
         else:
-            sys.stdout.write(message)
-            sys.stdout.flush()
+            self.progressBar = _textProgressBar(message, totalCount, progressChar, block, done)
 
     def update(self, count):
         '''
         Update the progreebar.
         '''
-        #
-        count = min(count, self.totalCount)
-        completed = int(round(100*count/self.totalCount))
-        if completed <= self.percent:
-            return
-        if self.gui:
-            self.dialog.Update(count, self.message + "\n%d%% completed." % completed)
-            if completed == 100:
-                self.done()
-        else:
-            for p in range(self.percent + 1, completed + 1):
-                if p == 100:
-                    self.done()
-                elif p % 10 == 0:
-                    sys.stdout.write(str(p/10))
-                elif p % self.block == 0:
-                    sys.stdout.write(self.progressChar)
-            sys.stdout.flush()
-        self.percent = completed
+        self.progressBar.update(count)
 
     def done(self):
         '''
         Finish progressbar, print 'done' message.
         '''
-        if self.completed:
-            return
-        if self.gui:
-            self.dialog.Destroy()
-            del self.app
-        else:
-            sys.stdout.write(self.doneMsg)
-            sys.stdout.flush()
-        self.completed = True
+        self.progressBar.done()
 
 
 class pySubset(pyOperator):
