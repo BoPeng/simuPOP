@@ -4711,6 +4711,11 @@ expr
 , ....
 \end_layout
 
+\begin_layout Itemize
+A Python function.
+ All output will be sent to this function for processing.
+\end_layout
+
 \begin_layout Standard
 Because a table output such as the one in Example 
 \begin_inset CommandInset ref
@@ -4817,6 +4822,45 @@ rep
 LatexCommand lstinputlisting
 filename "log/output.log"
 lstparams "caption={Use the output and outputExpr parameters},label={output}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "outputFunc"
+
+\end_inset
+
+ demonstrates an advanced usage of the 
+\family typewriter
+output
+\family default
+ parameter.
+ In this example, a logging object is created to write to a logfile as well
+ as the standard output.
+ The 
+\family typewriter
+info
+\family default
+ and 
+\family typewriter
+debug
+\family default
+ functions of this object are assigned to two operators so that their outputs
+ can be sent to both a logfile and to the console window.
+ One of the advantages of using a logging mechanism is that debugging output
+ could be suppressed easily by adjusting the logging level of the logging
+ object.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/outputFunc.log"
+lstparams "caption={Output to a Python function},label={outputFunc}"
 
 \end_inset
 

@@ -57,7 +57,7 @@ public:
 	 *  written to it.
 	 */
 	terminateIf(string condition = string(), bool stopAll = false, string message = string(),
-		string output = string(), int stage = PostMating, int begin = 0, int end = -1,
+		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1,
 		int step = 1, const intList & at = intList(), const repList & rep = repList(),
 		const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),

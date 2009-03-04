@@ -1776,33 +1776,20 @@ OstreamManager & ostreamManager()
 	return g_ostreams;
 }
 
-
 // Stream provider
 
 // all flags will be cleared to 0
-StreamProvider::StreamProvider(const string & output)
-	: m_filename(output), m_filenameExpr(), m_flags(0), m_filePtr(NULL)
+StreamProvider::StreamProvider(const string & output, const pyFunc & func)
+	: m_filename(output), m_filenameExpr(), m_func(func), m_flags(0), m_filePtr(NULL)
 {
 	if (!m_filename.empty() && m_filename[0] == '!') {
 		m_filenameExpr.setExpr(m_filename.substr(1));
 		m_filename.clear();
-	} else
+	} else if (m_func.isValid()) {
+		SETFLAG(m_flags, m_flagUseFunc);
+		SETFLAG(m_flags, m_flagCloseAfterUse);
+    } else
 		analyzeOutputString(m_filename);
-}
-
-
-void StreamProvider::setOutput(const string & output)
-{
-	if (!output.empty() && output[0] == '!') {
-		m_filename = string();
-		m_filenameExpr.setExpr(output.substr(1));
-	} else {
-		m_filename = output;
-		m_filenameExpr = Expression();
-	}
-
-	if (m_filenameExpr.empty())
-		analyzeOutputString(output);
 }
 
 
@@ -1811,12 +1798,17 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 	DBG_FAILIF(readable && (ISSETFLAG(m_flags, m_flagNoOutput) || ISSETFLAG(m_flags, m_flagUseDefault)),
 		SystemError, "A readable file is requested but this Opertor uses cout or cnull.");
 
-	if (ISSETFLAG(m_flags,  m_flagNoOutput) )
+	if (ISSETFLAG(m_flags, m_flagNoOutput))
 		return cnull();
 
 	// if using cout, return it.
-	if (ISSETFLAG(m_flags,  m_flagUseDefault) )
+	if (ISSETFLAG(m_flags, m_flagUseDefault))
 		return cout;
+
+	if (ISSETFLAG(m_flags, m_flagUseFunc)) {
+		m_filePtr = new ostringstream();
+		return *m_filePtr;
+	}
 
 	// if use and close type
 	string filename;
@@ -1882,11 +1874,18 @@ ostream & StreamProvider::getOstream(PyObject * dict, bool readable)
 // close ostream and delete ostream pointer.. if it is a ofstream.
 void StreamProvider::closeOstream()
 {
-	if (ISSETFLAG(m_flags, m_flagCloseAfterUse) ) {
-		if (ISSETFLAG(m_flags, m_flagReadable) )
-			static_cast<fstream *>(m_filePtr)->close();
+	if (ISSETFLAG(m_flags, m_flagCloseAfterUse)) {
+		if (ISSETFLAG(m_flags, m_flagUseFunc)) {
+			DBG_ASSERT(m_func.isValid(), SystemError,
+				"Passed function object is invalid");
+			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
+			PyObject * arglist = Py_BuildValue("(s)", str.c_str());
+			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
+			Py_DECREF(pyResult);
+		} else if (ISSETFLAG(m_flags, m_flagReadable))
+			dynamic_cast<fstream *>(m_filePtr)->close();
 		else
-			static_cast<ofstream *>(m_filePtr)->close();
+			dynamic_cast<ofstream *>(m_filePtr)->close();
 		delete m_filePtr;
 	}
 }
