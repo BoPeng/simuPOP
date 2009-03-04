@@ -802,11 +802,13 @@ class _wxParamDialog(_paramDialog):
             self.labelWidgets[g] = wx.StaticText(parent=self.dlg, id=-1, label=opt['label'])
             gridBox[colIndex].Add(self.labelWidgets[g], 0, wx.ALIGN_LEFT )
             # use different entry method for different types
+            if opt.has_key('description'):
+                tooltip = _prettyDesc(opt['description'])
+            else:
+                tooltip = 'arg: ' + opt['longarg'].rstrip('=')
             if opt.has_key('chooseOneOf'):    # single choice
                 self.entryWidgets[g] = wx.Choice(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseOneOf']])
-                if opt.has_key('description'):
-                    self.entryWidgets[g].SetToolTipString(_prettyDesc(opt['description']))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
                 # if an value is given through command line argument or configuration file
                 if value is not None:
@@ -819,8 +821,6 @@ class _wxParamDialog(_paramDialog):
                 # the height is a little bit too much...
                 self.entryWidgets[g] = wx.CheckListBox(parent=self.dlg, id=g,
                     choices = [str(x) for x in opt['chooseFrom']])
-                if opt.has_key('description'):
-                    self.entryWidgets[g].SetToolTipString(_prettyDesc(opt['description']))
                 if value is not None:
                     if type(value) in [types.ListType, types.TupleType]:
                         for val in value:
@@ -832,8 +832,6 @@ class _wxParamDialog(_paramDialog):
             elif (opt.has_key('arg') and opt['arg'][-1] != ':') or \
                  (opt.has_key('longarg') and opt['longarg'][-1] != '='):  # true or false
                 self.entryWidgets[g] = wx.CheckBox(parent=self.dlg, id=g, label = 'Yes / No')
-                if opt.has_key('description'):
-                    self.entryWidgets[g].SetToolTipString(_prettyDesc(opt['description']))
                 if value is not None:
                     self.entryWidgets[g].SetValue(value)
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND)
@@ -844,10 +842,9 @@ class _wxParamDialog(_paramDialog):
                 if value is not None:
                     txt = _prettyString(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
-                if opt.has_key('description'):
-                    self.entryWidgets[g].SetToolTipString(_prettyDesc(opt['description']))
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
                 rowIndex += 1
+            self.entryWidgets[g].SetToolTipString(tooltip)
         # help button
         buttonBox = wx.GridSizer(cols=3)
         self.addButton(wx.ID_HELP, 'Help', self.onHelp, self.dlg, buttonBox)
