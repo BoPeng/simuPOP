@@ -147,7 +147,9 @@ Details:
     considered as a Python expression. When an operator is applied to
     a population, this expression will be evaluated within the
     population's local namespace to obtain a population specific
-    output specification.
+    output specification. As an advanced feature, a Python function
+    can be assigned to this parameter. Output strings will be sent to
+    this function for processing.
 
 "; 
 
@@ -170,7 +172,8 @@ Arguments:
                     operator is written, which can be '' (no output),
                     '>' (standard output), 'filename' prefixed by one
                     or more '>', or an Python expression prefixed by
-                    an exclamation mark ('!expr').
+                    an exclamation mark ('!expr'). Alternatively, a
+                    Python function can be given to handle outputs.
     stage:          Stage(s) of a life cycle at which an operator will
                     be applied. It can be PreMating, DuringMating,
                     PostMating or any of their combined stages
@@ -2699,7 +2702,7 @@ Details:
 Usage:
 
     infoExec(stmts=string, usePopVars=False, exposeInd=string,
-      output=string, stage=PostMating, begin=0, end=-1, step=1, at=[],
+      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=[], subPops=[], infoFields=[])
 
 Details:
@@ -2957,7 +2960,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], output=string, infoFields=[\"paternal_tag\",
+      rep=[], subPops=[], output=\"\", infoFields=[\"paternal_tag\",
       \"maternal_tag\"])
 
 Arguments:
@@ -5046,8 +5049,7 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=string, infoFields=[\"father_idx\",
-      \"mother_idx\"])
+      subPops=[], output=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
 
 "; 
 
@@ -5125,7 +5127,7 @@ Description:
 Usage:
 
     parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      output=string, infoFields=[\"parent_idx\"])
+      output=\"\", infoFields=[\"parent_idx\"])
 
 "; 
 
@@ -7827,7 +7829,7 @@ Description:
 Usage:
 
     pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=string, infoFields=[])
+      subPops=[], output=\"\", infoFields=[])
 
 Arguments:
 
@@ -8725,7 +8727,7 @@ Details:
 
 Usage:
 
-    savePopulation(output=string, stage=PostMating, begin=0, end=-1,
+    savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
       step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
@@ -9743,9 +9745,9 @@ Usage:
       LD_param={}, association=[], association_param={}, Fst=[],
       Fst_param={}, relGroups=[], relLoci=[], rel_param={},
       relBySubPop=False, relMethod=[], relMinScored=10,
-      hasPhase=False, midValues=False, output=string,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      hasPhase=False, midValues=False, output=\"\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
 Arguments:
 
@@ -10664,7 +10666,7 @@ Usage:
 
 %ignore simuPOP::StreamProvider;
 
-%ignore simuPOP::StreamProvider::StreamProvider(const string &output);
+%ignore simuPOP::StreamProvider::StreamProvider(const string &output, const pyFunc &func);
 
 %feature("docstring") simuPOP::StreamProvider::~StreamProvider "
 
@@ -10674,13 +10676,47 @@ Usage:
 
 "; 
 
-%ignore simuPOP::StreamProvider::setOutput(const string &output);
-
 %ignore simuPOP::StreamProvider::noOutput();
 
 %ignore simuPOP::StreamProvider::getOstream(PyObject *dict=NULL, bool readable=false);
 
 %ignore simuPOP::StreamProvider::closeOstream();
+
+%feature("docstring") simuPOP::stringFunc "
+
+"; 
+
+%feature("docstring") simuPOP::stringFunc::stringFunc "
+
+Usage:
+
+    stringFunc(value)
+
+"; 
+
+%feature("docstring") simuPOP::stringFunc::value "
+
+Usage:
+
+    x.value()
+
+"; 
+
+%feature("docstring") simuPOP::stringFunc::func "
+
+Usage:
+
+    x.func()
+
+"; 
+
+%feature("docstring") simuPOP::stringFunc::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
 
 %feature("docstring") simuPOP::subPopList "
 
@@ -10780,8 +10816,8 @@ Description:
 
 Usage:
 
-    tagger(output=string, stage=DuringMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+    tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -10830,7 +10866,7 @@ Details:
 Usage:
 
     terminateIf(condition=string, stopAll=False, message=string,
-      output=string, stage=PostMating, begin=0, end=-1, step=1, at=[],
+      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
       rep=[], subPops=[], infoFields=[])
 
 Details:

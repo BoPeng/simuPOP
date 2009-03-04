@@ -240,7 +240,7 @@ stat::stat(
 	bool hasPhase,
 	bool midValues,                                                 // this parameter will be removed after all _param parameter is given.
 	// regular parameters
-	string output,
+	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),

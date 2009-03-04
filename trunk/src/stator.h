@@ -77,7 +77,7 @@ public:
 	 *  discouraged.
 	 */
 	pyEval(const string & expr = string(), const string & stmts = string(),
-		const string & exposePop = string(), string output = ">",
+		const string & exposePop = string(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
@@ -139,7 +139,7 @@ public:
 	 *  removed after the statements are executed.
 	 */
 	pyExec(const string & stmts = string(), const string & exposePop = string(),
-		string output = ">",
+		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: pyEval("", stmts, exposePop, "", stage, begin, end, step, at, rep, subPops, infoFields)
@@ -216,7 +216,7 @@ public:
 	 */
 	infoEval(const string & expr = string(), const string & stmts = string(), bool usePopVars = false,
 		const string & exposeInd = string(),
-		string output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const stringFunc & output = ">", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_expr(expr, stmts), m_usePopVars(usePopVars), m_exposeInd(exposeInd), m_dict(NULL)
@@ -309,7 +309,7 @@ public:
 	 *  variables and functions in \e stmts is discouraged.
 	 */
 	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
-		string output = string(), int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields)
 	{
@@ -1715,7 +1715,7 @@ public:
 		bool hasPhase = false,
 		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
 		// regular parameters
-		string output = string(),
+		const stringFunc & output = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr());

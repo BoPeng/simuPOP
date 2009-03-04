@@ -26,7 +26,7 @@
 
 namespace simuPOP {
 
-void pyOutput::apply(population & pop)
+bool pyOutput::apply(population & pop)
 {
 	ostream & out = this->getOstream(pop.dict());
 	out << m_string;

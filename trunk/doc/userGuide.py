@@ -477,7 +477,6 @@ simu.evolve(
 
 
 #file log/output.log
-from simuPOP import *
 simu = simulator(population(size=1000, loci=[2]), randomMating(), rep=3)
 simu.evolve(
     preOps = [initByValue([1, 2, 2, 1])],  
@@ -496,8 +495,41 @@ print open('R2.txt').read()    # Only the last write operation succeed.
 print open('LD_2.txt').read()  # Each replicate writes to a different file.
 #end
 
+#file log/outputFunc.log
+import logging
+# logging to a file simulation.log, with detailed debug information
+logging.basicConfig(
+    filename='simulation.log',
+    level=logging.DEBUG,
+    format='%(levelname)s: %(message)s',
+    filemode='w'
+)
+# logging to standard output with less information
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(message)s')
+console.setFormatter(formatter)
+logger = logging.getLogger('')
+logger.addHandler(console)
+#
+simu = simulator(population(size=1000, loci=[2]), randomMating())
+simu.evolve(
+    preOps = [initByValue([1, 2, 2, 1])],  
+    ops = [
+        recombinator(rate=0.01),
+        stat(LD=[0, 1]),
+        pyEval(r"'LD: %d, %.2f' % (gen, LD[0][1])", step=20,
+            output=logger.info),   # send LD to console and a logfile
+        pyEval(r"'R2: %d, %.2f' % (gen, R2[0][1])", step=20,
+            output=logger.debug),  # send R2 only to a logfile
+    ],
+    gen=100
+)
+print open('simulation.log').read()
+#end
 
-for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt', 'LD_2.txt']:
+logging.shutdown()
+for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt', 'LD_2.txt', 'simulation.log']:
     os.remove(file)
 
 #file log/hybrid.log

@@ -188,6 +188,359 @@ public:
 };
 
 // ////////////////////////////////////////////////////////////
+// / Parameter polymorphism
+// ////////////////////////////////////////////////////////////
+
+/** A wrapper to a python function
+ *  CPPONLY
+ */
+class pyObject
+{
+public:
+	pyObject(PyObject * obj) : m_object(NULL)
+	{
+		if (obj != NULL && obj != Py_None)
+			m_object = obj;
+
+		Py_XINCREF(m_object);
+	}
+
+
+	~pyObject()
+	{
+		Py_XDECREF(m_object);
+	}
+
+
+	pyObject(const pyObject & rhs) : m_object(rhs.m_object)
+	{
+		Py_XINCREF(m_object);
+	}
+
+
+	PyObject * object() const
+	{
+		return m_object;
+	}
+
+
+	bool isValid() const
+	{
+		return m_object != NULL;
+	}
+
+
+private:
+	PyObject * m_object;
+};
+
+
+/** A wrapper to a python function
+ *  CPPONLY
+ */
+class pyFunc
+{
+public:
+	pyFunc(PyObject * func) : m_func(func)
+	{
+		DBG_ASSERT(!m_func.isValid() || PyCallable_Check(m_func.object()),
+			ValueError,
+			"Passed parameter should be None or a Python function");
+	}
+
+
+	bool isValid() const
+	{
+		return m_func.isValid();
+	}
+
+
+	PyObject * func() const
+	{
+		return m_func.object();
+	}
+
+
+	// Note how ... are passed to Py_BuildValue using Py_VaBuildValue
+	template <typename T>
+	T operator()(void converter(PyObject *, T &), const char * format, ...)
+	{
+		va_list argptr;
+
+		va_start(argptr, format);
+		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
+		va_end(argptr);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+#ifndef OPTIMIZED
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
+#endif
+			throw ValueError("Function call failed.\n");
+		}
+		T retValue;
+		converter(pyResult, retValue);
+		Py_DECREF(pyResult);
+		return retValue;
+	}
+
+
+	PyObject * operator()(const char * format, ...)
+	{
+		va_list argptr;
+
+		va_start(argptr, format);
+		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
+		va_end(argptr);
+		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+
+		Py_XDECREF(arglist);
+		if (pyResult == NULL) {
+#ifndef OPTIMIZED
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
+#endif
+			throw ValueError("Function call failed\n");
+		}
+		return pyResult;
+	}
+
+
+private:
+	pyObject m_func;
+};
+
+/** This class defines an interface using which both a integer number and
+ *  a list of numbers can be accpted.
+ */
+class intList
+{
+public:
+	intList(const vectorl & values = vectorl()) : m_elems(values)
+	{
+	}
+
+
+	intList(long value) : m_elems(1, value)
+	{
+	}
+
+
+	const vectorl & elems() const
+	{
+		return m_elems;
+	}
+
+
+protected:
+	vectorl m_elems;
+};
+
+
+// I cannot use template here because otherwise SWIG does not
+// handle the type correctly. I guess this can be my problem with using
+// of template in simuPOP_common.i
+
+class uintList
+{
+public:
+	typedef vectorlu::iterator iterator;
+	typedef vectorlu::const_iterator const_iterator;
+
+public:
+	uintList(const vectorlu & values = vectorlu()) : m_elems(values)
+	{
+	}
+
+
+	uintList(ULONG value) : m_elems(1, value)
+	{
+	}
+
+
+	const vectorlu & elems() const
+	{
+		return m_elems;
+	}
+
+
+protected:
+	vectorlu m_elems;
+};
+
+
+class floatList
+{
+public:
+	floatList(const vectorf & values = vectorf()) : m_elems(values)
+	{
+	}
+
+
+	floatList(double value) : m_elems(1, value)
+	{
+	}
+
+
+	const vectorf & elems() const
+	{
+		return m_elems;
+	}
+
+
+protected:
+	vectorf m_elems;
+};
+
+
+class stringFunc
+{
+public:
+	stringFunc(const char * value) :
+		m_value(value), m_func(NULL)
+	{
+	}
+
+	stringFunc(PyObject * func) : m_value(), m_func(func)
+	{
+	}
+
+	string value() const
+	{
+		return m_value;
+	}
+
+	pyFunc func() const
+	{
+		return m_func;
+	}
+
+	bool empty() const
+	{
+		return m_value.empty() && not m_func.isValid();
+	}
+private:
+	string m_value;
+
+	pyFunc m_func;
+};
+
+
+class uintListFunc : public uintList
+{
+public:
+	uintListFunc(const vectorlu & values = vectorlu()) :
+		uintList(values), m_func(NULL)
+	{
+	}
+
+
+	uintListFunc(ULONG value) : uintList(value), m_func(NULL)
+	{
+	}
+
+
+	uintListFunc(PyObject * func) : uintList(), m_func(func)
+	{
+	}
+
+
+	pyFunc func() const
+	{
+		return m_func;
+	}
+
+
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+private:
+	pyFunc m_func;
+};
+
+
+class floatListFunc : public floatList
+{
+public:
+	floatListFunc(const vectorf & values = vectorf()) :
+		floatList(values), m_func(NULL)
+	{
+	}
+
+
+	floatListFunc(double value) : floatList(value), m_func(NULL)
+	{
+	}
+
+
+	floatListFunc(PyObject * func) : floatList(), m_func(func)
+	{
+	}
+
+
+	double operator[](size_t i) const
+	{
+		DBG_FAILIF(i >= size(), IndexError,
+			"Index " + toStr(i) + " out of range of 0 ~ " + toStr(size() - 1));
+		return m_elems[i];
+	}
+
+
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	size_t size() const
+	{
+		return m_elems.size();
+	}
+
+
+	pyFunc func() const
+	{
+		return m_func;
+	}
+
+
+private:
+	pyFunc m_func;
+};
+
+
+/** A class to specify replicate list. The reason why I cannot simple
+ *  use vectori() is that users have got used to use a single number
+ *  to specify a single replicate.
+ */
+class repList : public intList
+{
+public:
+	repList(const vectorl & reps = vectorl()) :
+		intList(reps)
+	{
+	}
+
+
+	repList(int rep) : intList(rep)
+	{
+	}
+
+
+	bool match(UINT rep, const vector<bool> & activeRep);
+
+};
+
+// ////////////////////////////////////////////////////////////
 // / Shared variables
 // ////////////////////////////////////////////////////////////
 
@@ -682,8 +1035,8 @@ OstreamManager & ostreamManager();
    fixed file strategy.
 
    2. operators use a simple interface to access files
-   OStreamProvider.getStream()
-   OStreamProdiver.closeStream()
+   StreamProvider.getStream()
+   StreamProdiver.closeStream()
    and m_flag operator
    OStreamProvider.noOutput()
    which means no input ("")
@@ -699,15 +1052,11 @@ class StreamProvider
 {
 public:
 	/// CPPONLY constructor. set the name parser
-	StreamProvider(const string & output);
+	StreamProvider(const string & output, const pyFunc & func);
 
 	~StreamProvider()
 	{
 	}
-
-
-	/// CPPONLY reset format string
-	void setOutput(const string & output);
 
 	/// CPPONLY m_flag: if type ''
 	bool noOutput()
@@ -766,6 +1115,9 @@ private:
 	/// output filename parser
 	Expression m_filenameExpr;
 
+	/// output to a function
+	pyFunc m_func;
+
 	/// internal m_flags of the operator. They are set during initialization for
 	/// performance considerations.
 	static const size_t m_flagNoOutput = 1;
@@ -775,6 +1127,7 @@ private:
 	static const size_t m_flagCloseAfterUse = 16;
 	static const size_t m_flagUseString = 32;
 	static const size_t m_flagReadable = 64;
+	static const size_t m_flagUseFunc = 128;
 
 	/// m_flags
 	unsigned char m_flags;
@@ -1325,355 +1678,6 @@ ostream & cnull();
 
 /// set the standard output (default to standard Python output)
 void setLogOutput(const string filename = string());
-
-// ////////////////////////////////////////////////////////////
-// / Parameter polymorphism
-// ////////////////////////////////////////////////////////////
-
-/** A wrapper to a python function
- *  CPPONLY
- */
-class pyObject
-{
-public:
-	pyObject(PyObject * obj) : m_object(NULL)
-	{
-		if (obj != NULL && obj != Py_None)
-			m_object = obj;
-
-		Py_XINCREF(m_object);
-	}
-
-
-	~pyObject()
-	{
-		Py_XDECREF(m_object);
-	}
-
-
-	pyObject(const pyObject & rhs) : m_object(rhs.m_object)
-	{
-		Py_XINCREF(m_object);
-	}
-
-
-	PyObject * object() const
-	{
-		return m_object;
-	}
-
-
-	bool isValid() const
-	{
-		return m_object != NULL;
-	}
-
-
-private:
-	PyObject * m_object;
-};
-
-
-/** A wrapper to a python function
- *  CPPONLY
- */
-class pyFunc
-{
-public:
-	pyFunc(PyObject * func) : m_func(func)
-	{
-		DBG_ASSERT(!m_func.isValid() || PyCallable_Check(m_func.object()),
-			ValueError,
-			"Passed parameter should be None or a Python function");
-	}
-
-
-	bool isValid() const
-	{
-		return m_func.isValid();
-	}
-
-
-	PyObject * func() const
-	{
-		return m_func.object();
-	}
-
-
-	// Note how ... are passed to Py_BuildValue using Py_VaBuildValue
-	template <typename T>
-	T operator()(void converter(PyObject *, T &), const char * format, ...)
-	{
-		va_list argptr;
-
-		va_start(argptr, format);
-		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
-		va_end(argptr);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-#ifndef OPTIMIZED
-			if (debug(DBG_GENERAL)) {
-				PyErr_Print();
-				PyErr_Clear();
-			}
-#endif
-			throw ValueError("Function call failed.\n");
-		}
-		T retValue;
-		converter(pyResult, retValue);
-		Py_DECREF(pyResult);
-		return retValue;
-	}
-
-
-	PyObject * operator()(const char * format, ...)
-	{
-		va_list argptr;
-
-		va_start(argptr, format);
-		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
-		va_end(argptr);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
-
-		Py_XDECREF(arglist);
-		if (pyResult == NULL) {
-#ifndef OPTIMIZED
-			if (debug(DBG_GENERAL)) {
-				PyErr_Print();
-				PyErr_Clear();
-			}
-#endif
-			throw ValueError("Function call failed\n");
-		}
-		return pyResult;
-	}
-
-
-private:
-	pyObject m_func;
-};
-
-/** This class defines an interface using which both a integer number and
- *  a list of numbers can be accpted.
- */
-class intList
-{
-public:
-	intList(const vectorl & values = vectorl()) : m_elems(values)
-	{
-	}
-
-
-	intList(long value) : m_elems(1, value)
-	{
-	}
-
-
-	const vectorl & elems() const
-	{
-		return m_elems;
-	}
-
-
-protected:
-	vectorl m_elems;
-};
-
-
-// I cannot use template here because otherwise SWIG does not
-// handle the type correctly. I guess this can be my problem with using
-// of template in simuPOP_common.i
-
-class uintList
-{
-public:
-	typedef vectorlu::iterator iterator;
-	typedef vectorlu::const_iterator const_iterator;
-
-public:
-	uintList(const vectorlu & values = vectorlu()) : m_elems(values)
-	{
-	}
-
-
-	uintList(ULONG value) : m_elems(1, value)
-	{
-	}
-
-
-	const vectorlu & elems() const
-	{
-		return m_elems;
-	}
-
-
-protected:
-	vectorlu m_elems;
-};
-
-
-class floatList
-{
-public:
-	floatList(const vectorf & values = vectorf()) : m_elems(values)
-	{
-	}
-
-
-	floatList(double value) : m_elems(1, value)
-	{
-	}
-
-
-	const vectorf & elems() const
-	{
-		return m_elems;
-	}
-
-
-protected:
-	vectorf m_elems;
-};
-
-
-class stringFunc
-{
-public:
-	stringFunc(const string & value = string()) :
-		m_value(value), m_func(NULL)
-	{
-	}
-
-	stringFunc(PyObject * func) : m_value(), m_func(func)
-	{
-	}
-
-	string value() const
-	{
-		return m_value;
-	}
-
-	pyFunc func() const
-	{
-		return m_func;
-	}
-
-private:
-	string m_value;
-
-	pyFunc m_func;
-};
-
-
-class uintListFunc : public uintList
-{
-public:
-	uintListFunc(const vectorlu & values = vectorlu()) :
-		uintList(values), m_func(NULL)
-	{
-	}
-
-
-	uintListFunc(ULONG value) : uintList(value), m_func(NULL)
-	{
-	}
-
-
-	uintListFunc(PyObject * func) : uintList(), m_func(func)
-	{
-	}
-
-
-	pyFunc func() const
-	{
-		return m_func;
-	}
-
-
-	bool empty() const
-	{
-		return m_elems.empty();
-	}
-
-
-private:
-	pyFunc m_func;
-};
-
-
-class floatListFunc : public floatList
-{
-public:
-	floatListFunc(const vectorf & values = vectorf()) :
-		floatList(values), m_func(NULL)
-	{
-	}
-
-
-	floatListFunc(double value) : floatList(value), m_func(NULL)
-	{
-	}
-
-
-	floatListFunc(PyObject * func) : floatList(), m_func(func)
-	{
-	}
-
-
-	double operator[](size_t i) const
-	{
-		DBG_FAILIF(i >= size(), IndexError,
-			"Index " + toStr(i) + " out of range of 0 ~ " + toStr(size() - 1));
-		return m_elems[i];
-	}
-
-
-	bool empty() const
-	{
-		return m_elems.empty();
-	}
-
-
-	size_t size() const
-	{
-		return m_elems.size();
-	}
-
-
-	pyFunc func() const
-	{
-		return m_func;
-	}
-
-
-private:
-	pyFunc m_func;
-};
-
-
-/** A class to specify replicate list. The reason why I cannot simple
- *  use vectori() is that users have got used to use a single number
- *  to specify a single replicate.
- */
-class repList : public intList
-{
-public:
-	repList(const vectorl & reps = vectorl()) :
-		intList(reps)
-	{
-	}
-
-
-	repList(int rep) : intList(rep)
-	{
-	}
-
-
-	bool match(UINT rep, const vector<bool> & activeRep);
-
-};
 
 
 }

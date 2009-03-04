@@ -168,6 +168,8 @@ private:
  *  the mark is considered as a Python expression. When an operator is applied
  *  to a population, this expression will be evaluated within the population's
  *  local namespace to obtain a population specific output specification.
+ *  As an advanced feature, a Python function can be assigned to this
+ *  parameter. Output strings will be sent to this function for processing.
  */
 class baseOperator
 {
@@ -182,7 +184,8 @@ public:
 	 *  \param output A string that specifies how output from an operator is
 	 *    written, which can be \c '' (no output), \c '>' (standard output),
 	 *    \c 'filename' prefixed by one or more '>', or an Python expression
-	 *    prefixed by an exclamation mark (\c '!expr').
+	 *    prefixed by an exclamation mark (\c '!expr'). Alternatively, a
+	 *    Python function can be given to handle outputs.
 	 *  \param stage Stage(s) of a life cycle at which an operator will be
 	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating or
 	 *    any of their combined stages \c PrePostMating, \c PreDuringMating
@@ -218,11 +221,11 @@ public:
 	 *    operators that use information fields usually have default values for
 	 *    this parameter.
 	 */
-	baseOperator(string output, int stage, int begin, int end, int step, const intList & at,
+	baseOperator(const stringFunc & output, int stage, int begin, int end, int step, const intList & at,
 		const repList & rep, const subPopList & subPops, const vectorstr & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_rep(rep), m_subPops(subPops),
-		m_ostream(output), m_infoFields(infoFields),
+		m_ostream(output.value(), output.func()), m_infoFields(infoFields),
 		m_lastPop(MaxTraitIndex)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
@@ -545,7 +548,7 @@ public:
 	 *  specified in parameter \e stopOnKeyStroke.
 	 */
 	pause(char stopOnKeyStroke = false, bool prompt = true,
-		string output = ">", int stage = PostMating,
+		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr()) :
@@ -595,7 +598,7 @@ class noneOp : public baseOperator
 public:
 	/** Create a \c noneOp.
 	 */
-	noneOp(string output = ">",
+	noneOp(const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
@@ -655,7 +658,7 @@ public:
 	 *  applicability is determined by the \c ifElse operator.
 	 */
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
-		string output = ">",
+		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
@@ -728,7 +731,7 @@ public:
 	/** Create a \c ticToc operator that outputs the elapsed since the last
 	 *  time it was applied, and the overall time since it was created.
 	 */
-	ticToc(string output = ">",
+	ticToc(const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields)
@@ -778,7 +781,7 @@ public:
 	 *  an population. It basically calls the
 	 *  <tt>population.setAncestralDepth</tt> member function of a population.
 	 */
-	setAncestralDepth(int depth, string output = ">",
+	setAncestralDepth(int depth, const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
