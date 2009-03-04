@@ -26,6 +26,15 @@
 
 namespace simuPOP {
 
+void pyOutput::apply(population & pop)
+{
+	ostream & out = this->getOstream(pop.dict());
+	out << m_string;
+	this->closeOstream();
+	return true;
+}
+
+
 void dumper::displayStructure(const population & pop, ostream & out)
 {
 	out << "Ploidy: " << pop.ploidy()
