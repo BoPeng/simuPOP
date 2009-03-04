@@ -63,15 +63,7 @@ public:
 
 
 	/// simply output some info
-	virtual bool apply(population & pop)
-	{
-		ostream & out = this->getOstream(pop.dict());
-
-		out << m_string;
-		this->closeOstream();
-		return true;
-	}
-
+	virtual bool apply(population & pop);
 
 	/// destructor
 	virtual ~pyOutput()

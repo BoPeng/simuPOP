@@ -1538,6 +1538,35 @@ protected:
 };
 
 
+class stringFunc
+{
+public:
+	stringFunc(const string & value = string()) :
+		m_value(value), m_func(NULL)
+	{
+	}
+
+	stringFunc(PyObject * func) : m_value(), m_func(func)
+	{
+	}
+
+	string value() const
+	{
+		return m_value;
+	}
+
+	pyFunc func() const
+	{
+		return m_func;
+	}
+
+private:
+	string m_value;
+
+	pyFunc m_func;
+};
+
+
 class uintListFunc : public uintList
 {
 public:
