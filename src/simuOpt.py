@@ -409,8 +409,6 @@ def _getParamValue(p, val):
 
 class _paramDialog:
     def __init__(self, options, title = '', description='', details='', nCol=1):
-        if len(options) == 0:
-            raise exceptions.ValueError("Empty field names...")    # some behaviors
         #
         # now, initialize variables
         self.options = options
@@ -656,21 +654,21 @@ class _tkParamDialog(_paramDialog):
                     self.entryWidgets[g].insert(0, _prettyString(value))
             self.entryWidgets[g].bind("<Return>", self.onOK)
             self.entryWidgets[g].bind("<Escape>", self.onCancel)
-        # help button
+        # help button: left
         helpButton = tk.Button(self.app, takefocus=1, text="Help")
         helpButton.bind("<Return>", self.onHelp)
         helpButton.bind("<Button-1>", self.onHelp)
-        helpButton.grid(column=0, columnspan=self.nCol, row = numRows+1, pady=20)
-        # ok button
+        helpButton.grid(column=0, columnspan=self.nCol, row = numRows+1, pady=20, sticky='w', padx=10)
+        # ok button: right
         okButton = tk.Button(self.app, takefocus=1, text="Run!")
         okButton.bind("<Return>", self.onOK)
         okButton.bind("<Button-1>", self.onOK)
-        okButton.grid( column=self.nCol, columnspan=self.nCol, row = numRows+1, pady=20)
-        # cancel button
+        okButton.grid(column=self.nCol, columnspan=self.nCol, row = numRows+1, sticky='e', pady=20, padx=10)
+        # cancel button: middle
         cancelButton = tk.Button(self.app, takefocus=1, text="Cancel")
         cancelButton.bind("<Return>", self.onCancel)
         cancelButton.bind("<Button-1>", self.onCancel)
-        cancelButton.grid( column=0, columnspan=2*self.nCol, row = numRows+1, pady=20)
+        cancelButton.grid(column=0, columnspan=2*self.nCol, row = numRows+1, pady=20)
         #
         self.app.bind("<Escape>", self.onCancel)
         # first un-none
