@@ -177,6 +177,19 @@ class TestOperator(unittest.TestCase):
             self.assertFileContent("gen%d.txt"%i, 'a'*5)
             os.remove('gen%d.txt'%i)
 
+    def testOutputFunc(self):
+        '''Testing output to a function'''
+        simu = simulator(population(), cloneMating(), rep=5)
+        def func1(msg):
+            self.assertEqual(msg, 'func1')
+        def func2(msg):
+            self.assertEqual(msg, 'func2')
+        # each replicate
+        simu.evolve([
+            pyOutput("func1", output=func1),
+            pyOutput("func2", output=func2),
+            ], gen=10)
+
     def testInfoEval(self):
         '''Testing operator infoEval'''
         pop = population(10, infoFields=['a', 'b'])
