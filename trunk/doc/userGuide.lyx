@@ -4712,8 +4712,13 @@ expr
 \end_layout
 
 \begin_layout Itemize
-A Python function.
- All output will be sent to this function for processing.
+A Python function that can accept a string as its only parameter (
+\family typewriter
+func(msg)
+\family default
+).
+ When an operator outputs a message, this function will be called with this
+ message.
 \end_layout
 
 \begin_layout Standard
