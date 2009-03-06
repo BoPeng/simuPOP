@@ -11606,6 +11606,23 @@ reference "fig:parameter-input-dialog"
 .
 \end_layout
 
+\begin_layout Note
+If 
+\family typewriter
+simuOpt.valueValidFile()
+\family default
+ or 
+\family typewriter
+simuOpt.valueValidDir()
+\family default
+ is used to validate a parameter, 
+\series bold
+double click
+\series default
+ the input textbox of this parameter will open a file or directory browse
+ dialog.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 wide false

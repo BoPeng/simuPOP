@@ -201,6 +201,7 @@ def valueValidDir():
     '''Return a function that returns true if passed option val if a valid
     directory'''
     def func(val):
+        '''simuOpt.valueValidDir''' 
         return os.path.isdir(val)
     return func
 
@@ -209,6 +210,7 @@ def valueValidFile():
     '''Return a function that returns true if passed option val if a valid
     file'''
     def func(val):
+        '''simuOpt.valueValidFile''' 
         return os.path.isfile(val)
     return func
 
@@ -485,6 +487,28 @@ class _tkParamDialog(_paramDialog):
     def onHelpOK(self, event):
         self.helpDlg.destroy()
 
+    def onOpen(self, event):
+        widget = event.widget
+        opt = self.options[self.entryWidgets.index(widget)]
+        import tkFileDialog as fileDlg
+        if 'valueValidFile' in opt['validate'].__doc__:
+            filename = fileDlg.askopenfilename(title=opt['label'])
+            if filename is not None:
+                # only available in Python 2.6
+                widget.delete(0, tk.END)
+                if 'relpath' in dir(os.path):
+                    widget.insert(0, os.path.relpath(filename))
+                else:
+                    widget.insert(0, filename)
+        else:
+            dirname = fileDlg.askdirectory(title=opt['label'])
+            if dirname is not None:
+                widget.delete(0, tk.END)
+                if 'relpath' in dir(os.path):
+                    widget.insert(0, os.path.relpath(dirname))
+                else:
+                    widget.insert(0, dirname)
+
     def createHelpDialog(self):
         self.helpDlg = tk.Toplevel(self.app)
         self.helpDlg.title('Help for ' + self.title)
@@ -648,6 +672,9 @@ class _tkParamDialog(_paramDialog):
                 self.entryWidgets[g] = tk.Entry(self.app)
                 self.entryWidgets[g].grid(column=colIndex*2+1, row=rowIndex%numRows+1,
                     padx=5, ipadx=0)
+                if opt.has_key('validate') and opt['validate'].__doc__ in \
+                    [valueValidFile().__doc__, valueValidDir().__doc__]:
+                    self.entryWidgets[g].bind('<Double-Button-1>', self.onOpen)
                 rowIndex += 1
                  # put default value into the entryWidget
                 if value is not None:
@@ -749,6 +776,29 @@ class _wxParamDialog(_paramDialog):
         box.Add(button, 0, wx.ALIGN_CENTER)
         self.dlg.Bind(wx.EVT_BUTTON, func, button)
 
+    def onOpen(self, event):
+        '''File browse'''
+        opt = self.options[event.GetId()]
+        widget = self.entryWidgets[event.GetId()]
+        if 'valueValidFile' in opt['validate'].__doc__:
+            dlg = wx.FileDialog(self.dlg, opt['label'], '', '',
+                "*.*", wx.OPEN)
+            if dlg.ShowModal() == wx.ID_OK:
+                # only available in Python 2.6
+                if 'relpath' in dir(os.path):
+                    widget.SetValue(os.path.relpath(dlg.GetPath()))
+                else:
+                    widget.SetValue(dlg.GetPath())
+        else:
+            dlg = wx.DirDialog(self.dlg, opt['label'], '', 
+                wx.DD_DEFAULT_STYLE or wx.DD_DIR_MUST_EXIST)
+            if dlg.ShowModal() == wx.ID_OK:
+                if 'relpath' in dir(os.path):
+                    widget.SetValue(os.path.relpath(dlg.GetPath()))
+                else:
+                    widget.SetValue(dlg.GetPath())
+        dlg.Destroy()
+
     def createDialog(self):
         self.app = wx.PySimpleApp(0)
         self.dlg = wx.Dialog(parent=None, id=-1, title = self.title)
@@ -841,6 +891,9 @@ class _wxParamDialog(_paramDialog):
                     txt = _prettyString(value)
                 self.entryWidgets[g] = wx.TextCtrl(parent=self.dlg, id=g, value=txt)
                 gridBox[colIndex].Add(self.entryWidgets[g], 1, wx.EXPAND )
+                if opt.has_key('validate') and opt['validate'].__doc__ in \
+                    [valueValidFile().__doc__, valueValidDir().__doc__]:
+                    self.entryWidgets[g].Bind(wx.EVT_LEFT_DCLICK, self.onOpen, id=g)
                 rowIndex += 1
             self.entryWidgets[g].SetToolTipString(tooltip)
         # help button
@@ -1340,6 +1393,12 @@ class simuOpt:
         are available, ``wxPython`` will be used unless *gui* is set to
         ``Tkinter``. If none of the toolkits are available, this function will
         raise an ``ImportError``.
+
+        .. note::
+        
+           If ``simuOpt.valueValidFile`` or ``simuOpt.valueValidDir`` is used
+           to validate a parameter, double click the text input box of this
+           parameter will open a file or directory browse dialog.
         '''
         title = os.path.split(sys.argv[0])[-1]
         if gui != 'Tkinter':
