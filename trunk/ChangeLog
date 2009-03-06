@@ -8,6 +8,9 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Allow specifying non-string values in 'chooseFrom' and 'chooseOneOf' in simuOpt
 		parameter specification.
   - NEW: Allow operators to output to a Python function.
+  - NEW: Allow the use of double-click to open a browse dialog for file and directory
+		input in simuOpt.
+		
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009
   - NEW: Allow populations in a simulator to have different genotype structure. 
