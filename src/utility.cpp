@@ -1881,7 +1881,16 @@ void StreamProvider::closeOstream()
 			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
 			PyObject * arglist = Py_BuildValue("(s)", str.c_str());
 			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
-			Py_DECREF(pyResult);
+			if (pyResult == NULL) {
+#ifndef OPTIMIZED
+				if (debug(DBG_GENERAL)) {
+					PyErr_Print();
+					PyErr_Clear();
+				}
+#endif
+				throw RuntimeError("Function call failed");
+			} else
+				Py_DECREF(pyResult);
 		} else if (ISSETFLAG(m_flags, m_flagReadable))
 			dynamic_cast<fstream *>(m_filePtr)->close();
 		else
