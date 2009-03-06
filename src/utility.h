@@ -423,7 +423,7 @@ public:
 
 	bool empty() const
 	{
-		return m_value.empty() && not m_func.isValid();
+		return m_value.empty() && ! m_func.isValid();
 	}
 private:
 	string m_value;
