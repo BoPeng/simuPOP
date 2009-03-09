@@ -169,6 +169,13 @@ bool infoExec::apply(population & pop)
 		for (UINT i = 0; i < pop.numSubPop(); ++i)
 			subPops.push_back(i);
 
+	OperationType oType = m_simpleStmt.operation();
+	string oVar = m_simpleStmt.var();
+	double oValue = m_simpleStmt.value();
+	UINT oVarIdx = 0;
+	if (oType != NoOperation)
+		oVarIdx = pop.infoIdx(oVar);
+
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for ( ; sp != spEnd; ++sp) {
@@ -177,8 +184,26 @@ bool infoExec::apply(population & pop)
 		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		for (; ind != indEnd; ++ind) {
-			evalInfo(& * ind);
-			updateInfo(& * ind);
+			switch (m_simpleStmt.operation()) {
+			case NoOperation:
+				evalInfo(& * ind);
+				updateInfo(& * ind);
+				break;
+			case Assignment:
+				ind->setInfo(oValue, oVarIdx);
+				break;
+			case Increment:
+				ind->setInfo(ind->info(oVarIdx) + oValue, oVarIdx);
+				break;
+			case Decrement:
+				ind->setInfo(ind->info(oVarIdx) - oValue, oVarIdx);
+				break;
+			case MultipliedBy:
+				ind->setInfo(ind->info(oVarIdx) * oValue, oVarIdx);
+				break;
+			default:
+				throw RuntimeError("Incorrect operation type");
+			}
 		}
 	}
 	return true;

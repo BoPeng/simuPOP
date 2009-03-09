@@ -55,6 +55,7 @@ if len(included_version) > 0:
     included_boost_include_dir = included_boost_dir
     included_boost_serialization_dir = os.path.join(included_boost_dir, 'libs', 'serialization', 'src')
     included_boost_iostreams_dir = os.path.join(included_boost_dir, 'libs', 'iostreams', 'src')
+    included_boost_regex_dir = os.path.join(included_boost_dir, 'libs', 'regex', 'src')
 else:
     included_boost = False
     included_boost_dir = 'boost'
@@ -396,6 +397,28 @@ if included_boost:
         ]
     ])
 
+if included_boost:
+    LIB_FILES.extend([os.path.join(included_boost_regex_dir, x) for x in [
+        "cpp_regex_traits.cpp",
+        "fileiter.cpp",
+        "posix_api.cpp",
+        "regex_raw_buffer.cpp",
+        "usinstances.cpp",
+        "wide_posix_api.cpp",
+        "cregex.cpp",
+        "icu.cpp",
+        "regex.cpp",
+        "regex_traits_defaults.cpp",
+        "w32_regex_traits.cpp",
+        "winstances.cpp",
+        "c_regex_traits.cpp",
+        "instances.cpp",
+        "regex_debug.cpp",
+        "static_mutex.cpp",
+        "wc_regex_traits.cpp",
+        ]
+    ])
+
 
 # build zlib from source for windows system to avoid distributing zlib1.dll
 # along with simuPOP.
@@ -482,7 +505,7 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         boost_lib_path = None
     else:
         (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-            ['iostreams', 'serialization'], boost_lib_search_paths,
+            ['iostreams', 'serialization', 'regex'], boost_lib_search_paths,
             boost_lib_prefix, boost_lib_suffix,
             boost_inc_search_paths, boost_versions)
     res = {}

@@ -249,3 +249,5 @@ recursive-include win32/zlib-1.2.3 *.h *.c
 recursive-include boost_1_37_0/boost *.hpp *.ipp
 recursive-include boost_1_37_0/libs/iostreams/src *.cpp *.hpp *.ipp
 recursive-include boost_1_37_0/libs/serialization/src *.cpp *.hpp *.ipp
+recursive-include boost_1_37_0/libs/regex/src *.cpp *.hpp *.ipp
+
