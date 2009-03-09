@@ -311,7 +311,8 @@ public:
 	infoExec(const string & stmts = string(), bool usePopVars = false,  const string & exposeInd = string(),
 		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields)
+		: infoEval(string(), stmts, usePopVars, exposeInd, output, stage, begin, end, step, at, rep, subPops, infoFields),
+		m_simpleStmt(stmts)
 	{
 	}
 
@@ -344,7 +345,8 @@ public:
 
 private:
 	void updateInfo(individual * ind);
-
+	
+	simpleStmt m_simpleStmt;
 };
 
 

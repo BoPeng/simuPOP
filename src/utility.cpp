@@ -67,6 +67,11 @@ using std::ofstream;
 #include "boost/pending/lowest_bit.hpp"
 using boost::lowest_bit;
 
+#include "boost/regex.hpp"
+using boost::regex;
+using boost::regex_match;
+using boost::cmatch;
+
 //macros to provide a portable way to make macro-passed string to C++ string
 #define MacroQuote_(x) # x
 #define MacroQuote(x) MacroQuote_(x)
@@ -1545,6 +1550,49 @@ intDict Expression::valueAsIntDict()
 	return val;
 }
 
+
+simpleStmt::simpleStmt(const string & stmt) : m_var(""),
+	m_operation(NoOperation), m_value(0)	
+{
+	const regex assign("\\s*([\\d\\w]+)\\s*=\\s*([-]*[1-9\\.]+)\\s*");
+	const regex increment1("\\s*([\\d\\w]+)\\s*\\+=\\s*([-]*[1-9\\.]+)\\s*");
+	const regex increment2("\\s*([\\d\\w]+)\\s*=\\s*\\1\\s*\\+\\s*([-]*[1-9\\.]+)\\s*");
+	const regex increment3("\\s*([\\d\\w]+)\\s*=\\s*([-]*[1-9\\.]+)\\s*\\+\\s*\\1\\s*");
+	const regex decrement1("\\s*([\\d\\w]+)\\s*-=\\s*([-]*[1-9\\.]+)\\s*");
+	const regex decrement2("\\s*([\\d\\w]+)\\s*=\\s*\\1\\s*-\\s*([-]*[1-9\\.]+)\\s*");
+	const regex multiplied1("\\s*([\\d\\w]+)\\s*\\*=\\s*([-]*[1-9\\.]+)\\s*");
+	const regex multiplied2("\\s*([\\d\\w]+)\\s*\\=\\s*\\1\\s*\\*\\s*([-]*[1-9\\.]+)\\s*");
+	const regex multiplied3("\\s*([\\d\\w]+)\\s*\\=\\s*\\s*([-]*[1-9\\.]+)\\s*\\*\\s*\\1\\s*");
+
+	cmatch matches;
+
+	DBG_DO(DBG_DEVEL, cout << "Decipher statement " << stmt << endl);
+	if (regex_match(stmt.c_str(), matches, assign))
+		m_operation = Assignment;
+	else if (regex_match(stmt.c_str(), matches, increment1) ||
+		regex_match(stmt.c_str(), matches, increment2) ||
+		regex_match(stmt.c_str(), matches, increment3))
+		m_operation = Increment;
+	else if (regex_match(stmt.c_str(), matches, decrement1) ||
+		regex_match(stmt.c_str(), matches, decrement2))
+		m_operation = Decrement;
+	else if (regex_match(stmt.c_str(), matches, multiplied1) ||
+		regex_match(stmt.c_str(), matches, multiplied2) ||
+		regex_match(stmt.c_str(), matches, multiplied3))
+		m_operation = MultipliedBy;
+	else
+		return;
+
+	m_var = string(matches[1].first, matches[1].second);
+	try {
+		m_value = boost::lexical_cast<double>(string(matches[2].first, matches[2].second));
+	} catch (...) {
+		m_operation = NoOperation;
+		return;
+	}
+	DBG_DO(DBG_DEVEL, cout << "Match statement with name " << m_var 
+		<< " and value " << m_value << " with operation " << m_operation << endl);
+}
 
 // Stream element, can be of different types
 

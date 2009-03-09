@@ -183,8 +183,6 @@ public:
 	{
 		return ind.affected();
 	}
-
-
 };
 
 // ////////////////////////////////////////////////////////////
@@ -895,6 +893,40 @@ private:
 
 	/// local namespace
 	PyObject * m_locals;
+};
+
+
+/** CPPONLY
+ *  Define a class that decipher simple statements that
+ *  can be executed faster for infoExec. It does not 
+ *  execute the statement.
+ */
+class simpleStmt
+{
+public:
+	simpleStmt(const string & stmt);
+
+	string var() const
+	{
+		return m_var;
+	}
+	
+	OperationType operation() const
+	{
+		return m_operation;
+	}
+
+	double value() const
+	{
+		return m_value;
+	}
+
+private:
+	string m_var;
+
+	OperationType m_operation;
+
+	double m_value;
 };
 
 // ////////////////////////////////////////////////////////////

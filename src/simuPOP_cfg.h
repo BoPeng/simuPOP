@@ -224,6 +224,14 @@ enum IterationType {
 	VisibleInds = 93
 };
 
+enum OperationType {
+	NoOperation = 100,
+	Assignment = 101,
+	Increment = 102,
+	Decrement = 103,
+	MultipliedBy = 104,
+};
+
 #define DBG_CODE_LENGTH 20
 
 enum DBG_CODE {
