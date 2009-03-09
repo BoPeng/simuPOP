@@ -154,6 +154,7 @@ bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 	return true;
 }
 
+
 vectori pause::s_cachedKeys = vectori();
 
 bool pause::apply(population & pop)
@@ -192,19 +193,18 @@ bool pause::apply(population & pop)
 		cout << "Simulation paused for population " << pop.rep() << "\n"
 		     << "Press\n"
 		     << "   's' to (s)top the evolution of this population,\n"
-			 << "   'q' to quit (stop the evolution of all populations),\n"
+		     << "   'q' to quit (stop the evolution of all populations),\n"
 		     << "   'p' to start an interative (P)ython shell, (current population will be exported as "
-					 << popName << ")\n"
-			 << "   'r' or any other key to (r)esume evolution...." << endl;
+		     << popName << ")\n"
+		     << "   'r' or any other key to (r)esume evolution...." << endl;
 	}
 	a = simuPOP_getch();
 
 	if (a == 's' || a == 'S') {
-		cout << "Evolution of population " << pop.rep() << " is stopped." << endl;	
+		cout << "Evolution of population " << pop.rep() << " is stopped." << endl;
 		return false;
-	}
-	else if (a == 'q' || a == 'Q') {
-		cout << "Evolution of all populations are terminated." << endl;	
+	} else if (a == 'q' || a == 'Q') {
+		cout << "Evolution of all populations are terminated." << endl;
 		throw StopEvolution(string());
 	}
 	if (a == 'p' || a == 'P') {

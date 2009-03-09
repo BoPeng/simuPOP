@@ -345,7 +345,7 @@ public:
 
 private:
 	void updateInfo(individual * ind);
-	
+
 	simpleStmt m_simpleStmt;
 };
 

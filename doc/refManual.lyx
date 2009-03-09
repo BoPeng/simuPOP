@@ -647,65 +647,6 @@ initByValueRef
 \end_layout
 
 \begin_layout Section
-Standard genotype transmitters
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-genoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-cloneGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mendelianGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-selfingGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-haplodiploidGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-mitochondrialGenoTransmitterRef
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Expression and Statements
 \end_layout
 
@@ -805,6 +746,85 @@ resizeSubPopsRef
 \end_layout
 
 \begin_layout Section
+Standard genotype transmitters
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+genoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+cloneGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mendelianGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+selfingGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+haplodiploidGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+mitochondrialGenoTransmitterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Recombination and gene conversion
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+recombinatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Mutation
 \begin_inset Index
 status collapsed
@@ -862,26 +882,6 @@ pyMutatorRef
 
 \backslash
 pointMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Recombination and gene conversion
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-recombinatorRef
 \end_layout
 
 \end_inset

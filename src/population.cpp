@@ -752,6 +752,7 @@ void population::splitSubPop(UINT subPop, const vectorlu & sizes)
 void population::removeSubPops(const uintList & subPopList)
 {
 	const vectorlu & subPops = subPopList.elems();
+
 #ifndef OPTIMIZED
 	// check if subPops are valid
 	for (vectorlu::const_iterator sp = subPops.begin(); sp < subPops.end(); ++sp) {
@@ -811,6 +812,7 @@ void population::removeSubPops(const uintList & subPopList)
 void population::removeIndividuals(const uintList & indList)
 {
 	const vectorlu & inds = indList.elems();
+
 	sortIndividuals();
 	vectorlu new_size = m_subPopSize;
 
@@ -1048,17 +1050,17 @@ void population::addIndFrom(const population & pop)
 		for (m_subPopIndex[0] = 0; j <= numSubPop(); ++j)
 			m_subPopIndex[j] = m_subPopIndex[j - 1] + m_subPopSize[j - 1];
 	}
-    if (!m_subPopNames.empty() && pop.m_subPopNames.empty()) {
-        for (size_t i = 0; i < pop.numSubPop(); ++i)
-            m_subPopNames.push_back(UnnamedSubPop);
-    } else if (m_subPopNames.empty() && !pop.m_subPopNames.empty()) {
-        m_subPopNames.resize(numSubPop(), UnnamedSubPop);
-        m_subPopNames.insert(m_subPopNames.end(),
-            pop.m_subPopNames.begin(), pop.m_subPopNames.end());
-    } else {
-        m_subPopNames.insert(m_subPopNames.end(),
-            pop.m_subPopNames.begin(), pop.m_subPopNames.end());
-    }
+	if (!m_subPopNames.empty() && pop.m_subPopNames.empty()) {
+		for (size_t i = 0; i < pop.numSubPop(); ++i)
+			m_subPopNames.push_back(UnnamedSubPop);
+	} else if (m_subPopNames.empty() && !pop.m_subPopNames.empty()) {
+		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
+		m_subPopNames.insert(m_subPopNames.end(),
+			pop.m_subPopNames.begin(), pop.m_subPopNames.end());
+	} else {
+		m_subPopNames.insert(m_subPopNames.end(),
+			pop.m_subPopNames.begin(), pop.m_subPopNames.end());
+	}
 	DBG_ASSERT(m_subPopNames.empty() || m_subPopNames.size() == numSubPop(), SystemError,
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
 }
@@ -1735,7 +1737,7 @@ void population::setIndInfo(const floatList & valueList, UINT idx)
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	CHECKRANGEINFO(idx);
-    const vectorf & values = valueList.elems();
+	const vectorf & values = valueList.elems();
 	size_t valueSize = values.size();
 	IndInfoIterator ptr = infoBegin(idx);
 	for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
@@ -1749,7 +1751,7 @@ void population::setIndInfo(const floatList & valueList, UINT idx, vspID subPop)
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	CHECKRANGEINFO(idx);
-    const vectorf & values = valueList.elems();
+	const vectorf & values = valueList.elems();
 	size_t valueSize = values.size();
 	IndInfoIterator ptr = infoBegin(idx, subPop);
 	for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)

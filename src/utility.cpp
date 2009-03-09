@@ -1552,7 +1552,7 @@ intDict Expression::valueAsIntDict()
 
 
 simpleStmt::simpleStmt(const string & stmt) : m_var(""),
-	m_operation(NoOperation), m_value(0)	
+	m_operation(NoOperation), m_value(0)
 {
 	const regex assign("\\s*([\\d\\w]+)\\s*=\\s*([-]*[1-9\\.]+)\\s*");
 	const regex increment1("\\s*([\\d\\w]+)\\s*\\+=\\s*([-]*[1-9\\.]+)\\s*");
@@ -1570,15 +1570,15 @@ simpleStmt::simpleStmt(const string & stmt) : m_var(""),
 	if (regex_match(stmt.c_str(), matches, assign))
 		m_operation = Assignment;
 	else if (regex_match(stmt.c_str(), matches, increment1) ||
-		regex_match(stmt.c_str(), matches, increment2) ||
-		regex_match(stmt.c_str(), matches, increment3))
+	         regex_match(stmt.c_str(), matches, increment2) ||
+	         regex_match(stmt.c_str(), matches, increment3))
 		m_operation = Increment;
 	else if (regex_match(stmt.c_str(), matches, decrement1) ||
-		regex_match(stmt.c_str(), matches, decrement2))
+	         regex_match(stmt.c_str(), matches, decrement2))
 		m_operation = Decrement;
 	else if (regex_match(stmt.c_str(), matches, multiplied1) ||
-		regex_match(stmt.c_str(), matches, multiplied2) ||
-		regex_match(stmt.c_str(), matches, multiplied3))
+	         regex_match(stmt.c_str(), matches, multiplied2) ||
+	         regex_match(stmt.c_str(), matches, multiplied3))
 		m_operation = MultipliedBy;
 	else
 		return;
@@ -1590,9 +1590,10 @@ simpleStmt::simpleStmt(const string & stmt) : m_var(""),
 		m_operation = NoOperation;
 		return;
 	}
-	DBG_DO(DBG_DEVEL, cout << "Match statement with name " << m_var 
-		<< " and value " << m_value << " with operation " << m_operation << endl);
+	DBG_DO(DBG_DEVEL, cout << "Match statement with name " << m_var
+		                   << " and value " << m_value << " with operation " << m_operation << endl);
 }
+
 
 // Stream element, can be of different types
 
@@ -1824,6 +1825,7 @@ OstreamManager & ostreamManager()
 	return g_ostreams;
 }
 
+
 // Stream provider
 
 // all flags will be cleared to 0
@@ -1836,7 +1838,7 @@ StreamProvider::StreamProvider(const string & output, const pyFunc & func)
 	} else if (m_func.isValid()) {
 		SETFLAG(m_flags, m_flagUseFunc);
 		SETFLAG(m_flags, m_flagCloseAfterUse);
-    } else
+	} else
 		analyzeOutputString(m_filename);
 }
 
@@ -2264,7 +2266,7 @@ BernulliTrials::BernulliTrials(RNG & rng, const vectorf & prob, ULONG trials)
 	// initialize the table
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
-			"Probability for a Bernulli trail should be between 0 and 1 (value " 
+			"Probability for a Bernulli trail should be between 0 and 1 (value "
 			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
 		m_table[i].resize(trials);
 		m_pointer[i] = BITPTR(m_table[i].begin());
@@ -2291,7 +2293,7 @@ void BernulliTrials::setParameter(const vectorf & prob, ULONG trials)
 
 	for (size_t i = 0; i < probSize(); ++i) {
 		DBG_FAILIF(m_prob[i] < 0 || m_prob[i] > 1, ValueError,
-			"Probability for a Bernulli trail should be between 0 and 1 (value " 
+			"Probability for a Bernulli trail should be between 0 and 1 (value "
 			+ toStr(m_prob[i]) + " at index " + toStr(i) + ")");
 		m_table[i].resize(trials);
 		m_pointer[i] = BITPTR(m_table[i].begin());
@@ -3098,7 +3100,7 @@ bool initialize()
     setLogOutput();
 
 #if __WORDSIZE == 32
-	DBG_ASSERT(WORDBIT == 32, SystemError,
+    DBG_ASSERT(WORDBIT == 32, SystemError,
 		"We are assuming 32 bit word size for this system but we are wrong."
 		"Please report this problem to the simuPOP mailinglist.");
 #endif
