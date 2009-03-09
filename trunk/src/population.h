@@ -156,7 +156,7 @@ public:
 	 *    \c chrom2, ... etc.
 	 *  \param alleleNames A list of allele names for all markers. For example,
 	 *    <tt>alleleNames=('A','C','T','G')</tt> names allele \c 0 --
-	 *    \c 3 \c A, \c C, \c T, and \c G respectively. 
+	 *    \c 3 \c A, \c C, \c T, and \c G respectively.
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
 	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
 	 *    chromosome and locus indexes, respectively. Loci names will be
@@ -1627,28 +1627,28 @@ private:
 		WORDTYPE tmp = 0;
 		for (size_t i = 0; i < blks; ++i) {
 			tmp = *ptr++;
-#if __WORDSIZE == 32
+#  if __WORDSIZE == 32
 			ar & tmp;
-#else
+#  else
 			for (size_t j = 0; j < WORDBIT / 32; ++j) {
 				WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
 				ar & tmp1;
 			}
-#endif
+#  endif
 		}
 		// last block
 		if (rest > 0) {
 			tmp = *ptr;
-#if __WORDSIZE == 32
+#  if __WORDSIZE == 32
 			ar & tmp;
-#else
+#  else
 			for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
 				WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 				tmp = tmp >> 32;
 				ar & tmp1;
 			}
-#endif
+#  endif
 		}
 #else
 		ar & m_genotype;
@@ -1678,30 +1678,30 @@ private:
 			WORDTYPE tmp = 0;
 			for (size_t i = 0; i < blks; ++i) {
 				tmp = *ptr++;
-#if __WORDSIZE == 32
+#  if __WORDSIZE == 32
 				ar & tmp;
-#else
+#  else
 				for (size_t j = 0; j < WORDBIT / 32; ++j) {
 					WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
 					ar & tmp1;
 				}
-#endif
+#  endif
 			}
 			// last block
 			if (rest > 0) {
 				tmp = *ptr;
 				// rest = 1-31: (rest-1)/32=0, j <= rest/32 = 0
 				// rest = 32; j <= (rest-1)/32 = 0
-#if __WORDSIZE == 32
+#  if __WORDSIZE == 32
 				ar & tmp;
-#else
+#  else
 				for (size_t j = 0; j <= (rest - 1) / 32; ++j) {
 					WORDTYPE tmp1 = tmp & 0xFFFFFFFF;
 					tmp = tmp >> 32;
 					ar & tmp1;
 				}
-#endif
+#  endif
 			}
 #else
 			ar & m_genotype;

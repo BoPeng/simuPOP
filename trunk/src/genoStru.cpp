@@ -69,8 +69,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 		for (size_t i = 0; i < m_numLoci.size(); ++i)
 			for (size_t j = 0; j < m_numLoci[i]; j++)
 				m_lociPos[m_chromIndex[i] + j] = j + 1;
-	}
-	else {                                                                            // check loci distance
+	} else {                                                                            // check loci distance
 		// loci distance, if specified, chould have length of chromosome.
 		DBG_FAILIF(m_lociPos.size() != m_totNumLoci, ValueError,
 			"You should specify loci distance for every locus (" + toStr(m_totNumLoci) + ")");
@@ -80,7 +79,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 				continue;
 
 			size_t begin = m_chromIndex[ch];
-			size_t end = m_chromIndex[ch+1];
+			size_t end = m_chromIndex[ch + 1];
 
 			bool ordered = true;
 			for (size_t j = begin + 1; j < end; ++j) {
@@ -93,7 +92,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 				continue;
 
 			DBG_DO(DBG_POPULATION, cout << "Loci on chromosome " << ch << " are unordered.");
-			
+
 			vectorf lociPos(m_lociPos.begin() + begin, m_lociPos.begin() + end);
 
 			// rank
@@ -108,7 +107,7 @@ GenoStructure::GenoStructure(UINT ploidy, const vectoru & loci, const vectoru & 
 				m_lociPos[begin + i] = lociPos[rank[i]];
 			// check again for loci duplication etc
 			for (size_t j = begin + 1; j < end; ++j) {
-				DBG_FAILIF(fcmp_le(m_lociPos[j], m_lociPos[j - 1]),	ValueError,
+				DBG_FAILIF(fcmp_le(m_lociPos[j], m_lociPos[j - 1]), ValueError,
 					"Loci on the same chromosome should have different positions.");
 			}
 			// lociNames?

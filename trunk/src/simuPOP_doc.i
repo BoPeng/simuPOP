@@ -592,7 +592,8 @@ Details:
     This during mating operator copies parental genotype directly to
     offspring. This operator works for all mating schemes when one or
     two parents are involved. If both parents are passed, maternal
-    genotype are copied.
+    genotype are copied. This genotype transmitter does not copy
+    genotype on customized chromosomes.
 
 "; 
 
@@ -605,7 +606,10 @@ Usage:
 
 Details:
 
-    Create a clone genotype transmitter.
+    Create a clone genotype transmitter (a during-mating operator)
+    that copies genotypes from parents to offspring. If two parents
+    are specified, genotypes are copied maternally. Parameters
+    subPops, and infoFields are ignored.
 
 "; 
 
@@ -1538,7 +1542,8 @@ Usage:
 Details:
 
     Clear (set alleles to zero) chromosome chrom on the ploidy-th
-    homologous set of chromosomes of individual ind.
+    homologous set of chromosomes of individual ind. It is equivalent
+    to ind.setGenotype([0], ploidy, chrom).
 
 "; 
 
@@ -1552,7 +1557,9 @@ Details:
 
     Transmit chromosome chrom on the parPloidy set of homologous
     chromosomes from parent to the ploidy set of homologous
-    chromosomes of offspring.
+    chromosomes of offspring. It is equivalent to
+    offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy,
+    chrom).
 
 "; 
 
@@ -1566,7 +1573,8 @@ Details:
 
     Transmit the parPloidy set of homologous chromosomes from parent
     to the ploidy set of homologous chromosomes of offspring.
-    Customized chromosomes are not copied.
+    Customized chromosomes are not copied. It is equivalent to
+    offspring.setGenotype(parent.genotype(parPloidy), ploidy).
 
 "; 
 
@@ -1778,32 +1786,31 @@ Usage:
 
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter "
 
-Applicability: haplodiploid only
-
 Details:
 
-    haplodiploid offspring generator mimics sex-determination in honey
-    bees. Given a female (queen) parent and a male parent, the female
-    is considered as diploid with two set of chromosomes, and the male
-    is condiered as haploid. Actually, the first set of male
-    chromosomes are used. During mating, female produce eggs, subject
-    to potential recombination and gene conversion, while male sperm
-    is identical to the parental chromosome.  Female offspring has two
-    sets of chromosomes, one from mother and one from father. Male
-    offspring has one set of chromosomes from his mother.
+    A genotype transmitter (during-mating operator) for haplodiploid
+    populations. The female parent is considered as diploid and the
+    male parent is considered as haploid (only the first homologous
+    copy is valid). If the offspring is Female, she will get a random
+    copy of two homologous chromosomes of her mother, and get the only
+    paternal copy from her father. If the offspring is Male, he will
+    only get a set of chromosomes from his mother.
 
 "; 
 
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter::haplodiploidGenoTransmitter "
 
-Description:
-
-    Create a haplodiploid genotype transmitter.
-
 Usage:
 
     haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
       rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    Create a haplodiploid genotype transmitter (during-mating
+    operator) that transmit parental genotypes from parents to
+    offspring in a haplodiploid population. Parameters subPops and
+    infoFields are ignored.
 
 "; 
 
@@ -3994,15 +4001,11 @@ Usage:
 
 Details:
 
-    Mendelian offspring generator accepts two parents and pass their
-    genotype to a number of offspring following Mendelian's law.
-    Basically, one of the paternal chromosomes is chosen randomly to
-    form the paternal copy of the offspring, and one of the maternal
-    chromosome is chosen randomly to form the maternal copy of the
-    offspring. The number of offspring produced is controled by
-    parameters numOffspring, numOffspringFunc, maxNumOffspring and
-    mode. Recombination will not happen unless a during-mating
-    operator recombinator is used.
+    This Mendelian offspring generator accepts two parents and pass
+    their genotypes to an offspring following Mendel's laws. Sex
+    chromosomes are handled according to the sex of the offspring,
+    which is usually determined in advance by an offspring generator.
+    Customized chromosomes are not handled.
 
 "; 
 
@@ -4015,7 +4018,11 @@ Usage:
 
 Details:
 
-    Create a Mendelian genotype transmitter.
+    Create a Mendelian genotype transmitter (a during-mating operator)
+    that transmits genotypes from parents to offspring following
+    Mendel's laws. Autosomes and sex chromosomes are handled but
+    customized chromosomes are ignored. Parameters subPops and
+    infoFields are ignored.
 
 "; 
 
@@ -4300,7 +4307,7 @@ Details:
     This geno transmitter assumes that the first homologous copy of
     several (or all) Customized chromosomes are copies of
     mitochondrial chromosomes. It transmits these chromosomes randomly
-    from the female parent.
+    from the female parent to offspring.
 
 "; 
 
@@ -4315,9 +4322,17 @@ Details:
 
     Createa a mitochondrial genotype transmitter that treats all
     Customized chromosomes, or a list of chromosomes specified by
-    chroms, as human mitochondrial chromosomes. It transmits these
-    chromosomes randomly from the female parent to offspring of both
-    sexes.
+    chroms, as human mitochondrial chromosomes. These chromosomes
+    should have the same length and the same number of loci. This
+    operator transmits these chromosomes randomly from the female
+    parent to offspring of both sexes.
+
+Note:
+
+    The 'form offspring genotype' flag of this operator is set to
+    False so this operator will not be the promary genotype
+    transmitter. Please refer to the simuPOP user's guide for the
+    implication of this setting.
 
 "; 
 
@@ -8122,103 +8137,106 @@ Details:
 
 Details:
 
-    In simuPOP, only one recombinator is provided. Recombination
-    events between loci a/b and b/c are independent, otherwise there
-    will be some linkage between loci. Users need to specify physical
-    recombination rate between adjacent loci. In addition, for the
-    recombinator
-    *   it only works for diploid (and for females in haplodiploid)
-    populations.
-    *   the recombination rate must be comprised between 0.0 and 0.5.
-    A recombination rate of 0.0 means that the loci are completely
-    linked, and thus behave together as a single linked locus. A
-    recombination rate of 0.5 is equivalent to free of recombination.
-    All other values between 0.0 and 0.5 will represent various
-    linkage intensities between adjacent pairs of loci. The
-    recombination rate is equivalent to 1-linkage and represents the
-    probability that the allele at the next locus is randomly drawn.
-    *   it works for selfing. I.e., when only one parent is provided,
-    it will be recombined twice, producing both maternal and paternal
-    chromosomes of the offspring.
-    *   conversion is allowed. Note that conversion will nullify many
-    recombination events, depending on the parameters chosen.
+    A genotype transmitter (during-mating operator) that transmits
+    parental chromosomes to offspring, subject to recombination and
+    gene conversion. This can be used to replace
+    mendelianGenoTransmitter and selfingGenoTransmitter. It does not
+    work in haplodiploid populations, although a customized genotype
+    transmitter that makes uses this operator could be defined. Please
+    refer to the simuPOP user's guide or online cookbook for details.
+    Recombination could be applied to all adjacent markers or after
+    specified loci. Recombination rate between two adjacent markers
+    could be specified directly, or calculated using physical distance
+    between them. In the latter case, a recombination intensity is
+    multiplied by physical distance between markers.  Gene conversion
+    is interpreted as double-recombination events. That is to say, if
+    a recombination event happens, it has a certain probability (can
+    be 1) to become a conversion event, namely triggering another
+    recombination event down the chromosome. The length of the
+    converted chromosome can be controlled in a number of ways.
+
+Note:
+
+    simuPOP does not assume any unit to loci positions so
+    recombination intensity could be explained differntly (e.g. cM/Mb,
+    Morgan/Mb) depending on your intepretation of loci positions. For
+    example, if basepair is used for loci position, intensity=10^-8
+    indicates 10^-8 per basepair, which is equivalent to 10^-2 per Mb
+    or 1 cM/Mb. If Mb is used for physical positions, the same
+    recombination intensity could be achieved by intensity=0.01.
 
 "; 
 
 %feature("docstring") simuPOP::recombinator::recombinator "
 
-Description:
-
-    recombine chromosomes from parents
-
 Usage:
 
-    recombinator(intensity=-1, rate=[], loci=[],
+    recombinator(rate=[], intensity=-1, loci=[],
       convMode=NoConversion, begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
 
 Details:
 
-    convMode can take the following forms NoConversion: no conversion
-    (NumMarkers, prob, n): converts a fixed number of markers
-    (GeometricDistribution, prob, p): An geometric distribution is
-    used to determine how many markers will be converted.
-    (TractLength, prob, n): converts a fixed length of tract.
-    (ExponentialDistribution, prob, p): An exponential distribution
-    with parameter convLen will be used to determine track length. The
-    first number is that probability of conversion event among all
-    recombination events. When a recombination event happens, it may
-    become a recombination event if the Holliday junction is
-    resolved/repaired successfully, or a conversion event if the
-    junction is not resolved/repaired. The default convProb is 0,
-    meaning no conversion event at all. Note that the ratio of
-    conversion to recombination events varies greatly from study to
-    study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics,
-    2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of this
-    parameter. When  Note that
-    *   conversion tract length is usually short, and is estimated to
-    be between 337 and 456 bp, with overall range between maybe 50 -
-    2500 bp.
-    *    simuPOP does not impose a unit for marker distance so your
-    choice of convParam needs to be consistent with your unit. In the
-    HapMap dataset, cM is usually assumed and marker distances are
-    around 10kb (0.001cM ~- 1kb). Gene conversion can largely be
-    ignored. This is important when you use distance based conversion
-    mode such as CONVERT_TrackLength or
-    CONVERT_ExponentialDistribution.
-    *   After a track length is determined, if a second recombination
-    event happens within this region, the track length will be
-    shortened. Note that conversion is identical to double
-    recombination under this context.
-
-Arguments:
-
-    intensity:      intensity of recombination. The actual
-                    recombination rate between two loci is determined
-                    by intensity*locus distance (between them).
-    rate:           recombination rate regardless of locus distance
-                    after all afterLoci. It can also be an array of
-                    recombination rates. Should have the same length
-                    as afterLoci or totNumOfLoci(). The recombination
-                    rates are independent of locus distance.
-    afterLoci:      an array of locus indexes. Recombination will
-                    occur after these loci. If rate is also specified,
-                    they should have the same length. Default to all
-                    loci (but meaningless for those loci located at
-                    the end of a chromosome). If this parameter is
-                    given, it should be ordered, and can not include
-                    loci at the end of a chromosome.
-    haplodiploid:   If set to true, the first copy of paternal
-                    chromosomes is copied directly as the paternal
-                    chromosomes of the offspring. This is because
-                    haplodiploid male has only one set of chromosome.
+    Create a recombinator (a mendelian genotype transmitter with
+    recombination and gene conversion) that passes genotypes from
+    parents (or a parent in case of self-fertilization) to offspring.
+    Recombination happens by default between all adjacent markers but
+    can be limited to a given set of loci. Each locus in this list
+    specifies a recombination point between the locus and the locus
+    immediately before it. Loci that are the first locus on each
+    chromosome are ignored.  If a single recombination rate (parameter
+    rate) is specified, it will used for all loci (all loci or loci
+    specified by parameter loci), regardless of physical distances
+    between adjacent loci.  If a list of recombination rates are
+    specified in rate, a parameter loci with the same length should
+    also be specified. Different recombination rates can then be used
+    for these loci.  A recombination intensity (intensity) can be used
+    to specify recombination rates that are proportional to physical
+    distances between adjacent markers. If the physical distance
+    between two markers is d, the recombination rate between them will
+    be intensity * d. No unit is assume for loci position and
+    recombination intensity.  Gene conversion is controlled using
+    parameter convMode, which can be
+    *   NoConversion: no gene conversion (default).
+    *   (NumMarkers, prob, n): With probability prob, convert a fixed
+    number (n) of markers if a recombination event happens.
+    *   (GeometricDistribution, prob, p): With probability prob,
+    convert a random number of markers if a recombination event
+    happens. The number of markes converted follows a geometric
+    distribution with probability p.
+    *   (TractLength, prob, n): With probability prob, convert a
+    region of fixed tract length (n) if a recombination event happens.
+    The actual number of markers converted depends on loci positions
+    of surrounding loci. The starting position of this tract is the
+    middle of two adjacent markers. For example, if four loci are
+    located at 0, 1, 2, 3 respectively, a conversion event happens
+    between 0 and 1, with a tract length 2 will start at 0.5 and end
+    at 2.5, covering the second and third loci.
+    *   (ExponentialDistribution, prob, p): With probability prob,
+    convert a region of random tract length if a recombination event
+    happens. The distribution of tract length follows a exponential
+    distribution with probability p. The actual number of markers
+    converted depends on loci positions of surrounding loci. simuPOP
+    uses this probabilistic model of gene conversion because when a
+    recombination event happens, it may become a recombination event
+    if the if the Holliday junction is resolved/repaired successfully,
+    or a conversion event if the junction is not resolved/repaired.
+    The probability, however, is more commonly denoted by the ratio of
+    conversion to recombination events in the literature. This ratio
+    varies greatly from study to study, ranging from 0.1 to 15 (Chen
+    et al, Nature Review Genetics, 2007). This translate to
+    0.1/0.9~0.1 to 15/16~0.94 of the gene conversion probability.
 
 Note:
 
-    There is no recombination between sex chromosomes of male
-    individuals if sexChrom()=True. This may change later if the
-    exchanges of genes between pseudoautosomal regions of XY need to
-    be modeled.
+    conversion tract length is usually short, and is estimated to be
+    between 337 and 456 bp, with overall range between maybe 50 - 2500
+    bp. This is usually not enough to conver, for example, two
+    adjacent markers from the HapMap dataset.There is no recombination
+    between sex chromosomes (Chromosomes X and Y), although
+    recombination is possible between pesudoautosomal regions on these
+    chromosomes. If such a feature is required, you will have to
+    simulate the pesudoautosomal regions as separate chromosomes.
 
 "; 
 
@@ -8247,55 +8265,13 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::recCount "
+%feature("docstring") simuPOP::recombinator::recCount "Obsolete or undocumented function."
 
-Description:
+%feature("docstring") simuPOP::recombinator::recCounts "Obsolete or undocumented function."
 
-    return recombination counts (only valid in standard modules)
+%feature("docstring") simuPOP::recombinator::convCount "Obsolete or undocumented function."
 
-Usage:
-
-    x.recCount(idx)
-
-"; 
-
-%feature("docstring") simuPOP::recombinator::recCounts "
-
-Description:
-
-    return recombination counts (only valid in standard modules)
-
-Usage:
-
-    x.recCounts()
-
-"; 
-
-%feature("docstring") simuPOP::recombinator::convCount "
-
-Description:
-
-    return the count of conversion of a certain size (only valid in
-    standard modules)
-
-Usage:
-
-    x.convCount(size)
-
-"; 
-
-%feature("docstring") simuPOP::recombinator::convCounts "
-
-Description:
-
-    return the count of conversions of all sizes (only valid in
-    standard modules)
-
-Usage:
-
-    x.convCounts()
-
-"; 
+%feature("docstring") simuPOP::recombinator::convCounts "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::recombinator::initialize "
 
@@ -8305,9 +8281,9 @@ Usage:
 
 Details:
 
-    Initialize a base genotype operator for a population. This
-    function should be called before any other functions are used to
-    transmit genotype.
+    Initialize a recombinator for the genotypic structure of
+    population pop. This function should be called before a
+    recombinator is explicitly applied to a population.
 
 "; 
 
@@ -8316,6 +8292,13 @@ Details:
 Usage:
 
     x.transmitGenotype(parent, offspring, ploidy)
+
+Details:
+
+    This function transmits genotypes from a parent to the ploidy-th
+    homologous set of chromosomes of an offspring. It can be used, for
+    example, by a customized genotype transmitter to use sex-specific
+    recombination rates to transmit parental genotypes to offspring.
 
 "; 
 
@@ -8905,26 +8888,27 @@ Usage:
 
 Details:
 
-    selfing offspring generator works similarly as a mendelian
-    offspring generator but a single parent produces both the paternal
-    and maternal copy of the offspring chromosomes. This offspring
-    generator accepts a dipload parent. A random copy of the parental
-    chromosomes is chosen randomly to form the parental copy of the
-    offspring chromosome, and is chosen randomly again to form the
-    maternal copy of the offspring chromosome.
+    A genotype transmitter (during-mating operator) that transmits
+    parental genotype of a parent through self-fertilization. That is
+    to say, the offspring genotype is formed according to Mendel's
+    laws, only that a parent serves as both maternal and paternal
+    parents.
 
 "; 
 
 %feature("docstring") simuPOP::selfingGenoTransmitter::selfingGenoTransmitter "
 
-Description:
-
-    Create a self-fertilization genotype transmitter.
-
 Usage:
 
     selfingGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
+
+Details:
+
+    Create a self-fertilization genotype transmitter that transmits
+    genotypes of a parent to an offspring through self-fertilization.
+    Cutsomized chromosomes are not handled. Parameters subPops and
+    infoFields are ignored.
 
 "; 
 
@@ -9237,6 +9221,40 @@ Usage:
 Usage:
 
     x.fromString(vars)
+
+"; 
+
+%ignore simuPOP::simpleStmt;
+
+%feature("docstring") simuPOP::simpleStmt::simpleStmt "
+
+Usage:
+
+    simpleStmt(stmt)
+
+"; 
+
+%feature("docstring") simuPOP::simpleStmt::var "
+
+Usage:
+
+    x.var()
+
+"; 
+
+%feature("docstring") simuPOP::simpleStmt::operation "
+
+Usage:
+
+    x.operation()
+
+"; 
+
+%feature("docstring") simuPOP::simpleStmt::value "
+
+Usage:
+
+    x.value()
 
 "; 
 

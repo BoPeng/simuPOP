@@ -233,7 +233,7 @@ protected:
 /** A genotype transmitter (during-mating operator) that transmits parental
  *  genotype of a parent through self-fertilization. That is to say, the
  *  offspring genotype is formed according to Mendel's laws, only that a
- *  parent serves as both maternal and paternal parents. 
+ *  parent serves as both maternal and paternal parents.
  */
 class selfingGenoTransmitter : public mendelianGenoTransmitter
 {
@@ -336,8 +336,13 @@ class mitochondrialGenoTransmitter : public genoTransmitter
 public:
 	/** Createa a mitochondrial genotype transmitter that treats all Customized
 	 *  chromosomes, or a list of chromosomes specified by \e chroms, as human
-	 *  mitochondrial chromosomes. It transmits these chromosomes randomly from
-	 *  the female parent to offspring of both sexes.
+	 *  mitochondrial chromosomes. These chromosomes should have the same
+	 *  length and the same number of loci. This operator transmits these
+	 *  chromosomes randomly from the female parent to offspring of both sexes.
+	 *  \note The 'form offspring genotype' flag of this operator is set to
+	 *  \c False so this operator will not be the promary genotype transmitter.
+	 *  Please refer to the simuPOP user's guide for the implication of this
+	 *  setting.
 	 */
 	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
@@ -386,84 +391,107 @@ private:
 };
 
 
-/**
-   In simuPOP, only one recombinator is provided. Recombination events between loci
-   a/b and b/c are independent, otherwise there will be some linkage between loci. Users
-   need to specify physical recombination rate between adjacent loci. In addition,
-   for the recombinator
-   \li it only works for diploid (and for females in haplodiploid) populations.
-   \li the recombination rate must be comprised between \c 0.0 and \c 0.5. A recombination
-   rate of \c 0.0 means that the loci are completely linked, and thus behave together
-   as a single linked locus. A recombination rate of \c 0.5 is equivalent to free of
-   recombination. All other values between \c 0.0 and \c 0.5 will represent various
-   linkage intensities	between adjacent pairs of loci. The recombination rate is
-   equivalent to <tt>1-linkage</tt> and represents the probability that the allele
-   at the next locus is randomly drawn.
-   \li it works for selfing. I.e., when only one parent is provided, it will be
-   recombined twice, producing both maternal and paternal chromosomes of the
-   offspring.
-   \li conversion is allowed. Note that conversion will nullify many recombination
-    events, depending on the parameters chosen.
+/** A genotype transmitter (during-mating operator) that transmits parental
+ *  chromosomes to offspring, subject to recombination and gene conversion.
+ *  This can be used to replace \c mendelianGenoTransmitter and
+ *  \c selfingGenoTransmitter. It does not work in haplodiploid populations,
+ *  although a customized genotype transmitter that makes uses this
+ *  operator could be defined. Please refer to the simuPOP user's guide or
+ *  online cookbook for details.
+ *
+ *  Recombination could be applied to all adjacent markers or after specified
+ *  loci. Recombination rate between two adjacent markers could be specified
+ *  directly, or calculated using physical distance between them. In the latter
+ *  case, a recombination intensity is multiplied by physical distance between
+ *  markers.
+ *
+ *  Gene conversion is interpreted as double-recombination events. That is to
+ *  say, if a recombination event happens, it has a certain probability (can
+ *  be 1) to become a conversion event, namely triggering another recombination
+ *  event down the chromosome. The length of the converted chromosome can be
+ *  controlled in a number of ways.
+ *
+ *  \note simuPOP does not assume any unit to loci positions so recombination
+ *  intensity could be explained differntly (e.g. cM/Mb, Morgan/Mb) depending
+ *  on your intepretation of loci positions. For example, if basepair is used
+ *  for loci position, <tt>intensity=10^-8</tt> indicates <tt>10^-8</tt> per
+ *  basepair, which is equivalent to <tt>10^-2</tt> per Mb or 1 cM/Mb. If \c Mb
+ *  is used for physical positions, the same recombination intensity could be
+ *  achieved by <tt>intensity=0.01</tt>.
  */
-
 class recombinator : public genoTransmitter
 {
 public:
-	/// recombine chromosomes from parents
-	/**
-	   \param intensity intensity of recombination. The actual recombination rate
-	    between two loci is determined by <tt>intensity*locus distance (between them)</tt>.
-	   \param rate recombination rate regardless of locus distance after all \c afterLoci.
-	    It can also be an array of recombination rates. Should have the same length
-	    as \c afterLoci or \c totNumOfLoci().
-	    The recombination rates are independent of locus distance.
-	   \param afterLoci an array of locus indexes. Recombination will occur after these
-	    loci. If \c rate is also specified, they should have the same length. Default
-	    to all loci (but meaningless for those loci located at the end of a chromosome).
-	    If this parameter is given, it should be ordered, and can not include loci at
-	   the end of a chromosome.
-
-	 * \e convMode can take the following forms
-	 * NoConversion: no conversion
-	 * (NumMarkers, prob, n): converts a fixed number of markers
-	 * (GeometricDistribution, prob, p): An geometric distribution is used to
-	        determine how many markers will be converted.
-	 * (TractLength, prob, n): converts a fixed length of tract.
-	 * (ExponentialDistribution, prob, p): An exponential distribution with parameter
-	        \c convLen will be used to determine track length.
-	 * The first number is that probability of conversion event among all recombination
-	    events. When a recombination event happens, it may become a recombination event
-	    if the Holliday junction is resolved/repaired successfully, or a
-	    conversion event if the junction is not resolved/repaired. The
-	    default \c convProb is 0, meaning no conversion event at all.
-	    Note that the ratio of conversion to recombination events varies greatly from
-	    study to study, ranging from 0.1 to 15 (Chen et al, Nature Review Genetics, 2007).
-	    This translate to 0.1/0.9~0.1 to 15/16~0.94 of this parameter. When
-
-	    Note that
-	   \li conversion tract length is usually short, and is estimated to be
-	        between 337 and 456 bp, with overall range between maybe 50 - 2500 bp.
-	   \li simuPOP does not impose a unit for marker distance so your choice
-	        of \c convParam needs to be consistent with your unit. In the HapMap dataset,
-	        cM is usually assumed and marker distances are around 10kb (0.001cM ~- 1kb).
-	        Gene conversion can largely be ignored. This is important when
-	        you use distance based conversion mode such as \c CONVERT_TrackLength or
-	   \c CONVERT_ExponentialDistribution.
-	   \li After a track length is determined, if a second recombination
-	        event happens within this region, the track length will be shortened.
-	        Note that conversion is identical to double recombination under
-	        this context.
-	   \param haplodiploid If set to true, the first copy of paternal chromosomes
-	        is copied directly as the paternal chromosomes of the offspring. This
-	        is because haplodiploid male has only one set of chromosome.
-
-	   \note There is no recombination between sex chromosomes of male individuals
-	   if <tt>sexChrom()=True</tt>. This may change later if the exchanges
-	   of genes between pseudoautosomal regions of \c XY need to be modeled.
-
+	/** Create a recombinator (a mendelian genotype transmitter with
+	 *  recombination and gene conversion) that passes genotypes from parents
+	 *  (or a parent in case of self-fertilization) to offspring.
+	 *
+	 *  Recombination happens by default between all adjacent markers but can
+	 *  be limited to a given set of \e loci. Each locus in this list specifies
+	 *  a recombination point between the locus and the locus immediately
+	 *  \b before it. Loci that are the first locus on each chromosome are
+	 *  ignored.
+	 *
+	 *  If a single recombination rate (parameter \e rate) is specified, it
+	 *  will used for all loci (all loci or loci specified by parameter
+	 *  \e loci), regardless of physical distances between adjacent loci.
+	 *
+	 *  If a list of recombination rates are specified in \e rate, a parameter
+	 *  \e loci with the same length should also be specified. Different
+	 *  recombination rates can then be used for these loci.
+	 *
+	 *  A recombination intensity (\e intensity) can be used to specify
+	 *  recombination rates that are proportional to physical distances between
+	 *  adjacent markers. If the physical distance between two markers is \c d,
+	 *  the recombination rate between them will be <tt>intensity * d</tt>. No
+	 *  unit is assume for loci position and recombination intensity.
+	 *
+	 *  Gene conversion is controlled using parameter \e convMode, which can be
+	 *
+	 *  \li <tt>NoConversion</tt>: no gene conversion (default).
+	 *  \li <tt>(NumMarkers, prob, n)</tt>: With probability \e prob, convert
+	 *      a fixed number (\e n) of markers if a recombination event happens.
+	 *  \li <tt>(GeometricDistribution, prob, p)</tt>: With probability \e prob,
+	 *      convert a random number of markers if a recombination event happens.
+	 *      The number of markes converted follows a geometric distribution
+	 *      with probability \e p.
+	 *  \li <tt>(TractLength, prob, n)</tt>: With probability \e prob, convert
+	 *      a region of fixed tract length (\e n) if a recombination event
+	 *      happens. The actual number of markers converted depends on loci
+	 *      positions of surrounding loci. The starting position of this
+	 *      tract is the middle of two adjacent markers. For example, if four
+	 *      loci are located at <tt>0, 1, 2, 3</tt> respectively, a conversion
+	 *      event happens between \c 0 and \c 1, with a tract length 2 will
+	 *      start at 0.5 and end at 2.5, covering the second and third loci.
+	 *  \li <tt>(ExponentialDistribution, prob, p)</tt>: With probability
+	 *      \e prob, convert a region of random tract length if a recombination
+	 *      event happens. The distribution of tract length follows a
+	 *      exponential distribution with probability \c p. The actual number
+	 *      of markers converted depends on loci positions of surrounding loci.
+	 *
+	 *  simuPOP uses this probabilistic model of gene conversion because when a
+	 *  recombination event happens, it may become a recombination event if the
+	 *  if the Holliday junction is resolved/repaired successfully, or a
+	 *  conversion event if the junction is not resolved/repaired. The
+	 *  probability, however, is more commonly denoted by the ratio of
+	 *  conversion to recombination events in the literature. This ratio varies
+	 *  greatly from study to study, ranging from 0.1 to 15 (Chen et al, Nature
+	 *  Review Genetics, 2007). This translate to 0.1/0.9~0.1 to 15/16~0.94 of
+	 *  the gene conversion probability.
+	 *
+	 *  \note conversion tract length is usually short, and is estimated to be
+	 *      between 337 and 456 bp, with overall range between maybe 50 - 2500
+	 *      bp. This is usually not enough to conver, for example, two adjacent
+	 *      markers from the HapMap dataset.
+	 *
+	 *  \note There is no recombination between sex chromosomes (Chromosomes X
+	 *      and Y), although recombination is possible between pesudoautosomal
+	 *      regions on these chromosomes. If such a feature is required, you
+	 *      will have to simulate the pesudoautosomal regions as separate
+	 *      chromosomes.
 	 */
-	recombinator(double intensity = -1, vectorf rate = vectorf(), vectoru loci = vectoru(),
-		const floatList & convMode = NoConversion,
+	recombinator(const floatList & rate = floatList(), double intensity = -1,
+		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr());
@@ -483,7 +511,10 @@ public:
 	}
 
 
-	/// return recombination counts (only valid in standard modules)
+	/** HIDDEN
+	 *  Return recombination counts at a given location. This is used only for
+	 *  debugging purposes and is only valid in standard modules.
+	 */
 	UINT recCount(size_t idx)
 	{
 		DBG_FAILIF(idx >= m_recCount.size(), IndexError,
@@ -496,7 +527,10 @@ public:
 	}
 
 
-	/// return recombination counts (only valid in standard modules)
+	/** HIDDEN
+	 *  Return recombination counts at all locations. This is used only for
+	 *  debugging purposes and is only valid in standard modules.
+	 */
 	vectoru recCounts()
 	{
 #ifndef OPTIMIZED
@@ -507,7 +541,10 @@ public:
 	}
 
 
-	/// return the count of conversion of a certain size (only valid in standard modules)
+	/** HIDDEN
+	 *  Return number of conversion events with given size. This is used only for
+	 *  debugging purposes and is only valid in standard modules.
+	 */
 	ULONG convCount(size_t size)
 	{
 #ifndef OPTIMIZED
@@ -518,7 +555,10 @@ public:
 	}
 
 
-	/// return the count of conversions of all sizes (only valid in standard modules)
+	/** HIDDEN
+	 *  Return the count of conversions of all sizes. This is used only for
+	 *  debugging purposes and is only valid in standard modules.
+	 */
 	std::map<int, int> convCounts()
 	{
 #ifndef OPTIMIZED
@@ -529,17 +569,23 @@ public:
 	}
 
 
+	/** Initialize a recombinator for the genotypic structure of population
+	 *  \e pop. This function should be called before a recombinator is
+	 *  explicitly applied to a population.
+	 */
 	void initialize(const population & pop);
 
-	// this function implement how to recombine
-	// parental chromosomes and set one copy of offspring chromosome
-	// bt contains the bernulli trailer
-
+	/** This function transmits genotypes from a \e parent to the \e ploidy-th
+	 *  homologous set of chromosomes of an \e offspring. It can be used, for
+	 *  example, by a customized genotype transmitter to use sex-specific
+	 *  recombination rates to transmit parental genotypes to offspring.
+	 */
 	void transmitGenotype(const individual & parent,
 		individual & offspring, int ploidy);
 
-	/// apply the recombinator during mating
-	/// CPPONLY
+	/** CPPONLY
+	 *  Apply the recombinator during mating
+	 */
 	virtual bool applyDuringMating(population & pop,
 		RawIndIterator offspring,
 		individual * dad, individual * mom);
@@ -556,7 +602,7 @@ private:
 	vectorf m_rate;
 
 	/// initial parameter
-	vectoru m_afterLoci;
+	vectorlu m_loci;
 
 	/// position to recombine, changed to fit a special pop
 	vectoru m_recBeforeLoci;

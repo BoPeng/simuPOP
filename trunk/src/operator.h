@@ -590,8 +590,8 @@ private:
 };
 
 /** This operator does nothing when it is applied to a population. It is
-  * usually used as a placeholder when an operator is needed syntactically.
-  */
+ *  usually used as a placeholder when an operator is needed syntactically.
+ */
 class noneOp : public baseOperator
 {
 
@@ -824,7 +824,7 @@ private:
  *  non-optimized modules, namely
  *  \li set environment variable \c SIMUDEBUG.
  *  \li use <tt>simuOpt.setOptions(debug)</tt> function.
- *  \li use function \c TurnOnDebug 
+ *  \li use function \c TurnOnDebug
  *  \li use the \c turnOnDebug operator
  *
  *  The advantage of using an operator is that you can turn on debug at

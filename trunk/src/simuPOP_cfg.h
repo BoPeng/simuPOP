@@ -389,7 +389,6 @@ public:
 };
 
 
-
 #define PreMating            1
 #define DuringMating         2
 #define PostMating           4
@@ -413,7 +412,7 @@ public:
     if (!(cond)) \
 	{ \
 		int line = __LINE__; \
-		throw exception(__FILE__ + string(":") +  toStr(line) + string(" ") + message); \
+		throw exception(__FILE__ + string(":") + toStr(line) + string(" ") + message); \
 	}
 
 #  define DBG_FAILIF(cond, exception, message) \

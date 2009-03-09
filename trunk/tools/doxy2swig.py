@@ -1150,10 +1150,10 @@ class Doxy2SWIG:
             txt.append('')
             # itemize
             if t.startswith('+'):
-                txt.extend(textwrap.wrap(t, initial_indent = initial_indent,
+                txt.extend(textwrap.wrap(t.strip(), initial_indent = initial_indent,
                     subsequent_indent = '  ' + subsequent_indent))
             else:
-                txt.extend(textwrap.wrap(t, initial_indent = initial_indent,
+                txt.extend(textwrap.wrap(t.strip(), initial_indent = initial_indent,
                     subsequent_indent=subsequent_indent))
         return ('\n'.join(txt)).strip('\n')
 
@@ -1272,8 +1272,8 @@ class Doxy2SWIG:
             print >> out
             print >> out, self.wrap_reST(entry['Doc'])
             if entry.has_key('note') and entry['note'] != '':
-                print >> out, '   **Note**:'
-                print >> out, self.wrap_reST(entry['note'])
+                print >> out, '\n   .. note::\n'
+                print >> out, '%s' % self.wrap_reST(entry['note'].strip(), ' '*6, ' '*6)
             print >> out
             # only use the first constructor
             constructor = [x for x in self.content if x['type'] == 'constructorofclass_' + entry['Name'] and not x['ignore'] and not x['hidden']]

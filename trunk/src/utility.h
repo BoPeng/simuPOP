@@ -183,6 +183,8 @@ public:
 	{
 		return ind.affected();
 	}
+
+
 };
 
 // ////////////////////////////////////////////////////////////
@@ -405,24 +407,30 @@ public:
 	{
 	}
 
+
 	stringFunc(PyObject * func) : m_value(), m_func(func)
 	{
 	}
+
 
 	string value() const
 	{
 		return m_value;
 	}
 
+
 	pyFunc func() const
 	{
 		return m_func;
 	}
 
+
 	bool empty() const
 	{
-		return m_value.empty() && ! m_func.isValid();
+		return m_value.empty() && !m_func.isValid();
 	}
+
+
 private:
 	string m_value;
 
@@ -898,7 +906,7 @@ private:
 
 /** CPPONLY
  *  Define a class that decipher simple statements that
- *  can be executed faster for infoExec. It does not 
+ *  can be executed faster for infoExec. It does not
  *  execute the statement.
  */
 class simpleStmt
@@ -910,16 +918,19 @@ public:
 	{
 		return m_var;
 	}
-	
+
+
 	OperationType operation() const
 	{
 		return m_operation;
 	}
 
+
 	double value() const
 	{
 		return m_value;
 	}
+
 
 private:
 	string m_var;
@@ -1089,6 +1100,7 @@ public:
 	~StreamProvider()
 	{
 	}
+
 
 	/// CPPONLY m_flag: if type ''
 	bool noOutput()
