@@ -230,18 +230,19 @@ protected:
 };
 
 
-/** selfing offspring generator works similarly as a mendelian offspring
-   generator but a single parent produces both the paternal and maternal
-   copy of the offspring chromosomes. This offspring generator accepts a
-   dipload parent. A random copy of the parental chromosomes is chosen
-   randomly to form the parental copy of the offspring chromosome, and
-   is chosen randomly again to form the maternal copy of the offspring
-   chromosome.
+/** A genotype transmitter (during-mating operator) that transmits parental
+ *  genotype of a parent through self-fertilization. That is to say, the
+ *  offspring genotype is formed according to Mendel's laws, only that a
+ *  parent serves as both maternal and paternal parents. 
  */
 class selfingGenoTransmitter : public mendelianGenoTransmitter
 {
 public:
-	/// Create a self-fertilization genotype transmitter.
+	/** Create a self-fertilization genotype transmitter that transmits
+	 *  genotypes of a parent to an offspring through self-fertilization.
+	 *  Cutsomized chromosomes are not handled. Parameters \e subPops and
+	 *  \e infoFields are ignored.
+	 */
 	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
@@ -273,21 +274,22 @@ public:
 };
 
 
-/** haplodiploid offspring generator mimics sex-determination in honey bees.
-   Given a female (queen) parent and a male parent, the female is considered
-   as diploid with two set of chromosomes, and the male is condiered as haploid.
-   Actually, the first set of male chromosomes are used. During mating,
-   female produce eggs, subject to potential recombination and gene conversion,
-   while male sperm is identical to the parental chromosome.
-
-   Female offspring has two sets of chromosomes, one from mother and one from
-   father. Male offspring has one set of chromosomes from his mother.
-   <applicability>haplodiploid only</applicability>
+/** A genotype transmitter (during-mating operator) for haplodiploid
+ *  populations. The female parent is considered as diploid and the male parent
+ *  is considered as haploid (only the first homologous copy is valid). If the
+ *  offspring is \c Female, she will get a random copy of two homologous
+ *  chromosomes of her mother, and get the only paternal copy from her father.
+ *  If the offspring is \c Male, he will only get a set of chromosomes from his
+ *  mother.
  */
 class haplodiploidGenoTransmitter : public mendelianGenoTransmitter
 {
 public:
-	/// Create a haplodiploid genotype transmitter.
+	/** Create a haplodiploid genotype transmitter (during-mating operator)
+	 *  that transmit parental genotypes from parents to offspring in a
+	 *  haplodiploid population. Parameters \e subPops and \e infoFields
+	 *  are ignored.
+	 */
 	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const vectorstr & infoFields = vectorstr())
@@ -326,8 +328,8 @@ private:
 
 
 /** This geno transmitter assumes that the first homologous copy of several (or
- *  all) Customized chromosomes are copies of mitochondrial chromosomes. It
- *  transmits these chromosomes randomly from the female parent.
+ *  all) \c Customized chromosomes are copies of mitochondrial chromosomes. It
+ *  transmits these chromosomes randomly from the female parent to offspring.
  */
 class mitochondrialGenoTransmitter : public genoTransmitter
 {
