@@ -65,20 +65,23 @@ public:
 
 
 	/** Clear (set alleles to zero) chromosome \e chrom on the \e ploidy-th
-	 *  homologous set of chromosomes of individual \e ind.
+	 *  homologous set of chromosomes of individual \e ind. It is equivalent to
+	 *  <tt>ind.setGenotype([0], ploidy, chrom)</tt>.
 	 */
 	void clearChromosome(const individual & ind, int ploidy, int chrom);
 
 	/** Transmit chromosome \e chrom on the \e parPloidy set of homologous
 	 *  chromosomes from \e parent to the \e ploidy set of homologous
-	 *  chromosomes of \e offspring.
+	 *  chromosomes of \e offspring. It is equivalent to
+	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy, chrom), polidy, chrom)</tt>.
 	 */
 	void copyChromosome(const individual & parent, int parPloidy,
 		individual & offspring, int ploidy, int chrom);
 
 	/** Transmit the \e parPloidy set of homologous chromosomes from \e parent
 	 *  to the \e ploidy set of homologous chromosomes of \e offspring.
-	 *  Customized chromosomes are not copied.
+	 *  Customized chromosomes are not copied. It is equivalent to
+	 *  <tt>offspring.setGenotype(parent.genotype(parPloidy), ploidy)</tt>.
 	 */
 	void copyChromosomes(const individual & parent, int parPloidy,
 		individual & offspring, int ploidy);
@@ -113,14 +116,19 @@ protected:
 	vectoru m_chromIdx;
 };
 
+
 /** This during mating operator copies parental genotype directly to offspring.
  *  This operator works for all mating schemes when one or two parents are
- *  involved. If both parents are passed, maternal genotype are copied.
+ *  involved. If both parents are passed, maternal genotype are copied. This
+ *  genotype transmitter does not copy genotype on customized chromosomes.
  */
 class cloneGenoTransmitter : public genoTransmitter
 {
 public:
-	/** Create a clone genotype transmitter.
+	/** Create a clone genotype transmitter (a during-mating operator) that
+	 *  copies genotypes from parents to offspring. If two parents are
+	 *  specified, genotypes are copied maternally. Parameters \e subPops,
+	 *  and \e infoFields are ignored.
 	 */
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
@@ -154,19 +162,19 @@ public:
 };
 
 
-/** Mendelian offspring generator accepts two parents and pass their
-   genotype to a number of offspring following Mendelian's law. Basically,
-   one of the paternal chromosomes is chosen randomly to form the paternal
-   copy of the offspring, and one of the maternal chromosome is chosen
-   randomly to form the maternal copy of the offspring. The number of offspring
-   produced is controled by parameters \c numOffspring, \c numOffspringFunc,
-   \c maxNumOffspring and \c mode. Recombination will not happen unless
-   a during-mating operator recombinator is used.
+/** This Mendelian offspring generator accepts two parents and pass their
+ *  genotypes to an offspring following Mendel's laws. Sex chromosomes are
+ *  handled according to the sex of the offspring, which is usually determined
+ *  in advance by an offspring generator. Customized chromosomes are not
+ *  handled.
  */
 class mendelianGenoTransmitter : public genoTransmitter
 {
 public:
-	/** Create a Mendelian genotype transmitter.
+	/** Create a Mendelian genotype transmitter (a during-mating operator) that
+	 *  transmits genotypes from parents to offspring following Mendel's laws.
+	 *  Autosomes and sex chromosomes are handled but customized chromosomes
+	 *  are ignored. Parameters \e subPops and \e infoFields are ignored.
 	 */
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
@@ -213,8 +221,11 @@ public:
 protected:
 	// cache chromBegin, chromEnd for better performance.
 	vectoru m_chIdx;
+
 	int m_chromX;
+
 	int m_chromY;
+
 	UINT m_numChrom;
 };
 
