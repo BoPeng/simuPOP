@@ -10,6 +10,7 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Allow operators to output to a Python function.
   - NEW: Allow the use of double-click to open a browse dialog for file and directory
 		input in simuOpt.
+  - BUG: Fix a memory leak bug related to infoEval and infoExec.
 		
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009

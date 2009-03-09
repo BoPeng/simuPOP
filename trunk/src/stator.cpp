@@ -63,11 +63,21 @@ string infoEval::evalInfo(individual * ind)
 {
 	vectorstr infos = ind->infoFields();
 
-	// update dictionary
 	for (UINT idx = 0; idx < infos.size(); ++idx) {
 		string name = infos[idx];
 		double val = ind->info(idx);
-		PyDict_SetItemString(m_dict, name.c_str(), PyFloat_FromDouble(val));
+		PyObject * obj = PyFloat_FromDouble(val);
+		int err = PyDict_SetItemString(m_dict, name.c_str(), obj);
+		Py_DECREF(obj);
+		if (err != 0) {
+#ifndef OPTIMIZED
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
+#endif
+			throw RuntimeError("Setting information fields as variables failed");
+		}
 	}
 
 	if (!m_exposeInd.empty()) {
