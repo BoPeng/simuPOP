@@ -362,19 +362,19 @@ public:
 	/**
 	   If none of the during mating operator can form offspring, default will be used.
 	 */
-	bool formOffGenotype()
+	bool isTransmitter()
 	{
-		return ISSETFLAG(m_flags, m_flagFormOffGenotype);
+		return ISSETFLAG(m_flags, m_flagTransmitter);
 	}
 
 
 	/// CPPONLY
-	void setFormOffGenotype(bool flag = true)
+	void setTransmitter(bool flag = true)
 	{
 		if (flag)
-			SETFLAG(m_flags, m_flagFormOffGenotype);
+			SETFLAG(m_flags, m_flagTransmitter);
 		else
-			RESETFLAG(m_flags, m_flagFormOffGenotype);
+			RESETFLAG(m_flags, m_flagTransmitter);
 	}
 
 
@@ -474,7 +474,7 @@ private:
 	static const size_t m_flagAtAllGen = 8;
 	static const size_t m_flagOnlyAtBegin = 16;
 	static const size_t m_flagOnlyAtEnd = 32;
-	static const size_t m_flagFormOffGenotype = 64;
+	static const size_t m_flagTransmitter = 64;
 	// limited to haploid?
 	static const size_t m_flagHaploid = 128;
 	// limited to diploid?
@@ -951,9 +951,9 @@ public:
 	   \param func a Python function. Its form is determined by other parameters.
 	   \param param any Python object that will be passed to \c func after \c pop parameter.
 	    Multiple parameters can be passed as a tuple.
-	   \param formOffGenotype This option tells the mating scheme this operator will set
+	   \param isTransmitter This option tells the mating scheme this operator will set
 	    the genotype of offspring (valid only for <tt>stage=DuringMating</tt>). By default
-	    (<tt>formOffGenotype=False</tt>), a mating scheme will set the genotype of offspring before it is
+	    (<tt>isTransmitter=False</tt>), a mating scheme will set the genotype of offspring before it is
 	    passed to the given Python function. Otherwise, a 'blank' offspring will be passed.
 	   \param passOffspringOnly if \c True, \c pyOperator will expect a function of form <tt>func(off [,param])</tt>,
 	    instead of <tt>func(pop, off, dad, mom [, param])</tt> which is used when \c passOffspringOnly
@@ -970,7 +970,7 @@ public:
 	   a selector, a \c PreMating Python operator should be used.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
-		int stage = PostMating, bool formOffGenotype = false, bool offspringOnly = false,
+		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr());
 

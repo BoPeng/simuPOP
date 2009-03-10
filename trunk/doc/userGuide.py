@@ -532,6 +532,22 @@ logging.shutdown()
 for file in ['LD.txt', 'LD_0.txt', 'LD_1.txt', 'LD_2.txt', 'R2.txt', 'LD_2.txt', 'simulation.log']:
     os.remove(file)
 
+#file log/transmitter.log
+simu = simulator(population(size=10000, loci=[2]), randomMating())
+simu.evolve(
+    preOps = [initByValue([1, 2, 2, 1])],
+    ops = [
+        # Recombination only happens after generation 30. A
+        # mendelianGenoTransmitter defined in randomMating is responsible
+        # for genotype transmission before that.
+        recombinator(rate=0.01, begin=30),
+        stat(LD=[0, 1]),
+        pyEval(r"'gen %d, LD: %.2f\n' % (gen, LD[0][1])", step=20)
+    ],
+    gen=100
+)
+#end
+
 #file log/hybrid.log
 def myPenetrance(geno):
     'A three-locus heterogeneity penetrance model'
@@ -1014,9 +1030,9 @@ class sexSpecificRecombinator(pyOperator):
             maleLoci, maleConvMode)
         #
         self.initialized = False
-        # Note the use of parameter formOffGenotype.
+        # Note the use of parameter isTransmitter
         pyOperator.__init__(self, func=self.transmitGenotype,
-            stage=DuringMating, formOffGenotype=True, *args, **kwargs)
+            stage=DuringMating, isTransmitter=True, *args, **kwargs)
     #
     def transmitGenotype(self, pop, off, dad, mom):
         # Recombinators need to be initialized. Basically, they cache some

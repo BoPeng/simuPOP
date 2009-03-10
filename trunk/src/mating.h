@@ -169,8 +169,8 @@ protected:
 	vectorop m_transmitters;
 
 protected:
-	/// see if who will generate offspring genotype
-	bool m_formOffGenotype;
+	/// see who will generate offspring genotype
+	bool m_transmitGenotype;
 
 	bool m_initialized;
 };

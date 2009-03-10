@@ -12,6 +12,8 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
 		input in simuOpt.
   - BUG: Fix a memory leak bug related to infoEval and infoExec. Optimize infoExec
 		for some simple statements.
+  - CHG: change parameter formOffGenotype of pyOperator to isTransmitter as a result of
+		merging concepts 'primary during mating operator' and 'genotype transmitter'.
 		
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009

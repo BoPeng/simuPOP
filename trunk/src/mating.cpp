@@ -30,7 +30,7 @@ namespace simuPOP {
 offspringGenerator::offspringGenerator(const vectorop & ops,
 	const floatListFunc & numOffspring, const floatList & sexMode) :
 	m_numOffspring(numOffspring), m_sexMode(sexMode.elems()),
-	m_transmitters(0), m_formOffGenotype(true), m_initialized(false)
+	m_transmitters(0), m_transmitGenotype(true), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
 		"Please specify either number of offspring or a function.");
@@ -84,7 +84,7 @@ offspringGenerator::~offspringGenerator()
 offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
 	: m_numOffspring(rhs.m_numOffspring),
 	m_sexMode(rhs.m_sexMode), m_transmitters(0),
-	m_formOffGenotype(rhs.m_formOffGenotype),
+	m_transmitGenotype(rhs.m_transmitGenotype),
 	m_initialized(rhs.m_initialized)
 {
 	for (size_t i = 0; i < rhs.m_transmitters.size(); ++i)
@@ -147,12 +147,12 @@ Sex offspringGenerator::getSex(int count)
 
 void offspringGenerator::initialize(const population & pop, SubPopID subPop, vector<baseOperator *> const & ops)
 {
-	m_formOffGenotype = true;
+	m_transmitGenotype = true;
 	vector<baseOperator *>::const_iterator iop = ops.begin();
 	vector<baseOperator *>::const_iterator iop_end = ops.end();
 	for (; iop != ops.end(); ++iop) {
-		if ((*iop)->formOffGenotype())
-			m_formOffGenotype = false;
+		if ((*iop)->isTransmitter())
+			m_transmitGenotype = false;
 	}
 	m_initialized = true;
 }
@@ -187,7 +187,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 		for (; iop != iopEnd; ++iop) {
 			try {
 				// During mating operator might reject this offspring.
-				if (!m_formOffGenotype && (*iop)->formOffGenotype())
+				if (!m_transmitGenotype && (*iop)->isTransmitter())
 					continue;
 
 				if (!(*iop)->applyDuringMating(pop, it, dad, mom)) {

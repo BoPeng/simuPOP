@@ -281,7 +281,7 @@ bool ticToc::apply(population & pop)
 
 
 pyOperator::pyOperator(PyObject * func, PyObject * param,
-	int stage, bool formOffGenotype, bool passOffspringOnly,
+	int stage, bool isTransmitter, bool passOffspringOnly,
 	int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const vectorstr & infoFields) :
 	baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
@@ -290,7 +290,7 @@ pyOperator::pyOperator(PyObject * func, PyObject * param,
 	if (!m_func.isValid())
 		throw ValueError("Passed variable is not a callable Python function.");
 
-	this->setFormOffGenotype(formOffGenotype);
+	this->setTransmitter(isTransmitter);
 }
 
 

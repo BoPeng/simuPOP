@@ -183,11 +183,11 @@ vectoru simulator::evolve(const vectorop & ops,
 	}
 	// first put in DuringMating operators that can form genotype
 	for (size_t i = 0; i < ops.size(); ++i)
-		if (ops[i]->canApplyDuringMating() && ops[i]->formOffGenotype())
+		if (ops[i]->canApplyDuringMating() && ops[i]->isTransmitter())
 			durmatingOps.push_back(ops[i]);
 
 	for (size_t i = 0; i < ops.size(); ++i)
-		if (ops[i]->canApplyDuringMating() && !ops[i]->formOffGenotype())
+		if (ops[i]->canApplyDuringMating() && !ops[i]->isTransmitter())
 			durmatingOps.push_back(ops[i]);
 
 	// check compatibility of operators

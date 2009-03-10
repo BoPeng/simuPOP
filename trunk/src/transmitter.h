@@ -53,7 +53,7 @@ public:
 		baseOperator("", DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
-		setFormOffGenotype(true);
+		setTransmitter(true);
 	}
 
 
@@ -135,7 +135,7 @@ public:
 		const vectorstr & infoFields = vectorstr()) :
 		genoTransmitter(begin, end, step, at, rep, subPops, infoFields)
 	{
-		setFormOffGenotype(true);
+		setTransmitter(true);
 	}
 
 
@@ -352,7 +352,7 @@ public:
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
 		// this is intended to be an auxillary genotype transmitter.
-		setFormOffGenotype(false);
+		setTransmitter(false);
 	}
 
 
