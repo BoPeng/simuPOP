@@ -496,21 +496,6 @@ del migrator.__init__
 migrator.__init__ = new_migrator
 
 
-def new_recombinator(self, intensity=-1, rate=[], *args, **kwargs):
-    # parameter rate
-    if type(rate) in [types.IntType, types.FloatType]:
-        r = [rate]
-    else:
-        r = rate
-    cppModule.recombinator_swiginit(self,
-        cppModule.new_recombinator(intensity, r, *args, **kwargs))
-
-new_recombinator.__doc__ = recombinator.__init__.__doc__
-del recombinator.__init__
-recombinator.__init__ = new_recombinator
-
-
-
 def new_initByFreq(self, alleleFreq=[], *args, **kwargs):
     # parameter alleleFreq
     if len(alleleFreq) > 0 and type(alleleFreq[0]) in [types.IntType, types.LongType, types.FloatType]:
