@@ -269,9 +269,9 @@ Details:
 
 %ignore simuPOP::baseOperator::infoField(UINT idx);
 
-%ignore simuPOP::baseOperator::formOffGenotype();
+%ignore simuPOP::baseOperator::isTransmitter();
 
-%ignore simuPOP::baseOperator::setFormOffGenotype(bool flag=true);
+%ignore simuPOP::baseOperator::setTransmitter(bool flag=true);
 
 %feature("docstring") simuPOP::baseOperator::apply "
 
@@ -7314,7 +7314,7 @@ Description:
 Usage:
 
     pyOperator(func, param=None, stage=PostMating,
-      formOffGenotype=False, offspringOnly=False, begin=0, end=-1,
+      isTransmitter=False, offspringOnly=False, begin=0, end=-1,
       step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
@@ -7324,10 +7324,10 @@ Arguments:
     param:          any Python object that will be passed to func
                     after pop parameter. Multiple parameters can be
                     passed as a tuple.
-    formOffGenotype:This option tells the mating scheme this operator
+    isTransmitter:  This option tells the mating scheme this operator
                     will set the genotype of offspring (valid only for
                     stage=DuringMating). By default
-                    (formOffGenotype=False), a mating scheme will set
+                    (isTransmitter=False), a mating scheme will set
                     the genotype of offspring before it is passed to
                     the given Python function. Otherwise, a 'blank'
                     offspring will be passed.
