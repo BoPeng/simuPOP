@@ -1269,7 +1269,7 @@ class simuOpt:
                     if idx in self.processedArgs or idx+1 in self.processedArgs:
                         raise exceptions.ValueError("Parameter " + cmdArgs[idx] + " has been processed before.")
                     try:
-                        val = _getParamValue(p, cmdArgs[idx+1])
+                        val = _getParamValue(opt, cmdArgs[idx+1])
                         self.processedArgs.extend([idx, idx+1])
                         opt['value'] = val
                         opt['processed'] = True
