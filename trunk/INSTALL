@@ -205,14 +205,7 @@ There are detailed instructions at wxPython homepage.
 There are a few reasons why you might need to install simuPOP from source
   1. Binary package for your system is not provided.
   2. You would like to build special version of Python and simuPOP for maximum
-     efficiently. For example, simuPOP built with intel C++ compiler (icc) 
-	 usually runs 20% to 30% faster than g++ compiled ones. Since intel C++ 
-	 for linux is free for non-commercial users, using intel C++ is a good choice 
-	 on linux systems.
-  3. simuPOP has a MPI version that can spread populations over a cluster and
-	 simulate huge genome likes what is used in genome-wide association studies. 
-	 No binary is provided since there are many different implementations of MPI. 
-	 You will have to compile by yourself if want to use simuPOP/MPI.
+     efficiently.
 
 
 For simple installation, boost and swig is not needed and simple
@@ -221,7 +214,7 @@ usually suffice. If you have modified simuPOP source code, you will have to
 install SWIG to generate wrap files for your new code.
 
 
-2.1.1. Installing boost libraries (iostreams, serialization and/or MPI)
+2.1.1. Installing boost libraries (iostreams, serialization and regex)
 =======================================================================
 
 Starting from simuPOP-0.7.8, boost 1.36 is bundled with simuPOP source
@@ -252,7 +245,7 @@ Note that:
 	     "-sTOOLS=gcc"  --with-serialization --with-iostreams --prefix=/usr install
      Boost CVS:
        > bjam toolset=gcc/cxxflags=-fPIC -j6 -d+2 --prefix=/usr \
-	     --with-serialization --with-iostreams  --with-mpi install
+	     --with-serialization --with-iostreams  install
 		 
      Note that link=static can not be used here (because of a bjam bug).
 
@@ -484,9 +477,6 @@ Then, get simuPOP/svn from https://simupop.svn.sourceforge.net/svnroot/simupop/t
 You can choose to install boost completely or unpack boost 1.36 as boost_1_36_0
 under the top source directory of simuPOP. In the later case, simuPOP will automatically
 compile the needed libraries from boost source.
-
-This step is optional, but is needed if you would like to compile the
-MPI version of simuPOP. boost/svn is needed for its boost/MPI library.
 
 3.3. Installing SWIG
 =====================
