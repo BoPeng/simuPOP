@@ -131,7 +131,7 @@ class popStatDialog(wx.Dialog):
         self.lbl_maxallele = wx.StaticText(self.panel_convert, -1, "Max allele number")
         self.txt_maxallele = wx.TextCtrl(self.panel_convert, -1, "auto")
         self.btn_export_fstat = wx.Button(self.panel_convert, -1, "Export to fstat format")
-        self.rb_fileformat = wx.RadioBox(self.panel_convert, -1, "Save in format", choices=["Text (*.txt)", "Binary (*.bin)", "XML (*.xml)", "Automatic"], majorDimension=2, style=wx.RA_SPECIFY_ROWS)
+        self.rb_fileformat = wx.RadioBox(self.panel_convert, -1, "Save in format", choices=["population (*.pop)", "all (*)"], majorDimension=2, style=wx.RA_SPECIFY_ROWS)
         self.btn_save_simuPOP = wx.Button(self.panel_convert, -1, "Save in simuPOP format")
         self.lal_pop_type = wx.StaticText(self.panel_convert, -1, "Population type")
         self.cb_poptype = wx.ComboBox(self.panel_convert, -1, choices=[], style=wx.CB_DROPDOWN|wx.CB_SIMPLE|wx.CB_READONLY)
@@ -374,10 +374,11 @@ class popStatDialog(wx.Dialog):
             # try to load population
             try:
                 print "Loading population", popFileName
-                self.pop = LoadPopulation(popFileName)
+                self.pop = LoadPopulation(str(popFileName))
                 self.popFileName = popFileName
                 self.txt_filename.SetValue(popFileName)
-            except:
+            except Exception, e:
+                print e
                 wx.MessageBox("Can not load file " + popFileName, "Load Population Failed", wx.OK)
                 self.pop = None    
                 self.popFileName = ''            
@@ -405,7 +406,7 @@ class popStatDialog(wx.Dialog):
             filename = self.txt_filename.GetValue().strip()
         else:
             filedlg = wx.FileDialog( self, message="Choose a population", defaultDir=os.getcwd(), 
-                defaultFile="", wildcard="bin files (*.bin)|*.bin|txt files (*.txt)|*.txt|(xml files (*.xml)|*.xml", style=wx.OPEN | wx.CHANGE_DIR)
+                defaultFile="", wildcard="population files (*.pop)|*.pop", style=wx.OPEN | wx.CHANGE_DIR)
             if filedlg.ShowModal() == wx.ID_OK:
                 filename = filedlg.GetPath()
             else: # cancel, do nothing
@@ -423,7 +424,6 @@ Population size: %d
 Number of chromosome: %d
 Number of loci on each chromosome: %s
 Has sex chromosome: %s
-Max allele state: %d
 Number of subpopulations: %d 
 Subpopulation sizes: %s
 Number of ancestral population: %d
@@ -432,10 +432,9 @@ Number of ancestral population: %d
             self.pop.numChrom(), \
             ', '.join([str(self.pop.numLoci(i)) for i in range(self.pop.numChrom())] ), \
             str(self.pop.sexChrom()), \
-            self.pop.maxAllele(), \
             self.pop.numSubPop(), \
             ', '.join([str(self.pop.subPopSize(i)) for i in range(self.pop.numSubPop())]), \
-            self.pop.ancestralDepth() )
+            self.pop.ancestralGens() )
         generalInfo += "Locus positions on chromosome: \n"
         for ch in range(self.pop.numChrom()):
             generalInfo += "  " + self.pop.chromName(ch) + "  " + ", ".join([str(self.pop.locusPos( self.pop.absLocusIndex(ch,a))) for a in range(self.pop.numLoci(ch))]) + "\n"            
@@ -498,7 +497,7 @@ Number of ancestral population: %d
             self.txt_from.SetValue('0')
             self.txt_to.SetValue(str(min(self.pop.subPopSize(0)-1, 100)))
             self.listbox_ancestral.Set( ['current'] + \
-                ['ancestral pop '+str(i) for i in range(1,self.pop.ancestralDepth()+1)])
+                ['ancestral pop '+str(i) for i in range(1,self.pop.ancestralGens()+1)])
             self.listbox_ancestral.SetSelection(0)
             self.OnGenotypeGridUpdate(None) 
         self.genoPageReady = True
@@ -506,9 +505,9 @@ Number of ancestral population: %d
     def OnGenotypeGridUpdate(self, event):
         # 0 means current, ....         
         if    self.listbox_ancestral.GetSelection() == -1:
-            self.pop.useAncestralPop( 0 )
+            self.pop.useAncestralGen( 0 )
         else:
-            self.pop.useAncestralPop( self.listbox_ancestral.GetSelection() )
+            self.pop.useAncestralGen( self.listbox_ancestral.GetSelection() )
         try:
             if self.listbox_subPop.GetSelection() == 0: # all
                 low = min( int(self.txt_from.GetValue()), self.pop.popSize())
@@ -552,7 +551,7 @@ Number of ancestral population: %d
         self.statPageReady = True
          
     def setConvertPage(self):
-        if self.pop is not None or self.pop.ancestralDepth() == 0: # no ancestral population
+        if self.pop is not None or self.pop.ancestralGens() == 0: # no ancestral population
             self.btn_export_linkage.Disable()
         else:
             self.btn_export_linkage.Enable()
