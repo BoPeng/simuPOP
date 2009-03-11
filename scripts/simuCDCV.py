@@ -4,14 +4,11 @@
 #     On the allelic spectrum of human disease
 # plus migration and complexity of the common disease
 #
-# Bo Peng (bpeng@rice.edu)
+# Bo Peng (bpeng@mdanderson.org)
 #
 # $LastChangedDate$
 # $Rev$
 # 
-# Usage:
-#     simuReich2001.py 
-#
 #
 
 """
@@ -44,13 +41,6 @@ import os, sys, types, exceptions, math
 # declare all options, getParam will use these info to get parameters
 # from a tk/wx-based dialog, command line, options etc.
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
-    },
     {'longarg': 'numDSL=',
      'default': 1,
      'label': 'Number of DSL',
@@ -244,59 +234,87 @@ options = [
      'allowedTypes': [types.IntType, types.LongType],
      'description': 'when resume is not empty. Start from this generation. This option is only available from command line.'
     },
-    {'longarg': 'dryrun',
-     'default': False,
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueOneOf([True, False]),
-     'description':    'Only display how simulation will perform.'
-     # do not save to config, do not prompt, so this appeared to be an undocumented option.
-    },
     {'longarg': 'name=',
      'default': 'cdcv',
      'allowedTypes': [types.StringType],
      'label': 'Name of the simulation',
      'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
     },
-    {'arg': 'v',
-     'longarg': 'verbose',
-     'default': False,
-     'allowedTypes': [types.NoneType, types.IntType],
-     'description': 'Verbose mode.'
-    }
 ]
 
-def getOptions(details=__doc__):
-    ''' get options from options structure,
-        if this module is imported, instead of run directly,
-        user can specify parameter in some other way.
+def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
     '''
-    #
-    # get all parameters, __doc__ is used for help info
-    opt = simuOpt.simuOpt(options, 
-        'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
-        'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
-        'and plotted (if R/RPy is available).\n', details)
-    if not opt.getParam(nCol=2):
-        sys.exit(1)
-    # -h or --help
-    if opt.help:    
-        print opt.usage()
-        sys.exit(0)
-    #
-    # --name
-    if opt.name is None: 
-        print "Name of the simulation is invalid"
-        sys.exit(1)
-    else:
-        if not os.path.isdir(opt.name):
-            os.makedirs(opt.name)
-        opt.saveConfig(os.path.join(opt.name, opt.name + '.cfg'))
-    #
-    # --verbose or -v 
-    if opt.verbose:                 # verbose
-        print opt.listOptions
-    # return the rest of the parameters
-    return opt.asList()[1:-1]
+    Linearly expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    inc = (endSize-initSize)/float(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = initSize + inc*(gen-burnin)
+        #
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
+
+
+def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+    '''
+    Exponentially expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    rate = (math.log(endSize)-math.log(initSize))/(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = int(initSize*math.exp((gen-burnin)*rate))
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
+
+def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+    '''
+    Instaneously expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = endSize
+        if gen < split:
+            return [int(tot)]
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
 
 # 
 # calculate statistics from a populations
@@ -367,7 +385,7 @@ def PlotSpectra(pop, param):
     # use global logOutput handle
     # this is less efficient but make sure we can see partial results
     logOutput = open(os.path.join(name, name+'.log'), "a")
-    logOutput.write("%d\t" % pop.gen())
+    logOutput.write("%d\t" % pop.dvars().gen)
     for sp in range(pop.numSubPop()):
         # unpack result
         [perc, numAllele, effNumAllele, overallFreq, percMostCommon, perc5MostCommon, percAncestralAllele] \
@@ -390,8 +408,8 @@ def PlotSpectra(pop, param):
         return True
     # record global ne history
     global NeHist, NeMax, FHist, FMax
-    NeHist[0].append(pop.gen())
-    FHist[0].append(pop.gen())
+    NeHist[0].append(pop.dvars().gen)
+    FHist[0].append(pop.dvars().gen)
     for d in range(numDSL):
         NeHist[d+1].append( effNumAllele[d] )
         FHist[d+1].append( overallFreq[d] )
@@ -399,9 +417,9 @@ def PlotSpectra(pop, param):
     NeMax = max( NeMax, max( effNumAllele))
     # now, variable like perc holds results for the whole populations.
     # plot something:
-    if pop.gen() in saveAt:
-        print "Saving figure in %s%d.eps (instead of displaying it)" % (name,pop.gen())
-        r.postscript(file=os.path.join(name, '%s%d.eps' % (name, pop.gen())), width=6, height=8 )
+    if pop.dvars().gen in saveAt:
+        print "Saving figure in %s%d.eps (instead of displaying it)" % (name,pop.dvars().gen)
+        r.postscript(file=os.path.join(name, '%s%d.eps' % (name, pop.dvars().gen)), width=6, height=8 )
     #
     # set no conversion mode to save execution time
     set_default_mode(NO_CONVERSION)
@@ -422,7 +440,7 @@ def PlotSpectra(pop, param):
     r.par(mar=[0.1]*4)
     r.par(oma=range(1,5))
     # windows 1
-    r.ltitle('Generation %d, PopSize %d' % (pop.gen(), pop.popSize()),
+    r.ltitle('Generation %d, PopSize %d' % (pop.dvars().gen, pop.popSize()),
         backcolor='white', forecolor='darkblue', cex=2.5)
     # windows 2
     r.ltitle(''),
@@ -487,7 +505,7 @@ def PlotSpectra(pop, param):
 total disease allele frequency
 Percent of 1 (5) most allele among all disease alleles''',
         cex=1.5, forecolor='blue')
-    if pop.gen() in saveAt:
+    if pop.dvars().gen in saveAt:
         r.dev_off()
     return True
 
@@ -497,7 +515,7 @@ def simuCDCV(numDSL, initSpec, selModel,
         initSize, finalSize, burnin, noMigrGen,
         mixingGen, growth, numSubPop, migrModel, migrRate,
         update, dispPlot, saveAt, savePop, resume,
-        resumeAtGen, name, dryrun):
+        resumeAtGen, name):
     ''' parameters are self-expanary. See help info for
         detailed simulation scheme. '''
     # generations
@@ -518,14 +536,14 @@ def simuCDCV(numDSL, initSpec, selModel,
     if resume == '':
         simu = simulator(     
             population(size=incFunc(0), loci=[1]*(numDSL),
-                maxAllele = maxAllele, infoFields=['fitness']),    
-            randomMating(newSubPopSizeFunc=incFunc)
+                infoFields=['fitness']),    
+            randomMating(subPopSize=incFunc)
         )
     else:
         try:
             print "Resuming simulation from file ", resume, " at generation ", resumeAtGen
             pop = LoadPopulation(resume)
-            simu = simulator(pop, randomMating(newSubPopSizeFunc=incFunc))
+            simu = simulator(pop, randomMating(subPopSize=incFunc))
             simu.setGen(resumeAtGen)
         except exceptions.Exception, e:
             print "Can not resume from population "+ resume + ". Aborting."
@@ -539,19 +557,19 @@ def simuCDCV(numDSL, initSpec, selModel,
     # determine selection
     #
     if selModelAllDSL == 'customized':
-        selection = maSelector( loci=range(numDSL), fitness=selCoef, wildtype=[0] )
+        selection = maSelector(loci=range(numDSL), fitness=selCoef, wildtype=[0] )
     else:
         sel = []
         for d in range(numDSL):
             if selModel[d] == 'recessive':
-                sel.append(maSelector(locus=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
+                sel.append(maSelector(loci=d, fitness=[1,1,1-selCoef[d]], wildtype=[0]))
             else: 
-                sel.append(maSelector(locus=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
+                sel.append(maSelector(loci=d, fitness=[1,1-selCoef[d]/2.,1-selCoef[d]], wildtype=[0]))
         # now, the whole selector
         if selModelAllDSL == 'additive':
-            selection = mlSelector(sel, mode=SEL_Additive)
+            selection = mlSelector(sel, mode=Additive)
         elif selModelAllDSL == 'multiplicative':
-            selection = mlSelector(sel, mode=SEL_Multiplicative)
+            selection = mlSelector(sel, mode=Multiplicative)
     # migration
     if numSubPop == 1 or migrModel == 'none':
         # no migration
@@ -591,7 +609,7 @@ def simuCDCV(numDSL, initSpec, selModel,
     simu.evolve(                            # start evolution
         preOps=
             # initialize DSL 
-            [initByFreq(atLoci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
+            [initByFreq(loci=[x], alleleFreq=initSpec[x]) for x in range(numDSL)] +
             [pyExec('allelesBeforeExpansion=[]')],
         ops=[         
             # report population size, for monitoring purpose only
@@ -610,7 +628,7 @@ def simuCDCV(numDSL, initSpec, selModel,
                 print "Ancestral alleles before expansion: ", allelesBeforeExpansion[i]''' % \
                 numDSL, at=[burnin]),
             #
-            splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
+            splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[burnin]),
             # mutate
             mutation,
             # selection
@@ -623,10 +641,9 @@ def simuCDCV(numDSL, initSpec, selModel,
             ticToc(step=100),
             ## pause at any user key input (for presentation purpose)
             ## pause(stopOnKeyStroke=1)
-            savePopulation(outputExpr='"%s/%s-%%d.txt"%% gen' % (name, name), step=3000),
+            savePopulation(output='!"%s/%s-%%d.txt"%% gen' % (name, name), step=3000),
         ],
-        end=end,
-        dryrun = dryrun
+        gen=end
     )
     #
     if savePop != '':
@@ -635,14 +652,23 @@ def simuCDCV(numDSL, initSpec, selModel,
 
 if __name__ == '__main__':
     # get parameters
-    allParam = getOptions()
+    par = simuOpt.simuOpt(options, 
+        'This program simulates the evolution of a mono or polygenic disease using a three-stage\n' +
+        'evolutionary scenario. The allelic spectrum at all disease susceptibility loci are recorded\n' +
+        'and plotted (if R/RPy is available).', __doc__)
+    if not par.getParam():
+        sys.exit(1)
+    #
+    if not os.path.isdir(par.name):
+        os.makedirs(par.name)
+        par.saveConfig(os.path.join(par.name, par.name + '.cfg'))
     #
     # unpack parameters
     (numDSL, initSpecTmp,
         selModelTmp, selModelAllDSL, selCoefTmp, mutaModel, maxAllele, mutaRateTmp, 
         initSize, finalSize, burnin, noMigrGen, mixingGen, growth, numSubPop, 
         migrModel, migrRate, update, dispPlot, saveAt, savePop, resume,
-        resumeAtGen, dryrun, name) = allParam
+        resumeAtGen, name) = par.asList()
 
     if dispPlot:
         try:
@@ -710,7 +736,7 @@ if __name__ == '__main__':
         initSize, finalSize, burnin, noMigrGen,
         mixingGen, growth, numSubPop, migrModel, migrRate,
         update, dispPlot, saveAt, savePop,
-        resume, resumeAtGen, name, dryrun)
+        resume, resumeAtGen, name)
     #
     # write report? What kind?
     # raw_input("Press any key to close this program and the R plot")        
