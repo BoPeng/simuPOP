@@ -1103,6 +1103,7 @@ class simuProgress:
         if self.gui in ['wxPython', True]:
             try:
                 import wx
+                self.gui = 'wxPython'
             except ImportError:
                 self.gui = 'Tkinter'
         if self.gui == 'Tkinter':
