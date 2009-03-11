@@ -1,0 +1,22 @@
+# This file is local/.htaccess -- the default distribution contains this
+# file to prevent local/ scripts from being accessed directly by browsers
+# (this is a potential, albeit very unlikely, security hole).
+#
+# If you alter or replace this file, it will likely be overwritten when
+# you upgrade from one version of PmWiki to another.  Be sure to save
+# a copy of your alterations in another location so you can restore them,
+# and you might try changing this file to be read-only to prevent a PmWiki
+# upgrade from overwriting your altered version.
+
+# Use mod_rewrite to enable "Clean URLs" for a PmWiki installation.
+RewriteEngine On
+# Define the rewrite base.
+RewriteBase /pmwiki
+# Send requests without parameters to pmwiki.php.
+#RewriteRule ^$           pmwiki.php  [L]
+# Send requests for index.php to pmwiki.php.
+#RewriteRule ^index\.php$ pmwiki.php  [L]
+# Send requests to pmwiki.php, appending the query string part.
+RewriteRule ^([A-Z0-9\xa0-\xff].*)$ pmwiki.php?n=$1  [QSA,L]
+#RewriteRule ^([A-Z0-9\xa0-\xff].*)$ pmwiki.php/$1  [QSA,L]
+

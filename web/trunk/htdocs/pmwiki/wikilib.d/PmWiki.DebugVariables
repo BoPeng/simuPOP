@@ -1,0 +1,11 @@
+version=pmwiki-2.1.18 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6
+author=TonyColley
+csum=include description of EnableDiag effects
+ctime=1156512549
+host=69.245.128.149
+name=PmWiki.DebugVariables
+rev=3
+targets=PmWiki.Variables
+text=%3c%3c|[[PmWiki.Variables]]|>>%0a%0a:$EnableDiag:(:include AvailableActions#BEGENABLEDIAG#ENDENABLEDIAG:)%0a%0a:$EnableIMSCaching:A variable which, when set equal to 1, recognizes the "If-Modified-Since" header coming from browsers and allows browsers to use locally cached pages.  Disabled by default to help the administrator customize its page without needing permanent reloading.%0a%0a:$EnableStopWatch:This activates an internal stopwatch that shows how long it takes to render a page. (If you have a wiki that composes a HTML page from multiple pages, such as a normal layout with a sidebar, you'll get separate timings for each subpage and for the total page.)%0a%0a: :The timings can be displayed by adding [@%3c!--function:StopWatch-->@] in the wiki template.%0a%0a: :Valid values are:%0a        $EnableStopWatch = 0; # No timings (the default). No HTML will be generated.%0a        $EnableStopWatch = 1; # Wall-clock timings only.%0a        $EnableStopWatch = 2; # Wall-clock and CPU usage timings. Won't work on Windows.%0a%0aSee also:%0a* scripts/refcount.php is useful for debugging%0a
+time=1156872328

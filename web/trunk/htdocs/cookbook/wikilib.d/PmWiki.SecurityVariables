@@ -1,0 +1,11 @@
+version=pmwiki-2.1.14 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux i686 (x86_64); en-US; rv:1.8.0.6) Gecko/20060728 SUSE/1.5.0.6-1.3 Firefox/1.5.0.6
+author=Pm
+csum=$AuthLDAPBindPassw[or]d
+ctime=1156512569
+host=24.1.26.255
+name=PmWiki.SecurityVariables
+rev=5
+targets=PmWiki.Variables,PmWiki.AuthUser,PmWiki.UrlApprovals
+text=%3c%3c|[[PmWiki.Variables]]|>>%0a%0a:$DefaultPasswords:(not documented yet)%0a%0a:$EnablePostAttrClearSession:A switch to control whether or not changing a page's attributes causes any existing passwords to be forgotten. The default is that changing attributes forgets any passwords entered; this can be changed by setting $EnablePostAttrClearSession to zero.%0a%0a:$HandleAuth:This sets the required authentication Level that is necessary to perform an action. When using the following example in your @@config.php@@ you need to be authenticated as editor in order to view the page history:%0a        $HandleAuth['diff'] = 'edit';%0a%0a:$PageAttributes:Set the string showed on the attributes page when entering a password for an action.%0a%0a:$AuthLDAPBindDN:For sites using [[AuthUser]] with LDAP authentication, this specifies the distinguished name (DN) to be used to bind to the LDAP server to check identity.%0a%0a:$AuthLDAPBindPassword:For [[AuthUser]] with LDAP authentication, this specifies the password used for binding (in conjunction with $AuthLDAPBindDN above).%0a%0aSee also:%0a* $EnablePageListProtect%0a* [[UrlApprovals]]%0a
+time=1156529861

@@ -1,0 +1,4 @@
+name=Site.GroupAttributes
+passwdread=@lock
+passwdedit=@lock
+passwdattr=@lock

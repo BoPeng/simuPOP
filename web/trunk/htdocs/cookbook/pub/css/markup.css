@@ -1,0 +1,100 @@
+a.createlink { color: red; }
+#wikitext { line-height: 1.4em; }
+#wikitext sub, #wikitext sup { line-height: 0; }
+div.footnote { 
+    width: 160px; 
+    border-bottom: 1px solid blue;
+	margin-bottom: 0.5em;
+}
+p.footnote {
+	text-indent: -1em;
+	margin-right: 3em;
+	margin-left: 3em;
+	margin-top: 0px;
+	margin-bottom: 0.5em;
+	font-size: smaller;
+}
+p.qanda:first-letter {
+    float: left;
+    font-family: Old English, Georgia, serif;
+    color: #777777;
+    font-size: 250%;
+    line-height: 0.85em;
+    margin-right: 0.3em;
+    margin-bottom:-0.25em;
+}
+p.drop:first-letter {
+    float: left;
+    font-family: Old English, Georgia, serif;
+    font-size: 270%;
+    line-height: 0.85em;
+    padding-top: 0.11em;
+    margin-right: 0.1em;
+    margin-bottom:-0.25em;
+}
+del { color: red; }
+ins { background-color: yellow; }
+div.inote {
+    font-size: 10px;
+    line-height: 1.1em;
+    float: right;
+    padding: 2px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 190px;
+    border-top: 1px dotted gray;
+    border-bottom: 1px dotted gray;
+    background-color: #ffffa1;
+}
+div.inote h1 {
+    background-color: #ffe53e;
+    font-size: 10px;
+    font-weight: normal;
+    margin-top: 0px;
+	margin-left: -2px;
+	margin-right: -2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 1px;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
+}
+div.inote h1 span.inote {
+    float: right;
+}
+div.inote ul, div.inote ol { margin-left: -1.5em; }
+div.inote p.vspace { margin-top:0.5em; }
+span.stickynote {
+    font-size: smaller;
+    float: right;
+    padding: 8px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    width: 170px;
+    border-top: 2px solid gray;
+    border-bottom: 2px solid gray;
+    text-align: center;
+    color: navy;
+    background-color: #dcdcdc;
+}
+span.smallcaps { font-variant: small-caps; }
+dfn  { font-style: normal; cursor: help; }
+abbr { font-style: italic; cursor: help; }
+abbr, dfn.definition { border-bottom: 1px dotted; }
+h5.runin { display: run-in; font-size: 100%; border: none; }
+div.figure {
+    border: thin silver solid;
+    padding: 0.3em;
+}
+div.figure p {
+    text-align: center;
+    font-style: italic;
+    font-size: smaller;
+    padding-top: 0.2em;
+    margin: 0;
+}
+dd, li p { margin-bottom: 0.5em }
+/*
+b.selflink { border-bottom: 1px dotted; }
+@media screen{ b.selflink { color: #e66e31; } }
+*/

@@ -1,0 +1,24 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5 (.NET CLR 3.5.30729)
+author=
+charset=ISO-8859-1
+csum=
+ctime=1232384895
+host=127.0.0.1
+name=Cookbook.EvolutionaryScenarios
+rev=5
+targets=Cookbook.RestartIfFailed,Cookbook.FollowFreqTrajectory
+text=(:redirect [[Main.EvolutionaryScenarios]]:)
+time=1233547821
+author:1232509322=
+diff:1232509322:1232506278:=5d4%0a%3c * [[Cookbook/FollowFreqTrajectory]] Run a smaller simulation and record allele frequency trajectory, follow this frequency trajectory in subsequent multiple replicate simulations.%0a
+host:1232509322=127.0.0.1
+author:1232506278=
+diff:1232506278:1232384909:=3,4c3%0a%3c * [[Cookbook/RestartIfFailed]] Restart an evolution if the frequency of an allele is not within specified range.%0a%3c %0a---%0a> * [TODO] Restart an evolution if an allele gets lost or fixed.%0a\ No newline at end of file%0a
+host:1232506278=127.0.0.1
+author:1232384909=
+diff:1232384909:1232384895:=3c3%0a%3c * [TODO] Restart an evolution if an allele gets lost or fixed.%0a\ No newline at end of file%0a---%0a> * Restart an evolution if an allele gets lost or fixed.%0a\ No newline at end of file%0a
+host:1232384909=127.0.0.1
+author:1232384895=
+diff:1232384895:1232384895:=1,3d0%0a%3c This page lists some commonly used evolutionary scenarios%0a%3c %0a%3c * Restart an evolution if an allele gets lost or fixed.%0a\ No newline at end of file%0a
+host:1232384895=127.0.0.1
