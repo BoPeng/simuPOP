@@ -198,16 +198,6 @@ include gsl/cdf/chisq.c
 include gsl/cdf/gamma.c
 
 
-# bundled scripts
-include scripts/simuViewPop.py
-include scripts/simuCDCV.py
-include scripts/simuRecHotSpot.py
-include scripts/simuCluster.py
-include scripts/simuForward.py
-include scripts/simuComplexDisease.py
-include scripts/analComplexDisease.py
-include scripts/simuNeutralSNPs.py
-
 # tests
 include test/run_tests.py
 include test/run_tests.sh
