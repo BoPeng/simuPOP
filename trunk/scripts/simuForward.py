@@ -146,24 +146,10 @@ the population.
 import simuOpt
 # load simuPOP libraries
 from simuPOP import *
-from simuUtil import LinearExpansion, ExponentialExpansion, MigrSteppingStoneRates, MigrIslandRates
+from simuUtil import MigrSteppingStoneRates, MigrIslandRates
 import os, sys, exceptions, types, math
 
-#
-# declare all options. getParam will use these information to get parameters
-# from a tk/wxPython-based dialog, command line, config file or user input
-#
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'useDefault': True,
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
-    },
-    #
-    # 
     {'separator': 'Genotype structure:'},    
     {'longarg': 'numChrom=',
      'default': 10,
@@ -301,7 +287,6 @@ options = [
      'default': 0.05,
      'label': 'minimal Allele Frequency',
      'allowedTypes': [types.TupleType, types.ListType],
-     'prompt': 'Minimum allele frequency required for each DSL (0.01):    ',
      'description': '''Mininal allele frequencies required for each DSL,
                 The simulation will restart if allele frequency is lower than
                 this number. Can be given as a number (for all DSL), or a list.''',
@@ -311,7 +296,6 @@ options = [
      'default': 0.20,
      'label': 'maximum Allele Frequency',
      'allowedTypes': [types.TupleType, types.ListType],
-     'prompt': 'Maximum allele frequency required for each DSL (0.2):    ',
      'description': '''Maximum allele frequencies required for each DSL,
                 The simulation will restart if allele frequency is greater than
                 this number.''',
@@ -447,14 +431,6 @@ options = [
     #
     # 
     {'separator': 'Miscellaneous:'},
-    {'longarg': 'dryrun',
-     'useDefault': True,
-     'default': False,
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueOneOf([True, False]),
-     'description':    'Only display how simulation will perform.'
-     # do not save to config, do not prompt, so this appeared to be an undocumented option.
-    },
     {'longarg': 'savePop=',
      'default': [],
      'useDefault': True,
@@ -466,7 +442,7 @@ options = [
                 not be resumed from this population due to the re-generation of allele 
                 frequency trajectories.''',
     },
-    {'longarg': 'simuName=',
+    {'longarg': 'name=',
      'default': 'simu',
      'allowedTypes': [types.StringType],
      'label': 'Simulation name',
@@ -475,58 +451,60 @@ options = [
                     name + '.cfg': configuration
                     name + .bin/txt/xml: saved popuation''',
     },
-    {'longarg': 'saveFormat=',
-     'default': 'txt',
-     'useDefault': True,
-     'allowedTypes': [types.StringType],
-     'label': 'Format to save population',
-     'description': '''Format to save population, can be 
-                 text, bin or xml. Note that the binary format, although
-                 smallest, may not be portable between different machines.''',    
-     'chooseOneOf': [ 'txt', 'bin', 'xml']
-    },
-    {'arg': 'v',
-     'longarg': 'verbose',
-     'useDefault': True,
-     'default': False,
-     'allowedTypes': [types.NoneType, types.IntType],
-     'description': 'Verbose mode.'
-    },
 ]
 
-# __doc__ + parameter definitions use >500 lines, 
-# more than one third of the total length of the script.
 
-def getOptions(details=__doc__):
-    ''' get options from options structure,
-        if this module is imported, instead of ran directly,
-        user can specify parameter in some other way.
+def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
     '''
-    # get all parameters, __doc__ is used for help info
-    allParam = simuOpt.getParam(options, 
-        '''    This program simulates the evolution of a complex common disease, subject 
-     to the impact of mutation, migration, recombination and population size change. 
-     Click 'help' for more information about the evolutionary scenario.''', details, nCol=2)
-    # when user click cancel ...
-    if len(allParam) == 0:
-        sys.exit(1)
-    # -h or --help
-    if allParam[0]:    
-        print simuOpt.usage(options, __doc__)
-        sys.exit(0)
-    # change current directory, all files wil be saved here.
-    try:
-        os.mkdir(allParam[-3])
-    except:
-        pass
-    # --saveConfig
-    if allParam[-3] != None: # saveConfig
-        simuOpt.saveConfig(options, os.path.join(allParam[-3], allParam[-3]+'.cfg'), allParam)
-    # --verbose or -v (these is no beautifying of [floats]
-    if allParam[-1]:                 # verbose
-        simuOpt.printConfig(options, allParam)
-    # return the rest of the parameters
-    return allParam[1:-1]
+    Linearly expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    inc = (endSize-initSize)/float(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = initSize + inc*(gen-burnin)
+        #
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
+
+
+def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+    '''
+    Exponentially expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    rate = (math.log(endSize)-math.log(initSize))/(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = int(initSize*math.exp((gen-burnin)*rate))
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
 
     
 def outputStatistics(pop, args): 
@@ -632,7 +610,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
         numSubPop, migrModel, migrRate,
         fitness, mlSelModel, 
         mutaRate, recRate, savedGen, numOffspring, numOffMode,
-        dryrun, savePop, filename, format):
+        savePop, filename):
     ''' run a simulation of complex disease with given parameters. 
     '''    
     ###
@@ -725,7 +703,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             initByValue(value=[[x]*sum(loci) for x in range(50, 60)],
                 proportions=[.1]*10), 
             # and then init DSL with all wild type alleles
-            initByValue([0]*len(DSL), atLoci=DSL)
+            initByValue([0]*len(DSL), loci=DSL)
         ]
     else: # SNP
         preOperators = [
@@ -733,17 +711,17 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             initByValue(value=[[x]*sum(loci) for x in [0,1] ],
                 proportions=[.5]*2),
             # and then init DSL with all wild type alleles
-            initByValue([0]*len(DSL), atLoci=DSL)
+            initByValue([0]*len(DSL), loci=DSL)
         ]
     ###
     ### mutation, start from gen 0,
     ###
     if maxAle > 1:    # Not SNP
         # symmetric mutation model for microsatellite
-        mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, atLoci=nonDSL)
+        mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, loci=nonDSL)
     else:
         # k-allele model for mutation of SNP
-        mutator = kamMutator(rate=mutaRate, maxAllele=1, atLoci=nonDSL)
+        mutator = kamMutator(rate=mutaRate, maxAllele=1, loci=nonDSL)
     ###
     ### Recombination
     ###
@@ -772,7 +750,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     operators = [
         mutator, 
         rec, 
-        savePopulation(burnin_pop, compress=False, at=[burninGen-1]),
+        savePopulation(burnin_pop, at=[burninGen-1]),
         stat(alleleFreq = DSL, popSize =True, end = burninGen, step = 100),
         stat(alleleFreq = DSL, popSize =True, begin = burninGen, end = burninGen + introLen),
         stat(alleleFreq = DSL, popSize = True, begin = burninGen + introLen, step = 100),
@@ -800,7 +778,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
         # before this one.
         operators.append( 
             ifElse("alleleFreq[%d][0]==1." % DSL[i],
-                pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i]),
+                pointMutator(loci=[DSL[i]], toAllele=1, inds=[i]),
             begin=burninGen, end = burninGen + introLen) 
         )
     # optionally, the mutants will be given some selective pressure
@@ -864,7 +842,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     )
     if len(savePop) > 0:
         # save population at given generations
-        operators.append(savePopulation(outputExpr='os.path.join(simuName, "%s_%d.%s" % (simuName, gen, format))', 
+        operators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.pop" % (name, gen))', 
             at=savePop))
     ###
     ###  demographic model
@@ -897,13 +875,10 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             # skip the burnin stage.
             print "Loading %s and skip burnin stage (gen=%d)" % (burnin_pop, burninGen)
             simu.setGen(burninGen)
-            # evolve! If --dryrun is set, only show info
-            simu.evolve(ops = operators, end = endingGen,
-                dryrun=dryrun )
+            simu.evolve(ops = operators, gen = endingGen)
         else:
-            pop = population(subPop=popSizeFunc(0), ploidy=2,
+            pop = population(size=popSizeFunc(0), ploidy=2,
                     loci = loci,
-                    maxAllele = maxAle,
                     lociPos = lociPos,
     				infoFields = ['fitness', 'father_idx', 'mother_idx'])
             # save DSL info, some operators will use it.
@@ -913,11 +888,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             pop.dvars().numLoci = numLoci
             simu = simulator(pop, randomMating(), rep=1)
             #
-            # evolve! If --dryrun is set, only show info
-            simu.evolve( preOps = preOperators, ops = operators, gen=endingGen - savedGen,
-                dryrun=dryrun )
-            if dryrun:
-                raise exceptions.SystemError("Stop since in dryrun mode.")
+            simu.evolve( preOps = preOperators, ops = operators, gen=endingGen - savedGen)
         if simu.gen() != endingGen - savedGen:
             print "Population restarted at gen ", simu.gen(), endingGen-savedGen
             print "Overall fixed population ", fixedCount
@@ -964,15 +935,23 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
             pop.dvars().recRate = recRate
             pop.dvars().numOffspring = numOffspring
             pop.dvars().numOffMode = numOffMode
-            print "Saving population to " + filename + '.' + format + '\n'
+            print "Saving population to " + filename + '\n'
             #TurnOnDebug(DBG_UTILITY)
-            simu.population(0).savePopulation(filename+'.'+format, compress=False)
+            simu.population(0).savePopulation(filename)
             break;
     return True
 
 if __name__ == '__main__':
-    ############## GET OPTIONS ####################################
-    allParam = getOptions()
+    par = simuOpt.simuOpt(options, 
+        '''This program simulates the evolution of a complex common disease, subject 
+     to the impact of mutation, migration, recombination and population size change. 
+     Click 'help' for more information about the evolutionary scenario.''', __doc__)
+    if not par.getParam():
+        sys.exit(1)
+    #
+    if not os.path.isdir(par.name):
+        os.mkdir(par.name)
+    par.saveConfig(os.path.join(par.name, par.name + '.cfg'))
     # unpack options
     (numChrom, numLoci, markerType, DSLafter, DSLdist, 
         initSize, endingSize, growthModel, 
@@ -981,12 +960,7 @@ if __name__ == '__main__':
         numSubPop, migrModel, migrRate,
         fitness, selMultiLocusModel,
         mutaRate, recRate, savedGen, numOffspring, numOffMode,
-        dryrun, savePop, simuName, format) = allParam
-    #
-    # check minimal requirement of simuPOP version
-    if simuRev() < 383:
-        raise exceptions.SystemError('''This scripts requires simuPOP revision >=425. 
-            Please upgrade your simuPOP distribution.''' )
+        savePop, name) = par.asList()
     #
     ################## RUN THE SIMULATION ###############
     simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist, 
@@ -996,5 +970,5 @@ if __name__ == '__main__':
         numSubPop, migrModel, migrRate,  
         fitness, selMultiLocusModel, 
         mutaRate, recRate, savedGen, numOffspring, numOffMode,
-        dryrun, savePop, os.path.join(simuName, simuName), format)
+        savePop, os.path.join(name, name))
     print "Done!"
