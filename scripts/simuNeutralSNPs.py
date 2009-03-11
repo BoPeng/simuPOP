@@ -50,13 +50,6 @@ except:
 #
 # details about these fields is given in the simuPOP reference manual.
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
-    },
     {'longarg': 'numLoci=',
      'default': 200,
      'label': 'Number of SNP loci',
@@ -163,57 +156,55 @@ options = [
      'description': '''Name of the simulation, configuration and output will be saved to a directory
         with the same name''',
     },
-    {'longarg': 'dryrun',
-     'default': False,
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueOneOf([True, False]),
-     'description':    'Only display how simulation will perform.'
-     # do not save to config, do not prompt, so this appeared to be an undocumented option.
-    },
-    {'arg': 'v',
-     'longarg': 'verbose',
-     'default': False,
-     'allowedTypes': [types.NoneType, types.IntType],
-     'description': 'Verbose mode.'
-    },
 ]
 
 
-def getOptions(details = __doc__):
-    ''' get options from options structure,
-        if this module is imported, instead of ran directly,
-        user can specify parameter in some other way.
+def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
     '''
-    # get all parameters, __doc__ is used for help info
-    allParam = simuOpt.getParam(options, 
-        '''    This program simulates the evolution of a set SNP loci, subject 
-     to the impact of mutation, migration, recombination and population size change. 
-     Click 'help' for more information about the evolutionary scenario.''', details, nCol=2)
-    # when user click cancel ...
-    if len(allParam) == 0:
-        sys.exit(1)
-    # -h or --help
-    if allParam[0]:    
-        print simuOpt.usage(options, __doc__)
-        sys.exit(0)
-    # --name
-    if allParam[-2] != None: # 
-        try:
-            os.makedirs(allParam[-3])
-        except:
-            pass
-        simuOpt.saveConfig(options, '%s/%s.cfg' % (allParam[-3], allParam[-3]), allParam)
-    # --verbose or -v (these is no beautifying of [floats]
-    if allParam[-1]:                 # verbose
-        for p in range(len(options)):
-            if options[p].has_key('label'):
-                if type(allParam[p]) == types.StringType:
-                    print options[p]['label'], ':\t"'+str(allParam[p])+'"'
-                else:
-                    print options[p]['label'], ':\t', str(allParam[p])
-    # return the rest of the parameters
-    return allParam[1:-1]
+    Exponentially expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    rate = (math.log(endSize)-math.log(initSize))/(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = int(initSize*math.exp((gen-burnin)*rate))
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
 
+def InstantExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+    '''
+    Instaneously expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = endSize
+        if gen < split:
+            return [int(tot)]
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
 
 def plotAlleleFreq(pop, param):
     'plot the histogram of allele frequency'
@@ -222,16 +213,16 @@ def plotAlleleFreq(pop, param):
     # 
     freq = pop.dvars().alleleFreq
     freq0 = [min(freq[i][0], 1-freq[i][0]) for i in range(pop.totNumLoci())]
-    r.postscript(os.path.join(param[0], '%s_%d.eps' % (param[0], pop.gen())))
+    r.postscript(os.path.join(param[0], '%s_%d.eps' % (param[0], pop.dvars().gen)))
     r.hist(freq0, nclass=50, xlim=[0,0.5], xlab='frequency', ylab='hist', 
-        main='Histogram of allele frequencies at generation %d' % pop.gen())
+        main='Histogram of allele frequencies at generation %d' % pop.dvars().gen)
     r.dev_off()
     return True
 
 
 # simulate function, 
 def simulate( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGen, 
-        growth, numSubPop, migrModel, migrRate, mutaRate, recRate, name, dryrun):
+        growth, numSubPop, migrModel, migrRate, mutaRate, recRate, name):
     ''' run the simulation, parameters are:
         numLoci:        number of SNP loci on the only chromosome
         lociPos:        loci position on the chromosome. Should be in 
@@ -272,15 +263,14 @@ def simulate( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGe
     if len(lociPos) != numLoci:
         print "If loci position is given, it should have length numLoci"
         sys.exit(1)
-    pop = population(subPop=popSizeFunc(0), ploidy=2,
-        loci = [numLoci], maxAllele = 1, lociPos = lociPos)
+    pop = population(size=popSizeFunc(0), ploidy=2,
+        loci = [numLoci], lociPos = lociPos)
     # save name in var
     pop.dvars().name = name
     # simulator
     simu = simulator( pop, 
-        randomMating( newSubPopSizeFunc=popSizeFunc ),
+        randomMating(subPopSize=popSizeFunc ),
         rep = 1)
-    # evolve! If --dryrun is set, only show info
     simu.evolve( 
         preOps = [
             # initialize all loci with two haplotypes (111,222)
@@ -293,7 +283,7 @@ def simulate( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGe
             # recombination rate
             recombinator(rate=recRate),
             # split population after burnin, to each sized subpopulations
-            splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
+            splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
             # migration
             migrOp,
             # report statistics
@@ -303,20 +293,27 @@ def simulate( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGe
             # plot histogram
             pyOperator(func=plotAlleleFreq, param=(name,), step=50),
             # save population every 1000 generations
-            savePopulation(outputExpr="'%s/%s_%d.txt'%(name,name,gen)",step=1000),
+            savePopulation(output="!'%s/%s_%d.txt'%(name,name,gen)",step=1000),
             # show elapsed time
             ticToc(at=[ split, mixing, endGen])
             ],
-        end=endGen, 
-        dryrun=dryrun 
+        gen=endGen
     )
-    if dryrun:
-        print "Stop since in dryrun mode."
-        sys.exit(1)
     # save population 
-    SavePopulation(pop, os.path.join(name, '%s.txt' % name))
+    pop.save(os.path.join(name, '%s.pop' % name))
 
 
 if __name__ == '__main__':
-    simulate( *getOptions() )
+    par = simuOpt.simuOpt(options, 
+        '''This program simulates the evolution of a set SNP loci, subject 
+     to the impact of mutation, migration, recombination and population size change. 
+     Click 'help' for more information about the evolutionary scenario.''', __doc__)
+    if not par.getParam():
+        sys.exit(1)
+    #
+    if not os.path.isdir(par.name):
+        os.makedir(par.name)
+    #
+    par.saveConfig(os.path.join(par.name, par.name + '.cfg'))
+    simulate(*par.asList())
     
