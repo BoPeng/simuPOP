@@ -46,19 +46,26 @@ For a complete development environment, it is recommended that you also install
 import os, sys, shutil, glob, re, tempfile
 
 # simuPOP works with these boost versions.
-boost_versions = ['1_35_0', '1_36_0', '1_37_0']
+boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
+unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x)]
 if len(included_version) > 0:
     included_boost = True
     included_boost_dir = 'boost_' + included_version[-1]  # use the latest version
+elif len(unsupported_version) > 0:
+    print 'This version of boost is not tested. It may or may not work: %s' % unsupported_version[-1]
+    included_boost = True
+    included_boost_dir = unsupported_version[-1]  # use the latest version
+else:
+    included_boost = False
+    included_boost_dir = 'boost'
+
+if included_boost:
     included_boost_include_dir = included_boost_dir
     included_boost_serialization_dir = os.path.join(included_boost_dir, 'libs', 'serialization', 'src')
     included_boost_iostreams_dir = os.path.join(included_boost_dir, 'libs', 'iostreams', 'src')
     included_boost_regex_dir = os.path.join(included_boost_dir, 'libs', 'regex', 'src')
-else:
-    included_boost = False
-    included_boost_dir = 'boost'
 
 # If setup.py can not find boost libraries, change boost_lib_seach_paths
 # and/or boost_inc_search_paths. 
@@ -387,35 +394,32 @@ if included_boost:
         'basic_pointer_oserializer.cpp',
         ]
     ])
-
-
-if included_boost:
+    #
     LIB_FILES.extend([os.path.join(included_boost_iostreams_dir, x) for x in [
         'mapped_file.cpp',
         'file_descriptor.cpp',
         'zlib.cpp'
         ]
     ])
-
-if included_boost:
+    #
     LIB_FILES.extend([os.path.join(included_boost_regex_dir, x) for x in [
-        "cpp_regex_traits.cpp",
-        "fileiter.cpp",
-        "posix_api.cpp",
-        "regex_raw_buffer.cpp",
-        "usinstances.cpp",
-        "wide_posix_api.cpp",
-        "cregex.cpp",
-        "icu.cpp",
-        "regex.cpp",
-        "regex_traits_defaults.cpp",
-        "w32_regex_traits.cpp",
-        "winstances.cpp",
-        "c_regex_traits.cpp",
-        "instances.cpp",
-        "regex_debug.cpp",
-        "static_mutex.cpp",
-        "wc_regex_traits.cpp",
+        'cpp_regex_traits.cpp',
+        'fileiter.cpp',
+        'posix_api.cpp',
+        'regex_raw_buffer.cpp',
+        'usinstances.cpp',
+        'wide_posix_api.cpp',
+        'cregex.cpp',
+        'icu.cpp',
+        'regex.cpp',
+        'regex_traits_defaults.cpp',
+        'w32_regex_traits.cpp',
+        'winstances.cpp',
+        'c_regex_traits.cpp',
+        'instances.cpp',
+        'regex_debug.cpp',
+        'static_mutex.cpp',
+        'wc_regex_traits.cpp',
         ]
     ])
 
