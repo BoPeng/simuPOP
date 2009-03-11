@@ -1,3 +1,0 @@
-version=pmwiki-2.2.0-beta57 ordered=1 urlencoded=1
-name=SiteAdmin.Status
-text=(:comment Any local edits to this page may be lost!:)%0a%0aThis site is running {$Version} (VersionNum={$VersionNum}).%0a
