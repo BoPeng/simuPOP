@@ -1,0 +1,308 @@
+html {
+    height: 100%;
+}
+
+body
+{
+    font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    color: Black;
+    font-size: 14px;
+    text-align: justify;
+    height: 100%;
+    background: #cbced0 url(images/background.png) top center repeat-y;
+    width: 936px;
+    margin: 0 auto;
+}
+
+#wrapper 
+{
+    position: absolute;
+    min-height: 100%;
+    background: #cbced0 url(images/background.png) top center repeat-y;
+}
+
+hr
+{
+    border: none;
+    height: 1px;
+    background-color: #ccc;
+    color: white;
+    width: 100%;
+}
+
+a
+{
+    color: black;
+    text-decoration: underline;
+}
+
+a:hover
+{
+    color: #007fff;
+    text-decoration: none;
+}
+
+#head
+{
+    width: 936px;
+    height: 100px;
+    background: url(images/header.png) top center no-repeat;
+}
+
+a#imap {
+	left: 1px;
+	top: 1px;
+	width: 178px;
+	height: 100px;
+	position: absolute;
+	text-decoration: none;
+}
+
+a#imap i {
+	visibility: hidden;
+	text-decoration: none;
+}
+
+#page-title
+{
+    position: absolute;
+    top: 52px;
+    left: 210px;
+    width: 725px;
+    font-size: 150%;
+    font-weight: bold;
+    color: #333;
+}
+#head #page-actions
+{
+    position: absolute;
+    top: 0px;
+    left: 205px;
+    width: 725px;
+    font-size: 90%;
+    text-align: right;
+}
+#page-actions ul
+{
+    list-style: none;
+    margin: 0px;
+    padding: 2px;
+}
+#page-actions li
+{
+    display: inline;
+    margin: 0px;
+    padding: 2px;
+}
+#page-actions li a
+{
+    text-decoration: none;
+    color: #333;
+    margin: 0px;
+    padding: 2px;
+}
+#page-actions li a:hover
+{
+    text-decoration: underline;
+}
+#content
+{
+    width: 936px;
+}
+#col-left
+{
+    float: left;
+    width: 171px;
+    padding-left: 10px;
+    padding-top: 15px;
+}
+#col-right
+{
+    float: right;
+    width: 715px;
+    padding-left: 15px;
+    padding-right: 21px;
+}
+
+#wikitext
+{
+    padding: 10px;
+}
+
+#wikitext h1, h2, h3, h4, h5
+{
+    color: #cb3300;
+    text-align: left;    
+}
+#wikitext h1
+{
+    font-size: 140%;
+    display: none;
+}
+#wikitext h2
+{
+    font-size: 130%;
+}
+#wikitext h3
+{
+    font-size: 120%;
+}
+#wikitext h4
+{
+    font-size: 110%;
+}
+#wikitext h5
+{
+    font-size: 100%;
+    font-style: italic;
+}
+
+#sidebar
+{
+    text-align: left;
+}
+#sidebar ul
+{
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+#sidebar li
+{
+    display: list-item;
+    margin: 0px;
+    border-bottom: 1px solid #999;
+}
+#sidebar li a
+{
+    text-decoration: none;
+    color: white;
+    padding: 2px 2px 4px 2px;
+    text-indent: 4px;
+}
+#sidebar ul li a
+{
+    display: block;
+}
+#sidebar ul li a:hover
+{
+    text-decoration: none;
+    background: #999 url(images/selector.png) center right no-repeat;
+    padding: 2px 2px 4px 2px;
+    text-indent: 4px;
+}
+#sidebar a.selflink
+{
+    text-decoration: none;
+    background: #999 url(images/selector.png) center right no-repeat;
+    padding: 2px 2px 4px 2px;
+    text-indent: 4px;
+}
+
+#wikiedit form
+{
+    margin: 0px;
+}
+#wikiedit textarea
+{
+    width: 99%;
+    font-family: monospace;
+}
+
+#footer
+{
+    text-align: right;
+    color: #666;
+    padding: 10px 10px 10px 0px;
+    font-size: 80%;
+}
+
+.difftype, .difftime, .diffrestore
+{
+    font-size: 8pt;
+}
+
+.quickref table
+{
+    margin: 2px auto;
+}
+.quickref tr
+{
+    border: 1px solid #999;
+}
+.quickref td
+{
+    padding: 2px;
+    vertical-align: top;
+}
+
+table.markup
+{
+    border: 1px solid #ccc;
+}
+td.markup1
+{
+    border-bottom: 1px solid #ccc;
+}
+dd
+{
+    margin-left: 18px;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+    font-size: 0;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+html[xmlns] .clearfix {
+    display: block;
+}
+
+* html .clearfix {
+    height: 1%;
+}
+
+.sidehead
+{
+    color: #ffbf00;
+    font-weight: bold;
+}
+
+.i18n_table
+{
+    font-size: 10pt;
+
+}
+
+.i18n_1 { background-color: #99ff66; }
+.i18n_2 { background-color: #ffcc33; }
+.i18n_3 { background-color: #ff6666; }
+
+.sourcecode {
+   background-color: #eef;
+   border: #666 1px solid;
+   padding: 1em;
+}
+/* From comment box */
+
+h4.journalhead, h4.messagehead { background:#ffb; border-top:1px dotted #999; }
+
+.message, .journal, .diary {
+      padding:3px;
+      border:1px dotted #999;
+      background:#ffc;
+}
+
+/* always show vertical scrollbar so the page will not shift when scroll bar appears/disappears */
+HTML {
+	overflow: -moz-scrollbars-vertical;
+}

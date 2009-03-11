@@ -1,0 +1,22 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008120908 Red Hat/3.0.5-1.el5_2 Firefox/3.0.5
+author=
+charset=ISO-8859-1
+csum=
+ctime=1232384195
+host=127.0.0.1
+name=Cookbook.Selfing
+rev=3
+targets=
+text=(:title Simulation of partial self-fertilization of certain plants:)%0a%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:selfing.py | http://simupop.sourceforge.net/images/download.jpg]]|selfing.py%0a%0aThis script demonstrates the use of selfing mating schemes. Because self-fertilization usually only happen to part of the plants in a region, a hetergeneous mating scheme is used to self-fertilize only part of the individuals.%0a%0a%0a=python [=%0adef simuSelfing(perc, N, n_rep, gen):%0a    '''%0a    perc    percentage of individuals under selfing mating schemes%0a    N       population size%0a    n_rep   Number of replicates per simulation%0a    gen     generations to run%0a    '''%0a    pop = population(N, loci=[2])%0a    pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]))%0a%0a    simu = simulator(pop,%0a        heteroMating([%0a            selfMating(subPop=(0, 0)),%0a            randomMating(subPop=(0, 1))%0a        ]),%0a        rep=n_rep%0a    )%0a%0a    simu.evolve(preOps=[%0a            initByValue([0, 1, 1, 0]),%0a            pyExec('ld_hist=[]')  # record ld%0a        ],%0a        ops=[%0a            recombinator(rate=0.01),%0a            stat(LD=[0,1]),%0a            pyExec('ld_hist.append(LD[0][1])')%0a        ],%0a        gen = gen%0a    )%0a    print simu.dvars(0).ld_hist%0a    return 0%0a%0a=]%0a
+time=1232488695
+title=Simulation of partial self-fertilization of certain plants
+author:1232488695=
+diff:1232488695:1232488591:=5c5%0a%3c This script demonstrates the use of selfing mating schemes. Because self-fertilization usually only happen to part of the plants in a region, a hetergeneous mating scheme is used to self-fertilize only part of the individuals.%0a---%0a> This script demonstrates the use of selfing mating schemes.%0a
+host:1232488695=127.0.0.1
+author:1232488591=
+diff:1232488591:1232384195:=1,4d0%0a%3c (:title Simulation of partial self-fertilization of certain plants:)%0a%3c %0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:selfing.py | http://simupop.sourceforge.net/images/download.jpg]]|selfing.py%0a%3c %0a8a5,7%0a> %0a> from simuPOP import *%0a> %0a39a39,42%0a> %0a> %0a> if __name__ == '__main__':%0a>     simuSelfing(.4, 1000, 10, 100)%0a
+host:1232488591=127.0.0.1
+author:1232384195=
+diff:1232384195:1232384195:=1,44d0%0a%3c This script demonstrates the use of selfing mating schemes.%0a%3c %0a%3c %0a%3c =python [=%0a%3c %0a%3c from simuPOP import *%0a%3c %0a%3c def simuSelfing(perc, N, n_rep, gen):%0a%3c     '''%0a%3c     perc    percentage of individuals under selfing mating schemes%0a%3c     N       population size%0a%3c     n_rep   Number of replicates per simulation%0a%3c     gen     generations to run%0a%3c     '''%0a%3c     pop = population(N, loci=[2])%0a%3c     pop.setVirtualSplitter(proportionSplitter([perc, 1-perc]))%0a%3c %0a%3c     simu = simulator(pop,%0a%3c         heteroMating([%0a%3c             selfMating(subPop=(0, 0)),%0a%3c             randomMating(subPop=(0, 1))%0a%3c         ]),%0a%3c         rep=n_rep%0a%3c     )%0a%3c %0a%3c     simu.evolve(preOps=[%0a%3c             initByValue([0, 1, 1, 0]),%0a%3c             pyExec('ld_hist=[]')  # record ld%0a%3c         ],%0a%3c         ops=[%0a%3c             recombinator(rate=0.01),%0a%3c             stat(LD=[0,1]),%0a%3c             pyExec('ld_hist.append(LD[0][1])')%0a%3c         ],%0a%3c         gen = gen%0a%3c     )%0a%3c     print simu.dvars(0).ld_hist%0a%3c     return 0%0a%3c %0a%3c %0a%3c if __name__ == '__main__':%0a%3c     simuSelfing(.4, 1000, 10, 100)%0a%3c %0a%3c =]%0a
+host:1232384195=127.0.0.1

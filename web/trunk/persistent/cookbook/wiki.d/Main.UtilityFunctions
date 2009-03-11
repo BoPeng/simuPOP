@@ -1,0 +1,21 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6 (.NET CLR 3.5.30729)
+author=
+charset=ISO-8859-1
+csum=
+ctime=1233719170
+host=127.0.0.1
+name=Main.UtilityFunctions
+rev=3
+targets=Cookbook.LoadHapMap,Cookbook.LoadHapMapR22,Cookbook.ChooseMarker
+text=This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%0a%0a!!HapMap related%0a%0a* [[Cookbook/loadHapMap]] This script download and save the hapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/loadHapMap_r22]] This script download and save the release 22 of the HapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%0a
+time=1235966092
+author:1235966092=
+diff:1235966092:1235789916:=4,5c4,5%0a%3c !!HapMap related%0a%3c %0a---%0a> !!Download and save the HapMap dataset in simuPOP format.%0a> %0a10,11c10,12%0a%3c * [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%3c %0a---%0a> !!Choose markers from the HapMap dataset.%0a> %0a> These functions assume that you have already downloaded and saved the hapMap samples in simuPOP format, using [[Cookbook/loadHapMap]].%0a
+host:1235966092=127.0.0.1
+author:1235789916=
+diff:1235789916:1233719170:=7,8d6%0a%3c %0a%3c * [[Cookbook/loadHapMap_r22]] This script download and save the release 22 of the HapMap dataset chromosome by chromosome.%0a
+host:1235789916=127.0.0.1
+author:1233719170=
+diff:1233719170:1233719170:=1,10d0%0a%3c This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%3c %0a%3c %0a%3c !!Download and save the HapMap dataset in simuPOP format.%0a%3c %0a%3c * [[Cookbook/loadHapMap]] This script download and save the hapMap dataset chromosome by chromosome.%0a%3c %0a%3c !!Choose markers from the HapMap dataset.%0a%3c %0a%3c These functions assume that you have already downloaded and saved the hapMap samples in simuPOP format, using [[Cookbook/loadHapMap]].%0a
+host:1233719170=127.0.0.1

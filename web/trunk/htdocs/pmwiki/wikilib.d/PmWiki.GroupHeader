@@ -1,0 +1,10 @@
+version=pmwiki-2.1.11 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.5) Gecko/20060719 Firefox/1.5.0.5
+author=TeganDowling
+csum=de-sandbox
+host=69.131.28.243
+name=PmWiki.GroupHeader
+rev=16
+targets=
+text=%25define=trail bgcolor=#eee block%25%25define=note font-style=italic color=green%25%25define=important block bgcolor=#fcc border='1px solid black' padding=5px%25%25define=audience class='frame rfloat' font-size:smaller bgcolor=#ffffcc%25(:comment please leave the multiple style definitions concatenated as a single line.  Linebreaks do appear in the output when the wiki is configured with linebreaks enabled -- thanks!:)
+time=1154438806

@@ -1,0 +1,31 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008120908 Red Hat/3.0.5-1.el5_2 Firefox/3.0.5
+author=
+charset=ISO-8859-1
+csum=
+ctime=1236797649
+host=127.0.0.1
+name=Cookbook.HWE
+rev=6
+targets=
+text=(:title Hardy-Weinberg equilibrium :)%0a%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuHWE.py | http://simupop.sourceforge.net/images/download.jpg]]|simuHWE.py%0a%0aThis program demonstrate the Hardy-weinberg equilibrium when the%0aallele frequencies in females and males are different.%0a%0aThe interesting parts are initialization.%0a%0a=python [=%0apop = population(size=popSize, ploidy=2, loci=[1])%0apop.setVirtualSplitter(sexSplitter())%0asimu = simulator(pop, randomMating())%0a%0asimu.evolve(%0a    preOps = [%0a        initSex(),%0a        initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)],%0a            initSex=False),%0a        initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)],%0a            initSex=False)%0a    ],%0a    ops = [%0a        stat(alleleFreq=[0], genoFreq=[0] ),%0a        pyEval(r"'%25.3f\t%25.3f (%25.3f)\t%25.3f (%25.3f)\t%25.3f (%25.3f)\n' %25 (alleleFreq[0][0], "\%0a            "genoFreq[0][0][0], alleleFreq[0][0]*alleleFreq[0][0], "\%0a            "genoFreq[0][0][1], 2*alleleFreq[0][0]*(1-alleleFreq[0][0]), "\%0a            "genoFreq[0][1][1], (1-alleleFreq[0][0])*(1-alleleFreq[0][0]) )"),%0a    ],%0a    gen=endGen%0a)%0a%0a=]%0a
+time=1236797826
+title=Hardy-Weinberg equilibrium 
+author:1236797826=
+diff:1236797826:1236797799:=1c1%0a%3c (:title Hardy-Weinberg equilibrium :)%0a---%0a> (title: Hardy-Weinberg equilibrium :)%0a
+host:1236797826=127.0.0.1
+author:1236797799=
+diff:1236797799:1236797766:=1c1%0a%3c (title: Hardy-Weinberg equilibrium :)%0a---%0a> (: Hardy-Weinberg equilibrium :)%0a
+host:1236797799=127.0.0.1
+author:1236797766=
+diff:1236797766:1236797731:=1c1%0a%3c (: Hardy-Weinberg equilibrium :)%0a---%0a> (:title An example about Python operator:)%0a
+host:1236797766=127.0.0.1
+author:1236797731=
+diff:1236797731:1236797681:=3c3%0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuHWE.py | http://simupop.sourceforge.net/images/download.jpg]]|simuHWE.py%0a---%0a> %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuNumOfAncestors.py | http://simupop.sourceforge.net/images/download.jpg]]|simuHWE.py%0a
+host:1236797731=127.0.0.1
+author:1236797681=
+diff:1236797681:1236797649:=18,21c18,19%0a%3c         initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)],%0a%3c             initSex=False),%0a%3c         initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)],%0a%3c             initSex=False)%0a---%0a>         initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)], initSex=False),%0a>         initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)], initSex=False)%0a
+host:1236797681=127.0.0.1
+author:1236797649=
+diff:1236797649:1236797649:=1,31d0%0a%3c (:title An example about Python operator:)%0a%3c %0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuNumOfAncestors.py | http://simupop.sourceforge.net/images/download.jpg]]|simuHWE.py%0a%3c %0a%3c This program demonstrate the Hardy-weinberg equilibrium when the%0a%3c allele frequencies in females and males are different.%0a%3c %0a%3c The interesting parts are initialization.%0a%3c %0a%3c =python [=%0a%3c pop = population(size=popSize, ploidy=2, loci=[1])%0a%3c pop.setVirtualSplitter(sexSplitter())%0a%3c simu = simulator(pop, randomMating())%0a%3c %0a%3c simu.evolve(%0a%3c     preOps = [%0a%3c         initSex(),%0a%3c         initByFreq(alleleFreq=[malleleFreq, 1-malleleFreq], subPops=[(0, 0)], initSex=False),%0a%3c         initByFreq(alleleFreq=[falleleFreq, 1-falleleFreq], subPops=[(0, 1)], initSex=False)%0a%3c     ],%0a%3c     ops = [%0a%3c         stat(alleleFreq=[0], genoFreq=[0] ),%0a%3c         pyEval(r"'%25.3f\t%25.3f (%25.3f)\t%25.3f (%25.3f)\t%25.3f (%25.3f)\n' %25 (alleleFreq[0][0], "\%0a%3c             "genoFreq[0][0][0], alleleFreq[0][0]*alleleFreq[0][0], "\%0a%3c             "genoFreq[0][0][1], 2*alleleFreq[0][0]*(1-alleleFreq[0][0]), "\%0a%3c             "genoFreq[0][1][1], (1-alleleFreq[0][0])*(1-alleleFreq[0][0]) )"),%0a%3c     ],%0a%3c     gen=endGen%0a%3c )%0a%3c %0a%3c =]%0a
+host:1236797649=127.0.0.1

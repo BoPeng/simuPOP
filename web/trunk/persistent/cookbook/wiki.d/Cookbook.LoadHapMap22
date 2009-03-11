@@ -1,0 +1,19 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6 (.NET CLR 3.5.30729)
+author=
+charset=ISO-8859-1
+csum=
+ctime=1235785873
+host=127.0.0.1
+name=Cookbook.LoadHapMap22
+rev=3
+targets=
+text=(:redirect [[Cookbook.LoadHapMapR22]]:)
+time=1235789942
+title=Download and save the HapMap datasets release 22
+author:1235786073=
+diff:1235786073:1235785873:=4,7c4,7%0a%3c This script downloads and loads hapmap data in http://www.hapmap.org/downloads/phasing/2007-08_rel22/phased/ .%0a%3c %0a%3c Estimated fine-scale recombination rates between adjacent markers are also downloaded from http://www.hapmap.org/downloads/recombination/2008-03_rel22_B36/rates/. The result is saved in a population dictionary as @@genDist@@, which stores the map distance of each locus. If some loci do not have a genetic distance, their genetic distances are estimated according their physical locations.%0a%3c %0a---%0a> This script downloads and loads hapmap data in http://ftp.hapmap.org/phasing/2007-08_rel22/phased/ .%0a> %0a> Estimated fine-scale recombination rates between adjacent markers are also downloaded from http://ftp.hapmap.org/recombination/2008-03_rel22_B36/rates/. The result is saved in a population dictionary as @@genDist@@, which stores the map distance of each locus. If some loci do not have a genetic distance, their genetic distances are estimated according their physical locations.%0a> %0a10,11c10,11%0a%3c !!! Description of saved simuPOP populations%0a%3c %0a---%0a> NOTE:%0a> %0a14,15d13%0a%3c # Different populations are saved in different files. These population may not be merged directly because they may have different set of markers.%0a%3c %0a21,23d18%0a%3c %0a%3c !!! Typical post-processing functions%0a%3c %0a
+host:1235786073=127.0.0.1
+author:1235785873=
+diff:1235785873:1235785873:=1,18d0%0a%3c (:title Download and save the HapMap datasets release 22:)%0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:loadHapMap_r22.py | http://simupop.sourceforge.net/images/download.jpg]]|loadHapMap_r22.py%0a%3c %0a%3c This script downloads and loads hapmap data in http://ftp.hapmap.org/phasing/2007-08_rel22/phased/ .%0a%3c %0a%3c Estimated fine-scale recombination rates between adjacent markers are also downloaded from http://ftp.hapmap.org/recombination/2008-03_rel22_B36/rates/. The result is saved in a population dictionary as @@genDist@@, which stores the map distance of each locus. If some loci do not have a genetic distance, their genetic distances are estimated according their physical locations.%0a%3c %0a%3c Run this script in the directory. You will obtain files such as hapmap_CEU_chr1.bin. These populations can be loaded and used in followup applications. You should of course tailor the population (choose SNP markers etc) using applicable simuPOP population related functions. If you would like to combine two populations, use @@pop.addIndFrom(pop1)@@.%0a%3c %0a%3c NOTE:%0a%3c %0a%3c # Actual allele information is lost. In the legend files, alleles coded in 0 and 1 are specified. This information is not available in the simuPOP population.%0a%3c %0a%3c # There is no missing data in the fwd_phased files.%0a%3c %0a%3c # For CEU and YRI populations, only parents (60 each) are loaded. This is because we want as many individuals as possible, but no duplicate genotype of offspring.%0a%3c %0a%3c # Loci positions are in basepair.%0a
+host:1235785873=127.0.0.1

@@ -1,0 +1,18 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008120908 Red Hat/3.0.5-1.el5_2 Firefox/3.0.5
+author=
+charset=ISO-8859-1
+csum=
+ctime=1236798177
+host=127.0.0.1
+name=Main.Scripts
+rev=2
+targets=Cookbook.SimuCDCV,Cookbook.SimuComplexDisease,Cookbook.SimuForward,Cookbook.SimuRecHotSpot,Cookbook.SimuNeutralSNPs
+text=!!! Script for published papers%0a%0aThese scripts were written for particular research papers. I have tried to update them so that they could run correctly under the current simuPOP version.%0a%0a* [[Cookbook/simuCDCV]] simulation for Reich's paper: On the allelic spectrum of human disease plus migration and complexity of the common disease. (for publication [[http://www.genetics.org/cgi/content/abstract/genetics.106.058164v1 | Peng and Kimmel, Genetics, 2007]])%0a%0a* [[Cookbook/simuComplexDisease]] generate dataset for common complex disease  with certain number of disease susceptibility loci.  (for publication [[http://www.plosgenetics.org/article/info:doi%252F10.1371%252Fjournal.pgen.0030047 | Peng et al, PLoS Genetics,  2007]])%0a%0a%0a!!! Script for fun (research related)%0a%0aThese scripts are written in simuPOP for various purposes. They can be useful examples for your research.%0a%0a* [[Cookbook/simuForward]]  Evolve a population forward in time, introduce a disease mutant at given generation.%0a%0a* [[Cookbook/simuRecHotSpot]] Look if recombination hotspot could be generated through even recombination.%0a%0a* [[Cookbook/simuNeutralSNPs]] Simulates the evolution of a chromosome with SNP markers, under the influence of mutation, migration, recombination and population size change.%0a
+time=1236798976
+author:1236798976=
+diff:1236798976:1236798177:=10,18d9%0a%3c !!! Script for fun (research related)%0a%3c %0a%3c These scripts are written in simuPOP for various purposes. They can be useful examples for your research.%0a%3c %0a%3c * [[Cookbook/simuForward]]  Evolve a population forward in time, introduce a disease mutant at given generation.%0a%3c %0a%3c * [[Cookbook/simuRecHotSpot]] Look if recombination hotspot could be generated through even recombination.%0a%3c %0a%3c * [[Cookbook/simuNeutralSNPs]] Simulates the evolution of a chromosome with SNP markers, under the influence of mutation, migration, recombination and population size change.%0a
+host:1236798976=127.0.0.1
+author:1236798177=
+diff:1236798177:1236798177:=1,9d0%0a%3c !!! Script for published papers%0a%3c %0a%3c These scripts were written for particular research papers. I have tried to update them so that they could run correctly under the current simuPOP version.%0a%3c %0a%3c * [[Cookbook/simuCDCV]] simulation for Reich's paper: On the allelic spectrum of human disease plus migration and complexity of the common disease. (for publication [[http://www.genetics.org/cgi/content/abstract/genetics.106.058164v1 | Peng and Kimmel, Genetics, 2007]])%0a%3c %0a%3c * [[Cookbook/simuComplexDisease]] generate dataset for common complex disease  with certain number of disease susceptibility loci.  (for publication [[http://www.plosgenetics.org/article/info:doi%252F10.1371%252Fjournal.pgen.0030047 | Peng et al, PLoS Genetics,  2007]])%0a%3c %0a%3c %0a
+host:1236798177=127.0.0.1

@@ -1,0 +1,10 @@
+version=pmwiki-2.1.15 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8) Gecko/20051111 Firefox/1.5
+author=
+csum=add see also: $TimeFmt
+host=212.186.80.57
+name=PmWiki.I18nVariables
+rev=8
+targets=PmWiki.Variables,PmWiki.Internationalizations,Site.Preferences
+text=%3c%3c|[[PmWiki.Variables]]|>>%0a%0aThis page describes the variables used by PmWiki for [[Internationalizations]] (i18n).%0a%0a:$VarPagesFmt:An array which contains the PageNames where you can find variable definitions.  To be modified when documentation is not in english.  See ''scripts/vardoc.php''.%0a%0a:$XLLangs:An array (hash) which contains pairs of language identifiers and translation hashes. Each translation hash maps a given lookup key (or phrase) into a corresponding text string for the given language. Thus, it is essentially a multi-lingual dictionary used for phrase translation.  It is also used for handling user preference mappings. Thus, the 'e_row' value that one finds on the [[Site.Preferences]] page is loaded into $XLLangs during preference processing.%0a%0aSee also:%0a* $TimeFmt%0a
+time=1156535546

@@ -1,0 +1,10 @@
+version=pmwiki-2.1.11 ordered=1 urlencoded=1
+agent=Opera/9.00 (Windows NT 5.1; U; de)
+author=
+csum=
+host=84.58.207.191
+name=PmWiki.DeletingPages
+rev=21
+targets=PmWiki.WikiAdministrator,Site.AllRecentChanges,PmWiki.EditVariables,PmWiki.DocumentationIndex
+text=To delete a page, edit the page, select (highlight) all text in the edit textarea and replace it with the single word%0a%0a    [@delete@]%0a%0aNote that it may be a good idea to add a comment to the field @@summary@@%0aexplaining why you deleted the page. (The field @@summary@@ is usually found%0ajust below the edit textarea).%0a%0aAfter saving the changes the page is deleted.  As an added safety feature, the deleted page still exists on the server (with a timestamp) and can be restored to the former page by the [[wiki administrator]].%0a%0aIf you suspect that a page has been deleted but aren't sure, have a look at the wikigroup's [=RecentChanges=]. Erasing a page counts as editing the page, and the activity is recorded there and on [[{$SiteGroup}.AllRecentChanges]].%0a%0aThe default word used for page deletion ("delete") can be changed in config.php by setting the variable $DeleteKeyPattern (see [[EditVariables]]). If there is a danger of malicious page deletion it may be a good idea to change the delete word to something more obscure. There is also a recipe for creating a separate delete action at Cookbook:DeleteAction.%0a%0a'''Deleting Groups & Categories'''%0a%0aOnce I create a Group or Category, how can I get rid of that group or category?%0a%0aJust remove the unwanted pages from wiki.d/ .  (Doing it via the wiki%0adoesn't resolve the problem, since it counts as an "update" which causes%0athe RecentChanges page to be re-created.)%0a%0a%0a%25trail%25%3c%3c|[[DocumentationIndex]]|>>
+time=1154269894

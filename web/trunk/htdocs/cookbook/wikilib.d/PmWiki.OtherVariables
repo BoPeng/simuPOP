@@ -1,0 +1,10 @@
+version=pmwiki-2.1.14 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8) Gecko/20051111 Firefox/1.5
+author=
+csum=separate [[Debug Variables]] and [[Security Variables]]
+host=212.186.80.57
+name=PmWiki.OtherVariables
+rev=56
+targets=PmWiki.Variables,PmWiki.FmtPageName,PmWiki.PageVariables
+text=%3c%3c|[[PmWiki.Variables]]|>>%0a%0a:$FmtV: %0a: :This variable is an array that is used for string substitutions at the end of a call to @@[[FmtPageName]]()@@. For each element in the array, the "key" (interpreted as a string) will be replaced by the corresponding "value".  The variable is intended to be a place to store substitution variables that have frequently changing values (thus avoiding a rebuild of the variable cache).  Also see $FmtP.%0a%0a:$FmtP:%0a: :This variable is an array that is used for pattern substitutions near the beginning of a call to [@FmtPageName@]. For each element in the array, the "key" (interpreted as a pattern) will be replaced by the corresponding value evaluated for the name of the current page. This is for instance used to handle $-substitutions that depend on the pagename passed to [@FmtPageName()@].  Also see $FmtV.%0a%0a:$FmtPV:%0a: :This variable is an array that is used for [[Page Variables]]. New variables can be defined with [@$FmtPV['$VarName'] = 'variable definition';@]  which can be used in markup with [@{$VarName}@]. %0a%0a        #example for "source" action%0a        [=$PageAttributes['passwdsource'] = "$['Set new source password']"=]%0a
+time=1156512605

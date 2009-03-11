@@ -1,0 +1,16 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008120908 Red Hat/3.0.5-1.el5_2 Firefox/3.0.5
+author=
+charset=ISO-8859-1
+csum=
+ctime=1236798352
+host=127.0.0.1
+name=Cookbook.SimuCDCV
+rev=1
+targets=
+text=(:title simulation for the Common Disease - Common Variant Hypothesis:)%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuCDCV.py | http://simupop.sourceforge.net/images/download.jpg]]|simuCDCV.py%0a%0a%0aReich and Lander's 2001 paper "On the allelic spectrum of human disease"%0aproposed a population genetics framework to model the evolution of %0aallelic spectra. The model is based on the fact that human population%0agrew quickly from around 10,000 to 6 billion in 18,000 -150,000 years.%0aTheir analysis showed that at the founder population, both common and%0arare diseases have simple spectra. After the sudden expansion of %0apopulation size, the allelic spectra of simple diseases become complex;%0awhile those of complex diseases remained simple.%0a%0aThis script simulates the evolution of a disease using a more complicated%0aversion of this evolutionary process. The allelic spectrum is observed, %0arecorded and plotted (if R/Rpy is available).%0a%0a
+time=1236798352
+title=simulation for the Common Disease - Common Variant Hypothesis
+author:1236798352=
+diff:1236798352:1236798352:=1,17d0%0a%3c (:title simulation for the Common Disease - Common Variant Hypothesis:)%0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuCDCV.py | http://simupop.sourceforge.net/images/download.jpg]]|simuCDCV.py%0a%3c %0a%3c %0a%3c Reich and Lander's 2001 paper "On the allelic spectrum of human disease"%0a%3c proposed a population genetics framework to model the evolution of %0a%3c allelic spectra. The model is based on the fact that human population%0a%3c grew quickly from around 10,000 to 6 billion in 18,000 -150,000 years.%0a%3c Their analysis showed that at the founder population, both common and%0a%3c rare diseases have simple spectra. After the sudden expansion of %0a%3c population size, the allelic spectra of simple diseases become complex;%0a%3c while those of complex diseases remained simple.%0a%3c %0a%3c This script simulates the evolution of a disease using a more complicated%0a%3c version of this evolutionary process. The allelic spectrum is observed, %0a%3c recorded and plotted (if R/Rpy is available).%0a%3c %0a
+host:1236798352=127.0.0.1

@@ -1,0 +1,16 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008120908 Red Hat/3.0.5-1.el5_2 Firefox/3.0.5
+author=
+charset=ISO-8859-1
+csum=
+ctime=1236799030
+host=127.0.0.1
+name=Cookbook.SimuForward
+rev=1
+targets=
+text=(:title Forward-time simulation of a disease mutant:)%0a%25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuForward.py | http://simupop.sourceforge.net/images/download.jpg]]|simuForward.py%0a%0aEvolve a population forward in time, introduce a disease mutant%0aat given generation.%0a
+time=1236799030
+title=Forward-time simulation of a disease mutant
+author:1236799030=
+diff:1236799030:1236799030:=1,5d0%0a%3c (:title Forward-time simulation of a disease mutant:)%0a%3c %25rfloat text-align=center margin-top=5px margin-right=25px margin-bottom=15px margin-left=25px %25 [[Attach:simuForward.py | http://simupop.sourceforge.net/images/download.jpg]]|simuForward.py%0a%3c %0a%3c Evolve a population forward in time, introduce a disease mutant%0a%3c at given generation.%0a
+host:1236799030=127.0.0.1

@@ -1,0 +1,79 @@
+version=pmwiki-2.1.27 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5 (.NET CLR 3.5.30729)
+author=
+csum=
+host=127.0.0.1
+name=Site.PageActions
+rev=46
+targets=Site.PageActions
+text=(:if auth edit:)%0a* %25item class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a* %25item rel=nofollow class=edit accesskey='$[ak_edit]'%25[[{*$FullName}?action=edit | $[Edit] ]]%0a* %25item rel=nofollow class=diff accesskey='$[ak_history]'%25[[{*$FullName}?action=diff | $[History] ]]%0a* %25item rel=nofollow class=print accesskey='$[ak_print]'%25[[{*$FullName}?action=print | $[Print] ]]%0a* %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]]%0a(:if !auth edit:)%0a* %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | $[Login] ]]%0a(:ifend:)%0a(:if auth upload:)%0a* %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | $[Attach] ]]%0a
+time=1232226342
+author:1232226342=
+diff:1232226342:1232226294:=7c7%0a%3c (:if !auth edit:)%0a---%0a> (:if not auth read:)%0a
+host:1232226342=127.0.0.1
+author:1232226294=
+diff:1232226294:1232226283:=7c7%0a%3c (:if not auth read:)%0a---%0a> (:if auth read:)%0a
+host:1232226294=127.0.0.1
+author:1232226283=
+diff:1232226283:1232226217:=7c7%0a%3c (:if auth read:)%0a---%0a> (:else:)%0a
+host:1232226283=127.0.0.1
+author:1232226217=
+diff:1232226217:1232226208:=6c6%0a%3c * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]]%0a---%0a> * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]] )%0a
+host:1232226217=127.0.0.1
+author:1232226208=
+diff:1232226208:1232226186:=2c2%0a%3c * %25item class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a---%0a> ( * %25item class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a
+host:1232226208=127.0.0.1
+author:1232226186=
+diff:1232226186:1232226049:=2c2%0a%3c ( * %25item class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a---%0a> * %25item class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a6c6%0a%3c * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]] )%0a---%0a> * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]]%0a
+host:1232226186=127.0.0.1
+author:1232226049=
+diff:1232226049:1232225998:=2,6c2,6%0a%3c * %25item class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a%3c * %25item rel=nofollow class=edit accesskey='$[ak_edit]'%25[[{*$FullName}?action=edit | $[Edit] ]]%0a%3c * %25item rel=nofollow class=diff accesskey='$[ak_history]'%25[[{*$FullName}?action=diff | $[History] ]]%0a%3c * %25item rel=nofollow class=print accesskey='$[ak_print]'%25[[{*$FullName}?action=print | $[Print] ]]%0a%3c * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]]%0a---%0a> * %25item              class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a> * %25item rel=nofollow class=edit      accesskey='$[ak_edit]'%25[[{*$FullName}?action=edit | $[Edit] ]]%0a> * %25item rel=nofollow class=diff      accesskey='$[ak_history]'%25[[{*$FullName}?action=diff | $[History] ]]%0a> * %25item rel=nofollow class=print     accesskey='$[ak_print]'%25[[{*$FullName}?action=print | $[Print] ]]%0a> * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]]%0a9a10%0a> %0a
+host:1232226049=127.0.0.1
+author:1232225998=
+diff:1232225998:1232225952:=6,7c6%0a%3c * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25[[{*$FullName}?action=logout | $[Logout] ]]%0a%3c (:else:)%0a---%0a> * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]] (:else:)%0a
+host:1232225998=127.0.0.1
+author:1232225952=
+diff:1232225952:1232225842:=6c6,10%0a%3c * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]] (:else:)%0a---%0a> * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]] (:ifend:)%0a> %0a> %0a> (:if auth upload:)%0a> * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | $[Attach] ]]%0a8,11d11%0a%3c (:ifend:)%0a%3c %0a%3c (:if auth upload:)%0a%3c * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | $[Attach] ]]%0a
+host:1232225952=127.0.0.1
+author:1232225842=
+diff:1232225842:1232225776:=6,10c6%0a%3c * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]] (:ifend:)%0a%3c %0a%3c %0a%3c (:if auth upload:)%0a%3c * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | $[Attach] ]]%0a---%0a> * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]] (:else:)%0a11a8,10%0a> (:ifend:)%0a> (:if auth upload:)%0a> * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | $[Attach] ]]%0a
+host:1232225842=127.0.0.1
+author:1232225776=
+diff:1232225776:1232225737:=6c6,7%0a%3c * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]] (:else:)%0a---%0a> * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]]%0a> (:else:)%0a
+host:1232225776=127.0.0.1
+author:1232225737=
+diff:1232225737:1232224463:=9d8%0a%3c (:ifend:)%0a11a11%0a> (:ifend:)%0a\ No newline at end of file%0a
+host:1232225737=127.0.0.1
+author:1232224463=
+diff:1232224463:1232224316:=1c1%0a%3c (:if auth edit:)%0a---%0a> (:if auth edit :)%0a
+host:1232224463=127.0.0.1
+author:1232224316=
+diff:1232224316:1232224271:=1,2c1,2%0a%3c (:if auth edit :)%0a%3c * %25item              class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a---%0a> * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | $[Login] ]]%0a> (:if auth edit:)%0a7,8d6%0a%3c (:else:)%0a%3c * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | $[Login] ]]%0a11d8%0a%3c (:ifend:)%0a\ No newline at end of file%0a
+host:1232224316=127.0.0.1
+author:1232224271=
+diff:1232224271:1232223854:=
+host:1232224271=127.0.0.1
+author:1232223854=
+diff:1232223854:1232223734:=1,2d0%0a%3c * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | $[Login] ]]%0a%3c (:if auth edit:)%0a6a5%0a> * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | $[Login] ]]%0a
+host:1232223854=127.0.0.1
+author:1232223734=
+diff:1232223734:1232223433:=
+host:1232223734=127.0.0.1
+author:1232223433=
+diff:1232223433:1232223391:=0a1%0a> (:if auth edit:)%0a5a7%0a> (:if:)%0a
+host:1232223433=127.0.0.1
+author:1232223391=
+diff:1232223391:1232223358:=1d0%0a%3c (:if auth edit:)%0a7d5%0a%3c (:if:)%0a
+host:1232223391=127.0.0.1
+author:1232223358=
+diff:1232223358:1232223324:=0a1%0a> * %25item              class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a
+host:1232223358=127.0.0.1
+author:1232223324=
+diff:1232223324:1232223193:=0a1%0a> (:if auth edit :)%0a5a7%0a> (:else:)%0a8a11%0a> (:ifend:)%0a
+host:1232223324=127.0.0.1
+author:1232223193=
+diff:1232223193:1232223034:=2,6c2,6%0a%3c * %25item              class=browse    accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a%3c * %25item rel=nofollow class=edit      accesskey='$[ak_edit]'%25[[{*$FullName}?action=edit | $[Edit] ]]%0a%3c * %25item rel=nofollow class=diff      accesskey='$[ak_history]'%25[[{*$FullName}?action=diff | $[History] ]]%0a%3c * %25item rel=nofollow class=print     accesskey='$[ak_print]'%25[[{*$FullName}?action=print | $[Print] ]]%0a%3c * %25item rel=nofollow class=logout    accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | $[Logout] ]]%0a---%0a> * %25item  class=browse accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a> * %25item rel=nofollow class=edit accesskey='$[ak_edit]'%25[[{*$FullName}?action=edit | Edit ]]%0a> * %25item rel=nofollow class=diff accesskey='$[ak_history]'%25[[{*$FullName}?action=diff | History ]]%0a> * %25item rel=nofollow class=print accesskey='$[ak_print]'%25[[{*$FullName}?action=print | Print ]]%0a> * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | Logout ]]%0a8c8%0a%3c * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | $[Login] ]]%0a---%0a> * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | Login ]]%0a10,11c10,11%0a%3c * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | $[Attach] ]]%0a%3c (:ifend:)%0a---%0a> * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | Attach ]]%0a> (:ifend:)%0a\ No newline at end of file%0a
+host:1232223193=127.0.0.1
+author:1232223034=
+diff:1232223034:1142198002:=1,8c1,3%0a%3c (:if auth edit :)%0a%3c * %25item  class=browse accesskey='$[ak_view]'%25[[{*$FullName} | $[View] ]]%0a%3c * %25item rel=nofollow class=edit accesskey='$[ak_edit]'%25[[{*$FullName}?action=edit | Edit ]]%0a%3c * %25item rel=nofollow class=diff accesskey='$[ak_history]'%25[[{*$FullName}?action=diff | History ]]%0a%3c * %25item rel=nofollow class=print accesskey='$[ak_print]'%25[[{*$FullName}?action=print | Print ]]%0a%3c * %25item rel=nofollow class=logout accesskey='$[ak_logout]'%25 [[{*$FullName}?action=logout | Logout ]]%0a%3c (:else:)%0a%3c * %25item rel=nofollow class=login %25 [[{*$FullName}?action=login | Login ]]%0a---%0a> * %25item class=browse accesskey='$[ak_view]'%25[[{$FullName} | $[View] ]]%0a> * %25item rel=nofollow class=edit accesskey='$[ak_edit]'%25[[{$FullName}?action=edit | $[Edit] ]]%0a> * %25item rel=nofollow class=diff accesskey='$[ak_history]'%25[[{$FullName}?action=diff | $[History] ]]%0a10,11c5,7%0a%3c * %25item rel=nofollow class=upload    accesskey='$[ak_attach]'%25[[{*$FullName}?action=upload | Attach ]]%0a%3c (:ifend:)%0a\ No newline at end of file%0a---%0a> * %25item rel=nofollow class=upload accesskey='$[ak_attach]'%25[[{$FullName}?action=upload | $[Attach] ]]%0a> (:if:)%0a> * %25item rel=nofollow class=print accesskey='$[ak_print]'%25[[{$FullName}?action=print | $[Print] ]]%0a\ No newline at end of file%0a
+host:1232223034=127.0.0.1
