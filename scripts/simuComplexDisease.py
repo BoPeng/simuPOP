@@ -138,16 +138,6 @@ import os, sys, exceptions, types, math
 # from a tk/wxPython-based dialog, command line, config file or user input
 #
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'useDefault': True,
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
-    },
-    #
-    # 
     {'separator': 'Genotype structure:'},    
     {'longarg': 'numChrom=',
      'default': 10,
@@ -458,7 +448,7 @@ options = [
                 not be resumed from this population due to the re-generation of allele 
                 frequency trajectories.''',
     },
-    {'longarg': 'simuName=',
+    {'longarg': 'name=',
      'default': 'simu',
      'allowedTypes': [types.StringType],
      'label': 'Simulation name',
@@ -467,58 +457,7 @@ options = [
                     name + '.cfg': configuration
                     name + .bin/txt/xml: saved popuation''',
     },
-    {'longarg': 'saveFormat=',
-     'default': 'txt',
-     'useDefault': True,
-     'allowedTypes': [types.StringType],
-     'label': 'Format to save population',
-     'description': '''Format to save population, can be 
-                 text, bin or xml. Note that the binary format, although
-                 smallest, may not be portable between different machines.''',    
-     'chooseOneOf': [ 'txt', 'bin', 'xml']
-    },
-    {'arg': 'v',
-     'longarg': 'verbose',
-     'useDefault': True,
-     'default': False,
-     'description': 'Verbose mode.'
-    },
 ]
-
-# __doc__ + parameter definitions use >500 lines, 
-# more than one third of the total length of the script.
-
-def getOptions(details=__doc__):
-    ''' get options from options structure,
-        if this module is imported, instead of ran directly,
-        user can specify parameter in some other way.
-    '''
-    # get all parameters, __doc__ is used for help info
-    allParam = simuOpt.getParam(options, 
-        '''    This program simulates the evolution of a complex common disease, subject 
-     to the impact of mutation, migration, recombination and population size change. 
-     Click 'help' for more information about the evolutionary scenario.''', details, nCol=2)
-    # when user click cancel ...
-    if len(allParam) == 0:
-        sys.exit(1)
-    # -h or --help
-    if allParam[0]:    
-        print simuOpt.usage(options, __doc__)
-        sys.exit(0)
-    # change current directory, all files wil be saved here.
-    try:
-        os.mkdir(allParam[-3])
-    except:
-        pass
-    # --saveConfig
-    if allParam[-3] != None: # saveConfig
-        simuOpt.saveConfig(options, os.path.join(allParam[-3], allParam[-3]+'.cfg'), allParam)
-    # --verbose or -v (these is no beautifying of [floats]
-    if allParam[-1]:                 # verbose
-        simuOpt.printConfig(options, allParam)
-    # return the rest of the parameters
-    return allParam[1:-1]
-
 
 def trajFunc(endingGen, traj):
     '''HIDDEN
@@ -815,7 +754,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreqTmp, minMutAge, maxMutAge, fitnessTmp, mlSelModelTmp, 
         mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
-        dryrun, savePop, filename, format):
+        dryrun, savePop, filename):
     ''' run a simulation of complex disease with given parameters. 
     '''    
     ###
@@ -828,7 +767,9 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         DSLdist = DSLdistTmp * len(DSLafter)
     else:
         DSLdist = DSLdistTmp
-    if len( DSLafter ) != len(DSLdist):
+    if len(DSLafter) != len(DSLdist):
+        print 'DSLafter: %s' % DSLafter
+        print 'DSLdist: %s' % DSLdist
         raise exceptions.ValueError("Please specify DSL distance for each DSL.")
     numDSL = len(DSLafter)
     if burninGen > splitGen or splitGen > mixingGen or splitGen > endingGen:
@@ -954,7 +895,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # 0, 1, 2, 3, ...
     tmp = population(1, loci=[numLoci]*numChrom, lociNames=[str(x) for x in range(numLoci*numChrom)])
     # insert DSL, given them names DSL0, DSL1, ...
-    tmp.insertAfterLoci(idx=DSLafter, pos=[tmp.locusPos(DSLafter[x]) + DSLdist[x] for x in range(len(DSLafter))], 
+    tmp.addLoci(chrom=[tmp.chromLocusPair(x)[0] for x in DSLafter],
+        pos=[tmp.locusPos(DSLafter[x]) + DSLdist[x] for x in range(len(DSLafter))], 
         names = ['DSL%d' % x for x in range(len(DSLafter))])
     # now, obtain the indices of these loci using loci names
     # I need these information because the following operators need to know which marker is DSL...
@@ -971,7 +913,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             initByValue(value=[[x]*sum(loci) for x in range(48, 53)],
                 proportions=[.2]*5), 
             # and then init DSL with all wild type alleles
-            initByValue([0]*len(DSL), atLoci=DSL)
+            initByValue([0]*len(DSL), loci=DSL)
         ]
     else: # SNP
         preOperators = [
@@ -979,17 +921,17 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
             initByValue(value=[[x]*sum(loci) for x in [0,1] ],
                 proportions=[.5]*2), 
             # and then init DSL with all wild type alleles
-            initByValue([0]*len(DSL), atLoci=DSL)
+            initByValue([0]*len(DSL), loci=DSL)
         ]            
     ###
     ### mutation, start from gen 0,
     ###
     if maxAle > 1:    # Not SNP
         # symmetric mutation model for microsatellite
-        mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, atLoci=nonDSL)
+        mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, loci=nonDSL)
     else:
         # k-allele model for mutation of SNP
-        mutator = kamMutator(rate=mutaRate, maxAllele=1, atLoci=nonDSL)
+        mutator = kamMutator(rate=mutaRate, maxAllele=1, loci=nonDSL)
     ###
     ### Recombination
     ###
@@ -1026,7 +968,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###            0 1 ...... i_T
     for i in range(numDSL):
         operators.append( 
-            pointMutator(atLoci=[DSL[i]], toAllele=1, inds=[i],
+            pointMutator(loci=[DSL[i]], toAllele=1, inds=[i],
                 at = [introGens[i]], stage=PreMating ) ) 
     ### 
     ### split to subpopulations
@@ -1073,7 +1015,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     )
     if len(savePop) > 0:
         # save population at given generations
-        operators.append(savePopulation(outputExpr='os.path.join(simuName, "%s_%d.%s" % (simuName, gen, format))', 
+        operators.append(savePopulation(outputExpr='os.path.join(name, "%s_%d.%s" % (name, gen, format))', 
             at=savePop))
     ### 
     ### prepare mating scheme
@@ -1087,8 +1029,8 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # create a population, note that I add needed information 
     # fields father_idx, mother_idx later on, with the hope 
     # that simulation can run a bit faster without them. 
-    pop = population(subPop=popSizeFunc(0), ploidy=2,
-        loci = loci, maxAllele = maxAle, lociPos = lociPos,
+    pop = population(size=popSizeFunc(0), ploidy=2,
+        loci = loci, lociPos = lociPos,
         infoFields = ['fitness', 'father_idx', 'mother_idx'])
     # save DSL info, some operators will use it.
     pop.dvars().DSL = DSL
@@ -1103,7 +1045,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     # start simulation.
     simu = simulator( pop, 
         controlledRandomMating(
-            newSubPopSizeFunc=popSizeFunc,            # demographic model
+            subPopSize=popSizeFunc,            # demographic model
             loci=DSL,                                                     # which loci to control
             alleles=[1]*numDSL,                                 # which allele to control
             freqFunc=trajFunc                                     # frequency control function
@@ -1111,7 +1053,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
         rep=1)
     # evolve! If --dryrun is set, only show info
     simu.evolve( preOps = preOperators, ops = operators, 
-        end=endingGen-savedGen, dryrun=dryrun )
+        gen=endingGen-savedGen, dryrun=dryrun )
     if dryrun:
         raise exceptions.SystemError("Stop since in dryrun mode.")
     # prepare for the last several generations
@@ -1122,10 +1064,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     operators.append(parentsTagger())
     simu.setMatingScheme(
         randomMating(
-            newSubPopSizeFunc=popSizeFunc,            # demographic model
+            subPopSize=popSizeFunc,            # demographic model
             numOffspring = numOffspring,
-            mode = {'constant': MATE_NumOffspring, 
-                    'geometric': MATE_GeometricDistribution
+            mode = {'constant': NumOffspring, 
+                    'geometric': GeometricDistribution
                    }[numOffMode]
         )
     )
@@ -1154,12 +1096,22 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     pop.dvars().numOffMode = numOffMode
     print "Saving population to " + filename + '.' + format + '\n'
     #TurnOnDebug(DBG_UTILITY)
-    simu.population(0).savePopulation(filename+'.'+format)
+    simu.population(0).save(filename)
     return True
 
 if __name__ == '__main__':
-    ############## GET OPTIONS ####################################
-    allParam = getOptions()
+    # get parameters
+    par = simuOpt.simuOpt(options, 
+      '''This program simulates the evolution of a complex common disease, subject 
+         to the impact of mutation, migration, recombination and population size change. 
+         Click 'help' for more information about the evolutionary scenario.''',
+        __doc__)
+    if not par.getParam():
+        sys.exit(1)
+    #
+    if not os.path.isdir(par.name):
+        os.makedirs(par.name)
+        par.saveConfig(os.path.join(par.name, par.name + '.cfg'))
     # unpack options
     (numChrom, numLoci, markerType, DSLafter, DSLdist, 
         initSize, endingSize, growthModel, 
@@ -1167,7 +1119,7 @@ if __name__ == '__main__':
         numSubPop, migrModel, migrRate, alleleDistInSubPop,
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel,
         mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
-        dryrun, savePop, simuName, format) = allParam
+        dryrun, savePop, name) = par.asList()
     #
     if markerType == 'SNP':
         simuOpt.setOptions(alleleType='binary')
@@ -1192,6 +1144,6 @@ if __name__ == '__main__':
         numSubPop, migrModel, migrRate, alleleDistInSubPop, 
         curAlleleFreq, minMutAge, maxMutAge, fitness, selMultiLocusModel, 
         mutaRate, recRate, savedGen, numOffspring, numOffMode, simuAge,
-        dryrun, savePop, os.path.join(simuName, simuName), format)
+        dryrun, savePop, os.path.join(name, name + '.pop'))
     
     print "Done!"
