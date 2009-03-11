@@ -46,7 +46,7 @@ simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 from simuUtil import *
-import os, sys, types, exceptions, os.path 
+import os, sys, types, exceptions, os.path, math
 
 #
 # declare all options. getParam will use these information to get parameters
@@ -54,13 +54,6 @@ import os, sys, types, exceptions, os.path
 #
 # details about these fields is given in the simuPOP reference manual.
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
-    },
     {'longarg': 'numLoci=',
      'default': 200,
      'label': 'Number of SNP loci',
@@ -188,26 +181,64 @@ options = [
      'description': 'Directory into which the datasets will be saved. ',
      'validate':    simuOpt.valueValidDir()
     },
-    {'longarg': 'dryrun',
-     'default': False,
-     'allowedTypes': [types.IntType],
-     'validate':    simuOpt.valueOneOf([True, False]),
-     'description':    'Only display how simulation will perform.'
-     # do not save to config, do not prompt, so this appeared to be an undocumented option.
-    },
-    {'longarg': 'saveConfig=',
+    {'longarg': 'configFile=',
      'default': sys.argv[0].split('.')[0]+'.cfg',
      'allowedTypes': [types.StringType, types.NoneType],
      'label': 'Save configuration',
      'description': 'Save current paremeter set to specified file.'
     },
-    {'arg': 'v',
-     'longarg': 'verbose',
-     'default': False,
-     'allowedTypes': [types.NoneType, types.IntType],
-     'description': 'Verbose mode.'
-    },
 ]
+
+def LinearExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+    '''
+    Linearly expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    inc = (endSize-initSize)/float(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = initSize + inc*(gen-burnin)
+        #
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
+
+def ExponentialExpansion(initSize, endSize, end, burnin=0, split=0, numSubPop=1, bottleneckGen=-1, bottleneckSize=0):
+    '''
+    Exponentially expand population size from intiSize to endSize
+    after burnin, split the population at generation split.
+    '''
+    rate = (math.log(endSize)-math.log(initSize))/(end-burnin)
+    def func(gen, oldSize=[]):
+        if gen == bottleneckGen:
+            if gen < split:
+                return [bottleneckSize]
+            else:
+                return [bottleneckSize/numSubPop]*numSubPop
+        # not bottleneck
+        if gen <= burnin:
+            tot = initSize
+        else:
+            tot = int(initSize*math.exp((gen-burnin)*rate))
+        if gen < split:
+            return [int(tot)]
+        elif gen > end:
+            return [int(endSize/numSubPop)]*numSubPop
+        else:
+            return [int(tot/numSubPop)]*numSubPop
+    return func
 
 
 def getOptions(details = __doc__):
@@ -253,8 +284,7 @@ def SaveLDhat(pop, filename):
         ind = pop.individual(i)
         for p in range(pop.ploidy()):
             seq.write('>genotype_%d_%d\n' % (i, p))
-			# use of arrGenotype is more efficient than repeated calls to allele() etc
-            gt = ind.arrGenotype(p, True)
+            gt = ind.genotype(p)
             for line in range(len(gt)/m):
                 if m*(line +1) <= len(gt):
                     seq.write( ''.join([str(g) for g in gt[(m*line):(m*(line+1))]]) + '\n')
@@ -270,9 +300,9 @@ def SaveLDhat(pop, filename):
                 
     
 # simulate function, 
-def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGen, 
+def simuHotSpot(numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGen, 
         growth, numSubPop, migrModel, migrRate, mutaRate, recRate,
-        sampleSize, numSample, sampleName, outputDir, dryrun):
+        sampleSize, numSample, sampleName, outputDir):
     ''' run the simulation, parameters are:
         numLoci:        number of SNP loci on the only chromosome
         lociPos:        loci position on the chromosome. Should be in 
@@ -314,11 +344,11 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
     if len(lociPos) != numLoci:
         print "If loci position is given, it should have length numLoci"
         sys.exit(1)
-    pop = population(subPop=popSizeFunc(0), ploidy=2,
-        loci = [numLoci], maxAllele = 2, lociPos = lociPos)
+    pop = population(size=popSizeFunc(0), ploidy=2,
+        loci = [numLoci], lociPos = lociPos)
     # simulator
     simu = simulator( pop, 
-        randomMating( newSubPopSizeFunc=popSizeFunc ),
+        randomMating(subPopSize=popSizeFunc ),
         rep = 1)
     # evolve! If --dryrun is set, only show info
     simu.evolve( 
@@ -333,7 +363,7 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
             # recombination rate
             recombinator(rate=recRate),
             # split population after burnin, to each sized subpopulations
-            splitSubPop(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
+            splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
             # migration
             migrOp,
             # report statistics
@@ -343,16 +373,12 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
             # show elapsed time
             ticToc(at=[ split, mixing, endGen])            
             ],
-        end=endGen, 
-        dryrun=dryrun 
+        gen = endGen
     )
-    if dryrun:
-        print "Stop since in dryrun mode."
-        sys.exit(1)
     # get the population
     pop = simu.population(0)
     # save population 
-    SavePopulation(pop, os.path.join(outputDir, sampleName + ".bin"))
+    pop.save(os.path.join(outputDir, sampleName + ".pop"))
     # random sample
     sample = RandomSample(pop, size = sampleSize, times = numSample)
     for s in range(len(sample)):
@@ -360,5 +386,16 @@ def simuHotSpot( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixin
 
 
 if __name__ == '__main__':
-    simuHotSpot( *getOptions() )
+        # get parameters
+    par = simuOpt.simuOpt(options,
+        '''This program simulates the evolution of a set SNP loci, subject 
+         to the impact of mutation, migration, recombination and population size change. 
+         Click 'help' for more information about the evolutionary scenario.''',
+        __doc__)
+   
+    if not par.getParam():
+        sys.exit(1)
+    #
+    par.saveConfig(par.configFile)
+    simuHotSpot(*par.asList()[:-1])
     
