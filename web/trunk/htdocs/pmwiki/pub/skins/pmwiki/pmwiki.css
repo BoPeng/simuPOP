@@ -16,7 +16,7 @@ body {
 
 /* These control the fixed-width text elements of the page */
 textarea, pre, code { font-size:0.9em; }
-pre, code { font-family:'Lucida Console','Andale Mono','Courier New',Courier,monospace; }
+pre, code { font-family:'Lucida Console','Andale Mono','Courier New',Courier; }
 pre { line-height:1.2em; }
 pre code, code code, pre pre { font-size:100%; }
 
@@ -55,11 +55,15 @@ h6 { font-size:1.0em; }
 #wikileft a:hover { text-decoration:underline; color:blue; }
 #wikileft ul { list-style:none; padding:0px; margin:0px; }
 #wikileft li { margin:0px; padding-left: 6px; }
-.sidehead {
+/* The "#wikileft h1" and "#wikileft h5" settings are for
+** backwards compatibility with previous releases of PmWiki.
+** They are deprecated (replaced with the .sidehead class),
+** and may be removed in a future release. */
+#wikileft h1, #wikileft h5, .sidehead {
   margin:0px; padding:4px 2px 2px 2px;
   font-size:11pt; font-weight:bold; font-style:normal; 
 }
-.sidehead a 
+#wikileft h1 a, #wikileft h5 a, .sidehead a 
   { color:#505050; font-weight:bold; font-style:normal; }
 
 /* These affect the main content area. */
