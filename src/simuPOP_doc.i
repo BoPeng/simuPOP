@@ -7277,39 +7277,20 @@ Usage:
 
 %feature("docstring") simuPOP::pyOperator "
 
-Description:
-
-    A python operator that directly operate a population.
-
 Details:
 
-    This operator accepts a function that can take the form of
-    *   func(pop) when stage=PreMating or PostMating, without setting
-    param;
-    *   func(pop, param) when stage=PreMating or PostMating, with
-    param;
-    *   func(pop, off, dad, mom) when stage=DuringMating and
-    passOffspringOnly=False, without setting param;
-    *   func(off) when stage=DuringMating and passOffspringOnly=True,
-    and without setting param;
-    *   func(pop, off, dad, mom, param) when stage=DuringMating and
-    passOffspringOnly=False, with param;
-    *   func(off, param) when stage=DuringMating and
-    passOffspringOnly=True, with param. For Pre- and PostMating
-    usages, a population and an optional parameter is passed to the
-    given function. For DuringMating usages, population, offspring,
-    its parents and an optional parameter are passed to the given
-    function. Arbitrary operations can be applied to the population
-    and offspring (if stage=DuringMating).
+    An operator that calls a user-defined function when it is applied
+    to a population (pre- or post-mating) or offsprings (during-
+    mating). The function can have have parameters pop when the
+    operator is applied pre- or post-mating, pop, off, dad, mom when
+    the operator is applied during-mating. An optional parameter can
+    be passed if parameter param is given. In the during-mating case,
+    parameters pop, dad and mom can be ignored if offspringOnly is set
+    to True.
 
 "; 
 
 %feature("docstring") simuPOP::pyOperator::pyOperator "
-
-Description:
-
-    Python operator, using a function that accepts a population
-    object.
 
 Usage:
 
@@ -7317,38 +7298,36 @@ Usage:
       isTransmitter=False, offspringOnly=False, begin=0, end=-1,
       step=1, at=[], rep=[], subPops=[], infoFields=[])
 
-Arguments:
+Details:
 
-    func:           a Python function. Its form is determined by other
-                    parameters.
-    param:          any Python object that will be passed to func
-                    after pop parameter. Multiple parameters can be
-                    passed as a tuple.
-    isTransmitter:  This option tells the mating scheme this operator
-                    will set the genotype of offspring (valid only for
-                    stage=DuringMating). By default
-                    (isTransmitter=False), a mating scheme will set
-                    the genotype of offspring before it is passed to
-                    the given Python function. Otherwise, a 'blank'
-                    offspring will be passed.
-    passOffspringOnly:if True, pyOperator will expect a function of form
-                    func(off [,param]), instead of func(pop, off, dad,
-                    mom [, param]) which is used when
-                    passOffspringOnly is False. Because many during-
-                    mating pyOperator only need access to offspring,
-                    this will improve efficiency. Default to False.
-
-Note:
-
-    * Output to output is not supported. That is to say, you have to
-    open/close/append to files explicitly in the Python function.
-    Because files specified by output are controlled (opened/closed)
-    by simulators, they should not be manipulated in a pyOperator
-    operator.
-    * This operator can be applied Pre-, During- or Post- Mating and
-    is applied PostMating by default. For example, if you would like
-    to examine the fitness values set by a selector, a PreMating
-    Python operator should be used.
+    Create a pure-Python operator that calls a user-defined function
+    when it is applied. Depending on parameters stage, param, and
+    offspringOnly, the function should have one of the following
+    forms:
+    *   func(pop) if stage=PreMating or PostMating, and without param.
+    *   func(pop, param) if stage=PreMating or PostMating, and with
+    param.
+    *   func(pop, off, dad, mom) if stage=DuringMating and without
+    param.
+    *   func(pop, off, dad, mom, param) if stage=DuringMating, and
+    with param.
+    *   func(off) if stage=DuringMating, offspringOnly=True and
+    without param.
+    *   func(off, param) if stage=DuringMating, offspringOnly=True and
+    with param. where pop is the population to which the operator is
+    applied, off is the offspring of dad and mom, and param is the
+    parameter param specified when the operator is created. When this
+    operator is applied during mating, it can become a genotype
+    transmitter if parameter isTransmitter is set to True. That is to
+    say, the genotype transmitter defined in a mating scheme will not
+    be applied when this operator is active. Please refer to the
+    simuPOP user's guide for a detailed explanation about genotype
+    transmitters.  This operator does not support parameters output,
+    subPops and infoFields. If certain output is needed, it should be
+    handled in the user defined function func. Because the status of
+    files used by other operators through parameter output is
+    undetermined during evolution, they should not be open or closed
+    in this Python operator.
 
 "; 
 
@@ -7356,13 +7335,14 @@ Note:
 
 %feature("docstring") simuPOP::pyOperator::apply "
 
-Description:
-
-    apply the pyOperator operator to one population
-
 Usage:
 
     x.apply(pop)
+
+Details:
+
+    Apply the pyOperator operator to population pop. Calling this
+    function is equivalent to call func with parameter pop.
 
 "; 
 

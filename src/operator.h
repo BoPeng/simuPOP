@@ -927,52 +927,54 @@ private:
 	DBG_CODE m_code;
 };
 
-/// A python operator that directly operate a population
-/**
-   This operator accepts a function that can take the form of
-   \li <tt>func(pop)</tt> when <tt>stage=PreMating</tt> or \c PostMating, without setting \c param;
-   \li <tt>func(pop, param)</tt> when <tt>stage=PreMating</tt> or \c PostMating, with \c param;
-   \li <tt>func(pop, off, dad, mom)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, without setting \c param;
-   \li <tt>func(off)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, and without setting \c param;
-   \li <tt>func(pop, off, dad, mom, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=False</tt>, with \c param;
-   \li <tt>func(off, param)</tt> when <tt>stage=DuringMating</tt> and <tt>passOffspringOnly=True</tt>, with \c param.
 
-   For \c Pre- and \c PostMating usages, a population and an optional parameter is passed to the given
-   function. For \c DuringMating usages, population, offspring, its parents and an optional parameter
-   are passed to the given function. Arbitrary operations can be applied to the population and
-   offspring (if <tt>stage=DuringMating</tt>).
-
+/** An operator that calls a user-defined function when it is applied to a
+ *  population (pre- or post-mating) or offsprings (during-mating). The
+ *  function can have have parameters \c pop when the operator is applied
+ *  pre- or post-mating, <tt>pop, off, dad, mom</tt> when the operator is
+ *  applied during-mating. An optional parameter can be passed if parameter
+ *  \e param is given. In the during-mating case, parameters \c pop,
+ *  \c dad and \c mom can be ignored if \e offspringOnly is set to \c True.
  */
 class pyOperator : public baseOperator
 {
 public:
-	/// Python operator, using a function that accepts a population object
-	/**
-	   \param func a Python function. Its form is determined by other parameters.
-	   \param param any Python object that will be passed to \c func after \c pop parameter.
-	    Multiple parameters can be passed as a tuple.
-	   \param isTransmitter This option tells the mating scheme this operator will set
-	    the genotype of offspring (valid only for <tt>stage=DuringMating</tt>). By default
-	    (<tt>isTransmitter=False</tt>), a mating scheme will set the genotype of offspring before it is
-	    passed to the given Python function. Otherwise, a 'blank' offspring will be passed.
-	   \param passOffspringOnly if \c True, \c pyOperator will expect a function of form <tt>func(off [,param])</tt>,
-	    instead of <tt>func(pop, off, dad, mom [, param])</tt> which is used when \c passOffspringOnly
-	    is \c False. Because many during-mating \c pyOperator only need access to offspring,
-	   this will improve efficiency. Default to \c False.
-
-	   \note
-	   \li Output to \c output is not supported. That is to say,
-	   you have to open/close/append to files explicitly in the Python function.
-	   Because files specified by \c output are controlled (opened/closed) by
-	   simulators, they should not be manipulated in a \c pyOperator operator.
-	   \li This operator can be applied \c Pre-, \c During- or <tt>Post- Mating</tt> and is applied \c PostMating
-	   by default. For example, if you would like to examine the fitness values set by
-	   a selector, a \c PreMating Python operator should be used.
+	/** Create a pure-Python operator that calls a user-defined function when
+	 *  it is applied. Depending on parameters \e stage, \e param, and
+	 *  \e offspringOnly, the function should have one of the following forms:
+	 *  \li <tt>func(pop)</tt> if <tt>stage=PreMating</tt> or \c PostMating,
+	 *    and without \c param.
+	 *  \li <tt>func(pop, param)</tt> if <tt>stage=PreMating</tt> or
+	 *    \c PostMating, and with \c param.
+	 *  \li <tt>func(pop, off, dad, mom)</tt> if <tt>stage=DuringMating</tt> and
+	 *    without \c param.
+	 *  \li <tt>func(pop, off, dad, mom, param)</tt> if <tt>stage=DuringMating</tt>,
+	 *    and with \c param.
+	 *  \li <tt>func(off)</tt> if <tt>stage=DuringMating</tt>,
+	 *    <tt>offspringOnly=True</tt> and without \c param.
+	 *  \li <tt>func(off, param)</tt> if <tt>stage=DuringMating</tt>,
+	 *    <tt>offspringOnly=True</tt> and with \c param.
+	 *
+	 *  where \c pop is the population to which the operator is applied, \c off
+	 *  is the offspring of \c dad and \c mom, and \c param is the parameter
+	 *  \e param specified when the operator is created. When this operator is
+	 *  applied during mating, it can become a <em>genotype transmitter</em> if
+	 *  parameter \e isTransmitter is set to \c True. That is to say, the
+	 *  genotype transmitter defined in a mating scheme will not be applied
+	 *  when this operator is active. Please refer to the simuPOP user's guide
+	 *  for a detailed explanation about <em>genotype transmitters</em>.
+	 *
+	 *  This operator does not support parameters \e output, \e subPops and
+	 *  \e infoFields. If certain output is needed, it should be handled in the
+	 *  user defined function \e func. Because the status of files used by
+	 *  other operators through parameter \e output is undetermined during
+	 *  evolution, they should not be open or closed in this Python operator.
 	 */
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr());
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const vectorstr & infoFields = vectorstr());
 
 	/// HIDDEN
 	virtual baseOperator * clone() const
@@ -981,7 +983,9 @@ public:
 	}
 
 
-	/// apply the \c pyOperator operator to one population
+	/** Apply the \c pyOperator operator to population \e pop. Calling this
+	 *  function is equivalent to call \e func with parameter \e pop.
+	 */
 	virtual bool apply(population & pop);
 
 	/// CPPONLY
