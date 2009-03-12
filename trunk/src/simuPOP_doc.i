@@ -7342,7 +7342,8 @@ Usage:
 Details:
 
     Apply the pyOperator operator to population pop. Calling this
-    function is equivalent to call func with parameter pop.
+    function is equivalent to call func with parameter pop and
+    optional parameter param.
 
 "; 
 
