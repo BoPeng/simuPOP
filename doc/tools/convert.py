@@ -160,13 +160,6 @@ class MyRestWriter(RestWriter):
                         return
             print 'Warning: Failed to find included file for filename "%s".' % file
             return
-        elif cmdname == 'ref':
-            ref_text = text(node.args[0]).lower().replace(':', '-')
-            if ref_text.startswith('cha-'):
-                self.curpar.append(':ref:`%s%s`' % (self.labelprefix, ref_text))
-            else:
-                self.curpar.append('`%s%s`_' % (self.labelprefix, ref_text))
-            return
         sym = ''
         if cmdname in ('code', 'bfcode', 'samp', 'texttt', 'regexp'):
             sym = '``'
