@@ -393,7 +393,7 @@ Index: restwriter.py
          cmdname = node.cmdname
          if cmdname == 'label':
 -            labelname = self.labelprefix + text(node.args[0]).lower()
-+            labelname = self.labelprefix + text(node.args[0]).lower().replace(':', '-')
++            labelname = self.labelprefix + text(node.args[0]).replace(':', '-')
              if self.no_flushing:
                  # in section
                  self.sectionlabel = labelname
@@ -508,13 +508,14 @@ Index: restwriter.py
          elif cmdname in ('b', 'textrm', 'email'):
              self.visit_node(content)
          elif cmdname == 'token':
-@@ -904,8 +989,11 @@
+@@ -904,8 +989,12 @@
              self.visit_wrapped('`', self.get_textonly_node(content, 'var',
                                                             warn=1), '`')
          elif cmdname == 'ref':
 -            self.curpar.append(':ref:`%s%s`' % (self.labelprefix,
 -                                                text(node.args[0]).lower()))
-+            ref_text = text(node.args[0]).lower().replace(':', '-')
++            ref_text = text(node.args[0]).replace(':', '-')
++            print ref_text
 +            if ref_text.startswith('cha-'):
 +                self.curpar.append(':ref:`%s%s`' % (self.labelprefix, ref_text))
 +            else:
