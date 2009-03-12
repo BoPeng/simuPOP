@@ -1143,7 +1143,9 @@ class simuOpt:
         '''Write a configuration file to *file*. This file can be later read
         with command line option ``-c`` or ``--config``. All parameters with a
         ``label`` entry are saved unless a list of parameters are specified
-        in *params*.
+        in *params*. In addition to parameter definitions, command lines
+        options to specify the same set of parameters are saved to the
+        configuration file.
         '''
         cfg = open(file,'w')
         try:
