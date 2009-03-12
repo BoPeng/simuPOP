@@ -984,7 +984,8 @@ public:
 
 
 	/** Apply the \c pyOperator operator to population \e pop. Calling this
-	 *  function is equivalent to call \e func with parameter \e pop.
+	 *  function is equivalent to call \e func with parameter \e pop and
+	 *  optional parameter \e param.
 	 */
 	virtual bool apply(population & pop);
 
