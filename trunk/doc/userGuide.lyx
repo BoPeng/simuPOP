@@ -11608,6 +11608,37 @@ par.rate
 \end_layout
 
 \begin_layout Standard
+Function 
+\family typewriter
+simuOpt.saveConfig(filename)
+\family default
+ saves current values of parameters to a configuraiton file 
+\family typewriter
+filename
+\family default
+.
+ Parameters that do not have a label are ignored.
+ This configuration file can be loaded later using command line option 
+\family typewriter
+--config filename
+\family default
+, perhaps with option 
+\family typewriter
+--gui=False
+\family default
+ to run the script in batch mode.
+ A less noticed feature of this function is that it also writes a complete
+ command that specifies the same parameters using command line options.
+ This can be handy if you would like to use real parameter definitions instead
+ of 
+\family typewriter
+--config filename
+\family default
+ in a batch file.
+ 
+\end_layout
+
+\begin_layout Standard
 The 
 \family typewriter
 simuOpt.simuOpt
@@ -11649,7 +11680,7 @@ the simuPOP reference manual
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Get prameters using function getParam},firstline=36,keywordstyle={\\small\\ttfamily},label={getParam},lastline=67"
+lstparams "caption={Get prameters using function getParam},firstline=36,keywordstyle={\\small\\ttfamily},label={getParam},lastline=69"
 
 \end_inset
 
@@ -11889,7 +11920,7 @@ simuOpt.asDict()
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.log"
-lstparams "caption={Use the simuOpt object},firstline=68,label={useSimuOpt}"
+lstparams "caption={Use the simuOpt object},firstline=70,label={useSimuOpt}"
 
 \end_inset
 
