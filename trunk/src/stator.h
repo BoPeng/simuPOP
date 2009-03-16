@@ -1070,6 +1070,11 @@ public:
 	statGenoFreq(const vectori & genoFreq = vectori(),
 		const strDict & param = strDict());
 
+	// Return AA, Aa and aa, wild type is A.
+	vectorlu countGenotype(population & pop, UINT loc, UINT wildtype);
+
+	vectorlu countGenotype(population & pop, UINT loc, SubPopID subPop, UINT wildtype);
+
 	bool apply(population & pop);
 
 private:
@@ -1367,6 +1372,26 @@ private:
 	bool m_output_AvgFit;
 };
 
+
+class statHWE
+{
+private:
+#define  HWE_String  "HWE"
+
+public:
+	statHWE(statGenoFreq & genoFreq, const vectorlu & loci = vectorlu());
+
+	bool apply(population & pop);
+
+private:
+	double calcHWE(const vectorlu & cnt);
+
+	statGenoFreq & m_genoFreq;
+
+	vectorlu m_loci;
+};
+
+
 /// calculate statistics
 /**
    Operator \c stat calculates various basic statistics for the population
@@ -1603,6 +1628,7 @@ public:
 		vectori Fst = vectori(),
 		strDict Fst_param = strDict(),
 		//
+		const uintList & HWE = uintList(),
 		//
 		bool hasPhase = false,
 		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
@@ -1650,6 +1676,8 @@ private:
 	statLD m_LD;
 	statAssociation m_association;
 	statFst m_Fst;
+	statHWE m_HWE;
 };
+
 }
 #endif

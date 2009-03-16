@@ -265,6 +265,8 @@ stat::stat(
 	vectori Fst,
 	strDict Fst_param,
 	//
+	const uintList & HWE,
+	//
 	bool hasPhase,
 	bool midValues,                                                 // this parameter will be removed after all _param parameter is given.
 	// regular parameters
@@ -284,7 +286,8 @@ stat::stat(
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	m_association(m_alleleFreq, m_haploFreq, association, association_param),
-	m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param)
+	m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
+	m_HWE(m_genoFreq, HWE.elems())
 {
 }
 
@@ -301,7 +304,8 @@ bool stat::apply(population & pop)
 	       m_haploFreq.apply(pop) &&
 	       m_LD.apply(pop) &&
 	       m_association.apply(pop) &&
-	       m_Fst.apply(pop);
+	       m_Fst.apply(pop) &&
+	       m_HWE.apply(pop);
 }
 
 
@@ -872,6 +876,9 @@ bool statGenoFreq::apply(population & pop)
 	if (m_atLoci.empty())
 		return true;
 
+	DBG_ASSERT(pop.ploidy() == 2, ValueError,
+		"Genotype can only be calcualted for diploid populations.");
+
 	UINT numSP = pop.numSubPop();
 	ULONG popSize = pop.popSize();
 
@@ -916,11 +923,11 @@ bool statGenoFreq::apply(population & pop)
 			vector<intDict> num;
 
 			// go through a single allele for all individual, all diploid
-			IndAlleleIterator it = pop.alleleBegin(loc, sp);
-			IndAlleleIterator itEnd = pop.alleleEnd(loc, sp);
-			for (; it != itEnd;  it += 2) {
-				a = *it;
-				b = *(it + 1);
+			IndIterator it = pop.indBegin(sp);
+			IndIterator itEnd = pop.indEnd(sp);
+			for (; it != itEnd; ++it) {
+				a = it->allele(loc, 0);
+				b = it->allele(loc, 1);
 				if (!m_phase && a > b)
 					std::swap(a, b);
 
@@ -973,6 +980,68 @@ bool statGenoFreq::apply(population & pop)
 		}
 	}
 	return true;
+}
+
+
+vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, UINT wildtype)
+{
+	DBG_ASSERT(pop.ploidy() == 2, ValueError,
+		"Genotype can only be calcualted for diploid populations.");
+
+	DBG_FAILIF(loc >= pop.totNumLoci(), IndexError,
+		"Locus index out of range");
+
+	vectorlu res(3, 0);
+
+	IndIterator it = pop.indBegin();
+	IndIterator itEnd = pop.indEnd();
+	for (; it != itEnd; ++it) {
+		Allele a = ToAllele(it->allele(loc, 0));
+		Allele b = ToAllele(it->allele(loc, 1));
+		if (a == wildtype) {
+			if (b == wildtype)
+				res[0]++;
+			else
+				res[1]++;
+		} else {
+			if (b == wildtype)
+				res[1]++;
+			else
+				res[2]++;
+		}
+	}
+	return res;
+}
+
+
+vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, SubPopID subPop, UINT wildtype)
+{
+	DBG_ASSERT(pop.ploidy() == 2, ValueError,
+		"Genotype can only be calcualted for diploid populations.");
+
+	DBG_FAILIF(loc >= pop.totNumLoci(), IndexError,
+		"Locus index out of range");
+
+	vectorlu res(3, 0);
+
+	IndIterator it = pop.indBegin(subPop);
+	IndIterator itEnd = pop.indEnd(subPop);
+	for (; it != itEnd; ++it) {
+		Allele a = ToAllele(it->allele(loc, 0));
+		Allele b = ToAllele(it->allele(loc, 1));
+		if (a == wildtype) {
+			if (b == wildtype)
+				res[0]++;
+			else
+				res[1]++;
+		} else {
+			if (b == wildtype)
+				res[1]++;
+			else
+				res[2]++;
+		}
+	}
+	return res;
 }
 
 
@@ -1843,6 +1912,146 @@ bool statFst::apply(population & pop)
 		pop.setDoubleVar(AvgFit_String, m_avgFit);
 	if (m_output_AvgFis)
 		pop.setDoubleVar(AvgFis_String, m_avgFis);
+	return true;
+}
+
+
+statHWE::statHWE(statGenoFreq & genoFreq, const vectorlu & loci)
+	: m_genoFreq(genoFreq), m_loci(loci)
+{
+}
+
+
+double statHWE::calcHWE(const vectorlu & cnt)
+{
+	// Calculates exact two-sided hardy-weinberg p-value. Parameters
+	// are number of genotypes, number of rare alleles observed and
+	// number of heterozygotes observed.
+	//
+	// (c) 2003 Jan Wigginton, Goncalo Abecasis
+	int obsAA = cnt[2]; // in this algorithm, AA is rare.
+	int obsAB = cnt[1];
+	int obsBB = cnt[0];
+
+	int diplotypes = obsAA + obsAB + obsBB;
+	int rare = (obsAA * 2) + obsAB;
+	int hets = obsAB;
+
+
+	//make sure "rare" allele is really the rare allele
+	if (rare > diplotypes)
+		rare = 2 * diplotypes - rare;
+
+	//make sure numbers aren't screwy
+	if (hets > rare)
+		throw ValueError("HW test: " + toStr(hets) + "heterozygotes but only " + toStr(rare) + "rare alleles.");
+
+	vectorf tailProbs(rare + 1, 0.0);
+
+	//start at midpoint
+	//all the casting is to make sure we don't overflow ints if there are 10's of 1000's of inds
+	int mid = (int)((double)rare * (double)(2 * diplotypes - rare) / (double)(2 * diplotypes));
+
+	//check to ensure that midpoint and rare alleles have same parity
+	if (((rare & 1) ^ (mid & 1)) != 0) {
+		mid++;
+	}
+	int het = mid;
+	int hom_r = (rare - mid) / 2;
+	int hom_c = diplotypes - het - hom_r;
+
+	//Calculate probability for each possible observed heterozygote
+	//count up to a scaling constant, to avoid underflow and overflow
+	tailProbs[mid] = 1.0;
+	double sum = tailProbs[mid];
+	for (het = mid; het > 1; het -= 2) {
+		tailProbs[het - 2] = (tailProbs[het] * het * (het - 1.0)) / (4.0 * (hom_r + 1.0) * (hom_c + 1.0));
+		sum += tailProbs[het - 2];
+		//2 fewer hets for next iteration -> add one rare and one common homozygote
+		hom_r++;
+		hom_c++;
+	}
+
+	het = mid;
+	hom_r = (rare - mid) / 2;
+	hom_c = diplotypes - het - hom_r;
+	for (het = mid; het <= rare - 2; het += 2) {
+		tailProbs[het + 2] = (tailProbs[het] * 4.0 * hom_r * hom_c) / ((het + 2.0) * (het + 1.0));
+		sum += tailProbs[het + 2];
+		//2 more hets for next iteration -> subtract one rare and one common homozygote
+		hom_r--;
+		hom_c--;
+	}
+
+	for (int z = 0; z < tailProbs.size(); z++)
+		tailProbs[z] /= sum;
+
+	double top = tailProbs[hets];
+	for (int i = hets + 1; i <= rare; i++)
+		top += tailProbs[i];
+
+	double otherSide = tailProbs[hets];
+	for (int i = hets - 1; i >= 0; i--)
+		otherSide += tailProbs[i];
+
+	if (top > 0.5 && otherSide > 0.5) {
+		return 1.0;
+	} else {
+		if (top < otherSide)
+			return top * 2;
+		else
+			return otherSide * 2;
+	}
+
+	return 1.0;
+}
+
+
+bool statHWE::apply(population & pop)
+{
+	if (m_loci.empty())
+		return true;
+
+	UINT numSP = pop.numSubPop();
+	UINT numLoci = m_loci.size();
+
+	pop.removeVar(HWE_String);
+	for (UINT sp = 0; sp < numSP; ++sp)
+		pop.removeVar(subPopVar_String(sp, HWE_String));
+
+	// calculate HWE for the whole population
+	vectorf HWE(numLoci);
+	for (size_t i = 0; i < numLoci; ++i) {
+		UINT loc = m_loci[i];
+
+		DBG_FAILIF(loc >= pop.totNumLoci(), IndexError,
+			"Locus index out of range.");
+
+		if (HWE.size() <= loc)
+			HWE.resize(loc + 1, 0);
+
+		HWE[loc] = calcHWE(m_genoFreq.countGenotype(pop, loc, 0));
+	}
+	pop.setDoubleVectorVar(HWE_String, HWE);
+
+	if (numSP == 1) {
+		string varname = subPopVar_String(0, HWE_String);
+		pop.setDoubleVectorVar(varname, HWE);
+		return true;
+	}
+
+	for (UINT sp = 0; sp < numSP; ++sp) {
+		vectorf HWE(numLoci);
+		for (size_t i = 0; i < numLoci; ++i) {
+			UINT loc = m_loci[i];
+			if (HWE.size() <= loc)
+				HWE.resize(loc + 1);
+			HWE[loc] = calcHWE(m_genoFreq.countGenotype(pop, loc, sp, 0));
+		}
+		string varname = subPopVar_String(sp, HWE_String);
+		pop.setDoubleVectorVar(varname, HWE);
+	}
+
 	return true;
 }
 
