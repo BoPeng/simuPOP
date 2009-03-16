@@ -1367,93 +1367,6 @@ private:
 	bool m_output_AvgFit;
 };
 
-#define REL_Queller             1
-#define REL_Lynch               2
-#define REL_IR                  3
-#define REL_D2                  4
-#define REL_Rel                 5
-
-// the relatedness measure between two individuals/families
-// using Queller and Goodnight or Lynch's method.
-// or internal relatedness values
-/// CPPONLY
-class statRelatedness
-{
-
-public:
-#define Rel_Queller_String "relQueller"
-#define Rel_Lynch_String   "relLynch"
-#define Rel_IR_String      "relIR"
-#define Rel_D2_String      "relD2"
-#define Rel_Rel_String     "relRel"
-
-public:
-	typedef std::pair<double, double> fraction;
-
-public:
-	/// \brief calculate relatedness measures between elements in groups
-	/**
-	   \param groups can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups of
-	   individuals; or [ 1 3 4] as three subpopulations. To specify between
-	   individual relatedness, use [[1],[2],[3]] (the first form). If this
-	   parameter is ignored, this operator calculate relatedness between
-	   all subpopulations.
-
-	   \param method can be REL_Queller, REL_Lynch, REL_IR, REL_D2
-	   or REL_Rel. Please refer to the manual for details.
-	 */
-	statRelatedness(statAlleleFreq & alleleFreq, const intMatrix & groups = intMatrix(),
-		bool useSubPop = false, const vectori & loci = vectori(), vectori method = vectori(),
-		int minScored = 10, const strDict & param = strDict());
-
-	// relatedness between individuals
-	fraction relQueller(individual ind1,
-		individual ind2);
-
-	fraction relLynch(individual ind1,
-		individual ind2);
-
-	// IR measure for individual ind at specified locus
-	fraction relIR(individual ind1, int locus);
-
-	// D2 measure for individual ind at specified locus
-	fraction relD2(individual ind1, int locus);
-
-	// REL measure for individual ind at specified locus
-	fraction relRel(individual ind1,
-		individual ind2,  int locus);
-
-	// between group i and j if method=REL_Queller and REL_Lynch
-	/// for group i and locus j otherwise
-	double groupRelatedness(population & pop, int i, int j, int method);
-
-	bool apply(population & pop);
-
-private:
-	/// need to get allele freq
-	statAlleleFreq & m_alleleFreq;
-
-	/// method to use
-	intMatrix m_groups;
-
-	///
-	bool m_useSubPop;
-
-	/// loci used
-	vectori m_atLoci;
-
-	/// method
-	vectori m_method;
-
-	/// control number of scored loci
-	int m_minScored;
-
-	// save result
-	matrix m_relQueller, m_relLynch, m_relIR, m_relD2, m_relRel;
-
-	bool m_midValues;
-};
-
 /// calculate statistics
 /**
    Operator \c stat calculates various basic statistics for the population
@@ -1651,23 +1564,6 @@ public:
 	   Can be one or more items choosen from the following options: \c Fst,
 	   \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
 
-	   \param relMethod method used to calculate relatedness. Can be either \c  REL_Queller or \c REL_Lynch.
-	   The relatedness values between two individuals, or two groups of individuals are calculated according
-	   to Queller & Goodnight (1989) (<tt>method=REL_Queller</tt>) and Lynch et al. (1999) (<tt>method=REL_Lynch</tt>).
-	   The results are pairwise relatedness values, in the form of a matrix. Original group or subpopulation
-	   numbers are discarded. There is no subpopulation level relatedness value.
-
-	   \param relGroups calculate pairwise relatedness between groups. Can be in the form of either
-	   <tt>[[1,2,3],[5,6,7],[8,9]]</tt> or <tt>[2,3,4]</tt>. The first one specifies groups of
-	   individuals, while the second specifies subpopulations. By default, relatedness between
-	   subpopulations is calculated.
-
-	   \param relLoci loci on which relatedness values are calculated
-
-	   \param rel_param a dictionary of parameters of relatedness statistics.
-	   Can be one or more items choosen from the following options: \c Fst,
-	   \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
-
 	   \param hasPhase if a/b and b/a are the same genotype. Default to \c False.
 
 	   \param midValues whether or not post intermediate results. Default to \c False.
@@ -1707,13 +1603,7 @@ public:
 		vectori Fst = vectori(),
 		strDict Fst_param = strDict(),
 		//
-		intMatrix relGroups = intMatrix(),
-		vectori relLoci = vectori(),
-		strDict rel_param = strDict(),
 		//
-		bool relBySubPop = false,                                           // internal use
-		vectori relMethod = vectori(),
-		int relMinScored = 10,                                              // minimal number of loci required.
 		bool hasPhase = false,
 		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
 		// regular parameters
@@ -1760,7 +1650,6 @@ private:
 	statLD m_LD;
 	statAssociation m_association;
 	statFst m_Fst;
-	statRelatedness m_relatedness;
 };
 }
 #endif
