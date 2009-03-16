@@ -15,6 +15,7 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: change parameter formOffGenotype of pyOperator to isTransmitter as a result of
 		merging concepts 'primary during mating operator' and 'genotype transmitter'.
   - CHG: Move all scripts under the scripts directory to online cookbook.
+  - CHG: Change relatedness calculations in operator stat.
 		
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009
