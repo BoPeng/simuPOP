@@ -1132,6 +1132,8 @@ class simuOpt:
         #
         opt['value'] = opt['default']
         opt['processed'] = False
+        if opt.has_key('chooseFrom') and not opt.has_key('allowedTypes'):
+            opt['allowedTypes'] = [type(()), type([])]
         #
         name = opt['longarg'].rstrip('=')
         if self.dict.has_key(name):
