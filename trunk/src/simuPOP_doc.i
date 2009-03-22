@@ -9742,11 +9742,9 @@ Usage:
       heteroFreq=[], expHetero=[], expHetero_param={}, homoFreq=[],
       genoFreq=[], genoFreq_param={}, haploFreq=[], LD=[],
       LD_param={}, association=[], association_param={}, Fst=[],
-      Fst_param={}, relGroups=[], relLoci=[], rel_param={},
-      relBySubPop=False, relMethod=[], relMinScored=10,
-      hasPhase=False, midValues=False, output=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      Fst_param={}, HWE=[], hasPhase=False, midValues=False,
+      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -9978,27 +9976,6 @@ Arguments:
                     be one or more items choosen from the following
                     options: Fst, Fis, Fit, AvgFst, AvgFis, and
                     AvgFit.
-    relMethod:      method used to calculate relatedness. Can be
-                    either REL_Queller or REL_Lynch. The relatedness
-                    values between two individuals, or two groups of
-                    individuals are calculated according to Queller &
-                    Goodnight (1989) (method=REL_Queller) and Lynch et
-                    al. (1999) (method=REL_Lynch). The results are
-                    pairwise relatedness values, in the form of a
-                    matrix. Original group or subpopulation numbers
-                    are discarded. There is no subpopulation level
-                    relatedness value.
-    relGroups:      calculate pairwise relatedness between groups. Can
-                    be in the form of either [[1,2,3],[5,6,7],[8,9]]
-                    or [2,3,4]. The first one specifies groups of
-                    individuals, while the second specifies
-                    subpopulations. By default, relatedness between
-                    subpopulations is calculated.
-    relLoci:        loci on which relatedness values are calculated
-    rel_param:      a dictionary of parameters of relatedness
-                    statistics. Can be one or more items choosen from
-                    the following options: Fst, Fis, Fit, AvgFst,
-                    AvgFis, and AvgFit.
     hasPhase:       if a/b and b/a are the same genotype. Default to
                     False.
     midValues:      whether or not post intermediate results. Default
@@ -10245,6 +10222,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statGenoFreq::countGenotype "
+
+Usage:
+
+    x.countGenotype(pop, loc, wildtype)
+
+"; 
+
 %feature("docstring") simuPOP::statGenoFreq::apply "
 
 Usage:
@@ -10346,6 +10331,26 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statHeteroFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statHWE "
+
+"; 
+
+%feature("docstring") simuPOP::statHWE::statHWE "
+
+Usage:
+
+    statHWE(genoFreq, loci=[])
+
+"; 
+
+%feature("docstring") simuPOP::statHWE::apply "
 
 Usage:
 
@@ -10508,92 +10513,6 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statPopSize::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statRelatedness;
-
-%feature("docstring") simuPOP::statRelatedness::statRelatedness "
-
-Description:
-
-    calculate relatedness measures between elements in groups
-
-Usage:
-
-    statRelatedness(alleleFreq, groups=[], useSubPop=False, loci=[],
-      method=[], minScored=10, param={})
-
-Arguments:
-
-    groups:         can be [ [1,2,3],[4,5,6],[7,8,9]] as three groups
-                    of individuals; or [ 1 3 4] as three
-                    subpopulations. To specify between individual
-                    relatedness, use [[1],[2],[3]] (the first form).
-                    If this parameter is ignored, this operator
-                    calculate relatedness between all subpopulations.
-    method:         can be REL_Queller, REL_Lynch, REL_IR, REL_D2 or
-                    REL_Rel. Please refer to the manual for details.
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::relQueller "
-
-Usage:
-
-    x.relQueller(ind1, ind2)
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::relLynch "
-
-Usage:
-
-    x.relLynch(ind1, ind2)
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::relIR "
-
-Usage:
-
-    x.relIR(ind1, locus)
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::relD2 "
-
-Usage:
-
-    x.relD2(ind1, locus)
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::relRel "
-
-Usage:
-
-    x.relRel(ind1, ind2, locus)
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::groupRelatedness "
-
-Description:
-
-    for group i and locus j otherwise
-
-Usage:
-
-    x.groupRelatedness(pop, i, j, method)
-
-"; 
-
-%feature("docstring") simuPOP::statRelatedness::apply "
 
 Usage:
 
