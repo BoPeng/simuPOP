@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2582,7 +2582,7 @@ In simuPOP, locus is a (named) position and alleles are just different numbers
  at that position.
  
 \series bold
-A locus can be a gene, a basepair, or even a deletion, depending on how
+A locus can be a gene, a nucleotide, or even a deletion, depending on how
  you define alleles and mutations
 \series default
 .
@@ -2590,29 +2590,44 @@ A locus can be a gene, a basepair, or even a deletion, depending on how
 \end_layout
 
 \begin_layout Itemize
-A condo can be simulated as a locus with 64 allelic states, or three locus
+A codon can be simulated as a locus with 64 allelic states, or three locus
  each with 4 allelic states.
- Alleles in the first case would be condos such as 
+ Alleles in the first case would be codons such as 
 \family typewriter
 AAC
 \family default
- and a mutation event would mutate one condo to another (e.g.
+ and a mutation event would mutate one codon to another (e.g.
  
 \family typewriter
 AAC
 \family default
-->
+ -> 
 \family typewriter
 ACC
 \family default
 ).
- Alleles in the second case would be A, C, T or G, and a mutation event
- would mutate one nucleotide to another (e.g.
+ Alleles in the second case would be 
+\family typewriter
+A
+\family default
+, 
+\family typewriter
+C
+\family default
+, 
+\family typewriter
+T
+\family default
+ or 
+\family typewriter
+G
+\family default
+, and a mutation event would mutate one nucleotide to another (e.g.
  
 \family typewriter
 A
 \family default
-->
+ -> 
 \family typewriter
 G
 \family default
