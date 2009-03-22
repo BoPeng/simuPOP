@@ -2726,7 +2726,7 @@ simuPOP is most widely used to study human (diploid) populations.
  simuPOP can also support other types of populations such as triploid and
  tetraploid populations, but these features are largely untested due to
  their limited usage.
- It is expected that supports for these population would be enhanced over
+ It is expected that supports for these populations would be enhanced over
  time.
 \end_layout
 
