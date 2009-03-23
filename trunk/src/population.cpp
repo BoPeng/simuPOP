@@ -829,8 +829,11 @@ void population::removeIndividuals(const uintList & indList)
 	vector<bool> removed(popSize(), false);
 	vectorlu::const_iterator it = inds.begin();
 	vectorlu::const_iterator it_end = inds.end();
-	for (; it != it_end; ++it)
+	for (; it != it_end; ++it) {
+		DBG_FAILIF(*it >= removed.size(), IndexError,
+			"Individual index " + toStr(*it) + " out of range.");
 		removed[*it] = true;
+	}
 	//
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		for (size_t ind = subPopBegin(sp); ind != subPopEnd(sp); ++ind) {
