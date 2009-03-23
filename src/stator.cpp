@@ -59,7 +59,7 @@ bool pyEval::apply(population & pop)
 }
 
 
-string infoEval::evalInfo(individual * ind)
+string infoEval::evalInfo(individual * ind, bool update)
 {
 	vectorstr infos = ind->infoFields();
 
@@ -86,12 +86,45 @@ string infoEval::evalInfo(individual * ind)
 			throw SystemError("Could not expose individual pointer. Compiled with the wrong version of SWIG? ");
 
 		// set dictionary variable pop to this object
-		SharedVariables(m_dict, false).setVar(m_exposeInd, indObj);
+		PyDict_SetItemString(m_dict, m_exposeInd.c_str(), indObj);
+		Py_DECREF(indObj);
 	}
 
 	m_expr.setLocalDict(m_dict);
 	// evaluate
 	string res = m_expr.valueAsString();
+	// update 
+	if (update) {
+		for (UINT idx = 0; idx < infos.size(); ++idx) {
+			double info = 0;
+			string name = infos[idx];
+			try {
+				PyObject * var = PyDict_GetItemString(m_dict, name.c_str());
+				PyObj_As_Double(var, info);
+				ind->setInfo(info, idx);
+			} catch (...) {
+				DBG_WARNING(true, "Failed to update information field " + name +
+					" from a dictionary of information fields.");
+			}
+		}
+	}
+
+	//
+	for (UINT idx = 0; idx < infos.size(); ++idx) {
+		string name = infos[idx];
+		int err = PyDict_DelItemString(m_dict, name.c_str());
+		if (err != 0) {
+#ifndef OPTIMIZED
+			if (debug(DBG_GENERAL)) {
+				PyErr_Print();
+				PyErr_Clear();
+			}
+#endif
+			throw RuntimeError("Setting information fields as variables failed");
+		}
+	}
+	if (!m_exposeInd.empty())
+		PyDict_DelItemString(m_dict, m_exposeInd.c_str());
 	return res;
 }
 
@@ -113,7 +146,7 @@ bool infoEval::apply(population & pop)
 		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		for (; ind != indEnd; ++ind) {
-			string res = evalInfo(& * ind) ;
+			string res = evalInfo(& * ind, false) ;
 			if (!this->noOutput() ) {
 				ostream & out = this->getOstream(pop.dict());
 				out << res;
@@ -130,7 +163,7 @@ bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	string res = evalInfo(& * offspring);
+	string res = evalInfo(& * offspring, false);
 
 	if (!this->noOutput() ) {
 		ostream & out = this->getOstream(pop.dict());
@@ -138,25 +171,6 @@ bool infoEval::applyDuringMating(population & pop, RawIndIterator offspring,
 		this->closeOstream();
 	}
 	return true;
-}
-
-
-void infoExec::updateInfo(individual * ind)
-{
-	vectorstr infos = ind->infoFields();
-
-	for (UINT idx = 0; idx < infos.size(); ++idx) {
-		double info = 0;
-		string name = infos[idx];
-		try {
-			PyObject * var = PyDict_GetItemString(m_dict, name.c_str());
-			PyObj_As_Double(var, info);
-			ind->setInfo(info, idx);
-		} catch (...) {
-			DBG_WARNING(true, "Failed to update information field " + name +
-				" from a dictionary of information fields.");
-		}
-	}
 }
 
 
@@ -186,8 +200,7 @@ bool infoExec::apply(population & pop)
 		for (; ind != indEnd; ++ind) {
 			switch (m_simpleStmt.operation()) {
 			case NoOperation:
-				evalInfo(& * ind);
-				updateInfo(& * ind);
+				evalInfo(& * ind, true);
 				break;
 			case Assignment:
 				ind->setInfo(oValue, oVarIdx);
@@ -215,8 +228,7 @@ bool infoExec::applyDuringMating(population & pop, RawIndIterator offspring,
 {
 	m_dict = m_usePopVars ? pop.dict() : PyDict_New();
 
-	evalInfo(& * offspring);
-	updateInfo(& * offspring);
+	evalInfo(& * offspring, true);
 	return true;
 }
 

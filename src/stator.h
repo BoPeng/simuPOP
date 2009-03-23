@@ -253,7 +253,7 @@ public:
 
 
 protected:
-	string evalInfo(individual *);
+	string evalInfo(individual *, bool update);
 
 	/// expression to evaluate
 	Expression m_expr;
@@ -344,8 +344,6 @@ public:
 
 
 private:
-	void updateInfo(individual * ind);
-
 	simpleStmt m_simpleStmt;
 };
 
