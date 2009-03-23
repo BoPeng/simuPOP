@@ -244,7 +244,7 @@ bool splitSubPops::apply(population & pop)
 	// we have to split from top to bottom subpopulations
 	// because split will change subpopulation index
 	if (subPops.empty() )
-		for (UINT i = pop.numSubPop() - 1; i >= 0; --i)
+		for (int i = pop.numSubPop() - 1; i >= 0; --i)
 			subPops.push_back(vspID(i));
 	else
 		std::sort(subPops.begin(), subPops.end(), compareVSP());
