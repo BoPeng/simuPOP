@@ -440,14 +440,11 @@ class TestPopulation(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, pop.removeSubPops, [8])
         # accept single input
         pop.removeSubPops(0)
-
-
+        
     def testRemoveIndividuals(self):
         'Testing population::removeIndividuals(inds)'
         pop = self.getPop(size =[20, 100, 30], subPopNames=['sp1', 'sp2', 'sp3'])
         pop1 = pop.clone()
-        # FIXME: test remove multiple individuals from multiple subpopulations,
-        # which may not be in order
         pop.removeIndividuals([15])
         self.assertEqual(pop.subPopSizes(), (19, 100, 30))
         for idx in range(15):
@@ -456,7 +453,6 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop1.individual(idx+1), pop.individual(idx))
         # accept single input
         pop.removeIndividuals(2)
-
         # 1) pop.removeIndividuals([500]) should yield an exception.
         pop = pop1.clone()
         self.assertRaises(exceptions.IndexError, pop.removeIndividuals, 500)
@@ -505,13 +501,6 @@ class TestPopulation(unittest.TestCase):
         pop.removeIndividuals(inds)
         self.assertEqual(pop.subPopSizes(), (0, 0, 0))
         self.assertEqual(pop.subPopNames(), pop1.subPopNames())
-        
-        
-                    
-                        
-            
-        
-        
 
     def testRemoveLoci(self):
         'Testing population::removeLoci(loci=[], keep=[])'
