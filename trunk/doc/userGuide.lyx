@@ -2651,8 +2651,8 @@ For microsatellite markers, alleles are usually interpreted as the number
 
 \begin_layout Itemize
 The infinite site and infinite allele mutation models could be simulated
- using either a continuous sequence of nucleotide with simple mutation,
- or a locus with a large number of possible allelic states.
+ using either a continuous sequence of nucleotides with a simple 2-allele
+ mutation model, or a locus with a large number of possible allelic states.
  It is also possible to simulate an empty region (without any locus) with
  loci introduced by mutation events.
 \end_layout
@@ -10203,11 +10203,19 @@ name "sec:Genotype-transmitters"
 \end_layout
 
 \begin_layout Subsection
-Recombination
+Generic genotype transmitter (operator 
+\family typewriter
+genoTransmitter
+\family default
+)
 \end_layout
 
 \begin_layout Subsection
-Recombination with gene conversion
+Recombination 
+\end_layout
+
+\begin_layout Subsection
+Gene conversion
 \end_layout
 
 \begin_layout Standard
