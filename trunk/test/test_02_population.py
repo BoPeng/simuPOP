@@ -444,7 +444,7 @@ class TestPopulation(unittest.TestCase):
 
     def testRemoveIndividuals(self):
         'Testing population::removeIndividuals(inds)'
-        pop = self.getPop(size =[20, 100, 30])
+        pop = self.getPop(size =[20, 100, 30], subPopNames=['sp1', 'sp2', 'sp3'])
         pop1 = pop.clone()
         # FIXME: test remove multiple individuals from multiple subpopulations,
         # which may not be in order
@@ -456,6 +456,62 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop1.individual(idx+1), pop.individual(idx))
         # accept single input
         pop.removeIndividuals(2)
+
+        # 1) pop.removeIndividuals([500]) should yield an exception.
+        pop = pop1.clone()
+        self.assertRaises(exceptions.IndexError, pop.removeIndividuals, 500)
+        # 2) pop.removeIndividuals([]) should not change anything (self.assertEqual(pop, pop1))
+        pop = pop1.clone()
+        pop.removeIndividuals([])
+        self.assertEqual(pop, pop1)
+        # 3) pop.removeIndividuals(range(15, 25)) ...
+        pop = pop1.clone()
+        inds = range(15, 25)
+        random.shuffle(inds)
+        pop.removeIndividuals(inds)
+        self.assertEqual(pop.subPopSizes(), (15, 95, 30))
+        for idx in range(15):
+            self.assertEqual(pop1.individual(idx), pop.individual(idx))
+        for idx in range(24, pop.popSize()):
+            self.assertEqual(pop1.individual(idx+10), pop.individual(idx))
+        # 4) pop.removeIndividuals(range(15, 125)) removes the middle subpopulation
+        #    and some individuals in subpopulation 0? Check if subpopulation name is handled correctly.
+        pop = pop1.clone()
+        inds = range(15, 125)
+        random.shuffle(inds)
+        pop.removeIndividuals(inds)
+        self.assertEqual(pop.subPopSizes(), (15, 0, 25))
+        for idx in range(15):
+            self.assertEqual(pop1.individual(idx), pop.individual(idx))
+        for idx in range(15, pop.popSize()):
+            self.assertEqual(pop1.individual(idx+110), pop.individual(idx))
+        self.assertEqual(pop.subPopNames(), pop1.subPopNames())
+        # 5) pop.removeIndividuals(range(pop.subPopBegin(1), pop.subPopEnd(1))) removes the middle subpopulation.
+        #    Check if subpopulation name is handled correctly.
+        pop = pop1.clone()
+        inds = range(pop.subPopBegin(1), pop.subPopEnd(1))
+        random.shuffle(inds)
+        pop.removeIndividuals(inds)
+        self.assertEqual(pop.subPopSizes(), (20, 0, 30))
+        for idx in range(20):
+            self.assertEqual(pop1.individual(idx), pop.individual(idx))
+        for idx in range(21, pop.popSize()):
+            self.assertEqual(pop1.individual(idx+100), pop.individual(idx))
+        self.assertEqual(pop.subPopNames(), pop1.subPopNames())
+        # 6) pop.removeIndividuals(range(pop.popSize())) removes all individuals in this population.
+        pop = pop1.clone()
+        inds = range(0, 150)
+        random.shuffle(inds)
+        pop.removeIndividuals(inds)
+        self.assertEqual(pop.subPopSizes(), (0, 0, 0))
+        self.assertEqual(pop.subPopNames(), pop1.subPopNames())
+        
+        
+                    
+                        
+            
+        
+        
 
     def testRemoveLoci(self):
         'Testing population::removeLoci(loci=[], keep=[])'
