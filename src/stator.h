@@ -828,7 +828,7 @@ private:
 class statNumOfAlleles
 {
 public:
-	statNumOfAlleles(statAlleleFreq & calc, const vectori & atLoci = vectori(),
+	statNumOfAlleles(statAlleleFreq & calc, const vectorlu & atLoci = vectorlu(),
 		const strDict & param = strDict())
 		: m_calc(calc), m_evalInSubPop(true)
 	{
@@ -838,7 +838,7 @@ public:
 			if ((it = param.find("subPop")) != itEnd)
 				m_evalInSubPop = it->second != 0.;
 		}
-		for (vectori::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
+		for (vectorlu::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
 			m_calc.addLocus(*it, true, m_evalInSubPop, true);
 	}
 
@@ -1589,7 +1589,7 @@ public:
 		bool numOfAffected = false,
 		strDict numOfAffected_param = strDict(),
 		//
-		vectori numOfAlleles = vectori(),
+		const uintList & numOfAlleles = uintList(),
 		strDict numOfAlleles_param = strDict(),
 		//
 		vectori alleleFreq = vectori(),
