@@ -411,9 +411,6 @@ class TestStat(unittest.TestCase):
         '''Testing LD for both dialleleic and multi-allelic cases'''
         self.TestLD([.2, .8])
         self.TestLD([.2, .3, .5])
-
-    def testAssociation(self):
-        'Testing calculation of association between two loci'
         #TurnOnDebug(DBG_STATO
         pop = population(size=[500,100,1000], ploidy=2, loci = [5])
         #
@@ -427,7 +424,7 @@ class TestStat(unittest.TestCase):
         # This has not passed our test yet. (degree of freedom problem?)
         #
         InitByFreq(pop, [.2, .3, .5])
-        Stat(pop, association=[2,4], popSize=1, association_param={'midValues':True})
+        Stat(pop, LD=[2,4], popSize=1, LD_param={'midValues':True, 'stat':['CramerV', 'LD_ChiSq', 'UC_U']})
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
             #allele1 is alleles in loc1
@@ -457,35 +454,35 @@ class TestStat(unittest.TestCase):
             c = len(var.alleleFreq[loc2])
             CramerV = math.sqrt(ChiSq(var, loc1, loc2)/(var.popSize * min(r - 1, c - 1)))
             return CramerV
-        assert abs(ChiSq(pop.dvars(), 2, 4) - pop.dvars().ChiSq[2][4]) < 1e-6
+        assert abs(ChiSq(pop.dvars(), 2, 4) - pop.dvars().LD_ChiSq[2][4]) < 1e-6
         if has_rpy:
-            assert abs(ChiSq_P(pop.dvars(), 2, 4) - pop.dvars().ChiSq_P[2][4]) < 1e-6
+            assert abs(ChiSq_P(pop.dvars(), 2, 4) - pop.dvars().LD_ChiSq_P[2][4]) < 1e-6
         assert abs(UC_U(pop.dvars(), 2, 4) - pop.dvars().UC_U[2][4]) < 1e-6
         assert abs(CramerV(pop.dvars(), 2, 4) - pop.dvars().CramerV[2][4]) < 1e-6
         for sp in range(3):
-            assert abs(ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).ChiSq[2][4]) < 1e-6
+            assert abs(ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD_ChiSq[2][4]) < 1e-6
             assert abs(UC_U(pop.dvars(sp), 2, 4) - pop.dvars(sp).UC_U[2][4]) < 1e-6
             assert abs(CramerV(pop.dvars(sp), 2, 4) - pop.dvars(sp).CramerV[2][4]) < 1e-6
         # if any one statistics is specified, others will not be evaluated
-        for stat in ['ChiSq', 'UC_U', 'CramerV']:
-            func = {'ChiSq':ChiSq, 'UC_U':UC_U, 'CramerV':CramerV}[stat]
-            Stat(pop, association=[2,4], popSize=1, association_param={'stat':[stat], 'midValues':True})
+        for stat in ['LD_ChiSq', 'UC_U', 'CramerV']:
+            func = {'LD_ChiSq':ChiSq, 'UC_U':UC_U, 'CramerV':CramerV}[stat]
+            Stat(pop, LD=[2,4], popSize=1, LD_param={'stat':[stat], 'midValues':True})
             assert pop.vars().has_key(stat)
             assert abs(func(pop.dvars(), 2, 4) - pop.vars()[stat][2][4]) < 1e-6
             for sp in range(3):
                 assert pop.vars(sp).has_key(stat)
                 assert abs(func(pop.dvars(sp), 2, 4) - pop.vars(sp)[stat][2][4]) < 1e-6
-            other_stat = ['ChiSq', 'UC_U', 'CramerV']
+            other_stat = ['LD_ChiSq', 'UC_U', 'CramerV']
             other_stat.remove(stat)
             for os in other_stat:
                 assert not pop.vars().has_key(os)
                 for sp in range(3):
                     assert not pop.vars(sp).has_key(os)
             # if subPop is set to False, no statistics for subpopulations
-            Stat(pop, association=[2,4], popSize=1, association_param={'stat':[stat], 'midValues':True, 'subPop':False})
+            Stat(pop, LD=[2,4], popSize=1, LD_param={'stat':[stat], 'midValues':True, 'subPop':False})
             assert abs(func(pop.dvars(), 2, 4) - pop.vars()[stat][2][4]) < 1e-6
             for sp in range(3):
-                assert not pop.vars(sp).has_key('ChiSq')
+                assert not pop.vars(sp).has_key('LD_ChiSq')
                 assert not pop.vars(sp).has_key('UC_U')
                 assert not pop.vars(sp).has_key('CramerV')
 

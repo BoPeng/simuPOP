@@ -523,18 +523,14 @@ new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
 initByValue.__init__ = new_initByValue
 
-def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association_param={},
-    midValues=None, *args, **kwargs):
-    # midValues is now obsolete
-    if midValues is not None:
-        print 'Parameter midValues is now obsolete. Please use the _param parameter of corresponding statistics'
+def new_stat(self, haploFreq=[], LD=[], LD_param={}, *args, **kwargs):
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
         hf = [haploFreq]
     else:
         hf = haploFreq
     # parameter LD
-    if len(LD) > 0 and type(LD[0]) in    [types.IntType, types.LongType]:
+    if len(LD) > 0 and type(LD[0]) in [types.IntType, types.LongType]:
         ld = [LD]
     else:
         ld = LD
@@ -546,22 +542,8 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, association=[], association
                 ldp[stat] = True
         else:
             ldp[key] = LD_param[key]
-    # parameters of association, convert 'stat':['ChiSq', 'UCU'] etc to 'ChiSq':True, 'UCU':True
-    assp = {}
-    for key in association_param.keys():
-        if 'stat' == key and type(association_param['stat']) in [types.TupleType, types.ListType]:
-            for stat in association_param['stat']:
-                assp[stat] = True
-        else:
-            assp[key] = association_param[key]
-    # parameter association
-    if len(association) > 0 and type(association[0]) in [types.IntType, types.LongType]:
-        Association = [association]
-    else:
-        Association = association
     cppModule.stat_swiginit(self,
         cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp,
-            association=Association, association_param=assp,
             *args, **kwargs))
 
 new_stat.__doc__ = stat.__init__.__doc__

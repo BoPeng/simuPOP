@@ -19,6 +19,8 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add calculation of HWE p-value to the stat operator.
   - NEW: Test individual index in population::removeIndividuals
   - BUG: Fix a bug when no subpopulation is given in splitSubPops.
+  - CHG: Merge stat(association) to stat(LD), in preparation for case-control association
+		tests.
 		
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009
