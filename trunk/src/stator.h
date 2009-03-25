@@ -1065,7 +1065,7 @@ private:
 #define  GenotypeFreq_String  "genoFreq"
 
 public:
-	statGenoFreq(const vectori & genoFreq = vectori(),
+	statGenoFreq(const vectorlu & genoFreq = vectorlu(),
 		const strDict & param = strDict());
 
 	// Return AA, Aa and aa, wild type is A.
@@ -1077,7 +1077,7 @@ public:
 
 private:
 	/// which genotypes
-	vectori m_atLoci;
+	vectorlu m_atLoci;
 
 	/// phase
 	bool m_phase;
@@ -1600,12 +1600,12 @@ public:
 		const strDict & expHetero_param = strDict(),
 		const uintList & homoFreq = uintList(),
 		//
-		vectori genoFreq = vectori(),
-		strDict genoFreq_param = strDict(),
-		intMatrix haploFreq = intMatrix(),
+		const uintList & genoFreq = uintList(),
+		const strDict & genoFreq_param = strDict(),
+		const intMatrix & haploFreq = intMatrix(),
 		//
-		intMatrix LD = intMatrix(),
-		strDict LD_param = strDict(),
+		const intMatrix & LD = intMatrix(),
+		const strDict & LD_param = strDict(),
 		//
 		//intMatrix association = intMatrix(),
 		//strDict association_param = strDict(),

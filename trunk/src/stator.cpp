@@ -264,12 +264,12 @@ stat::stat(
 	const strDict & expHetero_param,
 	const uintList & homoFreq,
 	//
-	vectori genoFreq,
-	strDict genoFreq_param,
-	intMatrix haploFreq,
+	const uintList & genoFreq,
+	const strDict & genoFreq_param,
+	const intMatrix & haploFreq,
 	//
-	intMatrix LD,
-	strDict LD_param,
+	const intMatrix & LD,
+	const strDict & LD_param,
 	//
 	//intMatrix association,
 	//strDict association_param,
@@ -294,7 +294,7 @@ stat::stat(
 	m_numOfAlleles(m_alleleFreq, numOfAlleles.elems(), numOfAlleles_param),
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems()),
 	m_expHetero(m_alleleFreq, expHetero.elems(), expHetero_param),
-	m_genoFreq(genoFreq, genoFreq_param),
+	m_genoFreq(genoFreq.elems(), genoFreq_param),
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	//m_association(m_alleleFreq, m_haploFreq, association, association_param),
@@ -870,7 +870,7 @@ bool statExpHetero::apply(population & pop)
 }
 
 
-statGenoFreq::statGenoFreq(const vectori & genoFreq,
+statGenoFreq::statGenoFreq(const vectorlu & genoFreq,
 	const strDict & param)
 	: m_atLoci(genoFreq), m_phase(false)
 {
@@ -919,7 +919,7 @@ bool statGenoFreq::apply(population & pop)
 		// for each locus, we need to use a vector of dictionaries.
 		vector<intDict> sum;
 
-		int loc = m_atLoci[i];
+		UINT loc = m_atLoci[i];
 
 #ifndef BINARYALLELE
 		Allele a, b;
