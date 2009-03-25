@@ -1299,7 +1299,7 @@ private:
 
 public:
 	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-		const vectori & Fst = vectori(), const strDict & param = strDict());
+		const vectorlu & Fst = vectorlu(), const strDict & param = strDict());
 
 	double Fst()
 	{
@@ -1344,7 +1344,7 @@ private:
 	statHeteroFreq & m_heteroFreq;
 
 	/// Fst
-	vectori m_atLoci;
+	vectorlu m_atLoci;
 
 	/// result
 	vectorf m_Fst, m_Fit, m_Fis;
@@ -1610,13 +1610,11 @@ public:
 		//intMatrix association = intMatrix(),
 		//strDict association_param = strDict(),
 		//
-		vectori Fst = vectori(),
-		strDict Fst_param = strDict(),
+		const uintList & Fst = uintList(),
+		const strDict & Fst_param = strDict(),
 		//
 		const uintList & HWE = uintList(),
 		//
-		bool hasPhase = false,
-		bool midValues = false,                                             // this parameter will be removed after all _param parameter is given.
 		// regular parameters
 		const stringFunc & output = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
