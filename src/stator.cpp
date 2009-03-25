@@ -256,8 +256,8 @@ stat::stat(
 	const uintList & numOfAlleles,
 	strDict numOfAlleles_param,
 	//
-	vectori alleleFreq,
-	strDict alleleFreq_param,
+	const uintList & alleleFreq,
+	const strDict & alleleFreq_param,
 	//
 	vectori heteroFreq,
 	vectori expHetero,
@@ -290,7 +290,7 @@ stat::stat(
 	m_popSize(popSize),
 	m_numOfMale(numOfMale, numOfMale_param),
 	m_numOfAffected(numOfAffected, numOfAffected_param),
-	m_alleleFreq(alleleFreq, alleleFreq_param),
+	m_alleleFreq(alleleFreq.elems(), alleleFreq_param),
 	m_numOfAlleles(m_alleleFreq, numOfAlleles.elems(), numOfAlleles_param),
 	m_heteroFreq(heteroFreq, homoFreq),
 	m_expHetero(m_alleleFreq, expHetero, expHetero_param),
@@ -458,9 +458,9 @@ statAlleleFreq::~statAlleleFreq()
 }
 
 
-void statAlleleFreq::addLocus(int locus, bool post, bool subPop, bool numOfAlleles)
+void statAlleleFreq::addLocus(UINT locus, bool post, bool subPop, bool numOfAlleles)
 {
-	vectori::const_iterator it;
+	vectorlu::const_iterator it;
 
 	// a new one
 	if ( (it = find(m_atLoci.begin(), m_atLoci.end(), locus)) == m_atLoci.end() ) {
