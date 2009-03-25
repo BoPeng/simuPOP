@@ -93,7 +93,7 @@ string infoEval::evalInfo(individual * ind, bool update)
 	m_expr.setLocalDict(m_dict);
 	// evaluate
 	string res = m_expr.valueAsString();
-	// update 
+	// update
 	if (update) {
 		for (UINT idx = 0; idx < infos.size(); ++idx) {
 			double info = 0;
@@ -271,8 +271,7 @@ stat::stat(
 	const intMatrix & LD,
 	const strDict & LD_param,
 	//
-	//intMatrix association,
-	//strDict association_param,
+	const uintList & association,
 	//
 	const uintList & Fst,
 	const strDict & Fst_param,
@@ -295,7 +294,7 @@ stat::stat(
 	m_genoFreq(genoFreq.elems(), genoFreq_param),
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
-	//m_association(m_alleleFreq, m_haploFreq, association, association_param),
+	m_association(association.elems(), subPops),
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
 	m_HWE(m_genoFreq, HWE.elems())
 {
@@ -313,7 +312,7 @@ bool stat::apply(population & pop)
 	       m_genoFreq.apply(pop) &&
 	       m_haploFreq.apply(pop) &&
 	       m_LD.apply(pop) &&
-	       //m_association.apply(pop) &&
+	       m_association.apply(pop) &&
 	       m_Fst.apply(pop) &&
 	       m_HWE.apply(pop);
 }
@@ -1221,9 +1220,9 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 		    param.find(AvgLDPRIME_String) != itEnd ||
 		    param.find(AvgR2_String) != itEnd ||
 		    param.find(AvgDELTA2_String) != itEnd ||
-			param.find(ChiSq_String) != itEnd ||
-			param.find(UCU_String) != itEnd ||
-			param.find(CramerV_String) != itEnd) {
+		    param.find(ChiSq_String) != itEnd ||
+		    param.find(UCU_String) != itEnd ||
+		    param.find(CramerV_String) != itEnd) {
 			m_output_ld = false;
 			m_output_ld_prime = false;
 			m_output_r2 = false;
@@ -1460,7 +1459,7 @@ bool statLD::apply(population & pop)
 			outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
-				if (numSP == 1)  // use the whole population result
+				if (numSP == 1)     // use the whole population result
 					outputLD(pop, hapLoci, haploKey(hapAlleles), 0, true, valid_delta2, D, D_prime, r2, delta2);
 				else {
 					for (UINT sp = 0; sp < numSP;  ++sp) {
@@ -1519,7 +1518,7 @@ bool statLD::apply(population & pop)
 			outputLD(pop, hapLoci, "", 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
-				if (numSP == 1)  // use the whole population result
+				if (numSP == 1)     // use the whole population result
 					outputLD(pop, hapLoci, "", 0, true, valid_delta2, D, D_prime, r2, delta2);
 				else {
 					for (UINT sp = 0; sp < numSP;  ++sp) {
@@ -1558,9 +1557,9 @@ bool statLD::apply(population & pop)
 			}                                                                                       // eval in subpop
 		}                                                                                           // size = 2, 4
 	}                                                                                               // for all LD
-	/* FIXME: the following is moved from the old statAssociation... they should
+	/* FIXME: the following is moved from the old association class... they should
 	 * be merged to the above calculation
-	*/
+	 */
 	if (!m_output_ChiSq && !m_output_UCU && !m_output_CramerV)
 		return true;
 
@@ -1705,7 +1704,97 @@ bool statLD::apply(population & pop)
 				}
 			}                                                                                       // each sp
 		}                                                                                           // numSP > 1
-	}                     
+	}
+	return true;
+}
+
+
+statAssociation::statAssociation(const vectorlu & loci, const subPopList & subPops) :
+	m_loci(loci), m_subPops(subPops)
+{
+}
+
+
+void statAssociation::calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG unaff_1,
+                                double & chisq, double & pvalue)
+{
+	double cases = aff_0 + aff_1;
+	double controls = unaff_0 + unaff_1;
+	double total = cases + controls;
+	double allele0 = aff_0 + unaff_0;
+	double allele1 = aff_1 + unaff_1;
+
+	if (cases == 0 || controls == 0 | allele0 == 0 || allele1 == 0) {
+		chisq = 0;
+		pvalue = 1;
+		return;
+	}
+	chisq = 0;
+	double nij = cases * allele0 / total;
+	chisq += pow(aff_0 - nij, 2) / nij;
+	nij = cases * allele1 / total;
+	chisq += pow(aff_1 - nij, 2) / nij;
+	nij = controls * allele0 / total;
+	chisq += pow(unaff_0 - nij, 2) / nij;
+	nij = controls * allele1 / total;
+	chisq += pow(unaff_1 - nij, 2) / nij;
+	DBG_DO(DBG_STATOR, cout << " counts: "
+		<< aff_0 << " " << aff_1 << " " << unaff_0 << " " << unaff_1 << " ChiSq: " << chisq << endl);
+
+	pvalue = rng().pvalChiSq(chisq, 1);
+}
+
+
+void statAssociation::countAlleles(IndIterator & it, UINT loc,
+                                   ULONG & aff_0, ULONG & aff_1, ULONG & unaff_0, ULONG & unaff_1)
+{
+	UINT ploidy = it->ploidy();
+
+	aff_0 = 0;
+	aff_1 = 0;
+	unaff_0 = 0;
+	unaff_1 = 0;
+	for (; it.valid(); ++it) {
+		for (UINT p = 0; p < ploidy; ++p) {
+			if (it->affected()) {
+				if (ToAllele(it->allele(loc, p)) == 0)
+					++aff_0;
+				else
+					++aff_1;
+			} else {
+				if (ToAllele(it->allele(loc, p)) == 0)
+					++unaff_0;
+				else
+					++unaff_1;
+			}
+		}
+	}
+}
+
+
+bool statAssociation::apply(population & pop)
+{
+	if (m_loci.empty())
+		return true;
+
+	pop.removeVar(Asso_ChiSq_String);
+	pop.removeVar(Asso_ChiSq_P_String);
+	pop.removeVar(Fit_String);
+
+	vectorf chisq(pop.totNumLoci());
+	vectorf pvalue(pop.totNumLoci());
+	ULONG aff_0, aff_1, unaff_0, unaff_1;
+
+	for (UINT i = 0; i < m_loci.size(); ++i) {
+		UINT loc = m_loci[i];
+		IndIterator it = pop.indBegin();
+		countAlleles(it, loc, aff_0, aff_1, unaff_0, unaff_1);
+		calcChiSq(aff_0, aff_1, unaff_0, unaff_1, chisq[loc], pvalue[loc]);
+		DBG_DO(DBG_STATOR, cout << "Locus: " << loc << " ChiSq: " << chisq[loc]
+			<< " p-value: " << pvalue[loc] << endl);
+	}
+	pop.setDoubleVectorVar(Asso_ChiSq_String, chisq);
+	pop.setDoubleVectorVar(Asso_ChiSq_P_String, pvalue);
 	return true;
 }
 
@@ -1895,7 +1984,7 @@ double statHWE::calcHWE(const vectorlu & cnt)
 	// number of heterozygotes observed.
 	//
 	// (c) 2003 Jan Wigginton, Goncalo Abecasis
-	int obsAA = cnt[2]; // in this algorithm, AA is rare.
+	int obsAA = cnt[2];                                             // in this algorithm, AA is rare.
 	int obsAB = cnt[1];
 	int obsBB = cnt[0];
 
