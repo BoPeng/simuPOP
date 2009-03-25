@@ -253,7 +253,7 @@ stat::stat(
 	bool numOfAffected,
 	strDict numOfAffected_param,
 	//
-	vectori numOfAlleles,
+	const uintList & numOfAlleles,
 	strDict numOfAlleles_param,
 	//
 	vectori alleleFreq,
@@ -291,7 +291,7 @@ stat::stat(
 	m_numOfMale(numOfMale, numOfMale_param),
 	m_numOfAffected(numOfAffected, numOfAffected_param),
 	m_alleleFreq(alleleFreq, alleleFreq_param),
-	m_numOfAlleles(m_alleleFreq, numOfAlleles, numOfAlleles_param),
+	m_numOfAlleles(m_alleleFreq, numOfAlleles.elems(), numOfAlleles_param),
 	m_heteroFreq(heteroFreq, homoFreq),
 	m_expHetero(m_alleleFreq, expHetero, expHetero_param),
 	m_genoFreq(genoFreq, genoFreq_param),
@@ -1951,7 +1951,7 @@ double statHWE::calcHWE(const vectorlu & cnt)
 		hom_c--;
 	}
 
-	for (int z = 0; z < tailProbs.size(); z++)
+	for (size_t z = 0; z < tailProbs.size(); z++)
 		tailProbs[z] /= sum;
 
 	double top = tailProbs[hets];
