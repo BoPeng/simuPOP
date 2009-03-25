@@ -45,6 +45,12 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 
 * Define an operator to handle customized operators.
 
+Implementation adjustment:
+
+* Remove indEnd etc make these iterators self contend. E.g.
+  change indBegin() to indIterator and use it.valid() for
+  ending tests.
+
 After 1.0,
 
 * Efficiency improvement and possible use of openMP.

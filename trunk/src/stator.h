@@ -1190,11 +1190,12 @@ private:
 #define   AvgR2_String        "R2"
 #define   AvgDELTA2_String    "Delta2"
 
-// association tests
+	// association tests
 #define   ChiSq_String      "LD_ChiSq"
 #define   ChiSq_P_String    "LD_ChiSq_P"
 #define   UCU_String        "UC_U"
 #define   CramerV_String    "CramerV"
+
 public:
 	// alleleFreq and haploFreq is required to calculate LD
 	// needed allele and halplotype are added to alleleFreq and haploFreq
@@ -1248,42 +1249,32 @@ private:
 };
 
 /// CPPONLY
-/*
 class statAssociation
 {
 private:
-	// these are names of calcualted statistics, will be accessed like
-	// pop.dvars().Chisq or pop.vars()['Chisq']
+#define Asso_ChiSq_String   "ChiSq"
+#define Asso_ChiSq_P_String "ChiSq_P"
 
 public:
-	// alleleFreq and haploFreq is required to calculate Chisq
-	// needed allele and halplotype are added to alleleFreq and haploFreq
-	// objects during the initialization of statAssociation, as well as stat.
-	// In stat::apply(), alleleFreq.apply() and haploFreq.apply()
-	// is called before statAssociation.apply() and ensures that allele frequencies
-	// are calculated when statAssociation needs them.
-	statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-		const intMatrix & Association = intMatrix(), const strDict & param = strDict());
+	statAssociation(const vectorlu & loci = vectorlu(),
+		const subPopList & subPops = subPopList());
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
 private:
-	/// need to get allele freq
-	statAlleleFreq & m_alleleFreq;
+	void calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG unaff_1,
+		double & chisq, double & pvalue);
 
-	/// need to get haplofreq
-	statHaploFreq & m_haploFreq;
+	void countAlleles(IndIterator & it, UINT loc,
+		ULONG & aff_0, ULONG & aff_1, ULONG & unaff_0, ULONG & unaff_1);
 
+private:
 	/// Association
-	intMatrix m_association;
+	vectorlu m_loci;
 
-	///
-	bool m_midValues;
-	bool m_evalInSubPop;
-
+	subPopList m_subPops;
 };
-*/
 
 /// CPPONLY currently there is no need to retrieve calculated value
 class statFst
@@ -1607,8 +1598,8 @@ public:
 		const intMatrix & LD = intMatrix(),
 		const strDict & LD_param = strDict(),
 		//
-		//intMatrix association = intMatrix(),
-		//strDict association_param = strDict(),
+		const uintList & association = uintList(),
+		//const strDict & association_param = strDict(),
 		//
 		const uintList & Fst = uintList(),
 		const strDict & Fst_param = strDict(),
@@ -1657,7 +1648,7 @@ private:
 	statGenoFreq m_genoFreq;
 	statHaploFreq m_haploFreq;
 	statLD m_LD;
-	//statAssociation m_association;
+	statAssociation m_association;
 	statFst m_Fst;
 	statHWE m_HWE;
 };
