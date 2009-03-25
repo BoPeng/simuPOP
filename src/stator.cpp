@@ -274,13 +274,11 @@ stat::stat(
 	//intMatrix association,
 	//strDict association_param,
 	//
-	vectori Fst,
-	strDict Fst_param,
+	const uintList & Fst,
+	const strDict & Fst_param,
 	//
 	const uintList & HWE,
 	//
-	bool hasPhase,
-	bool midValues,                                                 // this parameter will be removed after all _param parameter is given.
 	// regular parameters
 	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
@@ -298,7 +296,7 @@ stat::stat(
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	//m_association(m_alleleFreq, m_haploFreq, association, association_param),
-	m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
+	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
 	m_HWE(m_genoFreq, HWE.elems())
 {
 }
@@ -1713,7 +1711,7 @@ bool statLD::apply(population & pop)
 
 
 statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-	const vectori & Fst, const strDict & param)
+	const vectorlu & Fst, const strDict & param)
 	: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst),
 	m_midValues(false),
 	m_output_Fst(true),
