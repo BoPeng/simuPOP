@@ -873,7 +873,7 @@ private:
 #define HomoNum_String          "homoNum"
 #define HomoFreq_String         "homoFreq"
 
-	int locusIdx(int loc)
+	int locusIdx(UINT loc)
 	{
 		UINT idx = 0;
 
@@ -919,8 +919,8 @@ private:
 
 
 public:
-	statHeteroFreq(const vectori & heteroFreq = vectori(),
-		const vectori & homoFreq = vectori())
+	statHeteroFreq(const vectorlu & heteroFreq = vectorlu(),
+		const vectorlu & homoFreq = vectorlu())
 		: m_atLoci(heteroFreq), m_ifPost(0),
 		m_postHetero(!heteroFreq.empty()), m_postHomo(!homoFreq.empty()),
 		m_heteroNum(0), m_heteroFreq(0), m_homoNum(0), m_homoFreq(0)
@@ -935,7 +935,7 @@ public:
 	}
 
 
-	void addLocus(int locus, bool post = false)
+	void addLocus(UINT locus, bool post = false)
 	{
 		if (find(m_atLoci.begin(), m_atLoci.end(), locus) == m_atLoci.end() ) {
 			m_atLoci.push_back(locus);
@@ -987,7 +987,7 @@ public:
 
 private:
 	/// heteroFreq
-	vectori m_atLoci;
+	vectorlu m_atLoci;
 
 	///
 	vectori m_ifPost;
@@ -1016,7 +1016,7 @@ private:
 #define ExpHetero_String "expHetero"
 
 public:
-	statExpHetero(statAlleleFreq & alleleFreq, const vectori & expHetero = vectori(),
+	statExpHetero(statAlleleFreq & alleleFreq, const vectorlu & expHetero = vectorlu(),
 		const strDict & param = strDict())
 		: m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0),
 		m_midValues(false), m_evalInSubPop(true)
@@ -1042,7 +1042,7 @@ private:
 	statAlleleFreq & m_alleleFreq;
 
 	/// heteroFreq
-	vectori m_atLoci;
+	vectorlu m_atLoci;
 
 	/// expected heterozygosity
 	matrix m_expHetero;
@@ -1595,11 +1595,11 @@ public:
 		const uintList & alleleFreq = uintList(),
 		const strDict & alleleFreq_param = strDict(),
 		//
-		vectori heteroFreq = vectori(),
-		vectori expHetero = vectori(),
-		strDict expHetero_param = strDict(),
+		const uintList & heteroFreq = uintList(),
+		const uintList & expHetero = uintList(),
+		const strDict & expHetero_param = strDict(),
+		const uintList & homoFreq = uintList(),
 		//
-		vectori homoFreq = vectori(),
 		vectori genoFreq = vectori(),
 		strDict genoFreq_param = strDict(),
 		intMatrix haploFreq = intMatrix(),
