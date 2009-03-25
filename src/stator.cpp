@@ -271,8 +271,8 @@ stat::stat(
 	intMatrix LD,
 	strDict LD_param,
 	//
-	intMatrix association,
-	strDict association_param,
+	//intMatrix association,
+	//strDict association_param,
 	//
 	vectori Fst,
 	strDict Fst_param,
@@ -297,7 +297,7 @@ stat::stat(
 	m_genoFreq(genoFreq, genoFreq_param),
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
-	m_association(m_alleleFreq, m_haploFreq, association, association_param),
+	//m_association(m_alleleFreq, m_haploFreq, association, association_param),
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst, Fst_param),
 	m_HWE(m_genoFreq, HWE.elems())
 {
@@ -315,7 +315,7 @@ bool stat::apply(population & pop)
 	       m_genoFreq.apply(pop) &&
 	       m_haploFreq.apply(pop) &&
 	       m_LD.apply(pop) &&
-	       m_association.apply(pop) &&
+	       //m_association.apply(pop) &&
 	       m_Fst.apply(pop) &&
 	       m_HWE.apply(pop);
 }
@@ -1057,6 +1057,20 @@ vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, SubPopID subPop
 }
 
 
+int statHaploFreq::haploIndex(const vectori & haplo)
+{
+	// first locate haplo
+	UINT idx = 0;
+
+	while (m_haplotypes[idx] != haplo && idx < m_haplotypes.size())
+		idx++;
+
+	DBG_ASSERT(idx != m_haplotypes.size(), ValueError,
+		"Can not find haplotype " + toStr(haplo[0]) + ", " + toStr(haplo[1]));
+	return idx;
+}
+
+
 void statHaploFreq::addHaplotype(const vectori & haplo, bool post)
 {
 	intMatrix::iterator it;
@@ -1187,7 +1201,10 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 	m_output_LD(true),
 	m_output_LD_prime(true),
 	m_output_R2(true),
-	m_output_Delta2(true)
+	m_output_Delta2(true),
+	m_output_ChiSq(false),
+	m_output_UCU(false),
+	m_output_CramerV(false)
 {
 	// parameters
 	if (!param.empty()) {
@@ -1205,7 +1222,10 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 		    param.find(AvgLD_String) != itEnd ||
 		    param.find(AvgLDPRIME_String) != itEnd ||
 		    param.find(AvgR2_String) != itEnd ||
-		    param.find(AvgDELTA2_String) != itEnd) {
+		    param.find(AvgDELTA2_String) != itEnd ||
+			param.find(ChiSq_String) != itEnd ||
+			param.find(UCU_String) != itEnd ||
+			param.find(CramerV_String) != itEnd) {
 			m_output_ld = false;
 			m_output_ld_prime = false;
 			m_output_r2 = false;
@@ -1214,6 +1234,9 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 			m_output_LD_prime = false;
 			m_output_R2 = false;
 			m_output_Delta2 = false;
+			m_output_ChiSq = false;
+			m_output_UCU = false;
+			m_output_CramerV = false;
 			// if has key, and is True or 1
 			if ((it = param.find(LD_String)) != itEnd)
 				m_output_ld = it->second != 0.;
@@ -1231,6 +1254,12 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 				m_output_R2 = it->second != 0.;
 			if ((it = param.find(AvgDELTA2_String)) != itEnd)
 				m_output_Delta2 = it->second != 0.;
+			if ((it = param.find(ChiSq_String)) != itEnd)
+				m_output_ChiSq = it->second != 0.;
+			if ((it = param.find(UCU_String)) != itEnd)
+				m_output_UCU = it->second != 0.;
+			if ((it = param.find(CramerV_String)) != itEnd)
+				m_output_CramerV = it->second != 0.;
 		}
 	}
 	//
@@ -1389,6 +1418,10 @@ bool statLD::apply(population & pop)
 	pop.removeVar(AvgLDPRIME_String);
 	pop.removeVar(AvgR2_String);
 	pop.removeVar(AvgDELTA2_String);
+	pop.removeVar(ChiSq_String);
+	pop.removeVar(ChiSq_P_String);
+	pop.removeVar(UCU_String);
+	pop.removeVar(CramerV_String);
 	// also vars at each subpopulations
 	for (UINT sp = 0; sp < numSP;  ++sp) {
 		// subPopVar_String is nothing but subPop[sp]['string']
@@ -1400,6 +1433,10 @@ bool statLD::apply(population & pop)
 		pop.removeVar(subPopVar_String(sp, AvgLDPRIME_String));
 		pop.removeVar(subPopVar_String(sp, AvgR2_String));
 		pop.removeVar(subPopVar_String(sp, AvgDELTA2_String));
+		pop.removeVar(subPopVar_String(sp, ChiSq_String));
+		pop.removeVar(subPopVar_String(sp, ChiSq_P_String));
+		pop.removeVar(subPopVar_String(sp, UCU_String));
+		pop.removeVar(subPopVar_String(sp, CramerV_String));
 	}
 	for (size_t i = 0; i < nLD; ++i) {
 		// specifying alleles
@@ -1523,97 +1560,16 @@ bool statLD::apply(population & pop)
 			}                                                                                       // eval in subpop
 		}                                                                                           // size = 2, 4
 	}                                                                                               // for all LD
-	return true;
-}
-
-
-statAssociation::statAssociation(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-	const intMatrix & Association, const strDict & param)
-	: m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
-	m_association(Association),
-	m_midValues(false),
-	m_evalInSubPop(true),
-	m_output_ChiSq(true),
-	m_output_UCU(true),
-	m_output_CramerV(true)
-{
-	for (size_t i = 0, iEnd = m_association.size(); i < iEnd; ++i) {
-		// these asserts will only be checked in non-optimized modules
-		DBG_FAILIF(m_association[i].size() != 2,
-			ValueError, "Expecting [locus locus] items");
-
-		DBG_FAILIF(m_association[i][0] == m_association[i][1],
-			ValueError, "Association has to be calculated between different loci");
-		// parameters
-		if (!param.empty()) {
-			strDict::const_iterator it;
-			strDict::const_iterator itEnd = param.end();
-			if ((it = param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second != 0.;
-			if ((it = param.find("midValues")) != itEnd)
-				m_midValues = it->second != 0.;
-			// if any statistics is specified, other unspecified ones are not calculated
-			if (param.find(ChiSq_String) != itEnd ||
-			    param.find(UCU_String) != itEnd ||
-			    param.find(CramerV_String) != itEnd) {
-				m_output_ChiSq = false;
-				m_output_UCU = false;
-				m_output_CramerV = false;
-				// if has key, and is True or 1
-				if ((it = param.find(ChiSq_String)) != itEnd)
-					m_output_ChiSq = it->second != 0.;
-				if ((it = param.find(UCU_String)) != itEnd)
-					m_output_UCU = it->second != 0.;
-				if ((it = param.find(CramerV_String)) != itEnd)
-					m_output_CramerV = it->second != 0.;
-			}
-		}
-
-		// midValues is used to tell alleleFreq that the calculated allele
-		// frequency values should not be posted to pop.dvars()
-		//
-		// That is to say,
-		//     stat(Association=[0,1])
-		// will not generate
-		//     pop.dvars().alleleFreq
-		// unless stat() is called as
-		//     stat(Association=[0,1], midValues=True)
-		//
-		m_alleleFreq.addLocus(m_association[i][0], m_midValues, m_evalInSubPop, true);
-		m_alleleFreq.addLocus(m_association[i][1], m_midValues, m_evalInSubPop, true);
-		// also need haplotype.
-		vectori hap(2);
-		hap[0] = m_association[i][0];
-		hap[1] = m_association[i][1];
-		m_haploFreq.addHaplotype(hap, m_midValues);
-	}
-}
-
-
-bool statAssociation::apply(population & pop)
-{
-	if (m_association.empty())
+	/* FIXME: the following is moved from the old statAssociation... they should
+	 * be merged to the above calculation
+	*/
+	if (!m_output_ChiSq && !m_output_UCU && !m_output_CramerV)
 		return true;
 
-	UINT numSP = pop.numSubPop();
-	UINT nAssociation = m_association.size();
-
-	// remove previous values.
-	pop.removeVar(ChiSq_String);
-	pop.removeVar(ChiSq_P_String);
-	pop.removeVar(UCU_String);
-	pop.removeVar(CramerV_String);
-	// also vars at each subpopulations
-	for (UINT sp = 0; sp < numSP;  ++sp) {
-		// subPopVar_String is nothing but subPop[sp]['string']
-		pop.removeVar(subPopVar_String(sp, ChiSq_String));
-		pop.removeVar(subPopVar_String(sp, ChiSq_P_String));
-		pop.removeVar(subPopVar_String(sp, UCU_String));
-		pop.removeVar(subPopVar_String(sp, CramerV_String));
-	}
-	for (size_t i = 0; i < nAssociation; ++i) {
+	for (size_t i = 0; i < m_LD.size(); ++i) {
 		//
-		vectori & hapLoci = m_association[i];
+		vectori hapLoci = m_LD[i];
+		hapLoci.resize(2);
 
 		// find out all alleles
 		vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
@@ -1751,7 +1707,7 @@ bool statAssociation::apply(population & pop)
 				}
 			}                                                                                       // each sp
 		}                                                                                           // numSP > 1
-	}                                                                                               // each parameter
+	}                     
 	return true;
 }
 

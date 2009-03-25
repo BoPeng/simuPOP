@@ -1089,20 +1089,7 @@ class statHaploFreq
 private:
 #define  HaplotypeNum_String    "haploNum"
 #define  HaplotypeFreq_String   "haploFreq"
-	int haploIndex(const vectori & haplo)
-	{
-		// first locate haplo
-		UINT idx = 0;
-
-		while (m_haplotypes[idx] != haplo && idx < m_haplotypes.size())
-			idx++;
-
-		DBG_ASSERT(idx != m_haplotypes.size(), ValueError,
-			"Can not find haplotype." + toStr(haplo[0]) + ", " + toStr(haplo[1]));
-
-		return idx;
-	}
-
+	int haploIndex(const vectori & haplo);
 
 public:
 	statHaploFreq(const intMatrix & haploFreq = intMatrix())
@@ -1203,6 +1190,11 @@ private:
 #define   AvgR2_String        "R2"
 #define   AvgDELTA2_String    "Delta2"
 
+// association tests
+#define   ChiSq_String      "LD_ChiSq"
+#define   ChiSq_P_String    "LD_ChiSq_P"
+#define   UCU_String        "UC_U"
+#define   CramerV_String    "CramerV"
 public:
 	// alleleFreq and haploFreq is required to calculate LD
 	// needed allele and halplotype are added to alleleFreq and haploFreq
@@ -1250,18 +1242,18 @@ private:
 	bool m_output_LD_prime;
 	bool m_output_R2;
 	bool m_output_Delta2;
+	bool m_output_ChiSq;
+	bool m_output_UCU;
+	bool m_output_CramerV;
 };
 
 /// CPPONLY
+/*
 class statAssociation
 {
 private:
 	// these are names of calcualted statistics, will be accessed like
 	// pop.dvars().Chisq or pop.vars()['Chisq']
-#define   ChiSq_String      "ChiSq"
-#define   ChiSq_P_String    "ChiSq_P"
-#define   UCU_String        "UC_U"
-#define   CramerV_String    "CramerV"
 
 public:
 	// alleleFreq and haploFreq is required to calculate Chisq
@@ -1289,11 +1281,9 @@ private:
 	///
 	bool m_midValues;
 	bool m_evalInSubPop;
-	bool m_output_ChiSq;
-	bool m_output_UCU;
-	bool m_output_CramerV;
 
 };
+*/
 
 /// CPPONLY currently there is no need to retrieve calculated value
 class statFst
@@ -1553,20 +1543,17 @@ public:
 	   \li <tt>LD[loc1][loc2]</tt>, <tt>subPop[sp]['LD'][loc1][loc2]</tt>.
 	   \li <tt>LD_prime[loc1][loc2]</tt>, <tt>subPop[sp]['LD_prime'][loc1][loc2]</tt>.
 	   \li <tt>R2[loc1][loc2]</tt>, <tt>subPop[sp]['R2'][loc1][loc2]</tt>.
+	   \li <tt>LD_ChiSq[loc1][loc2]</tt>, <tt>subPop[s]['LD_ChiSq'][loc1][loc2]</tt>
+	   \li <tt>LD_ChiSq_P[loc1][loc2]</tt>, <tt>subPop[s]['LD_ChiSq_P'][loc1][loc2]</tt>
+	   \li <tt>LD_UC_U[loc1][loc2]</tt>, <tt>subPop[s]['LD_UC_U'][loc1][loc2]</tt>
 
 	   \param LD_param a dictionary of parameters of \c LD statistics. Can have key \c stat which is
-	   a list of statistics to calculate. Default to all. If any statistics is specified,
+	   a list of statistics to calculate. Default to LD, D' and R2. If any statistics is specified,
 	   only those specified will be calculated. For example, you may use <tt>LD_param={LD_prime}</tt>
 	   to calculate D' only, where <tt>LD_prime</tt> is a shortcut for <tt>'stat':['LD_prime']</tt>.
 	   Other parameters that you may use are:
 	   \li \c subPop whether or not calculate statistics for subpopulations.
 	   \li \c midValues whether or not keep intermediate results.
-
-	   \param association association measures
-
-	   \param association_param a dictionary of parameters of \c association statistics.
-	   Can be one or more items choosen from the following options: \c ChiSq,
-	   \c ChiSq_P, \c UC_U, and \c CramerV.
 
 	   \param Fst calculate \f$ F_{st} \f$, \f$ F_{is} \f$, \f$ F_{it} \f$.
 	   For example, <tt>Fst = [0,1,2]</tt> will calculate \f$ F_{st} \f$, \f$ F_{is} \f$,
@@ -1620,8 +1607,8 @@ public:
 		intMatrix LD = intMatrix(),
 		strDict LD_param = strDict(),
 		//
-		intMatrix association = intMatrix(),
-		strDict association_param = strDict(),
+		//intMatrix association = intMatrix(),
+		//strDict association_param = strDict(),
 		//
 		vectori Fst = vectori(),
 		strDict Fst_param = strDict(),
@@ -1672,7 +1659,7 @@ private:
 	statGenoFreq m_genoFreq;
 	statHaploFreq m_haploFreq;
 	statLD m_LD;
-	statAssociation m_association;
+	//statAssociation m_association;
 	statFst m_Fst;
 	statHWE m_HWE;
 };
