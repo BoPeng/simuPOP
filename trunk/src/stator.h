@@ -618,7 +618,7 @@ private:
 #define  AlleleFreq_String    "alleleFreq"
 
 public:
-	statAlleleFreq(const vectori & atLoci = vectori(), const strDict & param = strDict())
+	statAlleleFreq(const vectorlu & atLoci = vectorlu(), const strDict & param = strDict())
 		: m_atLoci(atLoci), m_ifPost(atLoci.size()), m_numOfAlleles(0),
 		m_alleleNum(0), m_alleleFreq(0),
 		m_evalInSubPop(true),
@@ -653,7 +653,7 @@ public:
 	/// destructor, nested vectors have to be cleared manually
 	~statAlleleFreq();
 
-	void addLocus(int locus, bool post, bool subPop, bool numOfAlleles);
+	void addLocus(UINT locus, bool post, bool subPop, bool numOfAlleles);
 
 	intMatrix & alleleNumAll()
 	{
@@ -800,7 +800,7 @@ public:
 
 private:
 	/// which alleles?
-	vectori m_atLoci;
+	vectorlu m_atLoci;
 
 	/// whether or not post result
 	vectori m_ifPost;
@@ -1592,8 +1592,8 @@ public:
 		const uintList & numOfAlleles = uintList(),
 		strDict numOfAlleles_param = strDict(),
 		//
-		vectori alleleFreq = vectori(),
-		strDict alleleFreq_param = strDict(),
+		const uintList & alleleFreq = uintList(),
+		const strDict & alleleFreq_param = strDict(),
 		//
 		vectori heteroFreq = vectori(),
 		vectori expHetero = vectori(),
