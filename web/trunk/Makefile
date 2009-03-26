@@ -7,3 +7,4 @@ get:
 # figure out what has been added or changed
 stat:
 	svn stat | grep -v -P '\.htaccess|\.flock|\.lastmod|\.page|\.stat|RecentChanges|config.php|skins|\.notify'
+
