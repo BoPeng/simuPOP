@@ -6,5 +6,9 @@ get:
 
 # figure out what has been added or changed
 stat:
-	svn stat | grep -v -P '\.htaccess|\.flock|\.lastmod|\.page|\.stat|RecentChanges|config.php|skins|\.notify'
+	@svn stat | grep -v -P '\.htaccess|\.flock|\.lastmod|\.page|\.stat|RecentChanges|config.php|skins|\.notify';\
+	if [ "$$?" = "1" ];\
+	then\
+		echo "No difference";\
+	fi
 
