@@ -194,10 +194,10 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					accept = false;
 					break;
 				}
-			} catch (...) {
+			} catch (Exception e) {
 				cout << "One of the transmitters " << (*iop)->__repr__()
-				     << " throws an exception." << endl << endl;
-				throw;
+				     << " throws an exception.\n" << e.message() << "\n" << endl;
+				throw e;
 			}
 		}
 
@@ -214,10 +214,11 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 					accept = false;
 					break;
 				}
-			} catch (...) {
+			} catch (Exception e) {
 				cout << "DuringMating operator " << (*iop)->__repr__()
-				     << " throws an exception." << endl << endl;
-				throw;
+				     << " throws an exception.\n"
+					 << e.message() << "\n" << endl;
+				throw e;
 			}
 		}                                                                         // all during-mating operators
 		if (accept) {

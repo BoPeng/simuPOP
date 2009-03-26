@@ -270,16 +270,13 @@ public:
 		va_start(argptr, format);
 		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
 		va_end(argptr);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+		PyObject * pyResult = NULL;
+		pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
-#ifndef OPTIMIZED
-			if (debug(DBG_GENERAL)) {
-				PyErr_Print();
-				PyErr_Clear();
-			}
-#endif
+			PyErr_Print();
+			PyErr_Clear();
 			throw ValueError("Function call failed.\n");
 		}
 		T retValue;
@@ -296,16 +293,13 @@ public:
 		va_start(argptr, format);
 		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
 		va_end(argptr);
-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
+		PyObject * pyResult = NULL;
+			pyResult = PyEval_CallObject(m_func.object(), arglist);
 
 		Py_XDECREF(arglist);
 		if (pyResult == NULL) {
-#ifndef OPTIMIZED
-			if (debug(DBG_GENERAL)) {
-				PyErr_Print();
-				PyErr_Clear();
-			}
-#endif
+			PyErr_Print();
+			PyErr_Clear();
 			throw ValueError("Function call failed\n");
 		}
 		return pyResult;
