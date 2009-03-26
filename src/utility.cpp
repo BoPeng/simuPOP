@@ -1932,13 +1932,9 @@ void StreamProvider::closeOstream()
 			PyObject * arglist = Py_BuildValue("(s)", str.c_str());
 			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
 			if (pyResult == NULL) {
-#ifndef OPTIMIZED
-				if (debug(DBG_GENERAL)) {
-					PyErr_Print();
-					PyErr_Clear();
-				}
-#endif
-				throw RuntimeError("Function call failed");
+				PyErr_Print();
+				PyErr_Clear();
+				throw RuntimeError("Failed to send output to a function.");
 			} else
 				Py_DECREF(pyResult);
 		} else if (ISSETFLAG(m_flags, m_flagReadable))
