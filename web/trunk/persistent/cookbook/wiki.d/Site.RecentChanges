@@ -1,8 +1,8 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008120908 Red Hat/3.0.5-1.el5_2 Firefox/3.0.5
+agent=Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080418 Ubuntu/7.10 (gutsy) Firefox/2.0.0.14
 ctime=1232378379
 host=127.0.0.1
 name=Site.RecentChanges
-rev=43
-text=* [[Site.SideBar | SideBar]]  . . . March 11, 2009, at 06:58 PM by ?: [==]%0a* [[Site/NotifyList]]  . . . January 21, 2009, at 05:00 PM by ?: [==]%0a* [[Site/SideBar]]  . . . January 21, 2009, at 04:16 AM by ?: [==]%0a* [[Site/PageActions]]  . . . January 21, 2009, at 03:44 AM by ?: [==]%0a
-time=1236797898
+rev=44
+text=* [[Site.SideBar | SideBar]]  . . . March 26, 2009, at 07:09 PM by ?: [==]%0a* [[Site/NotifyList]]  . . . January 21, 2009, at 05:00 PM by ?: [==]%0a* [[Site/SideBar]]  . . . January 21, 2009, at 04:16 AM by ?: [==]%0a* [[Site/PageActions]]  . . . January 21, 2009, at 03:44 AM by ?: [==]%0a
+time=1238094561

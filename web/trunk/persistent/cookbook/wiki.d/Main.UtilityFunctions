@@ -1,15 +1,18 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080418 Ubuntu/7.10 (gutsy) Firefox/2.0.0.14
 author=
 charset=ISO-8859-1
 csum=
 ctime=1233719170
 host=127.0.0.1
 name=Main.UtilityFunctions
-rev=3
+rev=4
 targets=Cookbook.LoadHapMap,Cookbook.LoadHapMapR22,Cookbook.ChooseMarker
-text=This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%0a%0a!!HapMap related%0a%0a* [[Cookbook/loadHapMap]] This script download and save the hapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/loadHapMap_r22]] This script download and save the release 22 of the HapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%0a
-time=1235966092
+text=This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%0a%0a!!HapMap related%0a%0a* [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a%0a* [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%0a
+time=1238095526
+author:1238095526=
+diff:1238095526:1235966092:=6,8c6,8%0a%3c * [[Cookbook/loadHapMap]] This script downloads and saves the hapMap dataset chromosome by chromosome.%0a%3c %0a%3c * [[Cookbook/loadHapMap_r22]] This script downloads and saves the release 22 of the HapMap dataset chromosome by chromosome.%0a---%0a> * [[Cookbook/loadHapMap]] This script download and save the hapMap dataset chromosome by chromosome.%0a> %0a> * [[Cookbook/loadHapMap_r22]] This script download and save the release 22 of the HapMap dataset chromosome by chromosome.%0a
+host:1238095526=127.0.0.1
 author:1235966092=
 diff:1235966092:1235789916:=4,5c4,5%0a%3c !!HapMap related%0a%3c %0a---%0a> !!Download and save the HapMap dataset in simuPOP format.%0a> %0a10,11c10,12%0a%3c * [[Cookbook/ChooseMarker]] Choose markers from the HapMap dataset.%0a%3c %0a---%0a> !!Choose markers from the HapMap dataset.%0a> %0a> These functions assume that you have already downloaded and saved the hapMap samples in simuPOP format, using [[Cookbook/loadHapMap]].%0a
 host:1235966092=127.0.0.1

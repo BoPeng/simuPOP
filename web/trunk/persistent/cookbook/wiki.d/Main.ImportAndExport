@@ -1,0 +1,27 @@
+version=pmwiki-2.2.0 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080418 Ubuntu/7.10 (gutsy) Firefox/2.0.0.14
+author=Yaji Xu
+charset=ISO-8859-1
+csum=
+ctime=1238094979
+host=127.0.0.1
+name=Main.ImportAndExport
+rev=5
+targets=Cookbook.ExportPOPGENE
+text=This page lists some functions that may allow you to import/export files into/from simuPOP.%0a%0a%0a!!POPGENE%0a%0a* [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a
+time=1238106561
+author:1238106561=Yaji Xu
+diff:1238106561:1238104316:=1c1%0a%3c This page lists some functions that may allow you to import/export files into/from simuPOP.%0a---%0a> This page lists some functions that may allow you import/export files into/from simuPOP.%0a
+host:1238106561=127.0.0.1
+author:1238104316=Yaji Xu
+diff:1238104316:1238104273:=6c6%0a%3c * [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a---%0a> * [[Cookbook/ExportPG]] This script exports your simulated populations into a POPGENE data file.%0a
+host:1238104316=127.0.0.1
+author:1238104273=Yaji Xu
+diff:1238104273:1238095332:=6c6%0a%3c * [[Cookbook/ExportPG]] This script exports your simulated populations into a POPGENE data file.%0a---%0a> * [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a
+host:1238104273=127.0.0.1
+author:1238095332=Yaji Xu
+diff:1238095332:1238094979:=1,3c1,3%0a%3c This page lists some functions that may allow you import/export files into/from simuPOP.%0a%3c %0a%3c %0a---%0a> This page lists some utility functions that may become handy when you need to implement your own simulation.%0a> %0a> %0a6c6%0a%3c * [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a---%0a> * [[Cookbook/ExportPOPGENE]] This script download and save the hapMap dataset chromosome by chromosome.%0a
+host:1238095332=127.0.0.1
+author:1238094979=
+diff:1238094979:1238094979:=1,6d0%0a%3c This page lists some utility functions that may become handy when you need to implement your own simulation.%0a%3c %0a%3c %0a%3c !!POPGENE%0a%3c %0a%3c * [[Cookbook/ExportPOPGENE]] This script download and save the hapMap dataset chromosome by chromosome.%0a
+host:1238094979=127.0.0.1
