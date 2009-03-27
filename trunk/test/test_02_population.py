@@ -18,14 +18,15 @@ import unittest, os, sys, exceptions, random, copy
 
 class TestPopulation(unittest.TestCase):
     # define a few functions to create basic populations
-    def getPop(self, VSP=False, size=[20, 80], loci = [1, 2],
+    def getPop(self, VSP=False, size=[20, 80], loci = [1, 2], infoFields=['x'],
             ancGen=0, *arg, **kwargs):
-        pop = population(size=size, ploidy=2, loci=loci, infoFields=['x'],
+        pop = population(size=size, ploidy=2, loci=loci, infoFields=infoFields,
             ancGen=ancGen, *arg, **kwargs)
         pop.setGenotype([random.randint(1, 5) for x in range(pop.popSize()*pop.ploidy())])
-        pop.setIndInfo([random.random() for x in range(pop.popSize())], 'x')
+        for info in infoFields:
+            pop.setIndInfo([random.random() for x in range(pop.popSize())], info)
         for i in range(ancGen):
-            pop.push(self.getPop(size=size, loci=loci, ancGen=0, *arg, **kwargs))
+            pop.push(self.getPop(size=size, loci=loci, infoFields=infoFields, ancGen=0, *arg, **kwargs))
         InitSex(pop)
         if VSP:
             pop.setVirtualSplitter(sexSplitter())
@@ -381,6 +382,62 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop, pop1)
         InitByFreq(pop1, [0.5, 0.5])
         self.assertNotEqual(pop, pop1)
+
+
+    def comparePop(self, pop1, pop2, inds, loci=None, infoFields=None, gen=0):
+        #inds should be original pop1 index of individuals in pop2
+        pop1.useAncestralGen(gen)
+        pop2.useAncestralGen(gen)
+        if loci is None:
+            for idx, ind in enumerate(inds):
+                if infoFields is None:
+                    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
+                else:
+                    self.assertEqual(pop1.individual(ind).genotype(), pop2.individual(idx).genotype())
+                    for info in infoFields:
+                        self.assertEqual(pop1.individual(ind).info(info), pop2.individual(idx).info(info))
+        else:
+            for idx, ind in enumerate(inds):
+                if infoField is None:
+                    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
+                else:
+                    self.assertEqual(pop1.individual(ind).genotype(), pop2.individual(idx).genotype())
+                    for info in infoFields:
+                        self.assertEqual(pop1.individual(ind).info(info), pop2.individual(idx).info(info))
+                for idx1, loc in enumerate(loci):
+                    for p in range(pop1.ploidy()):
+                        self.assertEqual(pop1.individual(ind).allele(loc, p), pop2.individual(idx).allele(idx1, p))
+            
+        # for idx, ind in enumerate(inds):
+        #    self.assertEqual(pop1.individual(ind), pop2.individual(idx))
+
+        
+               
+    def newtestExtract(self):
+        pop1 = self.getPop(size=[200, 400, 200], loci=[20, 40, 20], ancGen=3, infoFields=['x'])
+        for i in pop1.individuals():
+            n = random.choice([-1, -3, -5, 0, 1, 2, 3, 4, 5])
+            i.setInfo(n, 'x')
+        pop2 = pop1.extract(field='x')
+        for gen in range(4):
+            pop1.useAncestralGen(gen)
+            pop2.useAncestralGen(gen)
+            inds = []
+            for j in range(0,6):
+                for n in range(pop1.popSize()):
+                    ind = pop1.individual(n)
+                    if ind.info('x') == j:
+                        inds.append(n)
+            self.comparePop(pop1, pop2, inds, infoFields=['x'], gen=gen)
+        #if ancGen == -1:
+        #    self.assertEqual(pop1.ancestralGens(), pop2.ancestralGens())
+        #    topGen = pop1.ancestralGens()
+        #else:
+        #    self.assertEqual(pop2.ancestralGens(), ancGen)
+        #    topGen = ancGen
+        #for gen in range(topGen):
+        #    self.compare(pop1, pop2, gen=gen)
+        
 
     def testExtract(self):
         'Testing population::Extract(field=None, loci=None, infoFields=None, ancGen =-1)'
