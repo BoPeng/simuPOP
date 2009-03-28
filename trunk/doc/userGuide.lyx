@@ -3270,6 +3270,12 @@ Subpopulations
 
 \begin_layout Standard
 A simuPOP population consists of one or more subpopulations.
+ 
+\series bold
+If a population is not structured, it has one subpopulation that is the
+ population itself.
+
+\series default
  Subpopulations serve as barriers of individuals in the sense that mating
  only happens between individuals in the same subpopulation.
  A number of functions are provided to merge, remove, resize subpopulations,
@@ -3887,25 +3893,42 @@ population::extract(field=None, loci=None, info=None, ancGen=-1, ped=None)
  information fields and ancestral generations from an existing population.
  This function is widely used in ascertainment operators where individuals
  or pedigrees are extracted from an existing population and form a sample.
+ This function works as follows:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 If all default parameters are used, this function is equivalent to 
 \family typewriter
 population::clone()
 \family default
 .
- If a list of loci or information fields are given to parameters 
+\end_layout
+
+\begin_layout Itemize
+If a list of loci are given to parameter 
 \family typewriter
 loci
 \family default
- and 
+, only specified loci will be copied to the extracted population.
+ Loci in parameter 
+\family typewriter
+loci
+\family default
+ do not have to be in order but loci in the extracted population will keep
+ their original positions, and thus in their original order.
+\end_layout
+
+\begin_layout Itemize
+If a list of information fields are given to parameter 
 \family typewriter
 info
 \family default
-, other specified loci and information fields will be copied to the extracted
- population.
- If a positive 
+, only specified information fields will be copied to the extracted population.
+ 
+\end_layout
+
+\begin_layout Itemize
+If a positive 
 \family typewriter
 ancGen
 \family default
@@ -3918,20 +3941,26 @@ ancGen
  ancGen
 \family default
  will be extracted.
- The most interesting parameter is 
-\family typewriter
-ind
-\family default
-.
- Instead of given a list of individuals that will be extract, an information
+\end_layout
+
+\begin_layout Itemize
+Subset of individuals is specified differently.
+ Instead of a list of individuals that will be extracted, an information
  field is expected.
- This information field is expected to hold the new subpopulation ID to
- which each individual will belong in the extracted population.
+ This information field should hold the new subpopulation ID to which each
+ individual will belong in the extracted population.
  Individuals with negative values (invalid subpopulation ID) at this information
  field will not be extracted.
- If another population (or pedigree) with the same number of individuals
- is given, the information field from that population is used.
- Example 
+ If another population (or pedigree, parameter 
+\family typewriter
+ped
+\family default
+) with the same number of individuals is given, the information field from
+ that population is used.
+\end_layout
+
+\begin_layout Standard
+Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "extract"
@@ -10041,7 +10070,7 @@ splitSubPops
  It is often easier to do so with proportions.
  In addition, if a demographic function is used, you should make sure that
  the number of subpopulations will be the same before and after mating at
- any generation, naming apply a 
+ any generation, namely apply a 
 \family typewriter
 splitSubPops
 \family default
@@ -10203,15 +10232,304 @@ name "sec:Genotype-transmitters"
 \end_layout
 
 \begin_layout Subsection
-Generic genotype transmitter (operator 
+Generic genotype transmitters (operators 
 \family typewriter
 genoTransmitter
+\family default
+, 
+\family typewriter
+cloneGenoTransmitter
+\family default
+, 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+, 
+\family typewriter
+selfingGenoTransmitter
+\family default
+, 
+\family typewriter
+haplodiploidGenoTransmitter
+\family default
+, and 
+\family typewriter
+mitochondrialGenoTransmitter
 \family default
 )
 \end_layout
 
+\begin_layout Standard
+A number of during-mating operators are defined to transmit genotype from
+ parent(s) to offspring.
+ They are rarely used or even seen directly because they are used as genotype
+ transmitters of mating schemes.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+genoTransmitter
+\family default
+: This genotype transmitter is usually used by customized genotype transmitters
+ because it provides some utility functions that are more efficient than
+ their Pythonic counterparts.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+cloneGenoTransmitter
+\family default
+: Copy all genotype from a parent to an offspring.
+ It also copies parental sex to the offspring because sex can be genotype
+ determined.
+ This genotype transmitter is used by mating scheme 
+\family typewriter
+cloneMating
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+mendelianGenoTransmitter
+\family default
+: Copy genotypes from two parents (a Male and a Female) to an offspring
+ following Mendel's laws, used by mating scheme 
+\family typewriter
+randomMating.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+selfingGenoTransmitter
+\family default
+: Copy genotypes from one parent to an offspring using self-fertilization,
+ used by mating scheme 
+\family typewriter
+selfMating
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+haplodiploidGenoTransmitter
+\family default
+: Set genotype to male and female offspring differently in a haplodiploid
+ population, used by mating scheme 
+\family typewriter
+haplodiploidMating
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+mitochondrialGenoTransmitter
+\family default
+: Treat all customized chromosomes or specified chromosomes as mitochondrial
+ chromosomes and transmit maternal mitochondrial chromosomes randomly to
+ an offspring.
+ 
+\series bold
+This operator is not a genotype transmitter
+\series default
+ so that its existence will not block the application of another genotype
+ transmitter.
+\end_layout
+
 \begin_layout Subsection
-Recombination 
+Recombination (Operator 
+\family typewriter
+recombinator
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+The generic genotype transmitters do not handle genetic recombination.
+ A genotype transmitter 
+\family typewriter
+recombinator
+\family default
+ is provided for such purposes, and can be used with 
+\family typewriter
+randomMating
+\family default
+ and 
+\family typewriter
+selfMating
+\family default
+ (replace 
+\family typewriter
+mendelianGenoTransmitter
+\family default
+ and 
+\family typewriter
+selfingGenoTransmitter
+\family default
+ used in these mating schemes).
+\end_layout
+
+\begin_layout Standard
+Recombination rate is implemented 
+\series bold
+between adjacent markers
+\series default
+.
+ There can be only one recombination event between adjacent markers no matter
+ how far apart they are located on a chromosome.
+ In practise, a 
+\family typewriter
+recombinator
+\family default
+ goes along chromosomes and determine, between each adjacent loci, whether
+ or not a recombination happens.
+\end_layout
+
+\begin_layout Standard
+Recombination rates could be specified in the following ways:
+\end_layout
+
+\begin_layout Enumerate
+If a single recombination rate is specified through paramter 
+\family typewriter
+rate
+\family default
+, it will be the recombination rate between all adjacent loci, regardless
+ of loci position.
+\end_layout
+
+\begin_layout Enumerate
+If recombination happens only after certain loci, you can specify these
+ loci using parameter 
+\family typewriter
+loci
+\family default
+.
+ For example, 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+recombinator(rate=0.1, loci=[2, 5])
+\end_layout
+
+\end_inset
+
+recombines a chromosome only after loci 2 (between 2 and 3) and 5 (between
+ 5 and 6).
+\end_layout
+
+\begin_layout Enumerate
+If parameter 
+\family typewriter
+loci
+\family default
+ is given, different recombination rate can be given to each of them.
+ For example
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+recombinator(rate=
+[
+\lang english
+0.1
+, 0.05]
+\lang english
+, loci=[2, 5])
+\end_layout
+
+\end_inset
+
+uses two different recombination rates after loci 2 and 5.
+\end_layout
+
+\begin_layout Enumerate
+If recombination rates vary across your chromosomes, a long list of 
+\family typewriter
+rate
+\family default
+ and 
+\family typewriter
+loci
+\family default
+ may be needed to specify recombination rates one by one.
+ An alternative method is to specify a 
+\series bold
+recombination intensity
+\series default
+.
+ Recombination rate between two adjacent loci is calculated as the product
+ of this intensity and distance between them.
+ For example, if you apply operator
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+recombinator(
+intensity=0.1
+\lang english
+)
+\end_layout
+
+\end_inset
+
+to a population
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+population(size=100, loci=[4], lociPos=[0.1, 0.2, 0.4, 0.8])
+\end_layout
+
+\end_inset
+
+The recombination rates between adjacent markers will be 
+\family typewriter
+0.1*0.1
+\family default
+, 
+\family typewriter
+0.1*0.2
+\family default
+ and 
+\family typewriter
+0.1*0.4
+\family default
+ respectively.
+ 
+\end_layout
+
+\begin_layout Standard
+If more advanced recombination model is desired, a customized genotype transmitt
+er can be used.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sexSpecificRec"
+
+\end_inset
+
+ uses two recombinators to implement sex-specific recombination.
+\end_layout
+
+\begin_layout Note
+Both loci positions and recombination intensity are unitless.
+ You can assume different unit for loci position and recombination intensity
+ as long as the resulting recombination rate makes sense.
 \end_layout
 
 \begin_layout Subsection
