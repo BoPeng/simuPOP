@@ -273,6 +273,8 @@ stat::stat(
 	//
 	const uintList & association,
 	//
+	const uintList & neutrality,
+	//
 	const uintList & Fst,
 	const strDict & Fst_param,
 	//
@@ -295,6 +297,7 @@ stat::stat(
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	m_association(association.elems(), subPops),
+	m_neutrality(neutrality.elems(), subPops),
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
 	m_HWE(m_genoFreq, HWE.elems())
 {
@@ -313,6 +316,7 @@ bool stat::apply(population & pop)
 	       m_haploFreq.apply(pop) &&
 	       m_LD.apply(pop) &&
 	       m_association.apply(pop) &&
+		   m_neutrality.apply(pop) &&
 	       m_Fst.apply(pop) &&
 	       m_HWE.apply(pop);
 }
@@ -1795,6 +1799,65 @@ bool statAssociation::apply(population & pop)
 	}
 	pop.setDoubleVectorVar(Asso_ChiSq_String, chisq);
 	pop.setDoubleVectorVar(Asso_ChiSq_P_String, pvalue);
+	return true;
+}
+
+
+statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops) :
+	m_loci(loci), m_subPops(subPops)
+{
+	sort(m_loci.begin(), m_loci.end());
+	for (UINT i = 1; i < m_loci.size(); ++i) {
+		UINT loc = m_loci[i - 1];
+		DBG_FAILIF(loc == m_loci[i], ValueError, "Duplicated loci occurred in the list");
+	}
+}
+
+
+double statNeutrality::calcPi(IndIterator & it)
+{
+	UINT ploidy = it->ploidy();
+	double diffCnt = 0;
+	int numComparison = 0;
+	GenoIterator gt, gt1;
+	for (; it.valid(); ++it)
+		for (IndIterator it1 = it; it1.valid(); ++it1)
+			for (UINT p = 0; p < ploidy ; p++)
+				for (UINT p1 = 0; p1 < ploidy; p1++) {
+					// count numbers of the same person
+					if (it == it1) {
+						if (p < p1)	{
+							gt = it->genoBegin(p);
+							gt1 = it->genoBegin(p1);
+							for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc)
+								diffCnt += *(gt + *loc) != *(gt1 + *loc);
+							++numComparison;
+						}
+					}
+					// count numbers of different persons
+					else {
+						gt = it->genoBegin(p);
+						gt1 = it1->genoBegin(p1);
+						for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc)
+							diffCnt += *(gt + *loc) != *(gt1 + *loc);
+						++numComparison;
+					}
+				}
+	// return 0 if there is only one sequence
+	return numComparison == 0 ? 0 : diffCnt / numComparison;
+}
+
+
+bool statNeutrality::apply(population & pop)
+{
+	if (m_loci.empty())
+		return true;
+	DBG_FAILIF(m_loci.size() > pop.totNumLoci(), IndexError,
+		"Locus index out of range");
+
+	pop.removeVar(Neutra_Pi_String);
+	IndIterator it = pop.indBegin();
+	pop.setDoubleVar(Neutra_Pi_String, calcPi(it));
 	return true;
 }
 
