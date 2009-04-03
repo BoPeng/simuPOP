@@ -501,7 +501,37 @@ class TestStat(unittest.TestCase):
         pop.dvars().haploFreq['1-2']
         pop.dvars().haploFreq['1-3']
 
+    def pairwiseDiff(self, sample, loci):
+        'Calculating pairwise difference'
+        diff = []
+        pd = sample.ploidy()
+        for i in range(pd * sample.popSize() - 1):
+            g1 = sample.individual(i / pd).genotype(i % pd)
+            for j in range(i + 1, pd * sample.popSize()):
+                g2 = sample.individual(j / pd).genotype(j % pd)
+                diff.append(sum([x!=y for idx, x,y in zip(range(len(g1)), g1, g2) if idx in loci]) * 1.0)
+        # return 0 if only one sequence
+        if len(diff) == 0:
+            return 0.0
+        else:
+            return sum(diff) / len(diff)
 
+    def testNeutrality(self):
+        '''Testing the calculation of Tajima's Pi'''
+        pop = population(size=1, ploidy=1, loci=[1, 1])
+        InitByFreq(pop, [.3, .4, .3])
+        pop1 = population(size=[24, 31], ploidy=2, loci=[2, 1, 4])
+        InitByFreq(pop1, [.3, .7])
+        Stat(pop, neutrality=[0, 1])
+        self.assertEqual(pop.dvars().Pi, self.pairwiseDiff(pop, loci=[0, 1]))
+        Stat(pop1, neutrality=[0, 1, 2, 3, 4, 5, 6])
+        self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[0, 1, 2, 3, 4, 5, 6]))
+        Stat(pop1, neutrality=[1, 4])
+        self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[1, 4]))
+        #Stat(pop1, neutrality=[4, 4])
+        #self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[4, 4]))
+        Stat(pop1, neutrality=[6, 1, 3])
+        self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[6, 1, 3]))
 
 if __name__ == '__main__':
     unittest.main()

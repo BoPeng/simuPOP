@@ -1276,6 +1276,29 @@ private:
 	subPopList m_subPops;
 };
 
+/// CPPONLY
+class statNeutrality
+{
+private:
+#define Neutra_Pi_String   "Pi"
+
+public:
+	statNeutrality(const vectorlu & loci = vectorlu(),
+		const subPopList & subPops = subPopList());
+
+	// calculate, right now,  do not tempt to save values
+	bool apply(population & pop);
+
+private:
+	double calcPi(IndIterator & it);
+
+private:
+	/// Neutrality
+	vectorlu m_loci;
+
+	subPopList m_subPops;
+};
+
 /// CPPONLY currently there is no need to retrieve calculated value
 class statFst
 {
@@ -1601,6 +1624,8 @@ public:
 		const uintList & association = uintList(),
 		//const strDict & association_param = strDict(),
 		//
+		const uintList & neutrality = uintList(),
+		//
 		const uintList & Fst = uintList(),
 		const strDict & Fst_param = strDict(),
 		//
@@ -1649,6 +1674,7 @@ private:
 	statHaploFreq m_haploFreq;
 	statLD m_LD;
 	statAssociation m_association;
+	statNeutrality m_neutrality;
 	statFst m_Fst;
 	statHWE m_HWE;
 };
