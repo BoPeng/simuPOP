@@ -1723,6 +1723,53 @@ simu.evolve(
 
 #end
 
+#file log/recRate.log
+simu = simulator(population(size=[1000], loci=[100]),
+    randomMating(), rep=2)
+simu.evolve(
+    preOps = [initByValue([0]*100 + [1]*100)],
+    ops = [
+        recombinator(rate=0.01, rep=0),
+        recombinator(rate=[0.01]*10, loci=range(50, 60), rep=1),
+        stat(LD=[[40, 55], [60, 70]]),
+        pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[60][70])'),
+        pyOutput('\n', rep=-1)
+    ],
+    gen = 5
+)
+#end
+
+#file log/recIntensity.log
+simu = simulator(population(size=[1000], loci=[3], lociPos=[0, 1, 1.1]),
+    randomMating())
+simu.evolve(
+    preOps = [initByValue([0]*3 + [1]*3)],
+    ops = [
+        recombinator(intensity=0.01),
+        stat(LD=[[0, 1], [1, 2]]),
+        pyEval(r'"%.3f\t%.3f\n" % (LD_prime[0][1], LD_prime[1][2])', step=10)
+    ],
+    gen = 50
+)
+#end
+
+#file log/conversion.log
+simu = simulator(population(size=[1000], loci=[100]),
+    randomMating(), rep=2)
+simu.evolve(
+    preOps = [initByValue([0]*100 + [1]*100)],
+    ops = [
+        recombinator(rate=0.01, loci=50, rep=0),
+        recombinator(rate=0.01, loci=50, rep=1,
+            convMode=(NumMarkers, 1, 10)),
+        stat(LD=[[40, 55], [40, 70]]),
+        pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[40][70])'),
+        pyOutput('\n', rep=-1)
+    ],
+    gen = 5
+)
+#end
+
 #file log/migrator.log
 from simuUtil import *
 

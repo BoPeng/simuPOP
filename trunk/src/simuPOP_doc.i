@@ -9741,10 +9741,9 @@ Usage:
       numOfAlleles_param={}, alleleFreq=[], alleleFreq_param={},
       heteroFreq=[], expHetero=[], expHetero_param={}, homoFreq=[],
       genoFreq=[], genoFreq_param={}, haploFreq=[], LD=[],
-      LD_param={}, association=[], association_param={}, Fst=[],
-      Fst_param={}, HWE=[], hasPhase=False, midValues=False,
-      output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      LD_param={}, association=[], neutrality=[], Fst=[],
+      Fst_param={}, HWE=[], output=\"\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -9937,11 +9936,17 @@ Arguments:
                     * LD_prime[loc1][loc2],
                     subPop[sp]['LD_prime'][loc1][loc2].
                     * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2].
+                    * LD_ChiSq[loc1][loc2],
+                    subPop[s]['LD_ChiSq'][loc1][loc2]
+                    * LD_ChiSq_P[loc1][loc2],
+                    subPop[s]['LD_ChiSq_P'][loc1][loc2]
+                    * LD_UC_U[loc1][loc2],
+                    subPop[s]['LD_UC_U'][loc1][loc2]
     LD_param:       a dictionary of parameters of LD statistics. Can
                     have key stat which is a list of statistics to
-                    calculate. Default to all. If any statistics is
-                    specified, only those specified will be
-                    calculated. For example, you may use
+                    calculate. Default to LD, D' and R2. If any
+                    statistics is specified, only those specified will
+                    be calculated. For example, you may use
                     LD_param={LD_prime} to calculate D' only, where
                     LD_prime is a shortcut for 'stat':['LD_prime'].
                     Other parameters that you may use are:
@@ -9949,11 +9954,6 @@ Arguments:
                     subpopulations.
                     * midValues whether or not keep intermediate
                     results.
-    association:    association measures
-    association_param:a dictionary of parameters of association
-                    statistics. Can be one or more items choosen from
-                    the following options: ChiSq, ChiSq_P, UC_U, and
-                    CramerV.
     Fst:            calculate $ F_{st} $, $ F_{is} $, $ F_{it} $. For
                     example, Fst = [0,1,2] will calculate $ F_{st} $,
                     $ F_{is} $, $ F_{it} $ based on alleles at loci 0,
@@ -10140,7 +10140,7 @@ Usage:
 
 Usage:
 
-    statAssociation(alleleFreq, haploFreq, Association=[], param={})
+    statAssociation(loci=[], subPops=[])
 
 "; 
 
@@ -10369,6 +10369,24 @@ Usage:
 "; 
 
 %feature("docstring") simuPOP::statLD::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::statNeutrality;
+
+%feature("docstring") simuPOP::statNeutrality::statNeutrality "
+
+Usage:
+
+    statNeutrality(loci=[], subPops=[])
+
+"; 
+
+%feature("docstring") simuPOP::statNeutrality::apply "
 
 Usage:
 
