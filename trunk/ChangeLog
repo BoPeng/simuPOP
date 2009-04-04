@@ -22,6 +22,8 @@ version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Merge stat(association) to stat(LD), in preparation for case-control association
 		tests.
   - NEW: (experimental) Add case/control association chisq test to stat.
+  - NEW: (experimental) Add Tajima's pi statistics (mean pairwise difference) to
+		the stat() operator.
 		
 
 version 0.9.2 - (Rev 2472) Feb 20, 2009
