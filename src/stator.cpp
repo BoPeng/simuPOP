@@ -1808,8 +1808,7 @@ statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops
 {
 	sort(m_loci.begin(), m_loci.end());
 	for (UINT i = 1; i < m_loci.size(); ++i) {
-		UINT loc = m_loci[i - 1];
-		DBG_FAILIF(loc == m_loci[i], ValueError, "Duplicated loci occurred in the list");
+		DBG_FAILIF(m_loci[i-1] == m_loci[i], ValueError, "Duplicated loci occurred in the loci list.");
 	}
 }
 
@@ -1853,6 +1852,7 @@ bool statNeutrality::apply(population & pop)
 {
 	if (m_loci.empty())
 		return true;
+
 	DBG_FAILIF(m_loci.size() > pop.totNumLoci(), IndexError,
 		"Locus index out of range");
 
