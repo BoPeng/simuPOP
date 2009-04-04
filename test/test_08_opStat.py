@@ -532,6 +532,7 @@ class TestStat(unittest.TestCase):
         #self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[4, 4]))
         Stat(pop1, neutrality=[6, 1, 3])
         self.assertEqual(pop1.dvars().Pi, self.pairwiseDiff(pop1, loci=[6, 1, 3]))
+        self.assertRaises(exceptions.ValueError, Stat, pop1, neutrality=[5, 4, 3, 5])
 
 if __name__ == '__main__':
     unittest.main()

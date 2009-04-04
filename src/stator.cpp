@@ -316,7 +316,7 @@ bool stat::apply(population & pop)
 	       m_haploFreq.apply(pop) &&
 	       m_LD.apply(pop) &&
 	       m_association.apply(pop) &&
-		   m_neutrality.apply(pop) &&
+	       m_neutrality.apply(pop) &&
 	       m_Fst.apply(pop) &&
 	       m_HWE.apply(pop);
 }
@@ -1743,7 +1743,7 @@ void statAssociation::calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG u
 	nij = controls * allele1 / total;
 	chisq += pow(unaff_1 - nij, 2) / nij;
 	DBG_DO(DBG_STATOR, cout << " counts: "
-		<< aff_0 << " " << aff_1 << " " << unaff_0 << " " << unaff_1 << " ChiSq: " << chisq << endl);
+		                    << aff_0 << " " << aff_1 << " " << unaff_0 << " " << unaff_1 << " ChiSq: " << chisq << endl);
 
 	pvalue = rng().pvalChiSq(chisq, 1);
 }
@@ -1795,7 +1795,7 @@ bool statAssociation::apply(population & pop)
 		countAlleles(it, loc, aff_0, aff_1, unaff_0, unaff_1);
 		calcChiSq(aff_0, aff_1, unaff_0, unaff_1, chisq[loc], pvalue[loc]);
 		DBG_DO(DBG_STATOR, cout << "Locus: " << loc << " ChiSq: " << chisq[loc]
-			<< " p-value: " << pvalue[loc] << endl);
+			                    << " p-value: " << pvalue[loc] << endl);
 	}
 	pop.setDoubleVectorVar(Asso_ChiSq_String, chisq);
 	pop.setDoubleVectorVar(Asso_ChiSq_P_String, pvalue);
@@ -1820,13 +1820,14 @@ double statNeutrality::calcPi(IndIterator & it)
 	double diffCnt = 0;
 	int numComparison = 0;
 	GenoIterator gt, gt1;
+
 	for (; it.valid(); ++it)
 		for (IndIterator it1 = it; it1.valid(); ++it1)
 			for (UINT p = 0; p < ploidy ; p++)
 				for (UINT p1 = 0; p1 < ploidy; p1++) {
 					// count numbers of the same person
 					if (it == it1) {
-						if (p < p1)	{
+						if (p < p1) {
 							gt = it->genoBegin(p);
 							gt1 = it->genoBegin(p1);
 							for (vectorlu::iterator loc = m_loci.begin(); loc != m_loci.end(); ++loc)
