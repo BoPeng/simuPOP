@@ -1,6 +1,8 @@
 ChangeLog of simuPOP
 
-version 0.9.3 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+version 0.9.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
+
+version 0.9.3 - (Rev 2601) Apr 3, 2009
   - BUG: Fix a bug with population::removeLoci when given keep loci are not in order.
   - NEW: Prevent the use of greater than one probabilities in Bernulli trails.
   - NEW: Add a Tkinter implementation for simuProgress.
