@@ -1728,7 +1728,7 @@ void statAssociation::calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG u
 	double allele0 = aff_0 + unaff_0;
 	double allele1 = aff_1 + unaff_1;
 
-	if (cases == 0 || controls == 0 | allele0 == 0 || allele1 == 0) {
+	if (cases == 0 || controls == 0 || allele0 == 0 || allele1 == 0) {
 		chisq = 0;
 		pvalue = 1;
 		return;
