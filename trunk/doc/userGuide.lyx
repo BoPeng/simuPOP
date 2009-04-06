@@ -9001,7 +9001,7 @@ Expressions and statements
 \end_layout
 
 \begin_layout Subsection
-Output an Python string (operator 
+Output a Python string (operator 
 \family typewriter
 pyOutput
 \family default
@@ -11355,7 +11355,7 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 \end_layout
 
 \begin_layout Section
-Mutation
+Mutation (under revision)
 \end_layout
 
 \begin_layout Subsection
@@ -11419,7 +11419,7 @@ lstparams "caption={A hybrid mutation model},label={pyMutator}"
 \end_layout
 
 \begin_layout Section
-Selection
+Selection (under revision)
 \end_layout
 
 \begin_layout Standard
@@ -11636,7 +11636,7 @@ lstparams "caption={A hybrid selector},label={pySelector}"
 \end_layout
 
 \begin_layout Section
-Penetrance
+Penetrance (under revision)
 \end_layout
 
 \begin_layout Subsection
@@ -11685,7 +11685,7 @@ lstparams "caption={A hybrid penetrance model},label={pyPenetrance}"
 \end_layout
 
 \begin_layout Chapter
-Utility Modules (under revision)
+Utility Modules 
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:Utility-Modules"
@@ -12425,15 +12425,15 @@ simuOpt
 \end_layout
 
 \begin_layout Section
-simuUtil
+simuUtil (under revision)
 \end_layout
 
 \begin_layout Section
-simuRPy
+simuRPy (under revision)
 \end_layout
 
 \begin_layout Chapter
-A real example (under revision)
+A real world example
 \begin_inset CommandInset label
 LatexCommand label
 name "cha:A-real-example"
@@ -12444,14 +12444,14 @@ name "cha:A-real-example"
 \end_layout
 
 \begin_layout Standard
-In this chapter, I will show you, step by step, how to write a simuPOP script.
- The example is a simplified version of 
-\family typewriter
-scripts/simuCDCV.py
-\family default
- which uses a python operator to calculate and save many more statistics,
- and use rpy to display the dynamics of disease allele frequency.
- 
+Previous chapters use a lot of examples to demonstrate individual simuPOP
+ features.
+ However, it might not be clear how to integrate these features in longer
+ scripts that address real world problems, which may involve larger populations,
+ more complex genetic and demographic models and may run thousands of replicates
+ with different parameters.
+ This chapter will show you, step by step, how to write a complete simuPOP
+ script that has been used in a real-world research topic.
 \end_layout
 
 \begin_layout Section
@@ -12476,8 +12476,21 @@ key "Reich2001a"
 \end_layout
 
 \begin_layout Standard
-I use simuPOP to simulate this evolution process and observe the allelic
- spectra of both types of diseases.
+This example is a simplified version of the 
+\family typewriter
+simuCDCV.py
+\family default
+ script that simulates this evolution process and observe the allelic spectra
+ of both types of diseases.
+ The complete script is available at 
+\begin_inset CommandInset href
+LatexCommand href
+name "the simuPOP online cookbook"
+target "http://simupop.sourceforge.net/cookbook"
+
+\end_inset
+
+.
  The results are published in 
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -12495,14 +12508,212 @@ Demographic model
 \end_layout
 
 \begin_layout Standard
-The initial population size is set to 10,000, as suggested in the paper.
- The simulation will evolve 500 generations with constant population size
- to reach mutation-selection equilibrium.
- Then, the population size will increase by around 20,000 every 10 generations
- and reach 1,000,000 at generation 1000.
- The population growth takes around 12,500 years if we assume 25 years per
- generation.
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Reich2001a"
+
+\end_inset
+
+ used a very simple instant population growth model.
+ Under the model assumption, a population with an initial population size
  
+\begin_inset Formula $N_{0}$
+\end_inset
+
+ would evolve 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+ generations, instantly expand its population size to 
+\begin_inset Formula $N_{1}$
+\end_inset
+
+ and evolve another 
+\begin_inset Formula $G_{1}$
+\end_inset
+
+ generations.
+ Such a model can be easily implemented as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def ins_expansion(gen, oldsize=[]):
+\end_layout
+
+\begin_layout Plain Layout
+
+    'An instant population growth model'
+\end_layout
+
+\begin_layout Plain Layout
+
+    if gen < G0:
+\end_layout
+
+\begin_layout Plain Layout
+
+        return N0
+\end_layout
+
+\begin_layout Plain Layout
+
+    else:
+\end_layout
+
+\begin_layout Plain Layout
+
+        return G1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Other demographic models could be implemented similarly.
+ For example, an exponential population growth model that expand the population
+ size from 
+\begin_inset Formula $N_{0}$
+\end_inset
+
+ to 
+\begin_inset Formula $N_{1}$
+\end_inset
+
+ in 
+\begin_inset Formula $G_{1}$
+\end_inset
+
+ generations could be defined as
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+def exp_expansion(gen, oldsize=[]):
+\end_layout
+
+\begin_layout Plain Layout
+
+    'An exponential population growth model'
+\end_layout
+
+\begin_layout Plain Layout
+
+    if gen < G0:
+\end_layout
+
+\begin_layout Plain Layout
+
+        return N0
+\end_layout
+
+\begin_layout Plain Layout
+
+    else:
+\end_layout
+
+\begin_layout Plain Layout
+
+        rate = (math.log(N1) - math.log(N0))/G1
+\end_layout
+
+\begin_layout Plain Layout
+
+        return int(N0 * math.exp((gen - G0) * rate))
+\end_layout
+
+\end_inset
+
+That is to say, we first solve 
+\begin_inset Formula $r$
+\end_inset
+
+ from 
+\begin_inset Formula $N_{1}=N_{0}\exp\left(rG_{1}\right)$
+\end_inset
+
+ and then calculate 
+\begin_inset Formula $N_{t}=N_{0}\exp\left(rG\right)$
+\end_inset
+
+ for a given generation.
+\end_layout
+
+\begin_layout Standard
+There is a problem here: the above definitions treat 
+\family typewriter
+N0
+\family default
+, 
+\family typewriter
+G0
+\family default
+, 
+\family typewriter
+N1
+\family default
+ and 
+\family typewriter
+G1
+\family default
+ as global variables.
+ This is OK for small scripts but is certainly not a good idea for larger
+ scripts especially when different parameters will be used.
+ A better way is to wrap these functions by another function that accept
+ 
+\family typewriter
+N0
+\family default
+, 
+\family typewriter
+G0
+\family default
+, 
+\family typewriter
+N1
+\family default
+ and 
+\family typewriter
+G1
+\family default
+ as parameters.
+ That is demonstrated in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "reichDemo"
+
+\end_inset
+
+ where a function 
+\family typewriter
+demo_model
+\family default
+ is defined to return either an instant or an exponential population growth
+ demographic function.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/reich_demo.py"
+lstparams "caption={A demographic function producer},label={reichDemo}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
