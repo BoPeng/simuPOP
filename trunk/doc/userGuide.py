@@ -1910,7 +1910,7 @@ print par2.rep, par2.pop
 #end
 
 
-#file log/reich_demo.log
+#file log/reichDemo.log
 import math
 def demo_model(type, N0=1e4, N1=1e6, G0=500, G1=500):
     '''Return a demographic function 
@@ -1940,6 +1940,41 @@ def demo_model(type, N0=1e4, N1=1e6, G0=500, G1=500):
 demo_func = demo_model('exponential', 1e4, 1e6, 500, 500)
 # population size at generation 700
 print demo_func(700)
+#end
+
+
+#file log/reichStat.log
+class ne(pyOperator):
+    '''Define an operator that calculates effective number of
+    alleles at given loci. The result is saved in a population
+    variable ne.
+    '''
+    def __init__(self, loci, *args, **kwargs):
+        self.loci = loci
+        pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
+    #
+    def calcNe(self, pop):
+        Stat(pop, alleleFreq=self.loci)
+        ne = {}
+        for loc in self.loci:
+            freq = pop.dvars().alleleFreq[loc][1:]
+            sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
+            if sumFreq == 0:
+                ne[loc] = 0
+            else:
+                ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
+        # save the result to the population.
+        pop.dvars().ne = ne
+        return True
+
+def Ne(pop, loci):
+    '''Function form of operator ne'''
+    ne(loci).apply(pop)
+    return pop.dvars().ne
+
+pop = population(100, loci=[10])
+InitByFreq(pop, [.2] * 5)
+print Ne(pop, loci=[2, 4])
 #end
 
 ################################################
@@ -2245,24 +2280,6 @@ def simulate(incScenario):
     )
 
 #simulate(ins_exp)
-#end
-
-#file log/reichStat.py
-def ne(pop):
-    ' calculate effective number of alleles '
-    Stat(pop, alleleFreq=[0,1])
-    f0 = [0, 0]
-    ne = [0, 0]
-    for i in range(2):
-        freq = pop.dvars().alleleFreq[i][1:]
-        f0[i] = 1 - pop.dvars().alleleFreq[i][0]
-        if f0[i] == 0:
-            ne[i] = 0
-        else:
-            ne[i] = 1. / sum([(x/f0[i])**2 for x in freq])
-    print '%d\t%.3f\t%.3f\t%.3f\t%.3f' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
-    return True
-
 #end
 
 #file log/reichOpt.py
