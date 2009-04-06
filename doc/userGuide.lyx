@@ -12708,7 +12708,7 @@ demo_model
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/reich_demo.py"
+filename "log/reichDemo.log"
 lstparams "caption={A demographic function producer},label={reichDemo}"
 
 \end_inset
@@ -12716,469 +12716,147 @@ lstparams "caption={A demographic function producer},label={reichDemo}"
 
 \end_layout
 
+\begin_layout Note
+The defined demographic functions return the total population size (a number)
+ at each generation beacuse no subpopulation is considered.
+ A list of subpopulation sizes should be returned if there are more than
+ one subpopulations.
+\end_layout
+
 \begin_layout Section
-Mutation model
+Mutation and selection models
 \end_layout
 
 \begin_layout Standard
-The maximum number of alleles at each locus is set to be 2000, a number
- that is hopefully big enough to mimic the infinite allele model.
- Allele 0 is the wild type (
+The thoretical model empolyees an infinite allele model where there is a
+ single wild type allele and an infinite number of disease alleles.
+ Each mutation would introduce a new disease allele and there is no back
+ mutation (mutation from disease allele to wild type allele).
+\end_layout
+
+\begin_layout Standard
+This mutation model can be mimicked by a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with resaonably large 
+\begin_inset Formula $k$
+\end_inset
+
+.
+ We initialize all alleles to 0 which is the wild type (
 \begin_inset Formula $A$
 \end_inset
 
-) and all others are disease alleles (
+) and all other alleles are considered as disease alleles (
 \begin_inset Formula $a$
 \end_inset
 
 ).
- The 
+ Because an allele in a 
 \begin_inset Formula $k-$
 \end_inset
 
-allele mutation model is used.
- That is to say, an allele can mutate to any other allele with equal probability.
- An immediate implication of this model is that 
+allele mutation model can mutate to any other allele with equal probability,
+ 
 \begin_inset Formula $P\left(A\rightarrow a\right)\gg P\left(a\rightarrow A\right)$
 \end_inset
 
- since there are many more 
-\begin_inset Formula $a$
+ since there are many more disease alleles than the wild type allele.
+ If we choose a smaller 
+\begin_inset Formula $k$
 \end_inset
 
- than 
-\begin_inset Formula $A$
-\end_inset
-
-.
- The mutation rate is set to 
-\begin_inset Formula $\mu=3.2\times10^{-5}$
-\end_inset
-
- per locus per generation.
-\end_layout
-
-\begin_layout Section
-Selection on a common and a rare disease 
-\end_layout
-
-\begin_layout Standard
-Two diseases are simulated: a common disease with initial allele frequency
- of 
-\begin_inset Formula $f_{0}=0.2$
-\end_inset
-
-; and a rare disease with initial allele frequency of 
-\begin_inset Formula $f_{0}=0.001$
-\end_inset
-
-.
- The diseases are unlinked in the sense that their corresponding loci reside
- on separated chromosomes.
- The allelic spectra of both diseases are set to be 
-\begin_inset Formula $\left[.9,.02,.02,.02,.02,.02\right]$
-\end_inset
-
-.
- I.e., one allele accounts for 90% of the disease cases.
+ (e.g.
  
+\begin_inset Formula $k=20$
+\end_inset
+
+), recurrent and back mutations can on longer be ignored but it would be
+ interesting to simulate such cases because they are more realistic than
+ the infinite allele model in some cases.
 \end_layout
 
 \begin_layout Standard
-Both diseases are recessive in that their fitness values are 
-\begin_inset Formula $\left[1,1,1-s\right]$
+A 
+\begin_inset Formula $k$
 \end_inset
 
- for genotype 
-\begin_inset Formula $AA$
+-allele model can be simulated using the 
+\family typewriter
+kamMutator
+\family default
+ operator which accepts a mutation rate and a maximum allelic state as parameter
+s.
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+kamMutator(rate=mu, maxAllele=k)
+\end_layout
+
 \end_inset
 
-, 
-\begin_inset Formula $Aa$
-\end_inset
 
- and 
+\end_layout
+
+\begin_layout Standard
+Because there are many possible disease alleles, a multi-allelic selector
+ (
+\family typewriter
+maSelector
+\family default
+) could be used to select against the disease alleles.
+ This operator accept a single or a list of wild type alleles (
+\family typewriter
+[0]
+\family default
+ in this case) and treat all other alleles as disease alleles.
+ A penetrance table is needed which specified the fitness of each individual
+ when they have 0, 1 or 2 disease alleles respectively.
+ In this example, we assume a recessive model in which only genotype 
 \begin_inset Formula $aa$
 \end_inset
 
- respectively.
+ causes genetic disadvantages.
+ If we assume a selection pressure parameter 
+\begin_inset Formula $s$
+\end_inset
+
+, the operator to use is
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+maSelector(loci=0, wildtype=0, penetrance=[1, 1, 1-s])
+\end_layout
+
+\end_inset
+
+Note that the use of this selector requires a population information field
  
-\begin_inset Formula $s_{c}=0.1$
-\end_inset
-
- , 
-\begin_inset Formula $s_{r}=0.9$
-\end_inset
-
- are used in the simulation which imply weak selection on the common disease
- and strong selection on the rare disease.
- If an individual has both diseases, his fitness value follows a multiplicative
- model, i.e., 
-\begin_inset Formula $\left(1-s_{c}\right)\times\left(1-s_{r}\right)=0.09$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-These parameters, translated to python, are shown in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "alg:reich0"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/reichParam.py"
-lstparams "caption={Set parameters},label={alg:reich0}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Create a simulator
-\end_layout
-
-\begin_layout Standard
-Several parameters are needed to create a population:
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-ploidy
-\family default
-: 2, default
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-size
-\family default
-: initial population size, known
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-subPop
-\family default
-: no subpopulation (or one single population).
- size can be ignored if 
-\family typewriter
-subPop
-\family default
- is given.
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-loci
-\family default
-: number of chromosomes and number of loci on each chromosome: we use two
- unlinked loci.
- use 
-\family typewriter
-loci=[1,1]
-\family default
-.
- This array gives the number of loci on each chromosome.
-\end_layout
-
-\begin_layout Itemize
-loci name and position: no need to specify
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-infoFields
-\family default
-: This parameter is tricky since you need to specify what auxiliary information
- to attach to each individual.
- During the simulation, 
 \family typewriter
 fitness
 \family default
- is needed because all selectors generate this information and mating schemes
- will make use of it.
- If you forget to provide this parameter, never mind, the simulation will
- fail and tell you that a information field 
-\family typewriter
-fitness
-\family default
- is needed.
- Similar information fields include 
-\family typewriter
-father_idx
-\family default
- and 
-\family typewriter
-mother_idx
-\family default
- when you want to track each individual's parents using 
-\family typewriter
-taggers.
-\end_layout
-
-\begin_layout Standard
-You can then create a population with:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-population(size=1000, loci=[1,1], infoFields=['fitness'])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-To create simulator, we need to decide on a mating scheme.
- 
-\family typewriter
-randomMating
-\family default
- should of course be used, but we need to tell 
-\family typewriter
-randomMating
-\family default
- how population size should be changed.
- By default, all mating schemes keep the population size of ancestral population
-, but we need an instant population expansion model.
-\end_layout
-
-\begin_layout Standard
-The easiest way to achieve this is defining a function that accept generation
- number and the population size of previous generation, and return the size
- of this generation.
- The input and output population sizes need to be arrays, indicating sizes
- of all subpopulations.
- In our case, something like 
-\family typewriter
-[1000]
-\family default
- should be used.
- The instant population growth model is actually quite easy to write:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-def ins_exp(gen, oldSize=[]):
-\end_layout
-
-\begin_layout Plain Layout
-
-     if gen < burnin:
-\end_layout
-
-\begin_layout Plain Layout
-
-         return [initSize]
-\end_layout
-
-\begin_layout Plain Layout
-
-     else:
-\end_layout
-
-\begin_layout Plain Layout
-
-         return [finalSize] 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-With a little adjustment of how population size is given to 
-\family typewriter
-population()
-\family default
-, and use demographic function as a parameter to allow other demographic
- models to be used, we end up with example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "reich1"
-
-\end_inset
-
 .
- Note that because we use loci with more than 255 allele states, the long
- allele module is used.
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/reichSimulator.py"
-lstparams "caption={Create a simulator},label={reich1}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Initialization
-\end_layout
-
-\begin_layout Standard
-We start the simulation with initial allele spectra at the two loci.
- This can be achieved by operator 
+This example uses a single-locus selection model but the complete script
+ allows the use of different kinds of multi-locus selection model.
+ If we assume a multiplicative multi-locus selection model where fitness
+ values at different loci are combined (multiplied), a multi-locus selection
+ model (
 \family typewriter
-initByFreq
+mlSelector
 \family default
-, which allows you to initialize individuals with alleles proportional to
- given allele frequencies.
- Using a large number of parameters, this operator can initialize any subset
- of loci, for any subset(s) of individuals, even given ploidy.
- We need only to specify locus to initialize, and use it like
+) could be used as follows:
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-# initialize locus 0 (for common disease)
-\end_layout
-
-\begin_layout Plain Layout
-
-initByFreq(atLoci=[0], alleleFreq=C_f),
-\end_layout
-
-\begin_layout Plain Layout
-
-# initialize locus 1 (for rare disease)
-\end_layout
-
-\begin_layout Plain Layout
-
-initByFreq(atLoci=[1], alleleFreq=R_f),
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Mutation and selection
-\end_layout
-
-\begin_layout Standard
-You will need to read the relative sections of the reference manual to pick
- suitable mutator and selectors.
- What we need in this case are
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $k$
-\end_inset
-
--allele mutator with given number of allele states (
-\begin_inset Formula $k$
-\end_inset
-
-).
- This is exactly
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-kamMutator(rate=mu, maxAllele=max_allele)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-single locus selector that treat 0 as wildtype, and any other allele as
- mutant.
- The selector to use is
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Because an individual has only one fitness value, fitness values obtained
- from two selectors need to be combined (another choice is that you can
- use a selector that handle multiple loci.).
- Therefore, we use a multi-locus selector as follows:
-\end_layout
-
-\begin_deeper
 \begin_layout Standard
 \begin_inset listings
 inline false
@@ -13191,48 +12869,35 @@ mlSelector([
 
 \begin_layout Plain Layout
 
-    maSelector(locus=0, fitness=[1,1,1-C_s], wildtype=[0]),
+    maSelector(locus=loc1, fitness=[1,1,1-s1], wildtype=[0]),
 \end_layout
 
 \begin_layout Plain Layout
 
-    maSelector(locus=1, fitness=[1,1,1-R_s], wildtype=[0])
+    maSelector(locus=loc2, fitness=[1,1,1-s2], wildtype=[0])],
 \end_layout
 
 \begin_layout Plain Layout
 
-    ], mode=SEL_Multiplicative)
+    mode=Multiplicative
+\end_layout
+
+\begin_layout Plain Layout
+
+)
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-With these operators, the simulator can be started.
- It first initialize a population with given allelic spectra, and then evolve
- it, subject to mutation and selection, specific to each locus.
- The program is listed in example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "reich2"
-
-\end_inset
-
-:
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/reichMutSel.py"
-lstparams "caption={Run the simulator},label={reich2}"
-
-\end_inset
-
-
+These multi-locus model treat disease alleles at different loci more or
+ less independently.
+ If more complex multi-locus models (e.g.
+ models involve gene - gene and/or gene - interaction) are involved, a multi-loc
+us selector that uses a multi-locus penetrance table could be used.
 \end_layout
 
 \begin_layout Section
@@ -13241,24 +12906,28 @@ Output statistics
 
 \begin_layout Standard
 We first want to output total disease allele frequency of each locus.
- This is easy since 
+ This is easy because 
 \family typewriter
 stat()
 \family default
  operator can calculate allele frequency for us.
- What we need to do is use 
+ What we need to do is use a 
 \family typewriter
 stat()
 \family default
- operator to calculate allele frequency and set variable 
+ operator to calculate allele frequency and get the result from population
+ variable 
 \family typewriter
 alleleFreq
 \family default
- (and 
-\family typewriter
-alleleNum
-\family default
-) in each population's local namespace,
+.
+ Because allele frequcies add up to one, we can get the total disease allele
+ frequency using the allele frequency of the wild type allele 0 (
+\begin_inset Formula $\sum_{i=1}^{\infty}f_{i}=1-f_{0}$
+\end_inset
+
+).
+ The actual code would look more or less like this:
 \end_layout
 
 \begin_layout Standard
@@ -13271,31 +12940,9 @@ status open
 stat(alleleFreq=[0,1]),
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-and then use a 
-\family typewriter
-pyEval
-\family default
- (python expression) operator to print out the values:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
 \begin_layout Plain Layout
 
-pyEval(r' %.3f
-\backslash
-t%.3f
-\backslash
-n % (1-alleleFreq[0][0], 1-alleleFreq[1][0])')
+pyEval(r'"%.2f" % (1-alleleFreq[0][0])')
 \end_layout
 
 \end_inset
@@ -13304,38 +12951,20 @@ n % (1-alleleFreq[0][0], 1-alleleFreq[1][0])')
 \end_layout
 
 \begin_layout Standard
-The 
-\family typewriter
-pyEval
-\family default
- operator can accept any valid python expression so the above expression
- calculate 
-\begin_inset Formula $f_{0}=\sum_{i=1}^{\infty}f_{i}$
-\end_inset
-
- at each locus (0 and 1) and print it in the format of 
-\family typewriter
-'%.3f
-\backslash
-t%.3f
-\backslash
-n'
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-There is no operator to calculate effective number of alleles 
+We are also interested in the effective number of alleles 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Reich2001a"
 
 \end_inset
 
- so we need to do that by ourselves, using allele frequencies.
- The formula to calculate effective number of alleles is
+ at a locus.
+ Because simuPOP does not provide an operator or function to calculate this
+ statistic, we will have to calculate it manually.
+ Fortunately, this is not difficult because effective number of alleles
+ can be calculated from existing allele frequencies, using formula
 \begin_inset Formula \[
-n_{e}=\left(\sum_{i}\left(\frac{f_{i}}{f_{0}}\right)^{2}\right)^{-1}\]
+n_{e}=\left(\sum_{i=1}^{\infty}\left(\frac{f_{i}}{1-f_{0}}\right)^{2}\right)^{-1}\]
 
 \end_inset
 
@@ -13347,20 +12976,16 @@ where
 \begin_inset Formula $i$
 \end_inset
 
- , and 
-\begin_inset Formula $f_{0}$
-\end_inset
+.
+\end_layout
 
- is defined as above.
- To calculate 
+\begin_layout Standard
+A quick-and-dirty way to output 
 \begin_inset Formula $n_{e}$
 \end_inset
 
- at the first locus, we can use a 
-\family typewriter
-pyEval
-\family default
- operator (a direct translation of the formula):
+ at a locus (e.g.
+ locus 0) can be:
 \end_layout
 
 \begin_layout Standard
@@ -13375,17 +13000,13 @@ pyEval('1./sum([(x/(1-alleleFreq[0][0]))**2 for x in alleleFreq[0][1:]])')
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-However, this expression looks complicated and can not handle the case when
+but this expression looks complicated and does not handle the case when
  
-\begin_inset Formula $f_{0}=0$
+\begin_inset Formula $f_{0}=1$
 \end_inset
 
 .
- A more complicated, and robust method is using the 
+ A more robust method would involve the 
 \family typewriter
 stmts
 \family default
@@ -13397,7 +13018,7 @@ pyEval
 \family typewriter
 expr
 \family default
- ,
+:
 \end_layout
 
 \begin_layout Standard
@@ -13407,51 +13028,32 @@ status open
 
 \begin_layout Plain Layout
 
-pyEval(stmts='''ne = [0,0]
+pyEval(stmts='''freq = alleleFreq[0][1:]
 \end_layout
 
 \begin_layout Plain Layout
 
-for i in range(2):
+if alleleFreq[i][0] == 1:
 \end_layout
 
 \begin_layout Plain Layout
 
-    freq = alleleFreq[i][1:]
+    ne = 0
 \end_layout
 
 \begin_layout Plain Layout
 
-    f0 = 1 - alleleFreq[i][0]
+else:
 \end_layout
 
 \begin_layout Plain Layout
 
-    if f0 == 0:
+    ne = 1./sum([(x/(1-alleleFreq[0][0])**2 for x in freq])
 \end_layout
 
 \begin_layout Plain Layout
 
-        ne[i] = 0
-\end_layout
-
-\begin_layout Plain Layout
-
-    else:
-\end_layout
-
-\begin_layout Plain Layout
-
-        ne[i] = 1./sum([(x/f0)**2 for x in freq])
-\end_layout
-
-\begin_layout Plain Layout
-
-''', expr=r'%.4f
-\backslash
-t%.4f
-\backslash
-n % (ne[0], ne[1])')
+''', expr=r'"%.3f" % ne')
 \end_layout
 
 \end_inset
@@ -13460,15 +13062,13 @@ n % (ne[0], ne[1])')
 \end_layout
 
 \begin_layout Standard
-As you can see, the 
-\family typewriter
-pyEval
-\family default
- can be really complicated and calculate any statistics.
- However, if you plan to calculate more statistics, a pure python operator
- may be easier to write.
- The simplest form of a python operator is just a python function that accept
- a population as the first parameter (and an optional parameter),
+However, this piece of code does not look nice with the multi-line string,
+ and the operator is not really reusable (only valid for locus o).
+ It makes sense to define a function to calculate 
+\begin_inset Formula $n_{e}$
+\end_inset
+
+ generally:
 \end_layout
 
 \begin_layout Standard
@@ -13478,52 +13078,47 @@ status open
 
 \begin_layout Plain Layout
 
-def ne(pop):
+def ne(pop, loci):
 \end_layout
 
 \begin_layout Plain Layout
 
-    ' calculate effective number of alleles '
+    ' calculate effective number of alleles at given loci'
 \end_layout
 
 \begin_layout Plain Layout
 
-    Stat(pop, alleleFreq=[0,1])
+    Stat(pop, alleleFreq=loci)
 \end_layout
 
 \begin_layout Plain Layout
 
-    f0 = [0, 0]
+    ne = {}
 \end_layout
 
 \begin_layout Plain Layout
 
-    ne = [0, 0]
+    for loc in loci:
 \end_layout
 
 \begin_layout Plain Layout
 
-    for i in range(2):
+        freq = pop.dvars().alleleFreq[loc][1:]
 \end_layout
 
 \begin_layout Plain Layout
 
-        freq = pop.dvars().alleleFreq[i][1:]
+        sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
 \end_layout
 
 \begin_layout Plain Layout
 
-        f0[i] = 1 - pop.dvars().alleleFreq[i][0]
+        if sumFreq == 0:
 \end_layout
 
 \begin_layout Plain Layout
 
-        if f0[i] == 0:
-\end_layout
-
-\begin_layout Plain Layout
-
-            ne[i] = 0
+            ne[loc] = 0
 \end_layout
 
 \begin_layout Plain Layout
@@ -13533,23 +13128,18 @@ def ne(pop):
 
 \begin_layout Plain Layout
 
-            ne[i] = 1.
- / sum([(x/f0[i])**2 for x in freq])
+            ne[loc] = 1.
+ / sum([(x/sumFreq)**2 for x in freq])
 \end_layout
 
 \begin_layout Plain Layout
 
-    print '%d
-\backslash
-t%.3f
-\backslash
-t%.3f
-\backslash
-t%.3f
-\backslash
-t%.3f
-\backslash
-n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
+    # save the result to the population.
+\end_layout
+
+\begin_layout Plain Layout
+
+    pop.dvars().ne = ne
 \end_layout
 
 \begin_layout Plain Layout
@@ -13563,7 +13153,9 @@ n' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
 \end_layout
 
 \begin_layout Standard
-Then, you can use this function in a python operator
+When it is needed to calculate effective number of alleles, a Python operator
+ that uses this function can be used.
+ For example, operator
 \end_layout
 
 \begin_layout Standard
@@ -13573,12 +13165,18 @@ status open
 
 \begin_layout Plain Layout
 
-pyOperator(func=ne, step=5)
+pyOperator(func=ne, param=[0], step=5)
+\end_layout
+
+\begin_layout Plain Layout
+
+pyEval(r'"%.3f" % ne[0]', step=5)
 \end_layout
 
 \end_inset
 
-
+would calculate effective number of alleles at locus 0 and output it.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -13595,86 +13193,52 @@ pyOperator
 pyOperator
 \family default
  is no longer evaluated in the population's local namespace.
- You will have to get the vars explicitly using the 
+ You will have to get the variables explicitly using the 
 \family typewriter
 pop.dvars()
 \family default
- function.
- (This also implies that you can do whatever you want to the population.).
- In this example, the function form of the 
-\family typewriter
-stat
-\family default
- operator is used to explicitly calculate allele frequency.
- The results are also explicitly printed using the 
-\family typewriter
-print
-\family default
- command.
- The explicities lead to longer, but clearer program.
- This becomes obvious when you need to calculate and print many statistics.
+ function, and the results have to be explicitly saved to the population's
+ local namespace.
 \end_layout
 
 \begin_layout Standard
-The following program (listing 
+The final implementation, as a way to demonstrate how to define a new statistics
+ that hides all the details, defines a new operator by inheriting a class
+ from 
+\family typewriter
+pyOperator
+\family default
+.
+ The resulting operator could be used as a regular operator (e.g., 
+\family typewriter
+ne(loci=[0])
+\family default
+).
+ A function 
+\family typewriter
+Ne
+\family default
+ is also defined as the function form of this operator.
+ The code is listed in Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "reich3"
+reference "reichStat"
 
 \end_inset
 
-) uses the 
-\family typewriter
-pyOperator
-\family default
-
-\begin_inset Index
-status collapsed
-
-\begin_layout Plain Layout
-pyOperator
-\end_layout
-
-\end_inset
-
- solution.
- In this program, user can input two demographic models as command line
- parameter.
- Two other operators are used
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-ticToc
-\family default
- operator that prints out elapsed time at every 100 generations
-\end_layout
-
-\begin_layout Itemize
-A 
-\family typewriter
-pause
-\family default
- operator that pause the simulation whenever you press a key.
- You can actually enter a python command shell to examine the results.
-\end_layout
-
-\begin_layout Standard
+ 
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/reichStat.py"
-lstparams "caption={The whole program},label={reich3}"
+filename "log/reichStat.log"
+lstparams "caption={A customized operator to calculate effective number of alleles},label={reichStat}"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Standard
-
-\lyxline
-
+\begin_layout Section
+Simulator
 \end_layout
 
 \begin_layout Section
@@ -14034,6 +13598,10 @@ lstparams "caption={Option handling},label={reich4}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+The complete code
 \end_layout
 
 \begin_layout Standard
