@@ -1910,6 +1910,37 @@ print par2.rep, par2.pop
 #end
 
 
+#file log/reich_demo.log
+import math
+def demo_model(type, N0=1e4, N1=1e6, G0=500, G1=500):
+    '''Return a demographic function 
+    type: linear or exponential
+    N0:   Initial population size.
+    N1:   Ending population size.
+    G0:   Length of burn-in stage.
+    G1:   Length of population expansion stage.
+    '''
+    def ins_expansion(gen, oldsize=[]):
+        if gen < G0:
+            return N0
+        else:
+            return G1
+    rate = (math.log(N1) - math.log(N0))/G1
+    def exp_expansion(gen, oldsize=[]):
+        if gen < G0:
+            return N0
+        else:            
+            return int(N0 * math.exp((gen - G0) * rate))
+    if type == 'instant':
+        return ins_expansion
+    elif type == 'exponential':
+        return exp_expansion
+
+# when needed, create a demographic function as follows
+demo_func = demo_model('exponential', 1e4, 1e6, 500, 500)
+# population size at generation 700
+print demo_func(700)
+#end
 
 ################################################
 
