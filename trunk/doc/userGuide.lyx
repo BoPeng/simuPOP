@@ -1681,7 +1681,7 @@ SIMUOPTIMIZED
 \begin_layout Note
 Please do not make use of exceptions raised by simuPOP functions to direct
  the logic of your script (e.g.
- use of a 
+ use a 
 \family typewriter
 try ...
  except ...
@@ -8276,7 +8276,7 @@ myParentsChooser
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/cppParentChooser.py"
-lstparams "caption={Implement a parent chooser in C++},firstline=5,label={cppParentChooser}"
+lstparams "caption={Implement a parent chooser in C++},label={cppParentChooser}"
 
 \end_inset
 
