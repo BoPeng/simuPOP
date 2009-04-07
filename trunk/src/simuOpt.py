@@ -980,7 +980,8 @@ class simuOpt:
         to convert user input to these types. For example, if ``allowedTypes``
         is ``types.ListType`` or  ``types.TupleType`` and the user's input is a
         scalar, the input will be converted to a list automatically. An option
-        will not be accepted if such conversion fails.
+        will not be accepted if such conversion fails. If this item is not
+        specified, the type of the default value will be used.
 
     validate
         A function to validate the parameter. The function will be applied to
@@ -1132,8 +1133,11 @@ class simuOpt:
         #
         opt['value'] = opt['default']
         opt['processed'] = False
-        if opt.has_key('chooseFrom') and not opt.has_key('allowedTypes'):
-            opt['allowedTypes'] = [type(()), type([])]
+        if not opt.has_key('allowedTypes'):
+            if opt.has_key('chooseFrom'):
+                opt['allowedTypes'] = [type(()), type([])]
+            else:
+                opt['allowedTypes'] = [type(opt['default'])]
         #
         name = opt['longarg'].rstrip('=')
         if self.dict.has_key(name):
