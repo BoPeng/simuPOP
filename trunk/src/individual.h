@@ -112,7 +112,7 @@ public:
 	/**
 	 * An \c individual object cannot be created directly. It has to be accessed
 	 * from a \c population object using functions such as
-	 * <tt>population::individual(</tt><em>idx</em><tt>)</tt>.
+	 * <tt>population::individual(idx)</tt>.
 	 */
 	individual() : m_flags(m_flagVisible)
 	{
