@@ -1912,9 +1912,9 @@ print par2.rep, par2.pop
 
 #file log/reichDemo.log
 import math
-def demo_model(type, N0=1e4, N1=1e6, G0=500, G1=500):
+def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
     '''Return a demographic function 
-    type: linear or exponential
+    model: linear or exponential
     N0:   Initial population size.
     N1:   Ending population size.
     G0:   Length of burn-in stage.
@@ -1924,20 +1924,20 @@ def demo_model(type, N0=1e4, N1=1e6, G0=500, G1=500):
         if gen < G0:
             return N0
         else:
-            return G1
+            return N1
     rate = (math.log(N1) - math.log(N0))/G1
     def exp_expansion(gen, oldsize=[]):
         if gen < G0:
             return N0
         else:            
             return int(N0 * math.exp((gen - G0) * rate))
-    if type == 'instant':
+    if model == 'instant':
         return ins_expansion
-    elif type == 'exponential':
+    elif model == 'exponential':
         return exp_expansion
 
 # when needed, create a demographic function as follows
-demo_func = demo_model('exponential', 1e4, 1e6, 500, 500)
+demo_func = demo_model('exponential', 1000, 100000, 500, 500)
 # population size at generation 700
 print demo_func(700)
 #end
@@ -1977,58 +1977,116 @@ InitByFreq(pop, [.2] * 5)
 print Ne(pop, loci=[2, 4])
 #end
 
-#file log/reichEvolve.py
-def simulate():
-    simu = simulator(                       # create a simulator
-        population(size=incScenario(0), loci=[1,1],
-            infoFields=['fitness']),        # inital population
-        randomMating(subPopSize=incScenario)
+#file log/reichEvolve.log
+#beginignore
+import math
+def demo_model(model, N0=1000, N1=100000, G0=500, G1=500):
+    '''Return a demographic function 
+    model: linear or exponential
+    N0:   Initial population size.
+    N1:   Ending population size.
+    G0:   Length of burn-in stage.
+    G1:   Length of population expansion stage.
+    '''
+    def ins_expansion(gen, oldsize=[]):
+        if gen < G0:
+            return N0
+        else:
+            return N1
+    rate = (math.log(N1) - math.log(N0))/G1
+    def exp_expansion(gen, oldsize=[]):
+        if gen < G0:
+            return N0
+        else:            
+            return int(N0 * math.exp((gen - G0) * rate))
+    if model == 'instant':
+        return ins_expansion
+    elif model == 'exponential':
+        return exp_expansion
+
+class ne(pyOperator):
+    '''Define an operator that calculates effective number of
+    alleles at given loci. The result is saved in a population
+    variable ne.
+    '''
+    def __init__(self, loci, *args, **kwargs):
+        self.loci = loci
+        pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
+    #
+    def calcNe(self, pop):
+        Stat(pop, alleleFreq=self.loci)
+        ne = {}
+        for loc in self.loci:
+            freq = pop.dvars().alleleFreq[loc][1:]
+            sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
+            if sumFreq == 0:
+                ne[loc] = 0
+            else:
+                ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
+        # save the result to the population.
+        pop.dvars().ne = ne
+        return True
+
+#endignore
+
+def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
+    '''Evolve a population using given demographic model
+    and observe the evolution of its allelic spectrum.
+    model: type of demographic model.
+    N0, N1, G0, G1: parameters of demographic model.
+    spec: initial allelic spectrum, should be a list of allele
+        frequencies for each allele.
+    s: selection pressure.
+    mu: mutation rate.
+    k: maximum allele for the k-allele model
+    '''
+    demo_func = demo_model(model, N0, N1, G0, G1)
+    simu = simulator(
+        population(size=demo_func(0), loci=[1], infoFields=['fitness']),
+        randomMating(subPopSize=demo_func)
     )
-    simu.evolve(                            # start evolution
-        preOps=[                            # operators that will be applied before evolution
-            # initialize locus 0 (for common disease)
-            initByFreq(loci=[0], alleleFreq=C_f),
-            # initialize locus 1 (for rare disease)
-            initByFreq(loci=[1], alleleFreq=R_f),
+    simu.evolve(
+        preOps=[initByFreq(loci=[0], alleleFreq=spec)],
+        ops=[
+            kamMutator(rate=mu, maxAllele=k),
+            maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
+            ne(loci=[0], step=100),
+            pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
+                step=100),
         ],
-        ops=[                               # operators that will be applied at each gen
-            # mutate: k-alleles mutation model
-            kamMutator(rate=mu, maxAllele=max_allele),
-            # selection on common and rare disease,
-            mlSelector([                # multiple loci - multiplicative model
-                maSelector(loci=0, fitness=[1,1,1-C_s], wildtype=[0]),
-                maSelector(loci=1, fitness=[1,1,1-R_s], wildtype=[0])
-            ], mode=SEL_Multiplicative),
-        ],
-        gen = endGen
+        gen = G0 + G1
     )
 
+simulate('instant', 1000, 10000, 500, 500, [0.9]+[0.02]*5, 0.01, 1e-4, 200)
 #end
 
 
-#file log/reich.py
+#file log/simuCDCV.log
 #!/usr/bin/env python
-
+#
+# Author:  Bo Peng
+# Purpose: A real world example for simuPOP user's guide.
+#
 '''
-simulation for Reich(2001):
-     On the allelic spectrum of human disease
-
+Simulation the evolution of allelic spectra (number and frequencies
+of alleles at a locus), under the influence of population expansion,
+mutation, and natural selection.
 '''
 
 import simuOpt
-simuOpt.setOptions(alleleType='long')
+simuOpt.setOptions(quiet=True, alleleType='long')
+from simuPOP import *
 
-import sys, types, os
+import sys, types, os, math
 
 options = [
-    {'arg': 'h',
-     'longarg': 'help',
-     'default': False, 
-     'description': 'Print this usage message.',
-     'allowedTypes': [types.NoneType, type(True)],
-     'jump': -1                    # if -h is specified, ignore any other parameters.
+    {'longarg': 'demo=',
+     'default': 'instant',
+     'label': 'Population growth model',
+     'description': 'How does a population grow from N0 to N1.',
+     'chooseOneOf': ['instant', 'exponential'],
     },
-    {'longarg': 'initSize=',
+    {'longarg': 'N0=',
      'default': 10000,
      'label': 'Initial population size',
      'allowedTypes': [types.IntType, types.LongType],
@@ -2036,158 +2094,157 @@ options = [
                 till the end of burnin stage''',
      'validate': simuOpt.valueGT(0)
     },
-    {'longarg': 'finalSize=',
-     'default': 1000000,
+    {'longarg': 'N1=',
+     'default': 100000,
      'label': 'Final population size',
      'allowedTypes': [types.IntType, types.LongType],
-     'description': 'Ending population size (after expansion.',
+     'description': 'Ending population size (after population expansion)',
      'validate': simuOpt.valueGT(0)
     }, 
-    {'longarg': 'burnin=',
+    {'longarg': 'G0=',
      'default': 500,
      'label': 'Length of burn-in stage',
      'allowedTypes': [types.IntType],
      'description': 'Number of generations of the burn in stage.',
      'validate': simuOpt.valueGT(0)
     },
-    {'longarg': 'endGen=',
+    {'longarg': 'G1=',
      'default': 1000,
-     'label': 'Last generation',
+     'label': 'Length of expansion stage',
      'allowedTypes': [types.IntType],
-     'description': 'Ending generation, should be greater than burnin.',
+     'description': 'Number of geneartions of the population expansion stage',
      'validate': simuOpt.valueGT(0)
     },
-    {'longarg': 'growth=',
-     'default': 'instant',
-     'label': 'Population growth model',
-     'description': '''How population is grown from initSize to finalSize.
-                Choose between instant, linear and exponential''',
-     'chooseOneOf': ['linear', 'instant'],
+    {'longarg': 'spec=',
+     'default': [0.9] + [0.02]*5,
+     'label': 'Initial allelic spectrum',
+     'allowedTypes': [types.TupleType, types.ListType],
+     'description': '''Initial allelic spectrum, should be a list of allele
+            frequencies, for allele 0, 1, 2, ... respectively.''',
+     'validate': simuOpt.valueListOf(simuOpt.valueBetween(0, 1)),
     },
-    {'longarg': 'name=',
-     'default': 'cdcv',
-     'allowedTypes': [types.StringType],
-     'label': 'Name of the simulation',
-     'description': 'Base name for configuration (.cfg) log file (.log) and figures (.eps)'
+    {'longarg': 's=',
+     'default': 0.01,
+     'label': 'Selection pressure',
+     'allowedTypes': [types.IntType, types.FloatType],
+     'description': '''Selection coefficient for homozygtes (aa) genotype.
+            A recessive selection model is used so the fitness values of
+            genotypes AA, Aa and aa are 1, 1 and 1-s respectively.''',
+     'validate': simuOpt.valueGT(-1),
+    },
+    {'longarg': 'mu=',
+     'default': 1e-4,
+     'label': 'Mutation rate',
+     'allowedTypes': [types.IntType, types.FloatType],
+     'description': 'Mutation rate of a k-allele mutation model',
+     'validate': simuOpt.valueBetween(0, 1),
+    },
+    {'longarg': 'k=',
+     'default': 200,
+     'label': 'Maximum allelic state',
+     'allowedTypes': [types.IntType],
+     'description': 'Maximum allelic state for a k-allele mutation model',
+     'validate': simuOpt.valueGT(1),
     },
 ]
 
-def getOptions(details=__doc__):
-    # get all parameters, __doc__ is used for help info
-    allParam = simuOpt.getParam(options, 
-      'This program simulates the evolution of a common and a rare direse\n' +
-        'and observe the evolution of allelic spectra\n', details)
-    #
-    # when user click cancel ...
-    if len(allParam) == 0:
-        sys.exit(1)
-    # -h or --help
-    if allParam[0]:    
-        print simuOpt.usage(options, __doc__)
-        sys.exit(0)
-    # automatically save configurations
-    name = allParam[-1]
-    if not os.path.isdir(name):
-        os.makedirs(name)
-    simuOpt.saveConfig(options, os.path.join(name, name+'.cfg'), allParam)
-    # return the rest of the parameters
-    return allParam[1:-1]
-
-
-# these can be put as options as well.
-mu = 3.2e-5                  # mutation rate
-C_f0 = 0.2                   # initial allelic frequency of *c*ommon disease
-R_f0 = 0.001                 # initial allelic frequency of *r*are disease
-max_allele = 255             # allele range 1-255 (1 for wildtype)
-C_s = 0.0001                 # selection on common disease
-R_s = 0.9                    # selection on rare disease
-
-C_f = [1-C_f0] + [x*C_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
-R_f = [1-R_f0] + [x*R_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
-
-# instantaneous population growth
-def ins_exp(gen, oldSize=[]):
-    if gen < burnin:
-        return [initSize]
-    else:
-        return [finalSize]
-
-# linear growth after burn-in
-def lin_exp(gen, oldSize=[]):
-    if gen < burnin:
-        return [initSize]
-    elif gen % 10 != 0:
-        return oldSize
-    else:
-        incSize = (finalSize-initSize)/(endGen-burnin)
-        return [oldSize[0]+10*incSize]
-
-def ne(pop):
-    ' calculate effective number of alleles '
-    Stat(pop, alleleFreq=[0,1])
-    f0 = [0, 0]
-    ne = [0, 0]
-    for i in range(2):
-        freq = pop.dvars().alleleFreq[i][1:]
-        f0[i] = 1 - pop.dvars().alleleFreq[i][0]
-        if f0[i] == 0:
-            ne[i] = 0
+def demo_model(type, N0=1000, N1=100000, G0=500, G1=500):
+    '''Return a demographic function 
+    type: linear or exponential
+    N0:   Initial population size.
+    N1:   Ending population size.
+    G0:   Length of burn-in stage.
+    G1:   Length of population expansion stage.
+    '''
+    def ins_expansion(gen, oldsize=[]):
+        if gen < G0:
+            return N0
         else:
-            ne[i] = 1. / sum([(x/f0[i])**2 for x in freq])
-    print '%d\t%.3f\t%.3f\t%.3f\t%.3f' % (pop.gen(), f0[0], f0[1], ne[0], ne[1])
-    return True
+            return N1
+    rate = (math.log(N1) - math.log(N0))/G1
+    def exp_expansion(gen, oldsize=[]):
+        if gen < G0:
+            return N0
+        else:            
+            return int(N0 * math.exp((gen - G0) * rate))
+    if type == 'instant':
+        return ins_expansion
+    elif type == 'exponential':
+        return exp_expansion
 
-def simulate(incScenario):
-    simu = simulator(                                        # create a simulator
-        population(subPop=incScenario(0), loci=[1,1],
-            infoFields=['fitness']),                         # inital population
-        randomMating(subPopSizeFunc=incScenario)           # random mating
-    )
-    simu.evolve(                            # start evolution
-        preOps=[                            # operators that will be applied before evolution
-            # initialize locus 0 (for common disease)
-            initByFreq(atLoci=[0], alleleFreq=C_f),
-            # initialize locus 1 (for rare disease)
-            initByFreq(atLoci=[1], alleleFreq=R_f),
-        ],
-        ops=[                               # operators that will be applied at each gen
-            # mutate: k-alleles mutation model
-            kamMutator(rate=mu, maxAllele=max_allele),
-            # selection on common and rare disease,
-            mlSelector([                # multiple loci - multiplicative model
-                maSelector(loci=0, fitness=[1,1,1-C_s], wildtype=[0]),
-                maSelector(loci=1, fitness=[1,1,1-R_s], wildtype=[0])
-            ], mode=SEL_Multiplicative),
-            # report generation and popsize and total disease allele frequency.
-            pyOperator(func=ne, step=5),
-            # monitor time
-            ticToc(step=100),
-            # pause at any user key input (for presentation purpose)
-            pause(stopOnKeyStroke=1)
-        ],
-        end=endGen
-    )
+class ne(pyOperator):
+    '''Define an operator that calculates effective number of
+    alleles at given loci. The result is saved in a population
+    variable ne.
+    '''
+    def __init__(self, loci, *args, **kwargs):
+        self.loci = loci
+        pyOperator.__init__(self, func=self.calcNe, *args, **kwargs)
+    #
+    def calcNe(self, pop):
+        Stat(pop, alleleFreq=self.loci)
+        ne = {}
+        for loc in self.loci:
+            freq = pop.dvars().alleleFreq[loc][1:]
+            sumFreq = 1 - pop.dvars().alleleFreq[loc][0]
+            if sumFreq == 0:
+                ne[loc] = 0
+            else:
+                ne[loc] = 1. / sum([(x/sumFreq)**2 for x in freq])
+        # save the result to the population.
+        pop.dvars().ne = ne
+        return True
 
+def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
+    '''Evolve a population using given demographic model
+    and observe the evolution of its allelic spectrum.
+    model: type of demographic model.
+    N0, N1, G0, G1: parameters of demographic model.
+    spec: initial allelic spectrum, should be a list of allele
+        frequencies for each allele.
+    s: selection pressure.
+    mu: mutation rate.
+    k: maximum allele for the k-allele model
+    '''
+    demo_func = demo_model(model, N0, N1, G0, G1)
+    print demo_func(0)
+    simu = simulator(
+        population(size=demo_func(0), loci=[1], infoFields=['fitness']),
+        randomMating(subPopSize=demo_func)
+    )
+    simu.evolve(
+        preOps=[initByFreq(loci=[0], alleleFreq=spec)],
+        ops=[
+            kamMutator(rate=mu, maxAllele=k),
+            maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
+            ne(loci=[0], step=100),
+            pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
+                step=100),
+        ],
+        gen = G0 + G1
+    )
+    return simu.extract(0)
 
 if __name__ == '__main__':
     # get parameters
-    (initSize, finalSize, burnin, endGen, growth) = getOptions()
-    # 
-    from simuPOP import *
+    par = simuOpt.simuOpt(options, __doc__)
+    if not par.getParam():
+        sys.exit(1)
     #
-    if initSize > finalSize:
-        print 'Initial size should be greater than final size'
+    if not sum(par.spec) == 1:
+        print 'Initial allelic spectrum should add up to 1.'
         sys.exit(1)
-    if burnin > endGen:
-        print 'Burnin gen should be less than ending gen'
-        sys.exit(1)
-    if growth == 'linear':
-        simulate(lin_exp)
-    else:
-        simulate(ins_exp)
+    # save user input to a configuration file
+    par.saveConfig('simuCDCV.cfg')
+    #
+    simuCDCV(*par.asList())
 
 #end
 
+out = os.popen('python log/simuCDCV.py -h')
+hlp = open('log/simuCDCV.hlp', 'w')
+print >> hlp, out.read()
+hlp.close()
 
 ################################################
 
@@ -2419,200 +2476,3 @@ PyPenetrance(pop, loci=(0, 1, 2),
     func=peneFunc( ((0, 0.5), (0.3, 0.8)) ) )
 #end
 
-
-
-
-
-## 
-## 
-#file log/reichParam.py
-initSize =  10000            # initial population size
-finalSize = 1000000          # final population size
-burnin = 500                 # evolve with constant population size
-endGen = 1000                # last generation
-mu = 3.2e-5                  # mutation rate
-C_f0 = 0.2                   # initial allelic frequency of *c*ommon disease
-R_f0 = 0.001                 # initial allelic frequency of *r*are disease
-max_allele = 255             # allele range 1-255 (1 for wildtype)
-C_s = 0.0001                 # selection on common disease
-R_s = 0.9                    # selection on rare disease
-psName = 'lin_exp'           # filename of saved figures 
-
-# allele spectrum
-C_f = [1-C_f0] + [x*C_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
-R_f = [1-R_f0] + [x*R_f0 for x in [0.9, 0.02, 0.02, 0.02, 0.02, 0.02]]
-#end
-
-#file log/reichSimulator.py
-from simuOpt import setOptions
-setOptions(alleleType='long')
-from simuPOP import *
-
-# instantaneous population growth
-def ins_exp(gen, oldSize=[]):
-    if gen < burnin:
-        return [initSize]
-    else:
-        return [finalSize]
-
-def simulate(incScenario):
-    simu = simulator(                                        # create a simulator
-        population(size=incScenario(0), loci=[1,1],
-            infoFields=['fitness']),                         # inital population
-        randomMating(subPopSize=incScenario)           # random mating
-    )
-
-#simulate(ins_exp)
-#end
-
-#file log/reichMutSel.py
-def simulate(incScenario):
-    simu = simulator(                       # create a simulator
-        population(size=incScenario(0), loci=[1,1],
-            infoFields=['fitness']),        # inital population
-        randomMating(subPopSize=incScenario)
-    )
-    simu.evolve(                            # start evolution
-        preOps=[                            # operators that will be applied before evolution
-            # initialize locus 0 (for common disease)
-            initByFreq(loci=[0], alleleFreq=C_f),
-            # initialize locus 1 (for rare disease)
-            initByFreq(loci=[1], alleleFreq=R_f),
-        ],
-        ops=[                               # operators that will be applied at each gen
-            # mutate: k-alleles mutation model
-            kamMutator(rate=mu, maxAllele=max_allele),
-            # selection on common and rare disease,
-            mlSelector([                # multiple loci - multiplicative model
-                maSelector(loci=0, fitness=[1,1,1-C_s], wildtype=[0]),
-                maSelector(loci=1, fitness=[1,1,1-R_s], wildtype=[0])
-            ], mode=SEL_Multiplicative),
-        ],
-        gen = endGen
-    )
-
-#simulate(ins_exp)
-#end
-
-
-
-
-## 
-## #file log/expr.log
-## simu = simulator(population(10), randomMating(), rep=2)
-## # evaluate an expression in different areas
-## print simu.vars(0)
-## print simu.population(0).evaluate("gen+1")
-## # a statement (no return value)
-## simu.population(0).execute("myRep=2+rep*rep")
-## simu.population(1).execute("myRep=2*rep")
-## print simu.vars(0)
-## simu.evolve(
-##     ops=[ pyExec("myRep=2+rep*rep") ],
-##     gen=1)
-## print simu.vars(0)
-## #end
-## 
-## 
-## # Note that I can not use pop now, since it is
-## # obtained from simu.population(0) which is invalid now.
-#### 
-## #file log/operatoroutputexpr.log
-## outfile="'>>a'+str(rep)+'.txt'"
-## simu.evolve(
-##   ops = [
-##     stat(alleleFreq=[0]),
-##     pyEval('alleleFreq[0][0]', outputExpr=outfile)
-##   ],
-##   gen=1
-## )
-## print open("a0.txt").read()
-## print open("a1.txt").read()
-## #end
-## 
-## #file log/varPlotter.log
-## from simuUtil import *
-## from simuRPy import *
-## 
-## simu = simulator(
-##     population(size=[50, 50, 100], ploidy=2, loci=[3, 4], infoFields=['migrate_to']),
-##     randomMating(), rep=4)
-## 
-## # migrate
-## migr = migrator([[0, .2, .1], [.25, 0, .1], [.1, .2, 0]],
-##     mode=ByProbability)
-## # and count the size of subpopulations
-## stat = stat(popSize=1, stage=PreMating)
-## # plot subPopSize. 
-## simu.evolve(
-##     ops = [
-##         migr, 
-##         stat,
-##         varPlotter('subPopSize', numRep=4, byRep=1, 
-##             varDim=3, win=10, title='subPop size', saveAs='log/simuDemo')
-##     ],
-##     gen=30
-## )
-## 
-## #end
-## #PS /usr/bin/convert log/simuDemo16.eps log/simuDemo16.png
-## #PS /bin/rm -f log/simuDemo*.eps
-## 
-## 
-## #file log/expcomplex.log
-## #
-## 
-## numSubPop = 100         # number of archipelagos
-## numFamilies = 10        # real simulation uses 1000
-## numOffspring = 4     # kind of family size
-## numReplicate = 1
-## loci = [20]*20            # 400 loci on 20 chromosomes
-## endGen = 10                 # should be at leat 1000
-## maxAllele = 30
-## mutationRate = 0.001
-## recombinationRate = 0.02
-## 
-## popSize = numFamilies*numOffspring*numSubPop
-## subPopSize = [numFamilies*numOffspring]*numSubPop
-## 
-## # intializer
-## init = initByFreq( alleleFreq=[1./maxAllele]*maxAllele )
-## 
-## # migration: island model
-## #     by proportion, .1 to all others
-## #
-## migrRate = .1
-## # rate[i->i] will be ignored so we can do the following
-## migrRates = [[migrRate/(numSubPop-1)]*numSubPop]*numSubPop 
-## migrMode = ByProbability
-## #
-## migrate = migrator(migrRates, mode=migrMode)
-## 
-## # mutation
-## mutate = kamMutator(rate=mutationRate, maxAllele=maxAllele)
-## 
-## # recombination
-## recombine = recombinator( rate = recombinationRate )
-## 
-## # create a simulator 
-## simu = simulator(
-##     population(size=subPopSize, ploidy=2, loci=loci),
-##     randomMating(numOffspring = numOffspring,
-##                          subPopSize=subPopSize) )
-## #
-## # evolve
-## simu.evolve([
-##     migrate, 
-##     recombine, 
-##     mutate,
-##     pyEval(r"gen", rep=0),    # report progress
-##     endl(rep=-1)
-##     ],
-##     preOps=[init],
-##     gen=endGen)
-## 
-## 
-## #end
-
-
-#### 
