@@ -111,10 +111,6 @@ def splitFile(outputFile, runCommand=True):
                     if 'Error' in line:
                         print >> sys.stderr, " * * * * * Error is encounted in this file (this is perhaps intentional)"
                 else:
-                    print >> out, '#!/usr/bin/env python'
-                    print >> out, 'from simuPOP import *'
-                    print >> out, 'rng().setSeed(12345)'
-                    print >> out
                     print >> out, line,
                 first = False
             else:
