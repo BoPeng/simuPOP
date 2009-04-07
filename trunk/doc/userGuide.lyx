@@ -13519,34 +13519,18 @@ par.saveConfig('file.cfg')
 
 to save the current configuration to a file so that the same parameters
  could be retrieved later using parameter 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
+\family typewriter
 --config file.cfg
-\end_layout
-
-\end_inset
-
+\family default
 .
 \end_layout
 
 \begin_layout Standard
 After simply parameter validation, the main simulation function can be called.
  This example uses 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
+\family typewriter
 simuCDCV(*par.asList())
-\end_layout
-
-\end_inset
-
+\family default
  because the parameter list in the 
 \family typewriter
 par
@@ -13632,17 +13616,9 @@ Parameter input dialog of the simuCDCV script
 \begin_layout Enumerate
 The help message of this script could be displayed using the Help button
  of the parameter input dialog, or using command 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
+\family typewriter
 simuCDCV.py -h
-\end_layout
-
-\end_inset
-
+\family default
 .
  The help message is displayed in Example 
 \begin_inset CommandInset ref
