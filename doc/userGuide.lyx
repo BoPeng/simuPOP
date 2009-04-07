@@ -13698,6 +13698,14 @@ useDefault
 True
 \family default
  can be ignored if the default parameter is used.
+ In addition, parameter 
+\family typewriter
+--optimized
+\family default
+ could be used to load the optimized version of a simuPOP module.
+ For this particular configuration, the optimized module is 30% faster (62s
+ vs.
+ 40s) than the standard module.
 \end_layout
 
 \begin_layout Enumerate
