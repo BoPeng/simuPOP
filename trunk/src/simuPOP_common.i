@@ -323,6 +323,8 @@ def new_population(self, size=[], ploidy=2, loci=[], chromTypes=[],
         sp = [size]
     elif type(size) in [types.TupleType, types.ListType]:
         sp = size
+    else:
+        raise exceptions.TypeError('Parameter size should be an integer or a list of integers, %s given.' % size)
     if type(infoFields) not in (type([]), type(())):
         raise exceptions.ValueError('infoFields needs to be an array')
     ld = lociPos
