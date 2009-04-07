@@ -307,7 +307,7 @@ public:
 
 
 	/** return an editable array (a \c carrary of legnth
-	 *  <tt>numLoci(</tt><em>chrom</em><tt>)</tt>) that represents all alleles
+	 *  <tt>numLoci(chrom)</tt>) that represents all alleles
 	 *  on chromosome \e chrom of the <em>p</em>-th homologous set of
 	 *  chromosomes.
 	 *  <group>2-genotype</group>
@@ -354,7 +354,7 @@ public:
 	/** Fill the genotype of chromosome \e chrom on the <em>p</em>-th
 	 *  homologous set of chromosomes using a list of alleles \e geno.
 	 *  \c geno will be reused if its length is less than
-	 *  <tt>mumLoci(</tt><em>chrom</em><tt>)</tt>.
+	 *  <tt>numLoci(chrom)</tt>.
 	 * <group>2-genotype</group>
 	 */
 	void setGenotype(vectora geno, UINT p, UINT chrom)

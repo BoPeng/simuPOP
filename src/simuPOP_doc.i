@@ -2338,7 +2338,7 @@ Details:
 
     Fill the genotype of chromosome chrom on the p-th homologous set
     of chromosomes using a list of alleles geno. geno will be reused
-    if its length is less than mumLoci(chrom).
+    if its length is less than numLoci(chrom).
 
 "; 
 
@@ -5823,8 +5823,9 @@ Arguments:
     chromNames:     A list of chromosome names. Default to chrom1,
                     chrom2, ... etc.
     alleleNames:    A list of allele names for all markers. For
-                    example, alleleNames=('A','C','T','G') names
-                    allele 0 -- 3A, C, T, and G respectively.
+                    example, alleleNames=('A','C','T','G') gives names
+                    A, C, T, and G to alleles 0, 1, 2, and 3
+                    respectively.
     lociNames:      A list or a matrix (separated by chromosomes) of
                     names for each locus. Default to \"locX-Y\" where X
                     and Y are 1-based chromosome and locus indexes,
@@ -5838,7 +5839,9 @@ Arguments:
 
 Note:
 
-    simuPOP does not yet support locus-specific allele names.
+    simuPOP does not yet support locus-specific allele names. If this
+    information is very important, you can save allele names in the
+    local namespace of a population.
 
 "; 
 

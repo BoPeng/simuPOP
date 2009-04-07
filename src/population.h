@@ -114,8 +114,8 @@ public:
 	 *
 	 *  \param size A list of subpopulation sizes. The length of this list
 	 *    determines the number of subpopulations of this population. If
-	 *    there is no subpopulation, <em>size</em><tt>=[popSize]</tt> can be
-	 *    written as <em>size</em><tt>=popSize</tt>.
+	 *    there is no subpopulation, <tt>size=[popSize]</tt> can be
+	 *    written as <tt>size=popSize</tt>.
 	 *  \param ploidy Number of homologous sets of chromosomes. Default to
 	 *    \c 2 (diploid). For efficiency considerations, all chromosomes have
 	 *    the same number of homologous sets, even if some customized
@@ -155,8 +155,8 @@ public:
 	 *  \param chromNames A list of chromosome names. Default to \c chrom1,
 	 *    \c chrom2, ... etc.
 	 *  \param alleleNames A list of allele names for all markers. For example,
-	 *    <tt>alleleNames=('A','C','T','G')</tt> names allele \c 0 --
-	 *    \c 3 \c A, \c C, \c T, and \c G respectively.
+	 *    <tt>alleleNames=('A','C','T','G')</tt> gives names \c A, \c C, \c T,
+	 *    and \c G to alleles \c 0, \c 1, \c 2, and \c 3 respectively.
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
 	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
 	 *    chromosome and locus indexes, respectively. Loci names will be
@@ -166,7 +166,9 @@ public:
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
 	 *
-	 *  \note simuPOP does not yet support locus-specific allele names.
+	 *  \note simuPOP does not yet support locus-specific allele names. If this
+	 *  information is very important, you can save allele names in the local
+	 *  namespace of a population.
 	 */
 	population(const vectorlu & size = vectorlu(),
 		float ploidy = 2,
