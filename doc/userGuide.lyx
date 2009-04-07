@@ -1678,6 +1678,24 @@ SIMUOPTIMIZED
  can also be used.
 \end_layout
 
+\begin_layout Note
+Please do not make use of exceptions raised by simuPOP functions to direct
+ the logic of your script (e.g.
+ use of a 
+\family typewriter
+try ...
+ except ...
+
+\family default
+ statement around function 
+\family typewriter
+infoIdx
+\family default
+ to find a valid information field).
+ Because the optimized modules do not raise these exceptions, such a script
+ may crash or yield invalid results when the optimized module is used.
+\end_layout
+
 \begin_layout Subsection
 Random number generator
 \end_layout
