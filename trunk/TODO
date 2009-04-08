@@ -9,6 +9,9 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 
 * Go through each function and add support for subpopulation names.
 
+* Move largePedigreeSampler and functions in misc.h/cpp to simuUtil or even
+	online simuPOP cookbook.
+
 * For each operator,
   - Check applicability (haploid, diploid, etc), and implement it in
 	isCompatible().
@@ -31,17 +34,8 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 * Remove most functions from simuUtil.py and remove hapMapUtil.py. Remove
   simuViewPop.py. Carefully document others.
 
-* Remove the examples directory.
-
 * Implement a demography class that return a demographic function by adding
   'events' to a demographic model.
-
-* Move genotype producing code to another during mating operator.
-
-* Add ops option to mating schemes so that each mating scheme can use
-  its own during-mating operators.
-
-* Redefine selfing, making it randomMating + selfing operator.
 
 * Define an operator to handle customized operators.
 
@@ -63,4 +57,8 @@ After 1.0,
 * investigate the potential of python image module. See if it is easy to install and support
 
 * A real GUI other than the tk-based simple parameter dialog
+
+* Allow parameter loci of operators to take locus name because loci index might change
+	as a result of some operator.
+
 
