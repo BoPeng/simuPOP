@@ -582,6 +582,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	if (!m_replacement)
 		std::random_shuffle(m_index.begin(), m_index.end());
 
+	m_shift = pop.subPopBegin(sp);
 	m_initialized = true;
 }
 
@@ -600,9 +601,10 @@ parentChooser::individualPair randomParentChooser::chooseParents(RawIndIterator 
 	individual * ind = NULL;
 	if (m_index.empty()) {
 		if (m_selection)
-			ind = & * (basePtr + m_sampler.get());
+			// basePtr points to the beginning of the population, not subpopulation
+			ind = & * (basePtr + m_shift + m_sampler.get());
 		else
-			ind = & * (basePtr + rng().randInt(m_size));
+			ind = & * (basePtr + m_shift + rng().randInt(m_size));
 	} else {
 		if (m_selection)
 			ind = & * (m_index[m_sampler.get()]);
@@ -1024,6 +1026,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	DBG_FAILIF(!m_replacement && m_selection, ValueError,
 		"Selection is not allowed in random sample without replacement");
 
+	m_shift = pop.subPopBegin(sp);
 	m_initialized = true;
 }
 
