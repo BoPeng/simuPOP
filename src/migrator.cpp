@@ -266,6 +266,8 @@ bool splitSubPops::apply(population & pop)
 			vectorlu sizes;
 			for (size_t i = 0; i < m_proportions.size(); ++i)
 				sizes.push_back(static_cast<ULONG>(pop.subPopSize(sp) * m_proportions[i]));
+			// floating point problem.
+			sizes[m_proportions.size() - 1] += pop.subPopSize(sp) - accumulate(sizes.begin(), sizes.end(), 0LU);
 			pop.splitSubPop(sp, sizes);
 		} else {
 			// using an information field
