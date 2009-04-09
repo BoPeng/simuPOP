@@ -426,7 +426,7 @@ public:
 	randomParentChooser(bool replacement = true,
 		const string & selectionField = "fitness") :
 		parentChooser(selectionField), m_replacement(replacement),
-		m_index(0), m_chosen(0), m_sampler(rng())
+		m_index(0), m_chosen(0), m_sampler(rng()), m_size(0), m_shift(0)
 	{
 	}
 
