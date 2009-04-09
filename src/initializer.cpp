@@ -40,14 +40,13 @@ bool initSex::apply(population & pop)
 	for (; sp != sp_end; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = pop.indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator right = pop.indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		IndIterator ind = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
 		size_t sexSz = m_sex.size();
 		if (m_sex.empty())
-			for (; ind != right; ++ind)
+			for (; ind.valid(); ++ind)
 				ind->setSex(rng().randUniform01() < m_maleFreq ? Male : Female);
 		else
-			for (size_t idx = 0; ind != right; ++ind, ++idx)
+			for (size_t idx = 0; ind.valid(); ++ind, ++idx)
 				ind->setSex(m_sex[idx % sexSz] == 1 ? Male : Female);
 	}
 	return true;
@@ -121,10 +120,9 @@ bool initByFreq::apply(population & pop)
 		// will go through virtual subpopulation if sp is virtual
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator left = pop.indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator it = pop.indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator right = pop.indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		for (; it != right; ++it) {
+		IndIterator left = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		IndIterator it = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for (; it.valid(); ++it) {
 			if (!m_identicalInds || it == left) {
 				for (vectorlu::iterator loc = loci.begin(); loc != loci.end(); ++loc)
 					for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p)
@@ -211,9 +209,8 @@ bool initByValue::apply(population & pop)
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
 		// will go through virtual subpopulation if sp is virtual
-		IndIterator it = pop.indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator right = pop.indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		for (; it != right; ++it) {
+		IndIterator it = pop.indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for (; it.valid(); ++it) {
 			if (m_value[0].size() == loci.size()) { // for each ploidy
 				for (vectorlu::iterator p = ploidy.begin(); p != ploidy.end(); ++p) {
 					vectori & value = m_proportion.empty() ?

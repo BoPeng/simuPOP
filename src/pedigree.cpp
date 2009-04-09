@@ -296,7 +296,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			useAncestralGen(ans);
 			// if top generation, no information about sibling
 			if (ans == ancestralGens()) {
-				for (IndIterator it = indBegin(); it.valid(); ++it)
+				for (IndIterator it = indIterator(); it.valid(); ++it)
 					for (size_t i = 0; i < maxSibling; ++i)
 						it->setInfo(-1, siblingIdx[i]);
 				continue;
@@ -399,7 +399,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 	vectoru numResult(popSize(), 0);
 	UINT maxResult = resultIdx.size();
 	// clear values
-	for (IndIterator ind = indBegin(); ind.valid(); ++ind)
+	for (IndIterator ind = indIterator(); ind.valid(); ++ind)
 		for (size_t i = 0; i < maxResult; ++i)
 			ind->setInfo(-1, resultIdx[i]);
 	// convert pathFields to pathIdx
@@ -415,7 +415,7 @@ bool pedigree::traceRelatives(const vectoru & pathGen,
 		sexes[i] = static_cast<SexChoice>(pathSex[i]);
 
 	ULONG idx = 0;
-	for (IndIterator ind = indBegin(); ind.valid(); ++ind, ++idx) {
+	for (IndIterator ind = indIterator(); ind.valid(); ++ind, ++idx) {
 		// start from one individual from pathGen[0]
 		Sex mySex = ind->sex();
 		vectorlu inds = vectorlu(1, idx);

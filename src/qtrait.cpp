@@ -46,7 +46,7 @@ bool quanTrait::apply(population & pop)
 
 		// we need info to be in order
 		IndInfoIterator traitIt = pop.infoBegin(idx);
-		for (IndIterator it = pop.indBegin(); it.valid(); ++it)
+		for (IndIterator it = pop.indIterator(); it.valid(); ++it)
 			*traitIt++ = qtrait(& * it) ;
 	}
 	pop.useAncestralGen(0);

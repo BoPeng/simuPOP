@@ -143,9 +143,8 @@ bool infoEval::apply(population & pop)
 	for ( ; sp != spEnd; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		for (; ind != indEnd; ++ind) {
+		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for (; ind.valid(); ++ind) {
 			string res = evalInfo(& * ind, false) ;
 			if (!this->noOutput() ) {
 				ostream & out = this->getOstream(pop.dict());
@@ -195,9 +194,8 @@ bool infoExec::apply(population & pop)
 	for ( ; sp != spEnd; ++sp) {
 		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		for (; ind != indEnd; ++ind) {
+		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for (; ind.valid(); ++ind) {
 			switch (m_simpleStmt.operation()) {
 			case NoOperation:
 				evalInfo(& * ind, true);
@@ -369,7 +367,7 @@ bool statNumOfMale::apply(population & pop)
 	ULONG numOfMale = 0;
 	for (size_t sp = 0; sp < numSP; ++sp) {
 		ULONG n = 0;
-		for (IndIterator it = pop.indBegin(sp); it.valid(); ++it) {
+		for (IndIterator it = pop.indIterator(sp); it.valid(); ++it) {
 			if (it->sex() == Male)
 				n++;
 		}
@@ -420,8 +418,10 @@ bool statNumOfAffected::apply(population & pop)
 	m_numOfUnaffected.resize(numSP + 1);
 	if (m_evalInSubPop) {
 		for (size_t sp = 0; sp < numSP; ++sp) {
-			ULONG n = count_if(pop.indBegin(sp), pop.indEnd(sp),
-				isAffected<individual>());
+            ULONG n = 0;
+            for (IndIterator it = pop.indIterator(sp); it.valid(); ++it)
+                if (it->affected())
+                    ++n;
 			numOfAffected += n;
 			m_numOfAffected[sp] = n;
 			if (m_output_numOfAffected)
@@ -534,12 +534,11 @@ bool statAlleleFreq::apply(population & pop)
 				num.resize(2, 0);
 
 			// go through all alleles
-			IndAlleleIterator a = pop.alleleBegin(loc, sp);
-			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp);
+			IndAlleleIterator a = pop.alleleIterator(loc, sp);
 			// use allAllelel here because some marker does not have full number
 			// of alleles (e.g. markers on chromosome X and Y).
 			ULONG allAllele = 0;
-			for (; a != aEnd; ++a) {
+			for (; a.valid(); ++a) {
 				if (AlleleUnsigned(*a) >= num.size())
 					num.resize(*a + 1, 0);
 				num[*a]++;
@@ -690,9 +689,9 @@ bool statHeteroFreq::apply(population & pop)
 
 			// go through all alleles
 			//?>> \todo here we assume diploid population
-			IndAlleleIterator a = pop.alleleBegin(loc, sp);
-			IndAlleleIterator aEnd = pop.alleleEnd(loc, sp);
-			for (; a != aEnd; a += 2) {
+            // FIXME: alleleIterator will jump over chromosome x and Y etc.
+			IndAlleleIterator a = pop.alleleIterator(loc, sp);
+			for (; a.valid(); a += 2) {
 				if (AlleleUnsigned(*a) >= num.size() )
 					num.resize(*a + 1);
 
@@ -936,9 +935,8 @@ bool statGenoFreq::apply(population & pop)
 			vector<intDict> num;
 
 			// go through a single allele for all individual, all diploid
-			IndIterator it = pop.indBegin(sp);
-			IndIterator itEnd = pop.indEnd(sp);
-			for (; it != itEnd; ++it) {
+			IndIterator it = pop.indIterator(sp);
+			for (; it.valid(); ++it) {
 				a = it->allele(loc, 0);
 				b = it->allele(loc, 1);
 				if (!m_phase && a > b)
@@ -1006,9 +1004,8 @@ vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, UINT wildtype)
 
 	vectorlu res(3, 0);
 
-	IndIterator it = pop.indBegin();
-	IndIterator itEnd = pop.indEnd();
-	for (; it != itEnd; ++it) {
+	IndIterator it = pop.indIterator();
+	for (; it.valid(); ++it) {
 		Allele a = ToAllele(it->allele(loc, 0));
 		Allele b = ToAllele(it->allele(loc, 1));
 		if (a == wildtype) {
@@ -1037,9 +1034,8 @@ vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, SubPopID subPop
 
 	vectorlu res(3, 0);
 
-	IndIterator it = pop.indBegin(subPop);
-	IndIterator itEnd = pop.indEnd(subPop);
-	for (; it != itEnd; ++it) {
+	IndIterator it = pop.indIterator(subPop);
+	for (; it.valid(); ++it) {
 		Allele a = ToAllele(it->allele(loc, 0));
 		Allele b = ToAllele(it->allele(loc, 1));
 		if (a == wildtype) {
@@ -1134,9 +1130,8 @@ bool statHaploFreq::apply(population & pop)
 
 			vectori sampleHap(sz);
 
-			IndAlleleIterator it = pop.alleleBegin(0, sp);
-			IndAlleleIterator itEnd = pop.alleleEnd(0, sp);
-			for (; it != itEnd; ++it) {
+			IndAlleleIterator it = pop.alleleIterator(0, sp);
+			for (; it.valid(); ++it) {
 				for (size_t hap = 0; hap < sz; ++hap)
 					sampleHap[hap] = *(it.ptr() + haplotype[hap]);
 
@@ -1791,7 +1786,7 @@ bool statAssociation::apply(population & pop)
 
 	for (UINT i = 0; i < m_loci.size(); ++i) {
 		UINT loc = m_loci[i];
-		IndIterator it = pop.indBegin();
+		IndIterator it = pop.indIterator();
 		countAlleles(it, loc, aff_0, aff_1, unaff_0, unaff_1);
 		calcChiSq(aff_0, aff_1, unaff_0, unaff_1, chisq[loc], pvalue[loc]);
 		DBG_DO(DBG_STATOR, cout << "Locus: " << loc << " ChiSq: " << chisq[loc]
@@ -1857,7 +1852,7 @@ bool statNeutrality::apply(population & pop)
 		"Locus index out of range");
 
 	pop.removeVar(Neutra_Pi_String);
-	IndIterator it = pop.indBegin();
+	IndIterator it = pop.indIterator();
 	pop.setDoubleVar(Neutra_Pi_String, calcPi(it));
 	return true;
 }

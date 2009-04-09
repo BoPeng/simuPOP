@@ -51,7 +51,7 @@ bool basePenetrance::apply(population & pop)
 			UINT idx = pop.infoIdx(infoField(0));
 			penIt = pop.infoBegin(idx);
 		}
-		for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
+		for (IndIterator it = pop.indIterator(); it.valid(); ++it) {
 			p = penet(& * it);
 
 			if (rng().randUniform01() < p)

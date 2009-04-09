@@ -101,10 +101,8 @@ UINT dumper::displayGenotype(const population & pop, const subPopList & subPops,
 
 		if (sp->isVirtual())
 			const_cast<population &>(pop).activateVirtualSubPop(*sp, IteratableInds);
-		IndIterator ind = const_cast<population &>(pop).indBegin(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-		IndIterator indEnd = const_cast<population &>(pop).indEnd(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
-
-		for ( ; ind != indEnd; ++ind, ++count) {
+		IndIterator ind = const_cast<population &>(pop).indIterator(sp->subPop(), sp->isVirtual() ? IteratableInds : AllInds);
+		for ( ; ind.valid(); ++ind, ++count) {
 			out << setw(4) << (& * ind - & * pop.rawIndBegin()) << ": ";
 			ind->display(out, m_width, m_loci);
 			out << endl;

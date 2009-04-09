@@ -38,7 +38,7 @@ namespace simuPOP {
 //
 //  // for the top generation, no parents
 //  pop.useAncestralGen(pop.ancestralGens());
-//  for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
+//  for (IndIterator it = pop.indIterator(); it.valid(); ++it) {
 //      // -1 means no parents.
 //      // we do not use 0 since 0 is valid
 //      it->setInfo(-1, fatherIdx);
@@ -51,7 +51,7 @@ namespace simuPOP {
 //      vectorf oldindex = pop.indInfo(indexIdx);
 //      // children
 //      pop.useAncestralGen(ans);
-//      for (IndIterator it = pop.indBegin(); it.valid(); ++it) {
+//      for (IndIterator it = pop.indIterator(); it.valid(); ++it) {
 //          // what is the idx of my parents now?
 //          vectorf::iterator tmp = find(oldindex.begin(), oldindex.end(), it->info(fatherIdx));
 //          // no parents
@@ -570,7 +570,7 @@ namespace simuPOP {
 //  for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
 //      pop.useAncestralGen(1);
 //      vectori off;
-//      for (IndIterator it = pop.indBegin(sp); it.valid(); ++it) {
+//      for (IndIterator it = pop.indIterator(sp); it.valid(); ++it) {
 //          // individual already belongs to another family
 //          if (it->info(pedindexIdx) != -1.)
 //              continue;

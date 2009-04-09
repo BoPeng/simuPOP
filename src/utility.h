@@ -170,23 +170,6 @@ unsigned pow3(unsigned n);
 
 namespace simuPOP {
 
-/// CPPONLY operator to tell the affected status of an individual
-template<class individual>
-class isAffected
-{
-public:
-	isAffected()
-	{
-	};
-
-	bool operator()(const individual & ind)
-	{
-		return ind.affected();
-	}
-
-
-};
-
 // ////////////////////////////////////////////////////////////
 // / Parameter polymorphism
 // ////////////////////////////////////////////////////////////
