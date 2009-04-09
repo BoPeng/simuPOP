@@ -153,14 +153,14 @@ bool migrator::apply(population & pop)
 			// restore information fields set by user so that other individuals
 			// can stay at their original subpopulation.
 			if (!oldInfo.empty()) {
-				for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind)
+				for (IndIterator ind = pop.indIterator(spFrom); ind.valid();  ++ind)
 					ind->setInfo(oldInfo[& * ind - & * pop.rawIndBegin()], info);
 			}
 		} else if (m_mode == ByProbability) {
 			weightedSampler ws(rng(), m_rate[from]);
 
 			// for each individual, migrate according to migration probability
-			for (IndIterator ind = pop.indBegin(spFrom); ind.valid();  ++ind) {
+			for (IndIterator ind = pop.indIterator(spFrom); ind.valid();  ++ind) {
 				//toIndex = rng().randIntByFreq( rateSize, &m_rate[from][0] ) ;
 				toIndex = ws.get();
 
@@ -201,7 +201,7 @@ bool migrator::apply(population & pop)
 				toIndices[k++] = spFrom;
 
 			random_shuffle(toIndices.begin(), toIndices.end());
-			IndIterator ind = pop.indBegin(spFrom);
+			IndIterator ind = pop.indIterator(spFrom);
 			// set info
 			for (UINT i = 0; ind.valid(); ++i, ++ind)
 				// The previous migration_to value, if set by a previous vsp, will be overridden.

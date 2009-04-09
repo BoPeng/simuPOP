@@ -351,8 +351,6 @@ private:
 	bool m_selection;
 	/// starting individual
 	IndIterator m_begin;
-	/// ending individual
-	IndIterator m_end;
 	/// current individual
 	IndIterator m_ind;
 };

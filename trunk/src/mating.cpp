@@ -282,9 +282,8 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 			vectorf curFreq(numSP, 0);
 			bool hasAllele = false;
 			for (size_t sp = 0, n = 0; sp < numSP; ++sp) {
-				IndAlleleIterator a = const_cast<population &>(pop).alleleBegin(locus, sp);
-				IndAlleleIterator aEnd = const_cast<population &>(pop).alleleEnd(locus, sp);
-				for (; a != aEnd; ++a)
+				IndAlleleIterator a = const_cast<population &>(pop).alleleIterator(locus, sp);
+				for (; a.valid(); ++a)
 					if (AlleleUnsigned(*a) == allele)
 						n++;
 				hasAllele = hasAllele || n > 0;
@@ -317,9 +316,8 @@ void controlledOffspringGenerator::getExpectedAlleles(const population & pop,
 				Allele allele = ToAllele(m_alleles[i]);
 				ULONG n = 0;
 				// go through all alleles
-				IndAlleleIterator a = const_cast<population &>(pop).alleleBegin(locus, sp);
-				IndAlleleIterator aEnd = const_cast<population &>(pop).alleleEnd(locus, sp);
-				for (; a != aEnd; ++a) {
+				IndAlleleIterator a = const_cast<population &>(pop).alleleIterator(locus, sp);
+				for (; a.valid(); ++a) {
 					if (AlleleUnsigned(*a) == allele)
 						n++;
 				}
@@ -489,8 +487,7 @@ UINT controlledOffspringGenerator::generateOffspring(population & pop, individua
 
 void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 {
-	m_begin = pop.indBegin(sp);
-	m_end = pop.indEnd(sp);
+	m_begin = pop.indIterator(sp);
 	m_ind = m_begin;
 	m_initialized = true;
 }
@@ -498,7 +495,7 @@ void sequentialParentChooser::initialize(population & pop, SubPopID sp)
 
 parentChooser::individualPair sequentialParentChooser::chooseParents(RawIndIterator)
 {
-	if (m_ind == m_end)
+	if (!m_ind.valid())
 		m_ind = m_begin;
 	return parentChooser::individualPair(& * m_ind++, NULL);
 }
@@ -513,7 +510,7 @@ void sequentialParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_maleIndex.clear();
 	m_femaleIndex.clear();
 
-	IndIterator it = pop.indBegin(subPop);
+	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
 		if (it->sex() == Male) {
 			m_numMale++;
@@ -562,7 +559,7 @@ void randomParentChooser::initialize(population & pop, SubPopID sp)
 	// It is a good idea to cache IndIterators. This is however inefficient
 	// for non-virtual populations
 	if (pop.hasActivatedVirtualSubPop(sp) && !m_replacement) {
-		IndIterator it = pop.indBegin(sp);
+		IndIterator it = pop.indIterator(sp);
 		for (; it.valid(); ++it)
 			m_index.push_back(it.rawIter());
 	}
@@ -620,7 +617,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_numMale = 0;
 	m_numFemale = 0;
 
-	IndIterator it = pop.indBegin(subPop);
+	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
 		if (it->sex() == Male)
 			m_numMale++;
@@ -643,7 +640,7 @@ void randomParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_numMale = 0;
 	m_numFemale = 0;
 
-	it = pop.indBegin(subPop);
+	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
 		if (it->sex() == Male) {
 			m_maleIndex[m_numMale] = it.rawIter();
@@ -725,7 +722,7 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_numFemale = 0;
 	m_polyCount = 0;
 
-	IndIterator it = pop.indBegin(subPop);
+	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
 		if (it->sex() == Male)
 			m_numMale++;
@@ -748,7 +745,7 @@ void polyParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_numMale = 0;
 	m_numFemale = 0;
 
-	it = pop.indBegin(subPop);
+	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
 		if (it->sex() == Male) {
 			m_maleIndex[m_numMale] = it.rawIter();
@@ -837,7 +834,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 		useInfo = true;
 	}
 
-	IndIterator it = pop.indBegin(subPop);
+	IndIterator it = pop.indIterator(subPop);
 	for (; it.valid(); ++it) {
 		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
 		    && it->info(info_id) == 0.)
@@ -866,7 +863,7 @@ void alphaParentsChooser::initialize(population & pop, SubPopID subPop)
 	m_numMale = 0;
 	m_numFemale = 0;
 
-	it = pop.indBegin(subPop);
+	it = pop.indIterator(subPop);
 	for (; it.valid(); it++) {
 		if (hasAlphaMale && useInfo && it->sex() == m_alphaSex
 		    && it->info(info_id) == 0.)
@@ -987,7 +984,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	// In a virtual subpopulation, because m_begin + ... is **really** slow
 	// It is a good idea to cache IndIterators. This is however inefficient
 	// for non-virtual populations
-	IndIterator it = pop.indBegin(sp);
+	IndIterator it = pop.indIterator(sp);
 	vectorf fitness;
 	UINT fit_id = 0;
 	if (m_selection)
@@ -1008,7 +1005,7 @@ void infoParentsChooser::initialize(population & pop, SubPopID sp)
 	m_degenerate = m_index.empty();
 	DBG_WARNING(m_degenerate, "Parents are chosen randomly because there is no valid index.");
 	if (m_degenerate) {
-		for (it = pop.indBegin(sp); it.valid(); ++it) {
+		for (it = pop.indIterator(sp); it.valid(); ++it) {
 			m_index.push_back(it.rawIter());
 			if (m_selection)
 				fitness.push_back(it->info(fit_id));
@@ -1085,7 +1082,7 @@ void pyParentsChooser::initialize(population & pop, SubPopID sp)
 #ifndef OPTIMIZED
 	m_size = pop.subPopSize(sp);
 #endif
-	m_begin = pop.indBegin(sp);
+	m_begin = pop.indIterator(sp);
 
 	PyObject * popObj = pyPopObj(static_cast<void *>(&pop));
 	// if pop is valid?

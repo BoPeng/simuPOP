@@ -3,6 +3,7 @@ ChangeLog of simuPOP
 version 0.9.4 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - BUG: Fix the handling of proportions in splitSubPops.
   - BUG: Fix randomParentChooser when there is subpopulation structure.
+  - BUG: Fix a bug that concerns mutation at invalid (unused) locations.
 
 version 0.9.3 - (Rev 2601) Apr 3, 2009
   - BUG: Fix a bug with population::removeLoci when given keep loci are not in order.

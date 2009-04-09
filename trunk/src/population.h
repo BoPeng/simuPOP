@@ -588,17 +588,9 @@ public:
 
 
 	/// CPPONLY individual iterator: without subPop info
-	IndIterator indBegin(IterationType type = VisibleInds)
+	IndIterator indIterator(IterationType type = VisibleInds)
 	{
 		return IndIterator(m_inds.begin(), m_inds.end(),
-			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
-	}
-
-
-	/// CPPONLY individual iterator: without subPop info
-	IndIterator indEnd(IterationType type = VisibleInds)
-	{
-		return IndIterator(m_inds.end(), m_inds.end(),
 			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
@@ -606,7 +598,7 @@ public:
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	IndIterator indBegin(UINT subPop, IterationType type = VisibleInds)
+	IndIterator indIterator(UINT subPop, IterationType type = VisibleInds)
 	{
 		CHECKRANGESUBPOP(subPop);
 		DBG_FAILIF(hasActivatedVirtualSubPop(subPop) && type == IteratableInds,
@@ -618,54 +610,20 @@ public:
 	}
 
 
-	/// CPPONLY individual iterator: with subPop info.
-	IndIterator indEnd(UINT subPop, IterationType type = VisibleInds)
-	{
-		CHECKRANGESUBPOP(subPop);
-
-		return IndIterator(m_inds.begin() + m_subPopIndex[subPop + 1],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
-	}
-
-
 	/** CPPONLY individual iterator: without subPop info
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indBegin(IterationType type = VisibleInds) const
+	ConstIndIterator indIterator(IterationType type = VisibleInds) const
 	{
 		return ConstIndIterator(m_inds.begin(), m_inds.end(),
 			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
 	}
 
 
-	/** CPPONLY individual iterator: without subPop info
-	 *  It is recommended to use it.valid(), instead of it != indEnd()
-	 */
-	ConstIndIterator indEnd(IterationType type = VisibleInds) const
-	{
-		return ConstIndIterator(m_inds.end(), m_inds.end(),
-			(type == VisibleInds && !hasActivatedVirtualSubPop()) ? AllInds : type);
-	}
-
-
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indBegin(UINT subPop, IterationType type) const
-	{
-		CHECKRANGESUBPOP(subPop);
-
-		return ConstIndIterator(m_inds.begin() + m_subPopIndex[subPop],
-			m_inds.begin() + m_subPopIndex[subPop + 1],
-			(type == VisibleInds && !hasActivatedVirtualSubPop(subPop)) ? AllInds : type);
-	}
-
-
-	/** CPPONLY individual iterator: with subPop info.
-	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
-	 */
-	ConstIndIterator indEnd(UINT subPop, IterationType type) const
+	ConstIndIterator indIterator(UINT subPop, IterationType type  = VisibleInds) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -722,7 +680,6 @@ public:
 
 
 	/** CPPONLY individual iterator: without subPop info
-	 *  It is recommended to use it.valid(), instead of it != indEnd()
 	 */
 	ConstRawIndIterator rawIndEnd() const
 	{
@@ -742,7 +699,6 @@ public:
 
 
 	/** CPPONLY individual iterator: with subPop info.
-	 * It is recommended to use it.valid(), instead of it != indEnd(sp)
 	 */
 	ConstRawIndIterator rawIndEnd(UINT subPop) const
 	{
@@ -764,19 +720,12 @@ public:
 	   subpopulations will be respected.	Therefore, it is possible to access all alleles within an
 	   subpopulation	through such iterators.
 	 */
-	IndAlleleIterator alleleBegin(UINT locus);
-
-
-	/// CPPONLY allele iterator
-	IndAlleleIterator alleleEnd(UINT locus);
+	IndAlleleIterator alleleIterator(UINT locus);
 
 
 	/// CPPONLY allele begin, for given subPop
-	IndAlleleIterator alleleBegin(UINT locus, UINT subPop);
+	IndAlleleIterator alleleIterator(UINT locus, UINT subPop);
 
-
-	///  CPPONLY allele iterator
-	IndAlleleIterator alleleEnd(UINT locus, UINT subPop);
 
 	///  CPPONLY allele iterator, go through all allels one by one, without subPop info
 	/**
@@ -1121,7 +1070,7 @@ public:
 		// if requires order, but the information is not ordered
 		// use individual based
 		if (hasActivatedVirtualSubPop() || !indOrdered())
-			return IndInfoIterator(idx, indBegin());
+			return IndInfoIterator(idx, indIterator());
 		else
 			// if not required order, or if the information is ordered
 			return IndInfoIterator(idx, m_info.begin() + idx, infoSize());
@@ -1133,7 +1082,7 @@ public:
 	{
 		CHECKRANGEINFO(idx);
 		if (hasActivatedVirtualSubPop() || !indOrdered())
-			return IndInfoIterator(idx, indEnd());
+			return IndInfoIterator(idx, IndIterator(m_inds.end(), m_inds.end(), VisibleInds));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_info.size(), infoSize());
 	}
@@ -1154,9 +1103,9 @@ public:
 		// has to adjust order because of parameter subPop
 		if (vsp.isVirtual()) {
 			activateVirtualSubPop(vsp, IteratableInds);
-			return IndInfoIterator(idx, indBegin(subPop, IteratableInds));
+			return IndInfoIterator(idx, indIterator(subPop, IteratableInds));
 		} else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
-			return IndInfoIterator(idx, indBegin(subPop));
+			return IndInfoIterator(idx, indIterator(subPop));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop] * infoSize(), infoSize());
 	}
@@ -1172,9 +1121,10 @@ public:
 
 		// has to adjust order because of parameter subPop
 		if (vsp.isVirtual())
-			return IndInfoIterator(idx, indEnd(subPop, IteratableInds));
+			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop),
+                    IteratableInds));
 		else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
-			return IndInfoIterator(idx, indEnd(subPop));
+			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop), VisibleInds));
 		else
 			return IndInfoIterator(idx, m_info.begin() + idx + m_subPopIndex[subPop + 1] * infoSize(), infoSize());
 	}

@@ -393,7 +393,7 @@ const individual & population::ancestor(ULONG ind, UINT subPop, UINT gen) const
 }
 
 
-IndAlleleIterator population::alleleBegin(UINT locus)
+IndAlleleIterator population::alleleIterator(UINT locus)
 {
 	CHECKRANGEABSLOCUS(locus);
 
@@ -403,55 +403,33 @@ IndAlleleIterator population::alleleBegin(UINT locus)
 	// use individual based
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || ct != Autosome)
-		return IndAlleleIterator(locus, indBegin());
+	    || (ct != Autosome && ct != Customized) || isHaplodiploid())
+        // this is a complex case
+		return IndAlleleIterator(locus, indIterator());
 	else
-		return IndAlleleIterator(m_genotype.begin() + locus, totNumLoci());
+        // a simplere case with straightforward iterator
+		return IndAlleleIterator(m_genotype.begin() + locus, m_genotype.end() + locus,
+            totNumLoci());
 }
-
-
-/// CPPONLY allele iterator
-IndAlleleIterator population::alleleEnd(UINT locus)
-{
-	CHECKRANGEABSLOCUS(locus);
-	int ct = chromType(chromLocusPair(locus).first);
-	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || ct != Autosome)
-		return IndAlleleIterator(locus, indEnd());
-	else
-		return IndAlleleIterator(m_genotype.begin() + locus + m_popSize * genoSize(), totNumLoci());
-}
-
 
 /// CPPONLY allele begin, for given subPop
-IndAlleleIterator population::alleleBegin(UINT locus, UINT subPop)
+IndAlleleIterator population::alleleIterator(UINT locus, UINT subPop)
 {
 	CHECKRANGEABSLOCUS(locus);
 	CHECKRANGESUBPOP(subPop);
 
 	int ct = chromType(chromLocusPair(locus).first);
+    // this is a complex case
 	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || ct != Autosome)
-		return IndAlleleIterator(locus, indBegin(subPop));
+	    || (ct != Autosome && ct != Customized) || isHaplodiploid())
+        // this is a complex case
+		return IndAlleleIterator(locus, indIterator(subPop));
 	else
-		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop] * genoSize() +
-			locus, totNumLoci());
-}
-
-
-///  CPPONLY allele iterator
-IndAlleleIterator population::alleleEnd(UINT locus, UINT subPop)
-{
-	CHECKRANGEABSLOCUS(locus);
-	CHECKRANGESUBPOP(subPop);
-
-	int ct = chromType(chromLocusPair(locus).first);
-	if (hasActivatedVirtualSubPop() || !indOrdered()
-	    || ct != Autosome)
-		return IndAlleleIterator(locus, indEnd(subPop));
-	else
-		return IndAlleleIterator(m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() +
-			locus, totNumLoci());
+        // this is a complex case
+		return IndAlleleIterator(
+            m_genotype.begin() + m_subPopIndex[subPop] * genoSize() + locus,
+            m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() + locus,
+            totNumLoci());
 }
 
 
@@ -507,10 +485,9 @@ void population::setGenotype(vectora geno, vspID subPop)
 			*(ptr++) = geno[i % sz];
 	} else {
 		activateVirtualSubPop(subPop, IteratableInds);
-		IndIterator it = indBegin(sp, IteratableInds);
-		IndIterator it_end = indEnd(sp, IteratableInds);
+		IndIterator it = indIterator(sp, IteratableInds);
 		ULONG i = 0;
-		for (; it != it_end; ++it)
+		for (; it.valid(); ++it)
 			for (GenoIterator git = it->genoBegin(); git != it->genoEnd(); ++git, ++i)
 				*git = geno[i % sz];
 	}
@@ -530,13 +507,13 @@ void population::validate(const string & msg) const
 	ConstGenoIterator ge = m_genotype.end();
 
 	if (genoSize() > 0) {
-		for (ConstIndIterator it = indBegin(); it.valid(); ++it) {
+		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
 			DBG_ASSERT(it->genoPtr() >= gb && it->genoPtr() < ge, SystemError,
 				msg + "Wrong genotype pointer");
 		}
 	}
 	if (infoSize() > 0) {
-		for (ConstIndIterator it = indBegin(); it.valid(); ++it) {
+		for (ConstIndIterator it = indIterator(); it.valid(); ++it) {
 			DBG_ASSERT(it->infoPtr() >= ib && it->infoPtr() < ie, SystemError,
 				msg + "Wrong information field pointer. (number of information fields: "
 				+ toStr(infoSize()) + ")");
@@ -651,15 +628,15 @@ void population::setSubPopByIndInfo(const string & field)
 
 	DBG_DO(DBG_POPULATION, cout << "Sorting individuals." << endl);
 	// sort individuals first
-	std::sort(indBegin(), indEnd(), indCompare(info));
+	std::sort(indIterator(), IndIterator(m_inds.end(), m_inds.end(), AllInds), indCompare(info));
 	setIndOrdered(false);
 
 	// sort individuals first
 	// remove individuals with negative index.
-	if (indBegin()->info(info) < 0) {
+	if (indIterator()->info(info) < 0) {
 		// popsize etc will be changed.
 		ULONG newPopSize = m_popSize;
-		IndIterator it = indBegin();
+		IndIterator it = indIterator();
 		for (; it.valid();  ++it) {
 			if (it->info(info) < 0)
 				newPopSize-- ;
@@ -674,9 +651,6 @@ void population::setSubPopByIndInfo(const string & field)
 		vectora newGenotype(genoSize() * newPopSize);
 		vectorinfo newInfo(newPopSize * infoSize());
 		vector<individual> newInds(newPopSize);
-
-		DBG_ASSERT(indEnd() == it + newPopSize, SystemError,
-			"Pointer misplaced. ");
 
 		// assign genotype location and set structure information for individuals
 		GenoIterator ptr = newGenotype.begin();
@@ -710,7 +684,7 @@ void population::setSubPopByIndInfo(const string & field)
 
 		// check subpop size
 		fill(m_subPopSize.begin(), m_subPopSize.end(), 0);
-		for (IndIterator it = indBegin(); it.valid();  ++it)
+		for (IndIterator it = indIterator(); it.valid();  ++it)
 			m_subPopSize[ static_cast<UINT>(it->info(info)) ]++;
 	}
 	// rebuild index
@@ -1605,7 +1579,7 @@ void population::addInfoField(const string & field, double init)
 		int oldAncPop = m_curAncestralGen;
 		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 			useAncestralGen(anc);
-			for (IndIterator ind = indBegin(); ind.valid(); ++ind)
+			for (IndIterator ind = indIterator(); ind.valid(); ++ind)
 				ind->setInfo(init, idx);
 		}
 		useAncestralGen(oldAncPop);
@@ -1624,7 +1598,7 @@ void population::addInfoField(const string & field, double init)
 			vectorinfo newInfo(is * popSize());
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
-			for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
+			for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
 				copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
 				ind->setInfoPtr(ptr);
 				ind->setGenoStruIdx(genoStruIdx());
@@ -1657,7 +1631,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
 				useAncestralGen(anc);
 
-				for (IndIterator ind = indBegin(); ind.valid(); ++ind)
+				for (IndIterator ind = indIterator(); ind.valid(); ++ind)
 					ind->setInfo(init, idx);
 			}
 			useAncestralGen(oldAncPop);
@@ -1678,7 +1652,7 @@ void population::addInfoFields(const vectorstr & fields, double init)
 			vectorinfo newInfo(is * popSize(), 0.);
 			// copy the old stuff in
 			InfoIterator ptr = newInfo.begin();
-			for (IndIterator ind = indBegin(); ind.valid(); ++ind) {
+			for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
 				copy(ind->infoBegin(), ind->infoBegin() + os, ptr);
 				ind->setInfoPtr(ptr);
 				ind->setGenoStruIdx(genoStruIdx());
@@ -1702,7 +1676,7 @@ void population::setInfoFields(const vectorstr & fields, double init)
 		useAncestralGen(anc);
 		vectorinfo newInfo(is * popSize(), init);
 		InfoIterator ptr = newInfo.begin();
-		for (IndIterator ind = indBegin(); ind.valid(); ++ind, ptr += is) {
+		for (IndIterator ind = indIterator(); ind.valid(); ++ind, ptr += is) {
 			ind->setInfoPtr(ptr);
 			ind->setGenoStruIdx(genoStruIdx());
 		}
@@ -1919,7 +1893,7 @@ void population::sortIndividuals(bool infoOnly) const
 		vectorinfo tmpInfo(m_popSize * is);
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		IndIterator ind = const_cast<population *>(this)->indBegin();
+		IndIterator ind = const_cast<population *>(this)->indIterator();
 		for (; ind.valid(); ++ind) {
 			copy(ind->infoBegin(), ind->infoEnd(), infoPtr);
 			ind->setInfoPtr(infoPtr);
@@ -1936,7 +1910,7 @@ void population::sortIndividuals(bool infoOnly) const
 		vectora::iterator it = tmpGenotype.begin();
 		vectorinfo::iterator infoPtr = tmpInfo.begin();
 
-		IndIterator ind = const_cast<population *>(this)->indBegin();
+		IndIterator ind = const_cast<population *>(this)->indIterator();
 		for (; ind.valid(); ++ind) {
 #ifdef BINARYALLELE
 			copyGenotype(ind->genoBegin(), it, sz);

@@ -1082,6 +1082,10 @@ public:
 	{
 	}
 
+	bool valid()
+	{
+		return m_useGappedIterator || m_it.valid();
+	}
 
 	// this is the most important part!
 	InfoType & operator *() const
@@ -1145,13 +1149,15 @@ private:
 typedef InformationIterator<RawIndIterator> IndInfoIterator;
 typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 
-/**
-    this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using
-    1. an IndIterator that	will skip invisible individuals, or
-    2. a gapped iterator that will run faster.
-    Note that 1, 2 should yield identical result, and 2 should be used
-    when there is no virtual subpopulation.q
+/** This class implements a C++ iterator class that iterate through
+    all alleles in a (virtual) (sub)population using
+    1. an IndIterator that will skip invisible individuals and invalid
+		alleles, or
+    2. a gapped iterator that will run faster, in the case that
+	  a): no virtual subpopulation
+	  b): not sex chromosomes
+	  c): not haplodiploid
+
  */
 template <typename T>
 class CombinedAlleleIterator
@@ -1163,28 +1169,35 @@ public:
 	typedef AlleleRef reference;
 	typedef GenoIterator pointer;
 
-
 	CombinedAlleleIterator()
 	{
 	}
 
-
-	CombinedAlleleIterator(GenoIterator ptr, UINT size)
-		: m_useGappedIterator(true), m_it(), m_ptr(ptr), m_size(size)
+	CombinedAlleleIterator(GenoIterator ptr, GenoIterator ptrEnd, UINT size)
+		: m_useGappedIterator(true), m_valid(true),
+		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
+		// ignored
+		m_it(), m_index(0), m_ploidy(0), m_chromType(0), 
+		m_haplodiploid(false), m_p(0)
 	{
+		m_valid = m_ptr != m_ptrEnd;
 	}
 
 
 	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it)
-		: m_index(idx), m_useGappedIterator(false),
-		m_it(it), m_ptr(), m_p(0), m_ploidy(0),
-		m_size(0), m_chromType(0)
+		: m_useGappedIterator(false), m_valid(true),
+		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
+		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0), 
+		m_haplodiploid(false), m_p(0)
 	{
-		if (!it.valid())
+		if (!it.valid()) {
+			m_valid = false;
 			return;
+		}
 
-		m_ploidy = it->ploidy();
 		m_size = it->totNumLoci();
+		m_ploidy = it->ploidy();
+		m_haplodiploid = it->isHaplodiploid();
 		m_chromType = it->chromType(it->chromLocusPair(idx).first);
 		// we do not know anything about customized chromosome
 		// so we just assume it is autosome.
@@ -1196,9 +1209,15 @@ public:
 				while (m_it.valid())
 					if ((++m_it)->sex() == Male)
 						break;
+				m_valid = m_it.valid();
 			}
 			m_p = 1;
 		}
+	}
+
+	bool valid()
+	{
+		return m_valid;
 	}
 
 
@@ -1223,13 +1242,15 @@ public:
 	}
 
 
-	void advance(IndividualIterator<T> & it, UINT & p)
+	void advance(IndividualIterator<T> & it, UINT & p, bool & valid)
 	{
+		DBG_ASSERT(valid, RuntimeError, "Can not advance invalid allele iterator");
 		if (m_chromType == Autosome) {
 			++p;
 			if (p == m_ploidy) {
 				p = 0;
 				++it;
+				valid = it.valid();
 			}
 		} else if (m_chromType == ChromosomeX) {
 			if (it->sex() == Female) {
@@ -1240,6 +1261,7 @@ public:
 				else {
 					p = 0;
 					++it;
+					valid = it.valid();
 				}
 			} else {
 				// male, no X1.
@@ -1247,6 +1269,7 @@ public:
 					"Male individual only has the first homologous copy of chromosome X");
 				// next individual, ploidy 0, sex does not matter.
 				++it;
+				valid = it.valid();
 			}
 		} else if (m_chromType == ChromosomeY) {
 			DBG_ASSERT(it->sex() == Male, SystemError,
@@ -1255,6 +1278,7 @@ public:
 				if ((++it)->sex() == Male)
 					break;
 			p = 1;
+			valid = it.valid();
 		}
 	}
 
@@ -1265,11 +1289,12 @@ public:
 		// save current state
 		CombinedAlleleIterator tmp(*this);
 
-		if (m_useGappedIterator)
+		if (m_useGappedIterator) {
 			m_ptr += m_size;
-		else {
+			m_valid = m_ptr != m_ptrEnd;
+		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			advance(m_it, m_p);
+			advance(m_it, m_p, m_valid);
 		}
 		return tmp;
 	}
@@ -1277,11 +1302,12 @@ public:
 
 	CombinedAlleleIterator operator++()
 	{
-		if (m_useGappedIterator)
+		if (m_useGappedIterator) {
 			m_ptr += m_size;
-		else {
+			m_valid = m_ptr != m_ptrEnd;
+		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			advance(m_it, m_p);
+			advance(m_it, m_p, m_valid);
 		}
 		return *this;
 	}
@@ -1289,17 +1315,15 @@ public:
 
 	CombinedAlleleIterator & operator+=(difference_type diff)
 	{
-		if (m_useGappedIterator)
+		if (m_useGappedIterator) {
 			m_ptr += diff * m_size;
-		else if (m_chromType == Autosome) {
-			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			m_p += diff;
-			m_it += m_p / m_ploidy;
-			m_p %= m_ploidy;
+			m_valid = m_ptr != m_ptrEnd;
+			DBG_ASSERT(m_ptr <= m_ptrEnd, SystemError,
+				"Gapped allele iterator goes out of boundary");
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			for (int i = 0; i < diff; ++i)
-				advance(m_it, m_p);
+			for (int i = 0; i < diff && m_valid; ++i)
+				advance(m_it, m_p, m_valid);
 		}
 		return *this;
 	}
@@ -1309,17 +1333,15 @@ public:
 	{
 		CombinedAlleleIterator tmp(*this);
 
-		if (m_useGappedIterator)
+		if (m_useGappedIterator) {
 			tmp.m_ptr += diff * m_size;
-		else if (m_chromType == Autosome) {
-			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			tmp.m_p += diff;
-			tmp.m_it += tmp.m_p / m_ploidy;
-			tmp.m_p %= m_ploidy;
+			tmp.m_valid = tmp.m_ptr != tmp.m_ptrEnd;
+			DBG_ASSERT(tmp.m_ptr <= tmp.m_ptrEnd, SystemError,
+				"Gapped allele iterator goes out of boundary");
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
-			for (int i = 0; i < diff; ++i)
-				advance(tmp.m_it, tmp.m_p);
+			for (int i = 0; i < diff && tmp.m_valid; ++i)
+				advance(tmp.m_it, tmp.m_p, tmp.m_valid);
 		}
 		return tmp;
 	}
@@ -1341,22 +1363,30 @@ public:
 
 
 private:
-	// index of the information field
-	UINT m_index;
 	///
 	bool m_useGappedIterator;
-	// individual iterator
-	IndividualIterator<T> m_it;
+	///
+	bool m_valid;
 	//
 	GenoIterator m_ptr;
-	// current ploidy, used in individualiterator
-	UINT m_p;
-	// overall ploidy
-	UINT m_ploidy;
+	//
+	GenoIterator m_ptrEnd;
 	// genosize
 	UINT m_size;
+	// 
+	// The second iteration method
+	// individual iterator
+	IndividualIterator<T> m_it;
+	// index of the locus
+	UINT m_index;
+	// overall ploidy
+	UINT m_ploidy;
 	// chromosome type
 	int m_chromType;
+	//
+	bool m_haplodiploid;
+	// current ploidy, used in individualiterator
+	UINT m_p;
 };
 
 

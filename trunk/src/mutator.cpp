@@ -92,16 +92,11 @@ bool mutator::apply(population & pop)
 		size_t pos = m_bt.trialFirstSucc(i);
 		if (pos != BernulliTrials::npos) {
 			do {
-#ifndef OPTIMIZED
-				// alleleBegin is *not* ordered, so the mutation is random
-				AlleleRef ptr = *(pop.alleleBegin(locus) + pos);
-				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << locus
-					                     << " of individual " << (pos / pop.ploidy()) << " from " << int(ptr));
-				mutate(ptr);
-				DBG_DO(DBG_MUTATOR, cout << " to " << int(ptr) << endl);
-#else
-				mutate(*(pop.alleleBegin(locus) + pos));
-#endif
+                IndAlleleIterator ptr = pop.alleleIterator(locus) + pos;
+                if (!ptr.valid())
+                    continue;
+				mutate(*ptr);
+				DBG_DO(DBG_MUTATOR, cout << " to " << int(*ptr) << endl);
 				m_mutCount[ locus ]++;
 			} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
 		}                                                                                           // succ.any
