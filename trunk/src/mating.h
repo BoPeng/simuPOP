@@ -301,7 +301,7 @@ public:
 	}
 
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	virtual individualPair chooseParents(RawIndIterator basePtr)
 	{
 		return individualPair(NULL, NULL);
@@ -344,7 +344,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
@@ -388,7 +388,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
@@ -441,7 +441,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 protected:
@@ -455,6 +455,8 @@ protected:
 	weightedSampler m_sampler;
 	/// individuals to choose
 	size_t m_size;
+	/// index to the subpopulation
+	size_t m_shift;
 };
 
 
@@ -497,7 +499,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
@@ -563,7 +565,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
@@ -635,7 +637,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
@@ -711,7 +713,7 @@ public:
 	/// CPPONLY
 	void initialize(population & pop, SubPopID sp);
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
@@ -793,7 +795,7 @@ public:
 	}
 
 
-	/// CPPONLY
+	/// CPPONLY Note that basePtr is the begining of population, not subpopulation sp.
 	individualPair chooseParents(RawIndIterator basePtr);
 
 private:
