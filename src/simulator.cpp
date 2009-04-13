@@ -352,7 +352,7 @@ vectoru simulator::evolve(const vectorop & ops,
 				// does not execute post mating operator
 				continue;
 			} catch (Exception e) {
-				cout << "mating or one of the during mating operator throws an exception.\n" << endl;
+				cout << "mating or one of the during mating operator throws an exception.\n\n" << e.message() << endl;
 				throw e;
 			}
 
