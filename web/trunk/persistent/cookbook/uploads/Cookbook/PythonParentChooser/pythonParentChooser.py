@@ -23,17 +23,16 @@ import random
 
 def podParentsChooser(pop, sp):
     '''Choose parents of parents from different pods'''
-    males = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Male]
-    females = [x for x in range(pop.popSize()) if pop.individual(x).sex() == Female]
-    pods = pop.indInfo('pod')
+    males = [x for x in pop.individuals() if x.sex() == Male]
+    females = [x for x in pop.individuals() if x.sex() == Female]
     while True:
         # randomly choose a male
         male = males[random.randint(0, len(males)-1)]
-        pod = pods[male]
+        pod = male.info('pod')
         # randomly choose a female from different pod
         while True:
             female = females[random.randint(0, len(females)-1)]
-            if pods[female] != pod:
+            if female.info('pod') != pod:
                 break
         yield (male, female)
 
