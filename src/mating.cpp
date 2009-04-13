@@ -217,7 +217,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 			} catch (Exception e) {
 				cout << "DuringMating operator " << (*iop)->__repr__()
 				     << " throws an exception.\n"
-					 << e.message() << "\n" << endl;
+				     << e.message() << "\n" << endl;
 				throw e;
 			}
 		}                                                                         // all during-mating operators
@@ -1122,27 +1122,9 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 		"User-defined function yield invalid value.");
 #endif
 
-	vectori parents;
-	int parent;
 
-	if (PySequence_Check(item)) {
-		PyObj_As_IntArray(item, parents);
-		DBG_ASSERT(parents.size() == 2, ValueError,
-			"Returned parents indexes should have size 2");
-#ifndef OPTIMIZED
-		DBG_ASSERT(static_cast<unsigned>(parents[0]) < m_size
-			&& static_cast<unsigned>(parents[1]) < m_size,
-			ValueError, "Returned parent index (" + toStr(parents[0])
-			+ ", and " + toStr(parents[1]) +
-			") is greater than subpopulation size " + toStr(m_size));
-#endif
-		Py_DECREF(item);
-		// FIXME: this can be really slow in a virtual population because
-		// visibility between m_begin and m_begin+parents[x] need to
-		// be checked. It should make sense to return individual directly.
-		return std::make_pair(& * (m_begin + parents[0]),
-			& * (m_begin + parents[1]));
-	} else if (PyInt_Check(item) || PyLong_Check(item)) {
+	if (PyInt_Check(item) || PyLong_Check(item)) {
+		int parent;
 		PyObj_As_Int(item, parent);
 #ifndef OPTIMIZED
 		DBG_ASSERT(static_cast<unsigned>(parent) < m_size,
@@ -1150,13 +1132,37 @@ parentChooser::individualPair pyParentsChooser::chooseParents(RawIndIterator)
 			") is greater than subpopulation size " + toStr(m_size));
 #endif
 		Py_DECREF(item);
-		// FIXME: this can be really slow in a virtual population because
-		// visibility between m_begin and m_begin+parent need to
-		// be checked. It should make sense to return individual directly.
 		return parentChooser::individualPair(& * (m_begin + parent), NULL);
-	} else
-		DBG_ASSERT(false, ValueError,
-			"Invalid type of returned parent index(es)");
+	} else if (PySequence_Check(item)) {
+		DBG_ASSERT(PySequence_Size(item) == 2, RuntimeError,
+			"Parents should be returned in the form of a sequence of two elements");
+
+		individual * parents[2];
+		for (size_t i = 0; i < 2; ++i) {
+			PyObject * v = PySequence_GetItem(item, i);
+			if (PyInt_Check(v) || PyLong_Check(v)) {
+				ULONG idx = static_cast<ULONG>(PyInt_AS_LONG(v));
+				DBG_ASSERT(idx < m_size, ValueError, "Returned parent index (" + toStr(idx) +
+					") is greater than subpopulation size " + toStr(m_size));
+				parents[i] = & * (m_begin + idx);
+			} else {
+				void * ind = pyIndPointer(v);
+				if (ind)
+					parents[i] = reinterpret_cast<individual *>(ind);
+				else
+					DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
+			}
+		}
+		Py_DECREF(item);
+		return parentChooser::individualPair(parents[0], parents[1]);
+	} else {
+		// is an individual object is returned?
+		void * ind = pyIndPointer(item);
+		if (ind)
+			return parentChooser::individualPair(reinterpret_cast<individual *>(pyIndPointer(item)), NULL);
+		else
+			DBG_ASSERT(false, ValueError, "Invalid type of returned parent.");
+	}
 	// this should not be reached
 	return parentChooser::individualPair(NULL, NULL);
 }
