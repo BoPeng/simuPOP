@@ -48,7 +48,7 @@ def simuPodMating(numPods, podSize):
     pop.setIndInfo([x for z in range(numPods) for x in [z]*podSize], 'pod')
     pop.setVirtualSplitter(infoSplitter('pod', range(numPods)))
 
-    simu = simulator(pop, pyMating(
+    simu = simulator(pop, homoMating(
         pyParentsChooser(podParentsChooser),
         mendelianOffspringGenerator(numOffspring=1)))
     simu.evolve(
