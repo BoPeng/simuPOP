@@ -35,65 +35,28 @@ you should be able to run this script and install simuPOP using:
 If your copy of simuPOP is checked out from the subversion server, you will
 need to download a supported version of boost (see variable boost_versions
 below) and uncompress it under the simuPOP source directory. You also need to
-install swig >= 1.3.35 for the generation of Python wrapper files.
-
-For a complete development environment, it is recommended that you also install
-  1. doxygen: to generate source and command-line document.
-  2. Python docutils package: to generate reference manual and online document.
-  3. R and rpy: to develop and test R-related functions and modules.
+install swig >= 1.3.35 for the generation of Python wrapper files. Please see
+http://simupop.sourceforge.net/main/GetInvolved for details.
 
 """
 import os, sys, shutil, glob, re, tempfile
 
-# simuPOP works with these boost versions.
+# simuPOP works with these boost versions. Newer versions will be used if these
+# versions are not available, and will most likely work just fine.
 boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0']
 
 included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
 unsupported_version = [x for x in glob.glob('boost_*') if os.path.isdir(x)]
 if len(included_version) > 0:
-    included_boost = True
-    included_boost_dir = 'boost_' + included_version[-1]  # use the latest version
+    boost_dir = 'boost_' + included_version[-1]  # use the latest version
 elif len(unsupported_version) > 0:
     print 'This version of boost is not tested. It may or may not work: %s' % unsupported_version[-1]
-    included_boost = True
-    included_boost_dir = unsupported_version[-1]  # use the latest version
-else:
-    included_boost = False
-    included_boost_dir = 'boost'
+    boost_dir = unsupported_version[-1]  # use the latest version
 
-if included_boost:
-    included_boost_include_dir = included_boost_dir
-    included_boost_serialization_dir = os.path.join(included_boost_dir, 'libs', 'serialization', 'src')
-    included_boost_iostreams_dir = os.path.join(included_boost_dir, 'libs', 'iostreams', 'src')
-    included_boost_regex_dir = os.path.join(included_boost_dir, 'libs', 'regex', 'src')
-
-# If setup.py can not find boost libraries, change boost_lib_seach_paths
-# and/or boost_inc_search_paths. 
-#
-# use_vc is used only once to indicate if a portable stdint.h
-# need to be used. (msvc does not ship with stdint.h)
-if os.name == 'nt':
-    use_vc = True
-    boost_lib_search_paths = [r'win32', r'c:\boost\lib', r'c:\program files\boost\lib']
-    boost_inc_search_paths = [included_boost_dir, r'c:\boost', r'c:\program files\boost']
-    boost_lib_prefix = ''
-    boost_lib_suffix = '.lib'
-else:    
-    use_vc = False
-    boost_lib_search_paths = ['/usr/lib', '/usr/local/lib']
-    boost_inc_search_paths = [included_boost_dir, '/usr/include', '/usr/local/include']
-    home = os.environ.get('HOME', None)
-    if home is not None:
-        dirs = glob.glob(os.path.join(home, 'boost*'))
-        for dir in dirs:
-            if os.path.isdir(os.path.join(dir, 'lib')):
-                boost_lib_search_paths.append(os.path.join(dir, 'lib'))
-            if os.path.isdir(os.path.join(dir, 'include')):
-                boost_inc_search_paths.append(os.path.join(dir, 'include'))
-            else:
-                boost_inc_search_paths.append(dir)
-    boost_lib_prefix = 'lib'
-    boost_lib_suffix = '.a'
+boost_include_dir = boost_dir
+boost_serialization_dir = os.path.join(boost_dir, 'libs', 'serialization', 'src')
+boost_iostreams_dir = os.path.join(boost_dir, 'libs', 'iostreams', 'src')
+boost_regex_dir = os.path.join(boost_dir, 'libs', 'regex', 'src')
 
 # if you need to use full path name for swig, change it here.
 SWIG = 'swig'
@@ -106,7 +69,6 @@ SWIG = 'swig'
 
 from distutils.core import setup, Extension
 from distutils.sysconfig import get_config_var
-
 
 def swig_version():
     ''' get the version of swig '''
@@ -139,81 +101,6 @@ def simuPOP_version():
     return SIMUPOP_VER, SIMUPOP_REV
 
 
-def getBoostLibraries(libs, lib_paths, lib_prefix, lib_suffix, inc_paths, versions):
-    ''' look for boost libraries
-      libs: library names
-      lib_paths: try these paths for boost libraries
-      inc_paths: try these paths for boost headers
-      versions:   supported boost versions
-    '''
-    found_lib = False
-    found_inc = False
-    lib_names = []
-    lib_path = None
-    inc_path = None
-    for path in lib_paths:
-        if path is None:
-            continue
-        for lib in libs:
-            # get all the libs, then filter for the right library
-            files = glob.glob(os.path.join(path, '%sboost_%s*.*' % (lib_prefix, lib)))
-            # check things like libboost_iostreams-gcc-mt-d-1_33_1.a
-            if len(files) > 0:
-                # runtime code includes s,g,y,d,p,n, where we should look for
-                # d,g,y for debug, s,p,n for release
-                lib_files = []
-                for ver in versions:
-                    lib_files += filter(lambda x: re.search('%sboost_%s-\w+-mt-([^dgy]+-)*%s%s' \
-                        % (lib_prefix, lib, ver, lib_suffix), x), files)
-                if len(lib_files) == 0:
-                    # use alternative libraries
-                    for ver in versions:
-                        lib_files += filter(lambda x: re.search('%sboost_%s[-\w]*[-%s]*%s' \
-                            % (lib_prefix, lib, ver, lib_suffix), x), files)
-                if len(lib_files) > 0:
-                    # get xxx-gcc-1_33_1 from /usr/local/lib/libboost_xxx-gcc-1_33_1.a
-                    name = lib_files[0].split(os.sep)[-1][len(lib_prefix):]
-                    lib_names.append(name.split('.')[0])
-                else:
-                    break
-        if len(lib_names) == len(libs):
-            found_lib = True
-            lib_path = path
-            break
-    if not found_lib:
-        print "Can not find boost libraries. Please read the front part"
-        print "of setup.py for instructions."
-        print "Library search paths: ", lib_paths
-        print "Include search paths: ", inc_paths
-        sys.exit(1)
-    # check version number in boost/version.hpp
-    def isValidBoostDir(dir):
-        version_file = os.path.join(dir, 'boost', 'version.hpp')
-        if not os.path.isfile(version_file):
-            return False
-        version_file_content = open(version_file).read()
-        version_strings = ['#define BOOST_LIB_VERSION "%s"' % ver for ver in versions]
-        return True in [x in version_file_content for x in version_strings]
-    # check for boost header file
-    for path in inc_paths:
-        if path is None:
-            continue
-        if isValidBoostDir(path):
-            inc_path = path
-            found_inc = True
-        else:   # check path/boost_1_xx_x/boost
-            dirs = glob.glob(os.path.join(path, 'boost-*')) + glob.glob(os.path.join(path, 'boost_*'))
-            if len(dirs) > 0 and isValidBoostDir(dirs[0]):
-                inc_path = dirs[0]
-                found_inc = True
-    # return result
-    if found_inc:
-        return (lib_names, lib_path, inc_path)
-    else:
-        print "Can not find boost libraries. Please read the front part"
-        print "of setup.py for instructions."
-        sys.exit(1)
-        
 def replaceIntHeader(file):
     ''' Replace "#include <stdint.h>" with "#include <inttypes.h>"
         Try to keep time stamp unchanged '''
@@ -369,59 +256,52 @@ LIB_FILES = [
     'gsl/cdf/chisq.c',
     'gsl/cdf/gamma.c',
     'gsl/error.c' 
+] + [os.path.join(boost_serialization_dir, x) for x in [
+    'basic_archive.cpp',
+    'basic_iarchive.cpp',
+    'basic_oarchive.cpp',
+    'basic_serializer_map.cpp',
+    'basic_text_iprimitive.cpp',
+    'basic_text_oprimitive.cpp',
+    'extended_type_info.cpp',
+    'extended_type_info_no_rtti.cpp',
+    'extended_type_info_typeid.cpp',
+    'text_iarchive.cpp',
+    'text_oarchive.cpp',
+    'void_cast.cpp',
+    'polymorphic_iarchive.cpp',
+    'polymorphic_oarchive.cpp',
+    'stl_port.cpp',
+    'basic_pointer_iserializer.cpp',
+    'basic_iserializer.cpp',
+    'basic_oserializer.cpp',
+    'basic_pointer_oserializer.cpp',
+    ]
+] + [os.path.join(boost_iostreams_dir, x) for x in [
+    'mapped_file.cpp',
+    'file_descriptor.cpp',
+    'zlib.cpp'
+    ]
+] + [os.path.join(boost_regex_dir, x) for x in [
+    'cpp_regex_traits.cpp',
+    'fileiter.cpp',
+    'posix_api.cpp',
+    'regex_raw_buffer.cpp',
+    'usinstances.cpp',
+    'wide_posix_api.cpp',
+    'cregex.cpp',
+    'icu.cpp',
+    'regex.cpp',
+    'regex_traits_defaults.cpp',
+    'w32_regex_traits.cpp',
+    'winstances.cpp',
+    'c_regex_traits.cpp',
+    'instances.cpp',
+    'regex_debug.cpp',
+    'static_mutex.cpp',
+    'wc_regex_traits.cpp',
+    ]
 ]
-
-if included_boost:
-    LIB_FILES.extend([os.path.join(included_boost_serialization_dir, x) for x in [
-        'basic_archive.cpp',
-        'basic_iarchive.cpp',
-        'basic_oarchive.cpp',
-        'basic_serializer_map.cpp',
-        'basic_text_iprimitive.cpp',
-        'basic_text_oprimitive.cpp',
-        'extended_type_info.cpp',
-        'extended_type_info_no_rtti.cpp',
-        'extended_type_info_typeid.cpp',
-        'text_iarchive.cpp',
-        'text_oarchive.cpp',
-        'void_cast.cpp',
-        'polymorphic_iarchive.cpp',
-        'polymorphic_oarchive.cpp',
-        'stl_port.cpp',
-        'basic_pointer_iserializer.cpp',
-        'basic_iserializer.cpp',
-        'basic_oserializer.cpp',
-        'basic_pointer_oserializer.cpp',
-        ]
-    ])
-    #
-    LIB_FILES.extend([os.path.join(included_boost_iostreams_dir, x) for x in [
-        'mapped_file.cpp',
-        'file_descriptor.cpp',
-        'zlib.cpp'
-        ]
-    ])
-    #
-    LIB_FILES.extend([os.path.join(included_boost_regex_dir, x) for x in [
-        'cpp_regex_traits.cpp',
-        'fileiter.cpp',
-        'posix_api.cpp',
-        'regex_raw_buffer.cpp',
-        'usinstances.cpp',
-        'wide_posix_api.cpp',
-        'cregex.cpp',
-        'icu.cpp',
-        'regex.cpp',
-        'regex_traits_defaults.cpp',
-        'w32_regex_traits.cpp',
-        'winstances.cpp',
-        'c_regex_traits.cpp',
-        'instances.cpp',
-        'regex_debug.cpp',
-        'static_mutex.cpp',
-        'wc_regex_traits.cpp',
-        ]
-    ])
 
 
 # build zlib from source for windows system to avoid distributing zlib1.dll
@@ -502,15 +382,10 @@ DATA_FILES = [
 
 
 def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
-    if included_boost:
-        boost_inc_path = included_boost_include_dir
-        boost_lib_names = []
-        boost_lib_path = None
-    else:
-        (boost_lib_names, boost_lib_path, boost_inc_path) = getBoostLibraries(
-            ['iostreams', 'serialization', 'regex'], boost_lib_search_paths,
-            boost_lib_prefix, boost_lib_suffix,
-            boost_inc_search_paths, boost_versions)
+    #
+    boost_inc_path = boost_include_dir
+    boost_lib_names = []
+    boost_lib_path = None
     res = {}
     res['src'] =  ['src/simuPOP_' + modu + '_wrap.cpp']
     for src in SOURCE_FILES:
@@ -523,16 +398,11 @@ def ModuInfo(modu, SIMUPOP_VER, SIMUPOP_REV):
         res['libraries'] = ['stdc++', 'z']
     res['libraries'].extend(boost_lib_names)
     res['include_dirs'] = ['.', boost_inc_path]
-    if use_vc:
+    res['library_dirs'] = ['build']
+    if os.name == 'nt':
         # I have a portable stdint.h for msvc, to avoid distributing
         # zdll1.dll, I also build zlib from source
         res['include_dirs'].extend(['win32', 'win32/zlib-1.2.3'])
-    #
-    if included_boost:
-        res['library_dirs'] = ['build']
-    else:
-        res['library_dirs'] = ['build', boost_lib_path]
-    if use_vc:
         # zdll.lib is under win32
         res['library_dirs'].append('win32')
     if os.name == 'nt':
@@ -602,7 +472,7 @@ if __name__ == '__main__':
         os.system('swig %s swigpyrun.h' % SWIG_RUNTIME_FLAGS)
         # try the first option set with the first library
         for lib in MODULES:
-            print "Generating wrap file " + WRAP_INFO[lib][0]
+            print "Generating wrapper file " + WRAP_INFO[lib][0]
             if os.system('%s %s -outdir %s %s -o %s %s' % (SWIG, SWIG_FLAGS, \
                 SWIG_OUTDIR, WRAP_INFO[lib][2], WRAP_INFO[lib][0], WRAP_INFO[lib][1])) != 0:
                 print "Calling swig failed. Please check your swig version."
