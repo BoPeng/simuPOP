@@ -7991,7 +7991,7 @@ on index as parameters.
  generator function and ask the generated generator object repeated for
  either a parent, or a pair of parents (
 \emph on
-both are indexes relative to a subpopulation
+references to individual objects or indexes relative to a subpopulation
 \emph default
 ).
  Note that 

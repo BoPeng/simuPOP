@@ -633,11 +633,11 @@ Usage:
 
 Details:
 
-    this class implements a C++ iterator class that iterate through
-    infomation fields in a (sub)population using 1. an IndIterator
-    that will skip invisible individuals, or 2. a gapped iterator that
-    will run faster. Note that 1, 2 should yield identical result, and
-    2 should be used when there is no virtual subpopulation.q
+    This class implements a C++ iterator class that iterate through
+    all alleles in a (virtual) (sub)population using 1. an IndIterator
+    that will skip invisible individuals and invalid alleles, or 2. a
+    gapped iterator that will run faster, in the case that a): no
+    virtual subpopulation b): not sex chromosomes c): not haplodiploid
 
 "; 
 
@@ -646,6 +646,14 @@ Details:
 Usage:
 
     CombinedAlleleIterator()
+
+"; 
+
+%feature("docstring") simuPOP::CombinedAlleleIterator::valid "
+
+Usage:
+
+    x.valid()
 
 "; 
 
@@ -661,7 +669,7 @@ Usage:
 
 Usage:
 
-    x.advance(it, p)
+    x.advance(it, p, valid)
 
 "; 
 
@@ -2871,6 +2879,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::InformationIterator::valid "
+
+Usage:
+
+    x.valid()
+
+"; 
+
 %feature("docstring") simuPOP::infoSplitter "
 
 Details:
@@ -3291,16 +3307,6 @@ Usage:
 Usage:
 
     x.elems()
-
-"; 
-
-%ignore simuPOP::isAffected;
-
-%feature("docstring") simuPOP::isAffected::isAffected "
-
-Usage:
-
-    isAffected()
 
 "; 
 
@@ -6197,19 +6203,11 @@ Details:
 
 %ignore simuPOP::population::setIndOrdered(bool s) const;
 
-%ignore simuPOP::population::indBegin(IterationType type=VisibleInds);
+%ignore simuPOP::population::indIterator(IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indEnd(IterationType type=VisibleInds);
+%ignore simuPOP::population::indIterator(UINT subPop, IterationType type=VisibleInds);
 
-%ignore simuPOP::population::indBegin(UINT subPop, IterationType type=VisibleInds);
-
-%ignore simuPOP::population::indEnd(UINT subPop, IterationType type=VisibleInds);
-
-%ignore simuPOP::population::indBegin(IterationType type=VisibleInds) const;
-
-%ignore simuPOP::population::indEnd(IterationType type=VisibleInds) const;
-
-%ignore simuPOP::population::indEnd(UINT subPop, IterationType type) const;
+%ignore simuPOP::population::indIterator(IterationType type=VisibleInds) const;
 
 %ignore simuPOP::population::rawIndBegin();
 
@@ -6221,15 +6219,9 @@ Details:
 
 %ignore simuPOP::population::rawIndBegin() const;
 
-%ignore simuPOP::population::rawIndEnd() const;
+%ignore simuPOP::population::alleleIterator(UINT locus);
 
-%ignore simuPOP::population::rawIndEnd(UINT subPop) const;
-
-%ignore simuPOP::population::alleleBegin(UINT locus);
-
-%ignore simuPOP::population::alleleEnd(UINT locus);
-
-%ignore simuPOP::population::alleleBegin(UINT locus, UINT subPop);
+%ignore simuPOP::population::alleleIterator(UINT locus, UINT subPop);
 
 %ignore simuPOP::population::genoBegin(bool order);
 
@@ -7445,18 +7437,17 @@ Usage:
 Details:
 
     This parents chooser accept a Python generator function that
-    repeatedly yields an index (relative to each subpopulation) of a
-    parent, or indexes of two parents as a Python list of tuple. The
+    repeatedly yields one or two parents, which can be references to
+    individual objects or indexes relative to each subpopulation. The
     parent chooser calls the generator function with parental
     population and a subpopulation index for each subpopulation and
-    retrieves indexes of parents repeatedly using the iterator
-    interface of the generator function.  This parent chooser does not
-    support virtual subpopulation directly. A ValueError will be
-    raised if this parent chooser is applied to a virtual
-    subpopulation. However, because virtual subpopulations are defined
-    in the passed parental population, it is easy to return parents
-    from a particular virtual subpopulation using virtual
-    subpopulation related functions.
+    retrieves parents repeatedly using the iterator interface of the
+    generator function.  This parent chooser does not support virtual
+    subpopulation directly. A ValueError will be raised if this parent
+    chooser is applied to a virtual subpopulation. However, because
+    virtual subpopulations are defined in the passed parental
+    population, it is easy to return parents from a particular virtual
+    subpopulation using virtual subpopulation related functions.
 
 "; 
 
@@ -7471,8 +7462,9 @@ Details:
     Create a Python parent chooser using a Python generator function
     parentsGenerator. This function should accept a population object
     (the parental population) and a subpopulation number and return
-    the index of a parent or a pair of parents repeatedly using the
-    iterator interface of the generator function.
+    the reference or index (relative to subpopulation) of a parent or
+    a pair of parents repeatedly using the iterator interface of the
+    generator function.
 
 "; 
 
@@ -11438,6 +11430,8 @@ Details:
 %ignore simuPOP::pyPopObj(void *p);
 
 %ignore simuPOP::pyIndObj(void *p);
+
+%ignore simuPOP::pyIndPointer(PyObject *p);
 
 %ignore simuPOP::ostreamManager();
 

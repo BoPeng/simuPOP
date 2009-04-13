@@ -728,11 +728,11 @@ private:
 
 
 /** This parents chooser accept a Python generator function that repeatedly
- *  yields an index (relative to each subpopulation) of a parent, or indexes
- *  of two parents as a Python list of tuple. The parent chooser calls the
+ *  yields one or two parents, which can be references to individual objects
+ *  or indexes relative to each subpopulation. The parent chooser calls the
  *  generator function with parental population and a subpopulation index
- *  for each subpopulation and retrieves indexes of parents repeatedly using
- *  the iterator interface of the generator function.
+ *  for each subpopulation and retrieves parents repeatedly using the iterator
+ *  interface of the generator function.
  *
  *  This parent chooser does not support virtual subpopulation directly. A
  *  \c ValueError will be raised if this parent chooser is applied to a
@@ -746,9 +746,10 @@ class pyParentsChooser : public parentChooser
 public:
 	/** Create a Python parent chooser using a Python generator function
 	 *  \e parentsGenerator. This function should accept a population object
-	 *  (the parental population) and a subpopulation number and return
-	 *  the index of a parent or a pair of parents repeatedly using the
-	 *  iterator interface of the generator function.
+	 *  (the parental population) and a subpopulation number and return the
+	 *  reference or index (relative to subpopulation) of a parent or a pair of
+	 *  parents repeatedly using the iterator interface of the generator
+	 *  function.
 	 */
 	pyParentsChooser(PyObject * parentsGenerator);
 

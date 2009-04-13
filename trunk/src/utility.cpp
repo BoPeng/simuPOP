@@ -1357,6 +1357,21 @@ PyObject * pyIndObj(void * p)
 }
 
 
+void * pyIndPointer(PyObject * obj)
+{
+	if (PySwigObject_Check(obj)) {
+		if (reinterpret_cast<PySwigObject *>(obj)->ty == g_swigindividual)
+			return reinterpret_cast<PySwigObject *>(obj)->ptr;
+		else
+			return NULL;
+	}
+	if (PyObject_HasAttr(obj, SWIG_This()))
+		// a shadowed class
+		return pyIndPointer(PyObject_GetAttr(obj, SWIG_This()));
+	return NULL;
+}
+
+
 // Expression evaluation
 // because of ref count, need to define copier
 

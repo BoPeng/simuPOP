@@ -1107,23 +1107,15 @@ def randomChooser(pop, sp):
     females = []
     # identify males and females in each social rank
     for rank in range(3):
-        males.append([x for x in range(pop.subPopSize(sp)) \
-            if pop.individual(x, sp).sex() == Male and \
-                pop.individual(x, sp).info('rank') == rank])
-        females.append([x for x in range(pop.subPopSize(sp)) \
-            if pop.individual(x, sp).sex() == Female and \
-                pop.individual(x, sp).info('rank') == rank])
+        males.append([x for x in pop.individuals(sp) \
+            if x.sex() == Male and x.info('rank') == rank])
+        females.append([x for x in pop.individuals(sp) \
+            if x.sex() == Female and x.info('rank') == rank])
     while True:
-        # choose a parent randomly
-        idx = randint(0, pop.subPopSize(sp) - 1)
-        par = pop.individual(idx, sp)
-        # then choose a spouse in the same rank randomly
-        if par.sex() == Male:
-            rank = par.intInfo('rank')
-            yield idx, females[rank][randint(0, len(females[rank]) - 1)]
-        else:
-            rank = par.intInfo('rank')
-            yield males[rank][randint(0, len(males[rank]) - 1)], idx
+        # choose a rank randomly
+        rank = pop.individual(randint(0, pop.subPopSize(sp) - 1), sp).intInfo('rank')
+        yield males[rank][randint(0, len(males[rank]) - 1)], \
+            females[rank][randint(0, len(females[rank]) - 1)]
 
 def setRank(pop, dad, mom, off):
     'The rank of offspring can increase or drop to zero randomly'
