@@ -24,7 +24,7 @@ span.anchor {
 }
 span.anchor a { text-decoration: none; }
 span.anchor a:hover { text-decoration: underline; }
-ol.toc { text-indent:-20px; list-style: none; }
+ol.toc { text-indent:-20px; list-style: none; display: none;}
 ol.toc ol.toc { text-indent:-40px; }";
 $HTMLStylesFmt['tocf'] = "
 div.tocfloat { font-size: $TocSize; margin-bottom: 10px;
@@ -48,12 +48,12 @@ $HTMLHeaderFmt['toggle'] = "<script type=\"text/javascript\">
 function toggle(obj) {
     var elstyle = document.getElementById(obj).style;
     var text    = document.getElementById(obj + \"tog\");
-    if (elstyle.display == 'none') {
-        elstyle.display = 'block';
-        text.innerHTML = \"{$ToggleText[0]}\";
-    } else {
+    if (elstyle.display == 'block') {
         elstyle.display = 'none';
         text.innerHTML = \"{$ToggleText[1]}\";
+    } else {
+        elstyle.display = 'block';
+        text.innerHTML = \"{$ToggleText[0]}\";
     }
 }
 </script>";
@@ -233,7 +233,7 @@ function TableOfContents($pagename,$number,$float,$title,$includeq,$text) {
     } elseif ($float=='hide') { return '';
     } else {
         $tocid = ($float=='page') ? 'ptocid' : 'tocid';  // remote toc?
-        $toggle = " (<a id=\"{$tocid}tog\" href=\"javascript:toggle('$tocid');\">{$ToggleText[0]}</a>)";
+        $toggle = " (<a id=\"{$tocid}tog\" href=\"javascript:toggle('$tocid');\">{$ToggleText[1]}</a>)";
         $l = 'li'; $s = ($NumberToc) ? 'ol' : 'ul'; 
         $sc = "$s class='toc'";
         $f = ($TocFloat) ? 'float' : '';

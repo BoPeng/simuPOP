@@ -1,0 +1,25 @@
+version=pmwiki-2.1.27 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8
+author=
+csum=
+ctime=1239822888
+host=127.0.0.1
+name=Main.GuestBook
+passwdattr=@nopass
+passwdedit=@nopass
+passwdread=@nopass
+passwdupload=@nopass
+rev=4
+targets=
+text=(:title Suggestions, complaints, compliments ...:)%0a%0aThis is a scratch place where you can leave your comments to the simuPOP software. No password is needed.%0a
+time=1239823042
+title=Suggestions, complaints, compliments ...
+author:1239823012=
+diff:1239823012:1239822898:=1,3c1,2%0a%3c (:title Suggestions, complaints, compliments ...:)%0a%3c %0a%3c This is a scratch place where you can leave your comments to the simuPOP software. No password is needed.%0a---%0a> (:title Complaints, suggestions, complements...:)%0a> %0a
+host:1239823012=127.0.0.1
+author:1239822898=
+diff:1239822898:1239822888:=1,2c1,2%0a%3c (:title Complaints, suggestions, complements...:)%0a%3c %0a---%0a> (:Complaints, suggestions, complements...:)%0a> %0a
+host:1239822898=127.0.0.1
+author:1239822888=
+diff:1239822888:1239822888:=1,2d0%0a%3c (:Complaints, suggestions, complements...:)%0a%3c %0a
+host:1239822888=127.0.0.1

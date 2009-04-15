@@ -1,14 +1,20 @@
 version=pmwiki-2.1.27 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8
 author=
 csum=
 host=127.0.0.1
 name=Site.SideBar
 passwdedit=@_site_edit
-rev=77
-targets=Main.HomePage,Main.Download,Main.News,Main.BasicConcepts,Main.Features,Main.Examples,Main.MailingList,Main.Documentation,Main.ChangeLog,Main.RoadMap,Main.DevelopmentStories,Main.GetInvolved,Site.SideBar
-text=* [[Main/Home Page | Home]]%0a* [[Main/Download]]%0a* [[Main/News]]%0a%0a%25sidehead%25 Learn More%0a* [[Main/Basic Concepts]]%0a* [[Main/Features]]%0a* [[Main/Examples]]%0a%0a%25sidehead%25 Support%0a* [[Main/Mailing List]]%0a* [[Main/Documentation]]%0a* [[http://simupop.sourceforge.net/cookbook | Cookbook]]%0a%0a%0a%25sidehead%25 Development%0a* [[Main/ChangeLog]]%0a* [[Main/RoadMap]]%0a* [[Main/Development Stories | Stories]]%0a* [[Main/Get Involved]]%0a* [[http://simupop.svn.sourceforge.net/viewvc/simupop/ |  Source Code]]%0a%0a%0a%25sidehead%25 Administration%0a* %25newwin%25 [[https://sourceforge.net/projects/simupop/ | Sourceforge.net]]%0a(:if auth admin:)%0a* [[http://simupop.sourceforge.net/?action=totalcounter | Statistics]]%0a(:ifend:)%0a%0a(:if auth read:)%0a%25sidehead%25 Search%0a(:searchbox size=14 label=Go:)%0a%0a(:if auth edit:)%0a%25right%25 [-[[Site.SideBar?action=edit | edit SideBar]]-]%0a%25right%25 [-[[Main.HomePage?action=logout | Log Out]]-]%0a
-time=1238116796
+rev=79
+targets=Main.HomePage,Main.Download,Main.News,Main.BasicConcepts,Main.Features,Main.Examples,Main.MailingList,Main.Documentation,Main.GuestBook,Main.ChangeLog,Main.RoadMap,Main.DevelopmentStories,Main.GetInvolved,Site.SideBar
+text=* [[Main/Home Page | Home]]%0a* [[Main/Download]]%0a* [[Main/News]]%0a%0a%25sidehead%25 Learn More%0a* [[Main/Basic Concepts | Introduction]]%0a* [[Main/Features]]%0a* [[Main/Examples]]%0a%0a%25sidehead%25 Support%0a* [[Main/Mailing List]]%0a* [[Main/Documentation]]%0a* [[http://simupop.sourceforge.net/cookbook | Cookbook]]%0a* [[Main/GuestBook]]%0a%0a%0a%25sidehead%25 Development%0a* [[Main/ChangeLog]]%0a* [[Main/RoadMap]]%0a* [[Main/Development Stories | Stories]]%0a* [[Main/Get Involved]]%0a* [[http://simupop.svn.sourceforge.net/viewvc/simupop/ |  Source Code]]%0a%0a%0a%25sidehead%25 Administration%0a* %25newwin%25 [[https://sourceforge.net/projects/simupop/ | Sourceforge.net]]%0a(:if auth admin:)%0a* [[http://simupop.sourceforge.net/?action=totalcounter | Statistics]]%0a(:ifend:)%0a%0a(:if auth read:)%0a%25sidehead%25 Search%0a(:searchbox size=14 label=Go:)%0a%0a(:if auth edit:)%0a%25right%25 [-[[Site.SideBar?action=edit | edit SideBar]]-]%0a%25right%25 [-[[Main.HomePage?action=logout | Log Out]]-]%0a
+time=1239828908
+author:1239828908=
+diff:1239828908:1239822839:=6c6%0a%3c * [[Main/Basic Concepts | Introduction]]%0a---%0a> * [[Main/Basic Concepts]]%0a
+host:1239828908=127.0.0.1
+author:1239822839=
+diff:1239822839:1238116796:=14,16c14,15%0a%3c * [[Main/GuestBook]]%0a%3c %0a%3c %0a---%0a> %0a> %0a
+host:1239822839=127.0.0.1
 author:1238116796=
 diff:1238116796:1238116769:=13,15c13,15%0a%3c * [[http://simupop.sourceforge.net/cookbook | Cookbook]]%0a%3c %0a%3c %0a---%0a> * %25newwin%25 [[http://simupop.sourceforge.net/cookbook | Cookbook]]%0a> %0a> %0a
 host:1238116796=127.0.0.1
