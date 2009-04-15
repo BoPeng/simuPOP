@@ -56,3 +56,7 @@ This file describes how to release simuPOP.
 
 12. From the file release webpage, refresh, add the uploaded files,
 	set their file type. Send release announcement to the simuPOP mailinglist.
+
+13. Register this release of simuPOP at the pypi website, by running:
+  > python setup.py register
+
