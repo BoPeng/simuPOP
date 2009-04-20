@@ -3526,7 +3526,7 @@ s with certain properties (such as all male individuals).
 \end_layout
 
 \begin_layout Standard
-If more then one generations are stored in a population, function 
+If more than one generations are stored in a population, function 
 \family typewriter
 ancestor(idx, [subPop], gen)
 \family default
@@ -4320,7 +4320,7 @@ and
 \family typewriter
 postOps
 \family default
- parameters the 
+ parameters of the 
 \family typewriter
 evolve
 \family default
@@ -5012,6 +5012,12 @@ debug
  One of the advantages of using a logging mechanism is that debugging output
  could be suppressed easily by adjusting the logging level of the logging
  object.
+ Note that function 
+\family typewriter
+logging.info()
+\family default
+ automatically adds a new line to its input messages before it writes them
+ to an output.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -8396,7 +8402,7 @@ simu.setGen(0)
  to reset the generation number if you would like to have a fresh start
  for the second 
 \family typewriter
-evove()
+evolve()
 \family default
  call.
  
@@ -8860,7 +8866,7 @@ lstparams "caption={Initialize by allele frequency},label={initByFreq}"
 \end_layout
 
 \begin_layout Standard
-It is sometimes desired to creates identical individuals with random genotype.
+It is sometimes desired to create identical individuals with random genotype.
  Parameter 
 \family typewriter
 identicalInds
@@ -12005,7 +12011,7 @@ lines with symbol '|' as the first non-space/tab character are outputed
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/getParam.py"
-lstparams "caption={A sample parameter specification list},firstline=5,label={paramSpec},lastline=39"
+lstparams "caption={A sample parameter specification list},label={paramSpec},lastline=34"
 
 \end_inset
 

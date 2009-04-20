@@ -53,8 +53,7 @@ public:
 	 *  of the population will be terminated. If \e stopAll is set to \c True, the
 	 *  evolution of all replicates of the simulator will be terminated. If this
 	 *  operator is allowed to write to an \e output (default to ""), the generation
-	 *  number, preceeded with an optional \e message will be
-	 *  written to it.
+	 *  number, proceeded with an optional \e message.
 	 */
 	terminateIf(string condition = string(), bool stopAll = false, string message = string(),
 		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1,

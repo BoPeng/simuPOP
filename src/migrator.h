@@ -210,7 +210,7 @@ public:
 	 *  randomized before a subpopulation is split. This is designed to remove
 	 *  artificial order of individuals introduced, for example, by some non-
 	 *  random mating schemes. Note that, however, the original individual
-	 *  order is not guaranteed even if this parameter is et to \c False.
+	 *  order is not guaranteed even if this parameter is set to \c False.
 	 *
 	 *  Unless the last subpopulation is split, the indexes of existing
 	 *  subpopulations will be changed. If a subpopulation has a name, this

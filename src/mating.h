@@ -91,7 +91,7 @@ public:
 	 *  <tt>(UniformDistribution, a, b)</tt> can be given. The number of
 	 *  offspring will be determined randomly following these statistical
 	 *  distributions. Please refer to the simuPOP user's guide for a detailed
-	 *  description of these distribution and their parameters.
+	 *  description of these distributions and their parameters.
 	 *
 	 *  Parameter \e sexMode is used to control the sex of each offspring. Its
 	 *  default value is usually \e RandomSex which assign \c Male or \c Female

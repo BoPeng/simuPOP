@@ -85,8 +85,8 @@ ostream & operator<<(ostream & out, const vspID & vsp);
  *  and operators can be applied to individuals within specified VSPs.
  *
  *  Only one VSP splitter can be assigned to a population, which defined VSPs
- *  for all its subpopulations. It different splitters are needed for different
- *  subpopulations, a \c combinedSplitter should be.
+ *  for all its subpopulations. If different splitters are needed for different
+ *  subpopulations, a \c combinedSplitter should be used.
  */
 class vspSplitter
 {
