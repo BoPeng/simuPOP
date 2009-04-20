@@ -73,7 +73,7 @@ class pedigree;
  *  store arbitrary population variables.
  *
  *  In addition to genotypic structured related functions provided by the
- *  \c genoStruTrait class, the population class provides a large number
+ *  \c GenoStruTrait class, the population class provides a large number
  *  of member functions that can be used to
  *  \li Create, copy and compare populations.
  *  \li Manipulate subpopulations. A population can be divided into several
@@ -162,7 +162,7 @@ public:
 	 *    chromosome and locus indexes, respectively. Loci names will be
 	 *    rearranged according to their position on the chromosome.
 	 *  \param subPopNames A list of subpopulation names. All subpopulations
-	 *    will have name \c '' if this parameter is not specified.
+	 *    will have name \c 'Unnamed' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
 	 *
@@ -505,20 +505,20 @@ public:
 	 *  CPPONLY
 	 *  <group>6-ancestral</group>
 	 */
-	const individual & ancestor(ULONG ind, UINT gen) const;
+	const individual & ancestor(ULONG idx, UINT gen) const;
 
 	/** Return a reference to individual \c idx of subpopulation \e subPop in
 	 *  ancestral generation \c gen.
 	 *  <group>6-ancestral</group>
 	 */
-	individual & ancestor(ULONG ind, UINT subPop, UINT gen);
+	individual & ancestor(ULONG idx, UINT subPop, UINT gen);
 
 	/** Return a reference to individual \c idx of subpopulation \e subPop in
 	 *  ancestral generation \c gen.
 	 *  CPPONLY
 	 *  <group>6-ancestral</group>
 	 */
-	const individual & ancestor(ULONG ind, UINT subPop, UINT gen) const;
+	const individual & ancestor(ULONG idx, UINT subPop, UINT gen) const;
 
 	/** Return a Python iterator that can be used to iterate through all
 	 *  individuals in a population.
@@ -858,7 +858,7 @@ public:
 	 *  integer values at information field \e field (value returned by
 	 *  <tt>individual::indInfo(field)</tt>). Individuals with negative values
 	 *  at this \e field will be removed. Existing subpopulation names are
-	 *  unchanged but new subpopulations will not assign a name (\c 'unnamed').
+	 *  kept. New subpopulations will be named \c 'Unnamed'.
 	 *  <group>7-manipulate</group>
 	 */
 	void setSubPopByIndInfo(const string & field);

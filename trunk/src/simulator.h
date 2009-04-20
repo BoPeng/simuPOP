@@ -206,8 +206,8 @@ public:
 	}
 
 
-	/** Evolve all populations \e gen generations, subject to operators \e ops
-	 *  \e preOps and \e postOps. Operators \e preOps are applied to all
+	/** Evolve all populations \e gen generations, subject to operators
+	 *  \e ops, \e preOps and \e postOps. Operators \e preOps are applied to all
 	 *  populations (subject to applicability restrictions of the operators,
 	 *  imposed by the \e rep parameter of these operators) before evolution.
 	 *  They are usually used to initialize populations. Operators \e postOps

@@ -188,7 +188,7 @@ public:
 	 *    Python function can be given to handle outputs.
 	 *  \param stage Stage(s) of a life cycle at which an operator will be
 	 *    applied. It can be \c PreMating, \c DuringMating, \c PostMating or
-	 *    any of their combined stages \c PrePostMating, \c PreDuringMating
+	 *    any of their combined stages \c PrePostMating, \c PreDuringMating,
 	 *    \c DuringPostMating and \c PreDuringPostMating. Note that all
 	 *    operators have their default stage parameter and some of them ignore
 	 *    this parameter because they can only be applied at certain stage(s)

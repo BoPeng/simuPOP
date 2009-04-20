@@ -776,7 +776,7 @@ checkSexMode(randomMating(sexMode=RandomSex))
 checkSexMode(randomMating(sexMode=(ProbOfMale, 0.8)))
 # Case 4: NumOfMale (Specify number of male in each family)
 checkSexMode(randomMating(numOffspring=3, sexMode=(NumOfMale, 1)))
-# Case 5: NumOfFamel (Specify number of female in each family)
+# Case 5: NumOfFemale (Specify number of female in each family)
 checkSexMode(randomMating(
     numOffspring=(UniformDistribution, 4, 6),
     sexMode=(NumOfFemale, 2))
@@ -1824,7 +1824,7 @@ import types, simuOpt
 
 options = [
     {'arg': 'r:',
-    'longarg': 'rate=',
+     'longarg': 'rate=',
      'default': [0.01],
      'useDefault': True,
      'label': 'Recombination rate',

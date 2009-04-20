@@ -481,7 +481,7 @@ public:
 	 *
 	 *  \note conversion tract length is usually short, and is estimated to be
 	 *      between 337 and 456 bp, with overall range between maybe 50 - 2500
-	 *      bp. This is usually not enough to conver, for example, two adjacent
+	 *      bp. This is usually not enough to convert, for example, two adjacent
 	 *      markers from the HapMap dataset.
 	 *
 	 *  \note There is no recombination between sex chromosomes (Chromosomes X

@@ -177,11 +177,11 @@ Arguments:
     stage:          Stage(s) of a life cycle at which an operator will
                     be applied. It can be PreMating, DuringMating,
                     PostMating or any of their combined stages
-                    PrePostMating, PreDuringMatingDuringPostMating and
-                    PreDuringPostMating. Note that all operators have
-                    their default stage parameter and some of them
-                    ignore this parameter because they can only be
-                    applied at certain stage(s) of a life cycle.
+                    PrePostMating, PreDuringMating, DuringPostMating
+                    and PreDuringPostMating. Note that all operators
+                    have their default stage parameter and some of
+                    them ignore this parameter because they can only
+                    be applied at certain stage(s) of a life cycle.
     begin:          The starting generation at which an operator will
                     be applied. Default to 0. A negative number is
                     interpreted as a generation counted from the end
@@ -4915,7 +4915,7 @@ Details:
     (UniformDistribution, a, b) can be given. The number of offspring
     will be determined randomly following these statistical
     distributions. Please refer to the simuPOP user's guide for a
-    detailed description of these distribution and their parameters.
+    detailed description of these distributions and their parameters.
     Parameter sexMode is used to control the sex of each offspring.
     Its default value is usually RandomSex which assign Male or Female
     to each individual randomly, with equal probabilities. If NoSex is
@@ -5727,7 +5727,7 @@ Details:
     structure, organized by generations, subpopulations and virtual
     subpopulations. It also contains a Python dictionary that is used
     to store arbitrary population variables.  In addition to genotypic
-    structured related functions provided by the genoStruTrait class,
+    structured related functions provided by the GenoStruTrait class,
     the population class provides a large number of member functions
     that can be used to
     *   Create, copy and compare populations.
@@ -5838,7 +5838,7 @@ Arguments:
                     respectively. Loci names will be rearranged
                     according to their position on the chromosome.
     subPopNames:    A list of subpopulation names. All subpopulations
-                    will have name '' if this parameter is not
+                    will have name 'Unnamed' if this parameter is not
                     specified.
     infoFields:     Names of information fields (named float number)
                     that will be attached to each individual.
@@ -6155,13 +6155,13 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::ancestor(ULONG ind, UINT gen) const;
+%ignore simuPOP::population::ancestor(ULONG idx, UINT gen) const;
 
 %feature("docstring") simuPOP::population::ancestor "
 
 Usage:
 
-    x.ancestor(ind, subPop, gen)
+    x.ancestor(idx, subPop, gen)
 
 Details:
 
@@ -6170,7 +6170,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::population::ancestor(ULONG ind, UINT subPop, UINT gen) const;
+%ignore simuPOP::population::ancestor(ULONG idx, UINT subPop, UINT gen) const;
 
 %feature("docstring") simuPOP::population::individuals "
 
@@ -6300,9 +6300,8 @@ Details:
     Rearrange individuals to their new subpopulations according to
     their integer values at information field field (value returned by
     individual::indInfo(field)). Individuals with negative values at
-    this field will be removed. Existing subpopulation names are
-    unchanged but new subpopulations will not assign a name
-    ('unnamed').
+    this field will be removed. Existing subpopulation names are kept.
+    New subpopulations will be named 'Unnamed'.
 
 "; 
 
@@ -8207,7 +8206,7 @@ Note:
 
     conversion tract length is usually short, and is estimated to be
     between 337 and 456 bp, with overall range between maybe 50 - 2500
-    bp. This is usually not enough to conver, for example, two
+    bp. This is usually not enough to convert, for example, two
     adjacent markers from the HapMap dataset.There is no recombination
     between sex chromosomes (Chromosomes X and Y), although
     recombination is possible between pesudoautosomal regions on these
@@ -9396,8 +9395,8 @@ Usage:
 
 Details:
 
-    Evolve all populations gen generations, subject to operators
-    opspreOps and postOps. Operators preOps are applied to all
+    Evolve all populations gen generations, subject to operators ops,
+    preOps and postOps. Operators preOps are applied to all
     populations (subject to applicability restrictions of the
     operators, imposed by the rep parameter of these operators) before
     evolution. They are usually used to initialize populations.
@@ -9637,7 +9636,7 @@ Details:
     This is designed to remove artificial order of individuals
     introduced, for example, by some non- random mating schemes. Note
     that, however, the original individual order is not guaranteed
-    even if this parameter is et to False.  Unless the last
+    even if this parameter is set to False.  Unless the last
     subpopulation is split, the indexes of existing subpopulations
     will be changed. If a subpopulation has a name, this name will
     become the name for all subpopulations separated from this
@@ -10808,8 +10807,8 @@ Details:
     True, the evolution of the population will be terminated. If
     stopAll is set to True, the evolution of all replicates of the
     simulator will be terminated. If this operator is allowed to write
-    to an output (default to \"\"), the generation number, preceeded
-    with an optional message will be written to it.
+    to an output (default to \"\"), the generation number, proceeded
+    with an optional message.
 
 "; 
 
@@ -11149,8 +11148,8 @@ Details:
     splitter is assigned to a population, many functions and operators
     can be applied to individuals within specified VSPs.  Only one VSP
     splitter can be assigned to a population, which defined VSPs for
-    all its subpopulations. It different splitters are needed for
-    different subpopulations, a combinedSplitter should be.
+    all its subpopulations. If different splitters are needed for
+    different subpopulations, a combinedSplitter should be used.
 
 "; 
 
