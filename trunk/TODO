@@ -7,6 +7,10 @@ simuPOP 1.0 should have a consistently defined and well documented interface.
 * Continue to polish user's guide. (Add bibtex reference to programs cited
   on page 3).
 
+* Merge all six simuPOP modules to one.... ideally, there should be another
+  parameter to the population constructor so that different genotype array
+  could be used.
+
 * Go through each function and add support for subpopulation names.
 
 * Move largePedigreeSampler and functions in misc.h/cpp to simuUtil or even
