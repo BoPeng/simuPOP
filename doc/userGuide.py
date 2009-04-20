@@ -255,8 +255,8 @@ pop.setVirtualSplitter(sexSplitter())
 # to False because this operator will by default also initialize sex.
 InitByValue(pop, [[0]*5, [1]*5], subPops=([0, 0], [0, 1]), initSex=False)
 # set Sex information field to 0 for all males, and 1 for all females
-pop.setIndInfo([1], 'Sex', [0, 0])
-pop.setIndInfo([2], 'Sex', [0, 1])
+pop.setIndInfo([Male], 'Sex', [0, 0])
+pop.setIndInfo([Female], 'Sex', [0, 1])
 # Print individual genotypes, followed by values at information field Sex
 Dump(pop, structure=False)
 #end
