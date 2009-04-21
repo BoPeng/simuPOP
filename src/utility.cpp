@@ -1359,15 +1359,11 @@ PyObject * pyIndObj(void * p)
 
 void * pyIndPointer(PyObject * obj)
 {
-	if (PySwigObject_Check(obj)) {
-		if (reinterpret_cast<PySwigObject *>(obj)->ty == g_swigindividual)
-			return reinterpret_cast<PySwigObject *>(obj)->ptr;
-		else
-			return NULL;
-	}
-	if (PyObject_HasAttr(obj, SWIG_This()))
-		// a shadowed class
-		return pyIndPointer(PyObject_GetAttr(obj, SWIG_This()));
+	if (obj == NULL || !PyObject_HasAttr(obj, SWIG_This()))
+		return NULL;
+	PyObject * ptr = PyObject_GetAttr(obj, SWIG_This());
+	if (PySwigObject_Check(ptr) && reinterpret_cast<PySwigObject *>(ptr)->ty == g_swigindividual)
+		return reinterpret_cast<PySwigObject *>(ptr)->ptr;
 	return NULL;
 }
 
