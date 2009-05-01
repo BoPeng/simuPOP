@@ -185,32 +185,5 @@ matrix ForwardFreqTrajectory(
 	double migrRate = 0,
 	int ploidy = 2,
 	long maxAttempts = 1000);
-
-
-#ifndef OPTIMIZED
-// These two functions try to duplicate relevant code from similar papers
-// and are kept for reference only.
-//
-// simulate trajectory
-vectorf FreqTrajectorySelSim(
-	double sel,                                                                     // strength of selection coef  ::8
-	long Ne,                                                                        // effective population size ::9
-	double freq,                                                                    // initial freq ::10
-	double dom_h,                                                                   // strength of dominance ::27
-	int selection                                                                   // selection ::5
-    );
-
-/*simulate the sample path of the frequency of disease allele,
-   conditional on non-extinction and non-fixation
-   array of the mutant allele frequency is backword, start from present-day,
-   end at the founding time of the disease
-   But, simulation is forward, start from the past when only one copy
-   of disease allele, until the
-   present-day (if #disease allele <5, poisson dis. conditional
-   on #disease >0, else, normal dis.)*/
-vectorf FreqTrajectoryForward(double lowbound, double highbound,
-	int disAge, double grate, long N0, double seleCo);
-
-#endif
 }
 #endif
