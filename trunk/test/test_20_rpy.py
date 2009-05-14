@@ -25,6 +25,30 @@ except exceptions.ImportError:
     hasRPy = False
 
 class TestRPy(unittest.TestCase):
+    def testVarPlotterBase(self):
+        'Testing byRep parameter of varPlotter'
+        if not hasRPy:
+            return True
+        simu = simulator(
+            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            randomMating(), rep=3)
+        migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
+            mode=ByProbability)
+        stator = stat(popSize=1, stage=PreMating)
+        simu.evolve(
+            preOps = [initSex()],
+            ops = [
+             migr,
+             stator,
+             varPlotter('subPopSize[0]',
+                type='l', win=10, main='subPop size',
+                xlab='gen', ylim=[0, 100], 
+                col_rep=['red', 'green', 'blue'])
+             ],
+             gen = 30
+        )
+        sleep(5)
+        r.dev_off()
 
     def testVarPlotterByRep(self):
         'Testing byRep parameter of varPlotter'

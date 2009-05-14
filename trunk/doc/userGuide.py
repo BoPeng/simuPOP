@@ -1819,6 +1819,78 @@ simu.evolve(
 
 #end
 
+#file log/rpy.log
+from simuPOP import *
+from simuRPy import varPlotter, rpy
+pop = population(size=1000, loci=[2])
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+    preOps = [initByValue([1, 2, 2, 1])],  
+    ops = [
+        recombinator(rate=0.01),
+        stat(LD=[0, 1]),
+        varPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
+            legend=['Replicate %d' % x for x in range(3)],
+            xlab='generation',
+            ylab='LD between marker 1 and 2',
+            ylim=[0, 0.25],
+            main='LD decay',
+            col_rep=['red', 'blue', 'black'],
+            lty_rep=[1, 2, 3],
+        ),
+    ],
+    gen=100
+)
+#end
+
+#file log/rpyByRep.log
+from simuPOP import *
+from simuRPy import varPlotter, rpy
+pop = population(size=1000, loci=[1]*4)
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+    preOps = [initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
+    ops = [
+        stat(alleleFreq=range(4)),
+        varPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
+            update=10, saveAs='log/rpy_byRep.png',
+            legend=['Locus %d' % x for x in range(4)],
+            xlab='generation',
+            ylab='Allele frequency',
+            ylim=[0, 1],
+            main_rep=['Genetic drift, replicate %d' % x for x in range(3)],
+            col_dim=['red', 'blue', 'black', 'green'],
+        ),
+    ],
+    gen=100
+)
+#end
+
+#file log/rpyByDim.log
+from simuPOP import *
+from simuRPy import varPlotter, rpy
+pop = population(size=1000, loci=[1]*4)
+simu = simulator(pop, randomMating(), rep=3)
+simu.evolve(
+    preOps = [initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
+    ops = [
+        stat(alleleFreq=range(4)),
+        varPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
+            update=10, saveAs='log/rpy_byDim.png',
+            legend=['Replicate %d' % x for x in range(3)],
+            xlab='generation',
+            ylab='Allele frequency',
+            ylim=[0, 1],
+            main_dim=['Genetic drift, starting freq %.1f' % ((x+1)*0.10) for x in range(4)],
+            col_rep=['red', 'blue', 'black'],
+            lty_rep=[1, 2, 3],
+        ),
+    ],
+    gen=100
+)
+#end
+
+rpy.r.dev_off()
 #file log/getParam.log
 import types, simuOpt
 

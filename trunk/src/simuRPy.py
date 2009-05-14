@@ -67,13 +67,13 @@ class varPlotter(pyOperator):
     first generation where no line could be drawn) unless the current
     generation is less than ``update`` generations away from the last
     generation at which a figure has been drawn. Historical values for all
-    replicates will be displayed as lines with the x xais being generation
-    number. Multiple lines for each replicate will be drawn if the results of
-    the expression are sequences. These lines could be plotted in the same
-    figure, or seperated to subplots by replicates (``byRep``), by each
-    dimention of the results (``byDim``), or both. These figure could be saved
-    to files in various formats if parameter ``saveAs`` is specified. File
-    format is determined by file extension.
+    replicates will be drawn with the x xais being generation number. Multiple
+    lines for each replicate will be drawn if the results of the expression are
+    sequences. These lines could be plotted in the same figure, or seperated to
+    subplots by replicates (``byRep``), by each dimention of the results
+    (``byDim``), or both. These figure could be saved to files in various
+    formats if parameter ``saveAs`` is specified. File format is determined by
+    file extension. After the evolution, the graphic device could be left open.
 
     Besides parameters mentioned above, arbitrary keyword parameters could be
     specified and be passed to the underlying R functions ``plot`` and
@@ -86,7 +86,7 @@ class varPlotter(pyOperator):
     four replicates.
     '''
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
-        saveAs="", leaveOpen=True, legend=[], stage=PostMating, begin=0,
+        saveAs="", leaveOpen=False, legend=[], stage=PostMating, begin=0,
         end=-1, step=1, at=[], rep=[], **kwargs):
         '''
         expr
@@ -114,16 +114,20 @@ class varPlotter(pyOperator):
             subplots will be arranged by variable and then replicates.
 
         saveAs
-            Save figures in files saveAs.ext. If ext (such as pdf, jpeg) is
-            given, a corresponding device will be used. Otherwise, a postscript
-            driver will be used. Generation number will be inserted before file
-            extension so 'figure.eps' will produce files such as 'figure10.eps',
-            'figure50.eps'.
+            Save figures in files saveAs.ext. If ext is given, a corresponding
+            device will be used. Otherwise, a postscript driver will be used.
+            Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
+            ``.jpg``, and ``.tif``. Generation number at which a figure is
+            drawn will be inserted before file extension so 'figure.eps' will
+            produce files such as 'figure10.eps', 'figure50.eps'. Note that a
+            800x600 resolution is used for all raster formats.
 
         leaveOpen
             Whether or not leave the plot open when plotting is done. Default
-            to ``True``. This allows further manipulate of the figures using R
-            functions.
+            to ``False`` functions. If this option is set to ``True``, you will
+            have to close the graphic device explicitly using function
+            ``rpy.r.dev_off()``. Note that leaving the device open allows
+            further manipuation of the figures outside of this operator.
 
         legend
             labels of the lines. This operator will look for keyword parameters
@@ -132,7 +136,7 @@ class varPlotter(pyOperator):
             for both replicates and dimensions, legends should be given to each
             dimension, and then each replicate.
 
-        **kwargs
+        kwargs
             All additional keyword parameters will be passed directly to the
             plot function ``r.plot`` and ``r.line``. Such parameters includes
             but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
@@ -163,7 +167,7 @@ class varPlotter(pyOperator):
         self.data = []
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
-        pyOperator.__init__(self, func=self.plot, param=kwargs,
+        pyOperator.__init__(self, func=self._plot, param=kwargs,
             begin=begin, end=end, step=step, at=at,
             rep=rep, subPops=[], infoFields=[])
 
@@ -172,7 +176,7 @@ class varPlotter(pyOperator):
         if not self.leaveOpen and hasattr(self, 'device'):
             rpy.r.dev_off()
 
-    def getDev(self):
+    def _getDev(self):
         # open a new window
         try:
             # 46754 is the revision number for R 2.8.0
@@ -190,7 +194,7 @@ class varPlotter(pyOperator):
         if self.device == 0:
             raise RuntimeError('Can not open new device')
 
-    def pushData(self, gen, rep, data):
+    def _pushData(self, gen, rep, data):
         'Push history data to self.data for later retrieval'
         # allocate a list for each replicate.
         while rep + 1 > len(self.data):
@@ -206,6 +210,8 @@ class varPlotter(pyOperator):
                 raise RuntimeError('Data dimension is inconsistent.')
         elif self.nDim > 1:
             raise RuntimeError('Data dimension is inconsistent.')
+        else:
+            self.nDim = 1
         # append data
         self.data[rep].append(data)
         # check number of saved generations (self.win)
@@ -220,14 +226,14 @@ class varPlotter(pyOperator):
             self.reps = [x for x in range(len(self.data)) if len(self.data[x]) > 0]
             self.nRep = len(self.reps)
 
-    def getData(self, rep, dim = 0):
+    def _getData(self, rep, dim = 0):
         "Get the dim'th element of the data of replicate rep"
         if type(self.data[rep][0]) in [type(()), type([])]:
             return [x[dim] for x in self.data[rep]]
         else:
             return self.data[rep]
 
-    def getArgs(self, rep, dim, kwargs, **default):
+    def _getArgs(self, rep, dim, kwargs, **default):
         "Get the single format parameters for keyword parameters."
         ret = {}
         for key,value in kwargs.iteritems():
@@ -255,36 +261,36 @@ class varPlotter(pyOperator):
                 ret[key] = value
         return ret
 
-    def getLegendArgs(self, legendType, kwargs, **default):
+    def _getLegendArgs(self, legendType, kwargs, **default):
         ret = {}
         for var in ['lty', 'col', 'lwd', 'pch', 'bty']:
             ret[var] = []
             if legendType == '_rep':
                 for i in range(self.nRep):
-                    arg = self.getArgs(i, 0, kwargs, **default)
+                    arg = self._getArgs(i, 0, kwargs, **default)
                     if arg.has_key(var):
                         ret[var].append(arg[var])
             elif legendType == '_dim':
                 for i in range(self.nDim):
-                    arg = self.getArgs(0, i, kwargs, **default)
+                    arg = self._getArgs(0, i, kwargs, **default)
                     if arg.has_key(var):
                         ret[var].append(arg[var])
             elif legendType == '_rep_dim':
                 for i in range(self.nRep):
                     for j in range(self.nDim):
-                        arg = self.getArgs(i, j, kwargs, **default)
+                        arg = self._getArgs(i, j, kwargs, **default)
                         if arg.has_key(var):
                             ret[var].append(arg[var])
             if len(ret[var]) == 0:
                 ret.pop(var)
         return ret
 
-    def plot(self, pop, kwargs):
+    def _plot(self, pop, kwargs):
         "Evaluate expression in pop and save result. Plot all data if needed"
         gen = pop.dvars().gen
         rep = pop.dvars().rep
         # push data 
-        self.pushData(gen, rep, pop.evaluate(self.expr))
+        self._pushData(gen, rep, pop.evaluate(self.expr))
         # Draw a plot only when
         # 1. There are at least two obervations.
         # 2. rep is the last recorded replicate.
@@ -297,7 +303,7 @@ class varPlotter(pyOperator):
             self.lastPlot = gen
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
-            self.getDev()
+            self._getDev()
         # figure out the dimension of data
         if self.nRep == 1:
             self.byRep = False
@@ -324,42 +330,45 @@ class varPlotter(pyOperator):
                 if self.byDim:
                     # separate plot for each dim
                     for j in range(self.nDim):
-                        rpy.r.plot(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs, type='l'))
+                        rpy.r.plot(self.gen, self._getData(i, j),
+                            **self._getArgs(i, j, kwargs, type='l', xlab='Generation'))
                 else:
                     # all var in one subplot
-                    rpy.r.plot(self.gen, self.getData(i, 0), **self.getArgs(i, 0, kwargs, type='l'))
+                    rpy.r.plot(self.gen, self._getData(i, 0),
+                        **self._getArgs(i, 0, kwargs, type='l', xlab='Generation'))
                     for j in range(1, self.nDim):
-                        rpy.r.lines(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs(i, j, kwargs))
                     if len(self.legend) > 0:
                         rpy.r.legend('topright', legend=self.legend,
-                            **self.getLegendArgs('_dim', kwargs, bty='n', lty=1))
+                            **self._getLegendArgs('_dim', kwargs, bty='n', lty=1))
         else:
             # all replicate in one figure
             if self.byDim:
                 for i in range(self.nDim):
-                    rpy.r.plot(self.gen, self.getData(self.reps[0], i), **self.getArgs(self.reps[0], i, kwargs, type='l'))
+                    rpy.r.plot(self.gen, self._getData(self.reps[0], i),
+                        **self._getArgs(self.reps[0], i, kwargs, type='l', xlab='Generation'))
                     for j in self.reps[1:]:
-                        rpy.r.lines(self.gen, self.getData(j, i), **self.getArgs(j, i, kwargs))
+                        rpy.r.lines(self.gen, self._getData(j, i), **self._getArgs(j, i, kwargs))
                     if len(self.legend) > 0:
                         rpy.r.legend('topright', legend=self.legend,
-                            **self.getLegendArgs('_rep', kwargs, bty='n', lty=1))
+                            **self._getLegendArgs('_rep', kwargs, bty='n', lty=1))
             else:
-                rpy.r.plot(self.gen, self.getData(0, 0), **self.getArgs(0, 0, kwargs, type='l'))
+                rpy.r.plot(self.gen, self._getData(0, 0), **self._getArgs(0, 0, kwargs, type='l', xlab='Generation'))
                 for i in self.reps:
                     for j in range(self.nDim):
-                        rpy.r.lines(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs(i, j, kwargs))
                 if len(self.legend) > 0:
                     rpy.r.legend('topright', legend=self.legend,
-                        **self.getLegendArgs('_rep_dim', kwargs, bty='n', lty=1))
-        self.save(gen)
+                        **self._getLegendArgs('_rep_dim', kwargs, bty='n', lty=1))
+        if self.saveAs != '':
+            self._save(gen)
         return True
 
-    def save(self, gen):
+    def _save(self, gen):
         "Save plots using a device specified by file extension."
-        if self.saveAs == "":
-            return
         name = self.saveAs
         ext = os.path.splitext(name)[-1]
+        params = {}
         try:
             # I need to use this more lengthy form because some
             # functions are not available in, for example, R 2.6.2
@@ -367,12 +376,18 @@ class varPlotter(pyOperator):
                 device = rpy.r.pdf
             elif ext.lower() == '.png':
                 device = rpy.r.png
+                # this could be made configurable, but I prefer a cleaner
+                # interface
+                params = {'width':800, 'height':600}
             elif ext.lower() == '.bmp':
                 device = rpy.r.bmp
+                params = {'width':800, 'height':600}
             elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
                 device = rpy.r.jpeg
+                params = {'width':800, 'height':600}
             elif ext.lower() == '.tif' or ext.lower() == '.tiff':
                 device = rpy.r.tiff
+                params = {'width':800, 'height':600}
             elif ext.lower() == '.eps':
                 device = rpy.r.postscript
             else:
@@ -381,7 +396,7 @@ class varPlotter(pyOperator):
             print e
             print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
             device = rpy.r.postscript
-        #
+        # figure out a filename
         if gen < 0:
             if ext == '':
                 name += '.eps'
@@ -390,5 +405,5 @@ class varPlotter(pyOperator):
                 name += str(gen) + '.eps'
             else:
                 name = name.replace(ext, str(gen) + ext)
-        rpy.r.dev_print(file=name, device = device)
+        rpy.r.dev_print(file=name, device = device, **params)
 
