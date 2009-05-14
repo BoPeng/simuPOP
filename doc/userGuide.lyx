@@ -12492,7 +12492,230 @@ simuUtil (under revision)
 \end_layout
 
 \begin_layout Section
-simuRPy (under revision)
+simuRPy
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+simuRPy
+\family default
+ module defines a Python operator that uses R (
+\family typewriter
+http://www.r-project.org
+\family default
+) to plot the current and historical values of a Python expression (
+\family typewriter
+expr
+\family default
+).
+ When this operator is applied to populations during evolution, 
+\family typewriter
+expr
+\family default
+ is evaluated at each population's local namespace.
+ All results are saved unless parameter 
+\family typewriter
+win
+\family default
+ is used to specify a window of generations to keep.
+ The return value of the expression can be a number or a sequence, but should
+ have the same type and length across all replicates and generations.
+ A figure will be drawn at the end of the last replicate (except for the
+ first generation where no line could be drawn) unless the current generation
+ is less than 
+\family typewriter
+update
+\family default
+ generations away from the last generation at which a figure has been drawn.
+ Historical values for all replicates will be drawn with the x axis being
+ generation number.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/rpy.log"
+lstparams "caption={Use rpy to plot an expression},label={rpy}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Besides parameters mentioned above, arbitrary keyword parameters could be
+ specified and be passed to the underlying R functions ``plot`` and ``line``.
+ These parameters could be used to specify line type (``lty``), color (``col``),
+ title (``main``), limit of x and y axes (``xlim`` and ``ylim``) and many
+ other options (see R manual for details).
+ As a special case, multiple values can be passed to each replicate or dimension
+ if the name of a parameter ends with ``_rep`` or ``_dim``.
+ For example, ``lty_rep=range(1, 5)`` will pass parameters ``lty=1``, ...,
+ ``lty=4`` to four replicates.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rpy"
+
+\end_inset
+
+Saved figure
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename log/rpy80.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Multiple lines for each replicate will be drawn if the results of the expression
+ are sequences.
+ These lines could be plotted in the same figure, or seperated to subplots
+ by replicates (``byRep``), by each dimention of the results (``byDim``),
+ or both.
+ These figure could be saved to files in various formats if parameter ``saveAs``
+ is specified.
+ File format is determined by file extension.
+ After the evolution, the graphic device could be left open.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/rpyByRep.log"
+lstparams "caption={Separate figures by replicate},label={rpyByRep}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rpyByRep"
+
+\end_inset
+
+Saved figure
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename log/rpy_byRep80.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/rpyByDim.log"
+lstparams "caption={Separate figures by Dimension},label={rpyByDim}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rpyByDim"
+
+\end_inset
+
+Saved figure
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename log/rpy_byDim80.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Chapter

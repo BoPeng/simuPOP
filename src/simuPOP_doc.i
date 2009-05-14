@@ -11312,23 +11312,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::FreqTrajectorySelSim "
-
-Usage:
-
-    FreqTrajectorySelSim(sel, Ne, freq, dom_h, selection)
-
-"; 
-
-%feature("docstring") simuPOP::FreqTrajectoryForward "
-
-Usage:
-
-    FreqTrajectoryForward(lowbound, highbound, disAge, grate, N0,
-      seleCo)
-
-"; 
-
 %feature("docstring") simuPOP::ApplyDuringMatingOperator "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::LoadPopulation "
