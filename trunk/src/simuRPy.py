@@ -38,7 +38,7 @@ from math import ceil, sqrt
 try:
     import rpy_options
     rpy_options.set_options(VERBOSE = False)
-    from rpy import *
+    import rpy
 except ImportError, e:
     print 'Rpy can not be loaded. Please verify your rpy installation.'
     print 'Note that rpy > 0.99 is needed and rpy2 is not supported'
@@ -49,65 +49,45 @@ import os
 # if under windows, fix a bug with rpy which uses blocking i/o so
 # R figure will not be refreshed in time.
 if os.name == 'nt':
-    r.options(windowsBuffered=False)
+    rpy.r.options(windowsBuffered=False)
 
-from simuPOP import pyOperator
+from simuPOP import pyOperator, PostMating
 
 class varPlotter(pyOperator):
     '''
-    This class defines a Python operator that uses R to plot the values of a
-    Python expression. When this operator is applied to a population at
-    different generations, this expression is evaluated with its return values
-    expression is evaluated in its local namespace. Its value 
-    How this expression is plotted depends on the dimension of the
-    return value (if a sequence is returned), number of replicates, whether or
-    not historical values (collected over several generations) are plotted,
-    and plot type (lines or images).
+    This class defines a Python operator that uses R to plot the current and
+    historical values of a Python expression (``expr``). When this operator is
+    applied to populations during evolution, an expression is evaluated at each
+    population's local namespace. All results are saved unless parameter
+    ``win`` is used to specify a window of generations to keep. The return
+    value of the expression can be a number or a sequence, but should have the
+    same type and length across all replicates and generations.
+    
+    A figure will be draw at the end of the last replicate (except for the
+    first generation where no line could be drawn) unless the current
+    generation is less than ``update`` generations away from the last
+    generation at which a figure has been drawn. Historical values for all
+    replicates will be displayed as lines with the x xais being generation
+    number. Multiple lines for each replicate will be drawn if the results of
+    the expression are sequences. These lines could be plotted in the same
+    figure, or seperated to subplots by replicates (``byRep``), by each
+    dimention of the results (``byDim``), or both. These figure could be saved
+    to files in various formats if parameter ``saveAs`` is specified. File
+    format is determined by file extension.
 
-    The default behavior of this operator is to plot the history of an
-    expression. For example, when operator
-
-        varPlotter(var='expr')
-
-    is used in simulator::evolve, the value of ``expr`` will be recorded each
-    time when this operator is applied. A line will be draw in a figure with
-    x-axis being the generation number. Parameters ``ylim`` can be used to
-    specify the range of y-axis.
-
-    If the return value of expression ``expr`` is a sequence (tuple or list),
-    parameter ``varDim`` has to be used to indicate the dimension of this
-    expression. For example,
-
-        varPlotter(var='expr', varDim=3)
-
-    will plot three lines, corresponding to the histories of each item in the
-    array.
-
-    If the expression returns a number and there are several replicates,
-    parameter ``numRep``` should be used. In this case, each line will
-    correspond to a replicate.
-
-    If the expression returns a vector and there are several replicates, several
-    subplots will be used. Parameter ``byRep`` or ``byVal`` should be used
-    to tell ``varPlotter`` whether the subplots should be divided by replicate
-    or by variable. For example,
-
-        varPlotter(var='expr', varDim=8, numRep=5, byRep=1)
-
-    will use an appropriate layout for your subplots, which is, in this case,
-    2x3 for 5 replicates. Each subplot will have 8 lines. If byVal is ``True``,
-    there will be 3x3 subplots for 8 items in an array, and each subplot will
-    have 5 lines. Note that ``byRep`` or ``byVal`` can also be used when there
-    is only one replicate or if the dimension of the expression is one.
-
-    When ``history=False``, histories of each variable will be discarded so
-    the figure will always plot the current value of the expression.
-
+    Besides parameters mentioned above, arbitrary keyword parameters could be
+    specified and be passed to the underlying R functions ``plot`` and
+    ``line``. These parameters could be used to specify line type (``lty``),
+    color (``col``), title (``main``), limit of x and y axes (``xlim`` and
+    ``ylim``) and many other options (see R manual for details). As a special
+    case, multiple values can be passed to each replicate or dimension if the
+    name of a parameter ends with ``_rep`` or ``_dim``. For example,
+    ``lty_rep=range(1, 5)`` will pass parameters ``lty=1``, ..., ``lty=4`` to
+    four replicates.
     '''
-    def __init__(self, expr, win=0, update=1, byRep=False, byVal=False,
-        saveAs="", leaveOpen=True, stage=PostMating, begin=0, end=-1, step=1,
-        at=[], rep=[], repArgs=['lty', 'col', 'xlab', 'ylab', 'main'],
-        valArgs=[], **kwargs):
+    def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
+        saveAs="", leaveOpen=True, legend=[], stage=PostMating, begin=0,
+        end=-1, step=1, at=[], rep=[], **kwargs):
         '''
         expr
             expression that will be evaluated at each replicate's local
@@ -128,9 +108,9 @@ class varPlotter(pyOperator):
         byRep
             Separate values at different replicates to different subplots.
             
-        byVal
+        byDim
             Separate items from sequence results of ``expr`` to different
-            subplots. If both ``byRep`` and ``byVal`` are ``True``, the
+            subplots. If both ``byRep`` and ``byDim`` are ``True``, the
             subplots will be arranged by variable and then replicates.
 
         saveAs
@@ -145,37 +125,38 @@ class varPlotter(pyOperator):
             to ``True``. This allows further manipulate of the figures using R
             functions.
 
-        kwargs
+        legend
+            labels of the lines. This operator will look for keyword parameters
+            such as ``col``, ``lty``, ``lwd``, and ``pch`` and call the
+            ``legend`` function to draw a legend. If figure has multiple lines
+            for both replicates and dimensions, legends should be given to each
+            dimension, and then each replicate.
+
+        **kwargs
             All additional keyword parameters will be passed directly to the
-            plot function ``r.plot``. Such parameters can be xlab, ylab,
-            main, xlim, ylim, col, lty.... If the name of such an arg appear in
-            ``repArgs`` and/or ``valArgs`` and a list of parameters are given,
-            this operator will try to use the specified values for each
-            replicate and/or dimension of the returned values of ``expr``.
-            For example, ``lty=range(1,5)`` will use different line types for
-            different lines.
-
-        repArgs
-            The name of keyword parameters whose list form will be handled
-            specially for each replicate.
-
-        valArgs
-            The name of keyword parameters whose list form will be handled
-            specially for each dimension of the returned values of ``expr``.
+            plot function ``r.plot`` and ``r.line``. Such parameters includes
+            but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
+            ``ylim``, ``col``, ``lty``. Multiple values could be passed to
+            different replicates or dimensions of results if suffix ``_rep``
+            or ``_dim`` is appended to parameter name. For example,
+            ``col_rep=['red', 'blue']`` uses two colors for values from
+            different replicates. ``_rep_dim`` and ``_dim_rep`` could also be
+            used. If the list has insufficient number of items, existing items
+            will be reused. 
         '''
         # parameters
         self.expr = expr
         self.win = win
         self.update = update
         self.byRep = byRep
-        self.byVal = byVal
+        self.byDim = byDim
         self.saveAs = saveAs
         self.leaveOpen = leaveOpen
-        self.repArgs = repArgs
-        self.valArgs = valArgs
+        self.legend = legend
         # internal flags
-        self.numRep = 0
-        self.numVal = 0
+        self.nRep = 0
+        self.reps = []   # allows specification of selected replicates
+        self.nDim = 0
         self.lastPlot = 0
         # data
         self.gen = []
@@ -189,23 +170,23 @@ class varPlotter(pyOperator):
     def __del__(self) :
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            r.dev_off()
+            rpy.r.dev_off()
 
     def getDev(self):
         # open a new window
         try:
             # 46754 is the revision number for R 2.8.0
-            if int(r.R_Version()['svn rev']) < 46754:
+            if int(rpy.r.R_Version()['svn rev']) < 46754:
                 # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
-                r(r.getOption('device') + '()')
+                rpy.r(rpy.r.getOption('device') + '()')
             else:
                 # For R >= 2.8.0, getOption('device') returns a function
-                r('getOption("device")()')
+                rpy.r('getOption("device")()')
         except:
             raise RuntimeError("Failed to get R version to start a graphical device");
         #
         # get device number
-        self.device = r.dev_cur()
+        self.device = rpy.r.dev_cur()
         if self.device == 0:
             raise RuntimeError('Can not open new device')
 
@@ -217,13 +198,13 @@ class varPlotter(pyOperator):
         # append gen.
         if len(self.gen) == 0 or self.gen[-1] != gen:
             self.gen.append(gen)
-        # check if data type and length are consistent, set self.numVal
+        # check if data type and length are consistent, set self.nDim
         if type(data) in [type(()), type([])]:
-            if self.numVal == 0:
-                self.numVal = len(data)
-            if self.numVal != len(data):
+            if self.nDim == 0:
+                self.nDim = len(data)
+            if self.nDim != len(data):
                 raise RuntimeError('Data dimension is inconsistent.')
-        elif self.numVal > 1:
+        elif self.nDim > 1:
             raise RuntimeError('Data dimension is inconsistent.')
         # append data
         self.data[rep].append(data)
@@ -232,10 +213,12 @@ class varPlotter(pyOperator):
             and self.gen[0] + self.win < gen:
             self.gen.pop(0)
             for d in self.data:
-                d.pop(0)
-        # set self.numRep
-        if self.numRep == 0 and len(self.gen) > 1:
-            self.numRep = len(self.data)
+                if len(d) > 0:
+                    d.pop(0)
+        # set self.nRep
+        if self.nRep == 0 and len(self.gen) > 1:
+            self.reps = [x for x in range(len(self.data)) if len(self.data[x]) > 0]
+            self.nRep = len(self.reps)
 
     def getData(self, rep, dim = 0):
         "Get the dim'th element of the data of replicate rep"
@@ -244,23 +227,56 @@ class varPlotter(pyOperator):
         else:
             return self.data[rep]
 
-    def getArgs(self, rep, dim, kwargs):
-        "Get the single format parameters for keyword parameters"
+    def getArgs(self, rep, dim, kwargs, **default):
+        "Get the single format parameters for keyword parameters."
         ret = {}
         for key,value in kwargs.iteritems():
-            if (type(value) not in [type(()), type([])]) or \
-                (key not in self.repArgs and key not in self.repArgs):
+            if key.endswith('_rep_dim'):
+                par = key.rstrip('_rep_dim')
+                idx = self.reps.index(rep) * self.nDim + dim
+            elif key.endswith('_dim_rep'):
+                par = key.rstrip('_dim_rep')
+                idx = self.reps.index(rep) + self.nRep * dim
+            elif key.endswith('_rep'):
+                par = key.rstrip('_rep')
+                idx = self.reps.index(rep)
+            elif key.endswith('_dim'):
+                par = key.rstrip('_dim')
+                idx = dim
+            else:
                 ret[key] = value
                 continue
-            idx = 0
-            if key in self.repArgs:
-                idx = rep
-            if key in self.valArgs:
-                idx = idx * self.numVal + dim
-            if len(value) >= idx + 1:
-                ret[key] = value[idx]
+            if (type(value) not in [type(()), type([])]):
+                ret[par] = value
             else:
-                ret[key] = value[0]
+                ret[par] = value[idx % len(value)]
+        for key,value in default.iteritems():
+            if not ret.has_key(key):
+                ret[key] = value
+        return ret
+
+    def getLegendArgs(self, legendType, kwargs, **default):
+        ret = {}
+        for var in ['lty', 'col', 'lwd', 'pch', 'bty']:
+            ret[var] = []
+            if legendType == '_rep':
+                for i in range(self.nRep):
+                    arg = self.getArgs(i, 0, kwargs, **default)
+                    if arg.has_key(var):
+                        ret[var].append(arg[var])
+            elif legendType == '_dim':
+                for i in range(self.nDim):
+                    arg = self.getArgs(0, i, kwargs, **default)
+                    if arg.has_key(var):
+                        ret[var].append(arg[var])
+            elif legendType == '_rep_dim':
+                for i in range(self.nRep):
+                    for j in range(self.nDim):
+                        arg = self.getArgs(i, j, kwargs, **default)
+                        if arg.has_key(var):
+                            ret[var].append(arg[var])
+            if len(ret[var]) == 0:
+                ret.pop(var)
         return ret
 
     def plot(self, pop, kwargs):
@@ -283,16 +299,16 @@ class varPlotter(pyOperator):
         if not hasattr(self, 'device'):
             self.getDev()
         # figure out the dimension of data
-        if self.numRep == 1:
+        if self.nRep == 1:
             self.byRep = False
-        if self.numVal == 1:
-            self.byVal = False
+        if self.nDim == 1:
+            self.byDim = False
         # needs subplots?
         nPlots = 1
-        if self.byVal:
-            nPlots *= self.numVal
+        if self.byDim:
+            nPlots *= self.nDim
         if self.byRep:
-            nPlots *= self.numRep
+            nPlots *= self.nRep
         # call r.par to create subplots
         if nPlots > 1:
             nrow = int(ceil(sqrt(nPlots)))
@@ -300,32 +316,41 @@ class varPlotter(pyOperator):
             if nrow > ncol:
                 nrow, ncol = ncol, nrow
             # call r.par to allocate subplots
-            r.par(mfrow=[nrow, ncol])
+            rpy.r.par(mfrow=[nrow, ncol])
         # now plot.
         if self.byRep:
             # handle each replicate separately
-            for i in range(self.numRep):
-                if self.byVal:
+            for i in self.reps:
+                if self.byDim:
                     # separate plot for each dim
-                    for j in range(self.numVal):
-                        r.plot(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                    for j in range(self.nDim):
+                        rpy.r.plot(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs, type='l'))
                 else:
                     # all var in one subplot
-                    r.plot(self.gen, self.getData(i, 0), **self.getArgs(i, 0, kwargs))
-                    for j in range(1, self.numVal):
-                        r.lines(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                    rpy.r.plot(self.gen, self.getData(i, 0), **self.getArgs(i, 0, kwargs, type='l'))
+                    for j in range(1, self.nDim):
+                        rpy.r.lines(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                    if len(self.legend) > 0:
+                        rpy.r.legend('topright', legend=self.legend,
+                            **self.getLegendArgs('_dim', kwargs, bty='n', lty=1))
         else:
             # all replicate in one figure
-            if self.byVal:
-                for i in range(self.numVal):
-                    r.plot(self.gen, self.getData(0, i), **self.getArgs(0, i, kwargs))
-                    for j in range(1, self.numRep):
-                        r.lines(self.gen, self.getData(j, i), **self.getArgs(j, i, kwargs))
+            if self.byDim:
+                for i in range(self.nDim):
+                    rpy.r.plot(self.gen, self.getData(self.reps[0], i), **self.getArgs(self.reps[0], i, kwargs, type='l'))
+                    for j in self.reps[1:]:
+                        rpy.r.lines(self.gen, self.getData(j, i), **self.getArgs(j, i, kwargs))
+                    if len(self.legend) > 0:
+                        rpy.r.legend('topright', legend=self.legend,
+                            **self.getLegendArgs('_rep', kwargs, bty='n', lty=1))
             else:
-                r.plot(self.gen, self.getData(0, 0), **self.getArgs(0, 0, kwargs))
-                for i in range(self.numRep):
-                    for j in range(self.numVal):
-                        r.lines(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                rpy.r.plot(self.gen, self.getData(0, 0), **self.getArgs(0, 0, kwargs, type='l'))
+                for i in self.reps:
+                    for j in range(self.nDim):
+                        rpy.r.lines(self.gen, self.getData(i, j), **self.getArgs(i, j, kwargs))
+                if len(self.legend) > 0:
+                    rpy.r.legend('topright', legend=self.legend,
+                        **self.getLegendArgs('_rep_dim', kwargs, bty='n', lty=1))
         self.save(gen)
         return True
 
@@ -339,23 +364,23 @@ class varPlotter(pyOperator):
             # I need to use this more lengthy form because some
             # functions are not available in, for example, R 2.6.2
             if ext.lower() == '.pdf':
-                device = r.pdf
+                device = rpy.r.pdf
             elif ext.lower() == '.png':
-                device = r.png
+                device = rpy.r.png
             elif ext.lower() == '.bmp':
-                device = r.bmp
+                device = rpy.r.bmp
             elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
-                device = r.jpeg
+                device = rpy.r.jpeg
             elif ext.lower() == '.tif' or ext.lower() == '.tiff':
-                device = r.tiff
+                device = rpy.r.tiff
             elif ext.lower() == '.eps':
-                device = r.postscript
+                device = rpy.r.postscript
             else:
-                device = r.postscript
+                device = rpy.r.postscript
         except Exception, e:
             print e
             print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
-            device = r.postscript
+            device = rpy.r.postscript
         #
         if gen < 0:
             if ext == '':
@@ -365,5 +390,5 @@ class varPlotter(pyOperator):
                 name += str(gen) + '.eps'
             else:
                 name = name.replace(ext, str(gen) + ext)
-        r.dev_print(file=name, device = device)
+        rpy.r.dev_print(file=name, device = device)
 
