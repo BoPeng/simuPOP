@@ -1871,6 +1871,18 @@ from simuPOP import *
 from simuRPy import varPlotter, rpy
 pop = population(size=1000, loci=[1]*4)
 simu = simulator(pop, randomMating(), rep=3)
+
+def drawFrame(r, rep, dim):
+    '''Draw a frame around subplot dim. Parameter r is defined in the rpy module
+    and is used for calling R functions. rep and dim are passed to indicate
+    the index of a subplot. Because this example uses byDim=True, dim will be
+    the dimension number and rep=None will be passed.
+    '''
+    r.axis(1)
+    r.axis(2)
+    r.grid()
+    r.mtext({0:'A', 1:'B', 2:'C', 3:'D'}[dim], adj=1)
+
 simu.evolve(
     preOps = [initByFreq([0.1*(x+1), 1-0.1*(x+1)], loci=x) for x in range(4)],
     ops = [
@@ -1878,12 +1890,17 @@ simu.evolve(
         varPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
             update=10, saveAs='log/rpy_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
-            xlab='generation',
             ylab='Allele frequency',
             ylim=[0, 1],
-            main_dim=['Genetic drift, starting freq %.1f' % ((x+1)*0.10) for x in range(4)],
+            main_dim=['Genetic drift, freq=%.1f' % ((x+1)*0.10) for x in range(4)],
             col_rep=['red', 'blue', 'black'],
             lty_rep=[1, 2, 3],
+            # the default png dimension is 800x600
+            png_width=600, png_height=500,
+            # do not draw axes in r.plot, leaving the job to drawFrame
+            plot_axes=False,
+            # plot frame, grid etc after each r.plot call
+            plotHook = drawFrame,
         ),
     ],
     gen=100

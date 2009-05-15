@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12905,6 +12905,78 @@ Allele frequency trajectories separated by replicates
 \end_layout
 
 \begin_layout Standard
+In addition, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpyByDim"
+
+\end_inset
+
+ demonstrates some advanced features of this plotter that allow further
+ customization of the figures.
+ More specifically,
+\end_layout
+
+\begin_layout Itemize
+Function-specific parameters can be passed to the underlying R function
+ by prefixing function names to parameter names.
+ For example, 
+\family typewriter
+plot_axis=False
+\family default
+ is used to pass 
+\family typewriter
+axis=False
+\family default
+ to the 
+\family typewriter
+r.plot
+\family default
+ function (and not to function 
+\family typewriter
+lines
+\family default
+ which does not accept this parameter).
+\end_layout
+
+\begin_layout Itemize
+Several hook function can be defined by passed to parameters 
+\family typewriter
+preHook
+\family default
+, 
+\family typewriter
+postHook
+\family default
+ and 
+\family typewriter
+plotHook
+\family default
+, which will be called before a figure is drawn, after a figure is drawn,
+ and after each 
+\family typewriter
+r.plot
+\family default
+ call, respectively.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpyByDim"
+
+\end_inset
+
+ uses a 
+\family typewriter
+plotHook
+\family default
+ function to draw axes of the plots and call 
+\family typewriter
+mtext
+\family default
+ to add texts to the margins.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/rpyByDim.log"
@@ -12953,10 +13025,6 @@ Allele frequency trajectories separated by loci
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
