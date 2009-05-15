@@ -286,5 +286,77 @@ class TestRPy(unittest.TestCase):
         sleep(5)
         r.dev_off()
 
+    def testInfoPlotter(self):
+        import random
+        pop = population([100, 200], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                infoPlotter(['x', 'y'], main='B/W, 300 points'),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(5)
+        r.dev_off()
+
+    def testInfoPlotterSP(self):
+        import random
+        pop = population([100, 200], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                infoPlotter(['x', 'y'],
+                    subPops = [(0, 0), (0, 1), (1, 0), (1, 1)],
+                    col_sp = ['blue', 'red', 'green', 'purple'],
+                    main='Color, 300 points, left right does not mix'),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(5)
+        r.dev_off()
+
+    def testInfoPlotterSubSet(self):
+        import random
+        pop = population([100, 200], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                infoPlotter(['x', 'y'],
+                    subPops = [(0, 0), (0, 1)],
+                    col_sp = ['blue', 'red'],
+                    pch_sp = [1, 2],
+                    xlim = [0, 1],
+                    main='Twoo colors, 100 points xlim=[0, 1]',
+                    legend = ['Male', 'Female']),
+                pause(),
+            ],
+            gen = 5,
+        )
+        sleep(5)
+        r.dev_off()
+
 if __name__ == '__main__':
     unittest.main()

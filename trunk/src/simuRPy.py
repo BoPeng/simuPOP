@@ -53,6 +53,25 @@ if os.name == 'nt':
 
 from simuPOP import pyOperator, PostMating
 
+def _newDevice():
+    'Create a new graphics'
+    # open a new window
+    try:
+        # 46754 is the revision number for R 2.8.0
+        if int(rpy.r.R_Version()['svn rev']) < 46754:
+            # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
+            rpy.r(rpy.r.getOption('device') + '()')
+        else:
+            # For R >= 2.8.0, getOption('device') returns a function
+            rpy.r('getOption("device")()')
+    except:
+        raise RuntimeError("Failed to get R version to start a graphical device");
+    # get device number
+    device = rpy.r.dev_cur()
+    if device == 0:
+        raise RuntimeError('Can not open new device')
+    return device
+
 class varPlotter(pyOperator):
     '''
     This class defines a Python operator that uses R to plot the current and
@@ -129,8 +148,7 @@ class varPlotter(pyOperator):
             Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
             ``.jpg``, and ``.tif``. Generation number at which a figure is
             drawn will be inserted before file extension so 'figure.eps' will
-            produce files such as 'figure10.eps', 'figure50.eps'. Note that a
-            800x600 resolution is used for all raster formats.
+            produce files such as 'figure_10.eps', 'figure_50.eps'.
 
         leaveOpen
             Whether or not leave the plot open when plotting is done. Default
@@ -166,7 +184,9 @@ class varPlotter(pyOperator):
             All additional keyword parameters will be passed directly to the
             plot function ``r.plot`` and ``r.line``. Such parameters includes
             but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
-            ``ylim``, ``col``, ``lty``. Multiple values could be passed to
+            ``ylim``, ``col``, ``lty``. A parameter will be sent to a specific
+            function if its name is prefixed by the name of a function (e.g.
+            ``png_width``). Multiple values could be passed to
             different replicates or dimensions of results if suffix ``_rep``
             or ``_dim`` is appended to parameter name. For example,
             ``col_rep=['red', 'blue']`` uses two colors for values from
@@ -205,23 +225,6 @@ class varPlotter(pyOperator):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
             rpy.r.dev_off()
-
-    def _getDev(self):
-        # open a new window
-        try:
-            # 46754 is the revision number for R 2.8.0
-            if int(rpy.r.R_Version()['svn rev']) < 46754:
-                # For R < 2.8.0, getOption('device') returns a string (such as 'X11')
-                rpy.r(rpy.r.getOption('device') + '()')
-            else:
-                # For R >= 2.8.0, getOption('device') returns a function
-                rpy.r('getOption("device")()')
-        except:
-            raise RuntimeError("Failed to get R version to start a graphical device");
-        # get device number
-        self.device = rpy.r.dev_cur()
-        if self.device == 0:
-            raise RuntimeError('Can not open new device')
 
     def _pushData(self, gen, rep, data):
         'Push history data to self.data for later retrieval'
@@ -350,7 +353,7 @@ class varPlotter(pyOperator):
             self.lastPlot = gen
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
-            self._getDev()
+            self.device = _newDevice()
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -466,8 +469,246 @@ class varPlotter(pyOperator):
                 name += '.eps'
         else:
             if ext == '':
-                name += str(gen) + '.eps'
+                name += '_%d.eps' % gen
             else:
-                name = name.replace(ext, str(gen) + ext)
+                name = name.replace(ext, '_' + str(gen) + ext)
         rpy.r.dev_print(file=name, device = device, **params)
+
+
+class infoPlotter(pyOperator):
+    '''
+    This class defines a Python operator that uses R to plot individuals in a
+    population, using values at two information fields as their x- and y-axis.
+
+    Arbitrary keyword parameters could be specified and be passed to the
+    underlying R drawing functions ``plot`` and ``points``. These parameters
+    could be used to specify point type (``pch``), color (``col``),
+    title (``main``), limit of x and y axes (``xlim`` and ``ylim``) and many
+    other options (see R manual for details). You can also pass parameters
+    to specific R functions such as ``par``, ``plot``, ``points``, ``legend``,
+    ``pdf`` by prefixing parameter names with a function name. For example,
+    ``png_width=300`` will pass ``width=300`` to function ``png()`` when you
+    save your figures in ``png`` format. Further customization of your figures
+    could be achieved by writing your own hook functions that will be called
+    before and after a figure is drawn.
+
+    The power of this operator lies in its ability to differentiate individuals
+    from different (virtual) subpopulations. If you specify IDs of (virtual)
+    subpopulations (VSPs) in parameter ``subPops``, only individuals from these
+    VSPs will be displayed. Furthermore, by appending ``_sp`` to the name of
+    a parameter, a list of values can be specified and will be applied to
+    different VSPs. For example, if you have defined two VSPs by sex,
+    ``subPops=[(0, 0), (0, 1)]`` and ``col_sp=['blue', 'red']`` will color
+    male individuals with blue and female individuals with red.
+    '''
+    def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
+        preHook=None, postHook=None, stage=PostMating, begin=0, end=-1, step=1,
+        at=[], rep=[], subPops=[], **kwargs):
+        '''
+        infoFields
+            Two information fields whose values will be the x- and y-axis of
+            each point (individual) in the plot.
+
+        subPops
+            A list of subpopulations and virtual subpopulations. Only
+            individuals from these subpopulations will be plotted. Default
+            to subpopulation indexes.
+
+        saveAs
+            Save figures in files saveAs.ext. If ext is given, a corresponding
+            device will be used. Otherwise, a postscript driver will be used.
+            Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
+            ``.jpg``, and ``.tif``. Generation and replicate numbers at which
+            a figure is drawn will be inserted before file extension so
+            'figure.eps' will produce files such as 'figure_10_0.eps' where the
+            two numbers are generation and replicate indexes respectively.
+
+        leaveOpen
+            Whether or not leave the plot open when plotting is done. Default
+            to ``False`` functions. If this option is set to ``True``, you will
+            have to close the graphic device explicitly using function
+            ``rpy.r.dev_off()``. Note that leaving the device open allows
+            further manipuation of the figures outside of this operator.
+
+        legend
+            labels of the points. It must match the specified subpopulations.
+
+        preHook
+            A function that, if given, will be called before the figure is
+            draw. The ``r`` object from the ``rpy`` module will be passed to
+            this function.
+
+        postHook
+            A function that, if given, will be called after the figure is
+            drawn. The ``r`` object from the ``rpy`` module will be passed to
+            this function.
+
+        kwargs
+            All additional keyword parameters will be passed directly to the
+            plot function ``r.plot`` and ``r.points``. Such parameters includes
+            but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
+            ``ylim``, ``col``, ``pch``.A parameter will be sent to a specific
+            function if its name is prefixed by the name of a function (e.g.
+            ``png_width``). Multiple values could be passed to different
+            (virtual) subpopulations if suffix ``_sp`` is appended to parameter
+            name. If the list has insufficient number of items, existing items
+            will be reused.
+        '''
+        # parameters
+        self.infoFields = infoFields
+        if len(self.infoFields) != 2:
+            raise RuntimeError('Two information fields should be given')
+        self.saveAs = saveAs
+        self.leaveOpen = leaveOpen
+        self.legend = legend
+        self.preHook = preHook
+        self.postHook = postHook
+        self.subPops = subPops
+        self.kwargs = kwargs
+        # when apply is called, self.plot is called, additional keyword
+        # parameters are passed by kwargs.
+        pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
+            step=step, at=at, rep=rep)
+
+    def __del__(self):
+        # Close the device if needed.
+        if not self.leaveOpen and hasattr(self, 'device'):
+            rpy.r.dev_off()
+
+    def _getArgs(self, func, sp=None, **default):
+        "Get the single format parameters from keyword parameters."
+        # first, we need to figure out usable kwparameters, that is to say
+        # 1. if func in ['plot', 'points'], non-function specific parameters
+        #    could be used.
+        # 2. if func is 'legend' etc, only prefixed parameters could be used.
+        kwargs = {}
+        for key,value in self.kwargs.iteritems():
+            if key.startswith(func + '_') or (func == 'plot' and key.startswith('points_')):
+                # function specific, accept, plot also accept point parameters
+                kwargs[key.lstrip(func + '_')] = value
+            elif func in ['plot', 'points']:
+                # the plain case, or the case with ending _rep or _dim
+                # accept for plot and line (e.g. xlim)
+                if '_' not in key or key.split('_')[-1] == 'sp':
+                    kwargs[key] = value
+                # prefixed with another function is not considered
+        ret = {}
+        for key,value in kwargs.iteritems():
+            if key.endswith('_sp'):
+                par = key.rstrip('_sp')
+                if sp is None or (type(value) not in [type(()), type([])]):
+                    ret[par] = value
+                else:
+                    ret[par] = value[sp % len(value)]
+            else:
+                ret[key] = value
+        for key,value in default.iteritems():
+            if not ret.has_key(key):
+                ret[key] = value
+        return ret
+
+    def _getLegendArgs(self, **default):
+        ret = {}
+        # get single line properties from 'lines' calls.
+        for var in ['lty', 'col', 'lwd', 'pch', 'bty']:
+            ret[var] = []
+            for i in range(len(self.subPops)):
+                arg = self._getArgs('points', i, **default)
+                if arg.has_key(var):
+                    ret[var].append(arg[var])
+            if len(ret[var]) == 0:
+                ret.pop(var)
+        # is there any other parameters for legend function?
+        ret.update(self._getArgs('legend'))
+        return ret
+
+    def _plot(self, pop):
+        "Evaluate expression in pop and save result. Plot all data if needed"
+        gen = pop.dvars().gen
+        rep = pop.dvars().rep
+        # create a new graphical device if needed
+        if not hasattr(self, 'device'):
+            self.device = _newDevice()
+        # call the preHook function if given
+        if self.preHook is not None:
+            self.preHook(rpy.r)
+        # call par in case some parameter is provided
+        parParam = self._getArgs('par')
+        if len(parParam) > 0:
+            rpy.r.par(**parParam)
+        #
+        x = pop.indInfo(self.infoFields[0])
+        y = pop.indInfo(self.infoFields[1])
+        xlim = [min(x), max(x)]
+        ylim = [min(y), max(y)]
+        # if there is no subpopulation, easy
+        if len(self.subPops) == 0:
+            rpy.r.plot(x, y, 
+                **self._getArgs('plot', type='p', xlim=xlim, ylim=ylim,
+                    xlab=self.infoFields[0], ylab=self.infoFields[1]))
+        else:
+            parPlot = self._getArgs('plot', type='n', xlim=xlim, ylim=ylim,
+                    xlab=self.infoFields[0], ylab=self.infoFields[1])
+            parPlot['type'] = 'n'
+            rpy.r.plot(x[0], y[0], **parPlot)
+            for idx,sp in enumerate(self.subPops):
+                x = pop.indInfo(self.infoFields[0], sp)
+                y = pop.indInfo(self.infoFields[1], sp)
+                rpy.r.points(x, y, **self._getArgs('points', idx))
+            # legend
+            if len(self.legend) > 0:
+                rpy.r.legend('topright', legend=self.legend,
+                    **self._getLegendArgs(bty='n'))
+        # call the postHook function if given
+        if self.postHook is not None:
+            self.postHook(rpy.r)
+        if self.saveAs != '':
+            self._save(gen, rep)
+        return True
+
+    def _save(self, gen, rep):
+        "Save plots using a device specified by file extension."
+        name = self.saveAs
+        ext = os.path.splitext(name)[-1]
+        try:
+            # I need to use this more lengthy form because some
+            # functions are not available in, for example, R 2.6.2
+            if ext.lower() == '.pdf':
+                device = rpy.r.pdf
+                params = self._getArgs('pdf')
+            elif ext.lower() == '.png':
+                device = rpy.r.png
+                params = self._getArgs('png', width=800, height=600)
+            elif ext.lower() == '.bmp':
+                device = rpy.r.bmp
+                params = self._getArgs('bmp', width=800, height=600)
+            elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
+                device = rpy.r.jpeg
+                params = self._getArgs('jpeg', width=800, height=600)
+            elif ext.lower() == '.tif' or ext.lower() == '.tiff':
+                device = rpy.r.tiff
+                params = self._getArgs('tiff', width=800, height=600)
+            elif ext.lower() == '.eps':
+                device = rpy.r.postscript
+                params = self._getArgs('postscript')
+            else:
+                device = rpy.r.postscript
+                params = self._getArgs('postscript')
+        except Exception, e:
+            print e
+            print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
+            device = rpy.r.postscript
+            params = self._getArgs('postscript')
+        # figure out a filename
+        if gen < 0:
+            if ext == '':
+                name += '.eps'
+        else:
+            if ext == '':
+                name += '_%d_%d.eps' % (gen, rep)
+            else:
+                name = name.replace(ext, '_%d_%d%s' % (gen, rep, ext))
+        rpy.r.dev_print(file=name, device = device, **params)
+
+
 
