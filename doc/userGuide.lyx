@@ -12940,7 +12940,7 @@ lines
 \end_layout
 
 \begin_layout Itemize
-Several hook function can be defined by passed to parameters 
+Several hook function can be defined and passed to parameters 
 \family typewriter
 preHook
 \family default
@@ -12952,12 +12952,12 @@ postHook
 \family typewriter
 plotHook
 \family default
-, which will be called before a figure is drawn, after a figure is drawn,
- and after each 
+, which will be called, respectively, before a figure is drawn, after a
+ figure is drawn, and after each 
 \family typewriter
 r.plot
 \family default
- call, respectively.
+ call.
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
