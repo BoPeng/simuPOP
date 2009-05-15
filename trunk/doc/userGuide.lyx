@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12508,28 +12508,77 @@ http://www.r-project.org
 \family typewriter
 expr
 \family default
-).
- When this operator is applied to populations during evolution, 
-\family typewriter
-expr
-\family default
- is evaluated at each population's local namespace.
- All results are saved unless parameter 
+), which are evalulated (against each population's local namespace) and
+ saved during evolution.
+ The return value of the expression can be a number or a sequence, but should
+ have the same type and length across all replicates and generations.
+ Histories of each value (or each item in the returned sequence) of each
+ replicate form a line, with generation numbers as its x-axis.
+ Number of lines will be the number of replicates multiplied by dimension
+ of the expression.
+ Although complete histories are usually saved, you can use parameter 
 \family typewriter
 win
 \family default
- is used to specify a window of generations to keep.
- The return value of the expression can be a number or a sequence, but should
- have the same type and length across all replicates and generations.
- A figure will be drawn at the end of the last replicate (except for the
- first generation where no line could be drawn) unless the current generation
- is less than 
+ to save histories only within the last 
 \family typewriter
-update
+win
 \family default
- generations away from the last generation at which a figure has been drawn.
- Historical values for all replicates will be drawn with the x axis being
- generation number.
+ generations.
+ 
+\end_layout
+
+\begin_layout Standard
+Except for the first generation where no line could be drawn, a figure will
+ be drawn after this operator is applied to the last specified replicate
+ (parameter 
+\family typewriter
+rep
+\family default
+ could be used to specify a subset of replicates).
+ For example, although linkage disequilibrium values between the first two
+ loci are evaluated and saved at the end of generations 0, 5, 10, ..., (
+\family typewriter
+step=5
+\family default
+) figures are only drawn at generations 40 and 80 (
+\family typewriter
+update=40
+\family default
+) in Exampe 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpy"
+
+\end_inset
+
+.
+ This example also demonstrates the use of parameters 
+\family typewriter
+saveAs
+\family default
+ and 
+\family typewriter
+legend
+\family default
+.
+ By given a filename 
+\family typewriter
+rpy.png
+\family default
+ to parameter 
+\family typewriter
+saveAs
+\family default
+, this operator will save figures (named 
+\family typewriter
+rpy40.png
+\family default
+ and 
+\family typewriter
+rpy80.png
+\family default
+) after they are drawn.
 \end_layout
 
 \begin_layout Standard
@@ -12544,16 +12593,116 @@ lstparams "caption={Use rpy to plot an expression},label={rpy}"
 \end_layout
 
 \begin_layout Standard
-Besides parameters mentioned above, arbitrary keyword parameters could be
- specified and be passed to the underlying R functions ``plot`` and ``line``.
- These parameters could be used to specify line type (``lty``), color (``col``),
- title (``main``), limit of x and y axes (``xlim`` and ``ylim``) and many
- other options (see R manual for details).
- As a special case, multiple values can be passed to each replicate or dimension
- if the name of a parameter ends with ``_rep`` or ``_dim``.
- For example, ``lty_rep=range(1, 5)`` will pass parameters ``lty=1``, ...,
- ``lty=4`` to four replicates.
- 
+Parameters after 
+\family typewriter
+legend
+\family default
+ (
+\family typewriter
+xlab
+\family default
+, 
+\family typewriter
+ylab
+\family default
+, 
+\family typewriter
+ylim
+\family default
+, 
+\family typewriter
+main
+\family default
+, ...) deserve more attention here.
+ These parameters are not defined by 
+\family typewriter
+varPlotter
+\family default
+ so they are passed directly to the underlying R functions 
+\family typewriter
+plot
+\family default
+ and 
+\family typewriter
+line
+\family default
+.
+ They could be used to customize line type (
+\family typewriter
+lty
+\family default
+), color (
+\family typewriter
+col
+\family default
+), title (
+\family typewriter
+main
+\family default
+), limits of x and y axes (
+\family typewriter
+xlim
+\family default
+ and 
+\family typewriter
+ylim
+\family default
+) and many other graphical features (see R manual for details).
+ More interetingly, if multiple lines are drawn, a list of values could
+ be applied to these lines if you add 
+\family typewriter
+_rep
+\family default
+ (for each replicate) or 
+\family typewriter
+_dim
+\family default
+ (for each item of a sequence) after the name of the parameter.
+ For example, 
+\family typewriter
+lty_rep=[1, 2, 3]
+\family default
+ is used in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpy"
+
+\end_inset
+
+ to pass parameters 
+\family typewriter
+lty=1
+\family default
+, 
+\family typewriter
+lty=2
+\family default
+ and 
+\family typewriter
+lty=3
+\family default
+ to lines for three replicates.
+ Suffixes 
+\family typewriter
+_rep_dim
+\family default
+ and 
+\family typewriter
+_dim_rep
+\family default
+ are also allowed, but they are rarely used.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rpy"
+
+\end_inset
+
+ displayed 
+\family typewriter
+rpy80.png
+\family default
+ that is saved at generation 80 for this example.
 \end_layout
 
 \begin_layout Standard
@@ -12572,7 +12721,14 @@ name "fig:rpy"
 
 \end_inset
 
-Saved figure
+rpy80.png saved at generation 80 for Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpy"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -12581,17 +12737,14 @@ Saved figure
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename log/rpy80.png
 	lyxscale 40
-	width 80text%
+	width 60text%
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -12601,15 +12754,102 @@ Saved figure
 \end_layout
 
 \begin_layout Standard
-Multiple lines for each replicate will be drawn if the results of the expression
- are sequences.
- These lines could be plotted in the same figure, or seperated to subplots
- by replicates (``byRep``), by each dimention of the results (``byDim``),
- or both.
- These figure could be saved to files in various formats if parameter ``saveAs``
- is specified.
- File format is determined by file extension.
- After the evolution, the graphic device could be left open.
+If the expression is multidimensional, the number of lines can be large
+ and it is often desired to separate these lines into subplots.
+ This can be done by parameter 
+\family typewriter
+byRep
+\family default
+ or 
+\family typewriter
+byDim
+\family default
+.
+ The former plots lines replicate by replicate and the latter does it dimension
+ by dimension.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpyByRep"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpyByDim"
+
+\end_inset
+
+ both have three replicates and the expression has allele frequency for
+ four loci.
+ The total number of lines is therefore 12.
+ In Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpyByRep"
+
+\end_inset
+
+, these lines are separated to three subplots, replicate by replicate, with
+ different titles (parameter 
+\family typewriter
+main_rep
+\family default
+).
+ In each subplot, allele frequency trajectories (histories) for different
+ loci are plotted in different color (parameter 
+\family typewriter
+col_dim
+\family default
+).
+ The last saved figure (
+\family typewriter
+rpy_byRep90.png
+\family default
+) is displayed in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rpyByRep"
+
+\end_inset
+
+.
+ In Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "rpyByDim"
+
+\end_inset
+
+, these lines are separated to four subplots, locus by locus, with different
+ titles (parameter 
+\family typewriter
+main_dim
+\family default
+).
+ In each subplot, allele frequency trajectories (histories) for different
+ loci are plotted in different color (parameter 
+\family typewriter
+col_rep
+\family default
+) and line type (parameter 
+\family typewriter
+lty_rep
+\family default
+).
+ The last saved figure (
+\family typewriter
+rpy_byDim90.png
+\family default
+) is displayed in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rpyByDim"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -12639,7 +12879,7 @@ name "fig:rpyByRep"
 
 \end_inset
 
-Saved figure
+Allele frequency trajectories separated by replicates
 \end_layout
 
 \end_inset
@@ -12648,8 +12888,9 @@ Saved figure
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
-	filename log/rpy_byRep80.png
+	filename log/rpy_byRep90.png
 	lyxscale 40
 	width 80text%
 
@@ -12690,7 +12931,7 @@ name "fig:rpyByDim"
 
 \end_inset
 
-Saved figure
+Allele frequency trajectories separated by loci
 \end_layout
 
 \end_inset
@@ -12699,8 +12940,9 @@ Saved figure
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
-	filename log/rpy_byDim80.png
+	filename log/rpy_byDim90.png
 	lyxscale 40
 	width 80text%
 
