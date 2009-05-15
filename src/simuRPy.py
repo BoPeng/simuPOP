@@ -56,24 +56,27 @@ from simuPOP import pyOperator, PostMating
 class varPlotter(pyOperator):
     '''
     This class defines a Python operator that uses R to plot the current and
-    historical values of a Python expression (``expr``). When this operator is
-    applied to populations during evolution, an expression is evaluated at each
-    population's local namespace. All results are saved unless parameter
-    ``win`` is used to specify a window of generations to keep. The return
-    value of the expression can be a number or a sequence, but should have the
-    same type and length across all replicates and generations.
+    historical values of a Python expression (``expr``), which are evaluated
+    (against each population's local namespace) and saved during evolution. The
+    return value of the expression can be a number or a sequence, but should
+    have the same type and length across all replicates and generations.
+    Histories of each value (or each item in the returned sequence) of each
+    replicate form a line, with generation numbers as its x-axis. Number of
+    lines will be the number of replicates multiplied by dimension of the
+    expression. Although complete histories are usually saved, you can use
+    parameter ``win`` to save histories only within the last ``win``
+    generations.
     
     A figure will be draw at the end of the last replicate (except for the
     first generation where no line could be drawn) unless the current
     generation is less than ``update`` generations away from the last
-    generation at which a figure has been drawn. Historical values for all
-    replicates will be drawn with the x xais being generation number. Multiple
-    lines for each replicate will be drawn if the results of the expression are
-    sequences. These lines could be plotted in the same figure, or seperated to
-    subplots by replicates (``byRep``), by each dimention of the results
-    (``byDim``), or both. These figure could be saved to files in various
-    formats if parameter ``saveAs`` is specified. File format is determined by
-    file extension. After the evolution, the graphic device could be left open.
+    generation at which a figure has been drawn. Lines for multiple replicates
+    or dimensions could be plotted in the same figure (by default), or be
+    seperated to subplots by replicates (``byRep``), by each dimention of the
+    results (``byDim``), or by both. These figure could be saved to files in
+    various formats if parameter ``saveAs`` is specified. File format is
+    determined by file extension. After the evolution, the graphic device could
+    be left open.
 
     Besides parameters mentioned above, arbitrary keyword parameters could be
     specified and be passed to the underlying R functions ``plot`` and
