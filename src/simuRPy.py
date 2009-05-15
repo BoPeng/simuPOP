@@ -76,21 +76,28 @@ class varPlotter(pyOperator):
     results (``byDim``), or by both. These figure could be saved to files in
     various formats if parameter ``saveAs`` is specified. File format is
     determined by file extension. After the evolution, the graphic device could
-    be left open.
+    be left open (``leaveOpen``).
 
     Besides parameters mentioned above, arbitrary keyword parameters could be
-    specified and be passed to the underlying R functions ``plot`` and
-    ``line``. These parameters could be used to specify line type (``lty``),
+    specified and be passed to the underlying R drawing functions ``plot`` and
+    ``lines``. These parameters could be used to specify line type (``lty``),
     color (``col``), title (``main``), limit of x and y axes (``xlim`` and
     ``ylim``) and many other options (see R manual for details). As a special
-    case, multiple values can be passed to each replicate or dimension if the
-    name of a parameter ends with ``_rep`` or ``_dim``. For example,
-    ``lty_rep=range(1, 5)`` will pass parameters ``lty=1``, ..., ``lty=4`` to
-    four replicates.
+    case, multiple values can be passed to each replicate and/or dimension if
+    the name of a parameter ends with ``_rep``, ``_dim``, ``_rep_dim`` or
+    ``_dim_rep``. For example, ``lty_rep=range(1, 5)`` will pass parameters
+    ``lty=1``, ..., ``lty=4`` to four replicates. You can also pass parameters
+    to specific R functions such as ``par``, ``plot``, ``lines``, ``legend``,
+    ``pdf`` by prefixing parameter names with a function name. For example,
+    ``png_width=300`` will pass ``width=300`` to function ``png()`` when you
+    save your figures in ``png`` format. Further customization of your figures
+    could be achieved by writing your own hook functions that will be called
+    before and after a figure is drawn, and after each ``plot`` call.
     '''
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
-        saveAs="", leaveOpen=False, legend=[], stage=PostMating, begin=0,
-        end=-1, step=1, at=[], rep=[], **kwargs):
+        saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
+        plotHook=None, stage=PostMating, begin=0, end=-1, step=1, at=[],
+        rep=[], **kwargs):
         '''
         expr
             expression that will be evaluated at each replicate's local
@@ -139,6 +146,22 @@ class varPlotter(pyOperator):
             for both replicates and dimensions, legends should be given to each
             dimension, and then each replicate.
 
+        preHook
+            A function that, if given, will be called before the figure is
+            draw. The ``r`` object from the ``rpy`` module will be passed to
+            this function.
+
+        postHook
+            A function that, if given, will be called after the figure is
+            drawn. The ``r`` object from the ``rpy`` module will be passed to
+            this function.
+
+        plotHook
+            A function that, if given, will be called after each ``plot``
+            function. The ``r`` object from the ``rpy`` module, the replicate
+            number (``None`` if not applicable), the dimension number (``None``
+            if not applicable) will be passed to this function.
+
         kwargs
             All additional keyword parameters will be passed directly to the
             plot function ``r.plot`` and ``r.line``. Such parameters includes
@@ -160,6 +183,10 @@ class varPlotter(pyOperator):
         self.saveAs = saveAs
         self.leaveOpen = leaveOpen
         self.legend = legend
+        self.preHook = preHook
+        self.postHook = postHook
+        self.plotHook = plotHook
+        self.kwargs = kwargs
         # internal flags
         self.nRep = 0
         self.reps = []   # allows specification of selected replicates
@@ -170,11 +197,11 @@ class varPlotter(pyOperator):
         self.data = []
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
-        pyOperator.__init__(self, func=self._plot, param=kwargs,
+        pyOperator.__init__(self, func=self._plot,
             begin=begin, end=end, step=step, at=at,
             rep=rep, subPops=[], infoFields=[])
 
-    def __del__(self) :
+    def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
             rpy.r.dev_off()
@@ -191,7 +218,6 @@ class varPlotter(pyOperator):
                 rpy.r('getOption("device")()')
         except:
             raise RuntimeError("Failed to get R version to start a graphical device");
-        #
         # get device number
         self.device = rpy.r.dev_cur()
         if self.device == 0:
@@ -236,8 +262,23 @@ class varPlotter(pyOperator):
         else:
             return self.data[rep]
 
-    def _getArgs(self, rep, dim, kwargs, **default):
-        "Get the single format parameters for keyword parameters."
+    def _getArgs(self, func, rep=None, dim=None, **default):
+        "Get the single format parameters from keyword parameters."
+        # first, we need to figure out usable kwparameters, that is to say
+        # 1. if func in ['plot', 'lines'], non-function specific parameters
+        #    could be used.
+        # 2. if func is 'legend' etc, only prefixed parameters could be used.
+        kwargs = {}
+        for key,value in self.kwargs.iteritems():
+            if key.startswith(func + '_'):
+                # function specific, accept
+                kwargs[key.lstrip(func + '_')] = value
+            elif func in ['plot', 'lines']:
+                # the plain case, or the case with ending _rep or _dim
+                # accept for plot and line (e.g. xlim)
+                if '_' not in key or key.split('_')[-1] in ['rep', 'dim']:
+                    kwargs[key] = value
+                # prefixed with another function is not considered
         ret = {}
         for key,value in kwargs.iteritems():
             if key.endswith('_rep_dim'):
@@ -264,31 +305,34 @@ class varPlotter(pyOperator):
                 ret[key] = value
         return ret
 
-    def _getLegendArgs(self, legendType, kwargs, **default):
+    def _getLegendArgs(self, legendType, **default):
         ret = {}
+        # get single line properties from 'lines' calls.
         for var in ['lty', 'col', 'lwd', 'pch', 'bty']:
             ret[var] = []
             if legendType == '_rep':
                 for i in range(self.nRep):
-                    arg = self._getArgs(i, 0, kwargs, **default)
+                    arg = self._getArgs('lines', i, 0, **default)
                     if arg.has_key(var):
                         ret[var].append(arg[var])
             elif legendType == '_dim':
                 for i in range(self.nDim):
-                    arg = self._getArgs(0, i, kwargs, **default)
+                    arg = self._getArgs('lines', 0, i, **default)
                     if arg.has_key(var):
                         ret[var].append(arg[var])
             elif legendType == '_rep_dim':
                 for i in range(self.nRep):
                     for j in range(self.nDim):
-                        arg = self._getArgs(i, j, kwargs, **default)
+                        arg = self._getArgs('lines', i, j, **default)
                         if arg.has_key(var):
                             ret[var].append(arg[var])
             if len(ret[var]) == 0:
                 ret.pop(var)
+        # is there any other parameters for legend function?
+        ret.update(self._getArgs('legend'))
         return ret
 
-    def _plot(self, pop, kwargs):
+    def _plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
         gen = pop.dvars().gen
         rep = pop.dvars().rep
@@ -307,6 +351,9 @@ class varPlotter(pyOperator):
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
             self._getDev()
+        # call the preHook function if given
+        if self.preHook is not None:
+            self.preHook(rpy.r)
         # figure out the dimension of data
         if self.nRep == 1:
             self.byRep = False
@@ -325,7 +372,9 @@ class varPlotter(pyOperator):
             if nrow > ncol:
                 nrow, ncol = ncol, nrow
             # call r.par to allocate subplots
-            rpy.r.par(mfrow=[nrow, ncol])
+            rpy.r.par(**self._getArgs('par', mfrow=[nrow, ncol]))
+        else: # still call par
+            rpy.r.par(**self._getArgs('par'))
         # now plot.
         if self.byRep:
             # handle each replicate separately
@@ -334,35 +383,46 @@ class varPlotter(pyOperator):
                     # separate plot for each dim
                     for j in range(self.nDim):
                         rpy.r.plot(self.gen, self._getData(i, j),
-                            **self._getArgs(i, j, kwargs, type='l', xlab='Generation'))
+                            **self._getArgs('plot', i, j, type='l', xlab='Generation'))
+                        if self.plotHook is not None:
+                            self.plotHook(rpy.r, i, j)
                 else:
                     # all var in one subplot
                     rpy.r.plot(self.gen, self._getData(i, 0),
-                        **self._getArgs(i, 0, kwargs, type='l', xlab='Generation'))
+                        **self._getArgs('plot', i, 0, type='l', xlab='Generation'))
+                    if self.plotHook is not None:
+                        self.plotHook(rpy.r, i, None)
                     for j in range(1, self.nDim):
-                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs(i, j, kwargs))
+                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs('lines', i, j))
                     if len(self.legend) > 0:
                         rpy.r.legend('topright', legend=self.legend,
-                            **self._getLegendArgs('_dim', kwargs, bty='n', lty=1))
+                            **self._getLegendArgs('_dim', bty='n', lty=1))
         else:
             # all replicate in one figure
             if self.byDim:
                 for i in range(self.nDim):
                     rpy.r.plot(self.gen, self._getData(self.reps[0], i),
-                        **self._getArgs(self.reps[0], i, kwargs, type='l', xlab='Generation'))
+                        **self._getArgs('plot', self.reps[0], i, type='l', xlab='Generation'))
+                    if self.plotHook is not None:
+                        self.plotHook(rpy.r, None, i)
                     for j in self.reps[1:]:
-                        rpy.r.lines(self.gen, self._getData(j, i), **self._getArgs(j, i, kwargs))
+                        rpy.r.lines(self.gen, self._getData(j, i), **self._getArgs('lines', j, i))
                     if len(self.legend) > 0:
                         rpy.r.legend('topright', legend=self.legend,
-                            **self._getLegendArgs('_rep', kwargs, bty='n', lty=1))
+                            **self._getLegendArgs('_rep', bty='n', lty=1))
             else:
-                rpy.r.plot(self.gen, self._getData(0, 0), **self._getArgs(0, 0, kwargs, type='l', xlab='Generation'))
+                rpy.r.plot(self.gen, self._getData(0, 0), **self._getArgs('plot', 0, 0, type='l', xlab='Generation'))
+                if self.plotHook is not None:
+                    self.plotHook(rpy.r, None, None)
                 for i in self.reps:
                     for j in range(self.nDim):
-                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs(i, j, kwargs))
+                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs('lines', i, j))
                 if len(self.legend) > 0:
                     rpy.r.legend('topright', legend=self.legend,
-                        **self._getLegendArgs('_rep_dim', kwargs, bty='n', lty=1))
+                        **self._getLegendArgs('_rep_dim', bty='n', lty=1))
+        # call the postHook function if given
+        if self.postHook is not None:
+            self.postHook(rpy.r)
         if self.saveAs != '':
             self._save(gen)
         return True
@@ -371,34 +431,35 @@ class varPlotter(pyOperator):
         "Save plots using a device specified by file extension."
         name = self.saveAs
         ext = os.path.splitext(name)[-1]
-        params = {}
         try:
             # I need to use this more lengthy form because some
             # functions are not available in, for example, R 2.6.2
             if ext.lower() == '.pdf':
                 device = rpy.r.pdf
+                params = self._getArgs('pdf')
             elif ext.lower() == '.png':
                 device = rpy.r.png
-                # this could be made configurable, but I prefer a cleaner
-                # interface
-                params = {'width':800, 'height':600}
+                params = self._getArgs('png', width=800, height=600)
             elif ext.lower() == '.bmp':
                 device = rpy.r.bmp
-                params = {'width':800, 'height':600}
+                params = self._getArgs('bmp', width=800, height=600)
             elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
                 device = rpy.r.jpeg
-                params = {'width':800, 'height':600}
+                params = self._getArgs('jpeg', width=800, height=600)
             elif ext.lower() == '.tif' or ext.lower() == '.tiff':
                 device = rpy.r.tiff
-                params = {'width':800, 'height':600}
+                params = self._getArgs('tiff', width=800, height=600)
             elif ext.lower() == '.eps':
                 device = rpy.r.postscript
+                params = self._getArgs('postscript')
             else:
                 device = rpy.r.postscript
+                params = self._getArgs('postscript')
         except Exception, e:
             print e
             print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
             device = rpy.r.postscript
+            params = self._getArgs('postscript')
         # figure out a filename
         if gen < 0:
             if ext == '':
