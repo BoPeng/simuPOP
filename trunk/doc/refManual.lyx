@@ -1923,7 +1923,28 @@ simuRPyRef
 
 
 \backslash
+simuRPynewDeviceRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPysaveFigureRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuRPyvarPlotterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyinfoPlotterRef
 \end_layout
 
 \end_inset
