@@ -1929,8 +1929,7 @@ def passInfo(fields):
     anc = (anc1 + anc2)/2.
     x = (x1 + x2)/2 + random.normalvariate(anc - 0.5, 0.1)
     y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
-    # limit to 0 and 1
-    return max(0, min(1, x)), max(0, min(1, y)), anc
+    return x, y, anc
 
 simu = simulator(pop, randomMating())
 simu.evolve(
@@ -1941,7 +1940,7 @@ simu.evolve(
             subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
             col_sp = ['green', 'purple', 'red', 'blue', 'black'],
             cex_sp = [1, 1.2, 1.4, 1.6, 1.8],
-            xlim = [0, 1], ylim = [0, 1.2],
+            ylim = [0, 1.2],
             main = 'Ancestry distribution of individuals',
             legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
                 '0.6 <= anc < 0.8', '0.8 <= anc'],
