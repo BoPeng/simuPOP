@@ -47,7 +47,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterByRep(self):
@@ -72,7 +72,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterByDim(self):
@@ -97,7 +97,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterSelectedRep(self):
@@ -121,7 +121,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterTogether(self):
@@ -148,7 +148,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterByRepDim(self):
@@ -173,7 +173,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterSaveAs(self):
@@ -199,9 +199,9 @@ class TestRPy(unittest.TestCase):
              gen = 31
         )
         for f in range(5,31,5):
-            self.assertEqual(os.path.isfile('demo%d.eps' % f), True)
-            os.remove('demo%d.eps' % f)
-        sleep(5)
+            self.assertEqual(os.path.isfile('demo_%d.eps' % f), True)
+            os.remove('demo_%d.eps' % f)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterPar(self):
@@ -224,7 +224,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterPar(self):
@@ -247,7 +247,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterHook(self):
@@ -283,7 +283,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testInfoPlotter(self):
@@ -304,7 +304,7 @@ class TestRPy(unittest.TestCase):
             ],
             gen = 5,
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testInfoPlotterSP(self):
@@ -328,7 +328,7 @@ class TestRPy(unittest.TestCase):
             ],
             gen = 5,
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testInfoPlotterSubSet(self):
@@ -351,11 +351,11 @@ class TestRPy(unittest.TestCase):
                     xlim = [0, 1],
                     main='Twoo colors, 100 points xlim=[0, 1]',
                     legend = ['Male', 'Female']),
-                pause(),
+                #pause(),
             ],
             gen = 5,
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
 if __name__ == '__main__':

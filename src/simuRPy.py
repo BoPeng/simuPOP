@@ -53,8 +53,10 @@ if os.name == 'nt':
 
 from simuPOP import pyOperator, PostMating
 
-def _newDevice():
-    'Create a new graphics'
+def newDevice():
+    '''Create a new graphics window and return its device number in R. This
+    function essentially calls ``getOption('device')()`` in R.
+    '''
     # open a new window
     try:
         # 46754 is the revision number for R 2.8.0
@@ -71,6 +73,58 @@ def _newDevice():
     if device == 0:
         raise RuntimeError('Can not open new device')
     return device
+
+def saveFigure(filename, gen=None, rep=None, **kwargs):
+    '''
+    Save current figure into ``filename``. File format and graphics device are
+    determined by file extension. Supported file formats include ``pdf``,
+    ``png``, ``bmp``, ``jpg (jpeg)``, ``tif (tiff)``, and ``eps``, which
+    correspond to R devices ``pdf``, ``png``, ``bmp``, ``jpeg``, ``tiff``
+    and ``postscript``. A postscript device will be used if there is no file
+    extension or the file extension is not recognizable. If ``gen`` or ``rep``
+    is given, they will be inserted into ``filename`` before file extension,
+    with a leading ``_``. For example, ``saveFigure('file.eps', 10, 2)`` will
+    save figure as ``file_10_2.eps``. Additional keyword parameters will be
+    passed to the underlying ``dev.print`` function.
+    '''
+    file, ext = os.path.splitext(filename)
+    # default extension and format
+    if ext == '':
+        ext = '.eps'
+    #
+    params = {}
+    # these two parameters have to be specified for raster formats
+    try:
+        # I need to use this more lengthy form because some
+        # functions are not available in, for example, R 2.6.2
+        if ext.lower() == '.pdf':
+            device = rpy.r.pdf
+        elif ext.lower() == '.png':
+            device = rpy.r.png
+            params = {'width': 800, 'height': 600}
+        elif ext.lower() == '.bmp':
+            device = rpy.r.bmp
+            params = {'width': 800, 'height': 600}
+        elif ext.lower() in ['.jpg', '.jpeg']:
+            device = rpy.r.jpeg
+            params = {'width': 800, 'height': 600}
+        elif ext.lower() in ['.tif', '.tiff']:
+            device = rpy.r.tiff
+            params = {'width': 800, 'height': 600}
+        elif ext.lower() == '.eps':
+            device = rpy.r.postscript
+    except Exception, e:
+        print e
+        print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
+        device = rpy.r.postscript
+    # figure out a filename
+    if gen is not None:
+        file += '_%d' % gen
+    if rep is not None:
+        file += '_%d' % rep
+    params.update(kwargs)
+    rpy.r.dev_print(file=file + ext, device=device, **params)
+
 
 class varPlotter(pyOperator):
     '''
@@ -185,8 +239,8 @@ class varPlotter(pyOperator):
             plot function ``r.plot`` and ``r.line``. Such parameters includes
             but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
             ``ylim``, ``col``, ``lty``. A parameter will be sent to a specific
-            function if its name is prefixed by the name of a function (e.g.
-            ``png_width``). Multiple values could be passed to
+            function if its name is prefixed by the name of a function (use
+            ``save`` for ``dev.print``). Multiple values could be passed to
             different replicates or dimensions of results if suffix ``_rep``
             or ``_dim`` is appended to parameter name. For example,
             ``col_rep=['red', 'blue']`` uses two colors for values from
@@ -217,9 +271,8 @@ class varPlotter(pyOperator):
         self.data = []
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
-        pyOperator.__init__(self, func=self._plot,
-            begin=begin, end=end, step=step, at=at,
-            rep=rep, subPops=[], infoFields=[])
+        pyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
+            at=at, rep=rep, stage=stage, subPops=[], infoFields=[])
 
     def __del__(self):
         # Close the device if needed.
@@ -353,7 +406,7 @@ class varPlotter(pyOperator):
             self.lastPlot = gen
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
-            self.device = _newDevice()
+            self.device = newDevice()
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -427,53 +480,8 @@ class varPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            self._save(gen)
+            saveFigure(self.saveAs, gen, None, **self._getArgs('dev_print'))
         return True
-
-    def _save(self, gen):
-        "Save plots using a device specified by file extension."
-        name = self.saveAs
-        ext = os.path.splitext(name)[-1]
-        try:
-            # I need to use this more lengthy form because some
-            # functions are not available in, for example, R 2.6.2
-            if ext.lower() == '.pdf':
-                device = rpy.r.pdf
-                params = self._getArgs('pdf')
-            elif ext.lower() == '.png':
-                device = rpy.r.png
-                params = self._getArgs('png', width=800, height=600)
-            elif ext.lower() == '.bmp':
-                device = rpy.r.bmp
-                params = self._getArgs('bmp', width=800, height=600)
-            elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
-                device = rpy.r.jpeg
-                params = self._getArgs('jpeg', width=800, height=600)
-            elif ext.lower() == '.tif' or ext.lower() == '.tiff':
-                device = rpy.r.tiff
-                params = self._getArgs('tiff', width=800, height=600)
-            elif ext.lower() == '.eps':
-                device = rpy.r.postscript
-                params = self._getArgs('postscript')
-            else:
-                device = rpy.r.postscript
-                params = self._getArgs('postscript')
-        except Exception, e:
-            print e
-            print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
-            device = rpy.r.postscript
-            params = self._getArgs('postscript')
-        # figure out a filename
-        if gen < 0:
-            if ext == '':
-                name += '.eps'
-        else:
-            if ext == '':
-                name += '_%d.eps' % gen
-            else:
-                name = name.replace(ext, '_' + str(gen) + ext)
-        rpy.r.dev_print(file=name, device = device, **params)
-
 
 class infoPlotter(pyOperator):
     '''
@@ -487,10 +495,12 @@ class infoPlotter(pyOperator):
     other options (see R manual for details). You can also pass parameters
     to specific R functions such as ``par``, ``plot``, ``points``, ``legend``,
     ``pdf`` by prefixing parameter names with a function name. For example,
-    ``png_width=300`` will pass ``width=300`` to function ``png()`` when you
-    save your figures in ``png`` format. Further customization of your figures
-    could be achieved by writing your own hook functions that will be called
-    before and after a figure is drawn.
+    ``par_mar=[1]*4`` will pass ``par=[1]*4`` to function ``par()`` which is
+    called before a figure is drawn. (Note that the function to save a figure
+    is ``dev.print`` so parameters such as ``dev_print_width`` should be
+    used.) Further customization of your figures could be achieved by writing
+    your own hook functions that will be called before and after a figure is
+    drawn.
 
     The power of this operator lies in its ability to differentiate individuals
     from different (virtual) subpopulations. If you specify IDs of (virtual)
@@ -547,9 +557,9 @@ class infoPlotter(pyOperator):
             All additional keyword parameters will be passed directly to the
             plot function ``r.plot`` and ``r.points``. Such parameters includes
             but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
-            ``ylim``, ``col``, ``pch``.A parameter will be sent to a specific
+            ``ylim``, ``col``, ``pch``. A parameter will be sent to a specific
             function if its name is prefixed by the name of a function (e.g.
-            ``png_width``). Multiple values could be passed to different
+            ``dev_print_width``). Multiple values could be passed to different
             (virtual) subpopulations if suffix ``_sp`` is appended to parameter
             name. If the list has insufficient number of items, existing items
             will be reused.
@@ -568,7 +578,7 @@ class infoPlotter(pyOperator):
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, rep=rep)
+            step=step, at=at, rep=rep, stage=stage)
 
     def __del__(self):
         # Close the device if needed.
@@ -628,7 +638,7 @@ class infoPlotter(pyOperator):
         rep = pop.dvars().rep
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
-            self.device = _newDevice()
+            self.device = newDevice()
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -658,57 +668,11 @@ class infoPlotter(pyOperator):
             # legend
             if len(self.legend) > 0:
                 rpy.r.legend('topright', legend=self.legend,
-                    **self._getLegendArgs(bty='n'))
+                    **self._getLegendArgs(bty='n', pch=1))
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            self._save(gen, rep)
+            saveFigure(self.saveAs, gen, rep, **self._getArgs('dev_print'))
         return True
-
-    def _save(self, gen, rep):
-        "Save plots using a device specified by file extension."
-        name = self.saveAs
-        ext = os.path.splitext(name)[-1]
-        try:
-            # I need to use this more lengthy form because some
-            # functions are not available in, for example, R 2.6.2
-            if ext.lower() == '.pdf':
-                device = rpy.r.pdf
-                params = self._getArgs('pdf')
-            elif ext.lower() == '.png':
-                device = rpy.r.png
-                params = self._getArgs('png', width=800, height=600)
-            elif ext.lower() == '.bmp':
-                device = rpy.r.bmp
-                params = self._getArgs('bmp', width=800, height=600)
-            elif ext.lower() == '.jpg' or ext.lower() == '.jpeg':
-                device = rpy.r.jpeg
-                params = self._getArgs('jpeg', width=800, height=600)
-            elif ext.lower() == '.tif' or ext.lower() == '.tiff':
-                device = rpy.r.tiff
-                params = self._getArgs('tiff', width=800, height=600)
-            elif ext.lower() == '.eps':
-                device = rpy.r.postscript
-                params = self._getArgs('postscript')
-            else:
-                device = rpy.r.postscript
-                params = self._getArgs('postscript')
-        except Exception, e:
-            print e
-            print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
-            device = rpy.r.postscript
-            params = self._getArgs('postscript')
-        # figure out a filename
-        if gen < 0:
-            if ext == '':
-                name += '.eps'
-        else:
-            if ext == '':
-                name += '_%d_%d.eps' % (gen, rep)
-            else:
-                name = name.replace(ext, '_%d_%d%s' % (gen, rep, ext))
-        rpy.r.dev_print(file=name, device = device, **params)
-
-
 

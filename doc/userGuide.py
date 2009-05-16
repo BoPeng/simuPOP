@@ -1868,7 +1868,7 @@ simu.evolve(
 
 #file log/rpyByDim.log
 from simuPOP import *
-from simuRPy import varPlotter, rpy
+from simuRPy import varPlotter
 pop = population(size=1000, loci=[1]*4)
 simu = simulator(pop, randomMating(), rep=3)
 
@@ -1896,7 +1896,7 @@ simu.evolve(
             col_rep=['red', 'blue', 'black'],
             lty_rep=[1, 2, 3],
             # the default png dimension is 800x600
-            png_width=600, png_height=500,
+            dev_print_width=600, dev_print_height=500,
             # do not draw axes in r.plot, leaving the job to drawFrame
             plot_axes=False,
             # plot frame, grid etc after each r.plot call
@@ -1907,7 +1907,52 @@ simu.evolve(
 )
 #end
 
-rpy.r.dev_off()
+
+#file log/infoPlotter.log
+from simuPOP import *
+from simuRPy import infoPlotter
+import random
+pop = population([500], infoFields=['x', 'y', 'anc'])
+# random sex
+InitSex(pop)
+# random geographic location
+pop.setIndInfo([random.random() for i in range(500)], 'x')
+pop.setIndInfo([random.random() for i in range(500)], 'y')
+# anc is 0 or 1
+pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
+# Defines VSP 0, 1, 2, 3, 4 by anc.
+pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
+#
+def passInfo(fields):
+    'Parental fields will be passed as x1, y1, anc1, x2, y2, anc2'
+    x1, y1, anc1, x2, y2, anc2 = fields
+    anc = (anc1 + anc2)/2.
+    x = (x1 + x2)/2 + random.normalvariate(anc - 0.5, 0.1)
+    y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
+    # limit to 0 and 1
+    return max(0, min(1, x)), max(0, min(1, y)), anc
+
+simu = simulator(pop, randomMating())
+simu.evolve(
+    ops = [
+        pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
+        infoPlotter(['x', 'y'], stage=PreMating,            
+            saveAs = 'log/infoPlotter.png',
+            subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
+            col_sp = ['green', 'purple', 'red', 'blue', 'black'],
+            cex_sp = [1, 1.2, 1.4, 1.6, 1.8],
+            xlim = [0, 1], ylim = [0, 1.2],
+            main = 'Ancestry distribution of individuals',
+            legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
+                '0.6 <= anc < 0.8', '0.8 <= anc'],
+            plot_axes = False,
+            par_mar = [0, 0, 2, 0],
+        ),
+    ],
+    gen = 5,
+)
+#end
+
 #file log/getParam.log
 import types, simuOpt
 

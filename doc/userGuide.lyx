@@ -12495,6 +12495,12 @@ simuUtil (under revision)
 simuRPy
 \end_layout
 
+\begin_layout Subsection
+class 
+\family typewriter
+varPlotter
+\end_layout
+
 \begin_layout Standard
 The 
 \family typewriter
@@ -12700,7 +12706,7 @@ reference "fig:rpy"
 
  displayed 
 \family typewriter
-rpy80.png
+rpy_80.png
 \family default
  that is saved at generation 80 for this example.
 \end_layout
@@ -12721,7 +12727,7 @@ name "fig:rpy"
 
 \end_inset
 
-rpy80.png saved at generation 80 for Example 
+rpy_80.png saved at generation 80 for Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "rpy"
@@ -12739,7 +12745,7 @@ reference "rpy"
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/rpy80.png
+	filename log/rpy_80.png
 	lyxscale 40
 	width 60text%
 
@@ -12805,7 +12811,7 @@ col_dim
 ).
  The last saved figure (
 \family typewriter
-rpy_byRep90.png
+rpy_byRep_90.png
 \family default
 ) is displayed in Figure 
 \begin_inset CommandInset ref
@@ -12840,7 +12846,7 @@ lty_rep
 ).
  The last saved figure (
 \family typewriter
-rpy_byDim90.png
+rpy_byDim_90.png
 \family default
 ) is displayed in Figure 
 \begin_inset CommandInset ref
@@ -12890,7 +12896,7 @@ Allele frequency trajectories separated by replicates
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/rpy_byRep90.png
+	filename log/rpy_byRep_90.png
 	lyxscale 40
 	width 80text%
 
@@ -13014,7 +13020,280 @@ Allele frequency trajectories separated by loci
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/rpy_byDim90.png
+	filename log/rpy_byDim_90.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+
+\family typewriter
+class infoPlotter
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+infoPlotter
+\family default
+ plots individuals in all or selected (virtual) subpopulations in a 2-D
+ plot, using values at two information fields as their x- and y-axis.
+ In the most simplified form,
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+infoPlotter(infoFields=['x', 'y'])
+\end_layout
+
+\end_inset
+
+will plot all individuals according their values of information fields 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+y
+\family default
+.
+ Additional parameters such as pch, 
+\family typewriter
+col
+\family default
+, and 
+\family typewriter
+cex
+\family default
+ can be used to control the shape, color and size of the points.
+\end_layout
+
+\begin_layout Standard
+What makes this operator useful is its ability to differentiate points (individu
+als) by (virtual) subpopulations (VSPs).
+ If a list of VSPs are given, different colors and shapes can be assigned
+ to the points using list format of the parameters such as 
+\family typewriter
+pch_sp
+\family default
+ and 
+\family typewriter
+col_sp
+\family default
+.
+ Because simulations that keep track of multiple information fields are
+ usually complicated, let us simulate something interesting and examine
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "infoPlotter"
+
+\end_inset
+
+ in details.
+\end_layout
+
+\begin_layout Standard
+At the beginning of this example, all individuals are scattered randomly
+ with 
+\family typewriter
+x
+\family default
+ and 
+\family typewriter
+y
+\family default
+ being their physical locations.
+ We use 
+\family typewriter
+anc
+\family default
+ to record individual ancestry and assign 0 and 1 each to half of the population.
+ During evolution,
+\end_layout
+
+\begin_layout Itemize
+Offspring ancestry values are the average of their parents.
+\end_layout
+
+\begin_layout Itemize
+Offspring with higher ancestry value tend to move to the right.
+ More specifically, locations of an offspring will be 
+\begin_inset Formula \[
+\frac{\left(x_{1}+x_{2}\right)}{2}+N\left(\frac{a_{1}+a_{2}}{2}-0.5,0.1\right),\frac{\left(y_{1}+y_{2}\right)}{2}+N\left(0,0.1\right)\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\left(x_{1},y_{1}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\left(x_{2},y_{2}\right)$
+\end_inset
+
+ are locations of parents, 
+\begin_inset Formula $a_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{2}$
+\end_inset
+
+ are ancestry values of the parents, and 
+\begin_inset Formula $N\left(a,b\right)$
+\end_inset
+
+ are a random number with normal distribution.
+\end_layout
+
+\begin_layout Standard
+An 
+\family typewriter
+infoPlotter
+\family default
+ will be used to plot the physical location of all individuals.
+ Individual ancestries are divided into five regions (0, 0.2, 0.4, 0.6, 0.8,
+ 1) indicated by small to larger points.
+ Male and female individuals are plotted by different symbol.
+ This scripts uses the following techniques:
+\end_layout
+
+\begin_layout Itemize
+Set individual information fields randomly using 
+\family typewriter
+setIndInfo
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Define virtual subpopulations using a 
+\family typewriter
+infoSplitter
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Use 
+\family typewriter
+pyTagger
+\family default
+ to calculate offspring information fields from parental fields.
+\end_layout
+
+\begin_layout Itemize
+Mark individuals in different VSPs using parameters 
+\family typewriter
+col_sp
+\family default
+ and 
+\family typewriter
+cex_sp
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Use 
+\family typewriter
+plot_axes=False
+\family default
+ and 
+\family typewriter
+par_mar=[0, 0, 2, 0]
+\family default
+ to pass parameters 
+\family typewriter
+axes=False
+\family default
+ and 
+\family typewriter
+mar=[0, 0, 2, 0]
+\family default
+ to functions 
+\family typewriter
+plot
+\family default
+ and 
+\family typewriter
+par
+\family default
+ respectively.
+\end_layout
+
+\begin_layout Itemize
+Use 
+\family typewriter
+stage=PreMating
+\family default
+ to plot figures before mating.
+\end_layout
+
+\begin_layout Standard
+VSPs 0 and 4 appear at the beginning of generation 0, VSP 2 appears at the
+ end of generation 0, and VSP 1 and 3 appear at the end of generation 1.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:infoPlotter"
+
+\end_inset
+
+ displays a figure at the begging of generation 2.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/infoPlotter.log"
+lstparams "caption={Use infoPlotter to plot ancestry of individuals with geographic information.},label={infoPlotter}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:infoPlotter"
+
+\end_inset
+
+Plot of individuals with ancestry marked by different colors
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/infoPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 
