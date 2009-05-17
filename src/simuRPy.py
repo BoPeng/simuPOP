@@ -147,7 +147,7 @@ class aliasedArgs:
     ``mar=[1]*4`` to R function ``par``, and ``lty_rep=[1, 2, 3]`` will pass
     ``lty=1``, ``lty=2`` and ``lty=3`` to different replicates.
     '''
-    def __init__(self, defaultFuncs=[], allFuncs=[], suffixes=[], params={}, **kwargs):
+    def __init__(self, defaultFuncs=[], allFuncs=[], suffixes=[], defaultParams={}, **kwargs):
         '''
         defaultFunc
             Default functions. Parameters without a prefix will be passed to
@@ -160,22 +160,55 @@ class aliasedArgs:
         suffixes
             A list of allowed suffixes.
 
-        params
-            User specified parameters. Default parameters could be specified
-            by updating a default parameter dictionary with a user provided
-            one.
+        defaultParams
+            Default parameters in a dictionary. E.g. ``{'plot_type': 'l'}``
+            will pass ``type='l'`` to the ``plot`` function unless users
+            provides another value.
+
+        kwargs
+            User specified parameters. These parameters will overwide
+            default values in ``defaultParams``.
         '''
         self.defaultFuncs = defaultFuncs
         self.allFuncs = allFuncs
         self.suffixes = suffixes
-        self.params = params
-        self.params.update(kwargs)
+        self.params = kwargs
+        def baseForm(name):
+            for suffix in self.suffixes:
+                if name.endswith('_' + suffix):
+                    return name[:-len('_' + suffix)]
+            return name
+        #
+        def funcForm(name):
+            base = baseForm(key)
+            if True in [base.startswith(x + '_') for x in self.allFuncs]:
+                return [base]
+            else:
+                return ['%s_%s' % (x, base) for x in self.defaultFuncs]
+        #
+        existingParams = []
+        for key in self.params.keys():
+            existingParams.extend(funcForm(key))
+        #
+        for key,value in defaultParams.iteritems():
+            funcs = funcForm(key)
+            exist = False
+            for func in funcs:
+                if func in existingParams:
+                    exist = True
+            if not exist:
+                self.params[key] = value
 
-    def getArgs(self, func, **index):
+    def getArgs(self, func, **kwargs):
         '''Get all single format parameters from keyword parameters. Additional
         keyword arguments can be used to specify suffix and its index. (e.g.
-        rep=1 will return the second element of par_rep).
+        rep=1 will return the second element of par_rep). Unrecognized keyword
+        arguments are handled as default value that will be used if a parameter
+        is not defined. E.g. ``getArgs('line', rep=1, pch=4)`` will get
+        parameters for replicate 1 and add ``pch=4`` if ``pch`` is not defined.
         '''
+        if func not in self.allFuncs:
+            raise ValueError('%s is not among the allowed functions' % func)
         ret = {}
         for key,value in self.params.iteritems():
             # this is a prefixed parameter
@@ -183,7 +216,7 @@ class aliasedArgs:
             if True in [key.startswith(x + '_') for x in self.allFuncs]:
                 if key.startswith(func + '_'):
                     # function specific, accept
-                    par = key.lstrip(func + '_')
+                    par = key[len(func + '_'):]
             # not prefixed, accept if func is one of the default funcs
             elif func in self.defaultFuncs:
                 par = key
@@ -191,59 +224,55 @@ class aliasedArgs:
                 continue
             # is this a suffixed parameter?
             if True in [par.endswith('_' + x) for x in self.suffixes]:
-                for suffix,idx in index.iteritems():
-                    if not self.suffixes.has_key(suffix):
-                        raise ValueError('%d is not an allowed suffix' % suffix)
+                for suffix,idx in kwargs.iteritems():
+                    if not suffix in self.suffixes:
+                        continue
                     if par.endswith('_' + suffix):
                         if type(value) in [type(()), type([])]:
-                            ret[par] = value[idx % len(value)]
+                            ret[par[:-len('_' + suffix)]] = value[idx % len(value)]
                         else:
-                            ret[par] = value
+                            ret[par[:-len('_' + suffix)]] = value
                         break
             else:
                 ret[par] = value
+        # unrecognized keyword arguments?
+        for key,value in kwargs.iteritems():
+            if not key in self.suffixes and not ret.has_key(key):
+                ret[key] = value
         return ret
 
-    def getLegendArgs(self, func, args, **index):
+    def getLegendArgs(self, func, args, keys, values, **kwargs):
         '''
         Get argument values for legend drawing purposes. For example, 
 
-            getMultiArgs(['lty', 'pch'], rep=[0,1,2], dim=[0,1])
+            getMultiArgs('lines', ['lty', 'pch'], 'rep', [0,1,2])
         
-        will get parameter for ``lty`` and ``pch`` for all combinations of
-        ``rep`` and ``dim``.
+        will get parameter for ``lty`` and ``pch`` for all ``rep``. If there
+        are more keys (e.g. ``['rep', 'dim']``), values should be a list of
+        of lists (e.g., ``[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]``).
+        Default values could be passed as additional keyword arguments.
         '''
-        # do a outer product of values in index.
-        combinations = []
-        for suffix,indexes in index.iteritems():
-            # the first one
-            if len(combinations) == 0:
-                for idx in indexes:
-                    combinations.append([idx])
-                continue
-            # expand several times and insert each element ...
-            new_comb = []
-            for c in combinations:
-                for v in indexes:
-                    new_comb.append(c + [v])
-            combinations = new_comb
         # get param using getArgs
         ret = {}
         for arg in args:
-            ret[var] = []
-        for vals in combinations:
+            ret[arg] = []
+        for val in values:
             # compose a dictionary with these values
-            kwargs = {}
-            for k,v in zip(index.keys(), vals):
-                kwargs[k] = v
-            vals = self.getArgs(func, **kwargs)
+            index = {}
+            if type(keys) == type(''):
+                index[keys] = val
+            else:
+                for k,v in zip(keys, val):
+                    index[k] = v
+            index.update(kwargs)
+            vals = self.getArgs(func, **index)
             for arg in args:
                 if vals.has_key(arg):
-                    ret[var].append(vals[arg])
+                    ret[arg].append(vals[arg])
         #
         for arg in args:
-            if len(ret[var]) == 0:
-                ret.pop(var)
+            if len(ret[arg]) == 0:
+                ret.pop(arg)
         return ret
 
 
@@ -278,15 +307,15 @@ class varPlotter(pyOperator):
     color (``col``), title (``main``), limit of x and y axes (``xlim`` and
     ``ylim``) and many other options (see R manual for details). As a special
     case, multiple values can be passed to each replicate and/or dimension if
-    the name of a parameter ends with ``_rep``, ``_dim``, ``_rep_dim`` or
-    ``_dim_rep``. For example, ``lty_rep=range(1, 5)`` will pass parameters
-    ``lty=1``, ..., ``lty=4`` to four replicates. You can also pass parameters
-    to specific R functions such as ``par``, ``plot``, ``lines``, ``legend``,
-    ``pdf`` by prefixing parameter names with a function name. For example,
-    ``png_width=300`` will pass ``width=300`` to function ``png()`` when you
-    save your figures in ``png`` format. Further customization of your figures
-    could be achieved by writing your own hook functions that will be called
-    before and after a figure is drawn, and after each ``plot`` call.
+    the name of a parameter ends with ``_rep``, ``_dim``, or ``_repdim``
+    For example, ``lty_rep=range(1, 5)`` will pass parameters ``lty=1``, ...
+    ``lty=4`` to four replicates. You can also pass parameters to specific
+    R functions such as ``par``, ``plot``, ``lines``, ``legend``, ``dev_print``
+    by prefixing parameter names with a function name. For example, 
+    ``dev_print_width=300`` will pass ``width=300`` to function ``dev.print()``
+    when you save your figures using this function. Further customization of
+    your figures could be achieved by writing your own hook functions that will
+    be called before and after a figure is drawn, and after each ``plot`` call.
     '''
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
         saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
@@ -365,9 +394,8 @@ class varPlotter(pyOperator):
             different replicates or dimensions of results if suffix ``_rep``
             or ``_dim`` is appended to parameter name. For example,
             ``col_rep=['red', 'blue']`` uses two colors for values from
-            different replicates. ``_rep_dim`` and ``_dim_rep`` could also be
-            used. If the list has insufficient number of items, existing items
-            will be reused. 
+            different replicates. ``_repdim`` is also allowed. If the list
+            has insufficient number of items, existing items will be reused. 
         '''
         # parameters
         self.expr = expr
@@ -381,7 +409,12 @@ class varPlotter(pyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.plotHook = plotHook
-        self.kwargs = kwargs
+        self.args = aliasedArgs(
+            defaultFuncs = ['plot', 'lines'],
+            allFuncs = ['par', 'plot', 'lines', 'dev_print', 'legend'],
+            suffixes = ['rep', 'dim', 'repdim'],
+            defaultParams = {'legend_bty': 'n', 'plot_lty': 1},
+            **kwargs)
         # internal flags
         self.nRep = 0
         self.reps = []   # allows specification of selected replicates
@@ -439,76 +472,6 @@ class varPlotter(pyOperator):
         else:
             return self.data[rep]
 
-    def _getArgs(self, func, rep=None, dim=None, **default):
-        "Get the single format parameters from keyword parameters."
-        # first, we need to figure out usable kwparameters, that is to say
-        # 1. if func in ['plot', 'lines'], non-function specific parameters
-        #    could be used.
-        # 2. if func is 'legend' etc, only prefixed parameters could be used.
-        kwargs = {}
-        for key,value in self.kwargs.iteritems():
-            if key.startswith(func + '_'):
-                # function specific, accept
-                kwargs[key.lstrip(func + '_')] = value
-            elif func in ['plot', 'lines']:
-                # the plain case, or the case with ending _rep or _dim
-                # accept for plot and line (e.g. xlim)
-                if '_' not in key or key.split('_')[-1] in ['rep', 'dim']:
-                    kwargs[key] = value
-                # prefixed with another function is not considered
-        ret = {}
-        for key,value in kwargs.iteritems():
-            if key.endswith('_rep_dim'):
-                par = key.rstrip('_rep_dim')
-                idx = self.reps.index(rep) * self.nDim + dim
-            elif key.endswith('_dim_rep'):
-                par = key.rstrip('_dim_rep')
-                idx = self.reps.index(rep) + self.nRep * dim
-            elif key.endswith('_rep'):
-                par = key.rstrip('_rep')
-                idx = self.reps.index(rep)
-            elif key.endswith('_dim'):
-                par = key.rstrip('_dim')
-                idx = dim
-            else:
-                ret[key] = value
-                continue
-            if (type(value) not in [type(()), type([])]):
-                ret[par] = value
-            else:
-                ret[par] = value[idx % len(value)]
-        for key,value in default.iteritems():
-            if not ret.has_key(key):
-                ret[key] = value
-        return ret
-
-    def _getLegendArgs(self, legendType, **default):
-        ret = {}
-        # get single line properties from 'lines' calls.
-        for var in ['lty', 'col', 'lwd', 'pch', 'bty']:
-            ret[var] = []
-            if legendType == '_rep':
-                for i in range(self.nRep):
-                    arg = self._getArgs('lines', i, 0, **default)
-                    if arg.has_key(var):
-                        ret[var].append(arg[var])
-            elif legendType == '_dim':
-                for i in range(self.nDim):
-                    arg = self._getArgs('lines', 0, i, **default)
-                    if arg.has_key(var):
-                        ret[var].append(arg[var])
-            elif legendType == '_rep_dim':
-                for i in range(self.nRep):
-                    for j in range(self.nDim):
-                        arg = self._getArgs('lines', i, j, **default)
-                        if arg.has_key(var):
-                            ret[var].append(arg[var])
-            if len(ret[var]) == 0:
-                ret.pop(var)
-        # is there any other parameters for legend function?
-        ret.update(self._getArgs('legend'))
-        return ret
-
     def _plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
         gen = pop.dvars().gen
@@ -549,9 +512,9 @@ class varPlotter(pyOperator):
             if nrow > ncol:
                 nrow, ncol = ncol, nrow
             # call r.par to allocate subplots
-            rpy.r.par(**self._getArgs('par', mfrow=[nrow, ncol]))
+            rpy.r.par(**self.args.getArgs('par', mfrow=[nrow, ncol]))
         else: # still call par
-            rpy.r.par(**self._getArgs('par'))
+            rpy.r.par(**self.args.getArgs('par'))
         # now plot.
         if self.byRep:
             # handle each replicate separately
@@ -560,48 +523,57 @@ class varPlotter(pyOperator):
                     # separate plot for each dim
                     for j in range(self.nDim):
                         rpy.r.plot(self.gen, self._getData(i, j),
-                            **self._getArgs('plot', i, j, type='l', xlab='Generation'))
+                            **self.args.getArgs('plot', rep=i, dim=j, repdim=self.nDim*i +j, type='l', xlab='Generation'))
                         if self.plotHook is not None:
                             self.plotHook(rpy.r, i, j)
                 else:
                     # all var in one subplot
                     rpy.r.plot(self.gen, self._getData(i, 0),
-                        **self._getArgs('plot', i, 0, type='l', xlab='Generation'))
+                        **self.args.getArgs('plot', rep=i, dim=0, repdim=self.nDim*i, type='l', xlab='Generation'))
                     if self.plotHook is not None:
                         self.plotHook(rpy.r, i, None)
                     for j in range(1, self.nDim):
-                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs('lines', i, j))
+                        rpy.r.lines(self.gen, self._getData(i, j),
+                            **self.args.getArgs('lines', rep=i, dim=j, repdim=self.nDim*i + j))
                     if len(self.legend) > 0:
-                        rpy.r.legend('topright', legend=self.legend,
-                            **self._getLegendArgs('_dim', bty='n', lty=1))
+                        args = self.args.getLegendArgs('lines', ['lty', 'col'],
+                            'rep', range(nRep))
+                        args.update(self.args.getArgs('legend'))
+                        rpy.r.legend('topright', legend=self.legend, **args)
         else:
             # all replicate in one figure
             if self.byDim:
                 for i in range(self.nDim):
                     rpy.r.plot(self.gen, self._getData(self.reps[0], i),
-                        **self._getArgs('plot', self.reps[0], i, type='l', xlab='Generation'))
+                        **self.args.getArgs('plot', rep=self.reps[0], dim=i, repdim=i, type='l', xlab='Generation'))
                     if self.plotHook is not None:
                         self.plotHook(rpy.r, None, i)
                     for j in self.reps[1:]:
-                        rpy.r.lines(self.gen, self._getData(j, i), **self._getArgs('lines', j, i))
+                        rpy.r.lines(self.gen, self._getData(j, i),
+                            **self.args.getArgs('lines', rep=j, dim=i, repdim=self.nDim*j+i))
                     if len(self.legend) > 0:
-                        rpy.r.legend('topright', legend=self.legend,
-                            **self._getLegendArgs('_rep', bty='n', lty=1))
+                        args = self.args.getLegendArgs('lines', ['lty', 'col'],
+                            'rep', range(self.nRep))
+                        args.update(self.args.getArgs('legend'))
+                        rpy.r.legend('topright', legend=self.legend, **args)
             else:
-                rpy.r.plot(self.gen, self._getData(0, 0), **self._getArgs('plot', 0, 0, type='l', xlab='Generation'))
+                rpy.r.plot(self.gen, self._getData(0, 0),
+                    **self.args.getArgs('plot', rep=0, dim=0, repdim=0, type='l', xlab='Generation'))
                 if self.plotHook is not None:
                     self.plotHook(rpy.r, None, None)
                 for i in self.reps:
                     for j in range(self.nDim):
-                        rpy.r.lines(self.gen, self._getData(i, j), **self._getArgs('lines', i, j))
+                        rpy.r.lines(self.gen, self._getData(i, j), **self.args.getArgs('lines', rep=i, dim=j, repdim=self.nDim*i+j))
                 if len(self.legend) > 0:
-                    rpy.r.legend('topright', legend=self.legend,
-                        **self._getLegendArgs('_rep_dim', bty='n', lty=1))
+                    args = self.args.getLegendArgs('lines', ['lty', 'col'],
+                        ['rep', 'dim'], [(x,y) for x in range(self.nRep) for y in range(self.nDim)])
+                    args.update(self.args.getArgs('legend'))
+                    rpy.r.legend('topright', legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, None, **self._getArgs('dev_print'))
+            saveFigure(self.saveAs, gen, None, **self.args.getArgs('dev_print'))
         return True
 
 class infoPlotter(pyOperator):
@@ -695,7 +667,12 @@ class infoPlotter(pyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.subPops = subPops
-        self.kwargs = kwargs
+        self.args = aliasedArgs(
+            defaultFuncs = ['plot', 'points'],
+            allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
+            suffixes = ['sp'],
+            defaultParams = {'legend_bty': 'n', 'points_pch': 1},
+            **kwargs)
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
@@ -705,53 +682,6 @@ class infoPlotter(pyOperator):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
             rpy.r.dev_off()
-
-    def _getArgs(self, func, sp=None, **default):
-        "Get the single format parameters from keyword parameters."
-        # first, we need to figure out usable kwparameters, that is to say
-        # 1. if func in ['plot', 'points'], non-function specific parameters
-        #    could be used.
-        # 2. if func is 'legend' etc, only prefixed parameters could be used.
-        kwargs = {}
-        for key,value in self.kwargs.iteritems():
-            if key.startswith(func + '_') or (func == 'plot' and key.startswith('points_')):
-                # function specific, accept, plot also accept point parameters
-                kwargs[key.lstrip(func + '_')] = value
-            elif func in ['plot', 'points']:
-                # the plain case, or the case with ending _rep or _dim
-                # accept for plot and line (e.g. xlim)
-                if '_' not in key or key.split('_')[-1] == 'sp':
-                    kwargs[key] = value
-                # prefixed with another function is not considered
-        ret = {}
-        for key,value in kwargs.iteritems():
-            if key.endswith('_sp'):
-                par = key.rstrip('_sp')
-                if sp is None or (type(value) not in [type(()), type([])]):
-                    ret[par] = value
-                else:
-                    ret[par] = value[sp % len(value)]
-            else:
-                ret[key] = value
-        for key,value in default.iteritems():
-            if not ret.has_key(key):
-                ret[key] = value
-        return ret
-
-    def _getLegendArgs(self, **default):
-        ret = {}
-        # get single line properties from 'lines' calls.
-        for var in ['lty', 'col', 'lwd', 'pch', 'bty']:
-            ret[var] = []
-            for i in range(len(self.subPops)):
-                arg = self._getArgs('points', i, **default)
-                if arg.has_key(var):
-                    ret[var].append(arg[var])
-            if len(ret[var]) == 0:
-                ret.pop(var)
-        # is there any other parameters for legend function?
-        ret.update(self._getArgs('legend'))
-        return ret
 
     def _plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -764,7 +694,7 @@ class infoPlotter(pyOperator):
         if self.preHook is not None:
             self.preHook(rpy.r)
         # call par in case some parameter is provided
-        parParam = self._getArgs('par')
+        parParam = self.args.getArgs('par')
         if len(parParam) > 0:
             rpy.r.par(**parParam)
         #
@@ -775,21 +705,22 @@ class infoPlotter(pyOperator):
         # if there is no subpopulation, easy
         if len(self.subPops) == 0:
             rpy.r.plot(x, y, 
-                **self._getArgs('plot', type='p', xlim=xlim, ylim=ylim,
+                **self.args.getArgs('plot', type='p', xlim=xlim, ylim=ylim,
                     xlab=self.infoFields[0], ylab=self.infoFields[1]))
         else:
-            parPlot = self._getArgs('plot', type='n', xlim=xlim, ylim=ylim,
+            parPlot = self.args.getArgs('plot', type='n', xlim=xlim, ylim=ylim,
                     xlab=self.infoFields[0], ylab=self.infoFields[1])
             parPlot['type'] = 'n'
             rpy.r.plot(x[0], y[0], **parPlot)
             for idx,sp in enumerate(self.subPops):
                 x = pop.indInfo(self.infoFields[0], sp)
                 y = pop.indInfo(self.infoFields[1], sp)
-                rpy.r.points(x, y, **self._getArgs('points', idx))
+                rpy.r.points(x, y, **self.args.getArgs('points', sp=idx))
             # legend
             if len(self.legend) > 0:
-                rpy.r.legend('topright', legend=self.legend,
-                    **self._getLegendArgs(bty='n', pch=1))
+                args = self.args.getLegendArgs('points', [''], 'sp', range(len(self.subPops)))
+                args.update(self.args.getArgs('legend', bty='n'))
+                rpy.r.legend('topright', legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
