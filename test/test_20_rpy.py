@@ -95,9 +95,7 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('subPopSize[0]',
-                type='l', win=10, main='Three colorful lines, no legend, win=10',
-                xlab='gen', ylim=[0, 100], 
-                col_rep=['red', 'green', 'blue'])
+                win=10, main='Three colorful lines, no legend, win=10')
              ],
              gen = 30
         )
@@ -120,13 +118,13 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('subPopSize', byRep=True, lty_dim=[1, 2, 3],
-                type='l', win=10, main='3 rep, 3 colorful lines, ylabs differ', xlab='gen', ylim=[0, 100], 
-                col_dim=['red', 'green', 'blue'], 
+                main='3 rep, 3 colorful thick lines, ylabs differ',
+                lwd=2,
                 ylab_rep=['subPopSize (rep %d)' % x for x in range(3)])
              ],
              gen = 30
         )
-        sleep(1)
+        sleep(5)
         r.dev_off()
 
     def testVarPlotterByDim(self):
@@ -144,7 +142,7 @@ class TestRPy(unittest.TestCase):
             ops = [
              migr,
              stator,
-             varPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
+             varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  col_rep=['red', 'green', 'blue'],
                  byDim=True, win=10, main='win=10, 3 dim, 3 colorful lines, legend',
                  legend=['a', 'b', 'c'])
@@ -318,7 +316,7 @@ class TestRPy(unittest.TestCase):
             r.par(mar=[2]*4)
         def mtext(r):
             r.mtext('A marginal text', outer=True, side=3)
-        def drawFrame(r, rep, dim):
+        def drawFrame(r, **kwargs):
             r.axis(1)
             r.axis(2)
             r.grid()
@@ -340,7 +338,8 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testInfoPlotter(self):
+    def testScatterPlotter(self):
+        'Testing scatterPlotter'
         import random
         pop = population([100, 200], infoFields=['x', 'y'])
         InitSex(pop)
@@ -353,7 +352,7 @@ class TestRPy(unittest.TestCase):
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
                 inheritTagger(TAG_Maternal, infoFields=['y']),
-                infoPlotter(['x', 'y'], main='B/W, 300 points'),
+                scatterPlotter(['x', 'y'], main='B/W, 300 points'),
                 #pause(),
             ],
             gen = 5,
@@ -361,7 +360,8 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testInfoPlotterSP(self):
+    def testScatterPlotterSP(self):
+        'Testing scatterPlotter with multiple virtual subpopulations'
         import random
         pop = population([100, 200], infoFields=['x', 'y'])
         InitSex(pop)
@@ -374,7 +374,7 @@ class TestRPy(unittest.TestCase):
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
                 inheritTagger(TAG_Maternal, infoFields=['y']),
-                infoPlotter(['x', 'y'],
+                scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1), (1, 0), (1, 1)],
                     col_sp = ['blue', 'red', 'green', 'purple'],
                     main='Color, 300 points, left right does not mix'),
@@ -385,7 +385,8 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testInfoPlotterSubSet(self):
+    def testScatterPlotterSubSet(self):
+        'Testing scatterPlotter with partial individuals'
         import random
         pop = population([100, 200], infoFields=['x', 'y'])
         InitSex(pop)
@@ -398,7 +399,7 @@ class TestRPy(unittest.TestCase):
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
                 inheritTagger(TAG_Maternal, infoFields=['y']),
-                infoPlotter(['x', 'y'],
+                scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     col_sp = ['blue', 'red'],
                     pch_sp = [1, 2],
@@ -412,7 +413,29 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testStatPlotter(self):
+    def testStatPlotterBase(self):
+        'Testing basic histogram using statPlotter'
+        import random
+        pop = population([500, 1000], infoFields=['x'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x')
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                histPlotter(infoFields='x', main='histogram of x (green, 5 bins)',
+                    breaks = [0, 0.2, 0.5, 0.8, 1],
+                    angle=60, col='green'
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+
+    def testStatPlotterFields(self):
+        'Testing stat plotter with multiple fields and subpopulations'
         import random
         pop = population([500, 1000], infoFields=['x', 'y'])
         InitSex(pop)
@@ -420,22 +443,56 @@ class TestRPy(unittest.TestCase):
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
         pop.setIndInfo([random.random() for i in range(300)], 'y')
         pop.setVirtualSplitter(sexSplitter())
-        print pop.subPopName((0, 0))
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
                 inheritTagger(TAG_Maternal, infoFields=['y']),
-                statPlotter(['x', 'y'],
-                    subPops = [(0, 0), (0, 1)]
+                histPlotter(infoFields=['x', 'y'],
+                    subPops = [(0, 0), (0, 1)],
+                    col_fld=['red', 'green'],
+                    density_sp=[5, 20],
+                    main_spfld=['Field x, Male', 'Field y, Male',
+                        'Field x, Female', 'Field y, Female'],
                 ),
-                pause(),
+                #pause(),
             ],
             gen = 5,
         )
         sleep(1)
         r.dev_off()
-            
+
+    def testStatPlotterQQplot(self):
+        'Testing barplotter with multiple fields and subpopulations'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        def qqline(r, data=None, **kwargs):
+            r.qqline(data)
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                qqPlotter(infoFields=['x', 'y'],
+                    subPops = [(0, 0), (0, 1)],
+                    col_fld=['red', 'green'],
+                    pch_sp=[1, 2],
+                    main_spfld=['Field x, Male', 'Field y, Male',
+                        'Field x, Female', 'Field y, Female'],
+                    plotHook=qqline,
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+
 
 if __name__ == '__main__':
     unittest.main()
