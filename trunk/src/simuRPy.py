@@ -26,13 +26,23 @@
 #
 
 '''
-This module defines an operator ``varPlotter`` that makes use of the Python
-rpy module (http://rpy.sourceforge.net) to plot expressions in R
-(http://www.r-project.org), a popular statistical analysis language. Note that
-rpy2, the successor of rpy, is currently not supported.
+This module defines several utility functions and Python operators that make
+use of the Python rpy module (http://rpy.sourceforge.net) to plot expressions
+and information fields of evolving populations using a popular statistical
+analysis language R (http://www.r-project.org). Note that rpy2, the successor
+of rpy, is currently not supported.
+
+Each operator calls a sequence of R functions to draw and save figures. A
+special parameter passing mechanism is used so that you can specify arbitrary
+parameters to these functions. For example, you can use parameter
+``par_mfrow=[2,2]`` to pass ``mfrow=[2,2]`` to function ``par``, and use
+``lty_rep=[1,2]`` to pass ``lty=1`` and ``lty=2`` to specify different line
+types for different replicates. The help message of each class will describe
+which and in what sequence these R functions are called to help you figure
+out which parameters are allowed.
 '''
 
-from exceptions import RuntimeError
+from exceptions import RuntimeError, ValueError
 from math import ceil, sqrt
 
 try:
@@ -124,6 +134,117 @@ def saveFigure(filename, gen=None, rep=None, **kwargs):
         file += '_%d' % rep
     params.update(kwargs)
     rpy.r.dev_print(file=file + ext, device=device, **params)
+
+
+class aliasedArgs:
+    '''This class implements the alias keyword argument handling mechanism that
+    is used by all classes defined in this module. An alias keyword argument is
+    an argument that is prefixed with a function name and/or suffixed by an
+    iterator name. The former specifies to which underlying R function this
+    parameter will be passed to; the latter allows the users to specify a list
+    of values that will be passed, for example, to lines representing different
+    replicates. For example, parameter ``par_mar=[1]*4`` will pass
+    ``mar=[1]*4`` to R function ``par``, and ``lty_rep=[1, 2, 3]`` will pass
+    ``lty=1``, ``lty=2`` and ``lty=3`` to different replicates.
+    '''
+    def __init__(self, defaultFuncs=[], allFuncs=[], suffixes=[], params={}, **kwargs):
+        '''
+        defaultFunc
+            Default functions. Parameters without a prefix will be passed to
+            these functions.
+
+        allFuncs
+            Allowed functions. This should be all the R functions called in
+            your class.
+
+        suffixes
+            A list of allowed suffixes.
+
+        params
+            User specified parameters. Default parameters could be specified
+            by updating a default parameter dictionary with a user provided
+            one.
+        '''
+        self.defaultFuncs = defaultFuncs
+        self.allFuncs = allFuncs
+        self.suffixes = suffixes
+        self.params = params
+        self.params.update(kwargs)
+
+    def getArgs(self, func, **index):
+        '''Get all single format parameters from keyword parameters. Additional
+        keyword arguments can be used to specify suffix and its index. (e.g.
+        rep=1 will return the second element of par_rep).
+        '''
+        ret = {}
+        for key,value in self.params.iteritems():
+            # this is a prefixed parameter
+            par = None
+            if True in [key.startswith(x + '_') for x in self.allFuncs]:
+                if key.startswith(func + '_'):
+                    # function specific, accept
+                    par = key.lstrip(func + '_')
+            # not prefixed, accept if func is one of the default funcs
+            elif func in self.defaultFuncs:
+                par = key
+            if par is None:
+                continue
+            # is this a suffixed parameter?
+            if True in [par.endswith('_' + x) for x in self.suffixes]:
+                for suffix,idx in index.iteritems():
+                    if not self.suffixes.has_key(suffix):
+                        raise ValueError('%d is not an allowed suffix' % suffix)
+                    if par.endswith('_' + suffix):
+                        if type(value) in [type(()), type([])]:
+                            ret[par] = value[idx % len(value)]
+                        else:
+                            ret[par] = value
+                        break
+            else:
+                ret[par] = value
+        return ret
+
+    def getLegendArgs(self, func, args, **index):
+        '''
+        Get argument values for legend drawing purposes. For example, 
+
+            getMultiArgs(['lty', 'pch'], rep=[0,1,2], dim=[0,1])
+        
+        will get parameter for ``lty`` and ``pch`` for all combinations of
+        ``rep`` and ``dim``.
+        '''
+        # do a outer product of values in index.
+        combinations = []
+        for suffix,indexes in index.iteritems():
+            # the first one
+            if len(combinations) == 0:
+                for idx in indexes:
+                    combinations.append([idx])
+                continue
+            # expand several times and insert each element ...
+            new_comb = []
+            for c in combinations:
+                for v in indexes:
+                    new_comb.append(c + [v])
+            combinations = new_comb
+        # get param using getArgs
+        ret = {}
+        for arg in args:
+            ret[var] = []
+        for vals in combinations:
+            # compose a dictionary with these values
+            kwargs = {}
+            for k,v in zip(index.keys(), vals):
+                kwargs[k] = v
+            vals = self.getArgs(func, **kwargs)
+            for arg in args:
+                if vals.has_key(arg):
+                    ret[var].append(vals[arg])
+        #
+        for arg in args:
+            if len(ret[var]) == 0:
+                ret.pop(var)
+        return ret
 
 
 class varPlotter(pyOperator):

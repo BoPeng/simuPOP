@@ -25,6 +25,15 @@ except exceptions.ImportError:
     hasRPy = False
 
 class TestRPy(unittest.TestCase):
+    def testAliasedArgs(self):
+        'Testing class aliasedARgs'
+        args = aliasedARgs(
+            defaultFuncs = ['plot', 'lines'],
+            allFuncs = ['plot', 'lines', 'par'],
+            suffixes = ['rep', 'dim'],
+            lty = 1, cex_rep=[1, 2, 3],
+            main = 'g')
+
     def testVarPlotterBase(self):
         'Testing byRep parameter of varPlotter'
         if not hasRPy:
