@@ -412,5 +412,30 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
+    def testStatPlotter(self):
+        import random
+        pop = population([500, 1000], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        print pop.subPopName((0, 0))
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                statPlotter(['x', 'y'],
+                    subPops = [(0, 0), (0, 1)]
+                ),
+                pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+            
+
 if __name__ == '__main__':
     unittest.main()
