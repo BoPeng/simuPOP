@@ -12578,11 +12578,11 @@ saveAs
 \family default
 , this operator will save figures (named 
 \family typewriter
-rpy40.png
+rpy_40.png
 \family default
  and 
 \family typewriter
-rpy80.png
+rpy_80.png
 \family default
 ) after they are drawn.
 \end_layout
@@ -12688,15 +12688,11 @@ lty=2
 lty=3
 \family default
  to lines for three replicates.
- Suffixes 
+ Suffix 
 \family typewriter
-_rep_dim
+_repdim
 \family default
- and 
-\family typewriter
-_dim_rep
-\family default
- are also allowed, but they are rarely used.
+ can also be used to specify values for every replication and dimension.
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -13035,9 +13031,9 @@ Allele frequency trajectories separated by loci
 \end_layout
 
 \begin_layout Subsection
-
+class 
 \family typewriter
-class infoPlotter
+infoPlotter
 \end_layout
 
 \begin_layout Standard

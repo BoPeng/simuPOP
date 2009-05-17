@@ -1937,6 +1937,13 @@ simuRPysaveFigureRef
 
 
 \backslash
+simuRPyaliasedArgsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuRPyvarPlotterRef
 \end_layout
 
