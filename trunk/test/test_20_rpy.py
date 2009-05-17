@@ -27,12 +27,57 @@ except exceptions.ImportError:
 class TestRPy(unittest.TestCase):
     def testAliasedArgs(self):
         'Testing class aliasedARgs'
-        args = aliasedARgs(
+        args = aliasedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['plot', 'lines', 'par'],
             suffixes = ['rep', 'dim'],
-            lty = 1, cex_rep=[1, 2, 3],
-            main = 'g')
+            lty = 1,
+            cex_rep=[1, 2, 3],
+            pch_dim=[5,6,7,8],
+            main = 'g',
+            par_val=[1,3],
+            par_blah_dim=[1,2],
+            some_var=4
+        )
+        self.assertEqual(args.getArgs('plot'),
+            {'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('plot', dim=1),
+            {'pch': 6, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('plot', dim=4),
+            {'pch': 5, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('plot', rep=4, dim=5),
+            {'cex':2, 'pch': 6, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('par', rep=4, dim=5),
+            {'val':[1,3], 'blah': 2})
+        #
+        self.assertRaises(exceptions.ValueError, args.getArgs, 'par1')
+        self.assertEqual(args.getArgs('par', blah=1), {'val': [1, 3], 'blah': 1})
+        #
+        self.assertEqual(args.getArgs('lines', rep=1),
+            {'some_var':4, 'main': 'g', 'lty':1, 'cex':2})
+        #
+        self.assertEqual(args.getLegendArgs('lines', ['cex', 'pch'], 'rep', range(5)),
+            {'cex': [1, 2, 3, 1, 2]})
+        self.assertEqual(args.getLegendArgs('lines', ['cex', 'pch', 'lty'], 'rep', range(5)),
+            {'cex': [1, 2, 3, 1, 2], 'lty':[1, 1, 1, 1, 1]})
+        self.assertEqual(args.getLegendArgs('lines', ['cex', 'pch', 'lty'],
+            ['rep', 'dim'], [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]),
+            {'cex': [1, 1, 2, 2, 3, 3], 'lty':[1, 1, 1, 1, 1, 1], 'pch': [5, 6, 5, 6, 5, 6]})
+        #
+        args = aliasedArgs(
+            defaultFuncs = ['plot', 'lines'],
+            allFuncs = ['plot', 'lines', 'par'],
+            suffixes = ['rep', 'dim'],
+            defaultParams = {'plot_lty': 1, 'par_blah': 2, 'plot_blah': 'blah'},
+            lty = 1,
+            cex_rep=[1, 2, 3],
+            main = 'g',
+            par_val=[1,3],
+            par_blah_dim=[1,2],
+        )
+        self.assertEqual(args.params, {'lty':1, 'cex_rep': [1,2,3], 'lty':1,
+            'plot_blah': 'blah', 'par_blah_dim': [1,2], 'par_val':[1,3], 'main': 'g'})
+
 
     def testVarPlotterBase(self):
         'Testing byRep parameter of varPlotter'
@@ -177,7 +222,7 @@ class TestRPy(unittest.TestCase):
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  byDim=True, byRep=True,
-                 win=10, main_rep_dim=['rep dim %d' % x for x in range(9)],
+                 win=10, main_repdim=['rep dim %d' % x for x in range(9)],
                  col_rep=['red', 'green', 'blue'], lty_dim=range(1, 4))
              ],
              gen = 30
