@@ -138,14 +138,17 @@ def saveFigure(filename, gen=None, rep=None, **kwargs):
 
 class aliasedArgs:
     '''This class implements the alias keyword argument handling mechanism that
-    is used by all classes defined in this module. An alias keyword argument is
-    an argument that is prefixed with a function name and/or suffixed by an
-    iterator name. The former specifies to which underlying R function this
-    parameter will be passed to; the latter allows the users to specify a list
-    of values that will be passed, for example, to lines representing different
-    replicates. For example, parameter ``par_mar=[1]*4`` will pass
-    ``mar=[1]*4`` to R function ``par``, and ``lty_rep=[1, 2, 3]`` will pass
-    ``lty=1``, ``lty=2`` and ``lty=3`` to different replicates.
+    is used by all classes defined in this module. It is provided for users who
+    would like to use this mechanism for their own rpy-related operators.
+    
+    An alias keyword argument is an argument that is prefixed with a function
+    name and/or suffixed by an iterator name. The former specifies to which
+    underlying R function this parameter will be passed to; the latter allows
+    the users to specify a list of values that will be passed, for example, to
+    lines representing different replicates. For example, parameter
+    ``par_mar=[1]*4`` will pass ``mar=[1]*4`` to R function ``par``, and
+    ``lty_rep=[1, 2, 3]`` will pass ``lty=1``, ``lty=2`` and ``lty=3`` to
+    different replicates.
     '''
     def __init__(self, defaultFuncs=[], allFuncs=[], suffixes=[], defaultParams={}, **kwargs):
         '''
@@ -316,6 +319,11 @@ class varPlotter(pyOperator):
     when you save your figures using this function. Further customization of
     your figures could be achieved by writing your own hook functions that will
     be called before and after a figure is drawn, and after each ``plot`` call.
+
+    This opertor calls R functions ``par``, ``plot``, ``lines``, ``legend``,
+    and ``dev.print``. Functions ``plot`` and ``lines`` are the default
+    destination for keyword arguments and the ones that accept list parameters
+    to customize lines by replicate and/or dimension.
     '''
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
         saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
@@ -537,7 +545,7 @@ class varPlotter(pyOperator):
                             **self.args.getArgs('lines', rep=i, dim=j, repdim=self.nDim*i + j))
                     if len(self.legend) > 0:
                         args = self.args.getLegendArgs('lines', ['lty', 'col'],
-                            'rep', range(nRep))
+                            'rep', range(self.nRep))
                         args.update(self.args.getArgs('legend'))
                         rpy.r.legend('topright', legend=self.legend, **args)
         else:
@@ -603,6 +611,11 @@ class infoPlotter(pyOperator):
     different VSPs. For example, if you have defined two VSPs by sex,
     ``subPops=[(0, 0), (0, 1)]`` and ``col_sp=['blue', 'red']`` will color
     male individuals with blue and female individuals with red.
+
+    This opertor calls R functions ``par``, ``plot``, ``points``, ``legend``,
+    and ``dev.print``. Functions ``plot`` and ``points`` are the default
+    destination for keyword arguments and the ones that accept list parameters
+    to customize lines by (virtual) subpopulation.
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
         preHook=None, postHook=None, stage=PostMating, begin=0, end=-1, step=1,
@@ -725,6 +738,6 @@ class infoPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self._getArgs('dev_print'))
+            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print'))
         return True
 
