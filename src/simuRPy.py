@@ -407,17 +407,12 @@ class varPlotter(pyOperator):
             (optional).
 
         kwargs
-            All additional keyword parameters will be passed directly to the
-            plot function ``r.plot`` and ``r.line``. Such parameters includes
-            but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
-            ``ylim``, ``col``, ``lty``. A parameter will be sent to a specific
-            function if its name is prefixed by the name of a function (use
-            ``save`` for ``dev.print``). Multiple values could be passed to
-            different replicates or dimensions of results if suffix ``_rep``
-            or ``_dim`` is appended to parameter name. For example,
-            ``col_rep=['red', 'blue']`` uses two colors for values from
-            different replicates. ``_repdim`` is also allowed. If the list
-            has insufficient number of items, existing items will be reused. 
+            Additional keyword arguments that will be interpreted and sent to
+            underlying R functions. These arguments could have prefixes
+            (destination function names) ``plot_``, ``lines_``, ``par_``,
+            ``legend_`` and ``dev_print_``, and suffixes (list parameters)
+            ``_rep``, ``_dim``, and ``_repdim``. Arguments without prefixes are
+            sent to functions ``plot`` and ``lines``.
         '''
         # parameters
         self.expr = expr
@@ -441,8 +436,9 @@ class varPlotter(pyOperator):
                 'plot_ylab': '',
                 'lines_lty': 1,
                 'legend_bty': 'n',
-                },
-            **kwargs)
+            },
+            **kwargs
+        )
         # internal flags
         self.nRep = 0
         self.reps = []   # allows specification of selected replicates
@@ -453,8 +449,7 @@ class varPlotter(pyOperator):
         # data
         self.gen = []
         self.data = []
-        # when apply is called, self.plot is called, additional keyword
-        # parameters are passed by kwargs.
+        # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
             at=at, rep=rep, stage=stage, subPops=[], infoFields=[])
 
@@ -464,7 +459,9 @@ class varPlotter(pyOperator):
             rpy.r.dev_off()
 
     def _pushData(self, gen, rep, data):
-        'Push history data to self.data for later retrieval'
+        '''Push history data to self.data for later retrieval. Set self.min and
+        self.max along the way.
+        '''
         # allocate a list for each replicate.
         while rep + 1 > len(self.data):
             self.data.append([])
@@ -543,7 +540,7 @@ class varPlotter(pyOperator):
             nPlots *= self.nDim
         if self.byRep:
             nPlots *= self.nRep
-        # try to use default colors
+        # try to use colors
         if self.nDim > 1 and not self.byDim:
             self.args.addDefault(col_dim=rpy.r.rainbow(self.nDim))
         if self.nRep > 1 and not self.byRep:
@@ -555,50 +552,52 @@ class varPlotter(pyOperator):
             if nrow > ncol:
                 nrow, ncol = ncol, nrow
             self.args.addDefault(par_mfrow=[nrow, ncol])
-        #
+        # users might set additional parameters and override calculated mfrow.
         rpy.r.par(**self.args.getArgs('par'))
         # now plot.
         if self.byRep:
             # handle each replicate separately
-            for i in self.reps:
+            for rep_idx,rep in enumerate(self.reps):
                 if self.byDim:
                     # separate plot for each dim
-                    for j in range(self.nDim):
-                        data = self._getData(i, j)
+                    for dim in range(self.nDim):
+                        data = self._getData(rep, dim)
                         rpy.r.plot(self.gen, data,
-                            **self.args.getArgs('plot', rep=i, dim=j, repdim=self.nDim*i +j,
-                                ylim=[self.min, self.max]))
+                            **self.args.getArgs('plot', rep=rep_idx, dim=dim,
+                                repdim=self.nDim*rep_idx + dim, ylim=[self.min, self.max]))
                         if self.plotHook is not None:
-                            self.plotHook(r=rpy.r, gen=self.gen, data=data, rep=i, dim=j)
+                            self.plotHook(r=rpy.r, gen=self.gen, data=data, rep=rep, dim=dim)
                 else:
                     # all var in one subplot
-                    data = self._getData(i, 0)
+                    data = self._getData(rep, 0)
                     rpy.r.plot(self.gen, data,
-                        **self.args.getArgs('plot', rep=i, dim=0, repdim=self.nDim*i,
-                            ylim=[self.min, self.max]))
+                        **self.args.getArgs('plot', rep=rep_idx, dim=0,
+                            repdim=self.nDim * rep_idx, ylim=[self.min, self.max]))
                     if self.plotHook is not None:
-                        self.plotHook(r=rpy.r, gen=self.gen, data=data, rep=i)
-                    for j in range(1, self.nDim):
-                        rpy.r.lines(self.gen, self._getData(i, j),
-                            **self.args.getArgs('lines', rep=i, dim=j, repdim=self.nDim*i + j))
+                        self.plotHook(r=rpy.r, gen=self.gen, data=data, rep=rep)
+                    for dim in range(1, self.nDim):
+                        rpy.r.lines(self.gen, self._getData(rep, dim),
+                            **self.args.getArgs('lines', rep=rep_idx, dim=dim,
+                                repdim=self.nDim * rep_idx + dim))
                     if len(self.legend) > 0:
-                        args = self.args.getLegendArgs('lines', ['lty', 'col'],
+                        args = self.args.getLegendArgs('lines', ['lty', 'col', 'lwd'],
                             'rep', range(self.nRep))
                         args.update(self.args.getArgs('legend'))
                         rpy.r.legend('topright', legend=self.legend, **args)
         else:
             # all replicate in one figure
             if self.byDim:
-                for i in range(self.nDim):
-                    data = self._getData(self.reps[0], i)
+                for dim in range(self.nDim):
+                    data = self._getData(self.reps[0], dim)
                     rpy.r.plot(self.gen, data,
-                        **self.args.getArgs('plot', rep=self.reps[0], dim=i, repdim=i,
+                        **self.args.getArgs('plot', rep=self.reps[0], dim=dim, repdim=dim,
                             ylim=[self.min, self.max]))
                     if self.plotHook is not None:
-                        self.plotHook(r=rpy.r, gen=self.gen, data=data, dim=i)
-                    for j in self.reps[1:]:
-                        rpy.r.lines(self.gen, self._getData(j, i),
-                            **self.args.getArgs('lines', rep=j, dim=i, repdim=self.nDim*j+i))
+                        self.plotHook(r=rpy.r, gen=self.gen, data=data, dim=dim)
+                    for rep_idx,rep in enumerate(self.reps[1:]):
+                        rpy.r.lines(self.gen, self._getData(rep, dim),
+                            **self.args.getArgs('lines', rep=rep_idx+1, dim=dim,
+                                repdim=self.nDim * (rep_idx + 1) + dim))
                     if len(self.legend) > 0:
                         args = self.args.getLegendArgs('lines', ['lty', 'col'],
                             'rep', range(self.nRep))
@@ -611,10 +610,11 @@ class varPlotter(pyOperator):
                         ylim=[self.min, self.max]))
                 if self.plotHook is not None:
                     self.plotHook(r=rpy.r, gen=self.gen, data=data)
-                for i in self.reps:
-                    for j in range(self.nDim):
-                        rpy.r.lines(self.gen, self._getData(i, j),
-                            **self.args.getArgs('lines', rep=i, dim=j, repdim=self.nDim*i+j))
+                for rep_idx,rep in enumerate(self.reps):
+                    for dim in range(self.nDim):
+                        rpy.r.lines(self.gen, self._getData(rep, dim),
+                            **self.args.getArgs('lines', rep=rep_idx, dim=dim,
+                                repdim=self.nDim * rep_idx + dim))
                 if len(self.legend) > 0:
                     args = self.args.getLegendArgs('lines', ['lty', 'col'],
                         ['rep', 'dim'], [(x,y) for x in range(self.nRep) for y in range(self.nDim)])
@@ -650,11 +650,12 @@ class scatterPlotter(pyOperator):
     The power of this operator lies in its ability to differentiate individuals
     from different (virtual) subpopulations. If you specify IDs of (virtual)
     subpopulations (VSPs) in parameter ``subPops``, only individuals from these
-    VSPs will be displayed. Furthermore, by appending ``_sp`` to the name of
-    a parameter, a list of values can be specified and will be applied to
-    different VSPs. For example, if you have defined two VSPs by sex,
-    ``subPops=[(0, 0), (0, 1)]`` and ``col_sp=['blue', 'red']`` will color
-    male individuals with blue and female individuals with red.
+    VSPs will be displayed. Points from these subpopulations will be drawn
+    with different shapes and colors. You can also customize these points
+    using list parameters with suffix ``_sp``. For example, if you have defined
+    two VSPs by sex and set ``subPops=[(0, 0), (0, 1)]``,
+    ``col_sp=['blue', 'red']`` will color male individuals with blue and female
+    individuals with red.
 
     This opertor calls R functions ``par``, ``plot``, ``points``, ``legend``,
     and ``dev.print``. Functions ``plot`` and ``points`` are the default
@@ -704,15 +705,12 @@ class scatterPlotter(pyOperator):
             this function.
 
         kwargs
-            All additional keyword parameters will be passed directly to the
-            plot function ``r.plot`` and ``r.points``. Such parameters includes
-            but not limited to ``xlab``, ``ylab``, ``main``, ``xlim``,
-            ``ylim``, ``col``, ``pch``. A parameter will be sent to a specific
-            function if its name is prefixed by the name of a function (e.g.
-            ``dev_print_width``). Multiple values could be passed to different
-            (virtual) subpopulations if suffix ``_sp`` is appended to parameter
-            name. If the list has insufficient number of items, existing items
-            will be reused.
+            Additional keyword arguments that will be interpreted and sent to
+            underlying R functions. These arguments could have prefixes
+            (destination function names) ``plot_``, ``points_``, ``par_``,
+            ``legend_`` and ``dev_print_``, and suffixes (list parameters)
+            ``_sp``. Arguments without prefixes are sent to functions
+            ``plot`` and ``points``.
         '''
         # parameters
         self.infoFields = infoFields
@@ -728,10 +726,17 @@ class scatterPlotter(pyOperator):
             defaultFuncs = ['plot', 'points'],
             allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
             suffixes = ['sp'],
-            defaultParams = {'legend_bty': 'n', 'points_pch': 1},
+            defaultParams = {
+                'legend_bty': 'n',
+                'plot_xlab': self.infoFields[0],
+                'plot_ylab': self.infoFields[1],
+            },
             **kwargs)
-        # when apply is called, self.plot is called, additional keyword
-        # parameters are passed by kwargs.
+        if len(self.subPops) > 1:
+            self.args.addDefault(
+                pch_sp = range(1, len(self.subPops) + 1),
+                col_sp = rpy.r.rainbow(len(self.subPops)))
+        # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
             step=step, at=at, rep=rep, stage=stage)
 
@@ -762,11 +767,9 @@ class scatterPlotter(pyOperator):
         # if there is no subpopulation, easy
         if len(self.subPops) == 0:
             rpy.r.plot(x, y, 
-                **self.args.getArgs('plot', type='p', xlim=xlim, ylim=ylim,
-                    xlab=self.infoFields[0], ylab=self.infoFields[1]))
+                **self.args.getArgs('plot', type='p', xlim=xlim, ylim=ylim))
         else:
-            parPlot = self.args.getArgs('plot', type='n', xlim=xlim, ylim=ylim,
-                    xlab=self.infoFields[0], ylab=self.infoFields[1])
+            parPlot = self.args.getArgs('plot', type='n', xlim=xlim, ylim=ylim)
             parPlot['type'] = 'n'
             rpy.r.plot(x[0], y[0], **parPlot)
             for idx,sp in enumerate(self.subPops):
@@ -775,8 +778,9 @@ class scatterPlotter(pyOperator):
                 rpy.r.points(x, y, **self.args.getArgs('points', sp=idx))
             # legend
             if len(self.legend) > 0:
-                args = self.args.getLegendArgs('points', [''], 'sp', range(len(self.subPops)))
-                args.update(self.args.getArgs('legend', bty='n'))
+                args = self.args.getLegendArgs('points', ['col', 'pch', 'lwd', 'cex'],
+                    'sp', range(len(self.subPops)))
+                args.update(self.args.getArgs('legend'))
                 rpy.r.legend('topright', legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
@@ -788,21 +792,37 @@ class scatterPlotter(pyOperator):
 
 class statPlotter(pyOperator):
     '''
-    This operator plots the statistical descriptive figures such as histogram,
-    and qqplot, for one or more information fields in a population. If multiple
-    subpopulations are specified, they will be plotted in different subplots.
+    This operator uses a R function such as ``hist`` and ``qqplot`` to plot
+    properties of one or more information fields of individuals in one or more
+    (virtual) subpopulations. Separate subplots are used for different
+    information fields and subpopulations.
+
+    This operator essentially gets values of information fields and sends them
+    to a R function such as ``hist``. The resulting figures could be customized
+    by additional keyword parameters and various hook functions. For example,
+    a ``qqline`` function could be called in a ``plotHook`` function to add a
+    QQ line to a ``qqnorm`` plot. 
     
-    This opertor calls R functions ``par``, ``dev.print``, and a function that
-    you specify. The user-specified function is the default destination for
-    keyword arguments.
+    Besides regular keyword parameters, keyword parameters ending in ``_sp``,
+    ``_fld`` or ``_spfld`` are expected to have multiple values which will be
+    used for differnt subpopulations, information fields, and their
+    combinations. You can also specify which function the keyword should be
+    sent by prefixing a function name to the parameter name. For example,
+    ``pch_fld=[1, 2]`` will use different symbols for different information
+    fields, and ``par_mar=[1]*4`` will send parameter ``mar=[1]*4`` to function
+    ``par``.
+    
+    This opertor calls R functions ``par``, ``dev.print``, and a user-specified
+    function. Additional keyword arguments without function prefix will be sent
+    to this function.
     '''
     def __init__(self, func='hist', infoFields=[], saveAs="", leaveOpen=False,
         preHook=None, postHook=None, plotHook = None, stage=PostMating, begin=0,
         end=-1, step=1, at=[], rep=[], subPops=[], **kwargs):
         '''
         func
-            Name of the R function that will be called to display values of
-            given information fields.
+            Name of the R function that will be called to draw figures from
+            values of given information fields.
 
         infoFields
             Information fields whose values will be sent to the specified
@@ -843,19 +863,16 @@ class statPlotter(pyOperator):
             function. The ``r`` object from the ``rpy`` module, data being
             plotted, name of the information field and index of subpopulation
             (in parameter ``subPops``, if applicable) will be passed with
-            keywords ``r``, ``data``, ``field`` and ``subPop`` (optional).
+            keywords ``r``, ``data``, ``field`` and ``subPop`` (optional)
+            respectively.
 
         kwargs
-            All additional keyword parameters will be passed to the underlying
-            R function. Such parameters are function dependent but common
-            parameters such as ``xlab``, ``ylab``, ``main``, ``xlim``, ``ylim``
-            are usually supported. A parameter will be sent to a specific
-            function if its name is prefixed by the name of a function (e.g.
-            ``dev_print_width``). Multiple values could be passed to different
-            (virtual) subpopulations and/or information fields if suffix
-            ``_sp``, ``_fld`` or ``_spfld`` is appended to a parameter name.
-            If the list has insufficient number of items, existing items will
-            be reused.
+            Additional keyword arguments that will be interpreted and sent to
+            underlying R functions. These arguments could have prefixes
+            (destination function names) ``par_``, ``dev_print_`` and the
+            function you specify (parameter ``func``), and suffixes (list
+            parameters) ``_sp``, ``_fld``, and ``_spfld``. Arguments without
+            prefixes are sent to the user specified function.
         '''
         # parameters
         if type(infoFields) == type(''):
@@ -878,8 +895,7 @@ class statPlotter(pyOperator):
             suffixes = ['sp', 'fld', 'spfld'],
             defaultParams = {},
             **kwargs)
-        # when apply is called, self.plot is called, additional keyword
-        # parameters are passed by kwargs.
+        # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
             step=step, at=at, rep=rep, stage=stage)
 
@@ -908,17 +924,16 @@ class statPlotter(pyOperator):
             ncol = int(ceil(nPlots/float(nrow)))
             if nrow > ncol:
                 nrow, ncol = ncol, nrow
-            # call r.par to allocate subplots
-            rpy.r.par(**self.args.getArgs('par', mfrow=[nrow, ncol]))
-        else: # still call par
-            rpy.r.par(**self.args.getArgs('par'))
+            self.args.addDefault(par_mfrow=[nrow, ncol])
+        #
+        rpy.r.par(**self.args.getArgs('par'))
         #
         for fldIdx,fld in enumerate(self.infoFields):
             # if there is no subpopulation, easy
             if len(self.subPops) == 0:
                 val = pop.indInfo(fld)
-                self.rfunc(val, **self.args.getArgs(self.func, fld=fldIdx,
-                    sp=0, spfld=fldIdx, main='%s at gen %d' % (fld, gen), xlab=fld, ylab=self.func))
+                self.rfunc(val, **self.args.getArgs(self.func, fld=fldIdx, sp=0,
+                    spfld=fldIdx, main='%s at gen %d' % (fld, gen), xlab=fld, ylab=self.func))
                 if self.plotHook is not None:
                     self.plotHook(r=rpy.r, data=val, field=fld)
             else:
@@ -929,7 +944,7 @@ class statPlotter(pyOperator):
                         main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
                         xlab=fld, ylab=self.func))
                     if self.plotHook is not None:
-                        self.plotHook(r=rpy.r, data=val, field=fld, subPop=spIdx)
+                        self.plotHook(r=rpy.r, data=val, field=fld, subPop=sp)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
@@ -956,14 +971,28 @@ def qqPlotter(*args, **kwargs):
 
 class boxPlotter(pyOperator):
     '''
-    This operator draws boxplots of one or more information fields in one
-    or more (virtual) subpopulations of a population. Although a
-    ``statPlotter`` can be used to plot boxplots for each information field
-    and/or subpopulation, this class allows you to put multiple whiskers in
-    one plot. More specifically, if there are multiple information fields
-    and/or multiple subpopulations, parameters ``byField`` and ``bySubPop``
-    can be used to determine how to separate whiskers into subplots.
+    This operator draws boxplots of one or more information fields of
+    individuals in one or more (virtual) subpopulations of a population.
+    Although a ``statPlotter`` with ``func=boxplot`` could be used to plot
+    boxplots for each information field and/or subpopulation, this class allows
+    multiple whiskers to share one plot. How the whiskers are oraganized is
+    controlled by parameters ``byField`` and ``bySubPop``.
     
+    This operator essentially gets values of information fields and sends them
+    to boxplots. Individual ownerships (subpopulation or field) are also passed
+    so that multiple whiskers could be drawn in the same plot. The resulting
+    figures could be customized by additional keyword parameters and various
+    hook functions.
+    
+    Besides regular keyword parameters, keyword parameters ending in ``_sp``,
+    ``_fld`` or ``_spfld`` are expected to have multiple values which will be
+    used for differnt subpopulations, information fields, and their
+    combinations. You can also specify which function the keyword should be
+    sent by prefixing a function name to the parameter name. For example,
+    ``pch_fld=[1, 2]`` will use different symbols for different information
+    fields, and ``par_mar=[1]*4`` will send parameter ``mar=[1]*4`` to function
+    ``par``.
+ 
     This opertor calls R functions ``par``, ``boxplot`` and ``dev.print``.
     Keyword parameters without function prefix will be passed to ``boxplot``.
     '''
@@ -972,17 +1001,13 @@ class boxPlotter(pyOperator):
         stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
         **kwargs):
         '''
-        func
-            Name of the R function that will be called to display values of
-            given information fields.
-
         infoFields
-            Information fields whose values will be sent to the specified
-            plotting function.
+            Information fields whose values will be sent to R function
+            ``boxplot``.
 
         subPops
-            A list of subpopulations and virtual subpopulations. Each
-            subpopulation will be plotted in a separate subplot.
+            A list of subpopulations and virtual subpopulations. Separate
+            whiskers will be drawn for individuals in these subpopulations.
 
         byField
             If multiple information fields are specified, separate the whiskers
@@ -1021,21 +1046,17 @@ class boxPlotter(pyOperator):
         plotHook
             A function that, if given, will be called after each specified plot
             function. The ``r`` object from the ``rpy`` module, data being
-            plotted, name of the information field and index of subpopulation
-            (in parameter ``subPops``, if applicable) will be passed with
-            keywords ``r``, ``data``, ``field`` and ``subPop`` (optional).
+            plotted and ownership lists (in parameters ``field`` and ``subPop``,
+            if applicable) will be passed with keywords ``r``, ``data``,
+            ``field`` (optional) and ``subPop`` (optional).
 
         kwargs
-            Additional keyword parameters will be passed directly to the
-            plot function. Such parameters are function dependent but common
-            parameters such as ``xlab``, ``ylab``, ``main``, ``xlim``, ``ylim``
-            are usually supported. A parameter will be sent to a specific
-            function if its name is prefixed by the name of a function (e.g.
-            ``dev_print_width``). Multiple values could be passed to different
-            (virtual) subpopulations and/or information fields if suffix
-            ``_sp``, ``_fld`` or ``_spfld`` is appended to a parameter name.
-            If the list has insufficient number of items, existing items will
-            be reused.
+            Additional keyword arguments that will be interpreted and sent to
+            underlying R functions. These arguments could have prefixes
+            (destination function names) ``plot_``, ``boxplot_``, ``par_``,
+            and ``dev_print_``, and suffixes (list parameters) ``_sp``,
+            ``_fld`` and ``_spfld``. Arguments without prefixes are sent to
+            function ``boxplot``.
         '''
         # parameters
         if type(infoFields) == type(''):
@@ -1094,75 +1115,74 @@ class boxPlotter(pyOperator):
             ncol = int(ceil(nPlots/float(nrow)))
             if nrow > ncol:
                 nrow, ncol = ncol, nrow
-            # call r.par to allocate subplots
-            rpy.r.par(**self.args.getArgs('par', mfrow=[nrow, ncol]))
-        else: # still call par
-            rpy.r.par(**self.args.getArgs('par'))
+            self.args.addDefault(par_mfrow=[nrow, ncol])
+        #
+        rpy.r.par(**self.args.getArgs('par'))
         #
         if self.byField and self.bySubPop:
+            # multiple Field and subpop, each has its own subplot
             for fldIdx,fld in enumerate(self.infoFields):
                 for spIdx,sp in enumerate(self.subPops):
                     val = pop.indInfo(fld, sp)
-                    rpy.r.boxplot(val, **self.args.getArgs(self.func,
-                        fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
-                        main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
-                        xlab=fld, ylab=self.func))
+                    rpy.r.boxplot(val, **self.args.getArgs('boxplot',
+                        fld=fld, sp=sp, spfld=len(self.infoFields)*spIdx + fldIdx,
+                        main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
                     if self.plotHook is not None:
                         self.plotHook(r=rpy.r, data=val, field=fld, subPop=spIdx)
         elif self.byField and not self.bySubPop:
             for fldIdx,fld in enumerate(self.infoFields):
                 # combine data
                 data = []
-                sp = []
-                if len(self.subPops) > 1:
+                owner = []
+                if len(self.subPops) == 0:
+                    data = pop.indInfo(fld)
+                    owner = [fld]*len(data)
+                else:
                     for spIdx,sp in enumerate(self.subPops):
                         spData = pop.indInfo(fld, sp)
                         data.extend(spData)
-                        sp.extend([spIdx]*len(spData))
-                else:
-                    data = pop.indInfo(fld)
-                    sp = [0]*len(data)
+                        owner.extend([pop.subPopName(sp)]*len(spData))
                 #
-                rpy.r.boxplot(data, **self.args.getArgs(self.func,
-                    fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
-                    main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
-                    xlab=fld, ylab=self.func))
+                rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
+                    **self.args.getArgs('boxplot', fld=fldIdx,
+                    main='Field %s at gen %d' % (fld, gen)))
                 if self.plotHook is not None:
-                    self.plotHook(r=rpy.r, data=val, field=fld, subPop=spIdx)
+                    self.plotHook(r=rpy.r, data=val, field=owner)
         elif not self.byField and self.bySubPop:
             for spIdx,sp in enumerate(self.subPops):
                 # combine data
                 data = []
-                fld = []
-                if len(self.infoFields) > 1:
-                    for fldIdx,fld in enumerate(self.infoFields):
-                        spData = pop.indInfo(fld, sp)
-                        data.extend(spData)
-                        fld.extend([fldIdx]*len(spData))
-                else:
-                    data = pop.indInfo(fld)
-                    sp = [0]*len(data)
-                #
-                rpy.r.boxplot(data, **self.args.getArgs(self.func,
-                    fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
-                    main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
-        else:
-            data = []
-            fld = []
-            if len(self.infoFields) > 1:
+                owner = []
                 for fldIdx,fld in enumerate(self.infoFields):
-                    for fldIdx,fld in enumerate(self.infoFields):
-                        spData = pop.indInfo(fld, sp)
-                        data.extend(spData)
-                        fld.extend([fldIdx]*len(spData))
-                else:
-                    data = pop.indInfo(fld)
-                    sp = [0]*len(data)
+                    fldData = pop.indInfo(fld, sp)
+                    data.extend(fldData)
+                    owner.extend([fld]*len(fldData))
+                #
+                rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
+                    **self.args.getArgs('boxplot', sp=fldIdx,
+                    main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
+                if self.plotHook is not None:
+                    self.plotHook(r=rpy.r, data=val, subPop=owner)
+        else:
+            # everything in one plot.
+            data = []
+            owner = []
+            for fldIdx,fld in enumerate(self.infoFields):
+                if len(self.subPops) == 0:
+                    data.extend(pop.indInfo(fld))
+                    owner.extend([fld]*pop.popSize())
+                    continue
+                # multiple subpopulations
+                for spIdx,sp in enumerate(self.subPops):
+                    spData = pop.indInfo(fld, sp)
+                    data.extend(spData)
+                    if len(self.infoFields) == 1:
+                        owner.extend([pop.subPopName(sp)]*len(spData))
+                    else:
+                        owner.extend(['%s,%s' % (fld, pop.subPopName(sp))]*len(spData))
             #
-            rpy.r.boxplot(data, **self.args.getArgs(self.func,
-                fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
-                main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
-
+            rpy.r.boxplot(rpy.r("data ~ owner"), data=rpy.r.data_frame(data=data, owner=owner),
+                **self.args.getArgs('boxplot'))
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)

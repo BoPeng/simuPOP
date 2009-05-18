@@ -7,7 +7,9 @@ version 0.9.4 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Allow Python parent choosers to return individual(s) directly.
   - CHG: Remove image plottype from varPlotter, with simplified code and enhanced
 		functions.
-  - NEW: Add infoPlotter that plots information fields.
+  - NEW: Add scatterPlotter that plots information fields.
+  - NEW: Add statPlotter and two special cases histPlotter and qqPlotter.
+  - NEW: Add boxPlotter.
 
 version 0.9.3 - (Rev 2601) Apr 3, 2009
   - BUG: Fix a bug with population::removeLoci when given keep loci are not in order.

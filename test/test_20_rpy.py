@@ -94,7 +94,7 @@ class TestRPy(unittest.TestCase):
             ops = [
              migr,
              stator,
-             varPlotter('subPopSize[0]',
+             varPlotter('subPopSize[0]', update=10,
                 win=10, main='Three colorful lines, no legend, win=10')
              ],
              gen = 30
@@ -119,7 +119,7 @@ class TestRPy(unittest.TestCase):
              stator,
              varPlotter('subPopSize', byRep=True, lty_dim=[1, 2, 3],
                 main='3 rep, 3 colorful thick lines, ylabs differ',
-                lwd=2,
+                lwd=2, update=10,
                 ylab_rep=['subPopSize (rep %d)' % x for x in range(3)])
              ],
              gen = 30
@@ -143,7 +143,7 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
-                 col_rep=['red', 'green', 'blue'],
+                 col_rep=['red', 'green', 'blue'], update=10,
                  byDim=True, win=10, main='win=10, 3 dim, 3 colorful lines, legend',
                  legend=['a', 'b', 'c'])
              ],
@@ -168,7 +168,7 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
-                 col_rep=['red', 'green', 'blue'], byDim=True, 
+                 col_rep=['red', 'green', 'blue'], byDim=True, update=10,
                  main='3 out of 5 reps, 3 dim plots', rep=[0, 2, 3])
              ],
              gen = 30
@@ -192,7 +192,7 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp',
-                 col_rep=['red', 'green', 'blue'],
+                 col_rep=['red', 'green', 'blue'], update=10,
                  main='9 lines, col rep, lty dim',
                  lty_dim=range(1, 4), ylim=[0, 10000],
                  legend=['rep1-sp1', 'rep1-sp2', 'rep1-sp3', 'rep2-sp1',
@@ -219,7 +219,7 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
-                 byDim=True, byRep=True,
+                 byDim=True, byRep=True, update=10,
                  win=10, main_repdim=['rep dim %d' % x for x in range(9)],
                  col_rep=['red', 'green', 'blue'], lty_dim=range(1, 4))
              ],
@@ -245,7 +245,7 @@ class TestRPy(unittest.TestCase):
              stator,
              varPlotter('[x**2 for x in subPopSize]', byRep=True,
                  win=10, update=5, ylim=[0, 10000],
-                 main='Save as, 3 rep, no color', ylab='sp',
+                 main='Save as, 3 rep, 3 colors', ylab='sp',
                  saveAs='demo')
              ],
              gen = 31
@@ -257,7 +257,7 @@ class TestRPy(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterPar(self):
-        'Testing ylim parameter of varPlotter'
+        'Testing parameter passing of varPlotter'
         if not hasRPy:
             return True
         simu = simulator(
@@ -272,30 +272,8 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('subPopSize', byRep=True, ylim=[0,100],
-                 ylab='sp', win=10, update=5, par_mfrow=[1, 3], main='mfrow=[1, 3]')
-             ],
-             gen = 30
-        )
-        sleep(1)
-        r.dev_off()
-
-    def testVarPlotterPar(self):
-        'Testing ylim parameter of varPlotter'
-        if not hasRPy:
-            return True
-        simu = simulator(
-            population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
-            randomMating(), rep=3)
-        migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
-        stator = stat(popSize=1, stage=PreMating)
-        simu.evolve(
-            preOps = [initSex()],
-            ops = [
-             migr,
-             stator,
-             varPlotter('subPopSize', byRep=True, ylim=[0,100],
-                 ylab='sp', win=10, update=5, par_mfrow=[1, 3], main='mfrow=[1, 3]')
+                 ylab='sp', win=10, update=10,
+                 par_mfrow=[1, 3], main='mfrow=[1, 3]')
              ],
              gen = 30
         )
@@ -320,7 +298,7 @@ class TestRPy(unittest.TestCase):
             r.axis(1)
             r.axis(2)
             r.grid()
-
+        #
         simu.evolve(
             preOps = [initSex()],
             ops = [
@@ -352,7 +330,7 @@ class TestRPy(unittest.TestCase):
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
                 inheritTagger(TAG_Maternal, infoFields=['y']),
-                scatterPlotter(['x', 'y'], main='B/W, 300 points'),
+                scatterPlotter(['x', 'y'], main='B/W, 300 points', step=2),
                 #pause(),
             ],
             gen = 5,
@@ -376,9 +354,7 @@ class TestRPy(unittest.TestCase):
                 inheritTagger(TAG_Maternal, infoFields=['y']),
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1), (1, 0), (1, 1)],
-                    col_sp = ['blue', 'red', 'green', 'purple'],
                     main='Color, 300 points, left right does not mix'),
-                #pause(),
             ],
             gen = 5,
         )
@@ -401,8 +377,6 @@ class TestRPy(unittest.TestCase):
                 inheritTagger(TAG_Maternal, infoFields=['y']),
                 scatterPlotter(['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
-                    col_sp = ['blue', 'red'],
-                    pch_sp = [1, 2],
                     xlim = [0, 1],
                     main='Twoo colors, 100 points xlim=[0, 1]',
                     legend = ['Male', 'Female']),
@@ -423,9 +397,8 @@ class TestRPy(unittest.TestCase):
         simu.evolve(
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
-                histPlotter(infoFields='x', main='histogram of x (green, 5 bins)',
-                    breaks = [0, 0.2, 0.5, 0.8, 1],
-                    angle=60, col='green'
+                histPlotter(infoFields='x', main='histogram of x in green',
+                    angle=60, col='green', step=2,
                 ),
                 #pause(),
             ],
@@ -451,7 +424,7 @@ class TestRPy(unittest.TestCase):
                 histPlotter(infoFields=['x', 'y'],
                     subPops = [(0, 0), (0, 1)],
                     col_fld=['red', 'green'],
-                    density_sp=[5, 20],
+                    density_sp=[5, 20], step=2,
                     main_spfld=['Field x, Male', 'Field y, Male',
                         'Field x, Female', 'Field y, Female'],
                 ),
@@ -484,7 +457,7 @@ class TestRPy(unittest.TestCase):
                     pch_sp=[1, 2],
                     main_spfld=['Field x, Male', 'Field y, Male',
                         'Field x, Female', 'Field y, Female'],
-                    plotHook=qqline,
+                    plotHook=qqline, step=2
                 ),
                 #pause(),
             ],
@@ -493,6 +466,137 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
+    def testBoxPlotterBase(self):
+        'Testing the base boxplotter'
+        import random
+        pop = population([500, 100], infoFields=['x'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x')
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                boxPlotter(infoFields='x', xlab='x', main='boxplot for field x',
+                    step=2), 
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(5)
+        r.dev_off()
+
+    def testBoxPlotterFields(self):
+        'Testing barplotter with multiple fields and subpopulations'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                boxPlotter(infoFields=['x', 'y'], step=2
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                boxPlotter(infoFields=['x', 'y'], 
+                    subPops=[(0, 0), (0, 1)],
+                    step=2
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+
+    def testBoxPlotterByField(self):
+        'Testing boxPlotter separated by information field'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                boxPlotter(infoFields=['x', 'y'], byField=True,
+                    subPops=[(0,0), (0,1)],
+                    step=2
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+
+    def testBoxPlotterBySubPop(self):
+        'Testing boxPlotter separated by subpopulation'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                boxPlotter(infoFields=['x', 'y'], bySubPop=True,
+                    subPops=[(0,0), (0,1)],
+                    step=2
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+
+    def testBoxPlotterByFieldSubPop(self):
+        'Testing boxPlotter separated by both field and subpopulation'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                boxPlotter(infoFields=['x', 'y'], bySubPop=True,
+                    subPops=[(0,0), (0,1)], byField=True,
+                    step=2
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
 
 if __name__ == '__main__':
     unittest.main()
