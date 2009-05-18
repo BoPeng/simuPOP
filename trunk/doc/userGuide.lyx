@@ -12495,22 +12495,185 @@ simuUtil (under revision)
 simuRPy
 \end_layout
 
-\begin_layout Subsection
-class 
-\family typewriter
-varPlotter
-\end_layout
-
 \begin_layout Standard
 The 
 \family typewriter
 simuRPy
 \family default
- module defines a Python operator that uses R (
+ module defines a few utility functions and Python operators that help you
+ plot variables and information fields during evolution.
+ A number of operators are defined that
+\end_layout
+
+\begin_layout Itemize
+Operator 
 \family typewriter
-http://www.r-project.org
+varPlotter
 \family default
-) to plot the current and historical values of a Python expression (
+: Plot a dynamically evaluated expression with its history.
+ Each expression and its history form a line in the plot.
+ Multiple lines will be plotted for multiple replicates and/or for each
+ element of the expression (if the evaluated value of the expression is
+ a sequence), with options to separate lines to different subplots.
+\end_layout
+
+\begin_layout Itemize
+Operator 
+\family typewriter
+scatterPlotter
+\family default
+: Plot individuals in specified (virtual) subpopulations using values at
+ two information fields as x and y axes.
+ Individuals belonging to different (virtual) subpopulations will be plotted
+ with different colors and shapes.
+\end_layout
+
+\begin_layout Itemize
+Operator 
+\family typewriter
+infoPlotter
+\family default
+: Using a R function such as 
+\family typewriter
+hist
+\family default
+ and 
+\family typewriter
+qqnorm
+\family default
+ to plot one or more information fields of individuala in one or more (virtual)
+ subpopulations.
+ Two specialized operators 
+\family typewriter
+histPlotter
+\family default
+ and 
+\family typewriter
+qqPlotter
+\family default
+ are provided to plot the histograms and qq plots.
+ Other functions could also be used, and it is even possible to draw a figure
+ completely by your own (with stratified data provided to you by this operator).
+\end_layout
+
+\begin_layout Itemize
+Operator 
+\family typewriter
+boxPlotter
+\family default
+: This operator uses R function 
+\family typewriter
+boxplot
+\family default
+ to plot boxplots of data of one or more information fields of individuals
+ in one ore more (virtual) subpopulations.
+ The whiskers could be grouped by information field or subpopulations.
+\end_layout
+
+\begin_layout Standard
+These operators are derived from class 
+\family typewriter
+pyOperator
+\family default
+ and call R plot functions when they are applied to a population.
+ For example, the 
+\family typewriter
+varPlotter
+\family default
+ collects expression values and use functions 
+\family typewriter
+plot
+\family default
+ and 
+\family typewriter
+lines
+\family default
+ to plot the data, with help from other functions such as 
+\family typewriter
+par
+\family default
+ (device property), 
+\family typewriter
+dev.print
+\family default
+ (save figure to files) and 
+\family typewriter
+legend
+\family default
+ (add legend).
+ Some functions are called multiple times for different replicate, subpopulation
+ or information fields.
+\end_layout
+
+\begin_layout Standard
+A large number of parameters could be used by these R functions to customize
+ every aspect of a figure.
+ One of the most interesting feature of this module is its use of derived
+ keyword parameters to send arbitrary parameters to the underlying R functions.
+ 
+\end_layout
+
+\begin_layout Standard
+A 
+\series bold
+derived keyword argument
+\series default
+ is an argument that is prefixed with a function name and/or suffixed by
+ an iterator name.
+ The former specifies to which underlying R function this parameter will
+ be passed to; the latter allows the users to specify a list of values that
+ will be passed, for example, to lines representing different replicates.
+ For example, parameter 
+\family typewriter
+par_mar=[1]*4
+\family default
+ will pass 
+\family typewriter
+mar=[1]*4
+\family default
+ to R function 
+\family typewriter
+par
+\family default
+, and 
+\family typewriter
+lty_rep=[1, 2, 3]
+\family default
+ will pass 
+\family typewriter
+lty=1
+\family default
+, 
+\family typewriter
+lty=2
+\family default
+ and 
+\family typewriter
+lty=3
+\family default
+ to different replicates.
+ A class usually has one or two default functions (such as 
+\family typewriter
+plot
+\family default
+, 
+\family typewriter
+lines
+\family default
+) to which keyword aguments without function prefix will be sent.
+ All operators in the simuRPy module make use of derived keyword arguments.
+\end_layout
+
+\begin_layout Subsection
+Plot of expressions and their histories
+\end_layout
+
+\begin_layout Standard
+Class 
+\family typewriter
+varPlotter
+\family default
+ plots the current and historical values of a Python expression (
 \family typewriter
 expr
 \family default
@@ -12620,11 +12783,13 @@ ylim
 main
 \family default
 , ...) deserve more attention here.
- These parameters are not defined by 
+ These parameters are derived keyword arguments because they are not defined
+ by 
 \family typewriter
-varPlotter
+varPlotter.
+
 \family default
- so they are passed directly to the underlying R functions 
+ Parameters without prefix are passed directly to the R functions 
 \family typewriter
 plot
 \family default
@@ -12654,8 +12819,8 @@ xlim
 ylim
 \family default
 ) and many other graphical features (see R manual for details).
- More interetingly, if multiple lines are drawn, a list of values could
- be applied to these lines if you add 
+ If multiple lines are drawn, a list of values could be applied to these
+ lines if you add 
 \family typewriter
 _rep
 \family default
@@ -12758,7 +12923,7 @@ reference "rpy"
 \begin_layout Standard
 If the expression is multidimensional, the number of lines can be large
  and it is often desired to separate these lines into subplots.
- This can be done by parameter 
+ This can be done by parameters 
 \family typewriter
 byRep
 \family default
@@ -12907,14 +13072,14 @@ Allele frequency trajectories separated by replicates
 \end_layout
 
 \begin_layout Standard
-In addition, Example 
+Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "rpyByDim"
 
 \end_inset
 
- demonstrates some advanced features of this plotter that allow further
+ also demonstrates some advanced features of this plotter that allow further
  customization of the figures.
  More specifically,
 \end_layout
@@ -13031,15 +13196,13 @@ Allele frequency trajectories separated by loci
 \end_layout
 
 \begin_layout Subsection
-class 
-\family typewriter
-infoPlotter
+Scatter plots
 \end_layout
 
 \begin_layout Standard
 Operator 
 \family typewriter
-infoPlotter
+scatterPlotter
 \family default
  plots individuals in all or selected (virtual) subpopulations in a 2-D
  plot, using values at two information fields as their x- and y-axis.
@@ -13078,22 +13241,14 @@ cex
 \begin_layout Standard
 What makes this operator useful is its ability to differentiate points (individu
 als) by (virtual) subpopulations (VSPs).
- If a list of VSPs are given, different colors and shapes can be assigned
- to the points using list format of the parameters such as 
-\family typewriter
-pch_sp
-\family default
- and 
-\family typewriter
-col_sp
-\family default
-.
+ If a list of VSPs are given, points representing individuals from these
+ VSPs will be plotted with different colors and shapes.
  Because simulations that keep track of multiple information fields are
  usually complicated, let us simulate something interesting and examine
  Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "infoPlotter"
+reference "scatterPlotter"
 
 \end_inset
 
@@ -13157,9 +13312,9 @@ where
 \begin_layout Standard
 An 
 \family typewriter
-infoPlotter
+scatterPlotter
 \family default
- will be used to plot the physical location of all individuals.
+ is used to plot the physical location of all individuals.
  Individual ancestries are divided into five regions (0, 0.2, 0.4, 0.6, 0.8,
  1) indicated by small to larger points.
  Male and female individuals are plotted by different symbol.
@@ -13244,7 +13399,7 @@ VSPs 0 and 4 appear at the beginning of generation 0, VSP 2 appears at the
  Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:infoPlotter"
+reference "fig:scatterPlotter"
 
 \end_inset
 
@@ -13254,8 +13409,8 @@ reference "fig:infoPlotter"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/infoPlotter.log"
-lstparams "caption={Use infoPlotter to plot ancestry of individuals with geographic information.},label={infoPlotter}"
+filename "log/scatterPlotter.log"
+lstparams "caption={Use scatterPlotter to plot ancestry of individuals with geographic information.},label={scatterPlotter}"
 
 \end_inset
 
@@ -13274,7 +13429,7 @@ status open
 \begin_layout Plain Layout
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:infoPlotter"
+name "fig:scatterPlotter"
 
 \end_inset
 
@@ -13290,6 +13445,170 @@ Plot of individuals with ancestry marked by different colors
 \align center
 \begin_inset Graphics
 	filename log/infoPlotter_2_0.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Histograms, QQ plots and boxplots.
+\end_layout
+
+\begin_layout Standard
+Class 
+\family typewriter
+infoPlotter
+\family default
+ can be used to draw figures for information fields of individuals in one
+ or more subpopulations.
+ 
+\family typewriter
+histPlotter
+\family default
+ and 
+\family typewriter
+qqPlotter
+\family default
+ are two special cases of this class that uses functions 
+\family typewriter
+hist
+\family default
+ and 
+\family typewriter
+qqnorm
+\family default
+ respectively.
+ Although an 
+\family typewriter
+infoPlotter
+\family default
+ using a 
+\family typewriter
+boxplot
+\family default
+ function could be used, a specialized 
+\family typewriter
+boxPlotter
+\family default
+ is defined so that mutliple boxplot whiskers could be drawn in the same
+ plot.
+\end_layout
+
+\begin_layout Standard
+Using the same evolutionary process as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "scatterPlotter"
+
+\end_inset
+
+, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "histPlotter"
+
+\end_inset
+
+ uses a 
+\family typewriter
+histPlotter
+\family default
+ to plot the histograms and a 
+\family typewriter
+boxPlotter
+\family default
+ to plot the boxplots of individual ancestry values.
+ By defining two virtual subpopulations by sex, the 
+\family typewriter
+histPlotter
+\family default
+ plots two histograms, one for males and one for females.
+ Different colors are used for these histograms.
+ 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/histPlotter.log"
+lstparams "caption={Use histPlotter to plot the histogram of individual ancestries.},label={histPlotter}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:histPlotter"
+
+\end_inset
+
+Histogram of individual ancestry values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/histPlotter_2_0.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:boxPlotter"
+
+\end_inset
+
+Boxplot of individual ancestry values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/boxPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 
