@@ -387,8 +387,8 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testStatPlotterBase(self):
-        'Testing basic histogram using statPlotter'
+    def testInfoPlotterBase(self):
+        'Testing basic histogram using infoPlotter'
         import random
         pop = population([500, 1000], infoFields=['x'])
         InitSex(pop)
@@ -407,7 +407,7 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testStatPlotterFields(self):
+    def testInfoPlotterFields(self):
         'Testing stat plotter with multiple fields and subpopulations'
         import random
         pop = population([500, 1000], infoFields=['x', 'y'])
@@ -435,7 +435,7 @@ class TestRPy(unittest.TestCase):
         sleep(1)
         r.dev_off()
 
-    def testStatPlotterQQplot(self):
+    def testInfoPlotterQQplot(self):
         'Testing barplotter with multiple fields and subpopulations'
         import random
         pop = population([500, 100], infoFields=['x', 'y'])
@@ -465,6 +465,35 @@ class TestRPy(unittest.TestCase):
         )
         sleep(1)
         r.dev_off()
+
+    def testInfoPlotterNoFunc(self):
+        'Testing the stat plotter when no function is specified'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating())
+        def qqplot(r, data=None, field=None, subPop=None, **kwargs):
+            r.qqnorm(data, main='QQ drawn in plotHook fld: %s sp: %s' % (field, subPop))
+            r.qqline(data)
+        simu.evolve(
+            ops = [
+                inheritTagger(TAG_Paternal, infoFields=['x']),
+                inheritTagger(TAG_Maternal, infoFields=['y']),
+                infoPlotter(infoFields=['x', 'y'],
+                    subPops = [(0, 0), (0, 1)],
+                    plotHook=qqplot, step=2
+                ),
+                #pause(),
+            ],
+            gen = 5,
+        )
+        sleep(1)
+        r.dev_off()
+
 
     def testBoxPlotterBase(self):
         'Testing the base boxplotter'
@@ -507,14 +536,26 @@ class TestRPy(unittest.TestCase):
         )
         sleep(1)
         r.dev_off()
+
+    def testBoxPlotterFieldsAndSubPop(self):
+        'Testing boxPlotter with both fields and subpopulation'
+        import random
+        pop = population([500, 100], infoFields=['x', 'y'],
+            subPopNames=['sp1', 'sp2'])
+        InitSex(pop)
+        pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
+        pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
+        pop.setIndInfo([random.random() for i in range(300)], 'y')
+        pop.setVirtualSplitter(sexSplitter())
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops = [
                 inheritTagger(TAG_Paternal, infoFields=['x']),
                 inheritTagger(TAG_Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], 
-                    subPops=[(0, 0), (0, 1)],
-                    step=2
+                    subPops=[(0, 0), (0, 1)], style='quantile',
+                    step=2, main='Boxplot with 2 fields x 2 subpops',
+                    col='green', horizontal=True,
                 ),
                 #pause(),
             ],
@@ -526,7 +567,8 @@ class TestRPy(unittest.TestCase):
     def testBoxPlotterByField(self):
         'Testing boxPlotter separated by information field'
         import random
-        pop = population([500, 100], infoFields=['x', 'y'], subPopNames=['', ''])
+        pop = population([500, 100], infoFields=['x', 'y'],
+            subPopNames=['sp1', 'sp2'])
         InitSex(pop)
         pop.setIndInfo([random.random() for i in range(100)], 'x', 0)
         pop.setIndInfo([1 + random.random() for i in range(100)], 'x', 1)
@@ -539,7 +581,7 @@ class TestRPy(unittest.TestCase):
                 inheritTagger(TAG_Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], byField=True,
                     subPops=[(0,0), (0,1)],
-                    step=2
+                    step=2, col_fld=['yellow', 'green'],
                 ),
                 #pause(),
             ],
@@ -564,7 +606,7 @@ class TestRPy(unittest.TestCase):
                 inheritTagger(TAG_Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)],
-                    step=2
+                    step=2, horizontal_sp=[True, False],
                 ),
                 #pause(),
             ],
@@ -589,13 +631,13 @@ class TestRPy(unittest.TestCase):
                 inheritTagger(TAG_Maternal, infoFields=['y']),
                 boxPlotter(infoFields=['x', 'y'], bySubPop=True,
                     subPops=[(0,0), (0,1)], byField=True,
-                    step=2
+                    step=2, col_spfld = ['red', 'green', 'yellow', 'blue'],
                 ),
                 #pause(),
             ],
             gen = 5,
         )
-        sleep(1)
+        sleep(10)
         r.dev_off()
 
 if __name__ == '__main__':

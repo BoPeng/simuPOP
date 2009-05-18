@@ -1821,7 +1821,7 @@ simu.evolve(
 
 #file log/rpy.log
 from simuPOP import *
-from simuRPy import varPlotter, rpy
+from simuRPy import varPlotter
 pop = population(size=1000, loci=[2])
 simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
@@ -1831,12 +1831,8 @@ simu.evolve(
         stat(LD=[0, 1]),
         varPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
             legend=['Replicate %d' % x for x in range(3)],
-            xlab='generation',
             ylab='LD between marker 1 and 2',
-            ylim=[0, 0.25],
-            main='LD decay',
-            col_rep=['red', 'blue', 'black'],
-            lty_rep=[1, 2, 3],
+            ylim=[0, 0.25], main='LD decay', lty_rep=[1, 2, 3],
         ),
     ],
     gen=100
@@ -1845,7 +1841,7 @@ simu.evolve(
 
 #file log/rpyByRep.log
 from simuPOP import *
-from simuRPy import varPlotter, rpy
+from simuRPy import varPlotter
 pop = population(size=1000, loci=[1]*4)
 simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
@@ -1855,11 +1851,9 @@ simu.evolve(
         varPlotter('[alleleFreq[x][0] for x in range(4)]', byRep=True,
             update=10, saveAs='log/rpy_byRep.png',
             legend=['Locus %d' % x for x in range(4)],
-            xlab='generation',
             ylab='Allele frequency',
             ylim=[0, 1],
             main_rep=['Genetic drift, replicate %d' % x for x in range(3)],
-            col_dim=['red', 'blue', 'black', 'green'],
         ),
     ],
     gen=100
@@ -1872,11 +1866,10 @@ from simuRPy import varPlotter
 pop = population(size=1000, loci=[1]*4)
 simu = simulator(pop, randomMating(), rep=3)
 
-def drawFrame(r, rep, dim):
-    '''Draw a frame around subplot dim. Parameter r is defined in the rpy module
-    and is used for calling R functions. rep and dim are passed to indicate
-    the index of a subplot. Because this example uses byDim=True, dim will be
-    the dimension number and rep=None will be passed.
+def drawFrame(r, dim=None, **kwargs):
+    '''Draw a frame around subplot dim. Parameter r is defined in the rpy
+    module and is used for calling R functions. Parameter dim is the dimension
+    index. Other parameters are ignored.
     '''
     r.axis(1)
     r.axis(2)
@@ -1888,7 +1881,7 @@ simu.evolve(
     ops = [
         stat(alleleFreq=range(4)),
         varPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
-            update=10, saveAs='log/rpy_byDim.png',
+            update=20, saveAs='log/rpy_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
             ylab='Allele frequency',
             ylim=[0, 1],
@@ -1907,10 +1900,9 @@ simu.evolve(
 )
 #end
 
-
-#file log/infoPlotter.log
+#file log/scatterPlotter.log
 from simuPOP import *
-from simuRPy import infoPlotter
+from simuRPy import scatterPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
 # random sex
@@ -1935,17 +1927,57 @@ simu = simulator(pop, randomMating())
 simu.evolve(
     ops = [
         pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
-        infoPlotter(['x', 'y'], stage=PreMating,            
-            saveAs = 'log/infoPlotter.png',
+        scatterPlotter(['x', 'y'], stage=PreMating,            
+            saveAs = 'log/scatterPlotter.png',
             subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
-            col_sp = ['green', 'purple', 'red', 'blue', 'black'],
-            cex_sp = [1, 1.2, 1.4, 1.6, 1.8],
             ylim = [0, 1.2],
             main = 'Ancestry distribution of individuals',
             legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
                 '0.6 <= anc < 0.8', '0.8 <= anc'],
             plot_axes = False,
             par_mar = [0, 0, 2, 0],
+        ),
+    ],
+    gen = 5,
+)
+#end
+
+#file log/histPlotter.log
+from simuPOP import *
+from simuRPy import histPlotter, boxPlotter
+import random
+pop = population([500], infoFields=['x', 'y', 'anc'])
+# random sex
+InitSex(pop)
+# random geographic location
+pop.setIndInfo([random.random() for i in range(500)], 'x')
+pop.setIndInfo([random.random() for i in range(500)], 'y')
+# anc is 0 or 1
+pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
+# Defines VSP 0, 1, 2, 3, 4 by anc.
+pop.setVirtualSplitter(sexSplitter())
+#
+def passInfo(fields):
+    'Parental fields will be passed as x1, y1, anc1, x2, y2, anc2'
+    x1, y1, anc1, x2, y2, anc2 = fields
+    anc = (anc1 + anc2)/2.
+    x = (x1 + x2)/2 + random.normalvariate(anc - 0.5, 0.1)
+    y = (y1 + y2)/2 + random.normalvariate(0, 0.1)
+    return x, y, anc
+
+simu = simulator(pop, randomMating())
+simu.evolve(
+    ops = [
+        pyTagger(passInfo, infoFields=['x', 'y', 'anc']),
+        histPlotter(infoFields='anc', stage=PreMating,            
+            subPops=[(0,0), (0,1)], col_sp=['blue', 'red'],
+            saveAs='log/histPlotter.png',
+            main='Histogram of ancestry values',
+        ),
+        boxPlotter(infoFields='anc', stage=PreMating,
+            subPops=[(0,0), (0,1)],
+            saveAs='log/boxPlotter.png',
+            main='Boxplots of ancestry values',
         ),
     ],
     gen = 5,

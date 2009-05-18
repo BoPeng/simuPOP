@@ -141,12 +141,12 @@ def saveFigure(filename, gen=None, rep=None, **kwargs):
     rpy.r.dev_print(file=file + ext, device=device, **params)
 
 
-class aliasedArgs:
-    '''This class implements the alias keyword argument handling mechanism that
+class derivedArgs:
+    '''This class implements the derived keyword argument handling mechanism that
     is used by all classes defined in this module. It is provided for users who
     would like to use this mechanism for their own rpy-related operators.
     
-    An alias keyword argument is an argument that is prefixed with a function
+    An derived keyword argument is an argument that is prefixed with a function
     name and/or suffixed by an iterator name. The former specifies to which
     underlying R function this parameter will be passed to; the latter allows
     the users to specify a list of values that will be passed, for example, to
@@ -426,7 +426,7 @@ class varPlotter(pyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.plotHook = plotHook
-        self.args = aliasedArgs(
+        self.args = derivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['par', 'plot', 'lines', 'dev_print', 'legend'],
             suffixes = ['rep', 'dim', 'repdim'],
@@ -456,7 +456,7 @@ class varPlotter(pyOperator):
     def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            rpy.r.dev_off()
+            rpy.r.dev_off(self.device)
 
     def _pushData(self, gen, rep, data):
         '''Push history data to self.data for later retrieval. Set self.min and
@@ -526,6 +526,8 @@ class varPlotter(pyOperator):
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
             self.device = newDevice()
+        else: # if there are multiple devices, set it back
+            rpy.r.dev_set(self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -722,7 +724,7 @@ class scatterPlotter(pyOperator):
         self.preHook = preHook
         self.postHook = postHook
         self.subPops = subPops
-        self.args = aliasedArgs(
+        self.args = derivedArgs(
             defaultFuncs = ['plot', 'points'],
             allFuncs = ['par', 'plot', 'points', 'dev_print', 'legend'],
             suffixes = ['sp'],
@@ -743,7 +745,7 @@ class scatterPlotter(pyOperator):
     def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            rpy.r.dev_off()
+            rpy.r.dev_off(self.device)
 
     def _plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -752,6 +754,8 @@ class scatterPlotter(pyOperator):
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
             self.device = newDevice()
+        else: # if there are multiple devices, set it back
+            rpy.r.dev_set(self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -790,7 +794,7 @@ class scatterPlotter(pyOperator):
         return True
 
 
-class statPlotter(pyOperator):
+class infoPlotter(pyOperator):
     '''
     This operator uses a R function such as ``hist`` and ``qqplot`` to plot
     properties of one or more information fields of individuals in one or more
@@ -801,7 +805,8 @@ class statPlotter(pyOperator):
     to a R function such as ``hist``. The resulting figures could be customized
     by additional keyword parameters and various hook functions. For example,
     a ``qqline`` function could be called in a ``plotHook`` function to add a
-    QQ line to a ``qqnorm`` plot. 
+    QQ line to a ``qqnorm`` plot. The ``plotHook`` can be used to draw the
+    whole (sub)plot if no R function is specified for parameter ``func``.
     
     Besides regular keyword parameters, keyword parameters ending in ``_sp``,
     ``_fld`` or ``_spfld`` are expected to have multiple values which will be
@@ -816,13 +821,15 @@ class statPlotter(pyOperator):
     function. Additional keyword arguments without function prefix will be sent
     to this function.
     '''
-    def __init__(self, func='hist', infoFields=[], saveAs="", leaveOpen=False,
+    def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
         preHook=None, postHook=None, plotHook = None, stage=PostMating, begin=0,
         end=-1, step=1, at=[], rep=[], subPops=[], **kwargs):
         '''
         func
             Name of the R function that will be called to draw figures from
-            values of given information fields.
+            values of given information fields. No R function will be called
+            if it is not specified. In this case, a ``plotHook`` can be used
+            to plot passed values.
 
         infoFields
             Information fields whose values will be sent to the specified
@@ -880,7 +887,8 @@ class statPlotter(pyOperator):
         else:
             self.infoFields = infoFields
         self.func = func
-        self.rfunc = rpy.r(self.func)
+        if self.func is not None:
+            self.rfunc = rpy.r(self.func)
         if len(self.infoFields) == 0:
             raise RuntimeError('At least one information field should be given')
         self.saveAs = saveAs
@@ -889,12 +897,20 @@ class statPlotter(pyOperator):
         self.postHook = postHook
         self.plotHook = plotHook
         self.subPops = subPops
-        self.args = aliasedArgs(
-            defaultFuncs = [self.func],
-            allFuncs = ['par', self.func, 'dev_print'],
-            suffixes = ['sp', 'fld', 'spfld'],
-            defaultParams = {},
-            **kwargs)
+        if self.func is None:
+            self.args = derivedArgs(
+                defaultFuncs = [],
+                allFuncs = ['par', 'dev_print'],
+                suffixes = ['sp', 'fld', 'spfld'],
+                defaultParams = {},
+                **kwargs)
+        else:
+            self.args = derivedArgs(
+                defaultFuncs = [self.func],
+                allFuncs = ['par', self.func, 'dev_print'],
+                suffixes = ['sp', 'fld', 'spfld'],
+                defaultParams = {},
+                **kwargs)
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
             step=step, at=at, rep=rep, stage=stage)
@@ -902,7 +918,7 @@ class statPlotter(pyOperator):
     def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            rpy.r.dev_off()
+            rpy.r.dev_off(self.device)
 
     def _plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -911,6 +927,8 @@ class statPlotter(pyOperator):
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
             self.device = newDevice()
+        else: # if there are multiple devices, set it back
+            rpy.r.dev_set(self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -932,17 +950,19 @@ class statPlotter(pyOperator):
             # if there is no subpopulation, easy
             if len(self.subPops) == 0:
                 val = pop.indInfo(fld)
-                self.rfunc(val, **self.args.getArgs(self.func, fld=fldIdx, sp=0,
-                    spfld=fldIdx, main='%s at gen %d' % (fld, gen), xlab=fld, ylab=self.func))
+                if self.func is not None:
+                    self.rfunc(val, **self.args.getArgs(self.func, fld=fldIdx, sp=0,
+                        spfld=fldIdx, main='%s at gen %d' % (fld, gen), xlab=fld, ylab=self.func))
                 if self.plotHook is not None:
                     self.plotHook(r=rpy.r, data=val, field=fld)
             else:
                 for spIdx,sp in enumerate(self.subPops):
                     val = pop.indInfo(fld, sp)
-                    self.rfunc(val, **self.args.getArgs(self.func,
-                        fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
-                        main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
-                        xlab=fld, ylab=self.func))
+                    if self.func is not None:
+                        self.rfunc(val, **self.args.getArgs(self.func,
+                            fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
+                            main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
+                            xlab=fld, ylab=self.func))
                     if self.plotHook is not None:
                         self.plotHook(r=rpy.r, data=val, field=fld, subPop=sp)
         # call the postHook function if given
@@ -954,26 +974,25 @@ class statPlotter(pyOperator):
 
 def histPlotter(*args, **kwargs):
     '''
-    A statPlotter that uses R function ``hist`` to draw histogram of individual
+    A infoPlotter that uses R function ``hist`` to draw histogram of individual
     information fields of specified (virtual) subpopulations. Please see
-    ``statPlotter`` for details.
+    ``infoPlotter`` for details.
     '''
-    return statPlotter('hist', *args, **kwargs)
+    return infoPlotter('hist', *args, **kwargs)
 
 def qqPlotter(*args, **kwargs):
     '''
-    A statPlotter that uses R function ``qqnorm`` to draw qq plot of individual
+    A infoPlotter that uses R function ``qqnorm`` to draw qq plot of individual
     information fields of specified (virtual) subpopulations. Please see
-    ``statPlotter`` for details.
+    ``infoPlotter`` for details.
     '''
-    return statPlotter('qqnorm', *args, **kwargs)
-
+    return infoPlotter('qqnorm', *args, **kwargs)
 
 class boxPlotter(pyOperator):
     '''
     This operator draws boxplots of one or more information fields of
     individuals in one or more (virtual) subpopulations of a population.
-    Although a ``statPlotter`` with ``func=boxplot`` could be used to plot
+    Although a ``infoPlotter`` with ``func=boxplot`` could be used to plot
     boxplots for each information field and/or subpopulation, this class allows
     multiple whiskers to share one plot. How the whiskers are oraganized is
     controlled by parameters ``byField`` and ``bySubPop``.
@@ -1045,10 +1064,9 @@ class boxPlotter(pyOperator):
 
         plotHook
             A function that, if given, will be called after each specified plot
-            function. The ``r`` object from the ``rpy`` module, data being
-            plotted and ownership lists (in parameters ``field`` and ``subPop``,
-            if applicable) will be passed with keywords ``r``, ``data``,
-            ``field`` (optional) and ``subPop`` (optional).
+            function. The ``r`` object from the ``rpy`` module, current field
+            and subpopulation will be passed with keywords ``r``, ``field`` and
+            ``subPop`` if applicable.
 
         kwargs
             Additional keyword arguments that will be interpreted and sent to
@@ -1077,7 +1095,7 @@ class boxPlotter(pyOperator):
         self.bySubPop = bySubPop
         if len(self.subPops) <= 1:
             self.bySubPop = False
-        self.args = aliasedArgs(
+        self.args = derivedArgs(
             defaultFuncs = ['boxplot'],
             allFuncs = ['par', 'boxplot', 'dev_print'],
             suffixes = ['sp', 'fld', 'spfld'],
@@ -1091,7 +1109,7 @@ class boxPlotter(pyOperator):
     def __del__(self):
         # Close the device if needed.
         if not self.leaveOpen and hasattr(self, 'device'):
-            rpy.r.dev_off()
+            rpy.r.dev_off(self.device)
 
     def _plot(self, pop):
         "Evaluate expression in pop and save result. Plot all data if needed"
@@ -1100,6 +1118,8 @@ class boxPlotter(pyOperator):
         # create a new graphical device if needed
         if not hasattr(self, 'device'):
             self.device = newDevice()
+        else: # if there are multiple devices, set it back
+            rpy.r.dev_set(self.device)
         # call the preHook function if given
         if self.preHook is not None:
             self.preHook(rpy.r)
@@ -1119,35 +1139,35 @@ class boxPlotter(pyOperator):
         #
         rpy.r.par(**self.args.getArgs('par'))
         #
-        if self.byField and self.bySubPop:
-            # multiple Field and subpop, each has its own subplot
+        if self.byField:
             for fldIdx,fld in enumerate(self.infoFields):
-                for spIdx,sp in enumerate(self.subPops):
-                    val = pop.indInfo(fld, sp)
-                    rpy.r.boxplot(val, **self.args.getArgs('boxplot',
-                        fld=fld, sp=sp, spfld=len(self.infoFields)*spIdx + fldIdx,
-                        main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
-                    if self.plotHook is not None:
-                        self.plotHook(r=rpy.r, data=val, field=fld, subPop=spIdx)
-        elif self.byField and not self.bySubPop:
-            for fldIdx,fld in enumerate(self.infoFields):
-                # combine data
-                data = []
-                owner = []
-                if len(self.subPops) == 0:
-                    data = pop.indInfo(fld)
-                    owner = [fld]*len(data)
-                else:
+                if self.bySubPop:
+                    # multiple Field and subpop, each has its own subplot
                     for spIdx,sp in enumerate(self.subPops):
-                        spData = pop.indInfo(fld, sp)
-                        data.extend(spData)
-                        owner.extend([pop.subPopName(sp)]*len(spData))
-                #
-                rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
-                    **self.args.getArgs('boxplot', fld=fldIdx,
-                    main='Field %s at gen %d' % (fld, gen)))
-                if self.plotHook is not None:
-                    self.plotHook(r=rpy.r, data=val, field=owner)
+                        val = pop.indInfo(fld, sp)
+                        rpy.r.boxplot(val, **self.args.getArgs('boxplot',
+                            fld=fld, sp=sp, spfld=len(self.infoFields)*spIdx + fldIdx,
+                            main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
+                        if self.plotHook is not None:
+                            self.plotHook(r=rpy.r, field=fld, subPop=spIdx)
+                else:
+                    # combine data
+                    data = []
+                    owner = []
+                    if len(self.subPops) == 0:
+                        data = pop.indInfo(fld)
+                        owner = [fld]*len(data)
+                    else:
+                        for spIdx,sp in enumerate(self.subPops):
+                            spData = pop.indInfo(fld, sp)
+                            data.extend(spData)
+                            owner.extend([pop.subPopName(sp)]*len(spData))
+                    #
+                    rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
+                        **self.args.getArgs('boxplot', fld=fldIdx,
+                        main='Field %s at gen %d' % (fld, gen)))
+                    if self.plotHook is not None:
+                        self.plotHook(r=rpy.r, field=fld)
         elif not self.byField and self.bySubPop:
             for spIdx,sp in enumerate(self.subPops):
                 # combine data
@@ -1159,10 +1179,10 @@ class boxPlotter(pyOperator):
                     owner.extend([fld]*len(fldData))
                 #
                 rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
-                    **self.args.getArgs('boxplot', sp=fldIdx,
-                    main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
+                    **self.args.getArgs('boxplot', sp=spIdx,
+                        main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
                 if self.plotHook is not None:
-                    self.plotHook(r=rpy.r, data=val, subPop=owner)
+                    self.plotHook(r=rpy.r, subPop=sp)
         else:
             # everything in one plot.
             data = []
@@ -1179,10 +1199,12 @@ class boxPlotter(pyOperator):
                     if len(self.infoFields) == 1:
                         owner.extend([pop.subPopName(sp)]*len(spData))
                     else:
-                        owner.extend(['%s,%s' % (fld, pop.subPopName(sp))]*len(spData))
+                        owner.extend(['%s, %s' % (fld, pop.subPopName(sp))]*len(spData))
             #
             rpy.r.boxplot(rpy.r("data ~ owner"), data=rpy.r.data_frame(data=data, owner=owner),
                 **self.args.getArgs('boxplot'))
+            if self.plotHook is not None:
+                self.plotHook(r=rpy.r)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)

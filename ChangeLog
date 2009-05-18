@@ -8,7 +8,7 @@ version 0.9.4 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Remove image plottype from varPlotter, with simplified code and enhanced
 		functions.
   - NEW: Add scatterPlotter that plots information fields.
-  - NEW: Add statPlotter and two special cases histPlotter and qqPlotter.
+  - NEW: Add infoPlotter and two special cases histPlotter and qqPlotter.
   - NEW: Add boxPlotter.
 
 version 0.9.3 - (Rev 2601) Apr 3, 2009

@@ -1937,7 +1937,7 @@ simuRPysaveFigureRef
 
 
 \backslash
-simuRPyaliasedArgsRef
+simuRPyderivedArgsRef
 \end_layout
 
 \begin_layout Plain Layout
@@ -1951,7 +1951,35 @@ simuRPyvarPlotterRef
 
 
 \backslash
+simuRPyscatterPlotterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuRPyinfoPlotterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyhistPlotterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyqqPlotterRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRPyboxPlotterRef
 \end_layout
 
 \end_inset
