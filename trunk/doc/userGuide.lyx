@@ -12508,7 +12508,7 @@ simuRPy
 \begin_layout Itemize
 Operator 
 \family typewriter
-varPlotter
+simuRPy.varPlotter
 \family default
 : Plot a dynamically evaluated expression with its history.
  Each expression and its history form a line in the plot.
@@ -12520,7 +12520,7 @@ varPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-scatterPlotter
+simuRPy.scatterPlotter
 \family default
 : Plot individuals in specified (virtual) subpopulations using values at
  two information fields as x and y axes.
@@ -12531,7 +12531,7 @@ scatterPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-infoPlotter
+simuRPy.infoPlotter
 \family default
 : Using a R function such as 
 \family typewriter
@@ -12545,11 +12545,11 @@ qqnorm
  subpopulations.
  Two specialized operators 
 \family typewriter
-histPlotter
+simuRPy.histPlotter
 \family default
  and 
 \family typewriter
-qqPlotter
+simuRPy.qqPlotter
 \family default
  are provided to plot the histograms and qq plots.
  Other functions could also be used, and it is even possible to draw a figure
@@ -12559,7 +12559,7 @@ qqPlotter
 \begin_layout Itemize
 Operator 
 \family typewriter
-boxPlotter
+simuRPy.boxPlotter
 \family default
 : This operator uses R function 
 \family typewriter
@@ -12576,9 +12576,9 @@ These operators are derived from class
 pyOperator
 \family default
  and call R plot functions when they are applied to a population.
- For example, the 
+ For example, operator 
 \family typewriter
-varPlotter
+simuRPy.varPlotter
 \family default
  collects expression values and use functions 
 \family typewriter
@@ -12700,7 +12700,7 @@ Plot of expressions and their histories
 \begin_layout Standard
 Class 
 \family typewriter
-varPlotter
+simuRPy.varPlotter
 \family default
  plots the current and historical values of a Python expression (
 \family typewriter
@@ -13231,7 +13231,7 @@ Scatter plots
 \begin_layout Standard
 Operator 
 \family typewriter
-scatterPlotter
+simuRPy.scatterPlotter
 \family default
  plots individuals in all or selected (virtual) subpopulations in a 2-D
  plot, using values at two information fields as their x- and y-axis.
@@ -13494,17 +13494,17 @@ Histograms, QQ plots and boxplots.
 \begin_layout Standard
 Class 
 \family typewriter
-infoPlotter
+simuRPy.infoPlotter
 \family default
  can be used to draw figures for information fields of individuals in one
  or more subpopulations.
  
 \family typewriter
-histPlotter
+simuRPy.histPlotter
 \family default
  and 
 \family typewriter
-qqPlotter
+simuRPy.qqPlotter
 \family default
  are two special cases of this class that uses functions 
 \family typewriter
@@ -13525,7 +13525,7 @@ boxplot
 \family default
  function could be used, a specialized 
 \family typewriter
-boxPlotter
+simuRPy.boxPlotter
 \family default
  is defined so that mutliple boxplot whiskers could be drawn in the same
  plot.
