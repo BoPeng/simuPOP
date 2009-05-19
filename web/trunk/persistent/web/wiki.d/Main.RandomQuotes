@@ -5,10 +5,25 @@ csum=
 ctime=1242700679
 host=127.0.0.1
 name=Main.RandomQuotes
-rev=5
-targets=Main.RoadMap
-text=[[#landscape]]%0a(:youtube Al_0BlSxcHI:)%0a%0a[--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%0a[[#designer]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a%0a[--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%0a%0a
-time=1242701284
+rev=10
+targets=Main.BasicConcepts,Main.RoadMap
+text=[[#evolution]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/evolve.png%0a[--A life cycle of the simuPOP evolutionary process. See simuPOP [[Main/BasicConcepts]] for details.--]%0a%0a%0a[[#example]]%0a=python [=%0afrom simuPOP import *%0apop = population(size=1000, loci=[2])%0asimu = simulator(pop, randomMating(), rep=3)%0asimu.evolve(%0a    preOps = [initByValue([1, 2, 2, 1])],  %0a    ops = [%0a        recombinator(rate=0.01),%0a        stat(LD=[0, 1]),%0a        pyEval(r"'%25.2f\t' %25 LD[0][1]", step=10),%0a        pyOutput('\n', rep=-1, step=10)%0a    ],%0a    gen=100%0a)%0a=]%0a[--A simple simuPOP script. Please see [[Main/BasicConcepts]] dor details--]%0a%0a[[#designer]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a[--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%0a[[#landscape]]%0a(:youtube Al_0BlSxcHI:)%0a%0a[--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%0a%0a
+time=1242701813
+author:1242701813=
+diff:1242701813:1242701787:=7a8,10%0a> %0a> !! A simple example:%0a> %0a
+host:1242701813=127.0.0.1
+author:1242701787=
+diff:1242701787:1242701732:=7,8d6%0a%3c [[#example]]%0a%3c %0a38c36,37%0a%3c %0a---%0a> [[#example]]%0a> %0a
+host:1242701787=127.0.0.1
+author:1242701732=
+diff:1242701732:1242701532:=0a1,9%0a> [[#landscape]]%0a> (:youtube Al_0BlSxcHI:)%0a> %0a> [--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a> [[#designer]]%0a> %0a> %25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a> [--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a> %0a5,37d13%0a%3c %0a%3c %0a%3c !! A simple example:%0a%3c %0a%3c =python [=%0a%3c from simuPOP import *%0a%3c pop = population(size=1000, loci=[2])%0a%3c simu = simulator(pop, randomMating(), rep=3)%0a%3c simu.evolve(%0a%3c     preOps = [initByValue([1, 2, 2, 1])],  %0a%3c     ops = [%0a%3c         recombinator(rate=0.01),%0a%3c         stat(LD=[0, 1]),%0a%3c         pyEval(r"'%25.2f\t' %25 LD[0][1]", step=10),%0a%3c         pyOutput('\n', rep=-1, step=10)%0a%3c     ],%0a%3c     gen=100%0a%3c )%0a%3c =]%0a%3c [--A simple simuPOP script. Please see [[Main/BasicConcepts]] dor details--]%0a%3c %0a%3c [[#designer]]%0a%3c %0a%3c %25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a%3c [--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%3c %0a%3c [[#landscape]]%0a%3c (:youtube Al_0BlSxcHI:)%0a%3c %0a%3c [--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%3c %0a%3c [[#example]]%0a%3c %0a
+host:1242701732=127.0.0.1
+author:1242701532=
+diff:1242701532:1242701496:=13c13%0a%3c [--A life cycle of the simuPOP evolutionary process. See simuPOP [[Main/BasicConcepts]] for details.--]%0a---%0a> [--A life cycle of the simuPOP evolutionary process. See simuPOP [[Main/Introduction]] for details.--]%0a
+host:1242701532=127.0.0.1
+author:1242701496=
+diff:1242701496:1242701284:=4a5%0a> %0a7a9%0a> %0a10,13c12%0a%3c [[#evolution]]%0a%3c %0a%3c %25width=500%25 http://simupop.sourceforge.net/images/evolve.png%0a%3c [--A life cycle of the simuPOP evolutionary process. See simuPOP [[Main/Introduction]] for details.--]%0a---%0a> %0a
+host:1242701496=127.0.0.1
 author:1242701284=
 diff:1242701284:1242700763:=8,9c8,9%0a%3c %25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a%3c %0a---%0a> %25width=300%25 http://simupop.sourceforge.net/images/designer.png%0a> %0a
 host:1242701284=127.0.0.1
