@@ -9,7 +9,8 @@ version 0.9.4 - Not released, available at https://simupop.svn.sourceforge.net/s
 		functions.
   - NEW: Add scatterPlotter that plots information fields.
   - NEW: Add infoPlotter and two special cases histPlotter and qqPlotter.
-  - NEW: Add boxPlotter.
+  - NEW: Add boxPlotter to plot boxplots of information fields.
+  - NEW: Introducing derivedArgs with expression values.
 
 version 0.9.3 - (Rev 2601) Apr 3, 2009
   - BUG: Fix a bug with population::removeLoci when given keep loci are not in order.

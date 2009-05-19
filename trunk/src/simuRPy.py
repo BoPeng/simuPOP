@@ -154,6 +154,12 @@ class derivedArgs:
     ``par_mar=[1]*4`` will pass ``mar=[1]*4`` to R function ``par``, and
     ``lty_rep=[1, 2, 3]`` will pass ``lty=1``, ``lty=2`` and ``lty=3`` to
     different replicates.
+
+    Values provided to derived arguments are usually passed unchanged, but with
+    one exception: string value with a leading ``!`` mark will be evaluated
+    against the current population before it is returned. For example,
+    ``main='!"Allele frequency at generation %d" % gen'`` will return 
+    ``main="Allele frequency at generation 100"`` at generation 100.
     '''
     def __init__(self, defaultFuncs=[], allFuncs=[], suffixes=[], defaultParams={}, **kwargs):
         '''
@@ -214,12 +220,12 @@ class derivedArgs:
             if not exist:
                 self.params[key] = value
 
-    def getArgs(self, func, **kwargs):
+    def getArgs(self, func, pop, **kwargs):
         '''Get all single format parameters from keyword parameters. Additional
         keyword arguments can be used to specify suffix and its index. (e.g.
         rep=1 will return the second element of par_rep). Unrecognized keyword
         arguments are handled as default value that will be used if a parameter
-        is not defined. E.g. ``getArgs('line', rep=1, pch=4)`` will get
+        is not defined. E.g. ``getArgs('line', pop, rep=1, pch=4)`` will get
         parameters for replicate 1 and add ``pch=4`` if ``pch`` is not defined.
         '''
         if func not in self.allFuncs:
@@ -254,13 +260,17 @@ class derivedArgs:
         for key,value in kwargs.iteritems():
             if not key in self.suffixes and not ret.has_key(key):
                 ret[key] = value
+        # evalulate the values if needed
+        for key in ret.keys():
+            if type(ret[key]) == type('') and ret[key].startswith('!'):
+                ret[key] = pop.evaluate(ret[key][1:])
         return ret
 
-    def getLegendArgs(self, func, args, keys, values, **kwargs):
+    def getLegendArgs(self, func, pop, args, keys, values, **kwargs):
         '''
         Get argument values for legend drawing purposes. For example, 
 
-            getMultiArgs('lines', ['lty', 'pch'], 'rep', [0,1,2])
+            getMultiArgs('lines', pop, ['lty', 'pch'], 'rep', [0,1,2])
         
         will get parameter for ``lty`` and ``pch`` for all ``rep``. If there
         are more keys (e.g. ``['rep', 'dim']``), values should be a list of
@@ -280,7 +290,7 @@ class derivedArgs:
                 for k,v in zip(keys, val):
                     index[k] = v
             index.update(kwargs)
-            vals = self.getArgs(func, **index)
+            vals = self.getArgs(func, pop, **index)
             for arg in args:
                 if vals.has_key(arg):
                     ret[arg].append(vals[arg])
@@ -328,9 +338,12 @@ class varPlotter(pyOperator):
     R functions such as ``par``, ``plot``, ``lines``, ``legend``, ``dev_print``
     by prefixing parameter names with a function name. For example, 
     ``dev_print_width=300`` will pass ``width=300`` to function ``dev.print()``
-    when you save your figures using this function. Further customization of
-    your figures could be achieved by writing your own hook functions that will
-    be called before and after a figure is drawn, and after each ``plot`` call.
+    when you save your figures using this function. In addition, if the value
+    of a parameter is a string starting with ``!``, the evaluated result of
+    the remaining string will be used as parameter value. Further customization
+    of your figures could be achieved by writing your own hook functions that
+    will be called before and after a figure is drawn, and after each ``plot``
+    call.
 
     This opertor calls R functions ``par``, ``plot``, ``lines``, ``legend``,
     and ``dev.print``. Functions ``plot`` and ``lines`` are the default
@@ -412,7 +425,9 @@ class varPlotter(pyOperator):
             (destination function names) ``plot_``, ``lines_``, ``par_``,
             ``legend_`` and ``dev_print_``, and suffixes (list parameters)
             ``_rep``, ``_dim``, and ``_repdim``. Arguments without prefixes are
-            sent to functions ``plot`` and ``lines``.
+            sent to functions ``plot`` and ``lines``. String values with a
+            leading ``!`` will be replaced by its evaluated result against the
+            current population.
         '''
         # parameters
         self.expr = expr
@@ -555,7 +570,7 @@ class varPlotter(pyOperator):
                 nrow, ncol = ncol, nrow
             self.args.addDefault(par_mfrow=[nrow, ncol])
         # users might set additional parameters and override calculated mfrow.
-        rpy.r.par(**self.args.getArgs('par'))
+        rpy.r.par(**self.args.getArgs('par', pop))
         # now plot.
         if self.byRep:
             # handle each replicate separately
@@ -565,7 +580,7 @@ class varPlotter(pyOperator):
                     for dim in range(self.nDim):
                         data = self._getData(rep, dim)
                         rpy.r.plot(self.gen, data,
-                            **self.args.getArgs('plot', rep=rep_idx, dim=dim,
+                            **self.args.getArgs('plot', pop, rep=rep_idx, dim=dim,
                                 repdim=self.nDim*rep_idx + dim, ylim=[self.min, self.max]))
                         if self.plotHook is not None:
                             self.plotHook(r=rpy.r, gen=self.gen, data=data, rep=rep, dim=dim)
@@ -573,18 +588,18 @@ class varPlotter(pyOperator):
                     # all var in one subplot
                     data = self._getData(rep, 0)
                     rpy.r.plot(self.gen, data,
-                        **self.args.getArgs('plot', rep=rep_idx, dim=0,
+                        **self.args.getArgs('plot', pop, rep=rep_idx, dim=0,
                             repdim=self.nDim * rep_idx, ylim=[self.min, self.max]))
                     if self.plotHook is not None:
                         self.plotHook(r=rpy.r, gen=self.gen, data=data, rep=rep)
                     for dim in range(1, self.nDim):
                         rpy.r.lines(self.gen, self._getData(rep, dim),
-                            **self.args.getArgs('lines', rep=rep_idx, dim=dim,
+                            **self.args.getArgs('lines', pop, rep=rep_idx, dim=dim,
                                 repdim=self.nDim * rep_idx + dim))
                     if len(self.legend) > 0:
-                        args = self.args.getLegendArgs('lines', ['lty', 'col', 'lwd'],
+                        args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
                             'rep', range(self.nRep))
-                        args.update(self.args.getArgs('legend'))
+                        args.update(self.args.getArgs('legend', pop))
                         rpy.r.legend('topright', legend=self.legend, **args)
         else:
             # all replicate in one figure
@@ -592,41 +607,41 @@ class varPlotter(pyOperator):
                 for dim in range(self.nDim):
                     data = self._getData(self.reps[0], dim)
                     rpy.r.plot(self.gen, data,
-                        **self.args.getArgs('plot', rep=self.reps[0], dim=dim, repdim=dim,
+                        **self.args.getArgs('plot', pop, rep=self.reps[0], dim=dim, repdim=dim,
                             ylim=[self.min, self.max]))
                     if self.plotHook is not None:
                         self.plotHook(r=rpy.r, gen=self.gen, data=data, dim=dim)
                     for rep_idx,rep in enumerate(self.reps[1:]):
                         rpy.r.lines(self.gen, self._getData(rep, dim),
-                            **self.args.getArgs('lines', rep=rep_idx+1, dim=dim,
+                            **self.args.getArgs('lines', pop, rep=rep_idx+1, dim=dim,
                                 repdim=self.nDim * (rep_idx + 1) + dim))
                     if len(self.legend) > 0:
-                        args = self.args.getLegendArgs('lines', ['lty', 'col'],
+                        args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
                             'rep', range(self.nRep))
-                        args.update(self.args.getArgs('legend'))
+                        args.update(self.args.getArgs('legend', pop))
                         rpy.r.legend('topright', legend=self.legend, **args)
             else:
                 data = self._getData(0, 0)
                 rpy.r.plot(self.gen, data,
-                    **self.args.getArgs('plot', rep=0, dim=0, repdim=0,
+                    **self.args.getArgs('plot', pop, rep=0, dim=0, repdim=0,
                         ylim=[self.min, self.max]))
                 if self.plotHook is not None:
                     self.plotHook(r=rpy.r, gen=self.gen, data=data)
                 for rep_idx,rep in enumerate(self.reps):
                     for dim in range(self.nDim):
                         rpy.r.lines(self.gen, self._getData(rep, dim),
-                            **self.args.getArgs('lines', rep=rep_idx, dim=dim,
+                            **self.args.getArgs('lines', pop, rep=rep_idx, dim=dim,
                                 repdim=self.nDim * rep_idx + dim))
                 if len(self.legend) > 0:
-                    args = self.args.getLegendArgs('lines', ['lty', 'col'],
+                    args = self.args.getLegendArgs('lines', pop, ['lty', 'col', 'lwd'],
                         ['rep', 'dim'], [(x,y) for x in range(self.nRep) for y in range(self.nDim)])
-                    args.update(self.args.getArgs('legend'))
+                    args.update(self.args.getArgs('legend', pop))
                     rpy.r.legend('topright', legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, None, **self.args.getArgs('dev_print'))
+            saveFigure(self.saveAs, gen, None, **self.args.getArgs('dev_print', pop))
         return True
 
 
@@ -657,7 +672,9 @@ class scatterPlotter(pyOperator):
     using list parameters with suffix ``_sp``. For example, if you have defined
     two VSPs by sex and set ``subPops=[(0, 0), (0, 1)]``,
     ``col_sp=['blue', 'red']`` will color male individuals with blue and female
-    individuals with red.
+    individuals with red. In addition, if the value of a parameter is a string
+    starting with ``!``, the evaluated result of the remaining string will be
+    used as parameter value.
 
     This opertor calls R functions ``par``, ``plot``, ``points``, ``legend``,
     and ``dev.print``. Functions ``plot`` and ``points`` are the default
@@ -712,7 +729,8 @@ class scatterPlotter(pyOperator):
             (destination function names) ``plot_``, ``points_``, ``par_``,
             ``legend_`` and ``dev_print_``, and suffixes (list parameters)
             ``_sp``. Arguments without prefixes are sent to functions
-            ``plot`` and ``points``.
+            ``plot`` and ``points``. String values with a leading ``!`` will be
+            replaced by its evaluated result against the current population.
         '''
         # parameters
         self.infoFields = infoFields
@@ -760,7 +778,7 @@ class scatterPlotter(pyOperator):
         if self.preHook is not None:
             self.preHook(rpy.r)
         # call par in case some parameter is provided
-        parParam = self.args.getArgs('par')
+        parParam = self.args.getArgs('par', pop)
         if len(parParam) > 0:
             rpy.r.par(**parParam)
         #
@@ -771,26 +789,26 @@ class scatterPlotter(pyOperator):
         # if there is no subpopulation, easy
         if len(self.subPops) == 0:
             rpy.r.plot(x, y, 
-                **self.args.getArgs('plot', type='p', xlim=xlim, ylim=ylim))
+                **self.args.getArgs('plot', pop, type='p', xlim=xlim, ylim=ylim))
         else:
-            parPlot = self.args.getArgs('plot', type='n', xlim=xlim, ylim=ylim)
+            parPlot = self.args.getArgs('plot', pop, type='n', xlim=xlim, ylim=ylim)
             parPlot['type'] = 'n'
             rpy.r.plot(x[0], y[0], **parPlot)
             for idx,sp in enumerate(self.subPops):
                 x = pop.indInfo(self.infoFields[0], sp)
                 y = pop.indInfo(self.infoFields[1], sp)
-                rpy.r.points(x, y, **self.args.getArgs('points', sp=idx))
+                rpy.r.points(x, y, **self.args.getArgs('points', pop, sp=idx))
             # legend
             if len(self.legend) > 0:
-                args = self.args.getLegendArgs('points', ['col', 'pch', 'lwd', 'cex'],
+                args = self.args.getLegendArgs('points', pop, ['col', 'pch', 'lwd', 'cex'],
                     'sp', range(len(self.subPops)))
-                args.update(self.args.getArgs('legend'))
+                args.update(self.args.getArgs('legend', pop))
                 rpy.r.legend('topright', legend=self.legend, **args)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print'))
+            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print', pop))
         return True
 
 
@@ -815,7 +833,9 @@ class infoPlotter(pyOperator):
     sent by prefixing a function name to the parameter name. For example,
     ``pch_fld=[1, 2]`` will use different symbols for different information
     fields, and ``par_mar=[1]*4`` will send parameter ``mar=[1]*4`` to function
-    ``par``.
+    ``par``. In addition, if the value of a parameter is a string starting with
+    ``!``, the evaluated result of the remaining string will be used as
+    parameter value.
     
     This opertor calls R functions ``par``, ``dev.print``, and a user-specified
     function. Additional keyword arguments without function prefix will be sent
@@ -879,7 +899,9 @@ class infoPlotter(pyOperator):
             (destination function names) ``par_``, ``dev_print_`` and the
             function you specify (parameter ``func``), and suffixes (list
             parameters) ``_sp``, ``_fld``, and ``_spfld``. Arguments without
-            prefixes are sent to the user specified function.
+            prefixes are sent to the user specified function. String values
+            with a leading ``!`` will be replaced by its evaluated result
+            against the current population.
         '''
         # parameters
         if type(infoFields) == type(''):
@@ -944,14 +966,14 @@ class infoPlotter(pyOperator):
                 nrow, ncol = ncol, nrow
             self.args.addDefault(par_mfrow=[nrow, ncol])
         #
-        rpy.r.par(**self.args.getArgs('par'))
+        rpy.r.par(**self.args.getArgs('par', pop))
         #
         for fldIdx,fld in enumerate(self.infoFields):
             # if there is no subpopulation, easy
             if len(self.subPops) == 0:
                 val = pop.indInfo(fld)
                 if self.func is not None:
-                    self.rfunc(val, **self.args.getArgs(self.func, fld=fldIdx, sp=0,
+                    self.rfunc(val, **self.args.getArgs(self.func, pop, fld=fldIdx, sp=0,
                         spfld=fldIdx, main='%s at gen %d' % (fld, gen), xlab=fld, ylab=self.func))
                 if self.plotHook is not None:
                     self.plotHook(r=rpy.r, data=val, field=fld)
@@ -959,7 +981,7 @@ class infoPlotter(pyOperator):
                 for spIdx,sp in enumerate(self.subPops):
                     val = pop.indInfo(fld, sp)
                     if self.func is not None:
-                        self.rfunc(val, **self.args.getArgs(self.func,
+                        self.rfunc(val, **self.args.getArgs(self.func, pop,
                             fld=fldIdx, sp=spIdx, spfld=len(self.infoFields)*spIdx + fldIdx,
                             main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen),
                             xlab=fld, ylab=self.func))
@@ -969,7 +991,7 @@ class infoPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print'))
+            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print', pop))
         return True
 
 def histPlotter(*args, **kwargs):
@@ -1010,7 +1032,9 @@ class boxPlotter(pyOperator):
     sent by prefixing a function name to the parameter name. For example,
     ``pch_fld=[1, 2]`` will use different symbols for different information
     fields, and ``par_mar=[1]*4`` will send parameter ``mar=[1]*4`` to function
-    ``par``.
+    ``par``. In addition, if the value of a parameter is a string starting with
+    ``!``, the evaluated result of the remaining string will be used as
+    parameter value.
  
     This opertor calls R functions ``par``, ``boxplot`` and ``dev.print``.
     Keyword parameters without function prefix will be passed to ``boxplot``.
@@ -1074,7 +1098,8 @@ class boxPlotter(pyOperator):
             (destination function names) ``plot_``, ``boxplot_``, ``par_``,
             and ``dev_print_``, and suffixes (list parameters) ``_sp``,
             ``_fld`` and ``_spfld``. Arguments without prefixes are sent to
-            function ``boxplot``.
+            function ``boxplot``. String values with a leading ``!`` will be
+            replaced by its evaluated result against the current population.
         '''
         # parameters
         if type(infoFields) == type(''):
@@ -1137,7 +1162,7 @@ class boxPlotter(pyOperator):
                 nrow, ncol = ncol, nrow
             self.args.addDefault(par_mfrow=[nrow, ncol])
         #
-        rpy.r.par(**self.args.getArgs('par'))
+        rpy.r.par(**self.args.getArgs('par', pop))
         #
         if self.byField:
             for fldIdx,fld in enumerate(self.infoFields):
@@ -1145,7 +1170,7 @@ class boxPlotter(pyOperator):
                     # multiple Field and subpop, each has its own subplot
                     for spIdx,sp in enumerate(self.subPops):
                         val = pop.indInfo(fld, sp)
-                        rpy.r.boxplot(val, **self.args.getArgs('boxplot',
+                        rpy.r.boxplot(val, **self.args.getArgs('boxplot', pop,
                             fld=fld, sp=sp, spfld=len(self.infoFields)*spIdx + fldIdx,
                             main='%s in %s at gen %d' % (fld, pop.subPopName(sp), gen)))
                         if self.plotHook is not None:
@@ -1164,7 +1189,7 @@ class boxPlotter(pyOperator):
                             owner.extend([pop.subPopName(sp)]*len(spData))
                     #
                     rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
-                        **self.args.getArgs('boxplot', fld=fldIdx,
+                        **self.args.getArgs('boxplot', pop, fld=fldIdx,
                         main='Field %s at gen %d' % (fld, gen)))
                     if self.plotHook is not None:
                         self.plotHook(r=rpy.r, field=fld)
@@ -1179,7 +1204,7 @@ class boxPlotter(pyOperator):
                     owner.extend([fld]*len(fldData))
                 #
                 rpy.r.boxplot(rpy.r('data ~ owner'), data=rpy.r.data_frame(data=data, owner=owner),
-                    **self.args.getArgs('boxplot', sp=spIdx,
+                    **self.args.getArgs('boxplot', pop, sp=spIdx,
                         main='Subpop %s at gen %d' % (pop.subPopName(sp), gen)))
                 if self.plotHook is not None:
                     self.plotHook(r=rpy.r, subPop=sp)
@@ -1202,13 +1227,13 @@ class boxPlotter(pyOperator):
                         owner.extend(['%s, %s' % (fld, pop.subPopName(sp))]*len(spData))
             #
             rpy.r.boxplot(rpy.r("data ~ owner"), data=rpy.r.data_frame(data=data, owner=owner),
-                **self.args.getArgs('boxplot'))
+                **self.args.getArgs('boxplot', pop))
             if self.plotHook is not None:
                 self.plotHook(r=rpy.r)
         # call the postHook function if given
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print'))
+            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print', pop))
         return True
 
