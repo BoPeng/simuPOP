@@ -1,0 +1,26 @@
+version=pmwiki-2.1.27 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)
+author=
+csum=
+ctime=1242700679
+host=127.0.0.1
+name=Main.RandomQuotes
+rev=5
+targets=Main.RoadMap
+text=[[#landscape]]%0a(:youtube Al_0BlSxcHI:)%0a%0a[--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%0a[[#designer]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a%0a[--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%0a%0a
+time=1242701284
+author:1242701284=
+diff:1242701284:1242700763:=8,9c8,9%0a%3c %25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a%3c %0a---%0a> %25width=300%25 http://simupop.sourceforge.net/images/designer.png%0a> %0a
+host:1242701284=127.0.0.1
+author:1242700763=
+diff:1242700763:1242700732:=10,12c10,12%0a%3c [--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%3c %0a%3c %0a---%0a> [--A prototype of a simuPOP designer. Any suggestion is welcome--]%0a> %0a> %0a
+host:1242700763=127.0.0.1
+author:1242700732=
+diff:1242700732:1242700710:=8,9c8,9%0a%3c %25width=300%25 http://simupop.sourceforge.net/images/designer.png%0a%3c %0a---%0a> %25lfloat width=300%25 http://simupop.sourceforge.net/images/designer.png%0a> %0a
+host:1242700732=127.0.0.1
+author:1242700710=
+diff:1242700710:1242700679:=0a1%0a> %0a8,9c9%0a%3c %25lfloat width=300%25 http://simupop.sourceforge.net/images/designer.png%0a%3c %0a---%0a> %25lfloat width=3%25 http://simupop.sourceforge.net/images/designer.png%0a
+host:1242700710=127.0.0.1
+author:1242700679=
+diff:1242700679:1242700679:=1,12d0%0a%3c %0a%3c [[#landscape]]%0a%3c (:youtube Al_0BlSxcHI:)%0a%3c %0a%3c [--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%3c %0a%3c [[#designer]]%0a%3c %0a%3c %25lfloat width=3%25 http://simupop.sourceforge.net/images/designer.png%0a%3c [--A prototype of a simuPOP designer. Any suggestion is welcome--]%0a%3c %0a%3c %0a
+host:1242700679=127.0.0.1
