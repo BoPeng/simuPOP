@@ -12606,15 +12606,11 @@ legend
 \end_layout
 
 \begin_layout Standard
-A large number of parameters could be used by these R functions to customize
- every aspect of a figure.
- One of the most interesting feature of this module is its use of derived
- keyword parameters to send arbitrary parameters to the underlying R functions.
- 
-\end_layout
-
-\begin_layout Standard
-A 
+One of the most interesting feature of this module is its use of derived
+ keyword parameters to send arbitrary parameters to the underlying R functions,
+ which usually accept a large number of parameters to customize every aspect
+ of a figure.
+ A 
 \series bold
 derived keyword argument
 \series default
@@ -12661,7 +12657,40 @@ plot
 lines
 \family default
 ) to which keyword aguments without function prefix will be sent.
- All operators in the simuRPy module make use of derived keyword arguments.
+\end_layout
+
+\begin_layout Standard
+In addition, the values of these keyword arguments could vary during evolution.
+ More specifically, if the value is a string with a leading exclamation
+ mark (
+\family typewriter
+!
+\family default
+), the remaining string will be considered as an expression.
+ This expression will be evaluated against the current population during
+ evolution and the return value will become the value of the parameter at
+ that generation.
+ For example, keyword parameter  
+\family typewriter
+main=
+\begin_inset Quotes erd
+\end_inset
+
+!'Allele frequency at generation %d' % gen
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+ will become 
+\family typewriter
+main='Allele frequency at generation 10'
+\family default
+ at generation 10.
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Subsection
@@ -13521,17 +13550,51 @@ reference "histPlotter"
 \family typewriter
 histPlotter
 \family default
- to plot the histograms and a 
+ to plot the histograms (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:histPlotter"
+
+\end_inset
+
+), a 
+\family typewriter
+qqPlotter
+\family default
+ to plot QQ plot (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:qqPlotter"
+
+\end_inset
+
+), and a 
 \family typewriter
 boxPlotter
 \family default
- to plot the boxplots of individual ancestry values.
+ to plot the boxplots (Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:boxPlotter"
+
+\end_inset
+
+) of individual ancestry values.
  By defining two virtual subpopulations by sex, the 
 \family typewriter
 histPlotter
 \family default
- plots two histograms, one for males and one for females.
- Different colors are used for these histograms.
+ and 
+\family typewriter
+qqPlotter
+\family default
+ plots two histograms and two QQ plots, one for males and one for females.
+ Different colors are used for these figures.
+ Note that these plots use the special expression value for parameter 
+\family typewriter
+main
+\family default
+ so that generation number can appear in the titles.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -13571,6 +13634,47 @@ Histogram of individual ancestry values
 \align center
 \begin_inset Graphics
 	filename log/histPlotter_2_0.png
+	lyxscale 40
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:qqPlotter"
+
+\end_inset
+
+QQ plot of individual ancestry values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename log/qqPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 

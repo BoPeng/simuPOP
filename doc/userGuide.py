@@ -1931,7 +1931,7 @@ simu.evolve(
             saveAs = 'log/scatterPlotter.png',
             subPops = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
             ylim = [0, 1.2],
-            main = 'Ancestry distribution of individuals',
+            main = "!'Ancestry distribution of individuals at generation %d' % gen",
             legend = ['anc < 0.2', '0.2 <= anc < 0.4', '0.4 <= anc < 0.6',
                 '0.6 <= anc < 0.8', '0.8 <= anc'],
             plot_axes = False,
@@ -1944,7 +1944,7 @@ simu.evolve(
 
 #file log/histPlotter.log
 from simuPOP import *
-from simuRPy import histPlotter, boxPlotter
+from simuRPy import histPlotter, qqPlotter, boxPlotter
 import random
 pop = population([500], infoFields=['x', 'y', 'anc'])
 # random sex
@@ -1972,12 +1972,17 @@ simu.evolve(
         histPlotter(infoFields='anc', stage=PreMating,            
             subPops=[(0,0), (0,1)], col_sp=['blue', 'red'],
             saveAs='log/histPlotter.png',
-            main='Histogram of ancestry values',
+            main="!'Histogram of ancestry values at generation %d' % gen",
+        ),
+        qqPlotter(infoFields='anc', stage=PreMating,            
+            subPops=[(0,0), (0,1)], col_sp=['blue', 'red'],
+            saveAs='log/qqPlotter.png',
+            main="!'QQ plot of ancestry values at generation %d' % gen",
         ),
         boxPlotter(infoFields='anc', stage=PreMating,
             subPops=[(0,0), (0,1)],
             saveAs='log/boxPlotter.png',
-            main='Boxplots of ancestry values',
+            main="!'Boxplots of ancestry values at generation %d' % gen",
         ),
     ],
     gen = 5,

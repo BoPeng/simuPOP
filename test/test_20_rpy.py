@@ -25,9 +25,11 @@ except exceptions.ImportError:
     hasRPy = False
 
 class TestRPy(unittest.TestCase):
-    def testAliasedArgs(self):
-        'Testing class aliasedARgs'
-        args = aliasedArgs(
+    def testDerivedArgs(self):
+        'Testing class derivedARgs'
+        pop = population(0)
+        pop.dvars().gen = 100
+        args = derivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['plot', 'lines', 'par'],
             suffixes = ['rep', 'dim'],
@@ -37,34 +39,35 @@ class TestRPy(unittest.TestCase):
             main = 'g',
             par_val=[1,3],
             par_blah_dim=[1,2],
-            some_var=4
+            some_var=4,
+            expr = '!gen',
         )
-        self.assertEqual(args.getArgs('plot'),
-            {'lty': 1, 'some_var':4, 'main':'g'})
-        self.assertEqual(args.getArgs('plot', dim=1),
-            {'pch': 6, 'lty': 1, 'some_var':4, 'main':'g'})
-        self.assertEqual(args.getArgs('plot', dim=4),
-            {'pch': 5, 'lty': 1, 'some_var':4, 'main':'g'})
-        self.assertEqual(args.getArgs('plot', rep=4, dim=5),
-            {'cex':2, 'pch': 6, 'lty': 1, 'some_var':4, 'main':'g'})
-        self.assertEqual(args.getArgs('par', rep=4, dim=5),
+        self.assertEqual(args.getArgs('plot', pop),
+            {'expr': 100, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('plot', pop, dim=1),
+            {'expr': 100, 'pch': 6, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('plot', pop, dim=4),
+            {'expr': 100, 'pch': 5, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('plot', pop, rep=4, dim=5),
+            {'expr': 100, 'cex':2, 'pch': 6, 'lty': 1, 'some_var':4, 'main':'g'})
+        self.assertEqual(args.getArgs('par', pop, rep=4, dim=5),
             {'val':[1,3], 'blah': 2})
         #
-        self.assertRaises(exceptions.ValueError, args.getArgs, 'par1')
-        self.assertEqual(args.getArgs('par', blah=1), {'val': [1, 3], 'blah': 1})
+        self.assertRaises(exceptions.ValueError, args.getArgs, 'par1', pop)
+        self.assertEqual(args.getArgs('par', pop, blah=1), {'val': [1, 3], 'blah': 1})
         #
-        self.assertEqual(args.getArgs('lines', rep=1),
-            {'some_var':4, 'main': 'g', 'lty':1, 'cex':2})
+        self.assertEqual(args.getArgs('lines', pop, rep=1),
+            {'expr': 100, 'some_var':4, 'main': 'g', 'lty':1, 'cex':2})
         #
-        self.assertEqual(args.getLegendArgs('lines', ['cex', 'pch'], 'rep', range(5)),
+        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch'], 'rep', range(5)),
             {'cex': [1, 2, 3, 1, 2]})
-        self.assertEqual(args.getLegendArgs('lines', ['cex', 'pch', 'lty'], 'rep', range(5)),
+        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch', 'lty'], 'rep', range(5)),
             {'cex': [1, 2, 3, 1, 2], 'lty':[1, 1, 1, 1, 1]})
-        self.assertEqual(args.getLegendArgs('lines', ['cex', 'pch', 'lty'],
+        self.assertEqual(args.getLegendArgs('lines', pop, ['cex', 'pch', 'lty'],
             ['rep', 'dim'], [(0, 0), (0, 1), (1, 0), (1, 1), (2, 0), (2, 1)]),
             {'cex': [1, 1, 2, 2, 3, 3], 'lty':[1, 1, 1, 1, 1, 1], 'pch': [5, 6, 5, 6, 5, 6]})
         #
-        args = aliasedArgs(
+        args = derivedArgs(
             defaultFuncs = ['plot', 'lines'],
             allFuncs = ['plot', 'lines', 'par'],
             suffixes = ['rep', 'dim'],
@@ -95,7 +98,7 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('subPopSize[0]', update=10,
-                win=10, main='Three colorful lines, no legend, win=10')
+                win=10, main="!'Three colorful lines, no legend, win=10, gen=%d' % gen")
              ],
              gen = 30
         )
