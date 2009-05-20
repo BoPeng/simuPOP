@@ -85,11 +85,11 @@ if not comp.__dict__.has_key('ldflags_shared'):
 if not comp.__dict__.has_key('compile_options'):
     comp.compile_options = []
 
-opts = Options()
-opts.AddOptions(
-    PathOption('prefix', 'Where to install. see "python setup.py install --prefix"', None),
-    PathOption('include-dirs', 'Extra include directories, see "python setup.py build_ext --help"', None),
-    PathOption('library-dirs', 'Extra library directories, see "python setup.py build_ext --help"', None),
+opts = Variables()
+opts.AddVariables(
+    PathVariable('prefix', 'Where to install. see "python setup.py install --prefix"', None),
+    PathVariable('include-dirs', 'Extra include directories, see "python setup.py build_ext --help"', None),
+    PathVariable('library-dirs', 'Extra library directories, see "python setup.py build_ext --help"', None),
 )
 
 env = Environment(
