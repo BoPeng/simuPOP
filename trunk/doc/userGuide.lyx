@@ -13595,6 +13595,19 @@ qqPlotter
 main
 \family default
  so that generation number can appear in the titles.
+ The same technique is used in the 
+\family typewriter
+dev_print_file
+\family default
+ parameter of the 
+\family typewriter
+boxPlotter
+\family default
+, which overrides the default filename derived from parameter 
+\family typewriter
+saveAs
+\family default
+.
  
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
@@ -13712,7 +13725,7 @@ Boxplot of individual ancestry values
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/boxPlotter_2_0.png
+	filename log/Gen2.png
 	lyxscale 40
 	width 80text%
 
