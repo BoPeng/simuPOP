@@ -89,20 +89,19 @@ def newDevice():
         raise RuntimeError('Can not open new device')
     return device
 
-def saveFigure(filename, gen=None, rep=None, **kwargs):
+def saveFigure(file=None, **kwargs):
     '''
-    Save current figure into ``filename``. File format and graphics device are
+    Save current figure into ``file``. File format and graphics device are
     determined by file extension. Supported file formats include ``pdf``,
     ``png``, ``bmp``, ``jpg (jpeg)``, ``tif (tiff)``, and ``eps``, which
     correspond to R devices ``pdf``, ``png``, ``bmp``, ``jpeg``, ``tiff``
     and ``postscript``. A postscript device will be used if there is no file
-    extension or the file extension is not recognizable. If ``gen`` or ``rep``
-    is given, they will be inserted into ``filename`` before file extension,
-    with a leading ``_``. For example, ``saveFigure('file.eps', 10, 2)`` will
-    save figure as ``file_10_2.eps``. Additional keyword parameters will be
-    passed to the underlying ``dev.print`` function.
+    extension or the file extension is not recognizable. Additional keyword
+    parameters will be passed to the underlying ``dev.print`` function.
     '''
-    file, ext = os.path.splitext(filename)
+    if file is None:
+        return
+    filename, ext = os.path.splitext(file)
     # default extension and format
     if ext == '':
         ext = '.eps'
@@ -132,13 +131,8 @@ def saveFigure(filename, gen=None, rep=None, **kwargs):
         print e
         print 'Can not determine which device to use to save file %s. A postscript driver is used.' % name
         device = rpy.r.postscript
-    # figure out a filename
-    if gen is not None:
-        file += '_%d' % gen
-    if rep is not None:
-        file += '_%d' % rep
     params.update(kwargs)
-    rpy.r.dev_print(file=file + ext, device=device, **params)
+    rpy.r.dev_print(file=file, device=device, **params)
 
 
 class derivedArgs:
@@ -380,12 +374,12 @@ class varPlotter(pyOperator):
             subplots will be arranged by variable and then replicates.
 
         saveAs
-            Save figures in files saveAs.ext. If ext is given, a corresponding
-            device will be used. Otherwise, a postscript driver will be used.
+            Save figures in files saveAs_gen.ext (e.g. ``figure_10.eps`` if
+            ``saveAs='figure.eps'``). If ext is given, a corresponding device
+            will be used. Otherwise, a default postscript driver will be used.
             Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
-            ``.jpg``, and ``.tif``. Generation number at which a figure is
-            drawn will be inserted before file extension so 'figure.eps' will
-            produce files such as 'figure_10.eps', 'figure_50.eps'.
+            ``.jpg``, and ``.tif``. The default filename could be overridden
+            by derived argument ``dev_print_file``.
 
         leaveOpen
             Whether or not leave the plot open when plotting is done. Default
@@ -641,7 +635,9 @@ class varPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, None, **self.args.getArgs('dev_print', pop))
+            file, ext = os.path.splitext(self.saveAs)
+            filename = '%s_%d%s' % (file, gen, ext)
+            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
 
@@ -695,13 +691,12 @@ class scatterPlotter(pyOperator):
             to subpopulation indexes.
 
         saveAs
-            Save figures in files saveAs.ext. If ext is given, a corresponding
-            device will be used. Otherwise, a postscript driver will be used.
-            Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
-            ``.jpg``, and ``.tif``. Generation and replicate numbers at which
-            a figure is drawn will be inserted before file extension so
-            'figure.eps' will produce files such as 'figure_10_0.eps' where the
-            two numbers are generation and replicate indexes respectively.
+            Save figures in files saveAs_gen_rep.ext (e.g. ``figure_10_0.eps``
+            if ``saveAs='figure.eps'``). If ext is given, a corresponding
+            device will be used. Otherwise, a default postscript driver will be
+            used. Currently supported formats include ``.pdf``, ``.png``,
+            ``.bmp``, ``.jpg``, and ``.tif``. The default filename could be
+            overriden by derived argument ``dev_print_file``.
 
         leaveOpen
             Whether or not leave the plot open when plotting is done. Default
@@ -808,7 +803,9 @@ class scatterPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print', pop))
+            file, ext = os.path.splitext(self.saveAs)
+            filename = '%s_%d_%d%s' % (file, gen, rep, ext)
+            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
 
@@ -860,13 +857,12 @@ class infoPlotter(pyOperator):
             subpopulation will be plotted in a separate subplot.
 
         saveAs
-            Save figures in files saveAs.ext. If ext is given, a corresponding
-            device will be used. Otherwise, a postscript driver will be used.
-            Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
-            ``.jpg``, and ``.tif``. Generation and replicate numbers at which
-            a figure is drawn will be inserted before file extension so
-            'figure.eps' will produce files such as 'figure_10_0.eps' where the
-            two numbers are generation and replicate indexes respectively.
+            Save figures in files saveAs_gen_rep.ext (e.g. ``figure_10_0.eps``
+            if ``saveAs='figure.eps'``). If ext is given, a corresponding
+            device will be used. Otherwise, a default postscript driver will be
+            used. Currently supported formats include ``.pdf``, ``.png``,
+            ``.bmp``, ``.jpg``, and ``.tif``. The default filename could be
+            overriden by derived argument ``dev_print_file``.
 
         leaveOpen
             Whether or not leave the plot open when plotting is done. Default
@@ -991,7 +987,9 @@ class infoPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print', pop))
+            file, ext = os.path.splitext(self.saveAs)
+            filename = '%s_%d_%d%s' % (file, gen, rep, ext)
+            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
 def histPlotter(*args, **kwargs):
@@ -1061,13 +1059,12 @@ class boxPlotter(pyOperator):
             whiskers to different subplots if this parameter is ``True``.
 
         saveAs
-            Save figures in files saveAs.ext. If ext is given, a corresponding
-            device will be used. Otherwise, a postscript driver will be used.
-            Currently supported formats include ``.pdf``, ``.png``, ``.bmp``,
-            ``.jpg``, and ``.tif``. Generation and replicate numbers at which
-            a figure is drawn will be inserted before file extension so
-            'figure.eps' will produce files such as 'figure_10_0.eps' where the
-            two numbers are generation and replicate indexes respectively.
+            Save figures in files saveAs_gen_rep.ext (e.g. ``figure_10_0.eps``
+            if ``saveAs='figure.eps'``). If ext is given, a corresponding
+            device will be used. Otherwise, a default postscript driver will be
+            used. Currently supported formats include ``.pdf``, ``.png``,
+            ``.bmp``, ``.jpg``, and ``.tif``. The default filename could be
+            overriden by derived argument ``dev_print_file``.
 
         leaveOpen
             Whether or not leave the plot open when plotting is done. Default
@@ -1234,6 +1231,8 @@ class boxPlotter(pyOperator):
         if self.postHook is not None:
             self.postHook(rpy.r)
         if self.saveAs != '':
-            saveFigure(self.saveAs, gen, rep, **self.args.getArgs('dev_print', pop))
+            file, ext = os.path.splitext(self.saveAs)
+            filename = '%s_%d_%d%s' % (file, gen, rep, ext)
+            saveFigure(**self.args.getArgs('dev_print', pop, file=filename))
         return True
 
