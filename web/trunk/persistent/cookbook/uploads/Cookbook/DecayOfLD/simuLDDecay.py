@@ -64,16 +64,14 @@ options = [
      'label':'Save figure to filename',
      'default':'',
      'allowedTypes':[types.StringType],
-     'description':'file the last figure to this filenameXX.eps .'
+     'description': '''If specified, save the figures to files such as filename_10.eps.
+        The format the figures is determined by file extension.
+        '''
     },
     {'longarg':'save=',
      'default':'',
      'allowedTypes':[types.StringType],
      'description':'Save current paremeter set to specified file.'
-    },
-    {'arg':'v',
-     'longarg':'verbose',
-     'default':False,
     },
 ]
 
@@ -103,10 +101,11 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
         methodeval = r"'%.4f\t' % LD[0][1]"
 
     if useRPy:
-        plotter = varPlotter(methodplot, numRep=numRep, win=gen,
-            ylim = [0, upperlim], xlab="generation", saveAs=saveFigure,
-            update = gen - 1, ylab=method, col=range(1, numRep + 1),
-            title="Decay of Linkage Disequilibrium r=%f" % recRate)
+        print saveFigure
+        plotter = varPlotter(methodplot, 
+            ylim = [0, upperlim], saveAs=saveFigure,
+            update = gen - 1, ylab=method,
+            main="Decay of Linkage Disequilibrium r=%f" % recRate)
     else:
         plotter = noneOp()
 
@@ -134,16 +133,8 @@ if __name__ == '__main__':
     if pars.save != '':
         pars.saveConfig(pars.save)
 
-    # print out info if in verbose mode
-    if pars.verbose:
-        print "Pop size: ", pars.size
-        print "End gen: ", pars.gen
-        print "Recombination rate: ", pars.recRate
-        print "Number of replicates: ", pars.numRep
-        print "Save figure to: ", pars.saveFigure
-
     simuLDDecay(pars.size, pars.gen, pars.recRate, pars.numRep,
-        pars.measure, pars.save, useRPy)
+        pars.measure, pars.saveFigure, useRPy)
 
     # wait five seconds before exit
     if useRPy:

@@ -5,10 +5,19 @@ csum=
 ctime=1242700679
 host=127.0.0.1
 name=Main.RandomQuotes
-rev=10
+rev=13
 targets=Main.BasicConcepts,Main.RoadMap
-text=[[#evolution]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/evolve.png%0a[--A life cycle of the simuPOP evolutionary process. See simuPOP [[Main/BasicConcepts]] for details.--]%0a%0a%0a[[#example]]%0a=python [=%0afrom simuPOP import *%0apop = population(size=1000, loci=[2])%0asimu = simulator(pop, randomMating(), rep=3)%0asimu.evolve(%0a    preOps = [initByValue([1, 2, 2, 1])],  %0a    ops = [%0a        recombinator(rate=0.01),%0a        stat(LD=[0, 1]),%0a        pyEval(r"'%25.2f\t' %25 LD[0][1]", step=10),%0a        pyOutput('\n', rep=-1, step=10)%0a    ],%0a    gen=100%0a)%0a=]%0a[--A simple simuPOP script. Please see [[Main/BasicConcepts]] dor details--]%0a%0a[[#designer]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a[--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%0a[[#landscape]]%0a(:youtube Al_0BlSxcHI:)%0a%0a[--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%0a%0a
-time=1242701813
+text=[[#evolution]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/evolve.png%0a[--A life cycle of the simuPOP evolutionary process. See simuPOP [[Main/BasicConcepts]] for details.--]%0a%0a%0a[[#example]]%0a=python [=%0afrom simuPOP import *%0apop = population(size=1000, loci=[2])%0asimu = simulator(pop, randomMating(), rep=3)%0asimu.evolve(%0a    preOps = [initByValue([1, 2, 2, 1])],  %0a    ops = [%0a        recombinator(rate=0.01),%0a        stat(LD=[0, 1]),%0a        pyEval(r"'%25.2f\t' %25 LD[0][1]", step=10),%0a        pyOutput('\n', rep=-1, step=10)%0a    ],%0a    gen=100%0a)%0a=]%0a[--A simple simuPOP script. Please see [[Main/BasicConcepts]] dor details--]%0a%0a[[#designer]]%0a%0a%25width=500%25 http://simupop.sourceforge.net/images/designer.png%0a[--A prototype of a simuPOP designer. See simuPOP [[Main/RoadMap]] for details.--]%0a%0a[[#LDDecay]]%0a%25width=500%25 http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/DecayOfLD?action=download&upname=decay_49.png%0a[--An example of the [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/DecayOfLD | decay of linkage disequilibrium]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]]--]%0a%0a[[#landscape]]%0a(:youtube Al_0BlSxcHI:)%0a%0a[--A [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%0a%0a
+time=1242787029
+author:1242787029=
+diff:1242787029:1242786963:=32,33c32,33%0a%3c [--An example of the [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/DecayOfLD | decay of linkage disequilibrium]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]]--]%0a%3c %0a---%0a> [--An example of the [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/DecayOfLD | decay of linkage disequilibrium]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]]%0a> %0a
+host:1242787029=127.0.0.1
+author:1242786963=
+diff:1242786963:1242762267:=30,33d29%0a%3c [[#LDDecay]]%0a%3c %25width=500%25 http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/DecayOfLD?action=download&upname=decay_49.png%0a%3c [--An example of the [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/DecayOfLD | decay of linkage disequilibrium]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]]%0a%3c %0a
+host:1242786963=127.0.0.1
+author:1242762267=
+diff:1242762267:1242701813:=33,35c33,35%0a%3c [--A [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a%3c %0a%3c %0a---%0a> [--Recipe of the month: [[http://simupop.sourceforge.net/cookbook/pmwiki.php/Cookbook/LandscapeGenetics | Landscape genetics example]] from the simuPOP [[http://simupop.sourceforge.net/cookbook | cookbook]], contributed by [[http://tiago.org | Tiago]]--]%0a> %0a> %0a
+host:1242762267=127.0.0.1
 author:1242701813=
 diff:1242701813:1242701787:=7a8,10%0a> %0a> !! A simple example:%0a> %0a
 host:1242701813=127.0.0.1

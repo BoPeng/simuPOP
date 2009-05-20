@@ -6,11 +6,14 @@ csum=
 ctime=1242698947
 host=127.0.0.1
 name=Main.Gallery
-rev=6
-targets=Cookbook.LandscapeGenetics
-text=(:title Gallery of figures and animations:)%0a%0aThis page collects figures and animations produced by simuPOP scripts. The scripts may appear in other categories as well.%0a%0a!!![[Cookbook/LandscapeGenetics | Landscape genetics example]] by Tiago%0a%0a(:youtube Al_0BlSxcHI:)%0a%0a
-time=1242699776
+rev=7
+targets=Cookbook.DecayOfLD,Cookbook.LandscapeGenetics
+text=(:title Gallery of figures and animations:)%0a%0aThis page collects figures and animations produced by simuPOP scripts. The scripts may appear in other categories as well.%0a%0a!!![[Cookbook/DecayOfLD | Decay of Linkage Disequilibrium]]%0a%0a%25width=500%25 Attach:Cookbook/DecayOfLD/decay_49.png%0a%0a!!![[Cookbook/LandscapeGenetics | Landscape genetics example]] by Tiago%0a%0a(:youtube Al_0BlSxcHI:)%0a%0a
+time=1242787184
 title=Gallery of figures and animations
+author:1242787184=
+diff:1242787184:1242699776:=4,7d3%0a%3c %0a%3c !!![[Cookbook/DecayOfLD | Decay of Linkage Disequilibrium]]%0a%3c %0a%3c %25width=500%25 Attach:Cookbook/DecayOfLD/decay_49.png%0a
+host:1242787184=127.0.0.1
 author:1242699776=
 diff:1242699776:1242699699:=3a4,7%0a> %0a> !!!Simple random drift%0a> %0a> %0a
 host:1242699776=127.0.0.1
