@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.3 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.9.4 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -13473,7 +13473,7 @@ Plot of individuals with ancestry marked by different colors
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename log/infoPlotter_2_0.png
+	filename log/scatterPlotter_2_0.png
 	lyxscale 40
 	width 80text%
 

@@ -1881,7 +1881,7 @@ simu.evolve(
     ops = [
         stat(alleleFreq=range(4)),
         varPlotter('[alleleFreq[x][0] for x in range(4)]', byDim=True,
-            update=20, saveAs='log/rpy_byDim.png',
+            update=10, saveAs='log/rpy_byDim.png',
             legend=['Replicate %d' % x for x in range(3)],
             ylab='Allele frequency',
             ylim=[0, 1],
