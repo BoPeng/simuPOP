@@ -128,7 +128,10 @@ clean:
 	-rm -rf tools/sphinx
 
 src_doc:
-	cd ..; doxygen Doxy_web
+	cd ..; \
+	SIMUPOP_VER=`cut -d'"' -f2 simuPOP_version.py | head -1`; export SIMUPOP_VER; \
+	SIMUPOP_REV=`cut -d'"' -f2 simuPOP_version.py | tail -1`; export SIMUPOP_REV; \
+	doxygen Doxy_web
 	rsync -v -rlt -z ../doxygen_doc/html/ simupop,simupop@web.sourceforge.net:htdocs/src_doc
 
 dist: html
@@ -138,4 +141,6 @@ dist: html
 	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual/build
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual
 
-
+pdf: userGuide.lyx refManual.lyx
+	/usr/local/bin/lyx --export pdf2 userGuide.lyx
+	/usr/local/bin/lyx --export pdf2 refManual.lyx
