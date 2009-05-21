@@ -247,13 +247,13 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', byRep=True,
-                 win=10, update=5, ylim=[0, 10000],
+                 win=20, update=10, ylim=[0, 10000],
                  main='Save as, 3 rep, 3 colors', ylab='sp',
-                 saveAs='demo')
+                 saveAs='demo.eps')
              ],
              gen = 31
         )
-        for f in range(5,31,5):
+        for f in range(10,31,10):
             self.assertEqual(os.path.isfile('demo_%d.eps' % f), True)
             os.remove('demo_%d.eps' % f)
         sleep(1)
