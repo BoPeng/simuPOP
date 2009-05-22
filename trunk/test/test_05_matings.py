@@ -301,6 +301,51 @@ class TestMatingSchemes(unittest.TestCase):
             ops=[parentTagger()], 
             gen=1)
 
+    def testPyParentsChooserRetValue(self):
+        'Testing the return value of Python parents chooser'
+        import random
+        def retIndex(pop, sp):
+            while True:
+                yield random.randint(0, pop.subPopSize(sp) - 1)
+        def retIndexes(pop, sp):
+            while True:
+                yield random.randint(0, pop.subPopSize(sp) - 1), random.randint(0, pop.subPopSize(sp) -1)
+        def retInd(pop, sp):
+            while True:
+                yield pop.individual(random.randint(0, pop.subPopSize(sp) - 1))
+        def retInds(pop, sp):
+            while True:
+                yield pop.individual(random.randint(0, pop.subPopSize(sp) - 1)), \
+                     pop.individual(random.randint(0, pop.subPopSize(sp) - 1))
+        def retPop(pop, sp):
+            while True:
+                yield pop
+        def retWrongIndex(pop, sp):
+            while True:
+                yield pop.subPopSize(sp)
+        def retWrongIndexes(pop, sp):
+            while True:
+                yield 0, pop.subPopSize(sp)
+        def testPyRetValue(func):
+            pop = population([200]*5)
+            simu = simulator(pop,
+                homoMating(
+                    pyParentsChooser(func),
+                    cloneOffspringGenerator()
+                )
+            )
+            simu.evolve(
+                ops = [],
+                gen = 5
+            )
+        testPyRetValue(retIndex)
+        testPyRetValue(retIndexes)
+        testPyRetValue(retInd)
+        testPyRetValue(retInds)
+        self.assertRaises(exceptions.RuntimeError, testPyRetValue, retPop)
+        self.assertRaises(exceptions.RuntimeError, testPyRetValue, retWrongIndex)
+        self.assertRaises(exceptions.RuntimeError, testPyRetValue, retWrongIndexes)
+
   
 if __name__ == '__main__':
   unittest.main()
