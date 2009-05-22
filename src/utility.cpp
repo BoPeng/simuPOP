@@ -1359,12 +1359,9 @@ PyObject * pyIndObj(void * p)
 
 void * pyIndPointer(PyObject * obj)
 {
-	if (obj == NULL || !PyObject_HasAttr(obj, SWIG_This()))
-		return NULL;
-	PyObject * ptr = PyObject_GetAttr(obj, SWIG_This());
-	if (PySwigObject_Check(ptr) && reinterpret_cast<PySwigObject *>(ptr)->ty == g_swigindividual)
-		return reinterpret_cast<PySwigObject *>(ptr)->ptr;
-	return NULL;
+	void * ptr = 0;
+	SWIG_Python_ConvertPtr(obj, &ptr, g_swigindividual, 0);
+	return ptr;
 }
 
 
