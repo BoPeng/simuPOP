@@ -64,7 +64,10 @@ if os.name == 'nt':
     rpy.r.options(windowsBuffered=False)
     # In addition to options(windowsBuffered=False), I find that I also need to
     # call windows.options(buffered=False) to make functions such as hist work.
-    rpy.r.windows_options(buffered=False)
+    #
+    # This function is only available for R 2.9.0 (rev 48333)
+    if int(rpy.r.R_Version()['svn rev']) >= 48333:
+        rpy.r.windows_options(buffered=False)
 
 from simuPOP import pyOperator, PostMating
 
