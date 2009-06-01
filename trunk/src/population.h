@@ -158,11 +158,12 @@ public:
 	 *    <tt>alleleNames=('A','C','T','G')</tt> gives names \c A, \c C, \c T,
 	 *    and \c G to alleles \c 0, \c 1, \c 2, and \c 3 respectively.
 	 *  \param lociNames A list or a matrix (separated by chromosomes) of names
-	 *    for each locus. Default to \c "locX-Y" where \c X and \c Y are 1-based
-	 *    chromosome and locus indexes, respectively. Loci names will be
-	 *    rearranged according to their position on the chromosome.
+	 *    for each locus. It can be empty or a list of names for each locus.
+	 *    Empty name can be used but non-empty names must be unique. If loci
+	 *    are not specified in order, loci names will be rearranged according
+	 *    to their position on the chromosome.
 	 *  \param subPopNames A list of subpopulation names. All subpopulations
-	 *    will have name \c 'Unnamed' if this parameter is not specified.
+	 *    will have name \c '' if this parameter is not specified.
 	 *  \param infoFields Names of information fields (named float number) that
 	 *    will be attached to each individual.
 	 *
@@ -341,16 +342,16 @@ public:
 	 */
 	UINT subPopByName(const string & name) const;
 
-	/** Return the name of a subpopulation \e subPop, and \c 'unnamed' if no
-	 *  name is assigned to \e subPop. If \e subPop is a virtual subpopulation
-	 *  (specified by a <tt>(sp, vsp)</tt> pair), a combined name such as
-	 *  <tt>subPop1 - Male</tt> is returned.
+	/** Return the "spName - vspName" (virtual named subpopulation), "" (unnamed
+	 *  non-virtual subpopulation), "spName" (named subpopulation) or "vspName"
+	 *  (unnamed virtual subpopulation), depending on whether subPopulation is
+	 *  named or if \e subPop is virtual.
 	 *  <group>2-subpopname</group>
 	 */
 	string subPopName(vspID subPop) const;
 
 	/** Return the names of all subpopulations (excluding virtual
-	 *  subpopulations). \c 'unnamed' will be returned for unnamed
+	 *  subpopulations). An empty string will be returned for unnamed
 	 *  subpopulations.
 	 *  <group>2-subpopname</group>
 	 */
@@ -623,7 +624,7 @@ public:
 	/** CPPONLY individual iterator: with subPop info.
 	 *  The iterator will skip invisible individuals
 	 */
-	ConstIndIterator indIterator(UINT subPop, IterationType type  = VisibleInds) const
+	ConstIndIterator indIterator(UINT subPop, IterationType type = VisibleInds) const
 	{
 		CHECKRANGESUBPOP(subPop);
 
@@ -858,7 +859,7 @@ public:
 	 *  integer values at information field \e field (value returned by
 	 *  <tt>individual::indInfo(field)</tt>). Individuals with negative values
 	 *  at this \e field will be removed. Existing subpopulation names are
-	 *  kept. New subpopulations will be named \c 'Unnamed'.
+	 *  kept. New subpopulations will have empty names.
 	 *  <group>7-manipulate</group>
 	 */
 	void setSubPopByIndInfo(const string & field);
@@ -923,9 +924,8 @@ public:
 	/** Add chromosome \e chromName with given type \e chromType to a
 	 *  population, with loci \e lociNames inserted at position \e lociPos.
 	 *  \e lociPos should be ordered. \e lociNames and \e chromName should not
-	 *  exist in the current population. If they are not specified, simuPOP
-	 *  will try to assign default names, and raise a \c ValueError if the
-	 *  default names have been used.
+	 *  exist in the current population. Empty loci names will be used if
+	 *  \e lociNames is not specified.
 	 *  <group>7-manipulate</group>
 	 */
 	void addChrom(const vectorf & lociPos, const vectorstr & lociNames = vectorstr(),
@@ -933,7 +933,7 @@ public:
 
 	/** Insert loci \e names at positions \e pos on chromosome \e chrom.
 	 *  These parameters should be lists of the same length, although
-	 *  \e names may be ignored, in which case random names will be given.
+	 *  \e names may be ignored, in which case empty strings will be assumed.
 	 *  Single-value input is allowed for parameter \e chrom and \e pos if only
 	 *  one locus is added. Alleles at inserted loci are initialized with zero
 	 *  alleles. Note that loci have to be added to existing chromosomes. If
@@ -1122,7 +1122,7 @@ public:
 		// has to adjust order because of parameter subPop
 		if (vsp.isVirtual())
 			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop),
-                    IteratableInds));
+					IteratableInds));
 		else if (hasActivatedVirtualSubPop(subPop) || !indOrdered())
 			return IndInfoIterator(idx, IndIterator(rawIndEnd(subPop), rawIndEnd(subPop), VisibleInds));
 		else

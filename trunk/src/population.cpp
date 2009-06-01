@@ -223,9 +223,12 @@ string population::subPopName(vspID subPop) const
 		"subpopulation names can either be empty, or be specified for all subpopulations.");
 	CHECKRANGESUBPOP(subPop.subPop());
 	string name = m_subPopNames.empty() ? UnnamedSubPop : m_subPopNames[subPop.subPop()];;
-	if (subPop.isVirtual())
-		return name + " - " + m_vspSplitter->name(subPop.virtualSubPop());
-	else
+	if (subPop.isVirtual()) {
+		if (name.empty())
+			return m_vspSplitter->name(subPop.virtualSubPop());
+		else
+			return name + " - " + m_vspSplitter->name(subPop.virtualSubPop());
+	} else
 		return name;
 }
 
@@ -404,13 +407,14 @@ IndAlleleIterator population::alleleIterator(UINT locus)
 	int ct = chromType(chromLocusPair(locus).first);
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || (ct != Autosome && ct != Customized) || isHaplodiploid())
-        // this is a complex case
+		// this is a complex case
 		return IndAlleleIterator(locus, indIterator());
 	else
-        // a simplere case with straightforward iterator
+		// a simplere case with straightforward iterator
 		return IndAlleleIterator(m_genotype.begin() + locus, m_genotype.end() + locus,
-            totNumLoci());
+			totNumLoci());
 }
+
 
 /// CPPONLY allele begin, for given subPop
 IndAlleleIterator population::alleleIterator(UINT locus, UINT subPop)
@@ -419,17 +423,17 @@ IndAlleleIterator population::alleleIterator(UINT locus, UINT subPop)
 	CHECKRANGESUBPOP(subPop);
 
 	int ct = chromType(chromLocusPair(locus).first);
-    // this is a complex case
+	// this is a complex case
 	if (hasActivatedVirtualSubPop() || !indOrdered()
 	    || (ct != Autosome && ct != Customized) || isHaplodiploid())
-        // this is a complex case
+		// this is a complex case
 		return IndAlleleIterator(locus, indIterator(subPop));
 	else
-        // this is a complex case
+		// this is a complex case
 		return IndAlleleIterator(
-            m_genotype.begin() + m_subPopIndex[subPop] * genoSize() + locus,
-            m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() + locus,
-            totNumLoci());
+			m_genotype.begin() + m_subPopIndex[subPop] * genoSize() + locus,
+			m_genotype.begin() + m_subPopIndex[subPop + 1] * genoSize() + locus,
+			totNumLoci());
 }
 
 
@@ -1048,12 +1052,13 @@ void population::addLociFrom(const population & pop)
 	DBG_FAILIF(ancestralGens() != pop.ancestralGens(), ValueError,
 		"Can not add chromosomes from a population with different number of ancestral generations");
 
-	vectorstr lociNames1 = lociNames();
-	vectorstr lociNames2 = pop.lociNames();
+	UINT size1 = totNumLoci();
+	UINT size2 = pop.totNumLoci();
 	// obtain new genotype structure and set it
-	setGenoStructure(gsAddLociFromStru(pop.genoStruIdx()));
-	vectoru indexes1 = lociByNames(lociNames1);
-	vectoru indexes2 = lociByNames(lociNames2);
+	vectoru indexes1;
+	vectoru indexes2;
+	setGenoStructure(gsAddLociFromStru(pop.genoStruIdx(),
+			indexes1, indexes2));
 
 	for (int depth = ancestralGens(); depth >= 0; --depth) {
 		useAncestralGen(depth);
@@ -1067,8 +1072,6 @@ void population::addLociFrom(const population & pop)
 		// merge chromosome by chromosome
 		GenoIterator ptr = newGenotype.begin();
 		UINT pEnd = ploidy();
-		UINT size1 = lociNames1.size();
-		UINT size2 = lociNames2.size();
 		UINT newSize = totNumLoci();
 		for (ULONG i = 0; i < m_popSize; ++i) {
 			// set new geno structure
