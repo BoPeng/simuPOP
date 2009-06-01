@@ -169,8 +169,12 @@ private:
 		ar & m_infoFields;
 
 		m_lociNameMap.clear();
-		for (size_t i = 0; i < m_lociNames.size(); ++i)
-			m_lociNameMap[m_lociNames[i]] = i;
+		if (m_lociNames.empty()) {
+			for (size_t i = 0; i < m_lociNames.size(); ++i) {
+				if (!m_lociNames[i].empty())
+					m_lociNameMap[m_lociNames[i]] = i;
+			}
+		}
 
 		// build chromosome index
 		m_chromIndex.resize(m_numLoci.size() + 1);
@@ -337,9 +341,10 @@ public:
 
 	/** CPPONLY
 	 *  Add loci (merge loci on the same chromsoomes) from another genotypic
-	 *  structure and create a new structure.
+	 *  structure and create a new structure. index1 and index2 are used
+	 *  to return the indexes of old loci in the new structure.
 	 */
-	GenoStructure & gsAddLociFromStru(size_t idx) const;
+	GenoStructure & gsAddLociFromStru(size_t idx, vectoru & index1, vectoru & index2) const;
 
 	/** CPPONLY
 	 *  Remove a list of loci from the current genotypic structure
@@ -685,8 +690,8 @@ public:
 
 
 	/** return the name of locus \e loc specified by the \e lociNames parameter of
-	 *  the \c population function. Default to \c locX-Y where \c X and \c Y
-	 *  are 1-based chromosome and locus indexes (\c loc1-1, \c loc1-2, ... etc)
+	 *  the \c population function. An empty string will be returned if no name
+	 *  has been given to locus \e loc.
 	 *  <group>3-locus</group>
 	 */
 	string locusName(const UINT loc) const
@@ -695,12 +700,14 @@ public:
 			"Locus index " + toStr(loc) + " out of range of 0 ~ " +
 			toStr(s_genoStruRepository[m_genoStruIdx].m_totNumLoci));
 
-		return s_genoStruRepository[m_genoStruIdx].m_lociNames[loc];
+		const vectorstr & names = s_genoStruRepository[m_genoStruIdx].m_lociNames;
+		return names.empty() ? string() : names[loc];
 	}
 
 
 	/** return the names of all loci specified by the \e lociNames parameter of
-	 *  the \c population function.
+	 *  the \c population function. An empty list will be returned if
+	 *  \e lociNames was not specified.
 	 *  <group>3-locus</group>
 	 */
 	vectorstr lociNames() const
@@ -710,15 +717,13 @@ public:
 
 
 	/** return the index of a locus with name \e name. Raise a \c ValueError
-	 *  if no locus is found.
+	 *  if no locus is found. Note that empty strings are used for loci without
+	 *  name but you cannot lookup such loci using this function.
 	 *  <group>3-locus</group>
 	 */
 	UINT locusByName(const string name) const
 	{
 		const map<string, UINT> & names = s_genoStruRepository[m_genoStruIdx].m_lociNameMap;
-
-		DBG_FAILIF(names.size() != s_genoStruRepository[m_genoStruIdx].m_lociNames.size(),
-			SystemError, "Loci names and their index map do not match");
 
 		map<string, UINT>::const_iterator it = names.find(name);
 

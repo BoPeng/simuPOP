@@ -68,10 +68,10 @@ class TestPopulation(unittest.TestCase):
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
         self.assertEqual(pop.numVirtualSubPop(), 5)
-        self.assertEqual(pop.subPopName(0), "unnamed")
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - x = 10")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - x = 11")
-        self.assertEqual(pop.subPopName([0, 4]), "unnamed - x = 14")
+        self.assertEqual(pop.subPopName(0), "")
+        self.assertEqual(pop.subPopName([0, 0]), "x = 10")
+        self.assertEqual(pop.subPopName([0, 1]), "x = 11")
+        self.assertEqual(pop.subPopName([0, 4]), "x = 14")
         self.assertRaises(exceptions.IndexError, pop.subPopName, 1)
         self.assertRaises(exceptions.IndexError, pop.subPopName, [0, 5])
         # with given names
@@ -634,7 +634,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopName(0), 'A')
         self.assertEqual(pop.subPopName(1), 'B')
         for i in range(2, 6):
-            self.assertEqual(pop.subPopName(i), 'unnamed')
+            self.assertEqual(pop.subPopName(i), '')
 
     def testAddInfoField(self):
         'Testing population::addInfoField(field, init=0)'
@@ -781,8 +781,8 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(sexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMale)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemale)
-        self.assertEqual(pop.subPopName([1, 0]), 'unnamed - Male')
-        self.assertEqual(pop.subPopName([1, 1]), 'unnamed - Female')
+        self.assertEqual(pop.subPopName([1, 0]), 'Male')
+        self.assertEqual(pop.subPopName([1, 1]), 'Female')
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.sex(), Male)
         for ind in pop.individuals([0, 1]):
@@ -807,8 +807,8 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(affectionSplitter())
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfAffected)
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfUnaffected)
-        self.assertEqual(pop.subPopName([1, 0]), 'unnamed - Unaffected')
-        self.assertEqual(pop.subPopName([1, 1]), 'unnamed - Affected')
+        self.assertEqual(pop.subPopName([1, 0]), 'Unaffected')
+        self.assertEqual(pop.subPopName([1, 1]), 'Affected')
         for ind in pop.individuals([1, 1]):
             self.assertEqual(ind.affected(), True)
         for ind in pop.individuals([1, 0]):
@@ -831,9 +831,9 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))
         self.assertEqual(pop.numVirtualSubPop(), 5)
         infos = list(pop.indInfo('x'))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - x = 10")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - x = 11")
-        self.assertEqual(pop.subPopName([0, 4]), "unnamed - x = 14")
+        self.assertEqual(pop.subPopName([0, 0]), "x = 10")
+        self.assertEqual(pop.subPopName([0, 1]), "x = 11")
+        self.assertEqual(pop.subPopName([0, 4]), "x = 14")
         self.assertEqual(pop.subPopSize([0, 0]), infos.count(10))
         self.assertEqual(pop.subPopSize([0, 1]), infos.count(11))
         self.assertEqual(pop.subPopSize([0, 2]), infos.count(12))
@@ -844,9 +844,9 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(ind.intInfo('x'), 10+i)
         # test cutoff
         pop.setVirtualSplitter(infoSplitter('x', cutoff=[11.5, 13.5]))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - x < 11.5")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - 11.5 <= x < 13.5")
-        self.assertEqual(pop.subPopName([0, 2]), "unnamed - x >= 13.5")
+        self.assertEqual(pop.subPopName([0, 0]), "x < 11.5")
+        self.assertEqual(pop.subPopName([0, 1]), "11.5 <= x < 13.5")
+        self.assertEqual(pop.subPopName([0, 2]), "x >= 13.5")
         self.assertEqual(pop.subPopSize([0, 0]), infos.count(10) + infos.count(11))
         self.assertEqual(pop.subPopSize([0, 1]), infos.count(12) + infos.count(13))
         self.assertEqual(pop.subPopSize([0, 2]),
@@ -863,7 +863,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(10)
         pop.setVirtualSplitter(proportionSplitter([0.01]*100))
         for i in range(100):
-            self.assertEqual(pop.subPopName([0, i]), "unnamed - Prop 0.01")
+            self.assertEqual(pop.subPopName([0, i]), "Prop 0.01")
             if i != 99:
                 self.assertEqual(pop.subPopSize([0, i]), 0)
             else:
@@ -879,8 +879,8 @@ class TestPopulation(unittest.TestCase):
         'Test rangeSplitter::rangeSplitter(ranges)'
         pop = population(100)
         pop.setVirtualSplitter(rangeSplitter(ranges=[[10, 20], [80, 200]]))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - Range [10, 20)")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - Range [80, 200)")
+        self.assertEqual(pop.subPopName([0, 0]), "Range [10, 20)")
+        self.assertEqual(pop.subPopName([0, 1]), "Range [80, 200)")
         self.assertEqual(pop.subPopSize([0, 0]), 10)
         self.assertEqual(pop.subPopSize([0, 1]), 20)
 
@@ -889,8 +889,8 @@ class TestPopulation(unittest.TestCase):
         pop = population(1000, loci=[2, 3])
         InitByFreq(pop, [0.3, 0.7])
         pop.setVirtualSplitter(genotypeSplitter(loci=1, alleles=[[0, 0], [1, 0]], phase=True))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - Genotype 1: 0 0")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - Genotype 1: 1 0")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0")
+        self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 1 0")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)
@@ -910,7 +910,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(1, 1)==0 or ind.allele(1, 1)==1, True)
         # multiple loci
         pop.setVirtualSplitter(genotypeSplitter(loci=[0, 1], alleles=[0, 1, 1, 1], phase=True))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - Genotype 0, 1: 0 1 1 1")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 0, 1: 0 1 1 1")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(0, 0), 0)
             self.assertEqual(ind.allele(0, 1), 1)
@@ -918,7 +918,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.allele(1, 1), 1)
         # multiple genotype at the same locus
         pop.setVirtualSplitter(genotypeSplitter(loci=1, alleles=[0, 1, 1, 1], phase=True))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - Genotype 1: 0 1 1 1")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 1 1 1")
         for ind in pop.individuals([0, 0]):
              self.assertEqual(ind.allele(1, 0)==1  or ind.allele(1, 0)==0, True)
              self.assertEqual(ind.allele(1, 1), 1)
@@ -926,8 +926,8 @@ class TestPopulation(unittest.TestCase):
         pop = population(1000, ploidy = 1, loci=[2, 3])
         InitByFreq(pop, [0.3, 0.7])
         pop.setVirtualSplitter(genotypeSplitter(loci=1, alleles=[[0, 1], [2]], phase=True))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - Genotype 1: 0 1")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - Genotype 1: 2")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 1")
+        self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 2")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0)==1 or ind.allele(1, 0)==0, True)
         for ind in pop.individuals([0, 1]):
@@ -940,10 +940,10 @@ class TestPopulation(unittest.TestCase):
         pop.setVirtualSplitter(combinedSplitter([
             genotypeSplitter(loci=1, alleles=[[0, 0], [1, 0]], phase=True),
             sexSplitter()]))
-        self.assertEqual(pop.subPopName([0, 0]), "unnamed - Genotype 1: 0 0")
-        self.assertEqual(pop.subPopName([0, 1]), "unnamed - Genotype 1: 1 0")
-        self.assertEqual(pop.subPopName([0, 2]), "unnamed - Male")
-        self.assertEqual(pop.subPopName([0, 3]), "unnamed - Female")
+        self.assertEqual(pop.subPopName([0, 0]), "Genotype 1: 0 0")
+        self.assertEqual(pop.subPopName([0, 1]), "Genotype 1: 1 0")
+        self.assertEqual(pop.subPopName([0, 2]), "Male")
+        self.assertEqual(pop.subPopName([0, 3]), "Female")
         for ind in pop.individuals([0, 0]):
             self.assertEqual(ind.allele(1, 0), 0)
             self.assertEqual(ind.allele(1, 1), 0)

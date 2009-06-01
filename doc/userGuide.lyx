@@ -2746,6 +2746,42 @@ simuPOP does not assume any unit for loci positions.
  The scale of this intensity will vary by the unit assumed.
 \end_layout
 
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Note
+Names of loci, alleles and subpopulations are optional.
+ Empty names will be used if they are not specified.
+ Whereas 
+\family typewriter
+locusName
+\family default
+, 
+\family typewriter
+subPopName
+\family default
+ and 
+\family typewriter
+alleleName
+\family default
+ always return a value (empty string or specified value) for any locus,
+ subpopulation or allele, respectively, 
+\family typewriter
+lociNames
+\family default
+, 
+\family typewriter
+subPopNames
+\family default
+ and 
+\family typewriter
+alleleNames
+\family default
+ only return specified values, which can be empty lists.
+ 
+\end_layout
+
 \begin_layout Subsection
 Haploid, diploid and haplodiploid populations
 \end_layout

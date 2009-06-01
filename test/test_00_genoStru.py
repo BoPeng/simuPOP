@@ -191,9 +191,9 @@ class TestGenoStru(unittest.TestCase):
     def testLociName(self):
         'Testing genoStruTrait::lociByNames(names), lociNames(), locusByName(name), locusName(loc)'
         pop = self.getPop()
-        self.assertEqual(pop.locusName(0), 'loc1-1')
-        self.assertEqual(pop.locusName(1), 'loc1-2')
-        self.assertEqual(pop.locusName(2), 'loc1-3')
+        self.assertEqual(pop.locusName(0), '')
+        self.assertEqual(pop.locusName(1), '')
+        self.assertEqual(pop.locusName(2), '')
         pop = population(loci=[1, 2], lociNames=['la', 'lb', 'lc'])
         self.assertEqual(pop.locusName(0), 'la')
         self.assertEqual(pop.locusName(1), 'lb')

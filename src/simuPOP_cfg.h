@@ -398,7 +398,7 @@ public:
 #define DuringPostMating     (DuringMating + PostMating)
 #define PreDuringPostMating  (PreMating + DuringMating + PostMating)
 
-#define UnnamedSubPop        "unnamed"
+#define UnnamedSubPop        ""
 
 // used to set local variables
 #define subPopVar_String(sp, var) (string("subPop[") + toStr(sp) + "]{\'" + var + "\'}")

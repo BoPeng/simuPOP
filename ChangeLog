@@ -3,6 +3,11 @@ ChangeLog of simuPOP
 version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: Supports SWIG 1.3.39.
   - BUG: Fix a bug when using simuRPy for R version <= 0.9.0 under windows.
+  - CHG: Do not set default loci name to "locX-Y". Empty string will be returned
+		if lociNames are not set.
+  - CHG: Do not set default subpopulation name to "Unnamed". Empty string will be
+		returned if lociNames are not set. population::subPopName() is changed
+		accordingly.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.
