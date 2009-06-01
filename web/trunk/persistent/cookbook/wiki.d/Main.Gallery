@@ -1,16 +1,25 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10
 author=
 charset=ISO-8859-1
 csum=
 ctime=1242698947
 host=127.0.0.1
 name=Main.Gallery
-rev=7
-targets=Cookbook.DecayOfLD,Cookbook.LandscapeGenetics
-text=(:title Gallery of figures and animations:)%0a%0aThis page collects figures and animations produced by simuPOP scripts. The scripts may appear in other categories as well.%0a%0a!!![[Cookbook/DecayOfLD | Decay of Linkage Disequilibrium]]%0a%0a%25width=500%25 Attach:Cookbook/DecayOfLD/decay_49.png%0a%0a!!![[Cookbook/LandscapeGenetics | Landscape genetics example]] by Tiago%0a%0a(:youtube Al_0BlSxcHI:)%0a%0a
-time=1242787184
-title=Gallery of figures and animations
+rev=10
+targets=Cookbook.GeneticDrift,Cookbook.Migration,Cookbook.DecayOfLD,Cookbook.LandscapeGenetics
+text=(:title the simuPOP Gallery:)%0a%0aThis page collects figures and animations produced by simuPOP scripts. The scripts may appear in other categories as well.%0a%0a!!![[Cookbook/GeneticDrift | Genetic Drift]]%0a%0a%25width=500%25 Attach:Cookbook/GeneticDrift/geneticDrift.png%0a%0a%0a!!![[Cookbook/Migration | Migration]]%0a%0a%25width=500%25 Attach:Cookbook/Migration/migration.png%0a%0a!!![[Cookbook/DecayOfLD | Decay of Linkage Disequilibrium]]%0a%0a%25width=500%25 Attach:Cookbook/DecayOfLD/decay_49.png%0a%0a!!![[Cookbook/LandscapeGenetics | Landscape genetics example]] by Tiago%0a%0a(:youtube Al_0BlSxcHI:)%0a%0a
+time=1243711733
+title=the simuPOP Gallery
+author:1243711733=
+diff:1243711733:1243711619:=12c12%0a%3c %25width=500%25 Attach:Cookbook/Migration/migration.png%0a---%0a> %25width=500%25 Attach:Cookbook/MIgration/migration.png%0a
+host:1243711733=127.0.0.1
+author:1243711619=
+diff:1243711619:1243002270:=4,12d3%0a%3c %0a%3c !!![[Cookbook/GeneticDrift | Genetic Drift]]%0a%3c %0a%3c %25width=500%25 Attach:Cookbook/GeneticDrift/geneticDrift.png%0a%3c %0a%3c %0a%3c !!![[Cookbook/Migration | Migration]]%0a%3c %0a%3c %25width=500%25 Attach:Cookbook/MIgration/migration.png%0a
+host:1243711619=127.0.0.1
+author:1243002270=
+diff:1243002270:1242787184:=1c1%0a%3c (:title the simuPOP Gallery:)%0a---%0a> (:title Gallery of figures and animations:)%0a
+host:1243002270=127.0.0.1
 author:1242787184=
 diff:1242787184:1242699776:=4,7d3%0a%3c %0a%3c !!![[Cookbook/DecayOfLD | Decay of Linkage Disequilibrium]]%0a%3c %0a%3c %25width=500%25 Attach:Cookbook/DecayOfLD/decay_49.png%0a
 host:1242787184=127.0.0.1

@@ -1,5 +1,5 @@
 version=pmwiki-2.1.27 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032606 Red Hat/3.0.7-1.el5 Firefox/3.0.7
+agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)
 author=
 csum=
 ctime=1239822888
@@ -9,11 +9,21 @@ passwdattr=@nopass
 passwdedit=@nopass
 passwdread=@nopass
 passwdupload=@nopass
-rev=5
+rev=8
 targets=
-text=(:title Suggestions, complaints, compliments ...:)%0a%0aThis is a scratch place where you can leave your comments to the simuPOP software. No password is needed.%0a
-time=1239831063
-title=Suggestions, complaints, compliments ...
+text=loiow, %3ca href="http://www.jqxclfrp4t.com">e9zpbf%3c/a> , [url=http://www.aqbofsxvh3j.com]j6rsi[/url], http://www.zjxh2cnc4q.com xkonq%0a%0a-- Thank you, spamer.
+time=1243034053
+author:1243034053=
+diff:1243034053:1242878667:=1,3c1%0a%3c loiow, %3ca href="http://www.jqxclfrp4t.com">e9zpbf%3c/a> , [url=http://www.aqbofsxvh3j.com]j6rsi[/url], http://www.zjxh2cnc4q.com xkonq%0a%3c %0a%3c -- Thank you, spamer.%0a\ No newline at end of file%0a---%0a> loiow, %3ca href="http://www.jqxclfrp4t.com">e9zpbf%3c/a> , [url=http://www.aqbofsxvh3j.com]j6rsi[/url], http://www.zjxh2cnc4q.com xkonq%0a\ No newline at end of file%0a
+host:1243034053=127.0.0.1
+author:1242878667=zgvcu 6cvtor
+csum:1242878667=i66r5 bj2y8j
+diff:1242878667:1242850215:=1c1%0a%3c loiow, %3ca href="http://www.jqxclfrp4t.com">e9zpbf%3c/a> , [url=http://www.aqbofsxvh3j.com]j6rsi[/url], http://www.zjxh2cnc4q.com xkonq%0a\ No newline at end of file%0a---%0a> b2L9E, %3ca href="http://www.dfdr2tpb06.com">p1qzq%3c/a> , [url=http://www.qbxxne7nt5h.com]hisvw[/url], http://www.eiqkkyfloib.com laclw%0a\ No newline at end of file%0a
+host:1242878667=127.0.0.1
+author:1242850215=izbpy ngq2q
+csum:1242850215=dmtep skqsq
+diff:1242850215:1239831063:=1c1,3%0a%3c b2L9E, %3ca href="http://www.dfdr2tpb06.com">p1qzq%3c/a> , [url=http://www.qbxxne7nt5h.com]hisvw[/url], http://www.eiqkkyfloib.com laclw%0a\ No newline at end of file%0a---%0a> (:title Suggestions, complaints, compliments ...:)%0a> %0a> This is a scratch place where you can leave your comments to the simuPOP software. No password is needed.%0a
+host:1242850215=127.0.0.1
 author:1239823012=
 diff:1239823012:1239822898:=1,3c1,2%0a%3c (:title Suggestions, complaints, compliments ...:)%0a%3c %0a%3c This is a scratch place where you can leave your comments to the simuPOP software. No password is needed.%0a---%0a> (:title Complaints, suggestions, complements...:)%0a> %0a
 host:1239823012=127.0.0.1
