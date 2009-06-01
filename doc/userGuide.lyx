@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -11495,6 +11495,76 @@ lstparams "caption={A hybrid mutation model},label={pyMutator}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Advanced topics
+\end_layout
+
+\begin_layout Subsubsection
+Mutation-introduced loci?
+\end_layout
+
+\begin_layout Standard
+All mutation models in simuPOP apply to existing alleles at pre-specified
+ loci.
+ However, if the location of loci cannot be determined beforehand, it is
+ sometimes desired to create new loci as a result of mutation.
+ A customized operator can be used for this purpose (see Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
+
+\end_inset
+
+), but extra attention is needed to make sure that other operators are applied
+ to the correct loci because loci indexes will be changed with the insertion
+ of new loci.
+\end_layout
+
+\begin_layout Subsubsection
+Realistic infinite-sites model?
+\end_layout
+
+\begin_layout Standard
+Infinite-sites and infinite-alleles models have some similarities.
+ In some cases, you can treat a long chromosomal region as a locus and use
+ the infinite-alleles model, actually a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with large 
+\begin_inset Formula $k$
+\end_inset
+
+, to mimic the infinite-site model.
+ Because there is supposed to be only one mutant at each site, you can assign
+ a unique 
+\emph on
+location
+\emph default
+ for each allele of an infinite-allele model and convert multi-allelic datasets
+ simulated by an infinite-allele model to sequences of diallelic markers.
+ It worth noting that mutation rates are interpreted differently for these
+ two models.
+\end_layout
+
+\begin_layout Standard
+If you really would like to simulate mutations over long sequences (e.g.,
+ mutate each basepair at a multi-centiMorgan region), simulating millions
+ of markers might not be realistic.
+ Allowing mutations to insert new loci can be more efficient, although this
+ method has its own limitations.
+\end_layout
+
+\begin_layout Standard
+An 
+\emph on
+allocate-when-needed
+\emph default
+ feature is planned to overcome this problem.
+ More specifically, homozygous loci will be stored more efficiently so that
+ long homozygous chromosomal regions could be simulated.
 \end_layout
 
 \begin_layout Section
