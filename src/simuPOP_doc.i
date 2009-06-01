@@ -1126,7 +1126,7 @@ Details:
 
 %ignore simuPOP::GenoStruTrait::gsAddChromFromStru(size_t idx) const;
 
-%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx) const;
+%ignore simuPOP::GenoStruTrait::gsAddLociFromStru(size_t idx, vectoru &index1, vectoru &index2) const;
 
 %ignore simuPOP::GenoStruTrait::gsRemoveLoci(const vectorlu &loci, vectorlu &kept);
 
@@ -1413,8 +1413,8 @@ Usage:
 Details:
 
     return the name of locus loc specified by the lociNames parameter
-    of the population function. Default to locX-Y where X and Y are
-    1-based chromosome and locus indexes (loc1-1, loc1-2, ... etc)
+    of the population function. An empty string will be returned if no
+    name has been given to locus loc.
 
 "; 
 
@@ -1427,7 +1427,8 @@ Usage:
 Details:
 
     return the names of all loci specified by the lociNames parameter
-    of the population function.
+    of the population function. An empty list will be returned if
+    lociNames was not specified.
 
 "; 
 
@@ -1440,7 +1441,8 @@ Usage:
 Details:
 
     return the index of a locus with name name. Raise a ValueError if
-    no locus is found.
+    no locus is found. Note that empty strings are used for loci
+    without name but you cannot lookup such loci using this function.
 
 "; 
 
@@ -5833,12 +5835,13 @@ Arguments:
                     A, C, T, and G to alleles 0, 1, 2, and 3
                     respectively.
     lociNames:      A list or a matrix (separated by chromosomes) of
-                    names for each locus. Default to \"locX-Y\" where X
-                    and Y are 1-based chromosome and locus indexes,
-                    respectively. Loci names will be rearranged
+                    names for each locus. It can be empty or a list of
+                    names for each locus. Empty name can be used but
+                    non-empty names must be unique. If loci are not
+                    specified in order, loci names will be rearranged
                     according to their position on the chromosome.
     subPopNames:    A list of subpopulation names. All subpopulations
-                    will have name 'Unnamed' if this parameter is not
+                    will have name '' if this parameter is not
                     specified.
     infoFields:     Names of information fields (named float number)
                     that will be attached to each individual.
@@ -6002,10 +6005,11 @@ Usage:
 
 Details:
 
-    Return the name of a subpopulation subPop, and 'unnamed' if no
-    name is assigned to subPop. If subPop is a virtual subpopulation
-    (specified by a (sp, vsp) pair), a combined name such as subPop1 -
-    Male is returned.
+    Return the \"spName - vspName\" (virtual named subpopulation), \"\"
+    (unnamed non-virtual subpopulation), \"spName\" (named
+    subpopulation) or \"vspName\" (unnamed virtual subpopulation),
+    depending on whether subPopulation is named or if subPop is
+    virtual.
 
 "; 
 
@@ -6018,7 +6022,7 @@ Usage:
 Details:
 
     Return the names of all subpopulations (excluding virtual
-    subpopulations). 'unnamed' will be returned for unnamed
+    subpopulations). An empty string will be returned for unnamed
     subpopulations.
 
 "; 
@@ -6301,7 +6305,7 @@ Details:
     their integer values at information field field (value returned by
     individual::indInfo(field)). Individuals with negative values at
     this field will be removed. Existing subpopulation names are kept.
-    New subpopulations will be named 'Unnamed'.
+    New subpopulations will have empty names.
 
 "; 
 
@@ -6424,9 +6428,8 @@ Details:
     Add chromosome chromName with given type chromType to a
     population, with loci lociNames inserted at position lociPos.
     lociPos should be ordered. lociNames and chromName should not
-    exist in the current population. If they are not specified,
-    simuPOP will try to assign default names, and raise a ValueError
-    if the default names have been used.
+    exist in the current population. Empty loci names will be used if
+    lociNames is not specified.
 
 "; 
 
@@ -6440,12 +6443,13 @@ Details:
 
     Insert loci names at positions pos on chromosome chrom. These
     parameters should be lists of the same length, although names may
-    be ignored, in which case random names will be given. Single-value
-    input is allowed for parameter chrom and pos if only one locus is
-    added. Alleles at inserted loci are initialized with zero alleles.
-    Note that loci have to be added to existing chromosomes. If loci
-    on a new chromosome need to be added, function addChrom should be
-    used. This function returns indexes of the inserted loci.
+    be ignored, in which case empty strings will be assumed. Single-
+    value input is allowed for parameter chrom and pos if only one
+    locus is added. Alleles at inserted loci are initialized with zero
+    alleles. Note that loci have to be added to existing chromosomes.
+    If loci on a new chromosome need to be added, function addChrom
+    should be used. This function returns indexes of the inserted
+    loci.
 
 "; 
 
