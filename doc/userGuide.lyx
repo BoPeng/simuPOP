@@ -11593,16 +11593,6 @@ If you really would like to simulate mutations over long sequences (e.g.,
  method has its own limitations.
 \end_layout
 
-\begin_layout Standard
-An 
-\emph on
-allocate-when-needed
-\emph default
- feature is planned to overcome this problem.
- More specifically, homozygous loci will be stored more efficiently so that
- long homozygous chromosomal regions could be simulated.
-\end_layout
-
 \begin_layout Section
 Selection (under revision)
 \end_layout
