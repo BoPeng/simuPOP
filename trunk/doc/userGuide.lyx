@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.0 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -2443,7 +2443,14 @@ lstparams "caption={The carray datatype},label={carraydatatype}"
 \end_layout
 
 \begin_layout Section
-Genotypic structure 
+Genotypic structure
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Genotypic-structure"
+
+\end_inset
+
+ 
 \begin_inset Index
 status collapsed
 
@@ -11454,7 +11461,107 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 \end_layout
 
 \begin_layout Section
-Mutation (under revision)
+Mutation
+\end_layout
+
+\begin_layout Standard
+A mutation operator mutates alleles at certain loci from one allele to another.
+ Because alleles are simple non-nagative numbers that can be intrepreted
+ as nucleotides, codons, squences of nucleotides or even genetic deletions,
+ appropriate mutation models have to be chosen for different types of loci.
+ Please refer to Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Genotypic-structure"
+
+\end_inset
+
+ for a few examples.
+ 
+\end_layout
+
+\begin_layout Subsection
+Theory
+\end_layout
+
+\begin_layout Standard
+A mutation model is usually defined as 
+\begin_inset Formula $\left(p_{ij}\right)_{n\times n}$
+\end_inset
+
+ where 
+\begin_inset Formula $p_{ij}=P\left(i\rightarrow j\right)$
+\end_inset
+
+ is the probability that an allele 
+\begin_inset Formula $i$
+\end_inset
+
+ mutates to 
+\begin_inset Formula $j$
+\end_inset
+
+ per generation per locus.
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ are usually alleles of the same type but they can also be groups of alleles.
+ For example, if 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ are wildtype (e.g.
+ allele 0) and mutants (e.g.
+ all non-zero alleles) respectively, 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+ will be the probability of mutating from a wildtype allele to any mutant.
+\end_layout
+
+\begin_layout Standard
+Because alleles usually have different probabilities of mutating to other
+ alleles, 
+\series bold
+a mutation process is typically allele dependent
+\series default
+.
+ Conceptually, a mutator would go through each mutable allele and mutates
+ it to allele 
+\begin_inset Formula $0,1,..,n-1$
+\end_inset
+
+ according to probabilities 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+, 
+\begin_inset Formula $j=0,...,n-1$
+\end_inset
+
+.
+ Most alleles will not be mutated because mutations usually happen at low
+ probability (with 
+\begin_inset Formula $p_{ii}$
+\end_inset
+
+ close to 1).
+ Because multiple parameters could be involved for a particular mutation
+ model, 
+\series bold
+the definition of a mutation rate and other paramters are model dependent
+ and may varying with different mathematical representation of the models
+\series default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -11591,6 +11698,214 @@ If you really would like to simulate mutations over long sequences (e.g.,
  of markers might not be realistic.
  Allowing mutations to insert new loci can be more efficient, although this
  method has its own limitations.
+\end_layout
+
+\begin_layout Subsubsection
+How are mutation models implemented in simuPOP?
+\end_layout
+
+\begin_layout Standard
+Given a mutation model 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+, it is obvious insufficient to go through all mutable alleles and determine
+ whether or not to mutate it using 
+\begin_inset Formula $p_{ij},$
+\end_inset
+
+ 
+\begin_inset Formula $j=0,...,1-n$
+\end_inset
+
+.
+ simuPOP uses a two step procedure to mutate a large number of alleles.
+ More specifically, for each mutation model, we determine 
+\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
+\end_inset
+
+ as the maximum mutating probability for all alleles, and then
+\end_layout
+
+\begin_layout Enumerate
+For each allele, trigger a mutation event with probability 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ Because 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is usually very small and is the same for all alleles, this can be implemented
+ efficiently.
+\end_layout
+
+\begin_layout Enumerate
+When a mutation event happens, mutation allele 
+\begin_inset Formula $i$
+\end_inset
+
+ to allele 
+\begin_inset Formula $j$
+\end_inset
+
+ with probability 
+\begin_inset Formula \begin{eqnarray*}
+P_{r}\left(i\rightarrow j\right) & = & \begin{cases}
+1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
+\frac{p_{ij}}{\mu} & \mbox{if }i\ne j\end{cases}\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because steps 1 and 2 are independent, it is easy to verify that
+\begin_inset Formula \[
+p_{ij}=\mu P_{r}\left(i\rightarrow j\right)=\mu\frac{p_{ij}}{\mu}\]
+
+\end_inset
+
+if 
+\begin_inset Formula $i\ne j$
+\end_inset
+
+ and 
+\begin_inset Formula \[
+p_{ii}=\left(1-\mu\right)+\mu\left(1-\frac{1}{\mu}\left(1-p_{ii}\right)\right)\]
+
+\end_inset
+
+if 
+\begin_inset Formula $i=j$
+\end_inset
+
+, where the first and second items are probabilities of no-mutation at steps
+ 1 and 2.
+ 
+\begin_inset Formula $\mu$
+\end_inset
+
+ was chosen as the smallest 
+\begin_inset Formula $\mu$
+\end_inset
+
+ that makes 
+\begin_inset Formula $0\leq Pr\left(i\rightarrow i\right)\leq1$
+\end_inset
+
+ for all 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For example, for a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cccc}
+1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
+\frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
+
+\end_inset
+
+
+\begin_inset Formula $\mu$
+\end_inset
+
+ is directly 
+\begin_inset Formula $\mu$
+\end_inset
+
+ for the first step and 
+\begin_inset Formula \[
+Pr\left(i\rightarrow j\right)=\begin{cases}
+0 & \mbox{if }i=j\\
+\frac{1}{k-1} & \mbox{if }i\ne j\end{cases}\]
+
+\end_inset
+
+for the second step.
+ Therefore, mutation rate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ in a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model could be interpreted as the probability of mutation, and a
+ mutation event would mutate an allele to any other allele with equal probabilit
+y.
+\end_layout
+
+\begin_layout Standard
+For a classical mutation model with 
+\begin_inset Formula $P\left(A\rightarrow a\right)=u$
+\end_inset
+
+ and 
+\begin_inset Formula $P\left(a\rightarrow A\right)=v$
+\end_inset
+
+, 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cc}
+1-u & u\\
+v & 1-v\end{array}\right)\]
+
+\end_inset
+
+if 
+\begin_inset Formula $u=0.001$
+\end_inset
+
+ and 
+\begin_inset Formula $v=0.0005$
+\end_inset
+
+, 
+\begin_inset Formula $\mu=\max\left(u,v\right)=0.001$
+\end_inset
+
+,
+\begin_inset Formula \[
+P_{r}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
+0 & 1\\
+\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5\end{array}\right)\]
+
+\end_inset
+
+That is to say, we would mutate at a mutation rate 
+\begin_inset Formula $u=0.001$
+\end_inset
+
+, mutate allele 
+\begin_inset Formula $A$
+\end_inset
+
+ to 
+\begin_inset Formula $a$
+\end_inset
+
+ with probability 1 and mutate allele 
+\begin_inset Formula $a$
+\end_inset
+
+ to 
+\begin_inset Formula $A$
+\end_inset
+
+ with probability 0.5.
 \end_layout
 
 \begin_layout Section
