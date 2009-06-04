@@ -11413,7 +11413,7 @@ Mutations in these models assume alleles 0, 1, 2, 3 as nucleotides A, C,
 \family typewriter
 acgtMutator
 \family default
- to remind you the order of these nucleotides.
+ to remind you the alphabetic order of these nucleotides.
  This mutation model is specified by a rate matrix
 \end_layout
 
@@ -12050,9 +12050,47 @@ mapOut
 \emph default
 , which map alleles in your population to and from alleles assumed in a
  mutation model.
- For example, a 4-allele model assumes alleles 0, 1, 2, 3.
- If your simulation reserves allele 0 for missing data or deleted allele
- and use 1, 2, 3, 4 as four regular allelic states, you can use parameters
+ For example, an 
+\family typewriter
+acgtMutator
+\family default
+ mutator assumes alleles 
+\family typewriter
+A
+\family default
+, 
+\family typewriter
+C
+\family default
+, 
+\family typewriter
+G
+\family default
+ and 
+\family typewriter
+T
+\family default
+ for alleles 0, 1, 2, and 3 respectively.
+ If for any reason the alleles in your application does not follow this
+ order, you will need to map these alleles to the alleles assumed in the
+ mutator.
+ For example, if you assumes 
+\family typewriter
+C
+\family default
+, 
+\family typewriter
+G
+\family default
+, 
+\family typewriter
+A
+\family default
+, 
+\family typewriter
+T
+\family default
+ for alleles 0, 1, 2, and 3 respectively, you can use parameters
 \end_layout
 
 \begin_layout Standard
@@ -12062,23 +12100,76 @@ status open
 
 \begin_layout Plain Layout
 
-mapIn=[-1, 0, 1, 2, 3], mapOut=[1, 2, 3, 4]
+mapIn=[1, 2, 0, 3], mapOut=[2, 0, 1, 3]
 \end_layout
 
 \end_inset
 
-so that your alleles 0, 1, 2, 3, 4 are treated as -1 (ignore), 0, 1, 2,
- and 3 respectively, and the mutated alleles would be mapped back to alleles
- 1, 2, 3 and 4.
- These two parameters also accept Python functions which should return correspon
-ding mapped-in or out allele for a given allele.
- These two functions can be used to explore very fancy mutation models.
- For example, you can categorize a large number of alleles into alleles
- assumed in a mutation model, and emit random alleles from a mutated allele.
+to map your alleles (
+\family typewriter
+C(0)->C(1)
+\family default
+, 
+\family typewriter
+G(1)->G(2)
+\family default
+, 
+\family typewriter
+A(2)->A(0)
+\family default
+, 
+\family typewriter
+T(3)->T(3)
+\family default
+) to alleles 
+\family typewriter
+acgtMutator
+\family default
+ assumes, and then map mutated alleles (
+\family typewriter
+A(0)->A(2)
+\family default
+, 
+\family typewriter
+C(1)->C(0)
+\family default
+, 
+\family typewriter
+G(2)->G(1)
+\family default
+, 
+\family typewriter
+T(3)->T(3)
+\family default
+) back.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alleleMapping"
+
+\end_inset
+
+ gives another example where alleles 4, 5, 6 and 7 are mutated using a 4-allele
+ model.
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/alleleMapping.log"
+lstparams "caption={Allele mapping for mutation operators},label={alleleMapping}"
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These two parameters also accept Python functions which should return correspond
+ing mapped-in or out allele for a given allele.
+ These two functions can be used to explore very fancy mutation models.
+ For example, you can categorize a large number of alleles into alleles
+ assumed in a mutation model, and emit random alleles from a mutated allele.
 \end_layout
 
 \begin_layout Subsection

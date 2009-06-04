@@ -1829,6 +1829,22 @@ simu.evolve(
 )
 #end
 
+#file log/alleleMapping.log
+pop = population(size=[2000], loci=[1])
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initByFreq([0]*4 + [0.1, 0.2, 0.3, 0.4])],
+    ops = [
+        kamMutator(k=4, rate=1e-4, mapIn=[0]*4 + range(4),
+            mapOut=[4, 5, 6, 7]),
+        stat(alleleFreq=[0], step=100),
+        pyEval(r"', '.join(['%.2f' % alleleFreq[0][x] for x in range(8)]) + '\n'",
+            step=100),
+    ],
+    gen=500
+)
+#end
+
 #file log/rpy.log
 from simuPOP import *
 from simuRPy import varPlotter
