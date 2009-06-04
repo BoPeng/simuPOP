@@ -1813,14 +1813,14 @@ simu.evolve(
 )
 #end
 
-#file log/actgMutator.log
+#file log/acgtMutator.log
 pop = population(size=[2000], loci=[1],
-    alleleNames=['A', 'C', 'T', 'G'])
+    alleleNames=['A', 'C', 'G', 'T'])
 simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [initByFreq([.1, .1, .1, .7])],
     ops = [
-        actgMutator(rate=[1e-4, 0.5], model='K80'),
+        acgtMutator(rate=[1e-4, 0.5], model='K80'),
         stat(alleleFreq=[0], step=100),
         pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(4)]) + '\n'",
             step=100),

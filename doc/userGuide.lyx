@@ -11831,7 +11831,7 @@ x_{3} & x_{5} & x_{6} & -\end{array}\right)\]
 
 \end_deeper
 \begin_layout Enumerate
-General model: model='' (default), rate=[
+General model: model='general' (default), rate=[
 \begin_inset Formula $x_{1}$
 \end_inset
 
@@ -11903,7 +11903,7 @@ It is not surprising that all other models are implemented as special cases
 Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "actgMutator"
+reference "acgtMutator"
 
 \end_inset
 
@@ -11914,8 +11914,8 @@ reference "actgMutator"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/actgMutator.log"
-lstparams "caption={A Kimura's 2 parameter mutation model},label={actgMutator}"
+filename "log/acgtMutator.log"
+lstparams "caption={A Kimura's 2 parameter mutation model},label={acgtMutator}"
 
 \end_inset
 
