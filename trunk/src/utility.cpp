@@ -2183,7 +2183,6 @@ bool RNG::randBit()
 }
 
 
-// They may be quicker.
 void weightedSampler::set(const vectorf & weight)
 {
 	m_N = weight.size();
@@ -2191,8 +2190,28 @@ void weightedSampler::set(const vectorf & weight)
 	if (m_N == 0)
 		return;
 
-	// if(m_fast)                                    // using the fast algorithm
-	// {
+	if (m_N == 1) {
+		m_fixed = true;
+		m_fixedValue = 0;
+		return;
+	}
+
+	m_fixed = true;
+	int prevIndex = -1;
+	for (size_t i = 0; i < weight.size(); ++i) {
+		if (weight[i] != 0) {
+			if (prevIndex == -1 ) {
+				m_fixedValue = i;
+				prevIndex = i;
+			} else { // two non-zero index, not fixed.
+				m_fixed = false;
+				break;
+			}
+		}
+	}
+	if (m_fixed)
+		return;
+
 	// sum of weight
 	double w = accumulate(weight.begin(), weight.end(), 0.0);
 
@@ -2236,17 +2255,6 @@ void weightedSampler::set(const vectorf & weight)
 		}
 	}
 	delete[] HL;
-	//}
-	// else                                          // using the bisection method
-	// {
-	// initialize p with N*p0,...N*p_k-1
-	//   m_q.resize(m_N);
-	//   for(size_t i=1; i<m_N; ++i)
-	//     m_q[i] += m_q[i-1];
-	// m_q[m_N-1] is the sum of all weights
-	//   for(size_t i=0; i<m_N; ++i)
-	//     m_q[i] /= m_q[m_N-1];
-	// }
 }
 
 

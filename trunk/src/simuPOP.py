@@ -562,6 +562,19 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
 
 
 # Mutation models
+def snpMutator(u=0, v=0, *args, **kwargs):
+    '''
+    Because there are only two alleles, this mutation model only needs to know
+    the mutation rate from allele 0 to 1 (parameter ``u``) and from 1 to 0
+    (parameter ``v``). If ``u=v``, this will be a 2-allele model. If one of the
+    two parameters are zero, mutation will be directional.
+    '''
+    if u == v:
+        # k-allele model is more optimized so we use this operator if u=v.
+        return kamMutator(u, *args, **kwargs)
+    else:
+        return matrixMutator([[1-u, u], [v, 1-v]], *args, **kwargs)
+
 
 def actgMutator(rate=[], model='', *args, **kwargs):
     '''

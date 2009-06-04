@@ -1359,7 +1359,7 @@ class weightedSampler
 public:
 	// set up AliasMethod table
 	weightedSampler(RNG & rng, const vectorf & weight = vectorf())
-		: m_RNG(&rng), m_q(0), m_a(0)
+		: m_RNG(&rng), m_q(0), m_a(0), m_fixed(false), m_fixedValue(0)
 	{
 		set(weight);
 	};
@@ -1370,38 +1370,13 @@ public:
 
 	void set(const vectorf & weight);
 
-	ULONG biSearch(double a)
-	{
-		unsigned long left = 0, right = m_N - 1;
-
-		// a reasonable initial guess will improve the performance a little bit
-		unsigned long mid = static_cast<ULONG>(a * (m_N - 1));
-
-		// at most loop 4 times for n=31
-		while (left <= right) {
-
-			if (m_q[mid] > a) {
-				if (mid == 0 || m_q[mid - 1] <= a)
-					return mid;
-				else
-					right = mid - 1;
-			} else {
-				if (m_q[mid + 1] > a)
-					return mid + 1;
-				else
-					left = mid + 1;
-			}
-			mid = (right + left) / 2;
-		}
-		// this should not be reached.
-		return 0;
-	}
-
-
 	// sample without replacement from 0,...,n-1,
 	// with weight freq
 	ULONG get()
 	{
+		if (m_fixed)
+			return m_fixedValue;
+
 		double rN = m_RNG->randUniform01() * m_N;
 
 		size_t K = static_cast<size_t>(rN);
@@ -1422,6 +1397,10 @@ public:
 		double rN;
 		size_t K;
 
+		if (m_fixed) {
+			std::fill(res.begin(), res.end(), m_fixedValue);
+			return 0;
+		}
 		for (vectorlu::iterator it = res.begin(); it != res.end(); ++it) {
 			rN = m_RNG->randUniform01() * m_N;
 			K = static_cast<size_t>(rN);
@@ -1443,6 +1422,10 @@ public:
 		double rN;
 		size_t K;
 
+		if (m_fixed) {
+			std::fill(beg, end, m_fixedValue + shift);
+			return;
+		}
 		for (Iterator it = beg; it != end; ++it) {
 			rN = m_RNG->randUniform01() * m_N;
 			K = static_cast<size_t>(rN);
@@ -1485,9 +1468,10 @@ private:
 	vectorf m_q;
 
 	vectorlu m_a;
-
-	/// whether or not use fast (but use more RAM) method
-	// bool m_fast;
+	
+	// handle special case
+	bool m_fixed;
+	ULONG m_fixedValue;
 };
 
 /** this class encapsulate behavior of a sequence of Bernulli trial.
