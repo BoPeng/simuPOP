@@ -1360,6 +1360,7 @@ PyObject * pyIndObj(void * p)
 void * pyIndPointer(PyObject * obj)
 {
 	void * ptr = 0;
+
 	SWIG_Python_ConvertPtr(obj, &ptr, g_swigindividual, 0);
 	return ptr;
 }
@@ -2200,7 +2201,7 @@ void weightedSampler::set(const vectorf & weight)
 	int prevIndex = -1;
 	for (size_t i = 0; i < weight.size(); ++i) {
 		if (weight[i] != 0) {
-			if (prevIndex == -1 ) {
+			if (prevIndex == -1) {
 				m_fixedValue = i;
 				prevIndex = i;
 			} else { // two non-zero index, not fixed.

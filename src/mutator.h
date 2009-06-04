@@ -63,35 +63,26 @@ public:
 	   \param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
 	   \param loci a vector of locus indexes. Will be ignored only when single rate is specified.
 	    Default to all loci.
-	   \param maxAllele maximum allowed allele. Interpreted by each sub mutator class. Default to \c pop.maxAllele().
 	 */
-	mutator(const vectorf & rate = vectorf(),
-		const vectoru & loci = vectoru(),
-		UINT maxAllele = 0,
-		const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+	mutator(const floatList & rate = floatList(), const uintList & loci = uintList(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
+		const stringFunc & output = ">", int stage = PostMating,
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_rate(rate), m_maxAllele(maxAllele), m_loci(loci),
+		m_rate(rate.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
 		m_bt(rng()), m_initialized(false), m_mutCount(0)
 	{
 		if (m_rate.empty() )
 			throw ValueError("You should specify a rate, or a sequence of rate.");
 
-		if (rate.size() > 1 && loci.empty())
+		if (m_rate.size() > 1 && m_loci.empty())
 			throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
 
-		if (rate.size() > 1 && !loci.empty() && rate.size() != loci.size() )
+		if (m_rate.size() > 1 && !m_loci.empty() && m_rate.size() != m_loci.size() )
 			throw ValueError("If both rates and loci are specified, they should have the same length.");
 
-#ifdef BINARYALLELE
-		DBG_WARNING(maxAllele > 1, "MaxAllele for binary libraries must be 1");
-		m_maxAllele = 1;
-#else
-		DBG_ASSERT(maxAllele <= ModuleMaxAllele, ValueError,
-			"The maximum allele number exceeds " + toStr(ModuleMaxAllele)
-			+ ". \nIf you need longer allele size, please use simuPOP_la libraries.");
-#endif
 	}
 
 
@@ -108,15 +99,8 @@ public:
 	}
 
 
-	/// return the mutation rate
-	vectorf rate()
-	{
-		return m_rate;
-	}
-
-
 	/// set an array of mutation rates
-	void setRate(const vectorf & rate, const vectoru & loci = vectoru())
+	void setRate(const vectorf & rate, const vectorlu & loci = vectorlu())
 	{
 		if (rate.size() != 1 && rate.size() != loci.size() )
 			throw ValueError("If you specify more than one rate values, you should also specify corresponding applicable loci");
@@ -126,22 +110,6 @@ public:
 			m_loci = loci;
 
 		m_initialized = false;
-	}
-
-
-	/// return maximum allowable allele number
-	UINT maxAllele()
-	{
-		return m_maxAllele;
-	}
-
-
-	/// set maximum allowable allele
-	void setMaxAllele(UINT maxAllele)
-	{
-#ifndef BINARYALLELE
-		m_maxAllele = maxAllele;
-#endif
 	}
 
 
@@ -174,15 +142,16 @@ private:
 	/// initialize bernulli trial according to pop size etc
 	virtual void initialize(population & pop);
 
-private:
+protected:
 	/// mutation rates
 	vectorf m_rate;
 
-	/// maxAllele
-	UINT m_maxAllele;
-
 	/// applicable loci.
-	vectoru m_loci;
+	vectorlu m_loci;
+
+	uintListFunc m_mapIn;
+
+	uintListFunc m_mapOut;
 
 	/// bernulli trials. bitSet mutation results.
 	BernulliTrials m_bt;
@@ -194,13 +163,14 @@ private:
 	vectoru m_mutCount;
 };
 
-/** 
+/**
  *
  */
 class matrixMutator : public mutator
 {
 public:
-	matrixMutator(const matrix & rate, const vectoru & loci = vectoru(),
+	matrixMutator(const matrix & rate, const uintList & loci = uintList(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
@@ -252,15 +222,20 @@ public:
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
-	kamMutator(const vectorf & rate = vectorf(),
-		const vectoru & loci = vectoru(),
-		UINT maxAllele = 0,
+	kamMutator(UINT k=0, const floatList & rate = floatList(), const uintList & loci = uintList(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPops, infoFields)
+		: mutator(rate, loci, mapIn, mapOut, output, stage, begin, end, step, at,
+		          rep, subPops, infoFields), m_k(k)
 	{
+		if (m_k == 0)
+			m_k = MaxAllele() + 1;
+#ifndef BINARYALLELE
+		if (m_k > MaxAllele() )
+			throw ValueError("maxAllele exceeds population max allele.");
+#endif
 	}
 
 
@@ -283,9 +258,12 @@ public:
 	virtual string __repr__()
 	{
 		return "<simuPOP::k-allele model mutator K=" +
-		       toStr(this->maxAllele()) + ">" ;
+		       toStr(m_k) + ">" ;
 	}
 
+
+private:
+	UINT m_k;
 
 };
 
@@ -311,21 +289,27 @@ public:
 	   Please see class \c mutator for the descriptions of other parameters.
 
 	 */
-	smmMutator(const vectorf & rate = vectorf(),
-		const vectoru & loci = vectoru(),
+	smmMutator(const floatList & rate = floatList(), const uintList & loci = uintList(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		UINT maxAllele = 0, double incProb = 0.5,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_incProb(incProb)
+		: mutator(rate, loci, mapIn, mapOut, output, stage, begin,
+		          end, step, at, rep, subPops, infoFields),
+		m_maxAllele(maxAllele), m_incProb(incProb)
 	{
 #ifdef BINARYALLELE
 		DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
 #endif
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
 			ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
+#ifndef BINARYALLELE
+		if (m_maxAllele == 0)
+			m_maxAllele = MaxAllele();
+		else if (m_maxAllele > 0 && m_maxAllele > MaxAllele() )
+			throw ValueError("maxAllele exceeds population max allele.");
+#endif
 	}
 
 
@@ -340,7 +324,7 @@ public:
 	{
 		// inc
 		if (rng().randUniform01() < m_incProb) {
-			if (AlleleUnsigned(allele) < this->maxAllele() )
+			if (AlleleUnsigned(allele) < m_maxAllele)
 				AlleleInc(allele);
 		}
 		// dec (use !=0 instead of > 0 to avoid warning inbinary mode
@@ -364,6 +348,8 @@ public:
 
 
 private:
+	UINT m_maxAllele;
+
 	/// probability to increase allele state
 	double m_incProb;
 };
@@ -398,15 +384,14 @@ public:
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
-	gsmMutator(const vectorf & rate = vectorf(),
-		const vectoru & loci = vectoru(),
+	gsmMutator(const floatList & rate = floatList(), const uintList & loci = uintList(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: mutator(rate, loci, maxAllele,
-		          output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_incProb(incProb), m_p(p), m_func(func)
+		: mutator(rate, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
+		m_maxAllele(maxAllele), m_incProb(incProb), m_p(p), m_func(func)
 	{
 		DBG_ASSERT(fcmp_ge(incProb, 0.) && fcmp_le(incProb, 1.),
 			ValueError, "Inc probability should be between [0,1], given " + toStr(incProb));
@@ -419,6 +404,12 @@ public:
 			DBG_ASSERT(fcmp_ge(p, 0.) && fcmp_le(p, 1.),
 				ValueError, "Parameter p of a geometric distribution should be between [0,1], given " + toStr(m_p));
 		}
+#ifndef BINARYALLELE
+		if (m_maxAllele == 0)
+			m_maxAllele = MaxAllele();
+		else if (m_maxAllele > 0 && m_maxAllele > MaxAllele() )
+			throw ValueError("maxAllele exceeds population max allele.");
+#endif
 	}
 
 
@@ -445,6 +436,8 @@ public:
 
 
 private:
+	UINT m_maxAllele;
+
 	/// probability to increase allele state
 	double m_incProb;
 
@@ -468,13 +461,13 @@ public:
 	/// create a \c pyMutator
 	/**
 	 */
-	pyMutator(const vectorf & rate = vectorf(),
-		const vectoru & loci = vectoru(), UINT maxAllele = 0,
+	pyMutator(const floatList & rate = floatList(),	const uintList & loci = uintList(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		PyObject * func = NULL,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
-		: mutator(rate, loci, maxAllele,
+		: mutator(rate, loci, mapIn, mapOut,
 		          output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)
 	{
@@ -524,16 +517,14 @@ public:
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
-	pointMutator(
-		const vectoru & loci,
-		Allele toAllele,
+	pointMutator(const uintList & loci,	Allele toAllele,
 		vectoru atPloidy = vectoru(),
 		vectorlu inds = vectorlu(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci), m_toAllele(toAllele),
+		m_loci(loci.elems()), m_toAllele(toAllele),
 		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
 	{
 		if (m_atPloidy.empty())
@@ -582,7 +573,7 @@ public:
 
 private:
 	/// applicable loci.
-	vectoru m_loci;
+	vectorlu m_loci;
 	Allele m_toAllele;
 	vectoru m_atPloidy;
 	vectorlu m_inds;
