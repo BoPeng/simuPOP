@@ -580,9 +580,9 @@ def dynaMutator(pop, param):
     for i in range(pop.totNumLoci()):
         # Get the frequency of allele 1 (disease allele)
         if pop.dvars().alleleFreq[i][1] < cutoff:
-            KamMutate(pop, maxAllele=1, rate=mu1, loci=[i])
+            KamMutate(pop, k=2, rate=mu1, loci=[i])
         else:
-            KamMutate(pop, maxAllele=1, rate=mu2, loci=[i])
+            KamMutate(pop, k=2, rate=mu2, loci=[i])
     return True
 
 simu = simulator(population(size=10000, loci=[2, 3]),
@@ -636,9 +636,9 @@ class dynaMutator(pyOperator):
         for i in range(pop.totNumLoci()):
             # Get the frequency of allele 1 (disease allele)
             if pop.dvars().alleleFreq[i][1] < self.cutoff:
-                KamMutate(pop, maxAllele=1, rate=self.mu1, loci=[i])
+                KamMutate(pop, k=2, rate=self.mu1, loci=[i])
             else:
-                KamMutate(pop, maxAllele=1, rate=self.mu2, loci=[i])
+                KamMutate(pop, k=2, rate=self.mu2, loci=[i])
         return True
 
 simu = simulator(population(size=10000, loci=[2, 3]),

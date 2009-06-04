@@ -1456,7 +1456,6 @@ if __name__ == '__main__':
     p.scan_module('simuOpt')
     p.scan_module('simuUtil')
     p.scan_module('simuRPy')
-    p.scan_module('hapMapUtil')
     print 'Writing latex reference file to', latex_file
     p.write(latex_file, type='latex_single')
     p.uniqueName = []

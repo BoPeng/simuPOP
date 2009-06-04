@@ -853,6 +853,13 @@ mutatorRef
 
 
 \backslash
+matrixMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 kamMutatorRef
 \end_layout
 
@@ -1285,100 +1292,6 @@ simuPOPRef
 \end_layout
 
 \begin_layout Subsection
-Function form of operators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPDumpRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPInitSexRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPInitByFreqRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPInitByValueRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-TurnOnDebugRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-TurnOffDebugRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPPyEvalRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPPyExecRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPInfoEvalRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPInfoExecRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPMigrateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Offspring generators
 \end_layout
 
@@ -1512,6 +1425,33 @@ simuPOPcontrolledRandomMatingRef
 \end_layout
 
 \begin_layout Subsection
+Mutation operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsnpMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPacgtMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Ascertainment operators
 \end_layout
 
@@ -1567,6 +1507,114 @@ simuPOPAffectedSibpairSampleRef
 \end_layout
 
 \begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+Function form of operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPDumpRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitSexRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitByFreqRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInitByValueRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyExecRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInfoEvalRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPInfoExecRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMigrateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMatrixMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPSnpMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPAcgtMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPKamMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -1667,6 +1715,20 @@ OptimizedRef
 
 \backslash
 SetRNGRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOnDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOffDebugRef
 \end_layout
 
 \begin_layout Plain Layout

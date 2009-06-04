@@ -145,184 +145,6 @@ def DebugCodes():
     'Return names of all debug codes'
     return _dbgCode.keys()
 
-#
-# functions to corresponding operators
-def Dump(pop, *args, **kwargs):
-    'Apply operator ``dumper`` to population *pop*.'
-    dumper(*args, **kwargs).apply(pop)
-
-def InitSex(pop, *args, **kwargs):
-    'Apply operator ``initSex`` to population *pop*.'
-    initSex(*args, **kwargs).apply(pop)
-
-def InitByFreq(pop, *args, **kwargs):
-    'Apply operator ``initByFreq`` to population *pop*.'
-    initByFreq(*args, **kwargs).apply(pop)
-
-def InitByValue(pop, *args, **kwargs):
-    'Apply operator ``initByValue`` to population *pop*.'
-    initByValue(*args, **kwargs).apply(pop)
-
-def PyEval(pop, *args, **kwargs):
-    '''Evaluate statements *stmts* (optional) and expression *expr* in
-    population *pop*\ 's local namespace and return the result of *expr*.
-    If *exposePop* is given, population *pop* will be exposed in its local
-    namespace as a variable with a name specified by *exposePop*.
-
-    .. note::
-
-       Unlike its operator counterpart, this function returns the result of
-       *expr* rather than writting it to an output.
-    '''
-    return pyEval(*args, **kwargs).evaluate(pop)
-
-def PyExec(pop, *args, **kwargs):
-    '''Execute *stmts* in population *pop*\ 's local namespace.'''
-    pyExec(*args, **kwargs).apply(pop)
-
-def InfoEval(pop, *args, **kwargs):
-    '''Evaluate *expr* for each individual, using information fields as variables.
-    Please refer to operator ``infoEval`` for details.
-    '''
-    infoEval(*args, **kwargs).apply(pop)
-
-def InfoExec(pop, *args, **kwargs):
-    '''Execute *stmts* for each individual, using information fields as variables.
-    Please refer to operator ``infoExec`` for details.
-    '''
-    infoExec(*args, **kwargs).apply(pop)
-
-def Migrate(pop, *args, **kwargs):
-    'Function form of operator ``migrator``.'
-    migrator(*args, **kwargs).apply(pop)
-
-def SplitSubPops(pop, *args, **kwargs):
-    '''Split subpopulations (*subPops*) of population *pop* according to either
-    *sizes* or *proportions* of the resulting subpopulations, or an information
-    field. Please refer to the operator form of this function (``splitSubPop``)
-    for details.'''
-    splitSubPops(*args, **kwargs).apply(pop)
-
-def MergeSubPops(pop, *args, **kwargs):
-    '''Merge subpopulations *subPops* of population *pop* into a single
-    subpopulation. Please refer to the operator form of this funciton
-    (``mergeSubPops``) for details'''
-    mergeSubPops(*args, **kwargs).apply(pop)
-
-def ResizeSubPops(pop, *args, **kwargs):
-    '''Resize subpopulations *subPops* of population *pop* into new sizes
-    *size*. Individuals will be added or removed accordingly. Please refer to
-    the operator form of this funciton (``resizeSubPops``) for details'''
-    resizeSubPops(*args, **kwargs).apply(pop)
-
-def Stat(pop, *args, **kwargs):
-    stat(*args, **kwargs).apply(pop)
-
-if stat.__init__.__doc__ is not None:
-    Stat.__doc__ = "Function version of operator stat whose __init__ function is \n" + stat.__init__.__doc__
-
-def KamMutate(pop, *args, **kwargs):
-    kamMutator(*args, **kwargs).apply(pop)
-
-if kamMutator.__init__.__doc__ is not None:
-    KamMutate.__doc__ = "Function version of operator kamMutator whose __init__ function is \n" + kamMutator.__init__.__doc__
-
-def SmmMutate(pop, *args, **kwargs):
-    smmMutator(*args, **kwargs).apply(pop)
-
-if smmMutator.__init__.__doc__ is not None:
-    SmmMutate.__doc__ = "Function version of operator smmMutator whose __init__ function is \n" + smmMutator.__init__.__doc__
-
-def GsmMutate(pop, *args, **kwargs):
-    gsmMutator(*args, **kwargs).apply(pop)
-
-if gsmMutator.__init__.__doc__ is not None:
-    GsmMutate.__doc__ = "Function version of operator gsmMutator whose __init__ function is \n" + gsmMutator.__init__.__doc__
-
-def PyMutate(pop, *args, **kwargs):
-    pyMutator(*args, **kwargs).apply(pop)
-
-if pyMutator.__init__.__doc__ is not None:
-    PyMutate.__doc__ = "Function version of operator pyMutator whose __init__ function is \n" + pyMutator.__init__.__doc__
-
-def PointMutate(pop, *args, **kwargs):
-    pointMutator(*args, **kwargs).apply(pop)
-
-if pointMutator.__init__.__doc__ is not None:
-    PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
-
-def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
-    mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)
-
-if mapSelector.__init__.__doc__ is not None:
-    MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
-
-def MaSelect(pop, loci, fitness, wildtype, *args, **kwargs):
-    maSelector(loci, fitness, wildtype, PostMating, *args, **kwargs).apply(pop)
-
-if maSelector.__init__.__doc__ is not None:
-    MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
-
-def MlSelect(pop, selectors, mode = Multiplicative, *args, **kwargs):
-    mlSelector(selectors, mode, PostMating, *args, **kwargs).apply(pop)
-
-if mlSelector.__init__.__doc__ is not None:
-    MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
-
-def PySelect(pop, loci, func, *args, **kwargs):
-    pySelector(loci, func, PostMating, *args, **kwargs).apply(pop)
-
-if pySelector.__init__.__doc__ is not None:
-    PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
-
-def MapPenetrance(pop, loci, penetrance, phase = False, ancGen = -1, *args, **kwargs):
-    mapPenetrance(loci, penetrance, phase, ancGen, PostMating, *args, **kwargs).apply(pop)
-
-if mapPenetrance.__init__.__doc__ is not None:
-    MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
-
-def MaPenetrance(pop, loci, penetrance, wildtype = 0, ancGen = -1, *args, **kwargs):
-    maPenetrance(loci, penetrance, wildtype, ancGen, PostMating, *args, **kwargs).apply(pop)
-
-if maPenetrance.__init__.__doc__ is not None:
-    MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
-
-def MlPenetrance(pop, peneOps, mode = Multiplicative, ancGen = -1, *args, **kwargs):
-    mlPenetrance(peneOps, mode, ancGen, PostMating, *args, **kwargs).apply(pop)
-
-if mlPenetrance.__init__.__doc__ is not None:
-    MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
-
-def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
-    pyPenetrance(loci, func, ancGen, PostMating, *args, **kwargs).apply(pop)
-
-if pyPenetrance.__init__.__doc__ is not None:
-    PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
-
-def MapQuanTrait(pop, *args, **kwargs):
-    mapQuanTrait(*args, **kwargs).apply(pop)
-
-if mapQuanTrait.__init__.__doc__ is not None:
-    MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
-
-def MaQuanTrait(pop, *args, **kwargs):
-    maQuanTrait(*args, **kwargs).apply(pop)
-
-if maQuanTrait.__init__.__doc__ is not None:
-    MaQuanTrait.__doc__ = "Function version of operator maQuanTrait whose __init__ function is \n" + maQuanTrait.__init__.__doc__
-
-def MlQuanTrait(pop, *args, **kwargs):
-    mlQuanTrait(*args, **kwargs).apply(pop)
-
-if mlQuanTrait.__init__.__doc__ is not None:
-    MlQuanTrait.__doc__ = "Function version of operator mlQuanTrait whose __init__ function is \n" + mlQuanTrait.__init__.__doc__
-
-def PyQuanTrait(pop, *args, **kwargs):
-    pyQuanTrait(*args, **kwargs).apply(pop)
-
-if pyQuanTrait.__init__.__doc__ is not None:
-    PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
-
 
 # mating schemes
 
@@ -1203,6 +1025,194 @@ AffectedSibpairSample.__doc__ = "Function version of operator affectedSibpairSam
 #     PySubset.__doc__ = "Function version of operator pySubset whose __init__function is \n" + pySubset.__init__.__doc__
 # 
 
+
+#
+# functions to corresponding operators
+def Dump(pop, *args, **kwargs):
+    'Apply operator ``dumper`` to population *pop*.'
+    dumper(*args, **kwargs).apply(pop)
+
+def InitSex(pop, *args, **kwargs):
+    'Apply operator ``initSex`` to population *pop*.'
+    initSex(*args, **kwargs).apply(pop)
+
+def InitByFreq(pop, *args, **kwargs):
+    'Apply operator ``initByFreq`` to population *pop*.'
+    initByFreq(*args, **kwargs).apply(pop)
+
+def InitByValue(pop, *args, **kwargs):
+    'Apply operator ``initByValue`` to population *pop*.'
+    initByValue(*args, **kwargs).apply(pop)
+
+def PyEval(pop, *args, **kwargs):
+    '''Evaluate statements *stmts* (optional) and expression *expr* in
+    population *pop*\ 's local namespace and return the result of *expr*.
+    If *exposePop* is given, population *pop* will be exposed in its local
+    namespace as a variable with a name specified by *exposePop*.
+
+    .. note::
+
+       Unlike its operator counterpart, this function returns the result of
+       *expr* rather than writting it to an output.
+    '''
+    return pyEval(*args, **kwargs).evaluate(pop)
+
+def PyExec(pop, *args, **kwargs):
+    '''Execute *stmts* in population *pop*\ 's local namespace.'''
+    pyExec(*args, **kwargs).apply(pop)
+
+def InfoEval(pop, *args, **kwargs):
+    '''Evaluate *expr* for each individual, using information fields as variables.
+    Please refer to operator ``infoEval`` for details.
+    '''
+    infoEval(*args, **kwargs).apply(pop)
+
+def InfoExec(pop, *args, **kwargs):
+    '''Execute *stmts* for each individual, using information fields as variables.
+    Please refer to operator ``infoExec`` for details.
+    '''
+    infoExec(*args, **kwargs).apply(pop)
+
+def Migrate(pop, *args, **kwargs):
+    'Function form of operator ``migrator``.'
+    migrator(*args, **kwargs).apply(pop)
+
+def SplitSubPops(pop, *args, **kwargs):
+    '''Split subpopulations (*subPops*) of population *pop* according to either
+    *sizes* or *proportions* of the resulting subpopulations, or an information
+    field. Please refer to the operator form of this function (``splitSubPop``)
+    for details.'''
+    splitSubPops(*args, **kwargs).apply(pop)
+
+def MergeSubPops(pop, *args, **kwargs):
+    '''Merge subpopulations *subPops* of population *pop* into a single
+    subpopulation. Please refer to the operator form of this funciton
+    (``mergeSubPops``) for details'''
+    mergeSubPops(*args, **kwargs).apply(pop)
+
+def ResizeSubPops(pop, *args, **kwargs):
+    '''Resize subpopulations *subPops* of population *pop* into new sizes
+    *size*. Individuals will be added or removed accordingly. Please refer to
+    the operator form of this funciton (``resizeSubPops``) for details'''
+    resizeSubPops(*args, **kwargs).apply(pop)
+
+def MatrixMutate(pop, *args, **kwargs):
+    'Function form of operator ``matrixMutator``'
+    matrixMutator(*args, **kwargs).apply(pop)
+
+def SnpMutate(pop, *args, **kwargs):
+    'Function form of operator ``snpMutator``'
+    snpMutator(*args, **kwargs).apply(pop)
+
+def AcgtMutate(pop, *args, **kwargs):
+    'Function form of operator ``acgtMutator``'
+    acgtMutator(*args, **kwargs).apply(pop)
+
+def KamMutate(pop, *args, **kwargs):
+    'Function form of operator ``kamMutator``'
+    kamMutator(*args, **kwargs).apply(pop)
+
+def SmmMutate(pop, *args, **kwargs):
+    smmMutator(*args, **kwargs).apply(pop)
+
+if smmMutator.__init__.__doc__ is not None:
+    SmmMutate.__doc__ = "Function version of operator smmMutator whose __init__ function is \n" + smmMutator.__init__.__doc__
+
+def GsmMutate(pop, *args, **kwargs):
+    gsmMutator(*args, **kwargs).apply(pop)
+
+if gsmMutator.__init__.__doc__ is not None:
+    GsmMutate.__doc__ = "Function version of operator gsmMutator whose __init__ function is \n" + gsmMutator.__init__.__doc__
+
+def PyMutate(pop, *args, **kwargs):
+    pyMutator(*args, **kwargs).apply(pop)
+
+if pyMutator.__init__.__doc__ is not None:
+    PyMutate.__doc__ = "Function version of operator pyMutator whose __init__ function is \n" + pyMutator.__init__.__doc__
+
+def PointMutate(pop, *args, **kwargs):
+    pointMutator(*args, **kwargs).apply(pop)
+
+if pointMutator.__init__.__doc__ is not None:
+    PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
+
+def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
+    mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)
+
+if mapSelector.__init__.__doc__ is not None:
+    MapSelect.__doc__ = "Function version of operator mapSelect whose __init__ function is \n" + mapSelector.__init__.__doc__
+
+def MaSelect(pop, loci, fitness, wildtype, *args, **kwargs):
+    maSelector(loci, fitness, wildtype, PostMating, *args, **kwargs).apply(pop)
+
+if maSelector.__init__.__doc__ is not None:
+    MaSelect.__doc__ = "Function version of operator maSelect whose __init__ function is \n" + maSelector.__init__.__doc__
+
+def MlSelect(pop, selectors, mode = Multiplicative, *args, **kwargs):
+    mlSelector(selectors, mode, PostMating, *args, **kwargs).apply(pop)
+
+if mlSelector.__init__.__doc__ is not None:
+    MlSelect.__doc__ = "Function version of operator mlSelect whose __init__ function is \n" + mlSelector.__init__.__doc__
+
+def PySelect(pop, loci, func, *args, **kwargs):
+    pySelector(loci, func, PostMating, *args, **kwargs).apply(pop)
+
+if pySelector.__init__.__doc__ is not None:
+    PySelect.__doc__ = "Function version of operator pySelect whose __init__ function is \n" + pySelector.__init__.__doc__
+
+def MapPenetrance(pop, loci, penetrance, phase = False, ancGen = -1, *args, **kwargs):
+    mapPenetrance(loci, penetrance, phase, ancGen, PostMating, *args, **kwargs).apply(pop)
+
+if mapPenetrance.__init__.__doc__ is not None:
+    MapPenetrance.__doc__ = "Function version of operator mapPenetrance whose __init__ function is \n" + mapPenetrance.__init__.__doc__
+
+def MaPenetrance(pop, loci, penetrance, wildtype = 0, ancGen = -1, *args, **kwargs):
+    maPenetrance(loci, penetrance, wildtype, ancGen, PostMating, *args, **kwargs).apply(pop)
+
+if maPenetrance.__init__.__doc__ is not None:
+    MaPenetrance.__doc__ = "Function version of operator maPenetrance whose __init__ function is \n" + maPenetrance.__init__.__doc__
+
+def MlPenetrance(pop, peneOps, mode = Multiplicative, ancGen = -1, *args, **kwargs):
+    mlPenetrance(peneOps, mode, ancGen, PostMating, *args, **kwargs).apply(pop)
+
+if mlPenetrance.__init__.__doc__ is not None:
+    MlPenetrance.__doc__ = "Function version of operator mlPenetrance whose __init__ function is \n" + mlPenetrance.__init__.__doc__
+
+def PyPenetrance(pop, loci, func, ancGen = -1, *args, **kwargs):
+    pyPenetrance(loci, func, ancGen, PostMating, *args, **kwargs).apply(pop)
+
+if pyPenetrance.__init__.__doc__ is not None:
+    PyPenetrance.__doc__ = "Function version of operator pyPenetrance whose __init__ function is \n" + pyPenetrance.__init__.__doc__
+
+def MapQuanTrait(pop, *args, **kwargs):
+    mapQuanTrait(*args, **kwargs).apply(pop)
+
+if mapQuanTrait.__init__.__doc__ is not None:
+    MapQuanTrait.__doc__ = "Function version of operator mapQuanTrait whose __init__ function is \n" + mapQuanTrait.__init__.__doc__
+
+def MaQuanTrait(pop, *args, **kwargs):
+    maQuanTrait(*args, **kwargs).apply(pop)
+
+if maQuanTrait.__init__.__doc__ is not None:
+    MaQuanTrait.__doc__ = "Function version of operator maQuanTrait whose __init__ function is \n" + maQuanTrait.__init__.__doc__
+
+def MlQuanTrait(pop, *args, **kwargs):
+    mlQuanTrait(*args, **kwargs).apply(pop)
+
+if mlQuanTrait.__init__.__doc__ is not None:
+    MlQuanTrait.__doc__ = "Function version of operator mlQuanTrait whose __init__ function is \n" + mlQuanTrait.__init__.__doc__
+
+def PyQuanTrait(pop, *args, **kwargs):
+    pyQuanTrait(*args, **kwargs).apply(pop)
+
+if pyQuanTrait.__init__.__doc__ is not None:
+    PyQuanTrait.__doc__ = "Function version of operator pyQuanTrait whose __init__ function is \n" + pyQuanTrait.__init__.__doc__
+
+def Stat(pop, *args, **kwargs):
+    stat(*args, **kwargs).apply(pop)
+
+if stat.__init__.__doc__ is not None:
+    Stat.__doc__ = "Function version of operator stat whose __init__ function is \n" + stat.__init__.__doc__
 
 
 
