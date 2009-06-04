@@ -115,9 +115,6 @@ if simuOptions['Debug'] != []:
                 print _dbgCode.keys()
 
 # Other definitions that does not really belong to simuUtil.py
-#
-
-
 class dw(object):
     def __init__(self, var):
         try:
@@ -563,6 +560,31 @@ def controlledRandomMating(loci=[], alleles=[], freqFunc=None,
         subPop = subPop,
         weight = weight)
 
+
+# Mutation models
+
+def actgMutator(rate=[], model='', *args, **kwargs):
+    '''
+    '''
+    if model == '':
+        if len(rate) != 12:
+            raise ValueError('Please specify 12 parameters for this general nucleotide mutation model')
+        m = [[0, rate[0], rate[1], rate[2]],
+            [rate[3], 0, rate[4], rate[5]],
+            [rate[6], rate[7], 0, rate[8]],
+            [rate[9], rate[10], rate[11], 0]]
+    elif model == '':
+        m = []
+    else:
+        raise ValueError('Unrecognized nucleotide mutation model %s' % model)
+    return matrixMutator(m, *args, **kwargs)
+
+
+def aminoAcidMutator(rate=[], model='', *args, **kwargs):
+    '''
+    This operator has not been implemented.
+    '''
+    return matrixMutator(m, *args, **kwargs)
 
 # Ascertainment operators and functions
 

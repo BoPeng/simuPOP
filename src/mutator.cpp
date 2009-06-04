@@ -92,9 +92,9 @@ bool mutator::apply(population & pop)
 		size_t pos = m_bt.trialFirstSucc(i);
 		if (pos != BernulliTrials::npos) {
 			do {
-                IndAlleleIterator ptr = pop.alleleIterator(locus) + pos;
-                if (!ptr.valid())
-                    continue;
+				IndAlleleIterator ptr = pop.alleleIterator(locus) + pos;
+				if (!ptr.valid())
+					continue;
 				mutate(*ptr);
 				DBG_DO(DBG_MUTATOR, cout << " to " << int(*ptr) << endl);
 				m_mutCount[ locus ]++;
@@ -103,6 +103,62 @@ bool mutator::apply(population & pop)
 	}                                                                                               // each applicable loci
 
 	return true;
+}
+
+
+matrixMutator::matrixMutator(const matrix & rate,
+	const vectoru & loci, const stringFunc & output,
+	int stage, int begin, int end, int step, const intList & at,
+	const repList & rep, const subPopList & subPops,
+	const vectorstr & infoFields)
+	: mutator(vectorf(1, 0), loci, rate.size(),
+	          output, stage, begin, end, step, at, rep, subPops, infoFields)
+{
+	matrix rateMatrix = rate;
+	// step 0, determine mu
+	double mu = 0;
+
+	for (size_t i = 0; i < rateMatrix.size(); ++i) {
+		DBG_ASSERT(rateMatrix[i].size() == rateMatrix.size(), ValueError,
+			"A n by n matrix is required.");
+		double sum = 0;
+		for (size_t j = 0; j < rateMatrix[i].size(); ++i) {
+			// ignore p_ii
+			if (i == j)
+				continue;
+			DBG_FAILIF(rateMatrix[i][j] < 0 || rateMatrix[i][j] > 1, ValueError,
+				"Elements in a mutation matrix must be between 0 and 1");
+			sum += rateMatrix[i][j];
+		}
+		DBG_FAILIF(sum > 1, ValueError, "Sum of P_ij should not exceed 1");
+		if (mu < 1 - sum)
+			mu = 1 - sum;
+	}
+	setRate(vectorf(1, mu), loci);
+	if (mu == 0.)
+		return;
+	// re-calculate probability
+	m_sampler.clear();
+	for (size_t i = 0; i < rateMatrix.size(); ++i) {
+		double sum = 0;
+		for (size_t j = 0; j < rateMatrix[i].size(); ++i) {
+			if (i == j)
+				continue;
+			rateMatrix[i][j] /= mu;
+			sum = rateMatrix[i][j];
+		}
+		rateMatrix[i][i] = 1 - sum / mu;
+		m_sampler.push_back(weightedSampler(rng(), rateMatrix[i]));
+	}
+}
+
+
+void matrixMutator::mutate(AlleleRef allele)
+{
+	DBG_FAILIF(allele >= m_sampler.size(), ValueError,
+		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
+		+ " (determined by the size of the mutation rate matrix).");
+	allele = m_sampler[allele].get();
 }
 
 

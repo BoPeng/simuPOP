@@ -8,6 +8,7 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Do not set default subpopulation name to "Unnamed". Empty string will be
 		returned if lociNames are not set. population::subPopName() is changed
 		accordingly.
+  - NEW: Add matrixMutator and an early form of actgMutator.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.
