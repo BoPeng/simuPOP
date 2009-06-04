@@ -10907,11 +10907,18 @@ reference "sec:Genotypic-structure"
 \end_inset
 
  for a few examples.
- 
+\end_layout
+
+\begin_layout Subsection
+Mutation models specified by rate matrixes (
+\family typewriter
+matrixMutator
+\family default
+) 
 \end_layout
 
 \begin_layout Standard
-A mutation model is usually defined as a 
+A mutation model can be defined as a 
 \series bold
 mutation rate matrix
 \series default
@@ -10932,30 +10939,6 @@ mutation rate matrix
 \end_inset
 
  per generation per locus.
- 
-\begin_inset Formula $i$
-\end_inset
-
- and 
-\begin_inset Formula $j$
-\end_inset
-
- are usually alleles of the same type but they can also be groups of alleles.
- For example, if 
-\begin_inset Formula $i$
-\end_inset
-
- and 
-\begin_inset Formula $j$
-\end_inset
-
- are wildtype (e.g.
- allele 0) and mutants (e.g.
- all non-zero alleles) respectively, 
-\begin_inset Formula $p_{ij}$
-\end_inset
-
- will be the probability of mutating from a wildtype allele to any mutant.
  Although mathematical formulation of 
 \begin_inset Formula $p_{ij}$
 \end_inset
@@ -10968,24 +10951,23 @@ mutation rate matrix
 \begin_inset Formula $i$
 \end_inset
 
- in this documentation and require such rate matrixes in the specification
- of a mutation model.
+ and require such rate matrixes in the specification of a mutation model.
  
 \begin_inset Formula $p_{ii}$
 \end_inset
 
- are sometimes unspecified because they can be determined from other values.
+ are sometimes unspecified because they can be determined from other mutation
+ rates.
 \end_layout
 
 \begin_layout Standard
-Because alleles usually have different probabilities of mutating to other
- alleles, 
-\series bold
-a mutation process is usually allele dependent
-\series default
-.
- Conceptually, a mutator would go through each mutable allele and mutates
- it to allele 
+A 
+\family typewriter
+matrixMutator
+\family default
+ is defined to mutate alleles according to a given rate matrix.
+ Conceptually speaking, this mutator goes through each mutable allele and
+ mutates it to allele 
 \begin_inset Formula $0,1,..,n-1$
 \end_inset
 
@@ -11004,21 +10986,42 @@ a mutation process is usually allele dependent
 \end_inset
 
  close to 1).
- Because multiple parameters could be involved for a particular mutation
- model, 
-\series bold
-the definition of a mutation rate and other paramters are model dependent
- and may varying with different mathematical representation of the models
-\series default
-.
-\end_layout
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "matrixMutator"
 
-\begin_layout Subsection
-Implementation of mutation in simuPOP? **
+\end_inset
+
+ simulates a locus with 3 alleles.
+ Because the rate at which allele 2 mutats to alleles 0 and 1 is higher
+ than the rate alleles 0 and 2 mutate to allele 2, the frequency of allele
+ 2 decreases over time.
 \end_layout
 
 \begin_layout Standard
-Given a mutation model 
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/matrixMutator.log"
+lstparams "caption={General mutator specified by a mutation rate matrix},label={matrixMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Implementation of matrixMutator **
+\end_layout
+
+\begin_layout Standard
+Because alleles usually have different probabilities of mutating to other
+ alleles, 
+\series bold
+a mutation process is usually allele dependent
+\series default
+.
+ Given a mutation model 
 \begin_inset Formula $\left(p_{ij}\right)$
 \end_inset
 
@@ -11218,37 +11221,11 @@ That is to say, we would mutate at a mutation rate
 \end_layout
 
 \begin_layout Subsection
-General mutation models
-\end_layout
-
-\begin_layout Standard
-Compared to specialized mutation models for certain types of alleles such
- as nucleotide and proteins, mutation models in this section do not assume
- type of alleles: they are simply numbers.
- 
-\end_layout
-
-\begin_layout Subsubsection
-A general mutation model
-\end_layout
-
-\begin_layout Standard
-Although many mutation models are specialization of this model, ...
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \[
-R=\left(\begin{array}{cc}
-1-u & u\\
-v & 1-v\end{array}\right)\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
-k-allele mutation model
+k-allele mutation model (
+\family typewriter
+kamMutator
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -11280,18 +11257,49 @@ The only parameter
 
  is the mutation rate, which is the rate at which an allele mutate to any
  other allele with equal probability.
- Alleles in this model are treated identically.
 \end_layout
 
 \begin_layout Standard
-Example 
+This mutation model is a special case of the 
+\family typewriter
+matrixMutator
+\family default
+ but another operator 
+\family typewriter
+kamMutator
+\family default
+ is recommended because it provides better performance, especially when
+ 
+\begin_inset Formula $k$
+\end_inset
+
+ is large.
+ In addition, this operator allows different mutation rate at different
+ loci.
+ When 
+\begin_inset Formula $k$
+\end_inset
+
+ is not specified, it is assumed to be the number of allowed alleles (e.g.
+ 2 for binary modules).
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "kamMutator"
 
 \end_inset
 
- desmonstrates the use of this mutation model:
+ desmonstrates the use of this operator where parameters 
+\family typewriter
+rate
+\family default
+ and 
+\family typewriter
+loci
+\family default
+ are used to specify different mutation rates for different loci.
+ Because this operator treats all alleles equally, all alleles will have
+ the same allele frequency in the long run.
 \end_layout
 
 \begin_layout Standard
@@ -11305,7 +11313,88 @@ lstparams "caption={A k-allele mutation model},label={kamMutator}"
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
+diallelic mutation models (
+\family typewriter
+snpMutator
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+matrixMutator
+\family default
+ and 
+\family typewriter
+kamMutator
+\family default
+ are general purpose mutators in the sense that they do not assume a type
+ for the mutated alleles.
+ This and the following sections describe mutation models for specific types
+ of alleles.
+\end_layout
+
+\begin_layout Standard
+If there are only two alleles at a locus, a diallelic mutation model should
+ be used.
+ Because single nucleotide polymorphisms (SNPs) are the most widely avaiable
+ diallelic markers, a 
+\family typewriter
+snpMutator
+\family default
+ is provided to mutate such markers using a mutate rate matrix
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+R=\left(\begin{array}{cc}
+1-u & u\\
+v & 1-v\end{array}\right).\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Despite of its name, this mutator can be used in many theoretical models
+ assuming 
+\begin_inset Formula $\mbox{Pr}\left(A\rightarrow a\right)=u$
+\end_inset
+
+ and 
+\begin_inset Formula $\mbox{Pr}\left(a\rightarrow A\right)=v$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $v=0$
+\end_inset
+
+, mutations will be directional.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "snpMutator"
+
+\end_inset
+
+ applies such a directional mutaton model to two loci, but with a purifying
+ selection applied to the first locus.
+ Because of the selection pressure, the frequency of allele 1 at the first
+ locus does not increase indefinitely as allele 1 at the second locus.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/snpMutator.log"
+lstparams "caption={A diallelic directional mutation model},label={snpMutator}"
+
+\end_inset
+
 
 \end_layout
 
@@ -11373,7 +11462,17 @@ specifies a nucleotide mutator using Kimura's 2-parameter model with
 \end_inset
 
 .
- The names and acceptable parameters of acceptable models are listed below:
+ Because multiple parameters could be involved for a particular mutation
+ model, 
+\series bold
+the definition of a mutation rate and other paramters are model dependent
+ and may varying with different mathematical representation of the models
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+The names and acceptable parameters of acceptable models are listed below:
 \end_layout
 
 \begin_layout Enumerate
@@ -11381,11 +11480,7 @@ Jukes and Cantor 1969 model: model='JC69', rate=[
 \begin_inset Formula $\mu$
 \end_inset
 
- ] (or rate= 
-\begin_inset Formula $\mu$
-\end_inset
-
- )
+ ]
 \end_layout
 
 \begin_deeper
@@ -11804,6 +11899,29 @@ It is not surprising that all other models are implemented as special cases
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "actgMutator"
+
+\end_inset
+
+ applies a Kimmura's 2-parameter mutation model to a population with a single
+ nucleotide marker.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/actgMutator.log"
+lstparams "caption={A Kimura's 2 parameter mutation model},label={actgMutator}"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Amino acid mutation models (
 \family typewriter
@@ -11827,7 +11945,7 @@ acgtMutator
 \end_layout
 
 \begin_layout Subsection
-Stepwise mutation model
+Mutation model for microsatellite markers
 \end_layout
 
 \begin_layout Standard

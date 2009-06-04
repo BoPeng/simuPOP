@@ -108,6 +108,7 @@ bool mutator::apply(population & pop)
 								static_cast<int>(*ptr)));
 					}
 				}
+				// The virtual mutate functions in derived operators will be called.
 				mutate(*ptr);
 				if (mapOut) {
 					if (numMapOutAllele > 0) {

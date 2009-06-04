@@ -1762,61 +1762,71 @@ simu.evolve(
 )
 #end
 
-#file log/migrator.log
-from simuUtil import *
-
-#number of cities
-nc = 6
-
-# how to change subpop size?
-def changeSPSize(gen, oldSize):
-    size = [0]*len(oldSize)
-    for i in range(0, len(size)):
-        size[i] = oldSize[i]*1.2
-    if size[i] > 1000:
-        size[i] /= 2
-    return size
-
-# migration between subpopulaitons
-rates = []
-for i in range(nc):
-    rates.append([0.]*nc)
-
-for i in range(1, nc-1):
-    rates[i][i+1]=0.05
-    rates[i][i-1]=0.05
-
-#
-rates[0][1] = 0.1
-rates[nc-1][nc-2] = 0.1
-
-# print rates
-print rates
-migr = migrator(rate=rates, mode=ByProbability)
-
-# initially, we need to set everyone to middle subpop
-initMigr = migrator(rate=[[1]], mode=ByProportion,
-    subPops=[0], toSubPops=[nc/2])
-
-pop = population(size=[500]*nc, infoFields=['migrate_to'])
-
-# the new popsize relies on a variable newSPSize
-# which is calculated from subPopSize bu newSize operator
-simu = simulator(pop,
-    randomMating(subPopSize=changeSPSize) )
-
-# evolve!
+#file log/matrixMutator.log
+simu = simulator(population(size=[2000], loci=[1]),
+    randomMating())
 simu.evolve(
-    preOps = [initSex(), initMigr ],
+    preOps = [initByFreq([0.2, 0.3, 0.5])],
     ops = [
-        migr,
-        stat(popSize=True),
-        pyEval('list(subPopSize)'),
-        pyOutput('\n', rep=-1)
+        matrixMutator(rate = [
+            [0, 1e-5, 1e-5],
+            [1e-4, 0, 1e-4],
+            [1e-3, 1e-3, 0]
+        ]),
+        stat(alleleFreq=[0], step=100),
+        pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(3)]) + '\n'",
+            step=100),
     ],
-    gen=10
+    gen=1000
 )
+#end
 
+
+#file log/kamMutator.log
+pop = population(size=[2000], loci=[1]*3)
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        kamMutator(k=5, rate=[1e-2, 1e-3], loci=[0, 1]),
+        stat(alleleFreq=range(3), step=100),
+        pyEval(r"', '.join(['%.3f' % alleleFreq[x][0] for x in range(3)]) + '\n'",
+            step=100),
+    ],
+    gen=500
+)
+#end
+
+#file log/snpMutator.log
+pop = population(size=[2000], loci=[1, 1], infoFields=['fitness'])
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        snpMutator(u=0.001),
+        maSelector(loci=0, fitness=[1, 0.99, 0.98]),
+        stat(alleleFreq=[0, 1], step=100),
+        pyEval(r"'%.3f\t%.3f\n' % (alleleFreq[0][1], alleleFreq[1][1])",
+            step=100),
+    ],
+    gen=500
+)
+#end
+
+#file log/actgMutator.log
+pop = population(size=[2000], loci=[1],
+    alleleNames=['A', 'C', 'T', 'G'])
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initByFreq([.1, .1, .1, .7])],
+    ops = [
+        actgMutator(rate=[1e-4, 0.5], model='K80'),
+        stat(alleleFreq=[0], step=100),
+        pyEval(r"', '.join(['%.3f' % alleleFreq[0][x] for x in range(4)]) + '\n'",
+            step=100),
+    ],
+    gen=500
+)
 #end
 
 #file log/rpy.log
@@ -2201,7 +2211,7 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
         frequencies for each allele.
     s: selection pressure.
     mu: mutation rate.
-    k: maximum allele for the k-allele model
+    k: k for the k-allele model
     '''
     demo_func = demo_model(model, N0, N1, G0, G1)
     simu = simulator(
@@ -2211,7 +2221,7 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
     simu.evolve(
         preOps=[initByFreq(loci=[0], alleleFreq=spec)],
         ops=[
-            kamMutator(rate=mu, maxAllele=k),
+            kamMutator(k=k, rate=mu),
             maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=[0], step=100),
             pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
@@ -2411,22 +2421,6 @@ hlp.close()
 
 ################################################
 
-
-#file log/kamMutator.log
-pop = population(size=[200, 300], ploidy=2, loci=[5, 10],
-    lociPos=[range(0, 5), range(0, 20, 2)],
-    alleleNames=['A', 'C', 'T', 'G'])
-simu = simulator(pop, randomMating(), rep=3)
-simu.evolve(
-    preOps = [initByFreq([.8, .2])],
-    ops = [
-        stat(alleleFreq=[0, 1], Fst=[1], step=10),
-        kamMutator(rate=0.001, rep=1),
-        kamMutator(rate=0.0001, rep=2)
-    ],
-    gen=10
-)
-#end
  
 #file log/smmMutator.log
 simu = simulator(population(size=300, loci=[3, 5]), randomMating())
