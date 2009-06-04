@@ -194,7 +194,7 @@ private:
 	vectoru m_mutCount;
 };
 
-/**
+/** 
  *
  */
 class matrixMutator : public mutator

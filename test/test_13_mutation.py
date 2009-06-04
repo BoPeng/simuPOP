@@ -141,6 +141,23 @@ class TestMutator(unittest.TestCase):
         self.assertGenotype(simu.population(0), 0,
             loci=[0,2,3])
 
+    def testsnpMutator(self):
+        'Testing diallelic mutator (SNP mutator'
+        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
+            randomMating(), rep=5)
+        simu.evolve(
+                preOps = [ initByFreq([.5, .5], loci=[0, 4])],
+                ops = [snpMutator(u=0.1, loci=[0, 4]),
+                    #stat(alleleFreq=[0, 4]),
+                    #pyEval(r'"%.3f %.3f\n" % (alleleFreq[0][0], alleleFreq[4][0])')
+                ],
+                gen=100)
+        self.assertGenotype(simu.population(0), 0,
+            loci=[1, 2, 3])
+        # fewer and fewer allele 0
+        self.assertGenotypeFreq(simu.population(0),
+            [0.], [0.05], loci=[0, 4])
+
     def testKamMutator(self):
         'Testing k-allele mutator'
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
