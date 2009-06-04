@@ -1730,9 +1730,10 @@ Description:
 
 Usage:
 
-    gsmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5, p=0,
-      func=None, output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+    gsmMutator(rate=[], loci=[], mapIn=[], mapOut=[], maxAllele=0,
+      incProb=0.5, p=0, func=None, output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
 Details:
 
@@ -3318,10 +3319,6 @@ Function form:
 
     KamMutate
 
-Description:
-
-    K-Allele Model mutator.
-
 Details:
 
     This mutator mutate an allele to another allelic state with equal
@@ -3340,9 +3337,9 @@ Description:
 
 Usage:
 
-    kamMutator(rate=[], loci=[], maxAllele=0, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    kamMutator(k=0, rate=[], loci=[], mapIn=[], mapOut=[],
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -4005,6 +4002,65 @@ Usage:
 
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
 
+%feature("docstring") simuPOP::matrixMutator "
+
+"; 
+
+%feature("docstring") simuPOP::matrixMutator::matrixMutator "
+
+Usage:
+
+    matrixMutator(rate, loci=[], mapIn=[], mapOut=[], output=\">\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
+      subPops=[], infoFields=[])
+
+"; 
+
+%feature("docstring") simuPOP::matrixMutator::~matrixMutator "
+
+Usage:
+
+    x.~matrixMutator()
+
+"; 
+
+%feature("docstring") simuPOP::matrixMutator::mutate "
+
+Description:
+
+    mutate to a state other than current state with equal probability
+
+Usage:
+
+    x.mutate(allele)
+
+"; 
+
+%feature("docstring") simuPOP::matrixMutator::clone "
+
+Description:
+
+    deep copy of a matrixMutator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%feature("docstring") simuPOP::matrixMutator::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the kamMutator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
 %feature("docstring") simuPOP::mendelianGenoTransmitter "
 
 Details:
@@ -4627,10 +4683,6 @@ Usage:
 
 %feature("docstring") simuPOP::mutator "
 
-Description:
-
-    Base class of all mutators.
-
 Details:
 
     The base class of all functional mutators. It is not supposed to
@@ -4656,7 +4708,7 @@ Description:
 
 Usage:
 
-    mutator(rate=[], loci=[], maxAllele=0, output=\">\",
+    mutator(rate=[], loci=[], mapIn=[], mapOut=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
 
@@ -4677,8 +4729,6 @@ Arguments:
     loci:           a vector of locus indexes. Will be ignored only
                     when single rate is specified. Default to all
                     loci.
-    maxAllele:      maximum allowed allele. Interpreted by each sub
-                    mutator class. Default to pop.maxAllele().
 
 "; 
 
@@ -4706,18 +4756,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mutator::rate "
-
-Description:
-
-    return the mutation rate
-
-Usage:
-
-    x.rate()
-
-"; 
-
 %feature("docstring") simuPOP::mutator::setRate "
 
 Description:
@@ -4727,30 +4765,6 @@ Description:
 Usage:
 
     x.setRate(rate, loci=[])
-
-"; 
-
-%feature("docstring") simuPOP::mutator::maxAllele "
-
-Description:
-
-    return maximum allowable allele number
-
-Usage:
-
-    x.maxAllele()
-
-"; 
-
-%feature("docstring") simuPOP::mutator::setMaxAllele "
-
-Description:
-
-    set maximum allowable allele
-
-Usage:
-
-    x.setMaxAllele(maxAllele)
 
 "; 
 
@@ -7196,9 +7210,9 @@ Description:
 
 Usage:
 
-    pyMutator(rate=[], loci=[], maxAllele=0, func=None, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    pyMutator(rate=[], loci=[], mapIn=[], mapOut=[], func=None,
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -9544,9 +9558,9 @@ Description:
 
 Usage:
 
-    smmMutator(rate=[], loci=[], maxAllele=0, incProb=0.5,
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+    smmMutator(rate=[], loci=[], mapIn=[], mapOut=[], maxAllele=0,
+      incProb=0.5, output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -11248,14 +11262,6 @@ Usage:
 Usage:
 
     x.set(weight)
-
-"; 
-
-%feature("docstring") simuPOP::weightedSampler::biSearch "
-
-Usage:
-
-    x.biSearch(a)
 
 "; 
 
