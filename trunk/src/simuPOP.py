@@ -586,8 +586,15 @@ def actgMutator(rate=[], model='', *args, **kwargs):
             [rate[3], 0, rate[4], rate[5]],
             [rate[6], rate[7], 0, rate[8]],
             [rate[9], rate[10], rate[11], 0]]
-    elif model == '':
-        m = []
+    elif model == 'K80':
+        if len(rate) != 2:
+            raise ValueError('A Kimura 2-parameter model requires two parameters mu and k')
+        mu = rate[0]
+        k = rate[1]
+        m = [[0, mu/4., mu*k/4., mu/4.],
+            [mu/4., 0, mu/4., mu*k/4.],
+            [mu*k/4., mu/4., 0, mu/4.],
+            [mu/4., mu*k/4., mu/4., 0]]
     else:
         raise ValueError('Unrecognized nucleotide mutation model %s' % model)
     return matrixMutator(m, *args, **kwargs)
