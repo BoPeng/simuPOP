@@ -194,7 +194,44 @@ private:
 	vectoru m_mutCount;
 };
 
-/// K-Allele Model mutator
+/**
+ *
+ */
+class matrixMutator : public mutator
+{
+public:
+	matrixMutator(const matrix & rate, const vectoru & loci = vectoru(),
+		const stringFunc & output = ">", int stage = PostMating,
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const vectorstr & infoFields = vectorstr());
+
+	~matrixMutator()
+	{
+	}
+
+
+	/// mutate to a state other than current state with equal probability
+	virtual void mutate(AlleleRef allele);
+
+	/// deep copy of a \c matrixMutator
+	virtual baseOperator * clone() const
+	{
+		return new matrixMutator(*this);
+	}
+
+
+	/// used by Python print function to print out the general information of the \c kamMutator
+	virtual string __repr__()
+	{
+		return "<simuPOP::matrix mutator";
+	}
+
+
+private:
+	vector<weightedSampler> m_sampler;
+};
+
 /**
    This mutator mutate an allele to another allelic state with equal probability.
    The specified mutation rate is actually the 'probability to mutate'. So the
