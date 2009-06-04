@@ -33,7 +33,6 @@
 #include "operator.h"
 
 namespace simuPOP {
-/// Base class of all mutators
 /**
    The base class of all functional mutators. It is not supposed to be called directly.
    \n
