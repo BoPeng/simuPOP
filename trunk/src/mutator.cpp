@@ -29,12 +29,6 @@ namespace simuPOP {
 
 void mutator::initialize(population & pop)
 {
-#ifndef BINARYALLELE
-	if (m_maxAllele == 0)
-		m_maxAllele = MaxAllele();
-	else if (m_maxAllele > 0 && m_maxAllele > MaxAllele() )
-		throw ValueError("maxAllele exceeds population max allele.");
-#endif
 
 	DBG_DO(DBG_MUTATOR, cout << "initialize mutator" << endl);
 
@@ -85,6 +79,15 @@ bool mutator::apply(population & pop)
 
 	m_bt.doTrial();
 
+	// mapIn and mapOut
+	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
+	vectorlu const & mapInList = m_mapIn.elems();
+	pyFunc mapInFunc = m_mapIn.func();
+	UINT numMapInAllele = mapInList.size();
+	bool mapOut = !m_mapOut.empty() || m_mapOut.func().isValid();
+	vectorlu const & mapOutList = m_mapOut.elems();
+	UINT numMapOutAllele = mapOutList.size();
+	pyFunc mapOutFunc = m_mapOut.func();
 	// mutate each mutable locus
 	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
 		int locus = m_loci[i];
@@ -96,7 +99,26 @@ bool mutator::apply(population & pop)
 				if (!ptr.valid())
 					continue;
 				DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
+				if (mapIn) {
+					if (numMapInAllele > 0) {
+						if (static_cast<size_t>(*ptr) < numMapInAllele)
+							*ptr = mapInList[*ptr];
+					} else {
+						*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
+								static_cast<int>(*ptr)));
+					}
+				}
 				mutate(*ptr);
+				if (mapOut) {
+					if (numMapOutAllele > 0) {
+						if (static_cast<size_t>(*ptr) < numMapOutAllele)
+							*ptr = mapOutList[*ptr];
+					} else {
+						*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
+								static_cast<int>(*ptr)));
+					}
+
+				}
 				DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
 				m_mutCount[ locus ]++;
 			} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
@@ -108,12 +130,13 @@ bool mutator::apply(population & pop)
 
 
 matrixMutator::matrixMutator(const matrix & rate,
-	const vectoru & loci, const stringFunc & output,
+	const uintList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
+	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops,
 	const vectorstr & infoFields)
-	: mutator(vectorf(1, 0), loci, rate.size(),
-	          output, stage, begin, end, step, at, rep, subPops, infoFields)
+	: mutator(vectorf(1, 0), loci, mapIn, mapOut, output, stage, begin, end, step,
+	          at, rep, subPops, infoFields)
 {
 	matrix rateMatrix = rate;
 	// step 0, determine mu
@@ -132,11 +155,11 @@ matrixMutator::matrixMutator(const matrix & rate,
 			sum += rateMatrix[i][j];
 		}
 		DBG_FAILIF(sum > 1, ValueError, "Sum of P_ij should not exceed 1");
-		if (mu <  sum)
+		if (mu < sum)
 			mu = sum;
 	}
 	DBG_DO(DBG_MUTATOR, cout << "Mu " << mu << endl);
-	setRate(vectorf(1, mu), loci);
+	setRate(vectorf(1, mu), loci.elems());
 	if (mu == 0.)
 		return;
 	// re-calculate probability
@@ -171,7 +194,7 @@ void kamMutator::mutate(AlleleRef allele)
 #ifdef BINARYALLELE
 	allele = !allele;
 #else
-	Allele new_allele = static_cast<Allele>(rng().randInt(maxAllele()));
+	Allele new_allele = static_cast<Allele>(rng().randInt(m_k - 1));
 	if (new_allele >= allele)
 		allele = new_allele + 1;
 	else
@@ -196,10 +219,10 @@ void gsmMutator::mutate(AlleleRef allele)
 #ifdef BINARYALLELE
 		allele = 1;
 #else
-		if (static_cast<UINT>(allele + step) < this->maxAllele() )
+		if (static_cast<UINT>(allele + step) < m_maxAllele)
 			AlleleAdd(allele, step);
 		else
-			allele = static_cast<Allele>(this->maxAllele());
+			allele = static_cast<Allele>(m_maxAllele);
 #endif
 	}
 	// decrease

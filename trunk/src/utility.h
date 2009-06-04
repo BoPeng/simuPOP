@@ -1468,7 +1468,7 @@ private:
 	vectorf m_q;
 
 	vectorlu m_a;
-	
+
 	// handle special case
 	bool m_fixed;
 	ULONG m_fixedValue;
