@@ -1154,9 +1154,6 @@ reference "cha:Core-simuPOP-components"
 \end_inset
 
  describes all classes in the simuPOP core.
- Although most topics and examples are simple, some topics need in-depth
- understanding of both the Python language and simuPOP.
- New simuPOP users can safely skip these sections.
  Chapter 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1189,7 +1186,16 @@ reference "cha:A-real-example"
 \end_inset
 
 ) demonstrates how to write a script to solve a real-world simulation problem.
- The last chapter gives a quick description on some bundled scripts.
+ Because some sections describe advanced features that are only used in
+ the construction of highly complex simulations, or implementation details
+ that concern only advanced users, new simuPOP users can safely skip these
+ sections.
+ 
+\series bold
+Sections that describe advanced topics are marked by one or two asterisks
+ (*) after the section heads
+\series default
+.
 \end_layout
 
 \begin_layout Standard
@@ -1697,7 +1703,7 @@ infoIdx
 \end_layout
 
 \begin_layout Subsection
-Random number generator
+Random number generator *
 \end_layout
 
 \begin_layout Standard
@@ -2842,7 +2848,7 @@ lstparams "caption={An example of haplodiploid population},keywordstyle={\\ttfam
 \end_layout
 
 \begin_layout Subsection
-Autosomes, sex chromosomes, and other types of chromosomes
+Autosomes, sex chromosomes, and other types of chromosomes *
 \end_layout
 
 \begin_layout Standard
@@ -3402,7 +3408,7 @@ lstparams "caption={Use of subpopulation names},label={subPopName}"
 \end_layout
 
 \begin_layout Subsection
-Virtual subpopulations
+Virtual subpopulations *
 \end_layout
 
 \begin_layout Standard
@@ -4809,7 +4815,7 @@ the simuPOP reference manual
 \end_layout
 
 \begin_layout Subsection
-Operator output
+Operator output *
 \end_layout
 
 \begin_layout Standard
@@ -5321,7 +5327,7 @@ lstparams "caption={Use a hybrid operator},keywordstyle={\\ttfamily},label={hybr
 \end_layout
 
 \begin_layout Subsection
-Python operators
+Python operators *
 \end_layout
 
 \begin_layout Standard
@@ -5603,14 +5609,7 @@ reference "sub:Using-C++"
 \end_layout
 
 \begin_layout Subsection
-Define your own operators
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-This is an advanced topic of simuPOP.
- New simuPOP users can safely skip this section.
+Define your own operators **
 \end_layout
 
 \begin_layout Standard
@@ -6687,7 +6686,7 @@ lstparams "caption={Asexual random mating},label={randomSelection}"
 \end_layout
 
 \begin_layout Subsection
-Mating with alpha individuals
+Mating with alpha individuals *
 \end_layout
 
 \begin_layout Standard
@@ -6853,7 +6852,7 @@ lstparams "caption={Selfing mating scheme},label={selfMating}"
 \end_layout
 
 \begin_layout Subsection
-Heterogeneous mating schemes
+Heterogeneous mating schemes *
 \end_layout
 
 \begin_layout Standard
@@ -7281,18 +7280,11 @@ lstparams "caption={A weighting scheme used by heterogeneous mating schemes.},la
 \end_layout
 
 \begin_layout Section
-Non-random and customized mating schemes
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-The following sections discuss advanced topics of simuPOP.
- New simuPOP users can safely skip these sections.
+Non-random and customized mating schemes *
 \end_layout
 
 \begin_layout Subsection
-The structure of a homogeneous mating scheme
+The structure of a homogeneous mating scheme *
 \end_layout
 
 \begin_layout Standard
@@ -7404,7 +7396,7 @@ lstparams "caption={Define a random mating scheme},firstline=4,label={randomMati
 \family typewriter
 homoMating
 \family default
- mating scheme
+ mating scheme *
 \end_layout
 
 \begin_layout Standard
@@ -7528,7 +7520,7 @@ The simuPOP reference manual lists all pre-defined parent choosers and offspring
 \end_layout
 
 \begin_layout Subsection
-Offspring generators
+Offspring generators *
 \end_layout
 
 \begin_layout Standard
@@ -7669,7 +7661,7 @@ lstparams "caption={A controlled random mating scheme},label={controlledOffGener
 \end_layout
 
 \begin_layout Subsection
-Pre-defined genotype transmitters
+Pre-defined genotype transmitters *
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Pre-defined-genotype-transmitters"
@@ -7795,7 +7787,7 @@ lstparams "caption={Transmission of mitochondrial chromosomes},label={mitochondr
 \end_layout
 
 \begin_layout Subsection
-Customized genotype transmitter
+Customized genotype transmitter **
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Customized-genotype-transmitter"
@@ -7911,7 +7903,7 @@ lstparams "caption={A customized genotype transmitter for sex-specific recombina
 \end_layout
 
 \begin_layout Subsection
-Pre-define parent choosers
+Pre-define parent choosers *
 \end_layout
 
 \begin_layout Standard
@@ -7992,7 +7984,7 @@ doc/cook/Mating_consanguineous.py
 \end_layout
 
 \begin_layout Subsection
-A Python parent chooser
+A Python parent chooser *
 \end_layout
 
 \begin_layout Standard
@@ -8126,7 +8118,7 @@ lstparams "caption={A hybrid parent chooser that chooses parents by their social
 \end_layout
 
 \begin_layout Subsection
-Using C++ to implement a parent chooser
+Using C++ to implement a parent chooser **
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:Using-C++"
@@ -8372,7 +8364,7 @@ lstparams "caption={Implement a parent chooser in C++},label={cppParentChooser}"
 \end_layout
 
 \begin_layout Subsection
-The pedigree mating scheme
+The pedigree mating scheme *
 \end_layout
 
 \begin_layout Standard
@@ -8676,7 +8668,7 @@ lstparams "caption={Clone, save and load a simulator},label={simuFunc}"
 \end_layout
 
 \begin_layout Subsection
-Modifying populations and mating scheme
+Modifying populations and mating scheme *
 \end_layout
 
 \begin_layout Standard
@@ -8710,7 +8702,7 @@ lstparams "caption={A two-stage evolutionary process},label={twoStage}"
 \end_layout
 
 \begin_layout Subsection
-Change genotypic structure during evolution
+Change genotypic structure during evolution **
 \end_layout
 
 \begin_layout Standard
@@ -9314,7 +9306,7 @@ infoEval
 \family typewriter
 infoExec
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -9980,7 +9972,7 @@ r/2 &  &  & r/2 & 1-r\end{array}\right)\]
 \end_layout
 
 \begin_layout Subsubsection
-Migrate from virtual subpopulations
+Migrate from virtual subpopulations *
 \end_layout
 
 \begin_layout Standard
@@ -10048,7 +10040,7 @@ lstparams "caption={Migration from virtual subpopulations},label={migrateVSP}"
 \end_layout
 
 \begin_layout Subsubsection
-Arbitrary migration models
+Arbitrary migration models **
 \end_layout
 
 \begin_layout Standard
@@ -10362,7 +10354,7 @@ haplodiploidGenoTransmitter
 \family typewriter
 mitochondrialGenoTransmitter
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -10700,7 +10692,7 @@ Gene conversion (Operator
 \family typewriter
 recombinator
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -10896,6 +10888,1131 @@ lstparams "caption={Gene conversion},label={conversion}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Mutation
+\end_layout
+
+\begin_layout Standard
+A mutation operator mutates alleles at certain loci from one allele to another.
+ Because alleles are simple non-nagative numbers that can be intrepreted
+ as nucleotides, codons, squences of nucleotides or even genetic deletions,
+ appropriate mutation models have to be chosen for different types of loci.
+ Please refer to Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Genotypic-structure"
+
+\end_inset
+
+ for a few examples.
+ 
+\end_layout
+
+\begin_layout Standard
+A mutation model is usually defined as a 
+\series bold
+mutation rate matrix
+\series default
+ 
+\begin_inset Formula $\left(p_{ij}\right)_{n\times n}$
+\end_inset
+
+ (also called transition matrix) where 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+ is the probability that an allele 
+\begin_inset Formula $i$
+\end_inset
+
+ mutates to 
+\begin_inset Formula $j$
+\end_inset
+
+ per generation per locus.
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ are usually alleles of the same type but they can also be groups of alleles.
+ For example, if 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ are wildtype (e.g.
+ allele 0) and mutants (e.g.
+ all non-zero alleles) respectively, 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+ will be the probability of mutating from a wildtype allele to any mutant.
+ Although mathematical formulation of 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+ are sometimes unscaled, we assume 
+\begin_inset Formula $\sum_{j=0}^{n-1}p_{ij}=1$
+\end_inset
+
+ for all 
+\begin_inset Formula $i$
+\end_inset
+
+ in this documentation and require such rate matrixes in the specification
+ of a mutation model.
+ 
+\begin_inset Formula $p_{ii}$
+\end_inset
+
+ are sometimes unspecified because they can be determined from other values.
+\end_layout
+
+\begin_layout Standard
+Because alleles usually have different probabilities of mutating to other
+ alleles, 
+\series bold
+a mutation process is usually allele dependent
+\series default
+.
+ Conceptually, a mutator would go through each mutable allele and mutates
+ it to allele 
+\begin_inset Formula $0,1,..,n-1$
+\end_inset
+
+ according to probabilities 
+\begin_inset Formula $p_{ij}$
+\end_inset
+
+, 
+\begin_inset Formula $j=0,...,n-1$
+\end_inset
+
+.
+ Most alleles will be kept intact because mutations usually happen at low
+ probability (with 
+\begin_inset Formula $p_{ii}$
+\end_inset
+
+ close to 1).
+ Because multiple parameters could be involved for a particular mutation
+ model, 
+\series bold
+the definition of a mutation rate and other paramters are model dependent
+ and may varying with different mathematical representation of the models
+\series default
+.
+\end_layout
+
+\begin_layout Subsection
+Implementation of mutation in simuPOP? **
+\end_layout
+
+\begin_layout Standard
+Given a mutation model 
+\begin_inset Formula $\left(p_{ij}\right)$
+\end_inset
+
+, it is obviously inefficient to go through all mutable alleles and determine
+ whether or not to mutate it using 
+\begin_inset Formula $p_{ij},$
+\end_inset
+
+ 
+\begin_inset Formula $j=0,...,1-n$
+\end_inset
+
+.
+ simuPOP uses a two step procedure to mutate a large number of alleles.
+ More specifically, for each mutation model, we determine 
+\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
+\end_inset
+
+ as the maximum mutating probability for all alleles, and then
+\end_layout
+
+\begin_layout Enumerate
+For each allele, trigger a mutation event with probability 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ Because 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is usually very small and is the same for all alleles, this step can be
+ implemented efficiently.
+\end_layout
+
+\begin_layout Enumerate
+When a mutation event happens, mutation allele 
+\begin_inset Formula $i$
+\end_inset
+
+ to allele 
+\begin_inset Formula $j$
+\end_inset
+
+ with probability 
+\begin_inset Formula \[
+\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
+1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
+\frac{p_{ij}}{\mu} & \mbox{if }i\ne j\end{cases}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because steps 1 and 2 are independent, it is easy to verify that
+\begin_inset Formula \[
+p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)\]
+
+\end_inset
+
+if 
+\begin_inset Formula $i\ne j$
+\end_inset
+
+ and 
+\begin_inset Formula \[
+p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)\]
+
+\end_inset
+
+where the first and second items are probabilities of no-mutation at steps
+ 1 and 2.
+ 
+\begin_inset Formula $\mu$
+\end_inset
+
+ was chosen as the smallest 
+\begin_inset Formula $\mu$
+\end_inset
+
+ that makes 
+\begin_inset Formula $0\leq\mbox{Pr}\left(i\rightarrow i\right)\leq1$
+\end_inset
+
+ for all 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For example, for a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cccc}
+1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
+\frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
+
+\end_inset
+
+
+\begin_inset Formula $\mu$
+\end_inset
+
+ is directly 
+\begin_inset Formula $\mu$
+\end_inset
+
+ for the first step and 
+\begin_inset Formula \[
+\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
+0 & \mbox{if }i=j\\
+\frac{1}{k-1} & \mbox{if }i\ne j\end{cases}\]
+
+\end_inset
+
+for the second step.
+ Therefore, mutation rate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ in a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model could be interpreted as the probability of mutation, and a
+ mutation event would mutate an allele to any other allele with equal probabilit
+y.
+\end_layout
+
+\begin_layout Standard
+For a classical mutation model with 
+\begin_inset Formula $P\left(A\rightarrow a\right)=u$
+\end_inset
+
+ and 
+\begin_inset Formula $P\left(a\rightarrow A\right)=v$
+\end_inset
+
+, 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cc}
+1-u & u\\
+v & 1-v\end{array}\right)\]
+
+\end_inset
+
+if 
+\begin_inset Formula $u=0.001$
+\end_inset
+
+ and 
+\begin_inset Formula $v=0.0005$
+\end_inset
+
+, 
+\begin_inset Formula $\mu=\max\left(u,v\right)=0.001$
+\end_inset
+
+,
+\begin_inset Formula \[
+\mbox{Pr}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
+0 & 1\\
+\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5\end{array}\right)\]
+
+\end_inset
+
+That is to say, we would mutate at a mutation rate 
+\begin_inset Formula $u=0.001$
+\end_inset
+
+, mutate allele 
+\begin_inset Formula $A$
+\end_inset
+
+ to 
+\begin_inset Formula $a$
+\end_inset
+
+ with probability 1 and mutate allele 
+\begin_inset Formula $a$
+\end_inset
+
+ to 
+\begin_inset Formula $A$
+\end_inset
+
+ with probability 0.5.
+\end_layout
+
+\begin_layout Subsection
+General mutation models
+\end_layout
+
+\begin_layout Standard
+Compared to specialized mutation models for certain types of alleles such
+ as nucleotide and proteins, mutation models in this section do not assume
+ type of alleles: they are simply numbers.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+A general mutation model
+\end_layout
+
+\begin_layout Standard
+Although many mutation models are specialization of this model, ...
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+R=\left(\begin{array}{cc}
+1-u & u\\
+v & 1-v\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+k-allele mutation model
+\end_layout
+
+\begin_layout Standard
+A 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model assumes 
+\begin_inset Formula $k$
+\end_inset
+
+ alleles 
+\begin_inset Formula $\left(0,...,k-1\right)$
+\end_inset
+
+ at a locus and mutate between them using rate matrix 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cccc}
+1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
+\frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
+
+\end_inset
+
+The only parameter 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is the mutation rate, which is the rate at which an allele mutate to any
+ other allele with equal probability.
+ Alleles in this model are treated identically.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "kamMutator"
+
+\end_inset
+
+ desmonstrates the use of this mutation model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/kamMutator.log"
+lstparams "caption={A k-allele mutation model},label={kamMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+
+\end_layout
+
+\begin_layout Subsection
+Nucleotide mutation models (
+\family typewriter
+acgtMutator
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Mutations in these models assume alleles 0, 1, 2, 3 as nucleotides A, C,
+ G, and T.
+ The operator is named 
+\family typewriter
+acgtMutator
+\family default
+ to remind you the order of these nucleotides.
+ This mutation model is specified by a rate matrix
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula \[
+\begin{array}{ccccc}
+ & A & C & G & T\\
+A & - & x_{1} & x_{2} & x_{3}\\
+C & x_{4} & - & x_{5} & x_{6}\\
+G & x_{7} & x_{8} & - & x_{9}\\
+T & x_{10} & x_{11} & x_{12} & -\end{array}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+which is determined by 12 parameters.
+ However, several simpler models with fewer parameters can be used.
+ In addition to parameters shared by all mutation operators, a nucleotide
+ mutator is specified by a parameter list and a model name.
+ For example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+acgtMutator(rate=[1e-5, 0.5], model='K80')
+\end_layout
+
+\end_inset
+
+specifies a nucleotide mutator using Kimura's 2-parameter model with 
+\begin_inset Formula $\mu=10^{-5}$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa=0.5$
+\end_inset
+
+.
+ The names and acceptable parameters of acceptable models are listed below:
+\end_layout
+
+\begin_layout Enumerate
+Jukes and Cantor 1969 model: model='JC69', rate=[
+\begin_inset Formula $\mu$
+\end_inset
+
+ ] (or rate= 
+\begin_inset Formula $\mu$
+\end_inset
+
+ )
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The Jukes and Cantor model is similar to a 
+\begin_inset Formula $4$
+\end_inset
+
+-allele model but its definition of 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is different.
+ More specifically, when a mutation event happens at rate 
+\begin_inset Formula $\mu$
+\end_inset
+
+, an allele will have equal probability to mutate to any of the 4 allelic
+ states.
+ 
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \frac{\mu}{4} & \frac{\mu}{4} & \frac{\mu}{4}\\
+\frac{\mu}{4} & - & \frac{\mu}{4} & \frac{\mu}{4}\\
+\frac{\mu}{4} & \frac{\mu}{4} & - & \frac{\mu}{4}\\
+\frac{\mu}{4} & \frac{\mu}{4} & \frac{\mu}{4} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Kimura's 2-parameter 1980 model: model='K80', rate=[
+\begin_inset Formula $\mu$
+\end_inset
+
+, 
+\begin_inset Formula $\kappa$
+\end_inset
+
+]
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Kimura 's model distinguishes transitions (
+\begin_inset Formula $A\longleftrightarrow G$
+\end_inset
+
+, and 
+\begin_inset Formula $C\leftrightarrow T$
+\end_inset
+
+ namely 
+\begin_inset Formula $0\longleftrightarrow2$
+\end_inset
+
+ and 
+\begin_inset Formula $1\longleftrightarrow3$
+\end_inset
+
+ with probability 
+\begin_inset Formula $\frac{\mu}{4}\kappa$
+\end_inset
+
+) and transversions (others) with probability 
+\begin_inset Formula $\frac{\mu}{4}$
+\end_inset
+
+.
+ It would be a Jukes and Cantor model if 
+\begin_inset Formula $\kappa=1$
+\end_inset
+
+.
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \frac{\mu}{4} & \frac{\mu}{4}\kappa & \frac{\mu}{4}\\
+\frac{\mu}{4} & - & \frac{\mu}{4} & \frac{\mu}{4}\kappa\\
+\frac{\mu}{4}\kappa & \frac{\mu}{4} & - & \frac{\mu}{4}\\
+\frac{\mu}{4} & \frac{\mu}{4}\kappa & \frac{\mu}{4} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Felsenstein 1981 model: model='F81', rate=[
+\begin_inset Formula $\mu$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{A}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{C}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{G}$
+\end_inset
+
+].
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This model assumes different base frequencies but the same probabilities
+ for transitions and transversions.
+ 
+\begin_inset Formula $\pi_{T}$
+\end_inset
+
+ is calculated from 
+\begin_inset Formula $\pi_{A}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{C}$
+\end_inset
+
+ and 
+\begin_inset Formula $\pi_{G}$
+\end_inset
+
+.
+ 
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \mu\pi_{C} & \mu\pi_{G} & \mu\pi_{T}\\
+\mu\pi_{A} & - & \mu\pi_{G} & \mu\pi_{T}\\
+\mu\pi_{A} & \mu\pi_{C} & - & \mu\pi_{T}\\
+\mu\pi_{A} & \mu\pi_{C} & \mu\pi_{G} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Hasegawa, Kishino and Yano 1985 model: model='HKY85', rate=[
+\begin_inset Formula $\mu$
+\end_inset
+
+, 
+\begin_inset Formula $\kappa$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{A}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{C}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{G}$
+\end_inset
+
+]
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This model replaces 1/4 frequency used in the Kimura's 2-parameter model
+ with nucleotide-specific frequencies.
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \mu\pi_{C} & \mu\kappa\pi_{G} & \mu\pi_{T}\\
+\mu\pi_{A} & - & \mu\pi_{G} & \mu\kappa\pi_{T}\\
+\mu\kappa\pi_{A} & \mu\pi_{C} & - & \mu\pi_{T}\\
+\mu\pi_{A} & \mu\kappa\pi_{C} & \mu\pi_{G} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Tamura 1992 model: model='T92', rate=[
+\begin_inset Formula $\mu$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{GC}$
+\end_inset
+
+]
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This model is a HKY85 model with 
+\begin_inset Formula $\pi_{G}=\pi_{C}=\pi_{GC}/2$
+\end_inset
+
+ and 
+\begin_inset Formula $\pi_{A}=\pi_{T}=\pi_{AT}/2=\left(1-\pi_{GC}\right)/2$
+\end_inset
+
+,
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \frac{1}{2}\mu\pi_{GC} & \frac{1}{2}\mu\nu\pi_{GC} & \frac{1}{2}\mu\pi_{AT}\\
+\frac{1}{2}\mu\pi_{AT} & - & \frac{1}{2}\mu\pi_{GC} & \frac{1}{2}\mu\nu\pi_{AT}\\
+\frac{1}{2}\mu\nu\pi_{AT} & \frac{1}{2}\mu\pi_{GC} & - & \frac{1}{2}\mu\pi_{AT}\\
+\frac{1}{2}\mu\pi_{AT} & \frac{1}{2}\mu\nu\pi_{GC} & \frac{1}{2}\mu\pi_{GC} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Tamura and Nei 1993 model: model='TN93', rate=[
+\begin_inset Formula $\mu$
+\end_inset
+
+, 
+\begin_inset Formula $\kappa_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $\kappa_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{A}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{C}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{G}$
+\end_inset
+
+]
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This model extends the HKY1985 model by distinguishing 
+\begin_inset Formula $A\longleftrightarrow G$
+\end_inset
+
+ transitions (namely 
+\begin_inset Formula $0\longleftrightarrow2$
+\end_inset
+
+) and 
+\begin_inset Formula $C\leftrightarrow T$
+\end_inset
+
+ transitions (
+\begin_inset Formula $1\longleftrightarrow3$
+\end_inset
+
+) with different 
+\begin_inset Formula $\kappa$
+\end_inset
+
+.
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \mu\pi_{C} & \mu\kappa_{1}\pi_{G} & \mu\pi_{T}\\
+\mu\pi_{A} & - & \mu\pi_{G} & \mu\kappa_{2}\pi_{T}\\
+\mu\kappa_{1}\pi_{A} & \mu\pi_{C} & - & \mu\pi_{T}\\
+\mu\pi_{A} & \mu\kappa_{2}\pi_{C} & \mu\pi_{G} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Generalized time reversible model: model='GTR', rate=[
+\begin_inset Formula $x_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{4}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{5}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{6}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{A}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{C}$
+\end_inset
+
+, 
+\begin_inset Formula $\pi_{G}$
+\end_inset
+
+]
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The generalized time reviersible model is the most general neutral, indepdendent
+, finite-sites, time-reversible model possible.
+ It is specified by six parameters and base frequencies.
+ Its rate matrix is defined as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & \frac{\pi_{A}x_{1}}{\pi_{C}} & \frac{\pi_{A}x_{2}}{\pi_{G}} & \frac{\pi_{A}x_{3}}{\pi_{T}}\\
+x_{1} & - & \frac{\pi_{C}x_{4}}{\pi_{G}} & \frac{\pi_{C}x_{5}}{\pi_{T}}\\
+x_{2} & x_{4} & - & \frac{\pi_{G}x_{6}}{\pi_{T}}\\
+x_{3} & x_{5} & x_{6} & -\end{array}\right)\]
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+General model: model='' (default), rate=[
+\begin_inset Formula $x_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{4}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{5}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{6}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{7}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{8}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{9}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{10}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{11}$
+\end_inset
+
+, 
+\begin_inset Formula $x_{12}$
+\end_inset
+
+].
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This is the most general model with 12 parameters:
+\begin_inset Formula \[
+R=\left(\begin{array}{cccc}
+- & x_{1} & x_{2} & x_{3}\\
+x_{4} & - & x_{5} & x_{6}\\
+x_{7} & x_{8} & - & x_{9}\\
+x_{10} & x_{11} & x_{12} & -\end{array}\right)\]
+
+\end_inset
+
+It is not surprising that all other models are implemented as special cases
+ of this model.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Amino acid mutation models (
+\family typewriter
+aminoAcidMutator
+\family default
+, not yet implemented)
+\end_layout
+
+\begin_layout Standard
+Amino acid mutation models assume alleles 0, 1, 2, 3, ..., 19 as 20 amino acids
+ C, S, T, P, A, G, N, D, E, Q, H, R, K, M, I, L, V, F, Y, and W.
+ This mutation model is specified by a 20 by 20 rate matrix.
+ The mutator should work similarly to 
+\family typewriter
+acgtMutator
+\family default
+ but it is more tedious.
+ I will implement popular mutation matrixes if there is a demonstrated need
+ for such an operator (an email to the simuPOP mailing list should be enough.
+ :-).
+\end_layout
+
+\begin_layout Subsection
+Stepwise mutation model
+\end_layout
+
+\begin_layout Standard
+The Stepwise Mutation Model (SMM) was proposed by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Ohta1973"
+
+\end_inset
+
+ to model the mutation of Variable Number Tandem Repeat (VNTR), which consists
+ of tandem repeat of sequences.
+ VNTR markers consisting of short sequences (e.g.
+ 5 basepair or less) are also called microsatellite markers.
+ Likely mechanisms for repeat number change at VNTR loci are slipped-strand
+ mispairing, unequal sister chromatid exchange and genetic recombination.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/smmMutator.log"
+lstparams "caption={A stepwise mutation model},label={smmMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Generalized stepwise mutation model
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/gsmMutator.log"
+lstparams "caption={A generalized stepwise mutation model},label={gsmMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Hybrid mutation model *
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyMutator.log"
+lstparams "caption={A hybrid mutation model},label={pyMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Apply mutation to (virtual) subpopulations *
+\end_layout
+
+\begin_layout Standard
+A mutator is usually applied to all individuals in a population.
+ However, you can restrict its use to specified subpopulations and/or virtual
+ subpopulations using parameter 
+\family typewriter
+subPop
+\family default
+.
+ For example, 
+\end_layout
+
+\begin_layout Subsection
+Dynamic or frequency dependent mutation rate *
+\end_layout
+
+\begin_layout Subsection
+Allele mapping **
+\end_layout
+
+\begin_layout Standard
+If alleles in your simulation do not follow the convention of a mutation
+ model, you will have to use a general mutation model with your own mutation
+ matrix, or an advanced feature called 
+\series bold
+allele mapping
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Allele mapping is done through two parameters 
+\emph on
+mapIn
+\emph default
+ and 
+\emph on
+mapOut
+\emph default
+, which map alleles in your population to and from alleles assumed in a
+ mutation model.
+ For example, a 4-allele model assumes alleles 0, 1, 2, 3.
+ If your simulation reserves allele 0 for missing data or deleted allele
+ and use 1, 2, 3, 4 as four regular allelic states, you can use parameters
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mapIn=[-1, 0, 1, 2, 3], mapOut=[1, 2, 3, 4]
+\end_layout
+
+\end_inset
+
+so that your alleles 0, 1, 2, 3, 4 are treated as -1 (ignore), 0, 1, 2,
+ and 3 respectively, and the mutated alleles would be mapped back to alleles
+ 1, 2, 3 and 4.
+ These two parameters also accept Python functions which should return correspon
+ding mapped-in or out allele for a given allele.
+ These two functions can be used to explore very fancy mutation models.
+ For example, you can categorize a large number of alleles into alleles
+ assumed in a mutation model, and emit random alleles from a mutated allele.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Subsection
+Infinite-sites model and mutation-introduced loci **
+\end_layout
+
+\begin_layout Standard
+All mutation models in simuPOP apply to existing alleles at pre-specified
+ loci.
+ However, if the location of loci cannot be determined beforehand, it is
+ sometimes desired to create new loci as a result of mutation.
+ A customized operator can be used for this purpose (see Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "newOperator"
+
+\end_inset
+
+), but extra attention is needed to make sure that other operators are applied
+ to the correct loci because loci indexes will be changed with the insertion
+ of new loci.
+\end_layout
+
+\begin_layout Standard
+Infinite-sites and infinite-alleles models have some similarities.
+ In some cases, you can treat a long chromosomal region as a locus and use
+ the infinite-alleles model, actually a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with large 
+\begin_inset Formula $k$
+\end_inset
+
+, to mimic the infinite-site model.
+ Because there is supposed to be only one mutant at each site, you can assign
+ a unique 
+\emph on
+location
+\emph default
+ for each allele of an infinite-allele model and convert multi-allelic datasets
+ simulated by an infinite-allele model to sequences of diallelic markers.
+ It worth noting that mutation rates are interpreted differently for these
+ two models.
+\end_layout
+
+\begin_layout Standard
+If you really would like to simulate mutations over long sequences (e.g.,
+ mutate each basepair at a multi-centiMorgan region), simulating millions
+ of markers might not be realistic.
+ Allowing mutations to insert new loci can be more efficient, although this
+ method has its own limitations.
 \end_layout
 
 \begin_layout Section
@@ -11206,7 +12323,7 @@ Conditional operator (operator
 \family typewriter
 ifElse
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -11259,7 +12376,7 @@ turnOnDebug
 \family typewriter
 turnOffDebug
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -11329,7 +12446,7 @@ Pause and resume an evolutionary process (operator
 \family typewriter
 pause
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -11412,7 +12529,7 @@ Measuring execution time of operators (operator
 \family typewriter
 ticToc
 \family default
-)
+) *
 \end_layout
 
 \begin_layout Standard
@@ -11458,454 +12575,6 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Mutation
-\end_layout
-
-\begin_layout Standard
-A mutation operator mutates alleles at certain loci from one allele to another.
- Because alleles are simple non-nagative numbers that can be intrepreted
- as nucleotides, codons, squences of nucleotides or even genetic deletions,
- appropriate mutation models have to be chosen for different types of loci.
- Please refer to Section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:Genotypic-structure"
-
-\end_inset
-
- for a few examples.
- 
-\end_layout
-
-\begin_layout Subsection
-Theory
-\end_layout
-
-\begin_layout Standard
-A mutation model is usually defined as 
-\begin_inset Formula $\left(p_{ij}\right)_{n\times n}$
-\end_inset
-
- where 
-\begin_inset Formula $p_{ij}=P\left(i\rightarrow j\right)$
-\end_inset
-
- is the probability that an allele 
-\begin_inset Formula $i$
-\end_inset
-
- mutates to 
-\begin_inset Formula $j$
-\end_inset
-
- per generation per locus.
- 
-\begin_inset Formula $i$
-\end_inset
-
- and 
-\begin_inset Formula $j$
-\end_inset
-
- are usually alleles of the same type but they can also be groups of alleles.
- For example, if 
-\begin_inset Formula $i$
-\end_inset
-
- and 
-\begin_inset Formula $j$
-\end_inset
-
- are wildtype (e.g.
- allele 0) and mutants (e.g.
- all non-zero alleles) respectively, 
-\begin_inset Formula $p_{ij}$
-\end_inset
-
- will be the probability of mutating from a wildtype allele to any mutant.
-\end_layout
-
-\begin_layout Standard
-Because alleles usually have different probabilities of mutating to other
- alleles, 
-\series bold
-a mutation process is typically allele dependent
-\series default
-.
- Conceptually, a mutator would go through each mutable allele and mutates
- it to allele 
-\begin_inset Formula $0,1,..,n-1$
-\end_inset
-
- according to probabilities 
-\begin_inset Formula $p_{ij}$
-\end_inset
-
-, 
-\begin_inset Formula $j=0,...,n-1$
-\end_inset
-
-.
- Most alleles will not be mutated because mutations usually happen at low
- probability (with 
-\begin_inset Formula $p_{ii}$
-\end_inset
-
- close to 1).
- Because multiple parameters could be involved for a particular mutation
- model, 
-\series bold
-the definition of a mutation rate and other paramters are model dependent
- and may varying with different mathematical representation of the models
-\series default
-.
-\end_layout
-
-\begin_layout Subsection
-k-allele mutation model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/kamMutator.log"
-lstparams "caption={A k-allele mutation model},label={kamMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Stepwise mutation model
-\end_layout
-
-\begin_layout Standard
-The Stepwise Mutation Model (SMM) was proposed by 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "Ohta1973"
-
-\end_inset
-
- to model the mutation of Variable Number Tandem Repeat (VNTR), which consists
- of tandem repeat of sequences.
- VNTR markers consisting of short sequences (e.g.
- 5 basepair or less) are also called microsatellite markers.
- Likely mechanisms for repeat number change at VNTR loci are slipped-strand
- mispairing, unequal sister chromatid exchange and genetic recombination.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/smmMutator.log"
-lstparams "caption={A stepwise mutation model},label={smmMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Generalized stepwise mutation model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/gsmMutator.log"
-lstparams "caption={A generalized stepwise mutation model},label={gsmMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Hybrid mutation model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyMutator.log"
-lstparams "caption={A hybrid mutation model},label={pyMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Advanced topics
-\end_layout
-
-\begin_layout Subsubsection
-Mutation-introduced loci?
-\end_layout
-
-\begin_layout Standard
-All mutation models in simuPOP apply to existing alleles at pre-specified
- loci.
- However, if the location of loci cannot be determined beforehand, it is
- sometimes desired to create new loci as a result of mutation.
- A customized operator can be used for this purpose (see Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "newOperator"
-
-\end_inset
-
-), but extra attention is needed to make sure that other operators are applied
- to the correct loci because loci indexes will be changed with the insertion
- of new loci.
-\end_layout
-
-\begin_layout Subsubsection
-Realistic infinite-sites model?
-\end_layout
-
-\begin_layout Standard
-Infinite-sites and infinite-alleles models have some similarities.
- In some cases, you can treat a long chromosomal region as a locus and use
- the infinite-alleles model, actually a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model with large 
-\begin_inset Formula $k$
-\end_inset
-
-, to mimic the infinite-site model.
- Because there is supposed to be only one mutant at each site, you can assign
- a unique 
-\emph on
-location
-\emph default
- for each allele of an infinite-allele model and convert multi-allelic datasets
- simulated by an infinite-allele model to sequences of diallelic markers.
- It worth noting that mutation rates are interpreted differently for these
- two models.
-\end_layout
-
-\begin_layout Standard
-If you really would like to simulate mutations over long sequences (e.g.,
- mutate each basepair at a multi-centiMorgan region), simulating millions
- of markers might not be realistic.
- Allowing mutations to insert new loci can be more efficient, although this
- method has its own limitations.
-\end_layout
-
-\begin_layout Subsubsection
-How are mutation models implemented in simuPOP?
-\end_layout
-
-\begin_layout Standard
-Given a mutation model 
-\begin_inset Formula $p_{ij}$
-\end_inset
-
-, it is obvious inefficient to go through all mutable alleles and determine
- whether or not to mutate it using 
-\begin_inset Formula $p_{ij},$
-\end_inset
-
- 
-\begin_inset Formula $j=0,...,1-n$
-\end_inset
-
-.
- simuPOP uses a two step procedure to mutate a large number of alleles.
- More specifically, for each mutation model, we determine 
-\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
-\end_inset
-
- as the maximum mutating probability for all alleles, and then
-\end_layout
-
-\begin_layout Enumerate
-For each allele, trigger a mutation event with probability 
-\begin_inset Formula $\mu$
-\end_inset
-
-.
- Because 
-\begin_inset Formula $\mu$
-\end_inset
-
- is usually very small and is the same for all alleles, this can be implemented
- efficiently.
-\end_layout
-
-\begin_layout Enumerate
-When a mutation event happens, mutation allele 
-\begin_inset Formula $i$
-\end_inset
-
- to allele 
-\begin_inset Formula $j$
-\end_inset
-
- with probability 
-\begin_inset Formula \begin{eqnarray*}
-P_{r}\left(i\rightarrow j\right) & = & \begin{cases}
-1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
-\frac{p_{ij}}{\mu} & \mbox{if }i\ne j\end{cases}\end{eqnarray*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Because steps 1 and 2 are independent, it is easy to verify that
-\begin_inset Formula \[
-p_{ij}=\mu P_{r}\left(i\rightarrow j\right)=\mu\frac{p_{ij}}{\mu}\]
-
-\end_inset
-
-if 
-\begin_inset Formula $i\ne j$
-\end_inset
-
- and 
-\begin_inset Formula \[
-p_{ii}=\left(1-\mu\right)+\mu\left(1-\frac{1}{\mu}\left(1-p_{ii}\right)\right)\]
-
-\end_inset
-
-if 
-\begin_inset Formula $i=j$
-\end_inset
-
-, where the first and second items are probabilities of no-mutation at steps
- 1 and 2.
- 
-\begin_inset Formula $\mu$
-\end_inset
-
- was chosen as the smallest 
-\begin_inset Formula $\mu$
-\end_inset
-
- that makes 
-\begin_inset Formula $0\leq Pr\left(i\rightarrow i\right)\leq1$
-\end_inset
-
- for all 
-\begin_inset Formula $i$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-For example, for a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model with 
-\begin_inset Formula \[
-p_{ij}=\left(\begin{array}{cccc}
-1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
-\frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
-\vdots & \vdots & \ddots & \vdots\\
-\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
-
-\end_inset
-
-
-\begin_inset Formula $\mu$
-\end_inset
-
- is directly 
-\begin_inset Formula $\mu$
-\end_inset
-
- for the first step and 
-\begin_inset Formula \[
-Pr\left(i\rightarrow j\right)=\begin{cases}
-0 & \mbox{if }i=j\\
-\frac{1}{k-1} & \mbox{if }i\ne j\end{cases}\]
-
-\end_inset
-
-for the second step.
- Therefore, mutation rate 
-\begin_inset Formula $\mu$
-\end_inset
-
- in a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model could be interpreted as the probability of mutation, and a
- mutation event would mutate an allele to any other allele with equal probabilit
-y.
-\end_layout
-
-\begin_layout Standard
-For a classical mutation model with 
-\begin_inset Formula $P\left(A\rightarrow a\right)=u$
-\end_inset
-
- and 
-\begin_inset Formula $P\left(a\rightarrow A\right)=v$
-\end_inset
-
-, 
-\begin_inset Formula \[
-p_{ij}=\left(\begin{array}{cc}
-1-u & u\\
-v & 1-v\end{array}\right)\]
-
-\end_inset
-
-if 
-\begin_inset Formula $u=0.001$
-\end_inset
-
- and 
-\begin_inset Formula $v=0.0005$
-\end_inset
-
-, 
-\begin_inset Formula $\mu=\max\left(u,v\right)=0.001$
-\end_inset
-
-,
-\begin_inset Formula \[
-P_{r}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
-0 & 1\\
-\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5\end{array}\right)\]
-
-\end_inset
-
-That is to say, we would mutate at a mutation rate 
-\begin_inset Formula $u=0.001$
-\end_inset
-
-, mutate allele 
-\begin_inset Formula $A$
-\end_inset
-
- to 
-\begin_inset Formula $a$
-\end_inset
-
- with probability 1 and mutate allele 
-\begin_inset Formula $a$
-\end_inset
-
- to 
-\begin_inset Formula $A$
-\end_inset
-
- with probability 0.5.
 \end_layout
 
 \begin_layout Section
@@ -13030,6 +13699,10 @@ legend
  (add legend).
  Some functions are called multiple times for different replicate, subpopulation
  or information fields.
+\end_layout
+
+\begin_layout Subsection
+Derived keyword arguments *
 \end_layout
 
 \begin_layout Standard
