@@ -868,10 +868,12 @@ public:
 	 *  which should add up to the size of subpopulation \e subPop. If \e subPop
 	 *  is not the last subpopulation, indexes of subpopulations after
 	 *  \e subPop are shifted. If \e subPop is named, the same name will be
-	 *  given to all new subpopulations.
+	 *  given to all new subpopulations unless a new set of \e names are
+	 *  specified for these subpopulations. This function returns the IDs of
+	 *  split subpopulations.
 	 *  <group>7-manipulate</group>
 	 */
-	void splitSubPop(UINT subPop, const vectorlu & sizes);
+	vectoru splitSubPop(UINT subPop, const vectorlu & sizes, const vectorstr & names = vectorstr());
 
 	/** Remove subpopulation(s) \e subPop and all their individuals. Indexes of
 	 *  subpopulations after removed subpopulations will be shifted.
@@ -890,10 +892,12 @@ public:
 	 *  subpopulations will be merged. \e subPops do not have to be adjacent to
 	 *  each other. They will all be merged to the subpopulation with the
 	 *  smallest subpopulation ID. Indexes of the rest of the subpopulation may
-	 *  be changed.
+	 *  be changed. A new name can be assigned to the merged subpopulation
+	 *  through parameter \e name (an empty \e name will be ignored). This
+	 *  function returns the ID of the merged subpopulation.
 	 *  <group>7-manipulate</group>
 	 */
-	void mergeSubPops(const vectoru & subPops = vectoru());
+	UINT mergeSubPops(const vectoru & subPops = vectoru(), const string & name = UnnamedSubPop);
 
 	/** Add all individuals, including ancestors, in \e pop to the current
 	 *  population. Two populations should have the same genotypic structures

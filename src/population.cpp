@@ -701,16 +701,23 @@ void population::setSubPopByIndInfo(const string & field)
 }
 
 
-void population::splitSubPop(UINT subPop, const vectorlu & sizes)
+vectoru population::splitSubPop(UINT subPop, const vectorlu & sizes, const vectorstr & names)
 {
 	if (sizes.size() <= 1)
-		return;
+		return vectoru(1, subPop);
 
 	DBG_FAILIF(accumulate(sizes.begin(), sizes.end(), 0LU) != subPopSize(subPop), ValueError,
 		"Sum of parameter sizes should be the size of subpopulation " + toStr(subPop));
+	
+	DBG_ASSERT(names.empty() || sizes.size() == names.size(), ValueError,
+		"Names should be given to none or all of the split subpopulations");
+
+	if (!names.empty() && m_subPopNames.empty())
+		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
 
 	vectorlu subPopSizes;
 	vectorstr subPopNames;
+	vectoru ret(sizes.size());
 	for (size_t sp = 0; sp < numSubPop(); ++sp) {
 		if (sp != subPop) {
 			subPopSizes.push_back(subPopSize(sp));
@@ -718,12 +725,19 @@ void population::splitSubPop(UINT subPop, const vectorlu & sizes)
 				subPopNames.push_back(m_subPopNames[sp]);
 		} else {
 			subPopSizes.insert(subPopSizes.end(), sizes.begin(), sizes.end());
-			if (!m_subPopNames.empty())
-				for (size_t i = 0; i < sizes.size(); ++i)
-					subPopNames.push_back(m_subPopNames[subPop]);
+			if (!m_subPopNames.empty()) {
+				if (names.empty()) {
+					for (size_t i = 0; i < sizes.size(); ++i)
+						subPopNames.push_back(m_subPopNames[subPop]);
+				} else
+					subPopNames.insert(subPopNames.end(), names.begin(), names.end());
+			}
+			for (size_t i = 0; i < sizes.size(); ++i)
+				ret[i] = sp + i;
 		}
 	}
 	setSubPopStru(subPopSizes, subPopNames);
+	return ret;
 }
 
 
@@ -849,8 +863,11 @@ void population::removeIndividuals(const uintList & indList)
 }
 
 
-void population::mergeSubPops(const vectoru & subPops)
+UINT population::mergeSubPops(const vectoru & subPops, const string & name)
 {
+	if (!name.empty() && m_subPopNames.empty())
+		m_subPopNames.resize(numSubPop(), UnnamedSubPop);
+
 	// merge all subpopulations
 	if (subPops.empty()) {
 		// [ popSize() ]
@@ -858,11 +875,14 @@ void population::mergeSubPops(const vectoru & subPops)
 		if (m_subPopNames.empty())
 			setSubPopStru(sz, m_subPopNames);
 		else
-			setSubPopStru(sz, vectorstr(1, m_subPopNames[0]));
-		return;
+			setSubPopStru(sz, vectorstr(1, name.empty() ? m_subPopNames[0] : name));
+		return 0;
 	}
-	if (subPops.size() == 1)
-		return;
+	if (subPops.size() == 1) {
+		if (!name.empty())
+			m_subPopNames[0] = name;
+		return subPops[0];
+	}
 
 	// are they in order?
 	bool consecutive = true;
@@ -881,7 +901,7 @@ void population::mergeSubPops(const vectoru & subPops)
 			if (new_size.size() <= sps[0]) {
 				new_size.push_back(subPopSize(sp));
 				if (!m_subPopNames.empty())
-					new_names.push_back(m_subPopNames[sp]);
+					new_names.push_back(name.empty() ? m_subPopNames[sp] : name);
 			} else
 				new_size[sps[0]] += subPopSize(sp);
 		} else {
@@ -893,7 +913,7 @@ void population::mergeSubPops(const vectoru & subPops)
 	// if consecutive, no need to move anyone
 	if (consecutive) {
 		setSubPopStru(new_size, new_names);
-		return;
+		return sps[0];
 	}
 	// difficult case.
 	sortIndividuals();
@@ -946,6 +966,7 @@ void population::mergeSubPops(const vectoru & subPops)
 		m_inds[i].setGenoPtr(ptr);
 		m_inds[i].setInfoPtr(infoPtr);
 	}
+	return sps[0];
 }
 
 

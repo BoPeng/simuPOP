@@ -471,6 +471,13 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop1.subPopName(oldsp), pop.subPopName(newsp))
             for idx in range(pop1.subPopSize(oldsp)):
                 self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
+        # set new name to merged subpopulation
+        pop = self.getPop(size=[100, 20, 30, 80, 50, 60], subPopNames=['A', 'B', 'C', 'D', 'E', 'F'])
+        sp = pop.mergeSubPops([2, 1, 4], name='new')
+        self.assertEqual(sp, 1)
+        self.assertEqual(pop.subPopName(sp), 'new')
+        self.assertEqual(pop.subPopNames(), ('A', 'new', 'D', 'F'))
+        self.assertEqual(pop.subPopSize(1), pop1.subPopSize(1)+pop1.subPopSize(2)+pop1.subPopSize(4))
 
     def testRemoveSubPops(self):
         'Testing population::removeEmptySubPops(), removeSubPops()'
@@ -609,7 +616,8 @@ class TestPopulation(unittest.TestCase):
         pop = population(size=[100, 80, 50], subPopNames=['A', 'B', 'C'])
         pop1 = pop.clone()
         self.assertRaises(exceptions.ValueError, pop.splitSubPop, 1, [20, 70])
-        pop.splitSubPop(1, [20, 60])
+        ids = pop.splitSubPop(1, [20, 60])
+        self.assertEqual(ids, (1, 2))
         self.assertEqual(pop1.subPopSize(1), pop.subPopSize(1)+pop.subPopSize(2))
         self.assertEqual(pop1.subPopName(1), pop.subPopName(1))
         self.assertEqual(pop1.subPopName(1), pop.subPopName(2))
@@ -622,6 +630,14 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(pop1.subPopName(oldsp), pop.subPopName(newsp))
             for idx in range(pop1.subPopSize(oldsp)):
                 self.assertEqual(pop1.individual(idx, oldsp), pop.individual(idx, newsp))
+        # assign new names to split subpopulation
+        pop = population(size=[100, 80, 50])
+        self.assertRaises(exceptions.ValueError, pop.splitSubPop, 1, [20, 70], names=['A1'])
+        ids = pop.splitSubPop(1, [20, 60], names=['A1', 'A2'])
+        self.assertEqual(ids, (1, 2))
+        self.assertEqual(pop.subPopName(1), 'A1')
+        self.assertEqual(pop.subPopName(2), 'A2')
+        self.assertEqual(pop.subPopNames(), ('', 'A1', 'A2', ''))
 
     def testSetSubPopByIndInfo(self):
         'Testing population::setSubPopByIndInfo(field)'
