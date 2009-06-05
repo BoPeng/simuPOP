@@ -169,7 +169,7 @@ private:
 		ar & m_infoFields;
 
 		m_lociNameMap.clear();
-		if (m_lociNames.empty()) {
+		if (!m_lociNames.empty()) {
 			for (size_t i = 0; i < m_lociNames.size(); ++i) {
 				if (!m_lociNames[i].empty())
 					m_lociNameMap[m_lociNames[i]] = i;
