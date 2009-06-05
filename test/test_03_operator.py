@@ -38,7 +38,7 @@ class TestOperator(unittest.TestCase):
                 recombinator(rate=0.001),
                 stat(stage=PrePostMating),
                 stat(alleleFreq=[1]),
-                kamMutator(maxAllele=10, rate=0.00005, loci=[0,2])
+                kamMutator(k=10, rate=0.00005, loci=[0,2])
             ],
             postOps = [stat()],
             #dryrun=True,
