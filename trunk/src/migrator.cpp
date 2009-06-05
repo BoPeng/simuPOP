@@ -233,8 +233,6 @@ struct compareVSP
 	{
 		return v1.subPop() > v2.subPop();
 	}
-
-
 };
 
 bool splitSubPops::apply(population & pop)
