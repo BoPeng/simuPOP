@@ -270,13 +270,29 @@ class TestMigrator(unittest.TestCase):
         pop = population(size=10, loci=[2,6], infoFields=['migrate_to'])
         InitByFreq(pop, [.2,.4,.4])
         genotype = list(pop.genotype())
-        SplitSubPops(pop, subPops=0, sizes=[2,8], randomize=False)
+        SplitSubPops(pop, subPops=0, sizes=[2, 8], randomize=False)
         # individual untouched
         self.assertEqual(pop.genotype(), genotype)
         # split, with randomization
         SplitSubPops(pop, subPops=1, sizes=[6,2], randomize=True)
         self.assertNotEqual(pop.genotype(), genotype)
-
+        # test subpopulation names
+        pop = population(size=10, loci=[2,6], infoFields=['migrate_to'])
+        self.assertRaises(exceptions.ValueError, SplitSubPops, pop, subPops=0,
+            sizes=[2, 8], names='ab', randomize=False)
+        SplitSubPops(pop, subPops=0, sizes=[2, 8], names=['ab', 'cd'],
+            randomize=False)
+        self.assertEqual(pop.subPopName(0), 'ab')
+        self.assertEqual(pop.subPopName(1), 'cd')
+        SplitSubPops(pop, subPops=1, proportions=[0.5, 0.5], randomize=False)
+        self.assertEqual(pop.subPopName(2), 'cd')
+        # names from noone...
+        pop = population(size=[10, 20], loci=[2,6], infoFields=['migrate_to'])
+        SplitSubPops(pop, subPops=1, sizes=[12, 8], names=['ab', 'cd'],
+            randomize=False)
+        self.assertEqual(pop.subPopName(0), '')
+        self.assertEqual(pop.subPopName(1), 'ab')
+        self.assertEqual(pop.subPopName(2), 'cd')
 
     def testRearrange(self):
         'Testing if info and genotype are migrated with individuals'
