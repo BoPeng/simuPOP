@@ -57,7 +57,7 @@ simu.evolve(
 #end
 
 #file log/help.log
-help(population.addInfoField)
+help(population.addInfoFields)
 #end
 
 #file log/absIndex.log
@@ -316,7 +316,7 @@ pop.genotype(1)
 #file log/popInfo.log
 pop = population(10)
 pop.setInfoFields(['a', 'b'])
-pop.addInfoField('c')
+pop.addInfoFields('c')
 pop.addInfoFields(['d', 'e'])
 pop.infoFields()
 #
