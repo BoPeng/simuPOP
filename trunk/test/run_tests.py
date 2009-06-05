@@ -59,11 +59,9 @@ def importTests():
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        from subprocess import Popen
         for allele in ['binary', 'short', 'long']:
             print '\n\n===== Testing %s module =====\n\n' % allele
-            p = Popen('python %s %s' % (sys.argv[0], allele), bufsize=0, shell=True)
-            os.waitpid(p.pid, 0)
+            os.system('python %s %s' % (sys.argv[0], allele))
     else:
         test_runner = unittest.TextTestRunner(verbosity=2)
         test_runner.run(importTests())
