@@ -9649,16 +9649,13 @@ Details:
     subpopulation is split, the indexes of existing subpopulations
     will be changed. If a subpopulation has a name, this name will
     become the name for all subpopulations separated from this
-    subpopulation. Optionally, you can assign names to these
-    subpopulations using parameter names, which can be either a list
-    of names for all split subpopulations, or a pattern with special
-    characters '$0' (original subpopulation name) and '$1' (1, 2, ...
-    etc if the subpopulations are split by sizes or proportions, and
-    the values of information fields if the subpopulations are split
-    by infoFields). A typical value for this parameter is '$0_$1'.
-    This operator is by default applied pre-mating (parameter stage).
-    Please refer to operator baseOperator for a detailed explanation
-    for all parameters.
+    subpopulation. Optionally, you can assign names to the new
+    subpopulations using a list of names specified in parameter names.
+    Because the same set of names will be used for all subpopulations,
+    this parameter is not recommended when multiple subpopulations are
+    split.  This operator is by default applied pre-mating (parameter
+    stage). Please refer to operator baseOperator for a detailed
+    explanation for all parameters.
 
 Note:
 
