@@ -4,19 +4,17 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Supports SWIG 1.3.39.
   - BUG: Fix a bug when using simuRPy for R version <= 0.9.0 under windows.
   - CHG: Do not set default loci name to "locX-Y". Empty string will be returned
-		if lociNames are not set.
+		if lociNames are not set. This also changes the behavior of functions
+		locusByName and lociByNames.
   - CHG: Do not set default subpopulation name to "Unnamed". Empty string will be
 		returned if lociNames are not set. population::subPopName() is changed
 		accordingly.
   - NEW: Add matrixMutator and an early form of actgMutator.
   - NEW: Add mapIn and mapOut feature to all mutators.
-  - NEW: Allow population::mergeSubPops and population::splitSubPop to set name(s)
-		and return ID(s) of new subpopulation(s).
-  - NEW: Add parameter name to operator mergeSubPops.
-  - NEW: Add parameter suffix to operator splitSubPops.
-  - NEW: Allow infoFields to take single form values.
-  - CHG: Remove population::addInfoField() because addInfoFields() now accepts
-		single input.
+  - NEW: Add parameter name to population::mergeSubPops and operator mergeSubPops
+  - NEW: Add parameter names to population::splitSubPop and operator splitSubPops.
+  - NEW: Allow parameter infoFields to take single form values. Remove
+		population::addInfoField() because addInfoFields() now accepts single input.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.

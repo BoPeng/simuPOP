@@ -261,14 +261,14 @@ bool splitSubPops::apply(population & pop)
 		}
 
 		if (!m_subPopSizes.empty())
-			pop.splitSubPop(sp, m_subPopSizes);
+			pop.splitSubPop(sp, m_subPopSizes, m_names);
 		else if (!m_proportions.empty()) {
 			vectorlu sizes;
 			for (size_t i = 0; i < m_proportions.size(); ++i)
 				sizes.push_back(static_cast<ULONG>(pop.subPopSize(sp) * m_proportions[i]));
 			// floating point problem.
 			sizes[m_proportions.size() - 1] += pop.subPopSize(sp) - accumulate(sizes.begin(), sizes.end(), 0LU);
-			pop.splitSubPop(sp, sizes);
+			pop.splitSubPop(sp, sizes, m_names);
 		} else {
 			// using an information field
 			UINT idx = pop.infoIdx(infoField(0));
@@ -284,7 +284,7 @@ bool splitSubPops::apply(population & pop)
 				} else
 					++spSize.back();
 			}
-			pop.splitSubPop(sp, spSize);
+			pop.splitSubPop(sp, spSize, m_names);
 		}
 	}
 	return true;
