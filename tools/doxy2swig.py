@@ -488,6 +488,7 @@ class Doxy2SWIG:
                 defVal = defVal.replace('floatListFunc','[]')
                 defVal = defVal.replace('floatList','[]')
                 defVal = defVal.replace('repList','[]')
+                defVal = defVal.replace('stringList','[]')
                 defVal = defVal.replace('subPopList','[]')
                 #defVal = defVal.replace('""', "''")
                 out.append(var + '=' + defVal)

@@ -29,7 +29,7 @@ namespace simuPOP {
 // create a \c tagger, default to be always active but no output
 tagger::tagger(const stringFunc & output, int stage,
 	int begin, int end, int step, const intList & at, const repList & rep, const subPopList & subPops,
-	const vectorstr & infoFields) :
+	const stringList & infoFields) :
 	// stage is automatically determined.
 	baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields)
 {
@@ -187,7 +187,7 @@ bool parentsTagger::apply(population & pop)
 pedigreeTagger::pedigreeTagger(int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops,
 	int stage, const stringFunc & output,
-	const vectorstr & pedigreeFields) :
+	const stringList & pedigreeFields) :
 	tagger(output, DuringMating, begin, end, step, at, rep, subPops, pedigreeFields)
 {
 	setApplicableStage(stage);

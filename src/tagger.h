@@ -49,7 +49,7 @@ public:
 	tagger(const stringFunc & output = "",  int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr());
+		const stringList & infoFields = stringList());
 
 	/// destructor
 	virtual ~tagger()
@@ -95,7 +95,7 @@ public:
 	inheritTagger(int mode = TAG_Paternal, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
-		const vectorstr & infoFields = vectorstr(TAG_InheritFields, TAG_InheritFields + 2)) :
+		const stringList & infoFields = stringList(TAG_InheritFields[0], TAG_InheritFields[1])) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields), m_mode(mode)
 	{
 		DBG_ASSERT(infoSize() > 0, ValueError,
@@ -153,9 +153,10 @@ public:
 	/// create a \c parentTagger
 	// string can be any string (m_Delimiter will be ignored for this class.)
 	//  %r will be replicate number %g will be generation number.
-	parentTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
+	parentTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
-		const vectorstr & infoFields = vectorstr(1, "parent_idx")) :
+		const stringList & infoFields = stringList("parent_idx")) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_subPopSize(1, 0)
 	{
@@ -224,7 +225,7 @@ public:
 	parentsTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
-		const vectorstr & infoFields = vectorstr(ParentsFields, ParentsFields + 2)) :
+		const stringList & infoFields = stringList(ParentsFields[0], ParentsFields[1])) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_subPopSize(1, 0)
 	{
@@ -280,7 +281,7 @@ public:
 	pedigreeTagger(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		int stage = PostMating, const stringFunc & output = ">",
-		const vectorstr & pedigreeFields = vectorstr());
+		const stringList & pedigreeFields = stringList());
 
 	bool apply(population & pop);
 
@@ -309,7 +310,7 @@ public:
 	pyTagger(PyObject * func = NULL, int begin = 0, int end = -1,
 		int step = 1, const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringFunc & output = "",
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		tagger(output, DuringMating, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)
 	{

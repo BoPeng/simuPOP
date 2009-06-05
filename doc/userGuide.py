@@ -157,7 +157,7 @@ print mom.genotype(1)
 
 
 #file log/individual.log
-pop = population([5, 4], loci=[2, 5], infoFields=['x'])
+pop = population([5, 4], loci=[2, 5], infoFields='x')
 # get an individual
 ind = pop.individual(3)
 ind.ploidy()            # access to genotypic structure
@@ -191,7 +191,7 @@ geno
 
 
 #file log/subPop.log
-pop = population(size=[3, 4, 5], ploidy=1, loci=[1], infoFields=['x'])
+pop = population(size=[3, 4, 5], ploidy=1, loci=[1], infoFields='x')
 # individual 0, 1, 2, ... will have an allele 0, 1, 2, ...
 pop.setGenotype(range(pop.popSize()))
 #
@@ -224,7 +224,7 @@ pop.subPopByName('z')
 
 #file log/virtualSplitter.log
 import random
-pop = population(size=[200, 400], loci=[30], infoFields=['x'])
+pop = population(size=[200, 400], loci=[30], infoFields='x')
 # assign random information fields
 pop.setIndInfo([random.randint(0, 3) for x in range(pop.popSize())], 'x')
 # define a virtual splitter by information field 'x'
@@ -248,7 +248,7 @@ pop.subPopSize([0, 4])    # Number of male individuals
 
 #file log/virtualSubPop.log
 import random
-pop = population(10, loci=[2, 3], infoFields=['Sex'])
+pop = population(10, loci=[2, 3], infoFields='Sex')
 InitSex(pop)
 pop.setVirtualSplitter(sexSplitter())
 # initialize male and females with different genotypes. Set initSex
@@ -265,7 +265,7 @@ Dump(pop, structure=False)
 #file log/accessIndividual.log
 # create a population with two generations. The current generation has values
 # 0-9 at information field x, the parental generation has values 10-19.
-pop = population(size=[5, 5], loci=[2, 3], infoFields=['x'], ancGen=1)
+pop = population(size=[5, 5], loci=[2, 3], infoFields='x', ancGen=1)
 pop.setIndInfo(range(11, 20), 'x')
 pop1 = pop.clone()
 pop1.setIndInfo(range(10), 'x')
@@ -300,7 +300,7 @@ pop.ancestor(5, 0).info('x')
 
 #file log/batchAccess.log
 import random
-pop = population(size=[4, 6], loci=[2], infoFields=['x'])
+pop = population(size=[4, 6], loci=[2], infoFields='x')
 pop.setIndInfo([random.randint(0, 10) for x in range(10)], 'x')
 pop.indInfo('x')
 pop.setGenotype([0, 1, 2, 3], 0)
@@ -379,7 +379,7 @@ pop = population(size=[10, 10], loci=[5, 5],
     infoFields=['x', 'y'])
 InitByValue(pop, range(10))
 pop.setIndInfo([-1]*4 + [0]*3 + [-1]*3 + [2]*4 + [-1]*3 + [1]*4, 'x')
-pop1 = pop.extract(field='x', loci=[1, 2, 3, 6, 7], infoFields=['x'])
+pop1 = pop.extract(field='x', loci=[1, 2, 3, 6, 7], infoFields='x')
 Dump(pop1, structure=False)
 #end
 
@@ -667,7 +667,7 @@ InitByFreq(pop, [.2, .3, .5])
 
 #file log/migrSize.log
 simu = simulator(
-    population(size=[500, 1000], infoFields=['migrate_to']),
+    population(size=[500, 1000], infoFields='migrate_to'),
     randomMating())
 simu.evolve(
     preOps = [initSex()],
@@ -682,7 +682,7 @@ simu.evolve(
 
 #file log/migrFixedSize.log
 simu = simulator(
-    population(size=[500, 1000], infoFields=['migrate_to']),
+    population(size=[500, 1000], infoFields='migrate_to'),
     randomMating(subPopSize=[500, 1000]))
 simu.evolve(
     preOps = [initSex()],
@@ -700,7 +700,7 @@ def demo(gen, oldSize=[]):
     return [500 + gen*10, 1000 + gen*10]
 
 simu = simulator(
-    population(size=[500, 1000], infoFields=['migrate_to']),
+    population(size=[500, 1000], infoFields='migrate_to'),
     randomMating(subPopSize=demo))
 simu.evolve(
     preOps = [initSex()],
@@ -815,7 +815,7 @@ pop = simu.extract(0)
 
 #file log/randomSelection.log
 simu = simulator(population(100, ploidy=1, loci=[5, 5], ancGen=1,
-    infoFields=['parent_idx']),
+    infoFields='parent_idx'),
     randomSelection())
 simu.evolve(
     preOps = [initByFreq([0.3, 0.7])],
@@ -917,7 +917,7 @@ pop = simu.extract(0)
 
 #file log/heteroMatingWeight.log
 pop = population(size=[1000], loci=[2],
-    infoFields=['mark'])
+    infoFields='mark')
 pop.setVirtualSplitter(rangeSplitter([[0, 500], [200, 1000]]))
 def markOff(param):
     '''define a Python during mating operator that marks
@@ -966,7 +966,7 @@ def randomMating(numOffspring = 1., sexMode = RandomSex, ops = [], subPopSize = 
 
 
 #file log/sequentialSelfing.log
-simu = simulator(population(100, loci=[5]*3, infoFields=['parent_idx']),
+simu = simulator(population(100, loci=[5]*3, infoFields='parent_idx'),
     homoMating(sequentialParentChooser(), selfingOffspringGenerator()))
 simu.evolve(
     preOps = [initByFreq([0.2]*5)],
@@ -1073,7 +1073,7 @@ def locate_sibling(pop):
     pop.setIndInfo([2*x+1 for x in range(pop.popSize()/2)], 'sibling', (0, 0))
     pop.setIndInfo([2*x for x in range(pop.popSize()/2)], 'sibling', (0, 1))
 
-simu = simulator(pop, consanguineousMating(func=locate_sibling, infoFields=['sibling'],
+simu = simulator(pop, consanguineousMating(func=locate_sibling, infoFields='sibling',
     numOffspring=2, sexMode=(NumOfMale, 1)))
 simu.evolve(
     preOps = [initByFreq([0.2, 0.8], sex=[Male, Female])],
@@ -1121,7 +1121,7 @@ def setRank(pop, dad, mom, off):
     'The rank of offspring can increase or drop to zero randomly'
     off.setInfo((dad.info('rank') + randint(-1, 1)) % 3, 'rank')
 
-pop = population(size=[1000, 2000], loci=[1], infoFields=['rank'])
+pop = population(size=[1000, 2000], loci=[1], infoFields='rank')
 pop.setIndInfo([randint(0, 2) for x in range(pop.popSize())], 'rank')
 
 simu = simulator(pop, homoMating(
@@ -1323,7 +1323,7 @@ for pop in simu.populations():
 
 
 #file log/simuFunc.log
-simu = simulator(population(100, loci=[5, 10], infoFields=['x']),
+simu = simulator(population(100, loci=[5, 10], infoFields='x'),
     randomMating(), rep=5)
 simu.evolve(preOps=[initByFreq([0.4, 0.6])],
     ops=[], gen=10)
@@ -1388,7 +1388,7 @@ Dump(pop, structure=False)
 #end
 
 #file log/dumper.log
-pop = population(size=[10, 10], loci=[20, 30], infoFields=['gen'],
+pop = population(size=[10, 10], loci=[20, 30], infoFields='gen',
     ancGen=-1)
 pop.setVirtualSplitter(sexSplitter())
 pop1 = pop.clone()
@@ -1538,7 +1538,7 @@ simu.evolve(
 
 #file log/infoEval.log
 import random
-pop = population(20, loci=[1], infoFields=['a'])
+pop = population(20, loci=[1], infoFields='a')
 pop.setVirtualSplitter(infoSplitter('a', cutoff=[3]))
 InitByFreq(pop, [0.2, 0.8])
 pop.setIndInfo([random.randint(2, 5) for x in range(20)], 'a')
@@ -1565,7 +1565,7 @@ print pop.indInfo('c')[:10]
 
 #file log/migrateByProb.log
 simu = simulator(
-    population(size=[1000]*3, infoFields=['migrate_to']),
+    population(size=[1000]*3, infoFields='migrate_to'),
     randomMating())
 simu.evolve(
     preOps = [initSex()],
@@ -1585,7 +1585,7 @@ simu.evolve(
 
 #file log/migrateByPropAndCount.log
 simu = simulator(
-    population(size=[1000]*3, infoFields=['migrate_to']),
+    population(size=[1000]*3, infoFields='migrate_to'),
     randomMating())
 simu.evolve(
     preOps = [initSex()],
@@ -1616,7 +1616,7 @@ simu.evolve(
 #end
 
 #file log/migrateVSP.log
-pop = population(size=[1000]*2, infoFields=['migrate_to'])
+pop = population(size=[1000]*2, infoFields='migrate_to')
 pop.setVirtualSplitter(sexSplitter())
 simu = simulator(pop, randomMating())
 simu.evolve(
@@ -1638,7 +1638,7 @@ simu.evolve(
 #end
 
 #file log/manualMigration.log
-pop = population([10]*2, infoFields=['migrate_to'])
+pop = population([10]*2, infoFields='migrate_to')
 pop.setIndInfo([0, 1, 2, 3]*5, 'migrate_to')
 Migrate(pop, mode=ByIndInfo)
 pop.subPopSizes()
@@ -1678,7 +1678,7 @@ simu.evolve(
 
 #file log/splitByInfo.log
 import random
-pop = population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields=['x'])
+pop = population([1000]*3, subPopNames=['a', 'b', 'c'], infoFields='x')
 pop.setIndInfo([random.randint(0, 3) for x in range(1000)], 'x')
 print pop.subPopSizes()
 print pop.subPopNames()
@@ -1798,7 +1798,7 @@ simu.evolve(
 #end
 
 #file log/snpMutator.log
-pop = population(size=[2000], loci=[1, 1], infoFields=['fitness'])
+pop = population(size=[2000], loci=[1, 1], infoFields='fitness')
 simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [initSex()],
@@ -2231,7 +2231,7 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
     '''
     demo_func = demo_model(model, N0, N1, G0, G1)
     simu = simulator(
-        population(size=demo_func(0), loci=[1], infoFields=['fitness']),
+        population(size=demo_func(0), loci=[1], infoFields='fitness'),
         randomMating(subPopSize=demo_func)
     )
     simu.evolve(
@@ -2398,7 +2398,7 @@ def simuCDCV(model, N0, N1, G0, G1, spec, s, mu, k):
     demo_func = demo_model(model, N0, N1, G0, G1)
     print demo_func(0)
     simu = simulator(
-        population(size=demo_func(0), loci=[1], infoFields=['fitness']),
+        population(size=demo_func(0), loci=[1], infoFields='fitness'),
         randomMating(subPopSize=demo_func)
     )
     simu.evolve(
@@ -2514,7 +2514,7 @@ simu.evolve(
 
 #file log/mapSelector.log
 simu = simulator(
-    population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
+    population(size=1000, ploidy=2, loci=[1], infoFields='fitness'),
     randomMating())
 s1 = .1
 s2 = .2
@@ -2532,7 +2532,7 @@ simu.evolve(
  
 #file log/maSelector.log
 simu = simulator(
-    population(size=1000, ploidy=2, loci=[1], infoFields=['fitness']),
+    population(size=1000, ploidy=2, loci=[1], infoFields='fitness'),
     randomMating())
 s1 = .1
 s2 = .2
@@ -2569,7 +2569,7 @@ simu.evolve(
 
 #file log/pySelector.log
 simu = simulator(
-    population(size=1000, ploidy=2, loci=[3], infoFields=['fitness'] ),
+    population(size=1000, ploidy=2, loci=[3], infoFields='fitness'),
     randomMating()
 )
 

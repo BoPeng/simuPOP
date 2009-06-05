@@ -302,6 +302,34 @@ unsigned pow3(unsigned n)
 
 namespace simuPOP {
 
+// additional types
+stringList::stringList(PyObject * str) : m_elems()
+{
+	if (str == NULL)
+		return;
+	if (PyString_Check(str))
+		addString(str);
+	else if (PySequence_Check(str)) {
+		// assign values
+		UINT numStr = PySequence_Size(str);
+		for (size_t i = 0; i < numStr; ++i) {
+			PyObject * item = PySequence_GetItem(str, i);
+			addString(item);
+			Py_DECREF(item);
+		}
+	}
+}
+
+void stringList::addString(PyObject * str)
+{
+	PyObject * res = PyObject_Str(str);
+	if (res == NULL)
+		return;
+	string value = string(PyString_AsString(str));
+	m_elems.push_back(value);
+	Py_DECREF(res);
+}
+
 //
 // shared variables
 //

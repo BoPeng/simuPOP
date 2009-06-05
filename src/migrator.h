@@ -132,7 +132,7 @@ public:
 	migrator(const matrix & rate = matrix(), int mode = ByProbability, const uintList & toSubPops = uintList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr(1, "migrate_to"));
+		const stringList & infoFields = stringList("migrate_to"));
 
 	/// destructor
 	virtual ~migrator()
@@ -208,14 +208,20 @@ public:
 	 *
 	 *  If parameter \c randomize is \c True (default), individuals will be
 	 *  randomized before a subpopulation is split. This is designed to remove
-	 *  artificial order of individuals introduced, for example, by some non-
+	 *  artificial order of individuals introduced by, for example, some non-
 	 *  random mating schemes. Note that, however, the original individual
 	 *  order is not guaranteed even if this parameter is set to \c False.
 	 *
 	 *  Unless the last subpopulation is split, the indexes of existing
 	 *  subpopulations will be changed. If a subpopulation has a name, this
 	 *  name will become the name for all subpopulations separated from this
-	 *  subpopulation.
+	 *  subpopulation. Optionally, you can assign names to these subpopulations
+	 *  using parameter \e names, which can be either a list of names for all
+	 *  split subpopulations, or a pattern with special characters \c '$0'
+	 *  (original subpopulation name) and \c '$1' (\c 1, \c 2, ... etc if the
+	 *  subpopulations are split by \e sizes or \e proportions, and the values
+	 *  of information fields if the subpopulations are split by \e infoFields).
+	 *  A typical value for this parameter is \c '$0_$1'.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
@@ -225,18 +231,18 @@ public:
 	 *  information field such as \c migrate_to.
 	 */
 	splitSubPops(const subPopList & subPops = subPopList(), const vectorlu & sizes = vectorlu(),
-		const vectorf & proportions = vectorf(), bool randomize = true,
+		const vectorf & proportions = vectorf(), const stringList names = stringList(), bool randomize = true,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-		m_subPopSizes(sizes), m_proportions(proportions), m_randomize(randomize)
+		m_subPopSizes(sizes), m_proportions(proportions), m_names(names.elems()), m_randomize(randomize)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
 				"Virtual subpopulations are not supported in operator splitSubPops");
 		}
 
-		DBG_FAILIF(sizes.empty() + proportions.empty() + infoFields.empty() != 2, ValueError,
+		DBG_FAILIF(sizes.empty() + proportions.empty() + infoFields.elems().empty() != 2, ValueError,
 			"Please specify one and only one of sizes, proportions and infoFields.");
 	}
 
@@ -271,6 +277,8 @@ private:
 	/// new subpopulation proportions.
 	vectorf m_proportions;
 
+	vectorstr m_names;
+
 	/// random split
 	bool m_randomize;
 };
@@ -288,16 +296,17 @@ public:
 	/** Create an operator that merges subpopulations \e subPops to a single
 	 *  subpopulation. If \e subPops is not given, all subpopulations will be
 	 *  merged. The merged subpopulation will take the name of the first
-	 *  subpopulation being merged.
+	 *  subpopulation being merged unless a new \e name is given.
 	 *
 	 *  This operator is by default applied pre-mating (parameter \e stage).
 	 *  Please refer to operator \c baseOperator for a detailed explanation for
 	 *  all parameters.
 	 */
-	mergeSubPops(const subPopList & subPops = subPopList(),
+	mergeSubPops(const subPopList & subPops = subPopList(), const string & name = string(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
-		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
+		const repList & rep = repList(), const stringList & infoFields = stringList())
+		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
+		m_name(name)
 	{
 		for (size_t i = 0; i < subPops.size(); ++i) {
 			DBG_FAILIF(subPops[i].isVirtual(), ValueError,
@@ -329,6 +338,8 @@ public:
 	}
 
 
+private:
+	string m_name;
 };
 
 
@@ -357,7 +368,7 @@ public:
 		const vectorlu & sizes = vectorlu(), const vectorf & proportions = vectorf(),
 		bool propagate = true, int stage = PreMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_sizes(sizes), m_proportions(proportions), m_propagate(propagate)
 	{

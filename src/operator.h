@@ -222,10 +222,10 @@ public:
 	 *    this parameter.
 	 */
 	baseOperator(const stringFunc & output, int stage, int begin, int end, int step, const intList & at,
-		const repList & rep, const subPopList & subPops, const vectorstr & infoFields) :
+		const repList & rep, const subPopList & subPops, const stringList & infoFields) :
 		m_beginGen(begin), m_endGen(end), m_stepGen(step), m_atGen(at.elems()),
 		m_flags(0), m_rep(rep), m_subPops(subPops),
-		m_ostream(output.value(), output.func()), m_infoFields(infoFields),
+		m_ostream(output.value(), output.func()), m_infoFields(infoFields.elems()),
 		m_lastPop(MaxTraitIndex)
 	{
 		DBG_FAILIF(step <= 0, ValueError, "step need to be at least one");
@@ -551,7 +551,7 @@ public:
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
@@ -600,7 +600,7 @@ public:
 	 */
 	noneOp(const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
@@ -660,7 +660,7 @@ public:
 	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
 	{
@@ -733,7 +733,7 @@ public:
 	 */
 	ticToc(const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 		time(&m_startTime);
@@ -783,7 +783,8 @@ public:
 	 */
 	setAncestralDepth(int depth, const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_depth(depth)
 	{
@@ -839,7 +840,7 @@ public:
 	 */
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_code(code)
 	{
@@ -890,7 +891,7 @@ public:
 	 */
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_code(code)
 	{
@@ -974,7 +975,7 @@ public:
 		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr());
+		const stringList & infoFields = stringList());
 
 	/// HIDDEN
 	virtual baseOperator * clone() const

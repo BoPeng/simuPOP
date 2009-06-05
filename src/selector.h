@@ -76,7 +76,8 @@ public:
 	/**
 	 */
 	selector(int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr(1, "fitness"))
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = stringList("fitness"))
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
 	{
 	}
@@ -142,7 +143,7 @@ public:
 	mapSelector(const uintList & loci, const strDict & fitness, bool phase = false,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr(1, "fitness")) :
+		const stringList & infoFields = stringList("fitness")) :
 		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(fitness), m_phase(phase)
 	{
@@ -219,7 +220,7 @@ public:
 	maSelector(const uintList & loci, const vectorf & fitness, const uintList & wildtype = uintList(0),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr(1, "fitness")) :
+		const stringList & infoFields = stringList("fitness")) :
 		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_fitness(fitness), m_wildtype(wildtype.elems())
 	{
@@ -289,7 +290,7 @@ public:
 	mlSelector(const vectorop selectors, int mode = Multiplicative,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr(1, "fitness")) :
+		const stringList & infoFields = stringList("fitness")) :
 		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_selectors(0), m_mode(mode)
 	{
@@ -371,7 +372,7 @@ public:
 	pySelector(uintList loci, PyObject * func,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr(1, "fitness")) :
+		const stringList & infoFields = stringList("fitness")) :
 		selector(stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{

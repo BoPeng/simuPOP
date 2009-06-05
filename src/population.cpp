@@ -44,7 +44,7 @@ population::population(const vectorlu & size,
 	const vectorstr & alleleNames,
 	const vectorstr & lociNames,
 	const vectorstr & subPopNames,
-	const vectorstr & infoFields)
+	const stringList & infoFields)
 	:
 	GenoStruTrait(),
 	m_popSize(0),
@@ -76,7 +76,7 @@ population::population(const vectorlu & size,
 
 	setGenoStructure(fcmp_eq(ploidy, Haplodiploid) ? 2 : static_cast<UINT>(ploidy),
 		loci, chromTypes, fcmp_eq(ploidy, Haplodiploid), lociPos, chromNames, alleleNames,
-		lociNames, infoFields);
+		lociNames, infoFields.elems());
 
 	DBG_DO(DBG_DEVEL, cout << "individual size is " << sizeof(individual) << '+'
 		                   << sizeof(Allele) << '*' << genoSize() << endl
@@ -1586,59 +1586,10 @@ void population::push(population & rhs)
 	rhs.validate("Outside population after push and discard:");
 }
 
-
-// add field
-void population::addInfoField(const string & field, double init)
+void population::addInfoFields(const stringList & fieldList, double init)
 {
-	DBG_ASSERT(m_info.size() == infoSize() * popSize(), SystemError,
-		"Info size is wrong");
+	const vectorstr & fields = fieldList.elems();
 
-	vectorstr newfields;
-	UINT os = infoSize();
-	UINT idx;
-	// if this field exists, return directly
-	try {
-		idx = infoIdx(field);
-		// only needs to initialize
-		int oldAncPop = m_curAncestralGen;
-		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralGen(anc);
-			for (IndIterator ind = indIterator(); ind.valid(); ++ind)
-				ind->setInfo(init, idx);
-		}
-		useAncestralGen(oldAncPop);
-		return;
-	} catch (IndexError &) {
-		newfields.push_back(field);
-	}
-
-	// adjust information size.
-	if (!newfields.empty()) {
-		setGenoStructure(struAddInfoFields(newfields));
-		UINT is = infoSize();
-		int oldAncPop = m_curAncestralGen;
-		for (UINT anc = 0; anc <= m_ancestralPops.size(); anc++) {
-			useAncestralGen(anc);
-			vectorinfo newInfo(is * popSize());
-			// copy the old stuff in
-			InfoIterator ptr = newInfo.begin();
-			for (IndIterator ind = indIterator(); ind.valid(); ++ind) {
-				copy(ind->infoBegin(), ind->infoBegin() + is - 1, ptr);
-				ind->setInfoPtr(ptr);
-				ind->setGenoStruIdx(genoStruIdx());
-				fill(ind->infoBegin() + os, ind->infoEnd(), init);
-				ptr += is;
-			}
-			m_info.swap(newInfo);
-		}
-		useAncestralGen(oldAncPop);
-	}
-	return;
-}
-
-
-void population::addInfoFields(const vectorstr & fields, double init)
-{
 	DBG_ASSERT(m_info.size() == infoSize() * popSize(), SystemError,
 		"Info size is wrong");
 
@@ -1690,8 +1641,9 @@ void population::addInfoFields(const vectorstr & fields, double init)
 }
 
 
-void population::setInfoFields(const vectorstr & fields, double init)
+void population::setInfoFields(const stringList & fieldList, double init)
 {
+	const vectorstr & fields = fieldList.elems();
 	setGenoStructure(struSetInfoFields(fields));
 	// reset info vector
 	int oldAncPop = m_curAncestralGen;
@@ -1710,9 +1662,12 @@ void population::setInfoFields(const vectorstr & fields, double init)
 }
 
 
-void population::updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
-                                      const vectorstr & fromFields, int ancGen)
+void population::updateInfoFieldsFrom(const stringList & fieldList, const population & pop,
+                                      const stringList & fromFieldList, int ancGen)
 {
+	const vectorstr & fields = fieldList.elems();
+	const vectorstr & fromFields = fromFieldList.elems();
+
 	int depth = ancestralGens();
 
 	if (ancGen > 0 && ancGen < depth)

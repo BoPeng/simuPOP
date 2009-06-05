@@ -2986,8 +2986,8 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], output=\"\", infoFields=[\"paternal_tag\",
-      \"maternal_tag\"])
+      rep=[], subPops=[], output=\"\", infoFields=[],
+      TAG_InheritFields[1])
 
 Arguments:
 
@@ -3597,7 +3597,7 @@ Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[\"qtrait\"])
+      subPops=[], infoFields=[])
 
 Arguments:
 
@@ -3685,7 +3685,7 @@ Usage:
 
     mapSelector(loci, fitness, phase=False, stage=PreMating,
       begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[\"fitness\"])
+      infoFields=[])
 
 Arguments:
 
@@ -3773,7 +3773,7 @@ Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[\"qtrait\"])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -3868,8 +3868,7 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[\"fitness\"])
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -4153,17 +4152,18 @@ Details:
 
 Usage:
 
-    mergeSubPops(subPops=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=[], infoFields=[])
+    mergeSubPops(subPops=[], name=string, stage=PreMating, begin=0,
+      end=-1, step=1, at=[], rep=[], infoFields=[])
 
 Details:
 
     Create an operator that merges subpopulations subPops to a single
     subpopulation. If subPops is not given, all subpopulations will be
     merged. The merged subpopulation will take the name of the first
-    subpopulation being merged.  This operator is by default applied
-    pre-mating (parameter stage). Please refer to operator
-    baseOperator for a detailed explanation for all parameters.
+    subpopulation being merged unless a new name is given.  This
+    operator is by default applied pre-mating (parameter stage).
+    Please refer to operator baseOperator for a detailed explanation
+    for all parameters.
 
 "; 
 
@@ -4275,7 +4275,7 @@ Usage:
 
     migrator(rate=[], mode=ByProbability, toSubPops=[],
       stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[\"migrate_to\"])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -4539,7 +4539,7 @@ Usage:
 
     mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[\"qtrait\"])
+      subPops=[], infoFields=[])
 
 Details:
 
@@ -4634,7 +4634,7 @@ Usage:
 
     mlSelector(selectors, mode=Multiplicative, stage=PreMating,
       begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[\"fitness\"])
+      infoFields=[])
 
 Details:
 
@@ -5086,7 +5086,7 @@ Description:
 Usage:
 
     parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=\"\", infoFields=[\"father_idx\", \"mother_idx\"])
+      subPops=[], output=\"\", infoFields=[], ParentsFields[1])
 
 "; 
 
@@ -5164,7 +5164,7 @@ Description:
 Usage:
 
     parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      output=\"\", infoFields=[\"parent_idx\"])
+      output=\"\", infoFields=[])
 
 "; 
 
@@ -6327,7 +6327,7 @@ Details:
 
 Usage:
 
-    x.splitSubPop(subPop, sizes)
+    x.splitSubPop(subPop, sizes, names=[])
 
 Details:
 
@@ -6335,7 +6335,9 @@ Details:
     which should add up to the size of subpopulation subPop. If subPop
     is not the last subpopulation, indexes of subpopulations after
     subPop are shifted. If subPop is named, the same name will be
-    given to all new subpopulations.
+    given to all new subpopulations unless a new set of names are
+    specified for these subpopulations. This function returns the IDs
+    of split subpopulations.
 
 "; 
 
@@ -6371,7 +6373,7 @@ Details:
 
 Usage:
 
-    x.mergeSubPops(subPops=[])
+    x.mergeSubPops(subPops=[], name=UnnamedSubPop)
 
 Details:
 
@@ -6379,7 +6381,10 @@ Details:
     subpopulations will be merged. subPops do not have to be adjacent
     to each other. They will all be merged to the subpopulation with
     the smallest subpopulation ID. Indexes of the rest of the
-    subpopulation may be changed.
+    subpopulation may be changed. A new name can be assigned to the
+    merged subpopulation through parameter name (an empty name will be
+    ignored). This function returns the ID of the merged
+    subpopulation.
 
 "; 
 
@@ -6674,19 +6679,6 @@ Details:
 
     Return the information field name of all individuals in (virtual)
     subpopulation subPop as a list.
-
-"; 
-
-%feature("docstring") simuPOP::population::addInfoField "
-
-Usage:
-
-    x.addInfoField(field, init=0)
-
-Details:
-
-    Add an information field field to a population and initialize its
-    values to init.
 
 "; 
 
@@ -7680,8 +7672,7 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancGen=-1, stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[\"qtrait\"])
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -7764,7 +7755,7 @@ Description:
 Usage:
 
     pySelector(loci, func, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[\"fitness\"])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 Arguments:
 
@@ -7911,7 +7902,7 @@ Description:
 Usage:
 
     quanTrait(ancGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[\"qtrait\"])
+      at=[], rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -8822,7 +8813,7 @@ Description:
 Usage:
 
     selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[\"fitness\"])
+      rep=[], subPops=[], infoFields=[])
 
 "; 
 
@@ -9629,7 +9620,7 @@ Details:
 
 Usage:
 
-    splitSubPops(subPops=[], sizes=[], proportions=[],
+    splitSubPops(subPops=[], sizes=[], proportions=[], names=[],
       randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
       rep=[], infoFields=[])
 
@@ -9652,15 +9643,22 @@ Details:
     this information field. If parameter randomize is True (default),
     individuals will be randomized before a subpopulation is split.
     This is designed to remove artificial order of individuals
-    introduced, for example, by some non- random mating schemes. Note
+    introduced by, for example, some non- random mating schemes. Note
     that, however, the original individual order is not guaranteed
     even if this parameter is set to False.  Unless the last
     subpopulation is split, the indexes of existing subpopulations
     will be changed. If a subpopulation has a name, this name will
     become the name for all subpopulations separated from this
-    subpopulation.  This operator is by default applied pre-mating
-    (parameter stage). Please refer to operator baseOperator for a
-    detailed explanation for all parameters.
+    subpopulation. Optionally, you can assign names to these
+    subpopulations using parameter names, which can be either a list
+    of names for all split subpopulations, or a pattern with special
+    characters '$0' (original subpopulation name) and '$1' (1, 2, ...
+    etc if the subpopulations are split by sizes or proportions, and
+    the values of information fields if the subpopulations are split
+    by infoFields). A typical value for this parameter is '$0_$1'.
+    This operator is by default applied pre-mating (parameter stage).
+    Please refer to operator baseOperator for a detailed explanation
+    for all parameters.
 
 Note:
 
@@ -10663,6 +10661,28 @@ Usage:
 Usage:
 
     x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::stringList "
+
+"; 
+
+%feature("docstring") simuPOP::stringList::stringList "
+
+Usage:
+
+    stringList(str=None)
+
+"; 
+
+%ignore simuPOP::stringList::stringList(const string &str);
+
+%feature("docstring") simuPOP::stringList::elems "
+
+Usage:
+
+    x.elems()
 
 "; 
 

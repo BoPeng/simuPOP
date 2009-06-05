@@ -55,7 +55,7 @@ public:
 	pyOutput(const string & msg = string(), const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_string(msg)
 	{
@@ -119,7 +119,7 @@ public:
 		int width = 1, UINT max = 100, const uintList & loci = uintList(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_showGenotype(genotype), m_showStructure(structure), m_ancGen(ancGen), m_width(width),
 		m_loci(loci.elems()), m_max(max)
@@ -191,7 +191,7 @@ public:
 	 */
 	savePopulation(const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1,
 		int step = 1, const intList & at = intList(), const repList & rep = repList(),
-		const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr()) :
+		const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_filename(output.value())
 	{

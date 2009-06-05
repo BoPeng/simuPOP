@@ -373,6 +373,44 @@ protected:
 	vectorf m_elems;
 };
 
+/* stringList() is supposed to work just like intList and I should be
+ * able to define two constructors, using string and vectorstr. However,
+ * because string itself is a sequence, the vectorstr version accepts
+ * input such as 'abs' and yield ('a', 'b', 'c'). I therefore have to
+ * parse the input Python object by myself.
+ */
+class stringList
+{
+public:
+	stringList(PyObject * str = NULL);
+
+	/// CPPONLY
+	stringList(const string & str) : m_elems(1, str)
+	{
+	}
+
+
+	/// CPPONLY
+	stringList(const string & str1, const string & str2) : m_elems()
+	{
+		m_elems.push_back(str1);
+		m_elems.push_back(str2);
+	}
+
+
+	const vectorstr & elems() const
+	{
+		return m_elems;
+	}
+
+
+private:
+	void addString(PyObject * str);
+
+protected:
+	vectorstr m_elems;
+};
+
 
 class stringFunc
 {

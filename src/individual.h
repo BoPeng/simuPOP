@@ -1082,10 +1082,12 @@ public:
 	{
 	}
 
+
 	bool valid()
 	{
 		return m_useGappedIterator || m_it.valid();
 	}
+
 
 	// this is the most important part!
 	InfoType & operator *() const
@@ -1152,11 +1154,11 @@ typedef InformationIterator<ConstRawIndIterator> ConstIndInfoIterator;
 /** This class implements a C++ iterator class that iterate through
     all alleles in a (virtual) (sub)population using
     1. an IndIterator that will skip invisible individuals and invalid
-		alleles, or
+        alleles, or
     2. a gapped iterator that will run faster, in the case that
-	  a): no virtual subpopulation
-	  b): not sex chromosomes
-	  c): not haplodiploid
+      a): no virtual subpopulation
+      b): not sex chromosomes
+      c): not haplodiploid
 
  */
 template <typename T>
@@ -1173,11 +1175,12 @@ public:
 	{
 	}
 
+
 	CombinedAlleleIterator(GenoIterator ptr, GenoIterator ptrEnd, UINT size)
 		: m_useGappedIterator(true), m_valid(true),
 		m_ptr(ptr), m_ptrEnd(ptrEnd), m_size(size),
 		// ignored
-		m_it(), m_index(0), m_ploidy(0), m_chromType(0), 
+		m_it(), m_index(0), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
 	{
 		m_valid = m_ptr != m_ptrEnd;
@@ -1187,7 +1190,7 @@ public:
 	CombinedAlleleIterator(UINT idx, IndividualIterator<T> it)
 		: m_useGappedIterator(false), m_valid(true),
 		m_ptr(), m_ptrEnd(), m_size(0), // belong to a previous one
-		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0), 
+		m_it(it), m_index(idx), m_ploidy(0), m_chromType(0),
 		m_haplodiploid(false), m_p(0)
 	{
 		if (!it.valid()) {
@@ -1214,6 +1217,7 @@ public:
 			m_p = 1;
 		}
 	}
+
 
 	bool valid()
 	{
@@ -1373,7 +1377,7 @@ private:
 	GenoIterator m_ptrEnd;
 	// genosize
 	UINT m_size;
-	// 
+	//
 	// The second iteration method
 	// individual iterator
 	IndividualIterator<T> m_it;

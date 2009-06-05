@@ -12,6 +12,11 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add mapIn and mapOut feature to all mutators.
   - NEW: Allow population::mergeSubPops and population::splitSubPop to set name(s)
 		and return ID(s) of new subpopulation(s).
+  - NEW: Add parameter name to operator mergeSubPops.
+  - NEW: Add parameter suffix to operator splitSubPops.
+  - NEW: Allow infoFields to take single form values.
+  - CHG: Remove population::addInfoField() because addInfoFields() now accepts
+		single input.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.

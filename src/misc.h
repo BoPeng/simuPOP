@@ -185,5 +185,6 @@ matrix ForwardFreqTrajectory(
 	double migrRate = 0,
 	int ploidy = 2,
 	long maxAttempts = 1000);
+
 }
 #endif

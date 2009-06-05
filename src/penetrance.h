@@ -82,7 +82,7 @@ public:
 	basePenetrance(int ancestralGen = -1, int stage = DuringMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr())
+		const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_ancestralGen(ancestralGen)
 	{
@@ -154,7 +154,7 @@ public:
 	mapPenetrance(const uintList & loci, const strDict & penetrance, bool phase = false,
 		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(penetrance), m_phase(phase)
 	{
@@ -222,7 +222,7 @@ public:
 		int ancGen = -1,
 		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_penetrance(penetrance), m_wildtype(wildtype.elems())
 	{
@@ -293,7 +293,7 @@ public:
 	mlPenetrance(const vectorop peneOps, int mode = Multiplicative,
 		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_peneOps(0), m_mode(mode)
 	{
@@ -375,7 +375,7 @@ public:
 	pyPenetrance(const uintList & loci, PyObject * func, int ancGen = -1,
 		int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr()) :
+		const stringList & infoFields = stringList()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
