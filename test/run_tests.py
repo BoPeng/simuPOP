@@ -38,6 +38,10 @@
 #
 import dircache, re, unittest, sys, os
 
+from simuOpt import setOptions
+if len(sys.argv) > 1:
+    setOptions(alleleType = sys.argv[1])
+
 def importTests():
     tests = unittest.TestSuite()
 
@@ -48,34 +52,18 @@ def importTests():
         match = re.match("^(test_(.*))\\.py$", file)
         if match:
             m = match.group(1)
-            if len(sys.argv) > 2 and m == 'test_20_rpy':
-                continue
             print "Adding test cases in ", m
             module = __import__(m)
             tests.addTest( unittest.defaultTestLoader.loadTestsFromModule( module ) )
     return tests
 
-
 if __name__ == '__main__':
     if len(sys.argv) == 1:
-        errors = {}
-        from subprocess import Popen, PIPE
+        from subprocess import Popen
         for allele in ['binary', 'short', 'long']:
-            errors[allele] = []
-            p = Popen([sys.argv[0], allele], env={'SIMUALLELETYPE': allele},
-                shell=True, stderr=PIPE)
-            summary = False
-            for line in p.stderr.readlines():
-                print line,
-                if line.startswith('===================='):
-                    summary = True
-                if summary or not line.strip().endswith('ok'):
-                    errors[allele].append(line)
-        # summary
-        for allele in ['binary', 'short', 'long']:
-            print '\n\n%s\n=\n= Errors in the %s module\n=\n%s\n\n' % ('='*60, allele, '='*60)
-            for line in errors[allele]:
-                print line,
+            print '\n\n===== Testing %s module =====\n\n' % allele
+            p = Popen('python %s %s' % (sys.argv[0], allele), bufsize=0, shell=True)
+            os.waitpid(p.pid, 0)
     else:
         test_runner = unittest.TextTestRunner(verbosity=2)
         test_runner.run(importTests())
