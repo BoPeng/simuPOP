@@ -708,7 +708,7 @@ vectoru population::splitSubPop(UINT subPop, const vectorlu & sizes, const vecto
 
 	DBG_FAILIF(accumulate(sizes.begin(), sizes.end(), 0LU) != subPopSize(subPop), ValueError,
 		"Sum of parameter sizes should be the size of subpopulation " + toStr(subPop));
-	
+
 	DBG_ASSERT(names.empty() || sizes.size() == names.size(), ValueError,
 		"Names should be given to none or all of the split subpopulations");
 
@@ -1572,6 +1572,7 @@ void population::push(population & rhs)
 	m_genotype.swap(rhs.m_genotype);
 	m_info.swap(rhs.m_info);
 	m_inds.swap(rhs.m_inds);
+	std::swap(m_indOrdered, rhs.m_indOrdered);
 	// current population should be working well
 	// (with all datamember copied form rhs
 	// rhs may not be working well since m_genotype etc
@@ -1585,6 +1586,7 @@ void population::push(population & rhs)
 	validate("Current population after push and discard:");
 	rhs.validate("Outside population after push and discard:");
 }
+
 
 void population::addInfoFields(const stringList & fieldList, double init)
 {
@@ -1644,6 +1646,7 @@ void population::addInfoFields(const stringList & fieldList, double init)
 void population::setInfoFields(const stringList & fieldList, double init)
 {
 	const vectorstr & fields = fieldList.elems();
+
 	setGenoStructure(struSetInfoFields(fields));
 	// reset info vector
 	int oldAncPop = m_curAncestralGen;

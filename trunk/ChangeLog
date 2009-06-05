@@ -15,6 +15,7 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add parameter names to population::splitSubPop and operator splitSubPops.
   - NEW: Allow parameter infoFields to take single form values. Remove
 		population::addInfoField() because addInfoFields() now accepts single input.
+  - BUG: Fix a bug with persistent dirty signature.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.
