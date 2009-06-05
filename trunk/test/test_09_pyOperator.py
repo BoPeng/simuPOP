@@ -87,16 +87,16 @@ class TestPyOperator(unittest.TestCase):
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
                 if 1-pop.dvars().alleleFreq[i][0] < cutoff:
-                    KamMutate(pop, rate=mu1, loci=[i])
+                    KamMutate(pop, k=2, rate=mu1, loci=[i])
                 else:
-                    KamMutate(pop, rate=mu2, loci=[i])
+                    KamMutate(pop, k=2, rate=mu2, loci=[i])
         else:
             for i in range( pop.totNumLoci() ):
                 # 1-freq of wild type = total disease allele frequency
                 if 1-pop.dvars().alleleFreq[i][1] < cutoff:
-                    KamMutate(pop, maxAllele=2, rate=mu1, loci=[i])
+                    KamMutate(pop, k=2, rate=mu1, loci=[i])
                 else:
-                    KamMutate(pop, maxAllele=2, rate=mu2, loci=[i])
+                    KamMutate(pop, k=2, rate=mu2, loci=[i])
         return True
 
     def testDynaMutator(self):
