@@ -240,6 +240,7 @@ namespace std
 %implicitconv uintList;
 %implicitconv uintListFunc;
 %implicitconv floatListFunc;
+%implicitconv stringList;
 %implicitconv stringFunc;
 
 %include "utility.h"

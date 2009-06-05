@@ -1350,33 +1350,6 @@ subPops
 \end_layout
 
 \end_deeper
-\begin_layout Note
-Plural form parameters usually accept single inputs.
- For example, 
-\family typewriter
-loci=1
-\family default
- can be used as a shortcut for 
-\family typewriter
-loci=[1]
-\family default
-.
- An exception to this convention is list of strings (e.g.
- parameter 
-\family typewriter
-infoFields=['smoke']
-\family default
-) because a single string such as 
-\family typewriter
-infoFields='smoke'
-\family default
- will be interpreted as 
-\family typewriter
-infoFields=['s', 'm', 'o', 'k', 'e']
-\family default
-.
-\end_layout
-
 \begin_layout Chapter
 Core simuPOP components
 \begin_inset CommandInset label
@@ -2446,6 +2419,92 @@ lstparams "caption={The carray datatype},label={carraydatatype}"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Parameter names and single and list input of parameters
+\end_layout
+
+\begin_layout Standard
+simuPOP follows (at least tries to follow) the following naming convention:
+\end_layout
+
+\begin_layout Itemize
+If a parameter only accept a single input, singular names such as 
+\family typewriter
+field
+\family default
+, 
+\family typewriter
+locus
+\family default
+, 
+\family typewriter
+value
+\family default
+, and 
+\family typewriter
+name
+\family default
+ are used.
+\end_layout
+
+\begin_layout Itemize
+If a parameter accepts a list of values, plural names such as 
+\family typewriter
+fields
+\family default
+, 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+values
+\family default
+ and 
+\family typewriter
+names
+\family default
+ are used.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Plural form parameters usually accept single inputs.
+
+\series default
+ For example, 
+\family typewriter
+loci=1
+\family default
+ can be used as a shortcut for 
+\family typewriter
+loci=[1]
+\family default
+ and 
+\family typewriter
+infoFields='x'
+\family default
+ can be used as a shortcut for 
+\family typewriter
+infoFields=['x']
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The same rules also hold for function names.
+ For example, 
+\family typewriter
+population::addInfoFields()
+\family default
+ accept a list of information fields but 
+\family typewriter
+pop.addInfoFields('field')
+\family default
+ is also acceptable.
 \end_layout
 
 \begin_layout Section

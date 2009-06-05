@@ -135,7 +135,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops,
-	const vectorstr & infoFields)
+	const stringList & infoFields)
 	: mutator(vectorf(1, 0), loci, mapIn, mapOut, output, stage, begin, end, step,
 	          at, rep, subPops, infoFields)
 {

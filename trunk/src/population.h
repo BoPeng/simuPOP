@@ -181,7 +181,7 @@ public:
 		const vectorstr & alleleNames = vectorstr(),
 		const vectorstr & lociNames = vectorstr(),
 		const vectorstr & subPopNames = vectorstr(),
-		const vectorstr & infoFields = vectorstr());
+		const stringList & infoFields = stringList());
 
 	/// CPPONLY copy constructor
 	population(const population & rhs);
@@ -1180,24 +1180,18 @@ public:
 	}
 
 
-	/**	Add an information field \e field to a population and initialize its
-	 *  values to \e init.
-	 *  <group>8-info</group>
-	 */
-	void addInfoField(const string & field, double init = 0);
-
 	/** Add a list of information fields \e fields to a population and
 	 *  initialize their values to \e init. If an information field alreay
 	 *  exists, it will be re-initialized.
 	 * <group>8-info</group>
 	 */
-	void addInfoFields(const vectorstr & fields, double init = 0);
+	void addInfoFields(const stringList & fields, double init = 0);
 
 	/** Set information fields \e fields to a population and initialize them
 	 *  with value \e init. All existing information fields will be removed.
-	 * <group>8-info</group>
+	 *  <group>8-info</group>
 	 */
-	void setInfoFields(const vectorstr & fields, double init = 0);
+	void setInfoFields(const stringList & fields, double init = 0);
 
 	/** Update information fields \e fields from \e fromFields of another
 	 *  population (or pedigree) \e pop. Two populations should have the same
@@ -1206,8 +1200,8 @@ public:
 	 *  recent \e ancGen generations are updated.
 	 *  <group>8-info</group>
 	 */
-	void updateInfoFieldsFrom(const vectorstr & fields, const population & pop,
-		const vectorstr & fromFields = vectorstr(), int ancGen = -1);
+	void updateInfoFieldsFrom(const stringList & fields, const population & pop,
+		const stringList & fromFields = stringList(), int ancGen = -1);
 
 	/** set the intended ancestral depth of a population to \e depth, which can
 	 *  be \c 0 (does not store any ancestral generation), \c -1 (store all

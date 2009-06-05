@@ -61,7 +61,7 @@ public:
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(),
 		const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr())
+		const stringList & infoFields = stringList())
 		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex.elems())
 	{
@@ -134,7 +134,7 @@ public:
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr());
+		const stringList & infoFields = stringList());
 
 
 	~initByFreq()
@@ -202,7 +202,7 @@ public:
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr());
+		const stringList & infoFields = stringList());
 
 	~initByValue()
 	{

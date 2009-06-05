@@ -38,12 +38,12 @@
 namespace simuPOP {
 
 pedigree::pedigree(const population & pop, const vectoru & loci,
-	const vectorstr & infoFields, int ancGen,
+	const stringList & infoFields, int ancGen,
 	const string & fatherField, const string & motherField)
 	: m_fatherField(fatherField), m_motherField(motherField),
 	m_fatherIdx(-1), m_motherIdx(-1)
 {
-	vectorstr extractFields = infoFields;
+	vectorstr extractFields = infoFields.elems();
 
 	if (!m_fatherField.empty() && find(extractFields.begin(), extractFields.end(), fatherField) == extractFields.end())
 		extractFields.push_back(fatherField);

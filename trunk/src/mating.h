@@ -689,11 +689,11 @@ public:
 	 *  \e param and is usually used to locate qualified spouse for each parent.
 	 *  The return value of this function is ignored.
 	 */
-	infoParentsChooser(const vectorstr & infoFields = vectorstr(),
+	infoParentsChooser(const stringList & infoFields = stringList(),
 		PyObject * func = NULL, PyObject * param = NULL,
 		const string & selectionField = "fitness") :
 		randomParentChooser(true, selectionField),
-		m_infoFields(infoFields), m_func(func), m_param(param),
+		m_infoFields(infoFields.elems()), m_func(func), m_param(param),
 		m_infoIdx(0), m_degenerate(false)
 	{
 		DBG_FAILIF(m_infoFields.empty(), ValueError,

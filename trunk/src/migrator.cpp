@@ -30,7 +30,7 @@ namespace simuPOP {
 
 migrator::migrator(const matrix & rate, int mode, const uintList & toSubPops,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
+	const repList & rep, const subPopList & subPops, const stringList & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	m_rate(rate), m_mode(mode), m_to(toSubPops.elems())
 {
@@ -233,6 +233,8 @@ struct compareVSP
 	{
 		return v1.subPop() > v2.subPop();
 	}
+
+
 };
 
 bool splitSubPops::apply(population & pop)
@@ -296,7 +298,7 @@ bool mergeSubPops::apply(population & pop)
 
 	for (size_t i = 0; i < sp.size(); ++i)
 		subPops[i] = sp[i].subPop();
-	pop.mergeSubPops(subPops);
+	pop.mergeSubPops(subPops, m_name);
 	return true;
 }
 

@@ -68,7 +68,7 @@ public:
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr())
+		const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rate(rate.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
 		m_bt(rng()), m_initialized(false), m_mutCount(0)
@@ -173,7 +173,7 @@ public:
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
-		const vectorstr & infoFields = vectorstr());
+		const stringList & infoFields = stringList());
 
 	~matrixMutator()
 	{
@@ -221,11 +221,11 @@ public:
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
-	kamMutator(UINT k=0, const floatList & rate = floatList(), const uintList & loci = uintList(),
+	kamMutator(UINT k = 0, const floatList & rate = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rate, loci, mapIn, mapOut, output, stage, begin, end, step, at,
 		          rep, subPops, infoFields), m_k(k)
 	{
@@ -293,7 +293,7 @@ public:
 		UINT maxAllele = 0, double incProb = 0.5,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rate, loci, mapIn, mapOut, output, stage, begin,
 		          end, step, at, rep, subPops, infoFields),
 		m_maxAllele(maxAllele), m_incProb(incProb)
@@ -388,7 +388,7 @@ public:
 		UINT maxAllele = 0, double incProb = 0.5, double p = 0, PyObject * func = NULL,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rate, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_maxAllele(maxAllele), m_incProb(incProb), m_p(p), m_func(func)
 	{
@@ -460,12 +460,12 @@ public:
 	/// create a \c pyMutator
 	/**
 	 */
-	pyMutator(const floatList & rate = floatList(),	const uintList & loci = uintList(),
+	pyMutator(const floatList & rate = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		PyObject * func = NULL,
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rate, loci, mapIn, mapOut,
 		          output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)
@@ -516,12 +516,12 @@ public:
 
 	   Please see class \c mutator for the descriptions of other parameters.
 	 */
-	pointMutator(const uintList & loci,	Allele toAllele,
+	pointMutator(const uintList & loci, Allele toAllele,
 		vectoru atPloidy = vectoru(),
 		vectorlu inds = vectorlu(),
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const vectorstr & infoFields = vectorstr())
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_loci(loci.elems()), m_toAllele(toAllele),
 		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)

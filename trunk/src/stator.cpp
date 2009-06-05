@@ -281,7 +281,7 @@ stat::stat(
 	// regular parameters
 	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPops, const vectorstr & infoFields)
+	const repList & rep, const subPopList & subPops, const stringList & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
 	m_popSize(popSize),
@@ -418,10 +418,10 @@ bool statNumOfAffected::apply(population & pop)
 	m_numOfUnaffected.resize(numSP + 1);
 	if (m_evalInSubPop) {
 		for (size_t sp = 0; sp < numSP; ++sp) {
-            ULONG n = 0;
-            for (IndIterator it = pop.indIterator(sp); it.valid(); ++it)
-                if (it->affected())
-                    ++n;
+			ULONG n = 0;
+			for (IndIterator it = pop.indIterator(sp); it.valid(); ++it)
+				if (it->affected())
+					++n;
 			numOfAffected += n;
 			m_numOfAffected[sp] = n;
 			if (m_output_numOfAffected)
@@ -689,7 +689,7 @@ bool statHeteroFreq::apply(population & pop)
 
 			// go through all alleles
 			//?>> \todo here we assume diploid population
-            // FIXME: alleleIterator will jump over chromosome x and Y etc.
+			// FIXME: alleleIterator will jump over chromosome x and Y etc.
 			IndAlleleIterator a = pop.alleleIterator(loc, sp);
 			for (; a.valid(); a += 2) {
 				if (AlleleUnsigned(*a) >= num.size() )
@@ -1803,7 +1803,7 @@ statNeutrality::statNeutrality(const vectorlu & loci, const subPopList & subPops
 {
 	sort(m_loci.begin(), m_loci.end());
 	for (UINT i = 1; i < m_loci.size(); ++i) {
-		DBG_FAILIF(m_loci[i-1] == m_loci[i], ValueError, "Duplicated loci occurred in the loci list.");
+		DBG_FAILIF(m_loci[i - 1] == m_loci[i], ValueError, "Duplicated loci occurred in the loci list.");
 	}
 }
 
