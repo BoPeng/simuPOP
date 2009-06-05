@@ -130,7 +130,7 @@ class TestUtility(unittest.TestCase):
 
 
     def testSeed(self):
-        'repeated set rng() without seed, and see if the seed repeat'
+        'Testing RNG::seed() and RNG::setSeed()'
         import random
         seed = []
         name = AvailableRNGs()[0]
