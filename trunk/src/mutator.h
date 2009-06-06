@@ -33,35 +33,61 @@
 #include "operator.h"
 
 namespace simuPOP {
-/**
-   The base class of all functional mutators. It is not supposed to be called directly.
-   \n
-   Every mutator can specify \c rate (equal rate or different rates for different
-   loci) and a vector of applicable loci (default to all but should have the same
-   length as \c rate if \c rate has length greater than one).
-   \n
-   Maximum allele can be specified as well but more parameters, if needed, should
-   be implemented by individual mutator classes.
-   \n
-   There are numbers of possible allelic states. Most theoretical studies assume an infinite
-   number of allelic states to avoid any homoplasy. If it facilitates any analysis,
-   this is however extremely unrealistic.
+
+/** Class \c mutator is the base class of all mutators. It handles all the work
+ *  of picking an allele at specified loci from certain (virtual) subpopulation
+ *  with certain probability, and calling a derived mutator to mutate the
+ *  allele. Alleles can be changed before and after mutation if existing allele
+ *  numbers do not match those of a mutation model.
  */
 class mutator : public baseOperator
 {
 public:
-	/// create a mutator, do not call this constructor directly
-	/**
-	   All mutators have the following common parameters. However, the actual meaning
-	   of these parameters may vary according to different models. The only differences
-	   between the following mutators are the way they actually mutate an allele, and
-	   corresponding input parameters. The number of mutation events at each locus is
-	            recorded and can be accessed from the \c mutationCount or \c mutationCounts
-	            functions.
-
-	   \param rate can be a number (uniform rate) or an array of mutation rates (the same length as \c loci)
-	   \param loci a vector of locus indexes. Will be ignored only when single rate is specified.
-	    Default to all loci.
+	/** A mutator mutates alleles from one state to another with given
+	 *  probability. This base mutator does not perform any mutation but it
+	 *  defines common behaviors of all mutators.
+	 *
+	 *  By default, a mutator mutates all alleles in all populations of a
+	 *  simulator at all generations. A number of parameters can be used to
+	 *  restrict mutations to certain generations (parameters \e begin, \e end,
+	 *  \e step and \e at), replicate populations (parameter \e rep), (virtual)
+	 *  subpopulations (parameter \e subPops) and loci (parameter \e loci).
+	 *  Please refer to class \c baseOperator for a detailed explanation of
+	 *  these parameters.
+	 *
+	 *  Parameter \e rate or its equivalence specifies the probability that a
+	 *  a mutation event happens. The exact form and meaning of \e rate is
+	 *  mutator-specific. If a single rate is specified, it will be applied to
+	 *  all \e loci. If a list of mutation rates are given, they will be applied
+	 *  to each locus specified in parameter \e loci. Note that not all mutators
+	 *  allow specification of multiple mutation rate, especially when the
+	 *  mutation rate itself is a list or matrix.
+	 *
+	 *  Alleles at a locus are non-negative numbers 0, 1, ... up to the maximum
+	 *  allowed allele for the loaded module (1 for binary, 255 for short and
+	 *  65535 for long modules). Whereas some general mutation models treat
+	 *  alleles as numbers, other models assume specific interpretation of
+	 *  alleles. For example, an \c acgtMutator assumes alleles \c 0, \c 1,
+	 *  \c 2 and \c 3 as nucleotides \c A, \c C, \c G and \c T. Using a mutator
+	 *  that is incompatible with your simulation will certainly yield erroneous
+	 *  results.
+	 *
+	 *  If your simulation assumes different alleles with a mutation model, you
+	 *  can map an allele to the allele used in the model and map the mutated
+	 *  allele back. This is achieved using a \e mapIn list with its \c i-th
+	 *  item being the corresponding allele of real allele \c i, and a
+	 *  \e mapOut list with its \e i-th item being the real allele of allele
+	 *  \c i assumed in the model. For example <tt>mapIn=[0, 0, 1]</tt> and
+	 *  <tt>mapOut=[1, 2]</tt> would allow the use of a \c snpMutator to mutate
+	 *  between alleles 1 and 2, instead of 0 and 1. Parameters \e mapIn and
+	 *  \e mapOut also accept a user-defined Python function that returns
+	 *  a corresponding allele for a given allele. This allows easier mapping
+	 *  between a large number of alleles and advanced models such as random
+	 *  emission of alleles.
+	 *
+	 *  A mutator keeps track of number of mutation events happens at each
+	 *  locus. This count does not have to correspond to number of new mutants
+	 *  because some mutation events do not create new mutants.
 	 */
 	mutator(const floatList & rate = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
@@ -81,7 +107,6 @@ public:
 
 		if (m_rate.size() > 1 && !m_loci.empty() && m_rate.size() != m_loci.size() )
 			throw ValueError("If both rates and loci are specified, they should have the same length.");
-
 	}
 
 
@@ -98,7 +123,7 @@ public:
 	}
 
 
-	/// set an array of mutation rates
+	/// CPPONLY set an array of mutation rates
 	void setRate(const vectorf & rate, const vectorlu & loci = vectorlu())
 	{
 		if (rate.size() != 1 && rate.size() != loci.size() )
@@ -112,29 +137,23 @@ public:
 	}
 
 
-	/// return mutation count at \c locus
-	ULONG mutationCount(size_t locus)
-	{
-		DBG_ASSERT(locus < m_mutCount.size(), IndexError,
-			"locus index " + toStr(locus) + " is out of range");
-		return m_mutCount[locus];
-	}
-
-
-	/// return mutation counts
+	/** Return number of mutation events at all loci, including loci that are
+	 *  listed in parameter \e loci. Note that not all mutation events leads
+	 *  to a new mutant.
+	 */
 	vectoru mutationCounts()
 	{
 		return m_mutCount;
 	}
 
 
-	/// describe how to mutate a single allele
+	/// CPPONLY
 	virtual void mutate(AlleleRef allele)
 	{
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
 
-	/// apply a mutator
+	/// Apply a mutator
 	virtual bool apply(population & pop);
 
 private:
@@ -162,12 +181,26 @@ protected:
 	vectoru m_mutCount;
 };
 
-/**
- *
+/** A matrix mutator mutates alleles \c 0, \c 1, ..., \c n-1 using a \c n by
+ *  \c n matrix, which specifies the probability at which each allele mutates
+ *  to another. Conceptually speaking, this mutator goes through all mutable
+ *  allele and mutate it to another state according to probabilities
+ *  \f$p_{i0}$, \f$p_{i1}$, ... and \f$p_{i,n-1}$. Most alleles will not mutate
+ *  because \f$p_{ii}$ is usually close to 1. Only one mutation rate matrix
+ *  can be specified which will be used for all specified loci.
  */
 class matrixMutator : public mutator
 {
 public:
+	/** Create a mutator that mutates alleles \c 0, \c 1, ..., \c n-1 using a
+	 *  \c n by \c n matrix \c rate. Item \f$p_{ij}$ of this matrix specifies
+	 *  the probability at which allele \e i mutates to allele \e j. \f$p_{ii}$
+	 *  are ignored because they are automatically determined by \f$p_{ij}$,
+	 *  \f$j=0,...,n-1$. Only one mutation rate matrix can be specified which
+	 *  will be used for all loci in the applied population, or loci specified
+	 *  by parameter \e loci. Please refer to class \c mutator and
+	 *  \c baseOperator for detailed explanation of other parameters.
+	 */
 	matrixMutator(const matrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
 		const stringFunc & output = ">", int stage = PostMating,
@@ -175,12 +208,13 @@ public:
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList());
 
+	/// destructor.
 	~matrixMutator()
 	{
 	}
 
 
-	/// mutate to a state other than current state with equal probability
+	/// CPPONLY
 	virtual void mutate(AlleleRef allele);
 
 	/// deep copy of a \c matrixMutator
@@ -190,7 +224,7 @@ public:
 	}
 
 
-	/// used by Python print function to print out the general information of the \c kamMutator
+	///
 	virtual string __repr__()
 	{
 		return "<simuPOP::matrix mutator";
