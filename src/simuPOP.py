@@ -616,7 +616,7 @@ class randomSample(_sample):
 
     def prepareSample(self, pop):
         self.pedigree = pedigree(pop, fatherField='', motherField='')
-        self.pedigree.addInfoField('sample', -1)
+        self.pedigree.addInfoFields('sample', -1)
         return True
 
     def drawSample(self, pop):
@@ -676,7 +676,7 @@ class caseControlSample(_sample):
 
     def prepareSample(self, pop):
         self.pedigree = pedigree(pop, fatherField='', motherField='')
-        self.pedigree.addInfoField('sample', -1)
+        self.pedigree.addInfoFields('sample', -1)
         self.pedigree.setVirtualSplitter(affectionSplitter())
         return True
 
@@ -1113,16 +1113,8 @@ def KamMutate(pop, *args, **kwargs):
     kamMutator(*args, **kwargs).apply(pop)
 
 def SmmMutate(pop, *args, **kwargs):
+    'Function form of operator ``smmMutator``'
     smmMutator(*args, **kwargs).apply(pop)
-
-if smmMutator.__init__.__doc__ is not None:
-    SmmMutate.__doc__ = "Function version of operator smmMutator whose __init__ function is \n" + smmMutator.__init__.__doc__
-
-def GsmMutate(pop, *args, **kwargs):
-    gsmMutator(*args, **kwargs).apply(pop)
-
-if gsmMutator.__init__.__doc__ is not None:
-    GsmMutate.__doc__ = "Function version of operator gsmMutator whose __init__ function is \n" + gsmMutator.__init__.__doc__
 
 def PyMutate(pop, *args, **kwargs):
     pyMutator(*args, **kwargs).apply(pop)

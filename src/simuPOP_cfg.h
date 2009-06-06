@@ -153,11 +153,12 @@ enum ChromType {
 
 // For numOffspring and gene conversion
 enum Distribution {
-	BinomialDistribution = 21,
-	ExponentialDistribution = 22,
-	GeometricDistribution = 23,
-	PoissonDistribution = 24,
-	UniformDistribution = 25
+	Constant = 21,
+	BinomialDistribution = 22,
+	ExponentialDistribution = 23,
+	GeometricDistribution = 24,
+	PoissonDistribution = 25,
+	UniformDistribution = 26
 };
 
 // For sexMode
@@ -231,6 +232,7 @@ enum OperationType {
 	Decrement = 103,
 	MultipliedBy = 104,
 };
+
 
 #define DBG_CODE_LENGTH 20
 

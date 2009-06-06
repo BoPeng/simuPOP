@@ -652,18 +652,15 @@ class TestPopulation(unittest.TestCase):
         for i in range(2, 6):
             self.assertEqual(pop.subPopName(i), '')
 
-    def testAddInfoField(self):
-        'Testing population::addInfoField(field, init=0)'
+    def testAddInfoFields(self):
+        'Testing population::addInfoFields(fields, init=0)'
         pop = self.getPop()
-        pop1 = pop.addInfoField('fitness', 5.0)
+        pop1 = pop.addInfoFields('fitness', 5.0)
         self.assertEqual(pop.infoSize(), 2)
-        pop1 = pop.addInfoField('misc', 6.0)
+        pop1 = pop.addInfoFields('misc', 6.0)
         self.assertEqual(pop.infoSize(), 3)
         self.assertEqual(pop.indInfo('fitness'), tuple([5.0]*pop.popSize()))
         self.assertEqual(pop.indInfo('misc'), tuple([6.0]*pop.popSize()))
-
-    def testAddInfoFields(self):
-        'Testing population::addInfoFields(fields, init=0)'
         pop = self.getPop()
         pop1 = pop.addInfoFields(['x', 'fitness', 'misc'],  2.0)
         self.assertEqual(pop.infoSize(), 3)

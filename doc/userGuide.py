@@ -47,7 +47,7 @@ simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
     preOps = [initByValue([1, 2, 2, 1])],  
     ops = [
-        recombinator(rate=0.01),
+        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=10),
         pyOutput('\n', rep=-1, step=10)
@@ -142,7 +142,7 @@ simu.evolve(
     preOps = [initByValue([0]*20+[1]*20)],
     ops = [
         parentsTagger(),
-        recombinator(rate=0.01)
+        recombinator(rates=0.01)
     ],
     gen = 1
 )
@@ -481,7 +481,7 @@ simu = simulator(population(size=1000, loci=[2]), randomMating(), rep=3)
 simu.evolve(
     preOps = [initByValue([1, 2, 2, 1])],  
     ops = [
-        recombinator(rate=0.01),
+        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
         pyOutput('\n', rep=-1, step=20, output='>>LD.txt'),
@@ -516,7 +516,7 @@ simu = simulator(population(size=1000, loci=[2]), randomMating())
 simu.evolve(
     preOps = [initByValue([1, 2, 2, 1])],  
     ops = [
-        recombinator(rate=0.01),
+        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'LD: %d, %.2f' % (gen, LD[0][1])", step=20,
             output=logger.info),   # send LD to console and a logfile
@@ -540,7 +540,7 @@ simu.evolve(
         # Recombination only happens after generation 30. A
         # mendelianGenoTransmitter defined in randomMating is responsible
         # for genotype transmission before that.
-        recombinator(rate=0.01, begin=30),
+        recombinator(rates=0.01, begin=30),
         stat(LD=[0, 1]),
         pyEval(r"'gen %d, LD: %.2f\n' % (gen, LD[0][1])", step=20)
     ],
@@ -580,9 +580,9 @@ def dynaMutator(pop, param):
     for i in range(pop.totNumLoci()):
         # Get the frequency of allele 1 (disease allele)
         if pop.dvars().alleleFreq[i][1] < cutoff:
-            KamMutate(pop, k=2, rate=mu1, loci=[i])
+            KamMutate(pop, k=2, rates=mu1, loci=[i])
         else:
-            KamMutate(pop, k=2, rate=mu2, loci=[i])
+            KamMutate(pop, k=2, rates=mu2, loci=[i])
     return True
 
 simu = simulator(population(size=10000, loci=[2, 3]),
@@ -636,9 +636,9 @@ class dynaMutator(pyOperator):
         for i in range(pop.totNumLoci()):
             # Get the frequency of allele 1 (disease allele)
             if pop.dvars().alleleFreq[i][1] < self.cutoff:
-                KamMutate(pop, k=2, rate=self.mu1, loci=[i])
+                KamMutate(pop, k=2, rates=self.mu1, loci=[i])
             else:
-                KamMutate(pop, k=2, rate=self.mu2, loci=[i])
+                KamMutate(pop, k=2, rates=self.mu2, loci=[i])
         return True
 
 simu = simulator(population(size=10000, loci=[2, 3]),
@@ -871,7 +871,7 @@ for idx, ind in enumerate(pop.individuals()):
 
 simu = simulator(pop, selfMating())
 simu.evolve(
-    ops = [recombinator(rate=0.1)],
+    ops = [recombinator(rates=0.1)],
     gen = 1
 )
 Dump(simu.population(0), width=3, structure=False, max=10)
@@ -1009,7 +1009,7 @@ simu = simulator(pop, randomMating(ops=[mitochondrialGenoTransmitter()]))
 simu.evolve(
     preOps=[initByFreq([0.4] + [0.2]*3)],
     ops=[
-        recombinator(rate=0.1),
+        recombinator(rates=0.1),
         parentsTagger(),
         dumper(structure=False),
     ],
@@ -1020,13 +1020,13 @@ simu.evolve(
 
 #file log/sexSpecificRec.log
 class sexSpecificRecombinator(pyOperator):
-    def __init__(self, intensity=0, rate=0, loci=[], convMode=NoConversion,
-            maleIntensity=0, maleRate=0, maleLoci=[], maleConvMode=NoConversion,
+    def __init__(self, intensity=0, rates=0, loci=[], convMode=NoConversion,
+            maleIntensity=0, maleRates=0, maleLoci=[], maleConvMode=NoConversion,
             *args, **kwargs):
         # This operator is used to recombine maternal chromosomes
-        self.recombinator = recombinator(intensity, rate, loci, convMode)
+        self.recombinator = recombinator(rates, intensity, loci, convMode)
         # This operator is used to recombine paternal chromosomes
-        self.maleRecombinator = recombinator(maleIntensity, maleRate,
+        self.maleRecombinator = recombinator(maleRates, maleIntensity,
             maleLoci, maleConvMode)
         #
         self.initialized = False
@@ -1052,7 +1052,7 @@ simu.evolve(
     preOps=[initByFreq([0.4] + [0.2]*3)],
     ops=[
         parentsTagger(),
-        sexSpecificRecombinator(rate=0.1, maleRate=0),
+        sexSpecificRecombinator(rates=0.1, maleRates=0),
         dumper(structure=False),
     ],
     gen = 2
@@ -1721,8 +1721,8 @@ simu = simulator(population(size=[1000], loci=[100]),
 simu.evolve(
     preOps = [initByValue([0]*100 + [1]*100)],
     ops = [
-        recombinator(rate=0.01, rep=0),
-        recombinator(rate=[0.01]*10, loci=range(50, 60), rep=1),
+        recombinator(rates=0.01, rep=0),
+        recombinator(rates=[0.01]*10, loci=range(50, 60), rep=1),
         stat(LD=[[40, 55], [60, 70]]),
         pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[60][70])'),
         pyOutput('\n', rep=-1)
@@ -1751,8 +1751,8 @@ simu = simulator(population(size=[1000], loci=[100]),
 simu.evolve(
     preOps = [initByValue([0]*100 + [1]*100)],
     ops = [
-        recombinator(rate=0.01, loci=50, rep=0),
-        recombinator(rate=0.01, loci=50, rep=1,
+        recombinator(rates=0.01, loci=50, rep=0),
+        recombinator(rates=0.01, loci=50, rep=1,
             convMode=(NumMarkers, 1, 10)),
         stat(LD=[[40, 55], [40, 70]]),
         pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[40][70])'),
@@ -1788,7 +1788,7 @@ simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [initSex()],
     ops = [
-        kamMutator(k=5, rate=[1e-2, 1e-3], loci=[0, 1]),
+        kamMutator(k=5, rates=[1e-2, 1e-3], loci=[0, 1]),
         stat(alleleFreq=range(3), step=100),
         pyEval(r"', '.join(['%.3f' % alleleFreq[x][0] for x in range(3)]) + '\n'",
             step=100),
@@ -1835,7 +1835,7 @@ simu = simulator(pop, randomMating())
 simu.evolve(
     preOps = [initByFreq([0]*4 + [0.1, 0.2, 0.3, 0.4])],
     ops = [
-        kamMutator(k=4, rate=1e-4, mapIn=[0]*4 + range(4),
+        kamMutator(k=4, rates=1e-4, mapIn=[0]*4 + range(4),
             mapOut=[4, 5, 6, 7]),
         stat(alleleFreq=[0], step=100),
         pyEval(r"', '.join(['%.2f' % alleleFreq[0][x] for x in range(8)]) + '\n'",
@@ -1853,7 +1853,7 @@ simu = simulator(pop, randomMating(), rep=3)
 simu.evolve(
     preOps = [initByValue([1, 2, 2, 1])],  
     ops = [
-        recombinator(rate=0.01),
+        recombinator(rates=0.01),
         stat(LD=[0, 1]),
         varPlotter('LD[0][1]', step=5, update=40, saveAs='log/rpy.png',
             legend=['Replicate %d' % x for x in range(3)],
@@ -2237,7 +2237,7 @@ def simulate(model, N0, N1, G0, G1, spec, s, mu, k):
     simu.evolve(
         preOps=[initByFreq(loci=[0], alleleFreq=spec)],
         ops=[
-            kamMutator(k=k, rate=mu),
+            kamMutator(k=k, rates=mu),
             maSelector(loci=0, fitness=[1, 1, 1 - s], wildtype=0),
             ne(loci=[0], step=100),
             pyEval(r'"%d: %.2f\t%.2f\n" % (gen, 1 - alleleFreq[0][0], ne[0])',
@@ -2443,30 +2443,7 @@ simu = simulator(population(size=300, loci=[3, 5]), randomMating())
 simu.evolve(
     preOps = [initByFreq( [.2, .3, .5])],
     ops = [
-        smmMutator(rate=1,  incProb=.8),
-    ],
-    gen=1
-)
-#end
-
-#file log/gsmMutator.log
-import random
-simu = simulator(population(size=300, loci=[3, 5]), randomMating())
-simu.evolve(
-    preOps = [initByFreq( [.2, .3, .5])],
-    ops = [
-        gsmMutator(rate=1, p=.8, incProb=.8),
-    ],
-    gen=1
-)
-
-def rndInt():
-  return random.randrange(3, 6)
-
-simu.evolve(
-    preOps = [initByFreq( [.2, .3, .5])],
-    ops = [
-        gsmMutator(rate=1, func=rndInt, incProb=.8),
+        smmMutator(rates=1, mode=(Constant, .8)),
     ],
     gen=1
 )

@@ -201,7 +201,7 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertEqual(famSize, [2]*500+[4]*250)
 
         # virtual subpopulation
-        pop = population(size =[1000, 1000], loci=[2], infoFields=['father_idx', 'mother_idx'])
+        pop = population(size =[2000, 2000], loci=[2], infoFields=['father_idx', 'mother_idx'])
         pop.setVirtualSplitter(proportionSplitter([0.2, 0.8]))
         simu = simulator(pop, heteroMating(
             matingSchemes = [
@@ -225,7 +225,7 @@ class TestMatingSchemes(unittest.TestCase):
             else:
                 lastParent = parent
                 famSize.append(1)
-        self.assertEqual(famSize, [1]*1000+[2]*500)
+        self.assertEqual(famSize, [1]*2000+[2]*1000)
          
     def testPolygamousMating(self):
         'Testing polygamous mating scheme'

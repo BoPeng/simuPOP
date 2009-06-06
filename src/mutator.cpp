@@ -49,17 +49,17 @@ void mutator::initialize(population & pop)
 #endif
 
 	// all use the same rate
-	if (m_rate.size() < m_loci.size() ) {
-		m_rate.resize(m_loci.size());
-		fill(m_rate.begin() + 1, m_rate.end(), m_rate[0]);
+	if (m_rates.size() < m_loci.size() ) {
+		m_rates.resize(m_loci.size());
+		fill(m_rates.begin() + 1, m_rates.end(), m_rates[0]);
 	}
 
-	m_bt.setParameter(m_rate, pop.ploidy() * pop.popSize());
+	m_bt.setParameter(m_rates, pop.ploidy() * pop.popSize());
 
 #ifndef OPTIMIZED
-	for (size_t i = 0; i < m_rate.size(); ++i)
-		if (fcmp_lt(m_rate[i], 0.) || fcmp_gt(m_rate[i], 1.) )
-			throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rate[i]));
+	for (size_t i = 0; i < m_rates.size(); ++i)
+		if (fcmp_lt(m_rates[i], 0.) || fcmp_gt(m_rates[i], 1.) )
+			throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rates[i]));
 #endif
 	if (pop.totNumLoci() != m_mutCount.size())
 		m_mutCount.resize(pop.totNumLoci(), 0);
@@ -72,7 +72,7 @@ bool mutator::apply(population & pop)
 	if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
 		initialize(pop);
 		DBG_DO(DBG_MUTATOR, cout << "Reinitialize mutator at loci" << m_loci <<
-			" at rate " << m_rate << endl);
+			" at rate " << m_rates << endl);
 	}
 
 	DBG_DO(DBG_MUTATOR, cout << "Mutate replicate " << pop.rep() << endl);
@@ -204,26 +204,77 @@ void kamMutator::mutate(AlleleRef allele)
 }
 
 
-void gsmMutator::mutate(AlleleRef allele)
+smmMutator::smmMutator(const floatList & rates, const uintList & loci, const floatList & mode,
+	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
+	int stage, int begin, int end, int step, const intList & at,
+	const repList & rep, const subPopList & subPops, const stringList & infoFields)
+	: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
+	m_mode(mode.elems())
 {
-	int step;
+#ifdef BINARYALLELE
+	DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
+#endif
+	if (m_mode.empty()) {
+		m_mode.push_back(Constant);
+		m_mode.push_back(0.5);
+		m_mode.push_back(MaxAllele());
+	} else if (m_mode[0] == Constant) {
+		if (m_mode.size() == 1)
+			m_mode.push_back(0.5);
+		if (m_mode.size() == 2)
+			m_mode.push_back(MaxAllele());
+		//
+		DBG_ASSERT(fcmp_ge(m_mode[1], 0.) && fcmp_le(m_mode[1], 1.),
+			ValueError, "Inc probability should be between [0,1], given " + toStr(m_mode[1]));
+		if (m_mode[2] == 0)
+			m_mode[2] = MaxAllele();
+		if (m_mode[2] > MaxAllele())
+			throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
+	} else if (m_mode[0] == GeometricDistribution) {
+		DBG_FAILIF(m_mode.size() == 1, ValueError,
+			"Please specify a parameter to the geometric distribution.");
+		if (m_mode.size() == 2)
+			m_mode.push_back(0.5);
+		if (m_mode.size() == 3)
+			m_mode.push_back(MaxAllele());
+		//
+		DBG_ASSERT(fcmp_ge(m_mode[2], 0.) && fcmp_le(m_mode[2], 1.),
+			ValueError, "Inc probability should be between [0,1], given " + toStr(m_mode[2]));
+		if (m_mode[3] == 0)
+			m_mode[3] = MaxAllele();
+		if (m_mode[3] > MaxAllele())
+			throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
+	} else
+		throw ValueError("Unrecognized mutation mode.");
+}
 
-	if (!m_func.isValid())  // use a geometric distribution.
-		step = rng().randGeometric(m_p);
-	else
-		step = m_func(PyObj_As_Int, "()");
 
-	DBG_DO(DBG_MUTATOR, cout << "step is " << step << endl);
+void smmMutator::mutate(AlleleRef allele)
+{
+	UINT step = 0;
+	double incProb = 0.5;
+	UINT maxAllele = 0;
+
+	if (static_cast<UINT>(m_mode[0]) == Constant) {
+		step = 1;
+		incProb = m_mode[1];
+		maxAllele = static_cast<UINT>(m_mode[2]);
+	} else if (static_cast<UINT>(m_mode[0]) == GeometricDistribution) {
+		step = rng().randGeometric(m_mode[1]);
+		incProb = m_mode[2];
+		maxAllele = static_cast<UINT>(m_mode[3]);
+	} else
+		throw RuntimeError("Wrong stepwise mutation mode");
 
 	// increase
-	if (rng().randUniform01() < m_incProb) {
+	if (rng().randUniform01() < incProb) {
 #ifdef BINARYALLELE
 		allele = 1;
 #else
-		if (static_cast<UINT>(allele + step) < m_maxAllele)
+		if (static_cast<UINT>(allele + step) < maxAllele)
 			AlleleAdd(allele, step);
 		else
-			allele = static_cast<Allele>(m_maxAllele);
+			allele = ToAllele(maxAllele);
 #endif
 	}
 	// decrease

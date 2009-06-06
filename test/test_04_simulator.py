@@ -73,7 +73,7 @@ class TestSimulator(unittest.TestCase):
         simu.evolve(
             preOps = [initByFreq([0.2, 0.8])],
             ops = [
-                recombinator(rate=0.001),
+                recombinator(rates=0.001),
                 stat(alleleFreq=[1]),
             ],
             postOps = [stat()],
@@ -163,7 +163,7 @@ class TestSimulator(unittest.TestCase):
     def testIntegrity(self):
         'Testing checking of simulator integrity'
         simu = simulator(population(1), cloneMating())
-        simu.population(0).addInfoField('something')
+        simu.population(0).addInfoFields('something')
         # one can not change the genotype structure of the populations
         # in a simulator
         self.assertRaises(exceptions.ValueError, simu.evolve, ops=[])

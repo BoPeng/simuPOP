@@ -1694,107 +1694,6 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::gsmMutator "
-
-Function form:
-
-    GsmMutate
-
-Description:
-
-    generalized stepwise mutation model
-
-Details:
-
-    The Generalized Stepwise Mutation model (GSM) is an extension to
-    the stepwise mutation model. This model assumes that alleles are
-    represented by integer values and that a mutation either increases
-    or decreases the allele value by a random value. In other words,
-    in this model the change in the allelic state is drawn from a
-    random distribution. A geometric generalized stepwise model uses a
-    geometric distribution with parameter $ p $, which has mean $
-    \\frac{p}{1-p} $ and variance $ \\frac{p}{\\left(1-p\\right)^{2}} $.
-    gsmMutator implements both models. If you specify a Python
-    function without a parameter, this mutator will use its return
-    value each time a mutation occur; otherwise, a parameter $ p $
-    should be provided and the mutator will act as a geometric
-    generalized stepwise model.
-
-"; 
-
-%feature("docstring") simuPOP::gsmMutator::gsmMutator "
-
-Description:
-
-    create a gsmMutator
-
-Usage:
-
-    gsmMutator(rate=[], loci=[], mapIn=[], mapOut=[], maxAllele=0,
-      incProb=0.5, p=0, func=None, output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
-
-Details:
-
-    The GSM model is developed for allozymes. It provides better
-    description for these kinds of evolutionary processes.   Please
-    see class mutator for the descriptions of other parameters.
-
-Arguments:
-
-    incProb:        probability to increase allele state. Default to
-                    0.5.
-    func:           a function that returns the number of steps. This
-                    function does not accept any parameter.
-
-"; 
-
-%feature("docstring") simuPOP::gsmMutator::~gsmMutator "
-
-Usage:
-
-    x.~gsmMutator()
-
-"; 
-
-%feature("docstring") simuPOP::gsmMutator::clone "
-
-Description:
-
-    deep copy of a gsmMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::gsmMutator::mutate "
-
-Description:
-
-    mutate according to the GSM model
-
-Usage:
-
-    x.mutate(allele)
-
-"; 
-
-%feature("docstring") simuPOP::gsmMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the gsmMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::haplodiploidGenoTransmitter "
 
 Details:
@@ -3313,94 +3212,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::kamMutator "
-
-Function form:
-
-    KamMutate
-
-Details:
-
-    This mutator mutate an allele to another allelic state with equal
-    probability. The specified mutation rate is actually the
-    'probability to mutate'. So the mutation rate to any other allelic
-    state is actually $ \\frac{rate}{K-1} $, where $ K $ is specified
-    by parameter maxAllele.
-
-"; 
-
-%feature("docstring") simuPOP::kamMutator::kamMutator "
-
-Description:
-
-    create a K-Allele Model mutator
-
-Usage:
-
-    kamMutator(k=0, rate=[], loci=[], mapIn=[], mapOut=[],
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
-
-Details:
-
-    Please see class mutator for the descriptions of other parameters.
-
-Arguments:
-
-    rate:           mutation rate. It is the 'probability to mutate'.
-                    The actual mutation rate to any of the other K-1
-                    allelic states are rate/(K-1).
-    maxAllele:      maximum allele that can be mutated to. For binary
-                    libraries, allelic states will be [0, maxAllele].
-                    Otherwise, they are [1, maxAllele].
-
-"; 
-
-%feature("docstring") simuPOP::kamMutator::~kamMutator "
-
-Usage:
-
-    x.~kamMutator()
-
-"; 
-
-%feature("docstring") simuPOP::kamMutator::mutate "
-
-Description:
-
-    mutate to a state other than current state with equal probability
-
-Usage:
-
-    x.mutate(allele)
-
-"; 
-
-%feature("docstring") simuPOP::kamMutator::clone "
-
-Description:
-
-    deep copy of a kamMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::kamMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the kamMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %feature("docstring") simuPOP::maPenetrance "
 
 Function form:
@@ -4000,65 +3811,6 @@ Usage:
 %ignore simuPOP::mating::mate(population &pop, population &scratch, vector< baseOperator * > &ops);
 
 %ignore simuPOP::mating::prepareScratchPop(population &pop, population &scratch);
-
-%feature("docstring") simuPOP::matrixMutator "
-
-"; 
-
-%feature("docstring") simuPOP::matrixMutator::matrixMutator "
-
-Usage:
-
-    matrixMutator(rate, loci=[], mapIn=[], mapOut=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::matrixMutator::~matrixMutator "
-
-Usage:
-
-    x.~matrixMutator()
-
-"; 
-
-%feature("docstring") simuPOP::matrixMutator::mutate "
-
-Description:
-
-    mutate to a state other than current state with equal probability
-
-Usage:
-
-    x.mutate(allele)
-
-"; 
-
-%feature("docstring") simuPOP::matrixMutator::clone "
-
-Description:
-
-    deep copy of a matrixMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::matrixMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the kamMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
 
 %feature("docstring") simuPOP::mendelianGenoTransmitter "
 
@@ -4685,50 +4437,63 @@ Usage:
 
 Details:
 
-    The base class of all functional mutators. It is not supposed to
-    be called directly.
-    Every mutator can specify rate (equal rate or different rates for
-    different loci) and a vector of applicable loci (default to all
-    but should have the same length as rate if rate has length greater
-    than one).
-    Maximum allele can be specified as well but more parameters, if
-    needed, should be implemented by individual mutator classes.
-    There are numbers of possible allelic states. Most theoretical
-    studies assume an infinite number of allelic states to avoid any
-    homoplasy. If it facilitates any analysis, this is however
-    extremely unrealistic.
+    Class mutator is the base class of all mutators. It handles all
+    the work of picking an allele at specified loci from certain
+    (virtual) subpopulation with certain probability, and calling a
+    derived mutator to mutate the allele. Alleles can be changed
+    before and after mutation if existing allele numbers do not match
+    those of a mutation model.
 
 "; 
 
 %feature("docstring") simuPOP::mutator::mutator "
 
-Description:
-
-    create a mutator, do not call this constructor directly
-
 Usage:
 
-    mutator(rate=[], loci=[], mapIn=[], mapOut=[], output=\">\",
+    mutator(rates=[], loci=[], mapIn=[], mapOut=[], output=\">\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
 
 Details:
 
-    All mutators have the following common parameters. However, the
-    actual meaning of these parameters may vary according to different
-    models. The only differences between the following mutators are
-    the way they actually mutate an allele, and corresponding input
-    parameters. The number of mutation events at each locus is
-    recorded and can be accessed from the mutationCount or
-    mutationCounts functions.
-
-Arguments:
-
-    rate:           can be a number (uniform rate) or an array of
-                    mutation rates (the same length as loci)
-    loci:           a vector of locus indexes. Will be ignored only
-                    when single rate is specified. Default to all
-                    loci.
+    A mutator mutates alleles from one state to another with given
+    probability. This base mutator does not perform any mutation but
+    it defines common behaviors of all mutators.  By default, a
+    mutator mutates all alleles in all populations of a simulator at
+    all generations. A number of parameters can be used to restrict
+    mutations to certain generations (parameters begin, end, step and
+    at), replicate populations (parameter rep), (virtual)
+    subpopulations (parameter subPops) and loci (parameter loci).
+    Please refer to class baseOperator for a detailed explanation of
+    these parameters.  Parameter rate or its equivalence specifies the
+    probability that a a mutation event happens. The exact form and
+    meaning of rate is mutator-specific. If a single rate is
+    specified, it will be applied to all loci. If a list of mutation
+    rates are given, they will be applied to each locus specified in
+    parameter loci. Note that not all mutators allow specification of
+    multiple mutation rate, especially when the mutation rate itself
+    is a list or matrix.  Alleles at a locus are non-negative numbers
+    0, 1, ... up to the maximum allowed allele for the loaded module
+    (1 for binary, 255 for short and 65535 for long modules). Whereas
+    some general mutation models treat alleles as numbers, other
+    models assume specific interpretation of alleles. For example, an
+    acgtMutator assumes alleles 0, 1, 2 and 3 as nucleotides A, C, G
+    and T. Using a mutator that is incompatible with your simulation
+    will certainly yield erroneous results.  If your simulation
+    assumes different alleles with a mutation model, you can map an
+    allele to the allele used in the model and map the mutated allele
+    back. This is achieved using a mapIn list with its i-th item being
+    the corresponding allele of real allele i, and a mapOut list with
+    its i-th item being the real allele of allele i assumed in the
+    model. For example mapIn=[0, 0, 1] and mapOut=[1, 2] would allow
+    the use of a snpMutator to mutate between alleles 1 and 2, instead
+    of 0 and 1. Parameters mapIn and mapOut also accept a user-defined
+    Python function that returns a corresponding allele for a given
+    allele. This allows easier mapping between a large number of
+    alleles and advanced models such as random emission of alleles.  A
+    mutator keeps track of number of mutation events happens at each
+    locus. This count does not have to correspond to number of new
+    mutants because some mutation events do not create new mutants.
 
 "; 
 
@@ -4756,59 +4521,29 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::mutator::setRate "
-
-Description:
-
-    set an array of mutation rates
-
-Usage:
-
-    x.setRate(rate, loci=[])
-
-"; 
-
-%feature("docstring") simuPOP::mutator::mutationCount "
-
-Description:
-
-    return mutation count at locus
-
-Usage:
-
-    x.mutationCount(locus)
-
-"; 
+%ignore simuPOP::mutator::setRate(const vectorf &rates, const vectorlu &loci=vectorlu());
 
 %feature("docstring") simuPOP::mutator::mutationCounts "
-
-Description:
-
-    return mutation counts
 
 Usage:
 
     x.mutationCounts()
 
-"; 
+Details:
 
-%feature("docstring") simuPOP::mutator::mutate "
-
-Description:
-
-    describe how to mutate a single allele
-
-Usage:
-
-    x.mutate(allele)
+    Return number of mutation events at all loci, including loci that
+    are listed in parameter loci. Note that not all mutation events
+    leads to a new mutant.
 
 "; 
+
+%ignore simuPOP::mutator::mutate(AlleleRef allele);
 
 %feature("docstring") simuPOP::mutator::apply "
 
 Description:
 
-    apply a mutator
+    Apply a mutator.
 
 Usage:
 
@@ -5568,123 +5303,6 @@ Usage:
 "; 
 
 %ignore simuPOP::pedigreeTagger::apply(population &pop);
-
-%feature("docstring") simuPOP::pointMutator "
-
-Function form:
-
-    PointMutate
-
-Description:
-
-    point mutator
-
-Details:
-
-    Mutate specified individuals at specified loci to a spcified
-    allele. I.e., this is a non-random mutator used to introduce
-    diseases etc. pointMutator, as its name suggest, does point
-    mutation. This mutator will turn alleles at loci on the first
-    chromosome copy to toAllele for individual inds. You can specify
-    atPloidy to mutate other, or all ploidy copies.
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::pointMutator "
-
-Description:
-
-    create a pointMutator
-
-Usage:
-
-    pointMutator(loci, toAllele, atPloidy=[], inds=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
-
-Details:
-
-    Please see class mutator for the descriptions of other parameters.
-
-Arguments:
-
-    inds:           individuals who will mutate
-    toAllele:       allele that will be mutate to
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::~pointMutator "
-
-Description:
-
-    destructor
-
-Usage:
-
-    x.~pointMutator()
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::clone "
-
-Description:
-
-    deep copy of a pointMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::apply "
-
-Description:
-
-    apply a pointMutator
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pointMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::mutationCount "
-
-Description:
-
-    return mutation count at locus
-
-Usage:
-
-    x.mutationCount(locus)
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::mutationCounts "
-
-Description:
-
-    return mutation counts
-
-Usage:
-
-    x.mutationCounts()
-
-"; 
 
 %feature("docstring") simuPOP::polyParentsChooser "
 
@@ -7174,77 +6792,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::pyMutator "
-
-Function form:
-
-    PyMutate
-
-Description:
-
-    A hybrid mutator.
-
-Details:
-
-    Parameters such as mutation rate of this operator are set just
-    like others and you are supposed to provide a Python function to
-    return a new allele state given an old state. pyMutator will
-    choose an allele as usual and call your function to mutate it to
-    another allele.
-
-"; 
-
-%feature("docstring") simuPOP::pyMutator::pyMutator "
-
-Description:
-
-    create a pyMutator
-
-Usage:
-
-    pyMutator(rate=[], loci=[], mapIn=[], mapOut=[], func=None,
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
-
-"; 
-
-%feature("docstring") simuPOP::pyMutator::clone "
-
-Description:
-
-    deep copy of a pyMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::pyMutator::mutate "
-
-Description:
-
-    mutate according to the mixed model
-
-Usage:
-
-    x.mutate(allele)
-
-"; 
-
-%feature("docstring") simuPOP::pyMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the pyMutator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
 %ignore simuPOP::pyObject;
 
 %feature("docstring") simuPOP::pyObject::pyObject "
@@ -8155,7 +7702,7 @@ Note:
 
 Usage:
 
-    recombinator(rate=[], intensity=-1, loci=[],
+    recombinator(rates=[], intensity=-1, loci=[],
       convMode=NoConversion, begin=0, end=-1, step=1, at=[], rep=[],
       subPops=[], infoFields=[])
 
@@ -8169,10 +7716,10 @@ Details:
     specifies a recombination point between the locus and the locus
     immediately before it. Loci that are the first locus on each
     chromosome are ignored.  If a single recombination rate (parameter
-    rate) is specified, it will used for all loci (all loci or loci
+    rates) is specified, it will used for all loci (all loci or loci
     specified by parameter loci), regardless of physical distances
     between adjacent loci.  If a list of recombination rates are
-    specified in rate, a parameter loci with the same length should
+    specified in rates, a parameter loci with the same length should
     also be specified. Different recombination rates can then be used
     for these loci.  A recombination intensity (intensity) can be used
     to specify recombination rates that are proportional to physical
@@ -9514,86 +9061,6 @@ Details:
 Description:
 
     of the simulator
-
-Usage:
-
-    x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::smmMutator "
-
-Function form:
-
-    SmmMutate
-
-Description:
-
-    The stepwise mutation model.
-
-Details:
-
-    The Stepwise Mutation Model (SMM) assumes that alleles are
-    represented by integer values and that a mutation either increases
-    or decreases the allele value by one. For variable number tandem
-    repeats(VNTR) loci, the allele value is generally taken as the
-    number of tandem repeats in the DNA sequence.
-
-"; 
-
-%feature("docstring") simuPOP::smmMutator::smmMutator "
-
-Description:
-
-    create a SMM mutator
-
-Usage:
-
-    smmMutator(rate=[], loci=[], mapIn=[], mapOut=[], maxAllele=0,
-      incProb=0.5, output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
-
-Details:
-
-    The SMM is developed for allozymes. It provides better description
-    for these kinds of evolutionary processes.   Please see class
-    mutator for the descriptions of other parameters.
-
-Arguments:
-
-    incProb:        probability to increase allele state. Default to
-                    0.5.
-
-"; 
-
-%feature("docstring") simuPOP::smmMutator::~smmMutator "
-
-Usage:
-
-    x.~smmMutator()
-
-"; 
-
-%ignore simuPOP::smmMutator::mutate(AlleleRef allele);
-
-%feature("docstring") simuPOP::smmMutator::clone "
-
-Description:
-
-    deep copy of a smmMutator
-
-Usage:
-
-    x.clone()
-
-"; 
-
-%feature("docstring") simuPOP::smmMutator::__repr__ "
-
-Description:
-
-    used by Python print function to print out the general information
-    of the smmMutator
 
 Usage:
 

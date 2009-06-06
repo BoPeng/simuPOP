@@ -35,10 +35,10 @@ class TestOperator(unittest.TestCase):
         simu.evolve(
             preOps = [initByFreq([0.2, 0.8])],
             ops = [
-                recombinator(rate=0.001),
+                recombinator(rates=0.001),
                 stat(stage=PrePostMating),
                 stat(alleleFreq=[1]),
-                kamMutator(k=10, rate=0.00005, loci=[0,2])
+                kamMutator(k=10, rates=0.00005, loci=[0,2])
             ],
             postOps = [stat()],
             #dryrun=True,
