@@ -118,7 +118,7 @@ class TestMutator(unittest.TestCase):
         simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
             randomMating() )
         simu.evolve(preOps = [initSex()],
-            ops = [ kamMutator(k=2, rate=0.5, loci=[1,4])], gen=200)
+            ops = [ kamMutator(k=2, rates=0.5, loci=[1,4])], gen=200)
         self.assertGenotype(simu.population(0), 0,
             loci=[0,2,3])
 
@@ -187,14 +187,14 @@ class TestMutator(unittest.TestCase):
         # simu.apply( [ initByFreq([.2,.8])])
         simu.evolve(
                 preOps = [ initByFreq([.2,.8])],
-                ops = [ kamMutator(k=2, rate=0.1)],
+                ops = [ kamMutator(k=2, rates=0.1)],
                 gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         simu.evolve(
             preOps = [initSex()],
-            ops = [ kamMutator(k=2, rate=0.1, loci=[0,4])],
+            ops = [ kamMutator(k=2, rates=0.1, loci=[0,4])],
             gen = 1)
         # frequency seems to be OK.
         self.assertGenotypeFreq(simu.population(0),
@@ -210,12 +210,12 @@ class TestMutator(unittest.TestCase):
             randomMating(), rep=5)
         # simu.apply( [ initByFreq([.2,.8])])
         simu.evolve(preOps=[initByFreq([.2,.8])],
-             ops = [ smmMutator(rate=0.2)], gen=200)
+             ops = [ smmMutator(rates=0.2)], gen=200)
         # at loci
         simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
             randomMating(), rep=5)
         simu.evolve(preOps = [initSex()],
-            ops = [ smmMutator(rate=0.2, loci=[0,4])],
+            ops = [ smmMutator(rates=0.2, loci=[0,4])],
             gen = 1)
         # frequency seems to be OK.
         self.assertGenotypeFreq(simu.population(0),
@@ -223,26 +223,6 @@ class TestMutator(unittest.TestCase):
         self.assertGenotype(simu.population(0), 0,
             loci=[1,2,3])
 
-    def testGsmMutator(self):
-        'Testing generalized step-wise mutation mutator (imcomplete)'
-        if AlleleType() == 'binary':
-            return
-        simu = simulator( population(size=1000, ploidy=2, loci=[2, 3]),
-            randomMating(), rep=5)
-        simu.evolve(preOps = [ initByFreq([.2,.8])],
-                ops = [gsmMutator(rate=0.2)], gen=200)
-        # at loci
-        simu = simulator( population(size=10000, ploidy=2, loci=[2, 3]),
-            randomMating(), rep=5)
-        simu.population(0).genotype()[:] = 1
-        simu.evolve(preOps = [initSex()], 
-            ops = [ gsmMutator(rate=0.2, loci=[0,4])],
-            gen = 1)
-        # frequency? Genometric distribution of step
-        #self.assertGenotypeFreq(simu.population(0),
-        #    [0.85],[0.95], loci=[0,4])
-        self.assertGenotype(simu.population(0), 1,
-            loci=[1,2,3])
 
     def testPyMutator(self):
         pop = population(size=10, loci=[2])
@@ -260,18 +240,18 @@ class TestMutator(unittest.TestCase):
         G = 100
         pop = population(size=N, ploidy=2, loci=[5])
         simu = simulator(pop, randomMating())
-        mut = kamMutator(k = 10, rate=r, loci=[0,2,4])
+        mut = kamMutator(k = 10, rates=r, loci=[0,2,4])
         simu.evolve(preOps = [initSex()],
             ops = [mut],
             gen=G)
-        assert abs( mut.mutationCount(0) - 2*N*r[0]*G) < 200, \
+        assert abs( mut.mutationCounts()[0] - 2*N*r[0]*G) < 200, \
             "Number of mutation event is not as expected."
-        assert abs( mut.mutationCount(2) - 2*N*r[1]*G) < 200, \
+        assert abs( mut.mutationCounts()[2] - 2*N*r[1]*G) < 200, \
             "Number of mutation event is not as expected."
-        assert abs( mut.mutationCount(4) - 2*N*r[2]*G) < 200, \
+        assert abs( mut.mutationCounts()[4] - 2*N*r[2]*G) < 200, \
             "Number of mutation event is not as expected."
-        self.assertEqual( mut.mutationCount(1), 0)
-        self.assertEqual( mut.mutationCount(3), 0)
+        self.assertEqual( mut.mutationCounts()[1], 0)
+        self.assertEqual( mut.mutationCounts()[3], 0)
 
     def testPointMutator(self):
         # test point mutator

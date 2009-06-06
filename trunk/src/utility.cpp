@@ -320,15 +320,18 @@ stringList::stringList(PyObject * str) : m_elems()
 	}
 }
 
+
 void stringList::addString(PyObject * str)
 {
 	PyObject * res = PyObject_Str(str);
+
 	if (res == NULL)
 		return;
 	string value = string(PyString_AsString(str));
 	m_elems.push_back(value);
 	Py_DECREF(res);
 }
+
 
 //
 // shared variables

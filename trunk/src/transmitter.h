@@ -432,11 +432,11 @@ public:
 	 *  \b before it. Loci that are the first locus on each chromosome are
 	 *  ignored.
 	 *
-	 *  If a single recombination rate (parameter \e rate) is specified, it
+	 *  If a single recombination rate (parameter \e rates) is specified, it
 	 *  will used for all loci (all loci or loci specified by parameter
 	 *  \e loci), regardless of physical distances between adjacent loci.
 	 *
-	 *  If a list of recombination rates are specified in \e rate, a parameter
+	 *  If a list of recombination rates are specified in \e rates, a parameter
 	 *  \e loci with the same length should also be specified. Different
 	 *  recombination rates can then be used for these loci.
 	 *
@@ -490,7 +490,7 @@ public:
 	 *      will have to simulate the pesudoautosomal regions as separate
 	 *      chromosomes.
 	 */
-	recombinator(const floatList & rate = floatList(), double intensity = -1,
+	recombinator(const floatList & rates = floatList(), double intensity = -1,
 		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
@@ -599,7 +599,7 @@ private:
 	double m_intensity;
 
 	/// differnt rates
-	vectorf m_rate;
+	vectorf m_rates;
 
 	/// initial parameter
 	vectorlu m_loci;

@@ -163,7 +163,7 @@ class TestInitialization(unittest.TestCase):
         self.assertGenotype(pop, 0, loci=[0,3,5,7])
         self.assertGenotype(pop, 0, atPloidy=1)
         # virtual subPop
-        pop = population(size=[500, 1000, 500], loci=[2,4,2], infoFields=['x'])
+        pop = population(size=[5000, 10000, 5000], loci=[2,4,2], infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
         pop.setVirtualSplitter(infoSplitter('x', values=range(10, 15)))

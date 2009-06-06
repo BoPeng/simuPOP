@@ -16,6 +16,10 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Allow parameter infoFields to take single form values. Remove
 		population::addInfoField() because addInfoFields() now accepts single input.
   - BUG: Fix a bug with persistent dirty signature.
+  - CHG: Replace parameter maxAllele in operator kamMutator with k (= maxAllele + 1),
+		and rename parameter rate to rates.
+  - CHG: Merge operator gsmMutator to smmMutator and pyMutator.
+  - CHG: Rename parameter rate to rates for operator recombinator.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.
