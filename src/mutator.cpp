@@ -297,11 +297,11 @@ bool pointMutator::apply(population & pop)
 	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
 		for (vectorlu::iterator ind = m_inds.begin();
 		     ind != m_inds.end(); ++ind) {
-			for (size_t p = 0; p < m_atPloidy.size(); ++p) {
+			for (size_t p = 0; p < m_ploidy.size(); ++p) {
 				m_mutCount[m_loci[i]]++;
-				*(pop.ind(*ind).genoBegin(m_atPloidy[p]) + m_loci[i]) = m_toAllele;
+				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + m_loci[i]) = m_allele;
 				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << m_loci[i] <<
-					" to allele " << toStr(m_toAllele) << " at generation " << pop.gen() << endl);
+					" to allele " << toStr(m_allele) << " at generation " << pop.gen() << endl);
 			}
 		}
 	}                                                                                 // each applicable loci

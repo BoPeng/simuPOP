@@ -229,7 +229,7 @@ class TestMutator(unittest.TestCase):
         # cutom mutator
         def mut(x):
             return 1
-        m = pyMutator(rate=1, func=mut)
+        m = pyMutator(rates=1, func=mut)
         m.apply(pop)
         assert pop.individual(0).allele(0) == 1, \
             "PyMutator failed"
@@ -257,11 +257,11 @@ class TestMutator(unittest.TestCase):
         # test point mutator
         pop = population(size=10, ploidy=2, loci=[5])
         InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
-        PointMutate(pop, inds=[1,2,3], toAllele=0, loci=[1,3])
+        PointMutate(pop, inds=[1,2,3], allele=0, loci=[1,3])
         assert pop.individual(1).allele(1,0) == 0
         assert pop.individual(1).allele(1,1) != 0
-        PointMutate(pop, inds=[1,2,3], atPloidy=[1],
-            toAllele=0, loci=[1,2])
+        PointMutate(pop, inds=[1,2,3], ploidy=[1],
+            allele=0, loci=[1,2])
         assert pop.individual(1).allele(2,1) == 0
         assert pop.individual(1).allele(2,0) != 0
 
