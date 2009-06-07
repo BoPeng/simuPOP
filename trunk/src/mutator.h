@@ -250,8 +250,8 @@ public:
 	 *  <tt>k-1</tt> alleles with equal probability. If parameter \e k is
 	 *  unspecified, it will be assumed to be the number of allowed allelic
 	 *  states of the current simuPOP module. This mutator by default applies
-	 *  to all loci unless parameter \e loci is specified. A single mutate rate
-	 *  will be used for all loci if a single value of parameter \e rates is
+	 *  to all loci unless parameter \e loci is specified. A single mutation
+	 *  rate will be used for all loci if a single value of parameter \e rates
 	 *  is given. Otherwise, a list of mutation rates can be specified for each
 	 *  locus in parameter \e loci. Please refer to classes \c mutator and
 	 *  \c baseOperator for descriptions of other parameters.
@@ -316,34 +316,33 @@ class smmMutator : public mutator
 public:
 	/** Create a stepwise mutation mutator that mutates an allele by increasing
 	 *  or decreasing it. This mutator by default applies to all loci unless
-	 *  parameter \e loci is specified. A single mutate rate will be used for
-	 *  all loci if a single value of parameter \e rates is is given.
-	 *  Otherwise, a list of mutation rates can be specified for each locus in
-	 *  parameter \e loci. Please see class \c mutator for the descriptions of
-	 *  other parameters.
+	 *  parameter \e loci is specified. A single mutation rate will be used for
+	 *  all loci if a single value of parameter \e rates is given. Otherwise, a
+	 *  list of mutation rates can be specified for each locus in parameter
+	 *  \e loci.
 	 *
-	 *  The mode at which alleles are changed is determined by parameter
-	 *  \e mode which can be:
-	 *  \li <tt>[]</tt>: Standard neutral stepwise mutation model. This is the
-	 *		default mode.
-	 *  \li <tt>(Constant, incProb=0.5, maxAllele=0)</tt>:
-	 *		Standard stepwise mutation model with increasing probability
-	 *		\c incProb and a maximum allele state \e maxAllele (default to
-	 *		maximum allowed allele of the module).
-	 *	\li <tt>(GeometricDistribution, p, incProb=0.5, maxAllele=0)</tt>: When
-	 *		a mutation event happens, the number of the steps are determined by
-	 *		a geometric	distribution with parameter \e p. The mean and variance
-	 *		of steps are \f$\frac{p}{1-p}\f$ and
-	 *		\f$\frac{p}{\left(1-p\right)^{2}}\f$ respectively. The direction of
-	 *		the mutation is determined by \e incProb.
+	 *  When a mutation event happens, this operator increases or decreases an
+	 *  allele by \e mutStep steps. Acceptable input of parameter \e mutStep
+	 *  include
+	 *  \li A number: This is the default mode with default value 1.
+	 *  \li <tt>(GeometricDistribution, p)</tt>: The number of steps follows a
+	 *		a geometric distribution with parameter \e p. The mean and variance
+	 *		of steps are \f$\frac{p}{1-p}\f$ and 
+	 *		\f$\frac{p}{\left(1-p\right)^{2}}\f$ respectively.
+	 *  \li A Python function: This user defined function accepts the allele
+	 *		being mutated and return the steps to mutate.
+	 *
+	 *	The mutation process is usually neutral in the sense that mutating up
+	 *  and down is equally likely. You can adjust parameter \e incProb to
+	 *  change this behavior. 
 	 *
 	 *  If you need to use other generalized stepwise mutation models, you can
 	 *  implement them using a \c pyMutator. If performance becomes a concern,
-	 *  I may add them to this operator if provided with a reliable resource.
+	 *  I may add them to this operator if provided with a reliable reference.
 	 */
 	smmMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
-		const floatList & mode = floatList(), const uintListFunc & mapIn = uintListFunc(),
-		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
+		double incProb=0.5, UINT maxAllele=0, const floatListFunc & mutStep = floatListFunc(1),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList());
@@ -372,7 +371,11 @@ public:
 
 
 private:
-	vectorf m_mode;
+	double m_incProb;
+
+	UINT m_maxAllele;
+
+	floatListFunc m_mutStep;
 };
 
 
