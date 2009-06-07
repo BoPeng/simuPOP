@@ -102,7 +102,7 @@ bool mutator::apply(population & pop)
 				if (mapIn) {
 					if (numMapInAllele > 0) {
 						if (static_cast<size_t>(*ptr) < numMapInAllele)
-							*ptr = mapInList[*ptr];
+							*ptr = ToAllele(mapInList[*ptr]);
 					} else {
 						*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
 								static_cast<int>(*ptr)));
@@ -113,7 +113,7 @@ bool mutator::apply(population & pop)
 				if (mapOut) {
 					if (numMapOutAllele > 0) {
 						if (static_cast<size_t>(*ptr) < numMapOutAllele)
-							*ptr = mapOutList[*ptr];
+							*ptr = ToAllele(mapOutList[*ptr]);
 					} else {
 						*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
 								static_cast<int>(*ptr)));
@@ -204,77 +204,59 @@ void kamMutator::mutate(AlleleRef allele)
 }
 
 
-smmMutator::smmMutator(const floatList & rates, const uintList & loci, const floatList & mode,
+smmMutator::smmMutator(const floatList & rates, const uintList & loci,
+	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const stringList & infoFields)
 	: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
-	m_mode(mode.elems())
+	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE
 	DBG_WARNING(true, "Symetric stepwise mutation does not work well on two state alleles.");
 #endif
-	if (m_mode.empty()) {
-		m_mode.push_back(Constant);
-		m_mode.push_back(0.5);
-		m_mode.push_back(MaxAllele());
-	} else if (m_mode[0] == Constant) {
-		if (m_mode.size() == 1)
-			m_mode.push_back(0.5);
-		if (m_mode.size() == 2)
-			m_mode.push_back(MaxAllele());
-		//
-		DBG_ASSERT(fcmp_ge(m_mode[1], 0.) && fcmp_le(m_mode[1], 1.),
-			ValueError, "Inc probability should be between [0,1], given " + toStr(m_mode[1]));
-		if (m_mode[2] == 0)
-			m_mode[2] = MaxAllele();
-		if (m_mode[2] > MaxAllele())
-			throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
-	} else if (m_mode[0] == GeometricDistribution) {
-		DBG_FAILIF(m_mode.size() == 1, ValueError,
-			"Please specify a parameter to the geometric distribution.");
-		if (m_mode.size() == 2)
-			m_mode.push_back(0.5);
-		if (m_mode.size() == 3)
-			m_mode.push_back(MaxAllele());
-		//
-		DBG_ASSERT(fcmp_ge(m_mode[2], 0.) && fcmp_le(m_mode[2], 1.),
-			ValueError, "Inc probability should be between [0,1], given " + toStr(m_mode[2]));
-		if (m_mode[3] == 0)
-			m_mode[3] = MaxAllele();
-		if (m_mode[3] > MaxAllele())
-			throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
-	} else
-		throw ValueError("Unrecognized mutation mode.");
+	DBG_ASSERT(fcmp_ge(m_incProb, 0.) && fcmp_le(m_incProb, 1.),
+		ValueError, "Inc probability should be between [0,1], given " + toStr(m_incProb));
+	
+	if (m_maxAllele == 0)
+		m_maxAllele = MaxAllele();
+	if (m_maxAllele > MaxAllele())
+		throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
+	
+	DBG_FAILIF(! m_mutStep.func().isValid() && m_mutStep.empty(), ValueError,
+		"Parameter mutStep must be a number, a list or a valid function.");
+	
+	DBG_FAILIF(m_mutStep.size() > 1 && 
+		(fcmp_lt(m_mutStep[1], 0) || fcmp_gt(m_mutStep[1], 1)), ValueError,
+		"Probability for the geometric distribution has to be between 0 and 1");
+	
 }
 
 
 void smmMutator::mutate(AlleleRef allele)
 {
-	UINT step = 0;
-	double incProb = 0.5;
-	UINT maxAllele = 0;
-
-	if (static_cast<UINT>(m_mode[0]) == Constant) {
-		step = 1;
-		incProb = m_mode[1];
-		maxAllele = static_cast<UINT>(m_mode[2]);
-	} else if (static_cast<UINT>(m_mode[0]) == GeometricDistribution) {
-		step = rng().randGeometric(m_mode[1]);
-		incProb = m_mode[2];
-		maxAllele = static_cast<UINT>(m_mode[3]);
-	} else
-		throw RuntimeError("Wrong stepwise mutation mode");
+	UINT step = 1;
+	if (m_mutStep.size() == 1)
+		step = static_cast<UINT>(m_mutStep[0]);
+	else if (m_mutStep.size() == 2) {
+		DBG_ASSERT(static_cast<int>(m_mutStep[0]) == GeometricDistribution, ValueError,
+			"Incorrect mode for generating mutation step.");
+		step = rng().randGeometric(m_mutStep[1]);
+	} else {
+		DBG_ASSERT(m_mutStep.func().isValid(), ValueError,
+			"Invalid Python function for smmMutator");
+		step = m_mutStep.func()(PyObj_As_Int, "(i)", static_cast<int>(allele));
+	}
 
 	// increase
-	if (rng().randUniform01() < incProb) {
+	if (rng().randUniform01() < m_incProb) {
 #ifdef BINARYALLELE
 		allele = 1;
 #else
-		if (static_cast<UINT>(allele + step) < maxAllele)
+		if (static_cast<UINT>(allele + step) < m_maxAllele)
 			AlleleAdd(allele, step);
 		else
-			allele = ToAllele(maxAllele);
+			allele = ToAllele(m_maxAllele);
 #endif
 	}
 	// decrease
