@@ -217,25 +217,26 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 #endif
 	DBG_ASSERT(fcmp_ge(m_incProb, 0.) && fcmp_le(m_incProb, 1.),
 		ValueError, "Inc probability should be between [0,1], given " + toStr(m_incProb));
-	
+
 	if (m_maxAllele == 0)
 		m_maxAllele = MaxAllele();
 	if (m_maxAllele > MaxAllele())
 		throw ValueError("maxAllele exceeds maximum allowed allele in this module.");
-	
-	DBG_FAILIF(! m_mutStep.func().isValid() && m_mutStep.empty(), ValueError,
+
+	DBG_FAILIF(!m_mutStep.func().isValid() && m_mutStep.empty(), ValueError,
 		"Parameter mutStep must be a number, a list or a valid function.");
-	
-	DBG_FAILIF(m_mutStep.size() > 1 && 
+
+	DBG_FAILIF(m_mutStep.size() > 1 &&
 		(fcmp_lt(m_mutStep[1], 0) || fcmp_gt(m_mutStep[1], 1)), ValueError,
 		"Probability for the geometric distribution has to be between 0 and 1");
-	
+
 }
 
 
 void smmMutator::mutate(AlleleRef allele)
 {
 	UINT step = 1;
+
 	if (m_mutStep.size() == 1)
 		step = static_cast<UINT>(m_mutStep[0]);
 	else if (m_mutStep.size() == 2) {
@@ -245,7 +246,7 @@ void smmMutator::mutate(AlleleRef allele)
 	} else {
 		DBG_ASSERT(m_mutStep.func().isValid(), ValueError,
 			"Invalid Python function for smmMutator");
-		step = m_mutStep.func()(PyObj_As_Int, "(i)", static_cast<int>(allele));
+		step = m_mutStep.func() (PyObj_As_Int, "(i)", static_cast<int>(allele));
 	}
 
 	// increase

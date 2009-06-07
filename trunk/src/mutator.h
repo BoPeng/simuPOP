@@ -184,10 +184,9 @@ protected:
 /** A matrix mutator mutates alleles \c 0, \c 1, ..., \c n-1 using a \c n by
  *  \c n matrix, which specifies the probability at which each allele mutates
  *  to another. Conceptually speaking, this mutator goes through all mutable
- *  allele and mutate it to another state according to probabilities
- *  \f$p_{i0}$, \f$p_{i1}$, ... and \f$p_{i,n-1}$. Most alleles will not mutate
- *  because \f$p_{ii}$ is usually close to 1. Only one mutation rate matrix
- *  can be specified which will be used for all specified loci.
+ *  allele and mutate it to another state according to probabilities in the
+ *  corresponding row of the rate matrix. Only one mutation rate matrix can
+ *  be specified which will be used for all specified loci.
  #
  *  <funcForm>MatrixMutate</funcForm>
  */
@@ -195,13 +194,14 @@ class matrixMutator : public mutator
 {
 public:
 	/** Create a mutator that mutates alleles \c 0, \c 1, ..., \c n-1 using a
-	 *  \c n by \c n matrix \c rate. Item \f$p_{ij}$ of this matrix specifies
-	 *  the probability at which allele \e i mutates to allele \e j. \f$p_{ii}$
-	 *  are ignored because they are automatically determined by \f$p_{ij}$,
-	 *  \f$j=0,...,n-1$. Only one mutation rate matrix can be specified which
-	 *  will be used for all loci in the applied population, or loci specified
-	 *  by parameter \e loci. Please refer to classes \c mutator and
-	 *  \c baseOperator for detailed explanation of other parameters.
+	 *  \c n by \c n matrix \c rate. Item <tt>(i,j)</tt> of this matrix
+	 *  specifies the probability at which allele \e i mutates to allele \e j.
+	 *  Diagnal items <tt>(i, i)</tt> are ignored because they are
+	 *  automatically determined by other probabilities. Only one mutation rate
+	 *  matrix can be specified which will be used for all loci in the applied
+	 *  population, or loci specified by parameter \e loci. Please refer to
+	 *  classes \c mutator and \c baseOperator for detailed explanation of
+	 *  other parameters.
 	 */
 	matrixMutator(const matrix & rate, const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
@@ -326,22 +326,20 @@ public:
 	 *  include
 	 *  \li A number: This is the default mode with default value 1.
 	 *  \li <tt>(GeometricDistribution, p)</tt>: The number of steps follows a
-	 *		a geometric distribution with parameter \e p. The mean and variance
-	 *		of steps are \f$\frac{p}{1-p}\f$ and 
-	 *		\f$\frac{p}{\left(1-p\right)^{2}}\f$ respectively.
+	 *		a geometric distribution with parameter \e p.
 	 *  \li A Python function: This user defined function accepts the allele
 	 *		being mutated and return the steps to mutate.
 	 *
 	 *	The mutation process is usually neutral in the sense that mutating up
 	 *  and down is equally likely. You can adjust parameter \e incProb to
-	 *  change this behavior. 
+	 *  change this behavior.
 	 *
 	 *  If you need to use other generalized stepwise mutation models, you can
 	 *  implement them using a \c pyMutator. If performance becomes a concern,
 	 *  I may add them to this operator if provided with a reliable reference.
 	 */
 	smmMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
-		double incProb=0.5, UINT maxAllele=0, const floatListFunc & mutStep = floatListFunc(1),
+		double incProb = 0.5, UINT maxAllele = 0, const floatListFunc & mutStep = floatListFunc(1),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
@@ -450,7 +448,7 @@ public:
 	 *  descriptions of other parameters.
 	 */
 	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = uintList(),
-		const uintList & inds = uintList(),	const stringFunc & output = ">",
+		const uintList & inds = uintList(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
