@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12004,7 +12004,11 @@ acgtMutator
 \end_layout
 
 \begin_layout Subsection
-Mutation model for microsatellite markers
+Mutation model for microsatellite markers (
+\family typewriter
+smmMutator
+\family default
+)
 \end_layout
 
 \begin_layout Standard
@@ -12019,30 +12023,54 @@ key "Ohta1973"
  of tandem repeat of sequences.
  VNTR markers consisting of short sequences (e.g.
  5 basepair or less) are also called microsatellite markers.
- Likely mechanisms for repeat number change at VNTR loci are slipped-strand
- mispairing, unequal sister chromatid exchange and genetic recombination.
+ A mutation event of a VNTR marker either increase of decrease the number
+ of repeats, as a result of slipped-strand mispairing or unequal sister
+ chromatid exchange and genetic recombination.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+smmMutator
+\family default
+ assumes that alleles at a locus are the number of tandem repeats and mutates
+ them by increasing or decreasing the number of repeats during a mutation
+ event.
+ By adjusting parameters 
+\family typewriter
+incProb
+\family default
+, 
+\family typewriter
+maxAllele
+\family default
+ and 
+\family typewriter
+mutStep
+\family default
+, this operator can be used to simulate the standard neutral stepwise mutation
+ model and a number of generalized stepwise mutation models.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "smmMutator"
+
+\end_inset
+
+ uses two 
+\family typewriter
+smmMutator
+\family default
+ to mutate two microsatellite markers, using a standard and a generalized
+ model where a geometric distribution is used to determine the number of
+ steps.
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/smmMutator.log"
-lstparams "caption={A stepwise mutation model},label={smmMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Generalized stepwise mutation model
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/gsmMutator.log"
-lstparams "caption={A generalized stepwise mutation model},label={gsmMutator}"
+lstparams "caption={A standard and a generalized stepwise mutation model},label={smmMutator}"
 
 \end_inset
 
@@ -12051,6 +12079,44 @@ lstparams "caption={A generalized stepwise mutation model},label={gsmMutator}"
 
 \begin_layout Subsection
 Hybrid mutation model *
+\end_layout
+
+\begin_layout Standard
+A hybrid mutator 
+\family typewriter
+pyMutator
+\family default
+ mutates random alleles at selected loci (parameter 
+\family typewriter
+loci
+\family default
+), replicates (parameter 
+\family typewriter
+loci
+\family default
+), subpopulations (parameter 
+\family typewriter
+subPop
+\family default
+) with specified mutation rate (parameter 
+\family typewriter
+rate
+\family default
+).
+ Instead of mutating the alleles by itself, it passes the alleles to a user-defi
+ned function and use it return values as the mutated alleles.
+ Arbitrary mutation models could be implemented using this operator.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyMutator"
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout Standard
@@ -12077,10 +12143,6 @@ subPop
 \family default
 .
  For example, 
-\end_layout
-
-\begin_layout Subsection
-Dynamic or frequency dependent mutation rate *
 \end_layout
 
 \begin_layout Subsection

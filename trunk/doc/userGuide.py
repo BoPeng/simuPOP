@@ -1472,7 +1472,7 @@ simu.evolve(
             turnOnDebug(DBG_MUTATOR),
             turnOffDebug(DBG_MUTATOR)),
         ifElse('alleleNum[0][0] == 0',
-            pointMutator(loci=[0], toAllele=0, inds=[0])),
+            pointMutator(loci=0, allele=0, inds=0)),
     ],
     gen = 100
 )
@@ -1827,6 +1827,56 @@ simu.evolve(
     ],
     gen=500
 )
+#end
+
+#file log/smmMutator.log
+simu = simulator(population(size=1000, loci=[1, 1]), randomMating())
+simu.evolve(
+    # all start from allele 50
+    preOps = [initByFreq( [0]*50 + [1])],
+    ops = [
+        smmMutator(rates=1e-3, loci=0),
+        smmMutator(rates=1e-3, incProb=0.6, loci=1,
+            mutStep=(GeometricDistribution, 0.2)),
+    ],
+    gen=100
+)
+# count the average number tandem repeats at both loci
+cnt0 = cnt1 = 0
+for ind in simu.population(0).individuals():
+    cnt0 += ind.allele(0, 0) + ind.allele(0, 1)
+    cnt1 += ind.allele(1, 0) + ind.allele(1, 1)
+
+print 'Average number of repeats at two loci are %.2f and %.2f.' % \
+    (cnt0/2000., cnt1/2000.)
+
+#end
+
+#file log/pyMutator.log
+import random
+def incAllele(allele):
+    return allele + random.randint(1, 5)
+
+simu = simulator(population(size=1000, loci=[20]),
+    randomMating())
+simu.evolve(
+    preOps = [initSex()],
+    ops = [
+        pyMutator(func=incAllele, rates=[1e-4, 1e-5],
+            loci=[2, 10])
+    ],
+    gen = 1000
+)
+# count the average number tandem repeats at both loci
+def avgAllele(pop, loc):
+    ret = 0
+    for ind in pop.individuals():
+        ret += ind.allele(loc, 0) + ind.allele(loc, 1)
+    return ret / (pop.popSize() * 2.)
+
+pop = simu.population(0)
+print 'Average number of repeats at two loci are %.2f and %.2f.' % \
+    (avgAllele(pop, 2), avgAllele(pop, 10))
 #end
 
 #file log/alleleMapping.log
@@ -2438,33 +2488,6 @@ hlp.close()
 ################################################
 
  
-#file log/smmMutator.log
-simu = simulator(population(size=300, loci=[3, 5]), randomMating())
-simu.evolve(
-    preOps = [initByFreq( [.2, .3, .5])],
-    ops = [
-        smmMutator(rates=1, mode=(Constant, .8)),
-    ],
-    gen=1
-)
-#end
-
-
-#file log/pyMutator.log
-import random
-simu = simulator(population(size=300, loci=[3, 5]), randomMating())
-
-def mutateTo(allele):
-  return allele + random.randrange(3, 6)
-
-simu.evolve(
-    preOps = [initByValue([50]*3 + [100]*5)],
-    ops = [
-        pyMutator(rate=0.001, func=mutateTo),
-    ],
-    gen=1
-)
-#end
 
 #### #file log/recombinator.log
 simu = simulator(population(4, loci=[4, 5, 6], 

@@ -379,27 +379,31 @@ private:
 };
 
 
-/// A hybrid mutator
-/**
-   Parameters such as mutation rate of this operator are set just like others and you are supposed to
-   provide a Python function to return a new allele state given an old state. \c pyMutator
-   will choose an allele as usual and call your function to mutate it to another allele.
-   <funcForm>PyMutate</funcForm>
+/** This hybrid mutator accepts a Python function that determines how to mutate
+ *  an allele when an mutation event happens.
+ *  <funcForm>PyMutate</funcForm>
  */
 class pyMutator : public mutator
 {
 public:
-	/// create a \c pyMutator
-	/**
+	/** Create a hybrid mutator that uses a user-provided function to mutate an
+	 *  allele when a mutation event happens. This function (parameter \e func)
+	 *  accepts the allele to be mutated and return a mutated allele. The
+	 *  passed and returned alleles might be changed if parameters \e mapIn and
+	 *  \e mapOut are used although allele mappings, if needed, are usually
+	 *  handled in \e func as well. This mutator by default applies to all loci
+	 *  unless parameter \e loci is specified. A single mutation rate will be
+	 *  used for all loci if a single value of parameter \e rates is given.
+	 *  Otherwise, a list of mutation rates can be specified for each locus in
+	 *  parameter \e loci. Please refer to classes \c mutator and
+	 *  \c baseOperator for descriptions of other parameters.
 	 */
-	pyMutator(const floatList & rate = floatList(), const uintList & loci = uintList(),
-		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		PyObject * func = NULL,
-		const stringFunc & output = ">",
+	pyMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
+		PyObject * func = NULL, const uintListFunc & mapIn = uintListFunc(),
+		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
-		: mutator(rate, loci, mapIn, mapOut,
-		          output, stage, begin, end, step, at, rep, subPops, infoFields),
+		: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -414,7 +418,7 @@ public:
 	}
 
 
-	/// mutate according to the mixed model
+	/// CPPONLY mutate according to the mixed model
 	virtual void mutate(AlleleRef allele);
 
 	/// used by Python print function to print out the general information of the \c pyMutator
@@ -428,38 +432,32 @@ private:
 	pyFunc m_func;
 };
 
-/// point mutator
-/**
-   Mutate specified individuals at specified loci to a spcified allele.
-   I.e., this is a non-random mutator used to introduce diseases etc.
-   \c pointMutator, as its name suggest, does point mutation. This mutator will turn
-   alleles at \c loci on the first chromosome copy to \c toAllele for individual \c inds.
-   You can specify \c atPloidy to mutate other, or all ploidy copies.
 
-   <funcForm>PointMutate</funcForm>
+/** A point mutator is different from all other mutators because mutations in
+ *  this mutator do not happen randomly. Instead, it happens to specific loci
+ *  and mutate an allele to a specific state, regardless of its original state.
+ *  This mutator is usually used to introduce a mutant to a population.
+ *  <funcForm>PointMutate</funcForm>
  */
 class pointMutator : public baseOperator
 {
 public:
-	/// create a \c pointMutator
-	/**
-	   \param inds individuals who will mutate
-	   \param toAllele allele that will be mutate to
-
-	   Please see class \c mutator for the descriptions of other parameters.
+	/** Create a point mutator that mutates alleles at specified \e loci to
+	 *  a given \e allele of individuals \e inds. If there are multiple alleles
+	 *  at a locus (e.g. individuals in a diploid population), only the first
+	 *  allele is mutated unless indexes of alleles are listed in parameter
+	 *  \e ploidy. Please refer to class \c baseOperator for detailed
+	 *  descriptions of other parameters.
 	 */
-	pointMutator(const uintList & loci, Allele toAllele,
-		vectoru atPloidy = vectoru(),
-		vectorlu inds = vectorlu(),
-		const stringFunc & output = ">",
+	pointMutator(const uintList & loci, Allele allele, const uintList & ploidy = uintList(),
+		const uintList & inds = uintList(),	const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci.elems()), m_toAllele(toAllele),
-		m_atPloidy(atPloidy), m_inds(inds), m_mutCount(0)
+		m_loci(loci.elems()), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems()), m_mutCount(0)
 	{
-		if (m_atPloidy.empty())
-			m_atPloidy.push_back(0);
+		if (m_ploidy.empty())
+			m_ploidy.push_back(0);
 	}
 
 
@@ -486,15 +484,6 @@ public:
 	}
 
 
-	/// return mutation count at \c locus
-	ULONG mutationCount(size_t locus)
-	{
-		DBG_ASSERT(locus < m_mutCount.size(), IndexError,
-			"locus index " + toStr(locus) + " is out of range");
-		return m_mutCount[locus];
-	}
-
-
 	/// return mutation counts
 	vectoru mutationCounts()
 	{
@@ -505,8 +494,8 @@ public:
 private:
 	/// applicable loci.
 	vectorlu m_loci;
-	Allele m_toAllele;
-	vectoru m_atPloidy;
+	Allele m_allele;
+	vectorlu m_ploidy;
 	vectorlu m_inds;
 	/// report the number of mutation events
 	vectoru m_mutCount;
