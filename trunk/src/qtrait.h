@@ -275,27 +275,19 @@ public:
 
 	   Please refer to \c quanTrait for other parameter descriptions.
 	 */
-	mlQuanTrait(const vectorop qtraits, int mode = Multiplicative,
+	mlQuanTrait(const opList & qtraits, int mode = Multiplicative,
 		double sigma = 0, int ancGen = -1,
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("qtrait")) :
 		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_qtraits(0), m_sigma(sigma), m_mode(mode)
+		m_qtraits(qtraits), m_sigma(sigma), m_mode(mode)
 	{
 		DBG_FAILIF(qtraits.empty(), ValueError, "Please specify at least one selector.");
-		for (vectorop::const_iterator s = qtraits.begin(), sEnd = qtraits.end(); s != sEnd; ++s) {
-			DBG_ASSERT( (*s)->__repr__().substr(10, 6) == "qtrait", ValueError,
-				"Expecting a vector of quantitative trait calculator");
-			m_qtraits.push_back( (*s)->clone() );
-		}
-
 	};
 
 	virtual ~mlQuanTrait()
 	{
-		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end(); s != sEnd; ++s)
-			delete *s;
 	}
 
 
@@ -319,7 +311,7 @@ public:
 
 private:
 	/// a list of qtraits
-	vectorop m_qtraits;
+	opList m_qtraits;
 
 	///
 	double m_sigma;

@@ -281,7 +281,7 @@ public:
 
 	/// set if this operator can be applied \em pre-mating
 	/// CPPONLY
-	bool canApplyPreMating()
+	bool canApplyPreMating() const
 	{
 		return ISSETFLAG(m_flags, m_flagPreMating);
 	}
@@ -289,7 +289,7 @@ public:
 
 	/// set if this operator can be applied \em during-mating
 	/// CPPONLY
-	bool canApplyDuringMating()
+	bool canApplyDuringMating() const
 	{
 		return ISSETFLAG(m_flags, m_flagDuringMating);
 	}
@@ -297,7 +297,7 @@ public:
 
 	/// set if this operator can be applied \em post-mating
 	/// CPPONLY
-	bool canApplyPostMating()
+	bool canApplyPostMating() const
 	{
 		return ISSETFLAG(m_flags, m_flagPostMating);
 	}
@@ -518,6 +518,83 @@ private:
 
 typedef std::vector< baseOperator * > vectorop;
 
+class opList
+{
+public:
+	typedef vectorop::iterator iterator;
+	typedef vectorop::const_iterator const_iterator;
+
+public:
+	opList(const vectorop & values = vectorop());
+
+	opList(const baseOperator & op);
+
+	/// CPPONLY
+	opList(const opList & ops);
+
+	baseOperator * operator[](size_t idx) const
+	{
+		DBG_ASSERT(idx < m_elems.size(), IndexError,
+			"Operator index out of range");
+		return m_elems[idx];
+	}
+
+
+	~opList();
+
+	void add(const baseOperator * op)
+	{
+		m_elems.push_back(op->clone());
+	}
+
+
+	iterator begin()
+	{
+		return m_elems.begin();
+	}
+
+
+	iterator end()
+	{
+		return m_elems.end();
+	}
+
+
+	const_iterator begin() const
+	{
+		return m_elems.begin();
+	}
+
+
+	const_iterator end() const
+	{
+		return m_elems.end();
+	}
+
+
+	size_t size() const
+	{
+		return m_elems.size();
+	}
+
+
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+
+	const vectorop & elems() const
+	{
+		return m_elems;
+	}
+
+
+protected:
+	vectorop m_elems;
+
+};
+
 /** This operator pauses the evolution of a simulator at given generations or
  *  at a key stroke. When a simulator is stopped, you can go to a Python
  *  shell to examine the status of an evolutionary process, resume or stop the
@@ -644,49 +721,33 @@ public:
 };
 
 /** This operator accepts an expression that will be evaluated when this
- *  operator is applied. An if-operator will be applied when the expression
- *  returns \c True. Otherwise an else-operator will be applied.
+ *  operator is applied. A list of if-operators will be applied when the
+ *  expression returns \c True. Otherwise a list of else-operators will be
+ *  applied.
  */
 class ifElse : public baseOperator
 {
 
 public:
-	/** Create a conditional operator that will apply operator \e ifOp if
-	 *  condition \e cond is met and \e elseOp otherwise. The replicate and
+	/** Create a conditional operator that will apply operators \e ifOps if
+	 *  condition \e cond is met and \e elseOps otherwise. The replicate and
 	 *  generation applicability parameters (\e begin, \e end, \e step, \e at
-	 *  and \e rep) of the \e ifOp and \e elseOp are ignored because their
+	 *  and \e rep) of the \e ifOps and \e elseOps are ignored because their
 	 *  applicability is determined by the \c ifElse operator.
 	 */
-	ifElse(const string & cond, baseOperator * ifOp = NULL, baseOperator * elseOp = NULL,
-		const stringFunc & output = ">",
-		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
+	ifElse(const string & cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
+		const stringFunc & output = ">", int stage = PostMating,
+		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const stringList & infoFields = stringList()) :
 		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
-		m_cond(cond, ""), m_ifOp(NULL), m_elseOp(NULL)
+		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
 	{
-		if (ifOp != NULL)
-			m_ifOp = ifOp->clone();
-		if (elseOp != NULL)
-			m_elseOp = elseOp->clone();
 	};
 
 	/// destructor
 	virtual ~ifElse()
 	{
-		if (m_ifOp != NULL)
-			delete m_ifOp;
-		if (m_elseOp != NULL)
-			delete m_elseOp;
-	};
-
-	/// CPPONLY copy constructor
-	ifElse(const ifElse & rhs)
-		: baseOperator(rhs), m_cond(rhs.m_cond), m_ifOp(NULL), m_elseOp(NULL)
-	{
-		if (rhs.m_ifOp != NULL)
-			m_ifOp = rhs.m_ifOp->clone();
-		if (rhs.m_elseOp != NULL)
-			m_elseOp = rhs.m_elseOp->clone();
 	}
 
 
@@ -707,15 +768,15 @@ public:
 	/// used by Python print function to print out the general information of the \c ifElse operator
 	virtual string __repr__()
 	{
-		return "<simuPOP::if else operator >" + m_ifOp->__repr__() ;
+		return "<simuPOP::if else operator >";
 	}
 
 
 private:
 	Expression m_cond;
 
-	baseOperator * m_ifOp;
-	baseOperator * m_elseOp;
+	opList m_ifOps;
+	opList m_elseOps;
 };
 
 /** This operator, when called, output the difference between current and the

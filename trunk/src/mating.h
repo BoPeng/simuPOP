@@ -104,13 +104,13 @@ public:
 	 *  greater than or equal to the number of offspring in this family, all
 	 *  offspring in this family will be \c Male or \c Female.
 	 */
-	offspringGenerator(const vectorop & ops, const floatListFunc & numOffspring = 1,
+	offspringGenerator(const opList & ops, const floatListFunc & numOffspring = 1,
 		const floatList & sexMode = RandomSex);
 
-	virtual ~offspringGenerator();
+	virtual ~offspringGenerator()
+	{
+	}
 
-	/// CPPONLY
-	offspringGenerator(const offspringGenerator & rhs);
 
 	/// Make a deep copy of this offspring generator.
 	virtual offspringGenerator * clone() const
@@ -166,7 +166,7 @@ protected:
 	vectorf m_sexMode;
 
 	/// default transmitter
-	vectorop m_transmitters;
+	opList m_transmitters;
 
 protected:
 	/// see who will generate offspring genotype
@@ -212,7 +212,7 @@ public:
 	 *  of parameters \e ops, \e numOffspring and \e sexMode.
 	 */
 	controlledOffspringGenerator(const uintList & loci, const uintList & alleles,
-		PyObject * freqFunc, const vectorop & ops = vectorop(),
+		PyObject * freqFunc, const opList & ops = vectorop(),
 		const floatListFunc & numOffspring = 1, const floatList & sexMode = RandomSex);
 
 

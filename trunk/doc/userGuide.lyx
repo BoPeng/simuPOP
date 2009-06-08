@@ -12078,7 +12078,11 @@ lstparams "caption={A standard and a generalized stepwise mutation model},label=
 \end_layout
 
 \begin_layout Subsection
-Hybrid mutation model *
+Simulating arbitrary mutation models using a hybrid mutator (
+\family typewriter
+pyMutator
+\family default
+)*
 \end_layout
 
 \begin_layout Standard
@@ -12127,6 +12131,54 @@ reference "pyMutator"
 LatexCommand lstinputlisting
 filename "log/pyMutator.log"
 lstparams "caption={A hybrid mutation model},label={pyMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Manually-introduced mutations (
+\family typewriter
+pointMutator
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+Operator 
+\family typewriter
+pointMutator
+\family default
+ is different from all other mutators in that it mutates specified alleles
+ of specified individuals.
+ It is usually used to manually introduce one or more mutants to a population.
+ Although it is not a recommended method to introduce a disease predisposing
+ allele, the following example (Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pointMutator"
+
+\end_inset
+
+) demonstrates an evolutionary process where mutants are repeatedly introduced
+ and raised by positive selection until it reaches an appreciable allele
+ frequency.
+ This example uses two 
+\family typewriter
+ifElse
+\family default
+ operators.
+ The first one introduces a mutant when there is no mutant in the population,
+ and the second one terminate the evolution when the frequency of the mutant
+ reaches 0.05.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pointMutator.log"
+lstparams "caption={Use a point mutator to introduce a disease predisposing allele},label={pointMutator}"
 
 \end_inset
 

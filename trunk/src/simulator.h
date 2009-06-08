@@ -244,13 +244,13 @@ public:
 	 *
 	 *  <group>2-evolve</group>
 	 */
-	vectoru evolve(const vectorop & ops,
-		const vectorop & preOps = vectorop(),
-		const vectorop & postOps = vectorop(),
+	vectoru evolve(const opList & ops,
+		const opList & preOps = opList(),
+		const opList & postOps = opList(),
 		int gen = -1, bool dryrun = false);
 
 	/// CPPONLY apply a list of operators to all populations
-	bool apply(const vectorop ops, bool dryrun = false);
+	bool apply(const opList & ops, bool dryrun = false);
 
 
 	/** Set a new mating scheme \e matingScheme to a simulator.

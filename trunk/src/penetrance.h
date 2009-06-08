@@ -290,27 +290,18 @@ public:
 	   \param mode can be one of \c PEN_Multiplicative, \c PEN_Additive, and \c PEN_Heterogeneity
 
 	 */
-	mlPenetrance(const vectorop peneOps, int mode = Multiplicative,
+	mlPenetrance(const opList & peneOps, int mode = Multiplicative,
 		int ancGen = -1, int stage = DuringMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList()) :
 		basePenetrance(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_peneOps(0), m_mode(mode)
+		m_peneOps(peneOps), m_mode(mode)
 	{
 		DBG_FAILIF(peneOps.empty(), ValueError, "Please specify at least one penetrance operator.");
-		for (vectorop::const_iterator s = peneOps.begin(), sEnd = peneOps.end(); s != sEnd; ++s) {
-			DBG_ASSERT( (*s)->__repr__().substr(10, 10) == "penetrance", ValueError,
-				"Expecting a list of penetrance calculator");
-
-			m_peneOps.push_back( (*s)->clone() );
-		}
-
 	};
 
 	virtual ~mlPenetrance()
 	{
-		for (vectorop::iterator s = m_peneOps.begin(), sEnd = m_peneOps.end(); s != sEnd; ++s)
-			delete *s;
 	}
 
 
@@ -335,7 +326,7 @@ public:
 
 private:
 	/// a list of peneOps
-	vectorop m_peneOps;
+	opList m_peneOps;
 
 	/// mode
 	int m_mode;

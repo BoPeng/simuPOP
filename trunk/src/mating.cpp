@@ -27,10 +27,10 @@
 
 namespace simuPOP {
 
-offspringGenerator::offspringGenerator(const vectorop & ops,
+offspringGenerator::offspringGenerator(const opList & ops,
 	const floatListFunc & numOffspring, const floatList & sexMode) :
 	m_numOffspring(numOffspring), m_sexMode(sexMode.elems()),
-	m_transmitters(0), m_transmitGenotype(true), m_initialized(false)
+	m_transmitters(), m_transmitGenotype(true), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
 		"Please specify either number of offspring or a function.");
@@ -70,25 +70,7 @@ offspringGenerator::offspringGenerator(const vectorop & ops,
 	// the genotype transmitter that will be used when no during mating
 	// operator is used to transmit genotype from parents to offspring.
 	for (size_t i = 0; i < ops.size(); ++i)
-		m_transmitters.push_back(ops[i]->clone());
-}
-
-
-offspringGenerator::~offspringGenerator()
-{
-	for (size_t i = 0; i < m_transmitters.size(); ++i)
-		delete m_transmitters[i];
-}
-
-
-offspringGenerator::offspringGenerator(const offspringGenerator & rhs)
-	: m_numOffspring(rhs.m_numOffspring),
-	m_sexMode(rhs.m_sexMode), m_transmitters(0),
-	m_transmitGenotype(rhs.m_transmitGenotype),
-	m_initialized(rhs.m_initialized)
-{
-	for (size_t i = 0; i < rhs.m_transmitters.size(); ++i)
-		m_transmitters.push_back(rhs.m_transmitters[i]->clone());
+		m_transmitters.add(ops[i]);
 }
 
 
@@ -182,8 +164,8 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 		it->setSex(getSex(count));
 		//
 		accept = true;
-		vector<baseOperator *>::iterator iop = m_transmitters.begin();
-		vector<baseOperator *>::iterator iopEnd = m_transmitters.end();
+		opList::iterator iop = m_transmitters.begin();
+		opList::iterator iopEnd = m_transmitters.end();
 		for (; iop != iopEnd; ++iop) {
 			try {
 				// During mating operator might reject this offspring.
@@ -232,7 +214,7 @@ UINT offspringGenerator::generateOffspring(population & pop, individual * dad, i
 
 controlledOffspringGenerator::controlledOffspringGenerator(
 	const uintList & loci, const uintList & alleles, PyObject * freqFunc,
-	const vectorop & ops, const floatListFunc & numOffspring,
+	const opList & ops, const floatListFunc & numOffspring,
 	const floatList & sexMode)
 	: offspringGenerator(ops, numOffspring, sexMode),
 	m_loci(loci.elems()), m_alleles(alleles.elems()), m_freqFunc(freqFunc),
