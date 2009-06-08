@@ -21,6 +21,8 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Merge operator gsmMutator to smmMutator and pyMutator.
   - CHG: Rename parameter rate to rates for operator recombinator.
   - NEW: Mutators now supports virtual subpopulations (parameter VSP).
+  - NEW: ifElse operator now accepts lists of ifOps and elseOps.
+  - NEW: Allow single form input for operator lists.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.

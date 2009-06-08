@@ -168,9 +168,9 @@ void simulator::setGen(ULONG gen)
 }
 
 
-vectoru simulator::evolve(const vectorop & ops,
-                          const vectorop & preOps,
-                          const vectorop & postOps,
+vectoru simulator::evolve(const opList & ops,
+                          const opList & preOps,
+                          const opList & postOps,
                           int gens, bool dryrun)
 {
 	vectorop preMatingOps, durmatingOps, postMatingOps, activeDurmatingOps;
@@ -421,7 +421,7 @@ vectoru simulator::evolve(const vectorop & ops,
 }
 
 
-bool simulator::apply(const vectorop ops, bool dryrun)
+bool simulator::apply(const opList & ops, bool dryrun)
 {
 	for (size_t i = 0; i < ops.size(); ++i) {
 		if (ops[i]->canApplyDuringMating())

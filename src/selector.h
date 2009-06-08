@@ -287,25 +287,18 @@ public:
 	   Please refer to \c mapSelector for other parameter descriptions.
 
 	 */
-	mlSelector(const vectorop selectors, int mode = Multiplicative,
+	mlSelector(const opList & selectors, int mode = Multiplicative,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
 		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList("fitness")) :
 		selector(stage, begin, end, step, at, rep, subPops, infoFields),
-		m_selectors(0), m_mode(mode)
+		m_selectors(selectors), m_mode(mode)
 	{
 		DBG_FAILIF(selectors.empty(), ValueError, "Please specify at least one selector.");
-		for (vectorop::const_iterator s = selectors.begin(), sEnd = selectors.end(); s != sEnd; ++s) {
-			DBG_ASSERT( (*s)->__repr__().substr(10, 8) == "selector", ValueError,
-				"Expecting a list of fitness calculator. Given " + (*s)->__repr__());
-			m_selectors.push_back( (*s)->clone());
-		}
 	};
 
 	virtual ~mlSelector()
 	{
-		for (vectorop::iterator s = m_selectors.begin(), sEnd = m_selectors.end(); s != sEnd; ++s)
-			delete *s;
 	}
 
 
@@ -330,7 +323,7 @@ public:
 
 private:
 	/// a list of selectors
-	vectorop m_selectors;
+	opList m_selectors;
 
 	/// mode
 	int m_mode;

@@ -155,6 +155,42 @@ bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
+opList::opList(const vectorop & values) : m_elems(0)
+{
+	vectorop::const_iterator it = values.begin();
+	vectorop::const_iterator itEnd = values.end();
+
+	for (; it != itEnd; ++it)
+		m_elems.push_back((*it)->clone());
+}
+
+
+opList::opList(const baseOperator & op) : m_elems(0)
+{
+	m_elems.push_back(op.clone());
+}
+
+
+opList::opList(const opList & ops) : m_elems(0)
+{
+	vectorop::const_iterator it = ops.m_elems.begin();
+	vectorop::const_iterator itEnd = ops.m_elems.end();
+
+	for (; it != itEnd; ++it)
+		m_elems.push_back((*it)->clone());
+}
+
+
+opList::~opList()
+{
+	vectorop::const_iterator it = m_elems.begin();
+	vectorop::const_iterator itEnd = m_elems.end();
+
+	for (; it != itEnd; ++it)
+		delete *it;
+}
+
+
 vectori pause::s_cachedKeys = vectori();
 
 bool pause::apply(population & pop)
@@ -233,10 +269,27 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_cond.valueAsBool();
 
-	if (res && m_ifOp != NULL)
-		return m_ifOp->applyDuringMating(pop, offspring, dad, mom);
-	else if (!res && m_elseOp != NULL)
-		return m_elseOp->applyDuringMating(pop, offspring, dad, mom);
+	if (res && !m_ifOps.empty()) {
+		const vectorop & ops = m_ifOps.elems();
+		vectorop::const_iterator it = ops.begin();
+		vectorop::const_iterator itEnd = ops.end();
+		for (; it != itEnd; ++it) {
+			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
+			if (!ret)
+				return false;
+		}
+		return true;
+	} else if (!res && !m_elseOps.empty()) {
+		const vectorop & ops = m_elseOps.elems();
+		vectorop::const_iterator it = ops.begin();
+		vectorop::const_iterator itEnd = ops.end();
+		for (; it != itEnd; ++it) {
+			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
+			if (!ret)
+				return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -246,10 +299,27 @@ bool ifElse::apply(population & pop)
 	m_cond.setLocalDict(pop.dict());
 	bool res = m_cond.valueAsBool();
 
-	if (res && m_ifOp != NULL)
-		return m_ifOp->apply(pop);
-	else if (!res && m_elseOp != NULL)
-		return m_elseOp->apply(pop);
+	if (res && !m_ifOps.empty()) {
+		const vectorop & ops = m_ifOps.elems();
+		vectorop::const_iterator it = ops.begin();
+		vectorop::const_iterator itEnd = ops.end();
+		for (; it != itEnd; ++it) {
+			bool ret = (*it)->apply(pop);
+			if (!ret)
+				return false;
+		}
+		return true;
+	} else if (!res && !m_elseOps.empty()) {
+		const vectorop & ops = m_elseOps.elems();
+		vectorop::const_iterator it = ops.begin();
+		vectorop::const_iterator itEnd = ops.end();
+		for (; it != itEnd; ++it) {
+			bool ret = (*it)->apply(pop);
+			if (!ret)
+				return false;
+		}
+		return true;
+	}
 	return true;
 }
 

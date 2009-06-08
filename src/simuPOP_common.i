@@ -242,6 +242,7 @@ namespace std
 %implicitconv floatListFunc;
 %implicitconv stringList;
 %implicitconv stringFunc;
+%implicitconv opList;
 
 %include "utility.h"
 %include "misc.h"
@@ -261,14 +262,18 @@ namespace std
 %include "virtualSubPop.h"
 %include "population.h"
 
+namespace std {
+    %template()    vector<simuPOP::baseOperator * >;
+}
+
 %include "operator.h"
 
 namespace std
 {
     %template()    vector<PyObject*>;
-    %template()    vector<simuPOP::baseOperator * >;
     %template()    vector<simuPOP::homoMating * >;
 }
+
 
 ////////////////////////// SIMUPOP CLASSES //////////////////////////
 

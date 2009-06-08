@@ -249,11 +249,11 @@ Details:
 
 %ignore simuPOP::baseOperator::setApplicableStage(int stage);
 
-%ignore simuPOP::baseOperator::canApplyPreMating();
+%ignore simuPOP::baseOperator::canApplyPreMating() const;
 
-%ignore simuPOP::baseOperator::canApplyDuringMating();
+%ignore simuPOP::baseOperator::canApplyDuringMating() const;
 
-%ignore simuPOP::baseOperator::canApplyPostMating();
+%ignore simuPOP::baseOperator::canApplyPostMating() const;
 
 %ignore simuPOP::baseOperator::isCompatible(const population &pop);
 
@@ -1929,9 +1929,9 @@ Usage:
 Details:
 
     This operator accepts an expression that will be evaluated when
-    this operator is applied. An if-operator will be applied when the
-    expression returns True. Otherwise an else-operator will be
-    applied.
+    this operator is applied. A list of if-operators will be applied
+    when the expression returns True. Otherwise a list of else-
+    operators will be applied.
 
 "; 
 
@@ -1939,17 +1939,17 @@ Details:
 
 Usage:
 
-    ifElse(cond, ifOp=None, elseOp=None, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    ifElse(cond, ifOps=[], elseOps=[], output=\">\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
 Details:
 
-    Create a conditional operator that will apply operator ifOp if
-    condition cond is met and elseOp otherwise. The replicate and
+    Create a conditional operator that will apply operators ifOps if
+    condition cond is met and elseOps otherwise. The replicate and
     generation applicability parameters (begin, end, step, at and rep)
-    of the ifOp and elseOp are ignored because their applicability is
-    determined by the ifElse operator.
+    of the ifOps and elseOps are ignored because their applicability
+    is determined by the ifElse operator.
 
 "; 
 
@@ -1964,8 +1964,6 @@ Usage:
     x.~ifElse()
 
 "; 
-
-%ignore simuPOP::ifElse::ifElse(const ifElse &rhs);
 
 %feature("docstring") simuPOP::ifElse::clone "Obsolete or undocumented function."
 
@@ -4838,8 +4836,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::offspringGenerator::offspringGenerator(const offspringGenerator &rhs);
-
 %feature("docstring") simuPOP::offspringGenerator::clone "
 
 Description:
@@ -4863,6 +4859,76 @@ Usage:
 %ignore simuPOP::offspringGenerator::numOffspring(int gen);
 
 %ignore simuPOP::offspringGenerator::getSex(int count);
+
+%feature("docstring") simuPOP::opList "
+
+"; 
+
+%feature("docstring") simuPOP::opList::opList "
+
+Usage:
+
+    opList(values=[])
+
+"; 
+
+%ignore simuPOP::opList::opList(const opList &ops);
+
+%feature("docstring") simuPOP::opList::~opList "
+
+Usage:
+
+    x.~opList()
+
+"; 
+
+%feature("docstring") simuPOP::opList::add "
+
+Usage:
+
+    x.add(op)
+
+"; 
+
+%feature("docstring") simuPOP::opList::begin "
+
+Usage:
+
+    x.begin()
+
+"; 
+
+%feature("docstring") simuPOP::opList::end "
+
+Usage:
+
+    x.end()
+
+"; 
+
+%feature("docstring") simuPOP::opList::size "
+
+Usage:
+
+    x.size()
+
+"; 
+
+%feature("docstring") simuPOP::opList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::opList::elems "
+
+Usage:
+
+    x.elems()
+
+"; 
 
 %ignore simuPOP::OstreamManager;
 
@@ -9299,7 +9365,7 @@ Details:
 
 "; 
 
-%ignore simuPOP::simulator::apply(const vectorop ops, bool dryrun=false);
+%ignore simuPOP::simulator::apply(const opList &ops, bool dryrun=false);
 
 %feature("docstring") simuPOP::simulator::setMatingScheme "
 
