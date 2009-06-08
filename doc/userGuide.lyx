@@ -1,4 +1,4 @@
-#LyX 1.6.2svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12116,7 +12116,10 @@ reference "pyMutator"
 
 \end_inset
 
- 
+ applies a simple mutation model where an allele is increased by a random
+ number between 1 and 5 when it is mutated.
+ Two different mutation rates are used for two different loci so average
+ alleles at these two loci are different.
 \end_layout
 
 \begin_layout Standard
@@ -12142,7 +12145,59 @@ A mutator is usually applied to all individuals in a population.
 subPop
 \family default
 .
- For example, 
+ For example, you can use 
+\family typewriter
+subPop=[0, 2]
+\family default
+ to apply the mutator only to individuals in subpopulations 0 and 2.
+\end_layout
+
+\begin_layout Standard
+Virtual subpopulations can also be specified in this parameter.
+ For example, you can apply different mutation models to male and female
+ individuals, to unaffected or affected individuals, to patients at different
+ stages of a cancer.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mutatorVSP"
+
+\end_inset
+
+ demonstrate a mutation model where individuals with more tandem repeats
+ at a disease predisposing locus are more likely to develop a disease (e.g.
+ fragile-X).
+ Affected individuals are then subject to a non-neutral mutation model at
+ an accerlerated mutation rate.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mutatorVSP.log"
+lstparams "caption={Applying mutation to virtual subpopulations.},label={mutatorVSP}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At the beginning of a simulation, all individuals have 50 copies of a tandem
+ repeat and the mutation follows a standard neutral stepwise mutation model.
+ Individuals with more than 50 repeats will have an increasing probability
+ to develop a disease (
+\begin_inset Formula $\mbox{Pr}\left(\mbox{affected}\mid n\right)=\left(n-50\right)*0.05$
+\end_inset
+
+) for 
+\begin_inset Formula $50\le n\le70$
+\end_inset
+
+).
+ The averge repeat number therefore increases for affected individuals.
+ In contrast, the mean number of repeats at locus 1 on a separate chromosome
+ oscillate around 50.
 \end_layout
 
 \begin_layout Subsection

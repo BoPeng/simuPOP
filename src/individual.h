@@ -1292,6 +1292,8 @@ public:
 	{
 		// save current state
 		CombinedAlleleIterator tmp(*this);
+        if (!valid())
+            return tmp;
 
 		if (m_useGappedIterator) {
 			m_ptr += m_size;
@@ -1306,6 +1308,8 @@ public:
 
 	CombinedAlleleIterator operator++()
 	{
+        if (!valid())
+            return *this;
 		if (m_useGappedIterator) {
 			m_ptr += m_size;
 			m_valid = m_ptr != m_ptrEnd;
@@ -1319,6 +1323,8 @@ public:
 
 	CombinedAlleleIterator & operator+=(difference_type diff)
 	{
+        if (!valid())
+            return *this;
 		if (m_useGappedIterator) {
 			m_ptr += diff * m_size;
             if (m_ptr > m_ptrEnd)
@@ -1336,6 +1342,8 @@ public:
 	CombinedAlleleIterator operator+(difference_type diff)
 	{
 		CombinedAlleleIterator tmp(*this);
+        if (!valid())
+            return tmp;
 
 		if (m_useGappedIterator) {
 			tmp.m_ptr += diff * m_size;
