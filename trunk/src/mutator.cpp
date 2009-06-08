@@ -139,8 +139,15 @@ bool mutator::apply(population & pop)
 		DBG_FAILIF(sp >= pop.numSubPop(), IndexError,
 			"Subpopulation index " + toStr(sp) + " out of range");
 
+		ULONG popSize = pop.subPopSize(subPops[idx]);
+		DBG_DO(DBG_MUTATOR, cout << "SP " << subPops[idx] << " size: " << popSize << endl);
+		if (popSize == 0)
+			continue;
+
 		if (subPops[idx].isVirtual())
 			pop.activateVirtualSubPop(subPops[idx]);
+
+		m_bt.setParameter(m_rates, pop.ploidy() * popSize);
 
 		m_bt.doTrial();
 		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
@@ -183,6 +190,7 @@ bool mutator::apply(population & pop)
 		if (subPops[idx].isVirtual())
 			pop.deactivateVirtualSubPop(sp);
 	}   // each subpopulation
+	return true;
 }
 
 

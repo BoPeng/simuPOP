@@ -1862,7 +1862,7 @@ simu = simulator(population(size=1000, loci=[20]),
 simu.evolve(
     preOps = [initSex()],
     ops = [
-        pyMutator(func=incAllele, rates=[1e-4, 1e-5],
+        pyMutator(func=incAllele, rates=[1e-4, 1e-3],
             loci=[2, 10])
     ],
     gen = 1000
@@ -1877,6 +1877,69 @@ def avgAllele(pop, loc):
 pop = simu.population(0)
 print 'Average number of repeats at two loci are %.2f and %.2f.' % \
     (avgAllele(pop, 2), avgAllele(pop, 10))
+#end
+
+#file log/mutatorVSP.log
+def fragileX(geno):
+    '''A disease model where an individual has increased risk of 
+    affected if the number of tandem repeats exceed 75.
+    '''
+    # Alleles A1, A2.
+    maxRep = max(geno)
+    if maxRep < 50:
+        return 0
+    else:
+        # individuals with allele >= 70 will surely be affected
+        return min(1, (maxRep - 50)*0.05)
+
+def avgAllele(pop):
+    'count number of alleles by affection status.'
+    Stat(pop, numOfAffected=True)
+    aff = pop.dvars().numOfAffected
+    unaff = pop.dvars().numOfUnaffected
+    #
+    # This can be simplied after stator supports VSP.
+    cnt = [0, 0, 0]
+    for ind in pop.individuals():
+        reps  = ind.allele(0, 0) + ind.allele(0, 1)
+        if ind.affected():
+            cnt[1] += reps
+        else: # X, X
+            cnt[0] += reps
+        cnt[2] += ind.allele(1, 0) + ind.allele(1, 1)
+    if unaff != 0:
+        cnt[0] /= 2. * unaff
+    if aff != 0:
+        cnt[1] /= 2. * aff
+    cnt[2] /= 2. * (aff + unaff)
+    # male, female, loc2
+    pop.dvars().avgAllele = cnt
+    return True
+
+pop = population(10000, loci=[1, 1])
+pop.setVirtualSplitter(affectionSplitter())
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initByValue([50, 50])],
+    ops = [
+        # determine affection status for each offspring (duringMating)
+        pyPenetrance(func=fragileX, loci=0),
+        # unaffected offspring, mutation rate is high to save some time
+        smmMutator(rates=1e-3, loci=1),
+        # unaffected offspring, mutation rate is high to save some time
+        smmMutator(rates=1e-3, loci=0, subPops=[(0, 0)]),
+        # affected offspring have high probability of mutating upward
+        smmMutator(rates=1e-2, loci=0, subPops=[(0, 1)],
+           incProb=0.7, mutStep=3),
+        # number of affected
+        pyOperator(func=avgAllele, step=20),
+        pyEval(r"'Gen: %d #Aff: %d AvgRepeat: %.2f (unaff), %.2f (aff), %.2f (unrelated)\n'"
+            + " % (gen, numOfAffected, avgAllele[0], avgAllele[1], avgAllele[2])",
+            step=20),
+    ],
+    gen = 101
+)
+
 #end
 
 #file log/alleleMapping.log
