@@ -77,7 +77,6 @@ bool mutator::apply(population & pop)
 
 	DBG_DO(DBG_MUTATOR, cout << "Mutate replicate " << pop.rep() << endl);
 
-	m_bt.doTrial();
 
 	// mapIn and mapOut
 	bool mapIn = !m_mapIn.empty() || m_mapIn.func().isValid();
@@ -89,44 +88,101 @@ bool mutator::apply(population & pop)
 	UINT numMapOutAllele = mapOutList.size();
 	pyFunc mapOutFunc = m_mapOut.func();
 	// mutate each mutable locus
-	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-		int locus = m_loci[i];
-		DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
-		size_t pos = m_bt.trialFirstSucc(i);
-		if (pos != BernulliTrials::npos) {
-			do {
-				IndAlleleIterator ptr = pop.alleleIterator(locus) + pos;
-				if (!ptr.valid())
-					continue;
-				DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
-				if (mapIn) {
-					if (numMapInAllele > 0) {
-						if (static_cast<size_t>(*ptr) < numMapInAllele)
-							*ptr = ToAllele(mapInList[*ptr]);
-					} else {
-						*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
-								static_cast<int>(*ptr)));
-					}
-				}
-				// The virtual mutate functions in derived operators will be called.
-				mutate(*ptr);
-				if (mapOut) {
-					if (numMapOutAllele > 0) {
-						if (static_cast<size_t>(*ptr) < numMapOutAllele)
-							*ptr = ToAllele(mapOutList[*ptr]);
-					} else {
-						*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
-								static_cast<int>(*ptr)));
-					}
 
-				}
-				DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
-				m_mutCount[ locus ]++;
-			} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
-		}                                                                                           // succ.any
-	}                                                                                               // each applicable loci
+	subPopList subPops = applicableSubPops();
+	// the usual whole population, easy case.
+	if (subPops.empty()) {
+		m_bt.doTrial();
+		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
+			int locus = m_loci[i];
+			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
+			size_t pos = m_bt.trialFirstSucc(i);
+			if (pos != BernulliTrials::npos) {
+				do {
+					IndAlleleIterator ptr = pop.alleleIterator(locus) + pos;
+					if (!ptr.valid())
+						continue;
+					DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
+					if (mapIn) {
+						if (numMapInAllele > 0) {
+							if (static_cast<size_t>(*ptr) < numMapInAllele)
+								*ptr = ToAllele(mapInList[*ptr]);
+						} else {
+							*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
+									static_cast<int>(*ptr)));
+						}
+					}
+					// The virtual mutate functions in derived operators will be called.
+					mutate(*ptr);
+					if (mapOut) {
+						if (numMapOutAllele > 0) {
+							if (static_cast<size_t>(*ptr) < numMapOutAllele)
+								*ptr = ToAllele(mapOutList[*ptr]);
+						} else {
+							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
+									static_cast<int>(*ptr)));
+						}
 
-	return true;
+					}
+					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
+					m_mutCount[ locus ]++;
+				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
+			}                                                                                           // succ.any
+		}                                                                                               // each applicable loci
+		return true;
+	}
+	// multiple virtual subpopulations
+	for (UINT idx = 0; idx < subPops.size(); ++idx) {
+		UINT sp = subPops[idx].subPop();
+
+		// fromSubPops out of range....
+		DBG_FAILIF(sp >= pop.numSubPop(), IndexError,
+			"Subpopulation index " + toStr(sp) + " out of range");
+
+		if (subPops[idx].isVirtual())
+			pop.activateVirtualSubPop(subPops[idx]);
+
+		m_bt.doTrial();
+		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
+			int locus = m_loci[i];
+			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
+			size_t pos = m_bt.trialFirstSucc(i);
+			if (pos != BernulliTrials::npos) {
+				do {
+					IndAlleleIterator ptr = pop.alleleIterator(locus, sp) + pos;
+					if (!ptr.valid())
+						continue;
+					DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
+					if (mapIn) {
+						if (numMapInAllele > 0) {
+							if (static_cast<size_t>(*ptr) < numMapInAllele)
+								*ptr = ToAllele(mapInList[*ptr]);
+						} else {
+							*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
+									static_cast<int>(*ptr)));
+						}
+					}
+					// The virtual mutate functions in derived operators will be called.
+					mutate(*ptr);
+					if (mapOut) {
+						if (numMapOutAllele > 0) {
+							if (static_cast<size_t>(*ptr) < numMapOutAllele)
+								*ptr = ToAllele(mapOutList[*ptr]);
+						} else {
+							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
+									static_cast<int>(*ptr)));
+						}
+
+					}
+					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
+					m_mutCount[ locus ]++;
+				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
+			}                                                                                           // succ.any
+		}
+
+		if (subPops[idx].isVirtual())
+			pop.deactivateVirtualSubPop(sp);
+	}   // each subpopulation
 }
 
 

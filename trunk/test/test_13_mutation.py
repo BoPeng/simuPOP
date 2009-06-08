@@ -92,7 +92,7 @@ class TestMutator(unittest.TestCase):
 
     def assertGenotypeFreq(self, pop, freqLow, freqHigh,
         loci=[], subPops=[], indRange=[], atPloidy=[]):
-        'Assert if the genotype has the correct allele frequency'
+        'Testing if the genotype has the correct allele frequency'
         geno = getGenotype(pop, loci, subPops, indRange, atPloidy)
         if AlleleType() == 'binary':
             if len(freqLow) == 1:    # only one
@@ -112,6 +112,26 @@ class TestMutator(unittest.TestCase):
                 self.assertTrue(freq >= freqLow[i])
                 self.assertTrue(freq <= freqHigh[i])
 
+    def testVSP(self):
+        'Testing the subpops parameter of mutator'
+        pop = population(size=2000, ploidy=2, loci=[2, 3])
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, randomMating() )
+        simu.evolve(preOps = [initSex()],
+            ops = [ kamMutator(k=2, rates=0.5, loci=[1,4], subPops=[(0, 0)])],
+            gen = 1)
+        pop = simu.extract(0)
+        Stat(pop, alleleFreq=range(5))
+        for loc in [0, 2, 3]:
+            self.assertEqual(pop.dvars().alleleFreq[loc][0], 1.0)
+        for loc in [1, 4]:
+            self.assertNotEqual(pop.dvars().alleleFreq[loc][0], 1.0)
+        for ind in pop.individuals():
+            for loc in [0, 2, 3]:
+                self.assertEqual(ind.allele(loc, 0), 0)
+                self.assertEqual(ind.allele(loc, 1), 0)
+            if ind.sex() == Female:
+                self.assertEqual(ind.genotype(), [0]*10)
 
     def testUntouchedLoci(self):
         'Testing if mutator would mutate irrelevant locus'
