@@ -1321,9 +1321,9 @@ public:
 	{
 		if (m_useGappedIterator) {
 			m_ptr += diff * m_size;
+            if (m_ptr > m_ptrEnd)
+                m_ptr = m_ptrEnd;
 			m_valid = m_ptr != m_ptrEnd;
-			DBG_ASSERT(m_ptr <= m_ptrEnd, SystemError,
-				"Gapped allele iterator goes out of boundary");
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (int i = 0; i < diff && m_valid; ++i)
@@ -1339,9 +1339,9 @@ public:
 
 		if (m_useGappedIterator) {
 			tmp.m_ptr += diff * m_size;
+            if (tmp.m_ptr > tmp.m_ptrEnd)
+                tmp.m_ptr = tmp.m_ptrEnd;
 			tmp.m_valid = tmp.m_ptr != tmp.m_ptrEnd;
-			DBG_ASSERT(tmp.m_ptr <= tmp.m_ptrEnd, SystemError,
-				"Gapped allele iterator goes out of boundary");
 		} else {
 			DBG_ASSERT(m_it.valid(), SystemError, "Cannot refer to an invalid individual iterator");
 			for (int i = 0; i < diff && tmp.m_valid; ++i)

@@ -112,6 +112,23 @@ class TestMutator(unittest.TestCase):
                 self.assertTrue(freq >= freqLow[i])
                 self.assertTrue(freq <= freqHigh[i])
 
+    def testSP(self):
+        'Testing the subpop support of mutators'
+        pop = population(size=[1000, 2000], ploidy=2, loci=[2, 3])
+        simu = simulator(pop, randomMating() )
+        simu.evolve(preOps = [initSex()],
+            ops = [ kamMutator(k=2, rates=0.5, loci=[1,4],
+                subPops=1)],
+            gen = 100)
+        pop = simu.extract(0)
+        Stat(pop, alleleFreq=range(5))
+        for loc in [0, 2, 3]:
+            self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 1.0)
+            self.assertEqual(pop.dvars(1).alleleFreq[loc][0], 1.0)
+        for loc in [1, 4]:
+            self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 1.0)
+            self.assertNotEqual(pop.dvars(1).alleleFreq[loc][0], 1.0)
+
     def testVSP(self):
         'Testing the subpops parameter of mutator'
         pop = population(size=2000, ploidy=2, loci=[2, 3])
