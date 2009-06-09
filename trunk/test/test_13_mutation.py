@@ -271,25 +271,6 @@ class TestMutator(unittest.TestCase):
         assert pop.individual(0).allele(0) == 1, \
             "PyMutator failed"
 
-    def testMutationCount(self):
-        N = 10000
-        r = [0.001, 0.002, 0.003]
-        G = 100
-        pop = population(size=N, ploidy=2, loci=[5])
-        simu = simulator(pop, randomMating())
-        mut = kamMutator(k = 10, rates=r, loci=[0,2,4])
-        simu.evolve(preOps = [initSex()],
-            ops = [mut],
-            gen=G)
-        assert abs( mut.mutationCounts()[0] - 2*N*r[0]*G) < 200, \
-            "Number of mutation event is not as expected."
-        assert abs( mut.mutationCounts()[2] - 2*N*r[1]*G) < 200, \
-            "Number of mutation event is not as expected."
-        assert abs( mut.mutationCounts()[4] - 2*N*r[2]*G) < 200, \
-            "Number of mutation event is not as expected."
-        self.assertEqual( mut.mutationCounts()[1], 0)
-        self.assertEqual( mut.mutationCounts()[3], 0)
-
     def testPointMutator(self):
         # test point mutator
         pop = population(size=10, ploidy=2, loci=[5])

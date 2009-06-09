@@ -4868,25 +4868,17 @@ Usage:
 
 Usage:
 
-    opList(values=[])
+    opList(ops=[])
 
 "; 
 
-%ignore simuPOP::opList::opList(const opList &ops);
+%ignore simuPOP::opList::opList(const opList &rhs);
 
 %feature("docstring") simuPOP::opList::~opList "
 
 Usage:
 
     x.~opList()
-
-"; 
-
-%feature("docstring") simuPOP::opList::add "
-
-Usage:
-
-    x.add(op)
 
 "; 
 
@@ -8160,6 +8152,14 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::recombinator::~recombinator "
+
+Usage:
+
+    x.~recombinator()
+
+"; 
+
 %feature("docstring") simuPOP::recombinator::__repr__ "
 
 Description:
@@ -9933,6 +9933,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::stat::stat(const stat &rhs);
+
 %feature("docstring") simuPOP::stat::clone "
 
 Description:
@@ -10100,6 +10102,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::statExpHetero::statExpHetero(statAlleleFreq &alleleFreq, const statExpHetero &rhs);
+
 %feature("docstring") simuPOP::statExpHetero::apply "
 
 Usage:
@@ -10117,6 +10121,8 @@ Usage:
     statFst(alleleFreq, heteroFreq, Fst=[], param={})
 
 "; 
+
+%ignore simuPOP::statFst::statFst(statAlleleFreq &alleleFreq, statHeteroFreq &heteroFreq, const statFst &rhs);
 
 %feature("docstring") simuPOP::statFst::Fst "
 
@@ -10288,6 +10294,8 @@ Usage:
 
 "; 
 
+%ignore simuPOP::statHWE::statHWE(statGenoFreq &genoFreq, const statHWE &rhs);
+
 %feature("docstring") simuPOP::statHWE::apply "
 
 Usage:
@@ -10305,6 +10313,8 @@ Usage:
     statLD(alleleFreq, haploFreq, LD=[], LD_param={})
 
 "; 
+
+%ignore simuPOP::statLD::statLD(statAlleleFreq &alleleFreq, statHaploFreq &haploFreq, const statLD &rhs);
 
 %feature("docstring") simuPOP::statLD::apply "
 
@@ -10391,6 +10401,8 @@ Usage:
     statNumOfAlleles(calc, atLoci=[], param={})
 
 "; 
+
+%ignore simuPOP::statNumOfAlleles::statNumOfAlleles(statAlleleFreq &calc, const statNumOfAlleles &rhs);
 
 %feature("docstring") simuPOP::statNumOfAlleles::~statNumOfAlleles "
 

@@ -155,10 +155,10 @@ bool baseOperator::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
-opList::opList(const vectorop & values) : m_elems(0)
+opList::opList(const vectorop & ops) : m_elems(0)
 {
-	vectorop::const_iterator it = values.begin();
-	vectorop::const_iterator itEnd = values.end();
+	vectorop::const_iterator it = ops.begin();
+	vectorop::const_iterator itEnd = ops.end();
 
 	for (; it != itEnd; ++it)
 		m_elems.push_back((*it)->clone());
@@ -171,10 +171,10 @@ opList::opList(const baseOperator & op) : m_elems(0)
 }
 
 
-opList::opList(const opList & ops) : m_elems(0)
+opList::opList(const opList & rhs) : m_elems(0)
 {
-	vectorop::const_iterator it = ops.m_elems.begin();
-	vectorop::const_iterator itEnd = ops.m_elems.end();
+	vectorop::const_iterator it = rhs.m_elems.begin();
+	vectorop::const_iterator itEnd = rhs.m_elems.end();
 
 	for (; it != itEnd; ++it)
 		m_elems.push_back((*it)->clone());
@@ -270,9 +270,8 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 	bool res = m_cond.valueAsBool();
 
 	if (res && !m_ifOps.empty()) {
-		const vectorop & ops = m_ifOps.elems();
-		vectorop::const_iterator it = ops.begin();
-		vectorop::const_iterator itEnd = ops.end();
+		opList::const_iterator it = m_ifOps.begin();
+		opList::const_iterator itEnd = m_ifOps.end();
 		for (; it != itEnd; ++it) {
 			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
 			if (!ret)
@@ -280,9 +279,8 @@ bool ifElse::applyDuringMating(population & pop, RawIndIterator offspring,
 		}
 		return true;
 	} else if (!res && !m_elseOps.empty()) {
-		const vectorop & ops = m_elseOps.elems();
-		vectorop::const_iterator it = ops.begin();
-		vectorop::const_iterator itEnd = ops.end();
+		opList::const_iterator it = m_elseOps.begin();
+		opList::const_iterator itEnd = m_elseOps.end();
 		for (; it != itEnd; ++it) {
 			bool ret = (*it)->applyDuringMating(pop, offspring, dad, mom);
 			if (!ret)

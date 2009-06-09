@@ -14,7 +14,7 @@ simuOpt.setOptions(quiet=False)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
-class TestRecombinator(unittest.TestCase):
+class TestTransmitters(unittest.TestCase):
     def getPop(self, *args, **kwargs):
         'Create a population for testing.'
         pop = population(*args, **kwargs)
@@ -776,28 +776,14 @@ class TestRecombinator(unittest.TestCase):
         simu = simulator(pop, randomMating())
         simu.evolve(
             ops    = [ recombinator(rates=r) ],
-            postOps = [    stat(LD=[0,1]) ],
+            postOps = [   
+                stat(LD=[0,1])
+                ],
             gen=9)
         # check the change of LD, hopefully, the variation is not too high.
         assert abs(simu.dvars(0).LD[0][1] - 0.25*(1-r)**10) < 0.02, \
             "Decay of LD is not as expected: " + str(simu.dvars(0).LD[0][1]) + " vs expected " \
             + str( 0.25*(1-r)**10 )
-
-    def testRecCount(self):
-        'Testing count of recombination events '
-        r = 0.01
-        N = 1000
-        G = 100
-        rec = recombinator(rates=r)
-        pop = population(size=N, loci=[10,10])
-        simu = simulator(pop, randomMating())
-        simu.evolve(preOps = [initSex()], ops = [ rec ], gen=G)
-        # number of recombination event should be bionomial(ploidy*N*r, 0.1) with mean 10000
-        # at end should be bionomial(ploidy*N*r, 0.5)
-        assert abs( rec.recCount(0) - 2*N*r*G ) < 150, \
-            'Number of recombination event is not as expected. %d %d' % (rec.recCount(0), 2*N*r*G)
-        assert abs( rec.recCount(9) - 2*N*0.5*G ) < 2000, \
-            'Number of recombination event is not as expected. %d %d' % (rec.recCount(9), 2*N*0.5*G)
 
 
 #     def testNoMaleRec(self):
@@ -848,29 +834,6 @@ class TestRecombinator(unittest.TestCase):
         # which are all zero
         for ind in simu.population(0).individuals():
             self.assertEqual(ind.genotype(1), [0]*8)
-
-    def testConversionCount(self):
-        'Testing count of conversion events '
-        r = 0.01
-        N = 1000
-        G = 100
-        for mode, param in \
-                [(GeometricDistribution, 0.3),
-                 (TractLength, 2.5),
-                 (NumMarkers, 2),
-                 (ExponentialDistribution, 1)]:
-            rec = recombinator(rates=r, 
-                convMode=(mode, 0.2, param))
-            pop = population(size=N, loci=[10,10])
-            simu = simulator(pop, randomMating())
-            simu.evolve(preOps = [initSex()],
-                ops = [ rec ], gen=G-1)
-            # at end should be bionomial(ploidy*N*r, 0.5)
-            recCount = sum(rec.recCounts()) - max(rec.recCounts())
-            convCount = sum(rec.convCounts().values())
-            assert abs(recCount*0.2 - convCount) < 300
-
-
 
 if __name__ == '__main__':
     unittest.main()

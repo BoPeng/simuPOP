@@ -299,6 +299,28 @@ stat::stat(
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
 	m_HWE(m_genoFreq, HWE.elems())
 {
+	DBG_DO(DBG_STATOR, cout << "Stator created" << endl);
+}
+
+
+stat::stat(const stat & rhs) :
+	baseOperator(rhs),
+	// the order of initialization is meaningful since they may depend on each other
+	m_popSize(rhs.m_popSize),
+	m_numOfMale(rhs.m_numOfMale),
+	m_numOfAffected(rhs.m_numOfAffected),
+	m_alleleFreq(rhs.m_alleleFreq),
+	m_numOfAlleles(m_alleleFreq, m_numOfAlleles),   // note this one
+	m_heteroFreq(rhs.m_heteroFreq),
+	m_expHetero(m_alleleFreq, rhs.m_expHetero),     // and this one
+	m_genoFreq(rhs.m_genoFreq),
+	m_haploFreq(rhs.m_haploFreq),
+	m_LD(m_alleleFreq, m_haploFreq, rhs.m_LD), // and this one
+	m_association(rhs.m_association),
+	m_neutrality(rhs.m_neutrality),
+	m_Fst(m_alleleFreq, m_heteroFreq, rhs.m_Fst),
+	m_HWE(m_genoFreq, rhs.m_HWE)
+{
 }
 
 

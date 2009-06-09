@@ -84,10 +84,6 @@ public:
 	 *  a corresponding allele for a given allele. This allows easier mapping
 	 *  between a large number of alleles and advanced models such as random
 	 *  emission of alleles.
-	 *
-	 *  A mutator keeps track of number of mutation events happens at each
-	 *  locus. This count does not have to correspond to number of new mutants
-	 *  because some mutation events do not create new mutants.
 	 */
 	mutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
@@ -97,7 +93,7 @@ public:
 		const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
-		m_bt(rng()), m_initialized(false), m_mutCount(0)
+		m_bt(rng()), m_initialized(false)
 	{
 		if (m_rates.empty() )
 			throw ValueError("You should specify a rate, or a sequence of rate.");
@@ -137,16 +133,6 @@ public:
 	}
 
 
-	/** Return number of mutation events at all loci, including loci that are
-	 *  listed in parameter \e loci. Note that not all mutation events leads
-	 *  to a new mutant.
-	 */
-	vectoru mutationCounts()
-	{
-		return m_mutCount;
-	}
-
-
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele)
 	{
@@ -176,9 +162,6 @@ protected:
 
 	/// initialized? the first apply() call will trigger an initialization process.
 	bool m_initialized;
-
-	/// report the number of mutation events
-	vectoru m_mutCount;
 };
 
 /** A matrix mutator mutates alleles \c 0, \c 1, ..., \c n-1 using a \c n by
@@ -452,7 +435,7 @@ public:
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_loci(loci.elems()), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems()), m_mutCount(0)
+		m_loci(loci.elems()), m_allele(allele), m_ploidy(ploidy.elems()), m_inds(inds.elems())
 	{
 		if (m_ploidy.empty())
 			m_ploidy.push_back(0);
@@ -482,21 +465,12 @@ public:
 	}
 
 
-	/// return mutation counts
-	vectoru mutationCounts()
-	{
-		return m_mutCount;
-	}
-
-
 private:
 	/// applicable loci.
 	vectorlu m_loci;
 	Allele m_allele;
 	vectorlu m_ploidy;
 	vectorlu m_inds;
-	/// report the number of mutation events
-	vectoru m_mutCount;
 };
 
 }
