@@ -61,8 +61,6 @@ void mutator::initialize(population & pop)
 		if (fcmp_lt(m_rates[i], 0.) || fcmp_gt(m_rates[i], 1.) )
 			throw ValueError("Migration rate should be between [0,1], given " + toStr(m_rates[i]));
 #endif
-	if (pop.totNumLoci() != m_mutCount.size())
-		m_mutCount.resize(pop.totNumLoci(), 0);
 	m_initialized = true;
 }
 
@@ -125,7 +123,6 @@ bool mutator::apply(population & pop)
 
 					}
 					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
-					m_mutCount[ locus ]++;
 				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
 			}                                                                                           // succ.any
 		}                                                                                               // each applicable loci
@@ -182,7 +179,6 @@ bool mutator::apply(population & pop)
 
 					}
 					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
-					m_mutCount[ locus ]++;
 				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
 			}                                                                                           // succ.any
 		}
@@ -357,13 +353,11 @@ void pyMutator::mutate(AlleleRef allele)
 
 bool pointMutator::apply(population & pop)
 {
-	m_mutCount.resize(pop.totNumLoci(), 0);
 	// mutate each mutable locus
 	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
 		for (vectorlu::iterator ind = m_inds.begin();
 		     ind != m_inds.end(); ++ind) {
 			for (size_t p = 0; p < m_ploidy.size(); ++p) {
-				m_mutCount[m_loci[i]]++;
 				*(pop.ind(*ind).genoBegin(m_ploidy[p]) + m_loci[i]) = m_allele;
 				DBG_DO(DBG_MUTATOR, cout << "Mutate locus " << m_loci[i] <<
 					" to allele " << toStr(m_allele) << " at generation " << pop.gen() << endl);

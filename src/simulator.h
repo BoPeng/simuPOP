@@ -130,6 +130,9 @@ public:
 	 *  Population \e pop will be copied \e rep times (default to \c 1), while
 	 *  keeping the passed population intact. A mating scheme \e matingScheme
 	 *  will be used to evolve these populations.
+	 *
+	 *  \note Population \e pop is copied to a simulator so the input
+	 *  population will be kept untouched.
 	 */
 	simulator(const population & pop, mating & matingScheme, UINT rep = 1);
 
@@ -241,6 +244,10 @@ public:
 	 *  replicate even if the last replicate has stopped. In addition,
 	 *  \e postOps are applied to all replicates, including those that stopped
 	 *  before other replicates.
+	 *
+	 *  \note Operators \e ops, \e preOps and \e postOps are copied before they
+	 *  are applied during evolution. Input operators will therefore not be
+	 *  changed.
 	 *
 	 *  <group>2-evolve</group>
 	 */

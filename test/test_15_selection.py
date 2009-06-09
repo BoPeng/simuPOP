@@ -457,21 +457,19 @@ class TestSelector(unittest.TestCase):
             population(size=1000, ploidy=2, loci=[2],
             infoFields=['fitness', 'spare']),
             randomMating())
-        simu.evolve(
-            [
-                mlSelector([
+        sel = mlSelector([
                     mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                     mapSelector(loci=1, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                 ], mode=Additive),
-            ],
+        simu.evolve(
+            ops = sel,
             preOps=[ initByFreq(alleleFreq=[.2,.8])],
             gen=100
         )
         #
         simu.setGen(0)
         simu.evolve([
-            mlSelector(
-                [
+            mlSelector([
                     mapSelector(loci=0, fitness={'0-0':1,'0-1':1,'1-1':.8}),
                     maSelector(loci = 1, wildtype=[1], fitness=[1,1,.8])
                 ], mode=Multiplicative),

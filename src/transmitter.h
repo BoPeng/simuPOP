@@ -504,68 +504,15 @@ public:
 	}
 
 
+	virtual ~recombinator()
+	{
+	}
+
+
 	/// used by Python print function to print out the general information of the recombinator
 	virtual string __repr__()
 	{
 		return "<simuPOP::recombination>" ;
-	}
-
-
-	/** HIDDEN
-	 *  Return recombination counts at a given location. This is used only for
-	 *  debugging purposes and is only valid in standard modules.
-	 */
-	UINT recCount(size_t idx)
-	{
-		DBG_FAILIF(idx >= m_recCount.size(), IndexError,
-			"RecCount index out of range");
-#ifndef OPTIMIZED
-		return m_recCount[idx];
-#else
-		return 0;
-#endif
-	}
-
-
-	/** HIDDEN
-	 *  Return recombination counts at all locations. This is used only for
-	 *  debugging purposes and is only valid in standard modules.
-	 */
-	vectoru recCounts()
-	{
-#ifndef OPTIMIZED
-		return m_recCount;
-#else
-		return vectoru();
-#endif
-	}
-
-
-	/** HIDDEN
-	 *  Return number of conversion events with given size. This is used only for
-	 *  debugging purposes and is only valid in standard modules.
-	 */
-	ULONG convCount(size_t size)
-	{
-#ifndef OPTIMIZED
-		return m_convSize[size];
-#else
-		return 0;
-#endif
-	}
-
-
-	/** HIDDEN
-	 *  Return the count of conversions of all sizes. This is used only for
-	 *  debugging purposes and is only valid in standard modules.
-	 */
-	std::map<int, int> convCounts()
-	{
-#ifndef OPTIMIZED
-		return m_convSize;
-#else
-		return std::map<int, int>();
-#endif
 	}
 
 
@@ -619,13 +566,6 @@ private:
 	int m_customizedBegin;
 	int m_customizedEnd;
 
-#ifndef OPTIMIZED
-	/// report the number of recombination events
-	vectoru m_recCount;
-
-	// report the tract length of conversions
-	std::map<int, int> m_convSize;
-#endif
 	/// algorithm to use (frequent or seldom recombinations)
 	int m_algorithm;
 };

@@ -525,12 +525,12 @@ public:
 	typedef vectorop::const_iterator const_iterator;
 
 public:
-	opList(const vectorop & values = vectorop());
+	opList(const vectorop & ops = vectorop());
 
 	opList(const baseOperator & op);
 
 	/// CPPONLY
-	opList(const opList & ops);
+	opList(const opList & rhs);
 
 	baseOperator * operator[](size_t idx) const
 	{
@@ -541,12 +541,6 @@ public:
 
 
 	~opList();
-
-	void add(const baseOperator * op)
-	{
-		m_elems.push_back(op->clone());
-	}
-
 
 	iterator begin()
 	{

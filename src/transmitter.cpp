@@ -367,9 +367,6 @@ recombinator::recombinator(const floatList & rates, double intensity,
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci.elems()),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
 	m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
-#ifndef OPTIMIZED
-	m_recCount(0), m_convSize(),
-#endif
 	m_algorithm(0)
 {
 	// tells mating schemes that this operator will form
@@ -530,11 +527,6 @@ void recombinator::initialize(const population & pop)
 	DBG_ASSERT(vecP.back() == .5, SystemError,
 		"The last elem of m_rates should be half.");
 
-	// initialize recombination counter,
-	// This will count recombination events after
-	// each locus.
-	DBG_DO_(m_recCount.resize(pop.totNumLoci(), 0));
-
 	m_bt.setParameter(vecP, pop.popSize());
 
 	// choose an algorithm
@@ -588,10 +580,6 @@ void recombinator::transmitGenotype(const individual & parent,
 			forceFirstEnd = parent.chromEnd(m_chromX);
 		}
 	}
-	DBG_DO(DBG_TRANSMITTER, cout << "Ignore " << ignoreBegin << " - " << ignoreEnd
-		                         << "\nForce first: " << forceFirstBegin << " - " << forceFirstEnd
-		                         << "\nForce second: " << forceSecondBegin << " - " << forceSecondEnd
-		                         << endl);
 	// get a new set of values.
 	// const BoolResults& bs = m_bt.trial();
 	m_bt.trial();
@@ -631,7 +619,6 @@ void recombinator::transmitGenotype(const individual & parent,
 				else
 					curCp = (curCp + 1) % 2;
 				//
-				// this is not recorded in m_recCount[bl]
 				// no pending conversion
 				convCount = -1;
 			}
@@ -648,7 +635,6 @@ void recombinator::transmitGenotype(const individual & parent,
 				} else if (convCount < 0 && m_bt.trialSucc(bl)) {
 					// recombination (if convCount == 0, a conversion event is ending)
 					curCp = (curCp + 1) % 2;
-					DBG_DO_(m_recCount[bl]++);
 					// if conversion happens
 					if (withConversion &&
 					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
@@ -656,7 +642,6 @@ void recombinator::transmitGenotype(const individual & parent,
 						// convCount will be decreased, until reconversion completes
 						// or another recombination happens
 						convCount = markersConverted(gt + 1, parent);
-						DBG_DO_(m_convSize[convCount]++);
 					} else
 						// another recombination stops the previous conversion
 						convCount = -1;
@@ -675,14 +660,12 @@ void recombinator::transmitGenotype(const individual & parent,
 			// first piece
 			for (; gt < m_recBeforeLoci[pos]; ++gt)
 				off[gt] = cp[curCp][gt];
-			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
 			//
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
 			    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 				convCount = markersConverted(gt, parent);
-				DBG_DO_(m_convSize[convCount]++);
 			}
 			// next recombination point...
 			while ((pos = m_bt.probNextSucc(pos)) != BernulliTrials::npos) {
@@ -702,7 +685,6 @@ void recombinator::transmitGenotype(const individual & parent,
 				// copy from the end of conversion to this recombination point
 				for (; gt < gtEnd; ++gt)
 					off[gt] = cp[curCp][gt];
-				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
 				//
 				// conversion event for this recombination event
@@ -712,7 +694,6 @@ void recombinator::transmitGenotype(const individual & parent,
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
-					DBG_DO_(m_convSize[convCount]++);
 				}
 			}
 		}
@@ -739,13 +720,11 @@ void recombinator::transmitGenotype(const individual & parent,
 			gtEnd = m_recBeforeLoci[pos];
 			copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
 			gt = gtEnd;
-			DBG_DO_(m_recCount[pos]++);
 			curCp = (curCp + 1) % 2;
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
 			    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
 				convCount = markersConverted(gt, parent);
-				DBG_DO_(m_convSize[convCount]++);
 			}
 			// next recombination point...
 			while ((pos = m_bt.probNextSucc(pos)) != BernulliTrials::npos) {
@@ -763,7 +742,6 @@ void recombinator::transmitGenotype(const individual & parent,
 				// copy from the end of conversion to the next recombination point
 				copyGenotype(cp[curCp] + gt, off + gt, m_recBeforeLoci[pos] - gt);
 				gt = gtEnd;
-				DBG_DO_(m_recCount[pos]++);
 				curCp = (curCp + 1) % 2;
 				// conversion event for this recombination event
 				if (withConversion &&
@@ -772,7 +750,6 @@ void recombinator::transmitGenotype(const individual & parent,
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
-					DBG_DO_(m_convSize[convCount]++);
 				}
 			}
 		}

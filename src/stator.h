@@ -843,6 +843,13 @@ public:
 	}
 
 
+	/// CPPONLY: this is used by the copy constructor
+	statNumOfAlleles(statAlleleFreq & calc, const statNumOfAlleles & rhs)
+		: m_calc(calc), m_evalInSubPop(rhs.m_evalInSubPop)
+	{
+	}
+
+
 	~statNumOfAlleles()
 	{
 	}
@@ -1035,6 +1042,16 @@ public:
 	}
 
 
+	/// CPPONLY: used for copy constructor
+	statExpHetero(statAlleleFreq & alleleFreq, const statExpHetero & rhs)
+		: m_alleleFreq(alleleFreq), m_atLoci(rhs.m_atLoci),
+		m_expHetero(rhs.m_expHetero), m_midValues(rhs.m_midValues),
+		m_evalInSubPop(rhs.m_evalInSubPop)
+	{
+
+	}
+
+
 	bool apply(population & pop);
 
 private:
@@ -1206,6 +1223,27 @@ public:
 	statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 		const intMatrix & LD = intMatrix(), const strDict & LD_param = strDict());
 
+	/// CPPONLY: for copy constructor
+	statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
+		const statLD & rhs) :
+		m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
+		m_LD(rhs.m_LD), m_midValues(rhs.m_midValues),
+		m_evalInSubPop(rhs.m_evalInSubPop),
+		m_output_ld(rhs.m_output_ld),
+		m_output_ld_prime(rhs.m_output_ld_prime),
+		m_output_r2(rhs.m_output_r2),
+		m_output_delta2(rhs.m_output_delta2),
+		m_output_LD(rhs.m_output_LD),
+		m_output_LD_prime(rhs.m_output_LD_prime),
+		m_output_R2(rhs.m_output_R2),
+		m_output_Delta2(rhs.m_output_Delta2),
+		m_output_ChiSq(rhs.m_output_ChiSq),
+		m_output_UCU(rhs.m_output_UCU),
+		m_output_CramerV(rhs.m_output_CramerV)
+	{
+	}
+
+
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
@@ -1315,6 +1353,21 @@ public:
 	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
 		const vectorlu & Fst = vectorlu(), const strDict & param = strDict());
 
+	/// CPPONLY: for copy constructor
+	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
+		const statFst & rhs) :
+		m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq),
+		m_atLoci(rhs.m_atLoci), m_Fst(rhs.m_Fst),
+		m_Fit(rhs.m_Fit), m_Fis(rhs.m_Fis),
+		m_avgFst(rhs.m_avgFst), m_avgFit(rhs.m_avgFit), m_avgFis(rhs.m_avgFis),
+		m_midValues(rhs.m_midValues),
+		m_output_Fst(rhs.m_output_Fst), m_output_Fis(rhs.m_output_Fis), m_output_Fit(rhs.m_output_Fit),
+		m_output_AvgFst(rhs.m_output_AvgFst), m_output_AvgFis(rhs.m_output_AvgFis),
+		m_output_AvgFit(rhs.m_output_AvgFit)
+	{
+	}
+
+
 	double Fst()
 	{
 		return m_avgFst;
@@ -1382,6 +1435,13 @@ private:
 
 public:
 	statHWE(statGenoFreq & genoFreq, const vectorlu & loci = vectorlu());
+
+	/// CPPONLY: for copy constructor
+	statHWE(statGenoFreq & genoFreq, const statHWE & rhs) :
+		m_genoFreq(genoFreq), m_loci(rhs.m_loci)
+	{
+	}
+
 
 	bool apply(population & pop);
 
@@ -1641,6 +1701,9 @@ public:
 	{
 	}
 
+
+	/// CPPONLY
+	stat(const stat & rhs);
 
 	/// deep copy of a \c stat operator
 	virtual baseOperator * clone() const

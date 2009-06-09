@@ -30,7 +30,7 @@ namespace simuPOP {
 offspringGenerator::offspringGenerator(const opList & ops,
 	const floatListFunc & numOffspring, const floatList & sexMode) :
 	m_numOffspring(numOffspring), m_sexMode(sexMode.elems()),
-	m_transmitters(), m_transmitGenotype(true), m_initialized(false)
+	m_transmitters(ops), m_transmitGenotype(true), m_initialized(false)
 {
 	DBG_FAILIF(numOffspring.size() == 0 && !numOffspring.func().isValid(), ValueError,
 		"Please specify either number of offspring or a function.");
@@ -67,10 +67,6 @@ offspringGenerator::offspringGenerator(const opList & ops,
 	DBG_FAILIF(static_cast<int>(m_sexMode[0]) == ProbOfMale &&
 		(fcmp_lt(m_sexMode[1], 0) || fcmp_gt(m_sexMode[1], 1)),
 		ValueError, "Probability of male has to be between 0 and 1");
-	// the genotype transmitter that will be used when no during mating
-	// operator is used to transmit genotype from parents to offspring.
-	for (size_t i = 0; i < ops.size(); ++i)
-		m_transmitters.add(ops[i]);
 }
 
 
