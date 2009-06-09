@@ -305,7 +305,7 @@ public:
 	/// deep copy of a \c mlSelector
 	virtual baseOperator * clone() const
 	{
-		throw ValueError("Multi-loci selector can not be nested.");
+		return new mlSelector(*this);
 	}
 
 
