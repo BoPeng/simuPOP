@@ -4638,10 +4638,7 @@ Details:
     of 0 and 1. Parameters mapIn and mapOut also accept a user-defined
     Python function that returns a corresponding allele for a given
     allele. This allows easier mapping between a large number of
-    alleles and advanced models such as random emission of alleles.  A
-    mutator keeps track of number of mutation events happens at each
-    locus. This count does not have to correspond to number of new
-    mutants because some mutation events do not create new mutants.
+    alleles and advanced models such as random emission of alleles.
 
 "; 
 
@@ -4670,20 +4667,6 @@ Usage:
 "; 
 
 %ignore simuPOP::mutator::setRate(const vectorf &rates, const vectorlu &loci=vectorlu());
-
-%feature("docstring") simuPOP::mutator::mutationCounts "
-
-Usage:
-
-    x.mutationCounts()
-
-Details:
-
-    Return number of mutation events at all loci, including loci that
-    are listed in parameter loci. Note that not all mutation events
-    leads to a new mutant.
-
-"; 
 
 %ignore simuPOP::mutator::mutate(AlleleRef allele);
 
@@ -5593,18 +5576,6 @@ Description:
 Usage:
 
     x.__repr__()
-
-"; 
-
-%feature("docstring") simuPOP::pointMutator::mutationCounts "
-
-Description:
-
-    return mutation counts
-
-Usage:
-
-    x.mutationCounts()
 
 "; 
 
@@ -8173,14 +8144,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::recombinator::recCount "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::recombinator::recCounts "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::recombinator::convCount "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::recombinator::convCounts "Obsolete or undocumented function."
-
 %feature("docstring") simuPOP::recombinator::initialize "
 
 Usage:
@@ -9199,6 +9162,11 @@ Details:
     keeping the passed population intact. A mating scheme matingScheme
     will be used to evolve these populations.
 
+Note:
+
+    Population pop is copied to a simulator so the input population
+    will be kept untouched.
+
 "; 
 
 %feature("docstring") simuPOP::simulator::~simulator "
@@ -9362,6 +9330,12 @@ Details:
     the last active replicate even if the last replicate has stopped.
     In addition, postOps are applied to all replicates, including
     those that stopped before other replicates.
+
+Note:
+
+    Operators ops, preOps and postOps are copied before they are
+    applied during evolution. Input operators will therefore not be
+    changed.
 
 "; 
 
