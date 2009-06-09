@@ -370,19 +370,6 @@ simulatorRef
 pedigreeRef
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Virtual subpopulation splitters
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Plain Layout
 
 
@@ -445,7 +432,7 @@ combinedSplitterRef
 \end_layout
 
 \begin_layout Section
-Basic Mating Schemes
+Mating Schemes
 \begin_inset Index
 status collapsed
 
@@ -482,19 +469,6 @@ heteroMatingRef
 \backslash
 pedigreeMatingRef
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Parent choosers and offspring generators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Plain Layout
 
@@ -566,11 +540,287 @@ offspringGeneratorRef
 controlledOffspringGeneratorRef
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Pre-defined mating schemes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcloneMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomSelectionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPmonogamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPpolygamousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPalphaMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPconsanguineousMatingRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcontrolledRandomMatingRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Pre-defined offspring generators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcloneOffspringGeneratorRef
+\end_layout
+
 \begin_layout Plain Layout
 
 
 \backslash
 simuPOPmendelianOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPhaplodiploidOffspringGeneratorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPselfingOffspringGeneratorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Utility Classes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+RNGRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Global functions
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+AlleleTypeRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+AvailableRNGsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+LimitsRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPDebugCodesRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+LoadPopulationRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+LoadSimulatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+MaxAlleleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModuleCompilerRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModuleDateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModulePlatFormRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+ModulePyVersionRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+OptimizedRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SetRNGRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOnDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+TurnOffDebugRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rngRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuRevRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuVerRef
 \end_layout
 
 \end_inset
@@ -746,7 +996,7 @@ resizeSubPopsRef
 \end_layout
 
 \begin_layout Section
-Standard genotype transmitters
+Genotype transmitters
 \end_layout
 
 \begin_layout Standard
@@ -794,23 +1044,6 @@ haplodiploidGenoTransmitterRef
 \backslash
 mitochondrialGenoTransmitterRef
 \end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Recombination and gene conversion
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
 
 \begin_layout Plain Layout
 
@@ -882,6 +1115,33 @@ pyMutatorRef
 
 \backslash
 pointMutatorRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Derived mutation operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPsnpMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPacgtMutatorRef
 \end_layout
 
 \end_inset
@@ -1183,7 +1443,66 @@ pyOperatorRef
 \end_layout
 
 \begin_layout Section
-Miscellaneous
+Ascertainment operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPrandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPRandomSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPcaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPCaseControlSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPaffectedSibpairSampleRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPAffectedSibpairSampleRef
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Miscellaneous operators
 \end_layout
 
 \begin_layout Standard
@@ -1258,252 +1577,7 @@ ticTocRef
 
 \end_layout
 
-\begin_layout Chapter
-Python Modules (under revision)
-\end_layout
-
 \begin_layout Section
-Module 
-\family typewriter
-simuPOP
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Offspring generators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcloneOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmendelianOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPhaplodiploidOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPselfingOffspringGeneratorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-%
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Mating schemes
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcloneMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPrandomSelectionRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPrandomMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPmonogamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPpolygamousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPalphaMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPhaplodiploidMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPselfMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPconsanguineousMatingRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcontrolledRandomMatingRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Mutation operators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPsnpMutatorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPacgtMutatorRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Ascertainment operators
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPrandomSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPRandomSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPcaseControlSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPCaseControlSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPaffectedSibpairSampleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPAffectedSibpairSampleRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Subsection
 Function form of operators
 \end_layout
 
@@ -1602,152 +1676,13 @@ simuPOPAcgtMutateRef
 simuPOPKamMutateRef
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection
-Miscellaneous functions
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-AlleleTypeRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-AvailableRNGsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-LimitsRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuPOPDebugCodesRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-LoadPopulationRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-LoadSimulatorRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-MaxAlleleRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModuleCompilerRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModuleDateRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModulePlatFormRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-ModulePyVersionRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-OptimizedRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-SetRNGRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-TurnOnDebugRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-TurnOffDebugRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-rngRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuRevRef
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-simuVerRef
-\end_layout
-
-\end_inset
-
-
+\begin_layout Chapter
+Utility Modules
 \end_layout
 
 \begin_layout Section
@@ -1928,6 +1863,8 @@ simuOptsimuOptRef
 Module 
 \family typewriter
 simuUtil
+\family default
+ (under revision)
 \end_layout
 
 \begin_layout Standard
@@ -2035,26 +1972,6 @@ simuRPyqqPlotterRef
 
 \backslash
 simuRPyboxPlotterRef
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Utility Classes
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-RNGRef
 \end_layout
 
 \end_inset
