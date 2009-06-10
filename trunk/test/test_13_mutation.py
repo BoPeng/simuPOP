@@ -262,6 +262,7 @@ class TestMutator(unittest.TestCase):
 
 
     def testPyMutator(self):
+        'Testing the hybrid pyMutator'
         pop = population(size=10, loci=[2])
         # cutom mutator
         def mut(x):
@@ -272,6 +273,7 @@ class TestMutator(unittest.TestCase):
             "PyMutator failed"
 
     def testPointMutator(self):
+        'Testing point mutator'
         # test point mutator
         pop = population(size=10, ploidy=2, loci=[5])
         InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
@@ -282,6 +284,59 @@ class TestMutator(unittest.TestCase):
             allele=0, loci=[1,2])
         assert pop.individual(1).allele(2,1) == 0
         assert pop.individual(1).allele(2,0) != 0
+
+    def testSnpMutator(self):
+        'Testing SNP mutator'
+        cnt0 = 0
+        cnt1 = 0
+        for i in range(50):
+            pop = population(size=10000, loci=[1])
+            InitByFreq(pop, [0.6, 0.4])
+            SnpMutate(pop, u=0.2, v=0.1, loci=0)
+            Stat(pop, alleleFreq=[0])
+            # u = 10000*2*(0.6-0.12+0.04), v = 10000*2*(0.4-0.04+0.12)
+            cnt0 += pop.dvars().alleleNum[0][0]
+            cnt1 += pop.dvars().alleleNum[0][1]
+        print cnt0/50. , 20000*(0.6-0.12+0.04)
+        print cnt1/50. , 20000*(0.4-0.04+0.12)
+        self.assertEqual( abs(cnt0/50. - 20000*(0.6-0.12+0.04)) < 20, True)
+        self.assertEqual( abs(cnt1/50. - 20000*(0.4-0.04+0.12)) < 20, True)
+
+    def testMutationRate(self):
+        'Testing mutation rate'
+        cnt = 0
+        for i in range(50):
+            pop = population(size=10000, loci=[1])
+            # Mutate autosome
+            SnpMutate(pop, u=0.01, loci=0)
+            Stat(pop, alleleFreq=[0])
+            # 10000 x 2 x 0.01 = 200
+            cnt += pop.dvars().alleleNum[0][1]
+        self.assertEqual( abs(cnt/50. - 200) < 5, True)
+
+    def testMutationSexChromosomes(self):
+        'Testing mutation on chromosome X'
+        cnt = 0
+        for i in range(50):
+            pop = population(size=10000, loci=[1, 1], chromTypes=[ChromosomeX, ChromosomeY])
+            InitSex(pop, sex=[Male, Female])
+            # Mutate X chromosomes
+            SnpMutate(pop, u=0.01, loci=0)
+            Stat(pop, alleleFreq=[0])
+            # Male: 5000 x 0.01, Female: 5000 x 2 x 0.01 = 50 + 100
+            cnt += pop.dvars().alleleNum[0][1]
+        self.assertEqual( abs(cnt/50. - (5000*0.01*2 + 5000*0.01)) < 5, True)
+        #
+        # Mutate Y chromosomes
+        cnt = 0
+        for i in range(50):
+            pop = population(size=10000, loci=[1, 1], chromTypes=[ChromosomeX, ChromosomeY])
+            InitSex(pop, sex=[Male, Female])
+            SnpMutate(pop, u=0.01, loci=1)
+            Stat(pop, alleleFreq=[1])
+            # Male: 5000 x 0.01 = 50
+            cnt += pop.dvars().alleleNum[1][1]
+        self.assertEqual( abs(cnt/50. - 5000*0.01) < 1, True)
 
 if __name__ == '__main__':
     unittest.main()
