@@ -334,7 +334,6 @@ void smmMutator::mutate(AlleleRef allele)
 }
 
 
-// mutate according to the mixed model
 void pyMutator::mutate(AlleleRef allele)
 {
 	int resInt = m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
@@ -348,6 +347,12 @@ void pyMutator::mutate(AlleleRef allele)
 		"Mutated to an allele greater than maximum allowed allele value");
 	allele = static_cast<Allele>(resInt);
 #endif
+}
+
+
+void mixedMutator::mutate(AlleleRef allele)
+{
+	reinterpret_cast<mutator *>(m_mutators[m_sampler.get()])->mutate(allele);
 }
 
 

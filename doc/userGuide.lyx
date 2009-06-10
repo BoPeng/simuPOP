@@ -9961,12 +9961,10 @@ Theoretical migration models
 \end_layout
 
 \begin_layout Standard
-To facilitate the use of widely used theoretical migration models, two functions
- are defined in module 
+To facilitate the use of widely used theoretical migration models, a few
+ functions are defined in module 
 \family typewriter
-simuUtil
-\family default
-.
+simuUtil.
 \end_layout
 
 \begin_layout Itemize
@@ -9986,6 +9984,75 @@ MigrIslandRates(r, n)
  &  & ...\\
 \frac{r}{n-1} & ... & ... & 1-r & \frac{r}{n-1}\\
 \frac{r}{n-1} & ... & ... & \frac{r}{n-1} & 1-r\end{array}\right)\]
+
+\end_inset
+
+for a traditional island model where individuals have equal probability
+ of migrating to any other subpopulations.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+MigrHierarchicalIslandRates(r1, r2, n)
+\family default
+ models a hierarchical island model in which local populations are grouped
+ into neighborhoods within which there is considerable gene flow and between
+ which there is less gene flow.
+ 
+\begin_inset Formula $n$
+\end_inset
+
+ should be a list of group size.
+ 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ is the within-group migration rate and 
+\begin_inset Formula $r_{2}$
+\end_inset
+
+ is the cross-group migration rate.
+ That is to say, an individual in an island has probability 
+\begin_inset Formula $1-r_{1}-r_{2}$
+\end_inset
+
+ to say, 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ to be a migratant to other islands in the group (migration rate depending
+ on the size of group), and 
+\begin_inset Formula $r_{2}$
+\end_inset
+
+ to be a migrant to other islands in another group (migration rate depending
+ on the number of islands in other groups).
+ Both 
+\begin_inset Formula $r_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $r_{2}$
+\end_inset
+
+ can vary across groups of islands.
+ For example, 
+\family typewriter
+MigrHierarchicalIslandRates([r11, r12], r2, [3, 2])
+\family default
+ returns a 
+\begin_inset Formula $5\times5$
+\end_inset
+
+ migration matrix
+\begin_inset Formula \[
+\left(\begin{array}{ccccc}
+1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
+\frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{11}}{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
+\frac{r_{11}}{2} & \frac{r_{11}}{2} & 1-r_{11}-r_{2} & \frac{r_{2}}{2} & \frac{r_{2}}{2}\\
+\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & 1-r_{12}-r_{2} & r_{12}\\
+\frac{r_{2}}{3} & \frac{r_{2}}{3} & \frac{r_{2}}{3} & r_{12} & 1-r_{12}-r_{2}\end{array}\right)\]
 
 \end_inset
 
@@ -10028,6 +10095,20 @@ r/2 &  &  & r/2 & 1-r\end{array}\right)\]
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Many more migration models have been proposed and studied, sometimes under
+ different names with slightly different definitions.
+ Please refer to the 
+\emph on
+operators
+\emph default
+ section of the simuPOP online cookbook for the implementation of more migration
+ models.
+ If you cannot find your model there, it should not be too dificult to construct
+ a migration rate matrix for it and please consider adding your model to
+ the cookbook.
 \end_layout
 
 \begin_layout Subsubsection
@@ -12250,6 +12331,73 @@ At the beginning of a simulation, all individuals have 50 copies of a tandem
  The averge repeat number therefore increases for affected individuals.
  In contrast, the mean number of repeats at locus 1 on a separate chromosome
  oscillate around 50.
+\end_layout
+
+\begin_layout Subsection
+Mixed mutation models (mixedMutator) **
+\end_layout
+
+\begin_layout Standard
+Mixed mutation models are sometimes used to model real data.
+ For example, a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model can be used to explain extremely large or small number of
+ tandem repeats at a microsatellite marker which are hard to justify using
+ a standard stepwise mutation model.
+ A mixed mutation model would apply two or more mutation models at pre-specified
+ probabilities.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+mixedMutator
+\family default
+ is constructed by a list of mutators and their respective probabilities.
+ It accepts regular mutator parameters such as 
+\family typewriter
+rates
+\family default
+, 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+subPops
+\family default
+, 
+\family typewriter
+mapIn and mapOut
+\family default
+ and mutates aleles at specified rate.
+ When a mutation event happens, it calls one of the mutators to mutate the
+ allele.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mixedMutator"
+
+\end_inset
+
+ applies a mixture of 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model and stepwise model to mutate a micosatellite model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mixedMutator.log"
+lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMutator}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

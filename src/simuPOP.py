@@ -1117,16 +1117,17 @@ def SmmMutate(pop, *args, **kwargs):
     smmMutator(*args, **kwargs).apply(pop)
 
 def PyMutate(pop, *args, **kwargs):
+    'Function form of operator ``pyMutator``'
     pyMutator(*args, **kwargs).apply(pop)
 
-if pyMutator.__init__.__doc__ is not None:
-    PyMutate.__doc__ = "Function version of operator pyMutator whose __init__ function is \n" + pyMutator.__init__.__doc__
+def MixedMutate(pop, *args, **kwargs):
+    'Function form of operator ``mixedMutator``'
+    mixedMutator(*args, **kwargs).apply(pop)
 
 def PointMutate(pop, *args, **kwargs):
+    'Function form of operator ``pointMutator``'
     pointMutator(*args, **kwargs).apply(pop)
 
-if pointMutator.__init__.__doc__ is not None:
-    PointMutate.__doc__ = "Function version of operator pointMutator whose __init__ function is \n" + pointMutator.__init__.__doc__
 
 def MapSelect(pop, loci, fitness, phase = False, *args, **kwargs):
     mapSelector(loci, fitness, phase, PostMating, *args, **kwargs).apply(pop)

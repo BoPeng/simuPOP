@@ -1879,6 +1879,32 @@ print 'Average number of repeats at two loci are %.2f and %.2f.' % \
     (avgAllele(pop, 2), avgAllele(pop, 10))
 #end
 
+#file log/mixedMutator.log
+simu = simulator(population(5000, loci=[1, 1]),
+    randomMating())
+simu.evolve(
+    preOps = initByValue([50, 50]),
+    ops = [
+        # the first locus uses a pure stepwise mutation model
+        smmMutator(rates=0.001, loci=0),
+        # the second locus uses a mixed model
+        mixedMutator(rates=0.001, loci=1, mutators=[        
+            kamMutator(k=100),
+            smmMutator()
+        ], prob=[0.1, 0.9])],
+    gen = 20
+)
+# what alleles are there?
+geno0 = []
+geno1 = []
+for ind in simu.population(0).individuals():
+    geno0.extend([ind.allele(0, 0), ind.allele(0, 1)])
+    geno1.extend([ind.allele(1, 0), ind.allele(1, 1)])
+
+print 'Locus 0 has alleles', ', '.join([str(x) for x in set(geno0)])
+print 'Locus 1 has alleles', ', '.join([str(x) for x in set(geno1)])
+#end
+
 #file log/pointMutator.log
 pop = population(1000, loci=[1], infoFields='fitness')
 simu = simulator(pop, randomSelection())

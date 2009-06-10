@@ -95,9 +95,8 @@ public:
 		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
 		m_bt(rng()), m_initialized(false)
 	{
-		if (m_rates.empty() )
-			throw ValueError("You should specify a rate, or a sequence of rate.");
-
+		// NOTE: empty rates is allowed because a mutator might be 
+		// used in a mixed mutator.
 		if (m_rates.size() > 1 && m_loci.empty())
 			throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
 
@@ -399,7 +398,7 @@ public:
 	}
 
 
-	/// CPPONLY mutate according to the mixed model
+	/// CPPONLY
 	virtual void mutate(AlleleRef allele);
 
 	/// used by Python print function to print out the general information of the \c pyMutator
@@ -411,6 +410,67 @@ public:
 
 private:
 	pyFunc m_func;
+};
+
+
+/** This mixed mutator accepts a list of mutators and use one of them to mutate
+ *  an allele when an mutation event happens.
+ *  <funcForm>MixedMutate</funcForm>
+ */
+class mixedMutator : public mutator
+{
+public:
+	/** Create a mutator that randomly chooses one of the specified \e mutators
+	 *  to mutate an allele when a mutation event happens. The mutators are
+	 *  choosen according to a list of probabilities (\parameter \e prob) that
+	 *  should add up to \c 1. The passed and returned alleles might be changed
+	 *  if parameters \e mapIn and \e mapOut are used. Most parameters,
+	 *  including \e loci, \e mapIn, \e mapOut, \e rep, and \e subPops of
+	 *  mutators specified in parameter \e mutators are ignored. This mutator
+	 *  by default applies to all loci unless parameter \e loci is specified.
+	 *  Please refer to classes \c mutator and \c baseOperator for descriptions
+	 *  of other parameters.
+	 */
+	mixedMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
+		const opList & mutators = opList(), const vectorf & prob = vectorf(),
+		const uintListFunc & mapIn = uintListFunc(),
+		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
+		: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
+		m_mutators(mutators), m_sampler(rng())
+	{
+		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
+			"Please specify a probability for each passed mutator.");
+
+		DBG_ASSERT(fcmp_eq(std::accumulate(prob.begin(), prob.end(), 0.), 1.), ValueError,
+			"Passed probabilities should add up to 1.");
+
+		m_sampler.set(prob);
+	}
+
+
+	/// deep copy of a \c mixedMutator
+	virtual baseOperator * clone() const
+	{
+		return new mixedMutator(*this);
+	}
+
+
+	/// CPPONLY 
+	virtual void mutate(AlleleRef allele);
+
+	/// used by Python print function to print out the general information of the \c mixedMutator
+	virtual string __repr__()
+	{
+		return "<simuPOP::mixed mutator>" ;
+	}
+
+
+private:
+	opList m_mutators;
+
+	weightedSampler m_sampler;
 };
 
 
