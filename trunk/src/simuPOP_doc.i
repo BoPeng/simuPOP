@@ -4318,6 +4318,69 @@ Usage:
 
 %ignore simuPOP::mitochondrialGenoTransmitter::applyDuringMating(population &pop, RawIndIterator offspring, individual *dad=NULL, individual *mom=NULL);
 
+%feature("docstring") simuPOP::mixedMutator "
+
+Function form:
+
+    MixedMutate
+
+Details:
+
+    This mixed mutator accepts a list of mutators and use one of them
+    to mutate an allele when an mutation event happens.
+
+"; 
+
+%feature("docstring") simuPOP::mixedMutator::mixedMutator "
+
+Usage:
+
+    mixedMutator(rates=[], loci=[], mutators=[], prob=[], mapIn=[],
+      mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    Create a mutator that randomly chooses one of the specified
+    mutators to mutate an allele when a mutation event happens. The
+    mutators are choosen according to a list of probabilities ( prob)
+    that should add up to 1. The passed and returned alleles might be
+    changed if parameters mapIn and mapOut are used. Most parameters,
+    including loci, mapIn, mapOut, rep, and subPops of mutators
+    specified in parameter mutators are ignored. This mutator by
+    default applies to all loci unless parameter loci is specified.
+    Please refer to classes mutator and baseOperator for descriptions
+    of other parameters.
+
+"; 
+
+%feature("docstring") simuPOP::mixedMutator::clone "
+
+Description:
+
+    deep copy of a mixedMutator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::mixedMutator::mutate(AlleleRef allele);
+
+%feature("docstring") simuPOP::mixedMutator::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the mixedMutator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
 %feature("docstring") simuPOP::mlPenetrance "
 
 Function form:

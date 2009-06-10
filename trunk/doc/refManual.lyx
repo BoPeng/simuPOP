@@ -1114,6 +1114,13 @@ pyMutatorRef
 
 
 \backslash
+mixedMutatorRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 pointMutatorRef
 \end_layout
 
@@ -1674,6 +1681,34 @@ simuPOPAcgtMutateRef
 
 \backslash
 simuPOPKamMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPSmmMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPyMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPMixedMutateRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuPOPPointMutateRef
 \end_layout
 
 \end_inset

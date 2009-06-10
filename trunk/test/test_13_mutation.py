@@ -272,6 +272,17 @@ class TestMutator(unittest.TestCase):
         assert pop.individual(0).allele(0) == 1, \
             "PyMutator failed"
 
+    def testMixedMutator(self):
+        'testing mixed mutator'
+        pop = population(1000, loci=[1])
+        simu = simulator(pop, randomMating())
+        self.assertRaises(exceptions.ValueError,
+            mixedMutator, mutators=[kamMutator(k=10), kamMutator(k=10)],
+            prob=[0.2, 0.4])
+        self.assertRaises(exceptions.ValueError,
+            mixedMutator, mutators=[kamMutator(k=10), kamMutator(k=10)],
+            prob=[0.2, 0.4, 0.4])
+
     def testPointMutator(self):
         'Testing point mutator'
         # test point mutator

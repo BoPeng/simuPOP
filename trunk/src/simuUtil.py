@@ -111,6 +111,64 @@ def MigrIslandRates(r, n):
     return m
 
 
+def MigrHierarchicalIslandRates(r1, r2, n):
+    '''
+    Return the migration rate matrix for a hierarchical island model
+    where there are different migration rate within and across groups
+    of islands.
+
+    r1
+        Within group migration rates. It can be a number or a list of numbers
+        for each group of the islands.
+
+    r2
+        Across group migration rates which is the probability that someone will
+        migrate to a subpopulation outside of his group. A list of r2 could be
+        specified for each group of the islands.
+
+    n
+        Number of islands in each group. E.g. n=[5, 4] specifies two groups of
+        islands with 5 and 4 islands each.
+
+    For individuals in an island, the probability that it remains in the same
+    island is 1-r1-r2 (r1, r2 might vary by island groups), that it migrates
+    to another island in the same group is r1 and migrates to another island
+    outside of the group is r2. Migrate rate to a specific island depends on
+    the size of group.
+    '''
+    if type(n) not in [type(()), type([])]:
+        raise ValueError('A list of size of island groups is expected for parameter n')
+    nIslands = sum(n)
+    if type(r1) in [type(0), type(1.)]:
+        r1 = [r1] * len(n)
+    elif len(r1) != len(n):
+        raise ValueError('If multiple r1 is given, it should be given to all island groups.')
+    #
+    if type(r2) in [type(0), type(1.)]:
+        r2 = [r2] * len(n)
+    elif len(r2) != len(n):
+        raise ValueError('If multiple r2 is given, it should be given to all island groups.')
+    #
+    m = []
+    for groupIdx, groupSize in enumerate(n):
+        nOther = nIslands - groupSize
+        groupStart = sum(n[:groupIdx])
+        groupEnd = groupStart + groupSize
+        for island in range(groupStart, groupEnd):
+            m.append([])
+            for i in range(groupStart):
+                m[-1].append(r2[groupIdx] * 1.0 / nOther)
+            for i in range(groupStart, groupEnd):
+                if i == island:
+                    m[-1].append(1 - r1[groupIdx] - r2[groupIdx])
+                else:
+                    m[-1].append(r1[groupIdx] * 1.0 / groupSize)
+            for i in range(groupEnd, nIslands):
+                m[-1].append(r2[groupIdx] * 1.0 / nOther)
+    return m
+
+
+
 def MigrSteppingStoneRates(r, n, circular=False):
     '''migration rate matrix, circular stepping stone model (X=1-m)
 
