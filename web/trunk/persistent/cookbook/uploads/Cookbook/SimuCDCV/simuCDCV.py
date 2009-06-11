@@ -551,9 +551,9 @@ def simuCDCV(numDSL, initSpec, selModel,
 
     # determine mutation etc
     if mutaModel == 'k-allele':
-        mutation = kamMutator(rate=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
+        mutation = kamMutator(rates=mutaRate, loci=range(numDSL), k=maxAllele+1)
     else:
-        mutation = smmMutator(rate=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
+        mutation = smmMutator(rates=mutaRate, loci=range(numDSL), maxAllele=maxAllele)
     # determine selection
     #
     if selModelAllDSL == 'customized':
@@ -673,6 +673,7 @@ if __name__ == '__main__':
     if dispPlot:
         try:
             from simuRPy import *
+            from rpy import *
             r.library('lattice')
         except:
             print "RPy module not found. Can not view spectrum history."

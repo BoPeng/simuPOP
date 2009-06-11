@@ -928,10 +928,10 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###
     if maxAle > 1:    # Not SNP
         # symmetric mutation model for microsatellite
-        mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, loci=nonDSL)
+        mutator = smmMutator(rates=mutaRate, maxAllele=maxAle, loci=nonDSL)
     else:
         # k-allele model for mutation of SNP
-        mutator = kamMutator(rate=mutaRate, maxAllele=1, loci=nonDSL)
+        mutator = kamMutator(rates=mutaRate, k=2, loci=nonDSL)
     ###
     ### Recombination
     ###
@@ -968,7 +968,7 @@ def simuComplexDisease(numChrom, numLoci, markerType, DSLafter, DSLdistTmp,
     ###            0 1 ...... i_T
     for i in range(numDSL):
         operators.append( 
-            pointMutator(loci=[DSL[i]], toAllele=1, inds=[i],
+            pointMutator(loci=[DSL[i]], allele=1, inds=[i],
                 at = [introGens[i]], stage=PreMating ) ) 
     ### 
     ### split to subpopulations

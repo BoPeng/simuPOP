@@ -20,7 +20,7 @@ import math, random
 #   CA - A1:  0.020%
 
 recombine = recombinator(
-  rate = [0.00006, 0.0002],
+  rates = [0.00006, 0.0002],
   loci=[0,1] )
     
 #
@@ -37,8 +37,8 @@ recombine = recombinator(
 #   B1 e-8
 
 # with r = 1e-4, call this func
-def step():
-  return int(-math.log(random.uniform(0,1))/math.log(5))+1
+def stepFunc(allele):
+    return int(-math.log(random.uniform(0,1))/math.log(5))+1
 
 # test this step machanism:
 # with 5 times less likely to go a step further
@@ -50,8 +50,8 @@ def step():
 #  print s.count(i)
 
 # mutators
-mutate02 = kamMutator( loci=[0,2], rate=1e-8, maxAllele=2)
-mutate1 =  gsmMutator( loci=[1], maxAllele=7, rate=1e-4, func = step)
+mutate02 = kamMutator(loci=[0,2], rates=1e-8, k=3)
+mutate1 =  smmMutator(loci=[1], rates=1e-4, mutStep=stepFunc)
 
 #
 # initial generation

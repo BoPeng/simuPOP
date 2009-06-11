@@ -36,7 +36,7 @@ simuOpt.setOptions(quiet=True, alleleType='binary')
 
 from simuPOP import *
 from simuUtil import *
-import os, sys, types, exceptions, os.path 
+import os, sys, types, exceptions, os.path , math
 
 try:
     from simuRPy import *
@@ -213,6 +213,7 @@ def plotAlleleFreq(pop, param):
     # 
     freq = pop.dvars().alleleFreq
     freq0 = [min(freq[i][0], 1-freq[i][0]) for i in range(pop.totNumLoci())]
+    from rpy import r
     r.postscript(os.path.join(param[0], '%s_%d.eps' % (param[0], pop.dvars().gen)))
     r.hist(freq0, nclass=50, xlim=[0,0.5], xlab='frequency', ylab='hist', 
         main='Histogram of allele frequencies at generation %d' % pop.dvars().gen)
@@ -279,9 +280,9 @@ def simulate( numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixingGe
             ],
         ops = [
             # k-allele model for mutation of SNP
-            kamMutator(rate=mutaRate, maxAllele=1),
+            kamMutator(rates=mutaRate, k=2),
             # recombination rate
-            recombinator(rate=recRate),
+            recombinator(rates=recRate),
             # split population after burnin, to each sized subpopulations
             splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
             # migration

@@ -113,7 +113,7 @@ def simuLDDecay(popSize, gen, recRate, numRep, method, saveFigure, useRPy):
         # everyone will have the same genotype: 01/10
         preOps = [initByValue([0,1,1,0])],
         ops = [
-            recombinator(rate = recRate),
+            recombinator(rates = recRate),
             stat(alleleFreq=[0], LD=[0, 1]),
             pyEval(methodeval),
             pyOutput('\n', rep=-1),

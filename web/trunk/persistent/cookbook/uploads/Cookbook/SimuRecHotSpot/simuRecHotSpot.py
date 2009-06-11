@@ -359,9 +359,9 @@ def simuHotSpot(numLoci, lociPos, initSize, finalSize, burnin, noMigrGen, mixing
             ],
         ops = [
             # k-allele model for mutation of SNP
-            kamMutator(rate=mutaRate, maxAllele=2),
+            kamMutator(rates=mutaRate, k=2),
             # recombination rate
-            recombinator(rate=recRate),
+            recombinator(rates=recRate),
             # split population after burnin, to each sized subpopulations
             splitSubPops(0, proportions=[1./numSubPop]*numSubPop, at=[split]),
             # migration

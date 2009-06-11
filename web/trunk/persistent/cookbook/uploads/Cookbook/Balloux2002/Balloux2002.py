@@ -50,7 +50,7 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     ## mutation
     ##    different mutation rate at each locus
     ##    step-wise mutation model
-    mutate = smmMutator( rate = mutaRates, atLoci = range(0, nLoci),
+    mutate = smmMutator(rates = mutaRates, loci = range(0, nLoci),
          maxAllele=ma)
     
     ## migration, r_ii will be automatically set correctly
@@ -89,7 +89,7 @@ def simulate(subPop, migrRate, mutaRates, nRep=5, endGen=10, visual=[],
     ## calculate Fst and save result (all replicate in one file)
     ## calculate every 50 steps to save time
     stats = stat(Fst=range(0,nLoci), step=50)
-    saveFst =    pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,Fst[0],Fst[1],Fst[2],Fst[3],AvgFst)",
+    saveFst = pyEval(r"'%d\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t' % (gen,Fst[0],Fst[1],Fst[2],Fst[3],AvgFst)",
         step = 100, output=">>"+name+"_Fst.txt")
     ## output \n at the end of last replicate
     saveFst1 = pyOutput('\n', rep=-1, step=100, output=">>"+name+"_Fst.txt")

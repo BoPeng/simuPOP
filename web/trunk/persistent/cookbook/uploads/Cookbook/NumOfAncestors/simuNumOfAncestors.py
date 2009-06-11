@@ -106,7 +106,7 @@ def simuNumOfAncestors(popSize, lociNum, gen, recRate, numRep):
     simu.evolve(
         preOps = [initSex()],
         ops=[
-            recombinator(rate=recRate),
+            recombinator(rates=recRate),
             pyOperator(func=avgNumOfAncestors),
             pyOutput('\n', rep=-1)
         ],

@@ -584,10 +584,10 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
     ###
     if maxAle > 1:    # Not SNP
         # symmetric mutation model for microsatellite
-        mutator = smmMutator(rate=mutaRate, maxAllele=maxAle, loci=nonDSL)
+        mutator = smmMutator(rates=mutaRate, maxAllele=maxAle, loci=nonDSL)
     else:
         # k-allele model for mutation of SNP
-        mutator = kamMutator(rate=mutaRate, maxAllele=1, loci=nonDSL)
+        mutator = kamMutator(rates=mutaRate, k=2, loci=nonDSL)
     ###
     ### Recombination
     ###
@@ -644,7 +644,7 @@ def simuForward(numChrom, numLoci, markerType, DSLafter, DSLdist,
         # before this one.
         operators.append( 
             ifElse("alleleFreq[%d][0]==1." % DSL[i],
-                pointMutator(loci=[DSL[i]], toAllele=1, inds=[i]),
+                pointMutator(loci=DSL[i], allele=1, inds=i),
             begin=burninGen, end = burninGen + introLen) 
         )
     # optionally, the mutants will be given some selective pressure

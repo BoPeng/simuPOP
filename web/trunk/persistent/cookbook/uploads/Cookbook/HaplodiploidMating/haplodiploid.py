@@ -28,7 +28,7 @@ from simuPOP import *
 # This is implemented in the following Python during-mating operator:
 #
 class haplodiploidRecombinator(pyOperator):
-    def __init__(self, intensity, rate, loci, convMode, *args, **kwargs):
+    def __init__(self, rates, intensity, loci, convMode, *args, **kwargs):
         '''
         Create an instance of a Python operator, which will call
         ``self.transmitGenotype`` to create offspring. For performance
@@ -39,7 +39,7 @@ class haplodiploidRecombinator(pyOperator):
         fits your need.
         '''
         # This operator is used to recombine maternal chromosomes
-        self.recombinator = recombinator(intensity, rate, loci, convMode)
+        self.recombinator = recombinator(rates, intensity, loci, convMode)
         # this operator is used to copy paternal chromosomes
         self.copier = genoTransmitter()
         self.initialized = False
@@ -67,7 +67,7 @@ class haplodiploidRecombinator(pyOperator):
         return True
 
 
-def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
+def haplodiploidRecMating(replacement=True, rates=[], intensity=-1, loci=[],
         convMode=NoConversion, numOffspring = 1., sexMode = RandomSex,
         ops = [], subPopSize = [], subPop = (), weight = 0):
     '''
@@ -88,7 +88,7 @@ def haplodiploidRecMating(replacement=True, intensity=-1, rate=[], loci=[],
     return homoMating(
         chooser = randomParentsChooser(replacement),
         generator = offspringGenerator(
-            [haplodiploidRecombinator(intensity, rate, loci, convMode)],
+            [haplodiploidRecombinator(rates, intensity, loci, convMode)],
             numOffspring, sexMode),
         subPopSize = subPopSize,
         subPop = subPop,
@@ -108,7 +108,7 @@ def simuHaplodiploid(N, numMito=3, gen=10):
         # record indexes of parents for verification purpose
         ancGen=1, infoFields=['father_idx', 'mother_idx'])
 
-    simu = simulator(pop, haplodiploidRecMating(rate=0.1))
+    simu = simulator(pop, haplodiploidRecMating(rates=0.1))
 
     simu.evolve(
         preOps=[

@@ -54,7 +54,7 @@ def simuMitochondrial(N, numMito=3, gen=10):
             initByFreq([0.4] + [0.2]*3),
         ],
         ops=[
-            recombinator(rate=0.1),
+            recombinator(rates=0.1),
             mitochondrialGenoTransmitter(),
             parentsTagger(),
             dumper(structure=False),

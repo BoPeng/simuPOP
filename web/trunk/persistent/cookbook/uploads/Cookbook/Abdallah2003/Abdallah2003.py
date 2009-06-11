@@ -48,16 +48,16 @@ while True:
         ],
         ops = [
             # mutation
-            smmMutator(rate=1e-4, loci=range(1,31), maxAllele=99),
+            smmMutator(rates=1e-4, loci=range(1,31), maxAllele=100),
             # calculate LD
             stat(alleleFreq=range(0,31)),
             # LD=[[0,x] for x in [1,10,25]]),
             #varPlotter("[LD_prime[0][1],LD_prime[0][10],LD_prime[0][25]]",
             #    varDim=3, byRep=1, history=True, update=10, ylim=[0,1]),
             # introduce mutation at 100 gen to 10 individuals
-            pointMutator(inds=[0], loci=[0], toAllele=1, at = [100]),
+            pointMutator(inds=[0], loci=[0], allele=1, at = [100]),
             # recombination, with rate 0.001. 
-            recombinator(rate=0.001),
+            recombinator(rates=0.001),
             # selective advantage
             mapSelector(loci=0, fitness={'0-0':1, '0-1':1.5, '1-1':2},
                 begin = 100, end=110),
@@ -159,7 +159,7 @@ for i in range(1,5):
 
 # apply quantitative trait
 for i in range(0,samples):
-    validPops[i].addInfoField('qtrait')
+    validPops[i].addInfoFields('qtrait')
     # calculate statistics
     MapQuanTrait(validPops[i], loci=0, qtrait={'0-0':1, '0-1':1.5, '1-1':2},
         sigma=.1)
