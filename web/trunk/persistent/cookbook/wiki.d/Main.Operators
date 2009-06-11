@@ -1,15 +1,21 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10
 author=
 charset=ISO-8859-1
 csum=
 ctime=1232491548
 host=127.0.0.1
 name=Main.Operators
-rev=2
-targets=Cookbook.PyOperator
-text=!! Python operators%0a%0a* [[Cookbook/pyOperator]] An example about during-mating and post-mating Python operators.
-time=1233547772
+rev=4
+targets=Cookbook.PyOperator,Cookbook.SpatialMigration
+text=!! Python operators%0a%0a* [[Cookbook/pyOperator]] An example about during-mating and post-mating Python operators.%0a%0a!! Migration models%0a%0a* [[Cookbook/SpatialMigration]] A function to generate a migration rate matrix for a 2D spatial migration model. (%25red%25pending%25%25)%0a
+time=1244689458
+author:1244689458=
+diff:1244689458:1244686007:=7c7%0a%3c * [[Cookbook/SpatialMigration]] A function to generate a migration rate matrix for a 2D spatial migration model. (%25red%25pending%25%25)%0a---%0a> * [[Cookbook/SpatialMigration]] A function to generate a migration rate matrix for a 2D spatial migration model.%0a
+host:1244689458=127.0.0.1
+author:1244686007=
+diff:1244686007:1233547772:=3,7c3%0a%3c * [[Cookbook/pyOperator]] An example about during-mating and post-mating Python operators.%0a%3c %0a%3c !! Migration models%0a%3c %0a%3c * [[Cookbook/SpatialMigration]] A function to generate a migration rate matrix for a 2D spatial migration model.%0a---%0a> * [[Cookbook/pyOperator]] An example about during-mating and post-mating Python operators.%0a\ No newline at end of file%0a
+host:1244686007=127.0.0.1
 author:1232491548=
 diff:1232491548:1232491548:=1,3d0%0a%3c !! Python operators%0a%3c %0a%3c * [[Cookbook/pyOperator]] An example about during-mating and post-mating Python operators.%0a\ No newline at end of file%0a
 host:1232491548=127.0.0.1
