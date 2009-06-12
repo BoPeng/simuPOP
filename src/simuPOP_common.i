@@ -40,7 +40,6 @@
 #include "simulator.h"
 
 #include "utility.h"
-#include "misc.h"
 #include "pedigree.h"
 #include "initializer.h"
 #include "outputer.h"
@@ -245,7 +244,6 @@ namespace std
 %implicitconv opList;
 
 %include "utility.h"
-%include "misc.h"
 %include "genoStru.h"
 %include "individual.h"
 
