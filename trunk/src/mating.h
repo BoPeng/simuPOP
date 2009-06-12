@@ -32,7 +32,6 @@
 #include "utility.h"
 // for trajectory simulation functions
 #include "simuPOP_cfg.h"
-#include "misc.h"
 #include "pedigree.h"
 #include "population.h"
 #include "operator.h"
