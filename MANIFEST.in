@@ -36,7 +36,6 @@ include src/terminator.h
 include src/mutator.h
 include src/transmitter.h
 include src/tagger.h
-include src/misc.h
 include src/pedigree.h
 include src/virtualSubPop.h
 
@@ -60,7 +59,6 @@ include src/terminator.cpp
 include src/mutator.cpp
 include src/transmitter.cpp
 include src/tagger.cpp
-include src/misc.cpp
 include src/pedigree.cpp
 include src/virtualSubPop.cpp
 

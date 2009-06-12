@@ -37,7 +37,6 @@ and format conversion utilities.
 import exceptions, operator, types, os, sys, re
 
 from simuPOP import *
-import pprint
 from simuOpt import simuOptions
 
 def ViewVars(var, gui=None):
@@ -63,6 +62,7 @@ def ViewVars(var, gui=None):
         gui = simuOptions['GUI']
     #
     if gui == False or gui == 'Tkinter':
+        import pprint
         pprint.pprint(var)
         return
 
