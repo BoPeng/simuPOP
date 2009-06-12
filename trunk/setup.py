@@ -150,7 +150,6 @@ HEADER_FILES = [
     'src/mutator.h',
     'src/transmitter.h',
     'src/tagger.h',
-    'src/misc.h',
     'src/pedigree.h',
     'src/virtualSubPop.h',
 ]
@@ -174,7 +173,6 @@ SOURCE_FILES = [
     'src/mutator.cpp',
     'src/transmitter.cpp',
     'src/tagger.cpp',
-    'src/misc.cpp',
     'src/pedigree.cpp',
     'src/virtualSubPop.cpp',
 ]
