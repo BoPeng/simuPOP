@@ -29,6 +29,8 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add a mixedMutator to simulated mixed mutation models.
   - NEW: Move trajectory simulation functions out of the simuPOP core and
 		reimplement them in simuUtil.
+  - NEW: Add a context-dependent mutator contextMutator and context support for
+		pyMutator.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.

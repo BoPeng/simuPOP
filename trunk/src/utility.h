@@ -603,6 +603,9 @@ bool PyObj_Is_AlleleNumArray(PyObject * obj);
 PyObject * Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
 
 /// CPPONLY
+PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
+
+/// CPPONLY
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 
 /// CPPONLY

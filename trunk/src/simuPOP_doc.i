@@ -742,6 +742,79 @@ Details:
 
 "; 
 
+%feature("docstring") simuPOP::contextMutator "
+
+Function form:
+
+    ContextMutate
+
+Details:
+
+    This context-dependent mutator accepts a list of mutators and use
+    one of them to mutate an allele depending on the context of the
+    mutated allele.
+
+"; 
+
+%feature("docstring") simuPOP::contextMutator::contextMutator "
+
+Usage:
+
+    contextMutator(rates=[], loci=[], mutators=[], contexts=[],
+      mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+
+Details:
+
+    Create a mutator that choose one of the specified mutators to
+    mutate an allele when a mutation event happens. The mutators are
+    choosen according to the context of the mutated allele, which is
+    specified as a list of alleles to the left and right of an allele
+    ( contexts). For example, contexts=[(0,0), (0,1), (1,1)] indicates
+    which mutators should be used to mutate allele X in the context of
+    0X0, 0X1, and 1X1. A context can include more than one alleles at
+    both left and right sides of a mutated allele but all contexts
+    should have the same (even) number of alleles. If an allele does
+    not have full context (e.g. when a locus is the first locus on a
+    chromosome), unavailable alleles will be marked as -1. There
+    should be a mutator for each context but an additional mutator can
+    be specified as the default mutator for unmatched contexts. If
+    parameters mapIn is specified, both mutated allele and its context
+    alleles will be mapped. Most parameters, including loci, mapIn,
+    mapOut, rep, and subPops of mutators specified in parameter
+    mutators are ignored. This mutator by default applies to all loci
+    unless parameter loci is specified. Please refer to classes
+    mutator and baseOperator for descriptions of other parameters.
+
+"; 
+
+%feature("docstring") simuPOP::contextMutator::clone "
+
+Description:
+
+    deep copy of a context-dependentMutator
+
+Usage:
+
+    x.clone()
+
+"; 
+
+%ignore simuPOP::contextMutator::mutate(AlleleRef allele);
+
+%feature("docstring") simuPOP::contextMutator::__repr__ "
+
+Description:
+
+    used by Python print function to print out the general information
+    of the context-dependentMutator
+
+Usage:
+
+    x.__repr__()
+
+"; 
+
 %feature("docstring") simuPOP::controlledOffspringGenerator "
 
 Details:
@@ -774,19 +847,23 @@ Details:
     reaches specified allele frequency. At the beginning of each
     generation, expected allele frequency of alleles at loci is
     returned from a user-defined trajectory function freqFunc. If
-    there are multiple subpopulations, freqFunc can return a list of
-    allele frequencies for each subpopulation, or a list of allele
-    frequencies in the whole population. In the latter case, overall
-    expected number of alleles are scattered to each subpopulation in
-    proportion to existing number of alleles in each subpopulation,
-    using a multi-nomial distribution.  After the expected alleles are
-    calculated, this offspring generator accept and reject families
-    according to their genotype at loci until allele frequecies reach
-    their expected values. The rest of the offspring generation is
-    then filled with families without only wild type alleles at these
-    loci.  This offspring generator is derived from class
-    offspringGenerator. Please refer to class offspringGenerator for a
-    detailed description of parameters ops, numOffspring and sexMode.
+    there is no subpopulation, this function should return a list of
+    frequencies for each locus. If there are multiple subpopulations,
+    freqFunc can return a list of allele frequencies for all
+    subpopulations or combined frequencies that ignore population
+    structure. In the former case, allele frequencies should be
+    arranged by loc0_sp0, loc0_sp1, ... loc1_sp0, loc1_sp1, ..., and
+    so on. In the latter case, overall expected number of alleles are
+    scattered to each subpopulation in proportion to existing number
+    of alleles in each subpopulation, using a multinomial
+    distribution.  After the expected alleles are calculated, this
+    offspring generator accept and reject families according to their
+    genotype at loci until allele frequecies reach their expected
+    values. The rest of the offspring generation is then filled with
+    families without only wild type alleles at these loci.  This
+    offspring generator is derived from class offspringGenerator.
+    Please refer to class offspringGenerator for a detailed
+    description of parameters ops, numOffspring and sexMode.
 
 "; 
 
@@ -4336,8 +4413,8 @@ Details:
 Usage:
 
     mixedMutator(rates=[], loci=[], mutators=[], prob=[], mapIn=[],
-      mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      mapOut=[], context=0, output=\">\", stage=PostMating, begin=0,
+      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -4661,9 +4738,9 @@ Details:
 
 Usage:
 
-    mutator(rates=[], loci=[], mapIn=[], mapOut=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    mutator(rates=[], loci=[], mapIn=[], mapOut=[], context=0,
+      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
+      rep=[], subPops=[], infoFields=[])
 
 Details:
 
@@ -4702,6 +4779,15 @@ Details:
     Python function that returns a corresponding allele for a given
     allele. This allows easier mapping between a large number of
     alleles and advanced models such as random emission of alleles.
+    Some mutation models are context dependent. Namely, how an allele
+    mutates will depend on its adjecent alleles. Whereas most simuPOP
+    mutators are context independent, some of them accept a parameter
+    context which is the number of alleles to the left and right of
+    the mutated allele. For example context=1 will make the alleles to
+    the immediate left and right to a mutated allele available to a
+    mutator. These alleles will be mapped in if parameter mapIn is
+    defined. How exactly a mutator makes use of these information is
+    mutator dependent.
 
 "; 
 
@@ -4732,6 +4818,23 @@ Usage:
 %ignore simuPOP::mutator::setRate(const vectorf &rates, const vectorlu &loci=vectorlu());
 
 %ignore simuPOP::mutator::mutate(AlleleRef allele);
+
+%feature("docstring") simuPOP::mutator::fillContext "
+
+Description:
+
+    a rarely used feature, performance should be a secondary
+    consideration.
+
+Usage:
+
+    x.fillContext(pop, ptr, locus)
+
+"; 
+
+%ignore simuPOP::mutator::setContext(int context);
+
+%ignore simuPOP::mutator::context();
 
 %feature("docstring") simuPOP::mutator::apply "
 
@@ -7147,24 +7250,28 @@ Details:
 
 Usage:
 
-    pyMutator(rates=[], loci=[], func=None, mapIn=[], mapOut=[],
-      output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+    pyMutator(rates=[], loci=[], func=None, context=0, mapIn=[],
+      mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
+      step=1, at=[], rep=[], subPops=[], infoFields=[])
 
 Details:
 
     Create a hybrid mutator that uses a user-provided function to
     mutate an allele when a mutation event happens. This function
     (parameter func) accepts the allele to be mutated and return a
-    mutated allele. The passed and returned alleles might be changed
-    if parameters mapIn and mapOut are used although allele mappings,
-    if needed, are usually handled in func as well. This mutator by
-    default applies to all loci unless parameter loci is specified. A
-    single mutation rate will be used for all loci if a single value
-    of parameter rates is given. Otherwise, a list of mutation rates
-    can be specified for each locus in parameter loci. Please refer to
-    classes mutator and baseOperator for descriptions of other
-    parameters.
+    mutated allele. If context is specified, the context alleles to
+    the left and to the right of the mutated alleles will be passed to
+    this function as the second parameter. Invalid context alleles
+    (e.g. left allele to the first locus of a chromosome) will be
+    marked by -1. The passed, returned and context alleles might be
+    changed if parameters mapIn and mapOut are used although allele
+    mappings, if needed, are usually handled in func as well. This
+    mutator by default applies to all loci unless parameter loci is
+    specified. A single mutation rate will be used for all loci if a
+    single value of parameter rates is given. Otherwise, a list of
+    mutation rates can be specified for each locus in parameter loci.
+    Please refer to classes mutator and baseOperator for descriptions
+    of other parameters.
 
 "; 
 
@@ -11286,39 +11393,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::FreqTrajectoryStoch "
-
-Usage:
-
-    FreqTrajectoryStoch(curGen=0, freq=0, N=0, NtFunc=None,
-      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
-      ploidy=2, restartIfFail=False, maxAttempts=1000,
-      allowFixation=False)
-
-"; 
-
-%ignore simuPOP::MarginalFitness(unsigned nLoci, const vectorf &fitness, const vectorf &freq);
-
-%feature("docstring") simuPOP::FreqTrajectoryMultiStoch "
-
-Usage:
-
-    FreqTrajectoryMultiStoch(curGen=0, freq=[], N=0, NtFunc=None,
-      fitness=[], fitnessFunc=None, minMutAge=0, maxMutAge=100000,
-      ploidy=2, restartIfFail=False, maxAttempts=1000)
-
-"; 
-
-%feature("docstring") simuPOP::ForwardFreqTrajectory "
-
-Usage:
-
-    ForwardFreqTrajectory(curGen=0, endGen=0, curFreq=[], freq=[],
-      N=[], NtFunc=None, fitness=[], fitnessFunc=None, migrRate=0,
-      ploidy=2, maxAttempts=1000)
-
-"; 
-
 %feature("docstring") simuPOP::ApplyDuringMatingOperator "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::LoadPopulation "
@@ -11405,6 +11479,8 @@ Details:
 %ignore simuPOP::PyObj_Is_AlleleNumArray(PyObject *obj);
 
 %ignore simuPOP::Double_Vec_As_NumArray(vectorf::iterator begin, vectorf::iterator end);
+
+%ignore simuPOP::Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end);
 
 %ignore simuPOP::Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end);
 

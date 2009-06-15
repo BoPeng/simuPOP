@@ -390,11 +390,7 @@ def snpMutator(u=0, v=0, *args, **kwargs):
     the mutation rate from allele 0 to 1 (parameter ``u``) and from 1 to 0
     (parameter ``v``).
     '''
-    if u == v:
-        # k-allele model is more optimized so we use this operator if u=v.
-        return kamMutator(2, u, *args, **kwargs)
-    else:
-        return matrixMutator([[1-u, u], [v, 1-v]], *args, **kwargs)
+    return matrixMutator([[1-u, u], [v, 1-v]], *args, **kwargs)
 
 
 def acgtMutator(rate=[], model='general', *args, **kwargs):
