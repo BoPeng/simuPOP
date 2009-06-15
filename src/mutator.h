@@ -84,16 +84,26 @@ public:
 	 *  a corresponding allele for a given allele. This allows easier mapping
 	 *  between a large number of alleles and advanced models such as random
 	 *  emission of alleles.
+	 *
+	 *  Some mutation models are context dependent. Namely, how an allele
+	 *  mutates will depend on its adjecent alleles. Whereas most simuPOP
+	 *  mutators are context independent, some of them accept a parameter
+	 *  \e context which is the number of alleles to the left and right of
+	 *  the mutated allele. For example \e context=1 will make the alleles to
+	 *  the immediate left and right to a mutated allele available to a
+	 *  mutator. These alleles will be mapped in if parameter \e mapIn is
+	 *  defined. How exactly a mutator makes use of these information is
+	 *  mutator dependent.
 	 */
 	mutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
 		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
-		const stringFunc & output = ">", int stage = PostMating,
+		int context = 0, const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(),
 		const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
-		m_bt(rng()), m_initialized(false)
+		m_context(context*2), m_bt(rng()), m_initialized(false)
 	{
 		// NOTE: empty rates is allowed because a mutator might be 
 		// used in a mixed mutator.
@@ -138,6 +148,26 @@ public:
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
 
+	/// CPPONLY
+	/// Get the context of mutated allele. If an allele is invalid, -1 will
+	/// be used (this is the case for the first and last loci on a chromosome).
+	/// These is certainly more efficient if it is squeezed in the apply function,
+	/// with a number of flags defined in the initialization stage. However, for
+	/// a rarely used feature, performance should be a secondary consideration.
+	void fillContext(const population & pop, IndAlleleIterator ptr, UINT locus);
+	
+	/// CPPONLY
+	void setContext(int context)
+	{
+		m_context.resize(context * 2);
+	}
+
+	/// CPPONLY
+	vectori & context()
+	{
+		return m_context;
+	}
+
 	/// Apply a mutator
 	virtual bool apply(population & pop);
 
@@ -155,6 +185,8 @@ protected:
 	uintListFunc m_mapIn;
 
 	uintListFunc m_mapOut;
+
+	vectori m_context;
 
 	/// bernulli trials. bitSet mutation results.
 	BernulliTrials m_bt;
@@ -243,7 +275,7 @@ public:
 		const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
-		: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at,
+		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at,
 		          rep, subPops, infoFields), m_k(k)
 	{
 		if (m_k == 0)
@@ -368,8 +400,12 @@ class pyMutator : public mutator
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
 	 *  allele when a mutation event happens. This function (parameter \e func)
-	 *  accepts the allele to be mutated and return a mutated allele. The
-	 *  passed and returned alleles might be changed if parameters \e mapIn and
+	 *  accepts the allele to be mutated and return a mutated allele. If 
+	 *  \e context is specified, the \e context alleles to the left and to the
+	 *  right of the mutated alleles will be passed to this function as the
+	 *  second parameter. Invalid context alleles (e.g. left allele to the
+	 *  first locus of a chromosome) will be marked by -1. The passed, returned
+	 *  and context alleles might be changed if parameters \e mapIn and
 	 *  \e mapOut are used although allele mappings, if needed, are usually
 	 *  handled in \e func as well. This mutator by default applies to all loci
 	 *  unless parameter \e loci is specified. A single mutation rate will be
@@ -379,11 +415,11 @@ public:
 	 *  \c baseOperator for descriptions of other parameters.
 	 */
 	pyMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
-		PyObject * func = NULL, const uintListFunc & mapIn = uintListFunc(),
+		PyObject * func = NULL, int context=0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
-		: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
+		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_func(func)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
@@ -433,11 +469,11 @@ public:
 	 */
 	mixedMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
 		const opList & mutators = opList(), const vectorf & prob = vectorf(),
-		const uintListFunc & mapIn = uintListFunc(),
-		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
+		int context = 0, const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
-		: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
+		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_mutators(mutators), m_sampler(rng())
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
@@ -471,6 +507,81 @@ private:
 	opList m_mutators;
 
 	weightedSampler m_sampler;
+};
+
+
+/** This context-dependent mutator accepts a list of mutators and use one of
+ *  them to mutate an allele depending on the context of the mutated allele.
+ *  <funcForm>ContextMutate</funcForm>
+ */
+class contextMutator : public mutator
+{
+public:
+	/** Create a mutator that choose one of the specified \e mutators to mutate
+	 *  an allele when a mutation event happens. The mutators are choosen
+	 *  according to the context of the mutated allele, which is specified as
+	 *  a list of alleles to the left and right of an allele (\parameter
+	 *  \e contexts). For example, <tt>contexts=[(0,0), (0,1), (1,1)]</tt>
+	 *  indicates which mutators should be used to mutate allele \c X in the
+	 *  context of \c 0X0, \c 0X1, and \c 1X1. A context can include more than
+	 *  one alleles at both left and right sides of a mutated allele but all
+	 *  contexts should have the same (even) number of alleles. If an allele
+	 *  does not have full context (e.g. when a locus is the first locus on a
+	 *  chromosome), unavailable alleles will be marked as -1. There should be
+	 *  a mutator for each context but an additional mutator can be specified
+	 *  as the default mutator for unmatched contexts. If parameters \e mapIn
+	 *  is specified, both mutated allele and its context alleles will be
+	 *  mapped. Most parameters, including \e loci, \e mapIn, \e mapOut,
+	 *  \e rep, and \e subPops of mutators specified in parameter \e mutators
+	 *  are ignored. This mutator by default applies to all loci unless
+	 *  parameter \e loci is specified. Please refer to classes \c mutator and
+	 *  \c baseOperator for descriptions of other parameters.
+	 */
+	contextMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
+		const opList & mutators = opList(), const intMatrix & contexts = intMatrix(),
+		const uintListFunc & mapIn = uintListFunc(), const uintListFunc & mapOut = uintListFunc(),
+		const stringFunc & output = ">",
+		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
+		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
+		: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, rep, subPops, infoFields),
+		m_mutators(mutators), m_contexts(contexts)
+	{
+		if (m_contexts.size() != 0) {
+			DBG_FAILIF(m_contexts[0].size() / 2 * 2 != m_contexts[0].size(), ValueError,
+				"A context should be balanced, namely having the same number of alleles from the left and right of the mutated allele.");
+			setContext(m_contexts[0].size() / 2);
+		}
+		for (size_t i = 1; i < m_contexts.size(); ++i) {
+			DBG_FAILIF(m_contexts[i].size() != m_contexts.size(), ValueError,
+				"All contexts should have the same length");
+		}
+		DBG_FAILIF(m_mutators.size() != m_contexts.size() && m_mutators.size() != m_contexts.size() + 1,
+			ValueError,
+			"Please specify a context for each passed mutator (a default mutator is allowed at the end).");
+	}
+
+
+	/// deep copy of a \c context-dependentMutator
+	virtual baseOperator * clone() const
+	{
+		return new contextMutator(*this);
+	}
+
+
+	/// CPPONLY 
+	virtual void mutate(AlleleRef allele);
+
+	/// used by Python print function to print out the general information of the \c context-dependentMutator
+	virtual string __repr__()
+	{
+		return "<simuPOP::context-dependent mutator>" ;
+	}
+
+
+private:
+	opList m_mutators;
+
+	intMatrix m_contexts;
 };
 
 

@@ -65,6 +65,43 @@ void mutator::initialize(population & pop)
 }
 
 
+void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT locus)
+{
+	// chromosome?
+	UINT chrom = pop.chromLocusPair(locus).first;
+	UINT beg = pop.chromBegin(chrom);
+	UINT end = pop.chromEnd(chrom);
+	UINT cnt = m_context.size() / 2;
+
+	for (size_t i = 0; i < cnt; ++i) {
+		if (locus >= beg + i)
+			m_context[i] = * (ptr.ptr() - (cnt - i));
+		else
+			m_context[i] = -1;
+	}
+	for (size_t i = 0; i < cnt; ++i) {
+		if (locus + i < end)
+			m_context[cnt+i] = * (ptr.ptr() + i + 1);
+		else
+			m_context[cnt+i] = -1;
+	}
+	if (!m_mapIn.empty() || m_mapIn.func().isValid()) {
+		for (size_t i = 0; i < m_context.size(); ++i) {
+			if (m_context[i] == -1)
+				continue;
+			vectorlu const & mapInList = m_mapIn.elems();
+			if (mapInList.size() > 0) {
+				if (static_cast<UINT>(m_context[i]) < mapInList.size())
+					m_context[i] = mapInList[m_context[i]];
+			} else {
+				m_context[i] = m_mapIn.func()(PyObj_As_Int, "(i)",
+					m_context[i]);
+			}
+		}
+	}
+}
+
+
 bool mutator::apply(population & pop)
 {
 	if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
@@ -92,12 +129,15 @@ bool mutator::apply(population & pop)
 	if (subPops.empty()) {
 		m_bt.doTrial();
 		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-			int locus = m_loci[i];
+			UINT locus = m_loci[i];
 			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
 			size_t pos = m_bt.trialFirstSucc(i);
+			size_t lastPos = 0;
+			IndAlleleIterator ptr = pop.alleleIterator(locus);
 			if (pos != BernulliTrials::npos) {
 				do {
-					IndAlleleIterator ptr = pop.alleleIterator(locus) + pos;
+					ptr += pos - lastPos;
+					lastPos = pos;
 					if (!ptr.valid())
 						continue;
 					DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
@@ -110,6 +150,8 @@ bool mutator::apply(population & pop)
 									static_cast<int>(*ptr)));
 						}
 					}
+					if (!m_context.empty())
+						fillContext(pop, ptr, locus);
 					// The virtual mutate functions in derived operators will be called.
 					mutate(*ptr);
 					if (mapOut) {
@@ -148,12 +190,15 @@ bool mutator::apply(population & pop)
 
 		m_bt.doTrial();
 		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-			int locus = m_loci[i];
+			UINT locus = m_loci[i];
 			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
 			size_t pos = m_bt.trialFirstSucc(i);
+			size_t lastPos = 0;
+			IndAlleleIterator ptr = pop.alleleIterator(locus, sp);
 			if (pos != BernulliTrials::npos) {
 				do {
-					IndAlleleIterator ptr = pop.alleleIterator(locus, sp) + pos;
+					ptr += pos - lastPos;
+					lastPos = pos;
 					if (!ptr.valid())
 						continue;
 					DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
@@ -166,6 +211,8 @@ bool mutator::apply(population & pop)
 									static_cast<int>(*ptr)));
 						}
 					}
+					if (!m_context.empty())
+						fillContext(pop, ptr, locus);
 					// The virtual mutate functions in derived operators will be called.
 					mutate(*ptr);
 					if (mapOut) {
@@ -176,7 +223,6 @@ bool mutator::apply(population & pop)
 							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
 									static_cast<int>(*ptr)));
 						}
-
 					}
 					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
 				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
@@ -196,7 +242,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops,
 	const stringList & infoFields)
-	: mutator(vectorf(1, 0), loci, mapIn, mapOut, output, stage, begin, end, step,
+	: mutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, stage, begin, end, step,
 	          at, rep, subPops, infoFields)
 {
 	matrix rateMatrix = rate;
@@ -269,7 +315,7 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const stringList & infoFields)
-	: mutator(rates, loci, mapIn, mapOut, output, stage, begin, end, step, at, rep, subPops, infoFields),
+	: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, rep, subPops, infoFields),
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE
@@ -336,7 +382,15 @@ void smmMutator::mutate(AlleleRef allele)
 
 void pyMutator::mutate(AlleleRef allele)
 {
-	int resInt = m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
+	int resInt = 0;
+	
+	vectori & cntxt = context();
+	if (cntxt.empty())
+		m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
+	else {
+		PyObject * arr = Int_Vec_As_NumArray(cntxt.begin(), cntxt.end());
+		m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), arr);
+	}
 
 #ifdef BINARYALLELE
 	DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
@@ -355,6 +409,32 @@ void mixedMutator::mutate(AlleleRef allele)
 	reinterpret_cast<mutator *>(m_mutators[m_sampler.get()])->mutate(allele);
 }
 
+
+void contextMutator::mutate(AlleleRef allele)
+{
+	const vectori & alleles = context();
+	for (size_t i = 0; i < m_contexts.size(); ++i) {
+		bool match = true;
+		for (size_t j = 0; j < alleles.size(); ++j) {
+			if (m_contexts[i][j] != alleles[j]) {
+				match = false;
+				break;
+			}
+		}
+		if (match) {
+			DBG_DO(DBG_MUTATOR, cout << "Context " << alleles << " mutator " << i << endl);
+			reinterpret_cast<mutator *>(m_mutators[i])->mutate(allele);
+			return;
+		}
+	}
+	if (m_contexts.size() + 1 == m_mutators.size()) {
+		DBG_DO(DBG_MUTATOR, cout << "No context found. Use last mutator." << endl);
+		reinterpret_cast<mutator *>(m_mutators[m_contexts.size()]) -> mutate(allele);
+	} else {
+		cout << "Failed to find context " << alleles << endl;
+		throw RuntimeError("No match context is found and there is no default mutator");
+	}
+}
 
 bool pointMutator::apply(population & pop)
 {

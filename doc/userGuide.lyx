@@ -11150,8 +11150,70 @@ lstparams "caption={General mutator specified by a mutation rate matrix},label={
 
 \end_layout
 
+\begin_layout Standard
+Although alleles mutates between each other at different mutation rates,
+ a 
+\family typewriter
+matrixMutator
+\family default
+ mutates alleles (regardless of its status) at an 
+\series bold
+overall mutation rate
+\series default
+ 
+\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
+\end_inset
+
+ and uses a 
+\series bold
+transition matrix
+\series default
+ (
+\begin_inset Formula $\mbox{Pr}\left(i\rightarrow j\right)=p_{ij}/\mu$
+\end_inset
+
+, 
+\begin_inset Formula $i\ne j$
+\end_inset
+
+) to mutate between alleles when an mutation event happens.
+ When a 
+\family typewriter
+matrixMutator
+\family default
+ or its derived mutator (e.g.
+ 
+\family typewriter
+snpMutator
+\family default
+, 
+\family typewriter
+acgtMutator
+\family default
+) is used in another mutator (e.g.
+ 
+\family typewriter
+mixedMutator
+\family default
+ and 
+\family typewriter
+contextMutator
+\family default
+), the host mutator will trigger mutation events and use only the transition
+ matrix to mutate an allele.
+ In this case, 
+\family typewriter
+snpMutator(u=1)
+\family default
+ and 
+\family typewriter
+snpMutator(u=1e-8)
+\family default
+ are the same because they have the same transition matrixes.
+\end_layout
+
 \begin_layout Subsubsection
-Implementation of matrixMutator **
+Mutation rate and transition matrix of a matrixMutator **
 \end_layout
 
 \begin_layout Standard
@@ -11180,7 +11242,7 @@ a mutation process is usually allele dependent
 \begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
 \end_inset
 
- as the maximum mutating probability for all alleles, and then
+ as the overall mutation rate, and then
 \end_layout
 
 \begin_layout Enumerate
@@ -12398,6 +12460,164 @@ lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMu
 \end_inset
 
 
+\end_layout
+
+\begin_layout Note
+Passed mutators are only used to mutate alleles when a mutation event happens.
+ Mutation rates of these mutators are ignored.
+ For example, 
+\family typewriter
+snpMutator(u=1)
+\family default
+ and 
+\family typewriter
+snpMutator(u=0.01)
+\family default
+ are the same if they are used in a 
+\family typewriter
+mixedMutator
+\family default
+ because these two mutators differ only by mutation rate.
+ 
+\end_layout
+
+\begin_layout Subsection
+Context-dependent mutation models (
+\family typewriter
+contextMutator
+\family default
+)**
+\end_layout
+
+\begin_layout Standard
+All mutation models we have seen till now are context independent.
+ That is to say, how an allele is mutated depends only on the allele itself.
+ However, it is understood that DNA and amino acid substitution rates are
+ highly sequence context-dependent, e.g., C --> T substitutions in vertebrates
+ may occur much more frequently at CpG sites.
+ To simulate such models, a mutator must consider the context of a mutated
+ allele, e.g.
+ certain number of alleles to the left and right of this allele, and mutate
+ the allele accordingly.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+contextMutator
+\family default
+ can be used to mutate an allele depending on its surrounding loci.
+ This mutator is constructed by a list of mutators and their respective
+ contexts.
+ It accepts regular mutator parameters such as 
+\family typewriter
+rates
+\family default
+, 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+subPops
+\family default
+, 
+\family typewriter
+mapIn and mapOut
+\family default
+ and mutates aleles at specified rate.
+ When a mutation event happens, it checks the context of the mutaed allele
+ and choose a corresponding mutator to mutate the allele.
+ An additional mutator can be specified to mutate alleles with unknown context.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "contextMutator"
+
+\end_inset
+
+ applies two 
+\family typewriter
+snpMutator
+\family default
+ at different rates under different contexts.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/contentMutator.log"
+lstparams "caption={A context-dependent mutation model},label={contextMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Context-dependent mutator can also be implemented by a 
+\family typewriter
+pyMutator
+\family default
+.
+ When a non-zero parameter 
+\family typewriter
+context
+\family default
+ is specified, this mutator will collect 
+\family typewriter
+context
+\family default
+ alleles to the left and right of a mutated allele and pass them as the
+ second parameter of the user-provided mutation function.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyContextMutator"
+
+\end_inset
+
+ applies the same mutation model as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "contextMutator"
+
+\end_inset
+
+ using a 
+\family typewriter
+pyMutator
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyContentMutator.log"
+lstparams "caption={A hybrid context-dependent mutation model},label={pyContextMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Note
+Passed mutators are only used to mutate alleles when a mutation event happens.
+ Mutation rates of these mutators are ignored.
+ For example, 
+\family typewriter
+snpMutator(u=1)
+\family default
+ and 
+\family typewriter
+snpMutator(u=0.01)
+\family default
+ are the same if they are used in a 
+\family typewriter
+contextMutator
+\family default
+ because these two mutators differ only by mutation rate.
 \end_layout
 
 \begin_layout Subsection
