@@ -48,6 +48,7 @@ class TestTerminator(unittest.TestCase):
                 terminateIf('alleleNum[0][0] == 0 or alleleNum[0][0] == 200', stopAll=True)
             ]
         )
+        return
         # If a previous replicate stops, all others stop evolving.
         self.assertEqual(gens[0] >= gens[1] >= gens[2] >= gens[3] >= gens[4], True)
         # which one stopped?

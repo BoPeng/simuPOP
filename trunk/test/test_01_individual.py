@@ -110,7 +110,7 @@ class TestIndividual(unittest.TestCase):
             self.assertRaises(exceptions.IndexError, ind.setAllele, 0, 0, 0, 2)
 
     def testGenotype(self):
-        'Testing  individual::genotype(), genotype(p), genotype(p, chrom)'
+        'Testing individual::genotype(), genotype(p), genotype(p, chrom)'
         pop = self.getPop()
         ind = pop.individual(0)
         gt = ind.genotype()
@@ -136,7 +136,7 @@ class TestIndividual(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, ind.genotype, 0, 2)
 
     def testSetGenotype(self):
-        'Testing  individual::setGenotype(geno), setgenotype(geno, p), '
+        'Testing individual::setGenotype(geno), setgenotype(geno, p), '
         'setGenotype(geno, p, chrom)'
         pop = self.getPop()
         ind = pop.individual(0)
@@ -165,7 +165,7 @@ class TestIndividual(unittest.TestCase):
             self.assertEqual(gt, [4, 2, 3, 4, 2, 3, 4])
 
     def testSex(self):
-        'Testing  individual::sex(), setSex(sex), sexChar()'
+        'Testing individual::sex(), setSex(sex), sexChar()'
         pop = self.getPop()
         ind = pop.individual(0)
         self.assertEqual(ind.sex(), Male)
@@ -175,7 +175,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(ind.sexChar(), 'F')
 
     def testAffected(self):
-        'Testing  individual::affected(), affectedChar(), setAffected(affected)'
+        'Testing individual::affected(), affectedChar(), setAffected(affected)'
         pop = self.getPop()
         ind = pop.individual(0)
         self.assertEqual(ind.affected(), False)
@@ -185,7 +185,7 @@ class TestIndividual(unittest.TestCase):
         self.assertEqual(ind.affectedChar(), 'A')
 
     def testInfo(self):
-        'Testing  individual::info(idx), info(name), intInfo(idx), intinfo(name), '
+        'Testing individual::info(idx), info(name), intInfo(idx), intinfo(name), '
         'setInfo(value, idx), setInfo(value, name)'
         pop = population(10, infoFields=['age', 'fitness', 'trait1'])
         ind = pop.individual(0)

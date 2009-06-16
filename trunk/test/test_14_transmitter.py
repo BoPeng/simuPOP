@@ -9,7 +9,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=False)
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions

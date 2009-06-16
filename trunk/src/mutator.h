@@ -429,7 +429,7 @@ public:
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_func(func)
+		m_func(func), m_contextObj(NULL)
 	{
 		DBG_ASSERT(m_func.isValid(), ValueError,
 			"Passed variable is not a callable python function.");
@@ -455,6 +455,8 @@ public:
 
 private:
 	pyFunc m_func;
+
+	PyObject * m_contextObj;
 };
 
 

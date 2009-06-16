@@ -101,6 +101,7 @@ class TestQuanTrait(unittest.TestCase):
         )
 
     def testPyQuanTrait(self):
+        'Testing the hybrid quantitative trait operator'
         def qt(geno):
             if geno == [0, 0]:
                 return random.normalvariate(0, 0.5)

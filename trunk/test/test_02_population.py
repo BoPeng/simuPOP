@@ -787,7 +787,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(len(pop1.dvars(1).alleleFreq), 6)
 
     def testSexSplitter(self):
-        'Test sexSplitter::sexSplitter()'
+        'Testing sexSplitter::sexSplitter()'
         pop = population(size=[20, 80])
         InitByFreq(pop, [0.4, 0.6])
         Stat(pop, numOfMale=True)
@@ -812,7 +812,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(numFemale == 0, False)
 
     def testAffectionSplitter(self):
-        'Test affectionSplitter::affectionSplitter()'
+        'Testing affectionSplitter::affectionSplitter()'
         pop = population(size=[20, 80], loci=[1, 2])
         InitByFreq(pop, [0.4, 0.6])
         MaPenetrance(pop, loci=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
@@ -837,7 +837,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(numUnaffected == 0, False)
 
     def testInfoSplitter(self):
-        'Test infoSplitter::infoSplitter(field, values=[], cutoff=[])'
+        'Testing infoSplitter::infoSplitter(field, values=[], cutoff=[])'
         pop = population(1000, infoFields=['x'])
         for ind in pop.individuals():
             ind.setInfo(random.randint(10, 20), 'x')
@@ -872,7 +872,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.intInfo('x') >=13.5, True)
 
     def testProportionSplitter(self):
-        'Test proportionSplitter::proportionSplitter(proportions=[])'
+        'Testing proportionSplitter::proportionSplitter(proportions=[])'
         pop = population(10)
         pop.setVirtualSplitter(proportionSplitter([0.01]*100))
         for i in range(100):
@@ -889,7 +889,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSize([0, 1]), 600)
 
     def testRangeSplitter(self):
-        'Test rangeSplitter::rangeSplitter(ranges)'
+        'Testing rangeSplitter::rangeSplitter(ranges)'
         pop = population(100)
         pop.setVirtualSplitter(rangeSplitter(ranges=[[10, 20], [80, 200]]))
         self.assertEqual(pop.subPopName([0, 0]), "Range [10, 20)")
@@ -898,7 +898,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSize([0, 1]), 20)
 
     def testGenotypeSplitter(self):
-        'Test genotypeSplitter::genotypeSplitter(loci(or locus), alleles, phase=False)'
+        'Testing genotypeSplitter::genotypeSplitter(loci(or locus), alleles, phase=False)'
         pop = population(1000, loci=[2, 3])
         InitByFreq(pop, [0.3, 0.7])
         pop.setVirtualSplitter(genotypeSplitter(loci=1, alleles=[[0, 0], [1, 0]], phase=True))

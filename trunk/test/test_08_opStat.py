@@ -11,7 +11,7 @@
 
 import simuOpt
 import math
-simuOpt.setOptions(quiet=False)
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, os, sys, exceptions
@@ -487,7 +487,7 @@ class TestStat(unittest.TestCase):
                 assert not pop.vars(sp).has_key('CramerV')
 
     def testCombinedStats(self):
-        '''Resting dependency of combined statistics'''
+        '''Testing dependency of combined statistics'''
         pop = population(size=[500,100,1000], ploidy=2, loci = [5])
         InitByFreq(pop, [.2, .3, .5])
         Stat(pop, alleleFreq=[1,2], haploFreq=[[1,2], [1,3]], LD=[[1,2],[1,4]])

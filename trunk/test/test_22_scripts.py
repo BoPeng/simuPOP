@@ -99,9 +99,6 @@ class TestScripts(unittest.TestCase):
             filename='forward.bin',
             format='bin')
 
-    def testDemoNonRandomMating_cpp(self):
-        pass
-
 if __name__ == '__main__':
     unittest.main()
 

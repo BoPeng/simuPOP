@@ -308,14 +308,11 @@ vectoru simulator::evolve(const opList & ops,
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
-						if (e.message())
+				        if (e.message()[0] != '\0')
 							cout << e.message() << endl;
 						fill(activeReps.begin(), activeReps.end(), false);
 						numStopped = activeReps.size();
 						break;
-					} catch (...) {
-						cout << "PreMating operator " << preMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
-						throw;
 					}
 					ElapsedTime("PreMatingOp: " + preMatingOps[it]->__repr__());
 				}
@@ -345,15 +342,12 @@ vectoru simulator::evolve(const opList & ops,
 			} catch (StopEvolution e) {
 				DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 					                       << "During-mating Operator at replicate " + toStr(curRep) << endl);
-				if (e.message())
+				if (e.message()[0] != '\0')
 					cout << e.message() << endl;
 				fill(activeReps.begin(), activeReps.end(), false);
 				numStopped = activeReps.size();
 				// does not execute post mating operator
 				continue;
-			} catch (Exception e) {
-				cout << "mating or one of the during mating operator throws an exception.\n\n" << e.message() << endl;
-				throw e;
 			}
 
 			ElapsedTime("matingDone");
@@ -377,15 +371,12 @@ vectoru simulator::evolve(const opList & ops,
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
-						if (e.message())
+				        if (e.message()[0] != '\0')
 							cout << e.message() << endl;
 						fill(activeReps.begin(), activeReps.end(), false);
 						numStopped = activeReps.size();
 						// does not run the rest of the post-mating operators.
 						break;
-					} catch (...) {
-						cout << "PostMating operator " << postMatingOps[it]->__repr__() << " throws an exception." << endl << endl;
-						throw;
 					}
 					ElapsedTime("PostMatingOp: " + postMatingOps[it]->__repr__());
 				}

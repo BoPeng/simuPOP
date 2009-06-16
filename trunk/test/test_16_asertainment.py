@@ -11,7 +11,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=False)
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 from simuUtil import *

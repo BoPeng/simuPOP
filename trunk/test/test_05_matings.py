@@ -10,7 +10,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=False)
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, os, sys, random, math, sets
@@ -42,6 +42,7 @@ class TestMatingSchemes(unittest.TestCase):
         return famSize
 
     def testSubPopSizes(self):
+        'Testing parameter subPopSize of mating schemes'
         def demo(gen, oldSize=[]):
             return (500 + gen*10, 1000 + gen*10)
         def demoSize(pop):
@@ -64,11 +65,8 @@ class TestMatingSchemes(unittest.TestCase):
         'Testing number of offspring'
         # single number
         self.assertEqual(
-            self.getFamSize(randomMating(numOffspring=2)),
-            [2]*500)
-        self.assertEqual(
-             self.getFamSize(randomMating(numOffspring=3), N=30),
-             [3]*10)
+             self.getFamSize(randomMating(numOffspring=5), N=50),
+             [5]*10)
 
         # Python function
         def nos(gen):
@@ -133,6 +131,7 @@ class TestMatingSchemes(unittest.TestCase):
         return ''.join([ind.sexChar() for ind in simu.population(0).individuals()])
 
     def testSexMode(self):
+        'Testing parameter sexMode of mating schemes'
         # noSex
         self.assertEqual(
             self.checkSexMode(randomMating(sexMode=NoSex)),
@@ -342,9 +341,9 @@ class TestMatingSchemes(unittest.TestCase):
         testPyRetValue(retIndexes)
         testPyRetValue(retInd)
         testPyRetValue(retInds)
-        self.assertRaises(exceptions.RuntimeError, testPyRetValue, retPop)
-        self.assertRaises(exceptions.RuntimeError, testPyRetValue, retWrongIndex)
-        self.assertRaises(exceptions.RuntimeError, testPyRetValue, retWrongIndexes)
+        self.assertRaises(exceptions.ValueError, testPyRetValue, retPop)
+        self.assertRaises(exceptions.ValueError, testPyRetValue, retWrongIndex)
+        self.assertRaises(exceptions.ValueError, testPyRetValue, retWrongIndexes)
 
   
 if __name__ == '__main__':
