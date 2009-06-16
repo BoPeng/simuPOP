@@ -383,14 +383,14 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 void pyMutator::mutate(AlleleRef allele, UINT)
 {
 	int resInt = 0;
+	if (m_contextObj == NULL && !context().empty())
+		// this needs to be done only once
+		m_contextObj = Int_Vec_As_NumArray(context().begin(), context().end());
 	
-	vectori & cntxt = context();
-	if (cntxt.empty())
+	if (m_contextObj != NULL)
+		resInt = m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), m_contextObj);
+	else
 		resInt = m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
-	else {
-		PyObject * arr = Int_Vec_As_NumArray(cntxt.begin(), cntxt.end());
-		resInt = m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), arr);
-	}
 
 #ifdef BINARYALLELE
 	DBG_ASSERT(resInt == 0 || resInt == 1, ValueError,
@@ -416,7 +416,8 @@ void mixedMutator::mutate(AlleleRef allele, UINT locus)
 {
 	UINT idx = m_sampler.get();
 	mutator * mut = reinterpret_cast<mutator *>(m_mutators[idx]);
-	if (rng().randUniform01() < mut->mutRate(locus))
+	double mu = mut->mutRate(locus);
+	if (mu == 1.0 || rng().randUniform01() < mu)
 		mut->mutate(allele, locus);
 }
 

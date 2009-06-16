@@ -136,7 +136,7 @@ class TestSimulator(unittest.TestCase):
         self.assertRaises(exceptions.IndexError, simu.population, 5)
 
     def testAddInfoField(self):
-        'setMatingScheme(matingScheme)'
+        'Testing setMatingScheme(matingScheme)'
         simu = simulator(population(100, infoFields=['a']), cloneMating(), rep=3)
         simu.evolve(preOps=[initSex()], ops=[], gen=1)
         simu.setMatingScheme(randomMating())

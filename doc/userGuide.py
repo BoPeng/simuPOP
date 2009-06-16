@@ -1920,7 +1920,6 @@ simu.evolve(
             loci=[1, 4],
             rates=0.01
         ),
-        #snpMutator(u=0.01, v= 0.01, loci=[1, 4]),
         stat(alleleFreq=[1, 4], step=5),
         pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
             " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)

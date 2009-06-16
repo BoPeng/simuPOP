@@ -28,7 +28,7 @@ class TestPyOperator(unittest.TestCase):
         return True
 
     def testSimpleFunc(self):
-        'Testing a simple example'
+        'Testing Python operator'
         InitByFreq(self.pop, [.2, .3, .5])
         simu = simulator(self.pop, randomMating())
         simu.evolve( ops=[pyOperator(self.myFunc)],
@@ -69,7 +69,7 @@ class TestPyOperator(unittest.TestCase):
             return True
 
     def testTerminator(self):
-        'Testing a python terminator'
+        'Testing hybrid terminator'
         simu = simulator(self.pop, randomMating())
         simu.evolve(preOps = [initSex()],
             ops=[ pyOperator(self.myFuncAsTerminator) ],

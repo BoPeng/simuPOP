@@ -271,7 +271,7 @@ class TestMutator(unittest.TestCase):
         self.assertEqual(pop.individual(0).allele(0), 1)
 
     def testMixedMutator(self):
-        'testing mixed mutator'
+        'Testing mixed mutator'
         pop = population(1000, loci=[1])
         simu = simulator(pop, randomMating())
         self.assertRaises(exceptions.ValueError,
@@ -281,18 +281,51 @@ class TestMutator(unittest.TestCase):
             mixedMutator, mutators=[kamMutator(k=10), kamMutator(k=10)],
             prob=[0.2, 0.4, 0.4])
 
+    def testContextMutator(self):
+        'Testing context mutator'
+        simu = simulator(population(50000, loci=[3, 3]),
+            randomMating())
+        simu.evolve(
+            # initialize locus by 0, 0, 0, 1, 0, 1
+            preOps = initByValue([1, 1], loci=[3, 5]),
+            ops = [
+                contextMutator(mutators=[
+                    snpMutator(u=0.1),
+                    snpMutator(u=1),
+                    ],
+                    contexts=[(0, 0), (1, 1)],
+                    loci=[1, 4],
+                    rates=0.1
+                ),
+            ], 
+            gen = 1
+        )
+        pop = simu.extract(0)
+        Stat(pop, alleleFreq=(1, 4))
+        # test combined allele frequency
+        self.assertAlmostEqual(pop.dvars().alleleFreq[1][1], 0.01, places=2)
+        self.assertAlmostEqual(pop.dvars().alleleFreq[4][1], 0.1, places=2)
+        # test parameters
+        self.assertRaises(exceptions.ValueError, ContextMutate, pop, 
+            contexts=[(0, 0, 0)])
+        self.assertRaises(exceptions.ValueError, ContextMutate, pop, 
+            mutators=[snpMutator(u=0.1)], contexts=[(0, 0), (1, 1)])
+        self.assertRaises(exceptions.ValueError, ContextMutate, pop, 
+            mutators=[snpMutator(u=0.1), snpMutator(u=0.01)],
+            contexts=[(0, 0), (1, 1, 2, 2)])
+
     def testPointMutator(self):
         'Testing point mutator'
         # test point mutator
         pop = population(size=10, ploidy=2, loci=[5])
         InitByValue(pop, value=[[1]*5, [2]*5], proportions=[.3,.7])
         PointMutate(pop, inds=[1,2,3], allele=0, loci=[1,3])
-        assert pop.individual(1).allele(1,0) == 0
-        assert pop.individual(1).allele(1,1) != 0
+        self.assertEqual(pop.individual(1).allele(1,0), 0)
+        self.assertNotEqual(pop.individual(1).allele(1,1), 0)
         PointMutate(pop, inds=[1,2,3], ploidy=[1],
             allele=0, loci=[1,2])
-        assert pop.individual(1).allele(2,1) == 0
-        assert pop.individual(1).allele(2,0) != 0
+        self.assertEqual(pop.individual(1).allele(2,1), 0)
+        self.assertNotEqual(pop.individual(1).allele(2,0), 0)
 
     def testSnpMutator(self):
         'Testing SNP mutator'
@@ -343,7 +376,7 @@ class TestMutator(unittest.TestCase):
             Stat(pop, alleleFreq=[1])
             # Male: 5000 x 0.01 = 50
             cnt += pop.dvars().alleleNum[1][1]
-        self.assertEqual( abs(cnt/50. - 5000*0.01) < 1, True)
+        self.assertEqual( abs(cnt/50. - 5000*0.01) < 2, True)
 
 if __name__ == '__main__':
     unittest.main()

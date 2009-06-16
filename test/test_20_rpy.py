@@ -9,7 +9,7 @@
 #
 
 import simuOpt
-simuOpt.setOptions(quiet=False)
+simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
 import unittest, sys, os, exceptions
@@ -127,7 +127,7 @@ class TestRPy(unittest.TestCase):
              ],
              gen = 30
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testVarPlotterByDim(self):
@@ -135,10 +135,9 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
+            population(size=[200, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
             randomMating(), rep=3)
-        migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
-            mode=ByProbability)
+        migr = migrator(rate=[[0,.2],[.25,0]], mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
             preOps = [initSex()],
@@ -146,9 +145,9 @@ class TestRPy(unittest.TestCase):
              migr,
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
-                 col_rep=['red', 'green', 'blue'], update=10,
-                 byDim=True, win=10, main='win=10, 3 dim, 3 colorful lines, legend',
-                 legend=['a', 'b', 'c'])
+                 col_rep=['red', 'green'], update=10,
+                 byDim=True, win=10, main='win=10, 2 dim, 2 colorful lines, legend',
+                 legend=['a', 'b'])
              ],
              gen = 30
         )
@@ -180,7 +179,7 @@ class TestRPy(unittest.TestCase):
         r.dev_off()
 
     def testVarPlotterTogether(self):
-        'Testing byDim paramter of varPlotter'
+        'Testing plotting all lines together using varPlotter'
         if not hasRPy:
             return True
         simu = simulator(
@@ -211,9 +210,9 @@ class TestRPy(unittest.TestCase):
         if not hasRPy:
             return True
         simu = simulator(
-            population(size=[50, 50, 100], ploidy=2, loci=[3,4], infoFields = ['migrate_to']),
-            randomMating(), rep=3)
-        migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
+            population(size=[200, 100], ploidy=2, loci=[3, 4], infoFields = ['migrate_to']),
+            randomMating(), rep=2)
+        migr = migrator(rate=[[0, .2],[.25, 0]],
             mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
         simu.evolve(
@@ -223,8 +222,8 @@ class TestRPy(unittest.TestCase):
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', 
                  byDim=True, byRep=True, update=10,
-                 win=10, main_repdim=['rep dim %d' % x for x in range(9)],
-                 col_rep=['red', 'green', 'blue'], lty_dim=range(1, 4))
+                 win=10, main_repdim=['rep dim %d' % x for x in range(4)],
+                 col_rep=['red', 'green'], lty_dim=range(1, 3))
              ],
              gen = 30
         )
@@ -265,7 +264,7 @@ class TestRPy(unittest.TestCase):
             return True
         simu = simulator(
             population(size=[50,50,100], ploidy=2, loci=[3,4], infoFields=['migrate_to']),
-            randomMating(), rep=3)
+            randomMating(), rep=2)
         migr = migrator(rate=[[0,.2,.1],[.25,0,.1],[.1,.2,0]],
             mode=ByProbability)
         stator = stat(popSize=1, stage=PreMating)
@@ -276,7 +275,7 @@ class TestRPy(unittest.TestCase):
              stator,
              varPlotter('subPopSize', byRep=True, ylim=[0,100],
                  ylab='sp', win=10, update=10,
-                 par_mfrow=[1, 3], main='mfrow=[1, 3]')
+                 par_mfrow=[1, 2], main='mfrow=[1, 3]')
              ],
              gen = 30
         )
@@ -514,7 +513,7 @@ class TestRPy(unittest.TestCase):
             ],
             gen = 5,
         )
-        sleep(5)
+        sleep(1)
         r.dev_off()
 
     def testBoxPlotterFields(self):
@@ -640,7 +639,7 @@ class TestRPy(unittest.TestCase):
             ],
             gen = 5,
         )
-        sleep(10)
+        sleep(1)
         r.dev_off()
 
 if __name__ == '__main__':

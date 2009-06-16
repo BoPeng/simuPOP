@@ -11150,216 +11150,6 @@ lstparams "caption={General mutator specified by a mutation rate matrix},label={
 
 \end_layout
 
-\begin_layout Subsubsection
-Mutation rate and transition matrix of a matrixMutator **
-\end_layout
-
-\begin_layout Standard
-Because alleles usually have different probabilities of mutating to other
- alleles, 
-\series bold
-a mutation process is usually allele dependent
-\series default
-.
- Given a mutation model 
-\begin_inset Formula $\left(p_{ij}\right)$
-\end_inset
-
-, it is obviously inefficient to go through all mutable alleles and determine
- whether or not to mutate it using 
-\begin_inset Formula $p_{ij},$
-\end_inset
-
- 
-\begin_inset Formula $j=0,...,1-n$
-\end_inset
-
-.
- simuPOP uses a two step procedure to mutate a large number of alleles.
- More specifically, for each mutation model, we determine 
-\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
-\end_inset
-
- as the overall mutation rate, and then
-\end_layout
-
-\begin_layout Enumerate
-For each allele, trigger a mutation event with probability 
-\begin_inset Formula $\mu$
-\end_inset
-
-.
- Because 
-\begin_inset Formula $\mu$
-\end_inset
-
- is usually very small and is the same for all alleles, this step can be
- implemented efficiently.
-\end_layout
-
-\begin_layout Enumerate
-When a mutation event happens, mutation allele 
-\begin_inset Formula $i$
-\end_inset
-
- to allele 
-\begin_inset Formula $j$
-\end_inset
-
- with probability 
-\begin_inset Formula \[
-\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
-1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
-\frac{p_{ij}}{\mu} & \mbox{if }i\ne j\end{cases}\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Because steps 1 and 2 are independent, it is easy to verify that
-\begin_inset Formula \[
-p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)\]
-
-\end_inset
-
-if 
-\begin_inset Formula $i\ne j$
-\end_inset
-
- and 
-\begin_inset Formula \[
-p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)\]
-
-\end_inset
-
-where the first and second items are probabilities of no-mutation at steps
- 1 and 2.
- 
-\begin_inset Formula $\mu$
-\end_inset
-
- was chosen as the smallest 
-\begin_inset Formula $\mu$
-\end_inset
-
- that makes 
-\begin_inset Formula $0\leq\mbox{Pr}\left(i\rightarrow i\right)\leq1$
-\end_inset
-
- for all 
-\begin_inset Formula $i$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-For example, for a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model with 
-\begin_inset Formula \[
-p_{ij}=\left(\begin{array}{cccc}
-1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
-\frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
-\vdots & \vdots & \ddots & \vdots\\
-\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
-
-\end_inset
-
-
-\begin_inset Formula $\mu$
-\end_inset
-
- is directly 
-\begin_inset Formula $\mu$
-\end_inset
-
- for the first step and 
-\begin_inset Formula \[
-\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
-0 & \mbox{if }i=j\\
-\frac{1}{k-1} & \mbox{if }i\ne j\end{cases}\]
-
-\end_inset
-
-for the second step.
- Therefore, mutation rate 
-\begin_inset Formula $\mu$
-\end_inset
-
- in a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model could be interpreted as the probability of mutation, and a
- mutation event would mutate an allele to any other allele with equal probabilit
-y.
-\end_layout
-
-\begin_layout Standard
-For a classical mutation model with 
-\begin_inset Formula $P\left(A\rightarrow a\right)=u$
-\end_inset
-
- and 
-\begin_inset Formula $P\left(a\rightarrow A\right)=v$
-\end_inset
-
-, 
-\begin_inset Formula \[
-p_{ij}=\left(\begin{array}{cc}
-1-u & u\\
-v & 1-v\end{array}\right)\]
-
-\end_inset
-
-if 
-\begin_inset Formula $u=0.001$
-\end_inset
-
- and 
-\begin_inset Formula $v=0.0005$
-\end_inset
-
-, 
-\begin_inset Formula $\mu=\max\left(u,v\right)=0.001$
-\end_inset
-
-,
-\begin_inset Formula \[
-\mbox{Pr}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
-0 & 1\\
-\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5\end{array}\right)\]
-
-\end_inset
-
-That is to say, we would mutate at a mutation rate 
-\begin_inset Formula $u=0.001$
-\end_inset
-
-, mutate allele 
-\begin_inset Formula $A$
-\end_inset
-
- to 
-\begin_inset Formula $a$
-\end_inset
-
- with probability 1 and mutate allele 
-\begin_inset Formula $a$
-\end_inset
-
- to 
-\begin_inset Formula $A$
-\end_inset
-
- with probability 0.5.
-\end_layout
-
 \begin_layout Subsection
 k-allele mutation model (
 \family typewriter
@@ -11454,7 +11244,7 @@ lstparams "caption={A k-allele mutation model},label={kamMutator}"
 \end_layout
 
 \begin_layout Subsection
-diallelic mutation models (
+Diallelic mutation models (
 \family typewriter
 snpMutator
 \family default
@@ -12066,7 +11856,9 @@ lstparams "caption={A Kimura's 2 parameter mutation model},label={acgtMutator}"
 \begin_inset Note Note
 status open
 
-\begin_layout Subsection
+\begin_layout Plain Layout
+
+\series bold
 Amino acid mutation models (
 \family typewriter
 aminoAcidMutator
@@ -12102,7 +11894,11 @@ smmMutator
 \end_layout
 
 \begin_layout Standard
-The Stepwise Mutation Model (SMM) was proposed by 
+The 
+\series bold
+stepwise mutation model
+\series default
+ (SMM) was proposed by 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Ohta1973"
@@ -12139,7 +11935,11 @@ maxAllele
 mutStep
 \family default
 , this operator can be used to simulate the standard neutral stepwise mutation
- model and a number of generalized stepwise mutation models.
+ model and a number of 
+\series bold
+generalized stepwise mutation models
+\series default
+.
  For example, Example 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -12221,6 +12021,322 @@ reference "pyMutator"
 LatexCommand lstinputlisting
 filename "log/pyMutator.log"
 lstparams "caption={A hybrid mutation model},label={pyMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mixed mutation models (
+\family typewriter
+mixedMutator
+\family default
+) **
+\end_layout
+
+\begin_layout Standard
+Mixed mutation models are sometimes used to model real data.
+ For example, a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model can be used to explain extremely large or small number of
+ tandem repeats at a microsatellite marker which are hard to justify using
+ a standard stepwise mutation model.
+ A mixed mutation model would apply two or more mutation models at pre-specified
+ probabilities.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+mixedMutator
+\family default
+ is constructed by a list of mutators and their respective probabilities.
+ It accepts regular mutator parameters such as 
+\family typewriter
+rates
+\family default
+, 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+subPops
+\family default
+, 
+\family typewriter
+mapIn and mapOut
+\family default
+ and mutates aleles at specified rate.
+ When a mutation event happens, it calls one of the mutators to mutate the
+ allele.
+ For example, Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mixedMutator"
+
+\end_inset
+
+ applies a mixture of 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model and stepwise model to mutate a micosatellite model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mixedMutator.log"
+lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMutator}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When a mutation event happens, mutators in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mixedMutator"
+
+\end_inset
+
+ mutate the allele with probability (mutation rate) 1.
+ If different mutation rates are specified, the overall mutation rates would
+ be the product of mutation rate of 
+\family typewriter
+mixedMutator
+\family default
+ and the passed mutators.
+ However, it is extremely important to understand that although 
+\family typewriter
+mixedMutator(rates=mu)
+\family default
+ with 
+\family typewriter
+smmMutator(rates=1)
+\family default
+ and 
+\family typewriter
+mixedMutator(rates=1) 
+\family default
+with 
+\family typewriter
+smmMutator(rates=mu)
+\family default
+ mutate alleles at the same mutation rate, the former is much more efficient
+ because it triggers far less mutation events.
+\end_layout
+
+\begin_layout Subsection
+Context-dependent mutation models (
+\family typewriter
+contextMutator
+\family default
+)**
+\end_layout
+
+\begin_layout Standard
+All mutation models we have seen till now are context independent.
+ That is to say, how an allele is mutated depends only on the allele itself.
+ However, it is understood that DNA and amino acid substitution rates are
+ highly sequence context-dependent, e.g., C 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ T substitutions in vertebrates may occur much more frequently at CpG sites.
+ To simulate such models, a mutator must consider the context of a mutated
+ allele, e.g.
+ certain number of alleles to the left and right of this allele, and mutate
+ the allele accordingly.
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+contextMutator
+\family default
+ can be used to mutate an allele depending on its surrounding loci.
+ This mutator is constructed by a list of mutators and their respective
+ contexts.
+ It accepts regular mutator parameters such as 
+\family typewriter
+rates
+\family default
+, 
+\family typewriter
+loci
+\family default
+, 
+\family typewriter
+subPops
+\family default
+, 
+\family typewriter
+mapIn and mapOut
+\family default
+ and mutates aleles at specified rate.
+ When a mutation event happens, it checks the context of the mutaed allele
+ and choose a corresponding mutator to mutate the allele.
+ An additional mutator can be specified to mutate alleles with unknown context.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "contextMutator"
+
+\end_inset
+
+ applies two 
+\family typewriter
+snpMutator
+\family default
+ at different rates under different contexts.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/contextMutator.log"
+lstparams "caption={A context-dependent mutation model},label={contextMutator}"
+
+\end_inset
+
+Note that although 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+contextMutator(mutators=[
+\end_layout
+
+\begin_layout Plain Layout
+
+    snpMutator(u=0.1),
+\end_layout
+
+\begin_layout Plain Layout
+
+    snpMutator(u=1)],
+\end_layout
+
+\begin_layout Plain Layout
+
+    contexts=[(0, 0), (1, 1)],
+\end_layout
+
+\begin_layout Plain Layout
+
+    rates=0.01
+\end_layout
+
+\begin_layout Plain Layout
+
+)    
+\end_layout
+
+\end_inset
+
+and 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+contextMutator(mutators=[
+\end_layout
+
+\begin_layout Plain Layout
+
+    snpMutator(u=0.001),
+\end_layout
+
+\begin_layout Plain Layout
+
+    snpMutator(u=0.01)],
+\end_layout
+
+\begin_layout Plain Layout
+
+    contexts=[(0, 0), (1, 1)],
+\end_layout
+
+\begin_layout Plain Layout
+
+    rates=1
+\end_layout
+
+\begin_layout Plain Layout
+
+)    
+\end_layout
+
+\end_inset
+
+both apply two 
+\family typewriter
+snpMutator
+\family default
+ at mutation rates 
+\family typewriter
+0.001
+\family default
+ and 
+\family typewriter
+0.01
+\family default
+, the former is more efficient because it triggers less mutation events.
+\end_layout
+
+\begin_layout Standard
+Context-dependent mutator can also be implemented by a 
+\family typewriter
+pyMutator
+\family default
+.
+ When a non-zero parameter 
+\family typewriter
+context
+\family default
+ is specified, this mutator will collect 
+\family typewriter
+context
+\family default
+ number of alleles to the left and right of a mutated allele and pass them
+ as a second parameter of the user-provided mutation function.
+ Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pyContextMutator"
+
+\end_inset
+
+ applies the same mutation model as Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "contextMutator"
+
+\end_inset
+
+ using a 
+\family typewriter
+pyMutator
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pyContextMutator.log"
+lstparams "caption={A hybrid context-dependent mutation model},label={pyContextMutator}"
 
 \end_inset
 
@@ -12340,246 +12456,6 @@ At the beginning of a simulation, all individuals have 50 copies of a tandem
  The averge repeat number therefore increases for affected individuals.
  In contrast, the mean number of repeats at locus 1 on a separate chromosome
  oscillate around 50.
-\end_layout
-
-\begin_layout Subsection
-Mixed mutation models (mixedMutator) **
-\end_layout
-
-\begin_layout Standard
-Mixed mutation models are sometimes used to model real data.
- For example, a 
-\begin_inset Formula $k$
-\end_inset
-
--allele model can be used to explain extremely large or small number of
- tandem repeats at a microsatellite marker which are hard to justify using
- a standard stepwise mutation model.
- A mixed mutation model would apply two or more mutation models at pre-specified
- probabilities.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-mixedMutator
-\family default
- is constructed by a list of mutators and their respective probabilities.
- It accepts regular mutator parameters such as 
-\family typewriter
-rates
-\family default
-, 
-\family typewriter
-loci
-\family default
-, 
-\family typewriter
-subPops
-\family default
-, 
-\family typewriter
-mapIn and mapOut
-\family default
- and mutates aleles at specified rate.
- When a mutation event happens, it calls one of the mutators to mutate the
- allele.
- For example, Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mixedMutator"
-
-\end_inset
-
- applies a mixture of 
-\begin_inset Formula $k$
-\end_inset
-
--allele model and stepwise model to mutate a micosatellite model.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mixedMutator.log"
-lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-When a mutation event happens, mutators in Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "mixedMutator"
-
-\end_inset
-
- mutate the allele with probability (mutation rate) 1.
- Separate mutation rates could be specified so that two mutators happen
- at different mutation rates.
- However, it is extremely important to understand that although a 
-\family typewriter
-mixedMutator
-\family default
- at mutation rate 
-\begin_inset Formula $\mu$
-\end_inset
-
- with a 
-\family typewriter
-smmMutator
-\family default
- at mutation rate 1 and a 
-\family typewriter
-mixedMutator
-\family default
- at mutate rate 1 with a 
-\family typewriter
-smmMutator
-\family default
- at mutation rate 
-\begin_inset Formula $\mu$
-\end_inset
-
- achieve the same effect, the former is much more efficient because it triggers
- far less mutation events.
- When a 
-\family typewriter
-matrixMutator
-\family default
- is involved, it is worthwhile to rewrite the mutation rate matrix to factor
- out its mutation rate to the wrapper 
-\family typewriter
-mixedMutator
-\family default
-.
-\end_layout
-
-\begin_layout Subsection
-Context-dependent mutation models (
-\family typewriter
-contextMutator
-\family default
-)**
-\end_layout
-
-\begin_layout Standard
-All mutation models we have seen till now are context independent.
- That is to say, how an allele is mutated depends only on the allele itself.
- However, it is understood that DNA and amino acid substitution rates are
- highly sequence context-dependent, e.g., C 
-\begin_inset Formula $\rightarrow$
-\end_inset
-
- T substitutions in vertebrates may occur much more frequently at CpG sites.
- To simulate such models, a mutator must consider the context of a mutated
- allele, e.g.
- certain number of alleles to the left and right of this allele, and mutate
- the allele accordingly.
-\end_layout
-
-\begin_layout Standard
-A 
-\family typewriter
-contextMutator
-\family default
- can be used to mutate an allele depending on its surrounding loci.
- This mutator is constructed by a list of mutators and their respective
- contexts.
- It accepts regular mutator parameters such as 
-\family typewriter
-rates
-\family default
-, 
-\family typewriter
-loci
-\family default
-, 
-\family typewriter
-subPops
-\family default
-, 
-\family typewriter
-mapIn and mapOut
-\family default
- and mutates aleles at specified rate.
- When a mutation event happens, it checks the context of the mutaed allele
- and choose a corresponding mutator to mutate the allele.
- An additional mutator can be specified to mutate alleles with unknown context.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "contextMutator"
-
-\end_inset
-
- applies two 
-\family typewriter
-snpMutator
-\family default
- at different rates under different contexts.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/contextMutator.log"
-lstparams "caption={A context-dependent mutation model},label={contextMutator}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Context-dependent mutator can also be implemented by a 
-\family typewriter
-pyMutator
-\family default
-.
- When a non-zero parameter 
-\family typewriter
-context
-\family default
- is specified, this mutator will collect 
-\family typewriter
-context
-\family default
- alleles to the left and right of a mutated allele and pass them as the
- second parameter of the user-provided mutation function.
- Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "pyContextMutator"
-
-\end_inset
-
- applies the same mutation model as Example 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "contextMutator"
-
-\end_inset
-
- using a 
-\family typewriter
-pyMutator
-\family default
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pyContextMutator.log"
-lstparams "caption={A hybrid context-dependent mutation model},label={pyContextMutator}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -12780,6 +12656,242 @@ If you really would like to simulate mutations over long sequences (e.g.,
  of markers might not be realistic.
  Allowing mutations to insert new loci can be more efficient, although this
  method has its own limitations.
+\end_layout
+
+\begin_layout Subsection
+Mutation rate and transition matrix of a 
+\family typewriter
+matrixMutator 
+\family default
+**
+\end_layout
+
+\begin_layout Standard
+This section can be safely ignored beacuse it describes how 
+\family typewriter
+matrixMutator
+\family default
+ is implemented.
+ However, if you are using a 
+\family typewriter
+matrixMutator
+\family default
+ in a 
+\family typewriter
+mixedMutator
+\family default
+ or 
+\family typewriter
+contextMutator
+\family default
+, this section shows you how to factor out an allele-independent mutation
+ rate from a mutate rate matrix and improve the efficiency of these mutators.
+\end_layout
+
+\begin_layout Standard
+Because alleles usually have different probabilities of mutating to other
+ alleles, 
+\series bold
+a mutation process is usually allele dependent
+\series default
+.
+ Given a mutation model 
+\begin_inset Formula $\left(p_{ij}\right)$
+\end_inset
+
+, it is obviously inefficient to go through all mutable alleles and determine
+ whether or not to mutate it using 
+\begin_inset Formula $p_{ij},$
+\end_inset
+
+ 
+\begin_inset Formula $j=0,...,1-n$
+\end_inset
+
+.
+ simuPOP uses a two step procedure to mutate a large number of alleles.
+ More specifically, for each mutation model, we determine 
+\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
+\end_inset
+
+ as the overall mutation rate, and then
+\end_layout
+
+\begin_layout Enumerate
+For each allele, trigger a mutation event with probability 
+\begin_inset Formula $\mu$
+\end_inset
+
+.
+ Because 
+\begin_inset Formula $\mu$
+\end_inset
+
+ is usually very small and is the same for all alleles, this step can be
+ implemented efficiently.
+\end_layout
+
+\begin_layout Enumerate
+When a mutation event happens, mutation allele 
+\begin_inset Formula $i$
+\end_inset
+
+ to allele 
+\begin_inset Formula $j$
+\end_inset
+
+ with probability 
+\begin_inset Formula \[
+\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
+1-\frac{1}{\mu}\left(1-p_{ii}\right) & \mbox{if }i=j\\
+\frac{p_{ij}}{\mu} & \mbox{if }i\ne j\end{cases}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because steps 1 and 2 are independent, it is easy to verify that
+\begin_inset Formula \[
+p_{ij}=\mu\mbox{Pr}\left(i\rightarrow j\right)\]
+
+\end_inset
+
+if 
+\begin_inset Formula $i\ne j$
+\end_inset
+
+ and 
+\begin_inset Formula \[
+p_{ii}=\left(1-\mu\right)+\mu\mbox{Pr}\left(i\rightarrow i\right)\]
+
+\end_inset
+
+where the first and second items are probabilities of no-mutation at steps
+ 1 and 2.
+ 
+\begin_inset Formula $\mu$
+\end_inset
+
+ was chosen as the smallest 
+\begin_inset Formula $\mu$
+\end_inset
+
+ that makes 
+\begin_inset Formula $0\leq\mbox{Pr}\left(i\rightarrow i\right)\leq1$
+\end_inset
+
+ for all 
+\begin_inset Formula $i$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For example, for a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model with 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cccc}
+1-\mu & \frac{\mu}{k-1} & \cdots & \frac{\mu}{k-1}\\
+\frac{\mu}{k-1} & 1-\mu & \cdots & \frac{\mu}{k-1}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\mu}{k-1} & \frac{\mu}{k-1} & \cdots & 1-\mu\end{array}\right)\]
+
+\end_inset
+
+
+\begin_inset Formula $\mu$
+\end_inset
+
+ is directly 
+\begin_inset Formula $\mu$
+\end_inset
+
+ for the first step and 
+\begin_inset Formula \[
+\mbox{Pr}\left(i\rightarrow j\right)=\begin{cases}
+0 & \mbox{if }i=j\\
+\frac{1}{k-1} & \mbox{if }i\ne j\end{cases}\]
+
+\end_inset
+
+for the second step.
+ Therefore, mutation rate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ in a 
+\begin_inset Formula $k$
+\end_inset
+
+-allele model could be interpreted as the probability of mutation, and a
+ mutation event would mutate an allele to any other allele with equal probabilit
+y.
+\end_layout
+
+\begin_layout Standard
+For a classical mutation model with 
+\begin_inset Formula $P\left(A\rightarrow a\right)=u$
+\end_inset
+
+ and 
+\begin_inset Formula $P\left(a\rightarrow A\right)=v$
+\end_inset
+
+, 
+\begin_inset Formula \[
+p_{ij}=\left(\begin{array}{cc}
+1-u & u\\
+v & 1-v\end{array}\right)\]
+
+\end_inset
+
+if 
+\begin_inset Formula $u=0.001$
+\end_inset
+
+ and 
+\begin_inset Formula $v=0.0005$
+\end_inset
+
+, 
+\begin_inset Formula $\mu=\max\left(u,v\right)=0.001$
+\end_inset
+
+,
+\begin_inset Formula \[
+\mbox{Pr}\left(i\rightarrow j\right)=\left(\begin{array}{cc}
+0 & 1\\
+\frac{v}{u}=0.5 & 1-\frac{v}{u}=0.5\end{array}\right)\]
+
+\end_inset
+
+That is to say, we would mutate at a mutation rate 
+\begin_inset Formula $u=0.001$
+\end_inset
+
+, mutate allele 
+\begin_inset Formula $A$
+\end_inset
+
+ to 
+\begin_inset Formula $a$
+\end_inset
+
+ with probability 1 and mutate allele 
+\begin_inset Formula $a$
+\end_inset
+
+ to 
+\begin_inset Formula $A$
+\end_inset
+
+ with probability 0.5.
 \end_layout
 
 \begin_layout Section
