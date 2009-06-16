@@ -800,7 +800,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::contextMutator::mutate(AlleleRef allele);
+%ignore simuPOP::contextMutator::initialize(population &pop);
+
+%ignore simuPOP::contextMutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::contextMutator::__repr__ "
 
@@ -3332,7 +3334,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::kamMutator::mutate(AlleleRef allele);
+%ignore simuPOP::kamMutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::kamMutator::clone "
 
@@ -4010,7 +4012,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::matrixMutator::mutate(AlleleRef allele);
+%ignore simuPOP::matrixMutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::matrixMutator::clone "
 
@@ -4443,7 +4445,9 @@ Usage:
 
 "; 
 
-%ignore simuPOP::mixedMutator::mutate(AlleleRef allele);
+%ignore simuPOP::mixedMutator::initialize(population &pop);
+
+%ignore simuPOP::mixedMutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::mixedMutator::__repr__ "
 
@@ -4817,7 +4821,9 @@ Usage:
 
 %ignore simuPOP::mutator::setRate(const vectorf &rates, const vectorlu &loci=vectorlu());
 
-%ignore simuPOP::mutator::mutate(AlleleRef allele);
+%ignore simuPOP::mutator::mutRate(UINT loc);
+
+%ignore simuPOP::mutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::mutator::fillContext "
 
@@ -4847,6 +4853,8 @@ Usage:
     x.apply(pop)
 
 "; 
+
+%ignore simuPOP::mutator::initialize(population &pop);
 
 %feature("docstring") simuPOP::noneOp "
 
@@ -7287,7 +7295,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::pyMutator::mutate(AlleleRef allele);
+%ignore simuPOP::pyMutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::pyMutator::__repr__ "
 
@@ -9649,7 +9657,7 @@ Usage:
 
 "; 
 
-%ignore simuPOP::smmMutator::mutate(AlleleRef allele);
+%ignore simuPOP::smmMutator::mutate(AlleleRef allele, UINT locus);
 
 %feature("docstring") simuPOP::smmMutator::clone "
 
