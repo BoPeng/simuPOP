@@ -1889,8 +1889,8 @@ simu.evolve(
         smmMutator(rates=0.001, loci=0),
         # the second locus uses a mixed model
         mixedMutator(rates=0.001, loci=1, mutators=[        
-            kamMutator(k=100),
-            smmMutator()
+            kamMutator(rates=1, k=100),
+            smmMutator(rates=1)
         ], prob=[0.1, 0.9])],
     gen = 20
 )
@@ -1903,6 +1903,62 @@ for ind in simu.population(0).individuals():
 
 print 'Locus 0 has alleles', ', '.join([str(x) for x in set(geno0)])
 print 'Locus 1 has alleles', ', '.join([str(x) for x in set(geno1)])
+#end
+
+#file contextMutator.log
+simu = simulator(population(5000, loci=[3, 3]),
+    randomMating())
+simu.evolve(
+    # initialize locus by 0, 0, 0, 1, 0, 1
+    preOps = initByValue([1, 1], loci=[3, 5]),
+    ops = [
+        contextMutator(mutators=[
+            snpMutator(u=0.1),
+            snpMutator(u=1),
+            ],
+            contexts=[(0, 0), (1, 1)],
+            loci=[1, 4],
+            rates=0.01
+        ),
+        #snpMutator(u=0.01, v= 0.01, loci=[1, 4]),
+        stat(alleleFreq=[1, 4], step=5),
+        pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
+            " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)
+    ], 
+    gen = 20
+)
+#end
+
+#file pyContextMutator.log
+import random
+
+simu = simulator(population(5000, loci=[3, 3]),
+    randomMating())
+
+def contextMut(allele, context):
+    if context == [0, 0]:
+        if allele == 0 and random.random() < 0.1:
+            return 1
+    elif context == [1, 1]:
+        if allele == 0:
+            return 1
+    # do not mutate
+    return allele
+
+simu.evolve(
+    # initialize locus by 0, 0, 0, 1, 0, 1
+    preOps = initByValue([1, 1], loci=[3, 5]),
+    ops = [
+        pyMutator(func=contextMut, context=1,
+            loci=[1, 4],  rates=0.01
+        ),
+        #snpMutator(u=0.01, v= 0.01, loci=[1, 4]),
+        stat(alleleFreq=[1, 4], step=5),
+        pyEval(r"'Gen: %2d freq1: %.3f, freq2: %.3f\n'" + 
+            " % (gen, alleleFreq[1][1], alleleFreq[4][1])", step=5)
+    ], 
+    gen = 20
+)
 #end
 
 #file log/pointMutator.log

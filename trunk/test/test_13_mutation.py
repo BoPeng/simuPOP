@@ -267,10 +267,8 @@ class TestMutator(unittest.TestCase):
         # cutom mutator
         def mut(x):
             return 1
-        m = pyMutator(rates=1, func=mut)
-        m.apply(pop)
-        assert pop.individual(0).allele(0) == 1, \
-            "PyMutator failed"
+        PyMutate(pop, rates=1, func=mut)
+        self.assertEqual(pop.individual(0).allele(0), 1)
 
     def testMixedMutator(self):
         'testing mixed mutator'
@@ -308,8 +306,6 @@ class TestMutator(unittest.TestCase):
             # u = 10000*2*(0.6-0.12+0.04), v = 10000*2*(0.4-0.04+0.12)
             cnt0 += pop.dvars().alleleNum[0][0]
             cnt1 += pop.dvars().alleleNum[0][1]
-        print cnt0/50. , 20000*(0.6-0.12+0.04)
-        print cnt1/50. , 20000*(0.4-0.04+0.12)
         self.assertEqual( abs(cnt0/50. - 20000*(0.6-0.12+0.04)) < 20, True)
         self.assertEqual( abs(cnt1/50. - 20000*(0.4-0.04+0.12)) < 20, True)
 

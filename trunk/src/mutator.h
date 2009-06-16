@@ -141,9 +141,19 @@ public:
 		m_initialized = false;
 	}
 
+	/// CPPONLY
+	double mutRate(UINT loc)
+	{
+		vectorlu::iterator it = find(m_loci.begin(), m_loci.end(), loc);
+		DBG_ASSERT(it != m_loci.end(), RuntimeError,
+			"Failed to find mutation rate for locus " + toStr(loc));
+		DBG_ASSERT(m_rates.size() == m_loci.size(), SystemError,
+			"Incorrect rate and loci size");
+		return m_rates[it  - m_loci.begin()];
+	}
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele)
+	virtual void mutate(AlleleRef allele, UINT locus)
 	{
 		throw SystemError("You are not supposed to call this base mutator funciton.");
 	};
@@ -171,8 +181,7 @@ public:
 	/// Apply a mutator
 	virtual bool apply(population & pop);
 
-private:
-	/// initialize bernulli trial according to pop size etc
+    /// CPPONLY initialize bernulli trial according to pop size etc
 	virtual void initialize(population & pop);
 
 protected:
@@ -231,7 +240,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele);
+	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// deep copy of a \c matrixMutator
 	virtual baseOperator * clone() const
@@ -293,7 +302,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele);
+	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// deep copy of a \c kamMutator
 	virtual baseOperator * clone() const
@@ -366,7 +375,7 @@ public:
 
 	/// mutate according to the SMM model
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele);
+	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// deep copy of a \c smmMutator
 	virtual baseOperator * clone() const
@@ -435,7 +444,7 @@ public:
 
 
 	/// CPPONLY
-	virtual void mutate(AlleleRef allele);
+	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c pyMutator
 	virtual string __repr__()
@@ -492,16 +501,18 @@ public:
 		return new mixedMutator(*this);
 	}
 
+    /// CPPONLY: initialize all passed mutators
+    void initialize(population & pop);
+
 
 	/// CPPONLY 
-	virtual void mutate(AlleleRef allele);
+	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c mixedMutator
 	virtual string __repr__()
 	{
 		return "<simuPOP::mixed mutator>" ;
 	}
-
 
 private:
 	opList m_mutators;
@@ -567,9 +578,12 @@ public:
 		return new contextMutator(*this);
 	}
 
+    /// CPPONLY: initialize all passed mutators
+    void initialize(population & pop);
+
 
 	/// CPPONLY 
-	virtual void mutate(AlleleRef allele);
+	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c context-dependentMutator
 	virtual string __repr__()
