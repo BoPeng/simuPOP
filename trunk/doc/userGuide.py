@@ -1905,7 +1905,7 @@ print 'Locus 0 has alleles', ', '.join([str(x) for x in set(geno0)])
 print 'Locus 1 has alleles', ', '.join([str(x) for x in set(geno1)])
 #end
 
-#file contextMutator.log
+#file log/contextMutator.log
 simu = simulator(population(5000, loci=[3, 3]),
     randomMating())
 simu.evolve(
@@ -1929,7 +1929,7 @@ simu.evolve(
 )
 #end
 
-#file pyContextMutator.log
+#file log/pyContextMutator.log
 import random
 
 simu = simulator(population(5000, loci=[3, 3]),

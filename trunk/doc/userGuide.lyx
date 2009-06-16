@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12062,6 +12062,10 @@ lstparams "caption={A Kimura's 2 parameter mutation model},label={acgtMutator}"
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Subsection
 Amino acid mutation models (
 \family typewriter
@@ -12070,7 +12074,7 @@ aminoAcidMutator
 , not yet implemented)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Amino acid mutation models assume alleles 0, 1, 2, 3, ..., 19 as 20 amino acids
  C, S, T, P, A, G, N, D, E, Q, H, R, K, M, I, L, V, F, Y, and W.
  This mutation model is specified by a 20 by 20 rate matrix.
@@ -12082,6 +12086,11 @@ acgtMutator
  I will implement popular mutation matrixes if there is a demonstrated need
  for such an operator (an email to the simuPOP mailing list should be enough.
  :-).
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -12517,7 +12526,7 @@ snpMutator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/contentMutator.log"
+filename "log/contextMutator.log"
 lstparams "caption={A context-dependent mutation model},label={contextMutator}"
 
 \end_inset
@@ -12565,7 +12574,7 @@ pyMutator
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
-filename "log/pyContentMutator.log"
+filename "log/pyContextMutator.log"
 lstparams "caption={A hybrid context-dependent mutation model},label={pyContextMutator}"
 
 \end_inset
