@@ -1120,6 +1120,10 @@ def MixedMutate(pop, *args, **kwargs):
     'Function form of operator ``mixedMutator``'
     mixedMutator(*args, **kwargs).apply(pop)
 
+def ContextMutate(pop, *args, **kwargs):
+    'Function form of operator ``contextMutator``'
+    contextMutator(*args, **kwargs).apply(pop)
+
 def PointMutate(pop, *args, **kwargs):
     'Function form of operator ``pointMutator``'
     pointMutator(*args, **kwargs).apply(pop)

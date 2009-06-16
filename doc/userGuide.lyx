@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -11066,7 +11066,7 @@ mutation rate matrix
 \begin_inset Formula $\left(p_{ij}\right)_{n\times n}$
 \end_inset
 
- (also called transition matrix) where 
+ where 
 \begin_inset Formula $p_{ij}$
 \end_inset
 
@@ -11148,68 +11148,6 @@ lstparams "caption={General mutator specified by a mutation rate matrix},label={
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Although alleles mutates between each other at different mutation rates,
- a 
-\family typewriter
-matrixMutator
-\family default
- mutates alleles (regardless of its status) at an 
-\series bold
-overall mutation rate
-\series default
- 
-\begin_inset Formula $\mu=\max_{i=0}^{n-1}\left(1-p_{ii}\right)$
-\end_inset
-
- and uses a 
-\series bold
-transition matrix
-\series default
- (
-\begin_inset Formula $\mbox{Pr}\left(i\rightarrow j\right)=p_{ij}/\mu$
-\end_inset
-
-, 
-\begin_inset Formula $i\ne j$
-\end_inset
-
-) to mutate between alleles when an mutation event happens.
- When a 
-\family typewriter
-matrixMutator
-\family default
- or its derived mutator (e.g.
- 
-\family typewriter
-snpMutator
-\family default
-, 
-\family typewriter
-acgtMutator
-\family default
-) is used in another mutator (e.g.
- 
-\family typewriter
-mixedMutator
-\family default
- and 
-\family typewriter
-contextMutator
-\family default
-), the host mutator will trigger mutation events and use only the transition
- matrix to mutate an allele.
- In this case, 
-\family typewriter
-snpMutator(u=1)
-\family default
- and 
-\family typewriter
-snpMutator(u=1e-8)
-\family default
- are the same because they have the same transition matrixes.
 \end_layout
 
 \begin_layout Subsubsection
@@ -12462,23 +12400,53 @@ lstparams "caption={A mixed k-allele and stepwise mutation model},label={mixedMu
 
 \end_layout
 
-\begin_layout Note
-Passed mutators are only used to mutate alleles when a mutation event happens.
- Mutation rates of these mutators are ignored.
- For example, 
-\family typewriter
-snpMutator(u=1)
-\family default
- and 
-\family typewriter
-snpMutator(u=0.01)
-\family default
- are the same if they are used in a 
+\begin_layout Standard
+When a mutation event happens, mutators in Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "mixedMutator"
+
+\end_inset
+
+ mutate the allele with probability (mutation rate) 1.
+ Separate mutation rates could be specified so that two mutators happen
+ at different mutation rates.
+ However, it is extremely important to understand that although a 
 \family typewriter
 mixedMutator
 \family default
- because these two mutators differ only by mutation rate.
- 
+ at mutation rate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ with a 
+\family typewriter
+smmMutator
+\family default
+ at mutation rate 1 and a 
+\family typewriter
+mixedMutator
+\family default
+ at mutate rate 1 with a 
+\family typewriter
+smmMutator
+\family default
+ at mutation rate 
+\begin_inset Formula $\mu$
+\end_inset
+
+ achieve the same effect, the former is much more efficient because it triggers
+ far less mutation events.
+ When a 
+\family typewriter
+matrixMutator
+\family default
+ is involved, it is worthwhile to rewrite the mutation rate matrix to factor
+ out its mutation rate to the wrapper 
+\family typewriter
+mixedMutator
+\family default
+.
 \end_layout
 
 \begin_layout Subsection
@@ -12493,8 +12461,11 @@ contextMutator
 All mutation models we have seen till now are context independent.
  That is to say, how an allele is mutated depends only on the allele itself.
  However, it is understood that DNA and amino acid substitution rates are
- highly sequence context-dependent, e.g., C --> T substitutions in vertebrates
- may occur much more frequently at CpG sites.
+ highly sequence context-dependent, e.g., C 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ T substitutions in vertebrates may occur much more frequently at CpG sites.
  To simulate such models, a mutator must consider the context of a mutated
  allele, e.g.
  certain number of alleles to the left and right of this allele, and mutate
@@ -12600,24 +12571,6 @@ lstparams "caption={A hybrid context-dependent mutation model},label={pyContextM
 \end_inset
 
 
-\end_layout
-
-\begin_layout Note
-Passed mutators are only used to mutate alleles when a mutation event happens.
- Mutation rates of these mutators are ignored.
- For example, 
-\family typewriter
-snpMutator(u=1)
-\family default
- and 
-\family typewriter
-snpMutator(u=0.01)
-\family default
- are the same if they are used in a 
-\family typewriter
-contextMutator
-\family default
- because these two mutators differ only by mutation rate.
 \end_layout
 
 \begin_layout Subsection

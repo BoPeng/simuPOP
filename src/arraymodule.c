@@ -158,6 +158,27 @@ d_setitem(arrayobject *ap, int i, PyObject *v)
     return 0;
 }
 
+/// CPPONLY
+static PyObject *
+i_getitem(arrayobject *ap, int i)
+{
+    return PyInt_FromLong((long) ((int *)ap->ob_iterator.ob_item)[i]);
+}
+
+
+/// CPPONLY
+static int
+i_setitem(arrayobject *ap, int i, PyObject *v)
+{
+    int x;
+    /* 'i' == signed int, maps to PyArg_Parse's 'i' formatter */
+    if (!PyArg_Parse(v, "i;array item must be integer", &x))
+        return -1;
+    if (i >= 0)
+        ((int *)ap->ob_iterator.ob_item)[i] = x;
+    return 0;
+}
+
 
 /* Description of types */
 static struct arraydescr descriptors[] =
@@ -165,6 +186,7 @@ static struct arraydescr descriptors[] =
     {'a', 0, a_getitem, a_setitem},
     {'f', sizeof(float), f_getitem, f_setitem},
     {'d', sizeof(double), d_getitem, d_setitem},
+    {'i', sizeof(int), i_getitem, i_setitem},
     {                                                                                             /* Sentinel */
         '\0', 0, 0, 0
     }

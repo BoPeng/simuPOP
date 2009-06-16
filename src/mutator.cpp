@@ -104,7 +104,7 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 
 bool mutator::apply(population & pop)
 {
-	if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
+    if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
 		initialize(pop);
 		DBG_DO(DBG_MUTATOR, cout << "Reinitialize mutator at loci" << m_loci <<
 			" at rate " << m_rates << endl);
@@ -153,7 +153,7 @@ bool mutator::apply(population & pop)
 					if (!m_context.empty())
 						fillContext(pop, ptr, locus);
 					// The virtual mutate functions in derived operators will be called.
-					mutate(*ptr);
+					mutate(*ptr, locus);
 					if (mapOut) {
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapOutAllele)
@@ -214,7 +214,7 @@ bool mutator::apply(population & pop)
 					if (!m_context.empty())
 						fillContext(pop, ptr, locus);
 					// The virtual mutate functions in derived operators will be called.
-					mutate(*ptr);
+					mutate(*ptr, locus);
 					if (mapOut) {
 						if (numMapOutAllele > 0) {
 							if (static_cast<size_t>(*ptr) < numMapOutAllele)
@@ -286,7 +286,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 }
 
 
-void matrixMutator::mutate(AlleleRef allele)
+void matrixMutator::mutate(AlleleRef allele, UINT)
 {
 	DBG_FAILIF(allele >= m_sampler.size(), IndexError,
 		"Allele out of range of 1 ~ " + toStr(m_sampler.size() - 1)
@@ -296,7 +296,7 @@ void matrixMutator::mutate(AlleleRef allele)
 
 
 // mutate to a state other than current state with equal probability
-void kamMutator::mutate(AlleleRef allele)
+void kamMutator::mutate(AlleleRef allele, UINT)
 {
 #ifdef BINARYALLELE
 	allele = !allele;
@@ -339,7 +339,7 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 }
 
 
-void smmMutator::mutate(AlleleRef allele)
+void smmMutator::mutate(AlleleRef allele, UINT)
 {
 	UINT step = 1;
 
@@ -380,16 +380,16 @@ void smmMutator::mutate(AlleleRef allele)
 }
 
 
-void pyMutator::mutate(AlleleRef allele)
+void pyMutator::mutate(AlleleRef allele, UINT)
 {
 	int resInt = 0;
 	
 	vectori & cntxt = context();
 	if (cntxt.empty())
-		m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
+		resInt = m_func(PyObj_As_Int, "(i)", static_cast<int>(allele));
 	else {
 		PyObject * arr = Int_Vec_As_NumArray(cntxt.begin(), cntxt.end());
-		m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), arr);
+		resInt = m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), arr);
 	}
 
 #ifdef BINARYALLELE
@@ -404,13 +404,32 @@ void pyMutator::mutate(AlleleRef allele)
 }
 
 
-void mixedMutator::mutate(AlleleRef allele)
+void mixedMutator::initialize(population & pop)
 {
-	reinterpret_cast<mutator *>(m_mutators[m_sampler.get()])->mutate(allele);
+    mutator::initialize(pop);
+    for (size_t i = 0; i < m_mutators.size(); ++i)
+        reinterpret_cast<mutator *>(m_mutators[i])->initialize(pop);
 }
 
 
-void contextMutator::mutate(AlleleRef allele)
+void mixedMutator::mutate(AlleleRef allele, UINT locus)
+{
+	UINT idx = m_sampler.get();
+	mutator * mut = reinterpret_cast<mutator *>(m_mutators[idx]);
+	if (rng().randUniform01() < mut->mutRate(locus))
+		mut->mutate(allele, locus);
+}
+
+
+void contextMutator::initialize(population & pop)
+{
+    mutator::initialize(pop);
+    for (size_t i = 0; i < m_mutators.size(); ++i)
+        reinterpret_cast<mutator *>(m_mutators[i])->initialize(pop);
+}
+
+
+void contextMutator::mutate(AlleleRef allele, UINT locus)
 {
 	const vectori & alleles = context();
 	for (size_t i = 0; i < m_contexts.size(); ++i) {
@@ -423,13 +442,17 @@ void contextMutator::mutate(AlleleRef allele)
 		}
 		if (match) {
 			DBG_DO(DBG_MUTATOR, cout << "Context " << alleles << " mutator " << i << endl);
-			reinterpret_cast<mutator *>(m_mutators[i])->mutate(allele);
+			mutator * mut = reinterpret_cast<mutator *>(m_mutators[i]);
+			if (rng().randUniform01() < mut->mutRate(locus))
+				mut->mutate(allele, locus);
 			return;
 		}
 	}
 	if (m_contexts.size() + 1 == m_mutators.size()) {
 		DBG_DO(DBG_MUTATOR, cout << "No context found. Use last mutator." << endl);
-		reinterpret_cast<mutator *>(m_mutators[m_contexts.size()]) -> mutate(allele);
+		mutator * mut = reinterpret_cast<mutator *>(m_mutators[m_contexts.size()]);
+		if (rng().randUniform01() < mut->mutRate(locus))
+			mut->mutate(allele, locus);
 	} else {
 		cout << "Failed to find context " << alleles << endl;
 		throw RuntimeError("No match context is found and there is no default mutator");
