@@ -346,6 +346,25 @@ class TestMatingSchemes(unittest.TestCase):
         self.assertRaises(exceptions.ValueError, testPyRetValue, retWrongIndexes)
 
   
+    def testHaploidRandomMating(self):
+        'Testing random mating in haploid populations'
+        pop = population(size=[50, 100], loci=[5]*5, ploidy=1,
+            chromTypes=[Customized]*5)
+        pop.setVirtualSplitter(sexSplitter())
+        simu = simulator(pop, 
+            randomMating(ops=[mitochondrialGenoTransmitter()]))
+        simu.evolve(
+            preOps = [initSex(),
+                # female has [1]
+                initByValue([1]*25, subPops=[(0, 1), (1, 1)], initSex=False),
+                ],
+            ops = [ ],
+            gen = 1
+        )
+        self.assertEqual(simu.population(0).genotype(), [1]*(150*25))
+
+
+
 if __name__ == '__main__':
   unittest.main()
   sys.exit(0)

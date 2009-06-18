@@ -330,6 +330,9 @@ private:
 /** This geno transmitter assumes that the first homologous copy of several (or
  *  all) \c Customized chromosomes are copies of mitochondrial chromosomes. It
  *  transmits these chromosomes randomly from the female parent to offspring.
+ *  If this transmitter is applied to populations with more than one homologous
+ *  copies of chromosomes, it transmits the first homologous copy of
+ *  chromosomes and clears alleles (set to zero) on other homologous copies.
  */
 class mitochondrialGenoTransmitter : public genoTransmitter
 {

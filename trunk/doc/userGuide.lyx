@@ -10527,6 +10527,11 @@ cloneGenoTransmitter
 cloneMating
 \family default
 .
+ This genotype transmitter can be applied to populations of 
+\series bold
+any ploidy
+\series default
+ type.
 \end_layout
 
 \begin_layout Itemize
@@ -10538,6 +10543,12 @@ mendelianGenoTransmitter
  following Mendel's laws, used by mating scheme 
 \family typewriter
 randomMating.
+\family default
+This genotype transmitter can only be applied to 
+\series bold
+diploid
+\series default
+ populations.
 \end_layout
 
 \begin_layout Itemize
@@ -10551,6 +10562,11 @@ selfingGenoTransmitter
 selfMating
 \family default
 .
+ This genotype transmitter can only be applied to 
+\series bold
+diploid
+\series default
+ populations.
 \end_layout
 
 \begin_layout Itemize
@@ -10564,6 +10580,11 @@ haplodiploidGenoTransmitter
 haplodiploidMating
 \family default
 .
+ This genotype transmitter can only be applied to 
+\series bold
+haplodiploid
+\series default
+ populations.
 \end_layout
 
 \begin_layout Itemize
@@ -10574,6 +10595,13 @@ mitochondrialGenoTransmitter
 : Treat all customized chromosomes or specified chromosomes as mitochondrial
  chromosomes and transmit maternal mitochondrial chromosomes randomly to
  an offspring.
+ This genotype transmitter can be applied to populations of 
+\series bold
+any ploidy
+\series default
+ type.
+ It trasmits the first homologous copy of chromosomes maternally and clears
+ alleles on other homologous copies of chromosomes of an offspring.
  
 \series bold
 This operator is not a genotype transmitter

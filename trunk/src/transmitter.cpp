@@ -338,6 +338,7 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 	if (m_numLoci == 0)
 		return true;
 
+    UINT pldy = pop.ploidy();
 	//
 	vectoru::iterator it = m_mitoChroms.begin();
 	vectoru::iterator it_end = m_mitoChroms.end();
@@ -351,7 +352,8 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 		GenoIterator par_end = mom->genoEnd(0, m_mitoChroms[src]);
 		copy(par, par_end, off);
 #endif
-		clearChromosome(*offspring, 1, *it);
+        for (UINT p = 1; p < pldy; ++p)
+    		clearChromosome(*offspring, 1, *it);
 	}
 
 	return true;
