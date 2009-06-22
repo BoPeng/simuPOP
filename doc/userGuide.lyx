@@ -6,7 +6,7 @@
 \begin_preamble
 \renewcommand{\py@ptsize}{12pt}
 
-\setreleaseinfo{Release 0.9.4 (\mbox{$$Rev$$})}
+\setreleaseinfo{Release 0.9.5 (\mbox{$$Rev$$})}
 \authoraddress{
 {\bf Department of Epidemiology, U.T. M.D. Anderson Cancer Center}\\
 {\bf Email: } \textsf{bpeng@mdanderson.org}\\
@@ -11063,7 +11063,8 @@ Mutation
 \end_layout
 
 \begin_layout Standard
-A mutation operator mutates alleles at certain loci from one allele to another.
+A mutator (a mutation operator) mutates alleles at certain loci from one
+ allele to another.
  Because alleles are simple non-nagative numbers that can be intrepreted
  as nucleotides, codons, squences of nucleotides or even genetic deletions,
  appropriate mutation models have to be chosen for different types of loci.
@@ -11075,6 +11076,38 @@ reference "sec:Genotypic-structure"
 \end_inset
 
  for a few examples.
+\end_layout
+
+\begin_layout Standard
+A mutator will mutate alleles at all loci unless parameter 
+\family typewriter
+loci
+\family default
+ is used to specify a subset of loci.
+ Different mutators have different concepts and forms of mutation rates.
+ If a mutator accepts only a single mutation rate (which can be in the form
+ of a list or a matrix), it uses parameter 
+\family typewriter
+rate
+\family default
+ and applies the same mutation rate to all loci.
+ If a mutator accepts a list of mutation rates (each of which is a single
+ number), it uses parameter 
+\family typewriter
+rates
+\family default
+ and applies different mutation rates to different loci if multiple loci
+ are specified.
+ Note that parameter 
+\family typewriter
+rates
+\family default
+ also accepts single form inputs (e.g.
+ 
+\family typewriter
+rates=0.01
+\family default
+) in which case the same mutation rate will be applied to all loci.
 \end_layout
 
 \begin_layout Subsection
@@ -11240,7 +11273,7 @@ kamMutator
 \end_inset
 
  is large.
- In addition, this operator allows different mutation rate at different
+ In addition, this operator allows different mutation rates at different
  loci.
  When 
 \begin_inset Formula $k$
