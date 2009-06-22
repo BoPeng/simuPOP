@@ -765,6 +765,7 @@ class TestPopulation(unittest.TestCase):
         pop.save("popout");
         pop1 = LoadPopulation("popout")
         self.assertEqual(pop, pop1)
+        os.remove('popout')
 
     def testVars(self):
         'Testing population::vars(), vars(subPop), dvars(), dvars(subPop)'

@@ -49,6 +49,7 @@ class TestSimulator(unittest.TestCase):
         simu.save("simuout.sim");
         simu1 = LoadSimulator("simuout.sim", randomMating())
         self.assertEqual(simu, simu1)
+        os.remove("simuout.sim")
 
     def testSetGen(self):
         'Testing simulator::gen(), setGen(gen)'
