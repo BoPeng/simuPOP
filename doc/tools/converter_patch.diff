@@ -62,7 +62,7 @@ Index: latexparser.py
          return handler()
  
      # ------------------------- command handlers -----------------------------
-@@ -579,9 +596,264 @@
+@@ -579,9 +596,265 @@
              text.append(r)
          return VerbatimNode(TextNode(''.join(text)))
  
@@ -194,6 +194,7 @@ Index: latexparser.py
 +            # may not be in the same directory.
 +            nodes.append(CommandNode('lstinput', [TextNode(os.path.abspath(file))]
 +                + optionNodes))
++        nodes.append(CommandNode('example_url', [TextNode(file)]))
 +        return NodeList(nodes)
 +
 +    def handle_caption(self):
@@ -328,7 +329,7 @@ Index: latexparser.py
          for l, t, v, r in self.tokens:
              if t == 'command' and v == 'end' :
                  tok = self.tokens.peekmany(3)
-@@ -591,8 +863,8 @@
+@@ -591,8 +864,8 @@
                     tok[2][1] == 'egroup':
                      self.tokens.popmany(3)
                      break
@@ -339,7 +340,7 @@ Index: latexparser.py
  
      # alltt is different from verbatim because it allows markup
      def handle_alltt_env(self):
-@@ -606,7 +878,7 @@
+@@ -606,7 +879,7 @@
                      continue
                  handler = getattr(self, 'handle_' + v, None)
                  if not handler:
@@ -348,7 +349,7 @@ Index: latexparser.py
                  nodelist.append(handler())
              elif t == 'comment':
                  nodelist.append(CommentNode(v))
-@@ -615,6 +887,26 @@
+@@ -615,6 +888,26 @@
                  nodelist.append(TextNode(r))
          return VerbatimNode(nodelist.flatten())
  
@@ -405,7 +406,7 @@ Index: restwriter.py
 +        elif cmdname == 'dispmath':
 +            math = text(node.args[0]).strip()
 +            # require a new line and three leading spaces for each line
-+            formatted = ''.join(['\n   ' + x for x in math.split('\n')])
++            formatted = ''.join(['\n      ' + x for x in math.split('\n')])
 +            self.flush_par()
 +            self.write('.. math::\n%s\n' % formatted)
 +            return
@@ -449,6 +450,15 @@ Index: restwriter.py
          elif cmdname in ('declaremodule', 'modulesynopsis',
                         'moduleauthor', 'sectionauthor', 'platform'):
              self.flush_par(nocb=True, nocomments=True)
+@@ -706,7 +751,7 @@
+                 lines = self.get_node_text(self.get_textonly_node(
+                     node.content, warn=0)).split('\n') + ['']
+             # discard leading blank links
+-            while not lines[0].strip():
++            while len(lines) > 0 and len(lines[0].strip()) == 0:
+                 del lines[0]
+             for line in lines:
+                 self.write(line)
 @@ -889,14 +934,54 @@
              return
          content = node.args[0]

@@ -201,6 +201,52 @@ class MyRestWriter(RestWriter):
         # no inline comments -> they are all output at the start of a new paragraph
         pass #self.comments.append(node.comment.strip())
 
+    def visit_CommandNode(self, node):
+        cmdname = node.cmdname
+        if cmdname == 'example_url':
+            file = text(node.args[0])
+            file = file.replace('.log', '.py')
+            # get the file
+            txt = open(file).read()
+            outfilename = 'example_' + os.path.split(file)[-1]
+            with open(os.path.join('build', outfilename), 'w') as outfile:
+                print >> outfile, '''#!/usr/bin/env python
+
+#
+# $File: %s $
+#
+# This file is part of simuPOP, a forward-time population genetics
+# simulation environment. Please visit http://simupop.sourceforge.net
+# for details.
+#
+# Copyright (C) 2004 - 2009 Bo Peng (bpeng@mdanderson.org)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# This script is an example in the simuPOP user's guide. Please refer to
+# the user's guide (http://simupop.sourceforge.net/manual) for a detailed
+# description of this example.
+#
+
+from simuPOP import *
+''' % outfilename
+                print >> outfile, txt
+            # insert a URL
+            self.write('`Download %s <%s>`_\n' % (outfilename, outfilename))
+        else: 
+            RestWriter.visit_CommandNode(self, node)
     
 def convert_file(infile, outfile, doraise=True, splitchap=True,
                  toctree=None, deflang=None, labelprefix=''):
