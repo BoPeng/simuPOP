@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12736,14 +12736,22 @@ matrixMutator
 \end_layout
 
 \begin_layout Standard
-This section can be safely ignored beacuse it describes how 
+A 
 \family typewriter
 matrixMutator
 \family default
- is implemented.
- However, if you are using a 
+ is specified by a mutation rate matrix.
+ Although mutation rates of this mutator is typically allele-dependent,
+ the 
 \family typewriter
 matrixMutator
+\family default
+ is implemented as a two-step process where mutation events are triggered
+ independent to allelic states.
+ This section describes these two steps which can be useful if you need
+ to use a 
+\family typewriter
+maxtrixMutator
 \family default
  in a 
 \family typewriter
@@ -12753,8 +12761,8 @@ mixedMutator
 \family typewriter
 contextMutator
 \family default
-, this section shows you how to factor out an allele-independent mutation
- rate from a mutate rate matrix and improve the efficiency of these mutators.
+, and would like to factor out an allele-independent mutation rate to the
+ wrapper mutator.
 \end_layout
 
 \begin_layout Standard
