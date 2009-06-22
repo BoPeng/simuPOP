@@ -10668,7 +10668,7 @@ If a single recombination rate is specified through paramter
 \family typewriter
 rate
 \family default
-, it will be the recombination rate between all adjacent loci, regardless
+s, it will be the recombination rate between all adjacent loci, regardless
  of loci position.
 \end_layout
 
@@ -10686,7 +10686,7 @@ status open
 
 \begin_layout Plain Layout
 
-recombinator(rate=0.1, loci=[2, 5])
+recombinator(rates=0.1, loci=[2, 5])
 \end_layout
 
 \end_inset
@@ -10708,7 +10708,7 @@ status open
 
 \begin_layout Plain Layout
 
-recombinator(rate=[0.1, 0.05], loci=[2, 5])
+recombinator(rates=[0.1, 0.05], loci=[2, 5])
 \end_layout
 
 \end_inset
@@ -11111,7 +11111,7 @@ mutation rate matrix
 \begin_inset Formula $p_{ij}$
 \end_inset
 
- are sometimes unscaled, we assume 
+ are sometimes unscaled, simuPOP assumes 
 \begin_inset Formula $\sum_{j=0}^{n-1}p_{ij}=1$
 \end_inset
 
@@ -11119,13 +11119,17 @@ mutation rate matrix
 \begin_inset Formula $i$
 \end_inset
 
- and require such rate matrixes in the specification of a mutation model.
+ and requires such rate matrixes in the specification of a mutation model.
  
 \begin_inset Formula $p_{ii}$
 \end_inset
 
- are sometimes unspecified because they can be determined from other mutation
- rates.
+ of such a matrix are ignored because they are automatically calculated
+ from 
+\begin_inset Formula $p_{ii}=1-\sum_{j\ne i}p_{ij}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -11133,7 +11137,11 @@ A
 \family typewriter
 matrixMutator
 \family default
- is defined to mutate alleles according to a given rate matrix.
+ is defined to mutate between alleles 0, 1, ..., 
+\begin_inset Formula $n-1$
+\end_inset
+
+ according to a given rate matrix.
  Conceptually speaking, this mutator goes through each mutable allele and
  mutates it to allele 
 \begin_inset Formula $0,1,..,n-1$
@@ -11213,7 +11221,7 @@ The only parameter
 \begin_inset Formula $\mu$
 \end_inset
 
- is the mutation rate, which is the rate at which an allele mutate to any
+ is the mutation rate, which is the rate at which an allele mutates to any
  other allele with equal probability.
 \end_layout
 
@@ -11222,7 +11230,7 @@ This mutation model is a special case of the
 \family typewriter
 matrixMutator
 \family default
- but another operator 
+ but a specialized 
 \family typewriter
 kamMutator
 \family default

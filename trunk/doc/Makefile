@@ -138,6 +138,7 @@ dist: html
 	# remove old directory
 	rm -rf build/empty
 	mkdir build/empty
+	cp build/example_*.py build/html/build
 	rsync --delete --archive build/empty/ simupop,simupop@web.sourceforge.net:htdocs/manual/build
 	rsync -v -rlt -z build/html/ simupop,simupop@web.sourceforge.net:htdocs/manual
 

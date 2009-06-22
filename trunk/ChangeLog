@@ -32,6 +32,7 @@ version 0.9.5 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add a context-dependent mutator contextMutator and context support for
 		pyMutator.
   - NEW: Allow mitochondrialGenoTransmitter to be used in haploid populations.
+  - NEW: Add links to download examples to the online user's guide.
 
 version 0.9.4 - (Rev 2674) May 20, 2009
   - BUG: Fix the handling of proportions in splitSubPops.
