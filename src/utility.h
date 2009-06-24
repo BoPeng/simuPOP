@@ -1062,6 +1062,9 @@ public:
 	/// CPPONLY list all registered ostreams
 	void listAll();
 
+	/// CPPONLY
+	void closeOstream(const string & filename);
+
 	/// CPPONLY close all files and clean the map
 	void closeAll();
 
@@ -1198,6 +1201,18 @@ private:
 	/// file stream pointer, used ONLY if we create a new file stream
 	ostream * m_filePtr;
 };
+
+
+/** Output files specified by \c '>' will be closed immediately after it is
+ *  written. Those specified by \c '>>' and \c '>>>' will be closed by a
+ *  simulator after <tt>simulator.evolve()</tt>. However, these files will
+ *  be kept open if the operators are applied directly to a population using
+ *  the operators' function form. In this case, function \c closeOutput can be
+ *  used to close a specific file \e output, and close all unclosed files if
+ *  \e output is unspecified. An exception will be raised if \e output does
+ *  not exist or it has already been closed.
+ */
+void closeOutput(const string & output = string());
 
 // ////////////////////////////////////////////////////////////
 // / Random number generator
