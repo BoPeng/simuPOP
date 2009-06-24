@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -12969,6 +12969,54 @@ That is to say, we would mutate at a mutation rate
 \end_inset
 
  with probability 0.5.
+\end_layout
+
+\begin_layout Section
+Statistics calculation (operator 
+\family typewriter
+stat
+\family default
+)
+\end_layout
+
+\begin_layout Subsection
+Population variables
+\end_layout
+
+\begin_layout Subsection
+Statistics in (virtual) subpopulations
+\end_layout
+
+\begin_layout Subsection
+Individual counting
+\end_layout
+
+\begin_layout Subsection
+Allele frequency and allele count
+\end_layout
+
+\begin_layout Subsection
+Linkage disequilibrium
+\end_layout
+
+\begin_layout Subsection
+Heterozygosity
+\end_layout
+
+\begin_layout Subsection
+Genetic association
+\end_layout
+
+\begin_layout Subsection
+Population structure
+\end_layout
+
+\begin_layout Subsection
+Hardy Weinberg equilibrium
+\end_layout
+
+\begin_layout Subsection
+Self-defined statistics
 \end_layout
 
 \begin_layout Section
