@@ -3,6 +3,7 @@ ChangeLog of simuPOP
 version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/svnroot/simupop/trunk
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
 		in the function form of an operator.
+  - BUG: Fix a memory leak of LoadPopulation.
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.

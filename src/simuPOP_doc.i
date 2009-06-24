@@ -5100,6 +5100,8 @@ Usage:
 
 %ignore simuPOP::OstreamManager::listAll();
 
+%ignore simuPOP::OstreamManager::closeOstream(const string &filename);
+
 %ignore simuPOP::OstreamManager::closeAll();
 
 %feature("docstring") simuPOP::parentChooser "
@@ -11510,6 +11512,25 @@ Details:
 %ignore simuPOP::pyIndPointer(PyObject *p);
 
 %ignore simuPOP::ostreamManager();
+
+%feature("docstring") simuPOP::CloseOutput "
+
+Usage:
+
+    CloseOutput(output=string)
+
+Details:
+
+    Output files specified by '>' are closed immediately after they
+    are written. Those specified by '>>' and '>>>' are closed by a
+    simulator after simulator.evolve(). However, these files will be
+    kept open if the operators are applied directly to a population
+    using the operators' function form. In this case, function
+    closeOutput can be used to close a specific file output, and close
+    all unclosed files if output is unspecified. An exception will be
+    raised if output does not exist or it has already been closed.
+
+"; 
 
 %feature("docstring") simuPOP::rng "
 
