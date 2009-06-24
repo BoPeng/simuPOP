@@ -2057,7 +2057,7 @@ void StreamProvider::analyzeOutputString(const string & output)
 }
 
 
-void closeOutput(const string & output)
+void CloseOutput(const string & output)
 {
 	if (output.empty())
 		ostreamManager().closeAll();
