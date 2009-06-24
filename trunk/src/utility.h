@@ -1203,8 +1203,8 @@ private:
 };
 
 
-/** Output files specified by \c '>' will be closed immediately after it is
- *  written. Those specified by \c '>>' and \c '>>>' will be closed by a
+/** Output files specified by \c '>' are closed immediately after they are
+ *  written. Those specified by \c '>>' and \c '>>>' are closed by a
  *  simulator after <tt>simulator.evolve()</tt>. However, these files will
  *  be kept open if the operators are applied directly to a population using
  *  the operators' function form. In this case, function \c closeOutput can be
@@ -1212,7 +1212,7 @@ private:
  *  \e output is unspecified. An exception will be raised if \e output does
  *  not exist or it has already been closed.
  */
-void closeOutput(const string & output = string());
+void CloseOutput(const string & output = string());
 
 // ////////////////////////////////////////////////////////////
 // / Random number generator

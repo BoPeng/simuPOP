@@ -5912,6 +5912,46 @@ end
  can still be passed, but they are ignored by these functions.
 \end_layout
 
+\begin_layout Note
+Whereas output files specified by 
+\family typewriter
+'>'
+\family default
+ are closed immediately after they are written, those specified by 
+\family typewriter
+'>>'
+\family default
+ and 
+\family typewriter
+'>>>'
+\family default
+ are not closed after the operator is applied to a population.
+ This is not a problem when operators are used in a simulator because 
+\family typewriter
+simulator.evolve
+\family default
+ closes all files opened by operators, but can cause trouble when the operator
+ is applied directly to a population.
+ For example, multiple calls to 
+\family typewriter
+Dump(pop, output='>>file')
+\family default
+ will dump pop to 
+\family typewriter
+file
+\family default
+ repeatedly but 
+\family typewriter
+file
+\family default
+ will not be closed afterward.
+ In this case, 
+\family typewriter
+CloseOutput('file')
+\family default
+ should be used to explicitly close the file.
+\end_layout
+
 \begin_layout Section
 Mating Schemes
 \begin_inset CommandInset label
