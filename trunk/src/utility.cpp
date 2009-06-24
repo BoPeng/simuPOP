@@ -1204,7 +1204,7 @@ PyObject * load_list(const string & vars, size_t & offset)
 		// so the ref count of 1154 is one. Then, when the list element
 		// is replaced, the other instance of 1154 is also changed...
 		//
-		// Py_DECREF(elem);
+		Py_DECREF(elem);
 	}
 	offset++;                                                                         // skip 'e'
 	return d;
@@ -1347,9 +1347,7 @@ string SharedVariables::asString() const
 void SharedVariables::fromString(const string & vars)
 {
 	size_t offset = 0;
-	PyObject * obj;
-
-	obj = loadObj(vars, offset);
+	PyObject * obj = loadObj(vars, offset);
 
 	DBG_ASSERT(obj == NULL || vars[offset] == 'e', SystemError,
 		"Failed to load objects from string");

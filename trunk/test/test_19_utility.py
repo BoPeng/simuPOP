@@ -16,6 +16,50 @@ simuOpt.setOptions(quiet=True)
 from simuPOP import *
 import unittest, os, sys, exceptions
 
+# for memory leak testing.
+
+_proc_status = '/proc/%d/status' % os.getpid()
+
+_scale = {'kB': 1024.0, 'mB': 1024.0*1024.0,
+          'KB': 1024.0, 'MB': 1024.0*1024.0}
+
+def _VmB(VmKey):
+    '''Private.
+    '''
+    global _proc_status, _scale
+     # get pseudo file  /proc/<pid>/status
+    try:
+        t = open(_proc_status)
+        v = t.read()
+        t.close()
+    except:
+        return 0.0  # non-Linux?
+     # get VmKey line e.g. 'VmRSS:  9999  kB\n ...'
+    i = v.index(VmKey)
+    v = v[i:].split(None, 3)  # whitespace
+    if len(v) < 3:
+        return 0.0  # invalid format?
+     # convert Vm value to bytes
+    return float(v[1]) * _scale[v[2]]
+
+
+def memory(since=0.0):
+    '''Return memory usage in bytes.
+    '''
+    return _VmB('VmSize:') - since
+
+def resident(since=0.0):
+    '''Return resident memory usage in bytes.
+    '''
+    return _VmB('VmRSS:') - since
+
+
+def stacksize(since=0.0):
+    '''Return stack size in bytes.
+    '''
+    return _VmB('VmStk:') - since
+
+
 class TestUtility(unittest.TestCase):
 
     def interactiveTestPauseAtGen(self):
@@ -169,17 +213,28 @@ class TestUtility(unittest.TestCase):
         simuUtil.VC_merlin('ped')
 
 
-    def TestLeakLoadPopulation(self):
-        'Testing if loadPopulation leaks'
+    def testMemoryLeakLoadPopulation(self):
+        'Testing if loadPopulation leaks memory'
         # run this and see if memory usage goes up continuously
         pop = population(100, loci=[1000]*10)
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
-        pop.savePopulation('test.bin')
-        for i in range(10000):
-            print 'Loading %i' % i
+        pop.save('test.bin')
+        for i in range(4):
             pop = LoadPopulation('test.bin')
-            print pop.dvars().alleleFreq[100][0]
+            #pop = population(100, loci=[1000]*10)
+            Stat(pop, alleleFreq=range(pop.totNumLoci()))
+            #print pop.dvars().alleleFreq[100][0]
+            if i < 2:
+                # let m0 stablize
+                m0 = memory()
+                #print 'M0', m0
+            else:
+                m1 = memory(m0)
+                #dprint 'M1', m1
+                self.assertEqual(m1, 0.0)
+            del pop
 
+    
 
 if __name__ == '__main__':
     unittest.main()
