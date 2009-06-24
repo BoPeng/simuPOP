@@ -1857,6 +1857,14 @@ void OstreamManager::listAll()
 }
 
 
+void OstreamManager::closeOstream(const string & filename)
+{
+	if (!hasOstream(filename))
+		return;
+	m_ostreams.erase(filename);
+}
+
+
 // close all files and clean the map
 void OstreamManager::closeAll()
 {
@@ -2046,6 +2054,18 @@ void StreamProvider::analyzeOutputString(const string & output)
 		                     << "Filename is " << format << endl);
 
 	m_filename = format;
+}
+
+
+void closeOutput(const string & output)
+{
+	if (output.empty())
+		ostreamManager().closeAll();
+	else {
+		DBG_ASSERT(ostreamManager().hasOstream(output), RuntimeError,
+			"Output " + output + " does not exist or has already been closed.");
+		ostreamManager().closeOstream(output);	
+	}
 }
 
 
