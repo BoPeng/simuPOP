@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1725,7 +1725,7 @@ SetRNG
  It is also possible to save the random seed of a simuPOP session (c.f.
  
 \family typewriter
-rng().seed()
+GetRNG().seed()
 \family default
 ) and use it to replay the session later.
  
@@ -1734,12 +1734,12 @@ rng().seed()
 \begin_layout Note
 
 \family typewriter
-rng().seed()
+GetRNG().seed()
 \family default
  returns the seed of the simuPOP random number generator.
  It can be used to replay your simulation if 
 \family typewriter
-rng()
+GetRNG()
 \family default
  is your only source of random number generator.
  If you also use the Python 
@@ -1748,7 +1748,7 @@ random
 \family default
  module, it is a good practise to set its seed using 
 \family typewriter
-random.seed(rng().seed())
+random.seed(GetRNG().seed())
 \family default
 .
 \end_layout

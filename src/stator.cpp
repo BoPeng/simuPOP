@@ -1632,7 +1632,7 @@ bool statLD::apply(population & pop)
 				for (size_t j = 0; j < bs; ++j)
 					ChiSq += pow((n * cont_table[i][j] - n * cont_table[i][bs] * cont_table[as][j]), 2)
 					         / (n * cont_table[i][bs] * cont_table[as][j]);
-			ChiSq_P = rng().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
+			ChiSq_P = GetRNG().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
 		}
 		if (m_output_ChiSq) {
 			pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
@@ -1700,7 +1700,7 @@ bool statLD::apply(population & pop)
 						for (size_t j = 0; j < bs; ++j)
 							ChiSq += pow((n * cont_table[i][j] - n * cont_table[i][bs] * cont_table[as][j]), 2)
 							         / (n * cont_table[i][bs] * cont_table[as][j]);
-					ChiSq_P = rng().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
+					ChiSq_P = GetRNG().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
 				}
 				if (m_output_ChiSq) {
 					pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
@@ -1762,7 +1762,7 @@ void statAssociation::calcChiSq(ULONG aff_0, ULONG aff_1, ULONG unaff_0, ULONG u
 	DBG_DO(DBG_STATOR, cout << " counts: "
 		                    << aff_0 << " " << aff_1 << " " << unaff_0 << " " << unaff_1 << " ChiSq: " << chisq << endl);
 
-	pvalue = rng().pvalChiSq(chisq, 1);
+	pvalue = GetRNG().pvalChiSq(chisq, 1);
 }
 
 

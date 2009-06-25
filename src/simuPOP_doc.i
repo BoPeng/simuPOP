@@ -8481,9 +8481,9 @@ Details:
 
     This random number generator class wraps around a number of random
     number generators from GNU Scientific Library. You can obtain and
-    change system random number generator through the rng() function.
-    Or create a separate random number generator and use it in your
-    script.
+    change system random number generator through the GetRNG()
+    function. Or create a separate random number generator and use it
+    in your script.
 
 "; 
 
@@ -11532,7 +11532,7 @@ Details:
 
 "; 
 
-%feature("docstring") simuPOP::rng "
+%feature("docstring") simuPOP::GetRNG "
 
 Description:
 
@@ -11540,7 +11540,7 @@ Description:
 
 Usage:
 
-    rng()
+    GetRNG()
 
 "; 
 

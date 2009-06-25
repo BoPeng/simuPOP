@@ -103,7 +103,7 @@ public:
 		const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
-		m_context(context*2), m_bt(rng()), m_initialized(false)
+		m_context(context*2), m_bt(GetRNG()), m_initialized(false)
 	{
 		// NOTE: empty rates is allowed because a mutator might be 
 		// used in a mixed mutator.
@@ -485,7 +485,7 @@ public:
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
 		: mutator(rates, loci, mapIn, mapOut, context, output, stage, begin, end, step, at, rep, subPops, infoFields),
-		m_mutators(mutators), m_sampler(rng())
+		m_mutators(mutators), m_sampler(GetRNG())
 	{
 		DBG_FAILIF(m_mutators.size() != prob.size(), ValueError,
 			"Please specify a probability for each passed mutator.");

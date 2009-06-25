@@ -281,7 +281,7 @@ matrixMutator::matrixMutator(const matrix & rate,
 		}
 		rateMatrix[i][i] = 1 - sum / mu;
 		DBG_DO(DBG_MUTATOR, cout << "Setting weight for allele " << i << " to " << rateMatrix[i] << endl);
-		m_sampler.push_back(weightedSampler(rng(), rateMatrix[i]));
+		m_sampler.push_back(weightedSampler(GetRNG(), rateMatrix[i]));
 	}
 }
 
@@ -301,7 +301,7 @@ void kamMutator::mutate(AlleleRef allele, UINT)
 #ifdef BINARYALLELE
 	allele = !allele;
 #else
-	Allele new_allele = static_cast<Allele>(rng().randInt(m_k - 1));
+	Allele new_allele = static_cast<Allele>(GetRNG().randInt(m_k - 1));
 	if (new_allele >= allele)
 		allele = new_allele + 1;
 	else
@@ -348,7 +348,7 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 	else if (m_mutStep.size() == 2) {
 		DBG_ASSERT(static_cast<int>(m_mutStep[0]) == GeometricDistribution, ValueError,
 			"Incorrect mode for generating mutation step.");
-		step = rng().randGeometric(m_mutStep[1]);
+		step = GetRNG().randGeometric(m_mutStep[1]);
 	} else {
 		DBG_ASSERT(m_mutStep.func().isValid(), ValueError,
 			"Invalid Python function for smmMutator");
@@ -356,7 +356,7 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 	}
 
 	// increase
-	if (rng().randUniform01() < m_incProb) {
+	if (GetRNG().randUniform01() < m_incProb) {
 #ifdef BINARYALLELE
 		allele = 1;
 #else
@@ -417,7 +417,7 @@ void mixedMutator::mutate(AlleleRef allele, UINT locus)
 	UINT idx = m_sampler.get();
 	mutator * mut = reinterpret_cast<mutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
-	if (mu == 1.0 || rng().randUniform01() < mu)
+	if (mu == 1.0 || GetRNG().randUniform01() < mu)
 		mut->mutate(allele, locus);
 }
 
@@ -444,7 +444,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 		if (match) {
 			DBG_DO(DBG_MUTATOR, cout << "Context " << alleles << " mutator " << i << endl);
 			mutator * mut = reinterpret_cast<mutator *>(m_mutators[i]);
-			if (rng().randUniform01() < mut->mutRate(locus))
+			if (GetRNG().randUniform01() < mut->mutRate(locus))
 				mut->mutate(allele, locus);
 			return;
 		}
@@ -452,7 +452,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 	if (m_contexts.size() + 1 == m_mutators.size()) {
 		DBG_DO(DBG_MUTATOR, cout << "No context found. Use last mutator." << endl);
 		mutator * mut = reinterpret_cast<mutator *>(m_mutators[m_contexts.size()]);
-		if (rng().randUniform01() < mut->mutRate(locus))
+		if (GetRNG().randUniform01() < mut->mutRate(locus))
 			mut->mutate(allele, locus);
 	} else {
 		cout << "Failed to find context " << alleles << endl;
