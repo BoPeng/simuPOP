@@ -1,15 +1,24 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)
+agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032606 Red Hat/3.0.7-1.el5 Firefox/3.0.7
 author=
 charset=ISO-8859-1
 csum=
 host=127.0.0.1
 name=Site.SideBar
 passwdedit=@_site_edit
-rev=44
-targets=Main.HomePage,Main.ClassroomExamples,Main.Operators,Main.MatingSchemes,Main.EvolutionaryScenarios,Main.UtilityFunctions,Main.ImportAndExport,Main.Scripts,Main.Gallery,Main.OtherRecipes,Site.SideBar
-text=* [[Main/HomePage | Home]]%0a%0a%25sidehead%25 Cookbook%0a* [[Main/Classroom Examples]]%0a* [[Main/Operators]]%0a* [[Main/Mating Schemes]]%0a* [[Main/Evolutionary Scenarios]]%0a* [[Main/Utility Functions]]%0a* [[Main/Import And Export]]%0a* [[Main/Scripts | Complete Scripts]]%0a* [[Main/Gallery]]%0a* [[Main/Other Recipes]]%0a%0a%25sidehead%25 Resources%0a* [[http://simupop.sourceforge.net | simuPOP HomePage]]%0a* %25newwin%25 [[http://simupop.sourceforge.net/manual | Documents]]%0a%0a(:if auth read:)%0a%25sidehead%25 Administration%0a* [[http://simupop.sourceforge.net | simuPOP website]]%0a(:if auth admin:)%0a* [[http://simupop.sourceforge.net/cookbook/?action=totalcounter |Statistics]]%0a(:ifend:)%0a%0a%0a(:if auth read:)%0a%25sidehead%25 Search%0a(:searchbox size=14 label=Go:)%0a%0a(:if auth edit:)%0a%25right%25 [-[[Site.SideBar?action=edit | edit SideBar]]-]%0a
-time=1242698674
+rev=47
+targets=Main.HomePage,Main.ClassroomExamples,Main.Operators,Main.MatingSchemes,Main.EvolutionaryScenarios,Main.UtilityFunctions,Main.ImportAndExport,Main.Scripts,Main.Gallery,Main.OtherRecipes,Site.AllRecentChanges,Site.SideBar
+text=* [[Main/HomePage | Home]]%0a%0a%25sidehead%25 Cookbook%0a* [[Main/Classroom Examples]]%0a* [[Main/Operators]]%0a* [[Main/Mating Schemes]]%0a* [[Main/Evolutionary Scenarios]]%0a* [[Main/Utility Functions]]%0a* [[Main/Import And Export]]%0a* [[Main/Scripts | Complete Scripts]]%0a* [[Main/Gallery]]%0a* [[Main/Other Recipes]]%0a%0a%25sidehead%25 Resources%0a* [[http://simupop.sourceforge.net | simuPOP HomePage]]%0a* %25newwin%25 [[http://simupop.sourceforge.net/manual | Documents]]%0a%0a(:if auth read:)%0a%25sidehead%25 Administration%0a* [[http://simupop.sourceforge.net | simuPOP website]]%0a(:if auth admin:)%0a* [[Site/All Recent Changes]]%0a* [[http://simupop.sourceforge.net/cookbook/?action=totalcounter | Traffic Statistics]]%0a(:ifend:)%0a%0a%0a(:if auth read:)%0a%25sidehead%25 Search%0a(:searchbox size=14 label=Go:)%0a%0a(:if auth edit:)%0a%25right%25 [-[[Site.SideBar?action=edit | edit SideBar]]-]%0a
+time=1245937970
+author:1245937970=
+diff:1245937970:1245937908:=23c23%0a%3c * [[http://simupop.sourceforge.net/cookbook/?action=totalcounter | Traffic Statistics]]%0a---%0a> * [[http://simupop.sourceforge.net/cookbook/?action=totalcounter | Traffic Counts]]%0a
+host:1245937970=127.0.0.1
+author:1245937908=
+diff:1245937908:1245937831:=22,23c22,23%0a%3c * [[Site/All Recent Changes]]%0a%3c * [[http://simupop.sourceforge.net/cookbook/?action=totalcounter | Traffic Counts]]%0a---%0a> * [[http://simupop.sourceforge.net/cookbook/?action=totalcounter |Statistics]]%0a> * [[Site/AllRecentChanges]]%0a
+host:1245937908=127.0.0.1
+author:1245937831=
+diff:1245937831:1242698674:=23d22%0a%3c * [[Site/AllRecentChanges]]%0a
+host:1245937831=127.0.0.1
 author:1242698674=
 diff:1242698674:1239823242:=11d10%0a%3c * [[Main/Gallery]]%0a
 host:1242698674=127.0.0.1
