@@ -1222,7 +1222,7 @@ void CloseOutput(const string & output = string());
 
    This random number generator class wraps around a number of
    random number generators from GNU Scientific Library. You can obtain
-   and change system random number generator through the \c rng()
+   and change system random number generator through the \c GetRNG()
    function. Or create a separate random number generator and use
    it in your script.
  */
@@ -1230,7 +1230,7 @@ class RNG
 {
 
 public:
-	/// Create a RNG object. You can also use \c rng() function to get the
+	/// Create a RNG object. You can also use \c GetRNG() function to get the
 	/// RNG used by simuPOP.
 	RNG(const char * rng = NULL, unsigned long seed = 0);
 
@@ -1673,7 +1673,7 @@ private:
 };
 
 /// return the currently used random number generator
-RNG & rng();
+RNG & GetRNG();
 
 /// set random number generator. If <tt>seed=0</tt> (default), a random seed will be given. If <tt>rng=""</tt>, seed will be set to the current random number generator.
 void SetRNG(const string rng = string(), unsigned long seed = 0);

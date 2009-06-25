@@ -179,7 +179,7 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 		size_t parBegin = 0;
 		size_t parEnd = 0;
 		// first chromosome
-		parPloidy = rng().randBit();
+		parPloidy = GetRNG().randBit();
 		//
 		int nextParPloidy = 0;
 		bool copyPar;
@@ -188,7 +188,7 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 			if (ch == m_numChrom - 1)
 				copyPar = true;
 			else {                                                                 // is there a different chromosome?
-				nextParPloidy = rng().randBit();
+				nextParPloidy = GetRNG().randBit();
 				copyPar = parPloidy != nextParPloidy;
 			}
 			if (copyPar) {
@@ -227,7 +227,7 @@ void mendelianGenoTransmitter::transmitGenotype(const individual & parent,
 		else if (ploidy == 1 && ch == m_chromY)
 			parPloidy = 1;          // copy chrom Y from second ploidy
 		else
-			parPloidy = rng().randBit();
+			parPloidy = GetRNG().randBit();
 		//
 		copyChromosome(parent, parPloidy, offspring, ploidy, ch);
 	}
@@ -343,7 +343,7 @@ bool mitochondrialGenoTransmitter::applyDuringMating(population & pop,
 	vectoru::iterator it = m_mitoChroms.begin();
 	vectoru::iterator it_end = m_mitoChroms.end();
 	for (; it != it_end; ++it) {
-		UINT src = rng().randInt(m_mitoChroms.size());
+		UINT src = GetRNG().randInt(m_mitoChroms.size());
 		GenoIterator par = mom->genoBegin(0, m_mitoChroms[src]);
 		GenoIterator off = offspring->genoBegin(0, *it);
 #ifdef BINARYALLELE
@@ -368,7 +368,7 @@ recombinator::recombinator(const floatList & rates, double intensity,
 	genoTransmitter(begin, end, step, at, rep, subPops, infoFields)
 	, m_intensity(intensity), m_rates(rates.elems()), m_loci(loci.elems()),
 	m_recBeforeLoci(0), m_convMode(convMode.elems()),
-	m_bt(rng()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
+	m_bt(GetRNG()), m_chromX(-1), m_chromY(-1), m_customizedBegin(-1), m_customizedEnd(-1),
 	m_algorithm(0)
 {
 	// tells mating schemes that this operator will form
@@ -401,7 +401,7 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 		if (mode == NumMarkers)
 			num = static_cast<int>(m_convMode[2]);
 		else
-			num = rng().randGeometric(m_convMode[2]);
+			num = GetRNG().randGeometric(m_convMode[2]);
 
 		// if conversion reaches end of chromosome, it is an recombination event
 		if (num == 0 || num >= ind.lociLeft(index))
@@ -413,12 +413,12 @@ int recombinator::markersConverted(size_t index, const individual & ind)
 		if (mode == TractLength)
 			len = m_convMode[2];
 		else
-			len = rng().randExponential(len);
+			len = GetRNG().randExponential(len);
 		//
 		// recombination starts 'before' index so we assume that it happens
 		// randomly (uniformly) between this and previous marker
 		if (index > 0)
-			len -= rng().randUniform01() * ind.lociDist(index - 1, index);
+			len -= GetRNG().randUniform01() * ind.lociDist(index - 1, index);
 		if (len <= 0. || len >= ind.distLeft(index))
 			return 0;
 		else
@@ -640,7 +640,7 @@ void recombinator::transmitGenotype(const individual & parent,
 					// if conversion happens
 					if (withConversion &&
 					    parent.lociLeft(gt) != 1 &&             // can not be at the end of a chromosome
-					    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
+					    (m_convMode[1] == 1. || GetRNG().randUniform01() < m_convMode[1])) {
 						// convCount will be decreased, until reconversion completes
 						// or another recombination happens
 						convCount = markersConverted(gt + 1, parent);
@@ -666,7 +666,7 @@ void recombinator::transmitGenotype(const individual & parent,
 			//
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-			    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
+			    (m_convMode[1] == 1. || GetRNG().randUniform01() < m_convMode[1])) {
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
@@ -692,7 +692,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				// conversion event for this recombination event
 				if (withConversion &&
 				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-				    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
+				    (m_convMode[1] == 1. || GetRNG().randUniform01() < m_convMode[1])) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);
@@ -725,7 +725,7 @@ void recombinator::transmitGenotype(const individual & parent,
 			curCp = (curCp + 1) % 2;
 			if (withConversion &&
 			    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-			    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
+			    (m_convMode[1] == 1. || GetRNG().randUniform01() < m_convMode[1])) {
 				convCount = markersConverted(gt, parent);
 			}
 			// next recombination point...
@@ -748,7 +748,7 @@ void recombinator::transmitGenotype(const individual & parent,
 				// conversion event for this recombination event
 				if (withConversion &&
 				    parent.lociLeft(gt - 1) != 1 &&             // can not be at the end of a chromosome
-				    (m_convMode[1] == 1. || rng().randUniform01() < m_convMode[1])) {
+				    (m_convMode[1] == 1. || GetRNG().randUniform01() < m_convMode[1])) {
 					// convCount will be decreased, until reconversion completes
 					// or another recombination happens
 					convCount = markersConverted(gt, parent);

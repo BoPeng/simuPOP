@@ -2433,8 +2433,8 @@ void BernulliTrials::doTrial()
                 // for the quality of random bits.
                 *ptr = 0;
                 for (size_t b = 0; b < WORDBIT / 16; ++b) {
-                    // blocks[i] = static_cast<int16_t>(rng().randGet());
-                    tmp = rng().randInt(0xFFFF);
+                    // blocks[i] = static_cast<int16_t>(GetRNG().randGet());
+                    tmp = GetRNG().randInt(0xFFFF);
                     *ptr |= (0xFFFF & tmp) << (b * 16);
 				}
                 ptr++;
@@ -2443,13 +2443,13 @@ void BernulliTrials::doTrial()
             if (rest != 0) {
                 size_t b = 0;
                 for (b = 0; b < rest / 16; ++b) {
-                    tmp = rng().randInt(0xFFFF);
+                    tmp = GetRNG().randInt(0xFFFF);
                     *ptr |= (0xFFFF & tmp) << (b * 16);
 				}
                 // last bits
                 rest -= b * 16;
                 if (rest != 0) {
-                    tmp = rng().randInt(0xFFFF);
+                    tmp = GetRNG().randInt(0xFFFF);
                     *ptr |= (g_bitMask[rest] & tmp) << b * 16;
 				}
 			}
@@ -2656,17 +2656,17 @@ double BernulliTrials::probSuccRate() const
 RNG g_RNG;
 
 // return the global RNG
-RNG & rng()
+RNG & GetRNG()
 {
     return g_RNG;
 }
 
 
 // set global rng
-// this is temporary since rng() might not exist in the future
+// this is temporary since GetRNG() might not exist in the future
 void SetRNG(const string r, unsigned long seed)
 {
-    rng().setRNG(r.c_str(), seed);
+    GetRNG().setRNG(r.c_str(), seed);
 }
 
 
@@ -3276,14 +3276,14 @@ void testCopyGenotype()
     for (size_t i = 0; i < 100; ++i) {
         for (size_t j = 0; j < 1000; ++j) {
             // use != 0 to reduce compiler warning
-            from[j] = rng().randInt(2) != 0;
+            from[j] = GetRNG().randInt(2) != 0;
             to[j] = 0;
 		}
-        size_t from_idx = rng().randInt(300);
-        size_t to_idx = rng().randInt(300);
+        size_t from_idx = GetRNG().randInt(300);
+        size_t to_idx = GetRNG().randInt(300);
         if (from_idx > to_idx)
 			continue;
-        size_t length = rng().randInt(500);
+        size_t length = GetRNG().randInt(500);
         copyGenotype(from.begin() + from_idx,
 			to.begin() + to_idx, length);
         if (vectora(from.begin() + from_idx, from.begin() + from_idx + length) !=

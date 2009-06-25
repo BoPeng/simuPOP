@@ -77,7 +77,7 @@ double mapQuanTrait::qtrait(individual * ind)
 	DBG_ASSERT(pos != m_dict.end(), ValueError,
 		"No qtrait value for genotype " + key);
 
-	return rng().randNormal(pos->second, m_sigma) ;
+	return GetRNG().randNormal(pos->second, m_sigma) ;
 }
 
 
@@ -121,7 +121,7 @@ double maQuanTrait::qtrait(individual * ind)
 		index = index * 3 + 2 - numWildtype;
 	}
 
-	return rng().randNormal(m_qtrait[index], m_sigma[index]);
+	return GetRNG().randNormal(m_qtrait[index], m_sigma[index]);
 }
 
 
@@ -132,13 +132,13 @@ double mlQuanTrait::qtrait(individual * ind)
 		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
 		     s != sEnd; ++s)
 			fit *= static_cast<quanTrait *>(*s)->qtrait(ind);
-		return rng().randNormal(fit, m_sigma);
+		return GetRNG().randNormal(fit, m_sigma);
 	} else if (m_mode == Additive) {
 		double fit = 0;
 		for (vectorop::iterator s = m_qtraits.begin(), sEnd = m_qtraits.end();
 		     s != sEnd; ++s)
 			fit += static_cast<quanTrait *>(*s)->qtrait(ind);
-		return rng().randNormal(fit, m_sigma);
+		return GetRNG().randNormal(fit, m_sigma);
 	}
 	return 0.;
 }

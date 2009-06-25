@@ -54,7 +54,7 @@ bool basePenetrance::apply(population & pop)
 		for (IndIterator it = pop.indIterator(); it.valid(); ++it) {
 			p = penet(& * it);
 
-			if (rng().randUniform01() < p)
+			if (GetRNG().randUniform01() < p)
 				it->setAffected(true);
 			else
 				it->setAffected(false);
@@ -75,7 +75,7 @@ bool basePenetrance::applyDuringMating(population & pop, RawIndIterator offsprin
 
 	if (infoSize() > 0)
 		(*offspring).setInfo(p, infoField(0));
-	if (rng().randUniform01() < p)
+	if (GetRNG().randUniform01() < p)
 		offspring->setAffected(true);
 	else
 		offspring->setAffected(false);

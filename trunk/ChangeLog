@@ -4,6 +4,7 @@ version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add a global function closeOutput to close '>>' or '>>>' output files used 
 		in the function form of an operator.
   - BUG: Fix a memory leak of LoadPopulation.
+  - CHG: Rename function rng() to GetRNG() for consistent naming of functions.
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.

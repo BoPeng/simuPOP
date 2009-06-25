@@ -93,24 +93,24 @@ class TestUtility(unittest.TestCase):
 
     def testDefaultRNG(self):
         'Testing default RNG'
-        rg = rng()
+        rg = GetRNG()
         self.assertEqual(rg.name(), 'mt19937')
 
     def testBinomial(self):
         'Testing binomial distribution'
-        rg = rng()
+        rg = GetRNG()
         for n in range(1,10):
             rg.randBinomial(10, .7)
 
     def testUniform01(self):
         'Testing uniform distribution generator'
-        rg = rng()
+        rg = GetRNG()
         for n in range(1,10):
             rg.randUniform01()
 
     def testRandBit(self):
         'Testing random bit function'
-        rg = rng()
+        rg = GetRNG()
         sum = 0
         for n in range(10000):
             sum += rg.randBit()
@@ -128,7 +128,7 @@ class TestUtility(unittest.TestCase):
     def testBernulliTrials(self):
         'Testing bernullitrials'
         import math
-        rg = rng()
+        rg = GetRNG()
         p = [0.00001, 0.001, 0.5, 0.99]
         N = 1000000
         bt = BernulliTrials(rg, p, N)
@@ -180,18 +180,18 @@ class TestUtility(unittest.TestCase):
         name = AvailableRNGs()[0]
         for i in range(100):
             SetRNG(name)
-            sd = rng().seed()
+            sd = GetRNG().seed()
             assert sd not in seed
             seed.append(sd)
         # test set seed
         sd = random.randint(100, 10000)
         SetRNG(name, sd)
-        self.assertEqual(rng().seed(), sd)
+        self.assertEqual(GetRNG().seed(), sd)
 
 
     def testWeightedSampler(self):
         'Testing weighted sampler'
-        sampler = weightedSampler(rng(), [1, 2, 3, 4])
+        sampler = weightedSampler(GetRNG(), [1, 2, 3, 4])
         num = []
         for i in range(100000):
             num.append(sampler.get())
