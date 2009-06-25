@@ -236,6 +236,27 @@ class TestOperator(unittest.TestCase):
         )
 
 
+    def testCloseOutput(self):
+        '''Testing global function CloseOutput'''
+        pop = population(100, loci=[2])
+        Dump(pop, output='a.pop')
+        size = len(open('a.pop').read())
+        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
+        Dump(pop, output='>>a.pop')
+        CloseOutput('a.pop')
+        self.assertEqual(len(open('a.pop').read()), size)
+        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
+        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'b.pop')
+        Dump(pop, output='>>a.pop')
+        Dump(pop, output='>>a.pop')
+        self.assertEqual(len(open('a.pop').read()), size * 2)
+        #
+        Dump(pop, output='>>>a.pop')
+        Dump(pop, output='>>>a.pop')
+        self.assertEqual(len(open('a.pop').read()), size * 4)
+        CloseOutput('a.pop')
+        self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
+
 
 if __name__ == '__main__':
     unittest.main()
