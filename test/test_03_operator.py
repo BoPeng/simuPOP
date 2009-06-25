@@ -256,6 +256,7 @@ class TestOperator(unittest.TestCase):
         self.assertEqual(len(open('a.pop').read()), size * 4)
         CloseOutput('a.pop')
         self.assertRaises(exceptions.RuntimeError, CloseOutput, 'a.pop')
+        os.remove('a.pop')
 
 
 if __name__ == '__main__':

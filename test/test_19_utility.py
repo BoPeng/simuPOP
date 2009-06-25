@@ -233,6 +233,7 @@ class TestUtility(unittest.TestCase):
                 #dprint 'M1', m1
                 self.assertEqual(m1, 0.0)
             del pop
+        os.remove('test.bin')
 
     
 
