@@ -330,69 +330,69 @@ int population::__cmp__(const population & rhs) const
 }
 
 
-individual & population::ancestor(ULONG idx, UINT gen)
+individual & population::ancestor(ULONG idx, UINT gen, vspID vsp)
 {
+	DBG_FAILIF(vsp.isVirtual(), ValueError,
+		"Function genotype currently does not support virtual subpopulation");
+
 	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(gen) + " does not exist");
-	if (gen == m_curAncestralGen)
-		return this->ind(idx);
-	UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
-		IndexError, "Individual index out of range");
-	return m_ancestralPops[genIdx].m_inds[idx];
-}
-
-
-const individual & population::ancestor(ULONG idx, UINT gen) const
-{
-	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
-		"Ancestray generation " + toStr(gen) + " does not exist");
-	if (gen == m_curAncestralGen)
-		return this->ind(idx);
-	UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
-		IndexError, "Individual index out of range");
-	return m_ancestralPops[genIdx].m_inds[idx];
-}
-
-
-individual & population::ancestor(ULONG ind, UINT subPop, UINT gen)
-{
-	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
-		"Ancestray generation " + toStr(gen) + " does not exist");
-	if (gen == m_curAncestralGen)
-		return this->ind(ind, subPop);
-	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(subPop > m_ancestralPops[idx].m_subPopSize.size(),
-		IndexError, "subpopulation index out of range");
-	DBG_FAILIF(ind > m_ancestralPops[idx].m_subPopSize[subPop],
-		IndexError, "Individual index out of range");
-	ULONG shift = 0;
-	if (subPop > 0) {
-		for (size_t i = 0; i < subPop; ++i)
-			shift += m_ancestralPops[idx].m_subPopSize[i];
+	if (!vsp.valid()) {
+		if (gen == m_curAncestralGen)
+			return this->ind(idx);
+		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
+			IndexError, "Individual index out of range");
+		return m_ancestralPops[genIdx].m_inds[idx];
+	} else {
+		SubPopID subPop = vsp.subPop();
+		if (gen == m_curAncestralGen)
+			return this->ind(idx, subPop);
+		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+		DBG_FAILIF(subPop > m_ancestralPops[genIdx].m_subPopSize.size(),
+			IndexError, "subpopulation index out of range");
+		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_subPopSize[subPop],
+			IndexError, "Individual index out of range");
+		ULONG shift = 0;
+		if (subPop > 0) {
+			for (size_t i = 0; i < subPop; ++i)
+				shift += m_ancestralPops[genIdx].m_subPopSize[i];
+		}
+		return m_ancestralPops[genIdx].m_inds[shift + idx];
 	}
-	return m_ancestralPops[idx].m_inds[shift + ind];
 }
 
 
-const individual & population::ancestor(ULONG ind, UINT subPop, UINT gen) const
+const individual & population::ancestor(ULONG idx, UINT gen, vspID vsp) const
 {
+	DBG_FAILIF(vsp.isVirtual(), ValueError,
+		"Function genotype currently does not support virtual subpopulation");
+
 	DBG_FAILIF(gen > m_ancestralPops.size(), IndexError,
 		"Ancestray generation " + toStr(gen) + " does not exist");
-	if (gen == m_curAncestralGen)
-		return this->ind(ind, subPop);
-	UINT idx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-	DBG_FAILIF(subPop > m_ancestralPops[idx].m_subPopSize.size(),
-		IndexError, "subpopulation index out of range");
-	DBG_FAILIF(ind > m_ancestralPops[idx].m_subPopSize[subPop],
-		IndexError, "Individual index out of range");
-	ULONG shift = 0;
-	if (subPop > 0) {
-		for (size_t i = 0; i < subPop; ++i)
-			shift += m_ancestralPops[idx].m_subPopSize[i];
+	if (!vsp.valid()) {
+		if (gen == m_curAncestralGen)
+			return this->ind(idx);
+		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_inds.size(),
+			IndexError, "Individual index out of range");
+		return m_ancestralPops[genIdx].m_inds[idx];
+	} else {
+		SubPopID subPop = vsp.subPop();
+		if (gen == m_curAncestralGen)
+			return this->ind(idx, subPop);
+		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
+		DBG_FAILIF(subPop > m_ancestralPops[genIdx].m_subPopSize.size(),
+			IndexError, "subpopulation index out of range");
+		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_subPopSize[subPop],
+			IndexError, "Individual index out of range");
+		ULONG shift = 0;
+		if (subPop > 0) {
+			for (size_t i = 0; i < subPop; ++i)
+				shift += m_ancestralPops[genIdx].m_subPopSize[i];
+		}
+		return m_ancestralPops[genIdx].m_inds[shift + idx];
 	}
-	return m_ancestralPops[idx].m_inds[shift + ind];
 }
 
 
@@ -437,50 +437,43 @@ IndAlleleIterator population::alleleIterator(UINT locus, UINT subPop)
 }
 
 
-PyObject * population::genotype()
+PyObject * population::genotype(vspID vsp)
 {
+	DBG_FAILIF(vsp.isVirtual(), ValueError,
+		"Function genotype currently does not support virtual subpopulation");
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	sortIndividuals();
-	// directly expose values. Do not copy data over.
-	return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
-}
-
-
-PyObject * population::genotype(SubPopID subPop)
-{
-	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-		"This operation is not allowed when there is an activated virtual subpopulation");
-
-	CHECKRANGESUBPOP(subPop);
-	sortIndividuals();
-	// directly expose values. Do not copy data over.
-	return Allele_Vec_As_NumArray(genoBegin(subPop, true), genoEnd(subPop, true));
-}
-
-
-void population::setGenotype(vectora geno)
-{
-	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-		"This operation is not allowed when there is an activated virtual subpopulation");
-
-	sortIndividuals();
-	GenoIterator ptr = m_genotype.begin();
-	ULONG sz = geno.size();
-	for (ULONG i = 0; i < popSize() * genoSize(); ++i)
-		*(ptr++) = geno[i % sz];
+	if (!vsp.valid()) {
+		// directly expose values. Do not copy data over.
+		return Allele_Vec_As_NumArray(m_genotype.begin(), m_genotype.end());
+	} else {
+		SubPopID subPop = vsp.subPop();
+		CHECKRANGESUBPOP(subPop);
+		// directly expose values. Do not copy data over.
+		return Allele_Vec_As_NumArray(genoBegin(subPop, true), genoEnd(subPop, true));
+	}
+	return NULL;
 }
 
 
 void population::setGenotype(vectora geno, vspID subPop)
 {
+	sortIndividuals();
+	if (!subPop.valid()) {
+		GenoIterator ptr = m_genotype.begin();
+		ULONG sz = geno.size();
+		for (ULONG i = 0; i < popSize() * genoSize(); ++i)
+			*(ptr++) = geno[i % sz];
+		return;
+	}
+
 	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
 
 	SubPopID sp = subPop.subPop();
 	CHECKRANGESUBPOP(sp);
-	sortIndividuals();
 
 	ULONG sz = geno.size();
 	if (!subPop.isVirtual()) {
@@ -1690,31 +1683,25 @@ void population::updateInfoFieldsFrom(const stringList & fieldList, const popula
 }
 
 
-void population::setIndInfo(const floatList & valueList, UINT idx)
+void population::setIndInfo(const floatList & valueList, const uintString & field, vspID subPop)
 {
-	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
+	DBG_FAILIF(subPop.valid() && hasActivatedVirtualSubPop(), ValueError,
 		"This operation is not allowed when there is an activated virtual subpopulation");
+
+	UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 
 	CHECKRANGEINFO(idx);
 	const vectorf & values = valueList.elems();
 	size_t valueSize = values.size();
-	IndInfoIterator ptr = infoBegin(idx);
-	for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
-		*ptr = static_cast<InfoType>(values[i % valueSize]);
-}
-
-
-void population::setIndInfo(const floatList & valueList, UINT idx, vspID subPop)
-{
-	DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
-		"This operation is not allowed when there is an activated virtual subpopulation");
-
-	CHECKRANGEINFO(idx);
-	const vectorf & values = valueList.elems();
-	size_t valueSize = values.size();
-	IndInfoIterator ptr = infoBegin(idx, subPop);
-	for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)
-		*ptr = static_cast<InfoType>(values[i % valueSize]);
+	if (subPop.valid()) {
+		IndInfoIterator ptr = infoBegin(idx, subPop);
+		for (size_t i = 0; ptr != infoEnd(idx, subPop); ++ptr, ++i)
+			*ptr = static_cast<InfoType>(values[i % valueSize]);
+	} else {
+		IndInfoIterator ptr = infoBegin(idx);
+		for (size_t i = 0; ptr != infoEnd(idx); ++ptr, ++i)
+			*ptr = static_cast<InfoType>(values[i % valueSize]);
+	}
 }
 
 
@@ -1805,15 +1792,13 @@ void population::load(const string & filename)
 }
 
 
-PyObject * population::vars()
-{
-	Py_INCREF(m_vars.dict());
-	return m_vars.dict();
-}
-
-
 PyObject * population::vars(vspID vsp)
 {
+	if (!vsp.valid()) {
+		Py_INCREF(m_vars.dict());
+		return m_vars.dict();
+	}
+
 	SubPopID subPop = vsp.subPop();
 
 	DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),

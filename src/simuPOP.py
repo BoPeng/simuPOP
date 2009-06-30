@@ -92,7 +92,7 @@ if not simuOptions['Quiet']:
         print ("Version %s (Revision %d, %s) for Python %s" % (simuVer(), simuRev(), ModuleDate(),
             ModulePyVersion() ))
     print ModuleCompiler()
-    print "Random Number Generator is set to %s with random seed 0x%08x." % (rng().name(), rng().seed())
+    print "Random Number Generator is set to %s with random seed 0x%08x." % (GetRNG().name(), GetRNG().seed())
     # MaxAllele + 1 since 0 is one of the allelic states
     if Optimized():
         print "This is the optimized %s allele version with %d maximum allelic states." % (AlleleType(), MaxAllele()+1)

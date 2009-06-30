@@ -177,197 +177,50 @@ public:
 	//@{
 
 	/** return the current allele at a locus, using its absolute index \e idx.
+	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
+	 *  relative to the beginning of specified homologous copy of chromosomes
+	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
+	 *  specified chromosome (if \e chrom >= 0).
 	 *
 	 * <group>1-allele</group>
 	 */
-	UINT allele(UINT idx) const
-	{
-		CHECKRANGEGENOSIZE(idx);
-		return static_cast<UINT>(*(m_genoPtr + idx));
-	}
+	UINT allele(UINT idx, int ploidy = -1, int chrom = -1) const;
 
 
-	/** return the current allele at locus \e idx on the <em>p</em>-th set of
-	 *  homologous chromosomes.
-	 * <group>1-allele</group>
-	 */
-	UINT allele(UINT idx, UINT p) const
-	{
-		CHECKRANGEABSLOCUS(idx);
-		CHECKRANGEPLOIDY(p);
-		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() ));
-	}
-
-
-	/** return the current allele at locus \e idx on chromosome \e chrom of
-	 *  the <em>p</em>-th set of homologous chromosomes.
-	 * <group>1-allele</group>
-	 */
-	UINT allele(UINT idx, UINT p, UINT chrom) const
-	{
-		CHECKRANGELOCUS(chrom, idx);
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
-	}
-
-
-	/** return the name of \c allele(idx). If idx is invalid (e.g. second homologus
-	 *  copy), '.' is returned.
+	/** return the name of <tt>allele(idx, ploidy, chrom)</tt>. If idx is
+	 *  invalid (e.g. second homologus copy of chromosome Y), '.' is returned.
 	 *  HIDDEN
-	 * <group>1-allele</group>
-	 */
-	string alleleChar(UINT idx) const;
-
-
-	/** HIDDEN
-	 * return the name of <tt>allele(idx, p)</tt>
-	 * <group>1-allele</group>
-	 */
-	string alleleChar(UINT idx, UINT p) const;
-
-
-	/** HIDDEN
-	 * return the name of <tt>allele(idx, p, ch)</tt>
-	 * <group>1-allele</group>
-	 */
-	string alleleChar(UINT idx, UINT p, UINT ch) const;
-
-
-	/** set allele \e allele to a locus, using its absolute index \e idx.
-	 * <group>1-allele</group>
-	 */
-	void setAllele(Allele allele, UINT idx)
-	{
-		CHECKRANGEGENOSIZE(idx);
-		*(m_genoPtr + idx) = allele;
-	}
-
-
-	/** set allele \e allele to locus \e idx on the <em>p</em>-th homologous
-	 *  set of chromosomes.
-	 * <group>1-allele</group>
-	 */
-	void setAllele(Allele allele, UINT idx, UINT p)
-	{
-		CHECKRANGEABSLOCUS(idx);
-		CHECKRANGEPLOIDY(p);
-		*(m_genoPtr + idx + p * totNumLoci()) = allele;
-	}
-
-
-	/** set allele \e allele to locus \e idx on chromosome \e chrom of the
-	 *  <em>p</em>-th homologous set of chromosomes.
 	 *  <group>1-allele</group>
 	 */
-	void setAllele(Allele allele, UINT idx, UINT p, UINT chrom)
-	{
-		CHECKRANGELOCUS(chrom, idx);
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom) ) = allele;
-	}
+	string alleleChar(UINT idx, int ploidy = -1, int chrom = -1) const;
 
-
-	/** return an editable array (a \c carray of length <tt>totNumLoci()*ploidy()</tt>)
-	 *  that represents all alleles of an individual.
-	 * <group>2-genotype</group>
+	/** set allele \e allele to a locus, using its absolute index \e idx.
+	 *  If a ploidy \e ploidy and/or a chromosome indexes are given, \e idx is
+	 *  relative to the beginning of specified homologous copy of chromosomes
+	 *  (if \e chrom=-1) or the beginning of the specified homologous copy of
+	 *  specified chromosome (if \e chrom >= 0).
+	 *  <group>1-allele</group>
 	 */
-	PyObject * genotype()
-	{
-		// The following implementation has comparable performance as
-		// the direct memory access implementation, but it has two
-		// problems:
-		// 1. genotype has to be copied out, which requires additional
-		//    allocation of memory.
-		// 2. the return value is a tuple which lacks some functions of
-		//    a list, mostly notably the count() function.
-		/*
-		   UINT num = ploidy() * totNumLoci();
-		   vectora geno(num);
-		   for(UINT i =0; i < num; i++)
-		    geno[i] = *(m_genoPtr + i);
-		   return geno;
-		 */
-		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
-	}
-
+	void setAllele(Allele allele, UINT idx, int ploidy = -1, int chrom = -1);
 
 	/** return an editable array (a \c carray of length <tt>totNumLoci()</tt>)
 	 *  that represents all alleles on the <em>p</em>-th homologous set of
-	 *  chromosomes.
-	 * <group>2-genotype</group>
-	 */
-	PyObject * genotype(UINT p)
-	{
-		CHECKRANGEPLOIDY(p);
-		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
-			m_genoPtr + (p + 1) * totNumLoci() );
-	}
-
-
-	/** return an editable array (a \c carrary of legnth
-	 *  <tt>numLoci(chrom)</tt>) that represents all alleles
-	 *  on chromosome \e chrom of the <em>p</em>-th homologous set of
-	 *  chromosomes.
+	 *  chromosomes. If \e ploidy or \e chrom is given, only alleles on the
+	 *  \e chrom-th chromosome (or all chromosomes if <tt>chrom = -1</tt>) of
+	 *  \e ploidy-th homologous copy of chromosomes will be returned.
 	 *  <group>2-genotype</group>
 	 */
-	PyObject * genotype(UINT p, UINT chrom)
-	{
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(chrom),
-			m_genoPtr + p * totNumLoci() + chromEnd(chrom));
-	}
+	PyObject * genotype(int ploidy = -1, int chrom = -1);
 
 
 	/** Fill the genotype of an individual using a list of alleles \e geno.
-	 *  \c geno will be reused if its length is less than
-	 *  <tt>totNumLoci()*ploidy()</tt>.
+	 *  If parameters \e ploidy and/or \e chrom are specified, alleles will
+	 *  be copied to only all or specified chromosome on selected homologous
+	 *  copy of chromosomes. \c geno will be reused if its length is less than
+	 *  number of alleles to be filled.
 	 *  <group>2-genotype</group>
 	 */
-	void setGenotype(vectora geno)
-	{
-		UINT sz = geno.size();
-
-		for (UINT i = 0; i < totNumLoci() * ploidy(); i++)
-			*(m_genoPtr + i) = geno[i % sz];
-	}
-
-
-	/** Fill the genotype of the <em>p</em>-th homologous set of chromosomes
-	 *  using a list of alleles \e geno. \c geno will be reused if its length
-	 *  is less than <tt>totNumLoci()</tt>.
-	 *  <group>2-genotype</group>
-	 */
-	void setGenotype(vectora geno, UINT p)
-	{
-		CHECKRANGEPLOIDY(p);
-		GenoIterator ptr = m_genoPtr + p * totNumLoci();
-
-		UINT sz = geno.size();
-		for (UINT i = 0; i < totNumLoci(); i++)
-			*(ptr + i) = geno[i % sz];
-	}
-
-
-	/** Fill the genotype of chromosome \e chrom on the <em>p</em>-th
-	 *  homologous set of chromosomes using a list of alleles \e geno.
-	 *  \c geno will be reused if its length is less than
-	 *  <tt>numLoci(chrom)</tt>.
-	 * <group>2-genotype</group>
-	 */
-	void setGenotype(vectora geno, UINT p, UINT chrom)
-	{
-		CHECKRANGEPLOIDY(p);
-		CHECKRANGECHROM(chrom);
-		GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
-
-		UINT sz = geno.size();
-		for (UINT i = 0; i < numLoci(chrom); i++)
-			*(ptr + i) = geno[i % sz];
-	}
-
+	void setGenotype(vectora geno, int ploidy = -1, int chrom = -1);
 
 	/** return the sex of an individual, \c 1 for male and \c 2 for female.
 	 * <group>3-sex</group>
@@ -468,75 +321,39 @@ public:
 	}
 
 
-	/** Return the value of an information field \e idx (an index).
+	/** Return the value of an information field \e filed (by index or name).
 	 * <group>5-info</group>
 	 */
-	InfoType info(UINT idx) const
+	InfoType info(const uintString & field) const
 	{
+		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 		CHECKRANGEINFO(idx);
-
 		return m_infoPtr[idx];
 	}
 
 
-	/** Return the value of an information field \e idx (an index) as an integer number.
+	/** Return the value of an information field \e field (by index or name)
+	 *  as an integer number.
 	 * <group>5-info</group>
 	 */
-	int intInfo(UINT idx) const
+	int intInfo(const uintString & field) const
 	{
+		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 		CHECKRANGEINFO(idx);
 		return static_cast<int>(m_infoPtr[idx]);
 	}
 
 
-	/** Return the value of an information field \e name.
+	/** set the value of an information field \e field (by index or name) to
+	 *  \e value.
 	 *  <group>5-info</group>
 	 */
-	InfoType info(const string & name) const
+	void setInfo(InfoType value, const uintString & field)
 	{
-		int idx = infoIdx(name);
-
-		DBG_ASSERT(idx >= 0, IndexError,
-			"Info name " + name + " is not a valid info field name");
-		return m_infoPtr[idx];
-	}
-
-
-	/** Return the value of an information field \e name as an integer number.
-	 * <group>5-info</group>
-	 */
-	int intInfo(const string & name) const
-	{
-		int idx = infoIdx(name);
-
-		DBG_ASSERT(idx >= 0, IndexError,
-			"Info name " + name + " is not a valid info field name");
-		return static_cast<int>(m_infoPtr[idx]);
-	}
-
-
-	/** set the value of an information field \e idx (an index) to \e value.
-	 *  <group>5-info</group>
-	 */
-	void setInfo(InfoType value, UINT idx)
-	{
+		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
 		CHECKRANGEINFO(idx);
 		m_infoPtr[idx] = value;
 	}
-
-
-	/** set the value of an information field \e name to \e value.
-	 *  <group>5-info</group>
-	 */
-	void setInfo(InfoType value, const string & name)
-	{
-		int idx = infoIdx(name);
-
-		DBG_ASSERT(idx >= 0, IndexError,
-			"Info name " + name + " is not a valid info field name");
-		m_infoPtr[idx] = value;
-	}
-
 
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const

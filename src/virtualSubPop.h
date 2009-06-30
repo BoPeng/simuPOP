@@ -68,6 +68,7 @@ public:
 
 	SubPopID subPop() const { return m_subPop; }
 	SubPopID virtualSubPop() const { return m_virtualSubPop; }
+	bool valid() const { return m_subPop != InvalidSubPopID; }
 	bool isVirtual() const { return m_virtualSubPop != InvalidSubPopID; }
 
 private:

@@ -266,28 +266,13 @@ public:
 	void setMatingScheme(const mating & matingScheme);
 
 	/** Return the local namespace of the \e rep-th population, equivalent to
-	 *  <tt>x.population(rep).vars()</tt>.
-	 *  <group>9-var</group>
-	 */
-	PyObject * vars(UINT rep)
-	{
-		if (static_cast<UINT>(rep) >= m_numRep)
-			throw ValueError("Replicate index out of range.");
-
-		return m_ptrRep[rep]->vars();
-	}
-
-
-	/** Return a dictionary of subpopulation variables in the local namespace
-	 *  of the \e rep-th population, equivalent to
 	 *  <tt>x.population(rep).vars(subPop)</tt>.
 	 *  <group>9-var</group>
 	 */
-	PyObject * vars(UINT rep, vspID subPop)
+	PyObject * vars(UINT rep, vspID subPop = vspID())
 	{
 		if (static_cast<UINT>(rep) >= m_numRep)
 			throw ValueError("Replicate index out of range.");
-
 		return m_ptrRep[rep]->vars(subPop);
 	}
 

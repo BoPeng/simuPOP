@@ -5,6 +5,14 @@ version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		in the function form of an operator.
   - BUG: Fix a memory leak of LoadPopulation.
   - CHG: Rename function rng() to GetRNG() for consistent naming of functions.
+  - NEW: Merge overloaded functions of population::setIndInfo, population::indInfo,
+		population::individual, population::individuals, population::vars,
+		simulator::vars, individual::setGenotype, individual::genotype,
+		individual::allele, individual::setAllele, individual::alleleChar,
+		individual::info, individual::setInfo to one function with more complex 
+		input type and default parameter. This change allows keyword arguments for
+		all these functions.
+  - CHG: the parameter order of function population::ancestor has been changed!
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.

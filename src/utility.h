@@ -412,6 +412,38 @@ protected:
 };
 
 
+class uintString
+{
+public:
+    uintString(UINT value) : m_string(), m_int(value) 
+    {
+    }
+
+    uintString(const string & name) : m_string(name), m_int(0)
+    {
+    }
+
+    bool empty() const
+    {
+        return m_string.empty();
+    }
+
+    const string & name() const
+    {
+        return m_string;
+    }
+
+    UINT value() const
+    {
+        return m_int;
+    }
+
+private:
+    string m_string;
+    UINT m_int;
+};
+
+
 class stringFunc
 {
 public:
