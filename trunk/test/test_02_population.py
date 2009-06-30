@@ -173,7 +173,7 @@ class TestPopulation(unittest.TestCase):
                 self.assertEqual(ind.allele(idx%6), 6)
 
     def testAncestor(self):
-        'Testing population::ancestor(idx, gen), ancestor(idx, subPop, gen), push(pop)'
+        'Testing population::ancestor(idx, gen), ancestor(idx, gen, subPop), push(pop)'
         pop = population([100, 200], loci=[10, 20], infoFields=['x', 'y'],
             ancGen=5)
         InitByFreq(pop, [0.2, 0.8])
@@ -191,10 +191,10 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind, pop.ancestor(idx, 1))
             self.assertEqual(ind.info('x'), pop.ancestor(idx, 1).info('x'))
             self.assertEqual(ind.info('y'), pop.ancestor(idx, 1).info('y'))
-        self.assertRaises(exceptions.IndexError, pop.ancestor, 10000, 2)
-        self.assertRaises(exceptions.IndexError, pop.ancestor, 10000, 3)
+        self.assertRaises(exceptions.IndexError, pop.ancestor, 2, 10000)
+        self.assertRaises(exceptions.IndexError, pop.ancestor, 3, 10000)
         for idx, ind in enumerate(pop_c.individuals(0)):
-            self.assertEqual(ind, pop.ancestor(idx, 0, 1))
+            self.assertEqual(ind, pop.ancestor(idx, 1, 0))
 
     def testAncestralGens(self):
         'Testing population::ancestralGens(), setAncestralDepth(depth), useAncestralGen(idx)'

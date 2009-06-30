@@ -320,11 +320,14 @@ public:
 
 
 	/** Return the size of a subpopulation (<tt>subPopSize(sp)</tt>) or a
-	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>).
+	 *  virtual subpopulation (<tt>subPopSize([sp, vsp])<tt>). If no \e subpop
+	 *  is given, it is the same as <tt>popSize()</tt>.
 	 *  <group>2-subpopsize</group>
 	 */
-	ULONG subPopSize(vspID subPop) const
+	ULONG subPopSize(vspID subPop = vspID()) const
 	{
+		if (!subPop.valid())
+			return m_popSize;
 		CHECKRANGESUBPOP(subPop.subPop());
 		CHECKRANGEVIRTUALSUBPOP(subPop.virtualSubPop());
 		if (hasActivatedVirtualSubPop() || subPop.isVirtual())
@@ -452,97 +455,72 @@ public:
 	 */
 	//@{
 
-	/** Return a refernce to individual \e ind in the population.
-	 *  <group>4-ind</group>
+	/** Return a refernce to individual \e ind in the population
+	 * (if <tt>subPop=[]</tt>, default) or a subpopulation (if
+	 * <tt>subPop=sp</tt>). Virtual subpopulation is not supported.
+	 * <group>4-ind</group>
 	 */
-	individual & ind(ULONG idx)
-	{
-		CHECKRANGEIND(idx);
-
-		return m_inds[idx];
-	}
-
-
-	/** Return a refernce to individual \e ind in subpopulation \e subPop.
-	 *  <group>4-ind</group>
-	 */
-	individual & ind(ULONG idx, UINT subPop)
-	{
-		CHECKRANGESUBPOPMEMBER(idx, subPop);
-
-		return m_inds[subPopBegin(subPop) + idx];
-	}
-
-
-	/// CPPONLY refernce to individual \c ind in subpopulation \c subPop
-	/** CPPONLY
-	 *  Return a reference to individual \e ind from subpopulation \subPop.
-	 *  <group>4-ind</group>
-	 */
-	const individual & ind(ULONG idx, UINT subPop = 0) const
+	individual & ind(ULONG idx, vspID subPop = vspID())
 	{
 #ifndef OPTIMIZED
-		if (subPop > 0) {
-			CHECKRANGESUBPOPMEMBER(idx, subPop);
-		} else {
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+			"Function individual currently does not support virtual subpopulation");
+
+		if (!subPop.valid())
 			CHECKRANGEIND(idx);
-		}
+		else
+			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
 #endif
-
-		return m_inds[subPopBegin(subPop) + idx];
+		return subPops.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
 
 
-	/** Return a reference to individual \c idx in ancestral generation \c gen.
-	 *  The correct individual will be returned even if the current generation
-	 *  is not the present one (see also \c useAncestralGen).
-	 *  <group>6-ancestral</group>
+	/** CPPONLY: const version of the ind function.
 	 */
-	individual & ancestor(ULONG idx, UINT gen);
-
-	/** Return a reference to individual \c idx in ancestral generation \c gen.
-	 *  The correct individual will be returned even if the current generation
-	 *  is not the present one (see also \c useAncestralGen).
-	 *  CPPONLY
-	 *  <group>6-ancestral</group>
-	 */
-	const individual & ancestor(ULONG idx, UINT gen) const;
-
-	/** Return a reference to individual \c idx of subpopulation \e subPop in
-	 *  ancestral generation \c gen.
-	 *  <group>6-ancestral</group>
-	 */
-	individual & ancestor(ULONG idx, UINT subPop, UINT gen);
-
-	/** Return a reference to individual \c idx of subpopulation \e subPop in
-	 *  ancestral generation \c gen.
-	 *  CPPONLY
-	 *  <group>6-ancestral</group>
-	 */
-	const individual & ancestor(ULONG idx, UINT subPop, UINT gen) const;
-
-	/** Return a Python iterator that can be used to iterate through all
-	 *  individuals in a population.
-	 *  <group>4-ind</group>
-	 */
-	pyIndIterator individuals()
+	const individual & ind(ULONG idx, vspID subPop = vspID()) const
 	{
-		// if a virtual subpopulation is activated, this will
-		// iterate through virtual subpopulation. However,
-		// users are not supposed to manually activate subpopulation
-		// so this feature is CPPONLY
-		return pyIndIterator(m_inds.begin(), m_inds.end(),
-			!hasActivatedVirtualSubPop(), true);
+#ifndef OPTIMIZED
+		DBG_FAILIF(subPop.isVirtual(), ValueError,
+			"Function individual currently does not support virtual subpopulation");
+
+		if (!subPop.valid())
+			CHECKRANGEIND(idx);
+		else
+			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+#endif
+		return subPops.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
 
+
+	/** Return a reference to individual \c idx in ancestral generation \c gen.
+	 *  The correct individual will be returned even if the current generation
+	 *  is not the present one (see also \c useAncestralGen). If a valid
+	 *  \e subPop is specified, \e index is relative to that \e subPop.
+	 *  Virtual subpopulation is not supported.
+	 *  <group>6-ancestral</group>
+	 */
+	individual & ancestor(ULONG idx, UINT gen, vspID subPop = vspID());
+
+	/** CPPONLY const version of ancestor().
+	 *  <group>6-ancestral</group>
+	 */
+	const individual & ancestor(ULONG idx, UINT gen, vspID subPop = vspID()) const;
 
 	/** Return an iterator that can be used to iterate through all individuals
-	 *  in a subpopulation (<tt>subPop=spID</tt>) or a virtual subpopulation
-	 *  (<tt>subPop=[spID, vspID]</tt>).
+	 *  in a population (if <tt>subPop=[]</tt>, default), or a (virtual)
+	 *  subpopulation (<tt>subPop=spID</tt> or <tt>(spID, vspID)</tt>).
 	 *  <group>4-ind</group>
 	 */
-	pyIndIterator individuals(vspID subPop)
+	pyIndIterator individuals(vspID subPop = vspID())
 	{
+		if (!subPop.valid())
+			// if a virtual subpopulation is activated, this will
+			// iterate through virtual subpopulation. However,
+			// users are not supposed to manually activate subpopulation
+			// so this feature is CPPONLY
+			return pyIndIterator(m_inds.begin(), m_inds.end(),
+				!hasActivatedVirtualSubPop(), true);
+
 		SubPopID spID = subPop.subPop();
 
 #ifndef OPTIMIZED
@@ -822,32 +800,21 @@ public:
 	}
 
 
-	/** Return an editable array of the genotype of all individuals in this
-	 *  population.
-	 *  <group>5-genotype</group>
-	 */
-	PyObject * genotype();
-
 	/** Return an editable array of the genotype of all individuals in
+	 *  a population (if <tt>subPop=[]</tt>, default), or individuals in a
 	 *  subpopulation \e subPop. Virtual subpopulation is unsupported.
 	 *  <group>5-genotype</group>
 	 */
-	PyObject * genotype(SubPopID subPop);
+	PyObject * genotype(vspID subPop = vspID());
 
-	/** Fill the genotype of all individuals of a population using a list of
-	 *  alleles \e geno. \e geno will be reused if its length is less than
-	 *  <tt>popSize()*totNumLoci()*ploidy()</tt>.
-	 *  <group>5-genotype</group>
-	 */
-	void setGenotype(vectora geno);
-
-	/** Fill the genotype of all individuals of in (virtual) subpopulation
-	 *  \e subPop using a list of alleles \e geno. \e geno will be reused if
-	 *  its length is less than
+	/** Fill the genotype of all individuals in a population (if
+	 *  <tt>subPop=[]</tt>) or in a (virtual) subpopulation \e subPop (if
+	 *  <tt>subPop=sp</tt> or <tt>(sp, vsp)</tt>) using a list of alleles
+	 *  \e geno. \e geno will be reused if its length is less than
 	 *  <tt>subPopSize(subPop)*totNumLoci()*ploidy()</tt>.
 	 *  <group>5-genotype</group>
 	 */
-	void setGenotype(vectora geno, vspID subPop);
+	void setGenotype(vectora geno, vspID subPop = vspID());
 
 	//@}
 
@@ -1026,42 +993,15 @@ public:
 	}
 
 
-	/** Set information field \c idx (an index) of the current population to
-	 *  \e values. \e values will be reused if its length is smaller than
-	 *  <tt>popSize()</tt>.
+	/** Set information field \c field (specified by index or name) of
+	 *  all individuals (if <tt>subPop=[]</tt>, default), or individuals in
+	 *  a (virtual) subpopulation (<tt>subPop=sp</tt> or <tt>(sp, vsp)<tt>)
+	 *  to \e values. \e values will be reused if its length is smaller than
+	 *  the size of the population or (virtual) subpopulation.
 	 *  <group>8-info</group>
 	 */
-	void setIndInfo(const floatList & values, UINT idx);
-
-	/** Set information field \c name of the current population to \e values.
-	 *  \e values will be reused if its length is smaller than
-	 *  <tt>popSize()</tt>.
-	 *  <group>8-info</group>
-	 */
-	void setIndInfo(const floatList & values, const string & name)
-	{
-		setIndInfo(values, infoIdx(name));
-	}
-
-
-	/** Set information field \c idx (an index) of a subpopulation
-	 *  (<tt>subPop=sp</tt>) or a virtual subpopulation
-	 *  (<tt>subPop=[sp, vsp]</tt>) to \e values. \e values will be reused if
-	 *  its length is smaller than <tt>subPopSize(subPop)</tt>.
-	 *  <group>8-info</group>
-	 */
-	void setIndInfo(const floatList & values, UINT idx, vspID subPop);
-
-	/** Set information field \c name of a subpopulation (<tt>subPop=sp</tt>) or
-	 *  a virtual subpopulation (<tt>subPop=[sp, vsp]</tt>) to \e values.
-	 *  \e values will be reused if its length is smaller than
-	 *  <tt>subPopSize(subPop)</tt>.
-	 *  <group>8-info</group>
-	 */
-	void setIndInfo(const floatList & values, const string & name, vspID subPop)
-	{
-		setIndInfo(values, infoIdx(name), subPop);
-	}
+	void setIndInfo(const floatList & values, const uintString & field,
+		vspID subPop = vspID());
 
 
 	/// CPPONLY info iterator
@@ -1134,49 +1074,21 @@ public:
 	}
 
 
-	/** Return the information field \c idx (an index) of all individuals as a
-	 *  list.
+	/** Return the values (as a list) of information field \c field (by index
+	 *  or name) of all individuals (if <tt>subPop=[]</tt>, default), or
+	 *  individuals in a (virtual) subpopulation (if <tt>subPop=sp</tt> or
+	 *  <tt>(sp, vsp)</tt>).
 	 *  <group>8-info</group>
 	 */
-	vectorinfo indInfo(UINT idx)
+	vectorinfo indInfo(const uintString & field, vspID subPop = vspID())
 	{
 		DBG_FAILIF(hasActivatedVirtualSubPop(), ValueError,
 			"This operation is not allowed when there is an activated virtual subpopulation");
-
-		return vectorinfo(infoBegin(idx), infoEnd(idx));
-	}
-
-
-	/** Return the information field \c name of all individuals as a list.
-	 *  <group>8-info</group>
-	 */
-	vectorinfo indInfo(const string & name)
-	{
-		UINT idx = infoIdx(name);
-
-		return vectorinfo(infoBegin(idx), infoEnd(idx));
-	}
-
-
-	/** Return the information field \c idx (an index) of all individuals in
-	 *  (virtual) subpopulation \e subPop as a list.
-	 *  <group>8-info</group>
-	 */
-	vectorinfo indInfo(UINT idx, vspID subPop)
-	{
-		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
-	}
-
-
-	/** Return the information field \c name of all individuals in
-	 *  (virtual) subpopulation \e subPop as a list.
-	 *  <group>8-info</group>
-	 */
-	vectorinfo indInfo(const string & name, vspID subPop)
-	{
-		UINT idx = infoIdx(name);
-
-		return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+		if (subPop.valid())
+			return vectorinfo(infoBegin(idx, subPop), infoEnd(idx, subPop));
+		else
+			return vectorinfo(infoBegin(idx), infoEnd(idx));
 	}
 
 
@@ -1361,19 +1273,14 @@ public:
 	}
 
 
-	/** return variables of a population as a Python dictionary.
+	/** return variables of a population as a Python dictionary. If a valid
+	 *  subpopulation \e subPop is specified, a dictionary
+	 *  <tt>vars()["subPop"][subPop]</tt> is returned. A \c ValueError will be
+	 *  raised if key \e subPop does not exist in \c vars(), or if key
+	 *  \e subPop does not exist in <tt>vars()["subPop"]</tt>.
 	 *  <group>9-var</group>
 	 */
-	PyObject * vars();
-
-	/** return a dictionary <tt>vars()["subPop"][subPop]</tt>. \e subPop can be
-	 *  a number (<tt>subPop=spID</tt>), or a pair of numbers
-	 *  (<tt>subPop=(spID, vspID)</tt>). A \c ValueError will be raised if key
-	 *  \c 'subPop' does not exist in \c vars(), or if key \e subPop does not
-	 *  exist in <tt>vars()["subPop"]</tt>.
-	 *  <group>9-var</group>
-	 */
-	PyObject * vars(vspID subPop);
+	PyObject * vars(vspID subPop = vspID());
 
 
 	/// CPPONLY The same as vars(), but without increasing reference count.

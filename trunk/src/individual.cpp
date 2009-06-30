@@ -123,30 +123,111 @@ bool individual::validIndex(UINT idx, UINT p, UINT ch) const
 }
 
 
-string individual::alleleChar(UINT idx) const
+UINT individual::allele(UINT idx, int p, int chrom) const
 {
-	CHECKRANGEGENOSIZE(idx);
-
-	return validIndex(idx) ? alleleName(allele(idx)) : "_";
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	if (p < 0) {
+		CHECKRANGEGENOSIZE(idx);
+		return static_cast<UINT>(*(m_genoPtr + idx));
+	} else if (chrom < 0) {
+		CHECKRANGEABSLOCUS(idx);
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() ));
+	} else {
+		CHECKRANGELOCUS(chrom, idx);
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		return static_cast<UINT>(*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom)));
+	}
 }
 
 
-string individual::alleleChar(UINT idx, UINT p) const
+string individual::alleleChar(UINT idx, int p, int chrom) const
 {
-	CHECKRANGEABSLOCUS(idx);
-	CHECKRANGEPLOIDY(p);
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	if (p < 0) {
+		CHECKRANGEGENOSIZE(idx);
+		return validIndex(idx) ? alleleName(allele(idx)) : "_";
+	} else if (chrom < 0) {
+		CHECKRANGEABSLOCUS(idx);
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		return validIndex(idx, p) ? alleleName(allele(idx, p)) : "_";
+	} else {
+		CHECKRANGELOCUS(static_cast<UINT>(chrom), idx);
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGECHROM(static_cast<UINT>(chrom));
 
-	return validIndex(idx, p) ? alleleName(allele(idx, p)) : "_";
+		return validIndex(idx, p, chrom) ? alleleName(allele(idx, p, chrom)) : "_";
+	}
 }
 
 
-string individual::alleleChar(UINT idx, UINT p, UINT ch) const
+PyObject * individual::genotype(int p, int chrom)
 {
-	CHECKRANGELOCUS(ch, idx);
-	CHECKRANGEPLOIDY(p);
-	CHECKRANGECHROM(ch);
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	if (p < 0) {
+		return Allele_Vec_As_NumArray(m_genoPtr, m_genoPtr + genoSize());
+	} else if (chrom < 0) {
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci(),
+			m_genoPtr + (p + 1) * totNumLoci() );
+	} else {
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		return Allele_Vec_As_NumArray(m_genoPtr + p * totNumLoci() + chromBegin(chrom),
+			m_genoPtr + p * totNumLoci() + chromEnd(chrom));
+	}
+}
 
-	return validIndex(idx, p, ch) ? alleleName(allele(idx, p, ch)) : "_";
+
+void individual::setAllele(Allele allele, UINT idx, int p, int chrom)
+{
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	if (p < 0) {
+		CHECKRANGEGENOSIZE(idx);
+		*(m_genoPtr + idx) = allele;
+	} else if (chrom < 0) {
+		CHECKRANGEABSLOCUS(idx);
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		*(m_genoPtr + idx + p * totNumLoci()) = allele;
+	} else {
+		CHECKRANGELOCUS(static_cast<UINT>(chrom), idx);
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		*(m_genoPtr + idx + p * totNumLoci() + chromBegin(chrom) ) = allele;
+	}
+}
+
+
+void individual::setGenotype(vectora geno, int p, int chrom)
+{
+	DBG_FAILIF(p < 0 && chrom >= 0, ValueError,
+		"A valid ploidy index has to be specified if chrom is non-positive");
+	UINT sz = geno.size();
+	if (p < 0) {
+		for (UINT i = 0; i < totNumLoci() * ploidy(); i++)
+			*(m_genoPtr + i) = geno[i % sz];
+	} else if (chrom < 0) {
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		GenoIterator ptr = m_genoPtr + p * totNumLoci();
+
+		UINT sz = geno.size();
+		for (UINT i = 0; i < totNumLoci(); i++)
+			*(ptr + i) = geno[i % sz];
+
+	} else {
+		CHECKRANGEPLOIDY(static_cast<UINT>(p));
+		CHECKRANGECHROM(static_cast<UINT>(chrom));
+		GenoIterator ptr = m_genoPtr + p * totNumLoci() + chromBegin(chrom);
+
+		UINT sz = geno.size();
+		for (UINT i = 0; i < numLoci(chrom); i++)
+			*(ptr + i) = geno[i % sz];
+	}
 }
 
 

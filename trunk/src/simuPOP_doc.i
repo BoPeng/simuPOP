@@ -2167,44 +2167,17 @@ Usage:
 
 Usage:
 
-    x.allele(idx)
+    x.allele(idx, ploidy=-1, chrom=-1)
 
 Details:
 
     return the current allele at a locus, using its absolute index
-    idx.
+    idx. If a ploidy ploidy and/or a chromosome indexes are given, idx
+    is relative to the beginning of specified homologous copy of
+    chromosomes (if chrom=-1) or the beginning of the specified
+    homologous copy of specified chromosome (if chrom >= 0).
 
 "; 
-
-%feature("docstring") simuPOP::individual::allele "
-
-Usage:
-
-    x.allele(idx, p)
-
-Details:
-
-    return the current allele at locus idx on the p-th set of
-    homologous chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::individual::allele "
-
-Usage:
-
-    x.allele(idx, p, chrom)
-
-Details:
-
-    return the current allele at locus idx on chromosome chrom of the
-    p-th set of homologous chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::individual::alleleChar "Obsolete or undocumented function."
-
-%feature("docstring") simuPOP::individual::alleleChar "Obsolete or undocumented function."
 
 %feature("docstring") simuPOP::individual::alleleChar "Obsolete or undocumented function."
 
@@ -2212,37 +2185,15 @@ Details:
 
 Usage:
 
-    x.setAllele(allele, idx)
+    x.setAllele(allele, idx, ploidy=-1, chrom=-1)
 
 Details:
 
-    set allele allele to a locus, using its absolute index idx.
-
-"; 
-
-%feature("docstring") simuPOP::individual::setAllele "
-
-Usage:
-
-    x.setAllele(allele, idx, p)
-
-Details:
-
-    set allele allele to locus idx on the p-th homologous set of
-    chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::individual::setAllele "
-
-Usage:
-
-    x.setAllele(allele, idx, p, chrom)
-
-Details:
-
-    set allele allele to locus idx on chromosome chrom of the p-th
-    homologous set of chromosomes.
+    set allele allele to a locus, using its absolute index idx. If a
+    ploidy ploidy and/or a chromosome indexes are given, idx is
+    relative to the beginning of specified homologous copy of
+    chromosomes (if chrom=-1) or the beginning of the specified
+    homologous copy of specified chromosome (if chrom >= 0).
 
 "; 
 
@@ -2250,40 +2201,15 @@ Details:
 
 Usage:
 
-    x.genotype()
-
-Details:
-
-    return an editable array (a carray of length
-    totNumLoci()*ploidy()) that represents all alleles of an
-    individual.
-
-"; 
-
-%feature("docstring") simuPOP::individual::genotype "
-
-Usage:
-
-    x.genotype(p)
+    x.genotype(ploidy=-1, chrom=-1)
 
 Details:
 
     return an editable array (a carray of length totNumLoci()) that
     represents all alleles on the p-th homologous set of chromosomes.
-
-"; 
-
-%feature("docstring") simuPOP::individual::genotype "
-
-Usage:
-
-    x.genotype(p, chrom)
-
-Details:
-
-    return an editable array (a carrary of legnth numLoci(chrom)) that
-    represents all alleles on chromosome chrom of the p-th homologous
-    set of chromosomes.
+    If ploidy or chrom is given, only alleles on the chrom-th
+    chromosome (or all chromosomes if chrom = -1) of ploidy-th
+    homologous copy of chromosomes will be returned.
 
 "; 
 
@@ -2291,41 +2217,15 @@ Details:
 
 Usage:
 
-    x.setGenotype(geno)
+    x.setGenotype(geno, ploidy=-1, chrom=-1)
 
 Details:
 
     Fill the genotype of an individual using a list of alleles geno.
-    geno will be reused if its length is less than
-    totNumLoci()*ploidy().
-
-"; 
-
-%feature("docstring") simuPOP::individual::setGenotype "
-
-Usage:
-
-    x.setGenotype(geno, p)
-
-Details:
-
-    Fill the genotype of the p-th homologous set of chromosomes using
-    a list of alleles geno. geno will be reused if its length is less
-    than totNumLoci().
-
-"; 
-
-%feature("docstring") simuPOP::individual::setGenotype "
-
-Usage:
-
-    x.setGenotype(geno, p, chrom)
-
-Details:
-
-    Fill the genotype of chromosome chrom on the p-th homologous set
-    of chromosomes using a list of alleles geno. geno will be reused
-    if its length is less than numLoci(chrom).
+    If parameters ploidy and/or chrom are specified, alleles will be
+    copied to only all or specified chromosome on selected homologous
+    copy of chromosomes. geno will be reused if its length is less
+    than number of alleles to be filled.
 
 "; 
 
@@ -2413,11 +2313,11 @@ Details:
 
 Usage:
 
-    x.info(idx)
+    x.info(field)
 
 Details:
 
-    Return the value of an information field idx (an index).
+    Return the value of an information field filed (by index or name).
 
 "; 
 
@@ -2425,37 +2325,12 @@ Details:
 
 Usage:
 
-    x.intInfo(idx)
+    x.intInfo(field)
 
 Details:
 
-    Return the value of an information field idx (an index) as an
-    integer number.
-
-"; 
-
-%feature("docstring") simuPOP::individual::info "
-
-Usage:
-
-    x.info(name)
-
-Details:
-
-    Return the value of an information field name.
-
-"; 
-
-%feature("docstring") simuPOP::individual::intInfo "
-
-Usage:
-
-    x.intInfo(name)
-
-Details:
-
-    Return the value of an information field name as an integer
-    number.
+    Return the value of an information field field (by index or name)
+    as an integer number.
 
 "; 
 
@@ -2463,23 +2338,12 @@ Details:
 
 Usage:
 
-    x.setInfo(value, idx)
+    x.setInfo(value, field)
 
 Details:
 
-    set the value of an information field idx (an index) to value.
-
-"; 
-
-%feature("docstring") simuPOP::individual::setInfo "
-
-Usage:
-
-    x.setInfo(value, name)
-
-Details:
-
-    set the value of an information field name to value.
+    set the value of an information field field (by index or name) to
+    value.
 
 "; 
 
@@ -6059,12 +5923,13 @@ Details:
 
 Usage:
 
-    x.subPopSize(subPop)
+    x.subPopSize(subPop=[])
 
 Details:
 
     Return the size of a subpopulation (subPopSize(sp)) or a virtual
-    subpopulation (subPopSize([sp, vsp])).
+    subpopulation (subPopSize([sp, vsp])). If no subpop is given, it
+    is the same as popSize().
 
 "; 
 
@@ -6209,83 +6074,47 @@ Details:
 
 Usage:
 
-    x.ind(idx)
+    x.ind(idx, subPop=[])
 
 Details:
 
-    Return a refernce to individual ind in the population.
+    Return a refernce to individual ind in the population (if
+    subPop=[], default) or a subpopulation (if subPop=sp). Virtual
+    subpopulation is not supported.
 
 "; 
 
-%feature("docstring") simuPOP::population::ind "
-
-Usage:
-
-    x.ind(idx, subPop)
-
-Details:
-
-    Return a refernce to individual ind in subpopulation subPop.
-
-"; 
-
-%ignore simuPOP::population::ind(ULONG idx, UINT subPop=0) const;
+%ignore simuPOP::population::ind(ULONG idx, vspID subPop=vspID()) const;
 
 %feature("docstring") simuPOP::population::ancestor "
 
 Usage:
 
-    x.ancestor(idx, gen)
+    x.ancestor(idx, gen, subPop=[])
 
 Details:
 
     Return a reference to individual idx in ancestral generation gen.
     The correct individual will be returned even if the current
-    generation is not the present one (see also useAncestralGen).
+    generation is not the present one (see also useAncestralGen). If a
+    valid subPop is specified, index is relative to that subPop.
+    Virtual subpopulation is not supported.
 
 "; 
 
-%ignore simuPOP::population::ancestor(ULONG idx, UINT gen) const;
-
-%feature("docstring") simuPOP::population::ancestor "
-
-Usage:
-
-    x.ancestor(idx, subPop, gen)
-
-Details:
-
-    Return a reference to individual idx of subpopulation subPop in
-    ancestral generation gen.
-
-"; 
-
-%ignore simuPOP::population::ancestor(ULONG idx, UINT subPop, UINT gen) const;
+%ignore simuPOP::population::ancestor(ULONG idx, UINT gen, vspID subPop=vspID()) const;
 
 %feature("docstring") simuPOP::population::individuals "
 
 Usage:
 
-    x.individuals()
-
-Details:
-
-    Return a Python iterator that can be used to iterate through all
-    individuals in a population.
-
-"; 
-
-%feature("docstring") simuPOP::population::individuals "
-
-Usage:
-
-    x.individuals(subPop)
+    x.individuals(subPop=[])
 
 Details:
 
     Return an iterator that can be used to iterate through all
-    individuals in a subpopulation (subPop=spID) or a virtual
-    subpopulation (subPop=[spID, vspID]).
+    individuals in a population (if subPop=[], default), or a
+    (virtual) subpopulation (subPop=spID or (spID, vspID)).
 
 "; 
 
@@ -6329,24 +6158,12 @@ Details:
 
 Usage:
 
-    x.genotype()
+    x.genotype(subPop=[])
 
 Details:
 
-    Return an editable array of the genotype of all individuals in
-    this population.
-
-"; 
-
-%feature("docstring") simuPOP::population::genotype "
-
-Usage:
-
-    x.genotype(subPop)
-
-Details:
-
-    Return an editable array of the genotype of all individuals in
+    Return an editable array of the genotype of all individuals in a
+    population (if subPop=[], default), or individuals in a
     subpopulation subPop. Virtual subpopulation is unsupported.
 
 "; 
@@ -6355,27 +6172,14 @@ Details:
 
 Usage:
 
-    x.setGenotype(geno)
+    x.setGenotype(geno, subPop=[])
 
 Details:
 
-    Fill the genotype of all individuals of a population using a list
-    of alleles geno. geno will be reused if its length is less than
-    popSize()*totNumLoci()*ploidy().
-
-"; 
-
-%feature("docstring") simuPOP::population::setGenotype "
-
-Usage:
-
-    x.setGenotype(geno, subPop)
-
-Details:
-
-    Fill the genotype of all individuals of in (virtual) subpopulation
-    subPop using a list of alleles geno. geno will be reused if its
-    length is less than subPopSize(subPop)*totNumLoci()*ploidy().
+    Fill the genotype of all individuals in a population (if
+    subPop=[]) or in a (virtual) subpopulation subPop (if subPop=sp or
+    (sp, vsp)) using a list of alleles geno. geno will be reused if
+    its length is less than subPopSize(subPop)*totNumLoci()*ploidy().
 
 "; 
 
@@ -6647,55 +6451,15 @@ Details:
 
 Usage:
 
-    x.setIndInfo(values, idx)
+    x.setIndInfo(values, field, subPop=[])
 
 Details:
 
-    Set information field idx (an index) of the current population to
-    values. values will be reused if its length is smaller than
-    popSize().
-
-"; 
-
-%feature("docstring") simuPOP::population::setIndInfo "
-
-Usage:
-
-    x.setIndInfo(values, name)
-
-Details:
-
-    Set information field name of the current population to values.
-    values will be reused if its length is smaller than popSize().
-
-"; 
-
-%feature("docstring") simuPOP::population::setIndInfo "
-
-Usage:
-
-    x.setIndInfo(values, idx, subPop)
-
-Details:
-
-    Set information field idx (an index) of a subpopulation
-    (subPop=sp) or a virtual subpopulation (subPop=[sp, vsp]) to
-    values. values will be reused if its length is smaller than
-    subPopSize(subPop).
-
-"; 
-
-%feature("docstring") simuPOP::population::setIndInfo "
-
-Usage:
-
-    x.setIndInfo(values, name, subPop)
-
-Details:
-
-    Set information field name of a subpopulation (subPop=sp) or a
-    virtual subpopulation (subPop=[sp, vsp]) to values. values will be
-    reused if its length is smaller than subPopSize(subPop).
+    Set information field field (specified by index or name) of all
+    individuals (if subPop=[], default), or individuals in a (virtual)
+    subpopulation (subPop=sp or (sp, vsp)) to values. values will be
+    reused if its length is smaller than the size of the population or
+    (virtual) subpopulation.
 
 "; 
 
@@ -6707,50 +6471,14 @@ Details:
 
 Usage:
 
-    x.indInfo(idx)
+    x.indInfo(field, subPop=[])
 
 Details:
 
-    Return the information field idx (an index) of all individuals as
-    a list.
-
-"; 
-
-%feature("docstring") simuPOP::population::indInfo "
-
-Usage:
-
-    x.indInfo(name)
-
-Details:
-
-    Return the information field name of all individuals as a list.
-
-"; 
-
-%feature("docstring") simuPOP::population::indInfo "
-
-Usage:
-
-    x.indInfo(idx, subPop)
-
-Details:
-
-    Return the information field idx (an index) of all individuals in
-    (virtual) subpopulation subPop as a list.
-
-"; 
-
-%feature("docstring") simuPOP::population::indInfo "
-
-Usage:
-
-    x.indInfo(name, subPop)
-
-Details:
-
-    Return the information field name of all individuals in (virtual)
-    subpopulation subPop as a list.
+    Return the values (as a list) of information field field (by index
+    or name) of all individuals (if subPop=[], default), or
+    individuals in a (virtual) subpopulation (if subPop=sp or (sp,
+    vsp)).
 
 "; 
 
@@ -6872,26 +6600,15 @@ Details:
 
 Usage:
 
-    x.vars()
+    x.vars(subPop=[])
 
 Details:
 
-    return variables of a population as a Python dictionary.
-
-"; 
-
-%feature("docstring") simuPOP::population::vars "
-
-Usage:
-
-    x.vars(subPop)
-
-Details:
-
-    return a dictionary vars()[\"subPop\"][subPop]. subPop can be a
-    number (subPop=spID), or a pair of numbers (subPop=(spID, vspID)).
-    A ValueError will be raised if key 'subPop' does not exist in
-    vars(), or if key subPop does not exist in vars()[\"subPop\"].
+    return variables of a population as a Python dictionary. If a
+    valid subpopulation subPop is specified, a dictionary
+    vars()[\"subPop\"][subPop] is returned. A ValueError will be raised
+    if key subPop does not exist in vars(), or if key subPop does not
+    exist in vars()[\"subPop\"].
 
 "; 
 
@@ -9540,25 +9257,11 @@ Details:
 
 Usage:
 
-    x.vars(rep)
+    x.vars(rep, subPop=[])
 
 Details:
 
     Return the local namespace of the rep-th population, equivalent to
-    x.population(rep). vars().
-
-"; 
-
-%feature("docstring") simuPOP::simulator::vars "
-
-Usage:
-
-    x.vars(rep, subPop)
-
-Details:
-
-    Return a dictionary of subpopulation variables in the local
-    namespace of the rep-th population, equivalent to
     x.population(rep).vars(subPop).
 
 "; 
@@ -11214,6 +10917,42 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::uintString "
+
+"; 
+
+%feature("docstring") simuPOP::uintString::uintString "
+
+Usage:
+
+    uintString(value)
+
+"; 
+
+%feature("docstring") simuPOP::uintString::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::uintString::name "
+
+Usage:
+
+    x.name()
+
+"; 
+
+%feature("docstring") simuPOP::uintString::value "
+
+Usage:
+
+    x.value()
+
+"; 
+
 %feature("docstring") simuPOP::ValueError "
 
 Description:
@@ -11260,6 +10999,14 @@ Usage:
 Usage:
 
     x.virtualSubPop()
+
+"; 
+
+%feature("docstring") simuPOP::vspID::valid "
+
+Usage:
+
+    x.valid()
 
 "; 
 
@@ -11711,35 +11458,6 @@ Usage:
 "; 
 
 %ignore std::pow3(unsigned n);
-
-%feature("docstring") simuPOP::population::dvars "
-
-Usage:
-
-    x.dvars()
-
-Details:
-
-    Return a wrapper of Python dictionary returned by vars() so that
-    dictionary keys can be accessed as attributes. For example
-    pop.dvars().alleleFreq is equivalent to pop.vars()[\"alleleFreq\"].
-
-"; 
-
-%feature("docstring") simuPOP::simulator::dvars "
-
-Usage:
-
-    x.dvars(rep)
-
-Details:
-
-    Return a wrapper of Python dictionary returned by vars(rep) so
-    that dictionary keys can be accessed as attributes. For example
-    simu.dvars(1).alleleFreq is equivalent to
-    simu.vars(1)[\"alleleFreq\"].
-
-"; 
 
 %feature("docstring") simuPOP::population::dvars "
 

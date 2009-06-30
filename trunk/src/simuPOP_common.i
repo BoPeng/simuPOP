@@ -212,8 +212,7 @@ namespace std
 // individual and population are type names, and can not be used
 // as function name. ind and pop are used instead.
 // at the python level, individual and population are better.
-%rename(individual) ind(ULONG);
-%rename(individual) ind(ULONG, UINT);
+%rename(individual) ind(ULONG, vspID);
 %rename(population) pop(UINT) const;
 
 %newobject LoadPopulation;
@@ -236,6 +235,7 @@ namespace std
 %implicitconv repList;
 
 %implicitconv intList;
+%implicitconv uintString;
 %implicitconv uintList;
 %implicitconv uintListFunc;
 %implicitconv floatListFunc;
