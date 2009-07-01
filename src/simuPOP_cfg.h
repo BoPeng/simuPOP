@@ -402,9 +402,6 @@ public:
 
 #define UnnamedSubPop        ""
 
-// used to set local variables
-#define subPopVar_String(sp, var) (string("subPop[") + toStr(sp) + "]{\'" + var + "\'}")
-
 // standard library
 #ifndef OPTIMIZED
 

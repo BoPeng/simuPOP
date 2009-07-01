@@ -1807,16 +1807,21 @@ PyObject * population::vars(vspID vsp)
 	DBG_ASSERT(hasVar("subPop"), ValueError,
 		"subPop statistics does not exist yet.");
 
-	DBG_FAILIF(vsp.isVirtual(), SystemError,
-		"Access to virtual subpopulation dictionary is not yet supported");
-
 	PyObject * spObj = getVar("subPop");
-	spObj = PyList_GetItem(spObj, subPop);
+	// vsp? A tube with (sp, vsp)
+	PyObject * key = NULL;
+	if (vsp.isVirtual())
+		key = Py_BuildValue("(ii)", vsp.subPop(), vsp.virtualSubPop());
+	else
+		key = PyInt_FromLong(vsp.subPop());
 
-	DBG_ASSERT(spObj != NULL, SystemError,
-		"Something is wrong about the length of subPop list. ");
+	spObj = PyDict_GetItem(spObj, key);
+
+	DBG_FAILIF(spObj == NULL, ValueError,
+		"Statistics for specified (virtual) subpopulation does not exist.");
 
 	Py_INCREF(spObj);
+	Py_INCREF(key);
 	return spObj;
 }
 
