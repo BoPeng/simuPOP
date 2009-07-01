@@ -466,12 +466,13 @@ public:
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
 			"Function individual currently does not support virtual subpopulation");
 
-		if (!subPop.valid())
+		if (!subPop.valid()) {
 			CHECKRANGEIND(idx);
-		else
+		} else {
 			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+		}
 #endif
-		return subPops.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
 
 
@@ -483,12 +484,13 @@ public:
 		DBG_FAILIF(subPop.isVirtual(), ValueError,
 			"Function individual currently does not support virtual subpopulation");
 
-		if (!subPop.valid())
+		if (!subPop.valid()) {
 			CHECKRANGEIND(idx);
-		else
+		} else {
 			CHECKRANGESUBPOPMEMBER(idx, subPop.subPop());
+		}
 #endif
-		return subPops.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
+		return subPop.valid() ? m_inds[subPopBegin(subPop.subPop()) + idx] : m_inds[idx];
 	}
 
 
