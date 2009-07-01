@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13020,7 +13020,12 @@ stat
 \end_layout
 
 \begin_layout Subsection
-Population variables
+How statistics calculation works
+\end_layout
+
+\begin_layout Standard
+Statistics calculation and retrieval are two separate processes that are
+ connected .
 \end_layout
 
 \begin_layout Subsection
