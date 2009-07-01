@@ -29,11 +29,19 @@ class TestStat(unittest.TestCase):
         'Testing calculation of population (subPopulation) size'
         pop = population(size=[200,800])
         Stat(pop, popSize=1)
-        self.assertEqual(pop.dvars().numSubPop, 2)
+        self.assertEqual(pop.dvars().subPopSize, [200, 800])
         self.assertEqual(pop.dvars().popSize, 1000)
-        self.assertEqual(pop.dvars(0).popSize, 200)
+        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
+        Stat(pop, popSize=1, subPops=1)
+        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         self.assertEqual(pop.dvars(1).popSize, 800)
+        #
+        pop.setVirtualSplitter(sexSplitter())
+        InitSex(pop, sex=[Male, Female])
+        Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1])
         self.assertEqual(pop.dvars().subPopSize, [200,800])
+        self.assertEqual(pop.dvars([0,0]).popSize, 100)
+        self.assertEqual(pop.dvars([1,1]).popSize, 400)
 
     def testNumOfMale(self):
         'Testing counting number of male'
@@ -424,7 +432,7 @@ class TestStat(unittest.TestCase):
         # This has not passed our test yet. (degree of freedom problem?)
         #
         InitByFreq(pop, [.2, .3, .5])
-        Stat(pop, LD=[2,4], popSize=1, LD_param={'midValues':True, 'stat':['CramerV', 'LD_ChiSq', 'UC_U']})
+        Stat(pop, LD=[2,4], popSize=1, subPops=range(pop.numSubPop()), LD_param={'midValues':True, 'stat':['CramerV', 'LD_ChiSq', 'UC_U']})
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
             #allele1 is alleles in loc1

@@ -370,14 +370,12 @@ string haploKey(const vectori & seq);
 class statPopSize
 {
 private:
-#define  numSubPop_String   "numSubPop"
 #define  popSize_String     "popSize"
-#define  virtualPopSize_String "virtualPopSize"
 #define  subPopSize_String  "subPopSize"
 
 public:
-	statPopSize(bool popSize = false)
-		: m_isActive(popSize)
+	statPopSize(bool popSize = false, const subPopList & subPops = subPopList())
+		: m_isActive(popSize), m_subPops(subPops)
 	{
 	}
 
@@ -392,6 +390,7 @@ public:
 
 private:
 	bool m_isActive;
+	subPopList m_subPops;
 };
 
 /// CPPONLY

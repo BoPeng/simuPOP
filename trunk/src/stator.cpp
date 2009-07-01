@@ -231,6 +231,15 @@ bool infoExec::applyDuringMating(population & pop, RawIndIterator offspring,
 }
 
 
+string subPopVar_String(vspID sp, const string & var)
+{
+	if (sp.isVirtual())
+		return "subPop{(" + toStr(sp.subPop()) + "," + toStr(sp.virtualSubPop()) + ")}{\'" + var + "\'}";
+	else
+		return "subPop{" + toStr(sp.subPop()) + "}{\'" + var + "\'}";
+}
+
+
 string haploKey(const vectori & seq)
 {
 	string key = "{'" + toStr(seq[0]);
@@ -284,7 +293,7 @@ stat::stat(
 	const repList & rep, const subPopList & subPops, const stringList & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
-	m_popSize(popSize),
+	m_popSize(popSize, subPops),
 	m_numOfMale(numOfMale, numOfMale_param),
 	m_numOfAffected(numOfAffected, numOfAffected_param),
 	m_alleleFreq(alleleFreq.elems(), alleleFreq_param),
@@ -299,7 +308,6 @@ stat::stat(
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
 	m_HWE(m_genoFreq, HWE.elems())
 {
-	DBG_DO(DBG_STATOR, cout << "Stator created" << endl);
 }
 
 
@@ -347,32 +355,19 @@ bool statPopSize::apply(population & pop)
 	if (!m_isActive)
 		return true;
 
-	UINT numSP = pop.numSubPop();
-	ULONG popSize = pop.popSize();
-
-	pop.setIntVar(numSubPop_String, numSP);
-	pop.setIntVar(popSize_String, popSize);
-
+	// popSize = ...
+	pop.setIntVar(popSize_String, pop.popSize());
+	// subPopSize = ...
 	// type mismatch, can not use subPopSizes() directly.
-	vectori spSize(numSP);
-	vectori vspSize;
-	for (size_t sp = 0; sp < numSP; ++sp) {
+	vectori spSize(pop.numSubPop());
+	for (size_t sp = 0; sp < spSize.size(); ++sp)
 		spSize[sp] = pop.subPopSize(sp);
-		size_t numVSP = pop.numVirtualSubPop();
-		if (numVSP == 0)
-			pop.setIntVar(virtualPopSize_String + string("[") + toStr(sp) + "]", spSize[sp]);
-		else {
-			vspSize.clear();
-			for (size_t vsp = 0; vsp < numVSP; ++vsp)
-				vspSize.push_back(pop.subPopSize(vspID(sp, vsp)));
-			pop.setIntVectorVar(virtualPopSize_String + string("[") + toStr(sp) + "]", vspSize);
-		}
-	}
-
 	pop.setIntVectorVar(subPopSize_String, spSize);
-
-	for (size_t sp = 0; sp < numSP; ++sp)
-		pop.setIntVar(subPopVar_String(sp, popSize_String), spSize[sp]);
+	// for each (virtual) subpopulation
+	subPopList::const_iterator it = m_subPops.begin();
+	subPopList::const_iterator itEnd = m_subPops.end();
+	for (; it != itEnd; ++it)
+		pop.setIntVar(subPopVar_String(*it, popSize_String), pop.subPopSize(*it));
 	return true;
 }
 
