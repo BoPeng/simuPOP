@@ -349,13 +349,13 @@ individual & population::ancestor(ULONG idx, UINT gen, vspID vsp)
 		if (gen == m_curAncestralGen)
 			return this->ind(idx, subPop);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-		DBG_FAILIF(subPop > m_ancestralPops[genIdx].m_subPopSize.size(),
+		DBG_FAILIF(static_cast<UINT>(subPop) > m_ancestralPops[genIdx].m_subPopSize.size(),
 			IndexError, "subpopulation index out of range");
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_subPopSize[subPop],
 			IndexError, "Individual index out of range");
 		ULONG shift = 0;
 		if (subPop > 0) {
-			for (size_t i = 0; i < subPop; ++i)
+			for (int i = 0; i < subPop; ++i)
 				shift += m_ancestralPops[genIdx].m_subPopSize[i];
 		}
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
@@ -382,13 +382,13 @@ const individual & population::ancestor(ULONG idx, UINT gen, vspID vsp) const
 		if (gen == m_curAncestralGen)
 			return this->ind(idx, subPop);
 		UINT genIdx = gen == 0 ? m_curAncestralGen - 1 : gen - 1;
-		DBG_FAILIF(subPop > m_ancestralPops[genIdx].m_subPopSize.size(),
+		DBG_FAILIF(static_cast<UINT>(subPop) > m_ancestralPops[genIdx].m_subPopSize.size(),
 			IndexError, "subpopulation index out of range");
 		DBG_FAILIF(idx > m_ancestralPops[genIdx].m_subPopSize[subPop],
 			IndexError, "Individual index out of range");
 		ULONG shift = 0;
 		if (subPop > 0) {
-			for (size_t i = 0; i < subPop; ++i)
+			for (int i = 0; i < subPop; ++i)
 				shift += m_ancestralPops[genIdx].m_subPopSize[i];
 		}
 		return m_ancestralPops[genIdx].m_inds[shift + idx];
