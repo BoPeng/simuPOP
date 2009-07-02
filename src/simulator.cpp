@@ -308,7 +308,7 @@ vectoru simulator::evolve(const opList & ops,
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Pre-mating Operator " + preMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
-				        if (e.message()[0] != '\0')
+						if (e.message()[0] != '\0')
 							cout << e.message() << endl;
 						fill(activeReps.begin(), activeReps.end(), false);
 						numStopped = activeReps.size();
@@ -371,7 +371,7 @@ vectoru simulator::evolve(const opList & ops,
 						DBG_DO(DBG_SIMULATOR, cout << "All replicates are stopped due to a StopEvolution exception raised by "
 							                       << "Post-mating Operator " + postMatingOps[it]->__repr__() +
 							" stops at replicate " + toStr(curRep) << endl);
-				        if (e.message()[0] != '\0')
+						if (e.message()[0] != '\0')
 							cout << e.message() << endl;
 						fill(activeReps.begin(), activeReps.end(), false);
 						numStopped = activeReps.size();

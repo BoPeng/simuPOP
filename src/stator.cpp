@@ -470,24 +470,25 @@ bool statNumOfAffected::apply(population & pop)
 }
 
 
-statAlleleFreq::~statAlleleFreq()
+void statAlleleFreq::addLocus(UINT locus, const subPopList & subPops,
+                              const stringList & vars)
 {
-}
-
-
-void statAlleleFreq::addLocus(UINT locus, bool post, bool subPop, bool numOfAlleles)
-{
-	vectorlu::const_iterator it;
-
-	// a new one
-	if ( (it = find(m_loci.begin(), m_loci.end(), locus)) == m_loci.end() ) {
+	if (find(m_loci.begin(), m_loci.end(), locus) == m_loci.end())
 		m_loci.push_back(locus);
-		m_ifPost.push_back(static_cast<int>(post));
+	if (!subPops.empty()) {
+		subPopList::const_iterator it = subPops.begin();
+		subPopList::const_iterator itEnd = subPops.end();
+		for (; it != itEnd; ++it)
+			if (!m_subPops.contains(*it))
+				m_subPops.push_back(*it);
 	}
-	// existing one
-	else
-		m_ifPost[ it - m_loci.begin() ] |= static_cast<int>(post);
-
+	if (!vars.empty() && m_vars.empty()) {
+		vectorstr::const_iterator it = vars.elems().begin();
+		vectorstr::const_iterator itEnd = vars.elems().end();
+		for (; it != itEnd; ++it)
+			if (!m_vars.contains(*it))
+				m_vars.push_back(*it);
+	}
 }
 
 
@@ -500,8 +501,10 @@ bool statAlleleFreq::apply(population & pop)
 
 	// no variables...
 	if (!m_vars.empty() && !m_vars.contains(AlleleNum_String) &&
-	    !m_vars.contains(AlleleFreq_String))
+	    !m_vars.contains(AlleleFreq_String)) {
+		DBG_DO(DBG_GENERAL, cout << "Allele frequency is not calculated because specified variables do not include alleleFreq or alleleNum");
 		return true;
+	}
 
 	pop.removeVar(AlleleNum_String);
 	pop.removeVar(AlleleFreq_String);
@@ -1304,8 +1307,8 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 		// unless stat() is called as
 		//     stat(LD=[0,1], midValues=True)
 		//
-		m_alleleFreq.addLocus(m_LD[i][0], m_midValues, true, true);
-		m_alleleFreq.addLocus(m_LD[i][1], m_midValues, true, true);
+		m_alleleFreq.addLocus(m_LD[i][0]);
+		m_alleleFreq.addLocus(m_LD[i][1]);
 		// also need haplotype.
 		if (m_LD[i][0] != m_LD[i][1]) {
 			vectori hap(2);
@@ -1934,10 +1937,10 @@ statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
 
 	for (size_t i = 0; i < m_atLoci.size(); ++i) {
 		// need to get allele frequency at this locus
-		m_alleleFreq.addLocus(m_atLoci[i], m_midValues, true, true);
+		m_alleleFreq.addLocus(m_atLoci[i]);
 
 		// need to get heterozygous proportion  at this locus
-		m_heteroFreq.addLocus(m_atLoci[i], m_midValues);
+		m_heteroFreq.addLocus(m_atLoci[i]);
 	}
 }
 

@@ -96,6 +96,12 @@ public:
 	}
 
 
+	bool contains(const vspID subPop) const
+	{
+		return find(m_subPops.begin(), m_subPops.end(), subPop) != m_subPops.end();
+	}
+
+
 	const_iterator begin() const
 	{
 		return m_subPops.begin();

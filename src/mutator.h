@@ -103,9 +103,9 @@ public:
 		const stringList & infoFields = stringList())
 		: baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
 		m_rates(rates.elems()), m_loci(loci.elems()), m_mapIn(mapIn), m_mapOut(mapOut),
-		m_context(context*2), m_bt(GetRNG()), m_initialized(false)
+		m_context(context * 2), m_bt(GetRNG()), m_initialized(false)
 	{
-		// NOTE: empty rates is allowed because a mutator might be 
+		// NOTE: empty rates is allowed because a mutator might be
 		// used in a mixed mutator.
 		if (m_rates.size() > 1 && m_loci.empty())
 			throw ValueError("If you use variable rates, you should specify loci for each of the rate.");
@@ -141,16 +141,19 @@ public:
 		m_initialized = false;
 	}
 
+
 	/// CPPONLY
 	double mutRate(UINT loc)
 	{
 		vectorlu::iterator it = find(m_loci.begin(), m_loci.end(), loc);
+
 		DBG_ASSERT(it != m_loci.end(), RuntimeError,
 			"Failed to find mutation rate for locus " + toStr(loc));
 		DBG_ASSERT(m_rates.size() == m_loci.size(), SystemError,
 			"Incorrect rate and loci size");
-		return m_rates[it  - m_loci.begin()];
+		return m_rates[it - m_loci.begin()];
 	}
+
 
 	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus)
@@ -165,12 +168,13 @@ public:
 	/// with a number of flags defined in the initialization stage. However, for
 	/// a rarely used feature, performance should be a secondary consideration.
 	void fillContext(const population & pop, IndAlleleIterator ptr, UINT locus);
-	
+
 	/// CPPONLY
 	void setContext(int context)
 	{
 		m_context.resize(context * 2);
 	}
+
 
 	/// CPPONLY
 	vectori & context()
@@ -178,10 +182,11 @@ public:
 		return m_context;
 	}
 
+
 	/// Apply a mutator
 	virtual bool apply(population & pop);
 
-    /// CPPONLY initialize bernulli trial according to pop size etc
+	/// CPPONLY initialize bernulli trial according to pop size etc
 	virtual void initialize(population & pop);
 
 protected:
@@ -409,7 +414,7 @@ class pyMutator : public mutator
 public:
 	/** Create a hybrid mutator that uses a user-provided function to mutate an
 	 *  allele when a mutation event happens. This function (parameter \e func)
-	 *  accepts the allele to be mutated and return a mutated allele. If 
+	 *  accepts the allele to be mutated and return a mutated allele. If
 	 *  \e context is specified, the \e context alleles to the left and to the
 	 *  right of the mutated alleles will be passed to this function as the
 	 *  second parameter. Invalid context alleles (e.g. left allele to the
@@ -424,7 +429,7 @@ public:
 	 *  \c baseOperator for descriptions of other parameters.
 	 */
 	pyMutator(const floatList & rates = floatList(), const uintList & loci = uintList(),
-		PyObject * func = NULL, int context=0, const uintListFunc & mapIn = uintListFunc(),
+		PyObject * func = NULL, int context = 0, const uintListFunc & mapIn = uintListFunc(),
 		const uintListFunc & mapOut = uintListFunc(), const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
 		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList())
@@ -503,11 +508,12 @@ public:
 		return new mixedMutator(*this);
 	}
 
-    /// CPPONLY: initialize all passed mutators
-    void initialize(population & pop);
+
+	/// CPPONLY: initialize all passed mutators
+	void initialize(population & pop);
 
 
-	/// CPPONLY 
+	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c mixedMutator
@@ -515,6 +521,7 @@ public:
 	{
 		return "<simuPOP::mixed mutator>" ;
 	}
+
 
 private:
 	opList m_mutators;
@@ -580,11 +587,12 @@ public:
 		return new contextMutator(*this);
 	}
 
-    /// CPPONLY: initialize all passed mutators
-    void initialize(population & pop);
+
+	/// CPPONLY: initialize all passed mutators
+	void initialize(population & pop);
 
 
-	/// CPPONLY 
+	/// CPPONLY
 	virtual void mutate(AlleleRef allele, UINT locus);
 
 	/// used by Python print function to print out the general information of the \c context-dependentMutator

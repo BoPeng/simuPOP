@@ -66,6 +66,12 @@ public:
 	}
 
 
+	bool operator==(const vspID & rhs) const
+	{
+		return m_subPop == rhs.m_subPop && m_virtualSubPop == rhs.m_virtualSubPop;
+	}
+
+
 	SubPopID subPop() const { return m_subPop; }
 	SubPopID virtualSubPop() const { return m_virtualSubPop; }
 	bool valid() const { return m_subPop != InvalidSubPopID; }

@@ -327,6 +327,7 @@ public:
 	InfoType info(const uintString & field) const
 	{
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+
 		CHECKRANGEINFO(idx);
 		return m_infoPtr[idx];
 	}
@@ -339,6 +340,7 @@ public:
 	int intInfo(const uintString & field) const
 	{
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+
 		CHECKRANGEINFO(idx);
 		return static_cast<int>(m_infoPtr[idx]);
 	}
@@ -351,9 +353,11 @@ public:
 	void setInfo(InfoType value, const uintString & field)
 	{
 		UINT idx = field.empty() ? field.value() : infoIdx(field.name());
+
 		CHECKRANGEINFO(idx);
 		m_infoPtr[idx] = value;
 	}
+
 
 	/// CPPONLY start of alleles
 	GenoIterator genoBegin() const
