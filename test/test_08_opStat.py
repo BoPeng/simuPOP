@@ -42,6 +42,12 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().subPopSize, [200,800])
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
         self.assertEqual(pop.dvars([1,1]).popSize, 400)
+        # test the vars parameter
+        pop = population(size=[200,800])
+        Stat(pop, popSize=1, vars='popSize')
+        self.assertEqual(pop.vars().has_key('subPopSize'), False)
+        self.assertEqual(pop.dvars().popSize, 1000)
+
 
     def testNumOfMale(self):
         'Testing counting number of male'

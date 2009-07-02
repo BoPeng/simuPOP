@@ -374,8 +374,8 @@ private:
 #define  subPopSize_String  "subPopSize"
 
 public:
-	statPopSize(bool popSize = false, const subPopList & subPops = subPopList())
-		: m_isActive(popSize), m_subPops(subPops)
+	statPopSize(bool popSize, const subPopList & subPops, const stringList & vars)
+		: m_isActive(popSize), m_subPops(subPops), m_vars(vars)
 	{
 	}
 
@@ -391,6 +391,7 @@ public:
 private:
 	bool m_isActive;
 	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
@@ -1690,6 +1691,7 @@ public:
 		//
 		const uintList & HWE = uintList(),
 		//
+		const stringList & vars = stringList(),
 		// regular parameters
 		const stringFunc & output = "",
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
