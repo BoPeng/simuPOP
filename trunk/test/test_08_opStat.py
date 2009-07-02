@@ -100,8 +100,10 @@ class TestStat(unittest.TestCase):
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
         Stat(pop, alleleFreq=[0])
-        self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
         self.assertEqual(pop.dvars().alleleNum[0], [1230, 1970])
+        self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
+        #
+        Stat(pop, alleleFreq=[0], subPops=(0, 1, 2))
         self.assertEqual(pop.dvars(0).alleleFreq[0], [.5, .5])
         self.assertEqual(pop.dvars(0).alleleNum[0], [500, 500])
         # can not use assertEqual for floating numbers in this case
@@ -111,7 +113,7 @@ class TestStat(unittest.TestCase):
         assert abs(pop.dvars(2).alleleFreq[0][0] - 0.3) < 1e-5
         assert abs(pop.dvars(2).alleleFreq[0][1] - 0.7) < 1e-5
         self.assertEqual(pop.dvars(2).alleleNum[0], [600, 1400])
-        Stat(pop, alleleFreq=[0], alleleFreq_param={'alleleNum':True, 'subPop':False})
+        Stat(pop, alleleFreq=[0], vars ='alleleNum')
         assert pop.vars().has_key('alleleNum')
         # assert not pop.vars().has_key('alleleFreq')
         # This assert fails right now because of some implementation issue
