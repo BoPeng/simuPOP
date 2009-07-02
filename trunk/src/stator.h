@@ -619,7 +619,6 @@ private:
 public:
 	statAlleleFreq(const vectorlu & atLoci = vectorlu(), const strDict & param = strDict())
 		: m_atLoci(atLoci), m_ifPost(atLoci.size()),
-		m_alleleNum(0), m_alleleFreq(0),
 		m_evalInSubPop(true)
 	{
 		for (size_t i = 0; i < atLoci.size(); ++i)
@@ -632,135 +631,17 @@ public:
 
 	void addLocus(UINT locus, bool post, bool subPop, bool numOfAlleles);
 
-	intMatrix & alleleNumAll()
-	{
-		return m_alleleNum.back();
-	}
+	vectori numOfAlleles(population & pop);
 
+	vectorf alleleFreqVec(population & pop, int loc);
 
-	vectori & alleleNumVec(int loc)
-	{
-		return m_alleleNum.back()[loc];
-	}
+	double alleleFreq(population & pop, UINT allele, int loc);
 
+	vectorf alleleFreqVec(population & pop, int loc, UINT subPop);
 
-	int alleleNum(UINT allele, int loc)
-	{
-		// test for size?
-		vectori & an = m_alleleNum.back()[loc];
+	double alleleFreq(population & pop, UINT allele, int loc, UINT subPop);
 
-		return allele < an.size() ? an[allele] : 0;
-	}
-
-	vectori numOfAlleles()
-	{
-		UINT maxLocus = 0;
-		for (size_t loc = 0; loc < m_atLoci.size(); ++loc)
-			if (maxLocus < m_atLoci[loc])
-				maxLocus = m_atLoci[loc];
-		vectori res(maxLocus + 1, 0);
-		for (size_t loc = 0; loc < m_atLoci.size(); ++loc) {
-			const vectori & alleleNum = m_alleleNum.back()[m_atLoci[loc]];
-			int cnt = 0;
-			for (size_t j = 0; j < alleleNum.size(); ++j)
-				if (alleleNum[j] != 0)
-					cnt += 1;
-			res[m_atLoci[loc]] = cnt;
-		}
-		return res;
-	}
-
-	
-	matrix & alleleFreqAll()
-	{
-		return m_alleleFreq.back();
-	}
-
-
-	vectorf & alleleFreqVec(int loc)
-	{
-		return m_alleleFreq.back()[loc];
-	}
-
-
-	double alleleFreq(UINT allele, int loc)
-	{
-		vectorf & af = m_alleleFreq.back()[loc];
-
-		return allele < af.size() ? af[allele] : 0;
-	}
-
-
-	intMatrix & alleleNumAll(UINT subPop)
-	{
-		return m_alleleNum[subPop];
-	}
-
-
-	vectori & alleleNumVec(int loc, UINT subPop)
-	{
-		return m_alleleNum[subPop][loc];
-	}
-
-
-	int alleleNum(UINT allele, int loc, UINT subPop)
-	{
-		vectori & an = m_alleleNum[subPop][loc];
-
-		return allele < an.size() ? an[allele] : 0;
-	}
-
-
-	matrix & alleleFreqAll(UINT subPop)
-	{
-		return m_alleleFreq[subPop];
-	}
-
-
-	vectorf & alleleFreqVec(int loc, UINT subPop)
-	{
-		return m_alleleFreq[subPop][loc];
-	}
-
-
-	double alleleFreq(UINT allele, int loc, UINT subPop)
-	{
-		vectorf & af = m_alleleFreq[subPop][loc];
-
-		return allele < af.size() ? af[allele] : 0.;
-	}
-
-
-	vectori alleles(int loc)
-	{
-		vectori al;
-
-		for (size_t j = 0; j < m_alleleNum.back()[loc].size(); ++j)
-			if (m_alleleNum.back()[loc][j] > 0)
-				al.push_back(j);
-
-		return al;
-	}
-
-
-	vectori alleles(int loc, UINT subPop)
-	{
-		vectori al;
-
-		// whether or not count 0 allele?
-		// consider NA as an allele is reasonable.
-		for (size_t j = 0; j < m_alleleNum[subPop][loc].size(); ++j)
-			if (m_alleleNum[subPop][loc][j] != 0)
-				al.push_back(j);
-
-#ifndef BINARYALLELE
-		DBG_WARNING(m_alleleNum[subPop][loc][0] != 0,
-			"Having zero (NA) allele, counted as one allele.");
-#endif
-
-		return al;
-	}
-
+	vectori alleles(population & pop, int loc);
 
 	bool apply(population & pop);
 
@@ -770,13 +651,6 @@ private:
 
 	/// whether or not post result
 	vectori m_ifPost;
-
-	/// allele counter! use this matrix to avoid frequent
-	/// allocation of memory
-	vector<intMatrix> m_alleleNum;
-
-	/// allele Freq
-	vector<matrix> m_alleleFreq;
 
 	///
 	bool m_evalInSubPop;
@@ -1164,7 +1038,7 @@ public:
 
 private:
 	// calculate single allele LD values
-	void calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
+	void calculateLD(population & pop, const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
 		double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
 
 	// output statistics
