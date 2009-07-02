@@ -261,7 +261,6 @@ stat::stat(
 	strDict numOfAffected_param,
 	//
 	const uintList & alleleFreq,
-	const strDict & alleleFreq_param,
 	//
 	const uintList & heteroFreq,
 	const uintList & expHetero,
@@ -294,7 +293,7 @@ stat::stat(
 	m_popSize(popSize, subPops, vars),
 	m_numOfMale(numOfMale, numOfMale_param),
 	m_numOfAffected(numOfAffected, numOfAffected_param),
-	m_alleleFreq(alleleFreq.elems(), alleleFreq_param),
+	m_alleleFreq(alleleFreq.elems(), subPops, vars),
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems()),
 	m_expHetero(m_alleleFreq, expHetero.elems(), expHetero_param),
 	m_genoFreq(genoFreq.elems(), genoFreq_param),
@@ -481,120 +480,104 @@ void statAlleleFreq::addLocus(UINT locus, bool post, bool subPop, bool numOfAlle
 	vectorlu::const_iterator it;
 
 	// a new one
-	if ( (it = find(m_atLoci.begin(), m_atLoci.end(), locus)) == m_atLoci.end() ) {
-		m_atLoci.push_back(locus);
+	if ( (it = find(m_loci.begin(), m_loci.end(), locus)) == m_loci.end() ) {
+		m_loci.push_back(locus);
 		m_ifPost.push_back(static_cast<int>(post));
 	}
 	// existing one
 	else
-		m_ifPost[ it - m_atLoci.begin() ] |= static_cast<int>(post);
+		m_ifPost[ it - m_loci.begin() ] |= static_cast<int>(post);
 
 }
 
 
 bool statAlleleFreq::apply(population & pop)
 {
-	if (m_atLoci.empty())
+	if (m_loci.empty())
 		return true;
 
-	UINT numSP = pop.numSubPop();
-	UINT numLoci = m_atLoci.size();
+	DBG_DO(DBG_STATOR, cout << "Calculated allele frequency for loci " << m_loci << endl);
+
+	// no variables...
+	if (!m_vars.empty() && !m_vars.contains(AlleleNum_String) &&
+	    !m_vars.contains(AlleleFreq_String))
+		return true;
 
 	pop.removeVar(AlleleNum_String);
 	pop.removeVar(AlleleFreq_String);
-	for (UINT sp = 0; sp < numSP; ++sp) {
-		pop.removeVar(subPopVar_String(sp, AlleleNum_String));
-		pop.removeVar(subPopVar_String(sp, AlleleFreq_String));
+	// all subpopulations
+	for (size_t i = 0; i < m_loci.size(); ++i) {
+		UINT loc = m_loci[i];
+
+		vectori count(2, 0);
+		size_t allCount = 0;
+
+		// go through all alleles
+		IndAlleleIterator a = pop.alleleIterator(loc);
+		// use allAllelel here because some marker does not have full number
+		// of alleles (e.g. markers on chromosome X and Y).
+		for (; a.valid(); ++a) {
+			if (AlleleUnsigned(*a) >= count.size())
+				count.resize(*a + 1, 0);
+			count[*a]++;
+			allCount++;
+		}
+		// output variable.
+		if (m_vars.empty() || m_vars.contains(AlleleNum_String)) {
+			DBG_DO(DBG_STATOR, cout << "Set variable " << AlleleNum_String << "{"
+				                    << loc << "} with value " << count << endl);
+			pop.setIntVectorVar(string(AlleleNum_String) + "{" + toStr(loc) + "}", count);
+		}
+		if (m_vars.empty() || m_vars.contains(AlleleFreq_String)) {
+			vectorf freq(count.size(), 0.);
+			if (allCount != 0) {
+				for (size_t i = 0; i < count.size(); ++i)
+					freq[i] = static_cast<double>(count[i]) / allCount;
+			}
+			DBG_DO(DBG_STATOR, cout << "Set variable " << AlleleFreq_String << "{"
+				                    << loc << "} with value " << freq << endl);
+			pop.setDoubleVectorVar(string(AlleleFreq_String) + "{" + toStr(loc) + "}", freq);
+		}
 	}
+	// selected (virtual) subpopulatons.
+	subPopList::const_iterator it = m_subPops.begin();
+	subPopList::const_iterator itEnd = m_subPops.end();
+	for (; it != itEnd; ++it) {
+		pop.removeVar(subPopVar_String(*it, AlleleNum_String));
+		pop.removeVar(subPopVar_String(*it, AlleleFreq_String));
+		for (size_t i = 0; i < m_loci.size(); ++i) {
+			UINT loc = m_loci[i];
 
-	string varname;
+			vectori count(2, 0);
+			size_t allCount = 0;
 
-	for (size_t i = 0; i < numLoci; ++i) {
-		UINT loc = m_atLoci[i];
-
-		vectori sum(2, 0);
-		ULONG sumAll = 0;
-
-		// for each subpopulation
-		for (UINT sp = 0; sp < numSP;  ++sp) {
-			vectori num(2, 0);
-
+			if (it->isVirtual())
+				pop.activateVirtualSubPop(*it);
 			// go through all alleles
-			IndAlleleIterator a = pop.alleleIterator(loc, sp);
+			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
 			// use allAllelel here because some marker does not have full number
 			// of alleles (e.g. markers on chromosome X and Y).
-			ULONG allAllele = 0;
 			for (; a.valid(); ++a) {
-				if (AlleleUnsigned(*a) >= num.size())
-					num.resize(*a + 1, 0);
-				num[*a]++;
-				allAllele++;
+				if (AlleleUnsigned(*a) >= count.size())
+					count.resize(*a + 1, 0);
+				count[*a]++;
+				allCount++;
 			}
-
-			// add this number to overall num
-			// calculate frequency
-			// if there is only one sp, no need to do so.
-			if (numSP > 1) {
-				if (sum.size() < num.size())
-					sum.resize(num.size(), 0);
-				for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
-					sum[e] += num[e];
-				sumAll += allAllele;
+			// output variable.
+			if (m_vars.empty() || m_vars.contains(AlleleNum_String))
+				pop.setIntVectorVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", count);
+			if (m_vars.empty() || m_vars.contains(AlleleFreq_String)) {
+				vectorf freq(count.size(), 0.);
+				if (allCount != 0) {
+					for (size_t i = 0; i < count.size(); ++i)
+						freq[i] = static_cast<double>(count[i]) / allCount;
+				}
+				pop.setDoubleVectorVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", freq);
 			}
-
-			vectorf freq(num.size(), 0.);
-			for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
-				freq[e] = allAllele == 0 ? 0 : static_cast<double>(num[e]) / allAllele;
-
-			// post result at this locus
-			//if (m_ifPost[i]) {
-				if (m_output_alleleNum) {
-					varname = subPopVar_String(sp, AlleleNum_String) + "[" + toStr(loc) + "]";
-					PyObject * d = pop.setIntVectorVar(varname, num);
-
-					// do not need a separate result
-					if (numSP == 1 && sp == 0) {
-						varname = toStr(AlleleNum_String) + "[" + toStr(loc) + "]";
-						Py_INCREF(d);
-						pop.setVar(varname, d);
-					}
-				}
-
-				if (m_output_alleleFreq) {
-					varname = subPopVar_String(sp, AlleleFreq_String) + "[" + toStr(loc) + "]";
-					PyObject * d = pop.setDoubleVectorVar(varname, freq);
-
-					// do not need a separate result
-					if (numSP == 1 && sp == 0) {
-						varname = toStr(AlleleFreq_String) + "[" + toStr(loc) + "]";
-						Py_INCREF(d);
-						pop.setVar(varname, d);
-					}
-				}
-			//}                                                                                   // post
-
-		}                                                                                       // subpop
-
-		if (numSP > 1) {                                                                        // calculate sum and post overall result
-			// summary?
-			vectorf freq(sum.size(), 0);
-			for (size_t e = 0, eEnd = sum.size(); e < eEnd; ++e)
-				freq[e] = sumAll == 0 ? 0 : static_cast<double>(sum[e]) / sumAll;
-
-			//if (m_ifPost[i]) {
-				if (m_output_alleleNum) {
-					varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
-					pop.setIntVectorVar(varname, sum);
-				}
-				if (m_output_alleleFreq) {
-					varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
-					pop.setDoubleVectorVar(varname, freq);
-				}
-			//}
-
+			if (it->isVirtual())
+				pop.deactivateVirtualSubPop(it->subPop());
 		}
-	}                                                                                         // all loci
-
+	}
 	return true;
 }
 
@@ -603,12 +586,12 @@ vectori statAlleleFreq::numOfAlleles(population & pop)
 {
 	UINT maxLocus = 0;
 
-	for (size_t loc = 0; loc < m_atLoci.size(); ++loc)
-		if (maxLocus < m_atLoci[loc])
-			maxLocus = m_atLoci[loc];
+	for (size_t loc = 0; loc < m_loci.size(); ++loc)
+		if (maxLocus < m_loci[loc])
+			maxLocus = m_loci[loc];
 	vectori res(maxLocus + 1, 0);
-	for (size_t loc = 0; loc < m_atLoci.size(); ++loc) {
-		string varname = string(AlleleNum_String) + "[" + toStr(m_atLoci[loc]) + "]";
+	for (size_t loc = 0; loc < m_loci.size(); ++loc) {
+		string varname = string(AlleleNum_String) + "[" + toStr(m_loci[loc]) + "]";
 		PyObject * d = pop.getVar(varname);
 		vectori num;
 		PyObj_As_IntArray(d, num);
@@ -617,7 +600,7 @@ vectori statAlleleFreq::numOfAlleles(population & pop)
 		for (size_t j = 0; j < num.size(); ++j)
 			if (num[j] != 0)
 				cnt += 1;
-		res[m_atLoci[loc]] = cnt;
+		res[m_loci[loc]] = cnt;
 	}
 	return res;
 }
@@ -628,6 +611,7 @@ vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc)
 	string varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
 	PyObject * d = pop.getVar(varname);
 	vectorf res;
+
 	PyObj_As_Array(d, res);
 	return res;
 }
@@ -638,6 +622,7 @@ double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc)
 	string varname = string(AlleleFreq_String) + "[" + toStr(loc) + "][" + toStr(allele) + "]";
 	PyObject * d = pop.getVar(varname);
 	double af;
+
 	PyObj_As_Double(d, af);
 	return af;
 }
@@ -648,6 +633,7 @@ vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc, UINT subPop)
 	string varname = subPopVar_String(subPop, AlleleFreq_String) + "[" + toStr(loc) + "]";
 	PyObject * d = pop.getVar(varname);
 	vectorf res;
+
 	PyObj_As_Array(d, res);
 	return res;
 }
@@ -658,6 +644,7 @@ double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc, UINT s
 	string varname = subPopVar_String(subPop, AlleleFreq_String) + "[" + toStr(loc) + "][" + toStr(allele) + "]";
 	PyObject * d = pop.getVar(varname);
 	double af;
+
 	PyObj_As_Double(d, af);
 	return af;
 }
@@ -668,6 +655,7 @@ vectori statAlleleFreq::alleles(population & pop, int loc)
 	string varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
 	PyObject * d = pop.getVar(varname);
 	vectori res;
+
 	PyObj_As_IntArray(d, res);
 
 	vectori al;
@@ -1332,7 +1320,7 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 // this function calculate single-allele LD measures
 // D, D_p and r2 are used to return calculated values.
 // LD for subpopulation sp is calculated if subPop is true
-void statLD::calculateLD(population& pop, const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
+void statLD::calculateLD(population & pop, const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
                          double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2)
 {
 	if (subPop) {

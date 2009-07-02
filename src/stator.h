@@ -617,11 +617,11 @@ private:
 #define  AlleleFreq_String    "alleleFreq"
 
 public:
-	statAlleleFreq(const vectorlu & atLoci = vectorlu(), const strDict & param = strDict())
-		: m_atLoci(atLoci), m_ifPost(atLoci.size()),
-		m_evalInSubPop(true)
+	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
+		: m_loci(loci), m_ifPost(loci.size()),
+		m_subPops(subPops), m_vars(vars)
 	{
-		for (size_t i = 0; i < atLoci.size(); ++i)
+		for (size_t i = 0; i < loci.size(); ++i)
 			m_ifPost[i] = 1; // true, post result
 	}
 
@@ -647,15 +647,13 @@ public:
 
 private:
 	/// which alleles?
-	vectorlu m_atLoci;
+	vectorlu m_loci;
 
 	/// whether or not post result
 	vectori m_ifPost;
 
-	///
-	bool m_evalInSubPop;
-	bool m_output_alleleNum;
-	bool m_output_alleleFreq;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
@@ -1453,7 +1451,6 @@ public:
 		strDict numOfAffected_param = strDict(),
 		//
 		const uintList & alleleFreq = uintList(),
-		const strDict & alleleFreq_param = strDict(),
 		//
 		const uintList & heteroFreq = uintList(),
 		const uintList & expHetero = uintList(),
