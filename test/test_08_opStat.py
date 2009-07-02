@@ -99,7 +99,7 @@ class TestStat(unittest.TestCase):
             [0, 100],[100, 600], [600, 1000]]))
         InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
             subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-        Stat(pop, alleleFreq=[0], numOfAlleles=[0])
+        Stat(pop, alleleFreq=[0])
         self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
         self.assertEqual(pop.dvars().alleleNum[0], [1230, 1970])
         self.assertEqual(pop.dvars(0).alleleFreq[0], [.5, .5])
@@ -111,30 +111,12 @@ class TestStat(unittest.TestCase):
         assert abs(pop.dvars(2).alleleFreq[0][0] - 0.3) < 1e-5
         assert abs(pop.dvars(2).alleleFreq[0][1] - 0.7) < 1e-5
         self.assertEqual(pop.dvars(2).alleleNum[0], [600, 1400])
-        self.assertEqual(pop.dvars().numOfAlleles[0], 2)
-        self.assertEqual(pop.dvars(0).numOfAlleles[0], 2)
-        self.assertEqual(pop.dvars(1).numOfAlleles[0], 2)
         Stat(pop, alleleFreq=[0], alleleFreq_param={'alleleNum':True, 'subPop':False})
         assert pop.vars().has_key('alleleNum')
         assert not pop.vars().has_key('alleleFreq')
         assert not pop.vars().has_key('numOfAlleles')
         # This assert fails right now because of some implementation issue
         #assert not pop.vars(0).has_key('alleleNum')
-
-
-    def testNumOfAlleles(self):
-        'Testing calculation of number of alleles'
-        pop = population(size=[5000,15000], loci=[1])
-        InitByFreq(pop, [.2, 0, .5, .3])
-        Stat(pop, numOfAlleles=[0])
-        if AlleleType() == 'binary':
-            self.assertEqual(pop.dvars().numOfAlleles[0], 2)
-            self.assertEqual(pop.dvars(0).numOfAlleles[0], 2)
-            self.assertEqual(pop.dvars(1).numOfAlleles[0], 2)
-        else:
-            self.assertEqual(pop.dvars().numOfAlleles[0], 3)
-            self.assertEqual(pop.dvars(0).numOfAlleles[0], 3)
-            self.assertEqual(pop.dvars(1).numOfAlleles[0], 3)
 
     def testHeteroFreq(self):
         'Testing counting of heterozygote frequency'

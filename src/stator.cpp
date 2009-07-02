@@ -260,9 +260,6 @@ stat::stat(
 	bool numOfAffected,
 	strDict numOfAffected_param,
 	//
-	const uintList & numOfAlleles,
-	strDict numOfAlleles_param,
-	//
 	const uintList & alleleFreq,
 	const strDict & alleleFreq_param,
 	//
@@ -298,7 +295,6 @@ stat::stat(
 	m_numOfMale(numOfMale, numOfMale_param),
 	m_numOfAffected(numOfAffected, numOfAffected_param),
 	m_alleleFreq(alleleFreq.elems(), alleleFreq_param),
-	m_numOfAlleles(m_alleleFreq, numOfAlleles.elems(), numOfAlleles_param),
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems()),
 	m_expHetero(m_alleleFreq, expHetero.elems(), expHetero_param),
 	m_genoFreq(genoFreq.elems(), genoFreq_param),
@@ -319,7 +315,6 @@ stat::stat(const stat & rhs) :
 	m_numOfMale(rhs.m_numOfMale),
 	m_numOfAffected(rhs.m_numOfAffected),
 	m_alleleFreq(rhs.m_alleleFreq),
-	m_numOfAlleles(m_alleleFreq, m_numOfAlleles),   // note this one
 	m_heteroFreq(rhs.m_heteroFreq),
 	m_expHetero(m_alleleFreq, rhs.m_expHetero),     // and this one
 	m_genoFreq(rhs.m_genoFreq),
