@@ -822,53 +822,6 @@ private:
 	bool m_output_numOfAlleles;
 };
 
-// use alleleFreq to get number of alleles
-// so statNumOfAlleles is just a proxy class
-/// CPPONLY
-class statNumOfAlleles
-{
-public:
-	statNumOfAlleles(statAlleleFreq & calc, const vectorlu & atLoci = vectorlu(),
-		const strDict & param = strDict())
-		: m_calc(calc), m_evalInSubPop(true)
-	{
-		if (!param.empty()) {
-			strDict::const_iterator it;
-			strDict::const_iterator itEnd = param.end();
-			if ((it = param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second != 0.;
-		}
-		for (vectorlu::const_iterator it = atLoci.begin(); it != atLoci.end(); ++it)
-			m_calc.addLocus(*it, true, m_evalInSubPop, true);
-	}
-
-
-	/// CPPONLY: this is used by the copy constructor
-	statNumOfAlleles(statAlleleFreq & calc, const statNumOfAlleles & rhs)
-		: m_calc(calc), m_evalInSubPop(rhs.m_evalInSubPop)
-	{
-	}
-
-
-	~statNumOfAlleles()
-	{
-	}
-
-
-	// do nothing. m_calc.spply will be called by stat.
-	bool apply(population & pop)
-	{
-		return true;
-	}
-
-
-private:
-	/// a reference to an existing allelefreq calculator
-	statAlleleFreq & m_calc;
-
-	bool m_evalInSubPop;
-};
-
 /// CPPONLY
 class statHeteroFreq
 {
@@ -1663,9 +1616,6 @@ public:
 		bool numOfAffected = false,
 		strDict numOfAffected_param = strDict(),
 		//
-		const uintList & numOfAlleles = uintList(),
-		strDict numOfAlleles_param = strDict(),
-		//
 		const uintList & alleleFreq = uintList(),
 		const strDict & alleleFreq_param = strDict(),
 		//
@@ -1731,7 +1681,6 @@ private:
 	statNumOfMale m_numOfMale;
 	statNumOfAffected m_numOfAffected;
 	statAlleleFreq m_alleleFreq;
-	statNumOfAlleles m_numOfAlleles;
 	statHeteroFreq m_heteroFreq;
 	statExpHetero m_expHetero;
 	statGenoFreq m_genoFreq;
