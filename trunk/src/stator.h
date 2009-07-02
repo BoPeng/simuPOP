@@ -618,18 +618,19 @@ private:
 
 public:
 	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
-		: m_loci(loci), m_ifPost(loci.size()),
-		m_subPops(subPops), m_vars(vars)
+		: m_loci(loci), m_subPops(subPops), m_vars(vars)
 	{
-		for (size_t i = 0; i < loci.size(); ++i)
-			m_ifPost[i] = 1; // true, post result
 	}
 
 
 	/// destructor, nested vectors have to be cleared manually
-	~statAlleleFreq();
+	~statAlleleFreq()
+	{
+	}
 
-	void addLocus(UINT locus, bool post, bool subPop, bool numOfAlleles);
+
+	void addLocus(UINT locus, const subPopList & subPops = subPopList(),
+		const stringList & vars = stringList());
 
 	vectori numOfAlleles(population & pop);
 
@@ -648,9 +649,6 @@ public:
 private:
 	/// which alleles?
 	vectorlu m_loci;
-
-	/// whether or not post result
-	vectori m_ifPost;
 
 	subPopList m_subPops;
 	stringList m_vars;
@@ -825,7 +823,7 @@ public:
 		}
 		// add expected hetero to m_alleleFreq
 		for (size_t i = 0; i < expHetero.size(); ++i)
-			m_alleleFreq.addLocus(expHetero[i], m_midValues, m_evalInSubPop, false);
+			m_alleleFreq.addLocus(expHetero[i]);
 	}
 
 

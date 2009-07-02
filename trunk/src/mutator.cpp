@@ -75,15 +75,15 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus >= beg + i)
-			m_context[i] = * (ptr.ptr() - (cnt - i));
+			m_context[i] = *(ptr.ptr() - (cnt - i));
 		else
 			m_context[i] = -1;
 	}
 	for (size_t i = 0; i < cnt; ++i) {
 		if (locus + i < end)
-			m_context[cnt+i] = * (ptr.ptr() + i + 1);
+			m_context[cnt + i] = *(ptr.ptr() + i + 1);
 		else
-			m_context[cnt+i] = -1;
+			m_context[cnt + i] = -1;
 	}
 	if (!m_mapIn.empty() || m_mapIn.func().isValid()) {
 		for (size_t i = 0; i < m_context.size(); ++i) {
@@ -94,7 +94,7 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 				if (static_cast<UINT>(m_context[i]) < mapInList.size())
 					m_context[i] = mapInList[m_context[i]];
 			} else {
-				m_context[i] = m_mapIn.func()(PyObj_As_Int, "(i)",
+				m_context[i] = m_mapIn.func() (PyObj_As_Int, "(i)",
 					m_context[i]);
 			}
 		}
@@ -104,7 +104,7 @@ void mutator::fillContext(const population & pop, IndAlleleIterator ptr, UINT lo
 
 bool mutator::apply(population & pop)
 {
-    if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
+	if (!m_initialized || m_bt.trialSize() != pop.ploidy() * pop.popSize()) {
 		initialize(pop);
 		DBG_DO(DBG_MUTATOR, cout << "Reinitialize mutator at loci" << m_loci <<
 			" at rate " << m_rates << endl);
@@ -383,10 +383,11 @@ void smmMutator::mutate(AlleleRef allele, UINT)
 void pyMutator::mutate(AlleleRef allele, UINT)
 {
 	int resInt = 0;
+
 	if (m_contextObj == NULL && !context().empty())
 		// this needs to be done only once
 		m_contextObj = Int_Vec_As_NumArray(context().begin(), context().end());
-	
+
 	if (m_contextObj != NULL)
 		resInt = m_func(PyObj_As_Int, "(iO)", static_cast<int>(allele), m_contextObj);
 	else
@@ -406,9 +407,9 @@ void pyMutator::mutate(AlleleRef allele, UINT)
 
 void mixedMutator::initialize(population & pop)
 {
-    mutator::initialize(pop);
-    for (size_t i = 0; i < m_mutators.size(); ++i)
-        reinterpret_cast<mutator *>(m_mutators[i])->initialize(pop);
+	mutator::initialize(pop);
+	for (size_t i = 0; i < m_mutators.size(); ++i)
+		reinterpret_cast<mutator *>(m_mutators[i])->initialize(pop);
 }
 
 
@@ -417,6 +418,7 @@ void mixedMutator::mutate(AlleleRef allele, UINT locus)
 	UINT idx = m_sampler.get();
 	mutator * mut = reinterpret_cast<mutator *>(m_mutators[idx]);
 	double mu = mut->mutRate(locus);
+
 	if (mu == 1.0 || GetRNG().randUniform01() < mu)
 		mut->mutate(allele, locus);
 }
@@ -424,15 +426,16 @@ void mixedMutator::mutate(AlleleRef allele, UINT locus)
 
 void contextMutator::initialize(population & pop)
 {
-    mutator::initialize(pop);
-    for (size_t i = 0; i < m_mutators.size(); ++i)
-        reinterpret_cast<mutator *>(m_mutators[i])->initialize(pop);
+	mutator::initialize(pop);
+	for (size_t i = 0; i < m_mutators.size(); ++i)
+		reinterpret_cast<mutator *>(m_mutators[i])->initialize(pop);
 }
 
 
 void contextMutator::mutate(AlleleRef allele, UINT locus)
 {
 	const vectori & alleles = context();
+
 	for (size_t i = 0; i < m_contexts.size(); ++i) {
 		bool match = true;
 		for (size_t j = 0; j < alleles.size(); ++j) {
@@ -459,6 +462,7 @@ void contextMutator::mutate(AlleleRef allele, UINT locus)
 		throw RuntimeError("No match context is found and there is no default mutator");
 	}
 }
+
 
 bool pointMutator::apply(population & pop)
 {

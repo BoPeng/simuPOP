@@ -568,6 +568,7 @@ PyObject * Int_Vec_As_NumArray(vectori::iterator begin, vectori::iterator end)
 	return res;
 }
 
+
 PyObject * Allele_Vec_As_NumArray(GenoIterator begin, GenoIterator end)
 {
 	PyObject * res = newcarrayiterobject(begin, end);
@@ -729,7 +730,7 @@ next:
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
 		else if (keyType == 1) {
 			size_t j = s + 1;
-			for (; j < i && name[j] != ','; ++j);
+			for (; j < i && name[j] != ','; ++j) ;
 			DBG_ASSERT(name[j] == ',', ValueError, "Tuple key must have two elements.");
 			PyObject * sp = PyInt_FromString(const_cast<char *>(name.substr(s + 1, j - s - 1).c_str()), NULL, 0);
 			PyObject * vsp = PyInt_FromString(const_cast<char *>(name.substr(j + 1, i - j - 2).c_str()), NULL, 0);
@@ -737,7 +738,7 @@ next:
 			DBG_FAILIF(vsp == NULL, ValueError, "Failed to obtain virtual subpopulation index from tuple index");
 			childKey = Py_BuildValue("(OO)", sp, vsp);
 			Py_DECREF(sp);
-			Py_DECREF(vsp);			
+			Py_DECREF(vsp);
 		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
 		// not exist
@@ -852,11 +853,11 @@ next:
 		assert(name[i] == '}');
 
 		PyObject * childKey;
-	    if (keyType == 0)
+		if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
 		else if (keyType == 1) {
 			size_t j = s + 1;
-			for (; j < i && name[j] != ','; ++j);
+			for (; j < i && name[j] != ','; ++j) ;
 			DBG_ASSERT(name[j] == ',', ValueError, "Tuple key must have two elements.");
 			PyObject * sp = PyInt_FromString(const_cast<char *>(name.substr(s + 1, j - s - 1).c_str()), NULL, 0);
 			PyObject * vsp = PyInt_FromString(const_cast<char *>(name.substr(j + 1, i - j - 2).c_str()), NULL, 0);
@@ -864,10 +865,10 @@ next:
 			DBG_FAILIF(vsp == NULL, ValueError, "Failed to obtain virtual subpopulation index from tuple index");
 			childKey = Py_BuildValue("(OO)", sp, vsp);
 			Py_DECREF(sp);
-			Py_DECREF(vsp);			
+			Py_DECREF(vsp);
 		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
-	
+
 		// ready for iteration
 		curType = 1;
 		curParent = curChild;
@@ -2090,7 +2091,7 @@ void CloseOutput(const string & output)
 	else {
 		DBG_ASSERT(ostreamManager().hasOstream(output), RuntimeError,
 			"Output " + output + " does not exist or has already been closed.");
-		ostreamManager().closeOstream(output);	
+		ostreamManager().closeOstream(output);
 	}
 }
 

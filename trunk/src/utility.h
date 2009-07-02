@@ -397,15 +397,24 @@ public:
 		m_elems.push_back(str2);
 	}
 
+
 	bool empty() const
 	{
 		return m_elems.empty();
 	}
 
+
 	bool contains(const string & str) const
 	{
 		return find(m_elems.begin(), m_elems.end(), str) != m_elems.end();
 	}
+
+
+	void push_back(const string & str)
+	{
+		m_elems.push_back(str);
+	}
+
 
 	const vectorstr & elems() const
 	{
@@ -424,32 +433,37 @@ protected:
 class uintString
 {
 public:
-    uintString(UINT value) : m_string(), m_int(value) 
-    {
-    }
+	uintString(UINT value) : m_string(), m_int(value)
+	{
+	}
 
-    uintString(const string & name) : m_string(name), m_int(0)
-    {
-    }
 
-    bool empty() const
-    {
-        return m_string.empty();
-    }
+	uintString(const string & name) : m_string(name), m_int(0)
+	{
+	}
 
-    const string & name() const
-    {
-        return m_string;
-    }
 
-    UINT value() const
-    {
-        return m_int;
-    }
+	bool empty() const
+	{
+		return m_string.empty();
+	}
+
+
+	const string & name() const
+	{
+		return m_string;
+	}
+
+
+	UINT value() const
+	{
+		return m_int;
+	}
+
 
 private:
-    string m_string;
-    UINT m_int;
+	string m_string;
+	UINT m_int;
 };
 
 
