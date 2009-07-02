@@ -2060,6 +2060,44 @@ simu.evolve(
 )
 #end
 
+#file log/simuTrajectory.log
+def Nt(gen, oldSize=[]):
+    '''
+    Return population size at generation gen defined by the
+    demographic model.
+    '''
+    #return int((10**4) * exp(.00115 * gen))
+    return [1000]
+
+def fitness(gen):
+    '''
+    Return selection pressure.
+    '''
+    return [1, 1, 1]
+
+def simulation(loci, genEnd, freq):
+    
+    traj = BackwardTrajectory(N=Nt, fitness=fitness, nLoci=loci[0],
+                              genEnd=genEnd, freq=freq)
+    
+    print 'Trajectory simulated: ', len(traj.traj)
+    print Nt(min(traj.traj.keys()))
+    pop = population(size=Nt(min(traj.traj.keys())), loci=loci)
+    mating = controlledRandomMating(loci=[0, 1], subPopSize=Nt,
+            freqFunc=traj.func())
+    simu = simulator(pop, mating)
+    simu.evolve(
+        # preOps=[initByFreq...]
+        ops = [], #traj.mutators() + [
+            #stat(alleleFreq=[0]),
+            #pyEval(r"'%.3f\t' % alleleFreq[0][0]")
+            #],
+        gen=1000
+    )
+
+simulation(loci=[2], genEnd = 1000, freq=[0.01, 0.02])
+#end
+
 #file log/rpy.log
 from simuPOP import *
 from simuRPy import varPlotter

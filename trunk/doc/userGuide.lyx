@@ -14636,6 +14636,208 @@ simuOpt
 simuUtil (under revision)
 \end_layout
 
+\begin_layout Standard
+4.2 
+\begin_inset space \space{}
+\end_inset
+
+
+\begin_inset space \space{}
+\end_inset
+
+simuUtil
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+4.2.1 
+\begin_inset space \space{}
+\end_inset
+
+
+\begin_inset space \space{}
+\end_inset
+
+simuTrajectory
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the purpose of analyzing human populations with complex diseases 
+\shape italic
+in silico
+\shape default
+, two main approaches have been used for such simulations, backward-time
+ (coalescent) 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Kingman1982"
+
+\end_inset
+
+ and forward-time.
+ Given current allele frequencies, demographic models and selection pressure,
+ the simuTrajectory module defines a function that refers to allele frequencies
+ in all simulated generations.
+ This utility module is introduced for realizing forward-time simulations
+ [Peng2008].
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Although coalescent-based methods can simulate many neutral and non-neutral
+ processes with simple selection models, they cannot yet simulate realistic
+ samples of complex human diseases.
+ This technique has been challenged in several aspects.
+ It cannot handle diploid-specific effects such as non-additive selection
+ or penetrance models.
+ It can only solve simplest scenario of evolutionary process, one disease
+ susceptibility loci (DSL) under constant selection pressure.
+ It is built up by a number of assumptions and approximations that are regarded
+ as only working for limited parameter sets.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Compared to coalescent methods, a forward-time simulation has no theoretical
+ constraints and usually starts from an initial population and follows its
+ evolution generation by generation, subject to a certain number of genetic
+ or demographic changes.
+ Although the forward-time simulation is less efficient than coalescent
+ approach and there is lack of suitable simulation frameworks
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Balloux2002,Abdallah2003"
+
+\end_inset
+
+, the increasing power of computer and the availability of simuPOP compensate
+ the efficacy problem very well, let alone the gain of capability of dealing
+ with complex evolutionary scenarios as well as complex selection and penetrance
+ models in forward-time simulations.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We introduce a suitable forward-time simulation framework that allows us
+ to generate large multi-generation populations with complex diseases according
+ to specified demographic and evolutionary properties and allele frequencies
+ at the present generation.
+ We define a population as a collection of diploid individuals with the
+ same genotype structure.
+ During evolution, individuals are chosen randomly, with probabilities that
+ are proportional to their relative fitness values, to mate and produce
+ offspring that populate the next generation.
+ When subpopulations are present, mating occurs only within subpopulations.
+ It is assumed that a genetic disease is caused by mutations at one or several
+ binary DSL.
+ They are located on different chromosomes and are thus unlinked (Our algorithm
+ cannot yet handle linked DSL).
+ These loci only have wild-type alleles until one mutant (disease allele)
+ is introduced at each locus.
+ These disease mutants spread in the population during evolution, subject
+ to genetic drift and positive or negative selection pressure, reaching
+ certain allele frequencies at the present generation.
+ We assume that we know the exact demographic history (the size of population
+ and number and sizes of subpopulations at each generation) and the selection
+ pressure for all genotypes.
+ The selection pressure may vary during evolution.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A descriptive simulation framework is shown below and example 4.2.1 demonstrates
+ a simple case of how to generate a forward-time evolutionary process with
+ complex diseases, which are introduced by point mutations.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Given current disease allele frequencies and selection and demographic models,
+ simulate trajectories of allele frequencies at each DSL using a backward
+ approach (BackwardTrajectory.traj) [Peng2008, Slatkin2001].
+\end_layout
+
+\begin_layout Enumerate
+Create an initial population and initialize individuals randomly with several
+ initial haplotypes.
+ Burn-in the population subject to mutation (non-DSL markers only) and recombina
+tion, which will be present during the whole evolutionary process.
+\end_layout
+
+\begin_layout Enumerate
+Introduce the disease alleles to the population by point-mutating disease
+ loci of different individuals (BackwardTrajectory.mutators()).
+ The generations when mutants are introduced are determined by allele frequency
+ trajectories.
+\end_layout
+
+\begin_layout Enumerate
+Evolve the population according to the simulated allele frequency trajectories
+ and predetermined demographic features (controlledRandomMating(...)).
+ 
+\end_layout
+
+\begin_layout Standard
+\align left
+The advantage of this approach is that we control the disease allele frequencies
+ during evolution while allowing randomintroduction of disease mutants.
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+Example 4.2.1 forward-time simulation with complex diseases
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 simuRPy
 \end_layout
