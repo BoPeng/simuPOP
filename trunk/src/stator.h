@@ -613,40 +613,17 @@ private:
 class statAlleleFreq
 {
 private:
-#define  NumOfAlleles_String  "numOfAlleles"
 #define  AlleleNum_String     "alleleNum"
 #define  AlleleFreq_String    "alleleFreq"
 
 public:
 	statAlleleFreq(const vectorlu & atLoci = vectorlu(), const strDict & param = strDict())
-		: m_atLoci(atLoci), m_ifPost(atLoci.size()), m_numOfAlleles(0),
+		: m_atLoci(atLoci), m_ifPost(atLoci.size()),
 		m_alleleNum(0), m_alleleFreq(0),
-		m_evalInSubPop(true),
-		m_output_alleleNum(true),
-		m_output_alleleFreq(true),
-		m_output_numOfAlleles(false)
+		m_evalInSubPop(true)
 	{
 		for (size_t i = 0; i < atLoci.size(); ++i)
 			m_ifPost[i] = 1; // true, post result
-		if (!param.empty()) {
-			strDict::const_iterator it;
-			strDict::const_iterator itEnd = param.end();
-			if ((it = param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second != 0.;
-			if (param.find(AlleleNum_String) != itEnd ||
-			    param.find(AlleleFreq_String) != itEnd ||
-			    param.find(NumOfAlleles_String) != itEnd) {
-				m_output_alleleNum = false;
-				m_output_alleleFreq = false;
-				m_output_numOfAlleles = false;
-				if ((it = param.find(AlleleNum_String)) != itEnd)
-					m_output_alleleNum = it->second != 0.;
-				if ((it = param.find(AlleleFreq_String)) != itEnd)
-					m_output_alleleFreq = it->second != 0.;
-				if ((it = param.find(NumOfAlleles_String)) != itEnd)
-					m_output_numOfAlleles = it->second != 0.;
-			}
-		}
 	}
 
 
@@ -675,7 +652,25 @@ public:
 		return allele < an.size() ? an[allele] : 0;
 	}
 
+	vectori numOfAlleles()
+	{
+		UINT maxLocus = 0;
+		for (size_t loc = 0; loc < m_atLoci.size(); ++loc)
+			if (maxLocus < m_atLoci[loc])
+				maxLocus = m_atLoci[loc];
+		vectori res(maxLocus + 1, 0);
+		for (size_t loc = 0; loc < m_atLoci.size(); ++loc) {
+			const vectori & alleleNum = m_alleleNum.back()[m_atLoci[loc]];
+			int cnt = 0;
+			for (size_t j = 0; j < alleleNum.size(); ++j)
+				if (alleleNum[j] != 0)
+					cnt += 1;
+			res[m_atLoci[loc]] = cnt;
+		}
+		return res;
+	}
 
+	
 	matrix & alleleFreqAll()
 	{
 		return m_alleleFreq.back();
@@ -736,23 +731,6 @@ public:
 	}
 
 
-	vectori & numOfAlleles()
-	{
-		UINT idx = m_numOfAlleles.size() == 2 ? 0 : (m_numOfAlleles.size() - 1);
-
-		return m_numOfAlleles[idx];
-	}
-
-
-	vectori & numOfAlleles(UINT subPop)
-	{
-		DBG_ASSERT(subPop < m_numOfAlleles.size() - 1, IndexError,
-			"Subpop index " + toStr(subPop) + " out of range of 0 ~ "
-			+ toStr(m_numOfAlleles.size() - 2));
-		return m_numOfAlleles[subPop];
-	}
-
-
 	vectori alleles(int loc)
 	{
 		vectori al;
@@ -760,12 +738,6 @@ public:
 		for (size_t j = 0; j < m_alleleNum.back()[loc].size(); ++j)
 			if (m_alleleNum.back()[loc][j] > 0)
 				al.push_back(j);
-
-		DBG_ASSERT(al.size() == static_cast<UINT>(numOfAlleles()[loc]),
-			SystemError, "Number of alleles at locus " + toStr(loc)
-			+ " does not match.Observed "
-			+ toStr(al.size()) + " previous count: "
-			+ toStr(numOfAlleles()[loc]));
 
 		return al;
 	}
@@ -786,12 +758,6 @@ public:
 			"Having zero (NA) allele, counted as one allele.");
 #endif
 
-		DBG_ASSERT(al.size() == static_cast<UINT>(numOfAlleles(subPop)[loc]),
-			SystemError, "Number of alleles at locus " + toStr(loc)
-			+ " at subpop " + toStr(subPop) + " does not match. Observed "
-			+ toStr(al.size()) + " previous count: "
-			+ toStr(numOfAlleles(subPop)[loc]));
-
 		return al;
 	}
 
@@ -805,9 +771,6 @@ private:
 	/// whether or not post result
 	vectori m_ifPost;
 
-	/// count number of alleles
-	intMatrix m_numOfAlleles;
-
 	/// allele counter! use this matrix to avoid frequent
 	/// allocation of memory
 	vector<intMatrix> m_alleleNum;
@@ -819,7 +782,6 @@ private:
 	bool m_evalInSubPop;
 	bool m_output_alleleNum;
 	bool m_output_alleleFreq;
-	bool m_output_numOfAlleles;
 };
 
 /// CPPONLY

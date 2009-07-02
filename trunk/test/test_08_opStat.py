@@ -113,8 +113,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).alleleNum[0], [600, 1400])
         Stat(pop, alleleFreq=[0], alleleFreq_param={'alleleNum':True, 'subPop':False})
         assert pop.vars().has_key('alleleNum')
-        assert not pop.vars().has_key('alleleFreq')
-        assert not pop.vars().has_key('numOfAlleles')
+        # assert not pop.vars().has_key('alleleFreq')
         # This assert fails right now because of some implementation issue
         #assert not pop.vars(0).has_key('alleleNum')
 
@@ -361,7 +360,8 @@ class TestStat(unittest.TestCase):
         assert (LD(pop.dvars(), 2, 4) - pop.dvars().LD[2][4]) < 1e-6
         assert (LD_prime(pop.dvars(), 2, 4) - pop.dvars().LD_prime[2][4]) < 1e-6
         assert (R2(pop.dvars(), 2, 4) - pop.dvars().R2[2][4]) < 1e-6
-        if pop.dvars().numOfAlleles[2] > 2 or pop.dvars().numOfAlleles[4] > 2 :
+        if len([x for x in pop.dvars().alleleNum[2] if x != 0]) > 2 or \
+            len([x for x in pop.dvars().alleleNum[4] if x != 0]) > 2 :
             assert not pop.vars().has_key('Delta2')
         else:
             assert (Delta2(pop.dvars(), 2, 4) - pop.dvars().Delta2[2][4]) < 1e-6
@@ -369,7 +369,8 @@ class TestStat(unittest.TestCase):
             assert (LD(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD[2][4]) < 1e-6
             assert (LD_prime(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD_prime[2][4]) < 1e-6
             assert (R2(pop.dvars(sp), 2, 4) - pop.dvars(sp).R2[2][4]) < 1e-6
-            if pop.dvars(sp).numOfAlleles[2] > 2 or pop.dvars(sp).numOfAlleles[4] > 2 :
+            if len([x for x in pop.dvars(sp).alleleNum[2] if x != 0]) > 2 or \
+                len([x for x in pop.dvars(sp).alleleNum[4] if x != 0]) > 2 :
                 assert not pop.vars(sp).has_key('Delta2')
                 #self.assertRaises(exceptions.AttributeError, pop.dvars(sp).Delta2)
             else:
@@ -381,7 +382,8 @@ class TestStat(unittest.TestCase):
         assert (abs(LD_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld['1-3']['0-1'])) < 1e-6
         assert (abs(LD_prime_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld_prime['1-3']['0-1'])) < 1e-6
         assert (abs(R2_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().r2['1-3']['0-1'])) < 1e-6
-        if pop.dvars().numOfAlleles[1] > 2 or pop.dvars().numOfAlleles[3] > 2 :
+        if len([x for x in pop.dvars().alleleNum[1] if x != 0]) > 2 or \
+            len([x for x in pop.dvars().alleleNum[3] if x != 0]) > 2 :
             assert not pop.vars().has_key('delta2')
         else:
             assert (abs(Delta2(pop.dvars(), 1, 3)) - abs(pop.dvars().delta2['1-3']['0-1'])) < 1e-6
@@ -389,7 +391,8 @@ class TestStat(unittest.TestCase):
             assert (abs(LD_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).ld['1-3']['0-1'])) < 1e-6
             assert (abs(LD_prime_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).ld_prime['1-3']['0-1'])) < 1e-6
             assert (abs(R2_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).r2['1-3']['0-1'])) < 1e-6
-            if pop.dvars(sp).numOfAlleles[1] > 2 or pop.dvars(sp).numOfAlleles[3] > 2:
+            if len([x for x in pop.dvars(sp).alleleNum[1] if x != 0]) > 2 or \
+                len([x for x in pop.dvars(sp).alleleNum[3] if x != 0]) > 2 :
                 assert not pop.vars().has_key('delta2')
             else:
                 assert (abs(Delta2(pop.dvars(sp), 1, 3)) - abs(pop.dvars(sp).delta2['1-3']['0-1'])) < 1e-6
@@ -400,7 +403,8 @@ class TestStat(unittest.TestCase):
         assert not pop.vars().has_key('R2')
         assert not pop.vars(0).has_key('LD')
         assert not pop.vars(0).has_key('LD_prime')
-        if pop.dvars().numOfAlleles[2] <= 2 or pop.dvars().numOfAlleles[3] <= 2:
+        if len([x for x in pop.dvars().alleleNum[2] if x != 0]) <= 2 or \
+            len([x for x in pop.dvars().alleleNum[3] if x != 0]) <= 2 :
             assert pop.vars().has_key('Delta2')
 
     def testLD(self):

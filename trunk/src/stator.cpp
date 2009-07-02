@@ -489,8 +489,6 @@ void statAlleleFreq::addLocus(UINT locus, bool post, bool subPop, bool numOfAlle
 	else
 		m_ifPost[ it - m_atLoci.begin() ] |= static_cast<int>(post);
 
-	m_evalInSubPop |= subPop;
-	m_output_numOfAlleles |= numOfAlleles;
 }
 
 
@@ -502,11 +500,9 @@ bool statAlleleFreq::apply(population & pop)
 	UINT numSP = pop.numSubPop();
 	UINT numLoci = m_atLoci.size();
 
-	pop.removeVar(NumOfAlleles_String);
 	pop.removeVar(AlleleNum_String);
 	pop.removeVar(AlleleFreq_String);
 	for (UINT sp = 0; sp < numSP; ++sp) {
-		pop.removeVar(subPopVar_String(sp, NumOfAlleles_String));
 		pop.removeVar(subPopVar_String(sp, AlleleNum_String));
 		pop.removeVar(subPopVar_String(sp, AlleleFreq_String));
 	}
@@ -522,12 +518,9 @@ bool statAlleleFreq::apply(population & pop)
 		m_alleleNum.resize(len);
 		m_alleleFreq.resize(len);
 
-		m_numOfAlleles.resize(len);
 		for (size_t i = 0; i < len; ++i) {
 			m_alleleNum[i].resize(pop.totNumLoci());
 			m_alleleFreq[i].resize(pop.totNumLoci());
-			m_numOfAlleles[i].resize(pop.totNumLoci());
-			fill(m_numOfAlleles[i].begin(), m_numOfAlleles[i].end(), 0);
 		}
 	}
 
@@ -605,10 +598,6 @@ bool statAlleleFreq::apply(population & pop)
 				}
 			}                                                                         // post
 
-			// set numOfAlleles if necessary
-			if (m_output_numOfAlleles)
-				m_numOfAlleles[sp][loc] = count_if(num.begin(), num.end(),
-					bind2nd(std::greater<int>(), 0));
 		}                                                                                       // subpop
 
 		if (numSP > 1) {                                                                        // calculate sum and post overall result
@@ -629,28 +618,9 @@ bool statAlleleFreq::apply(population & pop)
 				}
 			}
 
-			// set numOfAlleles if necessary
-			if (m_output_numOfAlleles)
-				m_numOfAlleles.back()[loc] = count_if(sum.begin(), sum.end(),
-					bind2nd(std::greater<int>(), 0));
 		}
 	}                                                                                         // all loci
 
-	// post number of alleles
-	if (m_output_numOfAlleles && accumulate(m_ifPost.begin(), m_ifPost.end(), 0) > 0) {
-		// post number of alleles
-		for (UINT sp = 0; sp < numSP; ++sp) {
-			PyObject * d = pop.setIntVectorVar(subPopVar_String(sp, NumOfAlleles_String),
-				m_numOfAlleles[sp]);
-			if (numSP == 1) {
-				Py_INCREF(d);
-				pop.setVar(NumOfAlleles_String, d);
-			}
-		}
-		if (numSP > 1) {
-			pop.setIntVectorVar(NumOfAlleles_String, m_numOfAlleles.back());
-		}
-	}
 	return true;
 }
 
