@@ -235,6 +235,138 @@ class TestUtility(unittest.TestCase):
             del pop
         os.remove('test.bin')
 
+    # Test Backward and Forward Trajectories
+    def testSimuCase1(self):
+        # 1: independent case when freq = 0 in backward simulation
+        # and [0, 1, 0] in forward simulation. nLoci = 3, constant nSubPop = 3:
+        def Nt(gen):
+            return [1000] * 3
+        def fitness(gen):
+            return [1] * 3
+        trajSimulator = trajectorySimulator(N=Nt, fitness=fitness, nLoci = 3)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=0, minMutAge = 0, maxMutAge = 100000, ploidy = 2,
+                     restartIfFail = False, maxAttempts=1000, logger=None)
+        self.assertEqual(traj.traj[min(traj.traj.keys())], [0] * 9)
+        traj1 = trajSimulator.simuForward(freq = [0, 1, 0], destFreq = [[0,1]]*3, genEnd = 100)
+        self.assertEqual(traj1.freq(random.randint(0, 100)), [0,0,0,1,1,1,0,0,0])        
+
+    def testSimuCase2(self):
+        # 2: dependent case when freq = 0 in backward simulation
+        # and [0, 1] in forward simulation. nLoci = 2, constant nSubPop = 3:
+        def Nt(gen):
+            return [2000] * 3
+        def fitness(gen):
+            return [1] * 9
+        trajSimulator = trajectorySimulator(N=Nt, fitness=fitness, nLoci = 2)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=0)
+        self.assertEqual(traj.traj[min(traj.traj.keys())], [0] * 6)
+        traj1 = trajSimulator.simuForward(freq = [0, 1], destFreq = [[0, 1]]*2, genEnd = 200)
+        self.assertEqual(traj1.freq(random.randint(0, 200)), [0,0,0,1,1,1])
+        
+    def testSimuCase3(self):
+        # 3: nLoci = 2, fitness = [1, 0.0001, 0.0001, 1, 0.0002, 0.0002], freq = [0.5, 0.3],
+        # no subpopulation. If fitness for disease alleles are close to 0, backward simulation 
+        # should reach maxAttempts and freq should hit 0 before genEnd in forward simulation.
+        fitness = [1, 0.0001, 0.0001, 1, 0.0002, 0.0002]
+        trajSimulator = trajectorySimulator(N=1000, fitness=fitness, nLoci = 2)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=[0.5, 0.3], maxAttempts=100)
+        self.assertEqual(len(traj.traj), 0)
+        self.assertEqual(traj.freq(0), [0] * 2)
+        traj1 = trajSimulator.simuForward(genEnd = 200, freq = [0.2, 0.4],
+                                          destFreq = [[0, 1]] * 2)
+        self.assertEqual(traj1.freq(200), [0, 0])
+        
+    def testSimuCase4(self):
+        # 4: In backward simulation, given a normal set of parameters, if current freq of
+        # allele a is very small, the first element of traj[] should be 1/(ploidy * N) and
+        # the second element of traj[] should be larger than 1/(ploidy * N):
+        # nLoci = 1 and no subpopulation
+        fitness = [1,1,1]
+        #### ??? N = 101
+        trajSimulator = trajectorySimulator(N=1000, fitness=fitness, nLoci = 1)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=0.01)
+        #####
+        #print len(traj.traj)
+        #print [traj.traj[min(traj.traj.keys()) + i] for i in range(3)]
+        #####
+        self.assertEqual(traj.traj[min(traj.traj.keys())+1][0], 1. / (2 * 1000))
+        if traj.traj[min(traj.traj.keys())+2][0] < 1. / (2 * 1000):
+            raise ValueError('fail in test number 4 of testSimuBackward.')
+        
+    def testSimuCase5(self):
+        # 5: test given variable number of subpopulations, if allele frequencies would be
+        # recorded in the correct form. nLoci = 3.
+        # In a backward simulation, 3 subPops merge when gen = genEnd - 5 in backward sense.
+        # In another Forward simulation, a single population splits into 3 subPops when 
+        # gen = genEnd - 5 in forward sense. 
+        def Nt(gen):
+            if gen > 295:
+                return [1000] * 3
+            else:   # merge from all subpops into one population
+                return 3000
+        trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 3)
+        traj = trajSimulator.simuBackward(genEnd=300, freq=0.01)
+        self.assertEqual(traj.traj[min(traj.traj.keys())], [0] * 3)
+        self.assertEqual(len(traj.freq(296)), 9)
+        self.assertEqual(len(traj.freq(295)), 3)
+        traj1 = trajSimulator.simuForward(genEnd=300, freq=0.5, destFreq=[[0,1]]*3)
+        self.assertEqual(len(traj1.freq(295)), 3)
+        self.assertEqual(len(traj1.freq(296)), 9)
+        
+        # nLoci = 2.
+        # In a backward simulation, number of populations splits from one to 4 when
+        # gen = genEnd - 5 in backward sense.
+        # In another forward simulation, 4 subpopulations merge to one when
+        # gen = genEnd - 5 in forward sense.
+        def Nt(gen):
+            if gen > 295:
+                return 4000
+            else:   # merge from all subpops into one population
+                return [1000] * 4
+        trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 3)
+        traj = trajSimulator.simuBackward(genEnd=300, freq=0.01)
+        self.assertEqual(traj.traj[min(traj.traj.keys())], [0] * 12)
+        self.assertEqual(len(traj.freq(296)), 3)
+        self.assertEqual(len(traj.freq(295)), 12)
+        traj1 = trajSimulator.simuForward(genEnd=300, freq=0.5, destFreq=[[0,1]]*3)
+        self.assertEqual(len(traj1.freq(295)), 12)
+        self.assertEqual(len(traj1.freq(296)), 3)
+
+    def testSimuCase6(self):
+        # 6: given a normal set of parameters, plot a backward trajectory and
+        # another forward trajectory for the case of single locus without
+        # subpopulations.
+        trajSimulator = trajectorySimulator(N=3000, fitness=[1,1,1], nLoci = 1)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=0.1)
+        traj.plot()
+        traj1 = trajSimulator.simuForward(genEnd=200, freq=0.5, destFreq=[[0,1]])
+        traj1.plot()
+        
+    def testSimuCase7(self):
+        # 7: given a normal set of parameters, considering changable subpopulation
+        # sizes with mulitiple loci, plot a backward trajectory and another
+        # forward trajectory. nSubPops = 3, nLoci = 2.
+        def Nt(gen):
+            if gen > 2500:
+                return [1000] * 3
+            else:   # merge from all subpops into one population in backward sense
+                return 3000
+        trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 2)
+        traj = trajSimulator.simuBackward(genEnd=3000, freq=[0.05, 0.1])
+        traj.plot()
+        def Nt1(gen):
+            if gen < 100:
+                return 3000
+            else:   # split from one population into 3 subpops in forward sense
+                return [1000] * 3
+        trajSimulator1 = trajectorySimulator(N=Nt1, fitness=[1,1,1], nLoci = 5)
+        traj1 = trajSimulator1.simuForward(genEnd = 200, freq = [0.5, 0.6, 0.7, 0.8, 0.9],
+                                           destFreq = [[0,1]]*5)
+        traj1.plot()
+            
+
+if __name__ == '__main__':
+    unittest.main()
     
 
 if __name__ == '__main__':
