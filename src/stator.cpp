@@ -507,41 +507,17 @@ bool statAlleleFreq::apply(population & pop)
 		pop.removeVar(subPopVar_String(sp, AlleleFreq_String));
 	}
 
-	UINT len = numSP == 1 ? 1 : (numSP + 1);
-	// if not initialized or m_atLoci/numSP changes
-	if (m_alleleNum.size() != len) {
-		for (size_t i = 0; i < numLoci;  ++i)
-			DBG_FAILIF(static_cast<UINT>(m_atLoci[i]) >= pop.totNumLoci(),
-				IndexError, "locus index (" + toStr(m_atLoci[i])
-				+ ") out of range of 0 - " + toStr(pop.totNumLoci() - 1));
-
-		m_alleleNum.resize(len);
-		m_alleleFreq.resize(len);
-
-		for (size_t i = 0; i < len; ++i) {
-			m_alleleNum[i].resize(pop.totNumLoci());
-			m_alleleFreq[i].resize(pop.totNumLoci());
-		}
-	}
-
 	string varname;
 
 	for (size_t i = 0; i < numLoci; ++i) {
 		UINT loc = m_atLoci[i];
 
-		vectori & sum = m_alleleNum.back()[loc];
-		fill(sum.begin(), sum.end(), 0);
+		vectori sum(2, 0);
 		ULONG sumAll = 0;
 
 		// for each subpopulation
 		for (UINT sp = 0; sp < numSP;  ++sp) {
-			vectori & num = m_alleleNum[sp][loc];
-			// clear all current values
-			fill(num.begin(), num.end(), 0);
-			// for convenience, gurantees the existence
-			// of num for 0 and 1...
-			if (num.size() < 2)
-				num.resize(2, 0);
+			vectori num(2, 0);
 
 			// go through all alleles
 			IndAlleleIterator a = pop.alleleIterator(loc, sp);
@@ -566,13 +542,12 @@ bool statAlleleFreq::apply(population & pop)
 				sumAll += allAllele;
 			}
 
-			vectorf & freq = m_alleleFreq[sp][loc];
-			freq.resize(num.size(), 0.);
+			vectorf freq(num.size(), 0.);
 			for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
 				freq[e] = allAllele == 0 ? 0 : static_cast<double>(num[e]) / allAllele;
 
 			// post result at this locus
-			if (m_ifPost[i]) {
+			//if (m_ifPost[i]) {
 				if (m_output_alleleNum) {
 					varname = subPopVar_String(sp, AlleleNum_String) + "[" + toStr(loc) + "]";
 					PyObject * d = pop.setIntVectorVar(varname, num);
@@ -596,18 +571,17 @@ bool statAlleleFreq::apply(population & pop)
 						pop.setVar(varname, d);
 					}
 				}
-			}                                                                         // post
+			//}                                                                                   // post
 
 		}                                                                                       // subpop
 
 		if (numSP > 1) {                                                                        // calculate sum and post overall result
 			// summary?
-			vectorf & freq = m_alleleFreq.back()[loc];
-			freq.resize(sum.size());
+			vectorf freq(sum.size(), 0);
 			for (size_t e = 0, eEnd = sum.size(); e < eEnd; ++e)
 				freq[e] = sumAll == 0 ? 0 : static_cast<double>(sum[e]) / sumAll;
 
-			if (m_ifPost[i]) {
+			//if (m_ifPost[i]) {
 				if (m_output_alleleNum) {
 					varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
 					pop.setIntVectorVar(varname, sum);
@@ -616,12 +590,93 @@ bool statAlleleFreq::apply(population & pop)
 					varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
 					pop.setDoubleVectorVar(varname, freq);
 				}
-			}
+			//}
 
 		}
 	}                                                                                         // all loci
 
 	return true;
+}
+
+
+vectori statAlleleFreq::numOfAlleles(population & pop)
+{
+	UINT maxLocus = 0;
+
+	for (size_t loc = 0; loc < m_atLoci.size(); ++loc)
+		if (maxLocus < m_atLoci[loc])
+			maxLocus = m_atLoci[loc];
+	vectori res(maxLocus + 1, 0);
+	for (size_t loc = 0; loc < m_atLoci.size(); ++loc) {
+		string varname = string(AlleleNum_String) + "[" + toStr(m_atLoci[loc]) + "]";
+		PyObject * d = pop.getVar(varname);
+		vectori num;
+		PyObj_As_IntArray(d, num);
+
+		int cnt = 0;
+		for (size_t j = 0; j < num.size(); ++j)
+			if (num[j] != 0)
+				cnt += 1;
+		res[m_atLoci[loc]] = cnt;
+	}
+	return res;
+}
+
+
+vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc)
+{
+	string varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
+	PyObject * d = pop.getVar(varname);
+	vectorf res;
+	PyObj_As_Array(d, res);
+	return res;
+}
+
+
+double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc)
+{
+	string varname = string(AlleleFreq_String) + "[" + toStr(loc) + "][" + toStr(allele) + "]";
+	PyObject * d = pop.getVar(varname);
+	double af;
+	PyObj_As_Double(d, af);
+	return af;
+}
+
+
+vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc, UINT subPop)
+{
+	string varname = subPopVar_String(subPop, AlleleFreq_String) + "[" + toStr(loc) + "]";
+	PyObject * d = pop.getVar(varname);
+	vectorf res;
+	PyObj_As_Array(d, res);
+	return res;
+}
+
+
+double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc, UINT subPop)
+{
+	string varname = subPopVar_String(subPop, AlleleFreq_String) + "[" + toStr(loc) + "][" + toStr(allele) + "]";
+	PyObject * d = pop.getVar(varname);
+	double af;
+	PyObj_As_Double(d, af);
+	return af;
+}
+
+
+vectori statAlleleFreq::alleles(population & pop, int loc)
+{
+	string varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
+	PyObject * d = pop.getVar(varname);
+	vectori res;
+	PyObj_As_IntArray(d, res);
+
+	vectori al;
+
+	for (size_t j = 0; j < res.size(); ++j) {
+		if (res[j] > 0)
+			al.push_back(j);
+	}
+	return al;
 }
 
 
@@ -828,7 +883,7 @@ bool statExpHetero::apply(population & pop)
 		for (UINT sp = 0; sp < numSP;  ++sp) {
 			// calculate expected heterozygosity
 			// get allele frequency
-			vectorf & af = m_alleleFreq.alleleFreqVec(loc, sp);
+			vectorf af = m_alleleFreq.alleleFreqVec(pop, loc, sp);
 			double expHeter = 1;
 			// 1-sum pi^2
 			for (int al = 0, alEnd = af.size() ; al < alEnd; al++)
@@ -837,7 +892,7 @@ bool statExpHetero::apply(population & pop)
 			m_expHetero[sp][loc] = expHeter;
 		}
 
-		vectorf & af = m_alleleFreq.alleleFreqVec(loc);
+		vectorf af = m_alleleFreq.alleleFreqVec(pop, loc);
 		double expHeter = 1;
 		// 1-sum pi^2
 		for (int al = 0, alEnd = af.size(); al < alEnd; al++)
@@ -1277,7 +1332,7 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 // this function calculate single-allele LD measures
 // D, D_p and r2 are used to return calculated values.
 // LD for subpopulation sp is calculated if subPop is true
-void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
+void statLD::calculateLD(population& pop, const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
                          double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2)
 {
 	if (subPop) {
@@ -1288,8 +1343,8 @@ void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UI
 		else
 			P_AB = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
 		// get allele freq from the m_alleleFreq object
-		P_A = m_alleleFreq.alleleFreq(hapAlleles[0], hapLoci[0], sp);
-		P_B = m_alleleFreq.alleleFreq(hapAlleles[1], hapLoci[1], sp);
+		P_A = m_alleleFreq.alleleFreq(pop, hapAlleles[0], hapLoci[0], sp);
+		P_B = m_alleleFreq.alleleFreq(pop, hapAlleles[1], hapLoci[1], sp);
 
 		// calculate LD
 		D = P_AB - P_A * P_B;
@@ -1313,8 +1368,8 @@ void statLD::calculateLD(const vectori & hapLoci, const vectori & hapAlleles, UI
 			P_AB = 0;
 		else
 			P_AB = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
-		P_A = m_alleleFreq.alleleFreq(hapAlleles[0], hapLoci[0]);
-		P_B = m_alleleFreq.alleleFreq(hapAlleles[1], hapLoci[1]);
+		P_A = m_alleleFreq.alleleFreq(pop, hapAlleles[0], hapLoci[0]);
+		P_B = m_alleleFreq.alleleFreq(pop, hapAlleles[1], hapLoci[1]);
 
 		// calculate LD
 		D = P_AB - P_A * P_B;
@@ -1389,7 +1444,7 @@ bool statLD::apply(population & pop)
 	UINT numSP = pop.numSubPop();
 	UINT nLD = m_LD.size();
 	// used for delta2 which can only be computed for 2 alleles
-	vectori numofalleles = m_alleleFreq.numOfAlleles();
+	vectori numofalleles = m_alleleFreq.numOfAlleles(pop);
 	bool valid_delta2 = false;
 
 	// remove previous values.
@@ -1441,7 +1496,7 @@ bool statLD::apply(population & pop)
 			double delta2 = 0;
 			double P_A = 0;
 			double P_B = 0;
-			calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2, delta2);
+			calculateLD(pop, hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2, delta2);
 			outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D, D_prime, r2, delta2);
 
 			if (m_evalInSubPop) {
@@ -1456,7 +1511,7 @@ bool statLD::apply(population & pop)
 						double delta2 = 0;
 						double P_A = 0;
 						double P_B = 0;
-						calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2, delta2);
+						calculateLD(pop, hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2, delta2);
 						outputLD(pop, hapLoci, haploKey(hapAlleles), sp, true, valid_delta2, D, D_prime, r2, delta2);
 					}
 				}
@@ -1472,8 +1527,8 @@ bool statLD::apply(population & pop)
 				valid_delta2 = true;
 
 			// find out all alleles
-			vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
-			vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
+			vectori A_alleles = m_alleleFreq.alleles(pop, hapLoci[0]);
+			vectori B_alleles = m_alleleFreq.alleles(pop, hapLoci[1]);
 
 			// whole population
 			double D = 0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
@@ -1489,7 +1544,7 @@ bool statLD::apply(population & pop)
 					double delta2_ = 0;
 					double P_A = 0;
 					double P_B = 0;
-					calculateLD(hapLoci, hapAlleles, 0, false, P_A, P_B, D_, D_prime_, r2_, delta2_);
+					calculateLD(pop, hapLoci, hapAlleles, 0, false, P_A, P_B, D_, D_prime_, r2_, delta2_);
 					if (m_midValues)
 						outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D_, D_prime_, r2_, delta2_);
 
@@ -1523,7 +1578,7 @@ bool statLD::apply(population & pop)
 								double delta2_ = 0;
 								double P_A = 0;
 								double P_B = 0;
-								calculateLD(hapLoci, hapAlleles, sp, true, P_A, P_B, D_, D_prime_, r2_, delta2_);
+								calculateLD(pop, hapLoci, hapAlleles, sp, true, P_A, P_B, D_, D_prime_, r2_, delta2_);
 
 								// store allele-specific LD values as well.
 								if (m_midValues)
@@ -1555,8 +1610,8 @@ bool statLD::apply(population & pop)
 		hapLoci.resize(2);
 
 		// find out all alleles
-		vectori A_alleles = m_alleleFreq.alleles(hapLoci[0]);
-		vectori B_alleles = m_alleleFreq.alleles(hapLoci[1]);
+		vectori A_alleles = m_alleleFreq.alleles(pop, hapLoci[0]);
+		vectori B_alleles = m_alleleFreq.alleles(pop, hapLoci[1]);
 		string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
 		                    toStr(hapLoci[1]) + ']';
 
@@ -1930,7 +1985,7 @@ bool statFst::apply(population & pop)
 			"Index out of range of 0 ~ " + toStr(pop.totNumLoci() - 1));
 
 		// get all available alleles
-		vectori alleles = m_alleleFreq.alleles(loc);
+		vectori alleles = m_alleleFreq.alleles(pop, loc);
 
 		DBG_DO(DBG_STATOR, cout << "Using alleles " << alleles << endl);
 
@@ -1951,7 +2006,7 @@ bool statFst::apply(population & pop)
 		for (vectori::iterator ale = alleles.begin(); ale != alleles.end(); ++ale) {
 			// p_i
 			for (int sp = 0; sp < r; ++sp)
-				p_i[sp] = m_alleleFreq.alleleFreq(*ale, loc, sp);
+				p_i[sp] = m_alleleFreq.alleleFreq(pop, *ale, loc, sp);
 
 			// p_bar
 			double p_bar = 0;

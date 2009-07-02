@@ -833,26 +833,41 @@ next:
 		i++;
 		goto next;
 	} else if (name[i] == '{') {
-		bool numKey;
+		//	keytype can be numeric 0: subPop{0}
+		//                 tuple   1: subPop{(0,1)}
+		//                 string  2: subPop{0}{'alleleNum'}
+		int keyType;
 
 		// look for index,
 		s = ++i;
 		if (name[s] == '\'' || name[s] == '\"')
-			numKey = false;
+			keyType = 2;
+		else if (name[s] == '(')
+			keyType = 1;
 		else
-			numKey = true;
+			keyType = 0;
 
 		for ( ; name[i] != '}' && i < name.size(); ++i) ;
 
 		assert(name[i] == '}');
 
 		PyObject * childKey;
-
-		if (numKey)
+	    if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
-		else
+		else if (keyType == 1) {
+			size_t j = s + 1;
+			for (; j < i && name[j] != ','; ++j);
+			DBG_ASSERT(name[j] == ',', ValueError, "Tuple key must have two elements.");
+			PyObject * sp = PyInt_FromString(const_cast<char *>(name.substr(s + 1, j - s - 1).c_str()), NULL, 0);
+			PyObject * vsp = PyInt_FromString(const_cast<char *>(name.substr(j + 1, i - j - 2).c_str()), NULL, 0);
+			DBG_FAILIF(sp == NULL, ValueError, "Failed to obtain subpopulation index from tuple index");
+			DBG_FAILIF(vsp == NULL, ValueError, "Failed to obtain virtual subpopulation index from tuple index");
+			childKey = Py_BuildValue("(OO)", sp, vsp);
+			Py_DECREF(sp);
+			Py_DECREF(vsp);			
+		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
-
+	
 		// ready for iteration
 		curType = 1;
 		curParent = curChild;
