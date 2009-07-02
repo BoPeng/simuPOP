@@ -287,13 +287,14 @@ stat::stat(
 	//
 	const uintList & HWE,
 	//
+	const stringList & vars,
 	// regular parameters
 	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
 	const repList & rep, const subPopList & subPops, const stringList & infoFields)
 	: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
 	// the order of initialization is meaningful since they may depend on each other
-	m_popSize(popSize, subPops),
+	m_popSize(popSize, subPops, vars),
 	m_numOfMale(numOfMale, numOfMale_param),
 	m_numOfAffected(numOfAffected, numOfAffected_param),
 	m_alleleFreq(alleleFreq.elems(), alleleFreq_param),
@@ -356,18 +357,22 @@ bool statPopSize::apply(population & pop)
 		return true;
 
 	// popSize = ...
-	pop.setIntVar(popSize_String, pop.popSize());
+	if (m_vars.empty() || m_vars.contains(popSize_String)) {
+		pop.setIntVar(popSize_String, pop.popSize());
+		// for each (virtual) subpopulation
+		subPopList::const_iterator it = m_subPops.begin();
+		subPopList::const_iterator itEnd = m_subPops.end();
+		for (; it != itEnd; ++it)
+			pop.setIntVar(subPopVar_String(*it, popSize_String), pop.subPopSize(*it));
+	}
 	// subPopSize = ...
 	// type mismatch, can not use subPopSizes() directly.
-	vectori spSize(pop.numSubPop());
-	for (size_t sp = 0; sp < spSize.size(); ++sp)
-		spSize[sp] = pop.subPopSize(sp);
-	pop.setIntVectorVar(subPopSize_String, spSize);
-	// for each (virtual) subpopulation
-	subPopList::const_iterator it = m_subPops.begin();
-	subPopList::const_iterator itEnd = m_subPops.end();
-	for (; it != itEnd; ++it)
-		pop.setIntVar(subPopVar_String(*it, popSize_String), pop.subPopSize(*it));
+	if (m_vars.empty() || m_vars.contains(subPopSize_String)) {
+		vectori spSize(pop.numSubPop());
+		for (size_t sp = 0; sp < spSize.size(); ++sp)
+			spSize[sp] = pop.subPopSize(sp);
+		pop.setIntVectorVar(subPopSize_String, spSize);
+	}
 	return true;
 }
 

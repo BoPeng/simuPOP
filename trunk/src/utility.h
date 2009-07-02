@@ -397,6 +397,15 @@ public:
 		m_elems.push_back(str2);
 	}
 
+	bool empty() const
+	{
+		return m_elems.empty();
+	}
+
+	bool contains(const string & str) const
+	{
+		return find(m_elems.begin(), m_elems.end(), str) != m_elems.end();
+	}
 
 	const vectorstr & elems() const
 	{
