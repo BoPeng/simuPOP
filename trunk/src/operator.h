@@ -65,85 +65,91 @@ public:
 	typedef vectorvsp::const_iterator const_iterator;
 
 public:
-	subPopList(const vectorvsp & subPops = vectorvsp()) : m_subPops(subPops), m_valid(true)
-	{
-		if (m_subPops.size() == 1 && !m_subPops[1].valid()) {
-			m_subPops.clear();
-			m_valid = false;
-		}
-		for (size_t i = 0; i < m_subPops.size(); ++i) {
-			DBG_ASSERT(m_subPops[i].valid(), ValueError,
-				"Invalid subpopulation ID");
-		}
-	}
+	///
+	subPopList(const vectorvsp & subPops = vectorvsp());
 
+	/// CPPONLY
 	bool valid() const
 	{
 		return m_valid;
 	}
 
+
+	/// CPPONLY
 	bool empty() const
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.empty();
 	}
 
 
+	/// CPPONLY
 	size_t size() const
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.size();
 	}
 
 
+	/// CPPONLY
 	vspID operator[](unsigned int idx) const
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		DBG_FAILIF(idx >= m_subPops.size(), IndexError,
 			"Index out of range.");
 		return m_subPops[idx];
 	}
 
 
+	/// CPPONLY
 	void push_back(const vspID subPop)
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		m_subPops.push_back(subPop);
+		m_valid = true;
 	}
 
 
+	/// CPPONLY
 	bool contains(const vspID subPop) const
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return find(m_subPops.begin(), m_subPops.end(), subPop) != m_subPops.end();
 	}
 
 
+	/// CPPONLY
 	const_iterator begin() const
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.begin();
 	}
 
 
+	/// CPPONLY
 	const_iterator end() const
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.end();
 	}
 
 
+	/// CPPONLY
 	iterator begin()
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.begin();
 	}
 
 
+	/// CPPONLY
 	iterator end()
 	{
-		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.end();
+	}
+
+
+	///  CPPONLY If a subPopList is invalid (none), it will not be expanded.
+	void useSubPopsFrom(const population & pop)
+	{
+		DBG_ASSERT(m_subPops.empty(), SystemError,
+			"Only when no subpopulation is specified can this function be called."
+			"This is likely caused by the use of persistent subPops for different populations.");
+		if (m_valid)
+			for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+				m_subPops.push_back(vspID(sp));
 	}
 
 
@@ -572,42 +578,49 @@ public:
 
 	~opList();
 
+	/// CPPONLY
 	iterator begin()
 	{
 		return m_elems.begin();
 	}
 
 
+	/// CPPONLY
 	iterator end()
 	{
 		return m_elems.end();
 	}
 
 
+	/// CPPONLY
 	const_iterator begin() const
 	{
 		return m_elems.begin();
 	}
 
 
+	/// CPPONLY
 	const_iterator end() const
 	{
 		return m_elems.end();
 	}
 
 
+	/// CPPONLY
 	size_t size() const
 	{
 		return m_elems.size();
 	}
 
 
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_elems.empty();
 	}
 
 
+	/// CPPONLY
 	const vectorop & elems() const
 	{
 		return m_elems;

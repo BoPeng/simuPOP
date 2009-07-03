@@ -135,8 +135,7 @@ bool infoEval::apply(population & pop)
 
 	subPopList subPops = applicableSubPops();
 	if (subPops.empty())
-		for (UINT i = 0; i < pop.numSubPop(); ++i)
-			subPops.push_back(i);
+		subPops.useSubPopsFrom(pop);
 
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
@@ -179,8 +178,7 @@ bool infoExec::apply(population & pop)
 
 	subPopList subPops = applicableSubPops();
 	if (subPops.empty())
-		for (UINT i = 0; i < pop.numSubPop(); ++i)
-			subPops.push_back(i);
+		subPops.useSubPopsFrom(pop);
 
 	OperationType oType = m_simpleStmt.operation();
 	string oVar = m_simpleStmt.var();
@@ -354,8 +352,11 @@ bool statPopSize::apply(population & pop)
 	if (m_vars.empty() || m_vars.contains(popSize_String)) {
 		pop.setIntVar(popSize_String, pop.popSize());
 		// for each (virtual) subpopulation
-		subPopList::const_iterator it = m_subPops.begin();
-		subPopList::const_iterator itEnd = m_subPops.end();
+		subPopList subPops = m_subPops;
+		if (subPops.empty())
+			subPops.useSubPopsFrom(pop);
+		subPopList::const_iterator it = subPops.begin();
+		subPopList::const_iterator itEnd = subPops.end();
 		for (; it != itEnd; ++it)
 			pop.setIntVar(subPopVar_String(*it, popSize_String), pop.subPopSize(*it));
 	}
@@ -543,8 +544,11 @@ bool statAlleleFreq::apply(population & pop)
 		}
 	}
 	// selected (virtual) subpopulatons.
-	subPopList::const_iterator it = m_subPops.begin();
-	subPopList::const_iterator itEnd = m_subPops.end();
+	subPopList subPops = m_subPops;
+	if (subPops.empty())
+		subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
 		pop.removeVar(subPopVar_String(*it, AlleleNum_String));
 		pop.removeVar(subPopVar_String(*it, AlleleFreq_String));

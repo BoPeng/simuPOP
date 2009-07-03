@@ -1213,6 +1213,7 @@ private:
 };
 
 
+/// CPPONLY
 class statHWE
 {
 private:

@@ -124,8 +124,7 @@ bool dumper::apply(population & pop)
 
 	subPopList subPops = applicableSubPops();
 	if (subPops.empty())
-		for (UINT i = 0; i < pop.numSubPop(); ++i)
-			subPops.push_back(i);
+		subPops.useSubPopsFrom(pop);
 
 	if (m_showGenotype) {
 		UINT cnt = displayGenotype(pop, subPops, out);

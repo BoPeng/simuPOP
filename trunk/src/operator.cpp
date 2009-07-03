@@ -27,6 +27,19 @@
 
 namespace simuPOP {
 
+subPopList::subPopList(const vectorvsp & subPops) : m_subPops(subPops), m_valid(true)
+{
+    if (m_subPops.size() == 1 && !m_subPops[0].valid()) {
+        m_subPops.clear();
+        m_valid = false;
+    }
+    for (size_t i = 0; i < m_subPops.size(); ++i) {
+        DBG_ASSERT(m_subPops[i].valid(), ValueError,
+            "Invalid subpopulation ID");
+    }
+}
+
+
 bool baseOperator::isActive(UINT rep, long gen, long end,
                             const vector<bool> & activeRep, bool repOnly)
 {

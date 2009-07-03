@@ -31,10 +31,9 @@ bool initSex::apply(population & pop)
 {
 	subPopList subPops = applicableSubPops();
 
-	if (subPops.empty()) {
-		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			subPops.push_back(i);
-	}
+	if (subPops.empty())
+		subPops.useSubPopsFrom(pop);
+
 	subPopList::iterator sp = subPops.begin();
 	subPopList::iterator sp_end = subPops.end();
 	for (; sp != sp_end; ++sp) {
@@ -83,12 +82,10 @@ bool initByFreq::apply(population & pop)
 	// determined here.
 	if (m_initSex)
 		initSex::apply(pop);
-	subPopList subPops = applicableSubPops();
 
-	if (subPops.empty()) {
-		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			subPops.push_back(i);
-	}
+	subPopList subPops = applicableSubPops();
+	if (subPops.empty())
+		subPops.useSubPopsFrom(pop);
 
 	DBG_FAILIF(m_alleleFreq.size() > 1 && m_alleleFreq.size() != subPops.size(),
 		ValueError, "Ranges and values should have the same length");
@@ -173,10 +170,8 @@ bool initByValue::apply(population & pop)
 #endif
 
 	subPopList subPops = applicableSubPops();
-	if (subPops.empty()) {
-		for (size_t i = 0; i < pop.numSubPop(); ++i)
-			subPops.push_back(i);
-	}
+	if (subPops.empty())
+		subPops.useSubPopsFrom(pop);
 
 	vectorlu loci = m_loci;
 	if (m_loci.empty())

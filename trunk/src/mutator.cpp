@@ -126,51 +126,10 @@ bool mutator::apply(population & pop)
 
 	subPopList subPops = applicableSubPops();
 	// the usual whole population, easy case.
-	if (subPops.empty()) {
-		m_bt.doTrial();
-		for (size_t i = 0, iEnd = m_loci.size(); i < iEnd; ++i) {
-			UINT locus = m_loci[i];
-			DBG_DO(DBG_MUTATOR, cout << "Mutate at locus " << locus << endl);
-			size_t pos = m_bt.trialFirstSucc(i);
-			size_t lastPos = 0;
-			IndAlleleIterator ptr = pop.alleleIterator(locus);
-			if (pos != BernulliTrials::npos) {
-				do {
-					ptr += pos - lastPos;
-					lastPos = pos;
-					if (!ptr.valid())
-						continue;
-					DBG_DO(DBG_MUTATOR, cout << "Allele " << int(*ptr) << " at locus " << locus);
-					if (mapIn) {
-						if (numMapInAllele > 0) {
-							if (static_cast<size_t>(*ptr) < numMapInAllele)
-								*ptr = ToAllele(mapInList[*ptr]);
-						} else {
-							*ptr = ToAllele(mapInFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr)));
-						}
-					}
-					if (!m_context.empty())
-						fillContext(pop, ptr, locus);
-					// The virtual mutate functions in derived operators will be called.
-					mutate(*ptr, locus);
-					if (mapOut) {
-						if (numMapOutAllele > 0) {
-							if (static_cast<size_t>(*ptr) < numMapOutAllele)
-								*ptr = ToAllele(mapOutList[*ptr]);
-						} else {
-							*ptr = ToAllele(mapOutFunc(PyObj_As_Int, "(i)",
-									static_cast<int>(*ptr)));
-						}
+	if (subPops.empty())
+		subPops.useSubPopsFrom(pop);
 
-					}
-					DBG_DO(DBG_MUTATOR, cout << " is mutated to " << int(*ptr) << endl);
-				} while ( (pos = m_bt.trialNextSucc(i, pos)) != BernulliTrials::npos);
-			}                                                                                           // succ.any
-		}                                                                                               // each applicable loci
-		return true;
-	}
-	// multiple virtual subpopulations
+	// multiple (virtual) subpopulations
 	for (UINT idx = 0; idx < subPops.size(); ++idx) {
 		UINT sp = subPops[idx].subPop();
 
