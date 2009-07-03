@@ -13154,6 +13154,32 @@ Statistics calculation and retrieval are two separate processes that are
 \end_layout
 
 \begin_layout Subsection
+Parameters 
+\family typewriter
+subPops
+\family default
+ and 
+\family typewriter
+vars
+\end_layout
+
+\begin_layout Standard
+subPops can be
+\end_layout
+
+\begin_layout Itemize
+[]
+\end_layout
+
+\begin_layout Itemize
+None
+\end_layout
+
+\begin_layout Itemize
+A list of subpopulations.
+\end_layout
+
+\begin_layout Subsection
 Statistics in (virtual) subpopulations
 \end_layout
 
