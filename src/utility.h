@@ -307,6 +307,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	const vectorl & elems() const
 	{
 		return m_elems;
@@ -339,6 +340,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	const vectorlu & elems() const
 	{
 		return m_elems;
@@ -363,6 +365,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	const vectorf & elems() const
 	{
 		return m_elems;
@@ -398,24 +401,28 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_elems.empty();
 	}
 
 
+	/// CPPONLY
 	bool contains(const string & str) const
 	{
 		return find(m_elems.begin(), m_elems.end(), str) != m_elems.end();
 	}
 
 
+	/// CPPONLY
 	void push_back(const string & str)
 	{
 		m_elems.push_back(str);
 	}
 
 
+	/// CPPONLY
 	const vectorstr & elems() const
 	{
 		return m_elems;
@@ -443,18 +450,21 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_string.empty();
 	}
 
 
+	/// CPPONLY
 	const string & name() const
 	{
 		return m_string;
 	}
 
 
+	/// CPPONLY
 	UINT value() const
 	{
 		return m_int;
@@ -481,18 +491,21 @@ public:
 	}
 
 
+	/// CPPONLY
 	string value() const
 	{
 		return m_value;
 	}
 
 
+	/// CPPONLY
 	pyFunc func() const
 	{
 		return m_func;
 	}
 
 
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_value.empty() && !m_func.isValid();
@@ -525,12 +538,14 @@ public:
 	}
 
 
+	/// CPPONLY
 	pyFunc func() const
 	{
 		return m_func;
 	}
 
 
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_elems.empty();
@@ -561,6 +576,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	double operator[](size_t i) const
 	{
 		DBG_FAILIF(i >= size(), IndexError,
@@ -569,18 +585,21 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool empty() const
 	{
 		return m_elems.empty();
 	}
 
 
+	/// CPPONLY
 	size_t size() const
 	{
 		return m_elems.size();
 	}
 
 
+	/// CPPONLY
 	pyFunc func() const
 	{
 		return m_func;
@@ -610,6 +629,7 @@ public:
 	}
 
 
+	/// CPPONLY
 	bool match(UINT rep, const vector<bool> & activeRep);
 
 };

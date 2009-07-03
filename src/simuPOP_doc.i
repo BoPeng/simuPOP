@@ -203,12 +203,14 @@ Arguments:
                     shortcut for rep=[idx].
     subPops:        A list of applicable (virtual) subpopulations,
                     such as subPops=[sp1, sp2, (sp2, vsp1)]. An empty
-                    list (default) is interpreted as all
+                    list (usually the default) is interpreted as all
                     subpopulations. subPops=[sp1] can be simplied as
                     subPops=sp1. Negative indexes are not supported.
                     Suport for this parameter vary from operator to
                     operator. Some operators do not support virtual
-                    subpopulations and some operators do not support
+                    subpopulations and some operators regular input as
+                    well as None (meaning no subpopulation should be
+                    handled), and some operators do not do not support
                     this parameter at all. Please refer to the
                     reference manual of individual operators for their
                     support for this parameter.
@@ -1067,13 +1069,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::floatList::elems "
-
-Usage:
-
-    x.elems()
-
-"; 
+%ignore simuPOP::floatList::elems() const;
 
 %feature("docstring") simuPOP::floatListFunc "
 
@@ -1087,29 +1083,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::floatListFunc::empty "
+%ignore simuPOP::floatListFunc::empty() const;
 
-Usage:
+%ignore simuPOP::floatListFunc::size() const;
 
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::floatListFunc::size "
-
-Usage:
-
-    x.size()
-
-"; 
-
-%feature("docstring") simuPOP::floatListFunc::func "
-
-Usage:
-
-    x.func()
-
-"; 
+%ignore simuPOP::floatListFunc::func() const;
 
 %ignore simuPOP::GenoStructure;
 
@@ -3145,13 +3123,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::intList::elems "
-
-Usage:
-
-    x.elems()
-
-"; 
+%ignore simuPOP::intList::elems() const;
 
 %feature("docstring") simuPOP::kamMutator "
 
@@ -4906,45 +4878,15 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::opList::begin "
+%ignore simuPOP::opList::begin();
 
-Usage:
+%ignore simuPOP::opList::end();
 
-    x.begin()
+%ignore simuPOP::opList::size() const;
 
-"; 
+%ignore simuPOP::opList::empty() const;
 
-%feature("docstring") simuPOP::opList::end "
-
-Usage:
-
-    x.end()
-
-"; 
-
-%feature("docstring") simuPOP::opList::size "
-
-Usage:
-
-    x.size()
-
-"; 
-
-%feature("docstring") simuPOP::opList::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::opList::elems "
-
-Usage:
-
-    x.elems()
-
-"; 
+%ignore simuPOP::opList::elems() const;
 
 %ignore simuPOP::OstreamManager;
 
@@ -8093,13 +8035,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::repList::match "
-
-Usage:
-
-    x.match(rep, activeRep)
-
-"; 
+%ignore simuPOP::repList::match(UINT rep, const vector< bool > &activeRep);
 
 %feature("docstring") simuPOP::resizeSubPops "
 
@@ -10110,9 +10046,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::statHWE "
-
-"; 
+%ignore simuPOP::statHWE;
 
 %feature("docstring") simuPOP::statHWE::statHWE "
 
@@ -10380,29 +10314,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::stringFunc::value "
+%ignore simuPOP::stringFunc::value() const;
 
-Usage:
+%ignore simuPOP::stringFunc::func() const;
 
-    x.value()
-
-"; 
-
-%feature("docstring") simuPOP::stringFunc::func "
-
-Usage:
-
-    x.func()
-
-"; 
-
-%feature("docstring") simuPOP::stringFunc::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
+%ignore simuPOP::stringFunc::empty() const;
 
 %feature("docstring") simuPOP::stringList "
 
@@ -10418,37 +10334,13 @@ Usage:
 
 %ignore simuPOP::stringList::stringList(const string &str);
 
-%feature("docstring") simuPOP::stringList::empty "
+%ignore simuPOP::stringList::empty() const;
 
-Usage:
+%ignore simuPOP::stringList::contains(const string &str) const;
 
-    x.empty()
+%ignore simuPOP::stringList::push_back(const string &str);
 
-"; 
-
-%feature("docstring") simuPOP::stringList::contains "
-
-Usage:
-
-    x.contains(str)
-
-"; 
-
-%feature("docstring") simuPOP::stringList::push_back "
-
-Usage:
-
-    x.push_back(str)
-
-"; 
-
-%feature("docstring") simuPOP::stringList::elems "
-
-Usage:
-
-    x.elems()
-
-"; 
+%ignore simuPOP::stringList::elems() const;
 
 %feature("docstring") simuPOP::subPopList "
 
@@ -10468,53 +10360,21 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::subPopList::empty "
+%ignore simuPOP::subPopList::valid() const;
 
-Usage:
+%ignore simuPOP::subPopList::empty() const;
 
-    x.empty()
+%ignore simuPOP::subPopList::size() const;
 
-"; 
+%ignore simuPOP::subPopList::push_back(const vspID subPop);
 
-%feature("docstring") simuPOP::subPopList::size "
+%ignore simuPOP::subPopList::contains(const vspID subPop) const;
 
-Usage:
+%ignore simuPOP::subPopList::begin() const;
 
-    x.size()
+%ignore simuPOP::subPopList::end() const;
 
-"; 
-
-%feature("docstring") simuPOP::subPopList::push_back "
-
-Usage:
-
-    x.push_back(subPop)
-
-"; 
-
-%feature("docstring") simuPOP::subPopList::contains "
-
-Usage:
-
-    x.contains(subPop)
-
-"; 
-
-%feature("docstring") simuPOP::subPopList::begin "
-
-Usage:
-
-    x.begin()
-
-"; 
-
-%feature("docstring") simuPOP::subPopList::end "
-
-Usage:
-
-    x.end()
-
-"; 
+%ignore simuPOP::subPopList::useSubPopsFrom(const population &pop);
 
 %feature("docstring") simuPOP::SystemError "
 
@@ -10853,13 +10713,7 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::uintList::elems "
-
-Usage:
-
-    x.elems()
-
-"; 
+%ignore simuPOP::uintList::elems() const;
 
 %feature("docstring") simuPOP::uintListFunc "
 
@@ -10873,21 +10727,9 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::uintListFunc::func "
+%ignore simuPOP::uintListFunc::func() const;
 
-Usage:
-
-    x.func()
-
-"; 
-
-%feature("docstring") simuPOP::uintListFunc::empty "
-
-Usage:
-
-    x.empty()
-
-"; 
+%ignore simuPOP::uintListFunc::empty() const;
 
 %feature("docstring") simuPOP::uintString "
 
@@ -10901,29 +10743,11 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::uintString::empty "
+%ignore simuPOP::uintString::empty() const;
 
-Usage:
+%ignore simuPOP::uintString::name() const;
 
-    x.empty()
-
-"; 
-
-%feature("docstring") simuPOP::uintString::name "
-
-Usage:
-
-    x.name()
-
-"; 
-
-%feature("docstring") simuPOP::uintString::value "
-
-Usage:
-
-    x.value()
-
-"; 
+%ignore simuPOP::uintString::value() const;
 
 %feature("docstring") simuPOP::ValueError "
 

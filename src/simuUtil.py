@@ -606,12 +606,7 @@ class pySubset(pyOperator):
         return pySubset(self.field)
 
   
-if __name__ == "__main__":
-    pass
-
-
-
-class trajectory():
+class trajectory:
     '''
     A trajectory object returned by class trajectorySimulator(...) with several user-
     friendly built-in functions.
@@ -715,7 +710,7 @@ class trajectory():
         for gen in gens:
             print '%d: %s' % (gen, self.traj[gen])
 
-    def plot(self, **kwargs):
+    def plot(self, r, **kwargs):
         '''
         Plot current trajectory.
             The R object defined in a rpy module.
@@ -747,7 +742,7 @@ class trajectory():
                     col = int(idx / nSP) + 1) 
         
 
-class trajectorySimulator():
+class trajectorySimulator:
     '''
     Simulate trajectories of disease susceptibility loci using an extension of the backward
     method described in Slatkin 2001 or forward algorithms.
@@ -1018,7 +1013,7 @@ class trajectorySimulator():
                         if not destFreq[loc][0] <= afq <= destFreq[loc][1]:
                             if logger is not None:
                                 logger.debug('Exception-F, restart due to:  Nsubpop= %d Nloci= %d alleleFreq= %.2f' % (sp, loc, afq))
-                            raise Exception('invalid')
+                            raise exceptions.Exception('invalid')
                 break
             # first get curXt, N(t+1), then calculate nextXt.
             curXt = xt.freq(gen)
@@ -1146,18 +1141,18 @@ class trajectorySimulator():
                         else:
                             if logger is not None:
                                 logger.debug('Exception-B1:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                            raise Exception('invalid')
+                            raise exceptions.Exception('invalid')
                     elif xtPrev == 1: # fixed
                         if logger is not None:
                             logger.debug('Exception-B2:  it= %d Nsubpop= %d Nloci= %d' % (it, idx, loc))
-                        raise Exception('invalid')                 
+                        raise exceptions.Exception('invalid')                 
                     # success (judge when a trajectory is successfully generated)
                     if xtPrev == 0 and it == 1:
                         doneNSP[idx] = gen
                         if genEnd - gen < minMutAge:
-                            raise Exception('tooShort')
+                            raise exceptions.Exception('tooShort')
                         elif genEnd - gen >= maxMutAge:
-                            raise Exception('tooLong')
+                            raise exceptions.Exception('tooLong')
                     if it == 0:
                         doneNSP[idx] = True
                 if False not in doneNSP:
@@ -1253,7 +1248,7 @@ class trajectorySimulator():
             try:
                 return self._simuBackward(genEnd, freq, minMutAge, maxMutAge, ploidy, restartIfFail,
                                 logger)
-            except Exception, e:
+            except exceptions.Exception, e:
                 if e.args[0] == 'tooLong':
                     self.errorCount['tooLong'] += 1
                     self.errorCount['invalid'] += 1
@@ -1300,10 +1295,8 @@ def BackwardTrajectory(N, fitness, nLoci, genEnd, freq, minMutAge = 0, maxMutAge
 
 
 
-traj = BackwardTrajectory(N=[1000]*3, fitness=[1,1,1], nLoci=2, genEnd=5000, freq=[0.05, 0.08])
-
-print len(traj.traj)
-
+if __name__ == "__main__":
+    pass
 
 
-           
+

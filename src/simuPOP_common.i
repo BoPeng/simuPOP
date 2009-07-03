@@ -301,7 +301,7 @@ from simuOpt import simuOptions
 # a list of vspID so that the real constructor can correctly
 # recognize them.
 #
-# subPops = None
+# subPops = -1 (invalid)
 # subPops = 0
 # subPops = [1, 2, 3]
 # subPops = [(0, 1), (2, 1), 3]
@@ -309,7 +309,7 @@ from simuOpt import simuOptions
 def new_subPopList(self, subPops=[]):
     sp = []
     # in the case of subPops=0
-    if subPops is None:
+    if subPops in [None, -1]:
         sp = [vspID()]
     elif type(subPops) not in [type([]), type(())]:
         sp = [vspID(subPops)]

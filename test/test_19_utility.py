@@ -14,7 +14,10 @@ import simuOpt
 simuOpt.setOptions(quiet=True)
 
 from simuPOP import *
+from simuUtil import *
+
 import unittest, os, sys, exceptions
+import random
 
 # for memory leak testing.
 
@@ -338,9 +341,9 @@ class TestUtility(unittest.TestCase):
         # subpopulations.
         trajSimulator = trajectorySimulator(N=3000, fitness=[1,1,1], nLoci = 1)
         traj = trajSimulator.simuBackward(genEnd=3000, freq=0.1)
-        traj.plot()
+        #traj.plot()
         traj1 = trajSimulator.simuForward(genEnd=200, freq=0.5, destFreq=[[0,1]])
-        traj1.plot()
+        #traj1.plot()
         
     def testSimuCase7(self):
         # 7: given a normal set of parameters, considering changable subpopulation
@@ -353,7 +356,7 @@ class TestUtility(unittest.TestCase):
                 return 3000
         trajSimulator = trajectorySimulator(N=Nt, fitness=[1,1,1], nLoci = 2)
         traj = trajSimulator.simuBackward(genEnd=3000, freq=[0.05, 0.1])
-        traj.plot()
+        #traj.plot()
         def Nt1(gen):
             if gen < 100:
                 return 3000
@@ -362,7 +365,7 @@ class TestUtility(unittest.TestCase):
         trajSimulator1 = trajectorySimulator(N=Nt1, fitness=[1,1,1], nLoci = 5)
         traj1 = trajSimulator1.simuForward(genEnd = 200, freq = [0.5, 0.6, 0.7, 0.8, 0.9],
                                            destFreq = [[0,1]]*5)
-        traj1.plot()
+        #traj1.plot()
             
 
 if __name__ == '__main__':
