@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13630,6 +13630,199 @@ lstparams "caption={Monitor the performance of operators},label={ticToc}"
 Selection (under revision)
 \end_layout
 
+\begin_layout Subsection
+How natural selection works in simuPOP
+\end_layout
+
+\begin_layout Standard
+In the simplest scenario, natural selection is implemented in two steps:
+\end_layout
+
+\begin_layout Itemize
+Before mating happens, an operator (called a 
+\series bold
+selector
+\series default
+) goes through a populations and assign each individual a fitness value.
+ The fitness values are stored in an information field called 
+\family typewriter
+fitness
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+When mating happens, parents are chosen with probabilities that are proportional
+ to their fitness values.
+ For example, assuming that a parental population consists of four individuals
+ with fitness values 1, 2, 3, and 4, respectively, the probability that
+ they are picked to produce offspring are 
+\begin_inset Formula $1/\left(1+2+3+4\right)=0.1$
+\end_inset
+
+, 
+\begin_inset Formula $0.2$
+\end_inset
+
+, 
+\begin_inset Formula $0.3$
+\end_inset
+
+, and 
+\begin_inset Formula $0.4$
+\end_inset
+
+ respectively.
+ As you can image, if the offspring population has 10 individuals, the four
+ parents will on average parent 1, 2, 3 and 4 offspring.
+\end_layout
+
+\begin_layout Standard
+Because parents with lower fitness values have less chance to be produce
+ offspring, their genotypes have less chance to be passed to an offspring
+ generation.
+ If the decreased fitness is caused by the presence of certain mutant (e.g.
+ a mutant causing a serious disease), individuals with that mutant will
+ have less change to survive and effecitively reduce or eleminate that mutant
+ from the population.
+\end_layout
+
+\begin_layout Standard
+Although the underlying mechanisms are the same, more complicated selection
+ schemes could be simulated in simuPOP.
+ For example
+\end_layout
+
+\begin_layout Itemize
+In the diploid case, the same allele can be protective in heterozygotes
+ (
+\emph on
+Aa
+\emph default
+) and detrimental in homozygotes (
+\emph on
+aa
+\emph default
+) so a mutant (
+\emph on
+a
+\emph default
+) could be maintained in a population in the form of heterozygotes.
+\end_layout
+
+\begin_layout Itemize
+Individual fitness could be determined by multiple disease predisposing
+ loci and their interacting with environmental factors.
+\end_layout
+
+\begin_layout Itemize
+Although individual fitness is usually determined by individual genotype,
+ it can be caused purely by environmental factors.
+ For example, if geographical distributions of individuals are simulated,
+ individuals located in the north may have lower fitness values and produce
+ less offspring than individual located in the south.
+\end_layout
+
+\begin_layout Itemize
+Not all mating schemes support natural selection.
+\end_layout
+
+\begin_layout Subsection
+Map selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mapSelector.log"
+lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-allele selector (operator 
+\family typewriter
+maOperator
+\family default
+)
+\end_layout
+
+\begin_layout Standard
+A multi-allele selector divides alleles into two groups, wildtype 
+\emph on
+A
+\emph default
+ and mutants 
+\emph on
+a
+\emph default
+, and treat alleles within each group as the same.
+ The fitness model is therefore simplified to three fitness values: fitness
+ for genotype 
+\emph on
+AA
+\emph default
+, 
+\emph on
+Aa
+\emph default
+ and 
+\emph on
+aa
+\emph default
+.
+ The most widely used model treat allele 0 as wildtype and any other alleles
+ as mutants.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/maSelector.log"
+lstparams "caption={A multi-allele selector},label={maSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multi-loci selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/mlSelector.log"
+lstparams "caption={A multi-loci selector},label={mlSelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A hybrid selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/pySelector.log"
+lstparams "caption={A hybrid selector},label={pySelector}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Should we select parents or offspring? **
+\end_layout
+
 \begin_layout Standard
 It is not very clear that our method agrees with the traditional 'average
  number of offspring' definition of fitness.
@@ -13781,66 +13974,6 @@ Which is
 
 ).
  
-\end_layout
-
-\begin_layout Subsection
-Map selector
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mapSelector.log"
-lstparams "caption={A selector that uses pre-defined fitness value},label={mapSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-allele selector
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/maSelector.log"
-lstparams "caption={A multi-allele selector},label={maSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Multi-loci selector
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/mlSelector.log"
-lstparams "caption={A multi-loci selector},label={mlSelector}"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-A hybrid selector
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand lstinputlisting
-filename "log/pySelector.log"
-lstparams "caption={A hybrid selector},label={pySelector}"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
