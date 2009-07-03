@@ -167,6 +167,7 @@ ind.setAffected(True)   # access affection status,
 ind.sex()               # sex,
 ind.setInfo(4, 'x')     # and information fields
 ind.info('x')
+ind.intInfo(0)          # obtain the value of 'x' as an integer.
 #end
 
 #file log/individual_genotype.log
@@ -322,7 +323,9 @@ pop.infoFields()
 #
 cIdx = pop.infoIdx('c')
 eIdx = pop.infoIdx('e')
+# information fields can be accessed in batch mode
 pop.setIndInfo([1], cIdx)
+# as well as individually.
 for ind in pop.individuals():
     ind.setInfo(ind.info(cIdx) + 1, eIdx)
 
