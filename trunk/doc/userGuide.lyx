@@ -3205,6 +3205,69 @@ mother_idx
  is printed, along with two parental chromosomes.
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Information fields can be located both by names and by indexes
+\series default
+, the former provides better readability at a slight cost of performance
+ because these names have to be translated into indexes each time.
+ Because 
+\family typewriter
+ind.info('x')
+\family default
+ is essentially 
+\family typewriter
+ind.info(ind.infoIdx('x'))
+\family default
+, it might be a good idea to look up the index of an information field (e.g.
+ 
+\family typewriter
+field = pop.infoIdx('x')
+\family default
+) and use this index to access the information field (e.g.
+ 
+\family typewriter
+ind.info(field)
+\family default
+) if functions such as 
+\family typewriter
+ind.info('x')
+\family default
+ will be called repeatedly in a loop.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Information fields can only be set or added at the population level
+\series default
+ because all individuals need to have the same set of fields.
+ Values of information fields could be accessed at individual or population
+ levels, using functions such as 
+\family typewriter
+individual.info
+\family default
+, 
+\family typewriter
+individual.intInfo
+\family default
+, 
+\family typewriter
+individual.setInfo
+\family default
+, 
+\family typewriter
+population.indInfo
+\family default
+, 
+\family typewriter
+population.setIndInfo
+\family default
+.
+ These functions will be introduced in their respective classes.
+\end_layout
+
 \begin_layout Section
 Individual
 \end_layout
@@ -3240,6 +3303,17 @@ reference "individual_genotype"
 
  demonstrates how to access and modify individual sex, affection status
  and information fields.
+ Note that although all information fields are stored as float values, a
+ function 
+\family typewriter
+intInfo
+\family default
+ is provided to return an integer value (the same as 
+\family typewriter
+int(info(field))
+\family default
+).
+ 
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "log/individual.log"
@@ -3800,33 +3874,24 @@ and
 addInfoFields
 \family default
 .
- Sections 
+ Example 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "sub:stru-infoFields"
+reference "popInfo"
 
 \end_inset
 
- and 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Individuals"
-
-\end_inset
-
- have demonstrated how to read and write information fields from an individual,
+ demonstrates how to read and write information fields from an individual,
  or from a population in batch mode.
-\end_layout
-
-\begin_layout Standard
-Information fields can not located by their names or indexes.
- We have always used field names for clarity, at a cost of performance because
- these names have to be translated into indexes each time.
- When performance is a concern, you can use
+ Note that functions 
 \family typewriter
- idx=pop.infoIdx(name)
+population.indInfo
 \family default
- to get and use the index of an information field.
+ and 
+\family typewriter
+population.setIndInfo
+\family default
+ can be applied to (virtual) subpopulation using a optional parameter subPop.
 \end_layout
 
 \begin_layout Standard
@@ -4864,9 +4929,69 @@ initializer
 subPops=[(0,0)
 \family default
 , 1], if a virtual subpopulation is defined by individual sex.
- However, not all operators support this parameter, and even if they do,
+ Generally speaking,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPops=[]
+\family default
+ applies the operator to all subpopulation.
+ This is usually the default value of an operator.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPops=[vsp1, vsp2,...]
+\family default
+ applies the operator all specified (virtual) subpopulations.
+ (e.g.
+ 
+\family typewriter
+subPops=[(0,0)
+\family default
+, 1]).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPops=sp
+\family default
+ is an abbreviation for 
+\family typewriter
+subPops=[sp]
+\family default
+.
+ If 
+\family typewriter
+sp
+\family default
+ is virtual, it has to be written as 
+\family typewriter
+[sp]
+\family default
+ because 
+\family typewriter
+subPops=(0, 1)
+\family default
+ is intepreted as two non-virtual subpopulation.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+subPops=None
+\family default
+ is accepted by some operators meaning no subpopulation should be handled.
+\end_layout
+
+\begin_layout Standard
+However, not all operators support this parameter, and even if they do,
  their interpretations of parameter input may vary.
- Please refer to 
+ Please refer to documentation for individual operators in 
 \emph on
 the simuPOP reference manual
 \emph default

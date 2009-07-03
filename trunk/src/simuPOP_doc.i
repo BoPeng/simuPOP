@@ -9535,13 +9535,13 @@ Description:
 Usage:
 
     stat(popSize=False, numOfMale=False, numOfMale_param={},
-      numOfAffected=False, numOfAffected_param={}, numOfAlleles=[],
-      numOfAlleles_param={}, alleleFreq=[], alleleFreq_param={},
+      numOfAffected=False, numOfAffected_param={}, alleleFreq=[],
       heteroFreq=[], expHetero=[], expHetero_param={}, homoFreq=[],
       genoFreq=[], genoFreq_param={}, haploFreq=[], LD=[],
       LD_param={}, association=[], neutrality=[], Fst=[],
-      Fst_param={}, HWE=[], output=\"\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      Fst_param={}, HWE=[], vars=[], output=\"\", stage=PostMating,
+      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
+      infoFields=[])
 
 Arguments:
 
@@ -9838,7 +9838,7 @@ Usage:
 
 Usage:
 
-    statAlleleFreq(atLoci=[], param={})
+    statAlleleFreq(loci, subPops, vars)
 
 "; 
 
@@ -9858,55 +9858,7 @@ Usage:
 
 Usage:
 
-    x.addLocus(locus, post, subPop, numOfAlleles)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleNumAll "
-
-Usage:
-
-    x.alleleNumAll()
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleNumVec "
-
-Usage:
-
-    x.alleleNumVec(loc)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleNum "
-
-Usage:
-
-    x.alleleNum(allele, loc)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleFreqAll "
-
-Usage:
-
-    x.alleleFreqAll()
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleFreqVec "
-
-Usage:
-
-    x.alleleFreqVec(loc)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleFreq "
-
-Usage:
-
-    x.alleleFreq(allele, loc)
+    x.addLocus(locus, subPops=[], vars=[])
 
 "; 
 
@@ -9914,7 +9866,23 @@ Usage:
 
 Usage:
 
-    x.numOfAlleles()
+    x.numOfAlleles(pop)
+
+"; 
+
+%feature("docstring") simuPOP::statAlleleFreq::alleleFreqVec "
+
+Usage:
+
+    x.alleleFreqVec(pop, loc)
+
+"; 
+
+%feature("docstring") simuPOP::statAlleleFreq::alleleFreq "
+
+Usage:
+
+    x.alleleFreq(pop, allele, loc)
 
 "; 
 
@@ -9922,7 +9890,7 @@ Usage:
 
 Usage:
 
-    x.alleles(loc)
+    x.alleles(pop, loc)
 
 "; 
 
@@ -10252,34 +10220,6 @@ Usage:
 
 "; 
 
-%ignore simuPOP::statNumOfAlleles;
-
-%feature("docstring") simuPOP::statNumOfAlleles::statNumOfAlleles "
-
-Usage:
-
-    statNumOfAlleles(calc, atLoci=[], param={})
-
-"; 
-
-%ignore simuPOP::statNumOfAlleles::statNumOfAlleles(statAlleleFreq &calc, const statNumOfAlleles &rhs);
-
-%feature("docstring") simuPOP::statNumOfAlleles::~statNumOfAlleles "
-
-Usage:
-
-    x.~statNumOfAlleles()
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAlleles::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
 %ignore simuPOP::statNumOfMale;
 
 %feature("docstring") simuPOP::statNumOfMale::statNumOfMale "
@@ -10328,7 +10268,7 @@ Usage:
 
 Usage:
 
-    statPopSize(popSize=False)
+    statPopSize(popSize, subPops, vars)
 
 "; 
 
@@ -10478,6 +10418,30 @@ Usage:
 
 %ignore simuPOP::stringList::stringList(const string &str);
 
+%feature("docstring") simuPOP::stringList::empty "
+
+Usage:
+
+    x.empty()
+
+"; 
+
+%feature("docstring") simuPOP::stringList::contains "
+
+Usage:
+
+    x.contains(str)
+
+"; 
+
+%feature("docstring") simuPOP::stringList::push_back "
+
+Usage:
+
+    x.push_back(str)
+
+"; 
+
 %feature("docstring") simuPOP::stringList::elems "
 
 Usage:
@@ -10525,6 +10489,14 @@ Usage:
 Usage:
 
     x.push_back(subPop)
+
+"; 
+
+%feature("docstring") simuPOP::subPopList::contains "
+
+Usage:
+
+    x.contains(subPop)
 
 "; 
 

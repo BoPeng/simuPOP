@@ -65,25 +65,40 @@ public:
 	typedef vectorvsp::const_iterator const_iterator;
 
 public:
-	subPopList(const vectorvsp & subPops = vectorvsp()) : m_subPops(subPops)
+	subPopList(const vectorvsp & subPops = vectorvsp()) : m_subPops(subPops), m_valid(true)
 	{
+		if (m_subPops.size() == 1 && !m_subPops[1].valid()) {
+			m_subPops.clear();
+			m_valid = false;
+		}
+		for (size_t i = 0; i < m_subPops.size(); ++i) {
+			DBG_ASSERT(m_subPops[i].valid(), ValueError,
+				"Invalid subpopulation ID");
+		}
 	}
 
+	bool valid() const
+	{
+		return m_valid;
+	}
 
 	bool empty() const
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.empty();
 	}
 
 
 	size_t size() const
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.size();
 	}
 
 
 	vspID operator[](unsigned int idx) const
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		DBG_FAILIF(idx >= m_subPops.size(), IndexError,
 			"Index out of range.");
 		return m_subPops[idx];
@@ -92,42 +107,49 @@ public:
 
 	void push_back(const vspID subPop)
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		m_subPops.push_back(subPop);
 	}
 
 
 	bool contains(const vspID subPop) const
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return find(m_subPops.begin(), m_subPops.end(), subPop) != m_subPops.end();
 	}
 
 
 	const_iterator begin() const
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.begin();
 	}
 
 
 	const_iterator end() const
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.end();
 	}
 
 
 	iterator begin()
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.begin();
 	}
 
 
 	iterator end()
 	{
+		DBG_ASSERT(m_valid, ValueError, "A valid subpopulation list is required for this operator");
 		return m_subPops.end();
 	}
 
 
 private:
 	vectorvsp m_subPops;
+	bool m_valid;
 };
 
 
@@ -215,13 +237,15 @@ public:
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
 	 *    as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
-	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (default) is
-	 *    interpreted as all subpopulations. <tt>subPops=[sp1]</tt> can be
-	 *    simplied as <tt>subPops=sp1</tt>. Negative indexes are not supported.
-	 *    Suport for this parameter vary from operator to operator. Some
-	 *    operators do not support virtual subpopulations and some operators
-	 *    do not support this parameter at all. Please refer to the reference
-	 *    manual of individual operators for their support for this parameter.
+	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (usually the
+	 *    default) is interpreted as all subpopulations. <tt>subPops=[sp1]</tt>
+	 *    can be simplied as <tt>subPops=sp1</tt>. Negative indexes are not
+	 *    supported. Suport for this parameter vary from operator to operator.
+	 *    Some operators do not support virtual subpopulations and some
+	 *    operators regular input as well as \c None (meaning no subpopulation
+	 *    should be handled), and some operators do not do not support this
+	 *    parameter at all. Please refer to the reference manual of individual
+	 *    operators for their support for this parameter.
 	 *  \param infoFields A list of information fields that will be used by an
 	 *    operator. You usually do not need to specify this parameter because
 	 *    operators that use information fields usually have default values for
