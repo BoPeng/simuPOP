@@ -594,7 +594,7 @@ vectori statAlleleFreq::numOfAlleles(population & pop)
 			maxLocus = m_loci[loc];
 	vectori res(maxLocus + 1, 0);
 	for (size_t loc = 0; loc < m_loci.size(); ++loc) {
-		string varname = string(AlleleNum_String) + "[" + toStr(m_loci[loc]) + "]";
+		string varname = string(AlleleNum_String) + "{" + toStr(m_loci[loc]) + "}";
 		PyObject * d = pop.getVar(varname);
 		vectori num;
 		PyObj_As_IntArray(d, num);
@@ -611,7 +611,7 @@ vectori statAlleleFreq::numOfAlleles(population & pop)
 
 vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc)
 {
-	string varname = string(AlleleFreq_String) + "[" + toStr(loc) + "]";
+	string varname = string(AlleleFreq_String) + "{" + toStr(loc) + "}";
 	PyObject * d = pop.getVar(varname);
 	vectorf res;
 
@@ -622,7 +622,7 @@ vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc)
 
 double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc)
 {
-	string varname = string(AlleleFreq_String) + "[" + toStr(loc) + "][" + toStr(allele) + "]";
+	string varname = string(AlleleFreq_String) + "{" + toStr(loc) + "}[" + toStr(allele) + "]";
 	PyObject * d = pop.getVar(varname);
 	double af;
 
@@ -633,7 +633,7 @@ double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc)
 
 vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc, UINT subPop)
 {
-	string varname = subPopVar_String(subPop, AlleleFreq_String) + "[" + toStr(loc) + "]";
+	string varname = subPopVar_String(subPop, AlleleFreq_String) + "{" + toStr(loc) + "}";
 	PyObject * d = pop.getVar(varname);
 	vectorf res;
 
@@ -644,7 +644,7 @@ vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc, UINT subPop)
 
 double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc, UINT subPop)
 {
-	string varname = subPopVar_String(subPop, AlleleFreq_String) + "[" + toStr(loc) + "][" + toStr(allele) + "]";
+	string varname = subPopVar_String(subPop, AlleleFreq_String) + "{" + toStr(loc) + "}[" + toStr(allele) + "]";
 	PyObject * d = pop.getVar(varname);
 	double af;
 
@@ -655,7 +655,7 @@ double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc, UINT s
 
 vectori statAlleleFreq::alleles(population & pop, int loc)
 {
-	string varname = string(AlleleNum_String) + "[" + toStr(loc) + "]";
+	string varname = string(AlleleNum_String) + "{" + toStr(loc) + "}";
 	PyObject * d = pop.getVar(varname);
 	vectori res;
 
