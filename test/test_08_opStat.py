@@ -28,6 +28,7 @@ class TestStat(unittest.TestCase):
     def testPopSize(self):
         'Testing calculation of population (subPopulation) size'
         pop = population(size=[200,800])
+        # do not calculate for subpopulations
         Stat(pop, popSize=1, subPops=-1)
         self.assertEqual(pop.dvars().subPopSize, [200, 800])
         self.assertEqual(pop.dvars().popSize, 1000)
@@ -35,7 +36,7 @@ class TestStat(unittest.TestCase):
         Stat(pop, popSize=1, subPops=1)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         self.assertEqual(pop.dvars(1).popSize, 800)
-        #
+        # calculate for all subpopulations, using virtual subpopulation
         pop.setVirtualSplitter(sexSplitter())
         InitSex(pop, sex=[Male, Female])
         Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1])
@@ -59,17 +60,30 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setSex(Female)
         for i in range(100,800):
             pop.individual(i,1).setSex(Female)
-        Stat(pop, numOfMale=1)
+        Stat(pop, numOfMale=True, subPops=-1)
         self.assertEqual(pop.dvars().numOfMale, 200)
         self.assertEqual(pop.dvars().numOfFemale, 800)
+        self.assertRaises(exceptions.ValueError, pop.dvars, 0)
+        # all subpopulations
+        Stat(pop, numOfMale=True)
         self.assertEqual(pop.dvars(0).numOfMale, 100)
         self.assertEqual(pop.dvars(0).numOfFemale, 100)
         self.assertEqual(pop.dvars(1).numOfMale, 100)
         self.assertEqual(pop.dvars(1).numOfFemale, 700)
+        self.assertEqual(pop.dvars(1).propOfMale, 1./8)
+        self.assertEqual(pop.dvars(1).propOfFemale, 7./8)
+        # test virtual subpopulations
+        pop.setVirtualSplitter(proportionSplitter([0.4, 0.6]))
+        Stat(pop, numOfMale=True, subPops=[(0, 0), (1, 1)])
+        self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
+        self.assertEqual(pop.dvars([0, 0]).numOfMale, 80)
+        self.assertEqual(pop.dvars([0, 0]).propOfFemale, 0)
+        self.assertEqual(pop.dvars([1, 1]).numOfFemale, 480)
 
     def testNumOfAffected(self):
         'Testing counting number of affected individuals'
         pop = population(size=[200, 800])
+        InitSex(pop, sex=[Male, Female])
         for i in range(100):
             pop.individual(i,0).setAffected(True)
             pop.individual(i,1).setAffected(True)
@@ -90,6 +104,13 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(0).propOfUnaffected, 0.5)
         self.assertEqual(pop.dvars(1).propOfAffected, 1/8.)
         self.assertEqual(pop.dvars(1).propOfUnaffected, 7/8.)
+        # virtual subpopulation?
+        pop.setVirtualSplitter(sexSplitter())
+        Stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)])
+        self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
+        self.assertEqual(pop.dvars([0, 0]).numOfAffected, 50)
+        self.assertEqual(pop.dvars([0, 0]).propOfUnaffected, 0.5)
+        self.assertEqual(pop.dvars([1, 1]).numOfUnaffected, 350)
 
     def testAlleleFreq(self):
         'Testing calculation of allele frequency and number of alleles'

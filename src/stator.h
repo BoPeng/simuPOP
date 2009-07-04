@@ -379,13 +379,6 @@ public:
 	{
 	}
 
-
-	void activate()
-	{
-		m_isActive = true;
-	}
-
-
 	bool apply(population & pop);
 
 private:
@@ -398,216 +391,50 @@ private:
 class statNumOfMale
 {
 private:
-#define  numOfMale_String    "numOfMale"
-#define  propOfMale_String   "propOfMale"
-#define  numOfFemale_String  "numOfFemale"
+#define  numOfMale_String      "numOfMale"
+#define  propOfMale_String     "propOfMale"
+#define  numOfFemale_String    "numOfFemale"
 #define  propOfFemale_String   "propOfFemale"
 
 public:
-	statNumOfMale(bool numOfMale = false, const strDict & param = strDict())
-		: m_numOfMale(numOfMale ? 1 : 0), m_numOfFemale(0),
-		m_evalInSubPop(true),
-		m_output_numOfMale(true),
-		m_output_propOfMale(true),
-		m_output_numOfFemale(true),
-		m_output_propOfFemale(true)
+	statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars)
+		: m_isActive(numOfMale), m_subPops(subPops), m_vars(vars)
 	{
-		if (!param.empty()) {
-			strDict::const_iterator it;
-			strDict::const_iterator itEnd = param.end();
-			if ((it = param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second != 0.;
-			if (param.find(numOfMale_String) != itEnd ||
-			    param.find(propOfMale_String) != itEnd ||
-			    param.find(numOfFemale_String) != itEnd ||
-			    param.find(propOfFemale_String) != itEnd) {
-				m_output_numOfMale = false;
-				m_output_propOfMale = false;
-				m_output_numOfFemale = false;
-				m_output_propOfFemale = false;
-				if ((it = param.find(numOfMale_String)) != itEnd)
-					m_output_numOfMale = it->second != 0.;
-				if ((it = param.find(propOfMale_String)) != itEnd)
-					m_output_propOfMale = it->second != 0.;
-				if ((it = param.find(numOfFemale_String)) != itEnd)
-					m_output_numOfFemale = it->second != 0.;
-				if ((it = param.find(propOfFemale_String)) != itEnd)
-					m_output_propOfFemale = it->second != 0.;
-			}
-		}
 	}
-
-
-	void activate(bool yes = true)
-	{
-		m_numOfMale.resize(yes ? 1 : 0);
-		m_numOfFemale.resize(yes ? 1 : 0);
-	}
-
-
-	ULONG numOfMale()
-	{
-		DBG_ASSERT(m_numOfMale.size() > 1, ValueError,
-			"num of male has not been counted.");
-
-		return m_numOfMale[ m_numOfMale.size() - 1 ];
-	}
-
-
-	ULONG numOfFemale()
-	{
-		DBG_ASSERT(m_numOfFemale.size() > 1, ValueError,
-			"num of female has not been counted.");
-
-		return m_numOfFemale[ m_numOfFemale.size() - 1 ];
-	}
-
-
-	ULONG numOfMale(UINT subPop)
-	{
-		DBG_ASSERT(m_numOfMale.size() > 1, ValueError,
-			"num of male has not been counted.");
-
-		DBG_ASSERT(subPop >= m_numOfMale.size() - 1, ValueError,
-			"subPop index out of range.");
-
-		return m_numOfMale[ subPop ];
-	}
-
-
-	ULONG numOfFemale(UINT subPop)
-	{
-		DBG_ASSERT(m_numOfFemale.size() > 1, ValueError,
-			"num of male has not been counted.");
-
-		DBG_ASSERT(subPop >= m_numOfFemale.size() - 1, ValueError,
-			"subPop index out of range.");
-
-		return m_numOfFemale[ subPop ];
-	}
-
 
 	bool apply(population & pop);
 
 private:
 	/// whether or not to apply number of male/female
-	vectorlu m_numOfMale, m_numOfFemale;
-	bool m_evalInSubPop;
-	bool m_output_numOfMale;
-	bool m_output_propOfMale;
-	bool m_output_numOfFemale;
-	bool m_output_propOfFemale;
+	bool m_isActive;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
 class statNumOfAffected
 {
 private:
-#define  numOfAffected_String    "numOfAffected"
-#define  propOfAffected_String   "propOfAffected"
-#define  numOfUnaffected_String  "numOfUnaffected"
+#define  numOfAffected_String     "numOfAffected"
+#define  propOfAffected_String    "propOfAffected"
+#define  numOfUnaffected_String   "numOfUnaffected"
 #define  propOfUnaffected_String  "propOfUnaffected"
 
 public:
-	statNumOfAffected(bool numOfAffected = false, const strDict & param = strDict())
-		: m_numOfAffected(numOfAffected ? 1 : 0), m_numOfUnaffected(0),
-		m_evalInSubPop(true),
-		m_output_numOfAffected(true),
-		m_output_propOfAffected(true),
-		m_output_numOfUnaffected(true),
-		m_output_propOfUnaffected(true)
-	{
-		if (!param.empty()) {
-			strDict::const_iterator it;
-			strDict::const_iterator itEnd = param.end();
-			if ((it = param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second != 0.;
-			if (param.find(numOfAffected_String) != itEnd ||
-			    param.find(propOfAffected_String) != itEnd ||
-			    param.find(numOfUnaffected_String) != itEnd ||
-			    param.find(propOfUnaffected_String) != itEnd) {
-				m_output_numOfAffected = false;
-				m_output_propOfAffected = false;
-				m_output_numOfUnaffected = false;
-				m_output_propOfUnaffected = false;
-				if ((it = param.find(numOfAffected_String)) != itEnd)
-					m_output_numOfAffected = it->second != 0.;
-				if ((it = param.find(propOfAffected_String)) != itEnd)
-					m_output_propOfAffected = it->second != 0.;
-				if ((it = param.find(numOfUnaffected_String)) != itEnd)
-					m_output_numOfUnaffected = it->second != 0.;
-				if ((it = param.find(propOfUnaffected_String)) != itEnd)
-					m_output_propOfUnaffected = it->second != 0.;
-			}
-		}
-	}
-
-
-	~statNumOfAffected()
+	statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars)
+		: m_isActive(numOfAffected), m_subPops(subPops), m_vars(vars)
 	{
 	}
-
-
-	void activate(bool yes = true)
-	{
-		m_numOfAffected.resize(yes ? 1 : 0);
-		m_numOfUnaffected.resize(yes ? 1 : 0);
-	}
-
-
-	ULONG numOfAffected()
-	{
-		DBG_ASSERT(m_numOfAffected.size() > 1, ValueError,
-			"num of affected has not been counted.");
-
-		return m_numOfAffected[ m_numOfAffected.size() - 1 ];
-	}
-
-
-	ULONG numOfUnaffected()
-	{
-		DBG_ASSERT(m_numOfUnaffected.size() > 1, ValueError,
-			"num of unaffected has not been counted.");
-
-		return m_numOfUnaffected[ m_numOfUnaffected.size() - 1 ];
-	}
-
-
-	ULONG numOfAffected(UINT subPop)
-	{
-		DBG_ASSERT(m_numOfAffected.size() > 1, ValueError,
-			"num of affected has not been counted.");
-
-		DBG_ASSERT(subPop >= m_numOfAffected.size() - 1, ValueError,
-			"subPop index out of range.");
-
-		return m_numOfAffected[ subPop ];
-	}
-
-
-	ULONG numOfUnaffected(UINT subPop)
-	{
-		DBG_ASSERT(m_numOfUnaffected.size() > 1, ValueError,
-			"num of unaffected has not been counted.");
-
-		DBG_ASSERT(subPop >= m_numOfUnaffected.size() - 1, ValueError,
-			"subPop index out of range.");
-
-		return m_numOfUnaffected[ subPop ];
-	}
-
 
 	bool apply(population & pop);
 
 private:
-	/// record the result.
-	vectorlu m_numOfAffected, m_numOfUnaffected;
-	bool m_evalInSubPop;
-	bool m_output_numOfAffected;
-	bool m_output_propOfAffected;
-	bool m_output_numOfUnaffected;
-	bool m_output_propOfUnaffected;
+	/// whether or not to apply number of affected
+	bool m_isActive;
+	subPopList m_subPops;
+	stringList m_vars;
 };
+
 
 /// CPPONLY
 class statAlleleFreq
@@ -1444,10 +1271,8 @@ public:
 	stat(bool popSize = false,
 		//
 		bool numOfMale = false,
-		strDict numOfMale_param = strDict(),
 		//
 		bool numOfAffected = false,
-		strDict numOfAffected_param = strDict(),
 		//
 		const uintList & alleleFreq = uintList(),
 		//
