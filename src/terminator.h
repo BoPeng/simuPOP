@@ -57,9 +57,9 @@ public:
 	 */
 	terminateIf(string condition = string(), bool stopAll = false, string message = string(),
 		const stringFunc & output = "", int stage = PostMating, int begin = 0, int end = -1,
-		int step = 1, const intList & at = intList(), const repList & rep = repList(),
-		const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
-		baseOperator(output, stage, begin, end, step, at, rep, subPops, infoFields),
+		int step = 1, const intList & at = intList(), const repList & reps = AllReps,
+		const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		baseOperator(output, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_expr(condition), m_stopAll(stopAll), m_message(message)
 	{
 	}

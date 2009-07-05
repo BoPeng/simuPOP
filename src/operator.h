@@ -81,6 +81,10 @@ public:
 		return m_subPops.size();
 	}
 
+	int __len__() const
+	{
+		return m_subPops.size();
+	}
 
 	/// CPPONLY
 	vspID operator[](unsigned int idx) const
@@ -656,9 +660,9 @@ public:
 	pause(char stopOnKeyStroke = false, bool prompt = true,
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList()) :
-		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
+		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_prompt(prompt), m_stopOnKeyStroke(stopOnKeyStroke)
 	{
 	}
@@ -706,8 +710,8 @@ public:
 	 */
 	noneOp(const stringFunc & output = ">",
 		int stage = PostMating, int begin = 0, int end = 0, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
-		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields)
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -767,9 +771,9 @@ public:
 	ifElse(const string & cond, const opList & ifOps = opList(), const opList & elseOps = opList(),
 		const stringFunc & output = ">", int stage = PostMating,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList()) :
-		baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
+		baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_cond(cond, ""), m_ifOps(ifOps), m_elseOps(elseOps)
 	{
 	};
@@ -823,8 +827,8 @@ public:
 	 */
 	ticToc(const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields)
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields)
 	{
 		time(&m_startTime);
 		m_lastTime = m_startTime;
@@ -873,9 +877,9 @@ public:
 	 */
 	setAncestralDepth(int depth, const stringFunc & output = ">",
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
+		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_depth(depth)
 	{
 	};
@@ -930,8 +934,8 @@ public:
 	 */
 	turnOnDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
 	};
@@ -981,8 +985,8 @@ public:
 	 */
 	turnOffDebug(DBG_CODE code,
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(), const stringList & infoFields = stringList()) :
-		baseOperator(">", stage, begin, end, step, at, rep, subPops, infoFields),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops, const stringList & infoFields = stringList()) :
+		baseOperator(">", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_code(code)
 	{
 	};
@@ -1064,7 +1068,7 @@ public:
 	pyOperator(PyObject * func, PyObject * param = NULL,
 		int stage = PostMating, bool isTransmitter = false, bool offspringOnly = false,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList());
 
 	/// HIDDEN

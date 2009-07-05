@@ -199,10 +199,10 @@ matrixMutator::matrixMutator(const matrix & rate,
 	const uintList & loci, const uintListFunc & mapIn, const uintListFunc & mapOut,
 	const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPops,
+	const repList & reps, const subPopList & subPops,
 	const stringList & infoFields)
 	: mutator(vectorf(1, 0), loci, mapIn, mapOut, 0, output, stage, begin, end, step,
-	          at, rep, subPops, infoFields)
+	          at, reps, subPops, infoFields)
 {
 	matrix rateMatrix = rate;
 	// step 0, determine mu
@@ -273,8 +273,8 @@ smmMutator::smmMutator(const floatList & rates, const uintList & loci,
 	double incProb, UINT maxAllele, const floatListFunc & mutStep,
 	const uintListFunc & mapIn, const uintListFunc & mapOut, const stringFunc & output,
 	int stage, int begin, int end, int step, const intList & at,
-	const repList & rep, const subPopList & subPops, const stringList & infoFields)
-	: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, rep, subPops, infoFields),
+	const repList & reps, const subPopList & subPops, const stringList & infoFields)
+	: mutator(rates, loci, mapIn, mapOut, 0, output, stage, begin, end, step, at, reps, subPops, infoFields),
 	m_incProb(incProb), m_maxAllele(maxAllele), m_mutStep(mutStep)
 {
 #ifdef BINARYALLELE

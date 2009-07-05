@@ -74,7 +74,7 @@ class TestOperator(unittest.TestCase):
         'Testing replicate related functions'
         simu = simulator(population(), cloneMating(), rep=3)
         simu.evolve(
-            ops = [opRecorder(rep=-1)],
+            ops = [opRecorder(reps=-1)],
             gen=10
         )
         try:
@@ -95,8 +95,7 @@ class TestOperator(unittest.TestCase):
 
     def testOutput(self):
         'Testing output specifications'
-        simu = simulator( population(),
-                cloneMating(), rep=5)
+        simu = simulator( population(), cloneMating(), rep=5)
         simu.evolve([
             pyOutput("a", output=">a.txt"),
             ], gen=10)
@@ -127,7 +126,7 @@ class TestOperator(unittest.TestCase):
         # rep = ...
         simu.setGen(0)
         simu.evolve([
-            pyOutput("a", output=">>a.txt", rep=-1),
+            pyOutput("a", output=">>a.txt", reps=-1),
             ], gen=10)
         # a is appended 5 rep * 11 generations
         self.assertFileContent("a.txt", 'a'*10)

@@ -69,7 +69,7 @@ if os.name == 'nt':
     if int(rpy.r.R_Version()['svn rev']) >= 48333:
         rpy.r.windows_options(buffered=False)
 
-from simuPOP import pyOperator, PostMating
+from simuPOP import pyOperator, PostMating, AllReps, AllSubPops
 
 def newDevice():
     '''Create a new graphics window and return its device number in R. This
@@ -350,7 +350,7 @@ class varPlotter(pyOperator):
     def __init__(self, expr, win=0, update=1, byRep=False, byDim=False,
         saveAs="", leaveOpen=False, legend=[], preHook=None, postHook=None,
         plotHook=None, stage=PostMating, begin=0, end=-1, step=1, at=[],
-        rep=[], **kwargs):
+        reps=AllReps, **kwargs):
         '''
         expr
             expression that will be evaluated at each replicate's local
@@ -463,7 +463,7 @@ class varPlotter(pyOperator):
         self.data = []
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end, step=step,
-            at=at, rep=rep, stage=stage, subPops=[], infoFields=[])
+            at=at, reps=reps, stage=stage, subPops=AllSubPops, infoFields=[])
 
     def __del__(self):
         # Close the device if needed.
@@ -682,7 +682,7 @@ class scatterPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], saveAs="", leaveOpen=False, legend=[], 
         preHook=None, postHook=None, stage=PostMating, begin=0, end=-1, step=1,
-        at=[], rep=[], subPops=[], **kwargs):
+        at=[], reps=AllReps, subPops=AllSubPops, **kwargs):
         '''
         infoFields
             Two information fields whose values will be the x- and y-axis of
@@ -756,7 +756,7 @@ class scatterPlotter(pyOperator):
                 col_sp = rpy.r.rainbow(len(self.subPops)))
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, rep=rep, stage=stage)
+            step=step, at=at, reps=reps, stage=stage)
 
     def __del__(self):
         # Close the device if needed.
@@ -843,7 +843,7 @@ class infoPlotter(pyOperator):
     '''
     def __init__(self, func=None, infoFields=[], saveAs="", leaveOpen=False,
         preHook=None, postHook=None, plotHook = None, stage=PostMating, begin=0,
-        end=-1, step=1, at=[], rep=[], subPops=[], **kwargs):
+        end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops, **kwargs):
         '''
         func
             Name of the R function that will be called to draw figures from
@@ -934,7 +934,7 @@ class infoPlotter(pyOperator):
                 **kwargs)
         # when apply is called, self._plot is called.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, rep=rep, stage=stage)
+            step=step, at=at, reps=reps, stage=stage)
 
     def __del__(self):
         # Close the device if needed.
@@ -1042,8 +1042,8 @@ class boxPlotter(pyOperator):
     '''
     def __init__(self, infoFields=[], byField=False, bySubPop=False, saveAs="",
         leaveOpen=False, preHook=None, postHook=None, plotHook = None,
-        stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-        **kwargs):
+        stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+        subPops=AllSubPops, **kwargs):
         '''
         infoFields
             Information fields whose values will be sent to R function
@@ -1129,7 +1129,7 @@ class boxPlotter(pyOperator):
         # when apply is called, self.plot is called, additional keyword
         # parameters are passed by kwargs.
         pyOperator.__init__(self, func=self._plot, begin=begin, end=end,
-            step=step, at=at, rep=rep, stage=stage)
+            step=step, at=at, reps=reps, stage=stage)
 
     def __del__(self):
         # Close the device if needed.

@@ -68,7 +68,7 @@ class TestUtility(unittest.TestCase):
     def interactiveTestPauseAtGen(self):
         'Testing resume to simulation'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
-            randomMating(), rep=5)
+            randomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press q\n\n"
         self.assertRaises( exceptions.SystemError, simu.evolve,
             ops=[ pause(at=[10]),
@@ -78,7 +78,7 @@ class TestUtility(unittest.TestCase):
     def interactiveTestExitToShell(self):
         'Testing exit to a shell'
         simu = simulator( population(size=10, ploidy=2, loci=[2, 3]),
-            randomMating(), rep=5)
+            randomMating(), reps=5)
         print "\n\nUSER INTERACTION: Please press s and then Ctrl-D"
         print "Please check the existence of variable pop\n\n"
         simu.evolve(
