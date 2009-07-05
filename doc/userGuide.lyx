@@ -4980,14 +4980,6 @@ subPops=(0, 1)
  is intepreted as two non-virtual subpopulation.
 \end_layout
 
-\begin_layout Itemize
-
-\family typewriter
-subPops=None
-\family default
- is accepted by some operators meaning no subpopulation should be handled.
-\end_layout
-
 \begin_layout Standard
 However, not all operators support this parameter, and even if they do,
  their interpretations of parameter input may vary.
