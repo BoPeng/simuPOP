@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13149,8 +13149,46 @@ How statistics calculation works
 \end_layout
 
 \begin_layout Standard
-Statistics calculation and retrieval are two separate processes that are
- connected .
+A 
+\family typewriter
+stat
+\family default
+ operator calculates specified statistics of a population when it is applied
+ to this population.
+ This operator is by default applied after mating (parameter 
+\emph on
+stage
+\emph default
+) and can be applied to specified replicates (parameter 
+\emph on
+rep
+\emph default
+) at specified generations (parameter 
+\emph on
+begin
+\emph default
+, 
+\emph on
+end
+\emph default
+, 
+\emph on
+step
+\emph default
+, and 
+\emph on
+at
+\emph default
+).
+ This operator does not produce any output (ignore parameter 
+\emph on
+output
+\emph default
+) after statistics are calculated.
+ Instead, it stores results in the local namespace of the population being
+ applied.
+ Other operators can retrieve these variables or evalulate expression directly
+ in this local namespace.
 \end_layout
 
 \begin_layout Subsection
@@ -13164,19 +13202,69 @@ vars
 \end_layout
 
 \begin_layout Standard
-subPops can be
-\end_layout
 
-\begin_layout Itemize
-[]
-\end_layout
-
-\begin_layout Itemize
-None
-\end_layout
-
-\begin_layout Itemize
-A list of subpopulations.
+\family typewriter
+stat
+\family default
+ supports parameter 
+\emph on
+subPops
+\emph default
+.
+ It usually calculate the same set of statistics for all subpopulations
+ (
+\family typewriter
+subPops=[]
+\family default
+).
+ If a list of (virtual) subpopulations are specified, statistics for only
+ specified subpopulations will be calculated.
+ If an invalid list of subpopulations is given (
+\family typewriter
+subPops=-1
+\family default
+), statistics will not be calculated for any subpopulation.
+ However, different statistics treat this parameter differently and it is
+ very important to check its reference before you use 
+\emph on
+subPops
+\emph default
+ for any statistics.
+ Calculated statistics are saved as variables in a population's local namespace.
+ These variables can be numbers, lists or dictionaries and can be retrieved
+ using functions 
+\family typewriter
+population.vars()
+\family default
+ or 
+\family typewriter
+population.dvars()
+\family default
+.
+ If the same variable is calculated for one or more (virtual) subpopulation,
+ the variables are stored in 
+\family typewriter
+vars()['subPop'][sp]['var']
+\family default
+ where sp is a subpopulation ID (
+\family typewriter
+sp
+\family default
+) or a tuple of virtual subpopulation ID (
+\family typewriter
+(sp, vsp)
+\family default
+).
+ 
+\family typewriter
+population.vars(sp)
+\family default
+ and 
+\family typewriter
+population.dvars(sp)
+\family default
+ provide shortcuts to these variables.
+ 
 \end_layout
 
 \begin_layout Subsection
