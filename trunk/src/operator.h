@@ -235,8 +235,8 @@ public:
 	 *  \param at A list of applicable generations. Parameters \c begin,
 	 *    \c end, and \c step will be ignored if this parameter is specified.
 	 *    A single generation number is also acceptable.
-	 *  \param rep A list of applicable replicates. An empty list (default) is
-	 *    interpreted as all replicates in a simulator. Negative indexes such
+	 *  \param reps A list of applicable replicates. A default value \c AllReps
+	 *    is interpreted as all replicates in a simulator. Negative indexes such
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
 	 *    as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
