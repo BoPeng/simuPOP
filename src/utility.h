@@ -400,6 +400,9 @@ public:
 		m_elems.push_back(str2);
 	}
 
+    /// CPPONLY
+    void obtainFrom(const stringList & items, const char * allowedItems[],
+        const char * defaultItems[]);
 
 	/// CPPONLY
 	bool empty() const

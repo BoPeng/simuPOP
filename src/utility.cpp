@@ -333,6 +333,27 @@ void stringList::addString(PyObject * str)
 }
 
 
+void stringList::obtainFrom(const stringList & items, const char * allowedItems[],
+        const char * defaultItems[])
+{
+    if (items.empty()) {
+        for (size_t i = 0; defaultItems[i][0]; ++i)
+            m_elems.push_back(defaultItems[i]);
+        return;
+    }
+    stringList allowed;
+        for (size_t i = 0; allowedItems[i][0]; ++i)
+            allowed.m_elems.push_back(allowedItems[i]);
+    vectorstr::const_iterator it = items.elems().begin();
+    vectorstr::const_iterator itEnd = items.elems().end();
+    for (; it != itEnd; ++it)
+        if (allowed.contains(*it))
+            m_elems.push_back(*it);
+    if (m_elems.empty())
+        for (size_t i = 0; defaultItems[i][0]; ++i)
+            m_elems.push_back(defaultItems[i]);
+}
+
 //
 // shared variables
 //

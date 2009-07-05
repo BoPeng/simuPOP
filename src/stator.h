@@ -360,13 +360,18 @@ string haploKey(const vectori & seq);
 class statPopSize
 {
 private:
-#define  popSize_String     "popSize"
-#define  subPopSize_String  "subPopSize"
+#define  popSize_String        "popSize"
+#define  subPopSize_String     "subPopSize"
+#define  popSize_sp_String     "popSize_sp"
 
 public:
 	statPopSize(bool popSize, const subPopList & subPops, const stringList & vars)
-		: m_isActive(popSize), m_subPops(subPops), m_vars(vars)
+		: m_isActive(popSize), m_subPops(subPops), m_vars()
 	{
+		const char * allowedVars[] = {popSize_String, popSize_sp_String,
+				subPopSize_String, ""};
+		const char * defaultVars[] = {popSize_String, subPopSize_String, ""};
+		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
 	}
 
 	bool apply(population & pop);
@@ -381,15 +386,26 @@ private:
 class statNumOfMale
 {
 private:
-#define  numOfMale_String      "numOfMale"
-#define  propOfMale_String     "propOfMale"
-#define  numOfFemale_String    "numOfFemale"
-#define  propOfFemale_String   "propOfFemale"
+#define  numOfMale_String         "numOfMale"
+#define  propOfMale_String        "propOfMale"
+#define  numOfFemale_String       "numOfFemale"
+#define  propOfFemale_String      "propOfFemale"
+#define  numOfMale_sp_String      "numOfMale_sp"
+#define  propOfMale_sp_String     "propOfMale_sp"
+#define  numOfFemale_sp_String    "numOfFemale_sp"
+#define  propOfFemale_sp_String   "propOfFemale_sp"
 
 public:
 	statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars)
-		: m_isActive(numOfMale), m_subPops(subPops), m_vars(vars)
+		: m_isActive(numOfMale), m_subPops(subPops), m_vars()
 	{
+		const char * allowedVars[] = {
+			numOfMale_String, propOfMale_String,
+			numOfFemale_String, propOfFemale_String,
+			numOfMale_sp_String, propOfMale_sp_String,
+			numOfFemale_sp_String, propOfFemale_sp_String, ""};
+		const char * defaultVars[] = {numOfMale_String, ""};
+		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
 	}
 
 	bool apply(population & pop);
@@ -405,15 +421,26 @@ private:
 class statNumOfAffected
 {
 private:
-#define  numOfAffected_String     "numOfAffected"
-#define  propOfAffected_String    "propOfAffected"
-#define  numOfUnaffected_String   "numOfUnaffected"
-#define  propOfUnaffected_String  "propOfUnaffected"
+#define  numOfAffected_String        "numOfAffected"
+#define  propOfAffected_String       "propOfAffected"
+#define  numOfUnaffected_String      "numOfUnaffected"
+#define  propOfUnaffected_String     "propOfUnaffected"
+#define  numOfAffected_sp_String     "numOfAffected_sp"
+#define  propOfAffected_sp_String    "propOfAffected_sp"
+#define  numOfUnaffected_sp_String   "numOfUnaffected_sp"
+#define  propOfUnaffected_sp_String  "propOfUnaffected_sp"
 
 public:
 	statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars)
-		: m_isActive(numOfAffected), m_subPops(subPops), m_vars(vars)
+		: m_isActive(numOfAffected), m_subPops(subPops), m_vars()
 	{
+		const char * allowedVars[] = {
+			numOfAffected_String, propOfAffected_String,
+			numOfUnaffected_String, propOfUnaffected_String,
+			numOfAffected_sp_String, propOfAffected_sp_String,
+			numOfUnaffected_sp_String, propOfUnaffected_sp_String, ""};
+		const char * defaultVars[] = {numOfMale_String, ""};
+		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
 	}
 
 	bool apply(population & pop);
@@ -432,11 +459,18 @@ class statAlleleFreq
 private:
 #define  AlleleNum_String     "alleleNum"
 #define  AlleleFreq_String    "alleleFreq"
+#define  AlleleNum_sp_String     "alleleNum_sp"
+#define  AlleleFreq_sp_String    "alleleFreq_sp"
 
 public:
 	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
-		: m_loci(loci), m_subPops(subPops), m_vars(vars)
+		: m_loci(loci), m_subPops(subPops), m_vars()
 	{
+		const char * allowedVars[] = {
+			AlleleNum_String, AlleleFreq_String,
+			AlleleNum_sp_String, AlleleFreq_sp_String, ""};
+		const char * defaultVars[] = {AlleleFreq_String, ""};
+		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
 	}
 
 
@@ -1100,67 +1134,30 @@ public:
 	 *  Operator \e stat outputs a number of most useful variables for each
 	 *  type of statistic. For example, <tt>alleleFreq</tt> calculates both
 	 *  allele counts and allele frequencies and it by default sets
-	 *  variable \c alleleFreq for each (virtual) subpopulation
-	 *  (<tt>dvars(sp).alleleFreq<tt>)and for all subpopulations
-	 *  (<tt>dvars().alleleFreq</tt>). If this does not fit your need, you can
+	 *  variable \c alleleFreq (<tt>dvars().alleleFreq<tt>) for all or
+	 *  specified subpopulations. If this does not fit your need, you can
 	 *  use parameter \e vars to output additional parameters, or limit the
 	 *  output of existing parameters. More specifically, for this particular
 	 *  statistic, the available variables are \c 'alleleFreq', \c 'alleleNum',
 	 *  \c 'alleleFreq_sp' (\c 'alleleFreq' in each subpopulation), and
 	 *  \c 'alleleNum_sp' (\c 'alleleNum' in each subpopulation). You can set
-	 *  <tt>vars=['alleleNum']</tt> to only output overall allele count.
-
-	 Statistic calculator can output a large number of variables caParameter \e vars 
+	 *  <tt>vars=['alleleNum_sp']</tt> to output only subpopulation specific
+	 *  allele count.
+	 *
 	 *  Operator \c stat supports the following statistics:
 	 *
 	 *  <b>Population size</b>: If \e popSize=True, population size of all or
 	 *  specified subpopulations (parameter \e subPops) will be set to the
 	 *  following variables:
-	 *  \li \c popSize: Number of individuals in all or specified
+	 *  \li \c popSize (default): Number of individuals in all or specified
 	 *       subpopulations. Because \e subPops does not have to cover all
 	 *       individuals, it may not be the actual population size.
 	 *  \li \c popSize_sp: Size of (virtual) subpopulation \c sp.
-	 *  \li \c subPopSize: A list of subpopulation sizes.
+	 *  \li \c subPopSize (default): A list of subpopulation sizes.
 	 *       <tt>sum(subPopSize)</tt> is the total population size.
 	 *
-	 *
+	 *  <b>Number of male individuals</b>: 
 
-	   \param popSize whether or not calculate population and virtual subpopulation
-	    sizes. This parameter will set the following variables:
-	   \li \c numSubPop the number of subpopulations.
-	   \li \c subPopSize an array of subpopulation sizes.
-	   \li \c virtualSubPopSize (optional) an array of virtual subpopulation sizes.
-	    If a subpopulation does not have any virtual subpopulation, the
-	    subpopulation size is returned.
-	   \li \c popSize, <tt>subPop[sp]['popSize']</tt> the population/subpopulation size.
-
-	   \param numOfMale whether or not count the numbers or proportions of males and females.
-	    This parameter can set the following variables by user's specification:
-	   \li \c numOfMale, <tt>subPop[sp]['numOfMale']</tt> the number of males in the population/subpopulation.
-	   \li \c numOfFemale, <tt>subPop[sp]['numOfFemale']</tt> the number of females in the population/subpopulation.
-	   \li \c propOfMale, <tt>subPop[sp]['propOfMale']</tt> the proportion of
-	   males in the population/subpopulation.
-	   \li \c propOfFemale, <tt>subPop[sp]['propOfFemale']</tt> the proportion of
-	   females in the population/subpopulation.
-
-	   \param numOfMale_param a dictionary of parameters of \c numOfMale statistics.
-	   Can be one or more items choosen from the following options: \c numOfMale,
-	   \c propOfMale, \c numOfFemale, and \c propOfFemale.
-
-	   \param numOfAffected whether or not count the numbers or proportions of affected and unaffected individuals.
-	   This parameter can set the following variables by user's specification:
-	   \li \c numOfAffected, <tt>subPop[sp]['numOfAffected']</tt> the number of
-	   affected individuals in the population/subpopulation.
-	   \li \c numOfUnaffected, <tt>subPop[sp]['numOfUnAffected']</tt> the number of
-	   unaffected individuals in the population/subpopulation.
-	   \li \c propOfAffected, <tt>subPop[sp]['propOfAffected']</tt> the proportion of
-	   affected individuals in the population/subpopulation.
-	   \li \c propOfUnaffected, <tt>subPop[sp]['propOfUnAffected']</tt> the proportion of
-	   unaffected individuals in the population/subpopulation.
-
-	   \param numOfAffected_param a dictionary of parameters of \c numOfAffected statistics.
-	   Can be one or more items choosen from the following options: \c numOfAffected,
-	   \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
 
 	   \param numOfAlleles an array of loci at which the numbers of distinct alleles
 	   will be counted (<tt>numOfAlleles=[loc1, loc2, ...]</tt> where \c loc1 etc.

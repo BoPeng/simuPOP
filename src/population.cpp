@@ -1799,9 +1799,7 @@ PyObject * population::vars(vspID vsp)
 		return m_vars.dict();
 	}
 
-	SubPopID subPop = vsp.subPop();
-
-	DBG_ASSERT(static_cast<UINT>(subPop) < numSubPop(),
+	DBG_ASSERT(static_cast<UINT>(vsp.subPop()) < numSubPop(),
 		IndexError, "Subpop index out of range of 0 ~ " + toStr(numSubPop() - 1) );
 
 	DBG_ASSERT(hasVar("subPop"), ValueError,

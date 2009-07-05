@@ -347,25 +347,24 @@ bool statPopSize::apply(population & pop)
 		return true;
 
 	// popSize = ...
-	if (m_vars.empty() || m_vars.contains(popSize_String)) {
-		ULONG popSize = 0;
-		// for each (virtual) subpopulation
-		subPopList subPops = m_subPops;
-		if (subPops.empty())
-			subPops.useSubPopsFrom(pop);
-		subPopList::const_iterator it = subPops.begin();
-		subPopList::const_iterator itEnd = subPops.end();
-		for (; it != itEnd; ++it) {
-			ULONG spPopSize = pop.subPopSize(*it);
-			popSize += spPopSize;
+	ULONG popSize = 0;
+	// for each (virtual) subpopulation
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		ULONG spPopSize = pop.subPopSize(*it);
+		popSize += spPopSize;
+		if (m_vars.contains(popSize_sp_String))
 			pop.setIntVar(subPopVar_String(*it, popSize_String), spPopSize);
-		}
-		// NOTE: popSize does not have to be the total population size
-		pop.setIntVar(popSize_String, popSize);
 	}
+	// NOTE: popSize does not have to be the total population size
+	if (m_vars.contains(popSize_String))
+		pop.setIntVar(popSize_String, popSize);
 	// subPopSize = ...
 	// type mismatch, can not use subPopSizes() directly.
-	if (m_vars.empty() || m_vars.contains(subPopSize_String)) {
+	if (m_vars.contains(subPopSize_String)) {
 		vectori spSize(pop.numSubPop());
 		for (size_t sp = 0; sp < spSize.size(); ++sp)
 			spSize[sp] = pop.subPopSize(sp);
@@ -380,64 +379,58 @@ bool statNumOfMale::apply(population & pop)
 	if (!m_isActive)
 		return true;
 
-	vectorlu numOfMales(pop.numSubPop(), 0);
-	for (size_t sp = 0; sp < pop.numSubPop(); ++sp) {
-		ULONG n = 0;
-		IndIterator it = pop.indIterator(sp);
-		for (; it.valid(); ++it)
-			if (it->sex() == Male)
-				numOfMales[sp]++;
-	}
-	// output whole population
-	ULONG totNumOfMales = accumulate(numOfMales.begin(), numOfMales.end(), 0LU);
-	ULONG totNumOfFemales = pop.popSize() - totNumOfMales;
-	ULONG popSize = pop.popSize();
-	if (m_vars.empty() || m_vars.contains(numOfMale_String))
-		pop.setIntVar(numOfMale_String, totNumOfMales);
-	if (m_vars.empty() || m_vars.contains(propOfMale_String))
-		pop.setDoubleVar(propOfMale_String, popSize == 0 ? 0. : static_cast<double>(totNumOfMales) / popSize);
-	if (m_vars.empty() || m_vars.contains(numOfFemale_String))
-		pop.setIntVar(numOfFemale_String, totNumOfFemales);
-	if (m_vars.empty() || m_vars.contains(propOfFemale_String))
-		pop.setDoubleVar(propOfFemale_String, popSize == 0 ? 0 : static_cast<double>(totNumOfFemales) / popSize);
-
+	ULONG allMaleCnt = 0;
+	ULONG allFemaleCnt = 0;
+	ULONG allTotalCnt = 0;
 	// for each subpopulation.
 	subPopList subPops = m_subPops;
-	if (subPops.empty())
-		subPops.useSubPopsFrom(pop);
+	subPops.useSubPopsFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for (; sp != spEnd; ++sp) {
 		ULONG maleCnt = 0;
 		ULONG femaleCnt = 0;
 		ULONG totalCnt = 0;
-		if (sp->isVirtual()) {
+		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
-			IndIterator it = pop.indIterator(sp->subPop());
-			for (; it.valid(); ++it)
-				if (it->sex() == Male)
-					maleCnt++;
-				else
-					femaleCnt++;
+
+		IndIterator it = pop.indIterator(sp->subPop());
+		for (; it.valid(); ++it)
+			if (it->sex() == Male)
+				maleCnt++;
+			else
+				femaleCnt++;
+		
+		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
-		} else {
-			maleCnt = numOfMales[sp->subPop()];
-			femaleCnt = pop.subPopSize(sp->subPop()) - maleCnt;
-		}
+
 		totalCnt = maleCnt + femaleCnt;
 			
-		if (m_vars.empty() || m_vars.contains(numOfMale_String))
+		if (m_vars.contains(string(numOfMale_String) + "_sp"))
 			pop.setIntVar(subPopVar_String(*sp, numOfMale_String), maleCnt);
-		if (m_vars.empty() || m_vars.contains(propOfMale_String))
+		if (m_vars.contains(string(propOfMale_String) + "_sp"))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfMale_String),
 				totalCnt == 0 ? 0 : static_cast<double>(maleCnt) / totalCnt);
-		if (m_vars.empty() || m_vars.contains(numOfFemale_String))
+		if (m_vars.contains(string(numOfFemale_String) + "_sp"))
 			pop.setIntVar(subPopVar_String(*sp, numOfFemale_String), femaleCnt);
-		if (m_vars.empty() || m_vars.contains(propOfFemale_String))
+		if (m_vars.contains(string(propOfFemale_String) + "_sp"))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfFemale_String),
 				totalCnt == 0 ? 0 : static_cast<double>(femaleCnt) / totalCnt);
+
+		allMaleCnt += maleCnt;
+		allFemaleCnt += femaleCnt;
+		allTotalCnt += totalCnt;
 	}
 
+	// output whole population
+	if (m_vars.contains(numOfMale_String))
+		pop.setIntVar(numOfMale_String, allMaleCnt);
+	if (m_vars.contains(propOfMale_String))
+		pop.setDoubleVar(propOfMale_String, allTotalCnt == 0 ? 0. : static_cast<double>(allMaleCnt) / allTotalCnt);
+	if (m_vars.contains(numOfFemale_String))
+		pop.setIntVar(numOfFemale_String, allFemaleCnt);
+	if (m_vars.contains(propOfFemale_String))
+		pop.setDoubleVar(propOfFemale_String, allTotalCnt == 0 ? 0 : static_cast<double>(allFemaleCnt) / allTotalCnt);
 	return true;
 }
 
@@ -447,63 +440,59 @@ bool statNumOfAffected::apply(population & pop)
 	if (!m_isActive)
 		return true;
 
-	vectorlu numOfAffected(pop.numSubPop(), 0);
-	for (size_t sp = 0; sp < pop.numSubPop(); ++sp) {
-		ULONG n = 0;
-		IndIterator it = pop.indIterator(sp);
-		for (; it.valid(); ++it)
-			if (it->affected())
-				numOfAffected[sp]++;
-	}
-	// output whole population
-	ULONG totNumOfAffecteds = accumulate(numOfAffected.begin(), numOfAffected.end(), 0LU);
-	ULONG totNumOfUnaffecteds = pop.popSize() - totNumOfAffecteds;
-	ULONG popSize = pop.popSize();
-	if (m_vars.empty() || m_vars.contains(numOfAffected_String))
-		pop.setIntVar(numOfAffected_String, totNumOfAffecteds);
-	if (m_vars.empty() || m_vars.contains(propOfAffected_String))
-		pop.setDoubleVar(propOfAffected_String, popSize == 0 ? 0. : static_cast<double>(totNumOfAffecteds) / popSize);
-	if (m_vars.empty() || m_vars.contains(numOfUnaffected_String))
-		pop.setIntVar(numOfUnaffected_String, totNumOfUnaffecteds);
-	if (m_vars.empty() || m_vars.contains(propOfUnaffected_String))
-		pop.setDoubleVar(propOfUnaffected_String, popSize == 0 ? 0 : static_cast<double>(totNumOfUnaffecteds) / popSize);
-
+	ULONG allAffectedCnt = 0;
+	ULONG allUnaffectedCnt = 0;
+	ULONG allTotalCnt = 0;
 	// for each subpopulation.
 	subPopList subPops = m_subPops;
-	if (subPops.empty())
-		subPops.useSubPopsFrom(pop);
+	subPops.useSubPopsFrom(pop);
 	subPopList::const_iterator sp = subPops.begin();
 	subPopList::const_iterator spEnd = subPops.end();
 	for (; sp != spEnd; ++sp) {
 		ULONG affectedCnt = 0;
 		ULONG unaffectedCnt = 0;
 		ULONG totalCnt = 0;
-		if (sp->isVirtual()) {
+		if (sp->isVirtual())
 			pop.activateVirtualSubPop(*sp);
-			IndIterator it = pop.indIterator(sp->subPop());
-			for (; it.valid(); ++it)
-				if (it->affected())
-					affectedCnt++;
-				else
-					unaffectedCnt++;
+
+		IndIterator it = pop.indIterator(sp->subPop());
+		for (; it.valid(); ++it)
+			if (it->affected())
+				affectedCnt++;
+			else
+				unaffectedCnt++;
+		
+		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
-		} else {
-			affectedCnt = numOfAffected[sp->subPop()];
-			unaffectedCnt = pop.subPopSize(sp->subPop()) - affectedCnt;
-		}
+
 		totalCnt = affectedCnt + unaffectedCnt;
 			
-		if (m_vars.empty() || m_vars.contains(numOfAffected_String))
+		if (m_vars.contains(string(numOfAffected_String) + "_sp"))
 			pop.setIntVar(subPopVar_String(*sp, numOfAffected_String), affectedCnt);
-		if (m_vars.empty() || m_vars.contains(propOfAffected_String))
+		if (m_vars.contains(string(propOfAffected_String) + "_sp"))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfAffected_String),
 				totalCnt == 0 ? 0 : static_cast<double>(affectedCnt) / totalCnt);
-		if (m_vars.empty() || m_vars.contains(numOfUnaffected_String))
+		if (m_vars.contains(string(numOfUnaffected_String) + "_sp"))
 			pop.setIntVar(subPopVar_String(*sp, numOfUnaffected_String), unaffectedCnt);
-		if (m_vars.empty() || m_vars.contains(propOfUnaffected_String))
+		if (m_vars.contains(string(propOfUnaffected_String) + "_sp"))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfUnaffected_String),
 				totalCnt == 0 ? 0 : static_cast<double>(unaffectedCnt) / totalCnt);
+
+		allAffectedCnt += affectedCnt;
+		allUnaffectedCnt += unaffectedCnt;
+		allTotalCnt += totalCnt;
 	}
+
+	// output whole population
+	if (m_vars.contains(numOfAffected_String))
+		pop.setIntVar(numOfAffected_String, allAffectedCnt);
+	if (m_vars.contains(propOfAffected_String))
+		pop.setDoubleVar(propOfAffected_String, allTotalCnt == 0 ? 0. : static_cast<double>(allAffectedCnt) / allTotalCnt);
+	if (m_vars.contains(numOfUnaffected_String))
+		pop.setIntVar(numOfUnaffected_String, allUnaffectedCnt);
+	if (m_vars.contains(propOfUnaffected_String))
+		pop.setDoubleVar(propOfUnaffected_String, allTotalCnt == 0 ? 0 : static_cast<double>(allUnaffectedCnt) / allTotalCnt);
+
 	return true;
 }
 
@@ -537,89 +526,77 @@ bool statAlleleFreq::apply(population & pop)
 
 	DBG_DO(DBG_STATOR, cout << "Calculated allele frequency for loci " << m_loci << endl);
 
-	// no variables...
-	if (!m_vars.empty() && !m_vars.contains(AlleleNum_String) &&
-	    !m_vars.contains(AlleleFreq_String)) {
-		DBG_DO(DBG_GENERAL, cout << "Allele frequency is not calculated because specified variables do not include alleleFreq or alleleNum");
-		return true;
-	}
-
-	pop.removeVar(AlleleNum_String);
-	pop.removeVar(AlleleFreq_String);
-	// all subpopulations
-	for (size_t i = 0; i < m_loci.size(); ++i) {
-		UINT loc = m_loci[i];
-
-		vectori count(2, 0);
-		size_t allCount = 0;
-
-		// go through all alleles
-		IndAlleleIterator a = pop.alleleIterator(loc);
-		// use allAllelel here because some marker does not have full number
-		// of alleles (e.g. markers on chromosome X and Y).
-		for (; a.valid(); ++a) {
-			if (AlleleUnsigned(*a) >= count.size())
-				count.resize(*a + 1, 0);
-			count[*a]++;
-			allCount++;
-		}
-		// output variable.
-		if (m_vars.empty() || m_vars.contains(AlleleNum_String)) {
-			DBG_DO(DBG_STATOR, cout << "Set variable " << AlleleNum_String << "{"
-				                    << loc << "} with value " << count << endl);
-			pop.setIntVectorVar(string(AlleleNum_String) + "{" + toStr(loc) + "}", count);
-		}
-		if (m_vars.empty() || m_vars.contains(AlleleFreq_String)) {
-			vectorf freq(count.size(), 0.);
-			if (allCount != 0) {
-				for (size_t i = 0; i < count.size(); ++i)
-					freq[i] = static_cast<double>(count[i]) / allCount;
-			}
-			DBG_DO(DBG_STATOR, cout << "Set variable " << AlleleFreq_String << "{"
-				                    << loc << "} with value " << freq << endl);
-			pop.setDoubleVectorVar(string(AlleleFreq_String) + "{" + toStr(loc) + "}", freq);
-		}
-	}
+	// count for all specified subpopulations
+	vector<vectori> alleleCnt(m_loci.size(), vectori(2, 0));
+	vectorlu allAllelesCnt(m_loci.size(), 0);
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
-	if (subPops.empty())
-		subPops.useSubPopsFrom(pop);
+	subPops.useSubPopsFrom(pop);
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
-		pop.removeVar(subPopVar_String(*it, AlleleNum_String));
-		pop.removeVar(subPopVar_String(*it, AlleleFreq_String));
-		for (size_t i = 0; i < m_loci.size(); ++i) {
-			UINT loc = m_loci[i];
+		if (m_vars.contains(string(AlleleNum_String) + "_sp"))
+			pop.removeVar(subPopVar_String(*it, AlleleNum_String));
+		if (m_vars.contains(string(AlleleFreq_String) + "_sp"))
+			pop.removeVar(subPopVar_String(*it, AlleleFreq_String));
 
-			vectori count(2, 0);
-			size_t allCount = 0;
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
 
-			if (it->isVirtual())
-				pop.activateVirtualSubPop(*it);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
+
+			vectori alleles(2, 0);
+			size_t allAlleles = 0;
+
 			// go through all alleles
 			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
 			// use allAllelel here because some marker does not have full number
 			// of alleles (e.g. markers on chromosome X and Y).
 			for (; a.valid(); ++a) {
-				if (AlleleUnsigned(*a) >= count.size())
-					count.resize(*a + 1, 0);
-				count[*a]++;
-				allCount++;
+				if (AlleleUnsigned(*a) >= alleles.size())
+					alleles.resize(*a + 1, 0);
+				alleles[*a]++;
+				allAlleles++;
 			}
 			// output variable.
-			if (m_vars.empty() || m_vars.contains(AlleleNum_String))
-				pop.setIntVectorVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", count);
-			if (m_vars.empty() || m_vars.contains(AlleleFreq_String)) {
-				vectorf freq(count.size(), 0.);
-				if (allCount != 0) {
-					for (size_t i = 0; i < count.size(); ++i)
-						freq[i] = static_cast<double>(count[i]) / allCount;
+			if (m_vars.contains(string(AlleleNum_String) + "_sp"))
+				pop.setIntVectorVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
+			if (m_vars.contains(string(AlleleFreq_String) + "_sp")) {
+				vectorf freq(alleles.size(), 0.);
+				if (allAlleles != 0) {
+					for (size_t i = 0; i < alleles.size(); ++i)
+						freq[i] = static_cast<double>(alleles[i]) / allAlleles;
 				}
 				pop.setDoubleVectorVar(subPopVar_String(*it, AlleleFreq_String) + "{" + toStr(loc) + "}", freq);
 			}
-			if (it->isVirtual())
-				pop.deactivateVirtualSubPop(it->subPop());
+			// total allele count
+			if (alleleCnt[idx].size() < alleles.size())
+				alleleCnt[idx].resize(alleles.size(), 0);
+			for (size_t i = 0; i < alleles.size(); ++i)
+				alleleCnt[idx][i] += alleles[i];
+			allAllelesCnt[idx] += allAlleles;
+		}
+		if (it->isVirtual())
+			pop.deactivateVirtualSubPop(it->subPop());
+	}
+
+	if (m_vars.contains(AlleleNum_String)) {
+		pop.removeVar(AlleleNum_String);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx)
+			pop.setIntVectorVar(string(AlleleNum_String) + "{" + toStr(m_loci[idx]) + "}",
+				alleleCnt[idx]);
+	}
+	if (m_vars.contains(AlleleFreq_String)) {
+		pop.removeVar(AlleleFreq_String);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			vectorf freq(alleleCnt[idx].size(), 0.);
+			if (allAllelesCnt[idx] != 0) {
+				for (size_t i = 0; i < alleleCnt[idx].size(); ++i)
+					freq[i] = static_cast<double>(alleleCnt[idx][i]) / allAllelesCnt[idx];
+			}
+			pop.setDoubleVectorVar(string(AlleleFreq_String) + "{" + toStr(m_loci[idx]) + "}",
+				freq);
 		}
 	}
 	return true;
@@ -1348,8 +1325,8 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 		// unless stat() is called as
 		//     stat(LD=[0,1], midValues=True)
 		//
-		m_alleleFreq.addLocus(m_LD[i][0]);
-		m_alleleFreq.addLocus(m_LD[i][1]);
+		m_alleleFreq.addLocus(m_LD[i][0], AllSubPops, stringList("alleleNum"));
+		m_alleleFreq.addLocus(m_LD[i][1], AllSubPops, stringList("alleleNum"));
 		// also need haplotype.
 		if (m_LD[i][0] != m_LD[i][1]) {
 			vectori hap(2);
