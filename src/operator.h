@@ -69,13 +69,6 @@ public:
 	subPopList(const vectorvsp & subPops = vectorvsp());
 
 	/// CPPONLY
-	bool valid() const
-	{
-		return m_valid;
-	}
-
-
-	/// CPPONLY
 	bool empty() const
 	{
 		return m_subPops.empty();
@@ -102,7 +95,6 @@ public:
 	void push_back(const vspID subPop)
 	{
 		m_subPops.push_back(subPop);
-		m_valid = true;
 	}
 
 
@@ -147,15 +139,13 @@ public:
 		DBG_ASSERT(m_subPops.empty(), SystemError,
 			"Only when no subpopulation is specified can this function be called."
 			"This is likely caused by the use of persistent subPops for different populations.");
-		if (m_valid)
-			for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
-				m_subPops.push_back(vspID(sp));
+		for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+			m_subPops.push_back(vspID(sp));
 	}
 
 
 private:
 	vectorvsp m_subPops;
-	bool m_valid;
 };
 
 
