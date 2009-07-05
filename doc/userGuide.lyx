@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1316,7 +1316,11 @@ subPops
 \family typewriter
 rep
 \family default
- (replicate and replicates), 
+ (replicate), 
+\family typewriter
+reps
+\family default
+ (replicates), 
 \family typewriter
 gen
 \family default
@@ -4866,7 +4870,7 @@ A simulator can evolve multiple replicates of a population simultaneously.
 \begin_layout Standard
 Parameter 
 \family typewriter
-rep
+reps
 \family default
  is used to control which replicate(s) an operator can be applied to.
  This parameter can be a list of replicate numbers or a single replicate
@@ -4891,7 +4895,7 @@ reference "hybridOperator"
 
  demonstrates how to use this 
 \family typewriter
-rep
+reps
 \family default
  parameter.
  It is worth noting that negative indexes are 
@@ -15452,7 +15456,7 @@ Except for the first generation where no line could be drawn, a figure will
  be drawn after this operator is applied to the last specified replicate
  (parameter 
 \family typewriter
-rep
+reps
 \family default
  could be used to specify a subset of replicates).
  For example, although linkage disequilibrium values between the first two

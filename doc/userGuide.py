@@ -50,7 +50,7 @@ simu.evolve(
         recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=10),
-        pyOutput('\n', rep=-1, step=10)
+        pyOutput('\n', reps=-1, step=10)
     ],
     gen=100
 )
@@ -470,9 +470,9 @@ simu.evolve(
     preOps = initByFreq([0.2, 0.8]),
     ops = [
         stat(alleleFreq=[0], step=10),
-        pyEval('gen', step=10, rep=0),
-        pyEval(r"'\t%.2f' % alleleFreq[0][0]", step=10, rep=(0, 2, -1)),
-        pyOutput('\n', step=10, rep=-1)
+        pyEval('gen', step=10, reps=0),
+        pyEval(r"'\t%.2f' % alleleFreq[0][0]", step=10, reps=(0, 2, -1)),
+        pyOutput('\n', step=10, reps=-1)
     ],
     gen=30,
 )
@@ -487,7 +487,7 @@ simu.evolve(
         recombinator(rates=0.01),
         stat(LD=[0, 1]),
         pyEval(r"'%.2f\t' % LD[0][1]", step=20, output='>>LD.txt'),
-        pyOutput('\n', rep=-1, step=20, output='>>LD.txt'),
+        pyOutput('\n', reps=-1, step=20, output='>>LD.txt'),
         pyEval(r"'%.2f\t' % R2[0][1]", output='R2.txt'),
         pyEval(r"'%.2f\t' % LD[0][1]", step=20, output="!'>>LD_%d.txt' % rep"),
     ],
@@ -1485,7 +1485,7 @@ simu.evolve(
 simu = simulator(population(100), randomMating(), rep=10)
 simu.evolve(
     preOps = [initByFreq([0.5, 0.5])],
-    ops = [pause(stopOnKeyStroke=str(x), rep=x) for x in range(10)],
+    ops = [pause(stopOnKeyStroke=str(x), reps=x) for x in range(10)],
     gen = 100
 )
 #end
@@ -1496,7 +1496,7 @@ simu.evolve(
     preOps = [initByFreq([0.1, 0.9])],
     ops = [
         stat(alleleFreq=[0]),
-        ticToc(step=50, rep=-1),
+        ticToc(step=50, reps=-1),
     ],
     gen = 101
 )
@@ -1724,11 +1724,11 @@ simu = simulator(population(size=[1000], loci=[100]),
 simu.evolve(
     preOps = [initByValue([0]*100 + [1]*100)],
     ops = [
-        recombinator(rates=0.01, rep=0),
-        recombinator(rates=[0.01]*10, loci=range(50, 60), rep=1),
+        recombinator(rates=0.01, reps=0),
+        recombinator(rates=[0.01]*10, loci=range(50, 60), reps=1),
         stat(LD=[[40, 55], [60, 70]]),
         pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[60][70])'),
-        pyOutput('\n', rep=-1)
+        pyOutput('\n', reps=-1)
     ],
     gen = 5
 )
@@ -1754,12 +1754,12 @@ simu = simulator(population(size=[1000], loci=[100]),
 simu.evolve(
     preOps = [initByValue([0]*100 + [1]*100)],
     ops = [
-        recombinator(rates=0.01, loci=50, rep=0),
-        recombinator(rates=0.01, loci=50, rep=1,
+        recombinator(rates=0.01, loci=50, reps=0),
+        recombinator(rates=0.01, loci=50, reps=1,
             convMode=(NumMarkers, 1, 10)),
         stat(LD=[[40, 55], [40, 70]]),
         pyEval(r'"%d:\t%.3f\t%.3f\t" % (rep, LD_prime[40][55], LD_prime[40][70])'),
-        pyOutput('\n', rep=-1)
+        pyOutput('\n', reps=-1)
     ],
     gen = 5
 )
