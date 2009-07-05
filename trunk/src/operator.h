@@ -139,15 +139,18 @@ public:
 		DBG_ASSERT(m_subPops.empty(), SystemError,
 			"Only when no subpopulation is specified can this function be called."
 			"This is likely caused by the use of persistent subPops for different populations.");
-		for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
-			m_subPops.push_back(vspID(sp));
+		if (m_expand)
+			for (size_t sp = 0; sp < pop.numSubPop(); ++sp)
+				m_subPops.push_back(vspID(sp));
 	}
 
 
 private:
 	vectorvsp m_subPops;
+	bool m_expand;
 };
 
+const subPopList AllSubPops = subPopList(subPopList::vectorvsp(1, vspID()));
 
 /** Operators are objects that act on populations. They can be applied to
  *  populations directly using their function forms, but they are usually
@@ -233,15 +236,14 @@ public:
 	 *    as \c -1 (last replicate) is acceptable. <tt>rep=idx</tt> can be used
 	 *    as a shortcut for <tt>rep=[idx]</tt>.
 	 *  \param subPops A list of applicable (virtual) subpopulations, such as
-	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. An empty list (usually the
-	 *    default) is interpreted as all subpopulations. <tt>subPops=[sp1]</tt>
+	 *    <tt>subPops=[sp1, sp2, (sp2, vsp1)]</tt>. <tt>subPops=[sp1]</tt>
 	 *    can be simplied as <tt>subPops=sp1</tt>. Negative indexes are not
-	 *    supported. Suport for this parameter vary from operator to operator.
-	 *    Some operators do not support virtual subpopulations and some
-	 *    operators regular input as well as \c None (meaning no subpopulation
-	 *    should be handled), and some operators do not do not support this
-	 *    parameter at all. Please refer to the reference manual of individual
-	 *    operators for their support for this parameter.
+	 *    supported. The default value of this parameter is usually 
+	 *    \c AllSubPops which reprents all subpopulations of the population
+	 *    being aplied. Suport for this parameter vary from operator to operator
+	 *    and some operators do not support virtual subpopulations at all.
+	 *    Please refer to the reference manual of individual operators for their
+	 *    support for this parameter.
 	 *  \param infoFields A list of information fields that will be used by an
 	 *    operator. You usually do not need to specify this parameter because
 	 *    operators that use information fields usually have default values for

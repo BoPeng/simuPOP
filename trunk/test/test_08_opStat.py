@@ -29,7 +29,7 @@ class TestStat(unittest.TestCase):
         'Testing calculation of population (subPopulation) size'
         pop = population(size=[200,800])
         # do not calculate for subpopulations
-        Stat(pop, popSize=1, subPops=-1)
+        Stat(pop, popSize=1, subPops=[])
         self.assertEqual(pop.dvars().subPopSize, [200, 800])
         self.assertEqual(pop.dvars().popSize, 1000)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
