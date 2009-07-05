@@ -48,9 +48,9 @@ public:
 	/** Create a base genotype transmitter.
 	 */
 	genoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList()) :
-		baseOperator("", DuringMating, begin, end, step, at, rep, subPops, infoFields),
+		baseOperator("", DuringMating, begin, end, step, at, reps, subPops, infoFields),
 		m_ploidy(0), m_hasCustomizedChroms(false), m_lociToCopy(0), m_chromIdx(0)
 	{
 		setTransmitter(true);
@@ -131,9 +131,9 @@ public:
 	 *  and \e infoFields are ignored.
 	 */
 	cloneGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList()) :
-		genoTransmitter(begin, end, step, at, rep, subPops, infoFields)
+		genoTransmitter(begin, end, step, at, reps, subPops, infoFields)
 	{
 		setTransmitter(true);
 	}
@@ -177,9 +177,9 @@ public:
 	 *  are ignored. Parameters \e subPops and \e infoFields are ignored.
 	 */
 	mendelianGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList()) :
-		genoTransmitter(begin, end, step, at, rep, subPops, infoFields),
+		genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_chromX(-1), m_chromY(-1), m_numChrom(0)
 	{
 	}
@@ -244,9 +244,9 @@ public:
 	 *  \e infoFields are ignored.
 	 */
 	selfingGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList())
-		: mendelianGenoTransmitter(begin, end, step, at, rep, subPops, infoFields)
+		: mendelianGenoTransmitter(begin, end, step, at, reps, subPops, infoFields)
 	{
 	}
 
@@ -291,9 +291,9 @@ public:
 	 *  are ignored.
 	 */
 	haplodiploidGenoTransmitter(int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList())
-		: mendelianGenoTransmitter(begin, end, step, at, rep, subPops, infoFields),
+		: mendelianGenoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_copier()
 	{
 	}
@@ -349,9 +349,9 @@ public:
 	 */
 	mitochondrialGenoTransmitter(const vectoru & chroms = vectoru(),
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList())
-		: genoTransmitter(begin, end, step, at, rep, subPops, infoFields),
+		: genoTransmitter(begin, end, step, at, reps, subPops, infoFields),
 		m_chroms(chroms), m_mitoChroms(0), m_numLoci(0)
 	{
 		// this is intended to be an auxillary genotype transmitter.
@@ -496,7 +496,7 @@ public:
 	recombinator(const floatList & rates = floatList(), double intensity = -1,
 		const uintList & loci = uintList(), const floatList & convMode = NoConversion,
 		int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList());
 
 

@@ -59,10 +59,10 @@ public:
 	 */
 	initSex(double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(),
-		const subPopList & subPops = subPopList(),
+		const intList & at = intList(), const repList & reps = AllReps,
+		const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList())
-		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
+		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_maleFreq(maleFreq), m_sex(sex.elems())
 	{
 		if (!m_sex.empty()) {
@@ -133,7 +133,7 @@ public:
 		const uintList & ploidy = uintList(), bool identicalInds = false,
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList());
 
 
@@ -201,7 +201,7 @@ public:
 		const floatList & proportions = floatList(),
 		bool initSex = true, double maleFreq = 0.5, const intList & sex = intList(),
 		int stage = PreMating, int begin = 0, int end = 1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList());
 
 	~initByValue()

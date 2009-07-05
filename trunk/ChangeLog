@@ -19,6 +19,10 @@ version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - CHG: Introduce parameter vars to operator stator. It will be used to replace all
 		blah_param parameters.
   - CHG: Remove numOfAllele parameter of stat() operator.
+  - CHG: Parameter subPops now treats [] as no subpopulation, and accept AllSubPops as
+		its usual default parameter.
+  - CHG: Rename parameter rep to reps in all operators. This parameter now treats
+		input [] as no replicate and use AllReps as its default input.
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.

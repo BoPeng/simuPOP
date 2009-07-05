@@ -585,7 +585,7 @@ class TestPerformance(unittest.TestCase):
         simu = simulator(
             population(size=[1000]*10, loci=[200]),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
-            rep=1)
+            reps=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
             ops = [
@@ -605,7 +605,7 @@ class TestPerformance(unittest.TestCase):
         simu = simulator(
             population(size=[1000]*10, loci=[200]),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
-            rep=1)
+            reps=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
             ops = [
@@ -625,7 +625,7 @@ class TestPerformance(unittest.TestCase):
         simu = simulator(
             population(size=[1000]*10, loci=[1]*200),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
-            rep=1)
+            reps=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
             ops = [
@@ -643,7 +643,7 @@ class TestPerformance(unittest.TestCase):
         simu = simulator(
             population(size=[1000]*10, loci=[200]*10),
             randomMating(numOffspring=1/3., mode=MATE_GeometricDistribution),
-            rep=1)
+            reps=1)
         simu.evolve(
             preOps = [initByValue([50]*200)],
             ops = [
@@ -678,7 +678,7 @@ class TestPerformance(unittest.TestCase):
         pop = LoadPopulation('exp3_0_9.txt')
         #pop = population(size=100000, loci=[10]*8, ancestralDepth=2)
         #InitByFreq(pop, [.2, .8])
-        #simu = simulator(pop, randomMating(), rep=1)
+        #simu = simulator(pop, randomMating(), reps=1)
         #simu.evolve(ops=[], end=2)
         #pop = simu.population(0)
         print 'Start saving file'

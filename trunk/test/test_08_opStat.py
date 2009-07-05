@@ -31,7 +31,7 @@ class TestStat(unittest.TestCase):
         # do not calculate for subpopulations
         Stat(pop, popSize=1, subPops=[])
         self.assertEqual(pop.dvars().subPopSize, [200, 800])
-        self.assertEqual(pop.dvars().popSize, 1000)
+        self.assertEqual(pop.dvars().popSize, 0)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         Stat(pop, popSize=1, subPops=1)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
@@ -60,7 +60,7 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setSex(Female)
         for i in range(100,800):
             pop.individual(i,1).setSex(Female)
-        Stat(pop, numOfMale=True, subPops=-1)
+        Stat(pop, numOfMale=True, subPops=AllSubPops, vars=['numOfMale', 'numOfFemale'])
         self.assertEqual(pop.dvars().numOfMale, 200)
         self.assertEqual(pop.dvars().numOfFemale, 800)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)

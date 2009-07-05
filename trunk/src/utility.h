@@ -618,13 +618,13 @@ private:
 class repList : public intList
 {
 public:
-	repList(const vectorl & reps = vectorl()) :
-		intList(reps)
+	repList(const vectorl & reps = vectorl(), bool allReps=false) :
+		intList(reps), m_allReps(allReps)
 	{
 	}
 
 
-	repList(int rep) : intList(rep)
+	repList(int rep) : intList(rep), m_allReps(false)
 	{
 	}
 
@@ -632,7 +632,11 @@ public:
 	/// CPPONLY
 	bool match(UINT rep, const vector<bool> & activeRep);
 
+private:
+	bool m_allReps;
 };
+
+const repList AllReps = repList(vectorl(), true);
 
 // ////////////////////////////////////////////////////////////
 // / Shared variables

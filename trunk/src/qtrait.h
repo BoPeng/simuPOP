@@ -58,9 +58,9 @@ class quanTrait : public baseOperator
 public:
 	/// create a quantitative trait operator
 	quanTrait(int ancGen = -1,  int stage = PostMating, int begin = 0, int end = -1, int step = 1, const intList & at = intList(),
-		const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList("qtrait"))
-		: baseOperator("", stage, begin, end, step, at, rep, subPops, infoFields),
+		: baseOperator("", stage, begin, end, step, at, reps, subPops, infoFields),
 		m_ancGen(ancGen)
 	{
 	}
@@ -133,9 +133,9 @@ public:
 	mapQuanTrait(const uintList & loci, const strDict & qtrait, double sigma = 0, bool phase = false,
 		int ancGen = -1,
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const intList & at = intList(), const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList("qtrait")) :
-		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
+		quanTrait(ancGen, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_dict(qtrait), m_sigma(sigma), m_phase(phase)
 	{
 	};
@@ -204,8 +204,8 @@ public:
 	maQuanTrait(const uintList & loci, const vectorf & qtrait, const uintList & wildtype,
 		const floatList & sigma = floatList(), int ancGen = -1,
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(),
-		const subPopList & subPops = subPopList(),
+		const intList & at = intList(), const repList & reps = AllReps,
+		const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList("qtrait"));
 
 	/// destructor
@@ -278,9 +278,9 @@ public:
 	mlQuanTrait(const opList & qtraits, int mode = Multiplicative,
 		double sigma = 0, int ancGen = -1,
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const intList & at = intList(), const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList("qtrait")) :
-		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
+		quanTrait(ancGen, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_qtraits(qtraits), m_sigma(sigma), m_mode(mode)
 	{
 		DBG_FAILIF(qtraits.empty(), ValueError, "Please specify at least one selector.");
@@ -341,9 +341,9 @@ public:
 	// provide locus and qtrait for 11, 12, 13 (in the form of dictionary)
 	pyQuanTrait(const uintList & loci, PyObject * func, int ancGen = -1,
 		int stage = PostMating, int begin = 0, int end = -1, int step = 1,
-		const intList & at = intList(), const repList & rep = repList(), const subPopList & subPops = subPopList(),
+		const intList & at = intList(), const repList & reps = AllReps, const subPopList & subPops = AllSubPops,
 		const stringList & infoFields = stringList("qtrait")) :
-		quanTrait(ancGen, stage, begin, end, step, at, rep, subPops, infoFields),
+		quanTrait(ancGen, stage, begin, end, step, at, reps, subPops, infoFields),
 		m_loci(loci.elems()), m_func(func), m_alleles(0), m_len(0), m_numArray(NULL)
 	{
 		if (!m_func.isValid())

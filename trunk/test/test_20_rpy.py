@@ -171,7 +171,7 @@ class TestRPy(unittest.TestCase):
              stator,
              varPlotter('[x**2 for x in subPopSize]', ylab='sp', type='l',
                  col_rep=['red', 'green', 'blue'], byDim=True, update=10,
-                 main='3 out of 5 reps, 3 dim plots', rep=[0, 2, 3])
+                 main='3 out of 5 reps, 3 dim plots', reps=[0, 2, 3])
              ],
              gen = 30
         )
