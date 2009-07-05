@@ -352,16 +352,6 @@ private:
 // and stat class will provide an opearator interface
 // to all of them.
 
-//
-// each class defines how to apply the statistics and
-// provide interface to allow others to retrieve the value.
-// NOTE: the values are population dependent so these
-// values are only meaningful within the same stat.apply
-// call;
-//
-// The design separate the calculation of statistics
-// as much as possible and allow easier debug and writting
-// new statistics.
 
 /// CPPONLY return {'a-b-b'} for a b c
 string haploKey(const vectori & seq);
@@ -1067,24 +1057,73 @@ private:
 };
 
 
-/// calculate statistics
-/**
-   Operator \c stat calculates various basic statistics for the population
-   and sets variables in the local namespace. Other operators or functions can
-   refer to the results from the namespace after \c stat is applied. \c Stat
-   is the function form of the operator. \n
-
-   Note that these statistics are dependent to each other. For example,
-   heterotype and allele frequencies of related loci will be automatically
-   calculated if linkage diseqilibrium is requested.
-
-   <funcForm>Stat</funcForm>
+/** Operator \c stat calculates various statistics of the population being
+ *  applied and sets variables in its local namespace. Other operators or
+ *  functions can retrieve results from or evalulate expressions in this local
+ *  namespace after \c stat is applied.
+ *  <funcForm>Stat</funcForm>
  */
 class stat : public baseOperator
 {
 public:
-	/// create an \c stat operator
-	/**
+	/** Create a \c stat operator that calculates specified statistics of a
+	 *  population when it is applied to this population. This operator is
+	 *  by default applied after mating (parameter \e stage) and can be applied
+	 *  to specified replicates (parameter \e rep) at specified generations
+	 *  (parameter \e begin, \e end, \e step, and \e at). This operator does
+	 *  not produce any output (ignore parameter \e output) after statistics
+	 *  are calculated. Instead, it stores results in the local namespace of
+	 *  the population being applied. Other operators can retrieve these
+	 *  variables or evalulate expression directly in this local namespace.
+	 *  Please refer to operator \c baseOperator for a detailed explanation of
+	 *  these common operator parameters. 
+	 *
+	 *  \c stat supports parameter \e subPops. It usually calculate the same
+	 *  set of statistics for all subpopulations (<tt>subPops=[]</tt>). If
+	 *  a list of (virtual) subpopulations are specified, statistics for only
+	 *  specified subpopulations will be calculated. If an invalid list of
+	 *  subpopulations is given (<tt>subPops=-1</tt>), statistics will not
+	 *  be calculated for any subpopulation. However, different statistics
+	 *  treat this parameter differently and it is very important to check its
+	 *  reference before you use \e subPops for any statistics.
+	 *
+	 *  Calculated statistics are saved as variables in a population's local
+	 *  namespace. These variables can be numbers, lists or dictionaries and
+	 *  can be retrieved using functions <tt>population.vars()</tt> or
+	 *  <tt>population.dvars()</tt>. If the same variable is calculated for
+	 *  one or more (virtual) subpopulation, the variables are stored in
+	 *  <tt>vars()['subPop'][sp]['var']</tt> where sp is a subpopulation ID
+	 *  (\c sp) or a tuple of virtual subpopulation ID (<tt>(sp, vsp)</tt>).
+	 *  <tt>population.vars(sp)</tt> and <tt>population.dvars(sp)</tt> provide
+	 *  shortcuts to these variables.
+	 *
+	 *  Operator \e stat outputs a number of most useful variables for each
+	 *  type of statistic. For example, <tt>alleleFreq</tt> calculates both
+	 *  allele counts and allele frequencies and it by default sets
+	 *  variable \c alleleFreq for each (virtual) subpopulation
+	 *  (<tt>dvars(sp).alleleFreq<tt>)and for all subpopulations
+	 *  (<tt>dvars().alleleFreq</tt>). If this does not fit your need, you can
+	 *  use parameter \e vars to output additional parameters, or limit the
+	 *  output of existing parameters. More specifically, for this particular
+	 *  statistic, the available variables are \c 'alleleFreq', \c 'alleleNum',
+	 *  \c 'alleleFreq_sp' (\c 'alleleFreq' in each subpopulation), and
+	 *  \c 'alleleNum_sp' (\c 'alleleNum' in each subpopulation). You can set
+	 *  <tt>vars=['alleleNum']</tt> to only output overall allele count.
+
+	 Statistic calculator can output a large number of variables caParameter \e vars 
+	 *  Operator \c stat supports the following statistics:
+	 *
+	 *  <b>Population size</b>: If \e popSize=True, population size of all or
+	 *  specified subpopulations (parameter \e subPops) will be set to the
+	 *  following variables:
+	 *  \li \c popSize: Number of individuals in all or specified
+	 *       subpopulations. Because \e subPops does not have to cover all
+	 *       individuals, it may not be the actual population size.
+	 *  \li \c popSize_sp: Size of (virtual) subpopulation \c sp.
+	 *  \li \c subPopSize: A list of subpopulation sizes.
+	 *       <tt>sum(subPopSize)</tt> is the total population size.
+	 *
+	 *
 
 	   \param popSize whether or not calculate population and virtual subpopulation
 	    sizes. This parameter will set the following variables:

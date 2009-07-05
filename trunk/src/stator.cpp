@@ -348,15 +348,20 @@ bool statPopSize::apply(population & pop)
 
 	// popSize = ...
 	if (m_vars.empty() || m_vars.contains(popSize_String)) {
-		pop.setIntVar(popSize_String, pop.popSize());
+		ULONG popSize = 0;
 		// for each (virtual) subpopulation
 		subPopList subPops = m_subPops;
 		if (subPops.empty())
 			subPops.useSubPopsFrom(pop);
 		subPopList::const_iterator it = subPops.begin();
 		subPopList::const_iterator itEnd = subPops.end();
-		for (; it != itEnd; ++it)
-			pop.setIntVar(subPopVar_String(*it, popSize_String), pop.subPopSize(*it));
+		for (; it != itEnd; ++it) {
+			ULONG spPopSize = pop.subPopSize(*it);
+			popSize += spPopSize;
+			pop.setIntVar(subPopVar_String(*it, popSize_String), spPopSize);
+		}
+		// NOTE: popSize does not have to be the total population size
+		pop.setIntVar(popSize_String, popSize);
 	}
 	// subPopSize = ...
 	// type mismatch, can not use subPopSizes() directly.

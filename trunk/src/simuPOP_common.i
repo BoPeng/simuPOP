@@ -309,9 +309,7 @@ from simuOpt import simuOptions
 def new_subPopList(self, subPops=[]):
     sp = []
     # in the case of subPops=0
-    if subPops in [None, -1]:
-        sp = [vspID()]
-    elif type(subPops) not in [type([]), type(())]:
+    if type(subPops) not in [type([]), type(())]:
         sp = [vspID(subPops)]
     else:
         for s in subPops:
