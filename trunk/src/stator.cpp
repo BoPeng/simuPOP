@@ -259,8 +259,6 @@ stat::stat(
 	const uintList & alleleFreq,
 	//
 	const uintList & heteroFreq,
-	const uintList & expHetero,
-	const strDict & expHetero_param,
 	const uintList & homoFreq,
 	//
 	const uintList & genoFreq,
@@ -290,8 +288,7 @@ stat::stat(
 	m_numOfMale(numOfMale, subPops, vars),
 	m_numOfAffected(numOfAffected, subPops, vars),
 	m_alleleFreq(alleleFreq.elems(), subPops, vars),
-	m_heteroFreq(heteroFreq.elems(), homoFreq.elems()),
-	m_expHetero(m_alleleFreq, expHetero.elems(), expHetero_param),
+	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars),
 	m_genoFreq(genoFreq.elems(), genoFreq_param),
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
@@ -311,7 +308,6 @@ stat::stat(const stat & rhs) :
 	m_numOfAffected(rhs.m_numOfAffected),
 	m_alleleFreq(rhs.m_alleleFreq),
 	m_heteroFreq(rhs.m_heteroFreq),
-	m_expHetero(m_alleleFreq, rhs.m_expHetero),     // and this one
 	m_genoFreq(rhs.m_genoFreq),
 	m_haploFreq(rhs.m_haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, rhs.m_LD), // and this one
@@ -330,7 +326,6 @@ bool stat::apply(population & pop)
 	       m_numOfAffected.apply(pop) &&
 	       m_alleleFreq.apply(pop) &&
 	       m_heteroFreq.apply(pop) &&
-	       m_expHetero.apply(pop) &&
 	       m_genoFreq.apply(pop) &&
 	       m_haploFreq.apply(pop) &&
 	       m_LD.apply(pop) &&
@@ -406,14 +401,14 @@ bool statNumOfMale::apply(population & pop)
 
 		totalCnt = maleCnt + femaleCnt;
 			
-		if (m_vars.contains(string(numOfMale_String) + "_sp"))
+		if (m_vars.contains(numOfMale_sp_String))
 			pop.setIntVar(subPopVar_String(*sp, numOfMale_String), maleCnt);
-		if (m_vars.contains(string(propOfMale_String) + "_sp"))
+		if (m_vars.contains(propOfMale_sp_String))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfMale_String),
 				totalCnt == 0 ? 0 : static_cast<double>(maleCnt) / totalCnt);
-		if (m_vars.contains(string(numOfFemale_String) + "_sp"))
+		if (m_vars.contains(numOfFemale_sp_String))
 			pop.setIntVar(subPopVar_String(*sp, numOfFemale_String), femaleCnt);
-		if (m_vars.contains(string(propOfFemale_String) + "_sp"))
+		if (m_vars.contains(propOfFemale_sp_String))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfFemale_String),
 				totalCnt == 0 ? 0 : static_cast<double>(femaleCnt) / totalCnt);
 
@@ -467,14 +462,14 @@ bool statNumOfAffected::apply(population & pop)
 
 		totalCnt = affectedCnt + unaffectedCnt;
 			
-		if (m_vars.contains(string(numOfAffected_String) + "_sp"))
+		if (m_vars.contains(numOfAffected_sp_String))
 			pop.setIntVar(subPopVar_String(*sp, numOfAffected_String), affectedCnt);
-		if (m_vars.contains(string(propOfAffected_String) + "_sp"))
+		if (m_vars.contains(propOfAffected_sp_String))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfAffected_String),
 				totalCnt == 0 ? 0 : static_cast<double>(affectedCnt) / totalCnt);
-		if (m_vars.contains(string(numOfUnaffected_String) + "_sp"))
+		if (m_vars.contains(numOfUnaffected_sp_String))
 			pop.setIntVar(subPopVar_String(*sp, numOfUnaffected_String), unaffectedCnt);
-		if (m_vars.contains(string(propOfUnaffected_String) + "_sp"))
+		if (m_vars.contains(propOfUnaffected_sp_String))
 			pop.setDoubleVar(subPopVar_String(*sp, propOfUnaffected_String),
 				totalCnt == 0 ? 0 : static_cast<double>(unaffectedCnt) / totalCnt);
 
@@ -504,20 +499,18 @@ void statAlleleFreq::addLocus(UINT locus, const subPopList & subPops,
 {
 	if (find(m_loci.begin(), m_loci.end(), locus) == m_loci.end())
 		m_loci.push_back(locus);
-	if (!subPops.empty()) {
-		subPopList::const_iterator it = subPops.begin();
-		subPopList::const_iterator itEnd = subPops.end();
-		for (; it != itEnd; ++it)
-			if (!m_subPops.contains(*it))
-				m_subPops.push_back(*it);
-	}
-	if (!vars.empty()) {
-		vectorstr::const_iterator it = vars.elems().begin();
-		vectorstr::const_iterator itEnd = vars.elems().end();
-		for (; it != itEnd; ++it)
-			if (!m_vars.contains(*it))
-				m_vars.push_back(*it);
-	}
+	//
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it)
+		if (!m_subPops.contains(*it))
+			m_subPops.push_back(*it);
+	//
+	vectorstr::const_iterator vit = vars.elems().begin();
+	vectorstr::const_iterator vitEnd = vars.elems().end();
+	for (; vit != vitEnd; ++vit)
+		if (!m_vars.contains(*vit))
+			m_vars.push_back(*vit);
 }
 
 
@@ -537,9 +530,9 @@ bool statAlleleFreq::apply(population & pop)
 	subPopList::const_iterator it = subPops.begin();
 	subPopList::const_iterator itEnd = subPops.end();
 	for (; it != itEnd; ++it) {
-		if (m_vars.contains(string(AlleleNum_String) + "_sp"))
+		if (m_vars.contains(AlleleNum_sp_String))
 			pop.removeVar(subPopVar_String(*it, AlleleNum_String));
-		if (m_vars.contains(string(AlleleFreq_String) + "_sp"))
+		if (m_vars.contains(AlleleFreq_sp_String))
 			pop.removeVar(subPopVar_String(*it, AlleleFreq_String));
 
 		if (it->isVirtual())
@@ -562,9 +555,9 @@ bool statAlleleFreq::apply(population & pop)
 				allAlleles++;
 			}
 			// output variable.
-			if (m_vars.contains(string(AlleleNum_String) + "_sp"))
+			if (m_vars.contains(AlleleNum_sp_String))
 				pop.setIntVectorVar(subPopVar_String(*it, AlleleNum_String) + "{" + toStr(loc) + "}", alleles);
-			if (m_vars.contains(string(AlleleFreq_String) + "_sp")) {
+			if (m_vars.contains(AlleleFreq_sp_String)) {
 				vectorf freq(alleles.size(), 0.);
 				if (allAlleles != 0) {
 					for (size_t i = 0; i < alleles.size(); ++i)
@@ -691,233 +684,163 @@ vectori statAlleleFreq::alleles(population & pop, int loc)
 }
 
 
-bool statHeteroFreq::apply(population & pop)
+statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
+	 const subPopList & subPops, const stringList & vars)
+	: m_loci(heteroFreq), m_subPops(subPops), m_vars()
 {
-	if (m_atLoci.empty())
-		return true;
+	// add homofreq to m_loci
+	for (size_t i = 0; i < homoFreq.size(); ++i)
+		if (find(m_loci.begin(), m_loci.end(), homoFreq[i]) == m_loci.end())
+			m_loci.push_back(homoFreq[i]);
+	//
+	const char * allowedVars[] = {
+		HeteroNum_String, HeteroFreq_String,
+		HeteroNum_sp_String, HeteroFreq_sp_String,
+		HomoNum_String, HomoFreq_String,
+		HomoNum_sp_String, HomoFreq_sp_String,
+		""
+	};
 
-	UINT numSP = pop.numSubPop();
-	UINT numLoci = m_atLoci.size();
-
-	pop.removeVar(HeteroNum_String);
-	pop.removeVar(HeteroFreq_String);
-	pop.removeVar(AllHeteroNum_String);
-	pop.removeVar(AllHeteroFreq_String);
-	pop.removeVar(HomoNum_String);
-	pop.removeVar(HomoFreq_String);
-	for (UINT sp = 0; sp < numSP; ++sp) {
-		pop.removeVar(subPopVar_String(sp, HeteroNum_String));
-		pop.removeVar(subPopVar_String(sp, HeteroFreq_String));
-		pop.removeVar(subPopVar_String(sp, AllHeteroNum_String));
-		pop.removeVar(subPopVar_String(sp, AllHeteroFreq_String));
-		pop.removeVar(subPopVar_String(sp, HomoNum_String));
-		pop.removeVar(subPopVar_String(sp, HomoFreq_String));
+	const char * defaultVars[] = {""};
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	// add default variables
+	if (m_vars.empty()) {
+		if (!heteroFreq.empty())
+			m_vars.push_back(HeteroFreq_String);
+		if (!homoFreq.empty())
+			m_vars.push_back(HomoFreq_String);
 	}
-
-	// may be resizing for different replicate of populations.
-	// if not initialized or m_atLoci/numSP changes
-	if (m_heteroNum.size() != (numSP + 1) * numLoci) {
-		m_heteroNum.resize((numSP + 1) * numLoci);
-		m_heteroFreq.resize((numSP + 1) * numLoci);
-		m_homoNum.resize(numSP + 1);
-		m_homoFreq.resize(numSP + 1);
-	}
-
-	string varname;
-	ULONG popSize = pop.popSize();
-
-	for (size_t i = 0; i < numLoci; ++i) {
-		UINT loc = m_atLoci[i];
-		DBG_DO(DBG_STATOR, cout << "Counting heterozygotes at locus " << loc << endl);
-
-		vectori & sum = m_heteroNum[resIdx(i)];
-		fill(sum.begin(), sum.end(), 0);
-		int sumAll = 0;
-
-		// for each subpopulation
-		for (UINT sp = 0; sp < numSP;  ++sp) {
-			vectori & num = m_heteroNum[resIdx(i, sp)];
-			fill(num.begin(), num.end(), 0);
-			int numAll = 0;
-
-			// go through all alleles
-			//?>> \todo here we assume diploid population
-			// FIXME: alleleIterator will jump over chromosome x and Y etc.
-			IndAlleleIterator a = pop.alleleIterator(loc, sp);
-			for (; a.valid(); a += 2) {
-				if (AlleleUnsigned(*a) >= num.size() )
-					num.resize(*a + 1);
-
-				if (AlleleUnsigned(*(a + 1)) >= num.size() )
-					num.resize(*(a + 1) + 1);
-
-				if (*a != *(a + 1) ) {
-					num[*a]++;
-					num[*(a + 1)]++;
-					numAll++;
-				}
-			}
-
-			sumAll += numAll;
-			// add this number to overall num
-			// calculate frequency
-			if (numSP > 1) {
-				if (sum.size() < num.size())
-					sum.resize(num.size());
-				for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
-					sum[e] += num[e];
-			}
-
-			vectorf & freq = m_heteroFreq[resIdx(i, sp)];
-			freq.resize(num.size());
-			for (size_t e = 0, eEnd = num.size(); e < eEnd; ++e)
-				freq[e] = static_cast<double>(num[e]) / pop.subPopSize(sp);
-
-			// set variable.
-			if (m_ifPost[i] && m_postHetero) {
-				varname = subPopVar_String(sp, HeteroNum_String) + "[" + toStr(loc) + "]";
-				PyObject * d = pop.setIntVectorVar(varname, num);
-				if (numSP == 1) {
-					Py_INCREF(d);
-					varname = toStr(HeteroNum_String) + "[" + toStr(loc) + "]";
-					pop.setVar(varname, d);
-				}
-
-				varname = subPopVar_String(sp, HeteroFreq_String) + "[" + toStr(loc) + "]";
-				d = pop.setDoubleVectorVar(varname, freq);
-
-				if (numSP == 1) {
-					Py_INCREF(d);
-					varname = toStr(HeteroFreq_String) + "[" + toStr(loc) + "]";
-					pop.setVar(varname, d);
-				}
-
-				// overall hetero
-				varname = subPopVar_String(sp, AllHeteroNum_String) + "[" + toStr(loc) + "]";
-				d = pop.setIntVar(varname, numAll);
-				if (numSP == 1) {
-					Py_INCREF(d);
-					varname = toStr(AllHeteroNum_String) + "[" + toStr(loc) + "]";
-					pop.setVar(varname, d);
-				}
-
-				varname = subPopVar_String(sp, AllHeteroFreq_String) + "[" + toStr(loc) + "]";
-				d = pop.setDoubleVar(varname, static_cast<double>(numAll) / pop.subPopSize(sp));
-
-				if (numSP == 1) {
-					Py_INCREF(d);
-					varname = toStr(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
-					pop.setVar(varname, d);
-				}
-			}
-		}
-
-		if (numSP > 1 && m_postHetero) {
-			vectorf & freq = m_heteroFreq[resIdx(i)];
-			freq.resize(sum.size());
-			for (size_t e = 0, eEnd = sum.size(); e < eEnd; ++e)
-				freq[e] = static_cast<double>(sum[e]) / popSize;
-
-			if (m_ifPost[i]) {                                                        //
-				varname = string(HeteroNum_String) + "[" + toStr(loc) + "]";
-				pop.setIntVectorVar(varname, sum);
-
-				varname = string(HeteroFreq_String) + "[" + toStr(loc) + "]";
-				pop.setDoubleVectorVar(varname, freq);
-
-				varname = string(AllHeteroNum_String) + "[" + toStr(loc) + "]";
-				pop.setIntVar(varname, sumAll);
-
-				varname = string(AllHeteroFreq_String) + "[" + toStr(loc) + "]";
-				pop.setDoubleVar(varname, static_cast<double>(sumAll) / pop.popSize());
-			}
-		}                                                                                           // whole population
-	}                                                                                               // for all loci
-
-	if (m_postHomo) {
-		for (size_t i = 0; i < numLoci; ++i) {
-			UINT loc = m_atLoci[i];
-
-			if (loc + 1 >= m_homoFreq[0].size()) {
-				for (UINT sp = 0; sp < numSP + 1;  ++sp) {
-					m_homoFreq[sp].resize(loc + 1, 0.0);
-					m_homoNum[sp].resize(loc + 1, 0);
-				}
-			}
-
-			// calculate homoNum
-			for (UINT sp = 0; sp < numSP;  ++sp) {
-				m_homoNum[sp][loc] = pop.subPopSize(sp) - m_heteroNum[resIdx(i, sp)][0];
-				m_homoFreq[sp][loc] = (double)(m_homoNum[sp][loc]) / pop.subPopSize(sp);
-			}
-			m_homoNum[numSP][loc] = pop.popSize() - m_heteroNum[resIdx(i)][0];
-			m_homoFreq[numSP][loc] = (double)(m_homoNum[numSP][loc]) / pop.popSize();
-		}                                                                                 // all loci
-		// post result
-		for (UINT sp = 0; sp < numSP; ++sp) {
-			pop.setIntVectorVar(subPopVar_String(sp, HomoNum_String),
-				m_homoNum[sp]);
-			pop.setDoubleVectorVar(subPopVar_String(sp, HomoFreq_String),
-				m_homoFreq[sp]);
-		}
-		pop.setIntVectorVar(HomoNum_String, m_homoNum[numSP]);
-		pop.setDoubleVectorVar(HomoFreq_String, m_homoFreq[numSP]);
-	}
-	return true;
 }
 
 
-bool statExpHetero::apply(population & pop)
+void statHeteroFreq::addLocus(UINT locus, const subPopList & subPops,
+	const stringList & vars)
 {
-	if (m_atLoci.empty())
+	if (find(m_loci.begin(), m_loci.end(), locus) == m_loci.end())
+		m_loci.push_back(locus);
+	//
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it)
+		if (!m_subPops.contains(*it))
+			m_subPops.push_back(*it);
+	//
+	vectorstr::const_iterator vit = vars.elems().begin();
+	vectorstr::const_iterator vitEnd = vars.elems().end();
+	for (; vit != vitEnd; ++vit)
+		if (!m_vars.contains(*vit))
+			m_vars.push_back(*vit);
+}
+
+double statHeteroFreq::heteroFreq(population & pop, UINT allele, int loc, vspID subPop)
+{
+	string varname = subPopVar_String(subPop, HeteroFreq_String) + "{" + toStr(loc) + "}";
+	PyObject * d = pop.getVar(varname);
+	double res;
+	PyObj_As_Double(d, res);
+	return res;
+}
+
+
+bool statHeteroFreq::apply(population & pop)
+{
+	if (m_loci.empty())
 		return true;
 
-	UINT numSP = pop.numSubPop();
-	UINT numLoci = m_atLoci.size();
+	DBG_FAILIF(pop.ploidy() != 2, ValueError,
+		"Heterozygote frequency can only be calculated for diploid populations.");
 
-	pop.removeVar(ExpHetero_String);
-	for (UINT sp = 0; sp < numSP; ++sp)
-		pop.removeVar(subPopVar_String(sp, ExpHetero_String));
+	DBG_DO(DBG_STATOR, cout << "Calculated heterozygote frequency for loci " << m_loci << endl);
 
-	if (m_expHetero.size() != numSP + 1)
-		m_expHetero.resize(numSP + 1);
+	// count for all specified subpopulations
+	intDict allHeteroCnt;
+	intDict allHomoCnt;
 
-	for (size_t i = 0; i < numLoci; ++i) {
-		UINT loc = m_atLoci[i];
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it) {
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
 
-		for (UINT sp = 0; sp < numSP + 1;  ++sp) {
-			if (m_expHetero[sp].size() < loc + 1)
-				m_expHetero[sp].resize(loc + 1, 0.0);
+		intDict heteroCnt;
+		intDict homoCnt;
+
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
+
+#ifndef OPTIMIZED
+			int chromType = pop.chromType(pop.chromLocusPair(loc).first);
+			DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY,
+				ValueError, "Heterozygosity count for sex chromosomes is not supported.");
+#endif				
+			size_t hetero = 0;
+			size_t homo = 0;
+
+			// go through all alleles
+			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+			for (; a.valid(); a += 2) {
+				if (*a != *(a + 1))
+					hetero += 1;
+				else
+					homo += 1;
+			}
+			heteroCnt[loc] = hetero;
+			homoCnt[loc] = homo;
+			//
+			allHeteroCnt[loc] += heteroCnt[loc];
+			allHomoCnt[loc] += homoCnt[loc];
 		}
-
-		// for each subpopulation
-		for (UINT sp = 0; sp < numSP;  ++sp) {
-			// calculate expected heterozygosity
-			// get allele frequency
-			vectorf af = m_alleleFreq.alleleFreqVec(pop, loc, sp);
-			double expHeter = 1;
-			// 1-sum pi^2
-			for (int al = 0, alEnd = af.size() ; al < alEnd; al++)
-				expHeter -= af[al] * af[al];
-
-			m_expHetero[sp][loc] = expHeter;
+		if (it->isVirtual())
+			pop.deactivateVirtualSubPop(it->subPop());
+		// output subpopulation variable?
+		if (m_vars.contains(HeteroNum_sp_String))
+			pop.setIntDictVar(subPopVar_String(*it, HeteroNum_String), heteroCnt);
+		if (m_vars.contains(HomoNum_sp_String))
+			pop.setIntDictVar(subPopVar_String(*it, HomoNum_String), homoCnt);
+		if (m_vars.contains(HeteroFreq_sp_String)) {
+			intDict freq;
+			for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+				UINT loc = m_loci[idx];
+				double all = heteroCnt[loc] + homoCnt[loc];
+				freq[loc] = all == 0. ? 0 : heteroCnt[loc] / all;
+			}
+			pop.setIntDictVar(subPopVar_String(*it, HeteroFreq_String), freq);
 		}
-
-		vectorf af = m_alleleFreq.alleleFreqVec(pop, loc);
-		double expHeter = 1;
-		// 1-sum pi^2
-		for (int al = 0, alEnd = af.size(); al < alEnd; al++)
-			expHeter -= af[al] * af[al];
-
-		m_expHetero[numSP][loc] = expHeter;
+		if (m_vars.contains(HomoFreq_sp_String)) {
+			intDict freq;
+			for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+				UINT loc = m_loci[idx];
+				double all = heteroCnt[loc] + homoCnt[loc];
+				freq[loc] = all == 0. ? 0 : homoCnt[loc] / all;
+			}
+			pop.setIntDictVar(subPopVar_String(*it, HomoFreq_String), freq);
+		}
 	}
-
-	// post result
-	for (UINT sp = 0; sp < numSP; ++sp)
-		pop.setDoubleVectorVar(subPopVar_String(sp, ExpHetero_String),
-			m_expHetero[sp]);
-	pop.setDoubleVectorVar(ExpHetero_String,
-		m_expHetero[numSP]);
+	if (m_vars.contains(HeteroNum_String))
+		pop.setIntDictVar(HeteroNum_String, allHeteroCnt);
+	if (m_vars.contains(HomoNum_String))
+		pop.setIntDictVar(HomoNum_String, allHomoCnt);
+	if (m_vars.contains(HeteroFreq_String)) {
+		intDict freq;
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
+			double all = allHeteroCnt[loc] + allHomoCnt[loc];
+			freq[loc] = all == 0. ? 0 : allHeteroCnt[loc] / all;
+		}
+		pop.setIntDictVar(HeteroFreq_String, freq);
+	}
+	if (m_vars.contains(HomoFreq_String)) {
+		intDict freq;
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
+			double all = allHeteroCnt[loc] + allHomoCnt[loc];
+			freq[loc] = all == 0. ? 0 : allHomoCnt[loc] / all;
+		}
+		pop.setIntDictVar(HomoFreq_String, freq);
+	}
 
 	return true;
 }
@@ -925,7 +848,7 @@ bool statExpHetero::apply(population & pop)
 
 statGenoFreq::statGenoFreq(const vectorlu & genoFreq,
 	const strDict & param)
-	: m_atLoci(genoFreq), m_phase(false)
+	: m_loci(genoFreq), m_phase(false)
 {
 	if (!param.empty()) {
 		strDict::const_iterator it;
@@ -938,7 +861,7 @@ statGenoFreq::statGenoFreq(const vectorlu & genoFreq,
 
 bool statGenoFreq::apply(population & pop)
 {
-	if (m_atLoci.empty())
+	if (m_loci.empty())
 		return true;
 
 	DBG_ASSERT(pop.ploidy() == 2, ValueError,
@@ -947,10 +870,10 @@ bool statGenoFreq::apply(population & pop)
 	UINT numSP = pop.numSubPop();
 	ULONG popSize = pop.popSize();
 
-	for (size_t i = 0, iEnd = m_atLoci.size(); i < iEnd;  ++i) {
-		if (static_cast<UINT>(m_atLoci[i]) >= pop.totNumLoci() )
+	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd;  ++i) {
+		if (static_cast<UINT>(m_loci[i]) >= pop.totNumLoci() )
 			throw IndexError("Absolute locus index "
-				+ toStr(m_atLoci[i]) + " is out of range of 0 ~ "
+				+ toStr(m_loci[i]) + " is out of range of 0 ~ "
 				+ toStr(pop.totNumLoci() - 1));
 	}
 
@@ -968,11 +891,11 @@ bool statGenoFreq::apply(population & pop)
 	string varname;
 
 	// deal with genotype
-	for (size_t i = 0, iEnd = m_atLoci.size(); i < iEnd;  ++i) {
+	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd;  ++i) {
 		// for each locus, we need to use a vector of dictionaries.
 		vector<intDict> sum;
 
-		UINT loc = m_atLoci[i];
+		UINT loc = m_loci[i];
 
 #ifndef BINARYALLELE
 		Allele a, b;
@@ -1913,7 +1836,7 @@ bool statNeutrality::apply(population & pop)
 
 statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
 	const vectorlu & Fst, const strDict & param)
-	: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_atLoci(Fst),
+	: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_loci(Fst),
 	m_midValues(false),
 	m_output_Fst(true),
 	m_output_Fis(true),
@@ -1955,19 +1878,19 @@ statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
 			m_output_AvgFit = it->second != 0.;
 	}
 
-	for (size_t i = 0; i < m_atLoci.size(); ++i) {
+	for (size_t i = 0; i < m_loci.size(); ++i) {
 		// need to get allele frequency at this locus
-		m_alleleFreq.addLocus(m_atLoci[i]);
+		m_alleleFreq.addLocus(m_loci[i]);
 
 		// need to get heterozygous proportion  at this locus
-		m_heteroFreq.addLocus(m_atLoci[i]);
+		m_heteroFreq.addLocus(m_loci[i]);
 	}
 }
 
 
 bool statFst::apply(population & pop)
 {
-	if (m_atLoci.empty())
+	if (m_loci.empty())
 		return true;
 
 	pop.removeVar(Fst_String);
@@ -1989,8 +1912,8 @@ bool statFst::apply(population & pop)
 	vectorf p_i = vectorf(numSP);
 
 	// calculate Fst for each locus
-	for (size_t st = 0; st < m_atLoci.size(); ++st) {
-		int loc = m_atLoci[st];
+	for (size_t st = 0; st < m_loci.size(); ++st) {
+		int loc = m_loci[st];
 
 		DBG_ASSERT(static_cast<size_t>(loc) < pop.totNumLoci(), IndexError,
 			"Index out of range of 0 ~ " + toStr(pop.totNumLoci() - 1));
@@ -2034,7 +1957,7 @@ bool statFst::apply(population & pop)
 			// h_bar
 			double h_bar = 0;
 			for (int sp = 0; sp < r; ++sp)
-				h_bar += m_heteroFreq.heteroFreq(*ale, loc, sp) * n_i[sp];
+				h_bar += m_heteroFreq.heteroFreq(pop, *ale, loc, sp) * n_i[sp];
 			h_bar /= n;
 
 			// a, b, c

@@ -152,82 +152,31 @@ class TestStat(unittest.TestCase):
         if AlleleType() == 'binary':
             InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-            Stat(pop, heteroFreq=[0])
-            self.assertEqual(pop.dvars().HeteroNum[0], 880)
-            self.assertEqual(pop.dvars().heteroNum[0][0], 880)
-            self.assertEqual(pop.dvars().heteroNum[0][1], 880)
-            self.assertEqual(pop.dvars().HeteroFreq[0], 880./1600)
-            self.assertEqual(pop.dvars().heteroFreq[0][0], 880./1600)
-            self.assertEqual(pop.dvars().heteroFreq[0][1], 880./1600)
-            self.assertEqual(pop.dvars(0).HeteroNum[0], 250)
-            self.assertEqual(pop.dvars(0).heteroNum[0][0], 250)
-            self.assertEqual(pop.dvars(0).heteroNum[0][1], 250)
-            self.assertEqual(pop.dvars(0).HeteroFreq[0], .5)
-            self.assertEqual(pop.dvars(0).heteroFreq[0][0], .5)
-            self.assertEqual(pop.dvars(0).heteroFreq[0][1], .5)
-            self.assertEqual(pop.dvars(1).HeteroNum[0], 30)
-            self.assertEqual(pop.dvars(1).heteroNum[0][0], 30)
-            self.assertEqual(pop.dvars(1).heteroNum[0][1], 30)
-            self.assertEqual(pop.dvars(1).HeteroFreq[0], 0.3)
-            self.assertEqual(pop.dvars(1).heteroFreq[0][0], 0.3)
-            self.assertEqual(pop.dvars(1).heteroFreq[0][1], 0.3)
-            self.assertEqual(pop.dvars(2).HeteroNum[0], 600)
-            self.assertEqual(pop.dvars(2).heteroNum[0][0], 600)
-            self.assertEqual(pop.dvars(2).heteroNum[0][1], 600)
-            self.assertEqual(pop.dvars(2).HeteroFreq[0], 0.6)
-            self.assertEqual(pop.dvars(2).heteroFreq[0][0], 0.6)
-            self.assertEqual(pop.dvars(2).heteroFreq[0][1], 0.6)
+            Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
+                'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
+                'homoNum_sp', 'homoFreq_sp'])
+            self.assertEqual(pop.dvars().heteroNum[0], 880)
+            self.assertEqual(pop.dvars().heteroFreq[0], 880./1600)
+            self.assertEqual(pop.dvars(0).heteroNum[0], 250)
+            self.assertEqual(pop.dvars(0).heteroFreq[0], .5)
+            self.assertEqual(pop.dvars(1).heteroNum[0], 30)
+            self.assertEqual(pop.dvars(1).heteroFreq[0], 0.3)
+            self.assertEqual(pop.dvars(2).heteroNum[0], 600)
+            self.assertEqual(pop.dvars(2).heteroFreq[0], 0.6)
         else:
             InitByValue(pop, value = [[1,1],[1,2],[2,3],[1,1],[3,2],[2,2],[1,2],[3,2],[2,2]],
                 subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-            Stat(pop, heteroFreq=[0])
-            self.assertEqual(pop.dvars().HeteroNum[0], 1005)
-            self.assertEqual(pop.dvars().heteroNum[0][1], 350)
-            self.assertEqual(pop.dvars().heteroNum[0][2], 1005)
-            self.assertEqual(pop.dvars().heteroNum[0][3], 655)
-            self.assertEqual(pop.dvars().HeteroFreq[0], 1005./1600)
-            self.assertEqual(pop.dvars().heteroFreq[0][1], 350./1600)
-            self.assertEqual(pop.dvars().heteroFreq[0][2], 1005./1600)
-            self.assertEqual(pop.dvars().heteroFreq[0][3], 655./1600)
-            self.assertEqual(pop.dvars(0).HeteroNum[0], 375)
-            self.assertEqual(pop.dvars(0).heteroNum[0][1], 250)
-            self.assertEqual(pop.dvars(0).heteroNum[0][2], 375)
-            self.assertEqual(pop.dvars(0).heteroNum[0][3], 125)
-            self.assertEqual(pop.dvars(0).HeteroFreq[0], 375/500.)
-            self.assertEqual(pop.dvars(0).heteroFreq[0][1], .5)
-            self.assertEqual(pop.dvars(0).heteroFreq[0][2], 375/500.)
-            self.assertEqual(pop.dvars(0).heteroFreq[0][3], 125/500.)
-            self.assertEqual(pop.dvars(1).HeteroNum[0], 30)
-            self.assertEqual(pop.dvars(1).heteroNum[0][1], 0)
-            self.assertEqual(pop.dvars(1).heteroNum[0][2], 30)
-            self.assertEqual(pop.dvars(1).heteroNum[0][3], 30)
-            self.assertEqual(pop.dvars(1).HeteroFreq[0], 0.3)
-            self.assertEqual(pop.dvars(1).heteroFreq[0][1], 0)
-            self.assertEqual(pop.dvars(1).heteroFreq[0][2], 0.3)
-            self.assertEqual(pop.dvars(1).heteroFreq[0][3], 0.3)
-            self.assertEqual(pop.dvars(2).HeteroNum[0], 600)
-            self.assertEqual(pop.dvars(2).heteroNum[0][1], 100)
-            self.assertEqual(pop.dvars(2).heteroNum[0][2], 600)
-            self.assertEqual(pop.dvars(2).heteroNum[0][3], 500)
-            self.assertEqual(pop.dvars(2).HeteroFreq[0], 0.6)
-            self.assertEqual(pop.dvars(2).heteroFreq[0][1], 0.1)
-            self.assertEqual(pop.dvars(2).heteroFreq[0][2], 0.6)
-            self.assertEqual(pop.dvars(2).heteroFreq[0][3], 0.5)
-
-    def testExpHetero(self):
-        'Testing expected heterozygosity 1-sum p_i2'
-        pop = population(size=[500,100,1000], ploidy=2, loci = [1])
-        pop.setVirtualSplitter(rangeSplitter([[0,125], [125, 375], [375, 500],
-            [0, 50], [50, 80], [80, 100],
-            [0, 100],[100, 600], [600, 1000]]))
-        InitByValue(pop, value = [[0,0],[0,1],[1,1],[0,0],[0,1],[1,1],[0,1],[0,1],[1,1]],
-            subPops = [(0, 0), (0, 1), (0, 2), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8)])
-        Stat(pop, expHetero=[0])
-        #
-        assert abs(pop.dvars().expHetero[0] - (1-(123./320)**2-(197./320)**2)) < 0.00001
-        assert abs(pop.dvars(0).expHetero[0] - (1-0.5**2-0.5**2)) < 0.00001
-        assert abs(pop.dvars(1).expHetero[0] - (1-(13./20)**2-(7./20)**2)) < 0.00001
-        assert abs(pop.dvars(2).expHetero[0] - (1-0.3**2-0.7**2)) < 0.00001
+            Stat(pop, heteroFreq=[0], vars=['heteroFreq', 'heteroNum',
+                'heteroFreq_sp', 'heteroNum_sp', 'homoFreq', 'homoNum',
+                'homoNum_sp', 'homoFreq_sp'])
+            self.assertEqual(pop.dvars().heteroNum[0], 1005)
+            self.assertEqual(pop.dvars().heteroFreq[0], 1005./1600)
+            self.assertEqual(pop.dvars(0).heteroNum[0], 375)
+            self.assertEqual(pop.dvars(0).heteroFreq[0], 375/500.)
+            self.assertEqual(pop.dvars(1).heteroNum[0], 30)
+            self.assertEqual(pop.dvars(1).heteroFreq[0], 0.3)
+            self.assertEqual(pop.dvars(2).heteroNum[0], 600)
+            self.assertEqual(pop.dvars(2).heteroFreq[0], 0.6)
 
     def testGenoFreq(self):
         'Testing the counting of genotype frequency'
