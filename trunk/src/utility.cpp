@@ -342,8 +342,8 @@ void stringList::obtainFrom(const stringList & items, const char * allowedItems[
         return;
     }
     stringList allowed;
-        for (size_t i = 0; allowedItems[i][0]; ++i)
-            allowed.m_elems.push_back(allowedItems[i]);
+    for (size_t i = 0; allowedItems[i][0]; ++i)
+        allowed.m_elems.push_back(allowedItems[i]);
     vectorstr::const_iterator it = items.elems().begin();
     vectorstr::const_iterator itEnd = items.elems().end();
     for (; it != itEnd; ++it)
