@@ -371,7 +371,7 @@ public:
 		const char * allowedVars[] = {popSize_String, popSize_sp_String,
 				subPopSize_String, ""};
 		const char * defaultVars[] = {popSize_String, subPopSize_String, ""};
-		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
 
 	bool apply(population & pop);
@@ -404,8 +404,8 @@ public:
 			numOfFemale_String, propOfFemale_String,
 			numOfMale_sp_String, propOfMale_sp_String,
 			numOfFemale_sp_String, propOfFemale_sp_String, ""};
-		const char * defaultVars[] = {numOfMale_String, ""};
-		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
+		const char * defaultVars[] = {numOfMale_String, numOfFemale_String, ""};
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
 
 	bool apply(population & pop);
@@ -439,8 +439,8 @@ public:
 			numOfUnaffected_String, propOfUnaffected_String,
 			numOfAffected_sp_String, propOfAffected_sp_String,
 			numOfUnaffected_sp_String, propOfUnaffected_sp_String, ""};
-		const char * defaultVars[] = {numOfMale_String, ""};
-		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
+		const char * defaultVars[] = {numOfAffected_String, numOfUnaffected_String, ""};
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
 
 	bool apply(population & pop);
@@ -457,8 +457,8 @@ private:
 class statAlleleFreq
 {
 private:
-#define  AlleleNum_String     "alleleNum"
-#define  AlleleFreq_String    "alleleFreq"
+#define  AlleleNum_String        "alleleNum"
+#define  AlleleFreq_String       "alleleFreq"
 #define  AlleleNum_sp_String     "alleleNum_sp"
 #define  AlleleFreq_sp_String    "alleleFreq_sp"
 
@@ -469,8 +469,8 @@ public:
 		const char * allowedVars[] = {
 			AlleleNum_String, AlleleFreq_String,
 			AlleleNum_sp_String, AlleleFreq_sp_String, ""};
-		const char * defaultVars[] = {AlleleFreq_String, ""};
-		m_vars.obtainFrom(m_vars, allowedVars, defaultVars);
+		const char * defaultVars[] = {AlleleFreq_String, AlleleNum_String, ""};
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
 
 

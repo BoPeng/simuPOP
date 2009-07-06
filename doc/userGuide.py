@@ -1353,7 +1353,7 @@ os.remove('sample.sim')
 pop = population(size=[1000, 1000])
 InitSex(pop, maleFreq=0.3, subPops=0)
 InitSex(pop, sex=[Male, Female, Female], subPops=1)
-Stat(pop, numOfMale=True)
+Stat(pop, numOfMale=True, vars='numOfMale_sp')
 print pop.dvars(0).numOfMale
 print pop.dvars(1).numOfMale
 #end
@@ -1632,7 +1632,7 @@ simu.evolve(
             ],
             mode = ByProportion,
             subPops=[(0, 0), (0, 1)]),
-        stat(popSize=True, numOfMale=True, stage=PrePostMating),
+        stat(popSize=True, numOfMale=True, stage=PrePostMating, vars='numOfMale_sp'),
         pyEval(r"'%d/%d\t%d/%d\n' % (subPop[0]['numOfMale'], subPopSize[0], "
             "subPop[1]['numOfMale'], subPopSize[1])", stage=PrePostMating),
     ],

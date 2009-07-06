@@ -487,11 +487,13 @@ bool statNumOfAffected::apply(population & pop)
 	if (m_vars.contains(numOfAffected_String))
 		pop.setIntVar(numOfAffected_String, allAffectedCnt);
 	if (m_vars.contains(propOfAffected_String))
-		pop.setDoubleVar(propOfAffected_String, allTotalCnt == 0 ? 0. : static_cast<double>(allAffectedCnt) / allTotalCnt);
+		pop.setDoubleVar(propOfAffected_String, 
+			allTotalCnt == 0 ? 0. : static_cast<double>(allAffectedCnt) / allTotalCnt);
 	if (m_vars.contains(numOfUnaffected_String))
 		pop.setIntVar(numOfUnaffected_String, allUnaffectedCnt);
 	if (m_vars.contains(propOfUnaffected_String))
-		pop.setDoubleVar(propOfUnaffected_String, allTotalCnt == 0 ? 0 : static_cast<double>(allUnaffectedCnt) / allTotalCnt);
+		pop.setDoubleVar(propOfUnaffected_String,
+			allTotalCnt == 0 ? 0 : static_cast<double>(allUnaffectedCnt) / allTotalCnt);
 
 	return true;
 }
@@ -509,7 +511,7 @@ void statAlleleFreq::addLocus(UINT locus, const subPopList & subPops,
 			if (!m_subPops.contains(*it))
 				m_subPops.push_back(*it);
 	}
-	if (!vars.empty() && m_vars.empty()) {
+	if (!vars.empty()) {
 		vectorstr::const_iterator it = vars.elems().begin();
 		vectorstr::const_iterator itEnd = vars.elems().end();
 		for (; it != itEnd; ++it)
