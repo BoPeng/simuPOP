@@ -1,15 +1,19 @@
 version=pmwiki-2.2.0 ordered=1 urlencoded=1
-agent=Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032606 Red Hat/3.0.7-1.el5 Firefox/3.0.7
+agent=Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
 author=
 charset=ISO-8859-1
 csum=
 ctime=1238094979
 host=127.0.0.1
 name=Main.ImportAndExport
-rev=10
+rev=11
 targets=Cookbook.LinkageUtil,Cookbook.FstatUtil,Cookbook.SolarUtil,Cookbook.MerlinUtil,Cookbook.ExportPOPGENE
-text=This page lists some functions that may allow you to import/export files into/from simuPOP.%0a%0a%25red%25 [++This page is under construction. All save/load functions currently defined in the simuUtil module will be moved here.++]%25%25%0a%0a!! Linkage format%0a%0aLinkage format is one of the oldest and most widely used format for genetic linkage studies. This format was designed for linkage studies of families and has many unneeded fields. The following functions try to fill these fields with reasonable default values. In most cases, you can specify values using additional keyword arguments.%0a%0aLinkage format consists of two files, a @@.dat@@ file and a @@.ped@@ file. The latter is usually given as a simplified @@.pre@@ file which can be converted to a @@.ped@@ file using program @@makeped@@. Please refer to the [[http://linkage.rockefeller.edu/soft/linkage/ | Linkage documentation]] for a detailed description of this format.%0a%0aModule [[Cookbook/linkageUtil]] provides a few functions to save and load files in Linkage format.%0a%0a!! Fstat %0a%0a[[Cookbook/fstatUtil]] %0a%0a!! Solar%0a%0a[[Cookbook/solarUtil]] %0a%0a!! Merlin%0a%0a[[Cookbook/merlinUtil]]%0a%0a!! POPGENE%0a%0a* [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a
-time=1245946529
+text=(:title Interoperation with other software applications:)%0a%0aThis page lists some functions that may allow you to import/export files into/from simuPOP.%0a%0a%25red%25 [++This page is under construction. All save/load functions currently defined in the simuUtil module will be moved here.++]%25%25%0a%0a!! Linkage format%0a%0aLinkage format is one of the oldest and most widely used format for genetic linkage studies. This format was designed for linkage studies of families and has many unneeded fields. The following functions try to fill these fields with reasonable default values. In most cases, you can specify values using additional keyword arguments.%0a%0aLinkage format consists of two files, a @@.dat@@ file and a @@.ped@@ file. The latter is usually given as a simplified @@.pre@@ file which can be converted to a @@.ped@@ file using program @@makeped@@. Please refer to the [[http://linkage.rockefeller.edu/soft/linkage/ | Linkage documentation]] for a detailed description of this format.%0a%0aModule [[Cookbook/linkageUtil]] provides a few functions to save and load files in Linkage format.%0a%0a!! Fstat %0a%0a[[Cookbook/fstatUtil]] %0a%0a!! Solar%0a%0a[[Cookbook/solarUtil]] %0a%0a!! Merlin%0a%0a[[Cookbook/merlinUtil]]%0a%0a!! POPGENE%0a%0a* [[Cookbook/ExportPOPGENE]] This script exports your simulated populations into a POPGENE data file.%0a
+time=1246034297
+title=Interoperation with other software applications
+author:1246034297=
+diff:1246034297:1245946529:=1,2d0%0a%3c (:title Interoperation with other software applications:)%0a%3c %0a
+host:1246034297=127.0.0.1
 author:1245946529=
 diff:1245946529:1245946484:=11c11%0a%3c Module [[Cookbook/linkageUtil]] provides a few functions to save and load files in Linkage format.%0a---%0a> * [[Cookbook/linkageUtil]] %0a
 host:1245946529=127.0.0.1
