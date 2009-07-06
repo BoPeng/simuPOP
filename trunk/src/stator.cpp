@@ -395,12 +395,12 @@ bool statNumOfMale::apply(population & pop)
 				maleCnt++;
 			else
 				femaleCnt++;
-		
+
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
 
 		totalCnt = maleCnt + femaleCnt;
-			
+
 		if (m_vars.contains(numOfMale_sp_String))
 			pop.setIntVar(subPopVar_String(*sp, numOfMale_String), maleCnt);
 		if (m_vars.contains(propOfMale_sp_String))
@@ -456,12 +456,12 @@ bool statNumOfAffected::apply(population & pop)
 				affectedCnt++;
 			else
 				unaffectedCnt++;
-		
+
 		if (sp->isVirtual())
 			pop.deactivateVirtualSubPop(sp->subPop());
 
 		totalCnt = affectedCnt + unaffectedCnt;
-			
+
 		if (m_vars.contains(numOfAffected_sp_String))
 			pop.setIntVar(subPopVar_String(*sp, numOfAffected_String), affectedCnt);
 		if (m_vars.contains(propOfAffected_sp_String))
@@ -482,7 +482,7 @@ bool statNumOfAffected::apply(population & pop)
 	if (m_vars.contains(numOfAffected_String))
 		pop.setIntVar(numOfAffected_String, allAffectedCnt);
 	if (m_vars.contains(propOfAffected_String))
-		pop.setDoubleVar(propOfAffected_String, 
+		pop.setDoubleVar(propOfAffected_String,
 			allTotalCnt == 0 ? 0. : static_cast<double>(allAffectedCnt) / allTotalCnt);
 	if (m_vars.contains(numOfUnaffected_String))
 		pop.setIntVar(numOfUnaffected_String, allUnaffectedCnt);
@@ -685,7 +685,7 @@ vectori statAlleleFreq::alleles(population & pop, int loc)
 
 
 statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
-	 const subPopList & subPops, const stringList & vars)
+	const subPopList & subPops, const stringList & vars)
 	: m_loci(heteroFreq), m_subPops(subPops), m_vars()
 {
 	// add homofreq to m_loci
@@ -694,14 +694,14 @@ statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & hom
 			m_loci.push_back(homoFreq[i]);
 	//
 	const char * allowedVars[] = {
-		HeteroNum_String, HeteroFreq_String,
+		HeteroNum_String,    HeteroFreq_String,
 		HeteroNum_sp_String, HeteroFreq_sp_String,
-		HomoNum_String, HomoFreq_String,
-		HomoNum_sp_String, HomoFreq_sp_String,
+		HomoNum_String,      HomoFreq_String,
+		HomoNum_sp_String,   HomoFreq_sp_String,
 		""
 	};
 
-	const char * defaultVars[] = {""};
+	const char * defaultVars[] = { "" };
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	// add default variables
 	if (m_vars.empty()) {
@@ -714,7 +714,7 @@ statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & hom
 
 
 void statHeteroFreq::addLocus(UINT locus, const subPopList & subPops,
-	const stringList & vars)
+                              const stringList & vars)
 {
 	if (find(m_loci.begin(), m_loci.end(), locus) == m_loci.end())
 		m_loci.push_back(locus);
@@ -732,11 +732,13 @@ void statHeteroFreq::addLocus(UINT locus, const subPopList & subPops,
 			m_vars.push_back(*vit);
 }
 
+
 double statHeteroFreq::heteroFreq(population & pop, UINT allele, int loc, vspID subPop)
 {
 	string varname = subPopVar_String(subPop, HeteroFreq_String) + "{" + toStr(loc) + "}";
 	PyObject * d = pop.getVar(varname);
 	double res;
+
 	PyObj_As_Double(d, res);
 	return res;
 }
@@ -775,7 +777,7 @@ bool statHeteroFreq::apply(population & pop)
 			int chromType = pop.chromType(pop.chromLocusPair(loc).first);
 			DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY,
 				ValueError, "Heterozygosity count for sex chromosomes is not supported.");
-#endif				
+#endif
 			size_t hetero = 0;
 			size_t homo = 0;
 

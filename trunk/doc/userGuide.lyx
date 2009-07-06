@@ -13187,47 +13187,50 @@ output
  in this local namespace.
 \end_layout
 
-\begin_layout Subsection
-Parameters 
-\family typewriter
-subPops
-\family default
- and 
-\family typewriter
-vars
-\end_layout
-
 \begin_layout Standard
-
+The 
 \family typewriter
 stat
 \family default
- supports parameter 
+ operator supports parameter 
 \emph on
 subPops
 \emph default
-.
- It usually calculate the same set of statistics for all subpopulations
- (
+ and can calculate statistics in specified subpopulations.
+ For example
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+stat(alleleFreq=[0], subPops=[(0, 0), (1, 0)])
+\end_layout
+
+\end_inset
+
+will calculate the frequencies of alleles at locus 0, among individuals
+ in two virtual subpopulations.
+ If the virtual subpopulation is defined by sex (using a 
 \family typewriter
-subPops=[]
+sexSplitter
 \family default
-).
- If a list of (virtual) subpopulations are specified, statistics for only
- specified subpopulations will be calculated.
- If an invalid list of subpopulations is given (
+), the above operator will calculate allele frequency among all males in
+ the first and second subpopulations.
+ If 
 \family typewriter
-subPops=-1
-\family default
-), statistics will not be calculated for any subpopulation.
- However, different statistics treat this parameter differently and it is
- very important to check its reference before you use 
-\emph on
 subPops
-\emph default
- for any statistics.
- Calculated statistics are saved as variables in a population's local namespace.
- These variables can be numbers, lists or dictionaries and can be retrieved
+\family default
+ is not specified, allele frequency of the whole population (all subpopulations)
+ will be calculated.
+\end_layout
+
+\begin_layout Standard
+Statistics calculated by the 
+\family typewriter
+stat
+\family default
+ operator is stored in a population's local namespace, which can be retrieved
  using functions 
 \family typewriter
 population.vars()
@@ -13237,21 +13240,97 @@ population.vars()
 population.dvars()
 \family default
 .
- If the same variable is calculated for one or more (virtual) subpopulation,
- the variables are stored in 
+ The only difference between these functions is that 
 \family typewriter
-vars()['subPop'][sp]['var']
+vars()
 \family default
- where sp is a subpopulation ID (
+ returns a dictionary and 
 \family typewriter
-sp
+dvars()
 \family default
-) or a tuple of virtual subpopulation ID (
+ returns a Python object that uses variable names as attributes (
 \family typewriter
-(sp, vsp)
+vars()['alleleFreq']
+\family default
+ is equivalent to 
+\family typewriter
+dvars().alleleFreq
 \family default
 ).
+ More importantly, arbitrary expressions and statements can be evalulated
+ in a population's local namespace which allows operators such as 
+\family typewriter
+pyEval
+\family default
+ and 
+\family typewriter
+pyExec
+\family default
+ to manipuate and output statistics in any format.
+\end_layout
+
+\begin_layout Standard
+Although a lot more statistics could be calculated and outputted, the 
+\family typewriter
+stat
+\family default
+ operator by default outputs a selected number of variables for each statisic
+ calculated.
+ Other statistics could be calculated and outputted if their names are specified
+ in parameter 
+\family typewriter
+vars
+\family default
+.
+ Variable names ending with 
+\family typewriter
+_sp
+\family default
+ is interpreted as variables that will be calculated and outputted in all
+ or specified (virtual) subpopulations.
+ For example, parameter 
+\family typewriter
+vars
+\family default
+ in  
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+stat(alleleFreq=[0], subPops=[0, (1, 0)], vars=['alleleFreq_sp', 'alleleNum_sp']
+)
+\end_layout
+
+\end_inset
+
+tells this operator to output numbers and frequencies of alleles at locus
  
+\family typewriter
+0
+\family default
+ in subpopulation 
+\family typewriter
+0
+\family default
+ and virtual subpopulation 
+\family typewriter
+(1,0)
+\family default
+.
+ These variables will be saved in dictionaries 
+\family typewriter
+subPop[sp]
+\family default
+ of the local namespace.
+ For example, the above operator will write variables such as 
+\family typewriter
+subPop[0]['alleleFreq'], subPop[(1,0)]['alleleFreq'] and subPop[(1,0)]['alleleNu
+m']
+\family default
+.
+ Functions 
 \family typewriter
 population.vars(sp)
 \family default
@@ -13259,16 +13338,28 @@ population.vars(sp)
 \family typewriter
 population.dvars(sp)
 \family default
- provide shortcuts to these variables.
- 
-\end_layout
-
-\begin_layout Subsection
-Statistics in (virtual) subpopulations
+ are provided as shortcuts to acess these variables but the full variable
+ names have to be specified if these variables are used in expressions.
 \end_layout
 
 \begin_layout Subsection
 Individual counting
+\end_layout
+
+\begin_layout Standard
+Parameters 
+\emph on
+popSize
+\emph default
+, 
+\emph on
+numOfMale
+\emph default
+ and 
+\emph on
+numOfAffected
+\emph default
+ provide basic individual counting statistics.
 \end_layout
 
 \begin_layout Subsection

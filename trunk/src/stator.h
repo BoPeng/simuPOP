@@ -368,11 +368,13 @@ public:
 	statPopSize(bool popSize, const subPopList & subPops, const stringList & vars)
 		: m_isActive(popSize), m_subPops(subPops), m_vars()
 	{
-		const char * allowedVars[] = {popSize_String, popSize_sp_String,
-				subPopSize_String, ""};
-		const char * defaultVars[] = {popSize_String, subPopSize_String, ""};
+		const char * allowedVars[] = { popSize_String,    popSize_sp_String,
+			                           subPopSize_String, "" };
+		const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
+
 		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
+
 
 	bool apply(population & pop);
 
@@ -400,13 +402,16 @@ public:
 		: m_isActive(numOfMale), m_subPops(subPops), m_vars()
 	{
 		const char * allowedVars[] = {
-			numOfMale_String, propOfMale_String,
-			numOfFemale_String, propOfFemale_String,
-			numOfMale_sp_String, propOfMale_sp_String,
-			numOfFemale_sp_String, propOfFemale_sp_String, ""};
-		const char * defaultVars[] = {numOfMale_String, numOfFemale_String, ""};
+			numOfMale_String,      propOfMale_String,
+			numOfFemale_String,    propOfFemale_String,
+			numOfMale_sp_String,   propOfMale_sp_String,
+			numOfFemale_sp_String, propOfFemale_sp_String,""
+		};
+		const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
+
 		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
+
 
 	bool apply(population & pop);
 
@@ -435,13 +440,16 @@ public:
 		: m_isActive(numOfAffected), m_subPops(subPops), m_vars()
 	{
 		const char * allowedVars[] = {
-			numOfAffected_String, propOfAffected_String,
-			numOfUnaffected_String, propOfUnaffected_String,
-			numOfAffected_sp_String, propOfAffected_sp_String,
-			numOfUnaffected_sp_String, propOfUnaffected_sp_String, ""};
-		const char * defaultVars[] = {numOfAffected_String, numOfUnaffected_String, ""};
+			numOfAffected_String,      propOfAffected_String,
+			numOfUnaffected_String,    propOfUnaffected_String,
+			numOfAffected_sp_String,   propOfAffected_sp_String,
+			numOfUnaffected_sp_String, propOfUnaffected_sp_String,""
+		};
+		const char * defaultVars[] = { numOfAffected_String, numOfUnaffected_String, "" };
+
 		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
+
 
 	bool apply(population & pop);
 
@@ -467,9 +475,11 @@ public:
 		: m_loci(loci), m_subPops(subPops), m_vars()
 	{
 		const char * allowedVars[] = {
-			AlleleNum_String, AlleleFreq_String,
-			AlleleNum_sp_String, AlleleFreq_sp_String, ""};
-		const char * defaultVars[] = {AlleleFreq_String, AlleleNum_String, ""};
+			AlleleNum_String,    AlleleFreq_String,
+			AlleleNum_sp_String, AlleleFreq_sp_String,""
+		};
+		const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
+
 		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
 
@@ -520,8 +530,8 @@ private:
 
 public:
 	statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
-		 const subPopList & subPops, const stringList & vars);
-	
+		const subPopList & subPops, const stringList & vars);
+
 	void addLocus(UINT locus, const subPopList & subPops = AllSubPops,
 		const stringList & vars = stringList());
 
@@ -939,16 +949,14 @@ public:
 	 *  the population being applied. Other operators can retrieve these
 	 *  variables or evalulate expression directly in this local namespace.
 	 *  Please refer to operator \c baseOperator for a detailed explanation of
-	 *  these common operator parameters. 
+	 *  these common operator parameters.
 	 *
 	 *  \c stat supports parameter \e subPops. It usually calculate the same
-	 *  set of statistics for all subpopulations (<tt>subPops=[]</tt>). If
-	 *  a list of (virtual) subpopulations are specified, statistics for only
-	 *  specified subpopulations will be calculated. If an invalid list of
-	 *  subpopulations is given (<tt>subPops=-1</tt>), statistics will not
-	 *  be calculated for any subpopulation. However, different statistics
-	 *  treat this parameter differently and it is very important to check its
-	 *  reference before you use \e subPops for any statistics.
+	 *  set of statistics for all subpopulations (<tt>subPops=AllSubPops</tt>).
+	 *  If a list of (virtual) subpopulations are specified, statistics for
+	 *  only specified subpopulations will be calculated. However, different
+	 *  statistics treat this parameter differently and it is very important
+	 *  to check its reference before you use \e subPops for any statistics.
 	 *
 	 *  Calculated statistics are saved as variables in a population's local
 	 *  namespace. These variables can be numbers, lists or dictionaries and
@@ -963,7 +971,7 @@ public:
 	 *  Operator \e stat outputs a number of most useful variables for each
 	 *  type of statistic. For example, <tt>alleleFreq</tt> calculates both
 	 *  allele counts and allele frequencies and it by default sets
-	 *  variable \c alleleFreq (<tt>dvars().alleleFreq<tt>) for all or
+	 *  variable \c alleleFreq (<tt>dvars().alleleFreq</tt>) for all or
 	 *  specified subpopulations. If this does not fit your need, you can
 	 *  use parameter \e vars to output additional parameters, or limit the
 	 *  output of existing parameters. More specifically, for this particular
@@ -975,7 +983,7 @@ public:
 	 *
 	 *  Operator \c stat supports the following statistics:
 	 *
-	 *  <b>Population size</b>: If \e popSize=True, population size of all or
+	 *  <b>popSize</b>: If \e popSize=True, number of individuals in all or
 	 *  specified subpopulations (parameter \e subPops) will be set to the
 	 *  following variables:
 	 *  \li \c popSize (default): Number of individuals in all or specified
@@ -985,153 +993,81 @@ public:
 	 *  \li \c subPopSize (default): A list of subpopulation sizes.
 	 *       <tt>sum(subPopSize)</tt> is the total population size.
 	 *
-	 *  <b>Number of male individuals</b>: 
-
-
-	   \param numOfAlleles an array of loci at which the numbers of distinct alleles
-	   will be counted (<tt>numOfAlleles=[loc1, loc2, ...]</tt> where \c loc1 etc.
-	   are absolute locus indexes). This is done through the calculation of allele
-	   frequencies. Therefore, allele frequencies will also be calculated if this
-	   statistics is requested. This parameter will set the following variables
-	   (\c carray objects of the numbers of alleles for <em>all loci</em>). Unrequested loci will
-	   have \c 0 distinct alleles.
-	   \li \c numOfAlleles, <tt>subPop[sp]['numOfAlleles']</tt> the number of distinct
-	   alleles at each locus. (Calculated only at requested loci.)
-
-	   \param numOfAlleles_param a dictionary of parameters of \c numOfAlleles statistics.
-	   Can be one or more items choosen from the following options: \c numOfAffected,
-	   \c propOfAffected, \c numOfUnaffected, \c propOfUnaffected.
-
-	   \param alleleFreq an array of loci at which all allele frequencies will be
-	   calculated (<tt>alleleFreq=[loc1, loc2, ...]</tt> where \c loc1 etc. are
-	   loci where allele frequencies will be calculated). This parameter will set
-	   the following variables (\c carray objects); for example, <tt>alleleNum[1][2]</tt>
-	   will be the number of allele \c 2 at locus \c 1:
-	   \li <tt>alleleNum[a]</tt>, <tt>subPop[sp]['alleleNum'][a]</tt>
-	   \li <tt>alleleFreq[a]</tt>, <tt>subPop[sp]['alleleFreq'][a]</tt>.
-
-	   \param alleleFreq_param a dictionary of parameters of \c alleleFreq statistics.
-	   Can be one or more items choosen from the following options: \c numOfAlleles,
-	   \c alleleNum, and \c alleleFreq.
-
-	   \param genoFreq an array of loci at which all genotype frequencies will be
-	   calculated (<tt>genoFreq=[loc1, loc2, ...]</tt>. You may use parameter
-	   \c genoFreq_param to control if <tt>a/b</tt> and <tt>b/a</tt> are the same
-	   genotype. This parameter will set the following
-	   dictionary variables. Note that unlike list used for \c alleleFreq etc.,
-	   the indexes \c a, \c b of <tt>genoFreq[loc][a][b]</tt> are dictionary keys,
-	   so you will get a \em KeyError when you used a wrong key. You can get around
-	   this problem by using expressions like <tt>genoNum[loc].setDefault(a,{})</tt>.
-	   \li <tt>genoNum[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoNum'][loc][allele1][allele2]</tt>,
-	   the number of genotype \c allele1-allele2 at locus \c loc.
-	   \li <tt>genoFreq[loc][allele1][allele2]</tt> and <tt>subPop[sp]['genoFreq'][loc][allele1][allele2]</tt>,
-	   the frequency of genotype \c allele1-allele2 at locus \c loc.
-	   \li genoFreq_param a dictionary of parameters of \c phase = 0 or 1.
-
-	   \param heteroFreq an array of loci at which observed heterozygosities will be calculated
-	   (<tt>heteroFreq=[loc1, loc2, ...]</tt>). For each locus, the number and frequency of
-	   allele specific and overall heterozygotes will be calcuated and stored in four population
-	   variables. For example, <tt>heteroNum[loc][1]</tt> stores number of heterozygotes
-	   at locus \c loc, with respect to allele \c 1, which is the number of all genotype
-	   \c 1x or \c x1 where \x does not equal to \c 1. All other genotypes such as \c 02 are
-	   considered as homozygotes when <tt>heteroFreq[loc][1]</tt> is calculated.
-	   The overall number of heterozygotes (<tt>HeteroNum[loc]</tt>) is the number of
-	   genotype \c xy if \c x does not equal to \c y.
-	   \li <tt>HeteroNum[loc]</tt>, <tt>subPop[sp]['HeteroNum'][loc]</tt>, the overall heterozygote count.
-	   \li <tt>HeteroFreq[loc]</tt>, <tt>subPop[sp]['HeteroFreq'][loc]</tt>, the overall heterozygote frequency.
-	   \li <tt>heteroNum[loc][allele]</tt>, <tt>subPop[sp]['heteroNum'][loc][allele]</tt>, allele-specific heterozygote counts.
-	   \li <tt>heteroFreq[loc][allele]</tt>, <tt>subPop[sp]['heteroFreq'][loc][allele]</tt>, allele-specific heterozygote frequency.
-
-	   \param homoFreq an array of loci to calculate observed homozygosities
-	   and expected homozygosities (<tt>homoFreq=[loc1, loc2, ...]</tt>).
-	   This parameter will calculate the numbers and frequencies of homozygotes
-	   \b xx and set the following variables:
-	   \li <tt>homoNum[loc]</tt>, <tt>subPop[sp]['homoNum'][loc]</tt>.
-	   \li <tt>homoFreq[loc]</tt>, <tt>subPop[sp]['homoFreq'][loc]</tt>.
-
-	   \param expHetero an array of loci at which the expected heterozygosities will
-	   be calculated (<tt>expHetero=[loc1, loc2, ...]</tt>). The expected heterozygosity
-	   is calculated by \f[ h_{exp}=1-p_{i}^{2}, \f] where \f$ p_i \f$ is the allele
-	   frequency of allele \f$ i \f$. The following variables will be set:
-	   \li <tt>expHetero[loc]</tt>, <tt>subPop[sp]['expHetero'][loc]</tt>.
-
-	   \param expHetero_param a dictionary of parameters of \c expHetero statistics.
-	   Can be one or more items choosen from the following options: \c subpop and
-	   \c midValues.
-
-	   \param haploFreq a matrix of haplotypes (allele sequences on different loci) to
-	   count. For example, <tt>haploFreq = [ [ 0,1,2 ], [1,2] ]</tt>  will count
-	   all haplotypes on loci 0, 1 and 2; and all haplotypes on loci 1, 2.
-	   If only one haplotype is specified, the outer <tt>[]</tt> can be omitted. I.e.,
-	   <tt>haploFreq=[0,1]</tt> is acceptable. The following dictionary variables
-	   will be set with keys <tt>0-1-2</tt> etc. For example, <tt>haploNum['1-2']['5-6']</tt>
-	   is the number of allele pair 5, 6 (on loci 1 and 2 respectively) in the population.
-	   \li <tt>haploNum[haplo]</tt> and <tt>subPop[sp]['haploNum'][haplo]</tt>, the number
-	   of allele sequencies on loci \c haplo.
-	   \li <tt>haploFreq[haplo]</tt>, <tt>subPop[sp]['haploFreq'][haplo]</tt>, the frequency
-	   of allele sequencies on loci \c haplo.
-
-	   \param LD calculate linkage disequilibria \f$ LD \f$, \f$ LD' \f$
-	   and \f$ r^{2} \f$, given
-	   <tt>LD=[ [loc1, loc2], [ loc1, loc2, allele1, allele2], ... ]</tt>.
-	   For each item <tt>[loc1, loc2, allele1, allele2]</tt>, \f$ D \f$, \f$ D' \f$
-	   and \f$ r^{2} \f$ will be calculated
-	   based on \c allele1 at \c loc1 and \c allele2 at \c loc2. If only two loci are given,
-	   the LD values are averaged over all allele pairs. For example, for allele \f$ A \f$ at
-	   locus \c 1 and allele \f$ B \f$ at locus \c 2,
-	   \f[ D = P_{AB}-P_{A}P_{B} \f]
-	   \f[ D' = D/D_{max} \f]
-	   \f[ D_{max} =
-	   \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right)  \textrm{if }D>0 \ \
-	   \min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right)  \textrm{if }D<0 \f]
-	   \f[ r^{2} = \frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)} \f]
-	   If only one item is specified, the
-	   outer <tt>[]</tt> can be ignored. I.e., <tt>LD=[loc1, loc2]</tt> is acceptable.
-	   This parameter will set the following variables. Please note that the difference between
-	   the data structures used for \c ld and \c LD.
-	   \li <tt>ld['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld']['loc1-loc2']['allele1-allele2']</tt>.
-	   \li <tt>ld_prime['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['ld_prime']['loc1-loc2']['allele1-allele2']</tt>.
-	   \li <tt>r2['loc1-loc2']['allele1-allele2']</tt>, <tt>subPop[sp]['r2']['loc1-loc2']['allele1-allele2']</tt>.
-	   \li <tt>LD[loc1][loc2]</tt>, <tt>subPop[sp]['LD'][loc1][loc2]</tt>.
-	   \li <tt>LD_prime[loc1][loc2]</tt>, <tt>subPop[sp]['LD_prime'][loc1][loc2]</tt>.
-	   \li <tt>R2[loc1][loc2]</tt>, <tt>subPop[sp]['R2'][loc1][loc2]</tt>.
-	   \li <tt>LD_ChiSq[loc1][loc2]</tt>, <tt>subPop[s]['LD_ChiSq'][loc1][loc2]</tt>
-	   \li <tt>LD_ChiSq_P[loc1][loc2]</tt>, <tt>subPop[s]['LD_ChiSq_P'][loc1][loc2]</tt>
-	   \li <tt>LD_UC_U[loc1][loc2]</tt>, <tt>subPop[s]['LD_UC_U'][loc1][loc2]</tt>
-
-	   \param LD_param a dictionary of parameters of \c LD statistics. Can have key \c stat which is
-	   a list of statistics to calculate. Default to LD, D' and R2. If any statistics is specified,
-	   only those specified will be calculated. For example, you may use <tt>LD_param={LD_prime}</tt>
-	   to calculate D' only, where <tt>LD_prime</tt> is a shortcut for <tt>'stat':['LD_prime']</tt>.
-	   Other parameters that you may use are:
-	   \li \c subPop whether or not calculate statistics for subpopulations.
-	   \li \c midValues whether or not keep intermediate results.
-
-	   \param Fst calculate \f$ F_{st} \f$, \f$ F_{is} \f$, \f$ F_{it} \f$.
-	   For example, <tt>Fst = [0,1,2]</tt> will calculate \f$ F_{st} \f$, \f$ F_{is} \f$,
-	   \f$ F_{it} \f$ based on alleles at loci \c 0, \c 1, \c 2. The locus-specific values will be used
-	   to calculate \c AvgFst, which is an average value over all alleles (Weir
-	   & Cockerham, 1984). Terms and values that match Weir & Cockerham are:
-	   \li \f$ F \f$ (\f$ F_{IT} \f$) the correlation of genes within individuals (inbreeding);
-	   \li \f$ \theta \f$ (\f$ F_{ST} \f$) the correlation of genes of difference individuals
-	   in the same population (will evaluate for each subpopulation and the whole population)
-	   \li \f$ f \f$ (\f$ F_{IS} \f$) the correlation of genes within individuals within
-	   populations.
-
-	   This parameter will set the following variables:
-	   \li <tt>Fst[loc]</tt>, <tt>Fis[loc]</tt>, <tt>Fit[loc]</tt>
-	   \li <tt>AvgFst</tt>, <tt>AvgFis</tt>, <tt>AvgFit</tt>.
-
-	   \param Fst_param a dictionary of parameters of \c Fst statistics.
-	   Can be one or more items choosen from the following options: \c Fst,
-	   \c Fis, \c Fit, \c AvgFst, \c AvgFis, and \c AvgFit.
-
-	   \param hasPhase if a/b and b/a are the same genotype. Default to \c False.
-
-	   \param midValues whether or not post intermediate results. Default to \c False.
-	   For example, \c Fst will need to calculate allele frequencise. If \c midValues
-	   is set to \c True, allele frequencies will be posted as well. This will be
-	   helpful in debugging and sometimes in deriving statistics.
+	 *  <b>numOfMale</b>: If \e numOfMale=True, number of male individuals in
+	 *  all or specified (virtual) subpopulations will be set to the following
+	 *  variables:
+	 *  \li \c numOfMale (default): Total number of male individuals in all
+	 *       or specified (virtual) subpopulations.
+	 *  \li \c numOfMale (default): Total number of female individuals in all
+	 *       or specified (virtual) subpopulations.
+	 *  \li \c propOfMale: Proportion of male individuals.
+	 *  \li \c propOfFemale: Proportion of female individuals.
+	 *  \li \c numOfMale_sp: Number of male individuals in each (virtual)
+	 *       subpopulation.
+	 *  \li \c numOfFemale_sp: Number of female individuals in each (virtual)
+	 *       subpopulation.
+	 *  \li \c propOfMale_sp: Proportion of male individuals in each (virtual)
+	 *       subpopulation.
+	 *  \li \c propOfFemale_sp: Proportion of female individuals in each
+	 *       (virtual) subpopulation.
+	 *
+	 *  <b>numOfAffected</b>: If \e numOfAffected=True, number of affected
+	 *  individuals in all or specified (virtual) subpopulations will be set to the
+	 *  following variables:
+	 *  \li \c numOfAffected (default): Total number of affected individuals in
+	 *       all or specified (virtual) subpopulations.
+	 *  \li \c numOfAffected (default): Total number of unaffected individuals
+	 *       in all or specified (virtual) subpopulations.
+	 *  \li \c propOfAffected: Proportion of affected individuals.
+	 *  \li \c propOfUnaffected: Proportion of unaffected individuals.
+	 *  \li \c numOfAffected_sp: Number of affected individuals in each (virtual)
+	 *       subpopulation.
+	 *  \li \c numOfUnaffected_sp: Number of unaffected individuals in each
+	 *       (virtual) subpopulation.
+	 *  \li \c propOfAffected_sp: Proportion of affected individuals in each
+	 *       (virtual) subpopulation.
+	 *  \li \c propOfUnaffected_sp: Proportion of unaffected individuals in
+	 *       each (virtual) subpopulation.
+	 *
+	 *  <b>alleleFreq</b>: This parameter accepts a list of loci (by indexes),
+	 *  at which allele frequencies will be calculated. This statistic outputs
+	 *  the following variables:
+	 *  \li \c alleleFreq (default): <tt>alleleFreq[loc][a]</tt> is the
+	 *       frequency of allele \c a at locus \loc for all or specified
+	 *       (virtual) subpopulations. Variable \c alleleFreq is a dictionary
+	 *       (with loci indexes as keys) of lists. The length of the frequency
+	 *       list is determined by the maximum allele, but is guaranteed to
+	 *       have at least 2 items (frequency for alleles 0 and 1).
+	 *  \li \c alleleNum (default): <tt>alleleNum[loc][a]</tt> is the number of
+	 *       allele \c a at locus \loc for all or specified (virtual)
+	 *       subpopulations.
+	 *  \li \c alleleFreq_sp: Allele frequency in each (virtual) subpopulation.
+	 *  \li \c alleleNum_sp: Allele count in each (virtual) subpopulation.
+	 *
+	 *  <b>heteroFreq</b> and <b>homoFreq</b>: These parameters accept a list
+	 *  of loci (by indexes), at which the number and frequency of homozygotes
+	 *  and/or heterozygotes will be calculated. These statistics are only
+	 *  available for diploid populations. The following variables will be
+	 *  outputted:
+	 *  \li \c heteroFreq (default for parameter \e heteroFreq): A dictionary
+	 *       of proportion of heterozygotes in all or specified (virtual)
+	 *       subpopulations, with loci indexes as dictionary keys.
+	 *  \li \c homoFreq (default for parameter \e homoFreq): A dictionary of
+	 *       proportion of homozygotes in all or specified (virtual)
+	 *       subpopulations.
+	 *  \li \c heteroNum: A dictionary of number of heterozygotes in all or
+	 *       specified (virtual) subpopulations.
+	 *  \li \c homoNum: A dictionary of number of homozygotes in all or
+	 *       specified (virtual) subpopulations.
+	 *  \li \c heteroFreq_sp: A dictionary of proportion of heterozygotes in
+	 *       each (virtual) subpopulation.
+	 *  \li \c homoFreq_sp: A dictionary of proportion of homozygotes in each
+	 *       (virtual) subpopulation.
+	 *  \li \c heteroNum_sp: A dictionary of number of heterozygotes in each
+	 *       (virtual) subpopulation.
+	 *  \li \c homoNum_sp: A dictionary of number of homozygotes in each
+	 *       (virtual) subpopulation.
+	 *
 	 **/
 	stat(bool popSize = false,
 		//

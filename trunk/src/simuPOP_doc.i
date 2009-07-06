@@ -196,24 +196,22 @@ Arguments:
                     begin, end, and step will be ignored if this
                     parameter is specified. A single generation number
                     is also acceptable.
-    rep:            A list of applicable replicates. An empty list
-                    (default) is interpreted as all replicates in a
+    reps:           A list of applicable replicates. A default value
+                    AllReps is interpreted as all replicates in a
                     simulator. Negative indexes such as -1 (last
                     replicate) is acceptable. rep=idx can be used as a
                     shortcut for rep=[idx].
     subPops:        A list of applicable (virtual) subpopulations,
-                    such as subPops=[sp1, sp2, (sp2, vsp1)]. An empty
-                    list (usually the default) is interpreted as all
-                    subpopulations. subPops=[sp1] can be simplied as
-                    subPops=sp1. Negative indexes are not supported.
-                    Suport for this parameter vary from operator to
-                    operator. Some operators do not support virtual
-                    subpopulations and some operators regular input as
-                    well as None (meaning no subpopulation should be
-                    handled), and some operators do not do not support
-                    this parameter at all. Please refer to the
-                    reference manual of individual operators for their
-                    support for this parameter.
+                    such as subPops=[sp1, sp2, (sp2, vsp1)].
+                    subPops=[sp1] can be simplied as subPops=sp1.
+                    Negative indexes are not supported. The default
+                    value of this parameter is usually AllSubPops
+                    which reprents all subpopulations of the
+                    population being aplied. Suport for this parameter
+                    vary from operator to operator and some operators
+                    do not support virtual subpopulations at all.
+                    Please refer to the reference manual of individual
+                    operators for their support for this parameter.
     infoFields:     A list of information fields that will be used by
                     an operator. You usually do not need to specify
                     this parameter because operators that use
@@ -362,7 +360,8 @@ Description:
 Usage:
 
     basePenetrance(ancestralGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Arguments:
 
@@ -603,8 +602,8 @@ Details:
 
 Usage:
 
-    cloneGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    cloneGenoTransmitter(begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -764,7 +763,8 @@ Usage:
 
     contextMutator(rates=[], loci=[], mutators=[], contexts=[],
       mapIn=[], mapOut=[], output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -907,7 +907,7 @@ Usage:
 
     dumper(genotype=True, structure=True, ancGen=0, width=1,
       max=100, loci=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -1579,8 +1579,8 @@ Details:
 
 Usage:
 
-    genoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    genoTransmitter(begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -1770,7 +1770,7 @@ Details:
 Usage:
 
     haplodiploidGenoTransmitter(begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -1997,8 +1997,8 @@ Details:
 Usage:
 
     ifElse(cond, ifOps=[], elseOps=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -2438,7 +2438,7 @@ Usage:
 
     infoEval(expr=string, stmts=string, usePopVars=False,
       exposeInd=string, output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -2539,7 +2539,7 @@ Usage:
 
     infoExec(stmts=string, usePopVars=False, exposeInd=string,
       output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -2804,7 +2804,7 @@ Description:
 Usage:
 
     inheritTagger(mode=TAG_Paternal, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], output=\"\", infoFields=[],
+      reps=AllReps, subPops=AllSubPops, output=\"\", infoFields=[],
       TAG_InheritFields[1])
 
 Arguments:
@@ -2870,8 +2870,8 @@ Usage:
 
     initByFreq(alleleFreq=[], loci=[], ploidy=[],
       identicalInds=False, initSex=True, maleFreq=0.5, sex=[],
-      stage=PreMating, begin=0, end=1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PreMating, begin=0, end=1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -2955,7 +2955,8 @@ Usage:
 
     initByValue(value=[], loci=[], ploidy=[], proportions=[],
       initSex=True, maleFreq=0.5, sex=[], stage=PreMating, begin=0,
-      end=1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -3041,7 +3042,7 @@ Details:
 Usage:
 
     initSex(maleFreq=0.5, sex=[], stage=PreMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -3146,7 +3147,7 @@ Usage:
 
     kamMutator(k=0, rates=[], loci=[], mapIn=[], mapOut=[],
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -3229,8 +3230,8 @@ Description:
 Usage:
 
     maPenetrance(loci, penetrance, wildtype=[], ancGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=DuringMating, begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Arguments:
 
@@ -3311,8 +3312,8 @@ Description:
 Usage:
 
     mapPenetrance(loci, penetrance, phase=False, ancGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=DuringMating, begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Arguments:
 
@@ -3392,8 +3393,8 @@ Description:
 Usage:
 
     mapQuanTrait(loci, qtrait, sigma=0, phase=False, ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Arguments:
 
@@ -3480,8 +3481,8 @@ Description:
 Usage:
 
     mapSelector(loci, fitness, phase=False, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Arguments:
 
@@ -3568,8 +3569,8 @@ Description:
 Usage:
 
     maQuanTrait(loci, qtrait, wildtype, sigma=[], ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -3664,7 +3665,8 @@ Description:
 Usage:
 
     maSelector(loci, fitness, wildtype=[], stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -3820,8 +3822,8 @@ Details:
 Usage:
 
     matrixMutator(rate, loci=[], mapIn=[], mapOut=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -3891,8 +3893,8 @@ Details:
 
 Usage:
 
-    mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    mendelianGenoTransmitter(begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -3967,8 +3969,8 @@ Details:
 
 Usage:
 
-    mergeSubPops(subPops=[], name=string, stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], infoFields=[])
+    mergeSubPops(subPops=AllSubPops, name=string, stage=PreMating,
+      begin=0, end=-1, step=1, at=[], reps=AllReps, infoFields=[])
 
 Details:
 
@@ -4089,8 +4091,8 @@ Details:
 Usage:
 
     migrator(rate=[], mode=ByProbability, toSubPops=[],
-      stage=PreMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PreMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -4198,7 +4200,7 @@ Details:
 Usage:
 
     mitochondrialGenoTransmitter(chroms=[], begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -4255,7 +4257,8 @@ Usage:
 
     mixedMutator(rates=[], loci=[], mutators=[], prob=[], mapIn=[],
       mapOut=[], context=0, output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -4337,8 +4340,8 @@ Description:
 Usage:
 
     mlPenetrance(peneOps, mode=Multiplicative, ancGen=-1,
-      stage=DuringMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=DuringMating, begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Arguments:
 
@@ -4421,8 +4424,8 @@ Description:
 Usage:
 
     mlQuanTrait(qtraits, mode=Multiplicative, sigma=0, ancGen=-1,
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -4516,8 +4519,8 @@ Description:
 Usage:
 
     mlSelector(selectors, mode=Multiplicative, stage=PreMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -4583,7 +4586,7 @@ Usage:
 
     mutator(rates=[], loci=[], mapIn=[], mapOut=[], context=0,
       output=\">\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -4710,7 +4713,7 @@ Details:
 Usage:
 
     noneOp(output=\">\", stage=PostMating, begin=0, end=0, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -4996,8 +4999,8 @@ Description:
 
 Usage:
 
-    parentsTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=\"\", infoFields=[], ParentsFields[1])
+    parentsTagger(begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, output=\"\", infoFields=[], ParentsFields[1])
 
 "; 
 
@@ -5074,8 +5077,8 @@ Description:
 
 Usage:
 
-    parentTagger(begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      output=\"\", infoFields=[])
+    parentTagger(begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, output=\"\", infoFields=[])
 
 "; 
 
@@ -5143,8 +5146,8 @@ Details:
 Usage:
 
     pause(stopOnKeyStroke=False, prompt=True, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -5473,8 +5476,9 @@ Details:
 
 Usage:
 
-    pedigreeTagger(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], stage=PostMating, output=\">\", pedigreeFields=[])
+    pedigreeTagger(begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, stage=PostMating, output=\">\",
+      pedigreeFields=[])
 
 "; 
 
@@ -5501,8 +5505,8 @@ Details:
 Usage:
 
     pointMutator(loci, allele, ploidy=[], inds=[], output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -6678,8 +6682,8 @@ Details:
 Usage:
 
     pyEval(expr=string, stmts=string, exposePop=string, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -6782,8 +6786,8 @@ Details:
 Usage:
 
     pyExec(stmts=string, exposePop=string, output=\">\",
-      stage=PostMating, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -6924,7 +6928,7 @@ Usage:
 
     pyMutator(rates=[], loci=[], func=None, context=0, mapIn=[],
       mapOut=[], output=\">\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -7029,7 +7033,7 @@ Usage:
 
     pyOperator(func, param=None, stage=PostMating,
       isTransmitter=False, offspringOnly=False, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -7109,7 +7113,8 @@ Details:
 Usage:
 
     pyOutput(msg=string, output=\">\", stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -7271,7 +7276,8 @@ Description:
 Usage:
 
     pyPenetrance(loci, func, ancGen=-1, stage=DuringMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Arguments:
 
@@ -7401,7 +7407,8 @@ Description:
 Usage:
 
     pyQuanTrait(loci, func, ancGen=-1, stage=PostMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -7484,7 +7491,7 @@ Description:
 Usage:
 
     pySelector(loci, func, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Arguments:
 
@@ -7556,8 +7563,8 @@ Description:
 
 Usage:
 
-    pyTagger(func=None, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], output=\"\", infoFields=[])
+    pyTagger(func=None, begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, output=\"\", infoFields=[])
 
 Arguments:
 
@@ -7631,7 +7638,7 @@ Description:
 Usage:
 
     quanTrait(ancGen=-1, stage=PostMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 "; 
 
@@ -7885,8 +7892,8 @@ Note:
 Usage:
 
     recombinator(rates=[], intensity=-1, loci=[],
-      convMode=NoConversion, begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+      convMode=NoConversion, begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -8031,7 +8038,7 @@ Details:
 
 Usage:
 
-    repList(reps=[])
+    repList(reps=[], allReps=False)
 
 "; 
 
@@ -8055,9 +8062,9 @@ Details:
 
 Usage:
 
-    resizeSubPops(subPops=[], sizes=[], proportions=[],
+    resizeSubPops(subPops=AllSubPops, sizes=[], proportions=[],
       propagate=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+      reps=AllReps, infoFields=[])
 
 Details:
 
@@ -8418,7 +8425,7 @@ Details:
 Usage:
 
     savePopulation(output=\"\", stage=PostMating, begin=0, end=-1,
-      step=1, at=[], rep=[], subPops=[], infoFields=[])
+      step=1, at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -8536,7 +8543,7 @@ Description:
 Usage:
 
     selector(stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 "; 
 
@@ -8607,8 +8614,8 @@ Details:
 
 Usage:
 
-    selfingGenoTransmitter(begin=0, end=-1, step=1, at=[], rep=[],
-      subPops=[], infoFields=[])
+    selfingGenoTransmitter(begin=0, end=-1, step=1, at=[],
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -8734,7 +8741,8 @@ Details:
 Usage:
 
     setAncestralDepth(depth, output=\">\", stage=PreMating, begin=0,
-      end=-1, step=1, at=[], rep=[], subPops=[], infoFields=[])
+      end=-1, step=1, at=[], reps=AllReps, subPops=AllSubPops,
+      infoFields=[])
 
 Details:
 
@@ -9266,8 +9274,8 @@ Usage:
 
     smmMutator(rates=[], loci=[], incProb=0.5, maxAllele=0,
       mutStep=[], mapIn=[], mapOut=[], output=\">\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+      begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -9347,9 +9355,9 @@ Details:
 
 Usage:
 
-    splitSubPops(subPops=[], sizes=[], proportions=[], names=[],
-      randomize=True, stage=PreMating, begin=0, end=-1, step=1, at=[],
-      rep=[], infoFields=[])
+    splitSubPops(subPops=AllSubPops, sizes=[], proportions=[],
+      names=[], randomize=True, stage=PreMating, begin=0, end=-1,
+      step=1, at=[], reps=AllReps, infoFields=[])
 
 Details:
 
@@ -9446,278 +9454,142 @@ Function form:
 
     Stat
 
-Description:
-
-    calculate statistics
-
 Details:
 
-    Operator stat calculates various basic statistics for the
-    population and sets variables in the local namespace. Other
-    operators or functions can refer to the results from the namespace
-    after stat is applied. Stat is the function form of the operator.
-    Note that these statistics are dependent to each other. For
-    example, heterotype and allele frequencies of related loci will be
-    automatically calculated if linkage diseqilibrium is requested.
+    Operator stat calculates various statistics of the population
+    being applied and sets variables in its local namespace. Other
+    operators or functions can retrieve results from or evalulate
+    expressions in this local namespace after stat is applied.
 
 "; 
 
 %feature("docstring") simuPOP::stat::stat "
 
-Description:
-
-    create an stat operator
-
 Usage:
 
-    stat(popSize=False, numOfMale=False, numOfMale_param={},
-      numOfAffected=False, numOfAffected_param={}, alleleFreq=[],
-      heteroFreq=[], expHetero=[], expHetero_param={}, homoFreq=[],
-      genoFreq=[], genoFreq_param={}, haploFreq=[], LD=[],
-      LD_param={}, association=[], neutrality=[], Fst=[],
-      Fst_param={}, HWE=[], vars=[], output=\"\", stage=PostMating,
-      begin=0, end=-1, step=1, at=[], rep=[], subPops=[],
-      infoFields=[])
+    stat(popSize=False, numOfMale=False, numOfAffected=False,
+      alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
+      genoFreq_param={}, haploFreq=[], LD=[], LD_param={},
+      association=[], neutrality=[], Fst=[], Fst_param={}, HWE=[],
+      vars=[], output=\"\", stage=PostMating, begin=0, end=-1, step=1,
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
-Arguments:
+Details:
 
-    popSize:        whether or not calculate population and virtual
-                    subpopulation sizes. This parameter will set the
-                    following variables:
-                    * numSubPop the number of subpopulations.
-                    * subPopSize an array of subpopulation sizes.
-                    * virtualSubPopSize (optional) an array of virtual
-                    subpopulation sizes. If a subpopulation does not
-                    have any virtual subpopulation, the subpopulation
-                    size is returned.
-                    * popSize, subPop[sp]['popSize'] the
-                    population/subpopulation size.
-    numOfMale:      whether or not count the numbers or proportions of
-                    males and females. This parameter can set the
-                    following variables by user's specification:
-                    * numOfMale, subPop[sp]['numOfMale'] the number of
-                    males in the population/subpopulation.
-                    * numOfFemale, subPop[sp]['numOfFemale'] the
-                    number of females in the population/subpopulation.
-                    * propOfMale, subPop[sp]['propOfMale'] the
-                    proportion of males in the
-                    population/subpopulation.
-                    * propOfFemale, subPop[sp]['propOfFemale'] the
-                    proportion of females in the
-                    population/subpopulation.
-    numOfMale_param:a dictionary of parameters of numOfMale
-                    statistics. Can be one or more items choosen from
-                    the following options: numOfMale, propOfMale,
-                    numOfFemale, and propOfFemale.
-    numOfAffected:  whether or not count the numbers or proportions of
-                    affected and unaffected individuals. This
-                    parameter can set the following variables by
-                    user's specification:
-                    * numOfAffected, subPop[sp]['numOfAffected'] the
-                    number of affected individuals in the
-                    population/subpopulation.
-                    * numOfUnaffected, subPop[sp]['numOfUnAffected']
-                    the number of unaffected individuals in the
-                    population/subpopulation.
-                    * propOfAffected, subPop[sp]['propOfAffected'] the
-                    proportion of affected individuals in the
-                    population/subpopulation.
-                    * propOfUnaffected, subPop[sp]['propOfUnAffected']
-                    the proportion of unaffected individuals in the
-                    population/subpopulation.
-    numOfAffected_param:a dictionary of parameters of numOfAffected
-                    statistics. Can be one or more items choosen from
-                    the following options: numOfAffected,
-                    propOfAffected, numOfUnaffected, propOfUnaffected.
-    numOfAlleles:   an array of loci at which the numbers of distinct
-                    alleles will be counted (numOfAlleles=[loc1, loc2,
-                    ...] where loc1 etc. are absolute locus indexes).
-                    This is done through the calculation of allele
-                    frequencies. Therefore, allele frequencies will
-                    also be calculated if this statistics is
-                    requested. This parameter will set the following
-                    variables (carray objects of the numbers of
-                    alleles for all loci). Unrequested loci will have
-                    0 distinct alleles.
-                    * numOfAlleles, subPop[sp]['numOfAlleles'] the
-                    number of distinct alleles at each locus.
-                    (Calculated only at requested loci.)
-    numOfAlleles_param:a dictionary of parameters of numOfAlleles
-                    statistics. Can be one or more items choosen from
-                    the following options: numOfAffected,
-                    propOfAffected, numOfUnaffected, propOfUnaffected.
-    alleleFreq:     an array of loci at which all allele frequencies
-                    will be calculated (alleleFreq=[loc1, loc2, ...]
-                    where loc1 etc. are loci where allele frequencies
-                    will be calculated). This parameter will set the
-                    following variables (carray objects); for example,
-                    alleleNum[1][2] will be the number of allele 2 at
-                    locus 1:
-                    * alleleNum[a], subPop[sp]['alleleNum'][a]
-                    * alleleFreq[a], subPop[sp]['alleleFreq'][a].
-    alleleFreq_param:a dictionary of parameters of alleleFreq
-                    statistics. Can be one or more items choosen from
-                    the following options: numOfAlleles, alleleNum,
-                    and alleleFreq.
-    genoFreq:       an array of loci at which all genotype frequencies
-                    will be calculated (genoFreq=[loc1, loc2, ...].
-                    You may use parameter genoFreq_param to control if
-                    a/b and b/a are the same genotype. This parameter
-                    will set the following dictionary variables. Note
-                    that unlike list used for alleleFreq etc., the
-                    indexes a, b of genoFreq[loc][a][b] are dictionary
-                    keys, so you will get a KeyError when you used a
-                    wrong key. You can get around this problem by
-                    using expressions like
-                    genoNum[loc].setDefault(a,{}).
-                    * genoNum[loc][allele1][allele2] and
-                    subPop[sp]['genoNum'][loc][allele1][allele2], the
-                    number of genotype allele1-allele2 at locus loc.
-                    * genoFreq[loc][allele1][allele2] and
-                    subPop[sp]['genoFreq'][loc][allele1][allele2], the
-                    frequency of genotype allele1-allele2 at locus
-                    loc.
-                    * genoFreq_param a dictionary of parameters of
-                    phase = 0 or 1.
-    heteroFreq:     an array of loci at which observed
-                    heterozygosities will be calculated
-                    (heteroFreq=[loc1, loc2, ...]). For each locus,
-                    the number and frequency of allele specific and
-                    overall heterozygotes will be calcuated and stored
-                    in four population variables. For example,
-                    heteroNum[loc][1] stores number of heterozygotes
-                    at locus loc, with respect to allele 1, which is
-                    the number of all genotype 1x or x1 where does not
-                    equal to 1. All other genotypes such as 02 are
-                    considered as homozygotes when heteroFreq[loc][1]
-                    is calculated. The overall number of heterozygotes
-                    (HeteroNum[loc]) is the number of genotype xy if x
-                    does not equal to y.
-                    * HeteroNum[loc], subPop[sp]['HeteroNum'][loc],
-                    the overall heterozygote count.
-                    * HeteroFreq[loc], subPop[sp]['HeteroFreq'][loc],
-                    the overall heterozygote frequency.
-                    * heteroNum[loc][allele],
-                    subPop[sp]['heteroNum'][loc][allele], allele-
-                    specific heterozygote counts.
-                    * heteroFreq[loc][allele],
-                    subPop[sp]['heteroFreq'][loc][allele], allele-
-                    specific heterozygote frequency.
-    homoFreq:       an array of loci to calculate observed
-                    homozygosities and expected homozygosities
-                    (homoFreq=[loc1, loc2, ...]). This parameter will
-                    calculate the numbers and frequencies of
-                    homozygotes xx and set the following variables:
-                    * homoNum[loc], subPop[sp]['homoNum'][loc].
-                    * homoFreq[loc], subPop[sp]['homoFreq'][loc].
-    expHetero:      an array of loci at which the expected
-                    heterozygosities will be calculated
-                    (expHetero=[loc1, loc2, ...]). The expected
-                    heterozygosity is calculated by
-                    $ h_{exp}=1-p_{i}^{2}, $ where $ p_i $ is the
-                    allele frequency of allele $ i $. The following
-                    variables will be set:
-                    * expHetero[loc], subPop[sp]['expHetero'][loc].
-    expHetero_param:a dictionary of parameters of expHetero
-                    statistics. Can be one or more items choosen from
-                    the following options: subpop and midValues.
-    haploFreq:      a matrix of haplotypes (allele sequences on
-                    different loci) to count. For example, haploFreq =
-                    [ [ 0,1,2 ], [1,2] ] will count all haplotypes on
-                    loci 0, 1 and 2; and all haplotypes on loci 1, 2.
-                    If only one haplotype is specified, the outer []
-                    can be omitted. I.e., haploFreq=[0,1] is
-                    acceptable. The following dictionary variables
-                    will be set with keys 0-1-2 etc. For example,
-                    haploNum['1-2']['5-6'] is the number of allele
-                    pair 5, 6 (on loci 1 and 2 respectively) in the
-                    population.
-                    * haploNum[haplo] and
-                    subPop[sp]['haploNum'][haplo], the number of
-                    allele sequencies on loci haplo.
-                    * haploFreq[haplo],
-                    subPop[sp]['haploFreq'][haplo], the frequency of
-                    allele sequencies on loci haplo.
-    LD:             calculate linkage disequilibria $ LD $, $ LD' $
-                    and $ r^{2} $, given LD=[ [loc1, loc2], [ loc1,
-                    loc2, allele1, allele2], ... ]. For each item
-                    [loc1, loc2, allele1, allele2], $ D $, $ D' $ and
-                    $ r^{2} $ will be calculated based on allele1 at
-                    loc1 and allele2 at loc2. If only two loci are
-                    given, the LD values are averaged over all allele
-                    pairs. For example, for allele $ A $ at locus 1
-                    and allele $ B $ at locus 2,
-                    $ D = P_{AB}-P_{A}P_{B} $
-                    $ D' = D/D_{max} $
-                    $ D_{max} = \\min\\left(P_{A}\\left(1-P_{B}\\right),\\l
-                    eft(1-P_{A}\\right)P_{B}\\right) \\textrm{if }D>0 \\ \\
-                    \\min\\left(P_{A}P_{B},\\left(1-P_{A}\\right)\\left(1-P
-                    _{B}\\right)\\right) \\textrm{if }D<0 $
-                    $ r^{2} = \\frac{D^{2}}{P_{A}\\left(1-P_{A}\\right)P_
-                    {B}\\left(1-P_{B}\\right)} $ If only one item is
-                    specified, the outer [] can be ignored. I.e.,
-                    LD=[loc1, loc2] is acceptable. This parameter will
-                    set the following variables. Please note that the
-                    difference between the data structures used for ld
-                    and LD.
-                    * ld['loc1-loc2']['allele1-allele2'],
-                    subPop[sp]['ld']['loc1-loc2']['allele1-allele2'].
-                    * ld_prime['loc1-loc2']['allele1-allele2'], subPop
-                    [sp]['ld_prime']['loc1-loc2']['allele1-allele2'].
-                    * r2['loc1-loc2']['allele1-allele2'],
-                    subPop[sp]['r2']['loc1-loc2']['allele1-allele2'].
-                    * LD[loc1][loc2], subPop[sp]['LD'][loc1][loc2].
-                    * LD_prime[loc1][loc2],
-                    subPop[sp]['LD_prime'][loc1][loc2].
-                    * R2[loc1][loc2], subPop[sp]['R2'][loc1][loc2].
-                    * LD_ChiSq[loc1][loc2],
-                    subPop[s]['LD_ChiSq'][loc1][loc2]
-                    * LD_ChiSq_P[loc1][loc2],
-                    subPop[s]['LD_ChiSq_P'][loc1][loc2]
-                    * LD_UC_U[loc1][loc2],
-                    subPop[s]['LD_UC_U'][loc1][loc2]
-    LD_param:       a dictionary of parameters of LD statistics. Can
-                    have key stat which is a list of statistics to
-                    calculate. Default to LD, D' and R2. If any
-                    statistics is specified, only those specified will
-                    be calculated. For example, you may use
-                    LD_param={LD_prime} to calculate D' only, where
-                    LD_prime is a shortcut for 'stat':['LD_prime'].
-                    Other parameters that you may use are:
-                    * subPop whether or not calculate statistics for
-                    subpopulations.
-                    * midValues whether or not keep intermediate
-                    results.
-    Fst:            calculate $ F_{st} $, $ F_{is} $, $ F_{it} $. For
-                    example, Fst = [0,1,2] will calculate $ F_{st} $,
-                    $ F_{is} $, $ F_{it} $ based on alleles at loci 0,
-                    1, 2. The locus-specific values will be used to
-                    calculate AvgFst, which is an average value over
-                    all alleles (Weir & Cockerham, 1984). Terms and
-                    values that match Weir & Cockerham are:
-                    * $ F $ ( $ F_{IT} $) the correlation of genes
-                    within individuals (inbreeding);
-                    * $ \\theta $ ( $ F_{ST} $) the correlation of
-                    genes of difference individuals in the same
-                    population (will evaluate for each subpopulation
-                    and the whole population)
-                    * $ f $ ( $ F_{IS} $) the correlation of genes
-                    within individuals within populations. This
-                    parameter will set the following variables:
-                    * Fst[loc], Fis[loc], Fit[loc]
-                    * AvgFst, AvgFis, AvgFit.
-    Fst_param:      a dictionary of parameters of Fst statistics. Can
-                    be one or more items choosen from the following
-                    options: Fst, Fis, Fit, AvgFst, AvgFis, and
-                    AvgFit.
-    hasPhase:       if a/b and b/a are the same genotype. Default to
-                    False.
-    midValues:      whether or not post intermediate results. Default
-                    to False. For example, Fst will need to calculate
-                    allele frequencise. If midValues is set to True,
-                    allele frequencies will be posted as well. This
-                    will be helpful in debugging and sometimes in
-                    deriving statistics.
+    Create a stat operator that calculates specified statistics of a
+    population when it is applied to this population. This operator is
+    by default applied after mating (parameter stage) and can be
+    applied to specified replicates (parameter rep) at specified
+    generations (parameter begin, end, step, and at). This operator
+    does not produce any output (ignore parameter output) after
+    statistics are calculated. Instead, it stores results in the local
+    namespace of the population being applied. Other operators can
+    retrieve these variables or evalulate expression directly in this
+    local namespace. Please refer to operator baseOperator for a
+    detailed explanation of these common operator parameters.  stat
+    supports parameter subPops. It usually calculate the same set of
+    statistics for all subpopulations (subPops=AllSubPops). If a list
+    of (virtual) subpopulations are specified, statistics for only
+    specified subpopulations will be calculated. However, different
+    statistics treat this parameter differently and it is very
+    important to check its reference before you use subPops for any
+    statistics.  Calculated statistics are saved as variables in a
+    population's local namespace. These variables can be numbers,
+    lists or dictionaries and can be retrieved using functions
+    population.vars() or population.dvars(). If the same variable is
+    calculated for one or more (virtual) subpopulation, the variables
+    are stored in vars()['subPop'][sp]['var'] where sp is a
+    subpopulation ID (sp) or a tuple of virtual subpopulation ID ((sp,
+    vsp)). population.vars(sp) and population.dvars(sp) provide
+    shortcuts to these variables.  Operator stat outputs a number of
+    most useful variables for each type of statistic. For example,
+    alleleFreq calculates both allele counts and allele frequencies
+    and it by default sets variable alleleFreq (dvars().alleleFreq)
+    for all or specified subpopulations. If this does not fit your
+    need, you can use parameter vars to output additional parameters,
+    or limit the output of existing parameters. More specifically, for
+    this particular statistic, the available variables are
+    'alleleFreq', 'alleleNum', 'alleleFreq_sp' ('alleleFreq' in each
+    subpopulation), and 'alleleNum_sp' ('alleleNum' in each
+    subpopulation). You can set vars=['alleleNum_sp'] to output only
+    subpopulation specific allele count.  Operator stat supports the
+    following statistics:  popSize: If popSize=True, number of
+    individuals in all or specified subpopulations (parameter subPops)
+    will be set to the following variables:
+    *   popSize (default): Number of individuals in all or specified
+    subpopulations. Because subPops does not have to cover all
+    individuals, it may not be the actual population size.
+    *   popSize_sp: Size of (virtual) subpopulation sp.
+    *   subPopSize (default): A list of subpopulation sizes.
+    sum(subPopSize) is the total population size.numOfMale: If
+    numOfMale=True, number of male individuals in all or specified
+    (virtual) subpopulations will be set to the following variables:
+    *   numOfMale (default): Total number of male individuals in all
+    or specified (virtual) subpopulations.
+    *   numOfMale (default): Total number of female individuals in all
+    or specified (virtual) subpopulations.
+    *   propOfMale: Proportion of male individuals.
+    *   propOfFemale: Proportion of female individuals.
+    *   numOfMale_sp: Number of male individuals in each (virtual)
+    subpopulation.
+    *   numOfFemale_sp: Number of female individuals in each (virtual)
+    subpopulation.
+    *   propOfMale_sp: Proportion of male individuals in each
+    (virtual) subpopulation.
+    *   propOfFemale_sp: Proportion of female individuals in each
+    (virtual) subpopulation.numOfAffected: If numOfAffected=True,
+    number of affected individuals in all or specified (virtual)
+    subpopulations will be set to the following variables:
+    *   numOfAffected (default): Total number of affected individuals
+    in all or specified (virtual) subpopulations.
+    *   numOfAffected (default): Total number of unaffected
+    individuals in all or specified (virtual) subpopulations.
+    *   propOfAffected: Proportion of affected individuals.
+    *   propOfUnaffected: Proportion of unaffected individuals.
+    *   numOfAffected_sp: Number of affected individuals in each
+    (virtual) subpopulation.
+    *   numOfUnaffected_sp: Number of unaffected individuals in each
+    (virtual) subpopulation.
+    *   propOfAffected_sp: Proportion of affected individuals in each
+    (virtual) subpopulation.
+    *   propOfUnaffected_sp: Proportion of unaffected individuals in
+    each (virtual) subpopulation.alleleFreq: This parameter accepts a
+    list of loci (by indexes), at which allele frequencies will be
+    calculated. This statistic outputs the following variables:
+    *   alleleFreq (default): alleleFreq[loc][a] is the frequency of
+    allele a at locus for all or specified (virtual) subpopulations.
+    Variable alleleFreq is a dictionary (with loci indexes as keys) of
+    lists. The length of the frequency list is determined by the
+    maximum allele, but is guaranteed to have at least 2 items
+    (frequency for alleles 0 and 1).
+    *   alleleNum (default): alleleNum[loc][a] is the number of allele
+    a at locus for all or specified (virtual) subpopulations.
+    *   alleleFreq_sp: Allele frequency in each (virtual)
+    subpopulation.
+    *   alleleNum_sp: Allele count in each (virtual)
+    subpopulation.heteroFreq and homoFreq: These parameters accept a
+    list of loci (by indexes), at which the number and frequency of
+    homozygotes and/or heterozygotes will be calculated. These
+    statistics are only available for diploid populations. The
+    following variables will be outputted:
+    *   heteroFreq (default for parameter heteroFreq): A dictionary of
+    proportion of heterozygotes in all or specified (virtual)
+    subpopulations, with loci indexes as dictionary keys.
+    *   homoFreq (default for parameter homoFreq): A dictionary of
+    proportion of homozygotes in all or specified (virtual)
+    subpopulations.
+    *   heteroNum: A dictionary of number of heterozygotes in all or
+    specified (virtual) subpopulations.
+    *   homoNum: A dictionary of number of homozygotes in all or
+    specified (virtual) subpopulations.
+    *   heteroFreq_sp: A dictionary of proportion of heterozygotes in
+    each (virtual) subpopulation.
+    *   homoFreq_sp: A dictionary of proportion of homozygotes in each
+    (virtual) subpopulation.
+    *   heteroNum_sp: A dictionary of number of heterozygotes in each
+    (virtual) subpopulation.
+    *   homoNum_sp: A dictionary of number of homozygotes in each
+    (virtual) subpopulation.
 
 "; 
 
@@ -9794,7 +9666,7 @@ Usage:
 
 Usage:
 
-    x.addLocus(locus, subPops=[], vars=[])
+    x.addLocus(locus, subPops=AllSubPops, vars=[])
 
 "; 
 
@@ -9844,31 +9716,11 @@ Usage:
 
 Usage:
 
-    statAssociation(loci=[], subPops=[])
+    statAssociation(loci=[], subPops=AllSubPops)
 
 "; 
 
 %feature("docstring") simuPOP::statAssociation::apply "
-
-Usage:
-
-    x.apply(pop)
-
-"; 
-
-%ignore simuPOP::statExpHetero;
-
-%feature("docstring") simuPOP::statExpHetero::statExpHetero "
-
-Usage:
-
-    statExpHetero(alleleFreq, expHetero=[], param={})
-
-"; 
-
-%ignore simuPOP::statExpHetero::statExpHetero(statAlleleFreq &alleleFreq, const statExpHetero &rhs);
-
-%feature("docstring") simuPOP::statExpHetero::apply "
 
 Usage:
 
@@ -10010,7 +9862,7 @@ Usage:
 
 Usage:
 
-    statHeteroFreq(heteroFreq=[], homoFreq=[])
+    statHeteroFreq(heteroFreq, homoFreq, subPops, vars)
 
 "; 
 
@@ -10018,15 +9870,7 @@ Usage:
 
 Usage:
 
-    x.addLocus(locus, post=False)
-
-"; 
-
-%feature("docstring") simuPOP::statHeteroFreq::heteroNum "
-
-Usage:
-
-    x.heteroNum(allele, loc)
+    x.addLocus(locus, subPops=AllSubPops, vars=[])
 
 "; 
 
@@ -10034,7 +9878,7 @@ Usage:
 
 Usage:
 
-    x.heteroFreq(allele, loc)
+    x.heteroFreq(pop, allele, loc, subPop)
 
 "; 
 
@@ -10092,7 +9936,7 @@ Usage:
 
 Usage:
 
-    statNeutrality(loci=[], subPops=[])
+    statNeutrality(loci=[], subPops=AllSubPops)
 
 "; 
 
@@ -10110,39 +9954,7 @@ Usage:
 
 Usage:
 
-    statNumOfAffected(numOfAffected=False, param={})
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAffected::~statNumOfAffected "
-
-Usage:
-
-    x.~statNumOfAffected()
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAffected::activate "
-
-Usage:
-
-    x.activate(yes=True)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAffected::numOfAffected "
-
-Usage:
-
-    x.numOfAffected()
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfAffected::numOfUnaffected "
-
-Usage:
-
-    x.numOfUnaffected()
+    statNumOfAffected(numOfAffected, subPops, vars)
 
 "; 
 
@@ -10160,31 +9972,7 @@ Usage:
 
 Usage:
 
-    statNumOfMale(numOfMale=False, param={})
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMale::activate "
-
-Usage:
-
-    x.activate(yes=True)
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMale::numOfMale "
-
-Usage:
-
-    x.numOfMale()
-
-"; 
-
-%feature("docstring") simuPOP::statNumOfMale::numOfFemale "
-
-Usage:
-
-    x.numOfFemale()
+    statNumOfMale(numOfMale, subPops, vars)
 
 "; 
 
@@ -10203,14 +9991,6 @@ Usage:
 Usage:
 
     statPopSize(popSize, subPops, vars)
-
-"; 
-
-%feature("docstring") simuPOP::statPopSize::activate "
-
-Usage:
-
-    x.activate()
 
 "; 
 
@@ -10334,6 +10114,8 @@ Usage:
 
 %ignore simuPOP::stringList::stringList(const string &str);
 
+%ignore simuPOP::stringList::obtainFrom(const stringList &items, const char *allowedItems[], const char *defaultItems[]);
+
 %ignore simuPOP::stringList::empty() const;
 
 %ignore simuPOP::stringList::contains(const string &str) const;
@@ -10360,11 +10142,17 @@ Usage:
 
 "; 
 
-%ignore simuPOP::subPopList::valid() const;
-
 %ignore simuPOP::subPopList::empty() const;
 
 %ignore simuPOP::subPopList::size() const;
+
+%feature("docstring") simuPOP::subPopList::__len__ "
+
+Usage:
+
+    x.__len__()
+
+"; 
 
 %ignore simuPOP::subPopList::push_back(const vspID subPop);
 
@@ -10417,7 +10205,7 @@ Description:
 Usage:
 
     tagger(output=\"\", stage=DuringMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 "; 
 
@@ -10467,7 +10255,7 @@ Usage:
 
     terminateIf(condition=string, stopAll=False, message=string,
       output=\"\", stage=PostMating, begin=0, end=-1, step=1, at=[],
-      rep=[], subPops=[], infoFields=[])
+      reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -10546,7 +10334,7 @@ Details:
 Usage:
 
     ticToc(output=\">\", stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -10602,7 +10390,7 @@ Details:
 Usage:
 
     turnOffDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -10663,7 +10451,7 @@ Details:
 Usage:
 
     turnOnDebug(code, stage=PreMating, begin=0, end=-1, step=1,
-      at=[], rep=[], subPops=[], infoFields=[])
+      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
 
 Details:
 
