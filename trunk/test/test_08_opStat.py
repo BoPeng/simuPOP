@@ -33,13 +33,13 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().subPopSize, [200, 800])
         self.assertEqual(pop.dvars().popSize, 0)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
-        Stat(pop, popSize=1, subPops=1)
+        Stat(pop, popSize=1, subPops=1, vars='popSize_sp')
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         self.assertEqual(pop.dvars(1).popSize, 800)
         # calculate for all subpopulations, using virtual subpopulation
         pop.setVirtualSplitter(sexSplitter())
         InitSex(pop, sex=[Male, Female])
-        Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1])
+        Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
         self.assertEqual(pop.dvars().subPopSize, [200,800])
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
         self.assertEqual(pop.dvars([1,1]).popSize, 400)
@@ -65,7 +65,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().numOfFemale, 800)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         # all subpopulations
-        Stat(pop, numOfMale=True)
+        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp', 'propOfMale_sp', 'propOfFemale_sp'])
         self.assertEqual(pop.dvars(0).numOfMale, 100)
         self.assertEqual(pop.dvars(0).numOfFemale, 100)
         self.assertEqual(pop.dvars(1).numOfMale, 100)
@@ -74,7 +74,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).propOfFemale, 7./8)
         # test virtual subpopulations
         pop.setVirtualSplitter(proportionSplitter([0.4, 0.6]))
-        Stat(pop, numOfMale=True, subPops=[(0, 0), (1, 1)])
+        Stat(pop, numOfMale=True, subPops=[(0, 0), (1, 1)], vars=['numOfMale_sp', 'numOfFemale_sp', 'propOfFemale_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfMale, 80)
         self.assertEqual(pop.dvars([0, 0]).propOfFemale, 0)
@@ -91,7 +91,8 @@ class TestStat(unittest.TestCase):
             pop.individual(i,0).setAffected(False)
         for i in range(100,800):
             pop.individual(i,1).setAffected(False)
-        Stat(pop, numOfAffected=1)
+        Stat(pop, numOfAffected=1, vars=['propOfAffected', 'propOfUnaffected', 'propOfAffected_sp', 'propOfUnaffected_sp',
+            'numOfAffected', 'numOfUnaffected', 'numOfAffected_sp', 'numOfUnaffected_sp'])
         self.assertEqual(pop.dvars().numOfAffected, 200)
         self.assertEqual(pop.dvars().numOfUnaffected, 800)
         self.assertEqual(pop.dvars(0).numOfAffected, 100)
@@ -106,7 +107,8 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(1).propOfUnaffected, 7/8.)
         # virtual subpopulation?
         pop.setVirtualSplitter(sexSplitter())
-        Stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)])
+        Stat(pop, numOfAffected=True, subPops=[(0, 0), (1, 1)],
+            vars=['numOfAffected_sp', 'propOfUnaffected_sp', 'numOfUnaffected_sp'])
         self.assertRaises(exceptions.ValueError, pop.dvars, (0, 1))
         self.assertEqual(pop.dvars([0, 0]).numOfAffected, 50)
         self.assertEqual(pop.dvars([0, 0]).propOfUnaffected, 0.5)
@@ -124,7 +126,7 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars().alleleNum[0], [1230, 1970])
         self.assertEqual(pop.dvars().alleleFreq[0], [1230./3200, 1970./3200])
         #
-        Stat(pop, alleleFreq=[0], subPops=(0, 1, 2))
+        Stat(pop, alleleFreq=[0], subPops=(0, 1, 2), vars=['alleleFreq_sp', 'alleleNum_sp'])
         self.assertEqual(pop.dvars(0).alleleFreq[0], [.5, .5])
         self.assertEqual(pop.dvars(0).alleleNum[0], [500, 500])
         # can not use assertEqual for floating numbers in this case

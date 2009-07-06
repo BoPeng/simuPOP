@@ -126,7 +126,7 @@ class TestSelector(unittest.TestCase):
         #    p -> 1
         simu.evolve(
             [
-                stat( alleleFreq=[0], genoFreq=[0]),
+                stat( alleleFreq=[0], genoFreq=[0], vars='alleleFreq_sp'),
                 mapSelector(loci=0,
                     fitness={'0-0':1, '0-1':0.9, '1-1':.8}),
                 terminateIf('subPop[1]["alleleFreq"][0][0] < 0.4'),

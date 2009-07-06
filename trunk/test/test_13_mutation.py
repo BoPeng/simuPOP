@@ -121,7 +121,7 @@ class TestMutator(unittest.TestCase):
                 subPops=1)],
             gen = 100)
         pop = simu.extract(0)
-        Stat(pop, alleleFreq=range(5))
+        Stat(pop, alleleFreq=range(5), vars='alleleFreq_sp')
         for loc in [0, 2, 3]:
             self.assertEqual(pop.dvars(0).alleleFreq[loc][0], 1.0)
             self.assertEqual(pop.dvars(1).alleleFreq[loc][0], 1.0)

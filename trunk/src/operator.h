@@ -140,7 +140,7 @@ public:
 	///  CPPONLY If a subPopList is invalid (none), it will not be expanded.
 	void useSubPopsFrom(const population & pop)
 	{
-		DBG_ASSERT(m_subPops.empty(), SystemError,
+		DBG_FAILIF(m_expand && !m_subPops.empty(), SystemError,
 			"Only when no subpopulation is specified can this function be called."
 			"This is likely caused by the use of persistent subPops for different populations.");
 		if (m_expand)
