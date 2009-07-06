@@ -56,7 +56,7 @@ class TestPopulation(unittest.TestCase):
         self.assertEqual(pop.subPopSizes(), (20, 80) )
         self.assertEqual(pop.subPopIndPair(21), (1, 1) )
         self.assertRaises(exceptions.IndexError, pop.subPopIndPair, 200 )
-        Stat(pop, numOfMale=True)
+        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp'])
         pop.setVirtualSplitter(sexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMale)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemale)
@@ -780,7 +780,7 @@ class TestPopulation(unittest.TestCase):
         # with subPop
         pop = self.getPop(size=[20, 80], loci=[2, 4])
         InitByFreq(pop, [.2, .3, .5])
-        Stat(pop, alleleFreq=range(0, 6))
+        Stat(pop, alleleFreq=range(0, 6), vars='alleleFreq_sp')
         pop1 = pop.clone()
         self.assertEqual(len(pop.vars(0)["alleleFreq"]), 6)
         self.assertEqual(len(pop.dvars(1).alleleFreq), 6)
@@ -791,7 +791,7 @@ class TestPopulation(unittest.TestCase):
         'Testing sexSplitter::sexSplitter()'
         pop = population(size=[20, 80])
         InitByFreq(pop, [0.4, 0.6])
-        Stat(pop, numOfMale=True)
+        Stat(pop, numOfMale=True, vars=['numOfMale_sp', 'numOfFemale_sp'])
         pop.setVirtualSplitter(sexSplitter())
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfMale)
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfFemale)
@@ -817,7 +817,7 @@ class TestPopulation(unittest.TestCase):
         pop = population(size=[20, 80], loci=[1, 2])
         InitByFreq(pop, [0.4, 0.6])
         MaPenetrance(pop, loci=0, wildtype=0, penetrance=[0.2, 0.4, 0.8])
-        Stat(pop, numOfAffected=True)
+        Stat(pop, numOfAffected=True, vars=['numOfAffected_sp', 'numOfUnaffected_sp'])
         pop.setVirtualSplitter(affectionSplitter())
         self.assertEqual(pop.subPopSize([1, 1]), pop.dvars(1).numOfAffected)
         self.assertEqual(pop.subPopSize([1, 0]), pop.dvars(1).numOfUnaffected)
@@ -968,7 +968,7 @@ class TestPopulation(unittest.TestCase):
             self.assertEqual(ind.sex(), Male)
         for ind in pop.individuals([0, 3]):
             self.assertEqual(ind.sex(), Female)
-        Stat(pop, numOfMale=True)
+        Stat(pop, numOfMale=True, vars='numOfFemale_sp')
         self.assertEqual(pop.subPopSize([0, 3]), pop.dvars(0).numOfFemale)
 
 
