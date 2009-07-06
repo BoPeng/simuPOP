@@ -511,201 +511,30 @@ class statHeteroFreq
 private:
 #define HeteroNum_String        "heteroNum"
 #define HeteroFreq_String       "heteroFreq"
-#define AllHeteroNum_String     "HeteroNum"
-#define AllHeteroFreq_String    "HeteroFreq"
 #define HomoNum_String          "homoNum"
 #define HomoFreq_String         "homoFreq"
-
-	int locusIdx(UINT loc)
-	{
-		UINT idx = 0;
-
-		while (m_atLoci[idx] != loc && idx < m_atLoci.size() )
-			idx++;
-		DBG_ASSERT(m_atLoci[idx] == loc, ValueError,
-			"Can not find allele freq for locus " + toStr(loc));
-		return idx;
-	}
-
-
-	// the result layout is
-	//  loc 1, sup1
-	//  loc 2, sup1
-	//  ...
-	//  loc 1 , sup2
-	//  loc 2, sup2
-	//  ...
-	//  loc 1, summary
-	//  loc 2, summary
-	//  ...
-
-	int resIdx(int idx)                                                       // for summary
-	{
-		UINT numSP = m_heteroNum.size() / m_atLoci.size() - 1;
-
-		if (numSP == 1)
-			return idx;
-		else
-			return idx + numSP * m_atLoci.size();
-	}
-
-
-	int resIdx(int idx, UINT subPop)
-	{
-		DBG_ASSERT(subPop < m_heteroNum.size() / m_atLoci.size() - 1,
-			IndexError,
-			"Subpop index " + toStr(subPop) + " out of range of 0 ~ "
-			+ toStr(m_heteroNum.size() / m_atLoci.size() - 2));
-
-		return idx + subPop * m_atLoci.size();
-	}
-
+#define HeteroNum_sp_String     "heteroNum_sp"
+#define HeteroFreq_sp_String    "heteroFreq_sp"
+#define HomoNum_sp_String       "homoNum_sp"
+#define HomoFreq_sp_String      "homoFreq_sp"
 
 public:
-	statHeteroFreq(const vectorlu & heteroFreq = vectorlu(),
-		const vectorlu & homoFreq = vectorlu())
-		: m_atLoci(heteroFreq), m_ifPost(0),
-		m_postHetero(!heteroFreq.empty()), m_postHomo(!homoFreq.empty()),
-		m_heteroNum(0), m_heteroFreq(0), m_homoNum(0), m_homoFreq(0)
-	{
-		// add homofreq to m_atLoci
-		for (size_t i = 0; i < homoFreq.size(); ++i)
-			if (find(m_atLoci.begin(), m_atLoci.end(), homoFreq[i]) == m_atLoci.end())
-				m_atLoci.push_back(homoFreq[i]);
+	statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
+		 const subPopList & subPops, const stringList & vars);
+	
+	void addLocus(UINT locus, const subPopList & subPops = AllSubPops,
+		const stringList & vars = stringList());
 
-		// post result
-		m_ifPost.resize(m_atLoci.size(), 1);
-	}
-
-
-	void addLocus(UINT locus, bool post = false)
-	{
-		if (find(m_atLoci.begin(), m_atLoci.end(), locus) == m_atLoci.end() ) {
-			m_atLoci.push_back(locus);
-			// default not post result
-			m_ifPost.push_back(static_cast<int>(post));
-		}
-		m_postHetero = true;
-	}
-
-
-	int heteroNum(UINT allele, int loc)
-	{
-		UINT idx = locusIdx(loc);
-
-		vectori & hn = m_heteroNum[resIdx(idx)];
-
-		return allele < hn.size() ? hn[allele] : 0;
-	}
-
-
-	double heteroFreq(UINT allele, int loc)
-	{
-		UINT idx = locusIdx(loc);
-		vectorf & hf = m_heteroFreq[resIdx(idx)];
-
-		return allele < hf.size() ? hf[allele] : 0.;
-	}
-
-
-	int heteroNum(UINT allele, int loc, UINT subPop)
-	{
-		UINT idx = locusIdx(loc);
-		vectori & hn = m_heteroNum[resIdx(idx, subPop)];
-
-		return allele < hn.size() ? hn[allele] : 0;
-	}
-
-
-	double heteroFreq(UINT allele, int loc, UINT subPop)
-	{
-		UINT idx = locusIdx(loc);
-		vectorf & hf = m_heteroFreq[resIdx(idx, subPop)];
-
-		return allele < hf.size() ? hf[allele] : 0;
-	}
-
+	double heteroFreq(population & pop, UINT allele, int loc, vspID subPop);
 
 	bool apply(population & pop);
 
 private:
 	/// heteroFreq
-	vectorlu m_atLoci;
+	vectorlu m_loci;
 
-	///
-	vectori m_ifPost;
-
-	bool m_postHetero, m_postHomo;
-
-	/// hetero counter
-	intMatrix m_heteroNum;
-
-	/// hetero Freq
-	matrix m_heteroFreq;
-
-	/// expected heterozygosity
-	matrix m_expHetero;
-
-	/// homozygosity number and freq
-	intMatrix m_homoNum;
-
-	matrix m_homoFreq;
-};
-
-/// CPPONLY
-class statExpHetero
-{
-private:
-#define ExpHetero_String "expHetero"
-
-public:
-	statExpHetero(statAlleleFreq & alleleFreq, const vectorlu & expHetero = vectorlu(),
-		const strDict & param = strDict())
-		: m_alleleFreq(alleleFreq), m_atLoci(expHetero), m_expHetero(0),
-		m_midValues(false), m_evalInSubPop(true)
-	{
-		if (!param.empty()) {
-			strDict::const_iterator it;
-			strDict::const_iterator itEnd = param.end();
-			if ((it = param.find("subPop")) != itEnd)
-				m_evalInSubPop = it->second != 0.;
-			if ((it = param.find("midValues")) != itEnd)
-				m_midValues = it->second != 0.;
-		}
-		// add expected hetero to m_alleleFreq
-		for (size_t i = 0; i < expHetero.size(); ++i)
-			m_alleleFreq.addLocus(expHetero[i]);
-	}
-
-
-	/// CPPONLY: used for copy constructor
-	statExpHetero(statAlleleFreq & alleleFreq, const statExpHetero & rhs)
-		: m_alleleFreq(alleleFreq), m_atLoci(rhs.m_atLoci),
-		m_expHetero(rhs.m_expHetero), m_midValues(rhs.m_midValues),
-		m_evalInSubPop(rhs.m_evalInSubPop)
-	{
-
-	}
-
-
-	bool apply(population & pop);
-
-private:
-	/// need this to apply alleleFreq
-	statAlleleFreq & m_alleleFreq;
-
-	/// heteroFreq
-	vectorlu m_atLoci;
-
-	/// expected heterozygosity
-	matrix m_expHetero;
-
-	/// whether or not keep intermediate values
-	bool m_midValues;
-
-	/// whether or not calculate statistics for subpopulations
-	bool m_evalInSubPop;
-
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 // currently there is no need to expose the result.
@@ -730,7 +559,7 @@ public:
 
 private:
 	/// which genotypes
-	vectorlu m_atLoci;
+	vectorlu m_loci;
 
 	/// phase
 	bool m_phase;
@@ -993,7 +822,7 @@ public:
 	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
 		const statFst & rhs) :
 		m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq),
-		m_atLoci(rhs.m_atLoci), m_Fst(rhs.m_Fst),
+		m_loci(rhs.m_loci), m_Fst(rhs.m_Fst),
 		m_Fit(rhs.m_Fit), m_Fis(rhs.m_Fis),
 		m_avgFst(rhs.m_avgFst), m_avgFit(rhs.m_avgFit), m_avgFis(rhs.m_avgFis),
 		m_midValues(rhs.m_midValues),
@@ -1047,7 +876,7 @@ private:
 	statHeteroFreq & m_heteroFreq;
 
 	/// Fst
-	vectorlu m_atLoci;
+	vectorlu m_loci;
 
 	/// result
 	vectorf m_Fst, m_Fit, m_Fis;
@@ -1313,8 +1142,6 @@ public:
 		const uintList & alleleFreq = uintList(),
 		//
 		const uintList & heteroFreq = uintList(),
-		const uintList & expHetero = uintList(),
-		const strDict & expHetero_param = strDict(),
 		const uintList & homoFreq = uintList(),
 		//
 		const uintList & genoFreq = uintList(),
@@ -1375,7 +1202,6 @@ private:
 	statNumOfAffected m_numOfAffected;
 	statAlleleFreq m_alleleFreq;
 	statHeteroFreq m_heteroFreq;
-	statExpHetero m_expHetero;
 	statGenoFreq m_genoFreq;
 	statHaploFreq m_haploFreq;
 	statLD m_LD;
