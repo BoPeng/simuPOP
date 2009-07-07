@@ -798,6 +798,9 @@ public:
 	///CPPONLY
 	PyObject * setIntDictVar(const string & name, const intDict & val);
 
+	///CPPONLY
+	PyObject * setTupleDictVar(const string & name, const tupleDict & val);
+
 	/// CPPONLY
 	bool getVarAsBool(const string & name, bool nameError = true)
 	{

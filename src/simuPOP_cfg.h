@@ -302,6 +302,7 @@ typedef std::vector<std::vector<double > > matrix;
 using std::map;
 typedef std::map<string, double>           strDict;
 typedef std::map<int, double>              intDict;
+typedef std::map<vectori, double>          tupleDict;
 
 #define ValidPyObject(obj)   (obj != NULL && obj != Py_None)
 #define InvalidPyObject(obj) (obj == NULL || obj == Py_None)
@@ -316,7 +317,6 @@ public:
 	Exception(const string & msg) : m_msg(msg)
 	{
 	}
-
 
 	/// return error message
 	const char * message()

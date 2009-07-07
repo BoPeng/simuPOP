@@ -1344,6 +1344,11 @@ public:
 		return m_vars.setIntVectorVar(name, val);
 	}
 
+	///CPPONLY
+	PyObject * setTupleDictVar(const string & name, const tupleDict & val)
+	{
+		return m_vars.setTupleDictVar(name, val);
+	}
 
 	///CPPONLY
 	PyObject * setDoubleVectorVar(const string & name, const vectorf & val)

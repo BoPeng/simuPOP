@@ -6576,6 +6576,8 @@ Details:
 
 %ignore simuPOP::population::setIntVectorVar(const string &name, const vectori &val);
 
+%ignore simuPOP::population::setTupleDictVar(const string &name, const tupleDict &val);
+
 %ignore simuPOP::population::setDoubleVectorVar(const string &name, const vectorf &val);
 
 %ignore simuPOP::population::setStrDictVar(const string &name, const strDict &val);
@@ -8909,6 +8911,8 @@ Usage:
 
 %ignore simuPOP::SharedVariables::setIntDictVar(const string &name, const intDict &val);
 
+%ignore simuPOP::SharedVariables::setTupleDictVar(const string &name, const tupleDict &val);
+
 %ignore simuPOP::SharedVariables::getVarAsBool(const string &name, bool nameError=true);
 
 %ignore simuPOP::SharedVariables::getVarAsInt(const string &name, bool nameError=true);
@@ -9469,10 +9473,10 @@ Usage:
 
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      genoFreq_param={}, haploFreq=[], LD=[], LD_param={},
-      association=[], neutrality=[], Fst=[], Fst_param={}, HWE=[],
-      vars=[], output=\"\", stage=PostMating, begin=0, end=-1, step=1,
-      at=[], reps=AllReps, subPops=AllSubPops, infoFields=[])
+      haploFreq=[], LD=[], LD_param={}, association=[], neutrality=[],
+      Fst=[], Fst_param={}, HWE=[], vars=[], output=\"\",
+      stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
+      subPops=AllSubPops, infoFields=[])
 
 Details:
 
@@ -9589,7 +9593,26 @@ Details:
     *   heteroNum_sp: A dictionary of number of heterozygotes in each
     (virtual) subpopulation.
     *   homoNum_sp: A dictionary of number of homozygotes in each
-    (virtual) subpopulation.
+    (virtual) subpopulation.genoFreq: This parameter accept a list of
+    loci (by index) at which number and frequency of all genotypes are
+    outputed as a dictionary (indexed by loci indexes) of dictionaries
+    (indexed by tuples of possible indexes). This statistic is
+    available for all population types with genotype defined as
+    ordered alleles at a locus. The length of genotype is determined
+    by population ploidy. Because genotypes are ordered, (1, 0) and
+    (0, 1) (two possible genotypes in a diploid population) are
+    considered as different genotypes. This statistic outputs the
+    following variables:
+    *   genoFreq (default): A dictionary (by loci indexes) of
+    dictionaries (by genotype) of genotype frequencies. For example,
+    genoFreq[1][(1, 0)] is the frequency of genotype (1, 0) at locus
+    1.
+    *   genoNum (default): A dictionary of dictionaries of genotype
+    counts of all or specified (virtual) subpopulations.
+    *   genoFreq_sp: genotype frequency in each specified (virtual)
+    subpopulation.
+    *   genoFreq_sp: genotype count in each specified (virtual)
+    subpopulation.
 
 "; 
 
@@ -9778,7 +9801,7 @@ Usage:
 
 Usage:
 
-    statGenoFreq(genoFreq=[], param={})
+    statGenoFreq(genoFreq, subPops, vars)
 
 "; 
 

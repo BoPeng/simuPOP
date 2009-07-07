@@ -262,7 +262,7 @@ stat::stat(
 	const uintList & homoFreq,
 	//
 	const uintList & genoFreq,
-	const strDict & genoFreq_param,
+	//
 	const intMatrix & haploFreq,
 	//
 	const intMatrix & LD,
@@ -289,7 +289,7 @@ stat::stat(
 	m_numOfAffected(numOfAffected, subPops, vars),
 	m_alleleFreq(alleleFreq.elems(), subPops, vars),
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars),
-	m_genoFreq(genoFreq.elems(), genoFreq_param),
+	m_genoFreq(genoFreq.elems(), subPops, vars),
 	m_haploFreq(haploFreq),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	m_association(association.elems(), subPops),
@@ -821,6 +821,7 @@ bool statHeteroFreq::apply(population & pop)
 			pop.setIntDictVar(subPopVar_String(*it, HomoFreq_String), freq);
 		}
 	}
+	// for whole population.
 	if (m_vars.contains(HeteroNum_String))
 		pop.setIntDictVar(HeteroNum_String, allHeteroCnt);
 	if (m_vars.contains(HomoNum_String))
@@ -848,16 +849,16 @@ bool statHeteroFreq::apply(population & pop)
 }
 
 
-statGenoFreq::statGenoFreq(const vectorlu & genoFreq,
-	const strDict & param)
-	: m_loci(genoFreq), m_phase(false)
+statGenoFreq::statGenoFreq(const vectorlu & genoFreq, const subPopList & subPops, const stringList & vars)
+	: m_loci(genoFreq), m_subPops(subPops), m_vars()
 {
-	if (!param.empty()) {
-		strDict::const_iterator it;
-		strDict::const_iterator itEnd = param.end();
-		if ((it = param.find("phase")) != itEnd)
-			m_phase = it->second != 0.;
-	}
+	const char * allowedVars[] = {
+		GenotypeNum_String,    GenotypeFreq_String,
+		GenotypeNum_sp_String, GenotypeFreq_sp_String,""
+	};
+	const char * defaultVars[] = { GenotypeFreq_String, GenotypeNum_String, "" };
+
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
 
@@ -866,108 +867,88 @@ bool statGenoFreq::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	DBG_ASSERT(pop.ploidy() == 2, ValueError,
-		"Genotype can only be calcualted for diploid populations.");
+	DBG_DO(DBG_STATOR, cout << "Calculated genotype frequency for loci " << m_loci << endl);
 
-	UINT numSP = pop.numSubPop();
-	ULONG popSize = pop.popSize();
+	// count for all specified subpopulations
+	vector<tupleDict> genotypeCnt(m_loci.size());
+	vectorlu allGenotypeCnt(m_loci.size(), 0);
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	UINT ply = pop.ploidy();
+	for (; it != itEnd; ++it) {
+		if (m_vars.contains(GenotypeNum_sp_String))
+			pop.removeVar(subPopVar_String(*it, GenotypeNum_String));
+		if (m_vars.contains(GenotypeFreq_sp_String))
+			pop.removeVar(subPopVar_String(*it, GenotypeFreq_String));
 
-	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd;  ++i) {
-		if (static_cast<UINT>(m_loci[i]) >= pop.totNumLoci() )
-			throw IndexError("Absolute locus index "
-				+ toStr(m_loci[i]) + " is out of range of 0 ~ "
-				+ toStr(pop.totNumLoci() - 1));
-	}
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
 
-	// first remove genoNum that may be set by previous count.
-	// for example if genoNum[a][10] was set but this time there
-	// is no allele 10, we will not reset genoNum[a][10] ...
-	pop.removeVar(GenotypeNum_String);
-	pop.removeVar(GenotypeFreq_String);
-	for (UINT sp = 0; sp < numSP;  ++sp) {
-		// remove genoNum, genoFreq that may be set by previous run.
-		pop.removeVar(subPopVar_String(sp, GenotypeNum_String));
-		pop.removeVar(subPopVar_String(sp, GenotypeFreq_String));
-	}
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
 
-	string varname;
+			tupleDict genotypes;
+			size_t allGenotypes = 0;
 
-	// deal with genotype
-	for (size_t i = 0, iEnd = m_loci.size(); i < iEnd;  ++i) {
-		// for each locus, we need to use a vector of dictionaries.
-		vector<intDict> sum;
-
-		UINT loc = m_loci[i];
-
-#ifndef BINARYALLELE
-		Allele a, b;
-#else
-		unsigned short a, b;
-#endif
-
-		// for each subpopulation
-		for (UINT sp = 0; sp < numSP;  ++sp) {
-			DBG_DO(DBG_STATOR, cout << "Counting genotypes at locus " <<
-				loc << " subPop " << sp << endl);
-
-			vector<intDict> num;
-
-			// go through a single allele for all individual, all diploid
-			IndIterator it = pop.indIterator(sp);
-			for (; it.valid(); ++it) {
-				a = it->allele(loc, 0);
-				b = it->allele(loc, 1);
-				if (!m_phase && a > b)
-					std::swap(a, b);
-
-				if (a >= num.size() )
-					num.resize(a + 1);
-
-				num[a][b]++;
-
-				if (a >= sum.size() )
-					sum.resize(a + 1);
-
-				sum[a][b]++;
+			// go through all alleles
+			IndIterator ind = pop.indIterator(it->subPop());
+			for (; ind.valid(); ++ind) {
+				vectori genotype(ply);
+				for (size_t p = 0; p < ply; ++p)
+					genotype[p] = ind->allele(loc, p);
+				genotypes[genotype]++;
+				allGenotypes++;
 			}
-
-			// register values for this subpopulation
-			for (a = 0; a < num.size(); ++a) {
-				// need to replace previous values
-				// if( num[a].empty() )
-				//   continue;
-
-				// empty dictionary should be allowed
-				varname = subPopVar_String(sp, GenotypeNum_String) +
-				          + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
-				pop.setIntDictVar(varname, num[a]);
-
-				// apply frequency
-				for (intDict::iterator it = num[a].begin(), itEnd = num[a].end(); it != itEnd; ++it)
-					it->second = it->second / pop.subPopSize(sp);
-
-				varname = subPopVar_String(sp, GenotypeFreq_String) +
-				          + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
-				pop.setIntDictVar(varname, num[a]);
+			// total allele count
+			tupleDict::iterator dct = genotypes.begin();
+			tupleDict::iterator dctEnd = genotypes.end();
+			for (; dct != dctEnd; ++dct)
+				genotypeCnt[idx][dct->first] += dct->second;
+			allGenotypeCnt[idx] += allGenotypes;
+			// output variable.
+			if (m_vars.contains(GenotypeNum_sp_String))
+				pop.setTupleDictVar(subPopVar_String(*it, GenotypeNum_String) + "{" + toStr(loc) + "}", genotypes);
+			// note that genotyeps is changed in place.
+			if (m_vars.contains(GenotypeFreq_sp_String)) {
+				if (allGenotypes != 0) {
+					tupleDict::iterator dct = genotypes.begin();
+					tupleDict::iterator dctEnd = genotypes.end();
+					for (; dct != dctEnd; ++dct)
+						dct->second /= allGenotypes;
+				}
+				pop.setTupleDictVar(subPopVar_String(*it, GenotypeFreq_String) + "{" + toStr(loc) + "}", genotypes);
 			}
 		}
+		if (it->isVirtual())
+			pop.deactivateVirtualSubPop(it->subPop());
+	}
 
-		for (a = 0; a < sum.size(); ++a) {
-			// if( sum[a].empty() )
-			//  continue;
-
-			// empty dictionary should be allowed
-			varname = toStr(GenotypeNum_String) + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
-			pop.setIntDictVar(varname, sum[a]);
-
-			// apply frequency
-			for (intDict::iterator it = sum[a].begin(), itEnd = sum[a].end(); it != itEnd; ++it)
-				it->second = it->second / popSize;
-
-			varname = toStr(GenotypeFreq_String) + "[" + toStr(loc) + "][" + toStr(int(a)) + "]";
-			pop.setIntDictVar(varname, sum[a]);
+	if (m_vars.contains(GenotypeNum_String)) {
+		pop.removeVar(GenotypeNum_String);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx)
+			pop.setTupleDictVar(string(GenotypeNum_String) + "{" + toStr(m_loci[idx]) + "}",
+				genotypeCnt[idx]);
+	}
+	// note that genotyeCnt[idx] is changed in place.
+	if (m_vars.contains(GenotypeFreq_String)) {
+		pop.removeVar(GenotypeFreq_String);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
+			cout << "G " << allGenotypeCnt << " S" << genotypeCnt[idx].size() << endl;
+			if (allGenotypeCnt[idx] != 0) {
+				tupleDict::iterator dct = genotypeCnt[idx].begin();
+				tupleDict::iterator dctEnd = genotypeCnt[idx].end();
+				for (; dct != dctEnd; ++dct)
+					dct->second /= allGenotypeCnt[idx];
+			}
+			pop.setTupleDictVar(string(GenotypeFreq_String) + "{" + toStr(loc) + "}",
+				genotypeCnt[idx]);
 		}
 	}
+
 	return true;
 }
 

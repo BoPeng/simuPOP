@@ -1088,6 +1088,26 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 	return setVar(name, obj);
 }
 
+PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict & val)
+{
+	PyObject * obj = PyDict_New();
+	PyObject * u, * v;
+
+	tupleDict::const_iterator it = val.begin();
+	tupleDict::const_iterator itEnd = val.end();
+	for (; it != itEnd; ++it) {
+		const vectori & key = it->first;
+		u = PyTuple_New(key.size());
+		for (size_t i =; i < key.size(); ++i)
+			PyTuple_SetItem(u, i, PyInt_FromLong(key[i]));
+		v = PyFloat_FromDouble(it->second);
+		PyDict_SetItem(obj, u, v);
+		Py_XDECREF(u);
+		Py_XDECREF(v);
+	}
+	return setVar(name, obj);
+}
+
 
 void save_none(string & str)
 {
