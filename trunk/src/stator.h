@@ -547,18 +547,19 @@ private:
 	stringList m_vars;
 };
 
-// currently there is no need to expose the result.
-// may add that later.
+
 /// CPPONLY
 class statGenoFreq
 {
 private:
-#define  GenotypeNum_String   "genoNum"
-#define  GenotypeFreq_String  "genoFreq"
+#define  GenotypeNum_String      "genoNum"
+#define  GenotypeFreq_String     "genoFreq"
+#define  GenotypeNum_sp_String   "genoNum_sp"
+#define  GenotypeFreq_sp_String  "genoFreq_sp"
 
 public:
-	statGenoFreq(const vectorlu & genoFreq = vectorlu(),
-		const strDict & param = strDict());
+	statGenoFreq(const vectorlu & genoFreq,
+		const subPopList & subPops, const stringList & vars);
 
 	// Return AA, Aa and aa, wild type is A.
 	vectorlu countGenotype(population & pop, UINT loc, UINT wildtype);
@@ -571,8 +572,8 @@ private:
 	/// which genotypes
 	vectorlu m_loci;
 
-	/// phase
-	bool m_phase;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
@@ -1068,6 +1069,25 @@ public:
 	 *  \li \c homoNum_sp: A dictionary of number of homozygotes in each
 	 *       (virtual) subpopulation.
 	 *
+	 *  <b>genoFreq</b>: This parameter accept a list of loci (by index) at
+	 *  which number and frequency of all genotypes are outputed as a
+	 *  dictionary (indexed by loci indexes) of dictionaries (indexed by tuples
+	 *  of possible indexes). This statistic is available for all population
+	 *  types with genotype defined as ordered alleles at a locus. The length of
+	 *  genotype is determined by population ploidy. Because genotypes are
+	 *  ordered, <tt>(1, 0)</tt> and <tt>(0, 1)</tt> (two possible genotypes in
+	 *  a diploid population) are considered as different genotypes. This
+	 *  statistic outputs the following variables:
+	 *  \li \c genoFreq (default): A dictionary (by loci indexes) of
+	 *       dictionaries (by genotype) of genotype frequencies. For example,
+	 *       <tt>genoFreq[1][(1, 0)]</tt> is the frequency of genotype (1, 0)
+	 *       at locus 1.
+	 *  \li \c genoNum (default): A dictionary of dictionaries of genotype
+	 *       counts of all or specified (virtual) subpopulations.
+	 *  \li \c genoFreq_sp: genotype frequency in each specified (virtual)
+	 *      subpopulation.
+	 *  \li \c genoFreq_sp: genotype count in each specified (virtual)
+	 *      subpopulation.
 	 **/
 	stat(bool popSize = false,
 		//
@@ -1081,7 +1101,7 @@ public:
 		const uintList & homoFreq = uintList(),
 		//
 		const uintList & genoFreq = uintList(),
-		const strDict & genoFreq_param = strDict(),
+		//
 		const intMatrix & haploFreq = intMatrix(),
 		//
 		const intMatrix & LD = intMatrix(),
