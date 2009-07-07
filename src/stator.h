@@ -580,16 +580,22 @@ private:
 class statHaploFreq
 {
 private:
-#define  HaplotypeNum_String    "haploNum"
-#define  HaplotypeFreq_String   "haploFreq"
-	int haploIndex(const vectori & haplo);
+#define  HaplotypeNum_String       "haploNum"
+#define  HaplotypeFreq_String      "haploFreq"
+#define  HaplotypeNum_sp_String    "haploNum_sp"
+#define  HaplotypeFreq_sp_String   "haploFreq_sp"
 
 public:
-	statHaploFreq(const intMatrix & haploFreq = intMatrix())
-		: m_haplotypes(haploFreq), m_ifPost(haploFreq.size())
+	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops, const stringList & vars)
+		: m_loci(haploFreq), m_subPops(subPops), m_vars()
 	{
-		for (size_t i = 0; i < haploFreq.size(); ++i)
-			m_ifPost[i] = 1;
+		const char * allowedVars[] = {
+			HaplotypeNum_String,	HaplotypeFreq_String,
+			HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
+		};
+		const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
 
 
@@ -598,72 +604,23 @@ public:
 	}
 
 
-	void addHaplotype(const vectori & haplo, bool post = false);
-
-	int numOfHaplotypes(const vectori & haplo)
-	{
-		// first locate haplo
-		UINT idx = haploIndex(haplo);
-
-		return m_haploNum[idx + m_haploNum.size() -
-		                  m_haplotypes.size()].size();
-	}
-
-
-	int numOfHaplotypes(const vectori & haplo, UINT subPop)
-	{
-		// first locate haplo
-		UINT idx = haploIndex(haplo);
-
-		return m_haploNum[idx + subPop * m_haplotypes.size()].size();
-	}
-
-
-	map<vectori, UINT> & haploNum(const vectori & haplo)
-	{
-		UINT idx = haploIndex(haplo);
-
-		return m_haploNum[idx + m_haploNum.size() - m_haplotypes.size() ];
-	}
-
-
-	map<vectori, double> & haploFreq(const vectori & haplo)
-	{
-		UINT idx = haploIndex(haplo);
-
-		return m_haploFreq[idx + m_haploNum.size() - m_haplotypes.size() ];
-	}
-
-
-	map<vectori, UINT> & haploNum(const vectori & haplo, UINT subPop)
-	{
-		UINT idx = haploIndex(haplo);
-
-		return m_haploNum[idx + subPop * m_haplotypes.size() ];
-	}
-
-
-	map<vectori, double> & haploFreq(const vectori & haplo, UINT subPop)
-	{
-		UINT idx = haploIndex(haplo);
-
-		return m_haploFreq[idx + subPop * m_haplotypes.size() ];
-	}
-
-
 	bool apply(population & pop);
 
+	void addHaplotype(const vectori & loci, const subPopList & subPops,
+		const stringList & vars);
+
+	tupleDict haploFreq(population & pop, const vectori & loci, vspID subPop = vspID());
+
 private:
-	/// which haplotypes
-	intMatrix m_haplotypes;
+	// key string (in the format of a tuple)
+	string dictKey(const vectori & loci);
 
-	vectori m_ifPost;
+private:
+	/// haplotype at which loci
+	intMatrix m_loci;
 
-	/// keep results
-	vector< map< vectori, UINT> > m_haploNum;
-
-	/// keep result
-	vector< map< vectori, double> > m_haploFreq;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
@@ -1088,6 +1045,29 @@ public:
 	 *      subpopulation.
 	 *  \li \c genoFreq_sp: genotype count in each specified (virtual)
 	 *      subpopulation.
+	 *
+	 *  <b>haploFreq</b>: This parameter accepts one or more lists of loci (by
+	 *  index) at which number and frequency of haplotypes are outputted as
+	 *  dictionaries. <tt>[(1,2)]</tt> can be abbreviated to <tt>(1,2)</tt>.
+	 *  For example, using parameter <tt>haploFreq=(1,2,4)</tt>, all haplotypes
+	 *  at these three loci are counted. Results are saved in variables such as
+	 *  <tt>haploFreq[(1,2,4)][(1,1,0)]</tt> (frequency of haplotype (1,1,0)).
+	 *  This statistic works for all population types. Number of haplotypes for
+	 *  each individual equals to his/her ploidy number. Haplodiploid
+	 *  populations are supported in the sense that the second homologous copy
+	 *  of the haplotype is not counted for male individuals. This statistic
+	 *  outputs the following variables:
+	 *  \li \c haploFreq (default): A dictionary (with tuples of loci indexes
+	 *       as keys) of dictionaries of haplotype frequencies. For example,
+	 *       <tt>haploFreq[(0, 1)][(1,1)]</tt> records the frequency of
+	 *       haplotype <tt>(1,1)</tt> at loci <tt>(0, 1)</tt> in all or
+	 *       specified (virtual) subpopulations.
+	 *  \li \c haploNum (default): A dictionary of dictionaries of haplotype
+	 *       counts in all or specified (virtual) subpopulations.
+	 *  \li \c haploFreq_sp: Halptype frequencies in each (virtual)
+	 *       subpopulation.
+	 *  \li \c haploNum_sp: Halptype count in each (virtual) subpopulation.
+	 *
 	 **/
 	stat(bool popSize = false,
 		//

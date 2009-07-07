@@ -250,20 +250,20 @@ class TestStat(unittest.TestCase):
         if AlleleType() == 'binary':
             InitByValue(pop, value=[[0]*10,[1]*10], proportions=[.3,.7])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
-            assert abs(pop.dvars().haploFreq['0-1-5']['0-0-0'] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq['0-1-5']['1-1-1'] - 0.7) < 0.05
-            assert abs(pop.dvars().haploFreq['2-5']['0-0'] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq['2-5']['1-1'] - 0.7) < 0.05
+            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(0, 0, 0)] - 0.3) < 0.05
+            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.7) < 0.05
+            assert abs(pop.dvars().haploFreq[(2, 5)][(0, 0)] - 0.3) < 0.05
+            assert abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.7) < 0.05
         else:
             InitByValue(pop, value=[[1]*10,[2]*10,[3]*10],
                 proportions=[.2,.3,.5])
             Stat(pop, haploFreq=[[0,1,5],[2,5]])
-            assert abs(pop.dvars().haploFreq['0-1-5']['1-1-1'] - 0.2) < 0.05
-            assert abs(pop.dvars().haploFreq['0-1-5']['2-2-2'] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq['0-1-5']['3-3-3'] - 0.5) < 0.05
-            assert abs(pop.dvars().haploFreq['2-5']['1-1'] - 0.2) < 0.05
-            assert abs(pop.dvars().haploFreq['2-5']['2-2'] - 0.3) < 0.05
-            assert abs(pop.dvars().haploFreq['2-5']['3-3'] - 0.5) < 0.05
+            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(1, 1, 1)] - 0.2) < 0.05
+            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(2, 2, 2)] - 0.3) < 0.05
+            assert abs(pop.dvars().haploFreq[(0, 1, 5)][(3, 3, 3)] - 0.5) < 0.05
+            assert abs(pop.dvars().haploFreq[(2, 5)][(1, 1)] - 0.2) < 0.05
+            assert abs(pop.dvars().haploFreq[(2, 5)][(2, 2)] - 0.3) < 0.05
+            assert abs(pop.dvars().haploFreq[(2, 5)][(3, 3)] - 0.5) < 0.05
 
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'

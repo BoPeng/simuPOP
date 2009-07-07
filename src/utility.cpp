@@ -334,25 +334,26 @@ void stringList::addString(PyObject * str)
 
 
 void stringList::obtainFrom(const stringList & items, const char * allowedItems[],
-        const char * defaultItems[])
+                            const char * defaultItems[])
 {
-    if (items.empty()) {
-        for (size_t i = 0; defaultItems[i][0]; ++i)
-            m_elems.push_back(defaultItems[i]);
-        return;
-    }
-    stringList allowed;
-    for (size_t i = 0; allowedItems[i][0]; ++i)
-        allowed.m_elems.push_back(allowedItems[i]);
-    vectorstr::const_iterator it = items.elems().begin();
-    vectorstr::const_iterator itEnd = items.elems().end();
-    for (; it != itEnd; ++it)
-        if (allowed.contains(*it))
-            m_elems.push_back(*it);
-    if (m_elems.empty())
-        for (size_t i = 0; defaultItems[i][0]; ++i)
-            m_elems.push_back(defaultItems[i]);
+	if (items.empty()) {
+		for (size_t i = 0; defaultItems[i][0]; ++i)
+			m_elems.push_back(defaultItems[i]);
+		return;
+	}
+	stringList allowed;
+	for (size_t i = 0; allowedItems[i][0]; ++i)
+		allowed.m_elems.push_back(allowedItems[i]);
+	vectorstr::const_iterator it = items.elems().begin();
+	vectorstr::const_iterator itEnd = items.elems().end();
+	for (; it != itEnd; ++it)
+		if (allowed.contains(*it))
+			m_elems.push_back(*it);
+	if (m_elems.empty())
+		for (size_t i = 0; defaultItems[i][0]; ++i)
+			m_elems.push_back(defaultItems[i]);
 }
+
 
 //
 // shared variables
@@ -546,6 +547,39 @@ void PyObj_As_IntDict(PyObject * obj, intDict & val)
 		PyObj_As_Double(PyList_GetItem(vals, i), v);
 
 		val.insert(intDict::value_type(k, v));
+	}
+	Py_XDECREF(keys);
+	Py_XDECREF(vals);
+}
+
+
+void PyObj_As_TupleDict(PyObject * obj, tupleDict & val)
+{
+	if (obj == NULL) {
+		val = tupleDict();
+		return;
+	}
+
+	if (!PyMapping_Check(obj) )
+		throw ValueError("Return value can not be converted to dictionary");
+
+	// get key and vals
+	PyObject * keys = PyMapping_Keys(obj);
+	PyObject * vals = PyMapping_Values(obj);
+
+	// number of items
+	UINT sz = PyList_Size(keys);
+
+	val.clear();
+
+	// assign values
+	for (size_t i = 0; i < sz; ++i) {
+		vectori k;
+		double v;
+		PyObj_As_IntArray(PyList_GetItem(keys, i), k);
+		PyObj_As_Double(PyList_GetItem(vals, i), v);
+
+		val.insert(tupleDict::value_type(k, v));
 	}
 	Py_XDECREF(keys);
 	Py_XDECREF(vals);
@@ -750,16 +784,14 @@ next:
 		if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
 		else if (keyType == 1) {
-			size_t j = s + 1;
-			for (; j < i && name[j] != ','; ++j) ;
-			DBG_ASSERT(name[j] == ',', ValueError, "Tuple key must have two elements.");
-			PyObject * sp = PyInt_FromString(const_cast<char *>(name.substr(s + 1, j - s - 1).c_str()), NULL, 0);
-			PyObject * vsp = PyInt_FromString(const_cast<char *>(name.substr(j + 1, i - j - 2).c_str()), NULL, 0);
-			DBG_FAILIF(sp == NULL, ValueError, "Failed to obtain subpopulation index from tuple index");
-			DBG_FAILIF(vsp == NULL, ValueError, "Failed to obtain virtual subpopulation index from tuple index");
-			childKey = Py_BuildValue("(OO)", sp, vsp);
-			Py_DECREF(sp);
-			Py_DECREF(vsp);
+			vectori key;
+			for (size_t j = s + 1, k = j; j < i; j = k + 1) {
+				for (k = j + 1; k < i && name[k] != ',' && name[k] != ')'; ++k) ;
+				key.push_back(atoi(name.substr(j, k - j).c_str()));
+			}
+			childKey = PyTuple_New(key.size());
+			for (size_t j = 0; j < key.size(); ++j)
+				PyTuple_SetItem(childKey, j, PyInt_FromLong(key[j]));
 		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
 		// not exist
@@ -877,16 +909,14 @@ next:
 		if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
 		else if (keyType == 1) {
-			size_t j = s + 1;
-			for (; j < i && name[j] != ','; ++j) ;
-			DBG_ASSERT(name[j] == ',', ValueError, "Tuple key must have two elements.");
-			PyObject * sp = PyInt_FromString(const_cast<char *>(name.substr(s + 1, j - s - 1).c_str()), NULL, 0);
-			PyObject * vsp = PyInt_FromString(const_cast<char *>(name.substr(j + 1, i - j - 2).c_str()), NULL, 0);
-			DBG_FAILIF(sp == NULL, ValueError, "Failed to obtain subpopulation index from tuple index");
-			DBG_FAILIF(vsp == NULL, ValueError, "Failed to obtain virtual subpopulation index from tuple index");
-			childKey = Py_BuildValue("(OO)", sp, vsp);
-			Py_DECREF(sp);
-			Py_DECREF(vsp);
+			vectori key;
+			for (size_t j = s + 1, k = j; j < i; j = k + 1) {
+				for (k = j + 1; k < i && name[k] != ',' && name[k] != ')'; ++k) ;
+				key.push_back(atoi(name.substr(j, k - j).c_str()));
+			}
+			childKey = PyTuple_New(key.size());
+			for (size_t j = 0; j < key.size(); ++j)
+				PyTuple_SetItem(childKey, j, PyInt_FromLong(key[j]));
 		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
 
@@ -1088,6 +1118,7 @@ PyObject * SharedVariables::setIntDictVar(const string & name, const intDict & v
 	return setVar(name, obj);
 }
 
+
 PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict & val)
 {
 	PyObject * obj = PyDict_New();
@@ -1095,6 +1126,7 @@ PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict
 
 	tupleDict::const_iterator it = val.begin();
 	tupleDict::const_iterator itEnd = val.end();
+
 	for (; it != itEnd; ++it) {
 		const vectori & key = it->first;
 		u = PyTuple_New(key.size());

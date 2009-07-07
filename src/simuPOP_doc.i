@@ -9612,7 +9612,26 @@ Details:
     *   genoFreq_sp: genotype frequency in each specified (virtual)
     subpopulation.
     *   genoFreq_sp: genotype count in each specified (virtual)
+    subpopulation.haploFreq: This parameter accepts one or more lists
+    of loci (by index) at which number and frequency of haplotypes are
+    outputted as dictionaries. [(1,2)] can be abbreviated to (1,2).
+    For example, using parameter haploFreq=(1,2,4), all haplotypes at
+    these three loci are counted. Results are saved in variables such
+    as haploFreq[(1,2,4)][(1,1,0)] (frequency of haplotype (1,1,0)).
+    This statistic works for all population types. Number of
+    haplotypes for each individual equals to his/her ploidy number.
+    Haplodiploid populations are supported in the sense that the
+    second homologous copy of the haplotype is not counted for male
+    individuals. This statistic outputs the following variables:
+    *   haploFreq (default): A dictionary (with tuples of loci indexes
+    as keys) of dictionaries of haplotype frequencies. For example,
+    haploFreq[(0, 1)][(1,1)] records the frequency of haplotype (1,1)
+    at loci (0, 1) in all or specified (virtual) subpopulations.
+    *   haploNum (default): A dictionary of dictionaries of haplotype
+    counts in all or specified (virtual) subpopulations.
+    *   haploFreq_sp: Halptype frequencies in each (virtual)
     subpopulation.
+    *   haploNum_sp: Halptype count in each (virtual) subpopulation.
 
 "; 
 
@@ -9827,7 +9846,7 @@ Usage:
 
 Usage:
 
-    statHaploFreq(haploFreq=[])
+    statHaploFreq(haploFreq, subPops, vars)
 
 "; 
 
@@ -9839,27 +9858,19 @@ Usage:
 
 "; 
 
+%feature("docstring") simuPOP::statHaploFreq::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
 %feature("docstring") simuPOP::statHaploFreq::addHaplotype "
 
 Usage:
 
-    x.addHaplotype(haplo, post=False)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::numOfHaplotypes "
-
-Usage:
-
-    x.numOfHaplotypes(haplo)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::haploNum "
-
-Usage:
-
-    x.haploNum(haplo)
+    x.addHaplotype(loci, subPops, vars)
 
 "; 
 
@@ -9867,15 +9878,7 @@ Usage:
 
 Usage:
 
-    x.haploFreq(haplo)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::apply "
-
-Usage:
-
-    x.apply(pop)
+    x.haploFreq(pop, loci, subPop=[])
 
 "; 
 
@@ -10838,6 +10841,8 @@ Details:
 %ignore simuPOP::PyObj_As_StrDict(PyObject *obj, strDict &val);
 
 %ignore simuPOP::PyObj_As_IntDict(PyObject *obj, intDict &val);
+
+%ignore simuPOP::PyObj_As_TupleDict(PyObject *obj, tupleDict &val);
 
 %ignore simuPOP::PyObj_Is_IntNumArray(PyObject *obj);
 
