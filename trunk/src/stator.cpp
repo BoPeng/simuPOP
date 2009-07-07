@@ -290,7 +290,7 @@ stat::stat(
 	m_alleleFreq(alleleFreq.elems(), subPops, vars),
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars),
 	m_genoFreq(genoFreq.elems(), subPops, vars),
-	m_haploFreq(haploFreq),
+	m_haploFreq(haploFreq, subPops, vars),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	m_association(association.elems(), subPops),
 	m_neutrality(neutrality.elems(), subPops),
@@ -1013,131 +1013,154 @@ vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, SubPopID subPop
 }
 
 
-int statHaploFreq::haploIndex(const vectori & haplo)
+string statHaploFreq::dictKey(const vectori & loci)
 {
-	// first locate haplo
-	UINT idx = 0;
+	string key = "(";
 
-	while (m_haplotypes[idx] != haplo && idx < m_haplotypes.size())
-		idx++;
-
-	DBG_ASSERT(idx != m_haplotypes.size(), ValueError,
-		"Can not find haplotype " + toStr(haplo[0]) + ", " + toStr(haplo[1]));
-	return idx;
+	for (size_t i = 0; i < loci.size(); ++i) {
+		if (i != 0)
+			key += ",";
+		key += toStr(loci[i]);
+	}
+	key += ")";
+	return key;
 }
 
 
-void statHaploFreq::addHaplotype(const vectori & haplo, bool post)
+void statHaploFreq::addHaplotype(const vectori & loci,
+                                 const subPopList & subPops, const stringList & vars)
 {
-	intMatrix::iterator it;
+	if (find(m_loci.begin(), m_loci.end(), loci) == m_loci.end())
+		m_loci.push_back(loci);
+	//
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	for (; it != itEnd; ++it)
+		if (!m_subPops.contains(*it))
+			m_subPops.push_back(*it);
+	//
+	vectorstr::const_iterator vit = vars.elems().begin();
+	vectorstr::const_iterator vitEnd = vars.elems().end();
+	for (; vit != vitEnd; ++vit)
+		if (!m_vars.contains(*vit))
+			m_vars.push_back(*vit);
+}
 
-	if ((it = find(m_haplotypes.begin(), m_haplotypes.end(), haplo)) == m_haplotypes.end()) {
-		m_haplotypes.push_back(haplo);
-		m_ifPost.push_back(static_cast<int>(post));
-	} else
-		m_ifPost[it - m_haplotypes.begin()] |= static_cast<int>(post);
+
+tupleDict statHaploFreq::haploFreq(population & pop, const vectori & loci, vspID subPop)
+{
+	string key = dictKey(loci);
+
+	string varname;
+
+	if (subPop.valid())
+		varname = subPopVar_String(subPop, HaplotypeFreq_String) + "{" + key + "}";
+	else
+		varname = string(HaplotypeFreq_String) + "{" + key + "}";
+	PyObject * d = pop.getVar(varname);
+	tupleDict res;
+	PyObj_As_TupleDict(d, res);
+	return res;
 }
 
 
 bool statHaploFreq::apply(population & pop)
 {
-	if (m_haplotypes.empty())
+	if (m_loci.empty())
 		return true;
 
-	pop.removeVar(HaplotypeNum_String);
-	pop.removeVar(HaplotypeFreq_String);
-	for (UINT sp = 0; sp < pop.numSubPop(); ++sp) {
-		pop.removeVar(subPopVar_String(sp, HaplotypeNum_String));
-		pop.removeVar(subPopVar_String(sp, HaplotypeFreq_String));
-	}
+	DBG_DO(DBG_STATOR, cout << "Calculated haplotype frequency for loci " << m_loci << endl);
 
-	UINT nHap = m_haplotypes.size();
+	// count for all specified subpopulations
+	vector<tupleDict> haplotypeCnt(m_loci.size());
+	vectorlu allHaplotypeCnt(m_loci.size());
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	UINT ply = pop.ploidy();
+	for (; it != itEnd; ++it) {
+		if (m_vars.contains(HaplotypeNum_sp_String))
+			pop.removeVar(subPopVar_String(*it, HaplotypeNum_String));
+		if (m_vars.contains(HaplotypeFreq_sp_String))
+			pop.removeVar(subPopVar_String(*it, HaplotypeFreq_String));
 
-	// first time?
-	if (m_haploNum.size() != (pop.numSubPop() + 1) * nHap) {
-		for (size_t i = 0; i < nHap;  ++i) {
-			vectori & haplotype = m_haplotypes[i];
-			size_t sz = haplotype.size();
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
 
-			if (sz == 0)
-				throw ValueError("has to specify some haplotype.");
-			else if (sz == 1)
-				throw ValueError("Haplotype must contain alleles from more than one locus.");
-		}
-		m_haploNum.resize( (pop.numSubPop() + 1) * nHap);
-		m_haploFreq.resize( (pop.numSubPop() + 1) * nHap);
-	}
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			const vectori & loci = m_loci[idx];
+			UINT nLoci = loci.size();
 
-	UINT numSP = pop.numSubPop();
+			string key = dictKey(loci);
 
-	DBG_DO(DBG_STATOR, cout << "Counting haplotypes" << endl);
+			tupleDict haplotypes;
+			size_t allHaplotypes = 0;
 
-	// clear all statistics
-	for (size_t h = 0; h < nHap * (numSP + 1); ++h) {
-		m_haploNum[h].clear();
-		m_haploFreq[h].clear();
-	}
-
-	// for each subpopulation
-	for (UINT sp = 0; sp < numSP;  ++sp) {
-		for (size_t h = 0; h < nHap; ++h) {
-			vectori & haplotype = m_haplotypes[h];
-			map< vectori, UINT> & count = m_haploNum[h + sp * nHap];
-			map< vectori, UINT> & sum = m_haploNum[h + numSP * nHap];
-
-			size_t sz = haplotype.size();
-
-			vectori sampleHap(sz);
-
-			IndAlleleIterator it = pop.alleleIterator(0, sp);
-			for (; it.valid(); ++it) {
-				for (size_t hap = 0; hap < sz; ++hap)
-					sampleHap[hap] = *(it.ptr() + haplotype[hap]);
-
-				// add sampleHap count
-				count[sampleHap]++;
-				sum[sampleHap]++;
-			}
-		}
-	}
-	// finish count
-
-	// calculate haploFreq,
-	// for each subpopulation
-	for (UINT sp = 0; sp < numSP;  ++sp) {
-		// record both num and freq
-		string varNumName = subPopVar_String(sp, HaplotypeNum_String);
-		string varFreqName = subPopVar_String(sp, HaplotypeFreq_String);
-		for (size_t h = 0; h < nHap; ++h) {
-			vectori & haplotype = m_haplotypes[h];
-			map< vectori, UINT> & count = m_haploNum[h + sp * nHap];
-			map< vectori, double> & freq = m_haploFreq[h + sp * nHap];
-
-			for (map<vectori, UINT>::iterator it = count.begin(); it != count.end(); ++it) {
-				freq[ it->first] = double(it->second) / (pop.subPopSize(sp) * pop.ploidy());
-				if (m_ifPost[h]) {
-					pop.setIntVar(varNumName + haploKey(haplotype) + haploKey(it->first), it->second);
-					pop.setDoubleVar(varFreqName + haploKey(haplotype) + haploKey(it->first),
-						double(it->second) / (pop.subPopSize(sp) * pop.ploidy()));
+			// go through all individual
+			IndIterator ind = pop.indIterator(it->subPop());
+			for (; ind.valid(); ++ind) {
+				vectori haplotype(loci.size());
+				for (size_t p = 0; p < ply; ++p) {
+					if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+						continue;
+					for (size_t idx = 0; idx < nLoci; ++idx)
+						haplotype[idx] = ind->allele(loci[idx], p);
+					haplotypes[haplotype]++;
+					allHaplotypes++;
 				}
 			}
-		}
-	}
-	// whole population
-	for (size_t h = 0; h < nHap; ++h) {
-		vectori & haplotype = m_haplotypes[h];
-		map< vectori, UINT> & count = m_haploNum[h + numSP * nHap];
-		map< vectori, double> & freq = m_haploFreq[h + numSP * nHap];
-
-		for (map<vectori, UINT>::iterator it = count.begin(); it != count.end(); ++it) {
-			freq[ it->first] = double(it->second) / (pop.popSize() * pop.ploidy());
-			if (m_ifPost[h]) {
-				pop.setIntVar(HaplotypeNum_String + haploKey(haplotype) + haploKey(it->first), it->second);
-				pop.setDoubleVar(HaplotypeFreq_String + haploKey(haplotype) + haploKey(it->first),
-					double(it->second) / (pop.popSize() * pop.ploidy()));
+			// total haplotype count
+			tupleDict::iterator dct = haplotypes.begin();
+			tupleDict::iterator dctEnd = haplotypes.end();
+			for (; dct != dctEnd; ++dct)
+				haplotypeCnt[idx][dct->first] += dct->second;
+			allHaplotypeCnt[idx] += allHaplotypes;
+			// output variable.
+			if (m_vars.contains(HaplotypeNum_sp_String))
+				pop.setTupleDictVar(subPopVar_String(*it, HaplotypeNum_String) + "{"
+					+ key + "}", haplotypes);
+			// note that genotyeps is changed in place.
+			if (m_vars.contains(HaplotypeFreq_sp_String)) {
+				if (allHaplotypes != 0) {
+					tupleDict::iterator dct = haplotypes.begin();
+					tupleDict::iterator dctEnd = haplotypes.end();
+					for (; dct != dctEnd; ++dct)
+						dct->second /= allHaplotypes;
+				}
+				pop.setTupleDictVar(subPopVar_String(*it, HaplotypeFreq_String) + "{"
+					+ key + "}", haplotypes);
 			}
 		}
+		if (it->isVirtual())
+			pop.deactivateVirtualSubPop(it->subPop());
 	}
+
+	if (m_vars.contains(HaplotypeNum_String)) {
+		pop.removeVar(HaplotypeNum_String);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			string key = dictKey(m_loci[idx]);
+			pop.setTupleDictVar(string(HaplotypeNum_String) + "{" + key + "}",
+				haplotypeCnt[idx]);
+		}
+	}
+	// note that genotyeCnt[idx] is changed in place.
+	if (m_vars.contains(HaplotypeFreq_String)) {
+		pop.removeVar(HaplotypeFreq_String);
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			string key = dictKey(m_loci[idx]);
+			if (allHaplotypeCnt[idx] != 0) {
+				tupleDict::iterator dct = haplotypeCnt[idx].begin();
+				tupleDict::iterator dctEnd = haplotypeCnt[idx].end();
+				for (; dct != dctEnd; ++dct)
+					dct->second /= allHaplotypeCnt[idx];
+			}
+			pop.setTupleDictVar(string(HaplotypeFreq_String) + "{" + key + "}",
+				haplotypeCnt[idx]);
+		}
+	}
+
 	return true;
 }
 
@@ -1240,7 +1263,7 @@ statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
 			vectori hap(2);
 			hap[0] = m_LD[i][0];
 			hap[1] = m_LD[i][1];
-			m_haploFreq.addHaplotype(hap, m_midValues);
+			m_haploFreq.addHaplotype(hap, AllSubPops, stringList());
 		}
 	}
 }
@@ -1258,7 +1281,7 @@ void statLD::calculateLD(population & pop, const vectori & hapLoci, const vector
 		if (hapLoci[0] == hapLoci[1])
 			P_AB = 0;
 		else
-			P_AB = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
+			P_AB = m_haploFreq.haploFreq(pop, hapLoci, sp)[hapAlleles];
 		// get allele freq from the m_alleleFreq object
 		P_A = m_alleleFreq.alleleFreq(pop, hapAlleles[0], hapLoci[0], sp);
 		P_B = m_alleleFreq.alleleFreq(pop, hapAlleles[1], hapLoci[1], sp);
@@ -1284,7 +1307,7 @@ void statLD::calculateLD(population & pop, const vectori & hapLoci, const vector
 		if (hapLoci[0] == hapLoci[1])
 			P_AB = 0;
 		else
-			P_AB = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+			P_AB = m_haploFreq.haploFreq(pop, hapLoci)[hapAlleles];
 		P_A = m_alleleFreq.alleleFreq(pop, hapAlleles[0], hapLoci[0]);
 		P_B = m_alleleFreq.alleleFreq(pop, hapAlleles[1], hapLoci[1]);
 
@@ -1553,7 +1576,7 @@ bool statLD::apply(population & pop)
 				vectori hapAlleles(2);
 				hapAlleles[0] = A_alleles[i];
 				hapAlleles[1] = B_alleles[j];
-				cont_table[i][j] = m_haploFreq.haploFreq(hapLoci)[hapAlleles];
+				cont_table[i][j] = m_haploFreq.haploFreq(pop, hapLoci)[hapAlleles];
 				cont_table[i][bs] += cont_table[i][j];
 				cont_table[as][j] += cont_table[i][j];
 				cont_table[as][bs] += cont_table[i][j];
@@ -1622,7 +1645,7 @@ bool statLD::apply(population & pop)
 						vectori hapAlleles(2);
 						hapAlleles[0] = A_alleles[i];
 						hapAlleles[1] = B_alleles[j];
-						cont_table[i][j] = m_haploFreq.haploFreq(hapLoci, sp)[hapAlleles];
+						cont_table[i][j] = m_haploFreq.haploFreq(pop, hapLoci, sp)[hapAlleles];
 						cont_table[i][bs] += cont_table[i][j];
 						cont_table[as][j] += cont_table[i][j];
 						cont_table[as][bs] += cont_table[i][j];

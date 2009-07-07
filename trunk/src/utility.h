@@ -400,9 +400,10 @@ public:
 		m_elems.push_back(str2);
 	}
 
-    /// CPPONLY
-    void obtainFrom(const stringList & items, const char * allowedItems[],
-        const char * defaultItems[]);
+
+	/// CPPONLY
+	void obtainFrom(const stringList & items, const char * allowedItems[],
+		const char * defaultItems[]);
 
 	/// CPPONLY
 	bool empty() const
@@ -621,7 +622,7 @@ private:
 class repList : public intList
 {
 public:
-	repList(const vectorl & reps = vectorl(), bool allReps=false) :
+	repList(const vectorl & reps = vectorl(), bool allReps = false) :
 		intList(reps), m_allReps(allReps)
 	{
 	}
@@ -671,6 +672,9 @@ void PyObj_As_StrDict(PyObject * obj, strDict & val);
 
 /// CPPONLY
 void PyObj_As_IntDict(PyObject * obj, intDict & val);
+
+/// CPPONLY
+void PyObj_As_TupleDict(PyObject * obj, tupleDict & val);
 
 /// CPPONLY
 bool PyObj_Is_IntNumArray(PyObject * obj);
