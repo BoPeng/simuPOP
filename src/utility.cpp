@@ -1098,7 +1098,7 @@ PyObject * SharedVariables::setTupleDictVar(const string & name, const tupleDict
 	for (; it != itEnd; ++it) {
 		const vectori & key = it->first;
 		u = PyTuple_New(key.size());
-		for (size_t i =; i < key.size(); ++i)
+		for (size_t i = 0; i < key.size(); ++i)
 			PyTuple_SetItem(u, i, PyInt_FromLong(key[i]));
 		v = PyFloat_FromDouble(it->second);
 		PyDict_SetItem(obj, u, v);
