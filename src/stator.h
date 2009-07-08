@@ -624,6 +624,68 @@ private:
 };
 
 /// CPPONLY
+class statInfo
+{
+private:
+#define  SumOfInfo_String         "sumOfInfo"
+#define  MeanOfInfo_String        "meanOfInfo"
+#define  MaxOfInfo_String         "maxOfInfo"
+#define  MinOfInfo_String         "minOfInfo"
+#define  SumOfInfo_sp_String      "sumOfInfo_sp"
+#define  MeanOfInfo_sp_String     "meanOfInfo_sp"
+#define  MaxOfInfo_sp_String      "maxOfInfo_sp"
+#define  MinOfInfo_sp_String      "minOfInfo_sp"
+
+public:
+	statInfo(const vectorstr & sumOfInfo,
+		const vectorstr & meanOfInfo,
+		const vectorstr & maxOfInfo,
+		const vectorstr & minOfInfo,
+		const subPopList & subPops, const stringList & vars)
+		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo),
+		m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
+		m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			SumOfInfo_String,    MeanOfInfo_String,    MaxOfInfo_String,	MinOfInfo_String,
+			SumOfInfo_sp_String, MeanOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
+			""
+		};
+		const char * defaultVars[] = { "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
+		if (m_vars.empty()) {
+			if (!m_sumOfInfo.empty())
+				m_vars.push_back(SumOfInfo_String);
+			if (!m_meanOfInfo.empty())
+				m_vars.push_back(MeanOfInfo_String);
+			if (!m_maxOfInfo.empty())
+				m_vars.push_back(MaxOfInfo_String);
+			if (!m_minOfInfo.empty())
+				m_vars.push_back(MinOfInfo_String);
+		}
+	}
+
+
+	~statInfo()
+	{
+	}
+
+
+	bool apply(population & pop);
+
+private:
+	vectorstr m_sumOfInfo;
+	vectorstr m_meanOfInfo;
+	vectorstr m_maxOfInfo;
+	vectorstr m_minOfInfo;
+
+	subPopList m_subPops;
+	stringList m_vars;
+};
+
+
+/// CPPONLY
 class statLD
 {
 private:
@@ -1084,6 +1146,11 @@ public:
 		//
 		const intMatrix & haploFreq = intMatrix(),
 		//
+		const stringList & sumOfInfo = stringList(),
+		const stringList & meanOfInfo = stringList(),
+		const stringList & maxOfInfo = stringList(),
+		const stringList & minOfInfo = stringList(),
+		//
 		const intMatrix & LD = intMatrix(),
 		const strDict & LD_param = strDict(),
 		//
@@ -1140,6 +1207,7 @@ private:
 	statHeteroFreq m_heteroFreq;
 	statGenoFreq m_genoFreq;
 	statHaploFreq m_haploFreq;
+	statInfo m_info;
 	statLD m_LD;
 	statAssociation m_association;
 	statNeutrality m_neutrality;
