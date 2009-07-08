@@ -265,6 +265,11 @@ stat::stat(
 	//
 	const intMatrix & haploFreq,
 	//
+	const stringList & sumOfInfo,
+	const stringList & meanOfInfo,
+	const stringList & maxOfInfo,
+	const stringList & minOfInfo,
+	//
 	const intMatrix & LD,
 	const strDict & LD_param,
 	//
@@ -291,6 +296,7 @@ stat::stat(
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars),
 	m_genoFreq(genoFreq.elems(), subPops, vars),
 	m_haploFreq(haploFreq, subPops, vars),
+	m_info(sumOfInfo.elems(), meanOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	m_association(association.elems(), subPops),
 	m_neutrality(neutrality.elems(), subPops),
@@ -310,6 +316,7 @@ stat::stat(const stat & rhs) :
 	m_heteroFreq(rhs.m_heteroFreq),
 	m_genoFreq(rhs.m_genoFreq),
 	m_haploFreq(rhs.m_haploFreq),
+	m_info(rhs.m_info),
 	m_LD(m_alleleFreq, m_haploFreq, rhs.m_LD), // and this one
 	m_association(rhs.m_association),
 	m_neutrality(rhs.m_neutrality),
@@ -328,6 +335,7 @@ bool stat::apply(population & pop)
 	       m_heteroFreq.apply(pop) &&
 	       m_genoFreq.apply(pop) &&
 	       m_haploFreq.apply(pop) &&
+	       m_info.apply(pop) &&
 	       m_LD.apply(pop) &&
 	       m_association.apply(pop) &&
 	       m_neutrality.apply(pop) &&
@@ -1161,6 +1169,157 @@ bool statHaploFreq::apply(population & pop)
 		}
 	}
 
+	return true;
+}
+
+
+bool statInfo::apply(population & pop)
+{
+	if (m_sumOfInfo.empty() && m_meanOfInfo.empty() && m_maxOfInfo.empty() && m_minOfInfo.empty())
+		return true;
+
+	// field indexes
+	UINT numSumFld = m_sumOfInfo.size();
+	UINT numMeanFld = m_meanOfInfo.size();
+	UINT numMaxFld = m_maxOfInfo.size();
+	UINT numMinFld = m_minOfInfo.size();
+	//
+	vectoru sumOfInfo(m_sumOfInfo.size());
+	vectoru meanOfInfo(m_meanOfInfo.size());
+	vectoru maxOfInfo(m_maxOfInfo.size());
+	vectoru minOfInfo(m_minOfInfo.size());
+	for (size_t i = 0; i < numSumFld; ++i)
+		sumOfInfo[i] = pop.infoIdx(m_sumOfInfo[i]);
+	for (size_t i = 0; i < numMeanFld; ++i)
+		meanOfInfo[i] = pop.infoIdx(m_meanOfInfo[i]);
+	for (size_t i = 0; i < numMaxFld; ++i)
+		maxOfInfo[i] = pop.infoIdx(m_maxOfInfo[i]);
+	for (size_t i = 0; i < numMinFld; ++i)
+		minOfInfo[i] = pop.infoIdx(m_minOfInfo[i]);
+
+	vectorf allSumVal(numSumFld);
+	vectorf allMeanSumVal(numMeanFld);
+	vectorlu allMeanNumVal(numMeanFld);
+	vectorf allMaxVal(0);
+	vectorf allMinVal(0);
+	// for each subpopulation.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator sp = subPops.begin();
+	subPopList::const_iterator spEnd = subPops.end();
+	for (; sp != spEnd; ++sp) {
+		vectorf sumVal(numSumFld, 0.);
+		vectorf meanSumVal(numMeanFld, 0.);
+		vectorlu meanNumVal(numMeanFld, 0);
+		vectorf maxVal(0);
+		vectorf minVal(0);
+
+		if (sp->isVirtual())
+			pop.activateVirtualSubPop(*sp);
+
+		IndIterator it = pop.indIterator(sp->subPop());
+		for (; it.valid(); ++it) {
+			for (size_t i = 0; i < numSumFld; ++i)
+				sumVal[i] += it->info(sumOfInfo[i]);
+			for (size_t i = 0; i < numMeanFld; ++i) {
+				meanSumVal[i] += it->info(meanOfInfo[i]);
+				meanNumVal[i]++;
+			}
+			if (maxVal.empty()) {
+				for (size_t i = 0; i < numMaxFld; ++i)
+					maxVal.push_back(it->info(maxOfInfo[i]));
+			} else {
+				for (size_t i = 0; i < numMaxFld; ++i) {
+					if (maxVal[i] < it->info(maxOfInfo[i]))
+						maxVal[i] = it->info(maxOfInfo[i]);
+				}
+			}
+			if (minVal.empty()) {
+				for (size_t i = 0; i < numMinFld; ++i)
+					minVal.push_back(it->info(minOfInfo[i]));
+			} else {
+				for (size_t i = 0; i < numMinFld; ++i) {
+					if (minVal[i] > it->info(minOfInfo[i]))
+						minVal[i] = it->info(minOfInfo[i]);
+				}
+			}
+		}
+
+		if (sp->isVirtual())
+			pop.deactivateVirtualSubPop(sp->subPop());
+
+		for (size_t i = 0; i < numSumFld; ++i)
+			allSumVal[i] += sumVal[i];
+		for (size_t i = 0; i < numMeanFld; ++i) {
+			allMeanSumVal[i] += meanSumVal[i];
+			allMeanNumVal[i] += meanNumVal[i];
+		}
+		if (allMaxVal.empty()) {
+			for (size_t i = 0; i < numMaxFld; ++i)
+				allMaxVal.push_back(maxVal[i]);
+		} else {
+			for (size_t i = 0; i < numMaxFld; ++i)
+				if (allMaxVal[i] < maxVal[i])
+					allMaxVal[i] = maxVal[i];
+		}
+		if (allMinVal.empty()) {
+			for (size_t i = 0; i < numMinFld; ++i)
+				allMinVal.push_back(minVal[i]);
+		} else {
+			for (size_t i = 0; i < numMinFld; ++i)
+				if (allMinVal[i] > minVal[i])
+					allMinVal[i] = minVal[i];
+		}
+		// output variable
+		if (m_vars.contains(SumOfInfo_sp_String)) {
+			strDict dct;
+			for (size_t i = 0; i < numSumFld; ++i)
+				dct[m_sumOfInfo[i]] = sumVal[i];
+			pop.setStrDictVar(subPopVar_String(*sp, SumOfInfo_String), dct);
+		}
+		if (m_vars.contains(MeanOfInfo_sp_String)) {
+			strDict dct;
+			for (size_t i = 0; i < numMeanFld; ++i)
+				dct[m_meanOfInfo[i]] = meanNumVal[i] == 0 ? 0 : meanSumVal[i] / meanNumVal[i];
+			pop.setStrDictVar(subPopVar_String(*sp, MeanOfInfo_String), dct);
+		}
+		if (m_vars.contains(MaxOfInfo_sp_String)) {
+			strDict dct;
+			for (size_t i = 0; i < numMaxFld; ++i)
+				dct[m_maxOfInfo[i]] = maxVal[i];
+			pop.setStrDictVar(subPopVar_String(*sp, MaxOfInfo_String), dct);
+		}
+		if (m_vars.contains(MinOfInfo_sp_String)) {
+			strDict dct;
+			for (size_t i = 0; i < numMinFld; ++i)
+				dct[m_minOfInfo[i]] = minVal[i];
+			pop.setStrDictVar(subPopVar_String(*sp, MinOfInfo_String), dct);
+		}
+	}
+	if (m_vars.contains(SumOfInfo_String)) {
+		strDict dct;
+		for (size_t i = 0; i < m_sumOfInfo.size(); ++i)
+			dct[m_sumOfInfo[i]] = allSumVal[i];
+		pop.setStrDictVar(SumOfInfo_sp_String, dct);
+	}
+	if (m_vars.contains(MeanOfInfo_String)) {
+		strDict dct;
+		for (size_t i = 0; i < numMeanFld; ++i)
+			dct[m_meanOfInfo[i]] = allMeanNumVal[i] == 0 ? 0 : allMeanSumVal[i] / allMeanNumVal[i];
+		pop.setStrDictVar(MeanOfInfo_sp_String, dct);
+	}
+	if (m_vars.contains(MaxOfInfo_String)) {
+		strDict dct;
+		for (size_t i = 0; i < numMaxFld; ++i)
+			dct[m_maxOfInfo[i]] = allMaxVal[i];
+		pop.setStrDictVar(MaxOfInfo_sp_String, dct);
+	}
+	if (m_vars.contains(MinOfInfo_String)) {
+		strDict dct;
+		for (size_t i = 0; i < numMinFld; ++i)
+			dct[m_minOfInfo[i]] = allMinVal[i];
+		pop.setStrDictVar(MinOfInfo_sp_String, dct);
+	}
 	return true;
 }
 
