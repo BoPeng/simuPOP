@@ -2101,6 +2101,31 @@ def simulation(loci, genEnd, freq):
 simulation(loci=[2], genEnd = 1000, freq=[0.01, 0.02])
 #end
 
+
+#file log/statCount.log
+
+#end
+
+#file log/statFreq.log
+pop = population(10000, loci=[1])
+pop.setVirtualSplitter(affectedSplitter())
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initByFreq(loci=0, [0.8, 0.2])],
+    ops = [
+        maPenetrance(penet=[0.1, 0.4, 0.6], loci=0),
+        stat(alleleFreq=[0], subPops=[(0, 0), (0, 1)],
+            vars=['alleleFreq', 'alleleFreq_sp']),
+        pyEval(r"'Gen: %d, freq: %.2f, freq (affected): %.2f, freq (unaffected): %.2f\n' % " + \
+            "(gen, alleleFreq[0][1], subPop[(0,1)]['alleleFreq'][0][1], subPop[(0,0)]['alleleFreq'][0][1])"),
+    ],
+    gen = 5
+)
+#end
+
+#file log/statInfo.log
+#end
+
 #file log/rpy.log
 from simuPOP import *
 from simuRPy import varPlotter
