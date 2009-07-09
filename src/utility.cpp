@@ -989,14 +989,16 @@ next:
 		i++;
 		goto next;
 	} else if (name[i] == '{') {
-		bool numKey;
+		int keyType;
 
 		// look for index,
 		s = ++i;
 		if (name[s] == '\'' || name[s] == '\"')
-			numKey = false;
-		else
-			numKey = true;
+			keyType = 2;
+		else if (name[s] == '(')
+            keyType = 1;
+        else
+			keyType = 0;
 
 		for ( ; name[i] != '}' && i < name.size(); ++i) ;
 
@@ -1004,12 +1006,21 @@ next:
 
 		PyObject * childKey;
 
-		if (numKey)
+	    if (keyType == 0)
 			childKey = PyInt_FromString(const_cast<char *>(name.substr(s, i - s).c_str()), NULL, 0);
-		else
+		else if (keyType == 1) {
+			vectori key;
+			for (size_t j = s + 1, k = j; j < i; j = k + 1) {
+				for (k = j + 1; k < i && name[k] != ',' && name[k] != ')'; ++k) ;
+				key.push_back(atoi(name.substr(j, k - j).c_str()));
+			}
+			childKey = PyTuple_New(key.size());
+			for (size_t j = 0; j < key.size(); ++j)
+				PyTuple_SetItem(childKey, j, PyInt_FromLong(key[j]));
+		} else
 			childKey = PyString_FromString(const_cast<char *>(name.substr(s + 1, i - s - 2).c_str()));
-
-		// ready for iteration
+	
+        // ready for iteration
 		curType = 1;
 		curParent = curChild;
 		Py_XDECREF(curKey);
