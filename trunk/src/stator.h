@@ -637,10 +637,8 @@ private:
 #define  MinOfInfo_sp_String      "minOfInfo_sp"
 
 public:
-	statInfo(const vectorstr & sumOfInfo,
-		const vectorstr & meanOfInfo,
-		const vectorstr & maxOfInfo,
-		const vectorstr & minOfInfo,
+	statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
+		const vectorstr & maxOfInfo, const vectorstr & minOfInfo,
 		const subPopList & subPops, const stringList & vars)
 		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo),
 		m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
@@ -1129,6 +1127,32 @@ public:
 	 *  \li \c haploFreq_sp: Halptype frequencies in each (virtual)
 	 *       subpopulation.
 	 *  \li \c haploNum_sp: Halptype count in each (virtual) subpopulation.
+	 *
+	 *  <b>sumOfinfo</b>, <b>meanOfInfo</b>, <b>maxOfInfo</b> and
+	 *  <b>minOfInfo</b>: Each of these four parameters accepts a list of
+	 *  information fields. For each information field, the sum, mean, max or
+	 *  min (depending on the specified parameter(s)) of this information field
+	 *  at iddividuals in all or specified (virtual) subpopulations will be
+	 *  calculated. The results will be put into the following population
+	 *  variables:
+	 *  \li \c sumOfInfo (default for \e sumOfInfo): A dictionary of the sum of
+	 *       specified information fields of individuals in all or specified
+	 *       (virtual) subpopulations. This dictionary is indexed by names of
+	 *       information fields.
+	 *  \li \c meanOfInfo (default for \e meanOfInfo): A dictionary of the mean
+	 *       of information fields of all individuals.
+	 *  \li \c maxOfInfo (default for \e maxOfInfo): A dictionary of the
+	 *       maximum value of information fields of all individuals.
+	 *  \li \c minOfInfo (default for \e minOfInfo): A dictionary of the
+	 *       minimal value of information fields of all individuals.
+	 *  \li \c sumOfInfo_sp: A dictionary of the sum of information fields of
+	 *       individuals in each subpopulation.
+	 *  \li \c meanOfInfo_sp: A dictionary of the mean of information fields of
+	 *       individuals in each subpopulation.
+	 *  \li \c maxOfInfo_sp: A dictionary of the maximum value of information
+	 *       fields of individuals in each subpopulation.
+	 *  \li \c minOfInfo_sp: A dictionary of the minimal value of information
+	 *       fields of individuals in each subpopulation.
 	 *
 	 **/
 	stat(bool popSize = false,
