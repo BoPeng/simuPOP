@@ -9473,7 +9473,8 @@ Usage:
 
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], LD=[], LD_param={}, association=[], neutrality=[],
+      haploFreq=[], sumOfInfo=[], meanOfInfo=[], maxOfInfo=[],
+      minOfInfo=[], LD=[], LD_param={}, association=[], neutrality=[],
       Fst=[], Fst_param={}, HWE=[], vars=[], output=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
       subPops=AllSubPops, infoFields=[])
@@ -9631,7 +9632,32 @@ Details:
     counts in all or specified (virtual) subpopulations.
     *   haploFreq_sp: Halptype frequencies in each (virtual)
     subpopulation.
-    *   haploNum_sp: Halptype count in each (virtual) subpopulation.
+    *   haploNum_sp: Halptype count in each (virtual)
+    subpopulation.sumOfinfo, meanOfInfo, maxOfInfo and minOfInfo: Each
+    of these four parameters accepts a list of information fields. For
+    each information field, the sum, mean, max or min (depending on
+    the specified parameter(s)) of this information field at
+    iddividuals in all or specified (virtual) subpopulations will be
+    calculated. The results will be put into the following population
+    variables:
+    *   sumOfInfo (default for sumOfInfo): A dictionary of the sum of
+    specified information fields of individuals in all or specified
+    (virtual) subpopulations. This dictionary is indexed by names of
+    information fields.
+    *   meanOfInfo (default for meanOfInfo): A dictionary of the mean
+    of information fields of all individuals.
+    *   maxOfInfo (default for maxOfInfo): A dictionary of the maximum
+    value of information fields of all individuals.
+    *   minOfInfo (default for minOfInfo): A dictionary of the minimal
+    value of information fields of all individuals.
+    *   sumOfInfo_sp: A dictionary of the sum of information fields of
+    individuals in each subpopulation.
+    *   meanOfInfo_sp: A dictionary of the mean of information fields
+    of individuals in each subpopulation.
+    *   maxOfInfo_sp: A dictionary of the maximum value of information
+    fields of individuals in each subpopulation.
+    *   minOfInfo_sp: A dictionary of the minimal value of information
+    fields of individuals in each subpopulation.
 
 "; 
 
@@ -9929,6 +9955,33 @@ Usage:
 %ignore simuPOP::statHWE::statHWE(statGenoFreq &genoFreq, const statHWE &rhs);
 
 %feature("docstring") simuPOP::statHWE::apply "
+
+Usage:
+
+    x.apply(pop)
+
+"; 
+
+%ignore simuPOP::statInfo;
+
+%feature("docstring") simuPOP::statInfo::statInfo "
+
+Usage:
+
+    statInfo(sumOfInfo, meanOfInfo, maxOfInfo, minOfInfo, subPops,
+      vars)
+
+"; 
+
+%feature("docstring") simuPOP::statInfo::~statInfo "
+
+Usage:
+
+    x.~statInfo()
+
+"; 
+
+%feature("docstring") simuPOP::statInfo::apply "
 
 Usage:
 

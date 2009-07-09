@@ -1300,25 +1300,25 @@ bool statInfo::apply(population & pop)
 		strDict dct;
 		for (size_t i = 0; i < m_sumOfInfo.size(); ++i)
 			dct[m_sumOfInfo[i]] = allSumVal[i];
-		pop.setStrDictVar(SumOfInfo_sp_String, dct);
+		pop.setStrDictVar(SumOfInfo_String, dct);
 	}
 	if (m_vars.contains(MeanOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numMeanFld; ++i)
 			dct[m_meanOfInfo[i]] = allMeanNumVal[i] == 0 ? 0 : allMeanSumVal[i] / allMeanNumVal[i];
-		pop.setStrDictVar(MeanOfInfo_sp_String, dct);
+		pop.setStrDictVar(MeanOfInfo_String, dct);
 	}
 	if (m_vars.contains(MaxOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numMaxFld; ++i)
 			dct[m_maxOfInfo[i]] = allMaxVal[i];
-		pop.setStrDictVar(MaxOfInfo_sp_String, dct);
+		pop.setStrDictVar(MaxOfInfo_String, dct);
 	}
 	if (m_vars.contains(MinOfInfo_String)) {
 		strDict dct;
 		for (size_t i = 0; i < numMinFld; ++i)
 			dct[m_minOfInfo[i]] = allMinVal[i];
-		pop.setStrDictVar(MinOfInfo_sp_String, dct);
+		pop.setStrDictVar(MinOfInfo_String, dct);
 	}
 	return true;
 }

@@ -217,6 +217,27 @@ class TestStat(unittest.TestCase):
         self.assertEqual(pop.dvars(2).genoFreq[0][(0, 1)], 0.6)
         self.assertEqual(pop.dvars(2).genoFreq[0][(1, 1)], 0.4)
 
+    def testInfoStat(self):
+        'Testing summary statistics of information fields'
+        import random
+        pop = population(size=[500, 1000, 1000], infoFields=['x', 'y', 'z'])
+        InitSex(pop, sex=[Male, Female])
+        pop.setVirtualSplitter(sexSplitter())
+        pop.setIndInfo([1], field='x', subPop=(0, 0))
+        pop.setIndInfo([2], field='x', subPop=(0, 1))
+        pop.setIndInfo([random.randint(4, 10) for x in range(500)],
+            field='y', subPop=0)
+        Stat(pop, meanOfInfo='x', subPops=0)
+        self.assertEqual(pop.dvars().meanOfInfo['x'], 1.5)
+        Stat(pop, sumOfInfo='x', subPops=[(0, 0)])
+        self.assertEqual(pop.dvars().sumOfInfo['x'], 250)
+        Stat(pop, maxOfInfo='y', minOfInfo='y', subPops=[(0, 0), (0, 1)],
+            vars=['maxOfInfo', 'minOfInfo', 'maxOfInfo_sp', 'minOfInfo_sp'])
+        self.assertEqual(pop.dvars((0, 0)).maxOfInfo['y'], 10)
+        self.assertEqual(pop.dvars((0, 1)).minOfInfo['y'], 4)
+        self.assertEqual(pop.dvars().maxOfInfo['y'], 10)
+        self.assertEqual(pop.dvars().minOfInfo['y'], 4)
+
     def testFst(self):
         'Testing calculation of Fst value'
         pop = population(size=[500,100,1000],
