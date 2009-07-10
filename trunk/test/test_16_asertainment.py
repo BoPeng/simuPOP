@@ -129,7 +129,10 @@ class TestAscertainment(unittest.TestCase):
             self.assertEqual(ind, inpop)
         #
         (s,) = AffectedSibpairSample(self.pop, 2)
-        assert s.subPopSize(0) <= 4
+        s.useAncestralGen(1)
+        self.assertEqual(s.subPopSizes(), (2, 2))
+        s.useAncestralGen(0)
+        self.assertEqual(s.subPopSizes(), (2, 2))
         for ind in s.individuals():
             self.assertEqual(ind.affected(), True)
             #old index?

@@ -1350,6 +1350,8 @@ population & population::extract(bool removeInd, const string & field,
 	int depth = ancestralGens();
 	if (ancGen > 0 && ancGen < depth)
 		depth = ancGen;
+	// ancestral depth can be -1
+	pop.setAncestralDepth(m_ancestralGens);
 	for (; depth >= 0; --depth) {
 		const_cast<population *>(this)->useAncestralGen(depth);
 		sortIndividuals();

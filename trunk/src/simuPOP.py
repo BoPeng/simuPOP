@@ -896,6 +896,9 @@ class affectedSibpairSample(_sample):
                 else:
                     ind.setInfo(-1, sample)
         sample = pop.extract(field='sample', ancGen=1, ped=self.pedigree)
+        for gen in range(1, -1, -1):
+            sample.useAncestralGen(gen)
+            sample.removeSubPops([x for x in range(sample.numSubPop()) if sample.subPopSize(x) == 0])
         return sample
 
 

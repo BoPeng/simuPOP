@@ -945,7 +945,6 @@ bool statGenoFreq::apply(population & pop)
 		pop.removeVar(GenotypeFreq_String);
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			UINT loc = m_loci[idx];
-			cout << "G " << allGenotypeCnt << " S" << genotypeCnt[idx].size() << endl;
 			if (allGenotypeCnt[idx] != 0) {
 				tupleDict::iterator dct = genotypeCnt[idx].begin();
 				tupleDict::iterator dctEnd = genotypeCnt[idx].end();
