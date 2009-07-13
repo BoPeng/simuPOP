@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -15102,35 +15102,20 @@ simuUtil (under revision)
 \end_layout
 
 \begin_layout Standard
-4.2 
-\begin_inset space \space{}
-\end_inset
-
-
-\begin_inset space \space{}
-\end_inset
-
-simuUtil
-\begin_inset Newline newline
-\end_inset
-
-
+The simuUtil module provides a few utility functions and classes.
+ They do not belong to the simuPOP core but are distributed with simuPOP
+ because they are frequently used and play an important role in some specialized
+ simulation techniques.
+ Please refer to the simuPOP online cookbook (
+\family typewriter
+http://simupop.sourceforge.net/cookbook
+\family default
+) for more utility functions.
+ 
 \end_layout
 
-\begin_layout Standard
-4.2.1 
-\begin_inset space \space{}
-\end_inset
-
-
-\begin_inset space \space{}
-\end_inset
-
-simuTrajectory
-\begin_inset Newline newline
-\end_inset
-
-
+\begin_layout Subsection
+Trajectory simulation
 \end_layout
 
 \begin_layout Standard
@@ -15301,6 +15286,10 @@ status open
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Progress bar
 \end_layout
 
 \begin_layout Section

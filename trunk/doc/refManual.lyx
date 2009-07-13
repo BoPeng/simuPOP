@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -1938,7 +1938,70 @@ simuUtilRef
 
 
 \backslash
+simuUtilViewVars
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilMigrIslandRates
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilMigrHierarchicalIslandRates
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilMigrSteppingStoneRates
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilSaveCSV
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 simuUtilsimuProgressRef
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtiltrajectory
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtiltrajectorySimulator
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilForwardTrajectory
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+simuUtilBackwardTrajectory
 \end_layout
 
 \begin_layout Plain Layout

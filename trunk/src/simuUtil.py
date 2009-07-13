@@ -45,18 +45,15 @@ def ViewVars(var, gui=None):
         wxPython window.
 
     var
-        any variable to be viewed. Can be a dw object returned
-        by dvars() function
+        A dictionary variable to be viewed. Dictionary wrapper objects returned
+        by ``population.dvars()`` and ``simulator.dvars()`` are also acceptable.
 
-    level
-        level of display.
-
-    name
-        only view certain variable
-
-    subPop
-        whether or not display info in subPop
-
+    gui
+        If gui is ``False`` or ``'Tkinter'``, a text presentation (use the
+        pprint module) of the variable will be printed to the screen. If gui is
+        ``'wxPython'`` and wxPython is available, a wxPython windows will be
+        used. The default mode is determined by the global gui mode (see also
+        ``simuOpt.setOptions``).
     '''
     if gui is None:
         gui = simuOptions['GUI']
@@ -511,13 +508,14 @@ class _wxProgressBar(_baseProgressBar):
 
 
 class simuProgress:
-    '''
-    This class defines a very simple text based progress bar. It will display a
-    character (default to "``.``") for each change of progress (default to 2%),
-    and a number (1, 2, ..., 9) for each 10% of progress, and print a message
-    (default to "``Done.\\n``") when the job is finished.
+    '''The ``simuProgress`` class defines a progress bar. This class will use a
+    text-based progress bar that outputs progressing dots (.) with intermediate
+    numbers (e.g. 5 for 50%) under a non-GUI mode (``gui=False``). In the GUI
+    mode, a Tkinter or wxPython progress dialog will be used (``gui=Tkinter``
+    or ``gui=wxPython``). The default mode is determined by the global gui mode
+    of simuPOP (see also ``simuOpt.setOptions``).
 
-    This class is used as follows::
+    This class is usually used as follows::
 
         progress = simuProgress("Start simulation", 500)
         for i in range(500):
@@ -534,10 +532,11 @@ class simuProgress:
             Total expected steps.
 
         progressChar
-            Character to be displayed for each progress.
+            Character to be displayed for each progress. This is only used for
+            text-based progress bars.
 
         block
-            display progress at which interval (in terms of percentage)?
+            Intervals at which progresses will be displayed. Default to 2 (percent).
 
         done
             Message displayed when the job is finished.
@@ -572,38 +571,10 @@ class simuProgress:
 
     def done(self):
         '''
-        Finish progressbar, print 'done' message.
+        Finish progressbar, print 'done' message if in text-mode.
         '''
         self.progressBar.done()
 
-
-class pySubset(pyOperator):
-    '''
-    This operator rearranges and removes individuals according to their values at
-    an information field. Individuals with positive values at this information
-    field are moved to the subpopulation specified by the integer value of this
-    value. Individuals with negative values are removed. There is no function
-    form of this operator because this operator is essentially a wrapper around
-    function ``population::setSubPopByIndInfo(field)``.
-    '''
-    def __init__(self, field, *args, **kwargs):
-        '''
-        Create a pySubset operator that rearranges and removes individuals
-        according to their values at an information field *field*.
-        '''
-        self.field = field
-        pyOperator.__init__(self, func=self.apply,
-            param=self.field, *args, **kwargs)
-
-    def apply(self, pop, field):
-        pop.setSubPopByIndInfo(field)
-        return True
-
-    def __repr_():
-        return "<simuPOP::pySubset>"
-
-    def clone():
-        return pySubset(self.field)
 
   
 class trajectory:
