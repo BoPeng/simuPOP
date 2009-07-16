@@ -1998,27 +1998,25 @@ def fragileX(geno):
         return min(1, (maxRep - 50)*0.05)
 
 def avgAllele(pop):
-    'count number of alleles by affection status.'
-    Stat(pop, numOfAffected=True)
-    aff = pop.dvars().numOfAffected
-    unaff = pop.dvars().numOfUnaffected
-    #
-    # This can be simplied after stator supports VSP.
-    cnt = [0, 0, 0]
-    for ind in pop.individuals():
-        reps  = ind.allele(0, 0) + ind.allele(0, 1)
-        if ind.affected():
-            cnt[1] += reps
-        else: # X, X
-            cnt[0] += reps
-        cnt[2] += ind.allele(1, 0) + ind.allele(1, 1)
-    if unaff != 0:
-        cnt[0] /= 2. * unaff
-    if aff != 0:
-        cnt[1] /= 2. * aff
-    cnt[2] /= 2. * (aff + unaff)
-    # male, female, loc2
-    pop.dvars().avgAllele = cnt
+    'Get average allele by affection status.'
+    Stat(pop, alleleFreq=(0,1), subPops=[(0,0), (0,1)],
+        numOfAffected=True, vars=['alleleNum', 'alleleNum_sp'])
+    avg = []
+    for alleleNum in [\
+            pop.dvars((0,0)).alleleNum[0],  # first locus, unaffected
+            pop.dvars((0,1)).alleleNum[0],  # first locus, affected
+            pop.dvars().alleleNum[1],       # second locus, overall
+        ]:
+        alleleSum = numAllele = 0
+        for idx,cnt in enumerate(alleleNum):
+            alleleSum += idx * cnt
+            numAllele += cnt
+        if numAllele == 0:
+            avg.append(0)
+        else:
+            avg.append(alleleSum * 1.0 /numAllele)
+    # unaffected, affected, loc2
+    pop.dvars().avgAllele = avg
     return True
 
 pop = population(10000, loci=[1, 1])
@@ -2063,6 +2061,90 @@ simu.evolve(
 )
 #end
 
+
+#file log/statCount.log
+pop = population(10000, loci=[1])
+pop.setVirtualSplitter(combinedSplitter(
+    [sexSplitter(), affectionSplitter()]))
+InitByFreq(pop, [0.2, 0.8])
+MaPenetrance(pop, loci=0, penetrance=[0.1, 0.2, 0.5])
+# Count population size
+Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)])
+# popSize is the size of two VSPs, does not equal to total population size.
+# Because two VSPs overlap (all males and all unaffected), popSize can be
+# greater than real population size.
+print pop.dvars().subPopSize, pop.dvars().popSize
+# print popSize of each virtual subpopulation.
+Stat(pop, popSize=True, subPops=[(0, 0), (0, 2)], vars='popSize_sp')
+# Note the two ways to access variable in (virtual) subpopulations.
+print pop.dvars((0,0)).popSize, pop.dvars().subPop[(0,2)]['popSize']
+# Count number of male (should be the same as the size of VSP (0,0).
+Stat(pop, numOfMale=True)
+print pop.dvars().numOfMale
+# Count the number of affected and unaffected male individual
+Stat(pop, numOfMale=True, subPops=[(0, 2), (0, 3)], vars='numOfMale_sp')
+print pop.dvars((0,2)).numOfMale, pop.dvars((0,3)).numOfMale
+# or number of affected male and females
+Stat(pop, numOfAffected=True, subPops=[(0, 0), (0, 1)], vars='numOfAffected_sp')
+print pop.dvars((0,0)).numOfAffected, pop.dvars((0,1)).numOfAffected
+#end
+
+#file log/statAlleleFreq.log
+pop = population(10000, loci=[1])
+pop.setVirtualSplitter(affectionSplitter())
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = [initByFreq(loci=0, alleleFreq=[0.8, 0.2])],
+    ops = [
+        maPenetrance(penetrance=[0.1, 0.4, 0.6], loci=0),
+        stat(alleleFreq=[0], subPops=[(0, 0), (0, 1)],
+            vars=['alleleFreq', 'alleleFreq_sp']),
+        pyEval(r"'Gen: %d, freq: %.2f, freq (aff): %.2f, freq (unaff): %.2f\n' % " + \
+            "(gen, alleleFreq[0][1], subPop[(0,1)]['alleleFreq'][0][1]," + \
+            "subPop[(0,0)]['alleleFreq'][0][1])"),
+    ],
+    gen = 5
+)
+#end
+
+#file log/statGenoHaploFreq.log
+pop = population(100, loci=[3])
+InitByFreq(pop, [0.2, 0.4, 0.4], loci=0)
+InitByFreq(pop, [0.2, 0.8], loci=2)
+Stat(pop, genoFreq=[0, 1, 2], haploFreq=[0, 1, 2],
+    vars=['genoNum', 'haploFreq'])
+from simuUtil import ViewVars
+ViewVars(pop.vars(), gui=False)
+#end
+
+#file log/statInfo.log
+import random
+pop = population([500], infoFields='anc')
+# anc is 0 or 1
+pop.setIndInfo([random.randint(0, 1) for i in range(500)], 'anc')
+# Defines VSP 0, 1, 2, 3, 4 by anc.
+pop.setVirtualSplitter(infoSplitter('anc', cutoff=[0.2, 0.4, 0.6, 0.8]))
+#
+def passInfo(fields):
+    'Parental fields will be passed as anc1, anc2'
+    return (fields[0] + fields[1]) / 2.
+
+simu = simulator(pop, randomMating())
+simu.evolve(
+    preOps = initSex(),
+    ops = [
+        pyTagger(passInfo, infoFields='anc'),
+        stat(popSize=True, meanOfInfo='anc', varOfInfo='anc',
+            subPops=[(0,x) for x in range(5)]),
+        pyEval(r"'Anc: %.2f (%.2f), #inds: %s\n' %" + \
+            "(meanOfInfo['anc'], varOfInfo['anc'], " + \
+            "', '.join(['%4d' % x for x in subPopSize]))")
+    ],
+    gen = 5,
+)
+
+#end
+
 #file log/simuTrajectory.log
 def Nt(gen, oldSize=[]):
     '''
@@ -2101,30 +2183,6 @@ def simulation(loci, genEnd, freq):
 simulation(loci=[2], genEnd = 1000, freq=[0.01, 0.02])
 #end
 
-
-#file log/statCount.log
-
-#end
-
-#file log/statFreq.log
-pop = population(10000, loci=[1])
-pop.setVirtualSplitter(affectionSplitter())
-simu = simulator(pop, randomMating())
-simu.evolve(
-    preOps = [initByFreq(loci=0, alleleFreq=[0.8, 0.2])],
-    ops = [
-        maPenetrance(penetrance=[0.1, 0.4, 0.6], loci=0),
-        stat(alleleFreq=[0], subPops=[(0, 0), (0, 1)],
-            vars=['alleleFreq', 'alleleFreq_sp']),
-        pyEval(r"'Gen: %d, freq: %.2f, freq (affected): %.2f, freq (unaffected): %.2f\n' % " + \
-            "(gen, alleleFreq[0][1], subPop[(0,1)]['alleleFreq'][0][1], subPop[(0,0)]['alleleFreq'][0][1])"),
-    ],
-    gen = 5
-)
-#end
-
-#file log/statInfo.log
-#end
 
 #file log/rpy.log
 from simuPOP import *

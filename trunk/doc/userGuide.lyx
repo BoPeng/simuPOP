@@ -1,4 +1,4 @@
-#LyX 1.6.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13338,12 +13338,12 @@ population.vars(sp)
 \family typewriter
 population.dvars(sp)
 \family default
- are provided as shortcuts to acess these variables but the full variable
+ are provided as shortcuts to access these variables but the full variable
  names have to be specified if these variables are used in expressions.
 \end_layout
 
 \begin_layout Subsection
-Individual counting
+Counting individuals by sex and affection status
 \end_layout
 
 \begin_layout Standard
@@ -13360,10 +13360,465 @@ numOfMale
 numOfAffected
 \emph default
  provide basic individual counting statistics.
+ They count the number of all, male/female, affected/unaffected individuals
+ in all or specified (virtual) subpopulations, and set variables such as
+ 
+\family typewriter
+popSize
+\family default
+, 
+\family typewriter
+numOfMale
+\family default
+, 
+\family typewriter
+numOfFemale
+\family default
+, 
+\family typewriter
+numOfAffected
+\family default
+, 
+\family typewriter
+numOfUnaffected
+\family default
+.
+ Proportions and statistics for  subpopulations are available if variables
+ such as 
+\family typewriter
+propOfMale
+\family default
+, 
+\family typewriter
+numOfAffected_sp
+\family default
+ are specified in parameter vars.
+ A special variable is 
+\family typewriter
+subPopSize
+\family default
+ for parameter 
+\family typewriter
+popSize=True
+\family default
+.
+ It is a list of sizes of all or specified subpopulations and is easier
+ to use than referring to variable 
+\family typewriter
+popSize
+\family default
+ from individual subpopulations.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statCount"
+
+\end_inset
+
+ demonstrates how to use these parameters in operator 
+\family typewriter
+stat
+\family default
+.
+ It defines four VSPs by sex and affection status (using a 
+\family typewriter
+combinedSplitter
+\family default
+) and count individuals by sex and affection status.
+ It is worth noting that 
+\family typewriter
+pop.dvars().popSize
+\family default
+ in the first example is the total number of individuals in two virtual
+ subpopulations 
+\family typewriter
+(0,0)
+\family default
+ and 
+\family typewriter
+(0,2)
+\family default
+, which are all male indiviudals, and all unaffected individuals.
+ Because these two VSPs overlap, this variable can be larger than actual
+ population size.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statCount.log"
+lstparams "caption={Count individuals by sex and/or affection status},label={statCount}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
-Allele frequency and allele count
+Allele, genotype and haplotype frequency and count
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\emph on
+alleleFreq
+\emph default
+ accepts a list of markers at which allele frequencies in all or specified
+ (virtual) subpopulations will be calculated.
+ This statistic sets variables 
+\family typewriter
+alleleFreq[loc][allele]
+\family default
+ and 
+\family typewriter
+alleleNum[loc][allele]
+\family default
+ which are frequencies and numbers of allele 
+\family typewriter
+allele
+\family default
+ at locus 
+\family typewriter
+loc
+\family default
+, respectively.
+ If variables 
+\family typewriter
+alleleFreq_sp
+\family default
+ and 
+\family typewriter
+alleleNum_sp
+\family default
+ are specified in parameter 
+\emph on
+vars
+\emph default
+, these variables will be set for all or specified (virtual) subpopulations.
+ At the Python level, 
+\family typewriter
+alleleNum
+\family default
+ and 
+\family typewriter
+alleleFreq
+\family default
+ are dictionaries with loci indexes as keys, and 
+\family typewriter
+alleleNum[loc]
+\family default
+ and 
+\family typewriter
+alleleFreq[loc]
+\family default
+ are lists.
+ The length of variables 
+\family typewriter
+alleleNum[loc]
+\family default
+ and 
+\family typewriter
+alleleFreq[loc]
+\family default
+ are determined by available alleles, but are guaranteed to have at least
+ two elements (
+\family typewriter
+alleleFreq[loc][1]
+\family default
+ will exist even if there is no allele 1 in the population).
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statAlleleFreq"
+
+\end_inset
+
+ demonstrates an advanced usage of this statistic.
+ In this example, two virtual subpopulations are defined by individual affection
+ status.
+ During evolution, a multi-allele penetrance operator is used to determine
+ individual affection status and a 
+\family typewriter
+stat
+\family default
+ operator is used to calculate allele frequencies in these two virtual subpopula
+tions, and in the whole population.
+ Because the simulated disease is largely caused by the existence of allele
+ 1 at the first locus, it is expected that the frequency of allele 1 is
+ higher in the case group than in the control group.
+ It is worth noting that 
+\family typewriter
+alleleFreq[0][1]
+\family default
+ in this example is the frequency of allele 1 in the whole population because
+ these two virtual subpopulations add up to the whole population.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statAlleleFreq.log"
+lstparams "caption={Calculate allele frequency in affected and unaffected individuals},label={statAlleleFreq}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Genotype frequency is the same as allele frequency in a haploid population
+ because individual genotype consists of only one allele at each locus.
+ 
+\series bold
+In a diploid population, a genotype is represented as an ordered pair of
+ alleles 
+\series default
+(a tuple of two numbers) such as 
+\family typewriter
+(1, 2)
+\family default
+ where 1 and 2 are alleles at a locus on, respectively, the first and second
+ homologous copies of chromosomes.
+ Note that 
+\family typewriter
+(1, 2)
+\family default
+ and 
+\family typewriter
+(2, 1)
+\family default
+ are different genotypes.
+\end_layout
+
+\begin_layout Standard
+Haplotypes refer to alleles on the same homologous copy of a chromosome
+ at specified loci.
+ For example, an diploid individual can have haplotypes 
+\family typewriter
+(0, 2, 1)
+\family default
+ and 
+\family typewriter
+(0, 1, 1)
+\family default
+ at loci 
+\family typewriter
+(2, 3, 5)
+\family default
+ if he or she has genotype 
+\family typewriter
+(0, 0)
+\family default
+, 
+\family typewriter
+(2, 1)
+\family default
+ and 
+\family typewriter
+(1,1)
+\family default
+ at loci 2, 3 and 5 respectively.
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\emph on
+genoFreq
+\emph default
+ accepts a list of loci at which genotype counts and frequencies will be
+ calculated and outputted.
+ Parameter 
+\emph on
+haploFreq
+\emph default
+ accept one or more lists of loci specifying one or more haplotype sites
+ (e.g.
+ 
+\family typewriter
+haploFreq=[(0,1,2), (2,3)]
+\family default
+ specifies two haplotype sites).
+ The results are saved to dictionaries of genotypes or haplotypes, within
+ a dictionary indexed by locus index (for 
+\family typewriter
+genoFreq
+\family default
+) or haplotype site (for 
+\family typewriter
+haploFreq
+\family default
+).
+ For example, 
+\family typewriter
+haploFreq[(0,1,2)][(0,1,1)]
+\family default
+ will be the frequency of haplotype 
+\family typewriter
+(0, 1, 1)
+\family default
+ at loci 
+\family typewriter
+(0, 1, 2)
+\family default
+, if such a haplotype exists in the population.
+\end_layout
+
+\begin_layout Note
+
+\emph on
+haploFreq
+\emph default
+ does not check if loci in a haplotype site belong to the same chromosome,
+ or if loci are duplicated or in order.
+ It faithfully assemble alleles at specified loci as haplotypes although
+ these haplotypes might not be biologically meaningful.
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Note
+Counting a large number of haplotypes on long haplotype sites may exhaust
+ the RAM of your computer.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statGenoHaploFreq"
+
+\end_inset
+
+ creates a small population and initializes three loci with different allele
+ frequencies.
+ A function 
+\family typewriter
+Stat
+\family default
+ (the function form of operator 
+\family typewriter
+stat
+\family default
+) is used to count the number of different genotypes and haplotypes at these
+ loci.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statGenoHaploFreq.log"
+lstparams "caption={Counting genotypes and haplotypes in a population},label={statGenoHaploFreq}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Summary statistics of information fields
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\family typewriter
+sumOfInfo
+\family default
+, 
+\family typewriter
+meanOfInfo
+\family default
+, 
+\family typewriter
+varOfInfo
+\family default
+, 
+\family typewriter
+maxOfInfo
+\family default
+ and 
+\family typewriter
+minOfInfo
+\family default
+ are used to calculate the sum, mean, sample variance (
+\begin_inset Formula $\frac{1}{n-1}\sum_{i=1}^{n}\left(x_{i}-\bar{x}\right)^{2}$
+\end_inset
+
+), max and min of specified information fields of individuals in all or
+ specified (virtual) subpopulations.
+ The results are saved in dictionaries 
+\family typewriter
+sumOfInfo
+\family default
+, 
+\family typewriter
+meanOfInfo
+\family default
+, 
+\family typewriter
+maxOfInfo
+\family default
+ and 
+\family typewriter
+minOfInfo
+\family default
+ with information fields as keys.
+ For example, parameter  
+\family typewriter
+meanOfInfo='age'
+\family default
+ calculates the mean age of all individuals and set variable 
+\family typewriter
+meanOfInfo['age']
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Example 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "statInfo"
+
+\end_inset
+
+ demonstrates a mixing process of two populations.
+ The population starts with two types of individuals with ancestry values
+ 0 or 1 (information field 
+\family typewriter
+anc
+\family default
+).
+ During the evolution, individuals mate randomly and the ancestry of offspring
+ is the mean of parental ancestry values.
+ A 
+\family typewriter
+stat
+\family default
+ operator is used to calculate the mean and variance of individual ancestry
+ values, and the number of individuals in five ancestry groups.
+ It is not surprising that whereas population mean ancestry does not change,
+ more and more people have about the same number of ancestors from each
+ group and have an ancestry value around 0.5.
+ The variance of ancestry values therefore decreases gradually.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "log/statInfo.log"
+lstparams "caption={Calculate summary statistics of information fields},label={statInfo}"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection

@@ -9473,9 +9473,9 @@ Usage:
 
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
-      haploFreq=[], sumOfInfo=[], meanOfInfo=[], maxOfInfo=[],
-      minOfInfo=[], LD=[], LD_param={}, association=[], neutrality=[],
-      Fst=[], Fst_param={}, HWE=[], vars=[], output=\"\",
+      haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
+      maxOfInfo=[], minOfInfo=[], LD=[], LD_param={}, association=[],
+      neutrality=[], Fst=[], Fst_param={}, HWE=[], vars=[], output=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
       subPops=AllSubPops, infoFields=[])
 
@@ -9525,10 +9525,11 @@ Details:
     subpopulations. Because subPops does not have to cover all
     individuals, it may not be the actual population size.
     *   popSize_sp: Size of (virtual) subpopulation sp.
-    *   subPopSize (default): A list of subpopulation sizes.
-    sum(subPopSize) is the total population size.numOfMale: If
-    numOfMale=True, number of male individuals in all or specified
-    (virtual) subpopulations will be set to the following variables:
+    *   subPopSize (default): A list of (virtual) subpopulation sizes.
+    This variable is easier to use than accessing popSize from each
+    (virtual) subpopulation.numOfMale: If numOfMale=True, number of
+    male individuals in all or specified (virtual) subpopulations will
+    be set to the following variables:
     *   numOfMale (default): Total number of male individuals in all
     or specified (virtual) subpopulations.
     *   numOfMale (default): Total number of female individuals in all
@@ -9633,19 +9634,21 @@ Details:
     *   haploFreq_sp: Halptype frequencies in each (virtual)
     subpopulation.
     *   haploNum_sp: Halptype count in each (virtual)
-    subpopulation.sumOfinfo, meanOfInfo, maxOfInfo and minOfInfo: Each
-    of these four parameters accepts a list of information fields. For
-    each information field, the sum, mean, max or min (depending on
-    the specified parameter(s)) of this information field at
-    iddividuals in all or specified (virtual) subpopulations will be
-    calculated. The results will be put into the following population
-    variables:
+    subpopulation.sumOfinfo, meanOfInfo, varOfInfo, maxOfInfo and
+    minOfInfo: Each of these five parameters accepts a list of
+    information fields. For each information field, the sum, mean,
+    variance, maximum or minimal (depending on the specified
+    parameter(s)) of this information field at iddividuals in all or
+    specified (virtual) subpopulations will be calculated. The results
+    will be put into the following population variables:
     *   sumOfInfo (default for sumOfInfo): A dictionary of the sum of
     specified information fields of individuals in all or specified
     (virtual) subpopulations. This dictionary is indexed by names of
     information fields.
     *   meanOfInfo (default for meanOfInfo): A dictionary of the mean
     of information fields of all individuals.
+    *   varOfInfo (default for varOfInfo): A dictionary of the sample
+    variance of information fields of all individuals.
     *   maxOfInfo (default for maxOfInfo): A dictionary of the maximum
     value of information fields of all individuals.
     *   minOfInfo (default for minOfInfo): A dictionary of the minimal
@@ -9654,6 +9657,8 @@ Details:
     individuals in each subpopulation.
     *   meanOfInfo_sp: A dictionary of the mean of information fields
     of individuals in each subpopulation.
+    *   varOfInfo_sp: A dictionary of the sample variance of
+    information fields of individuals in each subpopulation.
     *   maxOfInfo_sp: A dictionary of the maximum value of information
     fields of individuals in each subpopulation.
     *   minOfInfo_sp: A dictionary of the minimal value of information
@@ -9968,8 +9973,8 @@ Usage:
 
 Usage:
 
-    statInfo(sumOfInfo, meanOfInfo, maxOfInfo, minOfInfo, subPops,
-      vars)
+    statInfo(sumOfInfo, meanOfInfo, varOfInfo, maxOfInfo, minOfInfo,
+      subPops, vars)
 
 "; 
 

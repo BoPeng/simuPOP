@@ -29,7 +29,7 @@ version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/s
 		Parameter phase has been removed.
   - CHG: statHaploFreq now uses tupe (instead of string) as loci and haplotype
 		indexes.
-  - NEW: Add statInfo to calculate sum, mean, max and min of information fields.
+  - NEW: Add statInfo to calculate sum, mean, var, max and min of information fields.
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.
