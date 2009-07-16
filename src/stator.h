@@ -629,24 +629,27 @@ class statInfo
 private:
 #define  SumOfInfo_String         "sumOfInfo"
 #define  MeanOfInfo_String        "meanOfInfo"
+#define  VarOfInfo_String         "varOfInfo"
 #define  MaxOfInfo_String         "maxOfInfo"
 #define  MinOfInfo_String         "minOfInfo"
 #define  SumOfInfo_sp_String      "sumOfInfo_sp"
 #define  MeanOfInfo_sp_String     "meanOfInfo_sp"
+#define  VarOfInfo_sp_String      "varOfInfo_sp"
 #define  MaxOfInfo_sp_String      "maxOfInfo_sp"
 #define  MinOfInfo_sp_String      "minOfInfo_sp"
 
 public:
 	statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
-		const vectorstr & maxOfInfo, const vectorstr & minOfInfo,
+		const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
+		const vectorstr & minOfInfo,
 		const subPopList & subPops, const stringList & vars)
-		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo),
+		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo), m_varOfInfo(varOfInfo),
 		m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
 		m_subPops(subPops), m_vars()
 	{
 		const char * allowedVars[] = {
-			SumOfInfo_String,    MeanOfInfo_String,    MaxOfInfo_String,	MinOfInfo_String,
-			SumOfInfo_sp_String, MeanOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
+			SumOfInfo_String,    MeanOfInfo_String,    VarOfInfo_String,	MaxOfInfo_String,    MinOfInfo_String,
+			SumOfInfo_sp_String, MeanOfInfo_sp_String, VarOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
 			""
 		};
 		const char * defaultVars[] = { "" };
@@ -657,6 +660,8 @@ public:
 				m_vars.push_back(SumOfInfo_String);
 			if (!m_meanOfInfo.empty())
 				m_vars.push_back(MeanOfInfo_String);
+			if (!m_varOfInfo.empty())
+				m_vars.push_back(VarOfInfo_String);
 			if (!m_maxOfInfo.empty())
 				m_vars.push_back(MaxOfInfo_String);
 			if (!m_minOfInfo.empty())
@@ -675,6 +680,7 @@ public:
 private:
 	vectorstr m_sumOfInfo;
 	vectorstr m_meanOfInfo;
+	vectorstr m_varOfInfo;
 	vectorstr m_maxOfInfo;
 	vectorstr m_minOfInfo;
 
@@ -1008,8 +1014,9 @@ public:
 	 *       subpopulations. Because \e subPops does not have to cover all
 	 *       individuals, it may not be the actual population size.
 	 *  \li \c popSize_sp: Size of (virtual) subpopulation \c sp.
-	 *  \li \c subPopSize (default): A list of subpopulation sizes.
-	 *       <tt>sum(subPopSize)</tt> is the total population size.
+	 *  \li \c subPopSize (default): A list of (virtual) subpopulation sizes.
+	 *      This variable is easier to use than accessing popSize from each
+	 *      (virtual) subpopulation.
 	 *
 	 *  <b>numOfMale</b>: If \e numOfMale=True, number of male individuals in
 	 *  all or specified (virtual) subpopulations will be set to the following
@@ -1128,19 +1135,21 @@ public:
 	 *       subpopulation.
 	 *  \li \c haploNum_sp: Halptype count in each (virtual) subpopulation.
 	 *
-	 *  <b>sumOfinfo</b>, <b>meanOfInfo</b>, <b>maxOfInfo</b> and
-	 *  <b>minOfInfo</b>: Each of these four parameters accepts a list of
-	 *  information fields. For each information field, the sum, mean, max or
-	 *  min (depending on the specified parameter(s)) of this information field
-	 *  at iddividuals in all or specified (virtual) subpopulations will be
-	 *  calculated. The results will be put into the following population
-	 *  variables:
+	 *  <b>sumOfinfo</b>, <b>meanOfInfo</b>, <b>varOfInfo</b>, <b>maxOfInfo</b>
+	 *  and <b>minOfInfo</b>: Each of these five parameters accepts a list of
+	 *  information fields. For each information field, the sum, mean, variance,
+	 *  maximum or minimal (depending on the specified parameter(s)) of this
+	 *  information field at iddividuals in all or specified (virtual)
+	 *  subpopulations will be calculated. The results will be put into the
+	 *  following population variables:
 	 *  \li \c sumOfInfo (default for \e sumOfInfo): A dictionary of the sum of
 	 *       specified information fields of individuals in all or specified
 	 *       (virtual) subpopulations. This dictionary is indexed by names of
 	 *       information fields.
 	 *  \li \c meanOfInfo (default for \e meanOfInfo): A dictionary of the mean
 	 *       of information fields of all individuals.
+	 *  \li \c varOfInfo (default for \e varOfInfo): A dictionary of the sample
+	 *       variance of information fields of all individuals.
 	 *  \li \c maxOfInfo (default for \e maxOfInfo): A dictionary of the
 	 *       maximum value of information fields of all individuals.
 	 *  \li \c minOfInfo (default for \e minOfInfo): A dictionary of the
@@ -1149,6 +1158,8 @@ public:
 	 *       individuals in each subpopulation.
 	 *  \li \c meanOfInfo_sp: A dictionary of the mean of information fields of
 	 *       individuals in each subpopulation.
+	 *  \li \c varOfInfo_sp: A dictionary of the sample variance of information
+	 *       fields of individuals in each subpopulation.
 	 *  \li \c maxOfInfo_sp: A dictionary of the maximum value of information
 	 *       fields of individuals in each subpopulation.
 	 *  \li \c minOfInfo_sp: A dictionary of the minimal value of information
@@ -1172,6 +1183,7 @@ public:
 		//
 		const stringList & sumOfInfo = stringList(),
 		const stringList & meanOfInfo = stringList(),
+		const stringList & varOfInfo = stringList(),
 		const stringList & maxOfInfo = stringList(),
 		const stringList & minOfInfo = stringList(),
 		//

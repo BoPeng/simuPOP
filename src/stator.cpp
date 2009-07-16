@@ -267,6 +267,7 @@ stat::stat(
 	//
 	const stringList & sumOfInfo,
 	const stringList & meanOfInfo,
+	const stringList & varOfInfo,
 	const stringList & maxOfInfo,
 	const stringList & minOfInfo,
 	//
@@ -296,7 +297,7 @@ stat::stat(
 	m_heteroFreq(heteroFreq.elems(), homoFreq.elems(), subPops, vars),
 	m_genoFreq(genoFreq.elems(), subPops, vars),
 	m_haploFreq(haploFreq, subPops, vars),
-	m_info(sumOfInfo.elems(), meanOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars),
+	m_info(sumOfInfo.elems(), meanOfInfo.elems(), varOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars),
 	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
 	m_association(association.elems(), subPops),
 	m_neutrality(neutrality.elems(), subPops),
@@ -351,6 +352,7 @@ bool statPopSize::apply(population & pop)
 
 	// popSize = ...
 	ULONG popSize = 0;
+	vectori spSize;
 	// for each (virtual) subpopulation
 	subPopList subPops = m_subPops;
 	subPops.useSubPopsFrom(pop);
@@ -359,6 +361,7 @@ bool statPopSize::apply(population & pop)
 	for (; it != itEnd; ++it) {
 		ULONG spPopSize = pop.subPopSize(*it);
 		popSize += spPopSize;
+		spSize.push_back(spPopSize);
 		if (m_vars.contains(popSize_sp_String))
 			pop.setIntVar(subPopVar_String(*it, popSize_String), spPopSize);
 	}
@@ -366,13 +369,8 @@ bool statPopSize::apply(population & pop)
 	if (m_vars.contains(popSize_String))
 		pop.setIntVar(popSize_String, popSize);
 	// subPopSize = ...
-	// type mismatch, can not use subPopSizes() directly.
-	if (m_vars.contains(subPopSize_String)) {
-		vectori spSize(pop.numSubPop());
-		for (size_t sp = 0; sp < spSize.size(); ++sp)
-			spSize[sp] = pop.subPopSize(sp);
+	if (m_vars.contains(subPopSize_String))
 		pop.setIntVectorVar(subPopSize_String, spSize);
-	}
 	return true;
 }
 
@@ -1180,17 +1178,21 @@ bool statInfo::apply(population & pop)
 	// field indexes
 	UINT numSumFld = m_sumOfInfo.size();
 	UINT numMeanFld = m_meanOfInfo.size();
+	UINT numVarFld = m_meanOfInfo.size();
 	UINT numMaxFld = m_maxOfInfo.size();
 	UINT numMinFld = m_minOfInfo.size();
 	//
 	vectoru sumOfInfo(m_sumOfInfo.size());
 	vectoru meanOfInfo(m_meanOfInfo.size());
+	vectoru varOfInfo(m_varOfInfo.size());
 	vectoru maxOfInfo(m_maxOfInfo.size());
 	vectoru minOfInfo(m_minOfInfo.size());
 	for (size_t i = 0; i < numSumFld; ++i)
 		sumOfInfo[i] = pop.infoIdx(m_sumOfInfo[i]);
 	for (size_t i = 0; i < numMeanFld; ++i)
 		meanOfInfo[i] = pop.infoIdx(m_meanOfInfo[i]);
+	for (size_t i = 0; i < numVarFld; ++i)
+		varOfInfo[i] = pop.infoIdx(m_varOfInfo[i]);
 	for (size_t i = 0; i < numMaxFld; ++i)
 		maxOfInfo[i] = pop.infoIdx(m_maxOfInfo[i]);
 	for (size_t i = 0; i < numMinFld; ++i)
@@ -1199,6 +1201,9 @@ bool statInfo::apply(population & pop)
 	vectorf allSumVal(numSumFld);
 	vectorf allMeanSumVal(numMeanFld);
 	vectorlu allMeanNumVal(numMeanFld);
+	vectorf allVarSumVal(numVarFld);
+	vectorf allVarSum2Val(numVarFld);
+	vectorlu allVarNumVal(numVarFld);
 	vectorf allMaxVal(0);
 	vectorf allMinVal(0);
 	// for each subpopulation.
@@ -1210,6 +1215,9 @@ bool statInfo::apply(population & pop)
 		vectorf sumVal(numSumFld, 0.);
 		vectorf meanSumVal(numMeanFld, 0.);
 		vectorlu meanNumVal(numMeanFld, 0);
+		vectorf varSumVal(numVarFld, 0.);
+		vectorf varSum2Val(numVarFld, 0.);
+		vectorlu varNumVal(numVarFld, 0);
 		vectorf maxVal(0);
 		vectorf minVal(0);
 
@@ -1223,6 +1231,12 @@ bool statInfo::apply(population & pop)
 			for (size_t i = 0; i < numMeanFld; ++i) {
 				meanSumVal[i] += it->info(meanOfInfo[i]);
 				meanNumVal[i]++;
+			}
+			for (size_t i = 0; i < numVarFld; ++i) {
+				float val = it->info(varOfInfo[i]);
+				varSumVal[i] += val;
+				varSum2Val[i] += val * val;
+				varNumVal[i]++;
 			}
 			if (maxVal.empty()) {
 				for (size_t i = 0; i < numMaxFld; ++i)
@@ -1253,6 +1267,11 @@ bool statInfo::apply(population & pop)
 			allMeanSumVal[i] += meanSumVal[i];
 			allMeanNumVal[i] += meanNumVal[i];
 		}
+		for (size_t i = 0; i < numVarFld; ++i) {
+			allVarSumVal[i] += varSumVal[i];
+			allVarSum2Val[i] += varSum2Val[i];
+			allVarNumVal[i] += varNumVal[i];
+		}
 		if (allMaxVal.empty()) {
 			for (size_t i = 0; i < numMaxFld; ++i)
 				allMaxVal.push_back(maxVal[i]);
@@ -1282,6 +1301,13 @@ bool statInfo::apply(population & pop)
 				dct[m_meanOfInfo[i]] = meanNumVal[i] == 0 ? 0 : meanSumVal[i] / meanNumVal[i];
 			pop.setStrDictVar(subPopVar_String(*sp, MeanOfInfo_String), dct);
 		}
+		if (m_vars.contains(VarOfInfo_sp_String)) {
+			strDict dct;
+			for (size_t i = 0; i < numVarFld; ++i)
+				dct[m_varOfInfo[i]] = varNumVal[i] <= 1 ? 0 :
+				                      (varSum2Val[i] - varSumVal[i] * varSumVal[i] / varNumVal[i]) / (varNumVal[i] - 1);
+			pop.setStrDictVar(subPopVar_String(*sp, VarOfInfo_String), dct);
+		}
 		if (m_vars.contains(MaxOfInfo_sp_String)) {
 			strDict dct;
 			for (size_t i = 0; i < numMaxFld; ++i)
@@ -1306,6 +1332,13 @@ bool statInfo::apply(population & pop)
 		for (size_t i = 0; i < numMeanFld; ++i)
 			dct[m_meanOfInfo[i]] = allMeanNumVal[i] == 0 ? 0 : allMeanSumVal[i] / allMeanNumVal[i];
 		pop.setStrDictVar(MeanOfInfo_String, dct);
+	}
+	if (m_vars.contains(VarOfInfo_String)) {
+		strDict dct;
+		for (size_t i = 0; i < numVarFld; ++i)
+			dct[m_varOfInfo[i]] = allVarNumVal[i] <= 1 ? 0 :
+			                      (allVarSum2Val[i] - allVarSumVal[i] * allVarSumVal[i] / allVarNumVal[i]) / (allVarNumVal[i] - 1);
+		pop.setStrDictVar(VarOfInfo_String, dct);
 	}
 	if (m_vars.contains(MaxOfInfo_String)) {
 		strDict dct;
