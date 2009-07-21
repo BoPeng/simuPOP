@@ -13393,11 +13393,11 @@ propOfMale
 numOfAffected_sp
 \family default
  are specified in parameter vars.
- A special variable is 
+ Another variable 
 \family typewriter
 subPopSize
 \family default
- for parameter 
+ is defined for parameter 
 \family typewriter
 popSize=True
 \family default
@@ -13763,6 +13763,10 @@ meanOfInfo
 \family default
 , 
 \family typewriter
+varOfInfo
+\family default
+, 
+\family typewriter
 maxOfInfo
 \family default
  and 
@@ -13796,7 +13800,7 @@ reference "statInfo"
 anc
 \family default
 ).
- During the evolution, individuals mate randomly and the ancestry of offspring
+ During the evolution, parents mate randomly and the ancestry of offspring
  is the mean of parental ancestry values.
  A 
 \family typewriter

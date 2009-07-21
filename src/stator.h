@@ -693,55 +693,44 @@ private:
 class statLD
 {
 private:
-	// these are names of calcualted statistics, will be accessed like
-	// pop.dvars().r2 or pop.vars()['r2']
-#define   LD_String           "ld"
-#define   LDPRIME_String      "ld_prime"
-#define   R2_String           "r2"
-#define   DELTA2_String       "delta2"
-	// these are LD averaged across all alleles
-	// for diallelic loci, they are the same as single-allele values
-#define   AvgLD_String        "LD"
-#define   AvgLDPRIME_String   "LD_prime"
-#define   AvgR2_String        "R2"
-#define   AvgDELTA2_String    "Delta2"
+#define   LD_String            "LD"
+#define   LD_prime_String      "LD_prime"
+#define   R2_String            "R2"
+#define   ChiSq_String         "LD_ChiSq"
+#define   ChiSq_p_String       "LD_ChiSq_p"
+#define   CramerV_String       "CramerV"
 
-	// association tests
-#define   ChiSq_String      "LD_ChiSq"
-#define   ChiSq_P_String    "LD_ChiSq_P"
-#define   UCU_String        "UC_U"
-#define   CramerV_String    "CramerV"
+#define   LD_sp_String         "LD_sp"
+#define   LD_prime_sp_String   "LD_prime_sp"
+#define   R2_sp_String         "R2_sp"
+#define   ChiSq_sp_String      "LD_ChiSq_sp"
+#define   ChiSq_p_sp_String    "LD_ChiSq_p_sp"
+#define   CramerV_sp_String    "CramerV_sp"
 
 public:
-	// alleleFreq and haploFreq is required to calculate LD
-	// needed allele and halplotype are added to alleleFreq and haploFreq
-	// objects during the initialization of statLD, as well as stat.
-	// In stat::apply(), alleleFreq.apply() and haploFreq.apply()
-	// is called before statLD.apply() and ensures that allele frequencies
-	// are calculated when statLD needs them.
-	statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-		const intMatrix & LD = intMatrix(), const strDict & LD_param = strDict());
-
-	/// CPPONLY: for copy constructor
-	statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-		const statLD & rhs) :
-		m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
-		m_LD(rhs.m_LD), m_midValues(rhs.m_midValues),
-		m_evalInSubPop(rhs.m_evalInSubPop),
-		m_output_ld(rhs.m_output_ld),
-		m_output_ld_prime(rhs.m_output_ld_prime),
-		m_output_r2(rhs.m_output_r2),
-		m_output_delta2(rhs.m_output_delta2),
-		m_output_LD(rhs.m_output_LD),
-		m_output_LD_prime(rhs.m_output_LD_prime),
-		m_output_R2(rhs.m_output_R2),
-		m_output_Delta2(rhs.m_output_Delta2),
-		m_output_ChiSq(rhs.m_output_ChiSq),
-		m_output_UCU(rhs.m_output_UCU),
-		m_output_CramerV(rhs.m_output_CramerV)
+	// In the previous versions (< 0.9.6), statLD relies statAlleleFreq
+	// and statHaploFreq to obtain allele and haplotype frequencies. This
+	// complicates the structure of these two statistics (because they need
+	// to decide how to save and provide statistics for statLD), and make
+	// statLD less efficient. The only advanced was that if both allele
+	// or haplotype frequencies and LD are requested, the frequencies will be
+	// calculated only once. However, this appear to be a rare case that does
+	// not worth special optimization. The newer version calculates allele and
+	// haplotype frequencies locally and in a more readable way.
+	statLD(const intMatrix & LD = intMatrix(),  const subPopList & subPops,
+		const stringList & vars)
+		: m_loci(loci), m_subPops(subPops), m_vars()
 	{
+		const char * allowedVars[] = {
+			LD_String, LD_prime_String, R2_String,
+			ChiSq_String, ChinSq_p_String, CramerV_String,
+			LD_sp_String, LD_prime_sp_String, R2_sp_String,
+			ChiSq_sp_String, ChinSq_p_sp_String, CramerV_sp_String,
+			""
+		};
+		const char * defaultVars[] = { LD_String, LDPRIME_String, R2_String, "" };
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
-
 
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
@@ -756,33 +745,11 @@ private:
 		bool valid_delta2, double D, double D_prime, double r2, double delta2);
 
 private:
-	/// need to get allele freq
-	statAlleleFreq & m_alleleFreq;
-
-	/// need to get haplofreq
-	statHaploFreq & m_haploFreq;
-
 	/// LD
 	intMatrix m_LD;
 
-	/// whether or not keep intermediate values
-	bool m_midValues;
-
-	/// whether or not calculate statistics for subpopulations
-	bool m_evalInSubPop;
-
-	/// whether or not calculate the following statistics
-	bool m_output_ld;
-	bool m_output_ld_prime;
-	bool m_output_r2;
-	bool m_output_delta2;
-	bool m_output_LD;
-	bool m_output_LD_prime;
-	bool m_output_R2;
-	bool m_output_Delta2;
-	bool m_output_ChiSq;
-	bool m_output_UCU;
-	bool m_output_CramerV;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 /// CPPONLY
