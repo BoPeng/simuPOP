@@ -1,4 +1,4 @@
-#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
+#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13823,6 +13823,241 @@ lstparams "caption={Calculate summary statistics of information fields},label={s
 
 \begin_layout Subsection
 Linkage disequilibrium
+\end_layout
+
+\begin_layout Standard
+Parameter 
+\emph on
+LD
+\emph default
+ accepts a list of loci-pairs such as 
+\family typewriter
+LD=[(0,1), (2,3)]
+\family default
+.
+ For each pair of loci, this operator calculates linkage disequilibrium
+ and optionally association measures between them.
+ Assuming that two loci are both diallelic, one with alleles 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $a$
+\end_inset
+
+, and the other with alleles 
+\begin_inset Formula $B$
+\end_inset
+
+ and 
+\begin_inset Formula $b$
+\end_inset
+
+.
+ If we denote 
+\begin_inset Formula $P_{x}$
+\end_inset
+
+, 
+\begin_inset Formula $P_{xy}$
+\end_inset
+
+ as allele and haplotype frequencies for allele 
+\begin_inset Formula $x$
+\end_inset
+
+ and haplotype 
+\begin_inset Formula $xy$
+\end_inset
+
+, respectively, the standard linkage disequilibrium measure is
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $D$
+\end_inset
+
+ (variable 
+\family typewriter
+LD[i][j]
+\family default
+) 
+\begin_inset Formula \[
+D=P_{AB}-P_{A}P_{B}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $D'=D/D_{max}$
+\end_inset
+
+ (variable 
+\family typewriter
+LD_prime[i][j]
+\family default
+) where 
+\begin_inset Formula \[
+D_{max}=\begin{cases}
+\min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D>0\\
+\min\left(P_{A}P_{B},\left(1-P_{A}\right)\left(1-P_{B}\right)\right) & \textrm{if }D<0\end{cases}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ (variable 
+\family typewriter
+R2[i][j]
+\family default
+) (
+\begin_inset Formula $\Delta^{2}$
+\end_inset
+
+ in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Devlin1995"
+
+\end_inset
+
+) 
+\begin_inset Formula \[
+r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To remove arbitrary sign of 
+\begin_inset Formula $D$
+\end_inset
+
+, the absolute value of 
+\begin_inset Formula $D$
+\end_inset
+
+ is assigned to variable 
+\family typewriter
+LD
+\family default
+.
+ If one or two loci have more than two alleles, 
+\begin_inset Formula $D$
+\end_inset
+
+, 
+\begin_inset Formula $D'$
+\end_inset
+
+ and 
+\begin_inset Formula $r^{2}$
+\end_inset
+
+ will be the averaged by 
+\begin_inset Formula $\sum\sum P_{A}P_{B}\left|\right|$
+\end_inset
+
+.
+ For example, 
+\begin_inset Formula \[
+r^{2}=\sum_{i}\sum_{j}P_{i}P_{j}r_{ij}^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\]
+
+\end_inset
+
+Note that 
+\begin_inset Formula $1-P_{A}$
+\end_inset
+
+ is no longer the frequency of allele 
+\begin_inset Formula $a$
+\end_inset
+
+ in this case.
+\end_layout
+
+\begin_layout Note
+A large number of linkage disequilibrium measures have been used in different
+ disciplines but not all of them are well-accepted.
+ Requests of adding a particular LD measure will be considered when a reliable
+ reference is provided.
+\end_layout
+
+\begin_layout Standard
+Association tests between specified markers could also be calculated, which
+ considers haplotype counts as a 
+\begin_inset Formula $m$
+\end_inset
+
+ by 
+\begin_inset Formula $n$
+\end_inset
+
+ contigency table where 
+\begin_inset Formula $m$
+\end_inset
+
+ and 
+\begin_inset Formula $n$
+\end_inset
+
+ are respective numbers of alleles at two loci.
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ and its 
+\begin_inset Formula $p$
+\end_inset
+
+-value (variable 
+\family typewriter
+LD_ChiSq
+\family default
+ and 
+\family typewriter
+LD_ChiSq_p
+\family default
+, respectively).
+ A one-side 
+\begin_inset Formula $\chi^{2}$
+\end_inset
+
+ test with 
+\begin_inset Formula $\left(m-1\right)\times\left(n-1\right)$
+\end_inset
+
+ degree of freedom will be used.
+\end_layout
+
+\begin_layout Itemize
+Cramer V statistic (variable 
+\family typewriter
+CramerV
+\family default
+): 
+\begin_inset Formula \[
+V=\sqrt{\frac{\chi^{2}}{N\times\mbox{min}\left(m-1,n-1\right)}}\]
+
+\end_inset
+
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ equals the total number of haplotypes (population size times ploidy).
 \end_layout
 
 \begin_layout Subsection
