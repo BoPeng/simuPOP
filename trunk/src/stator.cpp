@@ -298,7 +298,7 @@ stat::stat(
 	m_genoFreq(genoFreq.elems(), subPops, vars),
 	m_haploFreq(haploFreq, subPops, vars),
 	m_info(sumOfInfo.elems(), meanOfInfo.elems(), varOfInfo.elems(), maxOfInfo.elems(), minOfInfo.elems(), subPops, vars),
-	m_LD(m_alleleFreq, m_haploFreq, LD, LD_param),
+	m_LD(LD, subPops, vars),
 	m_association(association.elems(), subPops),
 	m_neutrality(neutrality.elems(), subPops),
 	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
@@ -318,7 +318,7 @@ stat::stat(const stat & rhs) :
 	m_genoFreq(rhs.m_genoFreq),
 	m_haploFreq(rhs.m_haploFreq),
 	m_info(rhs.m_info),
-	m_LD(m_alleleFreq, m_haploFreq, rhs.m_LD), // and this one
+	m_LD(rhs.m_LD),
 	m_association(rhs.m_association),
 	m_neutrality(rhs.m_neutrality),
 	m_Fst(m_alleleFreq, m_heteroFreq, rhs.m_Fst),
@@ -1356,109 +1356,6 @@ bool statInfo::apply(population & pop)
 }
 
 
-statLD::statLD(statAlleleFreq & alleleFreq, statHaploFreq & haploFreq,
-	const intMatrix & LD, const strDict & param)
-	: m_alleleFreq(alleleFreq), m_haploFreq(haploFreq),
-	m_LD(LD),
-	// default values,
-	m_midValues(false),
-	m_evalInSubPop(true),
-	m_output_ld(true),
-	m_output_ld_prime(true),
-	m_output_r2(true),
-	m_output_delta2(true),
-	m_output_LD(true),
-	m_output_LD_prime(true),
-	m_output_R2(true),
-	m_output_Delta2(true),
-	m_output_ChiSq(false),
-	m_output_UCU(false),
-	m_output_CramerV(false)
-{
-	// parameters
-	if (!param.empty()) {
-		strDict::const_iterator it;
-		strDict::const_iterator itEnd = param.end();
-		if ((it = param.find("subPop")) != itEnd)
-			m_evalInSubPop = it->second != 0.;
-		if ((it = param.find("midValues")) != itEnd)
-			m_midValues = it->second != 0.;
-		// if any statistics is specified, other unspecified ones are not calculated
-		if (param.find(LD_String) != itEnd ||
-		    param.find(LDPRIME_String) != itEnd ||
-		    param.find(R2_String) != itEnd ||
-		    param.find(DELTA2_String) != itEnd ||
-		    param.find(AvgLD_String) != itEnd ||
-		    param.find(AvgLDPRIME_String) != itEnd ||
-		    param.find(AvgR2_String) != itEnd ||
-		    param.find(AvgDELTA2_String) != itEnd ||
-		    param.find(ChiSq_String) != itEnd ||
-		    param.find(UCU_String) != itEnd ||
-		    param.find(CramerV_String) != itEnd) {
-			m_output_ld = false;
-			m_output_ld_prime = false;
-			m_output_r2 = false;
-			m_output_delta2 = false;
-			m_output_LD = false;
-			m_output_LD_prime = false;
-			m_output_R2 = false;
-			m_output_Delta2 = false;
-			m_output_ChiSq = false;
-			m_output_UCU = false;
-			m_output_CramerV = false;
-			// if has key, and is True or 1
-			if ((it = param.find(LD_String)) != itEnd)
-				m_output_ld = it->second != 0.;
-			if ((it = param.find(LDPRIME_String)) != itEnd)
-				m_output_ld_prime = it->second != 0.;
-			if ((it = param.find(R2_String)) != itEnd)
-				m_output_r2 = it->second != 0.;
-			if ((it = param.find(DELTA2_String)) != itEnd)
-				m_output_delta2 = it->second != 0.;
-			if ((it = param.find(AvgLD_String)) != itEnd)
-				m_output_LD = it->second != 0.;
-			if ((it = param.find(AvgLDPRIME_String)) != itEnd)
-				m_output_LD_prime = it->second != 0.;
-			if ((it = param.find(AvgR2_String)) != itEnd)
-				m_output_R2 = it->second != 0.;
-			if ((it = param.find(AvgDELTA2_String)) != itEnd)
-				m_output_Delta2 = it->second != 0.;
-			if ((it = param.find(ChiSq_String)) != itEnd)
-				m_output_ChiSq = it->second != 0.;
-			if ((it = param.find(UCU_String)) != itEnd)
-				m_output_UCU = it->second != 0.;
-			if ((it = param.find(CramerV_String)) != itEnd)
-				m_output_CramerV = it->second != 0.;
-		}
-	}
-	//
-	for (size_t i = 0, iEnd = m_LD.size(); i < iEnd; ++i) {
-		// these asserts will only be checked in non-optimized modules
-		DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4,
-			ValueError, "Expecting [locus locus [allele allele ]] items");
-
-		// midValues is used to tell alleleFreq that the calculated allele
-		// frequency values should not be posted to pop.dvars()
-		//
-		// That is to say,
-		//     stat(LD=[0,1])
-		// will not generate
-		//     pop.dvars().alleleFreq
-		// unless stat() is called as
-		//     stat(LD=[0,1], midValues=True)
-		//
-		m_alleleFreq.addLocus(m_LD[i][0], AllSubPops, stringList("alleleNum"));
-		m_alleleFreq.addLocus(m_LD[i][1], AllSubPops, stringList("alleleNum"));
-		// also need haplotype.
-		if (m_LD[i][0] != m_LD[i][1]) {
-			vectori hap(2);
-			hap[0] = m_LD[i][0];
-			hap[1] = m_LD[i][1];
-			m_haploFreq.addHaplotype(hap, AllSubPops, stringList());
-		}
-	}
-}
-
 
 // this function calculate single-allele LD measures
 // D, D_p and r2 are used to return calculated values.
@@ -1485,7 +1382,8 @@ void statLD::calculateLD(population & pop, const vectori & hapLoci, const vector
 		D_prime = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
 		r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
 		// calculate delta2
-		delta2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : pow((P_AB * ((1 - P_A) - (P_B - P_AB)) - (P_A - P_AB) * (P_B - P_AB)), 2) / (P_A * (1 - P_A) * P_B * (1 - P_B));
+		delta2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. 
+		: pow((P_AB * ((1 - P_A) - (P_B - P_AB)) - (P_A - P_AB) * (P_B - P_AB)), 2) / (P_A * (1 - P_A) * P_B * (1 - P_B));
 		// if environmental variable SIMUDEBUG is set to DBG_STATOR, or
 		// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 		DBG_DO(DBG_STATOR, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
@@ -1517,56 +1415,6 @@ void statLD::calculateLD(population & pop, const vectori & hapLoci, const vector
 }
 
 
-// try to shorten statLD::apply
-void statLD::outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
-                      bool valid_delta2, double D, double D_prime, double r2, double delta2)
-{
-	string ld_name, ldp_name, r2_name, d2_name, key_name;
-	bool ld_cond, ldp_cond, r2_cond, d2_cond;
-
-	// single allele cases
-	if (allele_string != "") {
-		ld_name = LD_String;
-		ldp_name = LDPRIME_String;
-		r2_name = R2_String;
-		d2_name = DELTA2_String;
-		key_name = haploKey(hapLoci) + allele_string;
-		ld_cond = m_output_ld;
-		ldp_cond = m_output_ld_prime;
-		r2_cond = m_output_r2;
-		d2_cond = m_output_delta2;
-	} else {
-		ld_name = AvgLD_String;
-		ldp_name = AvgLDPRIME_String;
-		r2_name = AvgR2_String;
-		d2_name = AvgDELTA2_String;
-		key_name = "{" + toStr(hapLoci[0]) + "}{" + toStr(hapLoci[1]) + '}';
-		ld_cond = m_output_LD;
-		ldp_cond = m_output_LD_prime;
-		r2_cond = m_output_R2;
-		d2_cond = m_output_Delta2;
-	}
-	if (subPop) {
-		ld_name = subPopVar_String(sp, ld_name);
-		ldp_name = subPopVar_String(sp, ldp_name);
-		r2_name = subPopVar_String(sp, r2_name);
-		d2_name = subPopVar_String(sp, d2_name);
-	}
-	DBG_DO(DBG_STATOR, cout << "Output statistics " << ldp_name + key_name << endl);
-	if (ld_cond)
-		pop.setDoubleVar(ld_name + key_name, D);
-	if (ldp_cond)
-		pop.setDoubleVar(ldp_name + key_name, D_prime);
-	if (r2_cond)
-		pop.setDoubleVar(r2_name + key_name, r2);
-	if (valid_delta2 && d2_cond)
-		pop.setDoubleVar(d2_name + key_name, delta2);
-}
-
-
-// this function is called by stat::apply(pop). It is called
-// after m_alleleFreq.apply(pop) and m_haploFreq.apply(pop) so
-// allele and haplotype frequencies should be available.
 bool statLD::apply(population & pop)
 {
 	if (m_LD.empty())
@@ -1574,39 +1422,36 @@ bool statLD::apply(population & pop)
 
 	UINT numSP = pop.numSubPop();
 	UINT nLD = m_LD.size();
-	// used for delta2 which can only be computed for 2 alleles
-	vectori numofalleles = m_alleleFreq.numOfAlleles(pop);
-	bool valid_delta2 = false;
 
-	// remove previous values.
-	pop.removeVar(LD_String);
-	pop.removeVar(LDPRIME_String);
-	pop.removeVar(R2_String);
-	pop.removeVar(DELTA2_String);
-	pop.removeVar(AvgLD_String);
-	pop.removeVar(AvgLDPRIME_String);
-	pop.removeVar(AvgR2_String);
-	pop.removeVar(AvgDELTA2_String);
-	pop.removeVar(ChiSq_String);
-	pop.removeVar(ChiSq_P_String);
-	pop.removeVar(UCU_String);
-	pop.removeVar(CramerV_String);
-	// also vars at each subpopulations
-	for (UINT sp = 0; sp < numSP;  ++sp) {
-		// subPopVar_String is nothing but subPop[sp]['string']
-		pop.removeVar(subPopVar_String(sp, LD_String));
-		pop.removeVar(subPopVar_String(sp, LDPRIME_String));
-		pop.removeVar(subPopVar_String(sp, R2_String));
-		pop.removeVar(subPopVar_String(sp, DELTA2_String));
-		pop.removeVar(subPopVar_String(sp, AvgLD_String));
-		pop.removeVar(subPopVar_String(sp, AvgLDPRIME_String));
-		pop.removeVar(subPopVar_String(sp, AvgR2_String));
-		pop.removeVar(subPopVar_String(sp, AvgDELTA2_String));
-		pop.removeVar(subPopVar_String(sp, ChiSq_String));
-		pop.removeVar(subPopVar_String(sp, ChiSq_P_String));
-		pop.removeVar(subPopVar_String(sp, UCU_String));
-		pop.removeVar(subPopVar_String(sp, CramerV_String));
-	}
+	vector<map<UINT, UINT> > allAlleleCnt;
+	vector<map<std::pair<UINT, UINT>, UINT> > allHaploCnt;
+	
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	UINT ply = pop.ploidy();
+	for (; it != itEnd; ++it) {
+		const char * spVars[] = {
+			LD_sp_String, LD_prime_sp_String, R2_sp_String,
+			ChiSq_sp_String, ChinSq_p_sp_String, CramerV_sp_String,
+			""
+		};
+		for (size_t i = 0; spVars[i][0]; ++i) {
+			if (m_vars.contains(spVars[i]))
+				pop.removeVar(subPopVar_String(*it, spVars[i]));
+		}
+
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
+
+		
+		vector<map<UINT, UINT> > alleleCnt;
+		vector<map<std::pair<UINT, UINT>, UINT> > haploCnt;
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			const vectori & loci = m_loci[idx];
+	
 	for (size_t i = 0; i < nLD; ++i) {
 		// specifying alleles
 		if (m_LD[i].size() == 4) {
