@@ -345,6 +345,17 @@ bool stat::apply(population & pop)
 }
 
 
+statPopSize::statPopSize(bool popSize, const subPopList & subPops, const stringList & vars)
+		: m_isActive(popSize), m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = { popSize_String,    popSize_sp_String,
+			                           subPopSize_String, "" };
+		const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	}
+
+
 bool statPopSize::apply(population & pop)
 {
 	if (!m_isActive)
@@ -373,6 +384,21 @@ bool statPopSize::apply(population & pop)
 		pop.setIntVectorVar(subPopSize_String, spSize);
 	return true;
 }
+
+
+statNumOfMale::statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars)
+		: m_isActive(numOfMale), m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			numOfMale_String,      propOfMale_String,
+			numOfFemale_String,    propOfFemale_String,
+			numOfMale_sp_String,   propOfMale_sp_String,
+			numOfFemale_sp_String, propOfFemale_sp_String,""
+		};
+		const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	}
 
 
 bool statNumOfMale::apply(population & pop)
@@ -434,6 +460,21 @@ bool statNumOfMale::apply(population & pop)
 		pop.setDoubleVar(propOfFemale_String, allTotalCnt == 0 ? 0 : static_cast<double>(allFemaleCnt) / allTotalCnt);
 	return true;
 }
+
+
+statNumOfAffected::statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars)
+		: m_isActive(numOfAffected), m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			numOfAffected_String,      propOfAffected_String,
+			numOfUnaffected_String,    propOfUnaffected_String,
+			numOfAffected_sp_String,   propOfAffected_sp_String,
+			numOfUnaffected_sp_String, propOfUnaffected_sp_String,""
+		};
+		const char * defaultVars[] = { numOfAffected_String, numOfUnaffected_String, "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	}
 
 
 bool statNumOfAffected::apply(population & pop)
@@ -500,24 +541,17 @@ bool statNumOfAffected::apply(population & pop)
 }
 
 
-void statAlleleFreq::addLocus(UINT locus, const subPopList & subPops,
-                              const stringList & vars)
-{
-	if (find(m_loci.begin(), m_loci.end(), locus) == m_loci.end())
-		m_loci.push_back(locus);
-	//
-	subPopList::const_iterator it = subPops.begin();
-	subPopList::const_iterator itEnd = subPops.end();
-	for (; it != itEnd; ++it)
-		if (!m_subPops.contains(*it))
-			m_subPops.push_back(*it);
-	//
-	vectorstr::const_iterator vit = vars.elems().begin();
-	vectorstr::const_iterator vitEnd = vars.elems().end();
-	for (; vit != vitEnd; ++vit)
-		if (!m_vars.contains(*vit))
-			m_vars.push_back(*vit);
-}
+statAlleleFreq::statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
+		: m_loci(loci), m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			AlleleNum_String,    AlleleFreq_String,
+			AlleleNum_sp_String, AlleleFreq_sp_String,""
+		};
+		const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	}
 
 
 bool statAlleleFreq::apply(population & pop)
@@ -604,92 +638,6 @@ bool statAlleleFreq::apply(population & pop)
 }
 
 
-vectori statAlleleFreq::numOfAlleles(population & pop)
-{
-	UINT maxLocus = 0;
-
-	for (size_t loc = 0; loc < m_loci.size(); ++loc)
-		if (maxLocus < m_loci[loc])
-			maxLocus = m_loci[loc];
-	vectori res(maxLocus + 1, 0);
-	for (size_t loc = 0; loc < m_loci.size(); ++loc) {
-		string varname = string(AlleleNum_String) + "{" + toStr(m_loci[loc]) + "}";
-		PyObject * d = pop.getVar(varname);
-		vectori num;
-		PyObj_As_IntArray(d, num);
-
-		int cnt = 0;
-		for (size_t j = 0; j < num.size(); ++j)
-			if (num[j] != 0)
-				cnt += 1;
-		res[m_loci[loc]] = cnt;
-	}
-	return res;
-}
-
-
-vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc)
-{
-	string varname = string(AlleleFreq_String) + "{" + toStr(loc) + "}";
-	PyObject * d = pop.getVar(varname);
-	vectorf res;
-
-	PyObj_As_Array(d, res);
-	return res;
-}
-
-
-double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc)
-{
-	string varname = string(AlleleFreq_String) + "{" + toStr(loc) + "}[" + toStr(allele) + "]";
-	PyObject * d = pop.getVar(varname);
-	double af;
-
-	PyObj_As_Double(d, af);
-	return af;
-}
-
-
-vectorf statAlleleFreq::alleleFreqVec(population & pop, int loc, UINT subPop)
-{
-	string varname = subPopVar_String(subPop, AlleleFreq_String) + "{" + toStr(loc) + "}";
-	PyObject * d = pop.getVar(varname);
-	vectorf res;
-
-	PyObj_As_Array(d, res);
-	return res;
-}
-
-
-double statAlleleFreq::alleleFreq(population & pop, UINT allele, int loc, UINT subPop)
-{
-	string varname = subPopVar_String(subPop, AlleleFreq_String) + "{" + toStr(loc) + "}[" + toStr(allele) + "]";
-	PyObject * d = pop.getVar(varname);
-	double af;
-
-	PyObj_As_Double(d, af);
-	return af;
-}
-
-
-vectori statAlleleFreq::alleles(population & pop, int loc)
-{
-	string varname = string(AlleleNum_String) + "{" + toStr(loc) + "}";
-	PyObject * d = pop.getVar(varname);
-	vectori res;
-
-	PyObj_As_IntArray(d, res);
-
-	vectori al;
-
-	for (size_t j = 0; j < res.size(); ++j) {
-		if (res[j] > 0)
-			al.push_back(j);
-	}
-	return al;
-}
-
-
 statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
 	const subPopList & subPops, const stringList & vars)
 	: m_loci(heteroFreq), m_subPops(subPops), m_vars()
@@ -718,36 +666,6 @@ statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & hom
 	}
 }
 
-
-void statHeteroFreq::addLocus(UINT locus, const subPopList & subPops,
-                              const stringList & vars)
-{
-	if (find(m_loci.begin(), m_loci.end(), locus) == m_loci.end())
-		m_loci.push_back(locus);
-	//
-	subPopList::const_iterator it = subPops.begin();
-	subPopList::const_iterator itEnd = subPops.end();
-	for (; it != itEnd; ++it)
-		if (!m_subPops.contains(*it))
-			m_subPops.push_back(*it);
-	//
-	vectorstr::const_iterator vit = vars.elems().begin();
-	vectorstr::const_iterator vitEnd = vars.elems().end();
-	for (; vit != vitEnd; ++vit)
-		if (!m_vars.contains(*vit))
-			m_vars.push_back(*vit);
-}
-
-
-double statHeteroFreq::heteroFreq(population & pop, UINT allele, int loc, vspID subPop)
-{
-	string varname = subPopVar_String(subPop, HeteroFreq_String) + "{" + toStr(loc) + "}";
-	PyObject * d = pop.getVar(varname);
-	double res;
-
-	PyObj_As_Double(d, res);
-	return res;
-}
 
 
 bool statHeteroFreq::apply(population & pop)
@@ -958,64 +876,17 @@ bool statGenoFreq::apply(population & pop)
 }
 
 
-vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, UINT wildtype)
-{
-	DBG_ASSERT(pop.ploidy() == 2, ValueError,
-		"Genotype can only be calcualted for diploid populations.");
+statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops, const stringList & vars)
+		: m_loci(haploFreq), m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			HaplotypeNum_String,	HaplotypeFreq_String,
+			HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
+		};
+		const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 
-	DBG_FAILIF(loc >= pop.totNumLoci(), IndexError,
-		"Locus index out of range");
-
-	vectorlu res(3, 0);
-
-	IndIterator it = pop.indIterator();
-	for (; it.valid(); ++it) {
-		Allele a = ToAllele(it->allele(loc, 0));
-		Allele b = ToAllele(it->allele(loc, 1));
-		if (a == wildtype) {
-			if (b == wildtype)
-				res[0]++;
-			else
-				res[1]++;
-		} else {
-			if (b == wildtype)
-				res[1]++;
-			else
-				res[2]++;
-		}
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 	}
-	return res;
-}
-
-
-vectorlu statGenoFreq::countGenotype(population & pop, UINT loc, SubPopID subPop, UINT wildtype)
-{
-	DBG_ASSERT(pop.ploidy() == 2, ValueError,
-		"Genotype can only be calcualted for diploid populations.");
-
-	DBG_FAILIF(loc >= pop.totNumLoci(), IndexError,
-		"Locus index out of range");
-
-	vectorlu res(3, 0);
-
-	IndIterator it = pop.indIterator(subPop);
-	for (; it.valid(); ++it) {
-		Allele a = ToAllele(it->allele(loc, 0));
-		Allele b = ToAllele(it->allele(loc, 1));
-		if (a == wildtype) {
-			if (b == wildtype)
-				res[0]++;
-			else
-				res[1]++;
-		} else {
-			if (b == wildtype)
-				res[1]++;
-			else
-				res[2]++;
-		}
-	}
-	return res;
-}
 
 
 string statHaploFreq::dictKey(const vectori & loci)
@@ -1029,43 +900,6 @@ string statHaploFreq::dictKey(const vectori & loci)
 	}
 	key += ")";
 	return key;
-}
-
-
-void statHaploFreq::addHaplotype(const vectori & loci,
-                                 const subPopList & subPops, const stringList & vars)
-{
-	if (find(m_loci.begin(), m_loci.end(), loci) == m_loci.end())
-		m_loci.push_back(loci);
-	//
-	subPopList::const_iterator it = subPops.begin();
-	subPopList::const_iterator itEnd = subPops.end();
-	for (; it != itEnd; ++it)
-		if (!m_subPops.contains(*it))
-			m_subPops.push_back(*it);
-	//
-	vectorstr::const_iterator vit = vars.elems().begin();
-	vectorstr::const_iterator vitEnd = vars.elems().end();
-	for (; vit != vitEnd; ++vit)
-		if (!m_vars.contains(*vit))
-			m_vars.push_back(*vit);
-}
-
-
-tupleDict statHaploFreq::haploFreq(population & pop, const vectori & loci, vspID subPop)
-{
-	string key = dictKey(loci);
-
-	string varname;
-
-	if (subPop.valid())
-		varname = subPopVar_String(subPop, HaplotypeFreq_String) + "{" + key + "}";
-	else
-		varname = string(HaplotypeFreq_String) + "{" + key + "}";
-	PyObject * d = pop.getVar(varname);
-	tupleDict res;
-	PyObj_As_TupleDict(d, res);
-	return res;
 }
 
 
@@ -1097,7 +931,16 @@ bool statHaploFreq::apply(population & pop)
 		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
 			const vectori & loci = m_loci[idx];
 			UINT nLoci = loci.size();
+			if (nLoci == 0)
+				continue;
 
+			UINT chromType = pop.chromType(pop.chromLocusPair(loci[0]).first);
+#ifndef OPTIMIZED
+			for (size_t i = 1; i < nLoci; ++i) {
+				DBG_FAILIF(pop.chromType(pop.chromLocusPair(loci[i].first)) != chromType,
+					"Haplotype must be on the chromosomes of the same type");
+			}
+#endif
 			string key = dictKey(loci);
 
 			tupleDict haplotypes;
@@ -1109,6 +952,11 @@ bool statHaploFreq::apply(population & pop)
 				vectori haplotype(loci.size());
 				for (size_t p = 0; p < ply; ++p) {
 					if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+						continue;
+					if (chromType == ChromosomeY && ind->sex() == Famale)
+						continue;
+					if (((chromType == ChromosomeX && p == 1) || 
+						(chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
 						continue;
 					for (size_t idx = 0; idx < nLoci; ++idx)
 						haplotype[idx] = ind->allele(loci[idx], p);
@@ -1168,6 +1016,37 @@ bool statHaploFreq::apply(population & pop)
 
 	return true;
 }
+
+
+statInfo::statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
+		const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
+		const vectorstr & minOfInfo,
+		const subPopList & subPops, const stringList & vars)
+		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo), m_varOfInfo(varOfInfo),
+		m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
+		m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			SumOfInfo_String,    MeanOfInfo_String,    VarOfInfo_String,	MaxOfInfo_String,    MinOfInfo_String,
+			SumOfInfo_sp_String, MeanOfInfo_sp_String, VarOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
+			""
+		};
+		const char * defaultVars[] = { "" };
+
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
+		if (m_vars.empty()) {
+			if (!m_sumOfInfo.empty())
+				m_vars.push_back(SumOfInfo_String);
+			if (!m_meanOfInfo.empty())
+				m_vars.push_back(MeanOfInfo_String);
+			if (!m_varOfInfo.empty())
+				m_vars.push_back(VarOfInfo_String);
+			if (!m_maxOfInfo.empty())
+				m_vars.push_back(MaxOfInfo_String);
+			if (!m_minOfInfo.empty())
+				m_vars.push_back(MinOfInfo_String);
+		}
+	}
 
 
 bool statInfo::apply(population & pop)
@@ -1355,7 +1234,26 @@ bool statInfo::apply(population & pop)
 	return true;
 }
 
+	
+statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
+		const stringList & vars)
+		: m_LD(LD), m_subPops(subPops), m_vars()
+	{
+		const char * allowedVars[] = {
+			LD_String, LD_prime_String, R2_String,
+			ChiSq_String, ChinSq_p_String, CramerV_String,
+			LD_sp_String, LD_prime_sp_String, R2_sp_String,
+			ChiSq_sp_String, ChinSq_p_sp_String, CramerV_sp_String,
+			""
+		};
+		const char * defaultVars[] = { LD_String, LDPRIME_String, R2_String, "" };
+		m_vars.obtainFrom(vars, allowedVars, defaultVars);
 
+		for (size_t i = 0; i < m_LD.size(); ++i) {
+			DBG_FAILIF(m_LD[i].size() != 2, ValueError,
+				"Parameter LD should be a list of loci pairs.");
+		}
+	}
 
 // this function calculate single-allele LD measures
 // D, D_p and r2 are used to return calculated values.
@@ -1420,11 +1318,21 @@ bool statLD::apply(population & pop)
 	if (m_LD.empty())
 		return true;
 
-	UINT numSP = pop.numSubPop();
 	UINT nLD = m_LD.size();
+	// determine involved LD.
+	vectoru loci;
+	vectoru lociMap(pop.totNumLoci());
+	for (size_t i = 0; i < m_LD.size(); ++i)
+		for (size_t j = 0; j < 2; ++j) {
+			if (find(loci.begin(), loci.end(), m_LD[i][j]) == loci.end()) {
+				loci.push_back(m_LD[i][j]);
+				lociMap[m_LD[i][j]] = loci.size() - 1;
+			}
+		}
+	UINT nLoci = loci.size();
 
-	vector<map<UINT, UINT> > allAlleleCnt;
-	vector<map<std::pair<UINT, UINT>, UINT> > allHaploCnt;
+	vector<map<UINT, UINT> > allAlleleCnt(loci.size());
+	vector<map<std::pair<UINT, UINT>, UINT> > allHaploCnt(m_LD.size());
 	
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
@@ -1446,282 +1354,121 @@ bool statLD::apply(population & pop)
 		if (it->isVirtual())
 			pop.activateVirtualSubPop(*it);
 
-		
-		vector<map<UINT, UINT> > alleleCnt;
-		vector<map<std::pair<UINT, UINT>, UINT> > haploCnt;
-		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
-			const vectori & loci = m_loci[idx];
+		vector<map<UINT, UINT> > alleleCnt(loci.size());
+		vector<map<std::pair<UINT, UINT>, UINT> > haploCnt(m_LD.size());
 	
-	for (size_t i = 0; i < nLD; ++i) {
-		// specifying alleles
-		if (m_LD[i].size() == 4) {
-			vectori hapLoci(2);
-			vectori hapAlleles(2);
-
-			hapLoci[0] = m_LD[i][0];
-			hapLoci[1] = m_LD[i][1];
-			if (numofalleles[hapLoci[0]] <= 2 && numofalleles[hapLoci[1]] <= 2)
-				valid_delta2 = true;
-			hapAlleles[0] = m_LD[i][2];
-			hapAlleles[1] = m_LD[i][3];
-
-			// whole population, P_A, P_B is ignored
-			double D = 0;
-			double D_prime = 0;
-			double r2 = 0;
-			double delta2 = 0;
-			double P_A = 0;
-			double P_B = 0;
-			calculateLD(pop, hapLoci, hapAlleles, 0, false, P_A, P_B, D, D_prime, r2, delta2);
-			outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D, D_prime, r2, delta2);
-
-			if (m_evalInSubPop) {
-				if (numSP == 1)     // use the whole population result
-					outputLD(pop, hapLoci, haploKey(hapAlleles), 0, true, valid_delta2, D, D_prime, r2, delta2);
-				else {
-					for (UINT sp = 0; sp < numSP;  ++sp) {
-						// get LD values, P_A, P_B is ignored.
-						double D = 0;
-						double D_prime = 0;
-						double r2 = 0;
-						double delta2 = 0;
-						double P_A = 0;
-						double P_B = 0;
-						calculateLD(pop, hapLoci, hapAlleles, sp, true, P_A, P_B, D, D_prime, r2, delta2);
-						outputLD(pop, hapLoci, haploKey(hapAlleles), sp, true, valid_delta2, D, D_prime, r2, delta2);
-					}
-				}
-			}                                                                         // eval in subpop
-		} else {
-			// No alleles specified, average over all available alleles
-			vectori hapLoci(2);
-			vectori hapAlleles(2);
-
-			hapLoci[0] = m_LD[i][0];
-			hapLoci[1] = m_LD[i][1];
-			if (numofalleles[hapLoci[0]] <= 2 && numofalleles[hapLoci[1]] <= 2)
-				valid_delta2 = true;
-
-			// find out all alleles
-			vectori A_alleles = m_alleleFreq.alleles(pop, hapLoci[0]);
-			vectori B_alleles = m_alleleFreq.alleles(pop, hapLoci[1]);
-
-			// whole population
-			double D = 0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
-			for (vectori::iterator A_ale = A_alleles.begin();
-			     A_ale != A_alleles.end(); ++A_ale) {
-				for (vectori::iterator B_ale = B_alleles.begin();
-				     B_ale != B_alleles.end(); ++B_ale) {
-					hapAlleles[0] = *A_ale;
-					hapAlleles[1] = *B_ale;
-					double D_ = 0;
-					double D_prime_ = 0;
-					double r2_ = 0;
-					double delta2_ = 0;
-					double P_A = 0;
-					double P_B = 0;
-					calculateLD(pop, hapLoci, hapAlleles, 0, false, P_A, P_B, D_, D_prime_, r2_, delta2_);
-					if (m_midValues)
-						outputLD(pop, hapLoci, haploKey(hapAlleles), 0, false, valid_delta2, D_, D_prime_, r2_, delta2_);
-
-					D += P_A * P_B * fabs(D_);
-					D_prime += P_A * P_B * fabs(D_prime_);
-					r2 += P_A * P_B * r2_;
-					if (valid_delta2)
-						delta2 += P_A * P_B * delta2_;
-					DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime << " r2 " << r2 << endl);
-				}                                                                 // all haplotypes
+		// count allele and genotype
+		IndIterator ind = pop.indIterator(it->subPop());
+		for (; ind.valid(); ++ind) {
+			vectori haplotype(loci.size());
+			for (size_t p = 0; p < ply; ++p) {
+				if (p == 1 && ind->sex() == Male && pop.isHaplodiploid())
+					continue;
+				if (chromType == ChromosomeY && ind->sex() == Famale)
+					continue;
+				if (((chromType == ChromosomeX && p == 1) || 
+					(chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+					continue;
+				GenoIterator geno = ind->genoBegin(p);
+				// allele frequency
+				for (size_t idx = 0; idx < nLoci; ++idx)
+					alleleCnt[idx][*(geno + loci[idx])] ++;
+				// haplotype frequency
+				for (size_t idx = 0; idx < m_LD.size(); ++idx) {
+					haploCnt[idx][make_pair(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))] ++;
 			}
-			outputLD(pop, hapLoci, "", 0, false, valid_delta2, D, D_prime, r2, delta2);
-
-			if (m_evalInSubPop) {
-				if (numSP == 1)     // use the whole population result
-					outputLD(pop, hapLoci, "", 0, true, valid_delta2, D, D_prime, r2, delta2);
-				else {
-					for (UINT sp = 0; sp < numSP;  ++sp) {
-						double D = 0.0, D_prime = 0.0, r2 = 0.0, delta2 = 0.0;
-						// iterate through all alleles at locus A and B
-						for (vectori::iterator A_ale = A_alleles.begin();
-						     A_ale != A_alleles.end(); ++A_ale) {
-							for (vectori::iterator B_ale = B_alleles.begin();
-							     B_ale != B_alleles.end(); ++B_ale) {
-								// this is now single allele ...
-								hapAlleles[0] = *A_ale;
-								hapAlleles[1] = *B_ale;
-								double D_ = 0;
-								double D_prime_ = 0;
-								double r2_ = 0;
-								double delta2_ = 0;
-								double P_A = 0;
-								double P_B = 0;
-								calculateLD(pop, hapLoci, hapAlleles, sp, true, P_A, P_B, D_, D_prime_, r2_, delta2_);
-
-								// store allele-specific LD values as well.
-								if (m_midValues)
-									outputLD(pop, hapLoci, haploKey(hapAlleles), sp, true, valid_delta2, D_, D_prime_, r2_, delta2_);
-
-								D += P_A * P_B * fabs(D_);
-								D_prime += P_A * P_B * fabs(D_prime_);
-								r2 += P_A * P_B * r2_;
-								if (valid_delta2)
-									delta2 += P_A * P_B * delta2_;
-								DBG_DO(DBG_STATOR, cout << "Sum D " << D << " D' " << D_prime << " r2 " << r2 << "delta2" << delta2 << endl);
-							}
-						}
-						outputLD(pop, hapLoci, "", sp, true, valid_delta2, D, D_prime, r2, delta2);
-					}                                                                               // each subpop
-				}                                                                                   // numSP
-			}                                                                                       // eval in subpop
-		}                                                                                           // size = 2, 4
-	}                                                                                               // for all LD
-	/* FIXME: the following is moved from the old association class... they should
-	 * be merged to the above calculation
-	 */
-	if (!m_output_ChiSq && !m_output_UCU && !m_output_CramerV)
-		return true;
-
-	for (size_t i = 0; i < m_LD.size(); ++i) {
+		}
+		// add to all count
+		for (size_t idx = 0; idx < nLoci; ++idx) {
+			map<UINT, UINT>::iterator cnt = alleleCnt[idx].begin();
+			map<UINT, UINT>::iterator cntEnd = alleleCnt[idx].end();
+			for (; cnt != cntEnd; ++cnt)
+				allAlleleCnt[cnt->first] += cnt->second;
+		}
 		//
-		vectori hapLoci = m_LD[i];
-		hapLoci.resize(2);
-
-		// find out all alleles
-		vectori A_alleles = m_alleleFreq.alleles(pop, hapLoci[0]);
-		vectori B_alleles = m_alleleFreq.alleles(pop, hapLoci[1]);
-		string hapLociStr = '[' + toStr(hapLoci[0]) + "][" +
-		                    toStr(hapLoci[1]) + ']';
-
-		UINT as = A_alleles.size();
-		UINT bs = B_alleles.size();
-
-		// the whole population
-		vector<vectorf> cont_table(as + 1);
-		for (size_t i = 0; i <= as; ++i)
-			cont_table[i].resize(bs + 1);
-		double n = static_cast<double>(pop.popSize());
-		double ChiSq = 0.0, ChiSq_P = 0.0, UC_U = 0.0, CramerV = 0.0;
-		double HA = 0.0, HB = 0.0, HAB = 0.0;
-		// initialize last line/column
-		for (size_t i = 0; i < as; ++i)
-			cont_table[i][bs] = 0;
-		for (size_t j = 0; j <= bs; ++j)
-			cont_table[as][j] = 0;
-		// get P_ij
-		for (size_t i = 0; i < as; ++i) {
-			for (size_t j = 0; j < bs; ++j) {
-				vectori hapAlleles(2);
-				hapAlleles[0] = A_alleles[i];
-				hapAlleles[1] = B_alleles[j];
-				cont_table[i][j] = m_haploFreq.haploFreq(pop, hapLoci)[hapAlleles];
-				cont_table[i][bs] += cont_table[i][j];
-				cont_table[as][j] += cont_table[i][j];
-				cont_table[as][bs] += cont_table[i][j];
-			}
+		for (size_t idx = 0; idx < m_LD.size(); ++idx) {
+			map<std::pair<UINT, UINT>, UINT>::iterator cnt = haploCnt[idx].begin();
+			map<std::pair<UINT, UINT>, UINT>::iterator cntEnd = haploCnt[idx].end();
+			for (; cnt != cntEnd; ++cnt)
+				allHaploCnt[cnt->first] += cnt->second;
 		}
-		DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
-			"Sum of haplotype frequencies is not 1. Association will not be computed.");
-		//DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
 		// calculate statistics
-		//ChiSq
-		if (m_output_ChiSq || m_output_CramerV) {
-			for (size_t i = 0; i < as; ++i)
-				for (size_t j = 0; j < bs; ++j)
-					ChiSq += pow((n * cont_table[i][j] - n * cont_table[i][bs] * cont_table[as][j]), 2)
-					         / (n * cont_table[i][bs] * cont_table[as][j]);
-			ChiSq_P = GetRNG().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
-		}
-		if (m_output_ChiSq) {
-			pop.setDoubleVar(ChiSq_String + hapLociStr, ChiSq);
-			pop.setDoubleVar(ChiSq_P_String + hapLociStr, ChiSq_P);
-		}
-		//UC_U
-		if (m_output_UCU) {
-			for (size_t i = 0; i < as; ++i)
-				HA += -cont_table[i][bs] * log(cont_table[i][bs]);
-			for (size_t j = 0; j <= bs; ++j)
-				HB += -cont_table[as][j] * log(cont_table[as][j]);
-			for (size_t i = 0; i < as; ++i)
-				for (size_t j = 0; j < bs; ++j)
-					HAB += -cont_table[i][j] * log(cont_table[i][j]);
-			UC_U = 2 * ((HA + HB - HAB) / (HA + HB));
-			pop.setDoubleVar(UCU_String + hapLociStr, UC_U);
-		}
-		//CramerV
-		if (m_output_CramerV) {
-			CramerV = sqrt(ChiSq / (n * std::min(as - 1, bs - 1)));
-			pop.setDoubleVar(CramerV_String + hapLociStr, CramerV);
-		}
+		vectorf LD(m_LD.size());
+		vectorf LD_prime(m_LD.size());
+		vectorf R2_prime(m_LD.size());
+		for (size_t idx = 0; idx < m_LD.size(); ++idx) {
+			UINT loc1 = m_LD[idx][0];
+			UINT loc2 = m_LD[idx][1];
+			const map<UINT, UINT> & alleleCnt1 = alleleCnt[lociMap[loc1]];
+			const map<UINT, UINT> & alleleCnt2 = alleleCnt[lociMap[loc2]];
+			vectora alleles1;
+			vectorf freq1;
+			vectora alleles2;
+			vectorf freq2;
+			map<UINT, UINT>::iterator cnt = alleleCnt1.begin();
+			map<UINT, UINT>::iterator cntEnd = alleleCnt1.end();
+			for (; cnt != cntEnd; ++cnt) {
+				alleles1.push_back(cnt->first);
+				freq1.push_back(cnt->second);
+			}
+			cnt = alleleCnt2.begin();
+			cntEnd = alleleCnt2.end();
+			for (; cnt != cntEnd; ++cnt) {
+				alleles2.push_back(a->first);
+				freq2.push_back(a->second);
+			}
+			// get haplotype count
+			const map<std::pair<UINT, UINT>, UINT> & haplos = haploCnt[idx];
+			// get total haplotype count (used to calculate haplotype frequency)
+			double allHaplo = 0;
+			map<std::pair<UINT, UINT>, UINT>::iterator hCnt = haplos.begin();
+			map<std::pair<UINT, UINT>, UINT>::iterator hCntEnd = haplos.end();
+			for (; hCnt != hCntEnd; ++hCnt)
+				allHaplo += hCnt->second;
+			//
+			//
+			// calculate LD
+			double avgD = 0;
+			double avgD_prime = 0;
+			double avgR2 = 0;
+			for (size_t i = 0; i < alleles1.size(); ++i) {
+				for (size_t j = 0; j < alleles2.size(); ++i) {
+					UINT A = alleles1[i];
+					UINT B = alleles2[j];
+					double P_AB = haplos[make_pair(A, B)] / allHaplo;
+					// get allele freq from the m_alleleFreq object
+					double P_A = freq1[i];
+					double P_B = freq2[j];
 
-		if (!m_evalInSubPop)
-			continue;
-		// subpopulations ...
-		if (numSP == 1) {
-			pop.setDoubleVar(subPopVar_String(0, ChiSq_String) + hapLociStr, ChiSq);
-			pop.setDoubleVar(subPopVar_String(0, ChiSq_P_String) + hapLociStr, ChiSq_P);
-			pop.setDoubleVar(subPopVar_String(0, UCU_String) + hapLociStr, UC_U);
-			pop.setDoubleVar(subPopVar_String(0, CramerV_String) + hapLociStr, CramerV);
-		} else {
-			for (UINT sp = 0; sp < numSP;  ++sp) {
-				UINT as = A_alleles.size();
-				UINT bs = B_alleles.size();
-				vector<vectorf> cont_table(as + 1);
-				for (size_t i = 0; i <= as; ++i)
-					cont_table[i].resize(bs + 1);
-				double n = static_cast<double>(pop.subPopSize(sp));
-				double ChiSq = 0.0, ChiSq_P = 0.0, UC_U = 0.0, CramerV = 0.0;
-				double HA = 0.0, HB = 0.0, HAB = 0.0;
-				// initialize last line/column
-				for (size_t i = 0; i < as; ++i)
-					cont_table[i][bs] = 0;
-				for (size_t j = 0; j <= bs; ++j)
-					cont_table[as][j] = 0;
-				// get P_ij
-				for (size_t i = 0; i < as; ++i)
-					for (size_t j = 0; j < bs; ++j) {
-						vectori hapAlleles(2);
-						hapAlleles[0] = A_alleles[i];
-						hapAlleles[1] = B_alleles[j];
-						cont_table[i][j] = m_haploFreq.haploFreq(pop, hapLoci, sp)[hapAlleles];
-						cont_table[i][bs] += cont_table[i][j];
-						cont_table[as][j] += cont_table[i][j];
-						cont_table[as][bs] += cont_table[i][j];
-					}
-				DBG_ASSERT(fcmp_eq(cont_table[as][bs], 1.), ValueError,
-					"Sum of haplotype frequencies is not 1. Association will not be computed.");
-				//DBG_DO(DBG_STATOR, for(size_t i=0; i <= as; ++i) cout << cont_table[i] << endl);
-				// calculate statistics
-				//ChiSq
-				if (m_output_ChiSq || m_output_CramerV) {
-					for (size_t i = 0; i < as; ++i)
-						for (size_t j = 0; j < bs; ++j)
-							ChiSq += pow((n * cont_table[i][j] - n * cont_table[i][bs] * cont_table[as][j]), 2)
-							         / (n * cont_table[i][bs] * cont_table[as][j]);
-					ChiSq_P = GetRNG().pvalChiSq(ChiSq, (as - 1) * (bs - 1));
+					// calculate LD
+					double D = P_AB - P_A * P_B;
+					// calculate LD'
+					double D_max = D > 0 ? std::min(P_A * (1 - P_B), (1 - P_A) * P_B) : std::min(P_A * P_B, (1 - P_A) * (1 - P_B));
+					// fcmp_eq is the float comparison operator, which treat (-1e-10, 1e-10) or so as 0 (platform dependent)
+					double D_prime = fcmp_eq(D_max, 0.) ? 0. : D / D_max;
+					double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
+					// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
+					DBG_DO(DBG_STATOR, cout << "LD: subpop " << sp << " : P_AB: " << P_AB
+			                    << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
+								" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
+					avgD += P_A * P_B * D;
+					avgD_prime += P_A * P_B * D_prime;
+					avgR2 += P_A * P_B * r2
 				}
-				if (m_output_ChiSq) {
-					pop.setDoubleVar(subPopVar_String(sp, ChiSq_String) + hapLociStr, ChiSq);
-					pop.setDoubleVar(subPopVar_String(sp, ChiSq_P_String) + hapLociStr, ChiSq_P);
-				}
-				//UC_U
-				if (m_output_UCU) {
-					for (size_t i = 0; i < as; ++i)
-						HA += -cont_table[i][bs] * log(cont_table[i][bs]);
-					for (size_t j = 0; j <= bs; ++j)
-						HB += -cont_table[as][j] * log(cont_table[as][j]);
-					for (size_t i = 0; i < as; ++i)
-						for (size_t j = 0; j < bs; ++j)
-							HAB += -cont_table[i][j] * log(cont_table[i][j]);
-					UC_U = 2 * ((HA + HB - HAB) / (HA + HB));
-					pop.setDoubleVar(subPopVar_String(sp, UCU_String) + hapLociStr, UC_U);
-				}
-				//CramerV
-				if (m_output_CramerV) {
-					CramerV = sqrt(ChiSq / (n * std::min(as - 1, bs - 1)));
-					pop.setDoubleVar(subPopVar_String(sp, CramerV_String) + hapLociStr, CramerV);
-				}
-			}                                                                                       // each sp
-		}                                                                                           // numSP > 1
+			}
+			// calculate association statistics
+
+			// output variables
+
+
+		}
+		// output statistics for subpopulation
+		if (m_vars.contains(LD_String)) {
+			
+		}
 	}
+	// output statistics for all (virtual) subpopulations
+
 	return true;
 }
 
