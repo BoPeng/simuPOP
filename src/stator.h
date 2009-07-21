@@ -348,14 +348,6 @@ private:
 };
 
 
-// The following classes apply various statistics
-// and stat class will provide an opearator interface
-// to all of them.
-
-
-/// CPPONLY return {'a-b-b'} for a b c
-string haploKey(const vectori & seq);
-
 /// CPPONLY post population sizes etc.
 class statPopSize
 {
@@ -365,22 +357,15 @@ private:
 #define  popSize_sp_String     "popSize_sp"
 
 public:
-	statPopSize(bool popSize, const subPopList & subPops, const stringList & vars)
-		: m_isActive(popSize), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = { popSize_String,    popSize_sp_String,
-			                           subPopSize_String, "" };
-		const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
-
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
-
+	statPopSize(bool popSize, const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
 	bool m_isActive;
+
 	subPopList m_subPops;
+
 	stringList m_vars;
 };
 
@@ -398,20 +383,7 @@ private:
 #define  propOfFemale_sp_String   "propOfFemale_sp"
 
 public:
-	statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars)
-		: m_isActive(numOfMale), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			numOfMale_String,      propOfMale_String,
-			numOfFemale_String,    propOfFemale_String,
-			numOfMale_sp_String,   propOfMale_sp_String,
-			numOfFemale_sp_String, propOfFemale_sp_String,""
-		};
-		const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
-
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
-
+	statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
@@ -436,20 +408,7 @@ private:
 #define  propOfUnaffected_sp_String  "propOfUnaffected_sp"
 
 public:
-	statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars)
-		: m_isActive(numOfAffected), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			numOfAffected_String,      propOfAffected_String,
-			numOfUnaffected_String,    propOfUnaffected_String,
-			numOfAffected_sp_String,   propOfAffected_sp_String,
-			numOfUnaffected_sp_String, propOfUnaffected_sp_String,""
-		};
-		const char * defaultVars[] = { numOfAffected_String, numOfUnaffected_String, "" };
-
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
-
+	statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
@@ -471,39 +430,13 @@ private:
 #define  AlleleFreq_sp_String    "alleleFreq_sp"
 
 public:
-	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
-		: m_loci(loci), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			AlleleNum_String,    AlleleFreq_String,
-			AlleleNum_sp_String, AlleleFreq_sp_String,""
-		};
-		const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
-
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
-
+	statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars);
 
 	/// destructor, nested vectors have to be cleared manually
 	~statAlleleFreq()
 	{
 	}
 
-
-	void addLocus(UINT locus, const subPopList & subPops = AllSubPops,
-		const stringList & vars = stringList());
-
-	vectori numOfAlleles(population & pop);
-
-	vectorf alleleFreqVec(population & pop, int loc);
-
-	double alleleFreq(population & pop, UINT allele, int loc);
-
-	vectorf alleleFreqVec(population & pop, int loc, UINT subPop);
-
-	double alleleFreq(population & pop, UINT allele, int loc, UINT subPop);
-
-	vectori alleles(population & pop, int loc);
 
 	bool apply(population & pop);
 
@@ -512,6 +445,7 @@ private:
 	vectorlu m_loci;
 
 	subPopList m_subPops;
+
 	stringList m_vars;
 };
 
@@ -531,11 +465,6 @@ private:
 public:
 	statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & homoFreq,
 		const subPopList & subPops, const stringList & vars);
-
-	void addLocus(UINT locus, const subPopList & subPops = AllSubPops,
-		const stringList & vars = stringList());
-
-	double heteroFreq(population & pop, UINT allele, int loc, vspID subPop);
 
 	bool apply(population & pop);
 
@@ -560,12 +489,7 @@ private:
 public:
 	statGenoFreq(const vectorlu & genoFreq,
 		const subPopList & subPops, const stringList & vars);
-
-	// Return AA, Aa and aa, wild type is A.
-	vectorlu countGenotype(population & pop, UINT loc, UINT wildtype);
-
-	vectorlu countGenotype(population & pop, UINT loc, SubPopID subPop, UINT wildtype);
-
+	
 	bool apply(population & pop);
 
 private:
@@ -575,6 +499,7 @@ private:
 	subPopList m_subPops;
 	stringList m_vars;
 };
+
 
 /// CPPONLY
 class statHaploFreq
@@ -586,18 +511,7 @@ private:
 #define  HaplotypeFreq_sp_String   "haploFreq_sp"
 
 public:
-	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops, const stringList & vars)
-		: m_loci(haploFreq), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			HaplotypeNum_String,	HaplotypeFreq_String,
-			HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
-		};
-		const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
-
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
-
+	statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops, const stringList & vars);
 
 	~statHaploFreq()
 	{
@@ -605,11 +519,6 @@ public:
 
 
 	bool apply(population & pop);
-
-	void addHaplotype(const vectori & loci, const subPopList & subPops,
-		const stringList & vars);
-
-	tupleDict haploFreq(population & pop, const vectori & loci, vspID subPop = vspID());
 
 private:
 	// key string (in the format of a tuple)
@@ -622,6 +531,7 @@ private:
 	subPopList m_subPops;
 	stringList m_vars;
 };
+
 
 /// CPPONLY
 class statInfo
@@ -642,33 +552,7 @@ public:
 	statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
 		const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
 		const vectorstr & minOfInfo,
-		const subPopList & subPops, const stringList & vars)
-		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo), m_varOfInfo(varOfInfo),
-		m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
-		m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			SumOfInfo_String,    MeanOfInfo_String,    VarOfInfo_String,	MaxOfInfo_String,    MinOfInfo_String,
-			SumOfInfo_sp_String, MeanOfInfo_sp_String, VarOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
-			""
-		};
-		const char * defaultVars[] = { "" };
-
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-		if (m_vars.empty()) {
-			if (!m_sumOfInfo.empty())
-				m_vars.push_back(SumOfInfo_String);
-			if (!m_meanOfInfo.empty())
-				m_vars.push_back(MeanOfInfo_String);
-			if (!m_varOfInfo.empty())
-				m_vars.push_back(VarOfInfo_String);
-			if (!m_maxOfInfo.empty())
-				m_vars.push_back(MaxOfInfo_String);
-			if (!m_minOfInfo.empty())
-				m_vars.push_back(MinOfInfo_String);
-		}
-	}
-
+		const subPopList & subPops, const stringList & vars);
 
 	~statInfo()
 	{
@@ -717,21 +601,9 @@ public:
 	// calculated only once. However, this appear to be a rare case that does
 	// not worth special optimization. The newer version calculates allele and
 	// haplotype frequencies locally and in a more readable way.
-	statLD(const intMatrix & LD = intMatrix(),  const subPopList & subPops,
-		const stringList & vars)
-		: m_loci(loci), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			LD_String, LD_prime_String, R2_String,
-			ChiSq_String, ChinSq_p_String, CramerV_String,
-			LD_sp_String, LD_prime_sp_String, R2_sp_String,
-			ChiSq_sp_String, ChinSq_p_sp_String, CramerV_sp_String,
-			""
-		};
-		const char * defaultVars[] = { LD_String, LDPRIME_String, R2_String, "" };
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
-
+	statLD(const intMatrix & LD,  const subPopList & subPops,
+		const stringList & vars);
+	
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
@@ -739,10 +611,6 @@ private:
 	// calculate single allele LD values
 	void calculateLD(population & pop, const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
 		double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
-
-	// output statistics
-	void outputLD(population & pop, const vectori & hapLoci, const string & allele_string, UINT sp, bool subPop,
-		bool valid_delta2, double D, double D_prime, double r2, double delta2);
 
 private:
 	/// LD
