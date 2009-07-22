@@ -417,7 +417,7 @@ new_initByValue.__doc__ = initByValue.__init__.__doc__
 del initByValue.__init__
 initByValue.__init__ = new_initByValue
 
-def new_stat(self, haploFreq=[], LD=[], LD_param={}, *args, **kwargs):
+def new_stat(self, haploFreq=[], LD=[], *args, **kwargs):
     # parameter haploFreq
     if len(haploFreq) > 0 and type(haploFreq[0]) in [types.IntType, types.LongType]:
         hf = [haploFreq]
@@ -428,17 +428,8 @@ def new_stat(self, haploFreq=[], LD=[], LD_param={}, *args, **kwargs):
         ld = [LD]
     else:
         ld = LD
-    # parameters of LD, convert 'stat':['LD', 'LD_prime'] etc to 'LD':True, 'LD_prime':True
-    ldp = {}
-    for key in LD_param.keys():
-        if 'stat' == key and type(LD_param['stat']) in [types.TupleType, types.ListType]:
-            for stat in LD_param['stat']:
-                ldp[stat] = True
-        else:
-            ldp[key] = LD_param[key]
     cppModule.stat_swiginit(self,
-        cppModule.new_stat(haploFreq=hf, LD=ld, LD_param=ldp,
-            *args, **kwargs))
+        cppModule.new_stat(haploFreq=hf, LD=ld, *args, **kwargs))
 
 new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__

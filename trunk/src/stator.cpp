@@ -272,7 +272,6 @@ stat::stat(
 	const stringList & minOfInfo,
 	//
 	const intMatrix & LD,
-	const strDict & LD_param,
 	//
 	const uintList & association,
 	//
@@ -346,14 +345,14 @@ bool stat::apply(population & pop)
 
 
 statPopSize::statPopSize(bool popSize, const subPopList & subPops, const stringList & vars)
-		: m_isActive(popSize), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = { popSize_String,    popSize_sp_String,
-			                           subPopSize_String, "" };
-		const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
+	: m_isActive(popSize), m_subPops(subPops), m_vars()
+{
+	const char * allowedVars[] = { popSize_String,    popSize_sp_String,
+		                           subPopSize_String, "" };
+	const char * defaultVars[] = { popSize_String, subPopSize_String, "" };
 
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
 
 
 bool statPopSize::apply(population & pop)
@@ -387,18 +386,18 @@ bool statPopSize::apply(population & pop)
 
 
 statNumOfMale::statNumOfMale(bool numOfMale, const subPopList & subPops, const stringList & vars)
-		: m_isActive(numOfMale), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			numOfMale_String,      propOfMale_String,
-			numOfFemale_String,    propOfFemale_String,
-			numOfMale_sp_String,   propOfMale_sp_String,
-			numOfFemale_sp_String, propOfFemale_sp_String,""
-		};
-		const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
+	: m_isActive(numOfMale), m_subPops(subPops), m_vars()
+{
+	const char * allowedVars[] = {
+		numOfMale_String,      propOfMale_String,
+		numOfFemale_String,    propOfFemale_String,
+		numOfMale_sp_String,   propOfMale_sp_String,
+		numOfFemale_sp_String, propOfFemale_sp_String,""
+	};
+	const char * defaultVars[] = { numOfMale_String, numOfFemale_String, "" };
 
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
 
 
 bool statNumOfMale::apply(population & pop)
@@ -463,18 +462,18 @@ bool statNumOfMale::apply(population & pop)
 
 
 statNumOfAffected::statNumOfAffected(bool numOfAffected, const subPopList & subPops, const stringList & vars)
-		: m_isActive(numOfAffected), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			numOfAffected_String,      propOfAffected_String,
-			numOfUnaffected_String,    propOfUnaffected_String,
-			numOfAffected_sp_String,   propOfAffected_sp_String,
-			numOfUnaffected_sp_String, propOfUnaffected_sp_String,""
-		};
-		const char * defaultVars[] = { numOfAffected_String, numOfUnaffected_String, "" };
+	: m_isActive(numOfAffected), m_subPops(subPops), m_vars()
+{
+	const char * allowedVars[] = {
+		numOfAffected_String,      propOfAffected_String,
+		numOfUnaffected_String,    propOfUnaffected_String,
+		numOfAffected_sp_String,   propOfAffected_sp_String,
+		numOfUnaffected_sp_String, propOfUnaffected_sp_String,""
+	};
+	const char * defaultVars[] = { numOfAffected_String, numOfUnaffected_String, "" };
 
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
 
 
 bool statNumOfAffected::apply(population & pop)
@@ -542,16 +541,16 @@ bool statNumOfAffected::apply(population & pop)
 
 
 statAlleleFreq::statAlleleFreq(const vectorlu & loci, const subPopList & subPops, const stringList & vars)
-		: m_loci(loci), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			AlleleNum_String,    AlleleFreq_String,
-			AlleleNum_sp_String, AlleleFreq_sp_String,""
-		};
-		const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
+	: m_loci(loci), m_subPops(subPops), m_vars()
+{
+	const char * allowedVars[] = {
+		AlleleNum_String,    AlleleFreq_String,
+		AlleleNum_sp_String, AlleleFreq_sp_String,""
+	};
+	const char * defaultVars[] = { AlleleFreq_String, AlleleNum_String, "" };
 
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
 
 
 bool statAlleleFreq::apply(population & pop)
@@ -665,7 +664,6 @@ statHeteroFreq::statHeteroFreq(const vectorlu & heteroFreq, const vectorlu & hom
 			m_vars.push_back(HomoFreq_String);
 	}
 }
-
 
 
 bool statHeteroFreq::apply(population & pop)
@@ -877,16 +875,16 @@ bool statGenoFreq::apply(population & pop)
 
 
 statHaploFreq::statHaploFreq(const intMatrix & haploFreq, const subPopList & subPops, const stringList & vars)
-		: m_loci(haploFreq), m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			HaplotypeNum_String,	HaplotypeFreq_String,
-			HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
-		};
-		const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
+	: m_loci(haploFreq), m_subPops(subPops), m_vars()
+{
+	const char * allowedVars[] = {
+		HaplotypeNum_String,	HaplotypeFreq_String,
+		HaplotypeNum_sp_String, HaplotypeFreq_sp_String,""
+	};
+	const char * defaultVars[] = { HaplotypeFreq_String, HaplotypeNum_String, "" };
 
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-	}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+}
 
 
 string statHaploFreq::dictKey(const vectori & loci)
@@ -955,8 +953,8 @@ bool statHaploFreq::apply(population & pop)
 						continue;
 					if (chromType == ChromosomeY && ind->sex() == Female)
 						continue;
-					if (((chromType == ChromosomeX && p == 1) || 
-						(chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (((chromType == ChromosomeX && p == 1) ||
+					     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
 						continue;
 					for (size_t idx = 0; idx < nLoci; ++idx)
 						haplotype[idx] = ind->allele(loci[idx], p);
@@ -1019,34 +1017,34 @@ bool statHaploFreq::apply(population & pop)
 
 
 statInfo::statInfo(const vectorstr & sumOfInfo, const vectorstr & meanOfInfo,
-		const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
-		const vectorstr & minOfInfo,
-		const subPopList & subPops, const stringList & vars)
-		: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo), m_varOfInfo(varOfInfo),
-		m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
-		m_subPops(subPops), m_vars()
-	{
-		const char * allowedVars[] = {
-			SumOfInfo_String,    MeanOfInfo_String,    VarOfInfo_String,	MaxOfInfo_String,    MinOfInfo_String,
-			SumOfInfo_sp_String, MeanOfInfo_sp_String, VarOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
-			""
-		};
-		const char * defaultVars[] = { "" };
+	const vectorstr & varOfInfo, const vectorstr & maxOfInfo,
+	const vectorstr & minOfInfo,
+	const subPopList & subPops, const stringList & vars)
+	: m_sumOfInfo(sumOfInfo), m_meanOfInfo(meanOfInfo), m_varOfInfo(varOfInfo),
+	m_maxOfInfo(maxOfInfo), m_minOfInfo(minOfInfo),
+	m_subPops(subPops), m_vars()
+{
+	const char * allowedVars[] = {
+		SumOfInfo_String,    MeanOfInfo_String,    VarOfInfo_String,	MaxOfInfo_String,    MinOfInfo_String,
+		SumOfInfo_sp_String, MeanOfInfo_sp_String, VarOfInfo_sp_String, MaxOfInfo_sp_String, MinOfInfo_sp_String,
+		""
+	};
+	const char * defaultVars[] = { "" };
 
-		m_vars.obtainFrom(vars, allowedVars, defaultVars);
-		if (m_vars.empty()) {
-			if (!m_sumOfInfo.empty())
-				m_vars.push_back(SumOfInfo_String);
-			if (!m_meanOfInfo.empty())
-				m_vars.push_back(MeanOfInfo_String);
-			if (!m_varOfInfo.empty())
-				m_vars.push_back(VarOfInfo_String);
-			if (!m_maxOfInfo.empty())
-				m_vars.push_back(MaxOfInfo_String);
-			if (!m_minOfInfo.empty())
-				m_vars.push_back(MinOfInfo_String);
-		}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
+	if (m_vars.empty()) {
+		if (!m_sumOfInfo.empty())
+			m_vars.push_back(SumOfInfo_String);
+		if (!m_meanOfInfo.empty())
+			m_vars.push_back(MeanOfInfo_String);
+		if (!m_varOfInfo.empty())
+			m_vars.push_back(VarOfInfo_String);
+		if (!m_maxOfInfo.empty())
+			m_vars.push_back(MaxOfInfo_String);
+		if (!m_minOfInfo.empty())
+			m_vars.push_back(MinOfInfo_String);
 	}
+}
 
 
 bool statInfo::apply(population & pop)
@@ -1234,19 +1232,20 @@ bool statInfo::apply(population & pop)
 	return true;
 }
 
-	
+
 statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
-		const stringList & vars)
+	const stringList & vars)
 	: m_LD(LD), m_subPops(subPops), m_vars()
 {
 	const char * allowedVars[] = {
-		LD_String, LD_prime_String, R2_String,
-		ChiSq_String, ChiSq_p_String, CramerV_String,
-		LD_sp_String, LD_prime_sp_String, R2_sp_String,
-		ChiSq_sp_String, ChiSq_p_sp_String, CramerV_sp_String,
+		LD_String,       LD_prime_String,		R2_String,
+		ChiSq_String,    ChiSq_p_String,		CramerV_String,
+		LD_sp_String,    LD_prime_sp_String,	R2_sp_String,
+		ChiSq_sp_String, ChiSq_p_sp_String,		CramerV_sp_String,
 		""
 	};
 	const char * defaultVars[] = { LD_String, LD_prime_String, R2_String, "" };
+
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 
 	for (size_t i = 0; i < m_LD.size(); ++i) {
@@ -1257,9 +1256,9 @@ statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
 
 
 void statLD::calculateLD(const vectoru & lociMap,
-		const ALLELECNTLIST & alleleCnt, const HAPLOCNTLIST & haploCnt,
-		vectorf & LD, vectorf & D_prime, vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p,
-		vectorf & CramerV)
+                         const ALLELECNTLIST & alleleCnt, const HAPLOCNTLIST & haploCnt,
+                         vectorf & LD, vectorf & D_prime, vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p,
+                         vectorf & CramerV)
 {
 	for (size_t idx = 0; idx < m_LD.size(); ++idx) {
 		UINT loc1 = m_LD[idx][0];
@@ -1272,16 +1271,26 @@ void statLD::calculateLD(const vectoru & lociMap,
 		vectorf freq2;
 		ALLELECNT::const_iterator cnt = alleleCnt1.begin();
 		ALLELECNT::const_iterator cntEnd = alleleCnt1.end();
+		UINT allAlleles = 0;
 		for (; cnt != cntEnd; ++cnt) {
 			alleles1.push_back(cnt->first);
 			freq1.push_back(cnt->second);
+			allAlleles += cnt->second;
 		}
+		for (size_t i = 0; i < freq1.size(); ++i)
+			freq1[i] /= allAlleles;
 		cnt = alleleCnt2.begin();
 		cntEnd = alleleCnt2.end();
+		allAlleles = 0;
 		for (; cnt != cntEnd; ++cnt) {
 			alleles2.push_back(cnt->first);
 			freq2.push_back(cnt->second);
+			allAlleles += cnt->second;
 		}
+		for (size_t i = 0; i < freq2.size(); ++i)
+			freq2[i] /= allAlleles;
+		DBG_DO(DBG_STATOR, cout << "Loc " << loc1 << " freq " << freq1 << endl
+			                    << "Loc " << loc2 << " freq " << freq2 << endl);
 		UINT nAllele1 = alleles1.size();
 		UINT nAllele2 = alleles2.size();
 		// get haplotype count
@@ -1290,13 +1299,16 @@ void statLD::calculateLD(const vectoru & lociMap,
 		double allHaplo = 0;
 		HAPLOCNT::const_iterator hCnt = haplos.begin();
 		HAPLOCNT::const_iterator hCntEnd = haplos.end();
-		for (; hCnt != hCntEnd; ++hCnt)
+		for (; hCnt != hCntEnd; ++hCnt) {
 			allHaplo += hCnt->second;
+			DBG_DO(DBG_STATOR, cout << "Haplotype " << hCnt->first.first << ", " << hCnt->first.second
+				                    << " Cnt " << hCnt->second << endl);
+		}
 		//
 		// calculate LD
 		if (!LD.empty()) {
 			for (size_t i = 0; i < nAllele1; ++i) {
-				for (size_t j = 0; j < nAllele2; ++i) {
+				for (size_t j = 0; j < nAllele2; ++j) {
 					UINT A = alleles1[i];
 					UINT B = alleles2[j];
 					double P_AB = haplos.find(HAPLOCNT::key_type(A, B))->second / allHaplo;
@@ -1313,19 +1325,19 @@ void statLD::calculateLD(const vectoru & lociMap,
 					double r2 = (fcmp_eq(P_A, 0) || fcmp_eq(P_B, 0) || fcmp_eq(P_A, 1) || fcmp_eq(P_B, 1)) ? 0. : D * D / P_A / (1 - P_A) / P_B / (1 - P_B);
 					// if TurnOnDebug(DBG_STATOR) is called in python, the following will be printed.
 					DBG_DO(DBG_STATOR, cout << "P_AB: " << P_AB
-								<< " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
-								" LD: " << D << " LD': " << D_prime << " r2: " << r2 << endl);
+						                    << " P_A: " << P_A << " P_B: " << P_B << " D_max: " << D_max <<
+						" LD: " << D << " LD': " << Dp << " r2: " << r2 << endl);
 
 					if (nAllele1 <= 2 && nAllele2 <= 2) {
 						// for the monomorphic or diallelic case, there is no need to do an average.
 						LD[idx] = fabs(D);
-						D_prime[idx] = Dp;
+						D_prime[idx] = fabs(Dp);
 						R2[idx] = r2;
 						break;
 					} else {
 						// for the monomorphic or diallelic case, there is no need to do an average.
 						LD[idx] += P_A * P_B * fabs(D);
-						D_prime[idx] += P_A * P_B * Dp;
+						D_prime[idx] += P_A * P_B * fabs(Dp);
 						R2[idx] += P_A * P_B * r2;
 					}
 				}
@@ -1360,7 +1372,7 @@ void statLD::calculateLD(const vectoru & lociMap,
 			for (size_t i = 0; i < nAllele1; ++i)
 				for (size_t j = 0; j < nAllele2; ++j)
 					ChiSq[idx] += pow((allHaplo * cont_table[i][j] - allHaplo * cont_table[i][nAllele2] * cont_table[nAllele1][j]), 2)
-					         / (allHaplo * cont_table[i][nAllele2] * cont_table[nAllele1][j]);
+					              / (allHaplo * cont_table[i][nAllele2] * cont_table[nAllele1][j]);
 			ChiSq_p[idx] = GetRNG().pvalChiSq(ChiSq[idx], (nAllele1 - 1) * (nAllele2 - 1));
 			CramerV[idx] = sqrt(ChiSq[idx] / (allHaplo * std::min(nAllele1 - 1, nAllele2 - 1)));
 		}
@@ -1372,14 +1384,14 @@ void statLD::outputVar(population & pop, const string & name, const vectorf & va
 {
 	if (value.empty())
 		return;
-	
+
 	DBG_FAILIF(value.size() != m_LD.size(), RuntimeError,
 		"Return result has incorrect value");
 
 	map<UINT, intDict> res;
 	for (size_t i = 0; i < m_LD.size(); ++i)
 		res[m_LD[i][0]][m_LD[i][1]] = value[i];
-	
+
 	pop.removeVar(name);
 	map<UINT, intDict>::const_iterator it = res.begin();
 	map<UINT, intDict>::const_iterator itEnd = res.end();
@@ -1406,7 +1418,7 @@ bool statLD::apply(population & pop)
 				chromTypes.push_back(pop.chromType(pop.chromLocusPair(m_LD[i][j]).first));
 			}
 		}
-		DBG_FAILIF(pop.chromType(pop.chromLocusPair(m_LD[i][0]).first) != 
+		DBG_FAILIF(pop.chromType(pop.chromLocusPair(m_LD[i][0]).first) !=
 			pop.chromType(pop.chromLocusPair(m_LD[i][1]).first),
 			ValueError, "Two loci must be on chromosome(s) of the same type");
 	}
@@ -1414,7 +1426,7 @@ bool statLD::apply(population & pop)
 
 	ALLELECNTLIST allAlleleCnt(loci.size());
 	HAPLOCNTLIST allHaploCnt(m_LD.size());
-	
+
 	// selected (virtual) subpopulatons.
 	subPopList subPops = m_subPops;
 	subPops.useSubPopsFrom(pop);
@@ -1423,8 +1435,8 @@ bool statLD::apply(population & pop)
 	UINT ply = pop.ploidy();
 	for (; it != itEnd; ++it) {
 		const char * spVars[] = {
-			LD_sp_String, LD_prime_sp_String, R2_sp_String,
-			ChiSq_sp_String, ChiSq_p_sp_String, CramerV_sp_String,
+			LD_sp_String,    LD_prime_sp_String,	R2_sp_String,
+			ChiSq_sp_String, ChiSq_p_sp_String,		CramerV_sp_String,
 			""
 		};
 		for (size_t i = 0; spVars[i][0]; ++i) {
@@ -1437,7 +1449,7 @@ bool statLD::apply(population & pop)
 
 		ALLELECNTLIST alleleCnt(loci.size());
 		HAPLOCNTLIST haploCnt(m_LD.size());
-	
+
 		// count allele and genotype
 		IndIterator ind = pop.indIterator(it->subPop());
 		for (; ind.valid(); ++ind) {
@@ -1449,20 +1461,20 @@ bool statLD::apply(population & pop)
 				for (size_t idx = 0; idx < nLoci; ++idx) {
 					if (chromTypes[idx] == ChromosomeY && ind->sex() == Female)
 						continue;
-					if (((chromTypes[idx] == ChromosomeX && p == 1) || 
-						(chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (((chromTypes[idx] == ChromosomeX && p == 1) ||
+					     (chromTypes[idx] == ChromosomeY && p == 0)) && ind->sex() == Male)
 						continue;
-					alleleCnt[idx][*(geno + loci[idx])] ++;
+					alleleCnt[idx][*(geno + loci[idx])]++;
 				}
 				// haplotype frequency
 				for (size_t idx = 0; idx < nLD; ++idx) {
 					UINT chromType = chromTypes[lociMap[m_LD[idx][0]]];
 					if (chromType == ChromosomeY && ind->sex() == Female)
 						continue;
-					if (((chromType == ChromosomeX && p == 1) || 
-						(chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
+					if (((chromType == ChromosomeX && p == 1) ||
+					     (chromType == ChromosomeY && p == 0)) && ind->sex() == Male)
 						continue;
-					haploCnt[idx][HAPLOCNT::key_type(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))] ++;
+					haploCnt[idx][HAPLOCNT::key_type(*(geno + m_LD[idx][0]), *(geno + m_LD[idx][1]))]++;
 				}
 			}
 		}
@@ -1495,7 +1507,7 @@ bool statLD::apply(population & pop)
 		vectorf CramerV(assoSize);
 		calculateLD(lociMap, alleleCnt, haploCnt, LD, D_prime, R2,
 			ChiSq, ChiSq_p, CramerV);
-		
+
 		// output statistics for subpopulation
 		if (m_vars.contains(LD_sp_String))
 			outputVar(pop, subPopVar_String(*it, LD_String), LD);
@@ -1526,7 +1538,7 @@ bool statLD::apply(population & pop)
 	vectorf CramerV(assoSize);
 	calculateLD(lociMap, allAlleleCnt, allHaploCnt, LD, D_prime, R2,
 		ChiSq, ChiSq_p, CramerV);
-	
+
 	// output statistics for subpopulation
 	if (m_vars.contains(LD_String))
 		outputVar(pop, LD_String, LD);
