@@ -1009,6 +1009,42 @@ public:
 	 *  \li \c minOfInfo_sp: A dictionary of the minimal value of information
 	 *       fields of individuals in each subpopulation.
 	 *
+	 *  <b>LD</b>: Parameter \c LD accepts one or a list of loci pairs (e.g.
+	 *  <tt>LD=[[0,1], [2,3]]</tt>) with optional primary alleles at both loci
+	 *  (e.g. <tt>LD=[0,1,0,0]</tt>). For each pair of loci, this operator
+	 *  calculates linkage disequilibrium and optional association statistics
+	 *  between two loci. When primary alleles are specified, signed linkage
+	 *  disequilibrium values are calculated with non-primary alleles are
+	 *  combined. Otherwise, absolute values of diallelic measures are combined
+	 *  to yield positive measure of LD. Association measures are calculated
+	 *  from a \c m by \c n contigency of haplotype frequencies (<tt>m=n=2</tt>
+	 *  if primary alleles are specified). Please refer to the simuPOP user's
+	 *  guide for detailed information. This statistic sets the following
+	 *  variables:
+	 *  \li \c LD (default) Basic LD measure for haplotypes in all or specified
+	 *       (virtual) subpopulations. Signed if primary alleles are specified.
+	 *  \li \c LD_prime (default) Lewontin's D' measure for haplotypes in all
+	 *       or specified (virtual) subpopulations. Signed if primary alleles
+	 *       are specified.
+	 *  \li \c R2 (default) Correlation LD measure for haplotypes in all or
+	 *       specified (virtual) subpopulations.
+	 *  \li \c LD_ChiSq ChiSq statistics for a contigency table with
+	 *       frequencies of haplotypes in all or specified (virtual)
+	 *       subpopulations.
+	 *  \li \c LD_ChiSq_p Single side p-value for the ChiSq statistic. Degrees
+	 *       of freedom is determined by number of alleles at both loci and the
+	 *       specification of primary alleles.
+	 *  \li \c CramerV Normalized ChiSq statistics.
+	 *  \li \c LD_sp Basic LD measure for haplotypes in each (virtual)
+	 *       subpopulation.
+	 *  \li \c LD_prime_sp Lewontin's D' measure for haplotypes in each
+	 *       (virtual) subpopulation.
+	 *  \li \c R2_sp R2 measure for haplotypes in each (virtual) subpopulation.
+	 *  \li \c LD_ChiSq_sp ChiSq statistics for each (virtual) subpopulation.
+	 *  \li \c LD_ChiSq_p_sp p value for the ChiSq statistics for each
+	 *       (virtual) subpopulation.
+	 *  \li \c CramerV_sp Cramer V statistics for each (virtual) subpopulation.
+	 *
 	 **/
 	stat(bool popSize = false,
 		//

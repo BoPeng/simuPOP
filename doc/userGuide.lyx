@@ -1,4 +1,4 @@
-#LyX 1.6.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.3svn created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -13834,14 +13834,24 @@ Parameter
 \emph on
 LD
 \emph default
- accepts a list of loci-pairs such as 
+ accepts a list of loci-pairs (e.g.
+ 
 \family typewriter
-LD=[(0,1), (2,3)]
+LD=[(0,1),(2,3)]
 \family default
-.
+) with optional primary alleles at two loci (e.g.
+ 
+\family typewriter
+LD=[(0,1,0,0),(2,3)]
+\family default
+).
  For each pair of loci, this operator calculates linkage disequilibrium
- and optionally association measures between them.
- Assuming that two loci are both diallelic, one with alleles 
+ and optional association measures between them.
+ 
+\end_layout
+
+\begin_layout Standard
+Assuming that two loci are both diallelic, one with alleles 
 \begin_inset Formula $A$
 \end_inset
 
@@ -13878,31 +13888,38 @@ LD=[(0,1), (2,3)]
 \end_layout
 
 \begin_layout Itemize
+Basic LD measure 
 \begin_inset Formula $D$
 \end_inset
 
- (variable 
-\family typewriter
-LD[i][j]
-\family default
-) 
+: 
 \begin_inset Formula \[
 D=P_{AB}-P_{A}P_{B}\]
 
 \end_inset
 
 
+\emph on
+D
+\emph default
+ ranges from -0.25 to 0.25.
+ The sign depends on the choice of alleles (
+\emph on
+A
+\emph default
+ and 
+\emph on
+B
+\emph default
+) at two loci.
 \end_layout
 
 \begin_layout Itemize
+Lewontin's 
 \begin_inset Formula $D'=D/D_{max}$
 \end_inset
 
- (variable 
-\family typewriter
-LD_prime[i][j]
-\family default
-) where 
+ where 
 \begin_inset Formula \[
 D_{max}=\begin{cases}
 \min\left(P_{A}\left(1-P_{B}\right),\left(1-P_{A}\right)P_{B}\right) & \textrm{if }D>0\\
@@ -13911,17 +13928,30 @@ D_{max}=\begin{cases}
 \end_inset
 
 
+\emph on
+
+\begin_inset Formula $D'$
+\end_inset
+
+
+\emph default
+ ranges from -1 to 1.
+ The sign depends on the choice of alleles (
+\emph on
+A
+\emph default
+ and 
+\emph on
+B
+\emph default
+) at two loci.
 \end_layout
 
 \begin_layout Itemize
 \begin_inset Formula $r^{2}$
 \end_inset
 
- (variable 
-\family typewriter
-R2[i][j]
-\family default
-) (
+ (
 \begin_inset Formula $\Delta^{2}$
 \end_inset
 
@@ -13941,52 +13971,109 @@ r^{2}=\frac{D^{2}}{P_{A}\left(1-P_{A}\right)P_{B}\left(1-P_{B}\right)}\]
 
 \end_layout
 
-\begin_layout Standard
-To remove arbitrary sign of 
-\begin_inset Formula $D$
-\end_inset
-
-, the absolute value of 
-\begin_inset Formula $D$
-\end_inset
-
- is assigned to variable 
-\family typewriter
-LD
-\family default
-.
- If one or two loci have more than two alleles, 
-\begin_inset Formula $D$
-\end_inset
-
-, 
-\begin_inset Formula $D'$
-\end_inset
-
- and 
-\begin_inset Formula $r^{2}$
-\end_inset
-
- will be the averaged by 
-\begin_inset Formula $\sum\sum P_{A}P_{B}\left|\right|$
-\end_inset
-
-.
- For example, 
-\begin_inset Formula \[
-r^{2}=\sum_{i}\sum_{j}P_{i}P_{j}r_{ij}^{2}=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\]
-
-\end_inset
-
-Note that 
+\begin_layout Itemize
+If primary alleles are specified, all other alleles are considered as minor
+ alleles with combined frequency (e.g.
+ 
 \begin_inset Formula $1-P_{A}$
 \end_inset
 
- is no longer the frequency of allele 
-\begin_inset Formula $a$
+).
+\end_layout
+
+\begin_layout Itemize
+If primary alleles are not specified, these LD measures are calculated as
+ the average of the absolute value of diallelic measures of all allele pairs.
+ For example, the multi-allele version of 
+\begin_inset Formula $r^{2}$
 \end_inset
 
- in this case.
+ is
+\begin_inset Formula \[
+r^{2}=\sum_{i}\sum_{j}P_{i}P_{j}\left|r_{ij}^{2}\right|=\sum_{i}\sum_{j}\frac{D_{ij}^{2}}{\left(1-P_{i}\right)\left(1-P_{j}\right)}\]
+
+\end_inset
+
+where 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ iterate through all alleles at the two loci.
+ 
+\series bold
+In the diallelic case, LD measures will be the absolute value of the single
+ measures
+\series default
+ because 
+\begin_inset Formula $D_{ij}$
+\end_inset
+
+ and 
+\begin_inset Formula $D'_{ij}$
+\end_inset
+
+ only differ by signs.
+\end_layout
+
+\begin_layout Standard
+In another word,
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LD=[loc1, loc2]
+\family default
+ will yield positive 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\begin_inset Formula $D'$
+\end_inset
+
+ measures.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+LD=[loc1, loc2, allele1, allele2]
+\family default
+ will yield signed 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\begin_inset Formula $D'$
+\end_inset
+
+ measures.
+\end_layout
+
+\begin_layout Itemize
+In the diallelic case, both cases yield identical results except for signs
+ of 
+\begin_inset Formula $D$
+\end_inset
+
+ and 
+\begin_inset Formula $D'$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+In the multi-allelic case, the results can be different because 
+\family typewriter
+LD=[loc1, loc2, allele1, allele2]
+\family default
+ combines non-primary alleles and gives a single diallelic measure.
 \end_layout
 
 \begin_layout Note
@@ -13997,8 +14084,8 @@ A large number of linkage disequilibrium measures have been used in different
 \end_layout
 
 \begin_layout Standard
-Association tests between specified markers could also be calculated, which
- considers haplotype counts as a 
+Association tests between specified loci could also be calculated using
+ a 
 \begin_inset Formula $m$
 \end_inset
 
@@ -14006,7 +14093,14 @@ Association tests between specified markers could also be calculated, which
 \begin_inset Formula $n$
 \end_inset
 
- contigency table where 
+ table of haplotype frequencies.
+ If primary alleles are specified, non-primary alleles are combined to form
+ a 2 by 2 table (
+\begin_inset Formula $m=n=2$
+\end_inset
+
+).
+ Otherwise, 
 \begin_inset Formula $m$
 \end_inset
 
@@ -14015,7 +14109,6 @@ Association tests between specified markers could also be calculated, which
 \end_inset
 
  are respective numbers of alleles at two loci.
- 
 \end_layout
 
 \begin_layout Itemize
@@ -14043,7 +14136,7 @@ LD_ChiSq_p
 \begin_inset Formula $\left(m-1\right)\times\left(n-1\right)$
 \end_inset
 
- degree of freedom will be used.
+ degrees of freedom will be used.
 \end_layout
 
 \begin_layout Itemize
@@ -14061,7 +14154,11 @@ where
 \begin_inset Formula $N$
 \end_inset
 
- equals the total number of haplotypes (population size times ploidy).
+ equals the total number of haplotypes (
+\begin_inset Formula $2\times\mbox{popSize}$
+\end_inset
+
+ for autosomes in diploid populations).
 \end_layout
 
 \begin_layout Subsection
