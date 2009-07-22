@@ -608,10 +608,19 @@ public:
 	bool apply(population & pop);
 
 private:
-	// calculate single allele LD values
-	void calculateLD(population & pop, const vectori & hapLoci, const vectori & hapAlleles, UINT sp, bool subPop,
-		double & P_A, double & P_B, double & D, double & D_prime, double & r2, double & delta2);
+	typedef map<UINT, UINT> ALLELECNT;
+	typedef vector<ALLELECNT> ALLELECNTLIST;
+	typedef map<std::pair<UINT, UINT>, UINT> HAPLOCNT;
+	typedef vector<HAPLOCNT> HAPLOCNTLIST;
 
+	// calculate single allele LD values
+	void calculateLD(const vectoru & lociMap,
+		const ALLELECNTLIST & alleleCnt, const HAPLOCNTLIST & haploCnt,
+		vectorf & LD, vectorf & D_prime, vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p,
+		vectorf & CramerV);
+	
+	void outputVar(population & pop, const string & name, const vectorf & value);
+	
 private:
 	/// LD
 	intMatrix m_LD;
