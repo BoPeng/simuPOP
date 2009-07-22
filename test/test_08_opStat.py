@@ -289,17 +289,15 @@ class TestStat(unittest.TestCase):
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
         #TurnOnDebug(DBG_STATOR)
-        pop = population(size=[500,100,1000],
-            ploidy=2, loci = [5])
+        pop = population(size=[500, 100, 1000], ploidy=2, loci = [5])
         InitByFreq(pop, freq)
-        if AlleleType() == 'binary':
-            Stat(pop, LD=[2,4], LD_param={'midValues':True})
-        else:
-            Stat(pop, LD=[2,4], LD_param={'midValues':True})
+        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4])
+        #from simuUtil import ViewVars
+        #ViewVars(pop.vars(), gui=False)
         def LD_single(var, loc1, loc2, allele1, allele2):
             p = var.alleleFreq[loc1][allele1]
             q = var.alleleFreq[loc2][allele2]
-            pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+            pq = var.haploFreq[(loc1, loc2)][(allele1, allele2)]
             return pq-p*q
         def LD(var, loc1, loc2):
             LD = 0
@@ -313,7 +311,7 @@ class TestStat(unittest.TestCase):
         def LD_prime_single(var, loc1, loc2, allele1, allele2):
             p = var.alleleFreq[loc1][allele1]
             q = var.alleleFreq[loc2][allele2]
-            pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+            pq = var.haploFreq[(loc1, loc2)][(allele1, allele2)]
             D = pq - p*q
             if D < 0:
                 Dmax = min(p*q, (1 - p)*(1 - q))
@@ -332,7 +330,7 @@ class TestStat(unittest.TestCase):
         def R2_single(var, loc1, loc2, allele1, allele2):
             p = var.alleleFreq[loc1][allele1]
             q = var.alleleFreq[loc2][allele2]
-            pq = var.haploFreq['%d-%d' % (loc1, loc2)]['%d-%d' % (allele1, allele2)]
+            pq = var.haploFreq[(loc1, loc2)][(allele1, allele2)]
             return (pq-p*q)**2/(p*q*(1-p)*(1-q))
         def R2(var, loc1, loc2):
             R2 = 0
@@ -343,65 +341,15 @@ class TestStat(unittest.TestCase):
                     q = var.alleleFreq[loc2][allele2]
                     R2 += p*q*R2_single(var, loc1, loc2, allele1, allele2)
             return R2
-        def Delta2(var, loc1, loc2):
-            P11 = var.haploFreq['%d-%d' % (loc1, loc2)]['0-0']
-            P12 = var.haploFreq['%d-%d' % (loc1, loc2)]['0-1']
-            P21 = var.haploFreq['%d-%d' % (loc1, loc2)]['1-0']
-            P22 = var.haploFreq['%d-%d' % (loc1, loc2)]['1-1']
-            p1 = var.alleleFreq[loc1][0]
-            q1 = var.alleleFreq[loc2][0]
-            return (P11*P22-P12*P21)**2/(p1*(1-p1)*q1*(1-q1))
-        #import simuUtil
-        #simuUtil.ListVars(pop.dvars())
-        assert (LD(pop.dvars(), 2, 4) - pop.dvars().LD[2][4]) < 1e-6
-        assert (LD_prime(pop.dvars(), 2, 4) - pop.dvars().LD_prime[2][4]) < 1e-6
-        assert (R2(pop.dvars(), 2, 4) - pop.dvars().R2[2][4]) < 1e-6
-        if len([x for x in pop.dvars().alleleNum[2] if x != 0]) > 2 or \
-            len([x for x in pop.dvars().alleleNum[4] if x != 0]) > 2 :
-            assert not pop.vars().has_key('Delta2')
-        else:
-            assert (Delta2(pop.dvars(), 2, 4) - pop.dvars().Delta2[2][4]) < 1e-6
+        self.assertAlmostEqual(LD(pop.dvars(), 2, 4), pop.dvars().LD[2][4])
+        self.assertAlmostEqual(LD_prime(pop.dvars(), 2, 4), pop.dvars().LD_prime[2][4])
+        self.assertAlmostEqual(R2(pop.dvars(), 2, 4), pop.dvars().R2[2][4])
+        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4],
+            vars=['alleleFreq_sp', 'haploFreq_sp', 'LD_sp', 'LD_prime_sp', 'R2_sp'])
         for sp in range(3):
-            assert (LD(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD[2][4]) < 1e-6
-            assert (LD_prime(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD_prime[2][4]) < 1e-6
-            assert (R2(pop.dvars(sp), 2, 4) - pop.dvars(sp).R2[2][4]) < 1e-6
-            if len([x for x in pop.dvars(sp).alleleNum[2] if x != 0]) > 2 or \
-                len([x for x in pop.dvars(sp).alleleNum[4] if x != 0]) > 2 :
-                assert not pop.vars(sp).has_key('Delta2')
-                #self.assertRaises(exceptions.AttributeError, pop.dvars(sp).Delta2)
-            else:
-                assert (Delta2(pop.dvars(sp), 2, 4) - pop.dvars(sp).Delta2[2][4]) < 1e-6
-        # test for single allele cases
-        # for binary alleles, LD should be the same
-        # for standard or long alleles, LD should be different from average LD
-        Stat(pop, LD=[1,3,0,1], LD_param={'midValues':True})
-        assert (abs(LD_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld['1-3']['0-1'])) < 1e-6
-        assert (abs(LD_prime_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().ld_prime['1-3']['0-1'])) < 1e-6
-        assert (abs(R2_single(pop.dvars(), 1, 3, 0, 1)) - abs(pop.dvars().r2['1-3']['0-1'])) < 1e-6
-        if len([x for x in pop.dvars().alleleNum[1] if x != 0]) > 2 or \
-            len([x for x in pop.dvars().alleleNum[3] if x != 0]) > 2 :
-            assert not pop.vars().has_key('delta2')
-        else:
-            assert (abs(Delta2(pop.dvars(), 1, 3)) - abs(pop.dvars().delta2['1-3']['0-1'])) < 1e-6
-        for sp in range(3):
-            assert (abs(LD_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).ld['1-3']['0-1'])) < 1e-6
-            assert (abs(LD_prime_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).ld_prime['1-3']['0-1'])) < 1e-6
-            assert (abs(R2_single(pop.dvars(sp), 1, 3, 0, 1)) - abs(pop.dvars(sp).r2['1-3']['0-1'])) < 1e-6
-            if len([x for x in pop.dvars(sp).alleleNum[1] if x != 0]) > 2 or \
-                len([x for x in pop.dvars(sp).alleleNum[3] if x != 0]) > 2 :
-                assert not pop.vars().has_key('delta2')
-            else:
-                assert (abs(Delta2(pop.dvars(sp), 1, 3)) - abs(pop.dvars(sp).delta2['1-3']['0-1'])) < 1e-6
-        # test LD_param
-        Stat(pop, LD=[2,3], LD_param={'stat':['LD', 'LD_prime', 'Delta2'], 'subPop':False, 'midValues':True})
-        assert pop.vars().has_key('LD')
-        assert pop.vars().has_key('LD_prime')
-        assert not pop.vars().has_key('R2')
-        assert not pop.vars(0).has_key('LD')
-        assert not pop.vars(0).has_key('LD_prime')
-        if len([x for x in pop.dvars().alleleNum[2] if x != 0]) <= 2 or \
-            len([x for x in pop.dvars().alleleNum[3] if x != 0]) <= 2 :
-            assert pop.vars().has_key('Delta2')
+            self.assertAlmostEqual(LD(pop.dvars(sp), 2, 4), pop.dvars(sp).LD[2][4])
+            self.assertAlmostEqual(LD_prime(pop.dvars(sp), 2, 4), pop.dvars(sp).LD_prime[2][4])
+            self.assertAlmostEqual(R2(pop.dvars(sp), 2, 4), pop.dvars(sp).R2[2][4])
 
     def testLD(self):
         '''Testing LD for both dialleleic and multi-allelic cases'''
@@ -420,67 +368,36 @@ class TestStat(unittest.TestCase):
         # This has not passed our test yet. (degree of freedom problem?)
         #
         InitByFreq(pop, [.2, .3, .5])
-        Stat(pop, LD=[2,4], popSize=1, subPops=range(pop.numSubPop()), LD_param={'midValues':True, 'stat':['CramerV', 'LD_ChiSq', 'UC_U']})
+        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
+            vars=['LD_ChiSq', 'CramerV'])
         def ChiSq(var, loc1, loc2):
             ChiSq = 0
             #allele1 is alleles in loc1
             for allele1, p in enumerate(var.alleleFreq[loc1]):
                 for allele2, q in enumerate(var.alleleFreq[loc2]):
-                    pq = var.haploFreq['%d-%d' % (loc1, loc2)].setdefault('%d-%d' % (allele1, allele2), 0)
+                    pq = var.haploFreq[(loc1, loc2)].setdefault((allele1, allele2), 0)
                     if p > 0 and q > 0:
-                        ChiSq += (var.popSize * pq - var.popSize * p * q) ** 2 / (var.popSize * p * q)
+                        ChiSq += (var.popSize * 2 * pq - var.popSize * 2 * p * q) ** 2 / (var.popSize * 2 * p * q)
             return ChiSq
         def ChiSq_P(var, loc1, loc2):
             a = len(var.alleleFreq[loc1])
             b = len(var.alleleFreq[loc2])
             return 1 - rpy.r.pchisq(ChiSq(var, loc1, loc2), (a-1)*(b-1))
-        def UC_U(var, loc1, loc2):
-            UC_U = 0
-            HA = 0
-            HB = 0
-            HAB = 0
-            #allele1 is alleles in loc1
-            HA = sum([-x * math.log(x) for x in var.alleleFreq[loc1]])
-            HB = sum([-x * math.log(x) for x in var.alleleFreq[loc2]])
-            HAB = sum([-x * math.log(x) for x in var.haploFreq['%d-%d' % (loc1, loc2)].values()])
-            UC_U = 2 * ((HA+HB-HAB)/(HA+HB))
-            return UC_U
         def CramerV(var, loc1, loc2):
             r = len(var.alleleFreq[loc1])
             c = len(var.alleleFreq[loc2])
-            CramerV = math.sqrt(ChiSq(var, loc1, loc2)/(var.popSize * min(r - 1, c - 1)))
+            CramerV = math.sqrt(ChiSq(var, loc1, loc2)/(2 * var.popSize * min(r - 1, c - 1)))
             return CramerV
-        assert abs(ChiSq(pop.dvars(), 2, 4) - pop.dvars().LD_ChiSq[2][4]) < 1e-6
+        self.assertAlmostEqual(ChiSq(pop.dvars(), 2, 4), pop.dvars().LD_ChiSq[2][4])
         if has_rpy:
-            assert abs(ChiSq_P(pop.dvars(), 2, 4) - pop.dvars().LD_ChiSq_P[2][4]) < 1e-6
-        assert abs(UC_U(pop.dvars(), 2, 4) - pop.dvars().UC_U[2][4]) < 1e-6
-        assert abs(CramerV(pop.dvars(), 2, 4) - pop.dvars().CramerV[2][4]) < 1e-6
+            self.assertAlmostEqual(ChiSq_P(pop.dvars(), 2, 4), pop.dvars().LD_ChiSq_P[2][4])
+        self.assertAlmostEqual(CramerV(pop.dvars(), 2, 4), pop.dvars().CramerV[2][4])
+        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2,4], popSize=1,
+            vars=['alleleFreq_sp', 'haploFreq_sp', 'LD_ChiSq_sp', 'CramerV_sp', 'popSize_sp'])
         for sp in range(3):
-            assert abs(ChiSq(pop.dvars(sp), 2, 4) - pop.dvars(sp).LD_ChiSq[2][4]) < 1e-6
-            assert abs(UC_U(pop.dvars(sp), 2, 4) - pop.dvars(sp).UC_U[2][4]) < 1e-6
-            assert abs(CramerV(pop.dvars(sp), 2, 4) - pop.dvars(sp).CramerV[2][4]) < 1e-6
-        # if any one statistics is specified, others will not be evaluated
-        for stat in ['LD_ChiSq', 'UC_U', 'CramerV']:
-            func = {'LD_ChiSq':ChiSq, 'UC_U':UC_U, 'CramerV':CramerV}[stat]
-            Stat(pop, LD=[2,4], popSize=1, LD_param={'stat':[stat], 'midValues':True})
-            assert pop.vars().has_key(stat)
-            assert abs(func(pop.dvars(), 2, 4) - pop.vars()[stat][2][4]) < 1e-6
-            for sp in range(3):
-                assert pop.vars(sp).has_key(stat)
-                assert abs(func(pop.dvars(sp), 2, 4) - pop.vars(sp)[stat][2][4]) < 1e-6
-            other_stat = ['LD_ChiSq', 'UC_U', 'CramerV']
-            other_stat.remove(stat)
-            for os in other_stat:
-                assert not pop.vars().has_key(os)
-                for sp in range(3):
-                    assert not pop.vars(sp).has_key(os)
-            # if subPop is set to False, no statistics for subpopulations
-            Stat(pop, LD=[2,4], popSize=1, LD_param={'stat':[stat], 'midValues':True, 'subPop':False})
-            assert abs(func(pop.dvars(), 2, 4) - pop.vars()[stat][2][4]) < 1e-6
-            for sp in range(3):
-                assert not pop.vars(sp).has_key('LD_ChiSq')
-                assert not pop.vars(sp).has_key('UC_U')
-                assert not pop.vars(sp).has_key('CramerV')
+            self.assertAlmostEqual(ChiSq(pop.dvars(sp), 2, 4), pop.dvars(sp).LD_ChiSq[2][4])
+            self.assertAlmostEqual(CramerV(pop.dvars(sp), 2, 4), pop.dvars(sp).CramerV[2][4])
+
 
     def testCombinedStats(self):
         '''Testing dependency of combined statistics'''

@@ -489,7 +489,7 @@ private:
 public:
 	statGenoFreq(const vectorlu & genoFreq,
 		const subPopList & subPops, const stringList & vars);
-	
+
 	bool apply(population & pop);
 
 private:
@@ -603,7 +603,7 @@ public:
 	// haplotype frequencies locally and in a more readable way.
 	statLD(const intMatrix & LD,  const subPopList & subPops,
 		const stringList & vars);
-	
+
 	// calculate, right now,  do not tempt to save values
 	bool apply(population & pop);
 
@@ -618,9 +618,9 @@ private:
 		const ALLELECNTLIST & alleleCnt, const HAPLOCNTLIST & haploCnt,
 		vectorf & LD, vectorf & D_prime, vectorf & R2, vectorf & ChiSq, vectorf & ChiSq_p,
 		vectorf & CramerV);
-	
+
 	void outputVar(population & pop, const string & name, const vectorf & value);
-	
+
 private:
 	/// LD
 	intMatrix m_LD;
@@ -1032,7 +1032,6 @@ public:
 		const stringList & minOfInfo = stringList(),
 		//
 		const intMatrix & LD = intMatrix(),
-		const strDict & LD_param = strDict(),
 		//
 		const uintList & association = uintList(),
 		//const strDict & association_param = strDict(),
