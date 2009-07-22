@@ -14161,6 +14161,45 @@ where
  for autosomes in diploid populations).
 \end_layout
 
+\begin_layout Standard
+This statistic sets variables 
+\family typewriter
+LD
+\family default
+, 
+\family typewriter
+LD_prime
+\family default
+, 
+\family typewriter
+R2
+\family default
+, and optionally 
+\family typewriter
+ChiSq
+\family default
+, 
+\family typewriter
+ChiSq_p
+\family default
+ and 
+\family typewriter
+CramerV
+\family default
+.
+ Subpopulation specific variables can be calculated by specifying variables
+ such as 
+\family typewriter
+LD_sp
+\family default
+ and 
+\family typewriter
+R2_sp
+\family default
+.
+ 
+\end_layout
+
 \begin_layout Subsection
 Heterozygosity
 \end_layout
