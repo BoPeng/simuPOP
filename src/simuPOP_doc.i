@@ -9474,7 +9474,7 @@ Usage:
     stat(popSize=False, numOfMale=False, numOfAffected=False,
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
-      maxOfInfo=[], minOfInfo=[], LD=[], LD_param={}, association=[],
+      maxOfInfo=[], minOfInfo=[], LD=[], association=[],
       neutrality=[], Fst=[], Fst_param={}, HWE=[], vars=[], output=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
       subPops=AllSubPops, infoFields=[])
@@ -9662,7 +9662,45 @@ Details:
     *   maxOfInfo_sp: A dictionary of the maximum value of information
     fields of individuals in each subpopulation.
     *   minOfInfo_sp: A dictionary of the minimal value of information
-    fields of individuals in each subpopulation.
+    fields of individuals in each subpopulation.LD: Parameter LD
+    accepts one or a list of loci pairs (e.g. LD=[[0,1], [2,3]]) with
+    optional primary alleles at both loci (e.g. LD=[0,1,0,0]). For
+    each pair of loci, this operator calculates linkage disequilibrium
+    and optional association statistics between two loci. When primary
+    alleles are specified, signed linkage disequilibrium values are
+    calculated with non-primary alleles are combined. Otherwise,
+    absolute values of diallelic measures are combined to yield
+    positive measure of LD. Association measures are calculated from a
+    m by n contigency of haplotype frequencies (m=n=2 if primary
+    alleles are specified). Please refer to the simuPOP user's guide
+    for detailed information. This statistic sets the following
+    variables:
+    *   LD (default) Basic LD measure for haplotypes in all or
+    specified (virtual) subpopulations. Signed if primary alleles are
+    specified.
+    *   LD_prime (default) Lewontin's D' measure for haplotypes in all
+    or specified (virtual) subpopulations. Signed if primary alleles
+    are specified.
+    *   R2 (default) Correlation LD measure for haplotypes in all or
+    specified (virtual) subpopulations.
+    *   LD_ChiSq ChiSq statistics for a contigency table with
+    frequencies of haplotypes in all or specified (virtual)
+    subpopulations.
+    *   LD_ChiSq_p Single side p-value for the ChiSq statistic.
+    Degrees of freedom is determined by number of alleles at both loci
+    and the specification of primary alleles.
+    *   CramerV Normalized ChiSq statistics.
+    *   LD_sp Basic LD measure for haplotypes in each (virtual)
+    subpopulation.
+    *   LD_prime_sp Lewontin's D' measure for haplotypes in each
+    (virtual) subpopulation.
+    *   R2_sp R2 measure for haplotypes in each (virtual)
+    subpopulation.
+    *   LD_ChiSq_sp ChiSq statistics for each (virtual) subpopulation.
+    *   LD_ChiSq_p_sp p value for the ChiSq statistics for each
+    (virtual) subpopulation.
+    *   CramerV_sp Cramer V statistics for each (virtual)
+    subpopulation.
 
 "; 
 
@@ -9732,46 +9770,6 @@ Description:
 Usage:
 
     x.~statAlleleFreq()
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::addLocus "
-
-Usage:
-
-    x.addLocus(locus, subPops=AllSubPops, vars=[])
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::numOfAlleles "
-
-Usage:
-
-    x.numOfAlleles(pop)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleFreqVec "
-
-Usage:
-
-    x.alleleFreqVec(pop, loc)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleleFreq "
-
-Usage:
-
-    x.alleleFreq(pop, allele, loc)
-
-"; 
-
-%feature("docstring") simuPOP::statAlleleFreq::alleles "
-
-Usage:
-
-    x.alleles(pop, loc)
 
 "; 
 
@@ -9855,14 +9853,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::statGenoFreq::countGenotype "
-
-Usage:
-
-    x.countGenotype(pop, loc, wildtype)
-
-"; 
-
 %feature("docstring") simuPOP::statGenoFreq::apply "
 
 Usage:
@@ -9897,22 +9887,6 @@ Usage:
 
 "; 
 
-%feature("docstring") simuPOP::statHaploFreq::addHaplotype "
-
-Usage:
-
-    x.addHaplotype(loci, subPops, vars)
-
-"; 
-
-%feature("docstring") simuPOP::statHaploFreq::haploFreq "
-
-Usage:
-
-    x.haploFreq(pop, loci, subPop=[])
-
-"; 
-
 %ignore simuPOP::statHeteroFreq;
 
 %feature("docstring") simuPOP::statHeteroFreq::statHeteroFreq "
@@ -9920,22 +9894,6 @@ Usage:
 Usage:
 
     statHeteroFreq(heteroFreq, homoFreq, subPops, vars)
-
-"; 
-
-%feature("docstring") simuPOP::statHeteroFreq::addLocus "
-
-Usage:
-
-    x.addLocus(locus, subPops=AllSubPops, vars=[])
-
-"; 
-
-%feature("docstring") simuPOP::statHeteroFreq::heteroFreq "
-
-Usage:
-
-    x.heteroFreq(pop, allele, loc, subPop)
 
 "; 
 
@@ -10000,11 +9958,9 @@ Usage:
 
 Usage:
 
-    statLD(alleleFreq, haploFreq, LD=[], LD_param={})
+    statLD(LD, subPops, vars)
 
 "; 
-
-%ignore simuPOP::statLD::statLD(statAlleleFreq &alleleFreq, statHaploFreq &haploFreq, const statLD &rhs);
 
 %feature("docstring") simuPOP::statLD::apply "
 
@@ -10848,8 +10804,6 @@ Usage:
     LoadSimulator(file, matingScheme)
 
 "; 
-
-%ignore simuPOP::haploKey(const vectori &seq);
 
 %feature("docstring") simuPOP::TurnOnDebug "
 
