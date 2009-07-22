@@ -289,9 +289,6 @@ class TestStat(unittest.TestCase):
     def TestLD(self, freq):
         'Testing calculation of LD for a particular freq'
         #TurnOnDebug(DBG_STATOR)
-        pop = population(size=[500, 100, 1000], ploidy=2, loci = [5])
-        InitByFreq(pop, freq)
-        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4])
         #from simuUtil import ViewVars
         #ViewVars(pop.vars(), gui=False)
         def LD_single(var, loc1, loc2, allele1, allele2):
@@ -341,6 +338,15 @@ class TestStat(unittest.TestCase):
                     q = var.alleleFreq[loc2][allele2]
                     R2 += p*q*R2_single(var, loc1, loc2, allele1, allele2)
             return R2
+        pop = population(size=[500, 100, 1000], ploidy=2, loci = [5])
+        InitByFreq(pop, freq)
+        # test case with primary alleles specified
+        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4, 0, 1])
+        self.assertAlmostEqual(LD_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().LD[2][4])
+        self.assertAlmostEqual(LD_prime_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().LD_prime[2][4])
+        self.assertAlmostEqual(R2_single(pop.dvars(), 2, 4, 0, 1), pop.dvars().R2[2][4])
+        #
+        Stat(pop, alleleFreq=[2,4], haploFreq=[2,4], LD=[2, 4])
         self.assertAlmostEqual(LD(pop.dvars(), 2, 4), pop.dvars().LD[2][4])
         self.assertAlmostEqual(LD_prime(pop.dvars(), 2, 4), pop.dvars().LD_prime[2][4])
         self.assertAlmostEqual(R2(pop.dvars(), 2, 4), pop.dvars().R2[2][4])
