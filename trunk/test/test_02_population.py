@@ -443,7 +443,7 @@ class TestPopulation(unittest.TestCase):
         'Testing population::Extract(field=None, loci=None, infoFields=None, ancGen =-1)'
         # If subpoulation size is too small, the last subpopulation
         # may not have any individual.
-        pop = population(size=[30, 50], loci=[2, 3],  infoFields=['x', 'y'])
+        pop = population(size=[30, 50], loci=[2, 3], infoFields=['x', 'y'])
         for ind in pop.individuals():
             n = random.randint(-1, 5)
             ind.setInfo(n, 'x')
@@ -458,6 +458,16 @@ class TestPopulation(unittest.TestCase):
                     self.assertEqual(ind.genotype(), [1]*(pop.totNumLoci()*pop.ploidy()))
                 else:
                     self.assertEqual(ind.genotype(), [sp+1]*(pop.totNumLoci()*pop.ploidy()))
+        # test pedFields
+        pop = population(size=[30, 50], loci=[2, 3], infoFields=['x','y'])
+        pop.setIndInfo([0], 'x')
+        pop.setIndInfo([1], 'y')
+        ped = pedigree(pop, infoFields=['x'], fatherField='', motherField='' )
+        ped.addInfoFields('z')
+        ped.setIndInfo([2], 'z')
+        sample = pop.extract(ped=ped, infoFields='y', pedFields='z')
+        self.assertEqual(sample.indInfo('z'), tuple([2.0]*80))
+
         # FIXME: test extraction of loci and ancestral generations
 
     def testMergeSubPops(self):
