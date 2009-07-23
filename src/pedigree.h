@@ -99,11 +99,13 @@ public:
 	 *
 	 *  Parameter \e relType specifies what type of relative to locate. It can
 	 *  be \c Self, \c Spouse (having at least one common offspring),
-	 *  \c Offspring, \c FullSibling (having common father and mother), or
-	 *  \c Sibling (having at least one common parent). Optionally, you can
-	 *  specify the sex of relatives you would like to locate, in the form of
+	 *  \c Offspring, \c FullSibling (having common father and mother),
+	 *  \c Sibling (having at least one common parent) or \c SpouseAndOffspring
+	 *  (One spouse and their common offspring). Optionally, you can specify
+	 *  the sex of relatives you would like to locate, in the form of
 	 *  <tt>relType=(type, sexChoice)</tt>. sexChoice can be \c AnySex
 	 *  (default), \c MaleOnly, \c FemaleOnly, \c SameSex or \c OppositeSex.
+	 *  \c sexChoice for \c SpouseAndOffspring only refer to sex of offspring.
 	 *
 	 *  This function will by default go through all ancestral generations and
 	 *  locate relatives for all individuals. This can be changed by setting

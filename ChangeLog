@@ -32,6 +32,8 @@ version 0.9.6 - Not released, available at https://simupop.svn.sourceforge.net/s
   - NEW: Add statInfo to calculate sum, mean, var, max and min of information fields.
   - CHG: rewrite statLD and change how primary alleles are handled. Please refer to
 		user's guide for details.
+  - NEW: add relationship SpouseAndOffspring to pedigree::locateRelatives.
+  - NEW: add parameter pedFields to population::extract.
 
 version 0.9.5 - Revision 2740 (Jun 22, 2009)
   - NEW: Supports SWIG 1.3.39.

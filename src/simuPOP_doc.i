@@ -5321,10 +5321,12 @@ Details:
     an individual can have.  Parameter relType specifies what type of
     relative to locate. It can be Self, Spouse (having at least one
     common offspring), Offspring, FullSibling (having common father
-    and mother), or Sibling (having at least one common parent).
+    and mother), Sibling (having at least one common parent) or
+    SpouseAndOffspring (One spouse and their common offspring).
     Optionally, you can specify the sex of relatives you would like to
     locate, in the form of relType=(type, sexChoice). sexChoice can be
     AnySex (default), MaleOnly, FemaleOnly, SameSex or OppositeSex.
+    sexChoice for SpouseAndOffspring only refer to sex of offspring.
     This function will by default go through all ancestral generations
     and locate relatives for all individuals. This can be changed by
     setting parameter ancGen to the greatest ancestral generation you
@@ -6336,8 +6338,9 @@ Details:
     generations will be kept. As an advanced feature, field can be
     information field of a pedigree object ped. This allows extraction
     of individuals according to pedigrees identified in a pedigree
-    object. This pedigree should have the same number of individuals
-    in all generations.
+    object. Additional information fields from pedFields can be copied
+    to the extracted population. This pedigree should have the same
+    number of individuals in all generations.
 
 "; 
 

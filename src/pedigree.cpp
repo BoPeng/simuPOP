@@ -165,6 +165,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			useAncestralGen(ans);
 			if (numSpouse.empty())
 				numSpouse.resize(popSize(), 0);
+			std::fill(numSpouse.begin(), numSpouse.end(), 0);
 			//
 			for (size_t idx = 0; idx < father.size(); ++idx) {
 				DBG_FAILIF(fcmp_eq(father[idx], -1) || fcmp_eq(mother[idx], -1), ValueError,
@@ -253,6 +254,7 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 				useAncestralGen(ans);
 				if (numOffspring.empty())
 					numOffspring.resize(popSize(), 0);
+				std::fill(numOffspring.begin(), numOffspring.end(), 0);
 				//
 				for (size_t idx = 0; idx < parent.size(); ++idx) {
 					DBG_ASSERT(fcmp_ne(parent[idx], -1), ValueError, "Invalid parental index (-1)");
@@ -369,6 +371,97 @@ void pedigree::locateRelatives(uintList fullRelType, const vectorstr & relFields
 			for (size_t idx = 0; idx < popSize(); ++idx) {
 				for (size_t no = numSibling[idx]; no < maxSibling; ++no)
 					ind(idx).setInfo(-1, siblingIdx[no]);
+			}
+		}
+		useAncestralGen(0);
+	} else if (relType == SpouseAndOffspring) {
+		DBG_ASSERT(numParents() == 2, ValueError,
+			"This relative only exists when there are two parents for each indidivual");
+
+		DBG_ASSERT(relFields.size() >= 2, ValueError,
+			"Please provide at least one information field for spouse and one for offspring.");
+
+		DBG_WARNING(topGen == 0, "Spouse can not be located because there is no parental generation.");
+
+		UINT maxOffspring = relFields.size() - 1;
+
+		int spouseIdx = infoIdx(relFields[0]);
+		// clear these fields for the last generation
+		IndInfoIterator ptr = infoBegin(spouseIdx);
+		IndInfoIterator ptrEnd = infoEnd(spouseIdx);
+		for (; ptr != ptrEnd; ++ptr)
+			*ptr = static_cast<InfoType>(-1);
+		vectori offspringIdx(maxOffspring);
+		for (size_t i = 0; i < maxOffspring; ++i) {
+			offspringIdx[i] = infoIdx(relFields[i + 1]);
+			// clear these fields for the last generation
+			ptr = infoBegin(offspringIdx[i]);
+			ptrEnd = infoEnd(offspringIdx[i]);
+			for (; ptr != ptrEnd; ++ptr)
+				*ptr = static_cast<InfoType>(-1);
+		}
+
+		// start from the parental generation
+		for (unsigned ans = 1; ans <= topGen; ++ans) {
+			vectoru numOffspring;
+			// go to offspring generation
+			useAncestralGen(ans - 1);
+			vectorf father = indInfo(m_fatherIdx);
+			vectorf mother = indInfo(m_motherIdx);
+			//
+			useAncestralGen(ans);
+			if (numOffspring.empty())
+				numOffspring.resize(popSize(), 0);
+			std::fill(numOffspring.begin(), numOffspring.end(), 0);
+			setIndInfo(vectorf(-1), spouseIdx);
+			//
+			for (size_t idx = 0; idx < father.size(); ++idx) {
+				DBG_FAILIF(fcmp_eq(father[idx], -1) || fcmp_eq(mother[idx], -1), ValueError,
+					"Invalid parental index (-1)");
+				ULONG p = static_cast<ULONG>(father[idx]);
+				ULONG m = static_cast<ULONG>(mother[idx]);
+				DBG_ASSERT(p < popSize() && m < popSize(), IndexError,
+					"Parental index out of range of 0 ~ " + toStr(popSize() - 1));
+				// if new parents
+				if (numOffspring[p] == 0 && numOffspring[m] == 0) {
+					if (relSex != AnySex) {
+						Sex offSex = ancestor(idx, ans - 1).sex();
+						if ((offSex == Male && relSex == FemaleOnly) ||
+						    (offSex == Female && relSex == MaleOnly))
+							continue;
+					}
+					ind(p).setInfo(m, spouseIdx);
+					ind(m).setInfo(p, spouseIdx);
+					ind(p).setInfo(idx, offspringIdx[0]);
+					ind(m).setInfo(idx, offspringIdx[0]);
+					++numOffspring[p];
+					++numOffspring[m];
+				} else if (numOffspring[p] == numOffspring[m]) {
+					// not the original spouse
+					if (ind(p).intInfo(spouseIdx) != m)
+						continue;
+					// no room for another offspring
+					if (numOffspring[p] >= maxOffspring)
+						continue;
+					// sex does not match
+					if (relSex != AnySex) {
+						Sex offSex = ancestor(idx, ans - 1).sex();
+						if ((offSex == Male && relSex == FemaleOnly) ||
+						    (offSex == Female && relSex == MaleOnly))
+							continue;
+					}
+					// great! The same parents
+					ind(p).setInfo(idx, offspringIdx[numOffspring[p]]);
+					ind(m).setInfo(idx, offspringIdx[numOffspring[m]]);
+					++numOffspring[p];
+					++numOffspring[m];
+				} else
+					continue;
+			}                                                                                               // ancestal generations
+			// set the rest of the field to -1
+			for (size_t idx = 0; idx < popSize(); ++idx) {
+				for (size_t ns = numOffspring[idx]; ns < maxOffspring; ++ns)
+					ind(idx).setInfo(-1, offspringIdx[ns]);
 			}
 		}
 		useAncestralGen(0);

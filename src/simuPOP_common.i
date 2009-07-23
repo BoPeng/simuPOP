@@ -351,7 +351,7 @@ del population.__init__
 population.__init__ = new_population
 
 
-def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=None):
+def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=None, pedFields=[]):
     removeInd = field is not None
     if field is None:
         field = ''
@@ -366,7 +366,7 @@ def new_extract(self, field=None, loci=None, infoFields=None, ancGen=-1, ped=Non
             infoFields, ancGen)
     else:
         return cppModule.population_extract(self, removeInd, field, removeLoci, loci, removeInfo,
-            infoFields, ancGen, ped)
+            infoFields, ancGen, ped, pedFields)
 
 if population.extract.__doc__ is not None:
     new_extract.__doc__ = population.extract.__doc__
