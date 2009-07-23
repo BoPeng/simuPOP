@@ -990,9 +990,10 @@ public:
 	 *  individuals from the same subpopulation. This statistic calulates
 	 *  \e Fis, \e Fit and \e Fst for each locus and for all loci and set
 	 *  variables:
-	 *  \li \c AvgFst (default) \e Fst estimated for all specified loci.
-	 *  \li \c AvgFis \e Fis estimated for all specified loci.
-	 *  \li \c AvgFit \e Fit estimated for all specified loci.
+	 *  \li \c AvgFst (default) The \e Fst statistic estimated for all
+	 *       specified loci.
+	 *  \li \c AvgFis The \e Fis statistic estimated for all specified loci.
+	 *  \li \c AvgFit The \e Fit statistic estimated for all specified loci.
 	 *  \li \c Fst A dictionary of locus level \e Fst values.
 	 *  \li \c Fis A dictionary of locus level \e Fis values.
 	 *  \li \c Fit A dictionary of locus level \e Fit values.

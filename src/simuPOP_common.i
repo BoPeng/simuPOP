@@ -435,8 +435,6 @@ new_stat.__doc__ = stat.__init__.__doc__
 del stat.__init__
 stat.__init__ = new_stat
 
-
-
 def new_genotypeSplitter(self, loci=[], alleles=[], *args, **kwargs):
     if len(alleles) == 0:
         raise exceptions.ValueError("Please specify alleles at each locus")

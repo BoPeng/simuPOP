@@ -9475,7 +9475,7 @@ Usage:
       alleleFreq=[], heteroFreq=[], homoFreq=[], genoFreq=[],
       haploFreq=[], sumOfInfo=[], meanOfInfo=[], varOfInfo=[],
       maxOfInfo=[], minOfInfo=[], LD=[], association=[],
-      neutrality=[], Fst=[], Fst_param={}, HWE=[], vars=[], output=\"\",
+      neutrality=[], Fst=[], HWE=[], vars=[], output=\"\",
       stage=PostMating, begin=0, end=-1, step=1, at=[], reps=AllReps,
       subPops=AllSubPops, infoFields=[])
 
@@ -9700,7 +9700,22 @@ Details:
     *   LD_ChiSq_p_sp p value for the ChiSq statistics for each
     (virtual) subpopulation.
     *   CramerV_sp Cramer V statistics for each (virtual)
-    subpopulation.
+    subpopulation.Fst: Parameter Fst accepts a list of loci at which
+    level of population structure is measured by statistic Fst using
+    an algorithm developed in Cockerham & Weir, 1984. Fst is by
+    default calculated for all subpopulation but a subset of
+    subpopulations could be specified using parameter subPops. Virtual
+    subpopulations are supported which makes it possible to estimate
+    population structure from groups of individuals from the same
+    subpopulation. This statistic calulates Fis, Fit and Fst for each
+    locus and for all loci and set variables:
+    *   AvgFst (default) The Fst statistic estimated for all specified
+    loci.
+    *   AvgFis The Fis statistic estimated for all specified loci.
+    *   AvgFit The Fit statistic estimated for all specified loci.
+    *   Fst A dictionary of locus level Fst values.
+    *   Fis A dictionary of locus level Fis values.
+    *   Fit A dictionary of locus level Fit values.
 
 "; 
 
@@ -9711,8 +9726,6 @@ Usage:
     x.~stat()
 
 "; 
-
-%ignore simuPOP::stat::stat(const stat &rhs);
 
 %feature("docstring") simuPOP::stat::clone "
 
@@ -9805,33 +9818,7 @@ Usage:
 
 Usage:
 
-    statFst(alleleFreq, heteroFreq, Fst=[], param={})
-
-"; 
-
-%ignore simuPOP::statFst::statFst(statAlleleFreq &alleleFreq, statHeteroFreq &heteroFreq, const statFst &rhs);
-
-%feature("docstring") simuPOP::statFst::Fst "
-
-Usage:
-
-    x.Fst()
-
-"; 
-
-%feature("docstring") simuPOP::statFst::Fis "
-
-Usage:
-
-    x.Fis()
-
-"; 
-
-%feature("docstring") simuPOP::statFst::Fit "
-
-Usage:
-
-    x.Fit()
+    statFst(Fst, subPops, vars)
 
 "; 
 
