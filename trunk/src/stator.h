@@ -685,89 +685,25 @@ class statFst
 {
 
 private:
-#define  Fst_String  "Fst"
-#define  Fis_String  "Fis"
-#define  Fit_String  "Fit"
+#define  Fst_String		"Fst"
+#define  Fis_String		"Fis"
+#define  Fit_String		"Fit"
 #define  AvgFst_String  "AvgFst"
 #define  AvgFis_String  "AvgFis"
 #define  AvgFit_String  "AvgFit"
 
 public:
-	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-		const vectorlu & Fst = vectorlu(), const strDict & param = strDict());
-
-	/// CPPONLY: for copy constructor
-	statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-		const statFst & rhs) :
-		m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq),
-		m_loci(rhs.m_loci), m_Fst(rhs.m_Fst),
-		m_Fit(rhs.m_Fit), m_Fis(rhs.m_Fis),
-		m_avgFst(rhs.m_avgFst), m_avgFit(rhs.m_avgFit), m_avgFis(rhs.m_avgFis),
-		m_midValues(rhs.m_midValues),
-		m_output_Fst(rhs.m_output_Fst), m_output_Fis(rhs.m_output_Fis), m_output_Fit(rhs.m_output_Fit),
-		m_output_AvgFst(rhs.m_output_AvgFst), m_output_AvgFis(rhs.m_output_AvgFis),
-		m_output_AvgFit(rhs.m_output_AvgFit)
-	{
-	}
-
-
-	double Fst()
-	{
-		return m_avgFst;
-	}
-
-
-	double Fis()
-	{
-		return m_avgFis;
-	}
-
-
-	double Fit()
-	{
-		return m_avgFit;
-	}
-
-
-	double Fst(UINT loc)
-	{
-		return m_Fst[loc];
-	}
-
-
-	double Fis(UINT loc)
-	{
-		return m_Fis[loc];
-	}
-
-
-	double Fit(UINT loc)
-	{
-		return m_Fit[loc];
-	}
-
+	statFst(const vectorlu & Fst, const subPopList & subPops, const stringList & vars);
 
 	bool apply(population & pop);
 
 private:
-	statAlleleFreq & m_alleleFreq;
-	statHeteroFreq & m_heteroFreq;
 
 	/// Fst
 	vectorlu m_loci;
 
-	/// result
-	vectorf m_Fst, m_Fit, m_Fis;
-
-	double m_avgFst, m_avgFit, m_avgFis;
-
-	bool m_midValues;
-	bool m_output_Fst;
-	bool m_output_Fis;
-	bool m_output_Fit;
-	bool m_output_AvgFst;
-	bool m_output_AvgFis;
-	bool m_output_AvgFit;
+	subPopList m_subPops;
+	stringList m_vars;
 };
 
 
@@ -1045,6 +981,22 @@ public:
 	 *       (virtual) subpopulation.
 	 *  \li \c CramerV_sp Cramer V statistics for each (virtual) subpopulation.
 	 *
+	 *  <b>Fst</b>: Parameter \c Fst accepts a list of loci at which level of
+	 *  population structure is measured by statistic \e Fst using an algorithm
+	 *  developed in Cockerham & Weir, 1984. \e Fst is by default calculated
+	 *  for all subpopulation but a subset of subpopulations could be specified
+	 *  using parameter \e subPops. Virtual subpopulations are supported which
+	 *  makes it possible to estimate population structure from groups of
+	 *  individuals from the same subpopulation. This statistic calulates
+	 *  \e Fis, \e Fit and \e Fst for each locus and for all loci and set
+	 *  variables:
+	 *  \li \c AvgFst (default) \e Fst estimated for all specified loci.
+	 *  \li \c AvgFis \e Fis estimated for all specified loci.
+	 *  \li \c AvgFit \e Fit estimated for all specified loci.
+	 *  \li \c Fst A dictionary of locus level \e Fst values.
+	 *  \li \c Fis A dictionary of locus level \e Fis values.
+	 *  \li \c Fit A dictionary of locus level \e Fit values.
+	 *
 	 **/
 	stat(bool popSize = false,
 		//
@@ -1075,7 +1027,6 @@ public:
 		const uintList & neutrality = uintList(),
 		//
 		const uintList & Fst = uintList(),
-		const strDict & Fst_param = strDict(),
 		//
 		const uintList & HWE = uintList(),
 		//
@@ -1090,9 +1041,6 @@ public:
 	{
 	}
 
-
-	/// CPPONLY
-	stat(const stat & rhs);
 
 	/// deep copy of a \c stat operator
 	virtual baseOperator * clone() const

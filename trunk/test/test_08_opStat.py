@@ -256,13 +256,13 @@ class TestStat(unittest.TestCase):
         #        2	-0.103	 0.102	-0.229	 0.228
         #    All	-0.103	 0.102	-0.229	 0.228	 0.373	 0.051	-0.102	 0.550
         Stat(pop, Fst=[0])
-        assert abs(pop.dvars().Fis[0] - (-0.229)) < 0.01
-        assert abs(pop.dvars().Fit[0] - (-0.103)) < 0.01
-        assert abs(pop.dvars().Fst[0] - (0.102)) < 0.01
-        Stat(pop, Fst=[0], Fst_param={'Fis':True})
-        assert pop.vars().has_key('Fis')
+        assert pop.vars().has_key('AvgFst')
         assert not pop.vars().has_key('Fit')
         assert not pop.vars().has_key('Fst')
+        Stat(pop, Fst=[0], vars=['Fis', 'Fit', 'Fst'])
+        self.assertAlmostEqual(pop.dvars().Fis[0], -0.2290202)
+        self.assertAlmostEqual(pop.dvars().Fit[0], -0.1034594)
+        self.assertAlmostEqual(pop.dvars().Fst[0],  0.1021633)
 
     def testHaploFreq(self):
         'Testing calculation of haplotype frequency'
