@@ -493,7 +493,7 @@ class TestPerformance(unittest.TestCase):
 
     def TestLD(self):
         'Testing the performance of calculating LD for a large number of loci'
-        pop = LoadPopulation('../research/HapMap/HapMap_CEU_chr1.pop')
+        pop = LoadPopulation('../../research/HapMap/HapMap_CEU_chr1.pop')
         c1 = time.clock()
         Stat(pop, alleleFreq=range(pop.totNumLoci()))
         c2 = time.clock()
@@ -506,7 +506,7 @@ class TestPerformance(unittest.TestCase):
             c2 = c3
         # version 0.9.6:
         # allele freq: 2.56s (std and op)
-        # LD: 2.50 (10k), 6.02 (20k), 29.57 (50k), 115.21 (100k)
+        # LD: 0.38 (10k), 1.09 (20k), 3.68 (50k), 10.50 (100k)
         #
         # Old version: 0.9.5
         # allele freq: 5.06

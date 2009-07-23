@@ -459,11 +459,11 @@ class TestTransmitters(unittest.TestCase):
             recombinator(rates = 0.1) ], gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        assert abs(simu.dvars(0).haploFreq['0-1']['%s-%s'%(a1,a2)] - 0.05) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['%s-%s'%(a1,a2)] - 0.05) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['%s-%s'%(a1,a2)] - 0.05) < 0.01
-        assert abs(simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.05) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.05) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.05) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.05) < 0.01
         # compare to the next test
         pop = population(10000, loci=[3,4])
         InitByValue(pop, value=[a1]*7+[a2]*7)
@@ -472,26 +472,26 @@ class TestTransmitters(unittest.TestCase):
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rates = 0.4, loci=[1,3]) ], gen=1 )
         # 0.5
-        assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01
         # 0.25
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-1'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-1'] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01
         # no recombination.
-        assert abs(simu.dvars(0).haploFreq['4-5']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-0'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01
         #
         # alrorithm 0?
         #
@@ -502,26 +502,26 @@ class TestTransmitters(unittest.TestCase):
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rates = 0.4, loci=[1,3,8]) ], gen=1 )
         # 0.5
-        assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01
         # 0.25
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-1'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-1'] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01
         # no recombination.
-        assert abs(simu.dvars(0).haploFreq['4-5']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-0'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01
 
     def testConversionRate(self):
         'Testing to see if we actually convert at this rate '
@@ -536,31 +536,31 @@ class TestTransmitters(unittest.TestCase):
         #print simu.dvars(0).haploFreq
         #print rec.convCounts()
         # 0.5
-        assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01
         # 0.25
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-1'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-1'] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01
         # r/2 recombination induced recombination
-        assert abs(simu.dvars(0).haploFreq['4-5']['0-0'] - 0.3) < 0.01
-        assert abs(simu.dvars(0).haploFreq['4-5']['0-1'] - 0.2) < 0.01
-        assert abs(simu.dvars(0).haploFreq['4-5']['1-1'] - 0.3) < 0.01
-        assert abs(simu.dvars(0).haploFreq['4-5']['1-0'] - 0.2) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.3) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(0,1)] - 0.2) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.3) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(1,0)] - 0.2) < 0.01
         # copied
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.5) < 0.01
         #
         # length 2
         pop = population(10000, loci=[3,4])
@@ -570,31 +570,31 @@ class TestTransmitters(unittest.TestCase):
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rates = 0.4, convMode = (NumMarkers, 1, 2), loci=[1,3]) ], gen=1 )
         #
-        assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01
         # 0.25
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-1'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-1'] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01
         # copied
-        assert abs(simu.dvars(0).haploFreq['4-5']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['4-5']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) < 0.01
         # r/2 recombination induced recombination
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-0'] - 0.3) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-1'] - 0.2) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['1-1'] - 0.3) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['1-0'] - 0.2) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) < 0.01
         #
         # algorithm 0??
         pop = population(10000, loci=[3,10])
@@ -604,31 +604,31 @@ class TestTransmitters(unittest.TestCase):
             stat( haploFreq = [[0,1], [1,2], [2,3], [3,4], [4,5], [5,6]]),
             recombinator(rates = 0.4, convMode=(NumMarkers, 1, 2), loci=[1,3,8]) ], gen=1 )
         #
-        assert abs(simu.dvars(0).haploFreq['0-1']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['0-1']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,1)][(1,1)] - 0.5) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['1-2']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(1,2)][(1,1)] - 0.30) < 0.01
         # 0.25
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['0-1'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-0'] - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['2-3']['1-1'] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(0,1)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,0)] - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(2,3)][(1,1)] - 0.25) < 0.01
         # r/2
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-1'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-0'] - 0.20) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['0-0'] - 0.30) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-4']['1-1'] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,1)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,0)] - 0.20) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(0,0)] - 0.30) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,4)][(1,1)] - 0.30) < 0.01
         # copied
-        assert abs(simu.dvars(0).haploFreq['4-5']['0-0'] - 0.5) < 0.01
-        assert abs(simu.dvars(0).haploFreq['4-5']['1-1'] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(0,0)] - 0.5) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(4,5)][(1,1)] - 0.5) < 0.01
         # r/2 recombination induced recombination
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-0'] - 0.3) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['0-1'] - 0.2) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['1-1'] - 0.3) < 0.01
-        assert abs(simu.dvars(0).haploFreq['5-6']['1-0'] - 0.2) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,0)] - 0.3) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(0,1)] - 0.2) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(1,1)] - 0.3) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(5,6)][(1,0)] - 0.2) < 0.01
 
 
     def testAtLociRecRates(self):
@@ -645,14 +645,14 @@ class TestTransmitters(unittest.TestCase):
             recombinator(rates = [0.1,0.15,0.3], loci=[0,2,5] ) ], gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        assert (simu.dvars(0).haploFreq['0-1']['%s-%s'%(a1,a2)] - 0.05) < 0.01
-        assert (simu.dvars(0).haploFreq['2-3']['%s-%s'%(a1,a2)] - 0.075)< 0.01
+        assert (simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01
+        assert (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.075)< 0.01
         try:    # do not have this haplotype
-            simu.dvars(0).haploFreq['3-4']['%s-%s'%(a1,a2)]
+            simu.dvars(0).haploFreq[(3,4)][(a1,a2)]
         except exceptions.KeyError:
             pass
-        assert (simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
-        assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.15) < 0.01
+        assert (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01
+        assert (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.15) < 0.01
 
     def testRecIntensity(self):
         'Testing recombination intensity'
@@ -668,11 +668,11 @@ class TestTransmitters(unittest.TestCase):
             recombinator(intensity = 0.1) ], gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        assert (simu.dvars(0).haploFreq['0-1']['%s-%s'%(a1,a2)] - 0.05) < 0.01
-        assert (simu.dvars(0).haploFreq['2-3']['%s-%s'%(a1,a2)] - 0.1)    < 0.01
-        assert (simu.dvars(0).haploFreq['3-4']['%s-%s'%(a1,a2)] - 0.1)    < 0.01
-        assert (simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
-        assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.2)    < 0.01
+        assert (simu.dvars(0).haploFreq[(0,1)][(a1,a2)] - 0.05) < 0.01
+        assert (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    < 0.01
+        assert (simu.dvars(0).haploFreq[(3,4)][(a1,a2)] - 0.1)    < 0.01
+        assert (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01
+        assert (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2)    < 0.01
 
 
     def testRecIntensityAfterLoci(self):
@@ -689,11 +689,11 @@ class TestTransmitters(unittest.TestCase):
             recombinator(intensity = 0.1, loci=[2,5]) ], gen=1 )
         # the supposed proportions are 1-1: 0.5-r/2, 1-2: r/2, 2-1: r/2, 2-2: 0.5-r/2
         #print simu.dvars(0).haploFreq
-        assert simu.dvars(0).haploFreq['0-1'].setdefault('%s-%s'%(a1,a2),0) == 0
-        assert (simu.dvars(0).haploFreq['2-3']['%s-%s'%(a1,a2)] - 0.1)    < 0.01
-        assert simu.dvars(0).haploFreq['3-4'].setdefault('%s-%s'%(a1,a2),0) == 0
-        assert (simu.dvars(0).haploFreq['4-5']['%s-%s'%(a1,a2)] - 0.25) < 0.01
-        assert (simu.dvars(0).haploFreq['5-6']['%s-%s'%(a1,a2)] - 0.2) < 0.01
+        assert simu.dvars(0).haploFreq[(0,1)].setdefault((a1,a2),0) == 0
+        assert (simu.dvars(0).haploFreq[(2,3)][(a1,a2)] - 0.1)    < 0.01
+        assert simu.dvars(0).haploFreq[(3,4)].setdefault((a1,a2),0) == 0
+        assert (simu.dvars(0).haploFreq[(4,5)][(a1,a2)] - 0.25) < 0.01
+        assert (simu.dvars(0).haploFreq[(5,6)][(a1,a2)] - 0.2) < 0.01
 
 
     def testNoNewAllele(self):
@@ -727,13 +727,13 @@ class TestTransmitters(unittest.TestCase):
             ## for debug purpose, output haploFreq
             #pyEval('haploFreq', stage=PrePostMating),
             recombinator(rates = 0) ], gen=1 )
-        self.assertEqual(simu.dvars(0).haploFreq['0-1'].setdefault('%s-%s'%(a1,a2), 0), 0.)
-        self.assertEqual(simu.dvars(0).haploFreq['2-3'].setdefault('%s-%s'%(a1,a2), 0), 0.)
-        self.assertEqual(simu.dvars(0).haploFreq['2-4'].setdefault('%s-%s'%(a1,a2), 0), 0.)
-        self.assertEqual(simu.dvars(0).haploFreq['5-6'].setdefault('%s-%s'%(a1,a2), 0), 0.)
-        assert abs(simu.dvars(0).haploFreq['0-2'].setdefault('%s-%s'%(a1,a2), 0) - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['0-6'].setdefault('%s-%s'%(a1,a2), 0) - 0.25) < 0.01
-        assert abs(simu.dvars(0).haploFreq['3-6'].setdefault('%s-%s'%(a1,a2), 0) - 0.25) < 0.01
+        self.assertEqual(simu.dvars(0).haploFreq[(0,1)].setdefault((a1,a2), 0), 0.)
+        self.assertEqual(simu.dvars(0).haploFreq[(2,3)].setdefault((a1,a2), 0), 0.)
+        self.assertEqual(simu.dvars(0).haploFreq[(2,4)].setdefault((a1,a2), 0), 0.)
+        self.assertEqual(simu.dvars(0).haploFreq[(5,6)].setdefault((a1,a2), 0), 0.)
+        assert abs(simu.dvars(0).haploFreq[(0,2)].setdefault((a1,a2), 0) - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(0,6)].setdefault((a1,a2), 0) - 0.25) < 0.01
+        assert abs(simu.dvars(0).haploFreq[(3,6)].setdefault((a1,a2), 0) - 0.25) < 0.01
 
 
     def testRecProportion(self):
@@ -753,11 +753,11 @@ class TestTransmitters(unittest.TestCase):
                     [ recombinator(rates=r),
                         stat(haploFreq=[0,1])
                     ], gen=1)
-            hf = simu.dvars(0).haploFreq['0-1']
-            assert not ((hf.setdefault('0-0',0) - prop[i][0]) > 0.01 or \
-                (hf.setdefault('0-1',0) - prop[i][1]) > 0.01 or \
-                (hf.setdefault('1-0',0) - prop[i][2]) > 0.01 or \
-                (hf.setdefault('1-1',0) - prop[i][3]) > 0.01), \
+            hf = simu.dvars(0).haploFreq[(0,1)]
+            assert not ((hf.setdefault((0,0),0) - prop[i][0]) > 0.01 or \
+                (hf.setdefault((0,1),0) - prop[i][1]) > 0.01 or \
+                (hf.setdefault((1,0),0) - prop[i][2]) > 0.01 or \
+                (hf.setdefault((1,1),0) - prop[i][3]) > 0.01), \
                 "Recombination results in potentially wrong proportions." +    \
                 str( genoDad[i]) + ' crossing ' + str(genoMom[i])
 

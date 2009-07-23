@@ -1034,7 +1034,7 @@ bool statInfo::apply(population & pop)
 	// field indexes
 	UINT numSumFld = m_sumOfInfo.size();
 	UINT numMeanFld = m_meanOfInfo.size();
-	UINT numVarFld = m_meanOfInfo.size();
+	UINT numVarFld = m_varOfInfo.size();
 	UINT numMaxFld = m_maxOfInfo.size();
 	UINT numMinFld = m_minOfInfo.size();
 	//

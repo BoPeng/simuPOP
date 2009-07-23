@@ -911,9 +911,9 @@ class TestPopulation(unittest.TestCase):
         for ind in pop.individuals([0, 1]):
             self.assertEqual(ind.allele(1, 0), 1)
             self.assertEqual(ind.allele(1, 1), 0)
-        Stat(pop, genoFreq=[1], genoFreq_param={'phase':1})
-        self.assertEqual(pop.subPopSize([0, 0]), pop.dvars().genoNum[1][0][0])
-        self.assertEqual(pop.subPopSize([0, 1]), pop.dvars().genoNum[1][1][0])
+        Stat(pop, genoFreq=[1])
+        self.assertEqual(pop.subPopSize([0, 0]), pop.dvars().genoNum[1][(0,0)])
+        self.assertEqual(pop.subPopSize([0, 1]), pop.dvars().genoNum[1][(1,0)])
         # non-phased case
         pop.setVirtualSplitter(genotypeSplitter(loci=1, alleles=[[0, 0], [1, 0]], phase=False))
         for ind in pop.individuals([0, 0]):

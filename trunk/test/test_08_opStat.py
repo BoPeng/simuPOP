@@ -30,7 +30,7 @@ class TestStat(unittest.TestCase):
         pop = population(size=[200,800])
         # do not calculate for subpopulations
         Stat(pop, popSize=1, subPops=[])
-        self.assertEqual(pop.dvars().subPopSize, [200, 800])
+        self.assertEqual(pop.dvars().subPopSize, [])
         self.assertEqual(pop.dvars().popSize, 0)
         self.assertRaises(exceptions.ValueError, pop.dvars, 0)
         Stat(pop, popSize=1, subPops=1, vars='popSize_sp')
@@ -40,7 +40,7 @@ class TestStat(unittest.TestCase):
         pop.setVirtualSplitter(sexSplitter())
         InitSex(pop, sex=[Male, Female])
         Stat(pop, popSize=1, subPops=[(0,0), (1,1), 1], vars=['subPopSize', 'popSize', 'popSize_sp'])
-        self.assertEqual(pop.dvars().subPopSize, [200,800])
+        self.assertEqual(pop.dvars().subPopSize, [100, 400, 800])
         self.assertEqual(pop.dvars([0,0]).popSize, 100)
         self.assertEqual(pop.dvars([1,1]).popSize, 400)
         # test the vars parameter
@@ -417,8 +417,8 @@ class TestStat(unittest.TestCase):
         pop.dvars().LD[1][4]
         pop.dvars().alleleFreq[1][0]
         pop.dvars().alleleFreq[2][0]
-        pop.dvars().haploFreq['1-2']
-        pop.dvars().haploFreq['1-3']
+        pop.dvars().haploFreq[(1, 2)]
+        pop.dvars().haploFreq[(1, 3)]
 
     def pairwiseDiff(self, sample, loci):
         'Calculating pairwise difference'
