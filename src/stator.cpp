@@ -278,7 +278,6 @@ stat::stat(
 	const uintList & neutrality,
 	//
 	const uintList & Fst,
-	const strDict & Fst_param,
 	//
 	const uintList & HWE,
 	//
@@ -300,28 +299,8 @@ stat::stat(
 	m_LD(LD, subPops, vars),
 	m_association(association.elems(), subPops),
 	m_neutrality(neutrality.elems(), subPops),
-	m_Fst(m_alleleFreq, m_heteroFreq, Fst.elems(), Fst_param),
+	m_Fst(Fst.elems(), subPops, vars),
 	m_HWE(m_genoFreq, HWE.elems())
-{
-}
-
-
-stat::stat(const stat & rhs) :
-	baseOperator(rhs),
-	// the order of initialization is meaningful since they may depend on each other
-	m_popSize(rhs.m_popSize),
-	m_numOfMale(rhs.m_numOfMale),
-	m_numOfAffected(rhs.m_numOfAffected),
-	m_alleleFreq(rhs.m_alleleFreq),
-	m_heteroFreq(rhs.m_heteroFreq),
-	m_genoFreq(rhs.m_genoFreq),
-	m_haploFreq(rhs.m_haploFreq),
-	m_info(rhs.m_info),
-	m_LD(rhs.m_LD),
-	m_association(rhs.m_association),
-	m_neutrality(rhs.m_neutrality),
-	m_Fst(m_alleleFreq, m_heteroFreq, rhs.m_Fst),
-	m_HWE(m_genoFreq, rhs.m_HWE)
 {
 }
 
@@ -1249,7 +1228,7 @@ statLD::statLD(const intMatrix & LD,  const subPopList & subPops,
 	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 
 	for (size_t i = 0; i < m_LD.size(); ++i) {
-		DBG_FAILIF(m_LD[i].size() != 2 and m_LD[i].size() != 4, ValueError,
+		DBG_FAILIF(m_LD[i].size() != 2 && m_LD[i].size() != 4, ValueError,
 			"Parameter LD should be a list of loci pairs with optional primary alleles.");
 	}
 }
@@ -1272,7 +1251,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 		ALLELECNT::const_iterator cntEnd = alleleCnt1.end();
 		double allAlleles = 0;
 		for (; cnt != cntEnd; ++cnt) {
-			alleles1.push_back(cnt->first);
+			alleles1.push_back(ToAllele(cnt->first));
 			freq1.push_back(cnt->second);
 			allAlleles += cnt->second;
 		}
@@ -1282,7 +1261,7 @@ void statLD::calculateLD(const vectoru & lociMap, const ALLELECNTLIST & alleleCn
 		cntEnd = alleleCnt2.end();
 		allAlleles = 0;
 		for (; cnt != cntEnd; ++cnt) {
-			alleles2.push_back(cnt->first);
+			alleles2.push_back(ToAllele(cnt->first));
 			freq2.push_back(cnt->second);
 			allAlleles += cnt->second;
 		}
@@ -1780,57 +1759,16 @@ bool statNeutrality::apply(population & pop)
 }
 
 
-statFst::statFst(statAlleleFreq & alleleFreq, statHeteroFreq & heteroFreq,
-	const vectorlu & Fst, const strDict & param)
-	: m_alleleFreq(alleleFreq), m_heteroFreq(heteroFreq), m_loci(Fst),
-	m_midValues(false),
-	m_output_Fst(true),
-	m_output_Fis(true),
-	m_output_Fit(true),
-	m_output_AvgFst(true),
-	m_output_AvgFis(true),
-	m_output_AvgFit(true)
+statFst::statFst(const vectorlu & Fst, const subPopList & subPops, const stringList & vars)
+	: m_loci(Fst), m_subPops(subPops), m_vars()
 {
-	strDict::const_iterator it;
-	strDict::const_iterator itEnd = param.end();
+	const char * allowedVars[] = {
+		Fst_String, Fis_String, Fit_String, AvgFst_String, AvgFis_String, AvgFit_String,
+		""
+	};
+	const char * defaultVars[] = { AvgFst_String, "" };
 
-	if ((it = param.find("midValues")) != itEnd)
-		m_midValues = it->second != 0.;
-	// if any statistics is specified, other unspecified ones are not calculated
-	if (param.find(Fst_String) != itEnd ||
-	    param.find(Fis_String) != itEnd ||
-	    param.find(Fit_String) != itEnd ||
-	    param.find(AvgFst_String) != itEnd ||
-	    param.find(AvgFis_String) != itEnd ||
-	    param.find(AvgFit_String) != itEnd) {
-		m_output_Fst = false;
-		m_output_Fis = false;
-		m_output_Fit = false;
-		m_output_AvgFst = false;
-		m_output_AvgFis = false;
-		m_output_AvgFit = false;
-		// if has key, and is True or 1
-		if ((it = param.find(Fst_String)) != itEnd)
-			m_output_Fst = it->second != 0.;
-		if ((it = param.find(Fis_String)) != itEnd)
-			m_output_Fis = it->second != 0.;
-		if ((it = param.find(Fit_String)) != itEnd)
-			m_output_Fit = it->second != 0.;
-		if ((it = param.find(AvgFst_String)) != itEnd)
-			m_output_AvgFst = it->second != 0.;
-		if ((it = param.find(AvgFis_String)) != itEnd)
-			m_output_AvgFis = it->second != 0.;
-		if ((it = param.find(AvgFit_String)) != itEnd)
-			m_output_AvgFit = it->second != 0.;
-	}
-
-	for (size_t i = 0; i < m_loci.size(); ++i) {
-		// need to get allele frequency at this locus
-		//m_alleleFreq.addLocus(m_loci[i]);
-
-		// need to get heterozygous proportion  at this locus
-		//m_heteroFreq.addLocus(m_loci[i]);
-	}
+	m_vars.obtainFrom(vars, allowedVars, defaultVars);
 }
 
 
@@ -1839,20 +1777,78 @@ bool statFst::apply(population & pop)
 	if (m_loci.empty())
 		return true;
 
-	pop.removeVar(Fst_String);
-	pop.removeVar(Fis_String);
-	pop.removeVar(Fit_String);
+	DBG_ASSERT(pop.ploidy() == 2, ValueError,
+		"Fst statistics is available only for diploid populations.");
 
-	m_Fst.clear();
-	m_Fit.clear();
-	m_Fis.clear();
+#ifndef OPTIMIZED
+	for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+		int chromType = pop.chromType(pop.chromLocusPair(m_loci[idx]).first);
+		DBG_FAILIF(chromType == ChromosomeX || chromType == ChromosomeY, ValueError,
+			"Fst can not be esimated from markers on sex chromosomes");
+	}
+#endif
+
+	// selected (virtual) subpopulatons.
+	subPopList subPops = m_subPops;
+	subPops.useSubPopsFrom(pop);
+	subPopList::const_iterator it = subPops.begin();
+	subPopList::const_iterator itEnd = subPops.end();
+	// count for all specified subpopulations
+	vector<map<Allele, bool> > allAlleles(m_loci.size());
+	vector<map<UINT, map<UINT, float> > > alleleFreq(subPops.size());
+	vector<map<UINT, map<UINT, float> > > heteroFreq(subPops.size());
+	for (size_t spIdx = 0; it != itEnd; ++it, ++spIdx) {
+		if (m_vars.contains(AlleleNum_sp_String))
+			pop.removeVar(subPopVar_String(*it, AlleleNum_String));
+		if (m_vars.contains(AlleleFreq_sp_String))
+			pop.removeVar(subPopVar_String(*it, AlleleFreq_String));
+
+		if (it->isVirtual())
+			pop.activateVirtualSubPop(*it);
+
+		for (size_t idx = 0; idx < m_loci.size(); ++idx) {
+			UINT loc = m_loci[idx];
+			map<UINT, float> & af = alleleFreq[spIdx][loc];
+			map<UINT, float> & hf = heteroFreq[spIdx][loc];
+			map<Allele, bool> & alleles = allAlleles[idx];
+			UINT cnt = 0;
+
+			// go through all alleles
+			IndAlleleIterator a = pop.alleleIterator(loc, it->subPop());
+			for (; a.valid(); ++cnt) {
+				Allele a1 = *a++;
+				Allele a2 = *a++;
+				++af[a1];
+				++af[a2];
+				hf[a1] += a1 != a2;
+				hf[a2] += a1 != a2;
+				alleles[a1] = true;
+				alleles[a2] = true;
+			}
+			// heterozygote frequency
+			map<UINT, float>::iterator it = af.begin();
+			map<UINT, float>::iterator itEnd = af.end();
+			for (; it != itEnd; ++it)
+				it->second /= 2 * cnt;
+			// heterozygote frequency
+			it = hf.begin();
+			itEnd = hf.end();
+			for (; it != itEnd; ++it)
+				it->second /= cnt;
+		}
+	}
 
 	// dicitonary to save values.
 	UINT numSP = pop.numSubPop();
 	ULONG popSize = pop.popSize();
 
 	// do not save these values now
-	double aa = 0., bb = 0., cc = 0.;
+	double aa = 0.;
+	double bb = 0.;
+	double cc = 0.;
+	intDict Fst;
+	intDict Fit;
+	intDict Fis;
 
 	// vector to store p[i]
 	vectorf p_i = vectorf(numSP);
@@ -1865,9 +1861,7 @@ bool statFst::apply(population & pop)
 			"Index out of range of 0 ~ " + toStr(pop.totNumLoci() - 1));
 
 		// get all available alleles
-		vectori alleles;         // = m_alleleFreq.alleles(pop, loc);
-
-		DBG_DO(DBG_STATOR, cout << "Using alleles " << alleles << endl);
+		const map<Allele, bool> & alleles = allAlleles[st];
 
 		// n_bar
 		double r = numSP;
@@ -1883,10 +1877,13 @@ bool statFst::apply(population & pop)
 
 		double a = 0.0, b = 0.0, c = 0.0;
 
-		for (vectori::iterator ale = alleles.begin(); ale != alleles.end(); ++ale) {
+		map<Allele, bool>::const_iterator aIt = alleles.begin();
+		map<Allele, bool>::const_iterator aEnd = alleles.end();
+		for (; aIt != aEnd; ++aIt) {
+			Allele allele = aIt->first;
 			// p_i
 			for (int sp = 0; sp < r; ++sp)
-				p_i[sp] = 0;         //m_alleleFreq.alleleFreq(pop, *ale, loc, sp);
+				p_i[sp] = alleleFreq[sp][loc][allele];
 
 			// p_bar
 			double p_bar = 0;
@@ -1903,7 +1900,7 @@ bool statFst::apply(population & pop)
 			// h_bar
 			double h_bar = 0;
 			for (int sp = 0; sp < r; ++sp)
-				h_bar += 0;         //m_heteroFreq.heteroFreq(pop, *ale, loc, sp) * n_i[sp];
+				h_bar += heteroFreq[sp][loc][allele] * n_i[sp];
 			h_bar /= n;
 
 			// a, b, c
@@ -1911,43 +1908,38 @@ bool statFst::apply(population & pop)
 			b += n_bar / (n_bar - 1) * (p_bar * (1 - p_bar) - (r - 1) / r * s_2 - (2 * n_bar - 1) / (4. * n_bar) * h_bar);
 			c += h_bar / 2.;
 
-			DBG_DO(DBG_STATOR, cout << "allele " << *ale << "\tn_c: " << n_c
+			DBG_DO(DBG_STATOR, cout << "allele " << allele << "\tn_c: " << n_c
 				                    << "\tp_i: " << p_i << "\tp_bar: " << p_bar << "\ts^2: " << s_2 << "\th_bar:"
 				                    << h_bar << "\ta: " << a << "\tb: " << b << "\tc: " << c << endl);
 		}                                                                                 // each allele
 
 		DBG_DO(DBG_STATOR, cout << "Fst= " << a / (a + b + c) << endl);
 
-		if (static_cast<size_t>(loc) >= m_Fst.size()) {
-			m_Fst.resize(loc + 1, 0.);
-			m_Fit.resize(loc + 1, 0.);
-			m_Fis.resize(loc + 1, 0.);
-		}
-		m_Fst[loc] = fcmp_eq(a + b + c, 0.) ? 0. : (a / (a + b + c));
-		m_Fit[loc] = fcmp_eq(a + b + c, 0.) ? 1. : (1 - c / (a + b + c));
-		m_Fis[loc] = fcmp_eq(b + c, 0.) ? 1. : (1 - c / (b + c));
+		Fst[loc] = fcmp_eq(a + b + c, 0.) ? 0. : (a / (a + b + c));
+		Fit[loc] = fcmp_eq(a + b + c, 0.) ? 1. : (1 - c / (a + b + c));
+		Fis[loc] = fcmp_eq(b + c, 0.) ? 1. : (1 - c / (b + c));
 
 		aa += a;
 		bb += b;
 		cc += c;
 	}
-	m_avgFst = fcmp_eq(aa + bb + cc, 0.) ? 0 : (aa / (aa + bb + cc));
-	m_avgFit = fcmp_eq(aa + bb + cc, 0.) ? 1. : (1 - cc / (aa + bb + cc));
-	m_avgFis = fcmp_eq(aa + bb + cc, 0) ? 1. : (1 - cc / (bb + cc));
+	double avgFst = fcmp_eq(aa + bb + cc, 0.) ? 0 : (aa / (aa + bb + cc));
+	double avgFit = fcmp_eq(aa + bb + cc, 0.) ? 1. : (1 - cc / (aa + bb + cc));
+	double avgFis = fcmp_eq(aa + bb + cc, 0) ? 1. : (1 - cc / (bb + cc));
 
 	// post results
-	if (m_output_Fst)
-		pop.setDoubleVectorVar(Fst_String, m_Fst);
-	if (m_output_Fit)
-		pop.setDoubleVectorVar(Fit_String, m_Fit);
-	if (m_output_Fis)
-		pop.setDoubleVectorVar(Fis_String, m_Fis);
-	if (m_output_AvgFst)
-		pop.setDoubleVar(AvgFst_String, m_avgFst);
-	if (m_output_AvgFit)
-		pop.setDoubleVar(AvgFit_String, m_avgFit);
-	if (m_output_AvgFis)
-		pop.setDoubleVar(AvgFis_String, m_avgFis);
+	if (m_vars.contains(Fst_String))
+		pop.setIntDictVar(Fst_String, Fst);
+	if (m_vars.contains(Fit_String))
+		pop.setIntDictVar(Fit_String, Fit);
+	if (m_vars.contains(Fis_String))
+		pop.setIntDictVar(Fis_String, Fis);
+	if (m_vars.contains(AvgFst_String))
+		pop.setDoubleVar(AvgFst_String, avgFst);
+	if (m_vars.contains(AvgFit_String))
+		pop.setDoubleVar(AvgFit_String, avgFit);
+	if (m_vars.contains(AvgFis_String))
+		pop.setDoubleVar(AvgFis_String, avgFis);
 	return true;
 }
 
